@@ -1,0 +1,10 @@
+<package>
+  <description brief="yason">
+    A JASON parser for common lisp.
+  </description>
+  <author>Hans Hübner</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+</package>
+
+

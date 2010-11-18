@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/js.jar"/>
+	<classpathentry kind="lib" path="lib/jsapi.jar"/>
+	<classpathentry kind="lib" path="lib/sphinx4.jar"/>
+	<classpathentry kind="lib" path="lib/WSJ_8gau_13dCep_16k_40mel_130Hz_6800Hz.jar"/>
+	<classpathentry kind="lib" path="lib/WSJ_8gau_13dCep_8kHz_31mel_200Hz_3500Hz.jar"/>
+	<classpathentry kind="lib" path="/work/ros/overlay/stacks-unstable/ros-experimental-trunk/rosjava/bin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/mod_vis"/>
+	<classpathentry kind="lib" path="/mod_vis/lib/controlP5.jar"/>
+	<classpathentry kind="lib" path="/mod_vis/lib/core.jar"/>
+	<classpathentry kind="lib" path="/mod_vis/lib/vecmath.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/json_prolog"/>
+	<classpathentry kind="lib" path="/work/ros/tumros-internal/utils/rosjava_deps/rosjava_msgs.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/srldb"/>
+	<classpathentry kind="lib" path="/work/ros/tumros-internal/3rdparty/mary_tts/bin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/comp_ehow"/>
+	<classpathentry kind="lib" path="/work/ros/tumros-internal/stacks/knowrob/3rdparty/jpl/prolog/jpl.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

@@ -1,0 +1,12 @@
+autom4te.cache
+*.class
+classes
+jpl.dll
+jpl.so
+jpl.jar
+jpltest.jar
+config.h
+config.log
+Makefile
+build_PAUL.bat
+test_jpl.bat

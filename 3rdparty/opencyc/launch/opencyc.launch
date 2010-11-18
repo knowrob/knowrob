@@ -1,0 +1,3 @@
+<launch>
+  <node name="opencyc" pkg="opencyc" type="opencyc" />
+</launch>

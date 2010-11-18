@@ -1,0 +1,23 @@
+<package>
+  <description brief="comp_objclusters">
+
+     comp_objclusters
+
+     Methods for inferring the most likely object class a point cluster
+     belongs to.
+
+     Input:  a list of lo IDs and the identifier of the desired object class
+     Output: the list of lo IDs, ordered by the probability that the resp. cluster
+             belongs to the desired object class
+
+  </description>
+  <author>Moritz Tenorth</author>
+  <license>GPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ias.in.tum.de/kb/wiki/index.php/comp_objclusters</url>
+
+  <depend package="comp_ros"/>
+  <depend package="comp_spatial"/>
+</package>
+
+

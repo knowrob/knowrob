@@ -1,0 +1,21 @@
+<package>
+  <description brief="comp_temporal">
+
+     comp_temporal
+
+     Temporal reasoning methods for the knowledge base.
+
+     Time points and intervals are supported, and the system can
+     calculate if one interval subsumes another one, happens before
+     or after another, and how long it takes.
+
+  </description>
+  <author>Moritz Tenorth</author>
+  <license>GPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ias.in.tum.de/kb/wiki/index.php/comp_temporal</url>
+  
+  <depend package="ias_knowledge_base"/>
+</package>
+
+

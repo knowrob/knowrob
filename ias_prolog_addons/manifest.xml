@@ -1,0 +1,21 @@
+<package>
+  <description brief="ias_prolog_addons">
+      Some swi-prolog utils and addons.
+  </description>
+  <author>Bernhard Kirchlechner, Moritz Tenorth, Jakob Engel</author>
+  <license>GPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://www.ros.org/wiki/ias_prolog_addons</url>
+
+  <depend package="jpl"/>
+  <depend package="rosjava"/>
+  <depend package="rosprolog"/>
+
+
+  <export>
+    <java classpath="${prefix}/lib/classifier_interface.jar:${prefix}/lib/mallet-deps.jar:${prefix}/lib/mallet-dist.jar:${prefix}/lib/weka_fipm.jar"/>
+  </export>
+
+
+</package>
+

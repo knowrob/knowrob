@@ -1,0 +1,478 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY local_path 'file://@OWL_PATH_PREFIX@/owl/'>
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY comp_cop "http://ias.cs.tum.edu/kb/comp_cop.owl#" >
+]>
+
+
+<rdf:RDF xmlns="http://ias.cs.tum.edu/kb/comp_cop.owl#"
+     xml:base="http://ias.cs.tum.edu/kb/comp_cop.owl"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#"
+     xmlns:comp_cop="http://ias.cs.tum.edu/kb/comp_cop.owl#">
+    <owl:Ontology rdf:about="">
+        <owl:imports rdf:resource="&local_path;knowrob.owl"/>
+    </owl:Ontology>
+
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#subEvents -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;subEvents"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#AttentionAlgorithm -->
+
+    <owl:Class rdf:about="#AttentionAlgorithm">
+        <rdfs:subClassOf rdf:resource="#CopPerception"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#Blob -->
+
+    <owl:Class rdf:about="#Blob">
+        <rdfs:subClassOf rdf:resource="#CopObjRecModel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#CalTab -->
+
+    <owl:Class rdf:about="#CalTab">
+        <rdfs:subClassOf rdf:resource="#CopObjRecModel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#CamerDriverRelay -->
+
+    <owl:Class rdf:about="#CamerDriverRelay">
+        <rdfs:subClassOf rdf:resource="#CameraDriver"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#CameraDriver -->
+
+    <owl:Class rdf:about="#CameraDriver">
+        <rdfs:subClassOf rdf:resource="#Camera"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#CheckColorClass -->
+
+    <owl:Class rdf:about="#CheckColorClass">
+        <rdfs:subClassOf rdf:resource="#LocateAlgorithm"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#needsComponent"/>
+                <owl:someValuesFrom rdf:resource="#ColorClass"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#needsComponent"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;Point3D"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#ClusterDetector -->
+
+    <owl:Class rdf:about="#ClusterDetector">
+        <rdfs:subClassOf rdf:resource="#LocateAlgorithm"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#needsComponent"/>
+                <owl:someValuesFrom rdf:resource="#SegmentPrototype"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#ColorClass -->
+
+    <owl:Class rdf:about="#ColorClass">
+        <rdfs:subClassOf rdf:resource="#CopObjRecModel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#CopObjRecModel -->
+
+    <owl:Class rdf:about="#CopObjRecModel">
+        <rdfs:subClassOf rdf:resource="#ObjectRecognitionModel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#CopPerception -->
+
+    <owl:Class rdf:about="#CopPerception">
+        <rdfs:subClassOf rdf:resource="&knowrob;VisualPerception"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#DeformShapeBasedAlgorithm -->
+
+    <owl:Class rdf:about="#DeformShapeBasedAlgorithm">
+        <rdfs:subClassOf rdf:resource="#LocateAlgorithm"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#needsComponent"/>
+                <owl:someValuesFrom rdf:resource="#DeformShapeModel"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#DeformShapeModel -->
+
+    <owl:Class rdf:about="#DeformShapeModel">
+        <rdfs:subClassOf rdf:resource="#CopObjRecModel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#DetectTransparentObject -->
+
+    <owl:Class rdf:about="#DetectTransparentObject">
+        <rdfs:subClassOf rdf:resource="#RefineAlgorithm"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#needsComponent"/>
+                <owl:someValuesFrom rdf:resource="#TransparentObjectCandidate"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#DetectTransparentObjectCandidate -->
+
+    <owl:Class rdf:about="#DetectTransparentObjectCandidate">
+        <rdfs:subClassOf rdf:resource="#LocateAlgorithm"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#needsComponent"/>
+                <owl:someValuesFrom rdf:resource="#TransparentObjectCandidate"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#DetectedFace -->
+
+    <owl:Class rdf:about="#DetectedFace">
+        <rdfs:subClassOf rdf:resource="#CopObjRecModel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#FaceDetection -->
+
+    <owl:Class rdf:about="#FaceDetection">
+        <rdfs:subClassOf rdf:resource="#LocateAlgorithm"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#needsComponent"/>
+                <owl:someValuesFrom rdf:resource="#DetectedFace"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#FindCalibrationPlate -->
+
+    <owl:Class rdf:about="#FindCalibrationPlate">
+        <rdfs:subClassOf rdf:resource="#LocateAlgorithm"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#needsComponent"/>
+                <owl:someValuesFrom rdf:resource="#CalTab"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#LocateAlgorithm -->
+
+    <owl:Class rdf:about="#LocateAlgorithm">
+        <rdfs:subClassOf rdf:resource="#CopPerception"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#MonocularCamera -->
+
+    <owl:Class rdf:about="#MonocularCamera">
+        <rdfs:subClassOf rdf:resource="#Camera"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#PointCloud -->
+
+    <owl:Class rdf:about="#PointCloud">
+        <rdfs:subClassOf rdf:resource="&knowrob;SpatialThing-Localized"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#ProveAlgorithm -->
+
+    <owl:Class rdf:about="#ProveAlgorithm">
+        <rdfs:subClassOf rdf:resource="#CopPerception"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#RFAClassByDPs -->
+
+    <owl:Class rdf:about="#RFAClassByDPs">
+        <rdfs:subClassOf rdf:resource="#RefineAlgorithm"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#RFAColorByShape -->
+
+    <owl:Class rdf:about="#RFAColorByShape">
+        <rdfs:subClassOf rdf:resource="#RefineAlgorithm"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#needsComponent"/>
+                <owl:someValuesFrom rdf:resource="#SegmentPrototype"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;subEvents"/>
+                <owl:someValuesFrom rdf:resource="#CheckColorClass"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#RFADeformByCluster -->
+
+    <owl:Class rdf:about="#RFADeformByCluster">
+        <rdfs:subClassOf rdf:resource="#RefineAlgorithm"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#needsComponent"/>
+                <owl:someValuesFrom rdf:resource="#SegmentPrototype"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#ROSCOPCamera -->
+
+    <owl:Class rdf:about="#ROSCOPCamera">
+        <rdfs:subClassOf rdf:resource="#CameraDriver"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#RefineAlgorithm -->
+
+    <owl:Class rdf:about="#RefineAlgorithm">
+        <rdfs:subClassOf rdf:resource="#CopPerception"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#SegmentPrototype -->
+
+    <owl:Class rdf:about="#SegmentPrototype">
+        <rdfs:subClassOf rdf:resource="#CopObjRecModel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#ShapeModel -->
+
+    <owl:Class rdf:about="#ShapeModel">
+        <rdfs:subClassOf rdf:resource="#CopObjRecModel"/>
+    </owl:Class>
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#ShapeModel -->
+
+    <owl:Class rdf:about="#ODUFinder">
+        <rdfs:subClassOf rdf:resource="#CopObjRecModel"/>
+    </owl:Class>
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#ShapeModelDownloader -->
+
+    <owl:Class rdf:about="#ShapeModelDownloader">
+        <rdfs:subClassOf rdf:resource="#RefineAlgorithm"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#ShapedBased3DAlgorithm -->
+
+    <owl:Class rdf:about="#ShapedBased3DAlgorithm">
+        <rdfs:subClassOf rdf:resource="#LocateAlgorithm"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#needsComponent"/>
+                <owl:someValuesFrom rdf:resource="#ShapeModel"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#SimulatedCamera -->
+
+    <owl:Class rdf:about="#SimulatedCamera">
+        <rdfs:subClassOf rdf:resource="#CameraDriver"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#StereoCamera -->
+
+    <owl:Class rdf:about="#StereoCamera">
+        <rdfs:subClassOf rdf:resource="#Camera"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#SwissRangerRemoteSensor -->
+
+    <owl:Class rdf:about="#SwissRangerRemoteSensor">
+        <rdfs:subClassOf rdf:resource="#TimeOfFlightCamera"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#TableObjectDescriptor -->
+
+    <owl:Class rdf:about="#TableObjectDescriptor">
+        <rdfs:subClassOf rdf:resource="#CopObjRecModel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#TableObjectRedetector -->
+
+    <owl:Class rdf:about="#TableObjectRedetector">
+        <rdfs:subClassOf rdf:resource="#LocateAlgorithm"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;subEvents"/>
+                <owl:someValuesFrom rdf:resource="#ClusterDetector"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#needsComponent"/>
+                <owl:someValuesFrom rdf:resource="#TableObjectDescriptor"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#TransparentObject -->
+
+    <owl:Class rdf:about="#TransparentObject">
+        <rdfs:subClassOf rdf:resource="&knowrob;EnduringThing-Localized"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#TransparentObjectCandidate -->
+
+    <owl:Class rdf:about="#TransparentObjectCandidate">
+        <rdfs:subClassOf rdf:resource="#CopObjRecModel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/vision_descriptors.owl#TwoInOneAlgorithm -->
+
+    <owl:Class rdf:about="#TwoInOneAlgorithm">
+        <rdfs:subClassOf rdf:resource="#LocateAlgorithm"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;subEvents"/>
+                <owl:someValuesFrom rdf:resource="#LocateAlgorithm"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&knowrob;BlackColor"/>
+            <rdf:Description rdf:about="&knowrob;BlueColor"/>
+            <rdf:Description rdf:about="&knowrob;GreenColor"/>
+            <rdf:Description rdf:about="&knowrob;RedColor"/>
+            <rdf:Description rdf:about="&knowrob;WhiteColor"/>
+            <rdf:Description rdf:about="&knowrob;YellowColor"/>
+        </owl:members>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 2.2.1.1101) http://owlapi.sourceforge.net -->
+

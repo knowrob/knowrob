@@ -1,0 +1,19 @@
+<package>
+  <description brief="mod_probcog">
+
+     ias_probcog
+
+  </description>
+  <author>Daniel Nyga, Moritz Tenorth</author>
+  <license>GPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ias.cs.tum.edu/kb/wiki/index.php/Mod_probcog</url>
+  <depend package="ias_knowledge_base"/>
+  <depend package="srldb"/>
+  <depend package="comp_temporal"/>
+  <depend package="comp_spatial"/>
+  <!--  for tumutils.jar:  -->
+  <depend package="mod_vis"/>
+</package>
+
+

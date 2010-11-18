@@ -1,0 +1,3 @@
+<launch>
+  <node name="communication_vis" pkg="mod_vis" type="communication_vis" />
+</launch>

@@ -1,0 +1,17 @@
+<package>
+  <description brief="mod_semantic_map">
+
+     mod_semantic_map
+
+     Node and tools to generate the OWL description of the semantic map
+     from ROS messages
+
+  </description>
+  <author>Moritz Tenorth</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/mod_semantic_map</url>
+  <depend package="rosjava" />
+</package>
+
+

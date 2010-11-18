@@ -1,0 +1,16 @@
+<package>
+  <description brief="mod_srdl">
+    Implementation of semantic robot description language
+  </description>
+  <author>Tobias Roehm</author>
+  <license>GPL</license>
+  <review status="unreviewed" notes=""/>
+  <!-- <depend package="thea"/> -->
+  <!-- <depend package="rosprolog"/> -->
+  <!-- <depend package="semweb"/> -->
+  <!-- <depend package="ias_prolog_addons"/> -->
+  <depend package="ias_knowledge_base"/>
+  <depend package="urdf"/>
+</package>
+
+

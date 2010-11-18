@@ -1,0 +1,15 @@
+<package>
+  <description brief="ias_knowledge_base">
+
+     ias_knowledge_base
+
+  </description>
+  <author>Moritz Tenorth, Lars Kunze</author>
+  <license>GPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://www.ros.org/wiki/ias_knowledge_base</url>
+  <depend package="thea"/>
+  <depend package="semweb"/>
+  <depend package="ias_prolog_addons"/>
+</package>
+

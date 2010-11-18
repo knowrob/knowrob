@@ -1,0 +1,26 @@
+<package>
+  <description brief="comp_ehow">
+
+     comp_ehow
+
+     ehow.com import functions
+
+  </description>
+  <author>Moritz Tenorth, Daniel Nyga</author>
+  <license>GPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ias.in.tum.de/kb/wiki/index.php/comp_ehow</url>
+
+  <depend package="ias_knowledge_base"/>
+  <depend package="opencyc"/>
+  <depend package="mod_vis"/>
+  <depend package="rosjava"/>
+  <depend package="comp_cop"/> <!-- TODO MT: depend only because of httpclient, refactor this! -->
+
+  <export>
+    <java classpath="${prefix}/bin:${prefix}/lib/antlr-2.7.5.jar:${prefix}/lib/arq-extra.jar${prefix}/lib/arq.jar:${prefix}/lib/axis.jar:${prefix}/lib/commons-collections.jar:${prefix}/lib/commonsdiscovery.jar:${prefix}/lib/commons-lang-2.0.jar:${prefix}/lib/commons-logging-1.1.1.jar:${prefix}/lib/concurrent.jar:${prefix}/lib/edtftpj-1.5.2.jar:${prefix}/lib/edu.mit.jwi_2.1.3.jar:${prefix}/lib/ekitspell.jar:${prefix}/lib/icu4j_3_4.jar:${prefix}/lib/instruction_factory.jar:${prefix}/lib/iri.jar:${prefix}/lib/jakarta-oro-2.0.4.jar:${prefix}/lib/jaxrpc.jar:${prefix}/lib/jcalendar.jar:${prefix}/lib/jdom.jar:${prefix}/lib/jena.jar:${prefix}/lib/jep-2.4.0.jar:${prefix}/lib/jpl.jar:${prefix}/lib/json.jar:${prefix}/lib/junit.jar:${prefix}/lib/kazuki.jar:${prefix}/lib/lax.jar:${prefix}/lib/log4j-1.2.12.jar:${prefix}/lib/looks-2.1.3.jar:${prefix}/lib/lucene-core-2.3.1.jar:${prefix}/lib/orphanNodesAlg.jar:${prefix}/lib/owlapi-bin.jar:${prefix}/lib/owlsyntax.jar:${prefix}/lib/protege-owl.jar:${prefix}/lib/protege.jar:${prefix}/lib/stanford-parser-2007-08-19.jar:${prefix}/lib/stax-api-1.0.jar:${prefix}/lib/swrl-jess-bridge.jar:${prefix}/lib/unicode_panel.jar:${prefix}/lib/vowlidator.jar:${prefix}/lib/wstx-asl-3.0.0.jar:${prefix}/lib/xercesImpl-2.7.1.jar:${prefix}/lib/xml-apis-2.7.1.jar:${prefix}/lib/xml-datatype-validator-20011001.jar:${prefix}/lib/xmlparserv2.jar:${prefix}/lib/xschema.jar"/>
+  </export>
+
+</package>
+
+

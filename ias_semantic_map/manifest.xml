@@ -1,0 +1,14 @@
+<package>
+  <description brief="ias_semantic_map">
+
+     ias_semantic_map
+
+  </description>
+  <author>Lars Kunze, Lorenz Moesenlechner, Moritz Tenorth</author>
+  <license>GPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://www.ros.org/wiki/ias_semantic_map</url>
+  <depend package="comp_spatial"/>
+</package>
+
+

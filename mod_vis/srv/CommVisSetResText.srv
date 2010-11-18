@@ -1,0 +1,5 @@
+# Moritz Tenorth, tenorth@cs.tum.edu
+# set response text in communication visualization
+string response
+---
+byte success

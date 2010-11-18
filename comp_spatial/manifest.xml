@@ -1,0 +1,22 @@
+<package>
+  <description brief="comp_spatial">
+
+     comp_spatial
+
+     Routines for spatial reasoning in Prolog.
+
+     Contains Prolog computables for calculating qualitative spatial relations,
+     but also those for extracting certain elements from the string representation
+     of a matrix.
+
+  </description>
+  <author>Moritz Tenorth, Lars Kunze</author>
+  <license>GPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ias.in.tum.de/kb/wiki/index.php/comp_spatial</url>
+
+  <depend package="ias_knowledge_base"/>
+  <depend package="comp_temporal"/>
+</package>
+
+

@@ -1,0 +1,23 @@
+<package>
+  <description brief="json_prolog">
+    json_prolog provides an interface to SWI prolog through ROS
+    services. It is implemented in java by using rosjava and JPL.
+  </description>
+  <author>Lorenz Moesenlechner, Moritz Tenorth</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/json_prolog</url>
+  <rosdep name="libjson_java"/>
+  <rosdep name="libjson_glib"/>
+  <depend package="rosjava"/>
+  <depend package="rosprolog"/>
+  <depend package="jpl"/>
+  <depend package="rospy"/>
+
+  <export>
+    <cpp cflags="-I${prefix}/include"
+         lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -ljson_prolog"/>
+    <java classpath="${prefix}/bin"/>
+  </export>
+
+</package>

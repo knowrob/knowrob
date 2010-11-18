@@ -1,0 +1,21 @@
+<package>
+  <description brief="srldb">
+
+     srldb
+
+     Statistical relational learning package developed in the IAS group at TUM.
+
+  </description>
+  <author>Dominik Jain, Stefan Waldherr, Moritz Tenorth</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+
+  <depend package="rosjava"/>
+
+  <export>
+    <java classpath="${prefix}/bin:${prefix}/lib/bnj.jar:${prefix}/lib/bnj_res.jar:${prefix}/lib/proximity.jar:${prefix}/lib/jahmm.jar:${prefix}/lib/log4j-1.2.9.jar:${prefix}/lib/jdom.jar:${prefix}/lib/mysql-connector-java-3.0.11-stable-bin.jar:${prefix}/lib/jython22.jar:${prefix}/lib/jsmile_linux_i386/smile.jar:${prefix}/lib/processing.org/xml.jar:${prefix}/lib/swt_linux_i386/swt.jar:${prefix}/lib/yarp_linux_amd64/jyarprpc.jar"/>
+  </export>
+
+</package>
+
+

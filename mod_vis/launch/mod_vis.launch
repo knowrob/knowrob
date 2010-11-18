@@ -1,0 +1,3 @@
+<launch>
+  <node name="mod_vis" pkg="rosprolog" type="run_with_prolog_env" args="mod_vis $(find json_prolog)/bin/json_prolog" />
+</launch>

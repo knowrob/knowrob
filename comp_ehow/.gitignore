@@ -1,0 +1,10 @@
+owl/comp_ehow.owl
+prolog/init.pl
+installed
+logs
+*.owl
+protege.properties
+checkedout
+.classpath
+.project
+lib

@@ -1,0 +1,31 @@
+<package>
+  <description brief="comp_germandeli">
+
+     comp_germandeli
+
+     Interface between KnowRob and the ODUfinder perception system
+     for recognizing objects from the GermanDeli online shop. The
+     package further provides information about these objects in
+     form of an OWL ontology and utilities for generating the OWL
+     representation given the XML log file created by the GermanDeli
+     crawler.
+
+  </description>
+  <author>Moritz Tenorth</author>
+  <license>GPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://www.ros.org/wiki/comp_germandeli</url>
+
+  <depend package="rosjava"/>
+  <depend package="ias_knowledge_base"/>
+  <depend package="comp_cop"/>
+  <depend package="mod_semantic_map"/>
+  <depend package="jpl"/>
+
+  <export>
+    <java classpath="${prefix}/bin"/>
+  </export>
+
+</package>
+
+

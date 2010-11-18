@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd /work/ros/tumros-internal/stacks/knowrob/3rdparty/opencyc/opencyc-2.0/scripts
+/work/ros/tumros-internal/stacks/knowrob/3rdparty/opencyc/opencyc-2.0/scripts/run-cyc.sh

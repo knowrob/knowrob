@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns="http://ias.cs.tum.edu/kb/objects_locations.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xml:base="http://ias.cs.tum.edu/kb/objects_locations.owl">
+  <owl:Ontology rdf:about=""/>
+  <owl:Class rdf:ID="Cup">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="SpatialThing"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Chair">
+    <rdfs:subClassOf rdf:resource="#SpatialThing"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Knife">
+    <rdfs:subClassOf rdf:resource="#SpatialThing"/>
+  </owl:Class>
+  <owl:Class rdf:ID="DinnerPlate">
+    <rdfs:subClassOf rdf:resource="#SpatialThing"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Fork">
+    <rdfs:subClassOf rdf:resource="#SpatialThing"/>
+  </owl:Class>
+  <owl:Class rdf:ID="PlaceMat">
+    <rdfs:subClassOf rdf:resource="#SpatialThing"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Location">
+    <rdfs:subClassOf rdf:resource="#SpatialThing"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Napkin">
+    <rdfs:subClassOf rdf:resource="#SpatialThing"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Spoon">
+    <rdfs:subClassOf rdf:resource="#SpatialThing"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="toLocation">
+    <rdfs:range rdf:resource="#SpatialThing"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="subEvents"/>
+  <owl:ObjectProperty rdf:ID="leftOf">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="spatiallyRelated"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="rightOf">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#spatiallyRelated"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="inFrontOf">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#spatiallyRelated"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#spatiallyRelated">
+    <rdfs:domain rdf:resource="#SpatialThing"/>
+    <rdfs:range rdf:resource="#SpatialThing"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="objectActedOn">
+    <rdfs:range rdf:resource="#SpatialThing"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="inCenterOf">
+    <rdfs:subPropertyOf rdf:resource="#spatiallyRelated"/>
+  </owl:ObjectProperty>
+  <PlaceMat rdf:ID="PlaceMat_20"/>
+  <Napkin rdf:ID="Napkin_21"/>
+  <Chair rdf:ID="Chair_35"/>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.4, Build 505)  http://protege.stanford.edu -->

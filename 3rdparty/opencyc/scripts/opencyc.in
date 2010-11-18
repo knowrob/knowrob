@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd @OPENCYC_PATH_PREFIX@/opencyc-2.0/scripts
+@OPENCYC_PATH_PREFIX@/opencyc-2.0/scripts/run-cyc.sh

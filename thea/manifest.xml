@@ -1,0 +1,14 @@
+<package>
+  <description brief="thea">
+      Owl parser and reasoner library for swi-prolog.
+
+      Taken from: http://www.semanticweb.gr/TheaOWLLib/
+  </description>
+  <author>Vangelis Vassiliadis</author>
+  <license>GPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ias.in.tum.de/kb/wiki/index.php/thea</url>
+  <depends>rosprolog</depends>
+</package>
+
+

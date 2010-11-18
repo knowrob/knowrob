@@ -1,0 +1,56 @@
+#JSGF V1.0;
+
+/**
+ * JSGF Grammar for the DialogModule
+ */
+
+grammar queries;
+
+
+/**
+*public <queries> = what do you know about <object> |
+*                   where is <object> |
+*                   where exactly is <object> |
+*                   can you eat it |
+*                   can you drink it |
+*                   is it perishable |
+*/
+
+public <queries> = rosie would you make us some pancakes |
+									 what do you need for that |
+									 can you recognize it |
+									 where would you search for it |
+									 can you get the pancake mix from the fridge |
+									 james can you get the pancake mix from the fridge |
+									 james where can you put it down |
+									 what is this |
+									 james show me a location that can be reached by Rosie |
+									 from where did you try to pick up an object |
+									 from where did you [successfully] pick up an object |
+									 from where did you put down an object |
+									 where did you detect objects |
+									 how did you move while grasping the object |
+									 how did you move the arm while grasping the object |
+									 what do you know about <object> |
+                   where is <object> |
+                   where exactly is <object> |
+                   can you eat it |
+                   can you drink it |
+                   is it perishable;
+
+
+
+
+<object> = (<furniture> | <tableware> | <silverware> | <food> | <drink> | it) [<number>];
+
+
+<furniture>  = cupboard | fridge | oven | dishwasher | table;
+ <tableware>  = cup | plate | glass;
+ <silverware> = spoon | fork | knife;
+ <food>       = pasta | cake | sausage;
+<drink>      = milk | buttermilk | iced tea | coffee | water;
+
+ 
+<number> = one | two | three | four | five | six | seven | eight | nine | zero;
+<robot>  = rosie | james;
+

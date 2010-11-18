@@ -1,0 +1,224 @@
+/** <module> comp_fipm
+
+  Description:
+    Predicates for interfacing with the FIPM system, especially for executing
+    queries defined in FIPM and reading the results into the Prolog system
+
+    useful application: define complex processing steps as feature graph in
+                        FIPM and execute then at once from Prolog
+
+    Note: The predicates defined here are all rather specially created for one
+          query in FIPM. Splitting general and query-dependent processing should
+          be considered.
+
+
+  Copyright (C) 2010 by Moritz Tenorth
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+@author Moritz Tenorth
+@license GPL
+*/
+
+
+:- module(comp_fipm,
+    [
+      initCmdProlog/0,
+      trainLeftHandPoseCRF/1,
+      trainRightHandPoseCRF/1,
+      leftHandPosesLabeled/3,
+      rightHandPosesLabeled/3,
+      bothHandPosesLabeled/6,
+      timeStampsOfFrames/1
+    ]).
+
+:- use_module(library('semweb/rdfs')).
+:- use_module(library('semweb/rdf_db')).
+:- use_module(library('semweb/rdfs_computable')).
+:- use_module(library('jpl')).
+:- use_module(library('util')).
+
+
+%% initCmdProlog is det.
+%
+% Initialize the FIPM engine.
+% Checks if FIPM is alredy initialized and, in this case, simply returns true.
+
+:- dynamic(fipm_initialized).
+initCmdProlog :-
+  
+   ((fipm_initialized)->(true);(
+        jpl_set_default_jvm_opts(['-Xmx512m']),
+        jpl_call('de.tum.in.fipm.base.database.Queryengine','getInstance', [], QueryEngine),
+        jpl_call('de.tum.in.fipm.base.util.Settings','getStd', [], Settings),
+        jpl_call(Settings,'put', ['main_dbengine', QueryEngine], _),
+
+        jpl_classname_to_class('de.tum.in.fipm.base.database.SQLQuery', SQLquery),
+        jpl_classname_to_class('fipm.xProlog.SWIPrologQuery', SWIquery),
+        jpl_classname_to_class('fipm.gui.featureGraph.GraphQuery', Graphquery),
+        jpl_new('fipm.data.db.base.DBQueryIO', [], QueryReader),
+        jpl_call('de.tum.in.fipm.base.data.query.QueryFactory', 'registerQuery', [SQLquery, QueryReader], _),
+        jpl_call('de.tum.in.fipm.base.data.query.QueryFactory', 'registerQuery', [SWIquery, QueryReader], _),
+        jpl_call('de.tum.in.fipm.base.data.query.QueryFactory', 'registerQuery', [Graphquery, QueryReader], _),
+
+        assert(fipm_initialized)
+   )).
+
+
+%% trainLeftHandPoseCRF(-CRF) is det.
+%
+% Calls the FIPM queries LeftHandPosGradientJointAnglesFeatures and LeftHandLabels to read the
+% training data for a Conditional Random Fields (CRF) classifier, trains a classifier using
+% the classifiers:crf_trained predicate and returns its identifier.
+% 
+% @param CRF Returned handle identifying the trained CRF instance
+
+trainLeftHandPoseCRF(CRF) :- 
+    jpl_new('de.tum.in.fipm.base.kipmmodels.util.KipmEpisodeData', [ 'stt-human',  'iaskitchen', 'set-the-table',  5.12, 3.8, '', '29-08-2008', 'localhost', 'stt-human', '/usr/wiss/tenorth/work/owl/gram_ias_human.pl'], Context),
+    jpl_call('de.tum.in.fipm.base.data.query.QueryFactory', 'readQuery', ['LeftHandPosGradientJointAnglesFeatures'], Q),
+    jpl_new('fipm.gui.InteractiveQuery', [Q], IQ),
+    jpl_call(IQ, 'execute', [Context], Qres),
+    jpl_call('de.tum.in.fipm.base.util.weka.WEKAQueryResultInterface', 'toStringArray', [Qres], QresInst),
+    arrays_to_lists(QresInst, Trainingdata),
+    
+    jpl_call('de.tum.in.fipm.base.data.query.QueryFactory', 'readQuery', ['LeftHandLabels'], Qlabels),
+    jpl_new('fipm.gui.InteractiveQuery', [Qlabels], IQlabels),
+    jpl_call(IQlabels, 'execute', [Context], Qreslabels),
+    jpl_call('de.tum.in.fipm.base.util.weka.WEKAQueryResultInterface', 'toStringArray', [Qreslabels], QresInstlabels),
+    arrays_to_lists(QresInstlabels, Labels),
+
+    flatten(Labels, FlatLabels),
+    classifiers:crf_trained(CRF, '""', [Trainingdata], [FlatLabels]),
+    classifiers:crf_saved('@PL_PATH_PREFIX@LeftHandCRF.model', CRF),!.
+
+
+%% trainRightHandPoseCRF(-CRF) is det.
+%
+% Calls the FIPM queries RightHandPosGradientJointAnglesFeatures and RightHandLabels to read the
+% training data for a Conditional Random Fields (CRF) classifier, trains a classifier using
+% the classifiers:crf_trained predicate and returns its identifier.
+%
+% @param CRF Returned handle identifying the trained CRF instance
+
+trainRightHandPoseCRF(CRF) :- 
+    jpl_new('de.tum.in.fipm.base.kipmmodels.util.KipmEpisodeData', [ 'stt-human',  'iaskitchen', 'set-the-table',  5.12, 3.8, '', '29-08-2008', 'localhost', 'stt-human', '/usr/wiss/tenorth/work/owl/gram_ias_human.pl'], Context),
+    jpl_call('de.tum.in.fipm.base.data.query.QueryFactory', 'readQuery', ['RightHandPosGradientJointAnglesFeatures'], Q),
+    jpl_new('fipm.gui.InteractiveQuery', [Q], IQ),
+    jpl_call(IQ, 'execute', [Context], Qres),
+    jpl_call('de.tum.in.fipm.base.util.weka.WEKAQueryResultInterface', 'toStringArray', [Qres], QresInst),
+    arrays_to_lists(QresInst, Trainingdata),
+
+    jpl_call('de.tum.in.fipm.base.data.query.QueryFactory', 'readQuery', ['RightHandLabels'], Qlabels),
+    jpl_new('fipm.gui.InteractiveQuery', [Qlabels], IQlabels),
+    jpl_call(IQlabels, 'execute', [Context], Qreslabels),
+    jpl_call('de.tum.in.fipm.base.util.weka.WEKAQueryResultInterface', 'toStringArray', [Qreslabels], QresInstlabels),
+    arrays_to_lists(QresInstlabels, Labels),
+
+    flatten(Labels, FlatLabels),
+    classifiers:crf_trained(CRF, '""', [Trainingdata], [FlatLabels]),
+    classifiers:crf_saved('@PL_PATH_PREFIX@RightHandCRF.model', CRF),!.
+
+
+%% leftHandPosesLabeled(-Frames, -Labels, -Times) is det.
+%
+% Calls the FIPM query LeftHandPosGradientJointAnglesFeatures to read the test data for a
+% Conditional Random Fields (CRF) classifier, runs the classifier to label the data, and
+% return the results.
+%
+% @param Frames List of frame identifiers including the features used for the CRF evaluation
+% @param Labels List of Labels output by the CRF
+% @param Times  List of time stamps for the frames
+
+leftHandPosesLabeled(Frames, Labels, Times) :-
+
+    print('Reading poses from database...'),
+    jpl_new('de.tum.in.fipm.base.kipmmodels.util.KipmEpisodeData', [ 'stt-human',  'iaskitchen', 'set-the-table',  5.12, 3.8, '', '29-08-2008', 'localhost', 'stt-human', '/usr/wiss/tenorth/work/owl/gram_ias_human.pl'], Context),
+    jpl_call('de.tum.in.fipm.base.data.query.QueryFactory', 'readQuery', ['LeftHandPosGradientJointAnglesFeatures'], Q),
+    jpl_new('fipm.gui.InteractiveQuery', [Q], IQ),
+
+    print('done. \nComputing Features...'),
+    jpl_call(IQ, 'execute', [Context], Qres),
+    jpl_call('de.tum.in.fipm.base.util.weka.WEKAQueryResultInterface', 'toStringArray', [Qres], QresInst),
+    arrays_to_lists(QresInst, Frames),
+
+    print('done. \n'),
+    classifiers:crf_saved('@PL_PATH_PREFIX@LeftHandCRF.model', CRF),
+
+    print('done. \nClassifying... '),
+    classifiers:crf_label(CRF, [Frames], [Labels]),
+    print('done. \n\n'),
+    timeStampsOfFrames(Times),!.
+
+%% rightHandPosesLabeled(-Frames, -Labels, -Times) is det.
+%
+% Calls the FIPM query RightHandPosGradientJointAnglesFeatures to read the test data for a
+% Conditional Random Fields (CRF) classifier, runs the classifier to label the data, and
+% return the results.
+%
+% @param Frames List of frame identifiers including the features used for the CRF evaluation
+% @param Labels List of Labels output by the CRF
+% @param Times  List of time stamps for the frames
+rightHandPosesLabeled(Frames, Labels, Times) :-
+
+    print('Reading poses from database...'),
+    jpl_new('de.tum.in.fipm.base.kipmmodels.util.KipmEpisodeData', [ 'stt-human',  'iaskitchen', 'set-the-table',  5.12, 3.8, '', '29-08-2008', 'localhost', 'stt-human', '/usr/wiss/tenorth/work/owl/gram_ias_human.pl'], Context),
+    jpl_call('de.tum.in.fipm.base.data.query.QueryFactory', 'readQuery', ['RightHandPosGradientJointAnglesFeatures'], Q),
+    jpl_new('fipm.gui.InteractiveQuery', [Q], IQ),
+
+    print('done. \nComputing Features...'),
+    jpl_call(IQ, 'execute', [Context], Qres),
+    jpl_call('de.tum.in.fipm.base.util.weka.WEKAQueryResultInterface', 'toStringArray', [Qres], QresInst),
+    arrays_to_lists(QresInst, Frames),
+
+    print('done. \n'),
+    classifiers:crf_saved('@PL_PATH_PREFIX@RightHandCRF.model', CRF),
+
+    print('done. \nClassifying... '),
+    classifiers:crf_label(CRF, [Frames], [Labels]),
+    print('done. \n\n'),
+    timeStampsOfFrames(Times),!.
+
+%% bothHandPosesLabeled(-LFrames, -LLabels, -LTimes, -RFrames, -RLabels, -RTimes) is det.
+%
+% Combination of leftHandPosesLabeled and rightHandPosesLabeled.
+%
+% @param LFrames List of frame identifiers including the features used for the CRF evaluation for the left hand
+% @param LLabels List of Labels output by the CRF for the left hand
+% @param LTimes  List of time stamps for the frames for the left hand
+% @param RFrames List of frame identifiers including the features used for the CRF evaluation for the right hand
+% @param RLabels List of Labels output by the CRF for the right hand
+% @param RTimes  List of time stamps for the frames for the right hand
+% @see leftHandPosesLabeled
+% @see rightHandPosesLabeled
+
+bothHandPosesLabeled(LFrames, LLabels, LTimes, RFrames, RLabels, RTimes) :-
+    leftHandPosesLabeled(LFrames, LLabels, LTimes),
+    rightHandPosesLabeled(RFrames, RLabels, RTimes).
+
+
+%% timeStampsOfFrames(-Times) is det.
+%
+% Read time stamps for the mocap frames from the database using the FIPM query TimeStamps
+%
+% @param Times List of time stamps for the frames
+
+timeStampsOfFrames(Times) :-
+    jpl_new('de.tum.in.fipm.base.kipmmodels.util.KipmEpisodeData', [ 'stt-human',  'iaskitchen', 'set-the-table',  5.12, 3.8, '', '29-08-2008', 'localhost', 'stt-human', '/usr/wiss/tenorth/work/owl/gram_ias_human.pl'], Context),
+    jpl_call('de.tum.in.fipm.base.data.query.QueryFactory', 'readQuery', ['TimeStamps'], Q),
+    jpl_new('fipm.gui.InteractiveQuery', [Q], IQ),
+    jpl_call(IQ, 'execute', [Context], Qres),
+    jpl_call('de.tum.in.fipm.base.util.weka.WEKAQueryResultInterface', 'toStringArray', [Qres], QresInst),
+    arrays_to_lists(QresInst, TimeTable),
+    flatten(TimeTable, Times),!.
+

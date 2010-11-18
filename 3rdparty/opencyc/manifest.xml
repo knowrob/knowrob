@@ -1,0 +1,20 @@
+<package>
+  <description brief="opencyc">
+
+    opencyc
+
+    Wrapper to install and launch the OpenCyc ontology
+
+  </description>
+  <author>Moritz Tenorth</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ias.in.tum.de/kb/wiki/index.php/opencyc</url>
+
+  <export>
+    <java classpath="${prefix}/opencyc-2.0/api/java/build/OpenCyc.jar"/>
+  </export>
+
+</package>
+
+

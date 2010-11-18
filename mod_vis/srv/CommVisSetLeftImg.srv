@@ -1,0 +1,5 @@
+# Moritz Tenorth, tenorth@cs.tum.edu
+# set left image in communication visualization
+string filename
+---
+byte success

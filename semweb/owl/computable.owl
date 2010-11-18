@@ -1,0 +1,548 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY computable "http://ias.cs.tum.edu/kb/computable.owl#" >
+]>
+
+
+<rdf:RDF xmlns="http://ias.cs.tum.edu/kb/computable.owl#"
+     xml:base="http://ias.cs.tum.edu/kb/computable.owl"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:computable="http://ias.cs.tum.edu/kb/computable.owl#"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <owl:Ontology rdf:about=""/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#first -->
+
+    <owl:ObjectProperty rdf:about="#first">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#PropertyCombination"/>
+                    <rdf:Description rdf:about="#PropertyConcatenation"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&rdf;Property"/>
+                    <rdf:Description rdf:about="#PropertyCombination"/>
+                    <rdf:Description rdf:about="#PropertyConcatenation"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#hasParameter -->
+
+    <owl:ObjectProperty rdf:about="#hasParameter">
+        <rdfs:domain rdf:resource="#JythonComputable"/>
+        <rdfs:range rdf:resource="#Parameter"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#hasValue -->
+
+    <owl:ObjectProperty rdf:about="#hasValue">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#Parameter"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#rest -->
+
+    <owl:ObjectProperty rdf:about="#rest">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&rdf;Property"/>
+                    <rdf:Description rdf:about="#PropertyCombination"/>
+                    <rdf:Description rdf:about="#PropertyConcatenation"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#PropertyCombination"/>
+                    <rdf:Description rdf:about="#PropertyConcatenation"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#target -->
+
+    <owl:ObjectProperty rdf:about="#target">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#Computable"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#cache -->
+
+    <owl:DatatypeProperty rdf:about="#cache">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#Computable"/>
+        <rdfs:range>
+            <rdf:Description>
+                <rdf:type rdf:resource="&owl;DataRange"/>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&rdf;List"/>
+                        <rdf:first rdf:datatype="&xsd;string">cache</rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&rdf;List"/>
+                                <rdf:first rdf:datatype="&xsd;string">dontCache</rdf:first>
+                                <rdf:rest rdf:resource="&rdf;nil"/>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdf:Description>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#command -->
+
+    <owl:DatatypeProperty rdf:about="#command">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#JythonComputable"/>
+                    <rdf:Description rdf:about="#PrologComputable"/>
+                    <rdf:Description rdf:about="#SqlClass"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#database -->
+
+    <owl:DatatypeProperty rdf:about="#database">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+        <rdfs:domain rdf:resource="#SqlComputable"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#frameSelect -->
+
+    <owl:DatatypeProperty rdf:about="#frameSelect">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+        <rdfs:domain rdf:resource="#SqlProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#frameValueSelect -->
+
+    <owl:DatatypeProperty rdf:about="#frameValueSelect">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+        <rdfs:domain rdf:resource="#SqlProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#frameVariable -->
+
+    <owl:DatatypeProperty rdf:about="#frameVariable">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#hasName -->
+
+    <owl:DatatypeProperty rdf:about="#hasName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+        <rdfs:domain rdf:resource="#Parameter"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#isType -->
+
+    <owl:DatatypeProperty rdf:about="#isType">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#JythonComputable"/>
+        <rdfs:range>
+            <rdf:Description>
+                <rdf:type rdf:resource="&owl;DataRange"/>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&rdf;List"/>
+                        <rdf:first rdf:datatype="&xsd;string">command</rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&rdf;List"/>
+                                <rdf:first rdf:datatype="&xsd;string">script</rdf:first>
+                                <rdf:rest rdf:resource="&rdf;nil"/>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdf:Description>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#nameOfReturn -->
+
+    <owl:DatatypeProperty rdf:about="#nameOfReturn">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+        <rdfs:domain rdf:resource="#JythonComputable"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#password -->
+
+    <owl:DatatypeProperty rdf:about="#password">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+        <rdfs:domain rdf:resource="#SqlComputable"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#testCommand -->
+
+    <owl:DatatypeProperty rdf:about="#testCommand">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+        <rdfs:domain rdf:resource="#SqlClass"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#user -->
+
+    <owl:DatatypeProperty rdf:about="#user">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+        <rdfs:domain rdf:resource="#SqlComputable"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#valueSelect -->
+
+    <owl:DatatypeProperty rdf:about="#valueSelect">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+        <rdfs:domain rdf:resource="#SqlProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#visible -->
+
+    <owl:DatatypeProperty rdf:about="#visible">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#Computable"/>
+        <rdfs:range>
+            <rdf:Description>
+                <rdf:type rdf:resource="&owl;DataRange"/>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="&rdf;List"/>
+                        <rdf:first rdf:datatype="&xsd;string">unvisible</rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&rdf;List"/>
+                                <rdf:first rdf:datatype="&xsd;string">visible</rdf:first>
+                                <rdf:rest rdf:resource="&rdf;nil"/>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdf:Description>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.w3.org/1999/02/22-rdf-syntax-ns#Property -->
+
+    <owl:Class rdf:about="&rdf;Property"/>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Class -->
+
+    <owl:Class rdf:about="&owl;Class"/>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#DatatypeProperty -->
+
+    <owl:Class rdf:about="&owl;DatatypeProperty">
+        <owl:disjointWith rdf:resource="#PropertyCombination"/>
+        <owl:disjointWith rdf:resource="#PropertyConcatenation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#ObjectProperty -->
+
+    <owl:Class rdf:about="&owl;ObjectProperty">
+        <owl:disjointWith rdf:resource="#PropertyCombination"/>
+        <owl:disjointWith rdf:resource="#PropertyConcatenation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Thing -->
+
+    <owl:Class rdf:about="&owl;Thing"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#Computable -->
+
+    <owl:Class rdf:about="#Computable"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#ComputableClass -->
+
+    <owl:Class rdf:about="#ComputableClass">
+        <rdfs:subClassOf rdf:resource="#Computable"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#target"/>
+                <owl:allValuesFrom rdf:resource="&owl;Class"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#ComputableProperty -->
+
+    <owl:Class rdf:about="#ComputableProperty">
+        <rdfs:subClassOf rdf:resource="#Computable"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#target"/>
+                <owl:allValuesFrom rdf:resource="&rdf;Property"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#ExplicitParameter -->
+
+    <owl:Class rdf:about="#ExplicitParameter">
+        <rdfs:subClassOf rdf:resource="#Parameter"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#hasValue"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="&owl;Thing"/>
+                            <owl:Class>
+                                <owl:complementOf rdf:resource="&rdf;Property"/>
+                            </owl:Class>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="#ImplicitParameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#ImplicitParameter -->
+
+    <owl:Class rdf:about="#ImplicitParameter">
+        <rdfs:subClassOf rdf:resource="#Parameter"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#hasValue"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="&rdf;Property"/>
+                            <rdf:Description rdf:about="#PropertyCombination"/>
+                            <rdf:Description rdf:about="#PropertyConcatenation"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#JythonClass -->
+
+    <owl:Class rdf:about="#JythonClass">
+        <rdfs:subClassOf rdf:resource="#ComputableClass"/>
+        <rdfs:subClassOf rdf:resource="#JythonComputable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#JythonComputable -->
+
+    <owl:Class rdf:about="#JythonComputable"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#JythonProperty -->
+
+    <owl:Class rdf:about="#JythonProperty">
+        <rdfs:subClassOf rdf:resource="#ComputableProperty"/>
+        <rdfs:subClassOf rdf:resource="#JythonComputable"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >The Parameter &quot;frame&quot; is always set to the frame-Symbol</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#Parameter -->
+
+    <owl:Class rdf:about="#Parameter"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#PrologClass -->
+
+    <owl:Class rdf:about="#PrologClass">
+        <rdfs:subClassOf rdf:resource="#ComputableClass"/>
+        <rdfs:subClassOf rdf:resource="#PrologComputable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#PrologComputable -->
+
+    <owl:Class rdf:about="#PrologComputable"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#PrologProperty -->
+
+    <owl:Class rdf:about="#PrologProperty">
+        <rdfs:subClassOf rdf:resource="#ComputableProperty"/>
+        <rdfs:subClassOf rdf:resource="#PrologComputable"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >The Parameter &quot;frame&quot; is always set to the frame-Symbol</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#PropertyCombination -->
+
+    <owl:Class rdf:about="#PropertyCombination">
+        <owl:disjointWith rdf:resource="#PropertyConcatenation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#PropertyConcatenation -->
+
+    <owl:Class rdf:about="#PropertyConcatenation"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#SqlClass -->
+
+    <owl:Class rdf:about="#SqlClass">
+        <rdfs:subClassOf rdf:resource="#ComputableClass"/>
+        <rdfs:subClassOf rdf:resource="#SqlComputable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#SqlComputable -->
+
+    <owl:Class rdf:about="#SqlComputable"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#SqlProperty -->
+
+    <owl:Class rdf:about="#SqlProperty">
+        <rdfs:subClassOf rdf:resource="#ComputableProperty"/>
+        <rdfs:subClassOf rdf:resource="#SqlComputable"/>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 2.2.1.1101) http://owlapi.sourceforge.net -->
+

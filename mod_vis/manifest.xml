@@ -1,0 +1,28 @@
+<package>
+  <description brief="mod_vis">
+
+     mod_vis
+
+     Visualisation module for the Prolog knowledge base.
+
+     Instances in the knowledge base can be pushed to the visualization
+     canvas, are then drawn and can be further inspected.
+
+     Currently supported: Action sequences, linked to the resp. human pose
+     sequence, as well as most objects that are relevant in the IAS kitchen.
+
+  </description>
+  <author>Moritz Tenorth, Jakob Engel</author>
+  <license>GPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ias.in.tum.de/kb/wiki/index.php/mod_vis</url>
+
+  <depend package="ias_knowledge_base"/>
+  <depend package="jpl"/>
+  <depend package="rosjava"/>
+
+  <export>
+    <java classpath="${prefix}/bin:${prefix}/lib/controlP5.jar:${prefix}/lib/core.jar:${prefix}/lib/vecmath.jar"/>
+  </export>
+
+</package>

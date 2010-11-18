@@ -1,0 +1,47 @@
+%%
+%% Copyright (C) 2010 by Moritz Tenorth
+%%
+%% This program is free software; you can redistribute it and/or modify
+%% it under the terms of the GNU General Public License as published by
+%% the Free Software Foundation; either version 3 of the License, or
+%% (at your option) any later version.
+%%
+%% This program is distributed in the hope that it will be useful,
+%% but WITHOUT ANY WARRANTY; without even the implied warranty of
+%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%% GNU General Public License for more details.
+%%
+%% You should have received a copy of the GNU General Public License
+%% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% dependencies
+
+:- register_ros_package(jpl).
+:- use_module(library('jpl')).
+:- jpl_set_default_jvm_opts(['-Xmx256M']).
+
+:- register_ros_package(ias_prolog_addons).
+:- register_ros_package(semweb).
+
+
+:- use_module(library('semweb/rdf_db')).
+:- use_module(library('semweb/rdf_edit')).
+:- use_module(library('semweb/rdfs')).
+:- use_module(library('semweb/owl')).
+
+% Thea OWL parser library
+:- register_ros_package(thea).
+:- use_module(library('thea/owl_parser')).
+
+:- use_module(library('semweb/rdfs_computable')).
+:- use_module(library('semweb/actionmodel')).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% parse OWL files, register name spaces
+:- owl_parser:owl_parse('/work/ros/tumros-internal/stacks/knowrob/semweb/owl/actionmodel.owl', false, false, true).
+
+:- rdf_db:rdf_register_ns(am,         'http://ias.cs.tum.edu/kb/actionmodel.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(computable, 'http://ias.cs.tum.edu/kb/computable.owl#', [keep(true)]).
+

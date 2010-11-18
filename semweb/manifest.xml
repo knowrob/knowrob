@@ -1,0 +1,12 @@
+<package>
+  <description brief="semweb">
+      Patched version of the swi-prolog semweb library.
+  </description>
+  <author>Bernhard Kirchlechner, Moritz Tenorth</author>
+  <license>GPL</license>
+  <review status="unreviewed" notes=""/>
+  <depend package="rosprolog"/>
+  <depend package="jpl"/>
+</package>
+
+

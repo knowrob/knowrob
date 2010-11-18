@@ -1,0 +1,307 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns="http://ias.cs.tum.edu/kb/actionmodel.owl#"
+		xml:base="http://ias.cs.tum.edu/kb/actionmodel.owl">
+  <owl:Ontology rdf:about=""/>
+  <owl:Class rdf:ID="Action">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Feature"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Situation"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Prediction"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="MarkovRule"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Agent"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="ActionModel"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:ID="SituationClass">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </owl:Class>
+  <owl:Class rdf:ID="PropertyConcatenation">
+    <rdfs:subClassOf>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+          <rdf:Description rdf:about="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+  </owl:Class>
+  <owl:Class rdf:about="#MarkovRule">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Feature"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Situation"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Prediction"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Agent"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#ActionModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Action"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Restriction">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </owl:Class>
+  <owl:Class rdf:ID="AgentClass">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Feature">
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Agent"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Action"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Prediction"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Situation"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#ActionModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#MarkovRule"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Agent">
+    <owl:disjointWith rdf:resource="#Feature"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Prediction"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#MarkovRule"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#ActionModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Action"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Situation"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Prediction">
+    <owl:disjointWith rdf:resource="#Feature"/>
+    <owl:disjointWith rdf:resource="#MarkovRule"/>
+    <owl:disjointWith rdf:resource="#Agent"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#ActionModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Action"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#Situation"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="#Situation">
+    <owl:disjointWith rdf:resource="#Feature"/>
+    <owl:disjointWith rdf:resource="#Prediction"/>
+    <owl:disjointWith rdf:resource="#MarkovRule"/>
+    <owl:disjointWith rdf:resource="#Agent"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="#ActionModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="#Action"/>
+  </owl:Class>
+  <owl:Class rdf:about="#ActionModel">
+    <owl:disjointWith rdf:resource="#Feature"/>
+    <owl:disjointWith rdf:resource="#Situation"/>
+    <owl:disjointWith rdf:resource="#Prediction"/>
+    <owl:disjointWith rdf:resource="#MarkovRule"/>
+    <owl:disjointWith rdf:resource="#Agent"/>
+    <owl:disjointWith rdf:resource="#Action"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="byActionmodel">
+    <rdfs:range rdf:resource="#ActionModel"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Prediction"/>
+          <owl:Class rdf:about="#SituationClass"/>
+          <owl:Class rdf:about="#AgentClass"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="predictable">
+    <rdfs:range>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Feature"/>
+          <rdf:Description rdf:about="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:range>
+    <rdfs:domain rdf:resource="#ActionModel"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="Body">
+    <rdfs:domain rdf:resource="#MarkovRule"/>
+    <rdfs:range rdf:resource="#Restriction"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="withRule">
+    <rdfs:domain rdf:resource="#ActionModel"/>
+    <rdfs:range rdf:resource="#MarkovRule"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="Head">
+    <rdfs:range rdf:resource="#Restriction"/>
+    <rdfs:domain rdf:resource="#MarkovRule"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="forAction">
+    <rdfs:range rdf:resource="#Action"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#ActionModel"/>
+          <owl:Class rdf:about="#SituationClass"/>
+          <owl:Class rdf:about="#AgentClass"/>
+          <owl:Class rdf:about="#Prediction"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="onProperty">
+    <rdfs:range>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+          <rdf:Description rdf:about="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:range>
+    <rdfs:domain rdf:resource="#Restriction"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="toAction">
+    <rdfs:domain rdf:resource="#Prediction"/>
+    <rdfs:range rdf:resource="#Action"/>
+  </owl:ObjectProperty>
+	<owl:ObjectProperty rdf:ID="toSituation">
+    <rdfs:domain rdf:resource="#Prediction"/>
+    <rdfs:range rdf:resource="#Situation"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="observable">
+    <rdfs:domain rdf:resource="#ActionModel"/>
+    <rdfs:range>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+          <owl:Class rdf:about="#Feature"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:range>
+  </owl:ObjectProperty>
+  <owl:DatatypeProperty rdf:ID="greaterThan">
+    <rdfs:domain rdf:resource="#Restriction"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="greaterThanOrEqual">
+    <rdfs:domain rdf:resource="#Restriction"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="lessThan">
+    <rdfs:domain rdf:resource="#Restriction"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="lessThanOrEqual">
+    <rdfs:domain rdf:resource="#Restriction"/>
+  </owl:DatatypeProperty>
+  <owl:TransitiveProperty rdf:ID="dependsOn">
+    <rdfs:domain rdf:resource="#Feature"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:range rdf:resource="#Feature"/>
+  </owl:TransitiveProperty>
+  <owl:FunctionalProperty rdf:ID="notEqual">
+    <rdfs:domain rdf:resource="#Restriction"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="calculatedBy">
+    <rdfs:range rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+    <rdfs:domain rdf:resource="#Feature"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="hasValue">
+    <rdfs:domain rdf:resource="#Restriction"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="withProbability">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Prediction"/>
+          <owl:Class rdf:about="#MarkovRule"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="minProbability">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#AgentClass"/>
+          <owl:Class rdf:about="#SituationClass"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="isObserved">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain rdf:resource="#Restriction"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="first">
+    <rdfs:domain rdf:resource="#PropertyConcatenation"/>
+    <rdfs:range>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+          <rdf:Description rdf:about="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:range>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="doneBy">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="#Action"/>
+    <rdfs:range rdf:resource="#Agent"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="rest">
+    <rdfs:range>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+          <rdf:Description rdf:about="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:range>
+    <rdfs:domain rdf:resource="#PropertyConcatenation"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="startSituation">
+    <rdfs:domain rdf:resource="#Action"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:range rdf:resource="#Situation"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="forSituation">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:range rdf:resource="#Situation"/>
+    <rdfs:domain rdf:resource="#Prediction"/>
+  </owl:FunctionalProperty>
+  <PropertyConcatenation rdf:ID="nil"/>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.3, Build 418)  http://protege.stanford.edu -->

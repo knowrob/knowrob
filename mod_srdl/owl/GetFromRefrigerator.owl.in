@@ -1,0 +1,197 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY swrl "http://www.w3.org/2003/11/swrl#" >
+    <!ENTITY dc "http://purl.org/dc/elements/1.1/" >
+    <!ENTITY swrlb "http://www.w3.org/2003/11/swrlb#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY SRDL "http://ias.cs.tum.edu/kb/SRDL.owl#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY TUM_Rosie "http://ias.cs.tum.edu/kb/TUM_Rosie.owl#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY SRDL_component "http://ias.cs.tum.edu/kb/SRDL_component.owl#" >
+    <!ENTITY SRDL_action "http://ias.cs.tum.edu/kb/SRDL_action.owl#" >
+    <!ENTITY SRDL_capability "http://ias.cs.tum.edu/kb/SRDL_capability.owl#" >
+]>
+
+
+<rdf:RDF xmlns="http://ias.cs.tum.edu/kb/SRDL_action.owl#"
+     xml:base="http://ias.cs.tum.edu/kb/SRDL_action.owl"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:SRDL_component="http://ias.cs.tum.edu/kb/SRDL_component.owl#"
+     xmlns:TUM_Rosie="http://ias.cs.tum.edu/kb/TUM_Rosie.owl#"
+     xmlns:PR2="http://ias.cs.tum.edu/kb/PR2.owl#"
+     xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:SRDL="http://ias.cs.tum.edu/kb/SRDL.owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:SRDL_capability="http://ias.cs.tum.edu/kb/SRDL_capability.owl#"
+     xmlns:SRDL_action="http://ias.cs.tum.edu/kb/SRDL_action.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <owl:Ontology rdf:about="">
+        <owl:imports rdf:resource="file://@SRDL_PACKAGE_PATH@/owl/PR2.owl"/>
+        <owl:imports rdf:resource="file://@SRDL_PACKAGE_PATH@/owl/TUM_Rosie.owl"/>
+    </owl:Ontology>
+
+
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL.owl#hasCapabilityDependency -->
+
+    <owl:ObjectProperty rdf:about="&SRDL;hasCapabilityDependency"/>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#subEvents -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;subEvents"/>
+
+
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#ClosingARefrigerator -->
+
+    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/SRDL_action.owl#ClosingARefrigerator">
+        <rdfs:subClassOf rdf:resource="&knowrob;ClosingAContainerArtifact"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#ClosingARefrigeratorRobot -->
+
+    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/SRDL_action.owl#ClosingARefrigeratorRobot">
+        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/SRDL_action.owl#ClosingARefrigerator"/>
+        <rdfs:subClassOf rdf:resource="&SRDL;SrdlRobotAction"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&SRDL;hasCapabilityDependency"/>
+                <owl:someValuesFrom rdf:resource="&SRDL_capability;ClosingAContainer"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#GetObjectFromRefrigerator -->
+
+    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/SRDL_action.owl#GetObjectFromRefrigerator">
+        <rdfs:subClassOf rdf:resource="&SRDL;SrdlRobotAction"/>
+        <rdfs:subClassOf rdf:resource="&SRDL_action;SrdlAction"/>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;subEvents"/>
+                        <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/SRDL_action.owl#ClosingARefrigerator"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;subEvents"/>
+                        <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/SRDL_action.owl#OpeningARefrigerator"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;subEvents"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;PickingUpAnObject"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#OpeningARefrigerator -->
+
+    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/SRDL_action.owl#OpeningARefrigerator">
+        <rdfs:subClassOf rdf:resource="&knowrob;OpeningAContainerArtifact"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#OpeningARefrigeratorRobot -->
+
+    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/SRDL_action.owl#OpeningARefrigeratorRobot">
+        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/SRDL_action.owl#OpeningARefrigerator"/>
+        <rdfs:subClassOf rdf:resource="&SRDL;SrdlRobotAction"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&SRDL;hasCapabilityDependency"/>
+                <owl:someValuesFrom rdf:resource="&SRDL_capability;OpeningAContainer"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL.owl#PickingUpAnObjectRobot -->
+
+    <owl:Class rdf:about="&SRDL;PickingUpAnObjectRobot"/>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL.owl#SrdlRobotAction -->
+
+    <owl:Class rdf:about="&SRDL;SrdlRobotAction"/>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#SrdlAction -->
+
+    <owl:Class rdf:about="&SRDL_action;SrdlAction"/>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#pr2_doors_actions -->
+
+    <owl:Class rdf:about="&SRDL_capability;pr2_doors_actions"/>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#ClosingAContainerArtifact -->
+
+    <owl:Class rdf:about="&knowrob;ClosingAContainerArtifact"/>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#OpeningAContainerArtifact -->
+
+    <owl:Class rdf:about="&knowrob;OpeningAContainerArtifact"/>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PickingUpAnObject -->
+
+    <owl:Class rdf:about="&knowrob;PickingUpAnObject"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.0.0.1469) http://owlapi.sourceforge.net -->
+
