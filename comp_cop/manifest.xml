@@ -22,6 +22,7 @@
 
   <export>
     <java classpath="${prefix}/bin:${prefix}/lib/apache-mime4j-0.6.jar:${prefix}/lib/commons-codec-1.3.jar:${prefix}/lib/commons-logging-1.1.1.jar:${prefix}/lib/google-api-translate-java-0.92.jar:${prefix}/lib/httpclient-4.0.1.jar:${prefix}/lib/httpcore-4.0.1.jar:${prefix}/lib/httpmime-4.0.1.jar:${prefix}/lib/xmlrpc-1.1.1.jar"/>
+    <rosdoc config="rosdoc.yaml" />
   </export>
 
 </package>
