@@ -1,0 +1,23 @@
+#!/bin/bash
+
+PL_ARGS=$@
+PL_INIT_FILE=$(rospack find rosprolog)/prolog/init.pl
+PLDOC_INIT_FILE=$(rospack find rosprolog)/prolog/doc-init.pl
+SCRIPT_FILE=""
+
+source $(rospack find rosprolog)/scripts/rosprolog_utils.sh
+
+if [ -n "$1" ] && [ -n "$(rospack find $1)" ]; then
+    get_pkg_classpath $1 ROS_EXPORT_CLASSPATH
+    get_pkg_ld_lib_path $1 ROS_EXPORT_LD
+    export CLASSPATH=$ROS_EXPORT_CLASSPATH:$CLASSPATH
+    export LD_LIBRARY_PATH=$ROS_EXPORT_LD:$LD_LIBRARY_PATH
+
+    if [ -f $(rospack find $1)/prolog/init.pl ]; then
+        SCRIPT_FILE="-g ensure_loaded('${PL_INIT_FILE}'),register_ros_package($1),doc_save('$(rospack find $1)/',[recursive(true),doc_root('$(rospack find $1)/doc')]) -t halt"
+    fi
+    PL_ARGS=${@:1}
+fi
+
+cd "$(rospack find $1)"
+exec /usr/bin/xpce -f ${PLDOC_INIT_FILE}  ${SCRIPT_FILE} ${PL_ARGS}
