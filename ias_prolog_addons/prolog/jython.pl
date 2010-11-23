@@ -23,8 +23,7 @@
     ]).
 :- use_module(library(jpl)).
 
-%%
-% jython_init(+Path, -Interpreter)
+%% jython_init(+Path, -Interpreter)
 %%
 jython_init(Path, Interpreter) :-
   nonvar(Path),
@@ -36,8 +35,7 @@ jython_init(Path, Interpreter) :-
   jpl_call('org.python.util.PythonInterpreter', initialize, [SysProps, Properties, CommandLine], _),
   jpl_new('org.python.util.PythonInterpreter', [], Interpreter).
 
-%%
-% jython_call(+Interpreter, +Command, +ResultNames, -Results).
+%% jython_call(+Interpreter, +Command, +ResultNames, -Results).
 %
 % Execute a jython command.
 %
@@ -55,8 +53,7 @@ jython_call(Interpreter, Command, ResultNames, Results) :-
   ; Results = 'No results requested!').
 
 
-%%
-% jython_variable(+Interpreter, ?Key, ?Value).
+%% jython_variable(+Interpreter, ?Key, ?Value).
 %
 % Set/get a variable in the jython interpreter.
 %%
@@ -74,8 +71,7 @@ jython_variable(Interpreter, Key, Value) :-
 jython_variable(_,_,_) :-
   throw(error(instantiation_error, _)).
 
-%%
-% jython_to_prolog(JythonValue, PrologValue).
+%% jython_to_prolog(JythonValue, PrologValue).
 %
 % Convert the value represented in a Jython class to prolog.
 %%
@@ -121,7 +117,7 @@ jython_map_to_prolog_1([K|KRest], JythonMap, [PK-PV|PRest]) :-
   jython_to_prolog(V, PV),
   jython_map_to_prolog_1(KRest, JythonMap, PRest).
 
-%% TODO: Handle PyComplex and others without getValue methods
+% TODO: Handle PyComplex and others without getValue methods
 jython_number_to_prolog(JythonNumber, Value) :-
   (
     catch(jpl_call(JythonNumber, getValue, [], V), _Error, fail) % If we have a getValue method, use it
@@ -206,8 +202,7 @@ jython_getResults(Interpreter, [VarName| RestNames], [Value| RestValues]) :-
   jpl_call(Interpreter, get, [VarName], Value),
   jython_getResults(Interpreter, RestNames, RestValues).
 
-%%
-% jython_exec_script(+Interpreter, +FileName, +ResultNames, -Results)
+%% jython_exec_script(+Interpreter, +FileName, +ResultNames, -Results)
 %
 % Execute a jython script.
 %

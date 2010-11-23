@@ -21,3 +21,5 @@
 
 % JPL
 :- register_ros_package(jpl).
+
+:- use_module(comp_similarity).
