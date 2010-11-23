@@ -10,9 +10,10 @@
   <author>Maintained by Moritz Tenorth</author>
   <license>GPL,BSD</license>  
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/knowrob</url>
-  <depend stack="cram_pl" /> <!-- liswip -->
+  <url>http://ros.org/wiki/trunk</url>
   <depend stack="ias_common" /> <!-- vision_srvs -->
-  <depend stack="ros" /> <!-- rostest, roslisp, std_msgs, roscpp -->
+  <depend stack="robot_model" /> <!-- urdf -->
+  <depend stack="ros" /> <!-- rospy, std_msgs -->
   <depend stack="ros-experimental-trunk" /> <!-- rosjava -->
+
 </stack>

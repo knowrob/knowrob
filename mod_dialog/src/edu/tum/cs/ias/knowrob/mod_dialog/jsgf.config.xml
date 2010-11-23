@@ -98,7 +98,7 @@
             
     <component name="jsgfGrammar" type="edu.cmu.sphinx.jsapi.JSGFGrammar">
         <property name="dictionary" value="dictionary"/>
-        <property name="grammarLocation" value="/work/ros/tumros-internal/stacks/knowrob/mod_dialog/etc/"/>
+        <property name="grammarLocation" value="/work/knowrob/trunk/mod_dialog/etc/"/>
         <property name="grammarName" value="queries"/>
 	<property name="logMath" value="logMath"/>
     </component>

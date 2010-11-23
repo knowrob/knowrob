@@ -33,12 +33,12 @@
 :- rdf_register_ns(am, 'http://ias.cs.tum.edu/kb/actionmodel.owl#').
 :- rdf_meta
   am_property_name(r,-).
+:- discontiguous am_rdf_triple/3.
 
-%%
-% am_property_name(+Property, -PropertyName)
+%% am_property_name(+Property, -PropertyName)
 %
 % Calculate a property name. PropertyConcatenations are broken down.
-%%
+%
 am_property_name(Property, Name) :-
   atom(Property),
   rdfs_instance_of(Property, computable:'PropertyConcatenation')
@@ -51,41 +51,37 @@ am_property_name(Property, Name) :-
   -> term_to_atom(NS:Local, Name)
   ; term_to_atom(Property, Name).
 
-%%
-% am_get_attributes_for_predicates(+Predicates, +Instances, -Attributes)
+%% am_get_attributes_for_predicates(+Predicates, +Instances, -Attributes)
 %
 % Get the attribute corresponding to the property names of the predicates in instances.
-%%
+%
 am_get_attributes_for_predicates([], _, []).
 am_get_attributes_for_predicates([Predicate|PRest], Instances, [Attribute|ARest]) :-
 	am_property_name(Predicate, Name),
 	jpl_call(Instances, attribute, [Name], Attribute),
 	am_get_attributes_for_predicates(PRest, Instances, ARest).
 
-%%
-% am_concat_predictables(+Ps, -ConcatedPs).
+%% am_concat_predictables(+Ps, -ConcatedPs).
 %
 % concat a list of elements with -. Do we really need this?
-%%
+%
 am_concat_predictables([P], P).
 am_concat_predictables([P0,P1|Ps], P) :-
   am_concat_predictables([P1|Ps], Px),
   P = P0-Px.
 
-%%
-% am_type_value_pair_in_one_of_list(?Type, ?Value, +OneOfList)
+%% am_type_value_pair_in_one_of_list(?Type, ?Value, +OneOfList)
 %
 % Find all type value pairs in the given oneOfList
-%%
+%
 am_type_value_pair_in_one_of_list(Type, Value, OneOfList) :-
   rdfs_list_to_prolog_list(OneOfList, PrologLiteralList),
   member(literal(type(Type, Value)), PrologLiteralList).
 
-%%
-% am_literal_value(+Type, +Value, -TypedValue)
+%% am_literal_value(+Type, +Value, -TypedValue)
 %
 % Create a literal(type(Type, Value)) pair, but look into owl:oneOfs.
-%%
+%
 am_literal_value(Type, Value, literal(type(Type, TermValue))) :-
   (var(TermValue), nonvar(Value)
   -> (atom_to_term(Value, TermValue, []); TermValue=Value)
@@ -98,11 +94,11 @@ am_literal_value(Type, Value, literal(type(OneOfType, Value))) :-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CALCULATE ATTRIBUTES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%
-% am_calculate_mining_attribute(s)_for_action(s)(+Attribute, +Action, +Situation, -Result)
+
+%% am_calculate_mining_attributes_for_actions(+Attribute, +Action, +Situation, -Result)
 %
 % Calculate the mining attribute(s) for the given action/situation(s).
-%%
+%
 am_calculate_mining_attribute_for_action(Attribute, Action, Situation, Result):-
   nonvar(Attribute),
   (rdfs:rdfs_instance_of(Attribute, 'http://ias.cs.tum.edu/kb/actionmodel.owl#Feature')
@@ -120,22 +116,21 @@ am_calculate_mining_attribute_for_action(Attribute, Action, Situation, Result):-
   -> [Result] = Results
   ; Result = Results).
 
-%%
-% am_calculate_mining_attributes_for_action(Attributes, Action, Situation, ResultList)
+%% am_calculate_mining_attributes_for_action(Attributes, Action, Situation, ResultList)
 %
 % Calculate all given mining_attribute properties for one action.
-%%
+%
 am_calculate_mining_attributes_for_action([], _, _, []).
 am_calculate_mining_attributes_for_action([Attribute|ARest], Action, Situation, [Result|RRest]):-
   nonvar(Attribute), nonvar(ARest),
   am_calculate_mining_attribute_for_action(Attribute, Action, Situation, Result),
   am_calculate_mining_attributes_for_action(ARest, Action, Situation, RRest).
-%%
-% am_calculate_mining_attributes_for_actions(+Attributes, +Actions, +Situations, -Results)
+
+%% am_calculate_mining_attributes_for_actions(+Attributes, +Actions, +Situations, -Results)
 %
 % Calculate the given mining_attributes for all given actions/situations
 % The result is a list of mining_attributes (i.e. lists) for each action
-%%
+%
 am_calculate_mining_attributes_for_actions(_,[], [], []).
 am_calculate_mining_attributes_for_actions(Attributes, [Action|ARest], [Situation|SRest], [Result|RRest]):-
   nonvar(Attributes),
@@ -143,22 +138,20 @@ am_calculate_mining_attributes_for_actions(Attributes, [Action|ARest], [Situatio
   has_to_work(actionmodel:am_calculate_mining_attributes_for_action(Attributes, Action, Situation, Result), unable_to_calculate_attributes),
   am_calculate_mining_attributes_for_actions(Attributes, ARest, SRest, RRest).
 
-%%
-% am_calculate_observables_for_situations(+Obs, +Actions, +Sits, -Result).
+%% am_calculate_observables_for_situations(+Obs, +Actions, +Sits, -Result).
 %
 % Calculate the observable values for the given situations.
-%%
+%
 am_calculate_observables_for_situations(Obs, Actions, Sits, Results) :-
   catch(am_calculate_mining_attributes_for_actions(Obs, Actions, Sits, Results), error(java_exception(A),B),
     (jpl_call(A, printStackTrace, [], _), flush, throw(error(java_exception(A),B)))).
 am_calculate_observables_for_situation(Obs, Action, Situation, Results) :-
   am_calculate_mining_attributes_for_action(Obs, Action, Situation, Results).
 
-%%
-% am_calculate_predictables_for_actions(+Predictables, +Actions, +Situations, -Result).
+%% am_calculate_predictables_for_actions(+Predictables, +Actions, +Situations, -Result).
 %
 % Calculate the predictable values for the given actions and situations.
-%%
+%
 am_calculate_predictables_for_actions(Predictables, Actions, Situations, PValues) :-
   am_calculate_mining_attributes_for_actions(Predictables, Actions, Situations, PValues).
 
@@ -169,11 +162,10 @@ am_mining_attributes(Predicates, PredicateValues, Attributes) :-
   am_attributes_nominal_or_numeric(Predicates, NumNom),
   am_mining_attributes_1(Predicates, NumNom, PredicateValues, Attributes, 0).
 
-%%
-% am_mining_attributes(+Observables, +ObsValues, +Predictables, +PValues, -Attributes)
+%% am_mining_attributes(+Observables, +ObsValues, +Predictables, +PValues, -Attributes)
 %
 % Create a weka.core.FastVector and add all mining attribute information (observables and predictables).
-%%
+%
 am_mining_attributes(Observables, ObsValues, Predictables, PValues, Attributes) :-
   am_attributes_nominal_or_numeric(Observables, NumNom),
   am_mining_attributes_1(Observables, NumNom, ObsValues, OAttributes, 0),
@@ -181,11 +173,10 @@ am_mining_attributes(Observables, ObsValues, Predictables, PValues, Attributes) 
   am_mining_attributes_1(Predictables, NumNomP, PValues, PAttributes, 0),
   Attributes=OAttributes-PAttributes.
 
-%%
-% am_mining_attributes_1(+Observables, +NominalNumeric, +Values, +Attributes, +N)
+%% am_mining_attributes_1(+Observables, +NominalNumeric, +Values, +Attributes, +N)
 %
 % Helper predicate for am_mining_attribtues.
-%%
+%
 % am_mining_attributes_1([], [], _, _, _).
 am_mining_attributes_1([], [], _, [], _).
 am_mining_attributes_1([O|Os], [Nom|Ns], Values, [Attribute|AttRest], N) :-
@@ -201,11 +192,10 @@ am_mining_attributes_1([O|Os], [Nom|Ns], Values, [Attribute|AttRest], N) :-
   N1 is N+1,
   am_mining_attributes_1(Os, Ns, Values, AttRest, N1).
 
-%%
-% am_mining_attribute_values(+Predicate, +Values, +VNo, -AttValues)
+%% am_mining_attribute_values(+Predicate, +Values, +VNo, -AttValues)
 %
 % Get the possible values for a given predicate. If it cannot be determined a priori use the correct column of the given values.
-%%
+%
 am_mining_attribute_values(Predicate, Values, VNo, AttValues) :-
   ( atom(Predicate),
     rdf_triple(rdfs:range, Predicate, Range),
@@ -214,47 +204,44 @@ am_mining_attribute_values(Predicate, Values, VNo, AttValues) :-
   ; extract_column(Values, VNo, LAValues),
     maplist(am_strip_literal_type, LAValues, AValues),
     sort(AValues, AttValues).
-    
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  TYPES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%
-% am_strip_literal_type(+Input,-Output)
+
+%% am_strip_literal_type(+Input,-Output)
 %
 % Strip the literal(type(..., Value)) and return value if present, else return the original.
 % A helper for am_possible_nominal_values.
-%%
+%
 am_strip_literal_type(literal(type(_, Value)), Value) :- !.
 am_strip_literal_type(Value, Value).
 
-%%
-% am_possible_predicates_values(+Preds, +PValues, +Column, -Results).
+%% am_possible_predicates_values(+Preds, +PValues, +Column, -Results).
 %
 % Calculate the possible values for all the predicates. See am_mining_attribute_values/4.
-%%
+%
 am_possible_predicates_values([], _, _, []).
 am_possible_predicates_values([Predicate|Ps], PValues, N, [Result|Rs]) :-
   am_mining_attribute_values(Predicate, PValues, N, Result),
   N1 is N+1,
   am_possible_predicates_values(Ps, PValues, N1, Rs).
 
-%%
-% am_possible_nominal_values(+Range, -Values)
+%% am_possible_nominal_values(+Range, -Values)
 %
 % Get the possible nominal values for a owl:DataRange -> owl:oneOf.
-%%
+%
 am_possible_nominal_values(T1, Vs) :-
   rdfs_instance_of(T1, owl:'DataRange'),
   rdf_triple(owl:oneOf, T1, Range),
   rdfs_list_to_prolog_list(Range, LVs),
   maplist(am_strip_literal_type, LVs, Vs).
 
-%%
-% am_attribute_nominal_or_numeric(+,-).
+%% am_attribute_nominal_or_numeric(+T1,-T0).
 %
 % Test if the type is nominal or numeric.
 % Possible numeric types: xsd:float, xsd:integer, ..., owl:DataRage with only numeric subtypes.
-%%
+%
 am_attribute_nominal_or_numeric(T1, T0) :-
   ( rdf_global_id(NS:Local, T1),
     NS = xsd ), !,
@@ -270,12 +257,11 @@ am_attribute_nominal_or_numeric(T1, T0) :- % Numeric types are always comparable
   -> T0 = numeric  % ... everything is numeric ...
   ; T0 = nominal.  % ... else everything is nominal
 
-%%
-% am_attributes_nominal_or_numeric(+,-).
+%% am_attributes_nominal_or_numeric(+T1,-T0).
 %
 % Test if the given types are nominal or numeric.
 % See am_attribute_nominal_or_numeric/2.
-%%
+%
 am_attributes_nominal_or_numeric([],[]).
 am_attributes_nominal_or_numeric([O|Os], [T|Ts]) :-
   ( rdfs_instance_of(O, am:'Feature') ->
@@ -312,12 +298,11 @@ am_fill_instances(Predicates, [PredicateValues|Ps], InstLen, Instances) :-
   jpl_call(Instances, 'add', [Instance], _),
   am_fill_instances(Predicates, Ps, InstLen, Instances).
 
-%%
-% am_fill_instance(ObservableValues, Predictables, Attributes, Instance)
+%% am_fill_instance(ObservableValues, Predictables, Attributes, Instance)
 %
 % Fill the observables corresponding to the attributes into the instance.
 % Then continue with appending the predictables.
-%%
+%
 am_fill_instance([], [], _, _).
 am_fill_instance([ObservableLValue|Os], Predictables, [Attribute|As], Instance) :-
   am_strip_literal_type(ObservableLValue, ObservableValue),
@@ -338,13 +323,12 @@ am_fill_instance([], Predictables, _, Instance) :-
   term_to_atom(Ps, PA),
   jpl_call(Instance, 'setClassValue', [PA], _).
 
-%%
-% am_fill_instances(+ObservableValuesList, +PredictableValuesList, +InstLen, +Instances)
+%% am_fill_instances(+ObservableValuesList, +PredictableValuesList, +InstLen, +Instances)
 %
 % Fill the Instances object with instances for the given observables and predictables.
 % The Predictables- and ObservablesValuesList should contain a list of
 % the predictables/observables for each Instance.
-%%
+%
 am_fill_instances(_, [], _, [], _, _).
 am_fill_instances(Observables, [ObservableValues|Os], Predictables, [PredictableValues|Ps], InstLen, Instances) :-
   jpl_new(class([weka,core],['Instance']), [InstLen], Instance),
@@ -361,11 +345,10 @@ am_fill_instances(Observables, [ObservableValues|Os], Predictables, [Predictable
   jpl_call(Instances, 'add', [Instance], _),
   am_fill_instances(Observables, Os, Predictables, Ps, InstLen, Instances).
 
-%%
-% am_instance_to_row(+Attributes, +Instance, -Values)
+%% am_instance_to_row(+Attributes, +Instance, -Values)
 %
 % Get the list of values for the list of attributes of the given instance.
-%%
+%
 am_instance_to_row([], Instance, [Value]) :-
   jpl_call(Instance, 'classValue', [], Value).
 am_instance_to_row([Att|As], Instance, [Value|Vs]) :-
@@ -377,11 +360,10 @@ am_instance_to_string_row([Att|As], Instance, [Value|Vs]) :-
   jpl_call(Instance, 'toString', [Att], Value), 
   am_instance_to_string_row(As, Instance, Vs).
 
-%%
-% am_instances_to_table(+Instances, -Table)
+%% am_instances_to_table(+Instances, -Table)
 %
 % Convert an instances object to a table (list of lists)
-%%
+%
 am_instances_to_table(Instances, Table) :-
   jpl_call(Instances, 'enumerateInstances', [], InstEnum),
   jpl_enumeration_to_list(InstEnum, InstList),
@@ -394,11 +376,10 @@ am_instances_to_string_table(Instances, Table) :-
   am_attribute_list_from_instances(Instances, Atts),
   maplist(am_instance_to_string_row(Atts), InstList, Table).
 
-%%
-% am_attribute_list_from_instances(+Instances, -AttributeList)
+%% am_attribute_list_from_instances(+Instances, -AttributeList)
 %
 % Create a list of attributes inside an Instances object
-%%
+%
 am_attribute_list_from_instances(Instances, AttributeList) :-
   jpl_call(Instances, 'numAttributes', [], NumAttributes),
   NumAttributesM1 is NumAttributes-1,
@@ -406,17 +387,17 @@ am_attribute_list_from_instances(Instances, AttributeList) :-
   maplist(am_nth_attribute_from_instance(Instances), AttributeNumbers, AttributeList).
 
 
-%%
-% am_nth_attribute_from_instance(+Instances, +Num, -Attribute)
+%% am_nth_attribute_from_instance(+Instances, +Num, -Attribute)
 %
 % Get the nth attribute of an instance. Attribute=Instance.attribute(Num).
-%%
+%
 am_nth_attribute_from_instance(Instances, Num, Attribute) :-
   jpl_call(Instances, attribute, [Num], Attribute).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% MODEL %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %%
 % Diverse access methods for models.
 %%
@@ -430,10 +411,9 @@ am_model_attributes(_-_-_-_-Instances-_-_, Attributes) :-
 am_model_bayesnet(_-_-_-_-_-BayesNet-_, BayesNet).
 am_model_bayesnet_instances(_-_-_-_-_-_-BayesNetInstances, BayesNetInstances).
 
-%%
-% am_necessary_predictables(+Predictable, -NecessaryPredictables).
+%% am_necessary_predictables(+Predictable, -NecessaryPredictables).
 % Get the predictables the given predictable am:dependsOn.
-%%
+%
 am_necessary_predictables(Predictable, NecessaryPredictables) :-
   findall(Nec, rdf_triple('http://ias.cs.tum.edu/kb/actionmodel.owl#dependsOn', Predictable, Nec), NecessaryPredictables).
 
@@ -442,11 +422,10 @@ am_copy_attributes(OriginalAttributes, Copies) :-
 	unifill_list([], Length, Params),
 	jpl_call_for_each(OriginalAttributes, copy, Params, Copies).
 
-%%
-% am_attribute_list_to_attributes(+PredictableIndexes, +ClassIndex, +OAttributeList-PAttributeList, -Attributes)
+%% am_attribute_list_to_attributes(+PredictableIndexes, +ClassIndex, +OAttributeList_PAttributeList, -Attributes)
 % Create a FastVector of Attributes consisting of the ObservableAttributes, the indexed predictable attributes
 % and the indexed class attribute.
-%%
+%
 am_attribute_list_to_attributes(PredictableIndexes, N, OAttributeList-PAttributeList, Attributes) :-
 	am_copy_attributes(OAttributeList, OAttributes),
 	list_to_fast_vector(OAttributes, Attributes),
@@ -456,11 +435,11 @@ am_attribute_list_to_attributes(PredictableIndexes, N, OAttributeList-PAttribute
 	fast_vector_add_list(Attributes, PAttributes).
 
 %%%%%%%%%%% CLASSIFIER LEARNING %%%%%%%%%%%%%%%%%
-%%
-% am_create_classifiers(+Observables, +ObservableValues, +Predictables, +PredictableValues,-Classifiers,-Instances)
+
+%% am_create_classifiers(+Observables, +ObservableValues, +Predictables, +PredictableValues,-Classifiers,-Instances)
 %
 % Creates the classifiers for the action model.
-%%
+%
 am_create_classifiers(Observables, ObservableValues, Predictables, PredictableValues, Classifiers, Instances) :-
   % Generate the mining attributes
   print_info('\tConstruct mining attributes... ', informational),
@@ -486,11 +465,10 @@ am_create_classifiers([Predictable|PRest], Observables, OValues, Predictables, P
   N1 is N+1,
   am_create_classifiers(PRest, Observables, OValues, Predictables, PValues, Attributes, CRest, IRest, N1).
 
-%%
-% am_create_classifier(+ObservableValues, +PredictableValues, +Attributes, -Classifiers,-Instances)
+%% am_create_classifier(+ObservableValues, +PredictableValues, +Attributes, -Classifiers,-Instances)
 %
 % Creates a classifier for the action model.
-%%
+%
 am_create_classifier(Observables, ObservableValues, Predictables, PredictableValues, Attributes, Classifier, Instances) :- 
   % Create the instances object for weka ...
   % term_to_atom(Frame, PredictionName), we use a default name for the instances. Does it matter anywhere?
@@ -515,10 +493,9 @@ am_create_classifier(Observables, ObservableValues, Predictables, PredictableVal
   print_info('done\n', informational).
 
 %%%%%%%% BAYESNET LEARNING %%%%%%%%%%%%%%%
-%%
-% am_bayes_initialize_domain(+Attribute, -Domain)
+%% am_bayes_initialize_domain(+Attribute, -Domain)
 % Initialize the domain for the given attribute.
-%%
+%
 am_bayes_initialize_domain(Attribute, Splits, Domain) :-
   jpl_call(Attribute, isNumeric, [], @(true))
   -> jpl_call(Attribute, name, [], AttributeName),
@@ -531,10 +508,11 @@ am_bayes_initialize_domain(Attribute, Splits, Domain) :-
 	  jpl_enumeration_to_list(ValueEnumeration, ValueList),
     jpl_datums_to_array(ValueList, ValueArray),
     jpl_new(class([edu,ksu,cis,bnj,ver3,core],['Discrete']), [ValueArray], Domain).
-%%
-% am_bayes_initialize_nodes(+BayesNet, +Predicates, +Attributes)
+
+
+%% am_bayes_initialize_nodes(+BayesNet, +Predicates, +Attributes)
 % Initialize the nodes of the bayes net.
-%%
+%
 am_bayes_initialize_nodes(_, [], [], _).
 am_bayes_initialize_nodes(BayesNet, [Predicate|Predicates], [Attribute|Attributes], Splits) :-
 	am_property_name(Predicate, Name),
@@ -542,11 +520,10 @@ am_bayes_initialize_nodes(BayesNet, [Predicate|Predicates], [Attribute|Attribute
 	jpl_call(BayesNet, 'addNode', [Name, Domain], _),
 	am_bayes_initialize_nodes(BayesNet, Predicates, Attributes, Splits).
 
-%%
-% am_bayes_initialize_dependency_domain(+ParentName, +PredictableName, +Splits, -Domain)
+%% am_bayes_initialize_dependency_domain(+ParentName, +PredictableName, +Splits, -Domain)
 % Initialize the domain with the dependency dependant splits. This may only be called if the
 % parent node is a Discretized node.
-%%
+%
 am_bayes_initialize_dependency_domain(ParentName, PredictableName, Splits, Domain) :-
   has_to_work(get_assoc(ParentName-PredictableName, Splits, DependencySplits),
     cannot_find_dependency_in_splits),
@@ -555,11 +532,10 @@ am_bayes_initialize_dependency_domain(ParentName, PredictableName, Splits, Domai
           DiscretizationFilter),
   jpl_new(class([edu,tum,cs,bayesnets,core],['Discretized']), [DiscretizationFilter], Domain).
   
-%%
-% am_bayes_add_dependencies(+BayesNet, +PredictableName, +Parents)
+%% am_bayes_add_dependencies(+BayesNet, +PredictableName, +Parents)
 % Add the connections of the given node of the BayesNet to its parents.
 % Additionally rediscretize the domains for discretized nodes by inserting an additional node.
-%%
+%
 am_bayes_add_dependencies(_, _, [], _).
 am_bayes_add_dependencies(BayesNet, PredictableName, [Parent|RestParents], Splits) :-
 	am_property_name(Parent, ParentName),
@@ -577,10 +553,9 @@ am_bayes_add_dependencies(BayesNet, PredictableName, [Parent|RestParents], Split
   jpl_call(BayesNet, 'connect', [ParentName, PredictableName], _),
 %   ),
 	am_bayes_add_dependencies(BayesNet, PredictableName, RestParents, Splits).
-%%
-% am_bayes_initialize_dependencies(BayesNet, Observables, Predictables)
+%% am_bayes_initialize_dependencies(BayesNet, Observables, Predictables)
 % Initialize the dependencies of the BayesNet.
-%%
+%
 am_bayes_initialize_dependencies(_, _, [], _).
 am_bayes_initialize_dependencies(BayesNet, Observables, [Predictable|RestPredictables], Splits) :-
 	am_property_name(Predictable, PredictableName),
@@ -589,10 +564,9 @@ am_bayes_initialize_dependencies(BayesNet, Observables, [Predictable|RestPredict
 	has_to_work(actionmodel:am_bayes_add_dependencies(BayesNet, PredictableName, AllParents, Splits),
     unable_to_add_dependencies),
 	am_bayes_initialize_dependencies(BayesNet, Observables, RestPredictables, Splits).
-%%
-% am_bayes_initialize_structure(+BayesNet, +Observables, +Predictables, +Attributes)
+%% am_bayes_initialize_structure(+BayesNet, +Observables, +Predictables, +Attributes)
 % Initialize the structure of the BayesNet: the nodes and their connections.
-%%
+%
 am_bayes_initialize_structure(BayesNet, Observables, Predictables, Attributes, DomainSplits) :-
 	append(Observables, Predictables, AllPredicates),
 	has_to_work(actionmodel:am_bayes_initialize_nodes(BayesNet, AllPredicates, Attributes, DomainSplits),
@@ -614,12 +588,11 @@ am_bayes_initialize_structure(BayesNet, Observables, Predictables, Attributes, D
 %	   am_initialize_domain_learner(RestAttributes, BayesNet, DomainLearner, DirectDomains, [ClusteredDomain|ClusteredDomains])
 %	; am_initialize_domain_learner(RestAttributes, BayesNet, DomainLearner, [AttributeName|DirectDomains], ClusteredDomains)).
 
-%%
-% am_learn_bayesnet(+BayesNet, +Instances)
+%% am_learn_bayesnet(+BayesNet, +Instances)
 %
 % Learn the bayesnet for the data given in the WEKA instances.
 % Learning is done by CPTLearner via BayesNet.
-%%
+%
 am_learn_bayesnet(BayesNet, Instances) :-
 	jpl_new(class([edu,tum,cs,bayesnets,learning],['CPTLearner']), [BayesNet], CPTLearner),
 	jpl_call(CPTLearner, 'learn', [Instances], _),
@@ -678,13 +651,11 @@ am_initialize_filter_cut_points(Filter, [DomainSplits|DRest], [Attribute|Attribu
 %%	jpl_call(Filter, isOutputFormatDefined, [], @(true)),
 %	am_convert_instances(Instances, Filter, NewInstances).
 
-%%
-% am_create_bayesnet_with_domainsplits(+Observables, +ObservableValues, +Predictables, +PredictableValues, 
-%                                      -BayesNet, -Instances, +DomainSplits)
+%% am_create_bayesnet_with_domainsplits(+Observables, +ObservableValues, +Predictables, +PredictableValues, -BayesNet, -Instances, +DomainSplits)
 % The domain splits have to be in the same order as [observables|predictables].
 % Create a bayesnet from the observable, -values, predictables, -values and domainsplits.
 % return the learned bayesnet and the instances.
-%%
+%
 am_create_bayesnet_with_domainsplits(Observables, ObservableValues, Predictables, PredictableValues, BayesNet, Instances, DomainSplits) :-
   % Generate the mining attributes...
   print_info('\tConstruct mining attributes... ', informational),
@@ -714,14 +685,13 @@ am_create_bayesnet_with_domainsplits(Observables, ObservableValues, Predictables
   has_to_work(actionmodel:am_learn_bayesnet(BayesNet, Instances), cannot_learn_bayesnet),
   print_info('done', informational).
 
-%%
-% am_create_bayesnet_from_classifiers(+Classifiers, +Instances, +FullInstances, -BayesNet)
+%% am_create_bayesnet_from_classifiers(+Classifiers, +Instances, +FullInstances, -BayesNet)
 %
 % Create a bayes net (edu.tum.cs.bayesnets.core.BeliefNetworkEx) from WEKA classifiers using
 % edu.tum.cs.bayesnets.learning.BeliefNetworkFromClassifiers via jpl.
 % This is preferable to am_create_bayesnet_with_splitpoints because it is easier to implement
 % in java and errors can be found much easier that way.
-%%
+%
 am_create_bayesnet_from_classifiers(Classifiers, Instances, FullInstances, BayesNet) :-
   zip(Classifiers, Instances, NCArguments),
   maplist(jpl_new('de.tum.in.fipm.base.util.weka.NamedClassifier'), NCArguments, NamedClassifiers),
@@ -736,11 +706,12 @@ am_create_bayesnet_from_classifiers(Classifiers, Instances, FullInstances, Bayes
 	jpl_call(CPTLearner, 'finish', [], _).
 
 %%%%%%%%%% MODEL CONVERSION %%%%%%%%%%%%
-%%
-% am_extract_domain_splits_from_trees(+Predicates, +Classifiers, +Instances, -Splits)
+
+
+%% am_extract_domain_splits_from_trees(+Predicates, +Classifiers, +Instances, -Splits)
 % Extract the domain splits used in classifier trees (as e.g. C45 or REPTree) 
 % as a list of assocs from parent to child.
-%%
+%
 am_extract_domain_splits_from_trees(Predicates, Classifiers, Instances, Splits) :-
   empty_assoc(Assoc),
   am_extract_domain_splits_from_trees(Predicates, Classifiers, Instances, Assoc, Splits).
@@ -749,11 +720,10 @@ am_extract_domain_splits_from_trees([Predicate|PRest], Classifiers, Instances, A
 	am_extract_domain_splits_for_predicate(Predicate, Classifiers, Instances, Acc, NewAcc),
 	am_extract_domain_splits_from_trees(PRest, Classifiers, Instances, NewAcc, Splits).
   
-%%
-% am_extract_domain_splits_for_predicate(+Predicate, +Classifiers, +Instances, +InputAssoc, -Splits)
+%% am_extract_domain_splits_for_predicate(+Predicate, +Classifiers, +Instances, +InputAssoc, -Splits)
 % Extract the domain splits for the given predicate from the classifier trees.
 % InputAssoc is an assoc that probably already stores some splits.
-%%
+%
 am_extract_domain_splits_for_predicate(Predicate, Classifiers, Instances, Assoc, Splits) :-
   am_extract_domain_splits_for_predicate(Predicate, Classifiers, Instances, [], Assoc, Splits).
 am_extract_domain_splits_for_predicate(Predicate, [], [], Union, Acc, Splits) :-
@@ -777,12 +747,12 @@ am_extract_domain_splits_for_predicate(Predicate, [Classifier|Classifiers], [Ins
 	am_extract_domain_splits_for_predicate(Predicate, Classifiers, IRest, NewUnion, NewAcc, Splits).
 
 %%%%%%%%%% ACTION MODEL ACCESS/CREATION %%%%%%%%%
-%%
-% am_calculate_action_model(+ActionDefinition, +Observables, +Predictables, -Model)
+
+%% am_calculate_action_model(+ActionDefinition, +Observables, +Predictables, -Model)
 %
 % Calculate a new action model from the given ActionDefinition, Observables and Predictables.
 % TODO: Create a model for each predictable and decide what classifier (J48 or RegressionTree) to learn.
-%%
+%
 am_calculate_action_model(Actions, Observables, PredictablesGraph, Model) :-
   % Sorting Predictables
   top_sort(PredictablesGraph, Predictables),
@@ -825,11 +795,10 @@ am_calculate_action_model(Actions, Observables, PredictablesGraph, Model) :-
 
   Model = Classifiers-Observables-PredictablesGraph-Predictables-Instances-BayesNet-BayesInstances.
 
-%%
-% am_get_action_model(+ActionModel, -Model)
+%% am_get_action_model(+ActionModel, -Model)
 %
 % Get the action model: If there is a cached one use it or calculate it.
-%%
+%
 am_get_action_model(ActionModel, Model) :-
   % Get the observables, ...
   has_to_work(setof(O,(rdf_triple('http://ias.cs.tum.edu/kb/actionmodel.owl#observable', ActionModel, O)), Observables),
@@ -864,11 +833,10 @@ Actions = MyActions,
   ; am_calculate_action_model(Actions, Observables, PredictablesGraph, Model),
     am_assert_model(Model, Actions)).
 
-%%
-% am_asserted_model(+Observables, +Predictables, +Actions, -Model)
+%% am_asserted_model(+Observables, +Predictables, +Actions, -Model)
 %
 % Search for an asserted model that fits the given parameters.
-%%
+%
 am_asserted_model(Observables, Predictables, Actions, Model) :-
   rdf_has(CachedObservablesNode, am:'learnedModelObservables', ModelAtom),
   rdfs_list_to_prolog_list(CachedObservablesNode, CachedObservables),
@@ -891,12 +859,11 @@ am_asserted_model(Observables, Predictables, Actions, Model) :-
 
   atom_to_term(ModelAtom, Model, []).
 
-%%
-% am_assert_model(+Model, +Actions)
+%% am_assert_model(+Model, +Actions)
 %
 % Assert the learned model and the learning instances to the database.
 % TODO: This should be done somewhat more like specifying a model.
-%%
+%
 am_assert_model(Classifier-Observables-PredictablesGraph-Predictables-Instances-BayesNet-BayesInstances, Actions) :-
   term_to_atom(Classifier-Observables-PredictablesGraph-Predictables-Instances-BayesNet-BayesInstances, ModelAtom),
   rdf_transaction( (rdfs_assert_list(Observables, ObsNode, models),
@@ -912,21 +879,20 @@ am_assert_model(Classifier-Observables-PredictablesGraph-Predictables-Instances-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ACTION CREATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%
-% am_assign_predictables(+Predictables, +Values, -PredictableValues)
+
+%% am_assign_predictables(+Predictables, +Values, -PredictableValues)
 %
 % Assign the "-"-separated Values to the corresponding Predictables.
-%%
+%
 am_assign_predictables([Predictable], Value, [[Predictable, Value]]) :-
   !, atom(Value).
 am_assign_predictables([Predictable|PRest], Value-ValueRest, [[Predictable, Value]|PVRest]) :-
   am_assign_predictables(PRest, ValueRest, PVRest).
 
-%%
-% am_assert_predicate_values_for_object(+PredicateValues, +Object)
+%% am_assert_predicate_values_for_object(+PredicateValues, +Object)
 %
 % Assert the given predicate values for the object.
-%%
+%
 am_assert_predicate_values_for_object([], _).
 am_assert_predicate_values_for_object([[Predicate, Value]|PVRest], Object) :-
   ( rdf_triple(rdf:type, Predicate, am:'Feature')
@@ -940,12 +906,11 @@ am_assert_predicate_values_for_object([[Predicate, Value]|PVRest], Object) :-
   am_assert_predicate_values_for_object(PVRest, Object).
 
 
-%%
-% am_filter_predicates_domain(+PredicateValues, +Domain, -OutputPredicateValues)
+%% am_filter_predicates_domain(+PredicateValues, +Domain, -OutputPredicateValues)
 %
 % Filter all Predicates that have a specified domain.
 % PreidcateValues has to be a list of [preidcate, value] pairs, e.g. [[am:withProbability, 0.5], ...].
-%%
+%
 am_filter_predicates_domain([], _, []) :- !.
 am_filter_predicates_domain([[Predicate, Value]|PRest], Domain, [[Predicate, Value]|ORest]) :-
   (rdf_triple(rdf:type, Predicate, am:'Feature')
@@ -957,11 +922,10 @@ am_filter_predicates_domain([[Predicate, Value]|PRest], Domain, [[Predicate, Val
 am_filter_predicates_domain([[_,_]|PRest], Domain, OutputPredicates) :-
   am_filter_predicates_domain(PRest, Domain, OutputPredicates).
   
-%%
-% am_check_predicates_domain(Predicates, Domain)
+%% am_check_predicates_domain(Predicates, Domain)
 %
 % Check that the given predicates have the correct domain.
-%%
+%
 am_check_predicates_domain([], _).
 am_check_predicates_domain([Predicate|PRest], Domain):-
   (rdf_triple(rdf:type, Predicate, am:'Feature')
@@ -971,14 +935,13 @@ am_check_predicates_domain([Predicate|PRest], Domain):-
   rdfs_subclass_of(SubDomain, Domain),!,  % We should never leave a choicepoint reading from rdf...
   am_check_predicates_domain(PRest, Domain).
 
-%%
-% am_create_action(+PredicateValues, +Situation, +Action, -Action)
+%% am_create_action(+PredicateValues, +Situation, +Action, -Action)
 %
 % Create an action with the given predicate values.
 % The action is assert in the rdf_triple database and the reference is returned.
 % TODO: We have to transmit all the owlassertions to persistent ones
 %   We should refer to the InputAction.
-%%
+%
 am_create_action(PredicateValues, _InputAction, InputSituation, Probability, Action) :-
   % Extract Predicates for the action...
   am_filter_predicates_domain(PredicateValues, 'http://ias.cs.tum.edu/kb/actionmodel.owl#Action', ActionPredicates),
@@ -986,14 +949,13 @@ am_create_action(PredicateValues, _InputAction, InputSituation, Probability, Act
   append(ActionPredicates, [['http://ias.cs.tum.edu/kb/actionmodel.owl#withProbability', Probability], ['http://ias.cs.tum.edu/kb/actionmodel.owl#startSituation', InputSituation]], AllPredicateValues),
   am_assert_predicate_values_for_object(AllPredicateValues, Action).
 
-%%
-% am_create_situation(+PredicateValues, +Situation, +Action, -Situation)
+%% am_create_situation(+PredicateValues, +Situation, +Action, -Situation)
 %
 % Create a situation with the given predicate values.
 % The action is assert in the rdf_triple database and the reference is returned.
 % TODO: We have to transmit all the owlassertions to persistent ones
 %   We should refer to the InputSituation and -Action.
-%%
+%
 am_create_situation(PredicateValues, _InputAction, _InputSituation, Probability, Situation) :-
   % Extract Predicates for the action...
   am_filter_predicates_domain(PredicateValues, 'http://ias.cs.tum.edu/kb/actionmodel.owl#Situation', ActionPredicates),
@@ -1009,11 +971,9 @@ am_nominal_instance_probability(Classifier, Instance, ClassIndex, Probability) :
   jpl_array_to_list(Distribution, DistList),
   nth0(ClassIndex, DistList, Probability).
 
-%%
-% am_predict_action_situation_predicates(+Predicates, +Dependencies, +Observables, +ObservableValues, +Attributes,
-%    +Instances, +Classifiers, -Values)
+%% am_predict_action_situation_predicates(+Predicates, +Dependencies, +Observables, +ObservableValues, +Attributes, +Instances, +Classifiers, -Values)
 % Get the prediction of the corresponding classifier/predictable pair for the given observables/-values.
-%%
+%
 am_predict_action_situation_predicates(Predicates, Dependencies, Observables, ObservableValues, Attributes,
     Instances, Classifiers, ValuesProbAssoc) :-
   empty_assoc(AccumulatorAssoc),
@@ -1050,10 +1010,9 @@ am_predict_action_situation_predicates([Predicate|PrRest], [Dependencies|DRest],
   am_predict_action_situation_predicates(PrRest, DRest, Observables, ObservableValues,
     ARest, IRest, CRest, NewValueAssoc, ResultAssoc).
 
- %%
- % am_neighbours(Graph, N, Neighbours)
+ %%% am_neighbours(Graph, N, Neighbours)
  % Invert order of arg 0 and 1 of neighbours to be usable in maplist.
- %%
+ %
  am_neighbours(Graph, N, Neighbours) :-
    neighbours(N, Graph, Neighbours).
 
@@ -1061,11 +1020,11 @@ am_predict_action_situation_predicates([Predicate|PrRest], [Dependencies|DRest],
  special_mul(Mul1, Mul2, Mul2) :- var(Mul1), !.
  special_mul(Mul1, Mul2, Result) :- Result is Mul1*Mul2.
 
-%%
-% am_predict_action_situation_predictables(Model, InputAction, Situation, Action, Probability)
+
+%% am_predict_action_situation_predictables(Model, InputAction, Situation, Action, Probability)
 % Predict the list of predictables with the given model.
 % The predictables have to exist in the model.
-%%
+%
 am_predict_action_situation_predictables(Model, InputAction, Situation, Predictables, Values, Probabilities) :-
   am_model_observables(Model, Observables),
   am_model_attributes(Model, AttributesList),
@@ -1127,11 +1086,10 @@ am_predict_action_situation_predictables_bayes(Model, InputAction, Situation, Pr
   boxed_column(PredictableNames, PredictableNamesArg),
   maplist(jpl_call(Assignments, get), PredictableNamesArg, Values).
 
-%%
-% am_classify_action_situation(+Model, +Action, +Situation, -Action)
+%% am_classify_action_situation(+Model, +Action, +Situation, -Action)
 %
 % Classify a situation and generate an action.
-%%
+%
 am_classify_action_situation(Model, InputAction, InputSituation, Action, Probability) :-
   am_model_predictables_graph(Model, PredictablesGraph),
   top_sort(PredictablesGraph, Predictables),
@@ -1141,11 +1099,10 @@ am_classify_action_situation(Model, InputAction, InputSituation, Action, Probabi
   zip(Predictables, Values, PredValues),
   has_to_work(actionmodel:am_create_action(PredValues, InputAction, InputSituation, Probability, Action), unable_to_create_action).
   
-%%
-% am_classify_situation_action(+Model, +Action, +Situation, -Situation)
+%% am_classify_situation_action(+Model, +Action, +Situation, -Situation)
 %
 % Classify a situation and generate an action.
-%%
+%
 am_classify_situation_action(Model, InputAction, InputSituation, Situation, Probability) :-
   am_model_predictables_graph(Model, PredictablesGraph),
   top_sort(PredictablesGraph, Predictables),
@@ -1156,19 +1113,17 @@ am_classify_situation_action(Model, InputAction, InputSituation, Situation, Prob
   has_to_work(actionmodel:am_create_situation(PredValues, InputAction, InputSituation, Probability, Situation), unable_to_create_situation).
 
 
-%%
-% am_classify_predictable(Model, InputAction, Situation, Predictable, Value, Probability)
+%% am_classify_predictable(Model, InputAction, Situation, Predictable, Value, Probability)
 % Predict a single predictable value from a model.
 % The predictable has to exist in the model.
-%%
+%
 am_classify_predictable(Model, InputAction, Situation, Predictable, Value, Probability) :-
   am_predict_action_situation_predictables(Model, InputAction, Situation, [Predictable], [Value], [Probability]).
 
-%%
-% am_predict_situation_from_observable_values(+Prediction, +ObservableValues, -Situation)
+%% am_predict_situation_from_observable_values(+Prediction, +ObservableValues, -Situation)
 % Predict a situation using the model specified via Prediction using the given ObservableValues
 % (used to classify a current observation instead of data read from the DB)
-%%
+%
 am_predict_situation_from_observable_values(Prediction, ObservableValues, Situation) :-
 
   % Read the actionModel
@@ -1205,11 +1160,10 @@ am_predict_situation_from_observable_values(Prediction, ObservableValues, Situat
   zip(Predictables, Values, PredValues),
   has_to_work(actionmodel:am_create_situation(PredValues, _InputAction, _InputSituation, Probability, Situation), unable_to_create_situation).
 
-%%
-% am_predict_action_from_observable_values(+Prediction, +ObservableValues, -Action)
+%% am_predict_action_from_observable_values(+Prediction, +ObservableValues, -Action)
 % Predict an action using the model specified via Prediction using the given ObservableValues
 % (used to classify a current observation instead of data read from the DB)
-%%
+%
 am_predict_action_from_observable_values(Prediction, ObservableValues, Action) :-
 
   % Read the actionModel
@@ -1250,11 +1204,12 @@ am_predict_action_from_observable_values(Prediction, ObservableValues, Action) :
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% RDF_TRIPLE_HOOK %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%
-% am_rdf_triple('http://ias.cs.tum.edu/kb/actionmodel.owl#toAction', ?Frame, ?Value).
+
+
+%% am_rdf_triple(actionmodel:'toAction', ?Frame, ?Value).
 %
 % rdf_triple_hook implementation for am:toAction.
-%%
+%
 am_rdf_triple(Property, Frame, Value):-
   catch(catch(
     ( rdf_equal(Property, 'http://ias.cs.tum.edu/kb/actionmodel.owl#toAction'),
@@ -1280,11 +1235,10 @@ am_rdf_triple(Property, Frame, Value):-
     %prolog_frame_attribute(ParentFrame, goal, FrameGoal),print(FrameGoal),
     jpl_call(JE, printStackTrace, [], _), throw(error(java_exception(JE), ExceptionRest)))).
   
-%%
-% am_rdf_triple('http://ias.cs.tum.edu/kb/actionmodel.owl#toSituation', ?Frame, ?Value).
+%% am_rdf_triple(actionmodel:'toSituation', ?Frame, ?Value).
 %
 % rdf_triple_hook implementation for am:toAction.
-%%
+%
 am_rdf_triple(Property, Frame, Value):-
   catch(catch(
     ( rdf_equal(Property, 'http://ias.cs.tum.edu/kb/actionmodel.owl#toSituation'),
@@ -1310,9 +1264,9 @@ am_rdf_triple(Property, Frame, Value):-
       %prolog_frame_attribute(ParentFrame, goal, FrameGoal),
       jpl_call(JE, printStackTrace, [], _), throw(error(java_exception(JE), ExceptionRest)))).
 
-%% To prevent the error that rdf_triple is already loaded from rdfs_computable.
-%% I use multifile, dynamic and discontiguous but the error still occurs when I use a
-%% standard definition. Why?!?
+% To prevent the error that rdf_triple is already loaded from rdfs_computable.
+% I use multifile, dynamic and discontiguous but the error still occurs when I use a
+% standard definition. Why?!?
 /*:- retract(user:(rdf_triple_hook(Property, Frame, Value):-
          actionmodel:am_rdf_triple(Property, Frame, Value))).*/
 :- assert(user:(rdf_triple_hook(Property, Frame, Value):-

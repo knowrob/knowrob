@@ -27,7 +27,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % parse OWL files, register name spaces
 
-:- owl_parser:owl_parse('/work/ros/tumros-internal/stacks/knowrob/comp_temporal/owl/comp_temporal.owl', false, false, true).
+:- owl_parser:owl_parse('/work/knowrob/trunk/comp_temporal/owl/comp_temporal.owl', false, false, true).
 :- rdf_db:rdf_register_ns(comp_temporal, 'http://ias.cs.tum.edu/kb/comp_temporal.owl#',     [keep(true)]).
 
 
