@@ -105,14 +105,13 @@ rdf_instance_from_class(Class, Instance) :-
 % 
 
 
-%% holds_tt(+Goal, [+Start, +End]) is nondet.
+%% holds_tt(+Goal, +StartEndList) is nondet.
 %
 % General definition of holds_tt that uses holds(..) to check if a relation
 % holds throughout a time span (i.e. for each time point during the time span)
 %
 % @param Goal  The goal that is to be checked
-% @param Start Start time of the time span under consideration
-% @param End   End time of the time span under consideration
+% @param StartEndList Start time and end time of the time span under consideration [Start, End]
 %
 holds_tt(Goal, [Start, End]) :-
 
