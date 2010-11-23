@@ -134,7 +134,10 @@ on_Physical(Top, Bottom) :-
     holds(on_Physical(Top, Bottom), T).
 
 
-%% holds(on_Physical(?Top, ?Bottom), +T) is nondet.
+
+%% holds(+OnPhysicalPred:compound, +T) is nondet.
+%
+% Usage: holds(on_Physical(?Top, ?Bottom), +T)
 %
 % Check if Top has been in the area of and above Bottom at time point T.
 %
@@ -144,6 +147,7 @@ on_Physical(Top, Bottom) :-
 % @param Bottom Identifier of the lower Object
 % @param T      TimePoint or Event for which the relations is supposed to hold
 %
+
 %%% holds(on_Physical(Top, Bottom), T) :-
 %%% 
 %%%     object_detection(Top, T, VPT),
@@ -213,7 +217,9 @@ comp_toTheLeftOf(Left, Right) :-
     holds(comp_toTheLeftOf(Left, Right), T).
 
 
-%% holds(comp_toTheLeftOf(?Left, ?Right), +T) is nondet.
+%% holds(+ToTheLeftOf:compound, +T) is nondet.
+%
+% Usage: holds(comp_toTheLeftOf(?Left, ?Right), +T)
 %
 % Check if Left is to the left of Right. Currently does not take the orientation
 % into account, only the position and dimension.
@@ -266,7 +272,9 @@ comp_toTheRightOf(Right, Left) :-
     holds(comp_toTheRightOf(Right, Left), T).
 
 
-%% holds(comp_toTheRightOf(?Right,?Left), +T) is nondet.
+%% holds(+ToTheRightOf:compound, +T) is nondet.
+%
+% Usage: holds(comp_toTheRightOf(?Right,?Left), +T)
 %
 % Check if Right is to the right of Left.
 %
@@ -297,7 +305,9 @@ comp_toTheSideOf(A, B) :-
     get_timepoint(T),
     holds(comp_toTheSideOf(A, B), T).
 
-%% holds(comp_toTheSideOf(?A, ?B), +T) is nondet.
+%% holds(+ToTheLeftOf:compound, +T) is nondet.
+%
+% Usage: holds(comp_toTheSideOf(?A, ?B), +T) is nondet.
 %
 % Check if A is either to the left or the right of B.
 %
@@ -329,7 +339,9 @@ comp_inFrontOf(Front, Back) :-
     get_timepoint(T),
     holds(comp_inFrontOf(Front, Back), T).
 
-%% holds(comp_inFrontOf(?Front, ?Back), +T) is nondet.
+%% holds(+InFrontOf:compound, +T) is nondet.
+%
+% Usage: holds(comp_inFrontOf(?Front, ?Back), +T)
 % 
 % Check if Front is in front of Back. Currently does not take the orientation
 % into account, only the position and dimension.
@@ -376,7 +388,9 @@ comp_inCenterOf(Inner, Outer) :-
     get_timepoint(T),
     holds(comp_inCenterOf(Inner, Outer), T).
 
-%% holds(comp_inCenterOf(?Inner, ?Outer), +T) is nondet.
+%% holds(+InCenterOf:compound, +T) is nondet.
+%
+% Usage: holds(comp_inCenterOf(?Inner, ?Outer), +T)
 %
 % Check if Inner is in the center of OuterObj. Currently does not take the orientation
 % into account, only the position and dimension.
@@ -425,7 +439,9 @@ in_ContGeneric(InnerObj, OuterObj) :-
     holds(in_ContGeneric(InnerObj, OuterObj), T).
 
 
-%% holds(in_ContGeneric(?InnerObj, ?OuterObj), +T) is nondet.
+%% holds(+InContained:compound, +T) is nondet.
+%
+% Usage: holds(in_ContGeneric(?InnerObj, ?OuterObj), +T)
 %
 % Check if Inner is in the center of OuterObj. Currently does not take the orientation
 % into account, only the position and dimension.
@@ -852,7 +868,7 @@ comp_orientation(Object, Orientation) :-
         rdf_split_url(_, O, Matrix),
         atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,M32,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_], '_', O),!.
 
-%% comp_m33(+Matrix, ?M33 is semidet.
+%% comp_m33(+Matrix, ?M33) is semidet.
 %
 % Extract component m(3,3) from a matrix
 %
