@@ -1,0 +1,137 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY coffeecup "http://ias.cs.tum.edu/kb/coffeecup.owl#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://ias.cs.tum.edu/kb/coffeecup.owl#"
+     xml:base="http://ias.cs.tum.edu/kb/coffeecup.owl"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:coffeecup="http://ias.cs.tum.edu/kb/coffeecup.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#">
+    <owl:Ontology rdf:about="">
+        <owl:imports rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/coffeecup.owl#containsDrinkableLiquid -->
+
+    <owl:ObjectProperty rdf:about="#containsDrinkableLiquid">
+        <rdfs:domain rdf:resource="&knowrob;Container"/>
+        <rdfs:range rdf:resource="&knowrob;Drink"/>
+        <rdfs:subPropertyOf rdf:resource="&knowrob;contains"/>
+    </owl:ObjectProperty>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#contains -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;contains"/>
+
+
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/coffeecup.owl#CoffeeCup -->
+
+    <owl:Class rdf:about="#CoffeeCup">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#containsDrinkableLiquid"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;Coffee-Beverage"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="&knowrob;Cup"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/coffeecup.owl#TeaCup -->
+
+    <owl:Class rdf:about="#TeaCup">
+        <rdfs:subClassOf rdf:resource="&knowrob;Cup"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Coffee-Beverage -->
+
+    <owl:Class rdf:about="&knowrob;Coffee-Beverage"/>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Container -->
+
+    <owl:Class rdf:about="&knowrob;Container"/>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Cup -->
+
+    <owl:Class rdf:about="&knowrob;Cup"/>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Drink -->
+
+    <owl:Class rdf:about="&knowrob;Drink"/>
+
+
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/coffeecup.owl#coffee0 -->
+
+    <knowrob:Coffee-Beverage rdf:about="#coffee0"/>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/coffeecup.owl#cup0 -->
+
+    <knowrob:Cup rdf:about="#cup0">
+        <containsDrinkableLiquid rdf:resource="#coffee0"/>
+    </knowrob:Cup>
+</rdf:RDF>
+

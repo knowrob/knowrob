@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog id="XML Catalog File (see http://www.oasis-open.org/committees/entity/spec-2001-08-06.html) - Created By Protege 4" prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <group id="Folder Repository, directory=, recursive=true, Auto-Update=true, version=1" prefer="public" xml:base="">
+        <uri id="Automatically generated entry, Timestamp=1288202184902" name="http://ias.cs.tum.edu/kb/coffeecup.owl" uri="coffeecup-solution.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1288202184902" name="http://ias.cs.tum.edu/kb/coffeecup.owl" uri="coffeecup.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1288202184902" name="http://ias.cs.tum.edu/kb/tabletop_obj.owl" uri="tabletop_obj.owl"/>
+    </group>
+</catalog>

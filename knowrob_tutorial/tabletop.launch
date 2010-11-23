@@ -1,0 +1,17 @@
+<launch>
+        <!-- load the database parameters -->
+        <!-- <rosparam command="load" file="$(find knowrob_tutorial)/pr2.yaml"/> -->
+        <!-- start the database wrapper node -->
+        <!-- <node pkg="household_objects_database" name="objects_database_node" type="objects_database_node" -->
+        <!-- respawn="true" output="screen"/> -->
+
+        <include file="$(find household_objects_database)/launch/objects_database_remote_client.launch"/>
+
+        <!-- the actual detector -->
+        <include file="$(find tabletop_object_detector)/launch/tabletop_node.launch"/>
+        <param name="/tabletop_node/use_database" value="true"/>
+        <param name="/tabletop_node/model_set" value="REDUCED_MODEL_SET" />
+        <param name="/tabletop_node/get_model_list_srv" value="/objects_database_node/get_model_list" />
+        <param name="/tabletop_node/get_model_mesh_srv" value="/objects_database_node/get_model_mesh" />
+
+</launch>
