@@ -1,7 +1,6 @@
 
 :- use_module(library('process')).
 
-
 rospack_package_path(Package, Path) :-
   nonvar(Package),
   process_create(path('rospack'), ['find', Package], [stdout(pipe(RospackOutput)), process(_PID)]),
@@ -44,7 +43,7 @@ add_ros_package_to_classpath(Package):-
 	atom_concat(':',Path,PackagePath),
 	concat_env("CLASSPATH",PackagePath).
 
-% calculates java dependencies for classapath
+% calculates java dependencies for classpath
 rospack_package_classpath(Package, Path) :-
   nonvar(Package),
   process_create(path('rospack'), ['export', '--lang=java', '--attrib=classpath', Package], [stdout(pipe(RospackOutput)), process(_PID)]),
