@@ -7,8 +7,12 @@
   <author>Vangelis Vassiliadis</author>
   <license>GPL</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ias.in.tum.de/kb/wiki/index.php/thea</url>
+  <url>http://ros.org/wiki/thea</url>
+  
   <depends>rosprolog</depends>
+  <export>
+    <rosdoc config="rosdoc.yaml" />
+  </export>
 </package>
 
 

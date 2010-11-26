@@ -1,8 +1,6 @@
 <package>
   <description brief="mod_semantic_map">
 
-     mod_semantic_map
-
      Node and tools to generate the OWL description of the semantic map
      from ROS messages
 
@@ -12,6 +10,9 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/mod_semantic_map</url>
   <depend package="rosjava" />
+  <export>
+    <rosdoc config="rosdoc.yaml" />
+  </export>
 </package>
 
 

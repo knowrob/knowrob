@@ -1,7 +1,8 @@
 <package>
   <description brief="mod_dialog">
 
-     mod_dialog
+    Simple dialog module to talk to KnowRob using natural language
+    queries and responses.
 
   </description>
   <author>Moritz Tenorth</author>
@@ -18,6 +19,9 @@
   <depend package="srldb"/>
   <depend package="json_prolog"/>
 
+  <export>
+    <rosdoc config="rosdoc.yaml" />
+  </export>
 </package>
 
 

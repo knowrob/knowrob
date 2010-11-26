@@ -1,7 +1,8 @@
 <package>
   <description brief="ias_semantic_map">
 
-     ias_semantic_map
+    Semantic maps of different kitchens of the IAS group at TUM, created from 3D laser scans,
+    represented as OWL file, plus additional predicates for manipulating the map and reasoning on it.
 
   </description>
   <author>Lars Kunze, Lorenz Moesenlechner, Moritz Tenorth</author>
@@ -9,6 +10,9 @@
   <review status="unreviewed" notes=""/>
   <url>http://www.ros.org/wiki/ias_semantic_map</url>
   <depend package="comp_spatial"/>
+  <export>
+    <rosdoc config="rosdoc.yaml" />
+  </export>
 </package>
 
 

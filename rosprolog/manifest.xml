@@ -1,6 +1,6 @@
 <package>
   <description brief="rosprolog">
-    Script to execute prolog and set the prolog library paths 
+    Script to execute prolog and set the prolog library paths
     to other ros prolog packages.
   </description>
   <author>Lorenz Moesenlechner</author>
@@ -14,6 +14,9 @@
   <rosdep name="swi_prolog_semweb"/>
   <rosdep name="swi_prolog_sgml"/>
   <rosdep name="swi_prolog_xpce"/>
+  <export>
+    <rosdoc config="rosdoc.yaml" />
+  </export>
 </package>
 
 

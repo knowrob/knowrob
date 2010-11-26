@@ -1,0 +1,7 @@
+ - builder: doxygen
+   name: C++ API
+   output_dir: c++
+   file_patterns: '*.cpp'
+ - builder: external
+   external_url: http://ias.cs.tum.edu/kb/doc/mod_srdl
+   external_label: Prolog API

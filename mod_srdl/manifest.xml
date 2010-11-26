@@ -1,16 +1,18 @@
 <package>
   <description brief="mod_srdl">
-    Implementation of semantic robot description language
+    Implementation of the Semantic Robot Description Language (SRDL) that
+    provides model and reasoning tools to match prerequisites of actions
+    to the capabilities of a robot.
   </description>
   <author>Tobias Roehm</author>
   <license>GPL</license>
+  <url>http://ros.org/wiki/mod_srdl</url>
   <review status="unreviewed" notes=""/>
-  <!-- <depend package="thea"/> -->
-  <!-- <depend package="rosprolog"/> -->
-  <!-- <depend package="semweb"/> -->
-  <!-- <depend package="ias_prolog_addons"/> -->
   <depend package="ias_knowledge_base"/>
   <depend package="urdf"/>
+  <export>
+    <rosdoc config="rosdoc.yaml" />
+  </export>
 </package>
 
 

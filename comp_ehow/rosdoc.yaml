@@ -3,5 +3,5 @@
    output_dir: java
    file_patterns: '*.java'
  - builder: external
-   external_url: http://ias.cs.tum.edu/kb/api/comp_cop
+   external_url: http://ias.cs.tum.edu/kb/api/comp_ehow
    external_label: Prolog API

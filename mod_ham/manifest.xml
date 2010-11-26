@@ -1,8 +1,6 @@
 <package>
   <description brief="mod_ham">
 
-     mod_ham
-
      Methods for building hierarchical action models, i.e. for segmenting
      data obtained by observing human subjects, and for recursively computing
      higher and higher levels of abstraction.
@@ -11,12 +9,15 @@
   <author>Moritz Tenorth</author>
   <license>GPL</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ias.in.tum.de/kb/wiki/index.php/mod_ham</url>
+  <url>http://ros.org/wiki/mod_ham</url>
 
   <depend package="comp_spatial"/>
   <depend package="comp_temporal"/>
   <depend package="comp_fipm"/>
   <depend package="mod_vis"/>
+  <export>
+    <rosdoc config="rosdoc.yaml" />
+  </export>
 </package>
 
 

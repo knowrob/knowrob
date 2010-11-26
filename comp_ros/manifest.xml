@@ -1,8 +1,6 @@
 <package>
   <description brief="comp_ros">
 
-     comp_ros
-
      Interface to ROS for reading data. Currently used for accessing the jlo
      service, but likely to be extended to other services.
 
@@ -10,13 +8,13 @@
   <author>Moritz Tenorth</author>
   <license>GPL</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ias.in.tum.de/kb/wiki/index.php/comp_ros</url>
+  <url>http://ros.org/wiki/comp_ros</url>
 
   <depend package="ias_knowledge_base"/>
   <depend package="kb_computable_client"/>
 
   <export>
-      <java classpath="${prefix}/lib/ros_client.jar"/>
+    <java classpath="${prefix}/lib/ros_client.jar"/>
   </export>
 
 </package>

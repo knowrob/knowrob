@@ -1,20 +1,18 @@
 <package>
   <description brief="comp_cop">
-
-     comp_cop
-
+  
      Interface between KnowRob and the CoP cognitive perception system
+     that allows to query for objects to perceive and listens on the
+     cop_answers topic for results, also for results of object perception
+     triggered by someone else.
 
-     allows to query for objects to perceive and listens on the cop_answers topic
-     for every object perception triggered by someone else
-
-     the results are asserted in the knowledge base and made available for reasoning
+     The results are asserted in the knowledge base and made available for reasoning.
 
   </description>
   <author>Moritz Tenorth</author>
   <license>GPL</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ias.in.tum.de/kb/wiki/index.php/Comp_cop</url>
+  <url>http://ros.org/wiki/comp_cop</url>
   <depend package="rosjava"/>
   <depend package="vision_srvs"/>
   <depend package="ias_knowledge_base"/>

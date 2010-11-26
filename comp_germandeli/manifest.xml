@@ -1,8 +1,6 @@
 <package>
   <description brief="comp_germandeli">
 
-     comp_germandeli
-
      Interface between KnowRob and the ODUfinder perception system
      for recognizing objects from the GermanDeli online shop. The
      package further provides information about these objects in
@@ -24,6 +22,7 @@
 
   <export>
     <java classpath="${prefix}/bin"/>
+    <rosdoc config="rosdoc.yaml" />
   </export>
 
 </package>

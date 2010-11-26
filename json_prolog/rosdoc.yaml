@@ -1,0 +1,4 @@
+ - builder: doxygen
+   name: Java API
+   output_dir: java
+   file_patterns: '*.java'
