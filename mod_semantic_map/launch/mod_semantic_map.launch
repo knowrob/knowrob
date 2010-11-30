@@ -1,3 +1,0 @@
-<launch>
-  <node name="mod_semantic_map" pkg="mod_semantic_map" type="SemanticMapToOWL" />
-</launch>

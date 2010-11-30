@@ -12,8 +12,10 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/trunk</url>
   <depend stack="ias_common" /> <!-- vision_srvs -->
+  <depend stack="knowrob" /> <!-- kb_computable_client -->
   <depend stack="robot_model" /> <!-- urdf -->
   <depend stack="ros" /> <!-- rospy, std_msgs -->
   <depend stack="ros-experimental-trunk" /> <!-- rosjava -->
+  <depend stack="tabletop_object_perception" /> <!-- tabletop_object_detector -->
 
 </stack>
