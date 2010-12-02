@@ -93,6 +93,7 @@ plan_subevents(Plan, SubEvents) :-
                     rdf_has(R, owl:someValuesFrom, SubEvent)), SubEvents).
 
 
+
 %% plan_objects(+Plan, -Objects) is semidet.
 %
 % Read all objects mentioned in sub-actions of the imported plan
@@ -103,10 +104,36 @@ plan_objects(Plan, Objects) :-
   plan_subevents(Plan, SubEvents),
   findall(Obj,
     (member(SubEvent, SubEvents),
-     owl_direct_subclass_of(SubEvent, Sup),
-     owl_direct_subclass_of(Sup, Sup2),
-     owl_restriction(Sup2,restriction('http://ias.cs.tum.edu/kb/knowrob.owl#objectActedOn',
-                                      some_values_from(Obj)))), Objects).
+     action_objectActedOn(SubEvent, Obj)), Objects).
+
+
+%% action_objectActedOn(?Action, ?Object) is nondet.
+%
+% Reads the objectActedOn for a TBOX action description
+%
+action_objectActedOn(Action, Object) :-
+        owl_direct_subclass_of(Action, Sup),
+        owl_direct_subclass_of(Sup, Sup2),
+        owl_restriction(Sup2,restriction(knowrob:'objectActedOn', some_values_from(Object))).
+
+%% action_toLocation(?Action, ?Loc) is nondet.
+%
+% Reads the toLocation for a TBOX action description
+%
+action_toLocation(Action, Loc) :-
+        owl_direct_subclass_of(Action, Sup),
+        owl_direct_subclass_of(Sup, Sup2),
+        owl_restriction(Sup2,restriction(knowrob:'toLocation', some_values_from(Loc))).
+
+%% action_fromLocation(?Action, ?Loc) is nondet.
+%
+% Reads the fromLocation for a TBOX action description
+%
+action_fromLocation(Action, Loc) :-
+        owl_direct_subclass_of(Action, Sup),
+        owl_direct_subclass_of(Sup, Sup2),
+        owl_restriction(Sup2,restriction(knowrob:'fromLocation', some_values_from(Loc))).
+
 
 
 %% matching_actions(?Plan, ?Act) is semidet.
