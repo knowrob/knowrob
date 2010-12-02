@@ -1,0 +1,19 @@
+<package>
+  <description brief="mary_tts">
+
+     3rdparty wrapper for DFKI's Mary Text-to-speech system. Node listens to the /mary/tts topic and reads all published texts.
+
+     Mary is based on human speech recordings, i.e. the models are larger than for formant-based systems like espeak, but the output is often more natural.
+
+  </description>
+  <author>Moritz Tenorth</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/mary_tts</url>
+
+  <depend package="rosjava"/>
+  <depend package="std_msgs"/>
+  <rosdep name="ant" />
+</package>
+
+
