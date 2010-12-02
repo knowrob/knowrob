@@ -17,7 +17,6 @@
   <depend package="rosjava"/>
   <depend package="ias_knowledge_base"/>
   <depend package="comp_cop"/>
-  <depend package="mod_semantic_map"/>
   <depend package="jpl"/>
 
   <export>

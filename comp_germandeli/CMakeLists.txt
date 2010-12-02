@@ -35,15 +35,12 @@ set(JAVA_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/bin)
 # Classpath
 add_jar_dir(lib)
 
-rosbuild_find_ros_package(mod_semantic_map)
-add_classpath(${mod_semantic_map_PACKAGE_PATH}/lib/owlapi-bin.jar)
-add_runtime_classpath(${mod_semantic_map_PACKAGE_PATH}/lib/owlapi-bin.jar)
-
 # external dependencies in other packages
 rosbuild_find_ros_package(rosjava)
 add_classpath(${rosjava_PACKAGE_PATH}/bin)
 
+
 # generate launch script
-rospack_add_java_executable(BarcodeWebLookup edu.tum.cs.ias.knowrob.BarcodeWebLookup)
+rospack_add_java_executable(GermanDeliOWLImport edu.tum.cs.ias.knowrob.comp_germandeli.GermanDeliOWLImport)
 
 add_java_source_dir(${PROJECT_SOURCE_DIR}/src)
