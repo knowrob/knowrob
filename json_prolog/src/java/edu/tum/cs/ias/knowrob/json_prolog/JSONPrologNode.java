@@ -258,7 +258,7 @@ public final class JSONPrologNode {
 	 * Run the json_prolog node, i.e. launch the Prolog environment, 
 	 * initialize the ROS connection and register the callbacks 
 	 */
-	public void execute() throws InterruptedException, RosException, IOException, RospackError {
+	public void execute(String args[]) throws InterruptedException, RosException, IOException, RospackError {
 
 		// initialize the Prolog environment
 		synchronized(jpl.Query.class) {
@@ -274,7 +274,7 @@ public final class JSONPrologNode {
 		// init ROS
 		final Ros ros = Ros.getInstance();
 		if(!Ros.getInstance().isInitialized()) {
-			ros.init("json_prolog");
+            ros.init("json_prolog", false, false, false, args);
 		}
 		NodeHandle n = ros.createNodeHandle("~");
 
@@ -357,9 +357,9 @@ public final class JSONPrologNode {
 		try {
 			
 			if(args.length>0)
-				new JSONPrologNode(args[0]).execute();
+				new JSONPrologNode(args[0]).execute(args);
 			else
-				new JSONPrologNode().execute();	
+				new JSONPrologNode().execute(args);	
 
 		} catch (Exception e) {
 			e.printStackTrace();
