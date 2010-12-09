@@ -81,11 +81,11 @@ public final class JSONPrologNode {
 			PrologQuery.Response response = new PrologQuery.Response();
 
 			if (hasIncrementalQuery ) {
-				response.ok = 0;
+				response.ok = false;
 				response.message = "Already processing an incremental query.";
 
 			} else if ( queries.get(request.id) != null ) {
-				response.ok = 0;
+				response.ok = false;
 				response.message = "Already processing a query with id " + request.id;
 
 			} else {
@@ -106,14 +106,14 @@ public final class JSONPrologNode {
 							queries.put(currentQueryId, new PrologAllSolutions(currentQuery));
 						}
 					}
-					response.ok = 1;
+					response.ok = true;
 
 				} catch (JSONQuery.InvalidJSONQuery e) {
-					response.ok = 0;
+					response.ok = false;
 					response.message = e.toString();
 
 				} catch (jpl.JPLException e) {
-					response.ok = 0;
+					response.ok = false;
 					response.message = e.getMessage();
 				}
 			}
@@ -141,11 +141,11 @@ public final class JSONPrologNode {
 				synchronized(jpl.Query.class) {
 
 					if (hasIncrementalQuery ) {
-						response.ok = 0;
+						response.ok = false;
 						response.message = "Already processing an incremental query.";
 
 					} else if (queries!=null && queries.get(request.id) != null ) {
-						response.ok = 0;
+						response.ok = false;
 						response.message = "Already processing a query with id " + request.id;
 
 					} else {
@@ -162,10 +162,10 @@ public final class JSONPrologNode {
 							} else {
 								queries.put(currentQueryId, new PrologAllSolutions(currentQuery));
 							}
-							response.ok = 1;
+							response.ok = true;
 
 						} catch (jpl.JPLException e) {
-							response.ok = 0;
+							response.ok = false;
 							response.message = e.getMessage();
 						}
 					}

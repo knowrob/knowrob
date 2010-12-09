@@ -83,7 +83,7 @@ public class PrologQueryProxy implements Iterable<PrologBindings> {
 			throw(new QueryError("Service call '" + prolog_.prolog_query.getService() + "' failed"));
 		}
 		
-		if(resp.ok == 0) {
+		if(resp.ok == false) {
 			throw(new QueryError("Prolog query failed: " + resp.message));
 		}
 
