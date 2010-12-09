@@ -70,7 +70,7 @@ public:
   bool isInt() const { return type_ == INT; }
   bool isString() const { return type_ == STRING; }
   bool isTerm() const { return type_ == TERM; }
-  bool islist() const { return type_ == LIST; }
+  bool isList() const { return type_ == LIST; }
   bool isValid() const { return type_ != EMPTY; }
 
   std::string toString() const;
