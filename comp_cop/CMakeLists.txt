@@ -58,6 +58,9 @@ add_classpath(${jpl_PACKAGE_PATH}/prolog/jpl.jar)
 rosbuild_find_ros_package(rosjava)
 add_classpath(${rosjava_PACKAGE_PATH}/bin)
 
+rosbuild_find_ros_package(rosjava_deps)
+add_classpath(${rosjava_deps_PACKAGE_PATH}/rosjava_msgs.jar)
+
 # generate launch script
 rospack_add_java_executable(BarcodeWebLookup edu.tum.cs.ias.knowrob.BarcodeWebLookup)
 
