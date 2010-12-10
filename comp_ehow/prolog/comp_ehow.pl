@@ -45,7 +45,11 @@
       comp_forCommand/2,
       matching_actions/2,
       plan_subevents/2,
-      plan_objects/2
+      plan_objects/2,
+      action_properties/3,
+      action_objectActedOn/2,
+      action_toLocation/2,
+      action_fromLocation/2
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -134,6 +138,15 @@ action_fromLocation(Action, Loc) :-
         owl_direct_subclass_of(Sup, Sup2),
         owl_restriction(Sup2,restriction(knowrob:'fromLocation', some_values_from(Loc))).
 
+
+%% action_properties(?Action, ?Prop, ?Val) is nondet.
+%
+% Reads all action properties for a TBOX action description
+%
+action_properties(Action, Prop, Val) :-
+        owl_direct_subclass_of(Action, Sup),
+        owl_direct_subclass_of(Sup, Sup2),
+        owl_restriction(Sup2,restriction(Prop, some_values_from(Val))).
 
 
 %% matching_actions(?Plan, ?Act) is semidet.

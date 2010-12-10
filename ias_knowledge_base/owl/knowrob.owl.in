@@ -231,6 +231,15 @@
 
 
 
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#deviceUsed -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;deviceUsed">
+        <rdfs:domain rdf:resource="&knowrob;ActionOnObject"/>
+        <rdfs:range rdf:resource="&knowrob;PhysicalDevice"/>
+    </owl:ObjectProperty>
+
+
+
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#directionalRelations -->
 
     <owl:ObjectProperty rdf:about="&knowrob;directionalRelations">
@@ -383,6 +392,16 @@
         <rdfs:comment rdf:datatype="&xsd;string">(inFrontOf-Generally FORE AFT) means that FORE is in front of the tangible object AFT. More precisely, the intrinsic back-to-front axis of AFT is within 45 degrees of some line intersecting both FORE and AFT. Note that FORE may be an intangible spatial object, such as an image projected onto a screen.</rdfs:comment>
         <rdfs:domain rdf:resource="&knowrob;SpatialThing-Localized"/>
         <rdfs:subPropertyOf rdf:resource="&knowrob;directionalRelations"/>
+    </owl:ObjectProperty>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#inReachOf -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;inReachOf">
+        <rdfs:range rdf:resource="&knowrob;SpatialThing-Localized"/>
+        <rdfs:domain rdf:resource="&knowrob;SpatialThing-Localized"/>
+        <rdfs:subPropertyOf rdf:resource="&knowrob;spatiallyRelated"/>
     </owl:ObjectProperty>
 
 
@@ -832,6 +851,14 @@ Note that locatedAtPoint-Spatial is irreflexive; in order to locate points in sp
 
 
 
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#subAction -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;subAction">
+        <rdfs:subPropertyOf rdf:resource="&knowrob;subEvents"/>
+    </owl:ObjectProperty>
+
+
+
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#subEvents -->
 
     <owl:ObjectProperty rdf:about="&knowrob;subEvents">
@@ -1010,6 +1037,15 @@ Note that locatedAtPoint-Spatial is irreflexive; in order to locate points in sp
         <rdfs:domain rdf:resource="&knowrob;Event"/>
         <rdfs:range rdf:resource="&knowrob;PhysicalDevice"/>
         <owl:inverseOf rdf:resource="&knowrob;typePrimaryFunction-deviceUsed"/>
+    </owl:ObjectProperty>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#withPolicy -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;withPolicy">
+        <rdfs:range rdf:resource="&knowrob;PurposefulAction"/>
+        <rdfs:domain rdf:resource="&knowrob;PurposefulAction"/>
     </owl:ObjectProperty>
 
 
@@ -1868,14 +1904,14 @@ See also xAxisPredicateOfSystem and yAxisPredicateOfSystem.</rdfs:comment>
     <owl:Class rdf:about="&actionmodel;Action">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&actionmodel;doneBy"/>
-                <owl:allValuesFrom rdf:resource="&knowrob;Agent-Generic"/>
+                <owl:onProperty rdf:resource="&knowrob;ofType"/>
+                <owl:allValuesFrom rdf:resource="&knowrob;ActionOnObject"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;ofType"/>
-                <owl:allValuesFrom rdf:resource="&knowrob;ActionOnObject"/>
+                <owl:onProperty rdf:resource="&actionmodel;doneBy"/>
+                <owl:allValuesFrom rdf:resource="&knowrob;Agent-Generic"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -2049,6 +2085,14 @@ See also xAxisPredicateOfSystem and yAxisPredicateOfSystem.</rdfs:comment>
 
 
 
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#ArmCollisionState -->
+
+    <owl:Class rdf:about="&knowrob;ArmCollisionState">
+        <rdfs:subClassOf rdf:resource="&knowrob;CollisionState"/>
+    </owl:Class>
+
+
+
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#ArmTrajectory -->
 
     <owl:Class rdf:about="&knowrob;ArmTrajectory">
@@ -2061,6 +2105,54 @@ See also xAxisPredicateOfSystem and yAxisPredicateOfSystem.</rdfs:comment>
 
     <owl:Class rdf:about="&knowrob;Artifact">
         <rdfs:subClassOf rdf:resource="&knowrob;InanimateObject-NonNatural"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#AtPoseState -->
+
+    <owl:Class rdf:about="&knowrob;AtPoseState">
+        <rdfs:subClassOf rdf:resource="&knowrob;TaskState"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#AttachmentState -->
+
+    <owl:Class rdf:about="&knowrob;AttachmentState">
+        <rdfs:subClassOf rdf:resource="&knowrob;TaskState"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#AvoidingArmCollisions -->
+
+    <owl:Class rdf:about="&knowrob;AvoidingArmCollisions">
+        <rdfs:subClassOf rdf:resource="&knowrob;AvoidingCollisions"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#AvoidingBaseCollisions -->
+
+    <owl:Class rdf:about="&knowrob;AvoidingBaseCollisions">
+        <rdfs:subClassOf rdf:resource="&knowrob;AvoidingCollisions"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#AvoidingCollisions -->
+
+    <owl:Class rdf:about="&knowrob;AvoidingCollisions">
+        <rdfs:subClassOf rdf:resource="&knowrob;AvoidingSomething"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#AvoidingSomething -->
+
+    <owl:Class rdf:about="&knowrob;AvoidingSomething">
+        <rdfs:subClassOf rdf:resource="&knowrob;PurposefulAction"/>
     </owl:Class>
 
 
@@ -2119,6 +2211,46 @@ See also xAxisPredicateOfSystem and yAxisPredicateOfSystem.</rdfs:comment>
 
     <owl:Class rdf:about="&knowrob;BakingSoda">
         <rdfs:subClassOf rdf:resource="&knowrob;FoodIngredientOnly"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#BaseAtPoseState -->
+
+    <owl:Class rdf:about="&knowrob;BaseAtPoseState">
+        <rdfs:subClassOf rdf:resource="&knowrob;AtPoseState"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#BaseCollisionState -->
+
+    <owl:Class rdf:about="&knowrob;BaseCollisionState">
+        <rdfs:subClassOf rdf:resource="&knowrob;CollisionState"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#BathRoom -->
+
+    <owl:Class rdf:about="&knowrob;BathRoom">
+        <rdfs:subClassOf rdf:resource="&knowrob;RoomInAConstruction"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Bed-PieceOfFurniture -->
+
+    <owl:Class rdf:about="&knowrob;Bed-PieceOfFurniture">
+        <rdfs:subClassOf rdf:resource="&knowrob;Person-SupportingFurniture"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#BedRoom -->
+
+    <owl:Class rdf:about="&knowrob;BedRoom">
+        <rdfs:subClassOf rdf:resource="&knowrob;RoomInAConstruction"/>
     </owl:Class>
 
 
@@ -2326,6 +2458,14 @@ See also xAxisPredicateOfSystem and yAxisPredicateOfSystem.</rdfs:comment>
     <owl:Class rdf:about="&knowrob;Buttermilk">
         <rdfs:subClassOf rdf:resource="&knowrob;DairyProduct"/>
         <rdfs:subClassOf rdf:resource="&knowrob;Drink"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture -->
+
+    <owl:Class rdf:about="&knowrob;Cabinet-PieceOfFurniture">
+        <rdfs:subClassOf rdf:resource="&knowrob;Box-Container"/>
     </owl:Class>
 
 
@@ -2572,6 +2712,14 @@ Cf. PolarCoordinateSystem.</rdfs:comment>
 
 
 
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#ClosingAGripper -->
+
+    <owl:Class rdf:about="&knowrob;ClosingAGripper">
+        <rdfs:subClassOf rdf:resource="&knowrob;ClosingSomething"/>
+    </owl:Class>
+
+
+
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#ClosingSomething -->
 
     <owl:Class rdf:about="&knowrob;ClosingSomething">
@@ -2625,6 +2773,30 @@ Cf. PolarCoordinateSystem.</rdfs:comment>
 
     <owl:Class rdf:about="&knowrob;Collecting">
         <rdfs:subClassOf rdf:resource="&knowrob;ActionOnObject"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Colliding -->
+
+    <owl:Class rdf:about="&knowrob;Colliding">
+        <rdfs:subClassOf rdf:resource="&knowrob;Translation-LocationChange"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#CollidingWithAnObstacle -->
+
+    <owl:Class rdf:about="&knowrob;CollidingWithAnObstacle">
+        <rdfs:subClassOf rdf:resource="&knowrob;Colliding"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#CollisionState -->
+
+    <owl:Class rdf:about="&knowrob;CollisionState">
+        <rdfs:subClassOf rdf:resource="&knowrob;TaskState"/>
     </owl:Class>
 
 
@@ -2946,12 +3118,6 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
         <rdfs:subClassOf rdf:resource="&knowrob;Box-Container"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;lispClass"/>
-                <owl:hasValue rdf:datatype="&xsd;string">cupboard</owl:hasValue>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-StoragePlaceFor"/>
                 <owl:someValuesFrom rdf:resource="&knowrob;FoodVessel"/>
             </owl:Restriction>
@@ -2967,6 +3133,12 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
                         </owl:unionOf>
                     </owl:Class>
                 </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;lispClass"/>
+                <owl:hasValue rdf:datatype="&xsd;string">cupboard</owl:hasValue>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -3022,10 +3194,42 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
 
 
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#DeviceClosedState -->
+
+    <owl:Class rdf:about="&knowrob;DeviceClosedState">
+        <rdfs:subClassOf rdf:resource="&knowrob;DeviceState"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#DeviceOpenState -->
+
+    <owl:Class rdf:about="&knowrob;DeviceOpenState">
+        <rdfs:subClassOf rdf:resource="&knowrob;DeviceState"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#DeviceState -->
+
+    <owl:Class rdf:about="&knowrob;DeviceState">
+        <rdfs:subClassOf rdf:resource="&knowrob;TaskState"/>
+    </owl:Class>
+
+
+
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Digit-AnatomicalPart -->
 
     <owl:Class rdf:about="&knowrob;Digit-AnatomicalPart">
         <rdfs:subClassOf rdf:resource="&knowrob;Appendage-AnimalBodyPart"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#DiningRoom -->
+
+    <owl:Class rdf:about="&knowrob;DiningRoom">
+        <rdfs:subClassOf rdf:resource="&knowrob;RoomInAConstruction"/>
     </owl:Class>
 
 
@@ -3085,8 +3289,8 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
         <rdfs:subClassOf rdf:resource="&knowrob;ElectricalHouseholdAppliance"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;properPhysicalPartTypes"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;DoorwayCovering"/>
+                <owl:onProperty rdf:resource="&knowrob;lispClass"/>
+                <owl:hasValue rdf:datatype="&xsd;string">dish-washer</owl:hasValue>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -3104,8 +3308,8 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;lispClass"/>
-                <owl:hasValue rdf:datatype="&xsd;string">dish-washer</owl:hasValue>
+                <owl:onProperty rdf:resource="&knowrob;properPhysicalPartTypes"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;DoorwayCovering"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="&xsd;string">The collection of devices designed to wash dishes.</rdfs:comment>
@@ -3444,6 +3648,15 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
 
 
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#FixedObstacle -->
+
+    <owl:Class rdf:about="&knowrob;FixedObstacle">
+        <rdfs:subClassOf rdf:resource="&knowrob;Obstacle"/>
+        <rdfs:subClassOf rdf:resource="&knowrob;Place"/>
+    </owl:Class>
+
+
+
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#FloorPlan -->
 
     <owl:Class rdf:about="&knowrob;FloorPlan">
@@ -3630,6 +3843,14 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
 
 
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#GeographicalArea-Intangible -->
+
+    <owl:Class rdf:about="&knowrob;GeographicalArea-Intangible">
+        <rdfs:subClassOf rdf:resource="&knowrob;Surface-Empirical"/>
+    </owl:Class>
+
+
+
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#GraspingSomething -->
 
     <owl:Class rdf:about="&knowrob;GraspingSomething">
@@ -3656,6 +3877,14 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
     <owl:Class rdf:about="&knowrob;GreenSalad">
         <rdfs:subClassOf rdf:resource="&knowrob;Salad"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#GripperAtPoseState -->
+
+    <owl:Class rdf:about="&knowrob;GripperAtPoseState">
+        <rdfs:subClassOf rdf:resource="&knowrob;AtPoseState"/>
     </owl:Class>
 
 
@@ -3799,6 +4028,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
     <owl:Class rdf:about="&knowrob;HolderGripper">
         <rdfs:subClassOf rdf:resource="&knowrob;EnduringThing-Localized"/>
+        <rdfs:subClassOf rdf:resource="&knowrob;PhysicalDevice"/>
     </owl:Class>
 
 
@@ -3824,6 +4054,14 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
     <owl:Class rdf:about="&knowrob;HoldingWithOneHand">
         <rdfs:subClassOf rdf:resource="&knowrob;HoldingWithHand"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#HospitalRoom -->
+
+    <owl:Class rdf:about="&knowrob;HospitalRoom">
+        <rdfs:subClassOf rdf:resource="&knowrob;RoomInAConstruction"/>
     </owl:Class>
 
 
@@ -3977,6 +4215,14 @@ Note that some events, such as an ice cube melting into a small puddle of water,
 
     <owl:Class rdf:about="&knowrob;Juice">
         <rdfs:subClassOf rdf:resource="&knowrob;Drink"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen -->
+
+    <owl:Class rdf:about="&knowrob;Kitchen">
+        <rdfs:subClassOf rdf:resource="&knowrob;RoomInAConstruction"/>
     </owl:Class>
 
 
@@ -4355,13 +4601,13 @@ For predicates that relate things to measurable quantities that characterize the
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;subEvents"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;AddingSth"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;Stirring"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;subEvents"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;Stirring"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;AddingSth"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment>two or more substances are combined to form a Mixture</rdfs:comment>
@@ -4490,6 +4736,22 @@ For predicates that relate things to measurable quantities that characterize the
 
 
 
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#ObjectGraspedState -->
+
+    <owl:Class rdf:about="&knowrob;ObjectGraspedState">
+        <rdfs:subClassOf rdf:resource="&knowrob;AttachmentState"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#ObjectPerceivedState -->
+
+    <owl:Class rdf:about="&knowrob;ObjectPerceivedState">
+        <rdfs:subClassOf rdf:resource="&knowrob;PerceptionState"/>
+    </owl:Class>
+
+
+
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#ObjectRecognitionAlgorithm -->
 
     <owl:Class rdf:about="&knowrob;ObjectRecognitionAlgorithm">
@@ -4507,6 +4769,14 @@ For predicates that relate things to measurable quantities that characterize the
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#ObjectType -->
 
     <owl:Class rdf:about="&knowrob;ObjectType"/>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Obstacle -->
+
+    <owl:Class rdf:about="&knowrob;Obstacle">
+        <rdfs:subClassOf rdf:resource="&knowrob;EnduringThing-Localized"/>
+    </owl:Class>
 
 
 
@@ -4533,13 +4803,13 @@ For predicates that relate things to measurable quantities that characterize the
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;subEvents"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;OpeningADoor"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;Reaching"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;subEvents"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;Reaching"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;OpeningADoor"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -4578,6 +4848,14 @@ For predicates that relate things to measurable quantities that characterize the
 
     <owl:Class rdf:about="&knowrob;OpeningADrawer">
         <rdfs:subClassOf rdf:resource="&knowrob;OpeningAContainerArtifact"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#OpeningAGripper -->
+
+    <owl:Class rdf:about="&knowrob;OpeningAGripper">
+        <rdfs:subClassOf rdf:resource="&knowrob;OpeningSomething"/>
     </owl:Class>
 
 
@@ -4645,6 +4923,19 @@ For predicates that relate things to measurable quantities that characterize the
         <rdfs:subClassOf rdf:resource="&knowrob;HouseholdAppliance"/>
         <rdfs:subClassOf>
             <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-deviceUsed"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="&knowrob;CookingFood"/>
+                            <rdf:Description rdf:about="&knowrob;HeatingFood"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;properPhysicalPartTypes"/>
                 <owl:someValuesFrom>
                     <owl:Class>
@@ -4660,19 +4951,6 @@ For predicates that relate things to measurable quantities that characterize the
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;lispClass"/>
                 <owl:hasValue rdf:datatype="&xsd;string">oven</owl:hasValue>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-deviceUsed"/>
-                <owl:someValuesFrom>
-                    <owl:Class>
-                        <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="&knowrob;CookingFood"/>
-                            <rdf:Description rdf:about="&knowrob;HeatingFood"/>
-                        </owl:unionOf>
-                    </owl:Class>
-                </owl:someValuesFrom>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -4786,6 +5064,14 @@ For predicates that relate things to measurable quantities that characterize the
 
 
 
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PerceptionState -->
+
+    <owl:Class rdf:about="&knowrob;PerceptionState">
+        <rdfs:subClassOf rdf:resource="&knowrob;TaskState"/>
+    </owl:Class>
+
+
+
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PerceptualAgent -->
 
     <owl:Class rdf:about="&knowrob;PerceptualAgent">
@@ -4852,13 +5138,13 @@ For predicates that relate things to measurable quantities that characterize the
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;subEvents"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;Reaching"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;TakingSomething"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;subEvents"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;TakingSomething"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;Reaching"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -4933,6 +5219,17 @@ For predicates that relate things to measurable quantities that characterize the
 
     <owl:Class rdf:about="&knowrob;Point">
         <rdfs:subClassOf rdf:resource="&knowrob;SpatialThing-Localized"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Point-Empirical -->
+
+    <owl:Class rdf:about="&knowrob;Point-Empirical">
+        <rdfs:subClassOf rdf:resource="&knowrob;SpaceRegion-Empirical"/>
+        <rdfs:comment>A specialization of both Point and SpaceRegion-Empirical (qq.v.). Each instance of Point-Empirical is a zero-dimensional object that belongs to, and thus has a fixed location in, the embedding space of the empirical universe (see #$TheSpatialUniverse-Empirical).
+
+Examples include the location of the center of mass of the Milky Way galaxy at the beginning of the 20th Century. Note that empirical space points are embedded in time; if time is not a significant parameter (i.e. if in an atemporal or temporally agnostic context) consider using Point instead. </rdfs:comment>
     </owl:Class>
 
 
@@ -5149,20 +5446,14 @@ For predicates that relate things to measurable quantities that characterize the
         <rdfs:subClassOf rdf:resource="&knowrob;TransportationEvent"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;orderingConstraints"/>
-                <owl:hasValue rdf:resource="&knowrob;SubEventOrderingPuttingSomethingSomewhere2"/>
+                <owl:onProperty rdf:resource="&knowrob;subEvents"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;PuttingDownAnObject"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;subEvents"/>
                 <owl:someValuesFrom rdf:resource="&knowrob;CarryingWhileLocomoting"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;subEvents"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;PuttingDownAnObject"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -5175,6 +5466,12 @@ For predicates that relate things to measurable quantities that characterize the
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;subEvents"/>
                 <owl:someValuesFrom rdf:resource="&knowrob;PickingUpAnObject"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;orderingConstraints"/>
+                <owl:hasValue rdf:resource="&knowrob;SubEventOrderingPuttingSomethingSomewhere2"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -5447,6 +5744,14 @@ For predicates that relate things to measurable quantities that characterize the
 
 
 
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#RoomInAConstruction -->
+
+    <owl:Class rdf:about="&knowrob;RoomInAConstruction">
+        <rdfs:subClassOf rdf:resource="&knowrob;ConstructionArtifact"/>
+    </owl:Class>
+
+
+
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix -->
 
     <owl:Class rdf:about="&knowrob;RotationMatrix">
@@ -5481,13 +5786,13 @@ For predicates that relate things to measurable quantities that characterize the
         <rdfs:subClassOf rdf:resource="&knowrob;RotationMatrix"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;matrixNumRows"/>
+                <owl:onProperty rdf:resource="&knowrob;matrixNumColumns"/>
                 <owl:hasValue rdf:datatype="&xsd;integer">4</owl:hasValue>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;matrixNumColumns"/>
+                <owl:onProperty rdf:resource="&knowrob;matrixNumRows"/>
                 <owl:hasValue rdf:datatype="&xsd;integer">4</owl:hasValue>
             </owl:Restriction>
         </rdfs:subClassOf>
@@ -5547,6 +5852,14 @@ For predicates that relate things to measurable quantities that characterize the
 
     <owl:Class rdf:about="&knowrob;Scissors">
         <rdfs:subClassOf rdf:resource="&knowrob;FoodUtensil"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#SelfLocalizedState -->
+
+    <owl:Class rdf:about="&knowrob;SelfLocalizedState">
+        <rdfs:subClassOf rdf:resource="&knowrob;PerceptionState"/>
     </owl:Class>
 
 
@@ -5625,8 +5938,8 @@ For predicates that relate things to measurable quantities that characterize the
         <rdfs:subClassOf rdf:resource="&knowrob;FurniturePiece"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;lispClass"/>
-                <owl:hasValue rdf:datatype="&xsd;string">sink</owl:hasValue>
+                <owl:onProperty rdf:resource="&knowrob;typeIntendedBehaviorCapable-DeviceUsed"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;WashingDishes"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -5637,8 +5950,8 @@ For predicates that relate things to measurable quantities that characterize the
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;typeIntendedBehaviorCapable-DeviceUsed"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;WashingDishes"/>
+                <owl:onProperty rdf:resource="&knowrob;lispClass"/>
+                <owl:hasValue rdf:datatype="&xsd;string">sink</owl:hasValue>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="&xsd;string">The container found in knowrobs, bathrooms, utility rooms etc which holds water, dishes, etc.. The Sink is the whole of which the basin, faucets, etc, are a part.</rdfs:comment>
@@ -5716,6 +6029,24 @@ For predicates that relate things to measurable quantities that characterize the
         <rdfs:subClassOf rdf:resource="&knowrob;Spoon-SilverwarePiece"/>
         <owl:disjointWith rdf:resource="&knowrob;Teaspoon"/>
         <rdfs:comment rdf:datatype="&xsd;string">A spoon with a larger-than-normal basin, used for eating soup.</rdfs:comment>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#SpaceChunk-Empirical -->
+
+    <owl:Class rdf:about="&knowrob;SpaceChunk-Empirical">
+        <rdfs:subClassOf rdf:resource="&knowrob;SpaceRegion-Empirical"/>
+        <rdfs:comment>A specialization of SpaceRegion-Empirical and SpaceChunk (qq.v.). Each instance of SpaceChunk-Empirical is a three-dimensional portion of the intangible space of the empirical universe (see #$TheSpatialUniverse-Empirical). This is the kind of space that physical objects occupy. </rdfs:comment>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#SpaceRegion-Empirical -->
+
+    <owl:Class rdf:about="&knowrob;SpaceRegion-Empirical">
+        <rdfs:subClassOf rdf:resource="&knowrob;Place"/>
+        <rdfs:comment>A specialization of SpaceRegion, SpatialThing-Localized, and IntangibleExistingThing (qq.v.). Instances of SpaceRegion-Empirical are intangible regions of space located in the empirically observable universe. A space region might or might not be connected (see SpatiallyContinuousThing). It might be partially or completely filled with (occupied by) PartiallyTangibles, or it might be completely empty (but cf. FreeSpaceRegion). In any case, the space region itself is not to be confused with a physical object or other spatially localized (non-space-region) thing that might happen to be cospatial with it. A given space region can be characterized fully merely by specifying its location and dimensions. Thus (although this is not the case with spatial things in general), space regions are identical (equals) if and only if they are cospatial. SpaceRegion-Empirical is in a way the spatial analogue of TimeInterval, whose own instances can be fully characterized by specifying their temporal properties; these two collections can be used, respectively, to talk about space and time as &quot;dimensions&quot;. Specializations of SpaceRegion-Empirical include Point-Empirical, LineSegment-Empirical, Surface-Empirical, and SpaceChunk-Empirical.</rdfs:comment>
     </owl:Class>
 
 
@@ -5878,14 +6209,14 @@ Note that a fictional or imaginary object (such as Frodo, Captain Queeg, or HAL9
         <rdfs:subClassOf rdf:resource="&knowrob;FurniturePiece"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-deviceUsed"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;CookingFood"/>
+                <owl:onProperty rdf:resource="&knowrob;properPhysicalPartTypes"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;Burner"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;properPhysicalPartTypes"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;Burner"/>
+                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-deviceUsed"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;CookingFood"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="&xsd;string">The part of a CookingRange (cf) that has the burners and is used for frying &amp; boiling in pots &amp; pans. Often called &#39;Stove&#39; in english..</rdfs:comment>
@@ -5936,6 +6267,17 @@ Note that a fictional or imaginary object (such as Frodo, Captain Queeg, or HAL9
 
     <owl:Class rdf:about="&knowrob;Supper">
         <rdfs:subClassOf rdf:resource="&knowrob;Meal"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Surface-Empirical -->
+
+    <owl:Class rdf:about="&knowrob;Surface-Empirical">
+        <rdfs:subClassOf rdf:resource="&knowrob;SpaceRegion-Empirical"/>
+        <rdfs:comment>A specialization of Surface and SpaceRegion-Empirical (qq.v.). Each instance of Surface-Empirical is a two-dimensional, continuous portion of #$TheSpatialUniverse-Empirical (q.v.).
+
+Note that a physical object, being three-dimensional, can only be partially located at a Surface-Empirical. An empirical space surface might intersect the space occupied by a physical object, but is never cospatial with it. (Cf. SpaceChunk-Empirical.) The only objects properly localizable at instances of Surface-Empirical are intangible objects of two or less dimensions. For example, the intangible surface that delimits (a) the space occupied by a table and (b) the space above the top surface of the table is an empirical space-surface. </rdfs:comment>
     </owl:Class>
 
 
@@ -6098,6 +6440,14 @@ Cf. Surface, whose instances are two-dimensional, intangible regions of space.</
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="&xsd;string">The tap or faucet apparatus found on sinks, bathtubs, etc.</rdfs:comment>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#TaskState -->
+
+    <owl:Class rdf:about="&knowrob;TaskState">
+        <rdfs:subClassOf rdf:resource="&knowrob;Configuration"/>
     </owl:Class>
 
 
@@ -6270,6 +6620,14 @@ Cf. Surface, whose instances are two-dimensional, intangible regions of space.</
 
     <owl:Class rdf:about="&knowrob;Trajectory">
         <rdfs:subClassOf rdf:resource="&knowrob;SpatialThing-Localized"/>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Translation-LocationChange -->
+
+    <owl:Class rdf:about="&knowrob;Translation-LocationChange">
+        <rdfs:subClassOf rdf:resource="&knowrob;Movement-TranslationEvent"/>
     </owl:Class>
 
 
@@ -6739,9 +7097,206 @@ Cf. Surface, whose instances are two-dimensional, intangible regions of space.</
     <rdf:Description>
         <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&knowrob;Bowl-Eating"/>
+            <rdf:Description rdf:about="&knowrob;DinnerPlate"/>
+            <rdf:Description rdf:about="&knowrob;Saucer"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&knowrob;Bowl-Mixing"/>
+            <rdf:Description rdf:about="&knowrob;CookingVessel"/>
+            <rdf:Description rdf:about="&knowrob;DrinkingVessel"/>
+            <rdf:Description rdf:about="&knowrob;EatingVessel"/>
+            <rdf:Description rdf:about="&knowrob;MeasuringCup"/>
+            <rdf:Description rdf:about="&knowrob;ServingVessel"/>
+            <rdf:Description rdf:about="&knowrob;Thermos"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&knowrob;IndexFinger"/>
+            <rdf:Description rdf:about="&knowrob;LittleFinger"/>
+            <rdf:Description rdf:about="&knowrob;MiddleFinger"/>
+            <rdf:Description rdf:about="&knowrob;RingFinger"/>
+            <rdf:Description rdf:about="&knowrob;Thumb"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&knowrob;CounterTop"/>
+            <rdf:Description rdf:about="&knowrob;Person-SupportingFurniture"/>
+            <rdf:Description rdf:about="&knowrob;Table-PieceOfFurniture"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&knowrob;FrameOfReference"/>
+            <rdf:Description rdf:about="&knowrob;Matrix"/>
+            <rdf:Description rdf:about="&knowrob;RelationalStructure"/>
+            <rdf:Description rdf:about="&knowrob;Tuple"/>
+            <rdf:Description rdf:about="&knowrob;Vector"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&knowrob;CarvingKnife"/>
+            <rdf:Description rdf:about="&knowrob;Fork-SilverwarePiece"/>
+            <rdf:Description rdf:about="&knowrob;Scissors"/>
+            <rdf:Description rdf:about="&knowrob;Spatula"/>
+            <rdf:Description rdf:about="&knowrob;Spoon-SilverwarePiece"/>
+            <rdf:Description rdf:about="&knowrob;TableKnife"/>
+            <rdf:Description rdf:about="&knowrob;Tongs"/>
+            <rdf:Description rdf:about="&knowrob;WireWhisk"/>
+            <rdf:Description rdf:about="&knowrob;WoodenSpoon"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&knowrob;ConstructionArtifact"/>
+            <rdf:Description rdf:about="&knowrob;FoodOrDrinkOrIngredient"/>
+            <rdf:Description rdf:about="&knowrob;FoodVessel"/>
+            <rdf:Description rdf:about="&knowrob;HandTool"/>
+            <rdf:Description rdf:about="&knowrob;RefrigeratedStorageDevice"/>
+            <rdf:Description rdf:about="&knowrob;TableCovering"/>
+            <rdf:Description rdf:about="&knowrob;Tray"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
             <rdf:Description rdf:about="&knowrob;AirCoolingDevice"/>
             <rdf:Description rdf:about="&knowrob;Refrigerator"/>
             <rdf:Description rdf:about="&knowrob;Refrigerator-Freezer"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&knowrob;BottleOpener"/>
+            <rdf:Description rdf:about="&knowrob;CakePan"/>
+            <rdf:Description rdf:about="&knowrob;CanOpener"/>
+            <rdf:Description rdf:about="&knowrob;CoffeeMaker"/>
+            <rdf:Description rdf:about="&knowrob;Colander"/>
+            <rdf:Description rdf:about="&knowrob;ElectricMixer"/>
+            <rdf:Description rdf:about="&knowrob;MicrowaveOven"/>
+            <rdf:Description rdf:about="&knowrob;Spatula"/>
+            <rdf:Description rdf:about="&knowrob;StoveTopCookingPot"/>
+            <rdf:Description rdf:about="&knowrob;Tongs"/>
+            <rdf:Description rdf:about="&knowrob;WireWhisk"/>
+            <rdf:Description rdf:about="&knowrob;WoodenSpoon"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&knowrob;BodyWash"/>
+            <rdf:Description rdf:about="&knowrob;DishwashingSoap"/>
+            <rdf:Description rdf:about="&knowrob;LaundryDetergent"/>
+            <rdf:Description rdf:about="&knowrob;Shampoo"/>
+            <rdf:Description rdf:about="&knowrob;Soap-Personal"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&knowrob;AnimalBodyPart"/>
+            <rdf:Description rdf:about="&knowrob;CleaningDevice"/>
+            <rdf:Description rdf:about="&knowrob;ConstructionArtifact"/>
+            <rdf:Description rdf:about="&knowrob;ControlDevice"/>
+            <rdf:Description rdf:about="&knowrob;FoodOrDrinkOrIngredient"/>
+            <rdf:Description rdf:about="&knowrob;FoodVessel"/>
+            <rdf:Description rdf:about="&knowrob;FurniturePiece"/>
+            <rdf:Description rdf:about="&knowrob;HandTool"/>
+            <rdf:Description rdf:about="&knowrob;NonPoweredDevice"/>
+            <rdf:Description rdf:about="&knowrob;TableCovering"/>
+            <rdf:Description rdf:about="&knowrob;TextileArtifact"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&knowrob;Bowl-Serving"/>
+            <rdf:Description rdf:about="&knowrob;Pitcher"/>
+            <rdf:Description rdf:about="&knowrob;Platter"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&knowrob;Arm"/>
+            <rdf:Description rdf:about="&knowrob;Digit-AnatomicalPart"/>
+            <rdf:Description rdf:about="&knowrob;FaceOfAnimal"/>
+            <rdf:Description rdf:about="&knowrob;Hand"/>
+            <rdf:Description rdf:about="&knowrob;Leg"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&knowrob;CleaningSubstance"/>
+            <rdf:Description rdf:about="&knowrob;DomesticCleaningTool"/>
+            <rdf:Description rdf:about="&knowrob;Napkin"/>
+            <rdf:Description rdf:about="&knowrob;PaperTowel"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&knowrob;Dishwasher"/>
+            <rdf:Description rdf:about="&knowrob;MicrowaveOven"/>
+            <rdf:Description rdf:about="&knowrob;Refrigerator"/>
+            <rdf:Description rdf:about="&knowrob;Refrigerator-Freezer"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&knowrob;CleaningARoom"/>
+            <rdf:Description rdf:about="&knowrob;DryingDishes"/>
+            <rdf:Description rdf:about="&knowrob;DryingLaundry"/>
+            <rdf:Description rdf:about="&knowrob;MoppingAFloor"/>
+            <rdf:Description rdf:about="&knowrob;SweepingAnArea"/>
+            <rdf:Description rdf:about="&knowrob;TakingOutTheGarbage"/>
+            <rdf:Description rdf:about="&knowrob;Vacuuming"/>
+            <rdf:Description rdf:about="&knowrob;WashingClothesInAMachine"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&knowrob;Cup"/>
+            <rdf:Description rdf:about="&knowrob;DrinkingBottle"/>
+            <rdf:Description rdf:about="&knowrob;DrinkingCan"/>
+            <rdf:Description rdf:about="&knowrob;DrinkingGlass"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&knowrob;BlackColor"/>
+            <rdf:Description rdf:about="&knowrob;BlueColor"/>
+            <rdf:Description rdf:about="&knowrob;GreenColor"/>
+            <rdf:Description rdf:about="&knowrob;OrangeColor"/>
+            <rdf:Description rdf:about="&knowrob;RedColor"/>
+            <rdf:Description rdf:about="&knowrob;WhiteColor"/>
+            <rdf:Description rdf:about="&knowrob;YellowColor"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&knowrob;AngularDistance"/>
+            <rdf:Description rdf:about="&knowrob;Area"/>
+            <rdf:Description rdf:about="&knowrob;Distance"/>
+            <rdf:Description rdf:about="&knowrob;Orientation"/>
+            <rdf:Description rdf:about="&knowrob;Volume"/>
         </owl:members>
     </rdf:Description>
     <rdf:Description>
@@ -6790,206 +7345,9 @@ Cf. Surface, whose instances are two-dimensional, intangible regions of space.</
             <rdf:Description rdf:about="&knowrob;VacuumCleaner"/>
         </owl:members>
     </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="&knowrob;ConstructionArtifact"/>
-            <rdf:Description rdf:about="&knowrob;FoodOrDrinkOrIngredient"/>
-            <rdf:Description rdf:about="&knowrob;FoodVessel"/>
-            <rdf:Description rdf:about="&knowrob;HandTool"/>
-            <rdf:Description rdf:about="&knowrob;RefrigeratedStorageDevice"/>
-            <rdf:Description rdf:about="&knowrob;TableCovering"/>
-            <rdf:Description rdf:about="&knowrob;Tray"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="&knowrob;CarvingKnife"/>
-            <rdf:Description rdf:about="&knowrob;Fork-SilverwarePiece"/>
-            <rdf:Description rdf:about="&knowrob;Scissors"/>
-            <rdf:Description rdf:about="&knowrob;Spatula"/>
-            <rdf:Description rdf:about="&knowrob;Spoon-SilverwarePiece"/>
-            <rdf:Description rdf:about="&knowrob;TableKnife"/>
-            <rdf:Description rdf:about="&knowrob;Tongs"/>
-            <rdf:Description rdf:about="&knowrob;WireWhisk"/>
-            <rdf:Description rdf:about="&knowrob;WoodenSpoon"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="&knowrob;Dishwasher"/>
-            <rdf:Description rdf:about="&knowrob;MicrowaveOven"/>
-            <rdf:Description rdf:about="&knowrob;Refrigerator"/>
-            <rdf:Description rdf:about="&knowrob;Refrigerator-Freezer"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="&knowrob;BodyWash"/>
-            <rdf:Description rdf:about="&knowrob;DishwashingSoap"/>
-            <rdf:Description rdf:about="&knowrob;LaundryDetergent"/>
-            <rdf:Description rdf:about="&knowrob;Shampoo"/>
-            <rdf:Description rdf:about="&knowrob;Soap-Personal"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="&knowrob;Cup"/>
-            <rdf:Description rdf:about="&knowrob;DrinkingBottle"/>
-            <rdf:Description rdf:about="&knowrob;DrinkingCan"/>
-            <rdf:Description rdf:about="&knowrob;DrinkingGlass"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="&knowrob;FrameOfReference"/>
-            <rdf:Description rdf:about="&knowrob;Matrix"/>
-            <rdf:Description rdf:about="&knowrob;RelationalStructure"/>
-            <rdf:Description rdf:about="&knowrob;Tuple"/>
-            <rdf:Description rdf:about="&knowrob;Vector"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="&knowrob;AnimalBodyPart"/>
-            <rdf:Description rdf:about="&knowrob;CleaningDevice"/>
-            <rdf:Description rdf:about="&knowrob;ConstructionArtifact"/>
-            <rdf:Description rdf:about="&knowrob;ControlDevice"/>
-            <rdf:Description rdf:about="&knowrob;FoodOrDrinkOrIngredient"/>
-            <rdf:Description rdf:about="&knowrob;FoodVessel"/>
-            <rdf:Description rdf:about="&knowrob;FurniturePiece"/>
-            <rdf:Description rdf:about="&knowrob;HandTool"/>
-            <rdf:Description rdf:about="&knowrob;NonPoweredDevice"/>
-            <rdf:Description rdf:about="&knowrob;TableCovering"/>
-            <rdf:Description rdf:about="&knowrob;TextileArtifact"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="&knowrob;CounterTop"/>
-            <rdf:Description rdf:about="&knowrob;Person-SupportingFurniture"/>
-            <rdf:Description rdf:about="&knowrob;Table-PieceOfFurniture"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="&knowrob;Arm"/>
-            <rdf:Description rdf:about="&knowrob;Digit-AnatomicalPart"/>
-            <rdf:Description rdf:about="&knowrob;FaceOfAnimal"/>
-            <rdf:Description rdf:about="&knowrob;Hand"/>
-            <rdf:Description rdf:about="&knowrob;Leg"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="&knowrob;CleaningARoom"/>
-            <rdf:Description rdf:about="&knowrob;DryingDishes"/>
-            <rdf:Description rdf:about="&knowrob;DryingLaundry"/>
-            <rdf:Description rdf:about="&knowrob;MoppingAFloor"/>
-            <rdf:Description rdf:about="&knowrob;SweepingAnArea"/>
-            <rdf:Description rdf:about="&knowrob;TakingOutTheGarbage"/>
-            <rdf:Description rdf:about="&knowrob;Vacuuming"/>
-            <rdf:Description rdf:about="&knowrob;WashingClothesInAMachine"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="&knowrob;IndexFinger"/>
-            <rdf:Description rdf:about="&knowrob;LittleFinger"/>
-            <rdf:Description rdf:about="&knowrob;MiddleFinger"/>
-            <rdf:Description rdf:about="&knowrob;RingFinger"/>
-            <rdf:Description rdf:about="&knowrob;Thumb"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="&knowrob;AngularDistance"/>
-            <rdf:Description rdf:about="&knowrob;Area"/>
-            <rdf:Description rdf:about="&knowrob;Distance"/>
-            <rdf:Description rdf:about="&knowrob;Orientation"/>
-            <rdf:Description rdf:about="&knowrob;Volume"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="&knowrob;Bowl-Serving"/>
-            <rdf:Description rdf:about="&knowrob;Pitcher"/>
-            <rdf:Description rdf:about="&knowrob;Platter"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="&knowrob;BottleOpener"/>
-            <rdf:Description rdf:about="&knowrob;CakePan"/>
-            <rdf:Description rdf:about="&knowrob;CanOpener"/>
-            <rdf:Description rdf:about="&knowrob;CoffeeMaker"/>
-            <rdf:Description rdf:about="&knowrob;Colander"/>
-            <rdf:Description rdf:about="&knowrob;ElectricMixer"/>
-            <rdf:Description rdf:about="&knowrob;MicrowaveOven"/>
-            <rdf:Description rdf:about="&knowrob;Spatula"/>
-            <rdf:Description rdf:about="&knowrob;StoveTopCookingPot"/>
-            <rdf:Description rdf:about="&knowrob;Tongs"/>
-            <rdf:Description rdf:about="&knowrob;WireWhisk"/>
-            <rdf:Description rdf:about="&knowrob;WoodenSpoon"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="&knowrob;Bowl-Eating"/>
-            <rdf:Description rdf:about="&knowrob;DinnerPlate"/>
-            <rdf:Description rdf:about="&knowrob;Saucer"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="&knowrob;CleaningSubstance"/>
-            <rdf:Description rdf:about="&knowrob;DomesticCleaningTool"/>
-            <rdf:Description rdf:about="&knowrob;Napkin"/>
-            <rdf:Description rdf:about="&knowrob;PaperTowel"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="&knowrob;Bowl-Mixing"/>
-            <rdf:Description rdf:about="&knowrob;CookingVessel"/>
-            <rdf:Description rdf:about="&knowrob;DrinkingVessel"/>
-            <rdf:Description rdf:about="&knowrob;EatingVessel"/>
-            <rdf:Description rdf:about="&knowrob;MeasuringCup"/>
-            <rdf:Description rdf:about="&knowrob;ServingVessel"/>
-            <rdf:Description rdf:about="&knowrob;Thermos"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="&knowrob;BlackColor"/>
-            <rdf:Description rdf:about="&knowrob;BlueColor"/>
-            <rdf:Description rdf:about="&knowrob;GreenColor"/>
-            <rdf:Description rdf:about="&knowrob;OrangeColor"/>
-            <rdf:Description rdf:about="&knowrob;RedColor"/>
-            <rdf:Description rdf:about="&knowrob;WhiteColor"/>
-            <rdf:Description rdf:about="&knowrob;YellowColor"/>
-        </owl:members>
-    </rdf:Description>
 </rdf:RDF>
 
 
 
-<!-- Generated by the OWL API (version 3.0.0.1469) http://owlapi.sourceforge.net -->
+<!-- Generated by the OWL API (version 3.1.0.20069) http://owlapi.sourceforge.net -->
 

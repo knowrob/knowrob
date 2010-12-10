@@ -1,4 +1,0 @@
-#!/bin/bash
-
-cd /work/knowrob/trunk/3rdparty/opencyc/opencyc-2.0/scripts
-/work/knowrob/trunk/3rdparty/opencyc/opencyc-2.0/scripts/run-cyc.sh
