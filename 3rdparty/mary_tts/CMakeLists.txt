@@ -31,5 +31,5 @@ add_jar_dir(mary/java)
 add_java_source_dir(${PROJECT_SOURCE_DIR}/src)
 
 rospack_add_java_executable(MaryROSClient edu.tum.cs.ias.mary_tts.MaryROSClient)
-rospack_add_java_executable(MaryServer )
+
 # rospack_add_java_executable(SpeechRecognitionNode edu.tum.cs.ias.knowrob.mod_dialog.SpeechRecognitionNode)

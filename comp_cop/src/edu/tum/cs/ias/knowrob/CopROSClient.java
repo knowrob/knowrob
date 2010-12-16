@@ -19,7 +19,6 @@ package edu.tum.cs.ias.knowrob;
 
 import ros.*;
 import ros.pkg.vision_msgs.msg.aposteriori_position;
-import ros.pkg.vision_msgs.msg.apriori_position;
 import ros.pkg.vision_msgs.msg.cop_answer;
 import ros.pkg.vision_msgs.msg.cop_descriptor;
 import ros.pkg.vision_srvs.srv.cop_call;
@@ -262,10 +261,11 @@ public class CopROSClient {
 	    		cop_req.action_type=25601;
 	    		cop_req.number_of_objects=1;
 	    		
-	    		cop_req.list_of_poses=new apriori_position[1];
-	    		cop_req.list_of_poses[0] = new apriori_position();
-	    		cop_req.list_of_poses[0].positionId=1;
-	    		cop_req.list_of_poses[0].probability=1.0;
+// not required any more with new rosjava: auto-initialized
+//	    		cop_req.list_of_poses=new apriori_position[1];
+//	    		cop_req.list_of_poses[0] = new apriori_position();
+//	    		cop_req.list_of_poses[0].positionId=1;
+//	    		cop_req.list_of_poses[0].probability=1.0;
 	    		
 	    		cop_req.object_ids = new long[1];
 	    		cop_req.object_ids[0] = 1;
@@ -482,10 +482,11 @@ public class CopROSClient {
 		cop_req.action_type=25600;
 		cop_req.number_of_objects=1;
 		
-		cop_req.list_of_poses=new apriori_position[1];
-		cop_req.list_of_poses[0] = new apriori_position();
-		cop_req.list_of_poses[0].positionId=1;
-		cop_req.list_of_poses[0].probability=1.0;
+// not required any more with new rosjava: auto-initialized
+//		cop_req.list_of_poses=new apriori_position[1];
+//		cop_req.list_of_poses[0] = new apriori_position();
+//		cop_req.list_of_poses[0].positionId=1;
+//		cop_req.list_of_poses[0].probability=1.0;
 		
 		cop_req.object_ids = new long[1];
 		cop_req.object_ids[0] = id;
@@ -498,9 +499,9 @@ public class CopROSClient {
 			for(aposteriori_position pose : r.found_poses) {
 				
 				// use first entry as model class
-				if(pose.models.length > 0) {
-					modelType=pose.models[0].type;
-					objClass=pose.models[0].sem_class;
+				if(pose.models.size() > 0) {
+					modelType=pose.models.get(0).type;
+					objClass=pose.models.get(0).sem_class;
 				}
 			}
 			res = new String[2];

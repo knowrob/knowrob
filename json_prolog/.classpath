@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="examples"/>
+	<classpathentry kind="src" path="msg_gen/java"/>
+	<classpathentry kind="src" path="srv_gen/java"/>
 	<classpathentry kind="src" path="src/java"/>
-	<classpathentry kind="src" path="srv/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/work/ros/tumros-internal/utils/rosjava_deps/rosjava_msgs.jar"/>
 	<classpathentry kind="lib" path="/work/ros/tumros-internal/stacks/knowrob/comp_cop/bin"/>
 	<classpathentry kind="lib" path="/work/ros/tumros-internal/stacks/knowrob/3rdparty/jpl/jpl/jpl.jar"/>
-	<classpathentry kind="lib" path="/work/ros/overlay/stacks-unstable/ros-experimental-trunk/rosjava/bin"/>
 	<classpathentry kind="lib" path="/usr/share/java/commons-collections3.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/json-lib.jar"/>
+	<classpathentry kind="lib" path="/work/overlay/stacks/client_rosjava/rosjava/bin"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

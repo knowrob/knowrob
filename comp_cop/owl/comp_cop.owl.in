@@ -77,7 +77,7 @@
 
     <!-- http://www.roboearth.org/kb/vision_descriptors.owl#CamerDriverRelay -->
 
-    <owl:Class rdf:about="#CamerDriverRelay">
+    <owl:Class rdf:about="#CameraDriverRelay">
         <rdfs:subClassOf rdf:resource="#CameraDriver"/>
     </owl:Class>
     

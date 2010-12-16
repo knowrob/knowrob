@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="src" path="srv_gen/java"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="srv/java"/>
+	<classpathentry kind="src" path="msg_gen/java"/>
 	<classpathentry kind="lib" path="lib/antlr-2.7.5.jar"/>
 	<classpathentry kind="lib" path="lib/arq-extra.jar"/>
 	<classpathentry kind="lib" path="lib/arq.jar"/>
@@ -48,7 +49,6 @@
 	<classpathentry kind="lib" path="lib/xmlparserv2.jar"/>
 	<classpathentry kind="lib" path="lib/xschema.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/work/ros/overlay/stacks-unstable/ros-experimental-trunk/rosjava/bin"/>
 	<classpathentry kind="lib" path="/work/ros/tumros-internal/stacks/knowrob/3rdparty/opencyc/opencyc-2.0/api/java/build/OpenCyc.jar"/>
 	<classpathentry kind="lib" path="/re_comm/lib/httpcomponents-client/apache-mime4j-0.6.jar"/>
 	<classpathentry kind="lib" path="/re_comm/lib/httpcomponents-client/commons-codec-1.3.jar"/>
@@ -59,5 +59,6 @@
 	<classpathentry kind="lib" path="/mod_vis/lib/controlP5.jar"/>
 	<classpathentry kind="lib" path="/mod_vis/lib/core.jar"/>
 	<classpathentry kind="lib" path="/mod_vis/lib/vecmath.jar"/>
+	<classpathentry kind="lib" path="/work/overlay/stacks/client_rosjava/rosjava/bin"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
