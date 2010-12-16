@@ -229,11 +229,11 @@ public class MaryROSClient {
         public SetMaryVoice.Response call(SetMaryVoice.Request req) {
 
             SetMaryVoice.Response res = new SetMaryVoice.Response();
-            res.result=0;
+            res.result=false;
             
             if (req.voice_name != null && req.voice_name.length() > 0) {
                 voice = req.voice_name;
-                res.result=1;
+                res.result=true;
             }
 
             return res;

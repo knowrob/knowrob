@@ -32,7 +32,7 @@
 
 # Set the Mary base installation directory in an environment variable:
 BINDIR="`dirname "$0"`"
-export MARY_BASE="`(cd "$BINDIR"/.. ; pwd)`"
+export MARY_BASE="`(cd "$BINDIR"/../mary ; pwd)`"
 
 # CYGWIN support:
 cygwin=0;

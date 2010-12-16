@@ -1,6 +1,7 @@
 include $(shell rospack find mk)/cmake.mk
 
 MAIN_DIR=$(shell pwd)
+MARY_DIR=$(shell pwd)/mary
 LIB_DIR=$(MAIN_DIR)/lib/
 BIN_DIR=$(MAIN_DIR)/bin/
 BUILD_DIR=$(MAIN_DIR)/build/
@@ -8,7 +9,7 @@ BUILD_DIR=$(MAIN_DIR)/build/
 all: inst
 
 checkedout:
-	svn co https://mary.opendfki.de/repos/tags/4.1.1 $(MAIN_DIR)
+	svn co https://mary.opendfki.de/repos/tags/4.1.1 $(MARY_DIR)
 # 	wget http://mary.dfki.de/download/4.1.0/mary-en-GB-4.1.0.zip
 	wget http://mary.dfki.de/download/4.1.0/mary-dfki-obadiah-4.1.0.zip
 # 	wget http://mary.dfki.de/download/4.1.0/mary-dfki-obadiah-hsmm-4.1.0.zip
@@ -21,7 +22,7 @@ checkedout:
 	touch checkedout
  
 inst: wiped checkedout
-	ant
+	ant -f $(MARY_DIR)/build.xml
 #	unzip mary-en-GB-4.1.0.zip
 	unzip mary-dfki-obadiah-4.1.0.zip
 # 	unzip mary-dfki-obadiah-hsmm-4.1.0.zip
@@ -38,7 +39,7 @@ wiped: Makefile
 	touch wiped
  
 wipe:
-	rm -rf $(BIN_DIR) $(BUILD_DIR) $(LIB_DIR)
+	rm -rf $(BIN_DIR) $(LIB_DIR) $(MARY_DIR)
 	rm -rf java download examples installed lib log netbeans tmp conf dist doc gpl-3.0.txt lgpl-3.0.txt MARY_software_user_agreement.txt README.usingEclipse.txt Changelog.txt .project .classpath build.xml
 	rm -f checkedout wiped inst *.zip
 

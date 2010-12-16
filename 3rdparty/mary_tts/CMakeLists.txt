@@ -23,11 +23,13 @@ set(JAVA_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/bin)
 # configure_file(${PROJECT_SOURCE_DIR}/src/edu/tum/cs/ias/knowrob/mod_dialog/jsgf.config.xml ${PROJECT_SOURCE_DIR}/bin/edu/tum/cs/ias/knowrob/mod_dialog/jsgf.config.xml COPYONLY)
 
 add_classpath(${PROJECT_SOURCE_DIR}/bin)
+add_runtime_classpath(${PROJECT_SOURCE_DIR}/mary/java)
 add_jar_dir(build)
 add_jar_dir(lib)
-add_jar_dir(java)
+add_jar_dir(mary/java)
 
 add_java_source_dir(${PROJECT_SOURCE_DIR}/src)
 
 rospack_add_java_executable(MaryROSClient edu.tum.cs.ias.mary_tts.MaryROSClient)
+rospack_add_java_executable(MaryServer )
 # rospack_add_java_executable(SpeechRecognitionNode edu.tum.cs.ias.knowrob.mod_dialog.SpeechRecognitionNode)
