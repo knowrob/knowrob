@@ -13,7 +13,7 @@ checkedout:
 	wget http://ias.cs.tum.edu/kb/comp_ehow_libs.tar.gz
 	wget http://ias.cs.tum.edu/kb/englishPCFG.ser.gz
 	tar xzf wordnet.tar.gz
-	mv wordnet etc/wordnet
+	mv wordnet/*.rdf etc/wordnet/
 	tar xzf comp_ehow_libs.tar.gz lib/
 	mv englishPCFG.ser.gz etc/englishPCFG.ser.gz
 	rm wordnet.tar.gz
