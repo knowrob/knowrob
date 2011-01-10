@@ -6,7 +6,7 @@ all: installed
 BUILD_TOPDIR = $(shell pwd)
 
 GIT_DIR = jpl
-GIT_URL = git://www.swi-prolog.org/home/pl/git/jpl.git
+GIT_URL = git://www.swi-prolog.org/home/pl/git/packages/jpl.git
 GIT_REVISION = cf3bf6129851daa18858548f09bc2349a1219dff
 GIT_PATCH = configure.patch
 
