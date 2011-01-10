@@ -771,6 +771,7 @@ Note that locatedAtPoint-Spatial is irreflexive; in order to locate points in sp
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#properPhysicalPartTypes -->
 
     <owl:ObjectProperty rdf:about="&knowrob;properPhysicalPartTypes">
+        <rdf:type rdf:resource="&owl;TransitiveProperty" />
         <rdfs:comment rdf:datatype="&xsd;string">A RuleMacroPredicate and a specialization of physicalPartTypes. Where TYPE1 and TYPE2 are both specializations of PartiallyTangible, (properPhysicalPartTypes TYPE1 TYPE2) means that every instance of TYPE1 has an instance of TYPE2 as a proper physical part. For example, (properPhysicalPartTypes Sailboard Sail-Device).</rdfs:comment>
     </owl:ObjectProperty>
 
@@ -779,6 +780,7 @@ Note that locatedAtPoint-Spatial is irreflexive; in order to locate points in sp
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#properPhysicalParts -->
 
     <owl:ObjectProperty rdf:about="&knowrob;properPhysicalParts">
+        <rdf:type rdf:resource="&owl;TransitiveProperty" />
         <rdfs:range rdf:resource="&knowrob;EnduringThing-Localized"/>
         <rdfs:domain rdf:resource="&knowrob;EnduringThing-Localized"/>
     </owl:ObjectProperty>

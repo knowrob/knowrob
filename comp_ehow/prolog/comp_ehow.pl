@@ -45,6 +45,7 @@
       comp_forCommand/2,
       matching_actions/2,
       plan_subevents/2,
+      plan_subevents_recursive/2,
       plan_objects/2,
       action_properties/3,
       action_objectActedOn/2,
@@ -63,8 +64,13 @@
 :-  rdf_meta
       comp_forCommand(r, r),
       matching_actions(r, r),
-      plan_subevents(r, r),
-      plan_objects(r, r).
+      plan_subevents(r, -),
+      plan_subevents_recursive(r, -),
+      plan_objects(r, r),
+      action_properties(r, r, r),
+      action_objectActedOn(r,r),
+      action_toLocation(r,r),
+      action_fromLocation(r,r).
 
 
 %% comp_forCommand(-Plan, +Command) is nondet.
@@ -90,11 +96,37 @@ comp_forCommand(Plan, Command) :-
 %
 % @param Plan Plan identifier
 % @param SubEvents List of sub-events of the plan
+%
 plan_subevents(Plan, SubEvents) :-
   findall(SubEvent, ( owl_has(Plan, rdfs:subClassOf, D),
-                    owl_has(D, owl:intersectionOf, I),
-                    rdfs_member(R, I),
-                    rdf_has(R, owl:someValuesFrom, SubEvent)), SubEvents).
+                      owl_has(D, owl:intersectionOf, I),
+                      rdfs_member(R, I),
+                      rdf_has(R, owl:onProperty, knowrob:'subAction'),
+                      rdf_has(R, owl:someValuesFrom, SubEvent)), SubEvents).
+
+
+%% plan_subevents_recursive(+Plan, ?SubEvents) is semidet.
+%
+% Recursively read all sub-event classes of the imported plan, i.e. single actions that need to be taken
+%
+% @param Plan Plan identifier
+% @param SubEvents List of sub-events of the plan
+%
+plan_subevents_recursive(Plan, SubEvents) :-
+  plan_subevents_recursive_1(Plan, Sub),
+  flatten(Sub,SubEvents).
+
+% simple case: no subevents, return action itself
+plan_subevents_recursive_1(Plan, []) :-
+  plan_subevents(Plan, []).
+
+% if there are subevents, iterate
+plan_subevents_recursive_1(Plan, [Plan|SubSubEvents]) :-
+  plan_subevents(Plan, SubEvents),
+
+  findall(SubSubEvent, (member(SubEvent, SubEvents),
+                       plan_subevents_recursive_1(SubEvent, SubSubEvent)), SubSubEvents).
+
 
 
 
