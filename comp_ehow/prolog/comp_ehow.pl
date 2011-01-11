@@ -102,7 +102,8 @@ plan_subevents(Plan, SubEvents) :-
                       owl_has(D, owl:intersectionOf, I),
                       rdfs_member(R, I),
                       rdf_has(R, owl:onProperty, knowrob:'subAction'),
-                      rdf_has(R, owl:someValuesFrom, SubEvent)), SubEvents).
+                      rdf_has(R, owl:someValuesFrom, SubEvent)), Sub),
+  predsort(compare_actions_partial_order, Sub, SubEvents).
 
 
 %% plan_subevents_recursive(+Plan, ?SubEvents) is semidet.
@@ -192,3 +193,31 @@ matching_actions(Plan, Act) :-
   rdf_has(Act, rdf:type, knowrob:'PuttingSomethingSomewhere'),
   member(ActCl, SubEvents),
   owl_individual_of(Act, ActCl).
+
+
+%% compare_actions_partial_order(-Rel, +Act1, +Act2) is semidet.
+%
+% Compare predicate to be used in predsort for sorting a list of actions
+% based on partial-order constraints
+%
+% Checks if there is an ordering constraint that has these two actions as before/after
+% TODO: can we check if these constraints belong to the current task?
+%
+compare_actions_partial_order('<', Act1, Act2) :-
+  owl_has(Constraint, knowrob:occursBeforeInOrdering, Act1),
+  owl_has(Constraint, knowrob:occursAfterInOrdering, Act2),!.
+
+compare_actions_partial_order('>', Act1, Act2) :-
+  owl_has(Constraint, knowrob:occursBeforeInOrdering, Act2),
+  owl_has(Constraint, knowrob:occursAfterInOrdering, Act1),!.
+
+compare_actions_partial_order('<', _, _).
+% compare_actions_partial_order('=', Act1, Act2) :-
+%   not((
+%     (owl_has(Constraint, knowrob:occursBeforeInOrdering, Act1),
+%      owl_has(Constraint, knowrob:occursAfterInOrdering, Act2)) ;
+%     (owl_has(Constraint, knowrob:occursBeforeInOrdering, Act2),
+%      owl_has(Constraint, knowrob:occursAfterInOrdering, Act1))
+%     )).
+
+
