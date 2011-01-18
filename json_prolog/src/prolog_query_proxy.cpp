@@ -149,7 +149,11 @@ void PrologQueryProxy::finish()
 
 std::string PrologQueryProxy::makeQueryId()
 {
-  return "JSON_PROLOG_CPP_" + boost::lexical_cast<std::string>(ros::Time::now().toNSec());
+  static int counter = 0;
+  return "JSON_PROLOG_CPP_" + boost::lexical_cast<std::string>(ros::Time::now().toNSec()) +
+         boost::lexical_cast<std::string>(counter++);
+
+  
 }
 
 }
