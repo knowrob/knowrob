@@ -1,0 +1,2277 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY SRDL "http://ias.cs.tum.edu/kb/SRDL.owl#" >
+    <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY SRDL_component "http://ias.cs.tum.edu/kb/SRDL_component.owl#" >
+    <!ENTITY SRDL_capability "http://ias.cs.tum.edu/kb/SRDL_capability.owl#" >
+]>
+
+
+<rdf:RDF xmlns="http://www.roboearth.org/kb/amigo.owl#"
+     xml:base="http://www.roboearth.org/kb/amigo.owl"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:SRDL="http://ias.cs.tum.edu/kb/SRDL.owl#"
+     xmlns:SRDL_component="http://ias.cs.tum.edu/kb/SRDL_component.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:SRDL_capability="http://ias.cs.tum.edu/kb/SRDL_capability.owl#"
+     xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#">
+    <owl:Ontology rdf:about="http://www.roboearth.org/kb/amigo.owl">
+        <owl:imports rdf:resource="file://@SRDL_PACKAGE_PATH@/owl/SRDL.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL.owl#hasBaseLinkInKinematicChain -->
+
+    <owl:ObjectProperty rdf:about="&SRDL;hasBaseLinkInKinematicChain"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL.owl#hasCapability -->
+
+    <owl:ObjectProperty rdf:about="&SRDL;hasCapability"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasBaseLinkOfComposition -->
+
+    <owl:ObjectProperty rdf:about="&SRDL_component;hasBaseLinkOfComposition"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasEndLinkOfComposition -->
+
+    <owl:ObjectProperty rdf:about="&SRDL_component;hasEndLinkOfComposition"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasSucceedingJoint -->
+
+    <owl:ObjectProperty rdf:about="&SRDL_component;hasSucceedingJoint"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasSucceedingLink -->
+
+    <owl:ObjectProperty rdf:about="&SRDL_component;hasSucceedingLink"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasSuccessorInKinematicChain -->
+
+    <owl:ObjectProperty rdf:about="&SRDL_component;hasSuccessorInKinematicChain"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasUrdfName -->
+
+    <owl:DatatypeProperty rdf:about="&SRDL_component;hasUrdfName"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL.owl#SrdlRobot -->
+
+    <owl:Class rdf:about="&SRDL;SrdlRobot"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#grasp_execution -->
+
+    <owl:Class rdf:about="&SRDL_capability;grasp_execution"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#move_arm -->
+
+    <owl:Class rdf:about="&SRDL_capability;move_arm"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#move_base -->
+
+    <owl:Class rdf:about="&SRDL_capability;move_base"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#Camera -->
+
+    <owl:Class rdf:about="&SRDL_component;Camera"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#ComponentComposition -->
+
+    <owl:Class rdf:about="&SRDL_component;ComponentComposition"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#ContinuousUrdfJoint -->
+
+    <owl:Class rdf:about="&SRDL_component;ContinuousUrdfJoint"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#FixedUrdfJoint -->
+
+    <owl:Class rdf:about="&SRDL_component;FixedUrdfJoint"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#GripperComponent -->
+
+    <owl:Class rdf:about="&SRDL_component;GripperComponent"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#LaserScanner -->
+
+    <owl:Class rdf:about="&SRDL_component;LaserScanner"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#PowerGrippManipulationEntity -->
+
+    <owl:Class rdf:about="&SRDL_component;PowerGrippManipulationEntity"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#PrismaticUrdfJoint -->
+
+    <owl:Class rdf:about="&SRDL_component;PrismaticUrdfJoint"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#RevoluteUrdfJoint -->
+
+    <owl:Class rdf:about="&SRDL_component;RevoluteUrdfJoint"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#UrdfLink -->
+
+    <owl:Class rdf:about="&SRDL_component;UrdfLink"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#WheeledBase -->
+
+    <owl:Class rdf:about="&SRDL_component;WheeledBase"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Robot -->
+
+    <owl:Class rdf:about="&knowrob;Robot"/>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#Amigo -->
+
+    <owl:Class rdf:about="http://www.roboearth.org/kb/amigo.owl#Amigo">
+        <rdfs:subClassOf rdf:resource="&SRDL;SrdlRobot"/>
+        <rdfs:subClassOf rdf:resource="&knowrob;Robot"/>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&SRDL;hasCapability"/>
+                        <owl:someValuesFrom rdf:resource="&SRDL_capability;grasp_execution"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&SRDL;hasCapability"/>
+                        <owl:someValuesFrom rdf:resource="&SRDL_capability;move_arm"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&SRDL;hasCapability"/>
+                        <owl:someValuesFrom rdf:resource="&SRDL_capability;move_base"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#AmigoGripper -->
+
+    <owl:Class rdf:about="http://www.roboearth.org/kb/amigo.owl#AmigoGripper">
+        <rdfs:subClassOf rdf:resource="&SRDL_component;GripperComponent"/>
+        <rdfs:subClassOf rdf:resource="&SRDL_component;PowerGrippManipulationEntity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Thing -->
+
+    <owl:Class rdf:about="&owl;Thing"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#AmigoGripperLeft -->
+
+    <owl:NamedIndividual rdf:about="http://www.roboearth.org/kb/amigo.owl#AmigoGripperLeft">
+        <rdf:type rdf:resource="&SRDL_component;ComponentComposition"/>
+        <rdf:type rdf:resource="http://www.roboearth.org/kb/amigo.owl#AmigoGripper"/>
+        <SRDL_component:hasEndLinkOfComposition rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_finger1_left"/>
+        <SRDL_component:hasEndLinkOfComposition rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_finger2_left"/>
+        <SRDL_component:hasBaseLinkOfComposition rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wrist_yaw_joint_left"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#AmigoGripperRight -->
+
+    <owl:NamedIndividual rdf:about="http://www.roboearth.org/kb/amigo.owl#AmigoGripperRight">
+        <rdf:type rdf:resource="&SRDL_component;ComponentComposition"/>
+        <rdf:type rdf:resource="http://www.roboearth.org/kb/amigo.owl#AmigoGripper"/>
+        <SRDL_component:hasEndLinkOfComposition rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_finger1_right"/>
+        <SRDL_component:hasEndLinkOfComposition rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_finger2_right"/>
+        <SRDL_component:hasBaseLinkOfComposition rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wrist_yaw_joint_right"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#AmigoRobot1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.roboearth.org/kb/amigo.owl#AmigoRobot1">
+        <rdf:type rdf:resource="http://www.roboearth.org/kb/amigo.owl#Amigo"/>
+        <SRDL:hasBaseLinkInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_base"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_base"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_base -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_base">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&SRDL_component;WheeledBase"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>base</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_base_laser_joint"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_base_laser_joint"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_spindle_joint"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_spindle_joint"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wheel_inner_joint_left_front"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wheel_inner_joint_left_front"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wheel_inner_joint_left_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wheel_inner_joint_left_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wheel_inner_joint_right_front"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wheel_inner_joint_right_front"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wheel_inner_joint_right_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wheel_inner_joint_right_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_base_laser -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_base_laser">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>base_laser</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_base_laser_joint -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_base_laser_joint">
+        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>base_laser_joint</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_base_laser"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_base_laser"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_base_link -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_base_link">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>base_link</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_base_link_joint"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_base_link_joint"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_base_link_joint -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_base_link_joint">
+        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>base_link_joint</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_base"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_base"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_camera_center -->
+
+    <owl:NamedIndividual rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_camera_center">
+        <rdf:type rdf:resource="&SRDL_component;Camera"/>
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <SRDL_component:hasUrdfName>camera_center</SRDL_component:hasUrdfName>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_camera_center_joint -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_camera_center_joint">
+        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>camera_center_joint</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_camera_center"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_camera_center"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_camera_left -->
+
+    <owl:NamedIndividual rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_camera_left">
+        <rdf:type rdf:resource="&SRDL_component;Camera"/>
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <SRDL_component:hasUrdfName>camera_left</SRDL_component:hasUrdfName>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_camera_left_joint -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_camera_left_joint">
+        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>camera_left_joint</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_camera_left"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_camera_left"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_camera_right -->
+
+    <owl:NamedIndividual rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_camera_right">
+        <rdf:type rdf:resource="&SRDL_component;Camera"/>
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <SRDL_component:hasUrdfName>camera_right</SRDL_component:hasUrdfName>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_camera_right_joint -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_camera_right_joint">
+        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>camera_right_joint</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_camera_right"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_camera_right"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_camera_tf -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_camera_tf">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>camera_tf</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_camera_tf_joint -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_camera_tf_joint">
+        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>camera_tf_joint</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_camera_tf"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_camera_tf"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_elbow_block_left -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_elbow_block_left">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>elbow_block_left</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_elbow_roll_joint_left"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_elbow_roll_joint_left"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_elbow_block_right -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_elbow_block_right">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>elbow_block_right</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_elbow_roll_joint_right"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_elbow_roll_joint_right"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_elbow_pitch_joint_left -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_elbow_pitch_joint_left">
+        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>elbow_pitch_joint_left</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_elbow_block_left"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_elbow_block_left"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_elbow_pitch_joint_right -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_elbow_pitch_joint_right">
+        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>elbow_pitch_joint_right</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_elbow_block_right"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_elbow_block_right"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_elbow_roll_joint_left -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_elbow_roll_joint_left">
+        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>elbow_roll_joint_left</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_fore_arm_left"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_fore_arm_left"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_elbow_roll_joint_right -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_elbow_roll_joint_right">
+        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>elbow_roll_joint_right</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_fore_arm_right"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_fore_arm_right"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_finger1_joint_left -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_finger1_joint_left">
+        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>finger1_joint_left</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_finger1_left"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_finger1_left"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_finger1_joint_right -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_finger1_joint_right">
+        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>finger1_joint_right</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_finger1_right"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_finger1_right"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_finger1_left -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_finger1_left">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>finger1_left</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_finger1_right -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_finger1_right">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>finger1_right</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_finger2_joint_left -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_finger2_joint_left">
+        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>finger2_joint_left</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_finger2_left"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_finger2_left"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_finger2_joint_right -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_finger2_joint_right">
+        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>finger2_joint_right</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_finger2_right"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_finger2_right"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_finger2_left -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_finger2_left">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>finger2_left</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_finger2_right -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_finger2_right">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>finger2_right</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_fore_arm_left -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_fore_arm_left">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>fore_arm_left</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wrist_pitch_joint_left"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wrist_pitch_joint_left"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_fore_arm_right -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_fore_arm_right">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>fore_arm_right</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wrist_pitch_joint_right"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wrist_pitch_joint_right"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_grippoint_joint_left -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_grippoint_joint_left">
+        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>grippoint_joint_left</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_grippoint_left"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_grippoint_left"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_grippoint_joint_right -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_grippoint_joint_right">
+        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>grippoint_joint_right</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_grippoint_right"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_grippoint_right"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_grippoint_left -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_grippoint_left">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>grippoint_left</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_grippoint_right -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_grippoint_right">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>grippoint_right</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_hand_left -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_hand_left">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>hand_left</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_finger1_joint_left"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_finger1_joint_left"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_finger2_joint_left"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_finger2_joint_left"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_grippoint_joint_left"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_grippoint_joint_left"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_hand_right -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_hand_right">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>hand_right</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_finger1_joint_right"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_finger1_joint_right"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_finger2_joint_right"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_finger2_joint_right"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_grippoint_joint_right"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_grippoint_joint_right"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_head -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_head">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>head</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_camera_center_joint"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_camera_center_joint"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_camera_left_joint"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_camera_left_joint"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_camera_right_joint"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_camera_right_joint"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_camera_tf_joint"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_camera_tf_joint"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_head_joint -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_head_joint">
+        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>head_joint</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_head"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_head"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_neck -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_neck">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>neck</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_head_joint"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_head_joint"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_neck_joint -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_neck_joint">
+        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>neck_joint</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_neck"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_neck"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_joint_left_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_joint_left_front">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere10_joint_left_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_left_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_left_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_joint_left_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_joint_left_rear">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere10_joint_left_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_left_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_left_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_joint_right_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_joint_right_front">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere10_joint_right_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_right_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_right_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_joint_right_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_joint_right_rear">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere10_joint_right_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_right_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_right_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_left_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_left_front">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere10_left_front</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_left_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_left_rear">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere10_left_rear</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_right_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_right_front">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere10_right_front</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_right_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_right_rear">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere10_right_rear</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_joint_left_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_joint_left_front">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere11_joint_left_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_left_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_left_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_joint_left_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_joint_left_rear">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere11_joint_left_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_left_rear"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_left_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_joint_right_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_joint_right_front">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere11_joint_right_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_right_front"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_right_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_joint_right_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_joint_right_rear">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere11_joint_right_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_right_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_right_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_left_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_left_front">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere11_left_front</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_left_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_left_rear">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere11_left_rear</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_right_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_right_front">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere11_right_front</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_right_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_right_rear">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere11_right_rear</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_joint_left_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_joint_left_front">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere12_joint_left_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_left_front"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_left_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_joint_left_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_joint_left_rear">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere12_joint_left_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_left_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_left_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_joint_right_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_joint_right_front">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere12_joint_right_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_right_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_right_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_joint_right_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_joint_right_rear">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere12_joint_right_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_right_rear"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_right_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_left_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_left_front">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere12_left_front</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_left_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_left_rear">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere12_left_rear</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_right_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_right_front">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere12_right_front</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_right_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_right_rear">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere12_right_rear</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_joint_left_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_joint_left_front">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere1_joint_left_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_left_front"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_left_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_joint_left_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_joint_left_rear">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere1_joint_left_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_left_rear"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_left_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_joint_right_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_joint_right_front">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere1_joint_right_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_right_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_right_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_joint_right_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_joint_right_rear">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere1_joint_right_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_right_rear"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_right_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_left_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_left_front">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere1_left_front</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_left_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_left_rear">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere1_left_rear</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_right_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_right_front">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere1_right_front</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_right_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_right_rear">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere1_right_rear</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_joint_left_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_joint_left_front">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere2_joint_left_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_left_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_left_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_joint_left_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_joint_left_rear">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere2_joint_left_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_left_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_left_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_joint_right_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_joint_right_front">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere2_joint_right_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_right_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_right_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_joint_right_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_joint_right_rear">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere2_joint_right_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_right_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_right_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_left_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_left_front">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere2_left_front</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_left_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_left_rear">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere2_left_rear</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_right_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_right_front">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere2_right_front</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_right_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_right_rear">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere2_right_rear</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_joint_left_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_joint_left_front">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere3_joint_left_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_left_front"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_left_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_joint_left_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_joint_left_rear">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere3_joint_left_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_left_rear"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_left_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_joint_right_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_joint_right_front">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere3_joint_right_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_right_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_right_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_joint_right_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_joint_right_rear">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere3_joint_right_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_right_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_right_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_left_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_left_front">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere3_left_front</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_left_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_left_rear">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere3_left_rear</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_right_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_right_front">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere3_right_front</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_right_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_right_rear">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere3_right_rear</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_joint_left_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_joint_left_front">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere4_joint_left_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_left_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_left_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_joint_left_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_joint_left_rear">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere4_joint_left_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_left_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_left_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_joint_right_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_joint_right_front">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere4_joint_right_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_right_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_right_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_joint_right_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_joint_right_rear">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere4_joint_right_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_right_rear"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_right_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_left_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_left_front">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere4_left_front</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_left_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_left_rear">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere4_left_rear</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_right_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_right_front">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere4_right_front</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_right_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_right_rear">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere4_right_rear</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_joint_left_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_joint_left_front">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere5_joint_left_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_left_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_left_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_joint_left_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_joint_left_rear">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere5_joint_left_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_left_rear"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_left_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_joint_right_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_joint_right_front">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere5_joint_right_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_right_front"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_right_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_joint_right_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_joint_right_rear">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere5_joint_right_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_right_rear"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_right_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_left_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_left_front">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere5_left_front</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_left_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_left_rear">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere5_left_rear</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_right_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_right_front">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere5_right_front</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_right_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_right_rear">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere5_right_rear</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_joint_left_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_joint_left_front">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere6_joint_left_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_left_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_left_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_joint_left_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_joint_left_rear">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere6_joint_left_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_left_rear"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_left_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_joint_right_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_joint_right_front">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere6_joint_right_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_right_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_right_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_joint_right_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_joint_right_rear">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere6_joint_right_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_right_rear"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_right_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_left_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_left_front">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere6_left_front</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_left_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_left_rear">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere6_left_rear</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_right_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_right_front">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere6_right_front</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_right_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_right_rear">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere6_right_rear</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_joint_left_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_joint_left_front">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere7_joint_left_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_left_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_left_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_joint_left_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_joint_left_rear">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere7_joint_left_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_left_rear"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_left_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_joint_right_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_joint_right_front">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere7_joint_right_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_right_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_right_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_joint_right_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_joint_right_rear">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere7_joint_right_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_right_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_right_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_left_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_left_front">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere7_left_front</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_left_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_left_rear">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere7_left_rear</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_right_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_right_front">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere7_right_front</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_right_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_right_rear">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere7_right_rear</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_joint_left_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_joint_left_front">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere8_joint_left_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_left_front"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_left_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_joint_left_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_joint_left_rear">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere8_joint_left_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_left_rear"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_left_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_joint_right_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_joint_right_front">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere8_joint_right_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_right_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_right_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_joint_right_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_joint_right_rear">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere8_joint_right_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_right_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_right_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_left_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_left_front">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere8_left_front</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_left_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_left_rear">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere8_left_rear</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_right_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_right_front">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere8_right_front</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_right_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_right_rear">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere8_right_rear</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_joint_left_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_joint_left_front">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere9_joint_left_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_left_front"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_left_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_joint_left_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_joint_left_rear">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere9_joint_left_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_left_rear"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_left_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_joint_right_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_joint_right_front">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere9_joint_right_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_right_front"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_right_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_joint_right_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_joint_right_rear">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere9_joint_right_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_right_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_right_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_left_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_left_front">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere9_left_front</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_left_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_left_rear">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere9_left_rear</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_right_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_right_front">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere9_right_front</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_right_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_right_rear">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>omni_sphere9_right_rear</SRDL_component:hasUrdfName>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_block_left -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_block_left">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>shoulder_block_left</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_pitch_joint_left"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_pitch_joint_left"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_block_right -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_block_right">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>shoulder_block_right</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_pitch_joint_right"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_pitch_joint_right"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_pitch_joint_left -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_pitch_joint_left">
+        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>shoulder_pitch_joint_left</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_sphere_left"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_sphere_left"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_pitch_joint_right -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_pitch_joint_right">
+        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>shoulder_pitch_joint_right</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_sphere_right"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_sphere_right"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_roll_joint_left -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_roll_joint_left">
+        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>shoulder_roll_joint_left</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_upper_arm_left"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_upper_arm_left"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_roll_joint_right -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_roll_joint_right">
+        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>shoulder_roll_joint_right</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_upper_arm_right"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_upper_arm_right"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_sphere_left -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_sphere_left">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>shoulder_sphere_left</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_roll_joint_left"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_roll_joint_left"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_sphere_right -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_sphere_right">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>shoulder_sphere_right</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_roll_joint_right"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_roll_joint_right"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_yaw_joint_left -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_yaw_joint_left">
+        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>shoulder_yaw_joint_left</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_block_left"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_block_left"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_yaw_joint_right -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_yaw_joint_right">
+        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>shoulder_yaw_joint_right</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_block_right"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_block_right"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_spindle_joint -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_spindle_joint">
+        <rdf:type rdf:resource="&SRDL_component;PrismaticUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>spindle_joint</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_torso"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_torso"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_top_laser -->
+
+    <owl:NamedIndividual rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_top_laser">
+        <rdf:type rdf:resource="&SRDL_component;LaserScanner"/>
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <SRDL_component:hasUrdfName>top_laser</SRDL_component:hasUrdfName>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_top_laser_joint -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_top_laser_joint">
+        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>top_laser_joint</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_top_laser"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_top_laser"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_torso -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_torso">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>torso</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_neck_joint"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_neck_joint"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_yaw_joint_left"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_yaw_joint_left"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_yaw_joint_right"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_shoulder_yaw_joint_right"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_top_laser_joint"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_top_laser_joint"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_upper_arm_left -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_upper_arm_left">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>upper_arm_left</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_elbow_pitch_joint_left"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_elbow_pitch_joint_left"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_upper_arm_right -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_upper_arm_right">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>upper_arm_right</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_elbow_pitch_joint_right"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_elbow_pitch_joint_right"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_wheel_inner_joint_left_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_wheel_inner_joint_left_front">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>wheel_inner_joint_left_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wheel_left_front"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wheel_left_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_wheel_inner_joint_left_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_wheel_inner_joint_left_rear">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>wheel_inner_joint_left_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wheel_left_rear"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wheel_left_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_wheel_inner_joint_right_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_wheel_inner_joint_right_front">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>wheel_inner_joint_right_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wheel_right_front"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wheel_right_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_wheel_inner_joint_right_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_wheel_inner_joint_right_rear">
+        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>wheel_inner_joint_right_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wheel_right_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wheel_right_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_wheel_left_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_wheel_left_front">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>wheel_left_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_joint_left_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_joint_left_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_joint_left_front"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_joint_left_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_joint_left_front"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_joint_left_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_joint_left_front"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_joint_left_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_joint_left_front"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_joint_left_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_joint_left_front"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_joint_left_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_joint_left_front"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_joint_left_front"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_joint_left_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_joint_left_front"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_joint_left_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_joint_left_front"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_joint_left_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_joint_left_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_joint_left_front"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_joint_left_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_joint_left_front"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_joint_left_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_wheel_left_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_wheel_left_rear">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>wheel_left_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_joint_left_rear"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_joint_left_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_joint_left_rear"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_joint_left_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_joint_left_rear"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_joint_left_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_joint_left_rear"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_joint_left_rear"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_joint_left_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_joint_left_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_joint_left_rear"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_joint_left_rear"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_joint_left_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_joint_left_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_joint_left_rear"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_joint_left_rear"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_joint_left_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_joint_left_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_joint_left_rear"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_joint_left_rear"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_joint_left_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_joint_left_rear"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_joint_left_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_joint_left_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_wheel_right_front -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_wheel_right_front">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>wheel_right_front</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_joint_right_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_joint_right_front"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_joint_right_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_joint_right_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_joint_right_front"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_joint_right_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_joint_right_front"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_joint_right_front"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_joint_right_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_joint_right_front"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_joint_right_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_joint_right_front"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_joint_right_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_joint_right_front"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_joint_right_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_joint_right_front"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_joint_right_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_joint_right_front"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_joint_right_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_joint_right_front"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_joint_right_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_joint_right_front"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_joint_right_front"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_joint_right_front"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_wheel_right_rear -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_wheel_right_rear">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>wheel_right_rear</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_joint_right_rear"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere10_joint_right_rear"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_joint_right_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere11_joint_right_rear"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_joint_right_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere12_joint_right_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_joint_right_rear"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere1_joint_right_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_joint_right_rear"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere2_joint_right_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_joint_right_rear"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere3_joint_right_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_joint_right_rear"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere4_joint_right_rear"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_joint_right_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere5_joint_right_rear"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_joint_right_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere6_joint_right_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_joint_right_rear"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere7_joint_right_rear"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_joint_right_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere8_joint_right_rear"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_joint_right_rear"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_omni_sphere9_joint_right_rear"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_wrist1_block_left -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_wrist1_block_left">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>wrist1_block_left</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wrist_yaw_joint_left"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wrist_yaw_joint_left"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_wrist1_block_right -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_wrist1_block_right">
+        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>wrist1_block_right</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wrist_yaw_joint_right"/>
+        <SRDL_component:hasSucceedingJoint rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wrist_yaw_joint_right"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_wrist_pitch_joint_left -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_wrist_pitch_joint_left">
+        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>wrist_pitch_joint_left</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wrist1_block_left"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wrist1_block_left"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_wrist_pitch_joint_right -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_wrist_pitch_joint_right">
+        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>wrist_pitch_joint_right</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wrist1_block_right"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_wrist1_block_right"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_wrist_yaw_joint_left -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_wrist_yaw_joint_left">
+        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>wrist_yaw_joint_left</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_hand_left"/>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_hand_left"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://www.roboearth.org/kb/amigo.owl#amigo_wrist_yaw_joint_right -->
+
+    <owl:Thing rdf:about="http://www.roboearth.org/kb/amigo.owl#amigo_wrist_yaw_joint_right">
+        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
+        <rdf:type rdf:resource="&owl;NamedIndividual"/>
+        <SRDL_component:hasUrdfName>wrist_yaw_joint_right</SRDL_component:hasUrdfName>
+        <SRDL_component:hasSucceedingLink rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_hand_right"/>
+        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="http://www.roboearth.org/kb/amigo.owl#amigo_hand_right"/>
+    </owl:Thing>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.1.0.20069) http://owlapi.sourceforge.net -->
+
