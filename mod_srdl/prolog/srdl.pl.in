@@ -465,7 +465,7 @@ checkActionFeasibility(Action, RobotInst) :-
     % CASE 2: subclass SubAction of Action exist and is feasible 
     (
         owl_subclass_of(ActionSubclass, Action),
-        ActionSubclass \== Action,  % make sure not to go into infty loop
+        ActionSubclass \== Action,  % TODO: make sure not to go into infty loop in case of owl:equivalentClass
         checkActionFeasibility(ActionSubclass, RobotInst) 
     ) ),
     !.  % Commit to first result 
