@@ -14,8 +14,11 @@
   <rosdep name="swi_prolog_semweb"/>
   <rosdep name="swi_prolog_sgml"/>
   <rosdep name="swi_prolog_xpce"/>
+
+  <depend package="rosbuild"/>
   <export>
     <rosdoc config="rosdoc.yaml" />
+    <rosbuild cmake_directory="${prefix}/cmake"/>
   </export>
 </package>
 
