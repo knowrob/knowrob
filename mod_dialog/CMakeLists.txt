@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.4.6)
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 
 rosbuild_init()
+rosbuild_include(rosprolog utils)
+
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
@@ -14,6 +16,7 @@ rosbuild_find_ros_package(srldb)
 
 
 set( MOD_DIALOG_PATH ${PROJECT_SOURCE_DIR} )
+fix_ros_destination_path(MOD_DIALOG_PATH)
 
 file(GLOB inputs src/edu/tum/cs/ias/knowrob/mod_dialog/*.in)
 

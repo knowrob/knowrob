@@ -9,6 +9,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ias.in.tum.de/kb/wiki/index.php/opencyc</url>
 
+  <depend package="rosprolog"/> <!-- For our deb build path replacement util -->
   <export>
     <java classpath="${prefix}/opencyc-2.0/api/java/build/OpenCyc.jar"/>
   </export>

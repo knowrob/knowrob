@@ -4,11 +4,13 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 
 rosbuild_init()
 
+rosbuild_include(rosprolog utils)
 
 #######################################
 # reset paths in OWL files
 rosbuild_find_ros_package(ias_knowledge_base)
 set( OWL_PATH_PREFIX ${ias_knowledge_base_PACKAGE_PATH} )
+fix_ros_destination_path(OWL_PATH_PREFIX)
 
 file(GLOB inputs owl/*.in)
 foreach( _in ${inputs} )
@@ -18,6 +20,7 @@ endforeach( _in )
 
 rosbuild_find_ros_package(comp_cop)
 set( LOCAL_PACKAGE_PATH ${comp_cop_PACKAGE_PATH} )
+fix_ros_destination_path(LOCAL_PACKAGE_PATH)
 
 file(GLOB inputs prolog/*.in)
 foreach( _in ${inputs} )

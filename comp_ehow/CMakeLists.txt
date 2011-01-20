@@ -3,6 +3,9 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 
 
 rosbuild_init()
+
+rosbuild_include(rosprolog utils)
+
 rosbuild_gensrv()
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
@@ -19,6 +22,9 @@ rosbuild_find_ros_package(ias_knowledge_base)
 set( OWL_PATH_PREFIX ${ias_knowledge_base_PACKAGE_PATH} )
 rosbuild_find_ros_package(comp_ehow)
 set( LOCAL_PACKAGE_PATH ${comp_ehow_PACKAGE_PATH} )
+
+fix_ros_destination_path(OWL_PATH_PREFIX)
+fix_ros_destination_path(LOCAL_PACKAGE_PATH)
 
 
 file(GLOB inputs owl/*.in)
