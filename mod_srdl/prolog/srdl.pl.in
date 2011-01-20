@@ -50,6 +50,8 @@
         printMissingComponentsForAlternativeList/3,   %(AltList, RobotInst, Indentation)
         printMissingComponentsForSingleAlternative/3,   %(Alt, RobotInst, Indentation) 
 
+        missing_components_for_action/3,
+
         % Learnability Inference 
         isLearnableCapability/2,   %(Cap, RobotInst)
  
@@ -135,6 +137,7 @@
         printMissingComponentsForSingleCap(r, r, -),
         printMissingComponentsForAlternativeList(t, r, -),
         printMissingComponentsForSingleAlternative(r, r, -), 
+        missing_components_for_action(r,r, -),
 
         % Learnability Inference 
         isLearnableCapability(r, r),
@@ -244,9 +247,17 @@ verifyCapAvailabilityFromComponents(Cap, RobotInst) :-
         UnmetReq == []
     ;
         % CASE 2: capability is a composite capability
-        propertyValuesFromRestrictions(Alt, srdl_cap:'hasSubCapability', SubCapList),  % collect all requirements for current alternative   
+        % collect all requirements for current alternative
+        propertyValuesFromRestrictions(Alt, srdl_cap:'hasSubCapability', SubCapList),
         SubCapList \== [],
-        checkAvailabilityOfCapList(SubCapList, RobotInst)
+        checkAvailabilityOfCapList(SubCapList, RobotInst),
+
+        % check if there are component requirements
+        ( (propertyValuesFromRestrictions(Alt, srdl:'needsComponent', ReqList),
+           ReqList \== [])
+           -> (filterReqListForUnmetReq(ReqList, RobotInst, UnmetReq),
+               UnmetReq == []) ;
+              (true) )
     ),
     !. % Commit to first result
 
@@ -353,6 +364,31 @@ filterActionList([A|T], Acc, Result) :-
         Result = TmpResult
     ).
 
+
+%
+% Return a list of all components missing for action Act
+%
+missing_components_for_action(Action, Robot, Components) :-
+
+  findall(Component, (% determine missing capabilities
+                      returnMissingCapsForAction(Action, Robot, MissingCaps),
+                      member(Cap, MissingCaps),
+
+                      % check for each capability which components are missing
+                      findall(UnmetReq, ( owl_subclass_of(Alt, srdl:'CapabilityProvisionAlternative'),
+                                    propertyValuesFromRestrictions(Alt, srdl:'providesCapability', CapList),
+                                    member(Cap, CapList),
+
+                                    propertyValuesFromRestrictions(Alt, srdl:'needsComponent', ReqList),
+                                    filterReqListForUnmetReq(ReqList, Robot, UnmetReq)
+                                  ), UnmetReqs),
+
+                      flatten(UnmetReqs, Component)),
+          CompLists),
+  flatten(CompLists, Components).
+
+
+
 % Print components that are missing for action Action on robot RobotInst
 % This predicate only calls predicate printMissingComponents/3
 printMissingComponents(Action, RobotInst) :-
@@ -414,6 +450,15 @@ printMissingComponentsForSingleAlternative(Alt, RobotInst, Indentation) :-
     ;
         % CASE 2: composite cap
         printIndentation(Indentation), print('Capability provision alternative "'), print(Alt) , print('" is a composite capability provision alternative.'), nl,
+
+
+        % collect all requirements
+        propertyValuesFromRestrictions(Alt, srdl:'needsComponent', ReqList),
+        % calculate and print unmet requirements
+        filterReqListForUnmetReq(ReqList, RobotInst, UnmetReq),
+        printIndentation(Indentation), print('Unmet requirements: '), nl, printIndentation(Indentation), print(UnmetReq), nl,
+        
+        
         printIndentation(Indentation), print('In the following alternatives for subcapabilities are shown:'), nl, printIndentation(Indentation), print('==>'),
         
         propertyValuesFromRestrictions(Alt, srdl_cap:'hasSubCapability', SubCapList),  
@@ -488,13 +533,13 @@ checkActionFeasibilityByDependencies(Action, RobotInst) :-
         true
     ),
      
-    % make sure that either capability dependencies or sub events are specified
+    % make sure that either capability dependencies or sub events are specified MT: WHY?
     (
         ( DirectSubActions == [] , ActionCapDep == [] )
     ->
-        fail 
+        fail
     ;
-        true 
+        true
     ),
     !.  % commit to first result
 
