@@ -66,3 +66,7 @@ libjson_glib:
     10.04: libjson-glib-dev
     10.10: libjson-glib-dev
 
+ant:
+  debian: ant
+  ubuntu: ant
+
