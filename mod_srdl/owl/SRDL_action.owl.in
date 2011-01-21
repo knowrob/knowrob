@@ -51,7 +51,7 @@
             >Semantics: Relation between a purposeful action and its subaction (sub actions are like steps of the purposeful action)</rdfs:comment>
         <rdfs:range rdf:resource="&knowrob;PurposefulAction"/>
         <rdfs:domain rdf:resource="&knowrob;PurposefulAction"/>
-        <rdfs:subPropertyOf rdf:resource="&knowrob;subEvents"/>
+        <rdfs:subPropertyOf rdf:resource="&knowrob;subAction"/>
     </owl:ObjectProperty>
     
 
@@ -62,9 +62,9 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#subEvents -->
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#subAction -->
 
-    <owl:ObjectProperty rdf:about="&knowrob;subEvents"/>
+    <owl:ObjectProperty rdf:about="&knowrob;subAction"/>
     
 
 
@@ -455,31 +455,31 @@ Extracted from wikihow.com (http://www.wikihow.com/Make-a-Chocolate-Cake)</rdfs:
             <owl:Class>
                 <owl:intersectionOf rdf:parseType="Collection">
                     <owl:Restriction>
-                        <owl:onProperty rdf:resource="&knowrob;subEvents"/>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
                         <owl:someValuesFrom rdf:resource="#TableSettingStep1"/>
                     </owl:Restriction>
                     <owl:Restriction>
-                        <owl:onProperty rdf:resource="&knowrob;subEvents"/>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
                         <owl:someValuesFrom rdf:resource="#TableSettingStep2"/>
                     </owl:Restriction>
                     <owl:Restriction>
-                        <owl:onProperty rdf:resource="&knowrob;subEvents"/>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
                         <owl:someValuesFrom rdf:resource="#TableSettingStep3"/>
                     </owl:Restriction>
                     <owl:Restriction>
-                        <owl:onProperty rdf:resource="&knowrob;subEvents"/>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
                         <owl:someValuesFrom rdf:resource="#TableSettingStep4"/>
                     </owl:Restriction>
                     <owl:Restriction>
-                        <owl:onProperty rdf:resource="&knowrob;subEvents"/>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
                         <owl:someValuesFrom rdf:resource="#TableSettingStep5"/>
                     </owl:Restriction>
                     <owl:Restriction>
-                        <owl:onProperty rdf:resource="&knowrob;subEvents"/>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
                         <owl:someValuesFrom rdf:resource="#TableSettingStep6"/>
                     </owl:Restriction>
                     <owl:Restriction>
-                        <owl:onProperty rdf:resource="&knowrob;subEvents"/>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
                         <owl:someValuesFrom rdf:resource="#TableSettingStep7"/>
                     </owl:Restriction>
                 </owl:intersectionOf>

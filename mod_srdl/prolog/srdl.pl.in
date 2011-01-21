@@ -185,8 +185,8 @@ matchRobotAndAction(RobotInst, Action) :-
 
 % Return all subactions of an action
 subActions(Action, SubActions) :-
-    % in query 'subEvents' is used because in knowrob this relation is used, in SRDL 'hasSubAction' (subproperty of 'subEvents)' is used
-    treeSearchAllNodes([Action], knowrob:'subEvents', SubActions),
+    % in query 'subAction' is used because in knowrob this relation is used, in SRDL 'hasSubAction' (subproperty of 'subAction)' is used
+    treeSearchAllNodes([Action], knowrob:'subAction', SubActions),
     !. % commit to first choice
 
 % Filter the actions in the first argument and return only those that are not feasible on robot RobotInst
@@ -332,7 +332,7 @@ returnMissingCapsForAction(Action, RobotInst, Result) :-
         % filter to have only actions that are leafs in action tree
         findall(X, 
                 ( member(X, UnfeasibleSubActions), 
-                  treeSearchLeavesOnly([X], knowrob:'subEvents', TmpSubActions),
+                  treeSearchLeavesOnly([X], knowrob:'subAction', TmpSubActions),
                   delete(TmpSubActions, X, TmpSubActionsWithoutX),
                   TmpSubActionsWithoutX = []),  
                 UnfeasibleLeafSubActions), 
@@ -370,9 +370,15 @@ filterActionList([A|T], Acc, Result) :-
 %
 missing_components_for_action(Action, Robot, Components) :-
 
-  findall(Component, (% determine missing capabilities
-                      returnMissingCapsForAction(Action, Robot, MissingCaps),
+  findall(Component, (% determine missing capabilities for this action:
+                      returnRequiredCapForActionList([Action], MissingCaps1),
+
+                      % missing capabilites for sub-actions:
+                      returnMissingCapsForAction(Action, Robot, MissingCaps2),
+
+                      append(MissingCaps1, MissingCaps2, MissingCaps),
                       member(Cap, MissingCaps),
+
 
                       % check for each capability which components are missing
                       findall(UnmetReq, ( owl_subclass_of(Alt, srdl:'CapabilityProvisionAlternative'),
@@ -526,7 +532,7 @@ checkActionFeasibilityByDependencies(Action, RobotInst) :-
         ActionCapDep == []
     ->
         (
-        propertyValuesFromRestrictions(Action, knowrob:'subEvents', DirectSubActions),
+        propertyValuesFromRestrictions(Action, knowrob:'subAction', DirectSubActions),
         checkFeasibilityOfActionList(DirectSubActions, RobotInst) 
         )
     ;
@@ -583,7 +589,7 @@ computeSuccessProbability(Action, SuccessProbability) :-
 
 % Compute success probability on the base of all descendants using min prob 
 computeSuccessProbabilityFromDescendants(Action, ResultProb) :-
-    treeSearchAllNodes([Action], knowrob:'subEvents', SubActionsTmp),
+    treeSearchAllNodes([Action], knowrob:'subAction', SubActionsTmp),
     delete(SubActionsTmp, Action, SubActions),
     (
        SubActions == [] 

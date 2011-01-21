@@ -166,7 +166,7 @@ owl_report :-
 %                                UTILITY Predicates
 % -----------------------------------------------------------------------
 
-%       owl_parser_log(+Log)
+%%       owl_parser_log(+Log)
 %
 %       Log is a list; together with a timestamp it is asserted as
 %       an owl_parser_log/2 term.
@@ -176,7 +176,7 @@ owl_parser_log(Log) :-
 	assertz(owl_parser_log(TS, Log)).
 
 
-%       owl_clear_as.
+%%       owl_clear_as.
 %
 %       Clears the prolog terms that store the Abstract Syntax
 %       implementation of the OWL ontology.
@@ -201,12 +201,10 @@ owl_clear_as :-
 convert(T,V,typed_value(T,V)).     
 
 
-%	rdf_2_owl.     
+%%	rdf_2_owl.     
 %       
 %       Converts RDF triples to OWL/4 triples so that
 %	their use can tracked by the OWL parser.
-
-
 rdf_2_owl :-
 	owl_parser_log(['Removing existing owl triples']),
 	retractall(owl(_,_,_,_)),
@@ -220,7 +218,7 @@ rdf_2_owl :-
 	owl_parser_log(['Number of owl triples copied: ',Z]).
 
 
-%       rdf_load_stream(+URL, +ImportedList)
+%% rdf_load_stream(+URL, +ImportedList)
 %	
 %	This predicate calls the rdf parser to parse the RDF/XML URL
 %	into RDF triples. URL can be a local file or a URL.
@@ -228,16 +226,16 @@ rdf_2_owl :-
 %	be imported, ie. are objects to an owl:imports predicate. 
 %	The ImportedList argument contains the imported so far URLs,
 %	to avoid re-visiting the same URLs. (Empty List in 1st call).
-
-rdf_load_stream(URL,Imported,Imports) :- 
-  	(sub_string(URL,0,4,_,'http'), !, 
-	 http_open(URL,RDF_Stream,[]), 
-         % rdf_load(RDF_Stream,[blank_nodes(noshare),convert_typed_literal(convert)]), 
-	 rdf_load(RDF_Stream,[blank_nodes(noshare)]), 
-	 close(RDF_Stream) 
-	 ;
-	 RDF_Stream = URL, rdf_load(RDF_Stream,[blank_nodes(noshare)])
-	 ),
+%
+rdf_load_stream(URL,Imported,Imports) :-
+  (sub_string(URL,0,4,_,'http'), !, 
+    http_open(URL,RDF_Stream,[]),
+    rdf_load(RDF_Stream,[blank_nodes(noshare)]),
+    close(RDF_Stream)
+    ;
+    RDF_Stream = URL, % URL is a file name
+    rdf_load(RDF_Stream,[blank_nodes(noshare)])
+  ),
 	(   Imports = true,
 	    rdf(_,'http://www.w3.org/2002/07/owl#imports',Import_URL),
 	    not( member(Import_URL, Imported)),!,

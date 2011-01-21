@@ -211,13 +211,5 @@ compare_actions_partial_order('>', Act1, Act2) :-
   owl_has(Constraint, knowrob:occursBeforeInOrdering, Act2),
   owl_has(Constraint, knowrob:occursAfterInOrdering, Act1),!.
 
+% default: keep ordering if there are no matching ordering constraints
 compare_actions_partial_order('<', _, _).
-% compare_actions_partial_order('=', Act1, Act2) :-
-%   not((
-%     (owl_has(Constraint, knowrob:occursBeforeInOrdering, Act1),
-%      owl_has(Constraint, knowrob:occursAfterInOrdering, Act2)) ;
-%     (owl_has(Constraint, knowrob:occursBeforeInOrdering, Act2),
-%      owl_has(Constraint, knowrob:occursAfterInOrdering, Act1))
-%     )).
-
-

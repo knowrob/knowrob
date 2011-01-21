@@ -70,3 +70,5 @@ ant:
   debian: ant
   ubuntu: ant
 
+git:
+  ubuntu: git-core
