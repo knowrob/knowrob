@@ -1,6 +1,4 @@
 
-PACKAGE_DIR=$(shell rospack find yason)
-
 all: installed
 
 checkedout:
@@ -10,7 +8,7 @@ checkedout:
 installed: checkedout
 	mkdir -p asdf
 	touch rospack_nosubdirs
-	ln -s ${PACKAGE_DIR}/yason/yason.asd ${PACKAGE_DIR}/asdf
+	ln -s ../yason/yason.asd asdf/
 	touch installed
 
 clean:
