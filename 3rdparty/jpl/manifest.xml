@@ -9,6 +9,7 @@
     <java classpath="${prefix}/jpl/jpl.jar"
           ld_lib_path="${prefix}/jpl"/>
   </export>
+  <rosdep name="git" />
 </package>
 
 
