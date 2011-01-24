@@ -38,7 +38,6 @@
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <owl:Ontology rdf:about="">
         <owl:imports rdf:resource="file://@SRDL_PACKAGE_PATH@/owl/PR2.owl"/>
-        <owl:imports rdf:resource="file://@SRDL_PACKAGE_PATH@/owl/amigo.owl"/>
         <owl:imports rdf:resource="file://@SRDL_PACKAGE_PATH@/owl/TUM_Rosie.owl"/>
     </owl:Ontology>
 
