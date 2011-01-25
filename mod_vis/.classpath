@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="msg_gen/java"/>
+	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="srv_gen/java"/>
 	<classpathentry kind="lib" path="lib/controlP5.jar"/>
 	<classpathentry kind="lib" path="lib/core.jar"/>
 	<classpathentry kind="lib" path="lib/vecmath.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/work/ros/tumros-internal/stacks/knowrob/3rdparty/jpl/prolog/jpl.jar"/>
-	<classpathentry kind="lib" path="/work/overlay/stacks/client_rosjava/rosjava/bin"/>
+	<classpathentry kind="lib" path="/opt/ros/cturtle/stacks/client_rosjava/rosjava/bin"/>
+	<classpathentry kind="lib" path="/home/tenorth/work/ros/stacks/knowrob/3rdparty/jpl/jpl/jpl.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
