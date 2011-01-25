@@ -52,6 +52,14 @@ public:
     QueryError(const std::string &msg)
       : std::runtime_error(msg) {}
   };
+
+  class ServerNotFound
+    : public std::runtime_error
+  {
+  public:
+    ServerNotFound(const std::string &msg)
+      : std::runtime_error(msg) {}
+  };
   
   class iterator
     : public boost::iterator_facade<iterator,

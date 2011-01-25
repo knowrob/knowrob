@@ -117,9 +117,12 @@ PrologQueryProxy::PrologQueryProxy(Prolog &prolog, const std::string &query_str)
 
   req.id = query_id_;
   req.query = query_str;
-  
-  ROS_ASSERT(prolog_->prolog_query.isValid());
-  ROS_ASSERT(prolog_->prolog_query.exists());
+
+  if(!prolog_->prolog_query.isValid() ||
+     !prolog_->prolog_query.exists())
+  {
+    throw ServerNotFound("No connection to the json_prolog server.");
+  }
   
   if(!prolog_->prolog_query.call(req, resp))
     throw PrologQueryProxy::QueryError("Service call '" + prolog_->prolog_query.getService() + "' failed");

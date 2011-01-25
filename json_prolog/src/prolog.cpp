@@ -57,4 +57,11 @@ PrologBindings Prolog::once(const std::string &query_str)
   return result;
 }
 
+bool Prolog::waitForServer(const ros::Duration &timeout)
+{
+  return prolog_query.waitForExistence(timeout) &&
+    next_solution.waitForExistence(timeout) &&
+    prolog_finish.waitForExistence(timeout);
+}
+
 }
