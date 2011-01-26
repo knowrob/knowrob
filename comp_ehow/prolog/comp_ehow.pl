@@ -152,6 +152,9 @@ action_objectActedOn(Action, Object) :-
         owl_direct_subclass_of(Action, Sup),
         owl_direct_subclass_of(Sup, Sup2),
         owl_restriction(Sup2,restriction(knowrob:'objectActedOn', some_values_from(Object))).
+action_objectActedOn(Action, Object) :-
+        owl_direct_subclass_of(Action, Sup),
+        owl_restriction(Sup,restriction(knowrob:'objectActedOn', some_values_from(Object))).
 
 %% action_toLocation(?Action, ?Loc) is nondet.
 %
@@ -161,6 +164,9 @@ action_toLocation(Action, Loc) :-
         owl_direct_subclass_of(Action, Sup),
         owl_direct_subclass_of(Sup, Sup2),
         owl_restriction(Sup2,restriction(knowrob:'toLocation', some_values_from(Loc))).
+action_toLocation(Action, Loc) :-
+        owl_direct_subclass_of(Action, Sup),
+        owl_restriction(Sup,restriction(knowrob:'toLocation', some_values_from(Loc))).
 
 %% action_fromLocation(?Action, ?Loc) is nondet.
 %
@@ -170,6 +176,9 @@ action_fromLocation(Action, Loc) :-
         owl_direct_subclass_of(Action, Sup),
         owl_direct_subclass_of(Sup, Sup2),
         owl_restriction(Sup2,restriction(knowrob:'fromLocation', some_values_from(Loc))).
+action_fromLocation(Action, Loc) :-
+        owl_direct_subclass_of(Action, Sup),
+        owl_restriction(Sup,restriction(knowrob:'fromLocation', some_values_from(Loc))).
 
 
 %% action_properties(?Action, ?Prop, ?Val) is nondet.
@@ -180,6 +189,11 @@ action_properties(Action, Prop, Val) :-
         owl_direct_subclass_of(Action, Sup),
         owl_direct_subclass_of(Sup, Sup2),
         owl_restriction(Sup2,restriction(Prop, some_values_from(Val))).
+action_properties(Action, Prop, Val) :-
+        owl_direct_subclass_of(Action, Sup),
+        owl_restriction(Sup,restriction(Prop, some_values_from(Val))).
+
+
 
 
 %% matching_actions(?Plan, ?Act) is semidet.
