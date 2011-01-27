@@ -1737,7 +1737,6 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
   	ItemBase itemForObjType(String type) {
   		
-  		
   		/////////////////////////////////////////////
   		// tableware
   		
@@ -1752,6 +1751,10 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
   		} else if (type.endsWith("#Bowl-Eating'")) {
   			return new BowlEating(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
+
+  		} else if (type.endsWith("#DrinkingBottle'")) {
+  			return new Box(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0.05f,0.05f,0.15f);
+
   	  		  			
   			
   			
@@ -1766,7 +1769,6 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
   		} else if(type.endsWith("#SoupSpoon'")) {
   			return new Spoon(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
-  		
   			
   			
   		/////////////////////////////////////////////
