@@ -6,7 +6,7 @@ rosbuild_include(rosprolog utils)
 
 rosbuild_find_ros_package(opencyc)
 set( OPENCYC_PATH_PREFIX ${opencyc_PACKAGE_PATH} )
-fix_ros_destination_path(OPENCYC_PACKAGE_PATH)
+fix_ros_destination_path(OPENCYC_PATH_PREFIX)
 
 file(GLOB inputs scripts/*.in)
 
