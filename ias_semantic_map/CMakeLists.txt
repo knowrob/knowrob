@@ -19,6 +19,7 @@ endforeach( _in )
 # replace path to local OWL files
 rosbuild_find_ros_package(ias_semantic_map)
 set( LOCAL_PACKAGE_PATH ${ias_semantic_map_PACKAGE_PATH} )
+fix_ros_destination_path(LOCAL_PACKAGE_PATH)
 
 file(GLOB inputs prolog/*.in)
 foreach( _in ${inputs} )
