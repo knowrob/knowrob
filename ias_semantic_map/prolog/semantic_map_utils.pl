@@ -26,6 +26,7 @@
       objectPose/2,
       childObject/2,
       childObjects/2,
+      objectLabel/2,
       semanticMap/1,
       connectionType/3,
       jointName/3
@@ -108,6 +109,9 @@ objectDimensions( O, W, D, H ) :-
 childObject( P, C ) :-
     rdf_has( P, knowrob:'properPhysicalPartTypes', C ),
     not( owl_individual_of(C, knowrob:'Connection-Physical') ).
+
+objectLabel( O, L ) :-
+    owl_has( O, rdfs:label, literal(type('http://www.w3.org/2001/XMLSchema#string', L)) ).
 
 connectionType( P, C, 'HingedJoint' ) :-
     rdf_has( P, knowrob:'properPhysicalPartTypes', C ),
