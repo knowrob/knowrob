@@ -19,6 +19,7 @@
     [
       readMap/1,
       rdf_atom_no_ns/2,
+      withoutNamespace/2,
       objectType/2,
       rootObjects/1,
       rootObject/1,
@@ -65,6 +66,9 @@ readEntity(E, Parent, [E_no_ns, Parent_no_ns, Pose]) :-
 
 rdf_atom_no_ns( Tin, Tout ) :-
     rdf_split_url(_, Tout, Tin ).
+
+withoutNamespace( Tin, Tout ) :-
+    rdf_split_url(_, Tout, Tin).
 
 objectType(O, T) :-
     rdf_has( O, rdf:type, T ),
