@@ -24,14 +24,23 @@ checkedout:
 inst: wiped checkedout
 	ant -f $(MARY_DIR)/build.xml
 #	unzip mary-en-GB-4.1.0.zip
+#	rm mary-en-GB-4.1.0.zip
 	unzip mary-dfki-obadiah-4.1.0.zip
+	rm mary-dfki-obadiah-4.1.0.zip
 # 	unzip mary-dfki-obadiah-hsmm-4.1.0.zip
+# 	rm mary-dfki-obadiah-hsmm-4.1.0.zip
 # 	unzip mary-dfki-poppy-4.1.0.zip
+# 	rm mary-dfki-poppy-4.1.0.zip
 # 	unzip mary-dfki-poppy-hsmm-4.1.0.zip
+# 	rm mary-dfki-poppy-hsmm-4.1.0.zip
 	unzip mary-dfki-prudence-4.1.0.zip
+	rm mary-dfki-prudence-4.1.0.zip
 # 	unzip mary-dfki-prudence-hsmm-4.1.0.zip
+# 	rm mary-dfki-prudence-hsmm-4.1.0.zip
 # 	unzip mary-dfki-spike-4.1.0.zip
+# 	rm mary-dfki-spike-4.1.0.zip
 # 	unzip mary-dfki-spike-hsmm-4.1.0.zip
+# 	rm mary-dfki-spike-hsmm-4.1.0.zip
 	touch inst
 # 
 wiped: Makefile
