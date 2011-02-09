@@ -65,10 +65,3 @@ libjson_glib:
     9.10:  libjson-glib-dev
     10.04: libjson-glib-dev
     10.10: libjson-glib-dev
-
-ant:
-  debian: ant
-  ubuntu: ant
-
-git:
-  ubuntu: git-core
