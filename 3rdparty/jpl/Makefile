@@ -5,42 +5,33 @@ all: installed
 
 BUILD_TOPDIR = $(shell pwd)
 
-GIT_DIR = jpl
-GIT_URL = git://www.swi-prolog.org/home/pl/git/packages/jpl.git
-GIT_REVISION = cf3bf6129851daa18858548f09bc2349a1219dff
-GIT_PATCH = configure.patch
+JPL_DIR = jpl
+JPL_URL = http://code.in.tum.de/files/jpl.tar.gz
 
-$(GIT_DIR):
-	git clone $(GIT_URL) $(GIT_DIR)
-	cd $(GIT_DIR) && git checkout $(GIT_REVISION)
+
+$(JPL_DIR):
+	wget $(JPL_URL)
+	tar xvzf jpl.tar.gz
+	rm jpl.tar.gz
 	touch rospack_nosubdirs
 
-patched: $(GIT_PATCH) Makefile
-	cd $(GIT_DIR) && git reset --hard
-ifneq ($(strip $(GIT_PATCH)),)
-	$(foreach PATCH, $(GIT_PATCH), cd $(GIT_DIR) && git apply $(BUILD_TOPDIR)/$(PATCH) && ) echo patched
-	touch rospack_nosubdirs
-	touch patched
-endif   
-
-installed: $(GIT_DIR) patched
-	cd $(GIT_DIR) && autoconf
-	cd $(GIT_DIR) && ./configure
-	make -C $(GIT_DIR)
+installed: $(JPL_DIR)
+	cd $(JPL_DIR) && autoconf
+	cd $(JPL_DIR) && ./configure
+	make -C $(JPL_DIR)
 	mkdir -p $(INSTALL_DIR)
-	$(foreach FILE, $(INSTALL_FILES), cp $(GIT_DIR)/$(FILE) $(INSTALL_DIR)/$(FILE) ; )
+	$(foreach FILE, $(INSTALL_FILES), cp $(JPL_DIR)/$(FILE) $(INSTALL_DIR)/$(FILE) ; )
 	touch installed
 
 clean:
-	-cd $(GIT_DIR) && make clean
-	-rm -f patched
+	-cd $(JPL_DIR) && make clean
 	-rm -f rospack_nosubdirs
 	-rm -f .build_version
 	-rm -f .rosgcov_files
 
 wipe: clean
 	-rm -f installed
-	-rm -rf $(GIT_DIR)
+	-rm -rf $(JPL_DIR)
 	-rm -rf $(INSTALL_DIR)
 
 .PHONY : clean download
