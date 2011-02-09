@@ -1,4 +1,0 @@
-<launch>
-  <node name="mod_dialog" pkg="mod_dialog" type="DialogModule" args="local" />
-  <node name="mod_dialog_speech" pkg="mod_dialog" type="SpeechRecognitionNode" args="" />
-</launch>

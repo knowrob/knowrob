@@ -1,4 +1,0 @@
-<launch>
-  <node name="mary_server" pkg="mary_tts" type="MaryServer" />
-  <node name="mary_ros_client" pkg="mary_tts" type="MaryROSClient" />
-</launch>

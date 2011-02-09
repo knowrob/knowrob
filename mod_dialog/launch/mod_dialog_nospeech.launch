@@ -1,3 +1,0 @@
-<launch>
-  <node name="mod_dialog" pkg="mod_dialog" type="DialogModule" args="" />
-</launch>

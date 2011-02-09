@@ -2,7 +2,7 @@
 
 
 # list of packages 
-RELEASED_PKGS="3rdparty comp_ehow comp_germandeli comp_temporal ias_prolog_addons json_prolog mod_srdl \
+RELEASED_PKGS="3rdparty comp_germandeli comp_temporal ias_prolog_addons json_prolog mod_srdl \
                rosdep.yaml semweb stack.xml thea CMakeLists.txt comp_cop comp_spatial ias_knowledge_base \
                ias_semantic_map mod_probcog mod_vis rosprolog srldb Makefile"
 

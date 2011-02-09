@@ -7,7 +7,7 @@
 	<classpathentry kind="lib" path="lib/core.jar"/>
 	<classpathentry kind="lib" path="lib/vecmath.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/opt/ros/cturtle/stacks/client_rosjava/rosjava/bin"/>
-	<classpathentry kind="lib" path="/home/tenorth/work/ros/stacks/knowrob/3rdparty/jpl/jpl/jpl.jar"/>
+	<classpathentry kind="lib" path="/work/ros/overlay/stacks/knowrob/3rdparty/jpl/jpl/jpl.jar"/>
+	<classpathentry kind="lib" path="/work/overlay/stacks/client_rosjava/rosjava/bin"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,4 +1,0 @@
-<launch>
-  <include file="$(find opencyc)/launch/opencyc.launch"/>
-        <node name="ehow_importer" pkg="comp_ehow" type="ehow_importer" cwd="node" />
-</launch>

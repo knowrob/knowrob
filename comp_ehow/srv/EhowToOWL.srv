@@ -1,5 +1,0 @@
-# Moritz Tenorth, tenorth@cs.tum.edu
-# service to retrieve a how-to for a query string and return an OWL representation
-string command
----
-string owl_instructions
