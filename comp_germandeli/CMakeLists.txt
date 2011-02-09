@@ -17,6 +17,8 @@ foreach( _in ${inputs} )
   string(REPLACE ".in" "" _out ${_in})
   configure_file( ${_in} ${_out} )
 endforeach( _in )
+file(REMOVE owl/germandeli.owl.in)
+file(REMOVE owl/germandeli-small.owl.in)
 
 rosbuild_find_ros_package(comp_germandeli)
 set( LOCAL_PACKAGE_PATH ${comp_germandeli_PACKAGE_PATH} )
