@@ -48,7 +48,8 @@
 
 :-  rdf_meta
     storagePlaceFor(r,r),
-    storagePlaceForBecause(r,r,r).
+    storagePlaceForBecause(r,r,r),
+    rdf_instance_from_class(r,r).
 
 
   storagePlaceFor(St, ObjT) :-
