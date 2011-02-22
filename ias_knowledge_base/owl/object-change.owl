@@ -44,6 +44,12 @@
     
 
 
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#target -->
+
+    <owl:ObjectProperty rdf:about="&computable;target"/>
+    
+
+
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#causes-Underspecified -->
 
     <owl:ObjectProperty rdf:about="&knowrob;causes-Underspecified"/>
@@ -53,6 +59,12 @@
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#objectActedOn -->
 
     <owl:ObjectProperty rdf:about="&knowrob;objectActedOn"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#toLocation -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;toLocation"/>
     
 
 
@@ -66,73 +78,27 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#inputs -->
-
-    <owl:ObjectProperty rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#inputs"/>
-    
-
-
     <!-- http://ias.cs.tum.edu/kb/object-change.owl#inputsDestroyed -->
 
-    <owl:ObjectProperty rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#inputsDestroyed">
-        <rdfs:range rdf:resource="&knowrob;SpatialThing"/>
-        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#DestructionEvent"/>
-        <rdfs:subPropertyOf rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#inputs"/>
-    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#inputsDestroyed"/>
     
 
 
     <!-- http://ias.cs.tum.edu/kb/object-change.owl#objectAddedTo -->
 
-    <owl:ObjectProperty rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#objectAddedTo">
-        <rdfs:domain rdf:resource="&knowrob;Incorporation-PhysicalAction"/>
-        <rdfs:subPropertyOf rdf:resource="&knowrob;objectActedOn"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#objectOfStateChange -->
-
-    <owl:ObjectProperty rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#objectOfStateChange">
-        <rdfs:range rdf:resource="&knowrob;EnduringThing-Localized"/>
-        <rdfs:subPropertyOf rdf:resource="&knowrob;objectActedOn"/>
-        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#PhysicalEvent"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#objectRemoved -->
-
-    <owl:ObjectProperty rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#objectRemoved">
-        <rdfs:range rdf:resource="&knowrob;EnduringThing-Localized"/>
-        <rdfs:subPropertyOf rdf:resource="&knowrob;objectActedOn"/>
-        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#PhysicalEvent"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#outputs -->
-
-    <owl:ObjectProperty rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#outputs"/>
+    <owl:ObjectProperty rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#objectAddedTo"/>
     
 
 
     <!-- http://ias.cs.tum.edu/kb/object-change.owl#outputsCreated -->
 
-    <owl:ObjectProperty rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#outputsCreated">
-        <rdfs:range rdf:resource="&knowrob;SpatialThing"/>
-        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#CreationEvent"/>
-        <rdfs:subPropertyOf rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#outputs"/>
-    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#outputsCreated"/>
     
 
 
     <!-- http://ias.cs.tum.edu/kb/object-change.owl#thingIncorporated -->
 
-    <owl:ObjectProperty rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#thingIncorporated">
-        <rdfs:domain rdf:resource="&knowrob;Incorporation-PhysicalAction"/>
-        <rdfs:subPropertyOf rdf:resource="&knowrob;objectActedOn"/>
-    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#thingIncorporated"/>
     
 
 
@@ -142,6 +108,41 @@
         <rdfs:range rdf:resource="&knowrob;EnduringThing-Localized"/>
         <rdfs:domain rdf:resource="&knowrob;EnduringThing-Localized"/>
     </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#cache -->
+
+    <owl:DatatypeProperty rdf:about="&computable;cache"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#command -->
+
+    <owl:DatatypeProperty rdf:about="&computable;command"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#visible -->
+
+    <owl:DatatypeProperty rdf:about="&computable;visible"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#temperatureOfObject -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;temperatureOfObject"/>
     
 
 
@@ -162,24 +163,33 @@
     
 
 
+    <!-- http://ias.cs.tum.edu/kb/computable.owl#PrologProperty -->
+
+    <owl:Class rdf:about="&computable;PrologProperty"/>
+    
+
+
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Bread -->
 
     <owl:Class rdf:about="&knowrob;Bread"/>
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Cracking -->
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#CakePan -->
 
-    <owl:Class rdf:about="&knowrob;Cracking">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#PhysicalTransformationEvent"/>
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#SeparationEvent"/>
-    </owl:Class>
+    <owl:Class rdf:about="&knowrob;CakePan"/>
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#CuttingAPieceOfFood -->
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Cracking -->
 
-    <owl:Class rdf:about="&knowrob;CuttingAPieceOfFood"/>
+    <owl:Class rdf:about="&knowrob;Cracking"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#CuttingOffAPiece -->
+
+    <owl:Class rdf:about="&knowrob;CuttingOffAPiece"/>
     
 
 
@@ -207,24 +217,6 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Event -->
-
-    <owl:Class rdf:about="&knowrob;Event"/>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#FoodIngredientOnly -->
-
-    <owl:Class rdf:about="&knowrob;FoodIngredientOnly"/>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Incorporation-PhysicalAction -->
-
-    <owl:Class rdf:about="&knowrob;Incorporation-PhysicalAction"/>
-    
-
-
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Mixing -->
 
     <owl:Class rdf:about="&knowrob;Mixing"/>
@@ -237,141 +229,27 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#SpatialThing -->
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PuttingSomethingOnto -->
 
-    <owl:Class rdf:about="&knowrob;SpatialThing"/>
+    <owl:Class rdf:about="&knowrob;PuttingSomethingOnto"/>
     
 
 
     <!-- http://ias.cs.tum.edu/kb/object-change.owl#BreadSlice -->
 
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#BreadSlice">
-        <rdfs:subClassOf rdf:resource="&knowrob;Bread"/>
-    </owl:Class>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#ChoppingSomething -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#ChoppingSomething">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#CuttingInPieces"/>
-    </owl:Class>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#CreationEvent -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#CreationEvent">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#CreationOrDestructionEvent"/>
-    </owl:Class>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#CreationOrDestructionEvent -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#CreationOrDestructionEvent">
-        <rdfs:subClassOf rdf:resource="&knowrob;Event"/>
-    </owl:Class>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#CuttingInPieces -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#CuttingInPieces">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#CuttingSomething"/>
-    </owl:Class>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#CuttingOffAPiece -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#CuttingOffAPiece">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#CuttingInPieces"/>
-    </owl:Class>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#CuttingSomething -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#CuttingSomething">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#SeparationEvent"/>
-    </owl:Class>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#DestructionEvent -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#DestructionEvent">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#CreationOrDestructionEvent"/>
-    </owl:Class>
+    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#BreadSlice"/>
     
 
 
     <!-- http://ias.cs.tum.edu/kb/object-change.owl#EggYolk-Food -->
 
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#EggYolk-Food">
-        <rdfs:subClassOf rdf:resource="&knowrob;FoodIngredientOnly"/>
-    </owl:Class>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#PhysicalCreationEvent -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#PhysicalCreationEvent">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#CreationEvent"/>
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#PhysicalCreationOrDestructionEvent"/>
-    </owl:Class>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#PhysicalCreationOrDestructionEvent -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#PhysicalCreationOrDestructionEvent">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#CreationOrDestructionEvent"/>
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#PhysicalEvent"/>
-    </owl:Class>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#PhysicalDestructionEvent -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#PhysicalDestructionEvent">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#DestructionEvent"/>
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#PhysicalCreationOrDestructionEvent"/>
-    </owl:Class>
+    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#EggYolk-Food"/>
     
 
 
     <!-- http://ias.cs.tum.edu/kb/object-change.owl#PhysicalEvent -->
 
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#PhysicalEvent">
-        <rdfs:subClassOf rdf:resource="&knowrob;Event"/>
-    </owl:Class>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#PhysicalTransformationEvent -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#PhysicalTransformationEvent">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#PhysicalCreationEvent"/>
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#PhysicalDestructionEvent"/>
-    </owl:Class>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#SeparationEvent -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#SeparationEvent">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#PhysicalEvent"/>
-    </owl:Class>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#SlicingSomething -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#SlicingSomething">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#CuttingInPieces"/>
-    </owl:Class>
+    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#PhysicalEvent"/>
     
 
 
@@ -383,19 +261,70 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
+    
 
-    <computable:PrologProperty rdf:about="#computeTransformedInto">
-        <computable:command rdf:datatype="&xsd;string">transformed_into</computable:command>
-        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
-        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-        <computable:target rdf:resource="#transformedInto"/>
-    </computable:PrologProperty>
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#postActors -->
+
+    <owl:NamedIndividual rdf:about="&knowrob;postActors"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#thermicallyConnectedTo -->
+
+    <owl:NamedIndividual rdf:about="&knowrob;thermicallyConnectedTo"/>
+    
 
 
     <!-- http://ias.cs.tum.edu/kb/object-change.owl#bread1 -->
 
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#bread1">
         <rdf:type rdf:resource="&knowrob;Bread"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/object-change.owl#cakepan1 -->
+
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#cakepan1">
+        <rdf:type rdf:resource="&knowrob;CakePan"/>
+        <knowrob:temperatureOfObject rdf:datatype="&xsd;float">150</knowrob:temperatureOfObject>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/object-change.owl#computeActionEffect -->
+
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#computeActionEffect">
+        <rdf:type rdf:resource="&computable;PrologProperty"/>
+        <computable:command rdf:datatype="&xsd;string">action_effects</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;postActors"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/object-change.owl#computeThermicallyConnectedTo -->
+
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#computeThermicallyConnectedTo">
+        <rdf:type rdf:resource="&computable;PrologProperty"/>
+        <computable:command rdf:datatype="&xsd;string">comp_thermicallyConnectedTo</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;thermicallyConnectedTo"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/object-change.owl#computeTransformedInto -->
+
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#computeTransformedInto">
+        <rdf:type rdf:resource="&computable;PrologProperty"/>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:command rdf:datatype="&xsd;string">transformed_into</computable:command>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#transformedInto"/>
     </owl:NamedIndividual>
     
 
@@ -420,21 +349,11 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#cutoff-event1 -->
-
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#cutoff-event1">
-        <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#CuttingOffAPiece"/>
-        <objectOfStateChange rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#bread1"/>
-        <objectRemoved rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#slice1"/>
-    </owl:NamedIndividual>
-    
-
-
     <!-- http://ias.cs.tum.edu/kb/object-change.owl#cutting1 -->
 
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#cutting1">
-        <rdf:type rdf:resource="&knowrob;CuttingAPieceOfFood"/>
-        <causes-ActEvent rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#cutoff-event1"/>
+        <rdf:type rdf:resource="&knowrob;CuttingOffAPiece"/>
+        <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#bread1"/>
     </owl:NamedIndividual>
     
 
@@ -507,11 +426,27 @@
     
 
 
+    <!-- http://ias.cs.tum.edu/kb/object-change.owl#put-mix-on-pan1 -->
+
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#put-mix-on-pan1">
+        <rdf:type rdf:resource="&knowrob;PuttingSomethingOnto"/>
+        <knowrob:toLocation rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#cakepan1"/>
+        <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#pancake-dough1"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://ias.cs.tum.edu/kb/object-change.owl#slice1 -->
 
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#slice1">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#BreadSlice"/>
     </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/object-change.owl#transformedInto -->
+
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#transformedInto"/>
 </rdf:RDF>
 
 
