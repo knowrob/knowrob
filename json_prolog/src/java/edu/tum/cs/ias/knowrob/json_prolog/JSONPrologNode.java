@@ -309,6 +309,7 @@ public final class JSONPrologNode {
 
 		if(query != null) {
 			query.close();
+			queries.remove(id);
 			if(query instanceof PrologIncrementalSolutions)
 				hasIncrementalQuery = false;
 		}
