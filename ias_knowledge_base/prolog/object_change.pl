@@ -12,10 +12,17 @@
 :- use_module(library('semweb/rdfs_computable')).
 :- use_module(library('thea/owl_parser')).
 
+
+:- use_module(library('action_effects')).
+:- use_module(library('processes')).
+
+
 :- owl_parser:owl_parse('../owl/object-change.owl', false, false, true).
+:- owl_parser:owl_parse('../owl/pancake-making.owl', false, false, true).
 
 :- rdf_db:rdf_register_ns(knowrob,      'http://ias.cs.tum.edu/kb/knowrob.owl#',      [keep(true)]).
 :- rdf_db:rdf_register_ns(object_change, 'http://ias.cs.tum.edu/kb/object-change.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(pancake, 'http://ias.cs.tum.edu/kb/pancake-making.owl#', [keep(true)]).
 
 :-  rdf_meta
     transformed_into(r, r),
@@ -32,92 +39,15 @@
 
 action_effects(Action, PostActors) :-
 
-  % only project when being called for the
-  % first time on this action instance
-  % \+ owl_has(Action, knowrob:postActors, _),
+  % project what is happening when performing the action
+  project_action(Action),
 
-  project_action(Action, PostActors),
-
-  %check for processes that got triggered
-  process.
-
-
-
-% Cutting off a piece
-project_action(Action, PostActors) :-
-
-  owl_individual_of(Action, knowrob:'CuttingOffAPiece'),
-  owl_has(Action, knowrob:objectActedOn, Obj),
-
-  % only project when being called for the
-  % first time on this action instance
-  \+ owl_has(Action, knowrob:outputsCreated, _),
-
-  rdf_has(Obj, rdf:type, ObjType),
-  ObjType \= 'http://www.w3.org/2002/07/owl#NamedIndividual',!,
-
-  % new objects
-  rdf_instance_from_class(ObjType, Slice),
-
-  % new relations
-  rdf_assert(Action, knowrob:outputsRemaining, Obj),
-  rdf_assert(Action, knowrob:outputsCreated, Slice),
-
-  print(Obj),print(' -> '), print(Slice), print('\n'),
+  % check for processes that got triggered
+  process,
 
   rdf_has(Action, knowrob:postActors, PostActors).
 
-
-% Cracking an egg
-project_action(Action, PostActors) :-
-
-  owl_individual_of(Action, knowrob:'Cracking'),
-  owl_has(Action, knowrob:objectActedOn, Obj),
-  owl_individual_of(Obj, knowrob:'Egg-Chickens'),!,
-
-  % only project when being called for the
-  % first time on this action instance
-  \+ owl_has(Action, knowrob:outputsCreated, _),
-
-  % new objects
-  rdf_instance_from_class(knowrob:'EggShell', Shell),
-  rdf_instance_from_class(knowrob:'EggYolk-Food', Yolk),
-
-  % new relations
-  rdf_assert(Action, knowrob:inputsDestroyed, Obj),
-  rdf_assert(Action, knowrob:outputsCreated, Shell),
-  rdf_assert(Action, knowrob:outputsCreated, Yolk),
-
-  print(Obj),print(' -> '), print(Shell), print('\n'),
-  print(Obj),print(' -> '), print(Yolk), print('\n'),
-
-  rdf_has(Action, knowrob:postActors, PostActors).
-
-
-
-
-% Putting something onto
-project_action(Action, PostActors) :-
-
-  owl_individual_of(Action, knowrob:'PuttingSomethingOnto'),
-  owl_has(Action, knowrob:objectActedOn, Obj),
-  owl_has(Action, knowrob:toLocation, To),
-
-  % only project when being called for the
-  % first time on this action instance
-  \+ owl_has(Action, knowrob:'on-Physical', _),
-
-  rdf_has(Obj, rdf:type, ObjType),
-  ObjType \= 'http://www.w3.org/2002/07/owl#NamedIndividual',!,
-
-  % new relations
-  rdf_assert(Obj, knowrob:'on-Physical', To),
-
-  print(Obj),print(' on top of '), print(To), print('\n'),
-
-  rdf_has(Action, knowrob:postActors, PostActors).
-
-
+% definitions of action effects in module action_effects
 
 
 
@@ -126,65 +56,7 @@ project_action(Action, PostActors) :-
 % processes
 %
 
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% baking process
-process :-
-
-
-  % % % % % % % % % % % % %
-  % Individuals changed in the process
-  owl_individual_of(Dough, knowrob:'Dough'),
-
-
-  % % % % % % % % % % % % %
-  % Preconditions (outside of QP)
-  rdf_triple(knowrob:'thermicallyConnectedTo', Dough, HeatSource),
-
-
-  % % % % % % % % % % % % %
-  % QuantityConditions (prerequisites for the process to be active, inside of QP)
-
-        % read temperature of the dough; default to 20 deg
-        ( (rdf_triple(knowrob:temperatureOfObject, Dough, TempDough),
-          strip_literal_type(TempDough, TDatom),
-          term_to_atom(TDterm, TDatom)) ;
-          TDterm=20 ),
-
-        % read temperature of the heat source object; default to 20 deg
-        ( (rdf_triple(knowrob:temperatureOfObject, HeatSource, TempHeatSource),
-          strip_literal_type(TempHeatSource, THSatom),
-          term_to_atom(THSterm, THSatom)) ;
-          THSterm=20 ),!,
-
-        TempBaked = 120,
-        THSterm > TempBaked,
-        THSterm > TDterm,
-
-
-  % % % % % % % % % % % % %
-  % Relations (proportionality, newly generated instances like gas or a flow rate)
-  % none
-
-
-  % % % % % % % % % % % % %
-  % Influences of the process on the individuals
-  rdf_instance_from_class(knowrob:'Baking-Hardening', Ev),
-  rdf_instance_from_class(knowrob:'Baked', Res),
-
-  rdf_assert(Ev, knowrob:inputsDestroyed, Dough),
-  rdf_assert(Ev, knowrob:outputsCreated,  Res),
-
-  print(Dough),print(' -> '), print(Res), print('\n'),
-
-  get_timepoint(NOW),
-  rdf_assert(Ev, knowrob:startTime, NOW),
-
-  get_timepoint('+2m', THEN),
-  rdf_assert(Ev, knowrob:endTime, THEN).
-
-
+% definitions of processes in module processes
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

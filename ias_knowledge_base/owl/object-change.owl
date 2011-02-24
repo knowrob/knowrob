@@ -50,11 +50,6 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#causes-Underspecified -->
-
-    <owl:ObjectProperty rdf:about="&knowrob;causes-Underspecified"/>
-    
-
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#objectActedOn -->
 
@@ -65,41 +60,6 @@
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#toLocation -->
 
     <owl:ObjectProperty rdf:about="&knowrob;toLocation"/>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#causes-ActEvent -->
-
-    <owl:ObjectProperty rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#causes-ActEvent">
-        <rdfs:domain rdf:resource="&actionmodel;Action"/>
-        <rdfs:subPropertyOf rdf:resource="&knowrob;causes-Underspecified"/>
-        <rdfs:range rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#PhysicalEvent"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#inputsDestroyed -->
-
-    <owl:ObjectProperty rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#inputsDestroyed"/>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#objectAddedTo -->
-
-    <owl:ObjectProperty rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#objectAddedTo"/>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#outputsCreated -->
-
-    <owl:ObjectProperty rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#outputsCreated"/>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#thingIncorporated -->
-
-    <owl:ObjectProperty rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#thingIncorporated"/>
-    
 
 
     <!-- http://ias.cs.tum.edu/kb/object-change.owl#transformedInto -->
@@ -235,23 +195,6 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#BreadSlice -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#BreadSlice"/>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#EggYolk-Food -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#EggYolk-Food"/>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#PhysicalEvent -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#PhysicalEvent"/>
-    
-
 
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -276,21 +219,6 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#bread1 -->
-
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#bread1">
-        <rdf:type rdf:resource="&knowrob;Bread"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#cakepan1 -->
-
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#cakepan1">
-        <rdf:type rdf:resource="&knowrob;CakePan"/>
-        <knowrob:temperatureOfObject rdf:datatype="&xsd;float">150</knowrob:temperatureOfObject>
-    </owl:NamedIndividual>
-    
 
 
     <!-- http://ias.cs.tum.edu/kb/object-change.owl#computeActionEffect -->
@@ -322,131 +250,13 @@
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#computeTransformedInto">
         <rdf:type rdf:resource="&computable;PrologProperty"/>
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
-        <computable:command rdf:datatype="&xsd;string">transformed_into</computable:command>
+        <computable:command rdf:datatype="&xsd;string">transformed_into_transitive</computable:command>
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
         <computable:target rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#transformedInto"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#cracking1 -->
-
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#cracking1">
-        <rdf:type rdf:resource="&knowrob;Cracking"/>
-        <inputsDestroyed rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#egg1"/>
-        <outputsCreated rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#eggshell1"/>
-        <outputsCreated rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#eggyolk1"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#cracking2 -->
-
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#cracking2">
-        <rdf:type rdf:resource="&knowrob;Cracking"/>
-        <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#egg2"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#cutting1 -->
-
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#cutting1">
-        <rdf:type rdf:resource="&knowrob;CuttingOffAPiece"/>
-        <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#bread1"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#egg1 -->
-
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#egg1">
-        <rdf:type rdf:resource="&knowrob;Egg-Chickens"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#egg2 -->
-
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#egg2">
-        <rdf:type rdf:resource="&knowrob;Egg-Chickens"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#eggshell1 -->
-
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#eggshell1">
-        <rdf:type rdf:resource="&knowrob;Eggshell"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#eggyolk1 -->
-
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#eggyolk1">
-        <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#EggYolk-Food"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#mixing1 -->
-
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#mixing1">
-        <rdf:type rdf:resource="&knowrob;Mixing"/>
-        <objectAddedTo rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#pancake-dough1"/>
-        <thingIncorporated rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#pancakemix1"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#mixing2 -->
-
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#mixing2">
-        <rdf:type rdf:resource="&knowrob;Mixing"/>
-        <thingIncorporated rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#eggyolk1"/>
-        <objectAddedTo rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#pancake-dough1"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#pancake-dough1 -->
-
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#pancake-dough1">
-        <rdf:type rdf:resource="&knowrob;Dough"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#pancakemix1 -->
-
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#pancakemix1">
-        <rdf:type rdf:resource="&knowrob;PancakeMix"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#put-mix-on-pan1 -->
-
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#put-mix-on-pan1">
-        <rdf:type rdf:resource="&knowrob;PuttingSomethingOnto"/>
-        <knowrob:toLocation rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#cakepan1"/>
-        <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#pancake-dough1"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#slice1 -->
-
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#slice1">
-        <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#BreadSlice"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#transformedInto -->
-
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#transformedInto"/>
 </rdf:RDF>
 
 
