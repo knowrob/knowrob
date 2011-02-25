@@ -30,8 +30,6 @@
     comp_thermicallyConnectedTo(r,r),
     action_effects(r,r).
 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % action effects

@@ -9,7 +9,6 @@
     <!ENTITY pancake "http://ias.cs.tum.edu/kb/pancake-making.owl#" >
     <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
     <!ENTITY computable "http://ias.cs.tum.edu/kb/computable.owl#" >
-    <!ENTITY actionmodel "http://ias.cs.tum.edu/kb/actionmodel.owl#" >
 ]>
 
 
@@ -30,6 +29,9 @@
 
     <owl:NamedIndividual rdf:about="&pancake;egg1">
         <rdf:type rdf:resource="&knowrob;Egg-Chickens"/>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">0.05</knowrob:heightOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.05</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.05</knowrob:widthOfObject>
     </owl:NamedIndividual>
 
     <owl:NamedIndividual rdf:about="&pancake;pancakemix1">
@@ -49,6 +51,14 @@
     </owl:NamedIndividual>
 
 
+    <owl:NamedIndividual rdf:about="&pancake;table1">
+        <rdf:type rdf:resource="&knowrob;KitchenTable"/>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">0.75</knowrob:heightOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">1.0</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">1.0</knowrob:widthOfObject>
+    </owl:NamedIndividual>
+
+
 
     <!--  ######  ACTIONS  ###### -->
 
@@ -56,6 +66,7 @@
     <owl:NamedIndividual rdf:about="&pancake;turnon1">
         <rdf:type rdf:resource="&knowrob;TurningOnPoweredDevice"/>
         <knowrob:objectActedOn rdf:resource="&pancake;pancakemaker1"/>
+        <knowrob:startTime rdf:resource="&pancake;timepoint_1298634548"/>
     </owl:NamedIndividual>
 
 
@@ -63,6 +74,7 @@
     <owl:NamedIndividual rdf:about="&pancake;cracking1">
         <rdf:type rdf:resource="&knowrob;Cracking"/>
         <knowrob:objectActedOn rdf:resource="&pancake;egg1"/>
+        <knowrob:startTime rdf:resource="&pancake;timepoint_1298634568"/>
     </owl:NamedIndividual>
 
 
@@ -72,6 +84,7 @@
         <knowrob:objectActedOn rdf:resource="&knowrob;EggYolk-Food1"/> <!-- how to refer to instances that will only be created later on? -->
         <knowrob:objectActedOn rdf:resource="&pancake;milk1"/>
         <knowrob:objectActedOn rdf:resource="&pancake;pancakemix1"/>
+        <knowrob:startTime rdf:resource="&pancake;timepoint_1298634588"/>
     </owl:NamedIndividual>
 
 
@@ -80,6 +93,7 @@
         <rdf:type rdf:resource="&knowrob;PuttingSomethingOnto"/>
         <knowrob:objectActedOn rdf:resource="&knowrob;Dough2"/>
         <knowrob:toLocation rdf:resource="&pancake;pancakemaker1"/>
+        <knowrob:startTime rdf:resource="&pancake;timepoint_1298634608"/>
     </owl:NamedIndividual>
 
 
@@ -89,15 +103,103 @@
     <!-- put pancake onto plate -->
     <owl:NamedIndividual rdf:about="&pancake;put1">
         <rdf:type rdf:resource="&knowrob;PuttingSomethingOnto"/>
-        <knowrob:objectActedOn rdf:resource="&knowrob;Baked3"/>
+        <knowrob:objectActedOn rdf:resource="&knowrob;Baked4"/>
         <knowrob:toLocation rdf:resource="&pancake;plate1"/>
+        <knowrob:startTime rdf:resource="&pancake;timepoint_1298634628"/>
     </owl:NamedIndividual>
 
 
+    <!-- table pose -->
+
+    <owl:NamedIndividual rdf:about="&pancake;SemanticMapPerception1">
+        <rdf:type rdf:resource="&knowrob;VisualPerception"/>
+        <knowrob:eventOccursAt rdf:resource="&pancake;RotationMatrix3D1"/>
+        <knowrob:startTime rdf:resource="&pancake;timepoint_1286380475"/>
+        <knowrob:objectActedOn rdf:resource="&pancake;table1"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="&pancake;RotationMatrix3D1">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:m00 rdf:datatype="&xsd;float">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.0</knowrob:m03>
+
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.0</knowrob:m13>
+
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.375</knowrob:m23>
+
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+    <!-- egg pose -->
+
+    <owl:NamedIndividual rdf:about="&pancake;SemanticMapPerception2">
+        <rdf:type rdf:resource="&knowrob;VisualPerception"/>
+        <knowrob:eventOccursAt rdf:resource="&pancake;RotationMatrix3D2"/>
+        <knowrob:startTime rdf:resource="&pancake;timepoint_1286380475"/>
+        <knowrob:objectActedOn rdf:resource="&pancake;egg1"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="&pancake;RotationMatrix3D2">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:m00 rdf:datatype="&xsd;float">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.0</knowrob:m03>
+
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.0</knowrob:m13>
+
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.3775</knowrob:m23>
+
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+    <owl:NamedIndividual rdf:about="&pancake;timepoint_1286380475">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
+
+
+    <owl:NamedIndividual rdf:about="&pancake;timepoint_1298634548">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="&pancake;timepoint_1298634568">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="&pancake;timepoint_1298634588">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="&pancake;timepoint_1298634608">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="&pancake;timepoint_1298634628">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
 
 </rdf:RDF>
 
-
-
-<!-- Generated by the OWL API (version 3.1.0.20069) http://owlapi.sourceforge.net -->
 

@@ -29,6 +29,7 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs_computable')).
 :- use_module(library('thea/owl_parser')).
+:- use_module(library('action_effects')).
 
 
 
@@ -79,6 +80,9 @@ process :-
 
   rdf_assert(Ev, knowrob:inputsDestroyed, Dough),
   rdf_assert(Ev, knowrob:outputsCreated,  Res),
+
+  % remove references to the Dough (spatial relations)
+  action_effects:unlink_object(Dough),
 
   print(Dough),print(' -> '), print(Res), print('\n'),
 

@@ -414,6 +414,18 @@ detection_endtime(Detection, EndTime) :-
     atom_concat('timepoint_', EndTAtom, EndTt),
     term_to_atom(EndTime, EndTAtom),! );
 
+  % check if the object has been destroyed in the meantime
+  ( rdf_has(Detection, knowrob:objectActedOn, Object),
+    rdf_has(Destruction, knowrob:inputsDestroyed, Object),
+    Destruction \= Detection,
+    rdfs_individual_of(Destruction,  knowrob:'PhysicalDestructionEvent'),
+    rdf_triple(knowrob:startTime, Detection, StT),
+    rdf_triple(knowrob:startTime, Destruction, EndTtG),
+    rdf_triple(knowrob:after, StT, EndTtG),
+    rdf_split_url(_, EndTt, EndTtG),
+    atom_concat('timepoint_', EndTAtom, EndTt),
+    term_to_atom(EndTime, EndTAtom),! );
+
   % otherwise take the current time (plus a second to avoid glitches)
   ( get_time(ET), EndTime is ET + 1.0).
 

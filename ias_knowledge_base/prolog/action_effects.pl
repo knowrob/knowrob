@@ -14,9 +14,23 @@
 :- rdf_db:rdf_register_ns(object_change, 'http://ias.cs.tum.edu/kb/object-change.owl#', [keep(true)]).
 
 :-  rdf_meta
-    project_action(r).
+    project_action(r),
+    unlink_object(r),
+    remove_object_properties(r,r).
 
 
+% utility predicate: remove reference to an object (e.g. if it has been destroyed)
+%
+unlink_object(Obj) :-
+  ((findall(Prop, (rdfs_subproperty_of(Prop, knowrob:topologicalRelations)), Props),
+    findall(P,    (member(P, Props), rdf_retractall(Obj, P, _)), _),!) ; true,!),
+  ((findall(Prop, (rdfs_subproperty_of(Prop, knowrob:orientation)), Props),
+    findall(P,    (member(P, Props), rdf_retractall(Obj, P, _)), _),!) ; true,!).
+
+% utility predicate: remove all assertions of sub-properties of Property from Obj
+remove_object_properties(Obj, Property) :-
+(findall(Prop, (rdfs_subproperty_of(Prop, Property)), Props),
+   findall(P,    (member(P, Props), rdf_retractall(Obj, P, _)), _)).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -195,16 +209,16 @@ project_action(Action) :-
 project_action(Action) :-
 
   owl_individual_of(Action, knowrob:'ApplyingSomethingToSurface'),
-  \+ owl_has(Action, knowrob:'', _),
 
   owl_has(Action, knowrob:objectActedOn, Obj),
+  \+ owl_has(Obj, knowrob:'on-Physical', _),
+
   owl_has(Action, knowrob:toLocation, To),!,
 
   % new relations
   % TODO: qualify these relations to hold only for limited time
   % Hack: retract all topological relations between OBJ and something else
-  (findall(Prop, rdfs_subproperty_of(Prop, knowrob:topologicalRelations), Props),
-   member(Prop, Props), rdf_retractall(Obj, Prop, _)),
+  remove_object_properties(Obj, knowrob:topologicalRelations),
   rdf_assert(Obj, knowrob:'on-Physical', To),
 
   print(Obj),print(' on top of '), print(To), print('\n').
@@ -216,16 +230,16 @@ project_action(Action) :-
 project_action(Action) :-
 
   owl_individual_of(Action, knowrob:'PuttingSomethingOnto'),
-  \+ owl_has(Action, knowrob:'on-Physical', _),
 
   owl_has(Action, knowrob:objectActedOn, Obj),
+  \+ owl_has(Obj, knowrob:'on-Physical', _),
+
   owl_has(Action, knowrob:toLocation, To),!,
 
   % new relations
   % TODO: qualify these relations to hold only for limited time
   % Hack: retract all topological relations between OBJ and something else
-  (findall(Prop, rdfs_subproperty_of(Prop, knowrob:topologicalRelations), Props),
-   member(Prop, Props), rdf_retractall(Obj, Prop, _)),
+  remove_object_properties(Obj, knowrob:topologicalRelations),
   rdf_assert(Obj, knowrob:'on-Physical', To),
 
   print(Obj),print(' on top of '), print(To), print('\n').
@@ -236,16 +250,16 @@ project_action(Action) :-
 project_action(Action) :-
 
   owl_individual_of(Action, knowrob:'PuttingSomethingIntoSomething'),
-  \+ owl_has(Action, knowrob:'', _),
 
   owl_has(Action, knowrob:objectActedOn, Obj),
+  \+ owl_has(Obj, knowrob:'on-Physical', _),
+
   owl_has(Action, knowrob:toLocation, To),!,
 
   % new relations
   % TODO: qualify these relations to hold only for limited time
   % Hack: retract all topological relations between OBJ and something else
-  (findall(Prop, rdfs_subproperty_of(Prop, knowrob:topologicalRelations), Props),
-   member(Prop, Props), rdf_retractall(Obj, Prop, _)),
+  remove_object_properties(Obj, knowrob:topologicalRelations),
   rdf_assert(Obj, knowrob:'in-ContGeneric', To),
 
   print(Obj),print(' on top of '), print(To), print('\n').
@@ -258,7 +272,6 @@ project_action(Action) :-
 project_action(Action) :-
 
   owl_individual_of(Action, knowrob:'PuttingSomethingSomewhere'),
-  \+ owl_has(Action, knowrob:'', _),
 
   owl_has(Action, knowrob:objectActedOn, Obj),
   owl_has(Action, knowrob:toLocation, To),!,
@@ -303,8 +316,7 @@ project_action(Action) :-
   % new relations
   % TODO: qualify these relations to hold only for limited time
   % Hack: retract all asserted states of OBJ
-  (findall(Prop, rdfs_subproperty_of(Prop, knowrob:stateOfObject), Props),
-   member(Prop, Props), rdf_retractall(Obj, Prop, _)),
+  remove_object_properties(Obj, knowrob:'stateOfObject'),
   rdf_assert(Obj, knowrob:'stateOfObject', knowrob:'DeviceStateOn'),
 
   rdf_assert(Action, knowrob:'objectOfStateChange', Obj),
@@ -327,8 +339,7 @@ project_action(Action) :-
   % new relations
   % TODO: qualify these relations to hold only for limited time
   % Hack: retract all asserted states of OBJ
-  (findall(Prop, rdfs_subproperty_of(Prop, knowrob:stateOfObject), Props),
-   member(Prop, Props), rdf_retractall(Obj, Prop, _)),
+  remove_object_properties(Obj, knowrob:stateOfObject),
   rdf_assert(Obj, knowrob:'stateOfObject', knowrob:'DeviceStateOff'),
 
   rdf_assert(Action, knowrob:'objectOfStateChange', Obj),
@@ -351,8 +362,7 @@ project_action(Action) :-
   % new relations
   % TODO: qualify these relations to hold only for limited time
   % Hack: retract all asserted states of OBJ
-  (findall(Prop, rdfs_subproperty_of(Prop, knowrob:stateOfObject), Props),
-   member(Prop, Props), rdf_retractall(Obj, Prop, _)),
+  remove_object_properties(Obj, knowrob:stateOfObject),
   rdf_assert(Obj, knowrob:'stateOfObject', knowrob:'DeviceStateOn'),
 
   rdf_assert(Action, knowrob:'objectOfStateChange', Obj),
@@ -375,8 +385,7 @@ project_action(Action) :-
   % new relations
   % TODO: qualify these relations to hold only for limited time
   % Hack: retract all asserted states of OBJ
-  (findall(Prop, rdfs_subproperty_of(Prop, knowrob:stateOfObject), Props),
-   member(Prop, Props), rdf_retractall(Obj, Prop, _)),
+  remove_object_properties(Obj, knowrob:stateOfObject),
   rdf_assert(Obj, knowrob:'stateOfObject', knowrob:'DeviceStateOff'),
 
   rdf_assert(Action, knowrob:'objectOfStateChange', Obj),
@@ -399,8 +408,7 @@ project_action(Action) :-
   % new relations
   % TODO: qualify these relations to hold only for limited time
   % Hack: retract all asserted states of OBJ
-  (findall(Prop, rdfs_subproperty_of(Prop, knowrob:stateOfObject), Props),
-   member(Prop, Props), rdf_retractall(Obj, Prop, _)),
+  remove_object_properties(Obj, knowrob:stateOfObject),
   rdf_assert(Obj, knowrob:'stateOfObject', knowrob:'ObjectStateOpen'),
 
   rdf_assert(Action, knowrob:'objectOfStateChange', Obj),
@@ -423,8 +431,7 @@ project_action(Action) :-
   % new relations
   % TODO: qualify these relations to hold only for limited time
   % Hack: retract all asserted states of OBJ
-  (findall(Prop, rdfs_subproperty_of(Prop, knowrob:stateOfObject), Props),
-   member(Prop, Props), rdf_retractall(Obj, Prop, _)),
+  remove_object_properties(Obj, knowrob:stateOfObject),
   rdf_assert(Obj, knowrob:'stateOfObject', knowrob:'ObjectStateClosed'),
 
   rdf_assert(Action, knowrob:'objectOfStateChange', Obj),
