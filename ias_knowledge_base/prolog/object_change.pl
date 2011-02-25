@@ -14,7 +14,7 @@
 
 
 :- use_module(library('action_effects')).
-:- use_module(library('processes')).
+:- use_module(library('process_effects')).
 
 
 :- owl_parser:owl_parse('../owl/object-change.owl', false, false, true).

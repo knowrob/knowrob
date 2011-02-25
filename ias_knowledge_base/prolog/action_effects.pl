@@ -1,7 +1,7 @@
 
 :- module(action_effects,
     [
-      project_action/1
+      project_action_effects/1
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -14,7 +14,7 @@
 :- rdf_db:rdf_register_ns(object_change, 'http://ias.cs.tum.edu/kb/object-change.owl#', [keep(true)]).
 
 :-  rdf_meta
-    project_action(r),
+    project_action_effects(r),
     unlink_object(r),
     remove_object_properties(r,r).
 
@@ -30,7 +30,7 @@ unlink_object(Obj) :-
 % utility predicate: remove all assertions of sub-properties of Property from Obj
 remove_object_properties(Obj, Property) :-
 (findall(Prop, (rdfs_subproperty_of(Prop, Property)), Props),
-   findall(P,    (member(P, Props), rdf_retractall(Obj, P, _)), _)).
+   findall(P,    (member(P, Props), rdf_retractall(Obj, P, _)), _)),!.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -41,7 +41,7 @@ remove_object_properties(Obj, Property) :-
 
 % % % % % % % % % % % % % % % %
 % Mixing baking mix to a dough
-project_action(Action) :-
+project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'Mixing'),
   \+ owl_has(Action, knowrob:outputsCreated, _),
@@ -66,16 +66,11 @@ project_action(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Adding something to something else
-project_action(Action) :-
+project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'Incorporation-Physical'),
   \+ owl_individual_of(Action, knowrob:'Mixing'),
   \+ owl_has(Action, knowrob:'', _).  % TODO: implement!
-
-
-
-
-
 
 
 
@@ -89,7 +84,7 @@ project_action(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Heat up food
-project_action(Action) :-
+project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'HeatingFood'),
   \+ owl_has(Action, knowrob:'', _).  % TODO: implement!
@@ -97,7 +92,7 @@ project_action(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Boil food
-project_action(Action) :-
+project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'BoilingFood'),
   \+ owl_has(Action, knowrob:'', _).  % TODO: implement!
@@ -105,7 +100,7 @@ project_action(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Baking food (i.e. start a baking process)
-project_action(Action) :-
+project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'BakingFood'),
   \+ owl_has(Action, knowrob:'', _).  % TODO: implement!
@@ -123,7 +118,7 @@ project_action(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Chopping something into small pieces
-project_action(Action) :-
+project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'ChoppingSomething'),
   \+ owl_has(Action, knowrob:'', _).  % TODO: implement!
@@ -131,7 +126,7 @@ project_action(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Taking something out of a container (sugar, coffee grains)
-project_action(Action) :-
+project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'RemovingMaterialFromAContainer'),
   \+ owl_has(Action, knowrob:'', _).  % TODO: implement!
@@ -139,7 +134,7 @@ project_action(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Cleaning something
-project_action(Action) :-
+project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'Cleaning'),
   \+ owl_has(Action, knowrob:'', _).  % TODO: implement!
@@ -149,7 +144,7 @@ project_action(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Cutting off a piece
-project_action(Action) :-
+project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'CuttingOffAPiece'),
   \+ owl_has(Action, knowrob:outputsCreated, _),
@@ -172,7 +167,7 @@ project_action(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Cracking an egg
-project_action(Action) :-
+project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'Cracking'),
   \+ owl_has(Action, knowrob:outputsCreated, _),
@@ -206,7 +201,7 @@ project_action(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Applying something to a surface (e.g. spreading butter)
-project_action(Action) :-
+project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'ApplyingSomethingToSurface'),
 
@@ -227,7 +222,7 @@ project_action(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Putting something onto something
-project_action(Action) :-
+project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'PuttingSomethingOnto'),
 
@@ -247,7 +242,7 @@ project_action(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Putting something into a container
-project_action(Action) :-
+project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'PuttingSomethingIntoSomething'),
 
@@ -269,7 +264,7 @@ project_action(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Putting something to some location
-project_action(Action) :-
+project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'PuttingSomethingSomewhere'),
 
@@ -306,7 +301,7 @@ project_action(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Switching on a device
-project_action(Action) :-
+project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'TurningOnPoweredDevice'),
 
@@ -329,7 +324,7 @@ project_action(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Switching off a device
-project_action(Action) :-
+project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'TurningOffPoweredDevice'),
 
@@ -352,7 +347,7 @@ project_action(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Turning on water (objectActedOn is a tap)
-project_action(Action) :-
+project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'TurningOnWater'),
 
@@ -375,7 +370,7 @@ project_action(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Turning off water (objectActedOn is a tap)
-project_action(Action) :-
+project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'TurningOffWater'),
 
@@ -398,7 +393,7 @@ project_action(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Opening a container (change state to open)
-project_action(Action) :-
+project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'OpeningAContainerArtifact'),
 
@@ -421,7 +416,7 @@ project_action(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Closing a container (change state to closed)
-project_action(Action) :-
+project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'ClosingAContainerArtifact'),
 

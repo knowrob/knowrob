@@ -20,9 +20,9 @@
 %
 
 
-:- module(processes,
+:- module(process_effects,
     [
-      process/0
+      project_process_effects/0
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -36,16 +36,17 @@
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % Dough becomes Baked during a baking process
-process :-
-
-  % % % % % % % % % % % % %
-  % Individuals changed in the process
-  owl_individual_of(Dough, knowrob:'Dough'),
+project_process_effects :-
 
 
   % % % % % % % % % % % % %
   % Preconditions (outside of QP)
   rdf_triple(knowrob:'thermicallyConnectedTo', Dough, HeatSource),
+
+
+  % % % % % % % % % % % % %
+  % Individuals changed in the process
+  owl_individual_of(Dough, knowrob:'Dough'), % re-arranged to get rid of open rdf choice points
 
 
   % % % % % % % % % % % % %
@@ -97,7 +98,7 @@ process :-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % cooling devices become cold, heating devices hot when being switched on
 
-process :-
+project_process_effects :-
   % % % % % % % % % % % % %
   % Individuals changed in the process
   (owl_individual_of(Device, knowrob:'HeatingDevice'); owl_individual_of(Device, knowrob:'CoolingDevice')),
@@ -127,7 +128,7 @@ process :-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % heating and cooling devices come to room temperature when being switched off
 
-process :-
+project_process_effects :-
   % % % % % % % % % % % % %
   % Individuals changed in the process
   (owl_individual_of(Device, knowrob:'HeatingDevice'); owl_individual_of(Device, knowrob:'CoolingDevice')),
