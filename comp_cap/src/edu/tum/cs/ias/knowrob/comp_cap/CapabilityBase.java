@@ -3,10 +3,12 @@ import java.io.*;
 
 public class CapabilityBase{
 	
-	String pathFile;
+	String pathFile = "tmp/topics";
 	
-	CapabilityBase() {
-		pathFile = "tmp/topics";
+	public CapabilityBase(){}
+	
+	public CapabilityBase(String path) {
+		pathFile = path;
 	}
 
   private String[] readFile(String path) throws Exception{
@@ -95,6 +97,7 @@ public class CapabilityBase{
 	  if(debug == "1"){
 		  return true;
 	  }
+	  
 	  String[] depency = {"a","b"};
 	  
 	  try {
@@ -111,6 +114,7 @@ public class CapabilityBase{
 	  if(debug == "1"){
 		  return true;
 	  }
+	  
 	  String[] depency = {"a","b"};
 	  
 	  try {
