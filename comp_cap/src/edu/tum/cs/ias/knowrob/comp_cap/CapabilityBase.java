@@ -88,12 +88,7 @@ public class CapabilityBase{
 	  return result;
   }
   
-  /**
-   * 
-   * @param debug
-   * @return true if debug is 1 or check returns true else false
-   */
-  public boolean cap_move_base(String debug){
+   public boolean cap_move_base(String debug){
 	  if(debug == "-1"){
 		  return false;
 	  }
@@ -109,11 +104,6 @@ public class CapabilityBase{
 	  return check(depency, pathFile);
   }
 
-  /**
-   * 
-   * @param debug
-   * @return true if debug is 1 or check returns true else false
-   */
   public boolean cap_move_arm(String debug){
 	  if(debug == "-1"){
 		  return false;
