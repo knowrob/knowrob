@@ -1,0 +1,18 @@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% dependencies
+
+:- register_ros_package(ias_knowledge_base).
+:- register_ros_package(rosjava).
+:- register_ros_package(jpl).
+:- register_ros_package(mod_srdl).
+:- register_ros_package(comp_cap).
+
+:- use_module(library('comp_cap')).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% parse OWL files, register name spaces
+
+:- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/comp_cap.owl', false, false, true).
+:- rdf_db:rdf_register_ns(comp_cap, 'http://ias.cs.tum.edu/kb/comp_cap.owl#',     [keep(true)]).
+

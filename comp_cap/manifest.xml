@@ -1,0 +1,23 @@
+<package>
+  <description brief="comp_cap">
+
+     comp_cap
+
+  </description>
+  <author>Steffen Neumann</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/comp_cap</url>
+  
+  <depend package="ias_knowledge_base"/>
+  <depend package="rosjava"/>
+  <depend package="jpl"/>
+  <depend package="mod_srdl"/>
+
+  <export>
+    <java classpath="${prefix}/bin" />
+   </export>
+  
+</package>
+
+ 
