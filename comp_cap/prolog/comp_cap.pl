@@ -16,7 +16,7 @@
 
 :- owl_parser:owl_parse('../owl/comp_cap.owl', false, false, true).
 
-:- rdf_db:rdf_register_ns(srdl_capabilty, 'http://ias.cs.tum.edu/kb/SRDL_capability.owl#',  [keep(true)]).
+:- rdf_db:rdf_register_ns(srdl_capabilty, 'http://ias.cs.tum.edu/kb/SRDL_capability.owl',  [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob,  'http://ias.cs.tum.edu/kb/knowrob.owl#',  [keep(true)]).
 :- rdf_db:rdf_register_ns(comp_cop, 'http://ias.cs.tum.edu/kb/comp_cap.owl#', [keep(true)]).
 
@@ -28,10 +28,10 @@
 % @param 
 % 
 comp_move_base(Inst, 'http://ias.cs.tum.edu/kb/SRDL_capability.owl#move_base') :-
-  jpl_new('edu.tum.cs.ias.knowrob.comp_cap.CapabilityBase',['/tmp/topics'], CapabilityBase),
+  jpl_new('edu.tum.cs.ias.knowrob.comp_cap.CapabilityBase',[], CapabilityBase),
   jpl_call(CapabilityBase, 'cap_move_base', ['1'], Res),
   jpl_is_true(Res),
-  rdfs_instance_from_class(srdl_capabilty:move_base,Inst).
+  rdfs_instance_from_class('http://ias.cs.tum.edu/kb/SRDL_capability.owl#move_base',Inst).
 
 
 %
@@ -44,4 +44,4 @@ comp_move_arm(Inst, 'http://ias.cs.tum.edu/kb/SRDL_capability.owl#move_arm') :-
   jpl_new(class([java,lang],['edu.tum.cs.ias.knowrob.comp_cap.CapabilityBase']),[''], CapabilityBase),
   jpl_call(CapabilityBase, 'cap_move_arm', ['0'], Res),
   jpl_is_true(Res),
-  rdfs_instance_from_class(srdl_capabilty:move_arm,Inst).
+  rdfs_instance_from_class('http://ias.cs.tum.edu/kb/SRDL_capability.owl#move_arm',Inst).

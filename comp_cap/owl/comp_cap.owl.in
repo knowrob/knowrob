@@ -9,7 +9,7 @@
           <!ENTITY xsd 'http://www.w3.org/2001/XMLSchema#'>
           <!ENTITY knowrob 'http://ias.cs.tum.edu/kb/knowrob.owl'>
           <!ENTITY actionmodel 'http://ias.cs.tum.edu/kb/actionmodel.owl'>
-	  <!ENTITY SRDL_capability 'http://ias.cs.tum.edu/kb/SRDL_capability.owl'>
+	  <!ENTITY srdl_capability 'http://ias.cs.tum.edu/kb/SRDL_capability.owl#'>
 ]> 
 
 <rdf:RDF
@@ -21,7 +21,7 @@
     xmlns:owl="http://www.w3.org/2002/07/owl#"
     xmlns:am="&actionmodel;#"
     xmlns:knowrob="&knowrob;#"
-    xmlns:SRDL_capability="http://ias.cs.tum.edu/kb/SRDL_capability.owl#"
+    xmlns:srdl_capability="http://ias.cs.tum.edu/kb/SRDL_capability.owl#"
     xml:base="http://ias.cs.tum.edu/kb/comp_cap.owl">
   <owl:Ontology rdf:about="">
     <owl:imports rdf:resource="&local_path;knowrob.owl"/>
@@ -31,17 +31,17 @@
 
     <computable:PrologClass rdf:about="#computeMove_Base">
       <computable:command rdf:datatype="&xsd;string">comp_cap:comp_move_base</computable:command>
-      <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+      <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
       <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-      <computable:target rdf:resource="&SRDL_capability;#move_base"/>
+      <computable:target rdf:resource="http://ias.cs.tum.edu/kb/SRDL_capability.owl#move_base"/>
     </computable:PrologClass>   
   
 
     <computable:PrologClass rdf:about="#computeMove_Arm">
       <computable:command rdf:datatype="&xsd;string">comp_cap:comp_move_arm</computable:command>
-      <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+      <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
       <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-      <computable:target rdf:resource="&SRDL_capability;#move_arm"/>
+      <computable:target rdf:resource="http://ias.cs.tum.edu/kb/SRDL_capability.owl#move_arm"/>
     </computable:PrologClass> 
 
 </rdf:RDF>
