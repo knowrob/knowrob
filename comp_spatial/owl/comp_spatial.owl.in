@@ -445,6 +445,24 @@
 
 
 
+    <computable:PrologProperty rdf:about="#computeAboveOf">
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:command rdf:datatype="&xsd;string">comp_above_of</computable:command>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="#aboveOf"/>
+    </computable:PrologProperty>
+
+
+
+    <computable:PrologProperty rdf:about="#computeBelowOf">
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:command rdf:datatype="&xsd;string">comp_below_of</computable:command>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="#belowOf"/>
+    </computable:PrologProperty>
+
+
+
 
 
     <computable:PrologProperty rdf:about="#computeToTheLeftOf">
@@ -516,6 +534,21 @@
         <rdfs:range rdf:resource="&knowrob;#EnduringThing-Localized"/>
         <rdfs:subPropertyOf rdf:resource="&knowrob;#on-Physical"/>
     </owl:ObjectProperty>
+
+
+    <owl:ObjectProperty rdf:about="#aboveOf">
+        <rdfs:domain rdf:resource="&knowrob;#EnduringThing-Localized"/>
+        <rdfs:range rdf:resource="&knowrob;#EnduringThing-Localized"/>
+        <rdfs:subPropertyOf rdf:resource="&knowrob;#aboveOf"/>
+    </owl:ObjectProperty>
+
+
+    <owl:ObjectProperty rdf:about="#belowOf">
+        <rdfs:domain rdf:resource="&knowrob;#EnduringThing-Localized"/>
+        <rdfs:range rdf:resource="&knowrob;#EnduringThing-Localized"/>
+        <rdfs:subPropertyOf rdf:resource="&knowrob;#belowOf"/>
+    </owl:ObjectProperty>
+
 
 
 

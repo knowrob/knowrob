@@ -35,6 +35,8 @@
       comp_toTheSideOf/2,
       comp_inFrontOf/2,
       comp_inCenterOf/2,
+      comp_below_of/2,
+      comp_above_of/2,
       comp_center/2,
       comp_xCoord/2,
       comp_yCoord/2,
@@ -105,6 +107,8 @@
     on_Physical(r, r),
     in_ContGeneric(r, r),
     adjacent_Objects(r, r),
+    comp_below_of(r,r),
+    comp_above_of(r,r),
     comp_toTheSideOf(r, r),    comp_toTheRightOf(r, r),    comp_toTheLeftOf(r, r),
     comp_inFrontOf(r, r),
     comp_inCenterOf(r, r),
@@ -199,6 +203,76 @@ holds(on_Physical(Top, Bottom),T) :-
 
     % the criterion is if the difference between them is less than epsilon=5cm
 %     =<( abs((BZ + 0.5*BH) - (TZ - 0.5*TH)), 0.05),
+    Top \= Bottom.
+
+
+
+
+
+%% comp_above_of(?Top, ?Bottom) is nondet.
+%
+% Check if Top is in the area of and above Bottom.
+%
+% Implemented as a wrapper predicate around holds(...) that computes the relation for the
+% current point in time
+%
+% @param Top Identifier of the upper Object
+% @param Bottom Identifier of the lower Object
+%
+comp_above_of(Top, Bottom) :-
+    get_timepoint(T),
+    holds(comp_below_of(Bottom, Top), T).
+
+
+
+%% comp_below_of(?Bottom, ?Top) is nondet.
+%
+% Check if Top is in the area of and above Bottom.
+%
+% Implemented as a wrapper predicate around holds(...) that computes the relation for the
+% current point in time
+%
+% @param Bottom Identifier of the lower Object
+% @param Top Identifier of the upper Object
+%
+comp_below_of(Bottom, Top) :-
+    get_timepoint(T),
+    holds(comp_below_of(Bottom, Top), T).
+
+
+
+%% holds(+BelowOf:compound, +T) is nondet.
+%
+% Usage: holds(comp_below_of(?Top, ?Bottom), +T)
+%
+% Check if Bottom has been in the area of and below Top at time point T.
+%
+% Currently does not take the orientation into account, only the position and dimension.
+%
+% @param Top    Identifier of the upper Object
+% @param Bottom Identifier of the lower Object
+% @param T      TimePoint or Event for which the relations is supposed to hold
+%
+
+holds(comp_below_of(Bottom, Top),T) :-
+
+    % get object center for Bottom
+    object_detection(Bottom, T, VPB),
+
+    rdf_triple(knowrob:eventOccursAt, VPB,    BottomMatrix),
+    rdf_triple(knowrob:m03, BottomMatrix, BCxx),strip_literal_type(BCxx, BCx),atom_to_term(BCx,BX,_),
+    rdf_triple(knowrob:m13, BottomMatrix, BCyy),strip_literal_type(BCyy, BCy),atom_to_term(BCy,BY,_),
+    rdf_triple(knowrob:m23, BottomMatrix, BCzz),strip_literal_type(BCzz, BCz),atom_to_term(BCz,BZ,_),
+
+    % query for objects at center point
+    objectAtPoint2D(BX,BY,Top),
+
+    % get objects at center point
+    object_detection(Top, T, VPT),
+    rdf_triple(knowrob:eventOccursAt, VPT, TopMatrix),
+    rdf_triple(knowrob:m23, TopMatrix, TCzz), strip_literal_type(TCzz, TCz),atom_to_term(TCz,TZ,_),
+
+    >( TZ, BZ ),
     Top \= Bottom.
 
 
@@ -1051,8 +1125,8 @@ objectAtPoint2D(PX,PY,Obj) :-
 
     % get information of potential objects at positon point2d (x/y)
 
-    rdf_has(Obj, knowrob:widthOfObject, Oww), strip_literal_type(Oww, Ow),atom_to_term(Ow,OW,_),
-    rdf_has(Obj, knowrob:depthOfObject, Odd), strip_literal_type(Odd, Od),atom_to_term(Od,OD,_),
+    rdf_has(Obj, knowrob:depthOfObject, Oww), strip_literal_type(Oww, Ow),atom_to_term(Ow,OW,_),
+    rdf_has(Obj, knowrob:widthOfObject, Odd), strip_literal_type(Odd, Od),atom_to_term(Od,OD,_),
 
     rdf_triple(knowrob:orientation, Obj, Mat),
     rdf_triple(knowrob:m03, Mat, Tmm03), strip_literal_type(Tmm03, TM03),atom_to_term(TM03,OX,_),
