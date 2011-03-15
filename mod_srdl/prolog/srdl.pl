@@ -91,10 +91,10 @@
 :- use_module(library('semweb/rdfs_computable')).
 
 %% Load owl file(s)
-:- owl_parser:owl_parse('@SRDL_PACKAGE_PATH@/owl/GetFromRefrigerator.owl', false, false, true).
-% :- owl_parser:owl_parse('@SRDL_PACKAGE_PATH@/owl/SRDL.owl', false, false, true).
-% :- owl_parser:owl_parse('@SRDL_PACKAGE_PATH@/owl/TUM_Rosie.owl', false, false, true).
-% :- owl_parser:owl_parse('@SRDL_PACKAGE_PATH@/owl/PR2.owl', false, false, true).
+:- owl_parser:owl_parse('../owl/GetFromRefrigerator.owl', false, false, true).
+% :- owl_parser:owl_parse('../owl/SRDL.owl', false, false, true).
+% :- owl_parser:owl_parse('../owl/TUM_Rosie.owl', false, false, true).
+% :- owl_parser:owl_parse('../owl/PR2.owl', false, false, true).
 
 %% Register namespaces
 :- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
