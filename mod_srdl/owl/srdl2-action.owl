@@ -1,0 +1,807 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY SRDL "http://ias.cs.tum.edu/kb/SRDL.owl#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY srdl2-action "http://ias.cs.tum.edu/kb/srdl2-action.owl#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://ias.cs.tum.edu/kb/srdl2-action.owl#"
+     xml:base="http://ias.cs.tum.edu/kb/srdl2-action.owl"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:SRDL="http://ias.cs.tum.edu/kb/SRDL.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:srdl2-action="http://ias.cs.tum.edu/kb/srdl2-action.owl#"
+     xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#">
+    <owl:Ontology rdf:about="">
+        <owl:imports rdf:resource="file:///work/overlay/stacks/knowrob/mod_srdl/owl/srdl2-cap.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#objectActedOn -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;objectActedOn"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#subAction -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;subAction"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-action.owl#ChocolateCakeBaking -->
+
+    <owl:Class rdf:about="#ChocolateCakeBaking">
+        <rdfs:subClassOf rdf:resource="&knowrob;Action"/>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                        <owl:someValuesFrom rdf:resource="#ChocolateCakeBakingStep1"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                        <owl:someValuesFrom rdf:resource="#ChocolateCakeBakingStep2"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                        <owl:someValuesFrom rdf:resource="#ChocolateCakeBakingStep3"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                        <owl:someValuesFrom rdf:resource="#ChocolateCakeBakingStep4"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                        <owl:someValuesFrom rdf:resource="#ChocolateCakeBakingStep5"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                        <owl:someValuesFrom rdf:resource="#ChocolateCakeBakingStep6"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                        <owl:someValuesFrom rdf:resource="#ChocolateCakeBakingStep7"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+        <rdfs:comment
+            >Recipe for baking a chocolate cake
+Extracted from wikihow.com (http://www.wikihow.com/Make-a-Chocolate-Cake)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-action.owl#ChocolateCakeBakingStep1 -->
+
+    <owl:Class rdf:about="#ChocolateCakeBakingStep1">
+        <rdfs:subClassOf rdf:resource="&knowrob;Mixing"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;Stirring-Beating"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;AddingAnEgg"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;Bowl-Mixing"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;Butter"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;Egg-Chickens"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;Sugar"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-action.owl#ChocolateCakeBakingStep2 -->
+
+    <owl:Class rdf:about="#ChocolateCakeBakingStep2">
+        <rdfs:subClassOf rdf:resource="&knowrob;MixingPowders"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;MixingPowders"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;AddingSth"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;BakingSoda"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;Bowl-Mixing"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;Cocoa-ThePowder"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;TableSalt"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;WheatFlour"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-action.owl#ChocolateCakeBakingStep3 -->
+
+    <owl:Class rdf:about="#ChocolateCakeBakingStep3">
+        <rdfs:subClassOf rdf:resource="&knowrob;Mixing"/>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;Bowl-Mixing"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;Milk"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;VanillaExtract"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;Water"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;Mixing"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;AddingSth"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-action.owl#ChocolateCakeBakingStep4 -->
+
+    <owl:Class rdf:about="#ChocolateCakeBakingStep4">
+        <rdfs:subClassOf rdf:resource="&knowrob;Pouring-PourFromOneContainerIntoAnother"/>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;Bowl-Mixing"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;CakePan"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;Dough"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;PickingUpAnObject"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;Pouring-PourFromOneContainerIntoAnother"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-action.owl#ChocolateCakeBakingStep5 -->
+
+    <owl:Class rdf:about="#ChocolateCakeBakingStep5">
+        <rdfs:subClassOf rdf:resource="&knowrob;BakingFood"/>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;OperateOven"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;PreheatOven"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;PuttingSomethingSomewhere"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;WaitForPredefinedTimeInterval"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;CakePan"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;Dough"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;Oven"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-action.owl#ChocolateCakeBakingStep6 -->
+
+    <owl:Class rdf:about="#ChocolateCakeBakingStep6">
+        <rdfs:subClassOf rdf:resource="&knowrob;Waiting"/>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;Cake"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;CakePan"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;PuttingSomethingSomewhere"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;WaitForPredefinedTimeInterval"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-action.owl#ChocolateCakeBakingStep7 -->
+
+    <owl:Class rdf:about="#ChocolateCakeBakingStep7">
+        <rdfs:subClassOf rdf:resource="&knowrob;ApplyingStuffToSurface"/>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;ApplyingStuffToSurface"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;PickingUpAnObject"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;Cake"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;Frosting"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-action.owl#TableSetting -->
+
+    <owl:Class rdf:about="#TableSetting">
+        <rdfs:subClassOf rdf:resource="&knowrob;Action"/>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                        <owl:someValuesFrom rdf:resource="#TableSettingStep1"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                        <owl:someValuesFrom rdf:resource="#TableSettingStep2"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                        <owl:someValuesFrom rdf:resource="#TableSettingStep3"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                        <owl:someValuesFrom rdf:resource="#TableSettingStep4"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                        <owl:someValuesFrom rdf:resource="#TableSettingStep5"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                        <owl:someValuesFrom rdf:resource="#TableSettingStep6"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                        <owl:someValuesFrom rdf:resource="#TableSettingStep7"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-action.owl#TableSettingStep1 -->
+
+    <owl:Class rdf:about="#TableSettingStep1">
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&knowrob;PuttingSomethingSomewhere"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;PlaceMat"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-action.owl#TableSettingStep2 -->
+
+    <owl:Class rdf:about="#TableSettingStep2">
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&knowrob;PuttingSomethingSomewhere"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;Napkin"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-action.owl#TableSettingStep3 -->
+
+    <owl:Class rdf:about="#TableSettingStep3">
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&knowrob;PuttingSomethingSomewhere"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;DinnerPlate"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-action.owl#TableSettingStep4 -->
+
+    <owl:Class rdf:about="#TableSettingStep4">
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&knowrob;PuttingSomethingSomewhere"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;Fork-SilverwarePiece"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-action.owl#TableSettingStep5 -->
+
+    <owl:Class rdf:about="#TableSettingStep5">
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&knowrob;PuttingSomethingSomewhere"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;Knife"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-action.owl#TableSettingStep6 -->
+
+    <owl:Class rdf:about="#TableSettingStep6">
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&knowrob;PuttingSomethingSomewhere"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;Spoon-SilverwarePiece"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-action.owl#TableSettingStep7 -->
+
+    <owl:Class rdf:about="#TableSettingStep7">
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&knowrob;PuttingSomethingSomewhere"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;Cup"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#AddingAnEgg -->
+
+    <owl:Class rdf:about="&knowrob;AddingAnEgg"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#AddingSth -->
+
+    <owl:Class rdf:about="&knowrob;AddingSth"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#ApplyingStuffToSurface -->
+
+    <owl:Class rdf:about="&knowrob;ApplyingStuffToSurface"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#BakingFood -->
+
+    <owl:Class rdf:about="&knowrob;BakingFood"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#BakingSoda -->
+
+    <owl:Class rdf:about="&knowrob;BakingSoda"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Bowl-Mixing -->
+
+    <owl:Class rdf:about="&knowrob;Bowl-Mixing"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Butter -->
+
+    <owl:Class rdf:about="&knowrob;Butter"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Cake -->
+
+    <owl:Class rdf:about="&knowrob;Cake"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#CakePan -->
+
+    <owl:Class rdf:about="&knowrob;CakePan"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Cocoa-ThePowder -->
+
+    <owl:Class rdf:about="&knowrob;Cocoa-ThePowder"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Cup -->
+
+    <owl:Class rdf:about="&knowrob;Cup"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#DinnerPlate -->
+
+    <owl:Class rdf:about="&knowrob;DinnerPlate"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Dough -->
+
+    <owl:Class rdf:about="&knowrob;Dough"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Egg-Chickens -->
+
+    <owl:Class rdf:about="&knowrob;Egg-Chickens"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Fork-SilverwarePiece -->
+
+    <owl:Class rdf:about="&knowrob;Fork-SilverwarePiece"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Frosting -->
+
+    <owl:Class rdf:about="&knowrob;Frosting"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Knife -->
+
+    <owl:Class rdf:about="&knowrob;Knife"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Milk -->
+
+    <owl:Class rdf:about="&knowrob;Milk"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Mixing -->
+
+    <owl:Class rdf:about="&knowrob;Mixing"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#MixingPowders -->
+
+    <owl:Class rdf:about="&knowrob;MixingPowders"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Napkin -->
+
+    <owl:Class rdf:about="&knowrob;Napkin"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#OperateOven -->
+
+    <owl:Class rdf:about="&knowrob;OperateOven"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Oven -->
+
+    <owl:Class rdf:about="&knowrob;Oven"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PickingUpAnObject -->
+
+    <owl:Class rdf:about="&knowrob;PickingUpAnObject"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PlaceMat -->
+
+    <owl:Class rdf:about="&knowrob;PlaceMat"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Pouring-PourFromOneContainerIntoAnother -->
+
+    <owl:Class rdf:about="&knowrob;Pouring-PourFromOneContainerIntoAnother"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PreheatOven -->
+
+    <owl:Class rdf:about="&knowrob;PreheatOven"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PurposefulAction -->
+
+    <owl:Class rdf:about="&knowrob;PurposefulAction"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PuttingSomethingSomewhere -->
+
+    <owl:Class rdf:about="&knowrob;PuttingSomethingSomewhere"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Spoon-SilverwarePiece -->
+
+    <owl:Class rdf:about="&knowrob;Spoon-SilverwarePiece"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Stirring-Beating -->
+
+    <owl:Class rdf:about="&knowrob;Stirring-Beating"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Sugar -->
+
+    <owl:Class rdf:about="&knowrob;Sugar"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#TableSalt -->
+
+    <owl:Class rdf:about="&knowrob;TableSalt"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#VanillaExtract -->
+
+    <owl:Class rdf:about="&knowrob;VanillaExtract"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#WaitForPredefinedTimeInterval -->
+
+    <owl:Class rdf:about="&knowrob;WaitForPredefinedTimeInterval"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Waiting -->
+
+    <owl:Class rdf:about="&knowrob;Waiting"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Water -->
+
+    <owl:Class rdf:about="&knowrob;Water"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#WheatFlour -->
+
+    <owl:Class rdf:about="&knowrob;WheatFlour"/>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Thing -->
+
+    <owl:Class rdf:about="&owl;Thing"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 2.2.1.1138) http://owlapi.sourceforge.net -->
+

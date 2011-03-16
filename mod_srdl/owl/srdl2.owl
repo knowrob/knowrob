@@ -19,7 +19,23 @@
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/srdl2.owl"/>
+    <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/srdl2.owl">
+        <owl:imports rdf:resource="file:///work/overlay/stacks/knowrob/ias_knowledge_base/owl/knowrob.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <owl:AnnotationProperty rdf:about="&srdl2;subComponent"/>
+    <owl:AnnotationProperty rdf:about="&srdl2;providesModelFor"/>
+    <owl:AnnotationProperty rdf:about="&srdl2;successorInKinematicChain"/>
     
 
 
@@ -38,41 +54,6 @@
 
     <owl:ObjectProperty rdf:about="&srdl2;dependsOn">
         <rdf:type rdf:resource="&owl;TransitiveProperty"/>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="&srdl2;Capability"/>
-                    <rdf:Description rdf:about="&srdl2;Component"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2.owl#dependsOnCapability -->
-
-    <owl:ObjectProperty rdf:about="&srdl2;dependsOnCapability">
-        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
-        <rdfs:subPropertyOf rdf:resource="&srdl2;dependsOn"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2.owl#dependsOnComponent -->
-
-    <owl:ObjectProperty rdf:about="&srdl2;dependsOnComponent">
-        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
-        <rdfs:subPropertyOf rdf:resource="&srdl2;dependsOn"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2.owl#providesModelFor -->
-
-    <owl:ObjectProperty rdf:about="&srdl2;providesModelFor">
-        <rdfs:domain rdf:resource="&srdl2;ObjectRecognitionModel"/>
-        <rdfs:range rdf:resource="&owl;Class"/>
     </owl:ObjectProperty>
     
 
@@ -83,44 +64,6 @@
         <rdf:type rdf:resource="&owl;TransitiveProperty"/>
         <rdfs:range rdf:resource="&srdl2;Action"/>
         <rdfs:domain rdf:resource="&srdl2;Action"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2.owl#subCapability -->
-
-    <owl:ObjectProperty rdf:about="&srdl2;subCapability">
-        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2.owl#subComponent -->
-
-    <owl:ObjectProperty rdf:about="&srdl2;subComponent">
-        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
-        <rdfs:domain rdf:resource="&srdl2;Component"/>
-        <rdfs:range rdf:resource="&srdl2;Component"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2.owl#successorInKinematicChain -->
-
-    <owl:ObjectProperty rdf:about="&srdl2;successorInKinematicChain">
-        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
-        <rdfs:domain rdf:resource="&srdl2;Component"/>
-        <rdfs:range rdf:resource="&srdl2;Component"/>
-        <rdfs:subPropertyOf rdf:resource="&srdl2;subComponent"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2.owl#superComponent -->
-
-    <owl:ObjectProperty rdf:about="&srdl2;superComponent">
-        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
-        <owl:inverseOf rdf:resource="&srdl2;subComponent"/>
     </owl:ObjectProperty>
     
 
@@ -161,28 +104,6 @@
     <!-- http://ias.cs.tum.edu/kb/srdl2.owl#AvailableCapability -->
 
     <owl:Class rdf:about="&srdl2;AvailableCapability">
-        <owl:equivalentClass>
-            <owl:Class>
-                <owl:intersectionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="&srdl2;Capability"/>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="&srdl2;dependsOnComponent"/>
-                        <owl:allValuesFrom rdf:resource="&srdl2;AvailableComponent"/>
-                    </owl:Restriction>
-                </owl:intersectionOf>
-            </owl:Class>
-        </owl:equivalentClass>
-        <owl:equivalentClass>
-            <owl:Class>
-                <owl:intersectionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="&srdl2;Capability"/>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="&srdl2;dependsOnComponent"/>
-                        <owl:someValuesFrom rdf:resource="&srdl2;AvailableComponent"/>
-                    </owl:Restriction>
-                </owl:intersectionOf>
-            </owl:Class>
-        </owl:equivalentClass>
         <rdfs:subClassOf rdf:resource="&srdl2;Capability"/>
     </owl:Class>
     
@@ -190,28 +111,7 @@
 
     <!-- http://ias.cs.tum.edu/kb/srdl2.owl#AvailableComponent -->
 
-    <owl:Class rdf:about="&srdl2;AvailableComponent">
-        <owl:equivalentClass>
-            <owl:Class>
-                <owl:intersectionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="&srdl2;Component"/>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="&srdl2;dependsOn"/>
-                        <owl:allValuesFrom>
-                            <owl:Restriction>
-                                <owl:onProperty rdf:resource="&srdl2;superComponent"/>
-                                <owl:hasValue rdf:resource="&srdl2;Robot1"/>
-                            </owl:Restriction>
-                        </owl:allValuesFrom>
-                    </owl:Restriction>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="&srdl2;superComponent"/>
-                        <owl:hasValue rdf:resource="&srdl2;Robot1"/>
-                    </owl:Restriction>
-                </owl:intersectionOf>
-            </owl:Class>
-        </owl:equivalentClass>
-    </owl:Class>
+    <owl:Class rdf:about="&srdl2;AvailableComponent"/>
     
 
 
@@ -247,12 +147,6 @@
 
     <owl:Class rdf:about="&srdl2;Hand">
         <rdfs:subClassOf rdf:resource="&srdl2;HardwareComponent"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2;dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="&srdl2;Arm"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -273,34 +167,6 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/srdl2.owl#NavigationCapability -->
-
-    <owl:Class rdf:about="&srdl2;NavigationCapability">
-        <rdfs:subClassOf rdf:resource="&srdl2;Capability"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2;dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="&srdl2;MovingBase"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2.owl#ObjRecCapability -->
-
-    <owl:Class rdf:about="&srdl2;ObjRecCapability">
-        <rdfs:subClassOf rdf:resource="&srdl2;Capability"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2;dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="&srdl2;ObjectRecognitionSystem"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
     <!-- http://ias.cs.tum.edu/kb/srdl2.owl#ObjectRecognitionModel -->
 
     <owl:Class rdf:about="&srdl2;ObjectRecognitionModel">
@@ -317,46 +183,10 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/srdl2.owl#PickAndPlaceCapability -->
-
-    <owl:Class rdf:about="&srdl2;PickAndPlaceCapability">
-        <rdfs:subClassOf rdf:resource="&srdl2;Capability"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2;dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="&srdl2;Arm"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2;dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="&srdl2;Hand"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
     <!-- http://ias.cs.tum.edu/kb/srdl2.owl#PickingUpABottle -->
 
     <owl:Class rdf:about="&srdl2;PickingUpABottle">
         <rdfs:subClassOf rdf:resource="&srdl2;PickingUpAnObject"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2;dependsOnComponent"/>
-                <owl:someValuesFrom>
-                    <owl:Class>
-                        <owl:intersectionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="&srdl2;ObjectRecognitionModel"/>
-                            <owl:Restriction>
-                                <owl:onProperty rdf:resource="&srdl2;providesModelFor"/>
-                                <owl:someValuesFrom rdf:resource="&srdl2;Bottle"/>
-                            </owl:Restriction>
-                        </owl:intersectionOf>
-                    </owl:Class>
-                </owl:someValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -367,8 +197,8 @@
         <rdfs:subClassOf rdf:resource="&srdl2;ActionOnObject"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2;dependsOn"/>
-                <owl:someValuesFrom rdf:resource="&srdl2;PickAndPlaceCapability"/>
+                <owl:onProperty rdf:resource="&srdl2;subAction"/>
+                <owl:someValuesFrom rdf:resource="&srdl2;Reaching"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -404,12 +234,6 @@
 
     <owl:Class rdf:about="&srdl2;PuttingDownAnObject">
         <rdfs:subClassOf rdf:resource="&srdl2;ActionOnObject"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2;dependsOnCapability"/>
-                <owl:someValuesFrom rdf:resource="&srdl2;PickAndPlaceCapability"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
     </owl:Class>
     
 
@@ -418,24 +242,14 @@
 
     <owl:Class rdf:about="&srdl2;PuttingSomethingSomewhere">
         <rdfs:subClassOf rdf:resource="&srdl2;TransportAction"/>
-        <rdfs:subClassOf>
-            <owl:Class>
-                <owl:intersectionOf rdf:parseType="Collection">
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="&srdl2;dependsOnCapability"/>
-                        <owl:someValuesFrom rdf:resource="&srdl2;PickAndPlaceCapability"/>
-                    </owl:Restriction>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="&srdl2;dependsOnCapability"/>
-                        <owl:someValuesFrom rdf:resource="&srdl2;SemanticNavigationCapability"/>
-                    </owl:Restriction>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="&srdl2;dependsOnComponent"/>
-                        <owl:someValuesFrom rdf:resource="&srdl2;SemanticEnvironmentMap"/>
-                    </owl:Restriction>
-                </owl:intersectionOf>
-            </owl:Class>
-        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2.owl#Reaching -->
+
+    <owl:Class rdf:about="&srdl2;Reaching">
+        <rdfs:subClassOf rdf:resource="&srdl2;ActionOnObject"/>
     </owl:Class>
     
 
@@ -480,38 +294,10 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/srdl2.owl#SemanticNavigationCapability -->
-
-    <owl:Class rdf:about="&srdl2;SemanticNavigationCapability">
-        <rdfs:subClassOf rdf:resource="&srdl2;Capability"/>
-        <rdfs:subClassOf>
-            <owl:Class>
-                <owl:intersectionOf rdf:parseType="Collection">
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="&srdl2;dependsOnCapability"/>
-                        <owl:someValuesFrom rdf:resource="&srdl2;NavigationCapability"/>
-                    </owl:Restriction>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="&srdl2;dependsOnComponent"/>
-                        <owl:someValuesFrom rdf:resource="&srdl2;SemanticEnvironmentMap"/>
-                    </owl:Restriction>
-                </owl:intersectionOf>
-            </owl:Class>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
     <!-- http://ias.cs.tum.edu/kb/srdl2.owl#SetTable -->
 
     <owl:Class rdf:about="&srdl2;SetTable">
         <rdfs:subClassOf rdf:resource="&srdl2;ActionOnObject"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2;dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="&srdl2;ObjectRecognitionModel"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Class>
                 <owl:intersectionOf rdf:parseType="Collection">
@@ -593,7 +379,6 @@
     <!-- http://ias.cs.tum.edu/kb/srdl2.owl#PickAndPlaceCap1 -->
 
     <owl:NamedIndividual rdf:about="&srdl2;PickAndPlaceCap1">
-        <rdf:type rdf:resource="&srdl2;PickAndPlaceCapability"/>
         <dependsOn rdf:resource="&srdl2;RobotArm1"/>
         <dependsOn rdf:resource="&srdl2;RobotHand1"/>
     </owl:NamedIndividual>
@@ -673,5 +458,5 @@
 
 
 
-<!-- Generated by the OWL API (version 3.1.0.20069) http://owlapi.sourceforge.net -->
+<!-- Generated by the OWL API (version 3.2.2.1789) http://owlapi.sourceforge.net -->
 
