@@ -1,5 +1,6 @@
 %%
 %% Copyright (C) 2009 by Lars Kunze, Lorenz Moesenlechner, Moritz Tenorth
+%% and Karinne Ramirez-Amaro
 %%
 %% This program is free software; you can redistribute it and/or modify
 %% it under the terms of the GNU General Public License as published by
@@ -15,14 +16,16 @@
 %% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %%
 
-:- register_ros_package(comp_spatial).
-:- use_module(library('comp_spatial')).
+:- use_module(library('semweb/rdfs_computable')).
+:- use_module(library('semweb/rdf_db')).
+:- use_module(library('semweb/rdfs')).
+:- use_module(library('thea/owl_parser')).
+:- use_module(library('semweb/owl')).
+:- use_module(library('semweb/rdf_edit')).
+:- use_module(library('semweb/actionmodel')).
 
-:- consult('semRoom_semantic_map').
-%:- consult('ias_semantic_map').
-%:- consult('ccrl2_semantic_map').
-:- consult('semantic_map_utils').
 
-% :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/ias_map_addons.owl', false, false, true).
-% :- rdf_db:rdf_register_ns(map_addons, 'http://ias.cs.tum.edu/kb/map_addons.owl#', [keep(true)]).
+:- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/semRoom_semantic_map.owl', false, false, true).
 
+:- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(ias_map, 'http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#', [keep(true)]).

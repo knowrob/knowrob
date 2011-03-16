@@ -1,0 +1,746 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY local_path 'file://@OWL_PATH_PREFIX@/owl/'>
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY owl2 "http://www.w3.org/2006/12/owl2#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY protege "http://protege.stanford.edu/plugins/owl/protege#" >
+    <!ENTITY semRoom_semantic_map "http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#" >
+]>
+
+
+<rdf:RDF xmlns="http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#"
+     xml:base="http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl"
+     xmlns:semRoom_semantic_map="http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl2="http://www.w3.org/2006/12/owl2#"
+     xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#">
+    <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl">
+        <owl:imports rdf:resource="&local_path;knowrob.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#describedInMap -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;describedInMap"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#eventOccursAt -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;eventOccursAt"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#hingedTo -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;hingedTo"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#objectActedOn -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;objectActedOn"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#orientation -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;orientation"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#properPhysicalPartTypes -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;properPhysicalPartTypes"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#startTime -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;startTime"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#depthOfObject -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;depthOfObject"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#heightOfObject -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;heightOfObject"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#m00 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m00"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#m01 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m01"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#m02 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m02"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#m03 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m03"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#m10 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m10"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#m11 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m11"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#m12 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m12"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#m13 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m13"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#m20 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m20"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#m21 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m21"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#m22 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m22"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#m23 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m23"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#m30 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m30"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#m31 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m31"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#m32 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m32"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#m33 -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;m33"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#radius -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;radius"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#widthOfObject -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;widthOfObject"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#ControlKnob -->
+
+    <owl:Class rdf:about="&knowrob;ControlKnob"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#CookingVessel -->
+
+    <owl:Class rdf:about="&knowrob;CookingVessel"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Cupboard -->
+
+    <owl:Class rdf:about="&knowrob;Cupboard"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#DinnerPlate -->
+
+    <owl:Class rdf:about="&knowrob;DinnerPlate"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Dishwasher -->
+
+    <owl:Class rdf:about="&knowrob;Dishwasher"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Door -->
+
+    <owl:Class rdf:about="&knowrob;Door"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Drawer -->
+
+    <owl:Class rdf:about="&knowrob;Drawer"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#DrinkingBottle -->
+
+    <owl:Class rdf:about="&knowrob;DrinkingBottle"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Handle -->
+
+    <owl:Class rdf:about="&knowrob;Handle"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#HingedJoint -->
+
+    <owl:Class rdf:about="&knowrob;HingedJoint"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#KitchenTable -->
+
+    <owl:Class rdf:about="&knowrob;KitchenTable"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Oven -->
+
+    <owl:Class rdf:about="&knowrob;Oven"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PancakeMix -->
+
+    <owl:Class rdf:about="&knowrob;PancakeMix"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3D -->
+
+    <owl:Class rdf:about="&knowrob;RotationMatrix3D"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#SemanticEnvironmentMap -->
+
+    <owl:Class rdf:about="&knowrob;SemanticEnvironmentMap"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#SemanticMapPerception -->
+
+    <owl:Class rdf:about="&knowrob;SemanticMapPerception"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Spatula -->
+
+    <owl:Class rdf:about="&knowrob;Spatula"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#TimePoint -->
+
+    <owl:Class rdf:about="&knowrob;TimePoint"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#WallOfAConstruction -->
+
+    <owl:Class rdf:about="&knowrob;WallOfAConstruction"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#PancakeMaker -->
+
+    <owl:Class rdf:about="&semRoom_semantic_map;PancakeMaker">
+        <rdfs:subClassOf rdf:resource="&knowrob;CookingVessel"/>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#SemanticEnvironmentMap2 -->
+
+    <owl:NamedIndividual rdf:about="&semRoom_semantic_map;SemanticEnvironmentMap2">
+        <rdf:type rdf:resource="&knowrob;SemanticEnvironmentMap"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#SemanticMapPerception_0 -->
+
+    <owl:NamedIndividual rdf:about="&semRoom_semantic_map;SemanticMapPerception_0">
+        <rdf:type rdf:resource="&knowrob;SemanticMapPerception"/>
+        <knowrob:objectActedOn rdf:resource="&semRoom_semantic_map;SemanticEnvironmentMap2"/>
+        <knowrob:eventOccursAt rdf:resource="&semRoom_semantic_map;rotationmatrix3d_1"/>
+        <knowrob:startTime rdf:resource="&semRoom_semantic_map;timepoint_1271159865.00"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#SemanticMapPerception_102 -->
+
+    <owl:NamedIndividual rdf:about="&semRoom_semantic_map;SemanticMapPerception_102">
+        <rdf:type rdf:resource="&knowrob;SemanticMapPerception"/>
+        <knowrob:eventOccursAt rdf:resource="&semRoom_semantic_map;rotationmatrix3d_102"/>
+        <knowrob:objectActedOn rdf:resource="&semRoom_semantic_map;table2"/>
+        <knowrob:startTime rdf:resource="&semRoom_semantic_map;timepoint_1271159865.00"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#SemanticMapPerception_103 -->
+
+    <owl:NamedIndividual rdf:about="&semRoom_semantic_map;SemanticMapPerception_103">
+        <rdf:type rdf:resource="&knowrob;SemanticMapPerception"/>
+        <knowrob:eventOccursAt rdf:resource="&semRoom_semantic_map;rotationmatrix3d_103"/>
+        <knowrob:objectActedOn rdf:resource="&semRoom_semantic_map;table1"/>
+        <knowrob:startTime rdf:resource="&semRoom_semantic_map;timepoint_1271159865.00"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#SemanticMapPerception_104 -->
+
+    <owl:NamedIndividual rdf:about="&semRoom_semantic_map;SemanticMapPerception_104">
+        <rdf:type rdf:resource="&knowrob;SemanticMapPerception"/>
+        <knowrob:objectActedOn rdf:resource="&semRoom_semantic_map;pancake_mix1"/>
+        <knowrob:eventOccursAt rdf:resource="&semRoom_semantic_map;rotationmatrix3d_104"/>
+        <knowrob:startTime rdf:resource="&semRoom_semantic_map;timepoint_1271159865.00"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#SemanticMapPerception_105 -->
+
+    <owl:NamedIndividual rdf:about="&semRoom_semantic_map;SemanticMapPerception_105">
+        <rdf:type rdf:resource="&knowrob;SemanticMapPerception"/>
+        <knowrob:objectActedOn rdf:resource="&semRoom_semantic_map;plate1"/>
+        <knowrob:eventOccursAt rdf:resource="&semRoom_semantic_map;rotationmatrix3d_105"/>
+        <knowrob:startTime rdf:resource="&semRoom_semantic_map;timepoint_1271159865.00"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#SemanticMapPerception_106 -->
+
+    <owl:NamedIndividual rdf:about="&semRoom_semantic_map;SemanticMapPerception_106">
+        <rdf:type rdf:resource="&knowrob;SemanticMapPerception"/>
+        <knowrob:objectActedOn rdf:resource="&semRoom_semantic_map;pancakemaker1"/>
+        <knowrob:eventOccursAt rdf:resource="&semRoom_semantic_map;rotationmatrix3d_106"/>
+        <knowrob:startTime rdf:resource="&semRoom_semantic_map;timepoint_1271159865.00"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#SemanticMapPerception_107 -->
+
+    <owl:NamedIndividual rdf:about="&semRoom_semantic_map;SemanticMapPerception_107">
+        <rdf:type rdf:resource="&knowrob;SemanticMapPerception"/>
+        <knowrob:eventOccursAt rdf:resource="&semRoom_semantic_map;rotationmatrix3d_107"/>
+        <knowrob:objectActedOn rdf:resource="&semRoom_semantic_map;spatula1"/>
+        <knowrob:startTime rdf:resource="&semRoom_semantic_map;timepoint_1271159865.00"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#SemanticMapPerception_34 -->
+
+    <owl:NamedIndividual rdf:about="&semRoom_semantic_map;SemanticMapPerception_34">
+        <rdf:type rdf:resource="&knowrob;SemanticMapPerception"/>
+        <knowrob:objectActedOn rdf:resource="&semRoom_semantic_map;drawer0"/>
+        <knowrob:eventOccursAt rdf:resource="&semRoom_semantic_map;rotationmatrix3d_35"/>
+        <knowrob:startTime rdf:resource="&semRoom_semantic_map;timepoint_1271159865.00"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#drawer0 -->
+
+    <owl:NamedIndividual rdf:about="&semRoom_semantic_map;drawer0">
+        <rdf:type rdf:resource="&knowrob;Drawer"/>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">0.13</knowrob:heightOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.47</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">1</knowrob:widthOfObject>
+        <knowrob:describedInMap rdf:resource="&semRoom_semantic_map;SemanticEnvironmentMap2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#pancake_mix1 -->
+
+    <owl:NamedIndividual rdf:about="&semRoom_semantic_map;pancake_mix1">
+        <rdf:type rdf:resource="&knowrob;PancakeMix"/>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">0.22</knowrob:heightOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">6</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">7</knowrob:widthOfObject>
+        <knowrob:describedInMap rdf:resource="&semRoom_semantic_map;SemanticEnvironmentMap2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#pancakemaker1 -->
+
+    <owl:NamedIndividual rdf:about="&semRoom_semantic_map;pancakemaker1">
+        <rdf:type rdf:resource="&semRoom_semantic_map;PancakeMaker"/>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">0.15</knowrob:heightOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.30</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.30</knowrob:widthOfObject>
+        <knowrob:describedInMap rdf:resource="&semRoom_semantic_map;SemanticEnvironmentMap2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#plate1 -->
+
+    <owl:NamedIndividual rdf:about="&semRoom_semantic_map;plate1">
+        <rdf:type rdf:resource="&knowrob;DinnerPlate"/>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">0.02</knowrob:heightOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.20</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.20</knowrob:widthOfObject>
+        <knowrob:describedInMap rdf:resource="&semRoom_semantic_map;SemanticEnvironmentMap2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#rotationmatrix3d_1 -->
+
+    <owl:NamedIndividual rdf:about="&semRoom_semantic_map;rotationmatrix3d_1">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:m23 rdf:datatype="&xsd;float">0</knowrob:m23>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m03 rdf:datatype="&xsd;float">0.0</knowrob:m03>
+        <knowrob:m13 rdf:datatype="&xsd;float">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m00 rdf:datatype="&xsd;float">1.0</knowrob:m00>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#rotationmatrix3d_102 -->
+
+    <owl:NamedIndividual rdf:about="&semRoom_semantic_map;rotationmatrix3d_102">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:m10 rdf:datatype="&xsd;float">0</knowrob:m10>
+        <knowrob:m12 rdf:datatype="&xsd;float">0</knowrob:m12>
+        <knowrob:m21 rdf:datatype="&xsd;float">0</knowrob:m21>
+        <knowrob:m20 rdf:datatype="&xsd;float">0</knowrob:m20>
+        <knowrob:m31 rdf:datatype="&xsd;float">0</knowrob:m31>
+        <knowrob:m30 rdf:datatype="&xsd;float">0</knowrob:m30>
+        <knowrob:m01 rdf:datatype="&xsd;float">0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;float">0</knowrob:m02>
+        <knowrob:m32 rdf:datatype="&xsd;float">0</knowrob:m32>
+        <knowrob:m23 rdf:datatype="&xsd;float">0.75</knowrob:m23>
+        <knowrob:m11 rdf:datatype="&xsd;float">1</knowrob:m11>
+        <knowrob:m33 rdf:datatype="&xsd;float">1</knowrob:m33>
+        <knowrob:m00 rdf:datatype="&xsd;float">1</knowrob:m00>
+        <knowrob:m22 rdf:datatype="&xsd;float">1</knowrob:m22>
+        <knowrob:m13 rdf:datatype="&xsd;float">1.50</knowrob:m13>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.875</knowrob:m03>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#rotationmatrix3d_103 -->
+
+    <owl:NamedIndividual rdf:about="&semRoom_semantic_map;rotationmatrix3d_103">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:m20 rdf:datatype="&xsd;float">0</knowrob:m20>
+        <knowrob:m31 rdf:datatype="&xsd;float">0</knowrob:m31>
+        <knowrob:m30 rdf:datatype="&xsd;float">0</knowrob:m30>
+        <knowrob:m02 rdf:datatype="&xsd;float">0</knowrob:m02>
+        <knowrob:m12 rdf:datatype="&xsd;float">0</knowrob:m12>
+        <knowrob:m01 rdf:datatype="&xsd;float">0</knowrob:m01>
+        <knowrob:m10 rdf:datatype="&xsd;float">0</knowrob:m10>
+        <knowrob:m32 rdf:datatype="&xsd;float">0</knowrob:m32>
+        <knowrob:m21 rdf:datatype="&xsd;float">0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;float">1</knowrob:m22>
+        <knowrob:m11 rdf:datatype="&xsd;float">1</knowrob:m11>
+        <knowrob:m00 rdf:datatype="&xsd;float">1</knowrob:m00>
+        <knowrob:m33 rdf:datatype="&xsd;float">1</knowrob:m33>
+        <knowrob:m23 rdf:datatype="&xsd;float">1.18</knowrob:m23>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.25</knowrob:m03>
+        <knowrob:m13 rdf:datatype="&xsd;float">1.50</knowrob:m13>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#rotationmatrix3d_104 -->
+
+    <owl:NamedIndividual rdf:about="&semRoom_semantic_map;rotationmatrix3d_104">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:m30 rdf:datatype="&xsd;float">0</knowrob:m30>
+        <knowrob:m02 rdf:datatype="&xsd;float">0</knowrob:m02>
+        <knowrob:m32 rdf:datatype="&xsd;float">0</knowrob:m32>
+        <knowrob:m01 rdf:datatype="&xsd;float">0</knowrob:m01>
+        <knowrob:m31 rdf:datatype="&xsd;float">0</knowrob:m31>
+        <knowrob:m12 rdf:datatype="&xsd;float">0</knowrob:m12>
+        <knowrob:m10 rdf:datatype="&xsd;float">0</knowrob:m10>
+        <knowrob:m20 rdf:datatype="&xsd;float">0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;float">0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;float">1</knowrob:m22>
+        <knowrob:m00 rdf:datatype="&xsd;float">1</knowrob:m00>
+        <knowrob:m11 rdf:datatype="&xsd;float">1</knowrob:m11>
+        <knowrob:m33 rdf:datatype="&xsd;float">1</knowrob:m33>
+        <knowrob:m23 rdf:datatype="&xsd;float">1.25</knowrob:m23>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.38</knowrob:m03>
+        <knowrob:m13 rdf:datatype="&xsd;float">1.40</knowrob:m13>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#rotationmatrix3d_105 -->
+
+    <owl:NamedIndividual rdf:about="&semRoom_semantic_map;rotationmatrix3d_105">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:m32 rdf:datatype="&xsd;float">0</knowrob:m32>
+        <knowrob:m01 rdf:datatype="&xsd;float">0</knowrob:m01>
+        <knowrob:m30 rdf:datatype="&xsd;float">0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;float">0</knowrob:m31>
+        <knowrob:m02 rdf:datatype="&xsd;float">0</knowrob:m02>
+        <knowrob:m12 rdf:datatype="&xsd;float">0</knowrob:m12>
+        <knowrob:m21 rdf:datatype="&xsd;float">0</knowrob:m21>
+        <knowrob:m10 rdf:datatype="&xsd;float">0</knowrob:m10>
+        <knowrob:m20 rdf:datatype="&xsd;float">0</knowrob:m20>
+        <knowrob:m00 rdf:datatype="&xsd;float">1</knowrob:m00>
+        <knowrob:m22 rdf:datatype="&xsd;float">1</knowrob:m22>
+        <knowrob:m11 rdf:datatype="&xsd;float">1</knowrob:m11>
+        <knowrob:m33 rdf:datatype="&xsd;float">1</knowrob:m33>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.20</knowrob:m03>
+        <knowrob:m13 rdf:datatype="&xsd;float">1.25</knowrob:m13>
+        <knowrob:m23 rdf:datatype="&xsd;float">1.27</knowrob:m23>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#rotationmatrix3d_106 -->
+
+    <owl:NamedIndividual rdf:about="&semRoom_semantic_map;rotationmatrix3d_106">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:m01 rdf:datatype="&xsd;float">0</knowrob:m01>
+        <knowrob:m12 rdf:datatype="&xsd;float">0</knowrob:m12>
+        <knowrob:m10 rdf:datatype="&xsd;float">0</knowrob:m10>
+        <knowrob:m31 rdf:datatype="&xsd;float">0</knowrob:m31>
+        <knowrob:m20 rdf:datatype="&xsd;float">0</knowrob:m20>
+        <knowrob:m32 rdf:datatype="&xsd;float">0</knowrob:m32>
+        <knowrob:m21 rdf:datatype="&xsd;float">0</knowrob:m21>
+        <knowrob:m30 rdf:datatype="&xsd;float">0</knowrob:m30>
+        <knowrob:m02 rdf:datatype="&xsd;float">0</knowrob:m02>
+        <knowrob:m00 rdf:datatype="&xsd;float">1</knowrob:m00>
+        <knowrob:m33 rdf:datatype="&xsd;float">1</knowrob:m33>
+        <knowrob:m11 rdf:datatype="&xsd;float">1</knowrob:m11>
+        <knowrob:m22 rdf:datatype="&xsd;float">1</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;float">1.25</knowrob:m23>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.27</knowrob:m03>
+        <knowrob:m13 rdf:datatype="&xsd;float">1.75</knowrob:m13>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#rotationmatrix3d_107 -->
+
+    <owl:NamedIndividual rdf:about="&semRoom_semantic_map;rotationmatrix3d_107">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:m20 rdf:datatype="&xsd;float">0</knowrob:m20>
+        <knowrob:m10 rdf:datatype="&xsd;float">0</knowrob:m10>
+        <knowrob:m21 rdf:datatype="&xsd;float">0</knowrob:m21>
+        <knowrob:m30 rdf:datatype="&xsd;float">0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;float">0</knowrob:m31>
+        <knowrob:m01 rdf:datatype="&xsd;float">0</knowrob:m01>
+        <knowrob:m12 rdf:datatype="&xsd;float">0</knowrob:m12>
+        <knowrob:m02 rdf:datatype="&xsd;float">0</knowrob:m02>
+        <knowrob:m32 rdf:datatype="&xsd;float">0</knowrob:m32>
+        <knowrob:m00 rdf:datatype="&xsd;float">1</knowrob:m00>
+        <knowrob:m33 rdf:datatype="&xsd;float">1</knowrob:m33>
+        <knowrob:m11 rdf:datatype="&xsd;float">1</knowrob:m11>
+        <knowrob:m22 rdf:datatype="&xsd;float">1</knowrob:m22>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.18</knowrob:m03>
+        <knowrob:m23 rdf:datatype="&xsd;float">1.28</knowrob:m23>
+        <knowrob:m13 rdf:datatype="&xsd;float">1.46</knowrob:m13>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#rotationmatrix3d_35 -->
+
+    <owl:NamedIndividual rdf:about="&semRoom_semantic_map;rotationmatrix3d_35">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:m01 rdf:datatype="&xsd;float">0.0</knowrob:m01>
+        <knowrob:m10 rdf:datatype="&xsd;float">0.0</knowrob:m10>
+        <knowrob:m02 rdf:datatype="&xsd;float">0.0</knowrob:m02>
+        <knowrob:m32 rdf:datatype="&xsd;float">0.0</knowrob:m32>
+        <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
+        <knowrob:m20 rdf:datatype="&xsd;float">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;float">0.0</knowrob:m21>
+        <knowrob:m31 rdf:datatype="&xsd;float">0.0</knowrob:m31>
+        <knowrob:m30 rdf:datatype="&xsd;float">0.0</knowrob:m30>
+        <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
+        <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
+        <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
+        <knowrob:m00 rdf:datatype="&xsd;float">1.0</knowrob:m00>
+        <knowrob:m23 rdf:datatype="&xsd;float">1.18</knowrob:m23>
+        <knowrob:m03 rdf:datatype="&xsd;float">1.25</knowrob:m03>
+        <knowrob:m13 rdf:datatype="&xsd;float">1.50</knowrob:m13>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#spatula1 -->
+
+    <owl:NamedIndividual rdf:about="&semRoom_semantic_map;spatula1">
+        <rdf:type rdf:resource="&knowrob;Spatula"/>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">0.015</knowrob:heightOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.03</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.05</knowrob:widthOfObject>
+        <knowrob:describedInMap rdf:resource="&semRoom_semantic_map;SemanticEnvironmentMap2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#table1 -->
+
+    <owl:NamedIndividual rdf:about="&semRoom_semantic_map;table1">
+        <rdf:type rdf:resource="&knowrob;KitchenTable"/>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">0.130</knowrob:heightOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.47</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">1.00</knowrob:widthOfObject>
+        <knowrob:describedInMap rdf:resource="&semRoom_semantic_map;SemanticEnvironmentMap2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#table2 -->
+
+    <owl:NamedIndividual rdf:about="&semRoom_semantic_map;table2">
+        <rdf:type rdf:resource="&knowrob;KitchenTable"/>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">0.75</knowrob:heightOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">1.40</knowrob:widthOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">1.80</knowrob:depthOfObject>
+        <knowrob:describedInMap rdf:resource="&semRoom_semantic_map;SemanticEnvironmentMap2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#timepoint_1271159865.00 -->
+
+    <owl:NamedIndividual rdf:about="&semRoom_semantic_map;timepoint_1271159865.00">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+        <knowrob:eventOccursAt rdf:resource="&semRoom_semantic_map;rotationmatrix3d_107"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.1.0.20069) http://owlapi.sourceforge.net -->
+
