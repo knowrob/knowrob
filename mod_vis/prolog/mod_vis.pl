@@ -379,4 +379,3 @@ highlight_object_with_children(Identifier, Highlight, Canvas) :-
 reset_highlighting(Canvas) :-
     ((var(Canvas)) -> (v_canvas(Canvas));(true)),
     jpl_call(Canvas, 'clearHighlight', [], _).
-

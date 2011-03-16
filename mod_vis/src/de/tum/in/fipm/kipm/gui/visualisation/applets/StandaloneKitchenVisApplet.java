@@ -442,7 +442,23 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
    */
   public void drawBackground() {
 	  clear();
- 	  addObjectWithChildren("'http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#SemanticEnvironmentMap0'");
+	// get the current semantic map
+		HashMap<String, Vector<Object>> tpe = PrologVisualizationCanvas.executeQuery(
+				"rdf_has(SUBJECT, rdf:type, knowrob:'SemanticEnvironmentMap')",null);
+		String type = null;
+		
+		// check if exists
+		try{
+			type = tpe.get("SUBJECT").get(0).toString();
+			//displayMessage("subject: "+tpe);
+			
+		} catch(Exception e) {
+			displayMessage("Semantic map not found");
+		}  
+		addObjectWithChildren(type);
+// 	  addObjectWithChildren("'http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#SemanticEnvironmentMap2'");
+//	  addObjectWithChildren("'http://ias.cs.tum.edu/kb/ias_semantic_map.owl#F360-Containers-revised-walls'");
+// 	  addObjectWithChildren("'http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#SemanticEnvironmentMap0'");
 // 	  addObjectWithChildren("'http://ias.cs.tum.edu/kb/ias_map_addons.owl#table0'");
   }
   
@@ -614,7 +630,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
   	{
   		queryString = identifier;
 		HashMap<String, Vector<Object>> c = PrologVisualizationCanvas.executeQuery(""+
-				"readPostureSeqForAction("+identifier+", P, EPISODENR, OCCURRENCENR, INSTANCENR, TIME, BECX, BECY, BECZ, ULWX, ULWY, ULWZ, OLWX, OLWY, OLWZ, UBWX, UBWY, UBWZ, OBWX, OBWY, OBWZ, UHWX, UHWY, UHWZ, BRKX, BRKY, BRKZ, OHWX, OHWY, OHWZ, KOX, KOY, KOZ, SEHX, SEHY, SEHZ, OSLX, OSLY, OSLZ, USLX, USLY, USLZ, FULX, FULY, FULZ, FBLX, FBLY, FBLZ, OSRX, OSRY, OSRZ, USRX, USRY, USRZ, FURX, FURY, FURZ, FBRX, FBRY, FBRZ, SBLX, SBLY, SBLZ, OALX, OALY, OALZ, UALX, UALY, UALZ, HALX, HALY, HALZ, FILX, FILY, FILZ, SBRX, SBRY, SBRZ, OARX, OARY, OARZ, UARX, UARY, UARZ, HARX, HARY, HARZ, FIRX, FIRY, FIRZ)"
+				"readPostureSeqForAction("+identifier+", P, EPISODENR, INSTANCENR, TIME, BECX, BECY, BECZ, ULWX, ULWY, ULWZ, OLWX, OLWY, OLWZ, UBWX, UBWY, UBWZ, OBWX, OBWY, OBWZ, UHWX, UHWY, UHWZ, BRKX, BRKY, BRKZ, OHWX, OHWY, OHWZ, KOX, KOY, KOZ, SEHX, SEHY, SEHZ, OSLX, OSLY, OSLZ, USLX, USLY, USLZ, FULX, FULY, FULZ, FBLX, FBLY, FBLZ, OSRX, OSRY, OSRZ, USRX, USRY, USRZ, FURX, FURY, FURZ, FBRX, FBRY, FBRZ, SBLX, SBLY, SBLZ, OALX, OALY, OALZ, UALX, UALY, UALZ, HALX, HALY, HALZ, FILX, FILY, FILZ, SBRX, SBRY, SBRZ, OARX, OARY, OARZ, UARX, UARY, UARZ, HARX, HARY, HARZ, FIRX, FIRY, FIRZ)"
 				,null);		
   		
 		if(c.get("TIME") == null)
@@ -712,11 +728,12 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
   	
   	public void addObject(String identifier) {
   		ItemBase item = getItem(identifier);
+  		//displayMessage("current identifier: "+identifier);
   		if(item != null) {
   			removeObject(identifier);  			
   			allItems.add(item);
   			animatedItemsRef.put(identifier, item);
-//  			displayMessage("added Item: "+identifier);
+ 			//displayMessage("added Item: "+identifier);
   		}
   	}
   	
@@ -864,7 +881,8 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
   		
   		// get type
   		HashMap<String, Vector<Object>> tpe = PrologVisualizationCanvas.executeQuery(
-  				"rdf_has("+identifier+", rdf:type, OBJECTCLASS)",null);
+  				"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," + 
+  				"OBJECTCLASS\\='http://www.w3.org/2002/07/owl#NamedIndividual'",null);
   		String type = null;
   		
 
@@ -873,6 +891,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
   		// check if exists
   		try{
   			type = tpe.get("OBJECTCLASS").get(0).toString();
+  			//displayMessage("Objectclass: "+type);
   		} catch(Exception e) {
   			displayMessage("item "+identifier+" not found");
   			return null;
@@ -891,7 +910,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
   		}
   			
   		// simple types
-  		ItemBase it =itemForObjType(type);
+   		ItemBase it =itemForObjType(type);
   		
   		
   		if(it!=null) {
@@ -1178,13 +1197,15 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
                 100*Float.valueOf(tables.get("D").get(0).toString()),
                 100*Float.valueOf(tables.get("W").get(0).toString()),
                 100*Float.valueOf(tables.get("H").get(0).toString()));
+          
+          int col = grayValues[(++grayLevelCounter) % grayValues.length];      
+          item.defaultColor = convertColor(col, col, col, 255);
+          item.setColor(item.defaultColor);
           item.name = identifier;
           return item;
       }
       
-      
-      
-
+     
       // check if it is a CounterTop
       HashMap<String, Vector<Object>> counter = PrologVisualizationCanvas.executeQuery(
     		  "rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
@@ -1321,8 +1342,8 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
       return b;
       }
       
-
-
+     
+    
     }
   		displayMessage("could not find how to add Item "+identifier+"\nType was: "+type);
   		return null;
@@ -1736,7 +1757,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 
   	ItemBase itemForObjType(String type) {
-  		
+  	  		
   		/////////////////////////////////////////////
   		// tableware
   		
@@ -1785,7 +1806,12 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
   			
   		} else if(type.endsWith("#CookingPot'")) {
   			return new CookingPot(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
-
+  			
+  		} else if(type.endsWith("#Spatula'")) {
+  			return new Spatula(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);	
+  			
+  		} else if(type.endsWith("#PancakeMaker'")) {
+  			return new PancakeMaker(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
   			
   			
   		/////////////////////////////////////////////
@@ -1806,6 +1832,8 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
   		} else if (type.endsWith("#BreakfastCereal'")) {
   			return new CerealBox(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
   			
+  		} else if (type.endsWith("#PancakeMix'")) {
+  			return new PancakeMix(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
   			
   			
   		/////////////////////////////////////////////
