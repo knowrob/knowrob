@@ -876,7 +876,7 @@ owl_gen_supers(Class, Visited, Super) :-
 owl_gen_subs(Class, _, Class).
 owl_gen_subs(Class, Visited, Sub) :-
 	owl_direct_subclass_of(Sub0, Class),
-	\+ memberchk(Sub0, Class),
+	\+ memberchk(Sub0, Visited),
 	owl_gen_subs(Sub0, [Sub0|Visited], Sub).
 
 
