@@ -510,19 +510,19 @@ in_all_domains([H|T], Resource) :-
 %	according the the OWL-Description entailment rules.
 
 owl_individual_of(Resource, Thing) :-
-	rdf_equal(Thing, owl:'Thing'), !,
+	rdf_equal(Thing, owl:'Thing'), %!, MT 16032011
 	(   atom(Resource)
 	->  true
 	;   rdf_subject(Resource)
 	).
 owl_individual_of(_Resource, Nothing) :-
-	rdf_equal(Nothing, owl:'Nothing'), !,
+	rdf_equal(Nothing, owl:'Nothing'), %!, MT 16032011
 	fail.
 owl_individual_of(Resource, Description) :-			% RDFS
 	rdfs_individual_of(Resource, Description).
 owl_individual_of(Resource, Class) :-
 	nonvar(Resource),
-	setof(C, rdf_has(Resource, rdf:type, C), Cs), !,
+	setof(C, rdf_has(Resource, rdf:type, C), Cs), %!, MT 16032011
 	member(C, Cs),
 	owl_subclass_of(C, Class).
 owl_individual_of(Resource, Class) :-
