@@ -26,7 +26,7 @@
      xmlns:srdl2-comp="http://ias.cs.tum.edu/kb/srdl2-comp.owl#"
      xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#">
     <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl">
-        <owl:imports rdf:resource="file:///work/overlay/stacks/knowrob/mod_srdl/owl/srdl2-comp.owl"/>
+        <owl:imports rdf:resource="file:///home/tenorth/work/ros/knowrob/mod_srdl/owl/srdl2-comp.owl"/>
     </owl:Ontology>
     
 
