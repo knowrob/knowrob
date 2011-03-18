@@ -26,7 +26,7 @@
      xmlns:srdl2-comp="http://ias.cs.tum.edu/kb/srdl2-comp.owl#"
      xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#">
     <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl">
-        <owl:imports rdf:resource="file:///home/tenorth/work/ros/knowrob/mod_srdl/owl/srdl2-comp.owl"/>
+        <owl:imports rdf:resource="file:///work/overlay/stacks/knowrob/mod_srdl/owl/srdl2-comp.owl"/>
     </owl:Ontology>
     
 
@@ -302,6 +302,14 @@
     
 
 
+    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#HeadMotionCapability -->
+
+    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#HeadMotionCapability">
+        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#BodyMotionCapability"/>
+    </owl:Class>
+    
+
+
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#LocalizationCapability -->
 
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#LocalizationCapability">
@@ -349,13 +357,13 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#dependsOnCapability"/>
-                <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#GripperMotionCapability"/>
+                <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ArmMotionCapability"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#dependsOnCapability"/>
-                <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ArmMotionCapability"/>
+                <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#GripperMotionCapability"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -369,13 +377,13 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;ObjectRecognitionModel"/>
+                <owl:someValuesFrom rdf:resource="&srdl2-comp;ObjectRecognitionComponent"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-comp;ObjectRecognitionComponent"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;ObjectRecognitionModel"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -444,6 +452,44 @@
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#PuttingDownAnObjectCapability">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability"/>
     </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#gripper_action -->
+
+    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#gripper_action">
+        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#GripperMotionCapability"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#move_arm -->
+
+    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#move_arm">
+        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionFreeArmMotionCapability"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#move_base -->
+
+    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#move_base">
+        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionFreeNavigationCapability"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#point_head_action -->
+
+    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#point_head_action">
+        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#HeadMotionCapability"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2.owl#MovingBase -->
+
+    <owl:Class rdf:about="&srdl2;MovingBase"/>
     
 
 
