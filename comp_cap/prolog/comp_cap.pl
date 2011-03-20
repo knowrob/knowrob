@@ -29,7 +29,7 @@
 % 
 comp_move_base(Inst, 'http://ias.cs.tum.edu/kb/SRDL_capability.owl#move_base') :-
   jpl_new('edu.tum.cs.ias.knowrob.comp_cap.CapabilityBase',[], CapabilityBase),
-  jpl_call(CapabilityBase, 'cap_move_base', ['1'], Res),
+  jpl_call(CapabilityBase, 'cap_move_base', [], Res),
   jpl_is_true(Res),
   rdfs_instance_from_class('http://ias.cs.tum.edu/kb/SRDL_capability.owl#move_base',Inst).
 
@@ -41,7 +41,7 @@ comp_move_base(Inst, 'http://ias.cs.tum.edu/kb/SRDL_capability.owl#move_base') :
 % @param 
 % 
 comp_move_arm(Inst, 'http://ias.cs.tum.edu/kb/SRDL_capability.owl#move_arm') :-
-  jpl_new(class([java,lang],['edu.tum.cs.ias.knowrob.comp_cap.CapabilityBase']),[''], CapabilityBase),
-  jpl_call(CapabilityBase, 'cap_move_arm', ['0'], Res),
+  jpl_new('edu.tum.cs.ias.knowrob.comp_cap.CapabilityBase',[], CapabilityBase),
+  jpl_call(CapabilityBase, 'cap_move_arm', [], Res),
   jpl_is_true(Res),
   rdfs_instance_from_class('http://ias.cs.tum.edu/kb/SRDL_capability.owl#move_arm',Inst).

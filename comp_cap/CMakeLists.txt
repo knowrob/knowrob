@@ -55,6 +55,7 @@ add_classpath(${rosjava_PACKAGE_PATH}/bin)
 
 
 rospack_add_java_executable(CapabilityBase edu.tum.cs.ias.knowrob.comp_cap.CapabilityBase)
+rospack_add_java_executable(CapROSClient edu.tum.cs.ias.knowrob.comp_cap.CapROSClient)
 
 add_java_source_dir(${PROJECT_SOURCE_DIR}/src)
 
