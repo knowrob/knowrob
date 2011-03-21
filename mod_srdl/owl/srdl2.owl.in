@@ -20,7 +20,7 @@
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/srdl2.owl">
-        <owl:imports rdf:resource="file:///work/overlay/stacks/knowrob/ias_knowledge_base/owl/knowrob.owl"/>
+        <owl:imports rdf:resource="file://@IAS_KB_PACKAGE_PATH@/owl/knowrob.owl"/>
     </owl:Ontology>
     
 

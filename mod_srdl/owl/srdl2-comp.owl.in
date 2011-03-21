@@ -24,7 +24,7 @@
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#">
     <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl">
-        <owl:imports rdf:resource="file:///work/overlay/stacks/knowrob/mod_srdl/owl/srdl2.owl"/>
+        <owl:imports rdf:resource="file://@SRDL_PACKAGE_PATH@/owl/srdl2.owl"/>
     </owl:Ontology>
     
 
