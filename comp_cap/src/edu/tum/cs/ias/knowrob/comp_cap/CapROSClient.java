@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import ros.*;
 
+@Deprecated
 public class CapROSClient {
 	boolean isInitialized = false;
 
@@ -20,7 +21,9 @@ public class CapROSClient {
 		node = ros.createNodeHandle();
 	}
 
-
+	/*
+	 * Gibt nicht alle topics zurück warum??
+	 */
 	public ArrayList<String> getTopics() {
 		ArrayList<String> topics = new ArrayList<String>();
 		Collection<Topic> help;

@@ -6,21 +6,12 @@ import java.util.ArrayList;
 public class CapabilityBase {
 	CapROSClient ros;
 
-	String fileName;
-	String directory;
-
 	public CapabilityBase() {
-		directory = "/tmp";
-		fileName = "topics.txt";
-
-		ros = new CapROSClient("CapRosClient");
+		// ros = new CapROSClient("CapRosClient");
 	}
 
-	public CapabilityBase(String directory, String filename, String nodeName) {
-		this.fileName = filename;
-		this.directory = directory;
-
-		ros = new CapROSClient(nodeName);
+	public CapabilityBase(String nodeName) {
+		// ros = new CapROSClient(nodeName);
 	}
 
 	public boolean cap_move_base() {
@@ -36,24 +27,10 @@ public class CapabilityBase {
 		String[] subscribed = { "/move_base/goal", "/move_base/cancel",
 				"/move_base_simple/goal" };
 
-		// /*
-		// * check for subscriped Topics
-		// */
-		// this.publishedTopics = this.checkPublishedTopics(published);
-		// if (!this.publishedTopics)
-		// return false;
-		//
-		// /*
-		// * check for published Topics
-		// */
-		// this.subscripedTopics = this.checkSubscribedTopics(subscribed);
-		// if (!this.subscripedTopics)
-		// return false;
-		//
-		// /*
-		// * return result
-		// */
-		return (this.checkDependencies(dependencies, this.ros.getTopics()));
+		return (this.checkDependencies(dependencies, this
+				.executeCommand("rostopic list"))
+				&& this.checkPublishedTopics(published) && this
+				.checkSubscribedTopics(subscribed));
 	}
 
 	public boolean cap_move_arm() {
@@ -63,13 +40,10 @@ public class CapabilityBase {
 		// "move_arm/result" };
 		// String[] subscribed = { "move_arm/goal", "move_arm/cancel" };
 
-		return (this.cap_move_l_arm() && this.cap_move_r_arm());
+		return (this.cap_move_left_arm() && this.cap_move_right_arm());
 	}
 
-	public boolean cap_move_l_arm() {
-		/*
-		 * Create String-Arrays
-		 */
+	public boolean cap_move_left_arm() {
 		String[] dependencies = { "/move_left_arm/goal",
 				"/move_left_arm/cancel", "/move_left_arm/feedback",
 				"/move_left_arm/status", "/move_left_arm/result" };
@@ -77,32 +51,13 @@ public class CapabilityBase {
 				"/move_left_arm/status", "/move_left_arm/result" };
 		String[] subscribed = { "/move_left_arm/goal", "/move_left_arm/cancel" };
 
-		// /*
-		// * check for subscriped Topics
-		// */
-		// this.publishedTopics = this.checkPublishedTopics(published);
-		// if (!this.publishedTopics)
-		// return false;
-		//
-		// /*
-		// * check for published Topics
-		// */
-		// this.subscripedTopics = this.checkSubscribedTopics(subscribed);
-		// if (!this.subscripedTopics)
-		// return false;
-		//
-		// /*
-		// * return result
-		// */
-
-		// return (existTopics && publishedTopics && subscripedTopics);
-		return (this.checkDependencies(dependencies, this.ros.getTopics()));
+		return (this.checkDependencies(dependencies, this
+				.executeCommand("rostopic list"))
+				&& this.checkPublishedTopics(published) && this
+				.checkSubscribedTopics(subscribed));
 	}
 
-	public boolean cap_move_r_arm() {
-		/*
-		 * Create String-Arrays
-		 */
+	public boolean cap_move_right_arm() {
 		String[] dependencies = { "/move_right_arm/goal",
 				"/move_right_arm/cancel", "/move_right_arm/feedback",
 				"/move_right_arm/status", "/move_right_arm/result" };
@@ -111,35 +66,21 @@ public class CapabilityBase {
 		String[] subscribed = { "/move_right_arm/goal",
 				"/move_right_arm/cancel" };
 
-		// /*
-		// * check for subscriped Topics
-		// */
-		// this.publishedTopics = this.checkPublishedTopics(published);
-		// if (!this.publishedTopics)
-		// return false;
-		//
-		// /*
-		// * check for published Topics
-		// */
-		// this.subscripedTopics = this.checkSubscribedTopics(subscribed);
-		// if (!this.subscripedTopics)
-		// return false;
-		//
-		// /*
-		// * return result
-		// */
-
-		// return (existTopics && publishedTopics && subscripedTopics);
-		return (this.checkDependencies(dependencies, this.ros.getTopics()));
+		return (this.checkDependencies(dependencies, this
+				.executeCommand("rostopic list"))
+				&& this.checkPublishedTopics(published) && this
+				.checkSubscribedTopics(subscribed));
 	}
 
+	public boolean cap_grasp_execution(){
+		return true;
+	}
+	
 	private boolean checkPublishedTopics(String[] published) {
 		ArrayList<String> topic_info = null;
 		for (String p : published) {
-			this.executeCommand("rostopic info " + p + " > " + this.directory
-					+ "/published.txt");
 			try {
-				topic_info = this.FileReader(this.directory + "/published.txt");
+				topic_info = this.executeCommand("rostopic info " + p);
 			} catch (Exception e) {
 			}
 
@@ -153,11 +94,8 @@ public class CapabilityBase {
 	private boolean checkSubscribedTopics(String[] subscribed) {
 		ArrayList<String> topic_info = null;
 		for (String s : subscribed) {
-			this.executeCommand("rostopic info " + s + " > " + this.directory
-					+ "/subscribed.txt");
 			try {
-				topic_info = this
-						.FileReader(this.directory + "/subscribed.txt");
+				topic_info = this.executeCommand("rostopic info " + s);
 			} catch (Exception e) {
 			}
 
@@ -168,18 +106,41 @@ public class CapabilityBase {
 		return true;
 	}
 
-	private void executeCommand(String command) {
+	private ArrayList<String> executeCommand(String command) {
+		ArrayList<String> output = new ArrayList<String>();
+		String s = null;
+
 		try {
-			Runtime rt = Runtime.getRuntime();
-			Process p = rt.exec(command);
-			p.waitFor();
-		} catch (Exception e) {
+			String[] command1 = { "bash", "-c", command };
+			Process p = Runtime.getRuntime().exec(command1);
+
+			BufferedReader stdInput = new BufferedReader(new InputStreamReader(
+					p.getInputStream()));
+
+			BufferedReader stdError = new BufferedReader(new InputStreamReader(
+					p.getErrorStream()));
+
+			// read the output from the command and write it to output
+			while ((s = stdInput.readLine()) != null) {
+				output.add(s);
+			}
+
+			// read any errors from the attempted command
+
+			while ((s = stdError.readLine()) != null) {
+			}
+
+			return output;
+		} catch (IOException e) {
+			System.out.println("exception happened - here's what I know: ");
+			e.printStackTrace();
+			return null;
 		}
 	}
 
 	private boolean existLineInFile(String dependence, ArrayList<String> file) {
-		for(String s : file){
-			if(s.equalsIgnoreCase(dependence))
+		for (String s : file) {
+			if (s.equalsIgnoreCase(dependence))
 				return true;
 		}
 		return false;
@@ -190,11 +151,11 @@ public class CapabilityBase {
 		for (String d : dependencies) {
 			if (!this.existLineInFile(d, topics))
 				return false;
-
 		}
 		return true;
 	}
 
+	@Deprecated
 	private ArrayList<String> FileReader(String path) throws Exception {
 		String line;
 		ArrayList<String> listLines = new ArrayList<String>();

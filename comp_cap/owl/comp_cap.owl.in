@@ -35,7 +35,6 @@
       <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
       <computable:target rdf:resource="http://ias.cs.tum.edu/kb/SRDL_capability.owl#move_base"/>
     </computable:PrologClass>   
-  
 
     <computable:PrologClass rdf:about="#computeMove_Arm">
       <computable:command rdf:datatype="&xsd;string">comp_cap:comp_move_arm</computable:command>
@@ -43,5 +42,12 @@
       <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
       <computable:target rdf:resource="http://ias.cs.tum.edu/kb/SRDL_capability.owl#move_arm"/>
     </computable:PrologClass> 
+    
+    <computable:PrologClass rdf:about="#computeGrasp_Executon">
+      <computable:command rdf:datatype="&xsd;string">comp_cap:comp_grasp_execution</computable:command>
+      <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
+      <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+      <computable:target rdf:resource="http://ias.cs.tum.edu/kb/SRDL_capability.owl#grasp_execution"/>
+    </computable:PrologClass>
 
 </rdf:RDF>
