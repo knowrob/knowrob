@@ -597,8 +597,9 @@ owl_has(S, P, O) :-
 	->  rdf_current_predicate(P)
 	;   true
 	),
-	rdf_reachable(SP, rdfs:subPropertyOf, P),
-	owl_has_transitive(S, SP, O).
+% 	rdf_reachable(SP, rdfs:subPropertyOf, P),
+% 	owl_has_transitive(S, SP, O).
+  owl_has_transitive(S, P, O).
 
 
 %%	owl_has_transitive(?Subject, ?Predicate, ?Object)
@@ -613,8 +614,9 @@ owl_has_transitive(S, P, O) :-
 	owl_has_equivalent(S, P, O).
 
 owl_has_transitive(S, P, O, Visited) :-
-	owl_has_equivalent(S, P, O1),
-	O1 \= literal(_),
+  rdf_reachable(SP, rdfs:subPropertyOf, P),
+	owl_has_equivalent(S, SP, O1),          % MT: pulled the rdfs_subprop_of in here to allow transitive sup-property chains
+	O1 \= literal(_),                       %     of the form P -> SP1 -> SP2 -> P ->... with SP1, SP2 transitive sub-properties of P
 	\+ memberchk(O1, Visited),
 	(   O = O1
 	;   owl_has_transitive(O1, P, O, [O1|Visited])
