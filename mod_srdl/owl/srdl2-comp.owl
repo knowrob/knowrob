@@ -132,6 +132,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
     <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#succeedingJoint -->
 
     <owl:ObjectProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#succeedingJoint">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
         <rdfs:range rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#UrdfJoint"/>
         <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#UrdfLink"/>
         <owl:inverseOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#precedingLink"/>
@@ -143,6 +144,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
     <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#succeedingLink -->
 
     <owl:ObjectProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#succeedingLink">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
         <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#UrdfJoint"/>
         <rdfs:range rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#UrdfLink"/>
         <rdfs:subPropertyOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#successorInKinematicChain"/>
@@ -497,8 +499,6 @@ Example: hand that is made of several links and joints</rdfs:comment>
         <rdfs:comment>Software components that controls the robot&#39;s motions, from single motions up to the task level</rdfs:comment>
     </owl:Class>
     
-
-
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#DlrHitHand -->
@@ -1248,22 +1248,6 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
 
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#UrdfJoint">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#UrdfComponent"/>
-        <rdfs:subClassOf>
-            <owl:Class>
-                <owl:intersectionOf rdf:parseType="Collection">
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#precedingLink"/>
-                        <owl:onClass rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#UrdfLink"/>
-                        <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
-                    </owl:Restriction>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#succeedingLink"/>
-                        <owl:onClass rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#UrdfLink"/>
-                        <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
-                    </owl:Restriction>
-                </owl:intersectionOf>
-            </owl:Class>
-        </rdfs:subClassOf>
     </owl:Class>
     
 

@@ -23,7 +23,7 @@
      xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#">
     <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/ChocolateCakeBaking.owl">
         <rdfs:comment rdf:datatype="&rdf;PlainLiteral">Description of a chocolate cake baking task</rdfs:comment>
-        <owl:imports rdf:resource="file:///home/tenorth/work/ros/knowrob/mod_srdl/owl/srdl2-action.owl"/>
+        <owl:imports rdf:resource="file://@SRDL_PACKAGE_PATH@/owl/srdl2-action.owl"/>
     </owl:Ontology>
     
 

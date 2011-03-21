@@ -121,13 +121,13 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-comp;ArmComponent"/>
+                <owl:someValuesFrom rdf:resource="&srdl2-comp;ArmMotionController"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-comp;ArmMotionController"/>
+                <owl:someValuesFrom rdf:resource="&srdl2-comp;ArmComponent"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -155,7 +155,7 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="&srdl2;MovingBase"/>
+                <owl:someValuesFrom rdf:resource="&srdl2-comp;MobileBase"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -330,14 +330,14 @@
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#dependsOnCapability"/>
-                <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#LocalizationCapability"/>
+                <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
+                <owl:someValuesFrom rdf:resource="&srdl2-comp;NavigationComponent"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-comp;NavigationComponent"/>
+                <owl:onProperty rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#LocalizationCapability"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -377,13 +377,13 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-comp;ObjectRecognitionComponent"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;ObjectRecognitionModel"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;ObjectRecognitionModel"/>
+                <owl:someValuesFrom rdf:resource="&srdl2-comp;ObjectRecognitionComponent"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
