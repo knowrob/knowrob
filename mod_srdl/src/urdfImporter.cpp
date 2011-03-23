@@ -12,11 +12,11 @@ using namespace std;
 // name definitions for owl uris, classes and properties
 #define INTENDATION_STEP 4 // how much blanks are used as one intendation step in XML file
 #define HTTP "http:/"
-#define SRDL_COMP_URI "/ias.cs.tum.edu/kb/SRDL_component.owl"
-#define SRDL_COMP "SRDL_component"
-#define HAS_SUCCEEDING_LINK_NAME "hasSucceedingLink"
-#define HAS_SUCCEEDING_JOINT_NAME "hasSucceedingJoint"
-#define HAS_SUCCESSOR_NAME "hasSuccessorInKinematicChain"
+#define SRDL_COMP_URI "/ias.cs.tum.edu/kb/srdl2-comp.owl"
+#define SRDL_COMP "srdl2comp"
+#define HAS_SUCCEEDING_LINK_NAME "succeedingLink"
+#define HAS_SUCCEEDING_JOINT_NAME "succeedingJoint"
+#define HAS_SUCCESSOR_NAME "successorInKinematicChain"
 #define LINK_NAME "UrdfLink"
 #define JOINT_NAME "UrdfJoint"
 #define REVOLUTE_JOINT_NAME "RevoluteUrdfJoint"
@@ -25,7 +25,7 @@ using namespace std;
 #define FIXED_JOINT_NAME "FixedUrdfJoint" 
 #define FLOATING_JOINT_NAME "FloatingUrdfJoint"
 #define PLANAR_JOINT_NAME "PlanarUrdfJoint"
-#define HAS_URDF_NAME "hasUrdfName"
+#define HAS_URDF_NAME "urdfName"
 
 
 class urdfImporter{
@@ -61,7 +61,7 @@ class urdfImporter{
 
         // Creating file
         //ROS_INFO("Creating owl file ...");
-        cout << "Please enter file name of ontology file:";
+        cout << "Please enter file name of ontology file: ";
         getline(cin, ontologyFilename);
         //ontologyFilename = "ont.owl"; 
         out.open(ontologyFilename.c_str());
@@ -89,13 +89,13 @@ class urdfImporter{
       
         // Read needed information from user 
         // Read Ontology URL
-        cout << "Please enter ontology url (will be used in exactly the entered way):";
+        cout << "Please enter ontology url: ";
         getline(cin, ontologyUri); 
         //ontologyUri = "http://ont.owl";
         // Read Path to SRDL ontology
-        srdlUri = "file:///usr/stud/roehm/ros/tumros-internal/stacks/knowrob/mod_srdl/owl/SRDL.owl"; 
-        //cout << "Please enter path of SRDL ontology (will be used in exactly the entered way):";
-        //getline(cin, srdlUri); 
+        //srdlUri = "file:///usr/stud/roehm/ros/tumros-internal/stacks/knowrob/mod_srdl/owl/SRDL.owl"; 
+        cout << "Please enter the path to the srdl2-cap.owl ontology: ";
+        getline(cin, srdlUri);
 
        // write
        out << "<?xml version=\"1.0\"?>\n\n";
@@ -112,7 +112,7 @@ class urdfImporter{
               "  xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"\n" <<
               "  xmlns:" << SRDL_COMP << "=\"" << HTTP << SRDL_COMP_URI << "#\">\n\n";
        out << "  <owl:Ontology rdf:about=\"\"> \n" <<
-              "    <owl:imports rdf:resource=\"" << srdlUri << "\"/>\n" <<
+              "    <owl:imports rdf:resource=\"file://" << srdlUri << "\"/>\n" <<
               "  </owl:Ontology>\n\n";
     }
 
@@ -133,7 +133,7 @@ class urdfImporter{
     void writeModel() {
 
         // ask for a name prefix
-        cout << "Please enter a prefix that will be put in front of all instance names:";
+        cout << "Please enter a prefix that will be put in front of all instance names: ";
         getline(cin, namePrefix); 
         //namePrefix = "PR2_";
  
@@ -195,7 +195,7 @@ class urdfImporter{
             //<!-- http://www.semanticweb.org/ontologies/2010/5/21/Ontology1277133023832.owl#Link1 -->
             out << "    <!-- " << ontologyUri << "#" << linkName << " -->\n";
             //<owl:Thing rdf:about="#Link1">
-            out << "    <owl:Thing rdf:about=\"#" << linkName << "\">\n";
+            out << "    <owl:NamedIndividual rdf:about=\"#" << linkName << "\">\n";
             //<rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
             out << "        <rdf:type rdf:resource=\"&" << SRDL_COMP << ";" << LINK_NAME << "\"/>\n";
             // <SRDL_component:hasUrdfName>Dummy_Name</SRDL_component:hasUrdfName>
@@ -208,11 +208,11 @@ class urdfImporter{
 
                 //<SRDL_component:hasSucceedingJoint rdf:resource="#Joint12"/>
                 out << "        <" << SRDL_COMP << ":" << HAS_SUCCEEDING_JOINT_NAME << " rdf:resource=\"#" << jointName << "\"/>\n";
-                out << "        <" << SRDL_COMP << ":" << HAS_SUCCESSOR_NAME << " rdf:resource=\"#" << jointName << "\"/>\n";
+//                 out << "        <" << SRDL_COMP << ":" << HAS_SUCCESSOR_NAME << " rdf:resource=\"#" << jointName << "\"/>\n";
             } 
 
             //</owl:Thing>
-            out << "    </owl:Thing>\n\n";
+            out << "    </owl:NamedIndividual>\n\n";
         }
 
         // Joints
@@ -259,16 +259,16 @@ class urdfImporter{
             //<!-- http://www.semanticweb.org/ontologies/2010/5/21/Ontology1277133023832.owl#JointBase1 -->
             out << "    <!-- " << ontologyUri << "#" << jointName << " -->\n";
             //<owl:Thing rdf:about="#JointBase1">
-            out << "    <owl:Thing rdf:about=\"#" << jointName << "\">\n";
+            out << "    <owl:NamedIndividual rdf:about=\"#" << jointName << "\">\n";
             //<rdf:type rdf:resource="&SRDL_component;UrdfJoint"/>
             out << "        <rdf:type rdf:resource=\"&" << SRDL_COMP << ";" << jointTypeName << "\"/>\n";
             // <SRDL_component:hasUrdfName>Dummy_Name</SRDL_component:hasUrdfName>
             out << "        <"  << SRDL_COMP << ":" << HAS_URDF_NAME << ">" << jointKey << "</" << SRDL_COMP << ":" << HAS_URDF_NAME << ">\n" ;
             //<SRDL_component:hasSucceedingLink rdf:resource="#Link1"/>
             out << "        <" << SRDL_COMP << ":" << HAS_SUCCEEDING_LINK_NAME << " rdf:resource=\"#" << childLinkName << "\"/>\n";
-            out << "        <" << SRDL_COMP << ":" << HAS_SUCCESSOR_NAME << " rdf:resource=\"#" << childLinkName << "\"/>\n";
+//             out << "        <" << SRDL_COMP << ":" << HAS_SUCCESSOR_NAME << " rdf:resource=\"#" << childLinkName << "\"/>\n";
             //</owl:Thing>
-            out << "    </owl:Thing>\n\n";
+            out << "    </owl:NamedIndividual>\n\n";
         } 
     }
 
