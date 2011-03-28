@@ -38,10 +38,10 @@
 action_effects(Action, PostActors) :-
 
   % project what is happening when performing the action
-  project_action(Action),
+  project_action_effects(Action),
 
   % check for processes that got triggered
-  process,
+  project_process_effects,
 
   rdf_has(Action, knowrob:postActors, PostActors).
 
