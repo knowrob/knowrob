@@ -211,6 +211,20 @@ add_object_with_children(Identifier, Canvas) :-
     ((var(Canvas)) -> (v_canvas(Canvas));(true)),
     jpl_call(Canvas, 'addObjectWithChildren', [Identifier], _).
 
+%% add_trajectory(+Identifiers, +Canvas) is nondet.
+%
+% Add a trajectory as a list of point identifiers to the scene
+%
+% @param Identifiers List of point identifiers, eg. "http://ias.cs.tum.edu/kb/ias_semantic_map.owl#point3d1"
+% @param Canvas      Visualization canvas
+%
+add_trajectory(Identifiers, Canvas) :-
+    jpl_list_to_array(Identifiers, TrajArray),
+    ((var(Canvas)) -> (v_canvas(Canvas));(true)),
+    jpl_call(Canvas, 'addTrajectory', [TrajArray], _).
+
+
+
 
 %% remove_object(+Identifier, +Canvas) is det.
 %  

@@ -15,6 +15,7 @@ import controlP5.ControlEvent;
 import controlP5.Textlabel;
 import de.tum.in.fipm.kipm.gui.visualisation.applets.ActionVisApplet;
 import de.tum.in.fipm.kipm.gui.visualisation.applets.StandaloneKitchenVisApplet;
+import de.tum.in.fipm.kipm.gui.visualisation.items.ItemBase;
 
 import processing.core.*;
 import jpl.Query;
@@ -144,6 +145,23 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
      */
     public void addObjectWithChildren(String identifier) {
     	KVObject.addObjectWithChildren(addSingleQuotes(identifier));
+    	KVObject.redraw();
+    }
+    
+    /**
+     * adds Trajectory to scene.
+     * @param identifier List of identifiers, eg. "http://ias.cs.tum.edu/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
+     */
+    public void addTrajectory(String[] identifiers){
+    	
+  		for(String identifier : identifiers) {
+  			
+  			addObject(identifier);
+  			
+  			// draw in yellow
+  			KVObject.highlightItem(addSingleQuotes(identifier), true, StandaloneKitchenVisApplet.convertColor(255, 221, 0, 255));
+
+  		}
     	KVObject.redraw();
     }
     

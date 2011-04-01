@@ -737,6 +737,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
   		}
   	}
   	
+  	
   	public void addObjectWithChildren(String identifier) {
   		HashMap<String, Vector<Object>> physicalParts = PrologVisualizationCanvas.executeQuery(
   				"rdf_reachable("+identifier+", knowrob:properPhysicalPartTypes, PART)",null);
@@ -1111,7 +1112,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	        "atom_to_term(_W,W,_), atom_to_term(_H,H,_), atom_to_term(_D,D,_)", null);
       if (knobs.get("M00") != null && knobs.get("M00").size() > 0)
       {
-        ItemBase item = new SphereHandle(
+        ItemBase item = new Sphere(
                 Float.valueOf(knobs.get("M00").get(0).toString()),
                 Float.valueOf(knobs.get("M01").get(0).toString()),
                 Float.valueOf(knobs.get("M02").get(0).toString()),
@@ -1881,7 +1882,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
   			return new Bread(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
       } else if (type.endsWith("#CowsMilk-Product'")) {
-        return new Tetrapak(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
+	        return new Tetrapak(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
   			
   		/////////////////////////////////////////////
@@ -1899,6 +1900,9 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
   		} else if(type.endsWith("#Place'")) {
 			return new Ellipse(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
+			
+		} else if(type.endsWith("#Point3D'")) {
+			return new Sphere(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  3f,3f,3f);
 		}
 		return null;	
 

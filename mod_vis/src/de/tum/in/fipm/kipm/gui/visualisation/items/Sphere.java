@@ -2,12 +2,12 @@ package de.tum.in.fipm.kipm.gui.visualisation.items;
 
 import edu.tum.cs.vis.Canvas;
 
-public class SphereHandle extends Handle {
+public class Sphere extends Handle {
 
 
 	private float radius;
 
-	public SphereHandle(float m00, float m01, float m02, float m03, float m10,
+	public Sphere(float m00, float m01, float m02, float m03, float m10,
 			float m11, float m12, float m13, float m20, float m21, float m22,
 			float m23, float m30, float m31, float m32, float m33, float xdim,
 			float ydim, float zdim) {
@@ -20,7 +20,7 @@ public class SphereHandle extends Handle {
 
 	@Override
 	public void drawIt(Canvas c) {
-		
+				
 		c.sphere(radius);
 	}
 }
