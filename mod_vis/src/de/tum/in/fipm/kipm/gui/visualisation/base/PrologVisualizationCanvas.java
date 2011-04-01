@@ -209,10 +209,11 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
     public void highlight(String identifier, boolean highlight, int r, int g, int b, String prob) {
     	
     	// show prob by alpha channel
-      // int c = (((((alpha << 8) + r) << 8) + g) << 8) + b;
+    	int alpha = (int) (255 * Float.valueOf(prob)); 
+        int c = (((((alpha << 8) + r) << 8) + g) << 8) + b;
 
     	// show prob by hue
-    	int c = HSVtoRGB (1-Float.valueOf(prob), 1.0f, 1.0f)+ 0xFF000000;
+    	//int c = HSVtoRGB (1-Float.valueOf(prob), 1.0f, 1.0f)+ 0xFF000000;
 
     	KVObject.highlightItem(addSingleQuotes(identifier),highlight, c);
       KVObject.redraw();

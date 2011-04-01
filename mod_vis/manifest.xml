@@ -20,7 +20,7 @@
   <depend package="rosjava"/>
 
   <export>
-    <java classpath="${prefix}/bin:${prefix}/lib/controlP5.jar:${prefix}/lib/core.jar:${prefix}/lib/vecmath.jar"/>
+    <java classpath="${prefix}/bin:${prefix}/lib/controlP5.jar:${prefix}/lib/core.jar:${prefix}/lib/vecmath.jar:${prefix}/lib/itext.jar:${prefix}/lib/pdf.jar"/>
     <rosdoc config="rosdoc.yaml" />
   </export>
 
