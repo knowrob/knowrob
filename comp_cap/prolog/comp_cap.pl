@@ -12,6 +12,7 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs_computable')).
 :- use_module(library('jpl')).
+:- use_module(library('srdl2')).
 :- jpl_set_default_jvm_opts(['-Xmx2048M']).
 
 :- owl_parser:owl_parse('../owl/comp_cap.owl', false, false, true).
@@ -27,7 +28,7 @@
 % @param
 % @param 
 % 
-comp_move_base(Inst, 'http://ias.cs.tum.edu/kb/SRDL_capability.owl#move_base') :-
+comp_move_base(Inst, 'http://ias.cs.tum.edu/kb/srdl2-cap.owl#move_base') :-
   jpl_new('edu.tum.cs.ias.knowrob.comp_cap.CapabilityBase',[], CapabilityBase),
   jpl_call(CapabilityBase, 'cap_move_base', [], Res),
   jpl_is_true(Res),
@@ -40,7 +41,7 @@ comp_move_base(Inst, 'http://ias.cs.tum.edu/kb/SRDL_capability.owl#move_base') :
 % @param
 % @param 
 % 
-comp_move_arm(Inst, 'http://ias.cs.tum.edu/kb/SRDL_capability.owl#move_arm') :-
+comp_move_arm(Inst, 'http://ias.cs.tum.edu/kb/srdl2-cap.owl#move_arm') :-
   jpl_new('edu.tum.cs.ias.knowrob.comp_cap.CapabilityBase',[], CapabilityBase),
   jpl_call(CapabilityBase, 'cap_move_arm', [], Res),
   jpl_is_true(Res),
@@ -52,7 +53,7 @@ comp_move_arm(Inst, 'http://ias.cs.tum.edu/kb/SRDL_capability.owl#move_arm') :-
 % @param
 % @param 
 % 
-comp_grasp_execution(Inst, 'http://ias.cs.tum.edu/kb/SRDL_capability.owl#grasp_execution') :-
+comp_grasp_execution(Inst, 'http://ias.cs.tum.edu/kb/srdl2-cap.owl#grasp_execution') :-
   jpl_new('edu.tum.cs.ias.knowrob.comp_cap.CapabilityBase',[], CapabilityBase),
   jpl_call(CapabilityBase, 'cap_grasp_execution', [], Res),
   jpl_is_true(Res),

@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import ros.*;
 
-@Deprecated
 public class CapROSClient {
 	boolean isInitialized = false;
 
@@ -34,6 +33,7 @@ public class CapROSClient {
 			topics.add(t.getName());
 			System.out.println(t.getName());
 		}
+		node.shutdown();
 		return topics;
 	}
 
