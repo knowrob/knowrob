@@ -1,0 +1,165 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY germandeli "http://ias.cs.tum.edu/kb/germandeli.owl#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY orgprinciples_demo "http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#" >
+]>
+
+
+<rdf:RDF xmlns="http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#"
+     xml:base="http://ias.cs.tum.edu/kb/orgprinciples_demo.owl"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:germandeli="http://ias.cs.tum.edu/kb/germandeli.owl#"
+     xmlns:orgprinciples_demo="http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#">
+    <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/orgprinciples_demo.owl">
+        <owl:imports rdf:resource="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#"/>
+        <owl:imports rdf:resource="http://ias.cs.tum.edu/kb/germandeli.owl#"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#in-ContGeneric -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;in-ContGeneric"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Brinker_Landbrot_Sliced_750g -->
+
+    <owl:Class rdf:about="&germandeli;Brinker_Landbrot_Sliced_750g"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Fat_Free_Quark_Red_Label -->
+
+    <owl:Class rdf:about="&germandeli;Fat_Free_Quark_Red_Label"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Fontal_Cheese_Wedge -->
+
+    <owl:Class rdf:about="&germandeli;Fontal_Cheese_Wedge"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Schmelzflocken_250g -->
+
+    <owl:Class rdf:about="&germandeli;Schmelzflocken_250g"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Vitalis_Knusper_Schoko_750g -->
+
+    <owl:Class rdf:about="&germandeli;Vitalis_Knusper_Schoko_750g"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Drawer1 -->
+
+    <owl:NamedIndividual rdf:about="&knowrob;Drawer1"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Drawer79 -->
+
+    <owl:NamedIndividual rdf:about="&knowrob;Drawer79"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Refrigerator67 -->
+
+    <owl:NamedIndividual rdf:about="&knowrob;Refrigerator67"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Fontal_Cheese_1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;Fontal_Cheese_1">
+        <rdf:type rdf:resource="&germandeli;Fontal_Cheese_Wedge"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Refrigerator67"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#LandBrot_1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;LandBrot_1">
+        <rdf:type rdf:resource="&germandeli;Brinker_Landbrot_Sliced_750g"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer79"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Muesli_Schoko_1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;Muesli_Schoko_1">
+        <rdf:type rdf:resource="&germandeli;Vitalis_Knusper_Schoko_750g"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Quark_1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;Quark_1">
+        <rdf:type rdf:resource="&germandeli;Fat_Free_Quark_Red_Label"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Refrigerator67"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Schmelzflocken_1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;Schmelzflocken_1">
+        <rdf:type rdf:resource="&germandeli;Schmelzflocken_250g"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer1"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.1.0.20069) http://owlapi.sourceforge.net -->
+

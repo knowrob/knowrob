@@ -1,0 +1,25 @@
+<package>
+  <description brief="comp_orgprinciples">
+
+     Routines for reasoning about organizational principles in the environment (Prolog).
+
+     Contains Prolog computables for calculating the best location where a (new) object 
+     should be placed (or searched for), given a knowledge base containing an Ontology 
+     including the object's class and information about the locations of other objects
+     in the environment.
+
+  </description>
+  <author>Martin Schuster</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/comp_orgprinciples</url>
+
+  <depend package="rosprolog"/>
+  <depend package="ias_prolog_addons"/>
+
+  <export>
+    <rosdoc config="rosdoc.yaml" />
+  </export>
+</package>
+
+
