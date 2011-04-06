@@ -21,20 +21,22 @@ public class CapROSClient {
 	}
 
 	/*
-	 * Gibt nicht alle topics zurück warum??
+	 * returns published topics
 	 */
-	public ArrayList<String> getTopics() {
+	public ArrayList<String> getPublishedTopics() {
 		ArrayList<String> topics = new ArrayList<String>();
 		Collection<Topic> help;
 
-		help = node.getTopics();
-
+		help = node.getTopics();//seems to have the same function as 'rostopic list -p'
 		for (Topic t : help) {
 			topics.add(t.getName());
-			System.out.println(t.getName());
 		}
-		node.shutdown();
+			
 		return topics;
+	}
+
+	public void destroy() {
+		node.shutdown();
 	}
 
 }
