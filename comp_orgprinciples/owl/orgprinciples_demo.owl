@@ -56,33 +56,207 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Brinker_Landbrot_Sliced_750g -->
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Bahlsen_Kipferl -->
 
-    <owl:Class rdf:about="&germandeli;Brinker_Landbrot_Sliced_750g"/>
+    <owl:Class rdf:about="&germandeli;Bahlsen_Kipferl"/>
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Fat_Free_Quark_Red_Label -->
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Butter_Cheese_150g -->
 
-    <owl:Class rdf:about="&germandeli;Fat_Free_Quark_Red_Label"/>
+    <owl:Class rdf:about="&germandeli;Butter_Cheese_150g"/>
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Fontal_Cheese_Wedge -->
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Choco_Cookies_200g -->
 
-    <owl:Class rdf:about="&germandeli;Fontal_Cheese_Wedge"/>
+    <owl:Class rdf:about="&germandeli;Choco_Cookies_200g"/>
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Schmelzflocken_250g -->
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Dallmayr_Classic_Ground_Coffee_250g -->
 
-    <owl:Class rdf:about="&germandeli;Schmelzflocken_250g"/>
+    <owl:Class rdf:about="&germandeli;Dallmayr_Classic_Ground_Coffee_250g"/>
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Vitalis_Knusper_Schoko_750g -->
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Dallmayr_Extra_Spezial_Ground_500g -->
 
-    <owl:Class rdf:about="&germandeli;Vitalis_Knusper_Schoko_750g"/>
+    <owl:Class rdf:about="&germandeli;Dallmayr_Extra_Spezial_Ground_500g"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Fanta_Orange_05_liter_bottle -->
+
+    <owl:Class rdf:about="&germandeli;Fanta_Orange_05_liter_bottle"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Ferrero_Hanuta_Haselnuss_Schnitte_12_Pack -->
+
+    <owl:Class rdf:about="&germandeli;Ferrero_Hanuta_Haselnuss_Schnitte_12_Pack"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Haendlmaiers_Sweet_Mustard_385_g -->
+
+    <owl:Class rdf:about="&germandeli;Haendlmaiers_Sweet_Mustard_385_g"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Kaffeefilter_Nr_4_80pc -->
+
+    <owl:Class rdf:about="&germandeli;Kaffeefilter_Nr_4_80pc"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Kuehne_Pickled_Red_Cabbage -->
+
+    <owl:Class rdf:about="&germandeli;Kuehne_Pickled_Red_Cabbage"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Kuehne_Sauerkraut_with_Riesling_Rhinewine_28oz -->
+
+    <owl:Class rdf:about="&germandeli;Kuehne_Sauerkraut_with_Riesling_Rhinewine_28oz"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Leimer_Panat_200g -->
+
+    <owl:Class rdf:about="&germandeli;Leimer_Panat_200g"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Mezzo_Mix_05l_Bottle -->
+
+    <owl:Class rdf:about="&germandeli;Mezzo_Mix_05l_Bottle"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Milch_Reis_500g -->
+
+    <owl:Class rdf:about="&germandeli;Milch_Reis_500g"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Muesli_5_Choco_Max_454g -->
+
+    <owl:Class rdf:about="&germandeli;Muesli_5_Choco_Max_454g"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Nordzucker_Brauner_Teezucker_500g -->
+
+    <owl:Class rdf:about="&germandeli;Nordzucker_Brauner_Teezucker_500g"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Pillers_Old_Forest_Salami_170g -->
+
+    <owl:Class rdf:about="&germandeli;Pillers_Old_Forest_Salami_170g"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Seitenbacher_Rigatoni_Gluten_free_Pasta_10_oz -->
+
+    <owl:Class rdf:about="&germandeli;Seitenbacher_Rigatoni_Gluten_free_Pasta_10_oz"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Teekanne_Rotbusch_Tee_20_Bags -->
+
+    <owl:Class rdf:about="&germandeli;Teekanne_Rotbusch_Tee_20_Bags"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Teekanne_Rotbusch_Tee_Vanille_20_Bags -->
+
+    <owl:Class rdf:about="&germandeli;Teekanne_Rotbusch_Tee_Vanille_20_Bags"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Vitalis_Knusper_Honeys_375g -->
+
+    <owl:Class rdf:about="&germandeli;Vitalis_Knusper_Honeys_375g"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Vitalis_Schoko_Muesli_375g -->
+
+    <owl:Class rdf:about="&germandeli;Vitalis_Schoko_Muesli_375g"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#CakePan -->
+
+    <owl:Class rdf:about="&knowrob;CakePan"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#DinnerFork -->
+
+    <owl:Class rdf:about="&knowrob;DinnerFork"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#DinnerPlate -->
+
+    <owl:Class rdf:about="&knowrob;DinnerPlate"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#DrinkingGlass -->
+
+    <owl:Class rdf:about="&knowrob;DrinkingGlass"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#DrinkingMug -->
+
+    <owl:Class rdf:about="&knowrob;DrinkingMug"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Saucer -->
+
+    <owl:Class rdf:about="&knowrob;Saucer"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#SoupSpoon -->
+
+    <owl:Class rdf:about="&knowrob;SoupSpoon"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Spatula -->
+
+    <owl:Class rdf:about="&knowrob;Spatula"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#StoveTopCookingPot -->
+
+    <owl:Class rdf:about="&knowrob;StoveTopCookingPot"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#TableKnife -->
+
+    <owl:Class rdf:about="&knowrob;TableKnife"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Teaspoon -->
+
+    <owl:Class rdf:about="&knowrob;Teaspoon"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#WoodenSpoon -->
+
+    <owl:Class rdf:about="&knowrob;WoodenSpoon"/>
     
 
 
@@ -103,9 +277,51 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Drawer79 -->
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Drawer13 -->
 
-    <owl:NamedIndividual rdf:about="&knowrob;Drawer79"/>
+    <owl:NamedIndividual rdf:about="&knowrob;Drawer13"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Drawer25 -->
+
+    <owl:NamedIndividual rdf:about="&knowrob;Drawer25"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Drawer31 -->
+
+    <owl:NamedIndividual rdf:about="&knowrob;Drawer31"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Drawer43 -->
+
+    <owl:NamedIndividual rdf:about="&knowrob;Drawer43"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Drawer49 -->
+
+    <owl:NamedIndividual rdf:about="&knowrob;Drawer49"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Drawer55 -->
+
+    <owl:NamedIndividual rdf:about="&knowrob;Drawer55"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Drawer61 -->
+
+    <owl:NamedIndividual rdf:about="&knowrob;Drawer61"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Drawer7 -->
+
+    <owl:NamedIndividual rdf:about="&knowrob;Drawer7"/>
     
 
 
@@ -115,47 +331,506 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Fontal_Cheese_1 -->
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#BahlsenKipferl1 -->
 
-    <owl:NamedIndividual rdf:about="&orgprinciples_demo;Fontal_Cheese_1">
-        <rdf:type rdf:resource="&germandeli;Fontal_Cheese_Wedge"/>
-        <knowrob:in-ContGeneric rdf:resource="&knowrob;Refrigerator67"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#LandBrot_1 -->
-
-    <owl:NamedIndividual rdf:about="&orgprinciples_demo;LandBrot_1">
-        <rdf:type rdf:resource="&germandeli;Brinker_Landbrot_Sliced_750g"/>
-        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer79"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Muesli_Schoko_1 -->
-
-    <owl:NamedIndividual rdf:about="&orgprinciples_demo;Muesli_Schoko_1">
-        <rdf:type rdf:resource="&germandeli;Vitalis_Knusper_Schoko_750g"/>
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;BahlsenKipferl1">
+        <rdf:type rdf:resource="&germandeli;Bahlsen_Kipferl"/>
         <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer1"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Quark_1 -->
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#CakePan1 -->
 
-    <owl:NamedIndividual rdf:about="&orgprinciples_demo;Quark_1">
-        <rdf:type rdf:resource="&germandeli;Fat_Free_Quark_Red_Label"/>
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;CakePan1">
+        <rdf:type rdf:resource="&knowrob;CakePan"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer25"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Cheese1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;Cheese1">
+        <rdf:type rdf:resource="&germandeli;Butter_Cheese_150g"/>
         <knowrob:in-ContGeneric rdf:resource="&knowrob;Refrigerator67"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Schmelzflocken_1 -->
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#ChocoCookies1 -->
 
-    <owl:NamedIndividual rdf:about="&orgprinciples_demo;Schmelzflocken_1">
-        <rdf:type rdf:resource="&germandeli;Schmelzflocken_250g"/>
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;ChocoCookies1">
+        <rdf:type rdf:resource="&germandeli;Choco_Cookies_200g"/>
         <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#CoffeGround1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;CoffeGround1">
+        <rdf:type rdf:resource="&germandeli;Dallmayr_Classic_Ground_Coffee_250g"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer7"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#CoffeeFilter1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;CoffeeFilter1">
+        <rdf:type rdf:resource="&germandeli;Kaffeefilter_Nr_4_80pc"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer7"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#CoffeeGround2 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;CoffeeGround2">
+        <rdf:type rdf:resource="&germandeli;Dallmayr_Extra_Spezial_Ground_500g"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer7"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#DinnerFork1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;DinnerFork1">
+        <rdf:type rdf:resource="&knowrob;DinnerFork"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer55"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#DinnerFork2 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;DinnerFork2">
+        <rdf:type rdf:resource="&knowrob;DinnerFork"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer55"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#DinnerFork3 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;DinnerFork3">
+        <rdf:type rdf:resource="&knowrob;DinnerFork"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer55"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#DinnerFork4 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;DinnerFork4">
+        <rdf:type rdf:resource="&knowrob;DinnerFork"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer55"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#DinnerPlate1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;DinnerPlate1">
+        <rdf:type rdf:resource="&knowrob;DinnerPlate"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer13"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#DinnerPlate2 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;DinnerPlate2">
+        <rdf:type rdf:resource="&knowrob;DinnerPlate"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer13"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#DinnerPlate3 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;DinnerPlate3">
+        <rdf:type rdf:resource="&knowrob;DinnerPlate"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer13"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#DinnerPlate4 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;DinnerPlate4">
+        <rdf:type rdf:resource="&knowrob;DinnerPlate"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer13"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#DinnerPlate5 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;DinnerPlate5">
+        <rdf:type rdf:resource="&knowrob;DinnerPlate"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer13"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#DinnerPlate6 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;DinnerPlate6">
+        <rdf:type rdf:resource="&knowrob;DinnerPlate"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer13"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#DrinkingGlass1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;DrinkingGlass1">
+        <rdf:type rdf:resource="&knowrob;DrinkingGlass"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer13"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#DrinkingGlass2 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;DrinkingGlass2">
+        <rdf:type rdf:resource="&knowrob;DrinkingGlass"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer13"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#DrinkingMug1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;DrinkingMug1">
+        <rdf:type rdf:resource="&knowrob;DrinkingMug"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer13"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#DrinkingMug2 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;DrinkingMug2">
+        <rdf:type rdf:resource="&knowrob;DrinkingMug"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer13"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Fanta1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;Fanta1">
+        <rdf:type rdf:resource="&germandeli;Fanta_Orange_05_liter_bottle"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Refrigerator67"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Hanuta1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;Hanuta1">
+        <rdf:type rdf:resource="&germandeli;Ferrero_Hanuta_Haselnuss_Schnitte_12_Pack"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Milchreis1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;Milchreis1">
+        <rdf:type rdf:resource="&germandeli;Milch_Reis_500g"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer49"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Panat1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;Panat1">
+        <rdf:type rdf:resource="&germandeli;Leimer_Panat_200g"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer49"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#PickledRedCabbage1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;PickledRedCabbage1">
+        <rdf:type rdf:resource="&germandeli;Kuehne_Pickled_Red_Cabbage"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer43"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Rigatoni1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;Rigatoni1">
+        <rdf:type rdf:resource="&germandeli;Seitenbacher_Rigatoni_Gluten_free_Pasta_10_oz"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer49"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Salami1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;Salami1">
+        <rdf:type rdf:resource="&germandeli;Pillers_Old_Forest_Salami_170g"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Refrigerator67"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Saucer1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;Saucer1">
+        <rdf:type rdf:resource="&knowrob;Saucer"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer13"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Saucer2 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;Saucer2">
+        <rdf:type rdf:resource="&knowrob;Saucer"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer13"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Sauerkraut1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;Sauerkraut1">
+        <rdf:type rdf:resource="&germandeli;Kuehne_Sauerkraut_with_Riesling_Rhinewine_28oz"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer43"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#SeitenbacherMuesli1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;SeitenbacherMuesli1">
+        <rdf:type rdf:resource="&germandeli;Muesli_5_Choco_Max_454g"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer31"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#SoupSpoon1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;SoupSpoon1">
+        <rdf:type rdf:resource="&knowrob;SoupSpoon"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer55"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#SoupSpoon2 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;SoupSpoon2">
+        <rdf:type rdf:resource="&knowrob;SoupSpoon"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer55"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#SoupSpoon3 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;SoupSpoon3">
+        <rdf:type rdf:resource="&knowrob;SoupSpoon"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer55"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#SoupSpoon4 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;SoupSpoon4">
+        <rdf:type rdf:resource="&knowrob;SoupSpoon"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer55"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Spatula1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;Spatula1">
+        <rdf:type rdf:resource="&knowrob;Spatula"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer61"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Spezi1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;Spezi1">
+        <rdf:type rdf:resource="&germandeli;Mezzo_Mix_05l_Bottle"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Refrigerator67"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Spezi2 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;Spezi2">
+        <rdf:type rdf:resource="&germandeli;Mezzo_Mix_05l_Bottle"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Refrigerator67"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#StoveTopCookingPot1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;StoveTopCookingPot1">
+        <rdf:type rdf:resource="&knowrob;StoveTopCookingPot"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer25"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#StoveTopCookingPot2 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;StoveTopCookingPot2">
+        <rdf:type rdf:resource="&knowrob;StoveTopCookingPot"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer25"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#SuesserSenf1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;SuesserSenf1">
+        <rdf:type rdf:resource="&germandeli;Haendlmaiers_Sweet_Mustard_385_g"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Refrigerator67"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Sugar1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;Sugar1">
+        <rdf:type rdf:resource="&germandeli;Nordzucker_Brauner_Teezucker_500g"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer7"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#TableKnife1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;TableKnife1">
+        <rdf:type rdf:resource="&knowrob;TableKnife"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer55"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#TableKnife2 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;TableKnife2">
+        <rdf:type rdf:resource="&knowrob;TableKnife"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer55"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#TableKnife3 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;TableKnife3">
+        <rdf:type rdf:resource="&knowrob;TableKnife"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer55"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#TableKnife4 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;TableKnife4">
+        <rdf:type rdf:resource="&knowrob;TableKnife"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer55"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Tea1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;Tea1">
+        <rdf:type rdf:resource="&germandeli;Teekanne_Rotbusch_Tee_20_Bags"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer7"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Tea2 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;Tea2">
+        <rdf:type rdf:resource="&germandeli;Teekanne_Rotbusch_Tee_Vanille_20_Bags"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer7"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#TeaSpoon1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;TeaSpoon1">
+        <rdf:type rdf:resource="&knowrob;Teaspoon"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer55"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#TeaSpoon2 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;TeaSpoon2">
+        <rdf:type rdf:resource="&knowrob;Teaspoon"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer55"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#TeaSpoon3 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;TeaSpoon3">
+        <rdf:type rdf:resource="&knowrob;Teaspoon"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer55"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#TeaSpoon4 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;TeaSpoon4">
+        <rdf:type rdf:resource="&knowrob;Teaspoon"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer55"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#VitalisCereal1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;VitalisCereal1">
+        <rdf:type rdf:resource="&germandeli;Vitalis_Knusper_Honeys_375g"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer31"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#VitalisCereal2 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;VitalisCereal2">
+        <rdf:type rdf:resource="&germandeli;Vitalis_Schoko_Muesli_375g"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer31"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#WoodenSpoon1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;WoodenSpoon1">
+        <rdf:type rdf:resource="&knowrob;WoodenSpoon"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer61"/>
     </owl:NamedIndividual>
 </rdf:RDF>
 
