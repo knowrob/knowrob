@@ -94,7 +94,7 @@ public class CapabilityBase {
 
 	private boolean existLineInFile(String dependence, ArrayList<String> file) {
 		for (String s : file) {
-			if (s.equalsIgnoreCase(dependence))
+			if (s.contains(dependence))
 				return true;
 		}
 		return false;
