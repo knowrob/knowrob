@@ -44,6 +44,7 @@
 %% best_location_maxMaxWup(+Object, -BestLocation).	  
 %
 % computes the best location where to place a certain object
+% may give multiple possible solutions in case there is a tie
 %
 % Example: best_location_maxMaxWup(orgprinciples_demo:'Muesli_Schoko_1', L).
 % Example: best_location_maxMaxWup(knowrob:'Knife', L).
@@ -87,12 +88,11 @@ best_location_dtree(Object, BestLocation) :-
     	findall(Similarities, (
     		member(Location, Locations),
     		objects_at_location(Location, ObjectsAtLocation),
-    		/** the following exclusion does not perform well in case there is only one object at a location
+    		% the following exclusion does not perform well in case there is only one object at a location
 	    		%exclude classes of TrainingObject from location:
-	    		%subtract(ObjectsAtLocation, [TrainingsObject], ObjectsAtLocationWithoutT), 
-	    		%classes_of_objects(ClassesAtLocation, ObjectsAtLocationWithoutT),
-    		*/
-    		classes_of_objects(ClassesAtLocation, ObjectsAtLocation),
+	    		subtract(ObjectsAtLocation, [TrainingsObject], ObjectsAtLocationWithoutT), 
+	    		classes_of_objects(ClassesAtLocation, ObjectsAtLocationWithoutT),
+    		%classes_of_objects(ClassesAtLocation, ObjectsAtLocation),
     		max_similarity_object_location(comp_similarity:rdf_wup_similarity, TrainingsClass, ClassesAtLocation, MaxSim),
     		avg_similarity_object_location(comp_similarity:rdf_wup_similarity, TrainingsClass, ClassesAtLocation, AvgSim),
     		%format('maxWup ~w, avgWup ~w at location ~w',[MaxSim, AvgSim, Location]), nl, %debug output
@@ -120,7 +120,8 @@ best_location_dtree(Object, BestLocation) :-
 	flatten(TestSimilaritiesAllLocations, TestSimilaritiesAllLocationsFlat),
 	%write(TestSimilaritiesAllLocationsFlat),nl, %debug output
     %classify Object:
-    classify_instances(Classifier, [TestSimilaritiesAllLocationsFlat] ,BestLocation).
+    classify_instances(Classifier, [TestSimilaritiesAllLocationsFlat] ,BestLocationList),
+    nth0(0, BestLocationList, BestLocation).
     
 	
 %% classes_of_objects(-Classes, +Objects)
