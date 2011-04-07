@@ -30,7 +30,9 @@
 :- module(comp_orgprinciples,
     [
 		best_location_maxMaxWup/2,
-		best_location_dtree/2
+		best_location_dtree/2,
+		highlight_best_location_maxMaxWup/2,
+		highlight_best_location_dtree/2
     ]).
 
 :- use_module(library('semweb/rdf_db')).
@@ -39,7 +41,9 @@
 	  best_location_dtree(r,-),
 	  objects_at_location(r,-),
 	  class_of_object(r,r),
-	  classes_of_objects(t,t).
+	  classes_of_objects(t,t),
+	  highlight_best_location_maxMaxWup(r,+),
+	  highlight_best_location_dtree(r,+).
 
 %% best_location_maxMaxWup(+Object, -BestLocation).	  
 %
@@ -225,3 +229,57 @@ count_sum([H|T], Count, Sum) :-
 	Count is C1 + 1,
 	Sum is S1 + H.
 	  
+	  
+	  
+% visualize with mod_vis:
+% init mod_vis:
+% register_ros_package(mod_vis).
+% use_module(library('mod_vis')). 
+% mod_vis:visualization_canvas(C).
+
+%% highlight_best_location_maxMaxWup(+Object, +Canvas) 
+% 
+% infer best location using maxMaxWup and highlight it in 3d visualization
+highlight_best_location_maxMaxWup(Object, Canvas) :-
+ mod_vis:reset_highlighting(Canvas),
+ forall(best_location_maxMaxWup(Object, L),( 
+ 	to_global(L, LGlobal), 
+ 	nl,print_objects_at_location(L),nl,
+ 	mod_vis:highlight_object(LGlobal, (@true),0,70,130,Canvas)
+ 	)).
+ 	
+%% highlight_best_location_dtree(+Object, +Canvas) 
+% 
+% infer best location using dtree and highlight it in 3d visualization
+highlight_best_location_dtree(Object, Canvas) :-
+ mod_vis:reset_highlighting(Canvas),
+ forall(best_location_dtree(Object, L), (
+	 nl,print_objects_at_location(L),nl,
+	 to_global(L, LGlobal), 
+	 mod_vis:highlight_object(LGlobal, (@true),0,70,130,Canvas)
+	 )).
+ 
+ 
+%% print_objects_at_location(+Location) 
+% 
+% print all objects and their classes at the given location
+print_objects_at_location(Location) :- 
+    objects_at_location(Location, Objects), 
+    to_local(Location, LocationLocal),
+    format('Objects at location ~w:', [LocationLocal]), nl,
+    forall(member(Object, Objects), (
+	    class_of_object(Class, Object),
+	    to_local(Class, ClassLocal),
+	    to_local(Object, ObjectLocal),
+	    format('~w (~w)', [ObjectLocal, ClassLocal]), nl
+    )).
+
+
+
+%uses the following helper functions:
+
+to_global(Class, Global) :-
+    (rdf_global_id(Class,Long) -> Global = Long ; Global = Class).
+
+to_local(Class, Local) :-	
+	(rdf_global_id(Short,Class) -> Local = Short ; Local = Class).
