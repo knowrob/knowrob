@@ -56,7 +56,8 @@
 % @param Object Object or Class
 % @param BestLocation accoring to max. maxWup similarity
 best_location_maxMaxWup(Object, BestLocation)	:-
-    (class_of_object(Class1, Object) -> Class = Class1 ; Class = Object),
+    to_global(Object, ObjectGlobal),
+    (class_of_object(Class1, ObjectGlobal) -> Class = Class1 ; Class = ObjectGlobal),
     all_locations(Locations),
     findall(MaxSim, (
     	member(Location, Locations),
@@ -81,7 +82,8 @@ best_location_maxMaxWup(Object, BestLocation)	:-
 % @param BestLocation accoring to Decision Trees, features are maxWup and avgWup similaritites
 % uses the WEKA C4.5 Decision Tree (J48) classifier (unpruned, min. number of instances per leaf = 0)
 best_location_dtree(Object, BestLocation) :-
-    (class_of_object(Class1, Object) -> Class = Class1 ; Class = Object),
+    to_global(Object, ObjectGlobal),
+    (class_of_object(Class1, ObjectGlobal) -> Class = Class1 ; Class = ObjectGlobal),
     all_locations(Locations),
     objects_at_location(_, AllObjects),
     %prepare training data:
@@ -229,6 +231,11 @@ count_sum([H|T], Count, Sum) :-
 	Count is C1 + 1,
 	Sum is S1 + H.
 	  
+to_global(Class, Global) :-
+    (rdf_global_id(Class,Long) -> Global = Long ; Global = Class).
+
+to_local(Class, Local) :-	
+	(rdf_global_id(Short,Class) -> Local = Short ; Local = Class).
 	  
 	  
 % visualize with mod_vis:
@@ -273,13 +280,3 @@ print_objects_at_location(Location) :-
 	    to_local(Object, ObjectLocal),
 	    format('~w (~w)', [ObjectLocal, ClassLocal]), nl
     )).
-
-
-
-%uses the following helper functions:
-
-to_global(Class, Global) :-
-    (rdf_global_id(Class,Long) -> Global = Long ; Global = Class).
-
-to_local(Class, Local) :-	
-	(rdf_global_id(Short,Class) -> Local = Short ; Local = Class).

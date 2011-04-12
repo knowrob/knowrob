@@ -86,6 +86,12 @@
     
 
 
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Egg_Noodles_Maxi_Ribbon_500g -->
+
+    <owl:Class rdf:about="&germandeli;Egg_Noodles_Maxi_Ribbon_500g"/>
+    
+
+
     <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Fanta_Orange_05_liter_bottle -->
 
     <owl:Class rdf:about="&germandeli;Fanta_Orange_05_liter_bottle"/>
@@ -101,6 +107,12 @@
     <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Haendlmaiers_Sweet_Mustard_385_g -->
 
     <owl:Class rdf:about="&germandeli;Haendlmaiers_Sweet_Mustard_385_g"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Hengstenberg_Mixed_Pickles -->
+
+    <owl:Class rdf:about="&germandeli;Hengstenberg_Mixed_Pickles"/>
     
 
 
@@ -137,6 +149,12 @@
     <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Milch_Reis_500g -->
 
     <owl:Class rdf:about="&germandeli;Milch_Reis_500g"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Milka_Schoko_Drink_refill_500g -->
+
+    <owl:Class rdf:about="&germandeli;Milka_Schoko_Drink_refill_500g"/>
     
 
 
@@ -185,6 +203,12 @@
     <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Vitalis_Schoko_Muesli_375g -->
 
     <owl:Class rdf:about="&germandeli;Vitalis_Schoko_Muesli_375g"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#illy_Espresso_Whole_Beans_88_oz -->
+
+    <owl:Class rdf:about="&germandeli;illy_Espresso_Whole_Beans_88_oz"/>
     
 
 
@@ -367,6 +391,15 @@
     
 
 
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#ChocolateDrink1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;ChocolateDrink1">
+        <rdf:type rdf:resource="&germandeli;Milka_Schoko_Drink_refill_500g"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer7"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#CoffeGround1 -->
 
     <owl:NamedIndividual rdf:about="&orgprinciples_demo;CoffeGround1">
@@ -380,7 +413,6 @@
 
     <owl:NamedIndividual rdf:about="&orgprinciples_demo;CoffeeFilter1">
         <rdf:type rdf:resource="&germandeli;Kaffeefilter_Nr_4_80pc"/>
-        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer7"/>
     </owl:NamedIndividual>
     
 
@@ -520,6 +552,23 @@
     
 
 
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#EggNoodles1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;EggNoodles1">
+        <rdf:type rdf:resource="&germandeli;Egg_Noodles_Maxi_Ribbon_500g"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#EspressoBeans1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;EspressoBeans1">
+        <rdf:type rdf:resource="&germandeli;illy_Espresso_Whole_Beans_88_oz"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer7"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Fanta1 -->
 
     <owl:NamedIndividual rdf:about="&orgprinciples_demo;Fanta1">
@@ -543,6 +592,14 @@
     <owl:NamedIndividual rdf:about="&orgprinciples_demo;Milchreis1">
         <rdf:type rdf:resource="&germandeli;Milch_Reis_500g"/>
         <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer49"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#MixedPickles1 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;MixedPickles1">
+        <rdf:type rdf:resource="&germandeli;Hengstenberg_Mixed_Pickles"/>
     </owl:NamedIndividual>
     
 
