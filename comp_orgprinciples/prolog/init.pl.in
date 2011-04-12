@@ -24,6 +24,7 @@
 :- register_ros_package(ias_prolog_addons). %semantic distance
 :- register_ros_package(comp_germandeli). %germandeli ontology
 :- register_ros_package(ias_semantic_map).
+:- register_ros_package(comp_orgprinciples).
 :- use_module(library('comp_similarity')).
 :- use_module(library('comp_germandeli')).
 :- use_module(library('comp_orgprinciples')).
