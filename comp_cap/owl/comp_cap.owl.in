@@ -345,7 +345,6 @@
                 <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedTopic"/>
                 <owl:someValuesFrom rdf:resource="&comp_cap;point_head_action_._result"/>
             </owl:Restriction>
-
       </owl:intersectionOf>
    </owl:Class>   
    

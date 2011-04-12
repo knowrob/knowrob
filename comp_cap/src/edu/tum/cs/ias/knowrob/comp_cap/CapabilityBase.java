@@ -22,32 +22,8 @@ public class CapabilityBase {
 		ArrayList<String> missing = new ArrayList<String>();
 		ArrayList<String> help;
 
-		published = this.convertTopicNames(published);
-		subscribed = this.convertTopicNames(subscribed);
-
-		String[] dependencies = new String[published.length + subscribed.length];
-		int index_pub = 0;
-		int index_sub = 0;
-		int index_dep = 0;
-
-		while (index_pub < published.length) {
-			dependencies[index_dep] = published[index_pub];
-			index_dep++;
-			index_pub++;
-		}
-		while (index_sub < subscribed.length) {
-			dependencies[index_dep] = subscribed[index_sub];
-			index_dep++;
-			index_sub++;
-		}
-
-		help = this.checkDependencies(dependencies, this
-				.executeCommand("rostopic list"));
-		for (String s : help) {
-			if (!this.existLineInFile(s, missing)) {
-				missing.add(s);
-			}
-		}
+		published = this.convertOwlNameToTopicName(published);
+		subscribed = this.convertOwlNameToTopicName(subscribed);
 
 		help = this.checkDependencies(published, ros.getPublishedTopics());
 		for (String s : help) {
@@ -65,17 +41,31 @@ public class CapabilityBase {
 		}
 
 		ros.destroy();
+
 		String[] res = new String[missing.size()];
 		res = missing.toArray(res);
+		res = this.convertTopicNameToOwlName(res);
 		return res;
 	}
 
-	private String[] convertTopicNames(String[] input) {
+	private String[] convertOwlNameToTopicName(String[] input) {
 		String[] output = new String[input.length];
 		int i = 0;
 		for (String help : input) {
 			help = help.replace("http://ias.cs.tum.edu/kb/comp_cap.owl#", "/");
 			help = help.replace("_._", "/");
+			output[i] = help;
+			i++;
+		}
+		return output;
+	}
+	
+	private String[] convertTopicNameToOwlName(String[] input) {
+		String[] output = new String[input.length];
+		int i = 0;
+		for (String help : input) {
+			help = help.replace("/", "_._");
+			help = help.replaceFirst("_._","http://ias.cs.tum.edu/kb/comp_cap.owl#");
 			output[i] = help;
 			i++;
 		}
@@ -94,13 +84,13 @@ public class CapabilityBase {
 
 	private boolean existLineInFile(String dependence, ArrayList<String> file) {
 		for (String s : file) {
-			if (s.contains(dependence))
+			if (s.contains(dependence) || s.equalsIgnoreCase(dependence))
 				return true;
 		}
 		return false;
 	}
 
-	private ArrayList<String> executeCommand(String command) {
+	public ArrayList<String> executeCommand(String command) {
 		ArrayList<String> output = new ArrayList<String>();
 		String s = null;
 
@@ -120,6 +110,7 @@ public class CapabilityBase {
 
 			// read any errors from the attempted command
 			while ((s = stdError.readLine()) != null) {
+				System.out.println(s);
 			}
 
 			return output;

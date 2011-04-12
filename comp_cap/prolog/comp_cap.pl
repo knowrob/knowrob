@@ -16,7 +16,7 @@
 
 :- owl_parser:owl_parse('../owl/comp_cap.owl', false, false, true).
 
-:- rdf_db:rdf_register_ns(srdl_capabilty, 'http://ias.cs.tum.edu/kb/SRDL_capability.owl',  [keep(true)]).
+:- rdf_db:rdf_register_ns(srdl2-cap, 'http://ias.cs.tum.edu/kb/srdl2-cap.owl',  [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob,  'http://ias.cs.tum.edu/kb/knowrob.owl#',  [keep(true)]).
 :- rdf_db:rdf_register_ns(comp_cap, 'http://ias.cs.tum.edu/kb/comp_cap.owl#', [keep(true)]).
 
@@ -36,5 +36,6 @@ comp_capability(Inst, Class) :-
   jpl_array_to_list(Res,MisTopics),
   length(MisTopics,X),
   X = 0,
-  rdf_instance_from_class(Class, Inst).
+  rdf_instance_from_class(Class, Inst);
+  member(Inst,MisTopics).
   
