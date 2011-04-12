@@ -76,7 +76,7 @@ project_process_effects :-
 
   % % % % % % % % % % % % %
   % Influences of the process on the individuals
-  rdf_instance_from_class(knowrob:'Baking-Hardening', Ev),
+  rdf_instance_from_class(knowrob:'BakingFood', Ev),
   rdf_instance_from_class(knowrob:'Baked', Res),
 
   rdf_assert(Ev, knowrob:inputsDestroyed, Dough),

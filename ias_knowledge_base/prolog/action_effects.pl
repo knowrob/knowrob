@@ -46,9 +46,11 @@ project_action_effects(Action) :-
   owl_individual_of(Action, knowrob:'Mixing'),
   \+ owl_has(Action, knowrob:outputsCreated, _),
 
-  % at least one objectActedOn is a MixForBakedGoods
+  % at least one objectActedOn is a MixForBakedGoods or WheatFlour
   owl_has(Action, knowrob:objectActedOn, Mix),
-  owl_individual_of(Mix, knowrob:'MixForBakedGoods'),
+  (owl_individual_of(Mix, knowrob:'MixForBakedGoods');
+   owl_individual_of(Mix, knowrob:'WheatFlour') ;
+   owl_individual_of(Mix, knowrob:'Dough') ),
 
   findall(Obj, owl_has(Action, knowrob:objectActedOn, Obj), Objs), !,
 
@@ -97,13 +99,6 @@ project_action_effects(Action) :-
   owl_individual_of(Action, knowrob:'BoilingFood'),
   \+ owl_has(Action, knowrob:'', _).  % TODO: implement!
 
-
-% % % % % % % % % % % % % % % %
-% Baking food (i.e. start a baking process)
-project_action_effects(Action) :-
-
-  owl_individual_of(Action, knowrob:'BakingFood'),
-  \+ owl_has(Action, knowrob:'', _).  % TODO: implement!
 
 
 
@@ -290,6 +285,25 @@ project_action_effects(Action) :-
   print(Obj),print(' at location '), print(To), print('\n').
 
 
+
+% % % % % % % % % % % % % % % %
+% Pouring something onto something
+project_action_effects(Action) :-
+
+  owl_individual_of(Action, knowrob:'PouringSomethingOnto'),
+
+  owl_has(Action, knowrob:objectActedOn, Obj),
+  \+ owl_has(Obj, knowrob:'on-Physical', _),
+
+  owl_has(Action, knowrob:toLocation, To),!,
+
+  % new relations
+  % TODO: qualify these relations to hold only for limited time
+  % Hack: retract all topological relations between OBJ and something else
+  remove_object_properties(Obj, knowrob:topologicalRelations),
+  rdf_assert(Obj, knowrob:'on-Physical', To),
+
+  print(Obj),print(' on top of '), print(To), print('\n').
 
 
 
