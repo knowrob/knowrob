@@ -43,7 +43,8 @@
 	  class_of_object(r,r),
 	  classes_of_objects(t,t),
 	  highlight_best_location_maxMaxWup(r,+),
-	  highlight_best_location_dtree(r,+).
+	  highlight_best_location_dtree(r,+),
+	  print_objects_at_location(r,r).
 
 %% best_location_maxMaxWup(+Object, -BestLocation).	  
 %
@@ -63,8 +64,8 @@ best_location_maxMaxWup(Object, BestLocation)	:-
     	member(Location, Locations),
     	objects_at_location(Location, ObjectsAtLocation),
     	classes_of_objects(ClassesAtLocation, ObjectsAtLocation),
-    	max_similarity_object_location(comp_similarity:rdf_wup_similarity, Class, ClassesAtLocation, MaxSim),  
-    	format('maxWup ~w at location ~w',[MaxSim, Location]), nl %debug output
+    	max_similarity_object_location(comp_similarity:rdf_wup_similarity, Class, ClassesAtLocation, MaxSim)%,  
+    	%format('maxWup ~w at location ~w',[MaxSim, Location]), nl %debug output
     ), MaxSimList),
     max_list(MaxSimList, MaxMaxSim),
     nth0(Index, MaxSimList, MaxMaxSim),
@@ -120,7 +121,7 @@ best_location_dtree(Object, BestLocation) :-
 		classes_of_objects(ClassesAtTestLocation, ObjectsAtTestLocation),
 		max_similarity_object_location(comp_similarity:rdf_wup_similarity, Class, ClassesAtTestLocation, TestMaxSim),
 		avg_similarity_object_location(comp_similarity:rdf_wup_similarity, Class, ClassesAtTestLocation, TestAvgSim),
-		format('Test: maxWup ~w, avgWup ~w at location ~w',[TestMaxSim, TestAvgSim, TestLocation]), nl, %debug output
+		%format('Test: maxWup ~w, avgWup ~w at location ~w',[TestMaxSim, TestAvgSim, TestLocation]), nl, %debug output
 		TestSimilarities = [TestMaxSim, TestAvgSim]  
 	),TestSimilaritiesAllLocations),
 	flatten(TestSimilaritiesAllLocations, TestSimilaritiesAllLocationsFlat),
@@ -251,7 +252,9 @@ highlight_best_location_maxMaxWup(Object, Canvas) :-
  mod_vis:reset_highlighting(Canvas),
  forall(best_location_maxMaxWup(Object, L),( 
  	to_global(L, LGlobal), 
- 	nl,print_objects_at_location(L),nl,
+ 	to_local(L, LLocal),
+ 	format('Best location: ~w', [LLocal]), nl,
+ 	print_objects_at_location(L, Object),nl,
  	mod_vis:highlight_object(LGlobal, (@true),0,70,130,Canvas)
  	)).
  	
@@ -261,22 +264,28 @@ highlight_best_location_maxMaxWup(Object, Canvas) :-
 highlight_best_location_dtree(Object, Canvas) :-
  mod_vis:reset_highlighting(Canvas),
  forall(best_location_dtree(Object, L), (
-	 nl,print_objects_at_location(L),nl,
 	 to_global(L, LGlobal), 
+	 to_local(L, LLocal),
+ 	 format('Best location: ~w', [LLocal]), nl,
+ 	 print_objects_at_location(L, Object),nl,
 	 mod_vis:highlight_object(LGlobal, (@true),0,70,130,Canvas)
 	 )).
  
  
-%% print_objects_at_location(+Location) 
+%% print_objects_at_location(+Location, +Object) 
 % 
-% print all objects and their classes at the given location
-print_objects_at_location(Location) :- 
-    objects_at_location(Location, Objects), 
+% print all objects and their classes at the given location, print similarities to Object
+print_objects_at_location(Location, Object) :- 
+    to_global(Object, ObjectGlobal),
+    (class_of_object(Class1, ObjectGlobal) -> Class = Class1 ; Class = ObjectGlobal),
+    objects_at_location(Location, ObjectsAtLocation), 
     to_local(Location, LocationLocal),
     format('Objects at location ~w:', [LocationLocal]), nl,
-    forall(member(Object, Objects), (
-	    class_of_object(Class, Object),
-	    to_local(Class, ClassLocal),
-	    to_local(Object, ObjectLocal),
-	    format('~w (~w)', [ObjectLocal, ClassLocal]), nl
+    write('WUP similarity: object (class)'),nl,
+    forall(member(ObjectAtLocation, ObjectsAtLocation), (
+	    class_of_object(ClassAtLocation, ObjectAtLocation),
+	    comp_similarity:rdf_wup_similarity(Class, ClassAtLocation, WupSim),
+	    to_local(ClassAtLocation, ClassAtLocationLocal),
+	    to_local(ObjectAtLocation, ObjectAtLocationLocal),
+	    format('~5f: ~w (~w)', [WupSim, ObjectAtLocationLocal, ClassAtLocationLocal]), nl
     )).
