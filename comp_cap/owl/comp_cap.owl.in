@@ -40,31 +40,31 @@
     //
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
-    
-     <!-- http://ias.cs.tum.edu/kb/comp_cap.owl#dependsOnTopic -->
+      
+    <!-- http://ias.cs.tum.edu/kb/comp_cap.owl#dependsOnMessageType -->
      
-    <owl:ObjectProperty rdf:about="&comp_cap;dependsOnTopic">
+    <owl:ObjectProperty rdf:about="&comp_cap;dependsOnMessageType">
       <rdfs:domain rdf:resource="&srdl2-cap;Capability"/>
-      <rdfs:range  rdf:resource="&comp_cap;Topic"/>
+      <rdfs:range  rdf:resource="&comp_cap;MessageType"/>
        <rdfs:subPropertyOf rdf:resource="&srdl2;dependsOn"/>
     </owl:ObjectProperty>
     
-    <!-- http://ias.cs.tum.edu/kb/comp_cap.owl#dependsOnSubscribedTopic -->
+    <!-- http://ias.cs.tum.edu/kb/comp_cap.owl#dependsOnSubscribedMessageType -->
     
-    <owl:ObjectProperty rdf:about="&comp_cap;dependsOnSubscribedTopic">
+    <owl:ObjectProperty rdf:about="&comp_cap;dependsOnSubscribedMessageType">
       <rdfs:domain rdf:resource="&srdl2-cap;Capability"/>
-      <rdfs:range  rdf:resource="&comp_cap;Topic"/>
-      <rdfs:subPropertyOf rdf:resource="&comp_cap;dependsOnTopic"/>
+      <rdfs:range  rdf:resource="&comp_cap;MessageType"/>
+      <rdfs:subPropertyOf rdf:resource="&comp_cap;dependsOnMessageType"/>
     </owl:ObjectProperty>
     
-    <!-- http://ias.cs.tum.edu/kb/comp_cap.owl#dependsOnPublishedTopic -->
+    <!-- http://ias.cs.tum.edu/kb/comp_cap.owl#dependsOnPublishedMessageType -->
     
-    <owl:ObjectProperty rdf:about="&comp_cap;dependsOnPublishedTopic">
+    <owl:ObjectProperty rdf:about="&comp_cap;dependsOnPublishedMessageType">
       <rdfs:domain rdf:resource="&srdl2-cap;Capability"/>
-      <rdfs:range  rdf:resource="&comp_cap;Topic"/>
-      <rdfs:subPropertyOf rdf:resource="&comp_cap;dependsOnTopic"/>
+      <rdfs:range  rdf:resource="&comp_cap;MessageType"/>
+      <rdfs:subPropertyOf rdf:resource="&comp_cap;dependsOnMessageType"/>
     </owl:ObjectProperty>
-       
+           
     <!-- 
     //////////////////////////////////////////////////////////////////////////////////////
     //
@@ -72,12 +72,7 @@
     //
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
-    
-    <owl:DatatypeProperty rdf:about="&comp_cap;hasName">
-      <rdfs:domain rdf:resource="&comp_cap;Topic"/>
-      <rdfs:range  rdf:resource="&comp_cap;Topic"/>
-    </owl:DatatypeProperty>    
-    
+       
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -88,162 +83,73 @@
 
 
     <owl:Class rdf:about="&comp_cap;Topic">
-      <rdfs:subClassOf>
-	<owl:Restriction>
-	  <owl:onProperty rdf:resource="&comp_cap;hasName"/>
-	  <owl:cardinality rdf:datatype="&xsd;string">1</owl:cardinality>
-	</owl:Restriction>
-      </rdfs:subClassOf>
+    </owl:Class>
+    
+    
+    <!-- http://ias.cs.tum.edu/kb/comp_cap.owl#move_armTopics -->
+    
+    <owl:Class rdf:about="&comp_cap;move_armTopics">
+      <rdfs:subClassOf rdf:resource="&comp_cap;Topic"/>
+    </owl:Class>
+    
+    <owl:Class rdf:about="&comp_cap;move_arm_msgs_._MoveArmActionGoal">
+      <rdfs:subClassOf rdf:resource="&comp_cap;move_armTopics"/>
+    </owl:Class>
+    
+    <owl:Class rdf:about="&comp_cap;move_arm_msgs_._MoveArmActionFeedback">
+      <rdfs:subClassOf rdf:resource="&comp_cap;move_armTopics"/>
+    </owl:Class>    
+    
+    <owl:Class rdf:about="&comp_cap;move_arm_msgs_._MoveArmActionResult">
+      <rdfs:subClassOf rdf:resource="&comp_cap;move_armTopics"/>
     </owl:Class>
     
     <!-- http://ias.cs.tum.edu/kb/comp_cap.owl#move_baseTopics -->
     
     <owl:Class rdf:about="&comp_cap;move_baseTopics">
       <rdfs:subClassOf rdf:resource="&comp_cap;Topic"/>
-    </owl:Class> 
+    </owl:Class>
     
-    <owl:Class rdf:about="&comp_cap;move_base_._goal">
+    <owl:Class rdf:about="&comp_cap;move_base_msgs_._MoveBaseActionGoal">
       <rdfs:subClassOf rdf:resource="&comp_cap;move_baseTopics"/>
     </owl:Class>
     
-    <owl:Class rdf:about="&comp_cap;move_base_._cancel">
+    <owl:Class rdf:about="&comp_cap;move_base_msgs_._MoveBaseActionFeedback">
       <rdfs:subClassOf rdf:resource="&comp_cap;move_baseTopics"/>
     </owl:Class>    
     
-    <owl:Class rdf:about="&comp_cap;move_base_._feedback">
-      <rdfs:subClassOf rdf:resource="&comp_cap;move_baseTopics"/>
-    </owl:Class>
-      
-    <owl:Class rdf:about="&comp_cap;move_base_._status">
+    <owl:Class rdf:about="&comp_cap;move_base_msgs_._MoveBaseActionResult">
       <rdfs:subClassOf rdf:resource="&comp_cap;move_baseTopics"/>
     </owl:Class>
     
-    <owl:Class rdf:about="&comp_cap;move_base_._result">
+    <owl:Class rdf:about="&comp_cap;geometry_msgs_._PoseStamped">
       <rdfs:subClassOf rdf:resource="&comp_cap;move_baseTopics"/>
     </owl:Class>
     
-    <owl:Class rdf:about="&comp_cap;move_base_simple_._goal">
+    <owl:Class rdf:about="&comp_cap;geometry_msgs_._Twist">
       <rdfs:subClassOf rdf:resource="&comp_cap;move_baseTopics"/>
     </owl:Class>
-    
-    <owl:Class rdf:about="&comp_cap;cmd_vel">
-      <rdfs:subClassOf rdf:resource="&comp_cap;move_baseTopics"/>
-    </owl:Class>
-    
-    <!-- http://ias.cs.tum.edu/kb/comp_cap.owl#move_armTopics -->
-    
-    <owl:Class rdf:about="&comp_cap;move_armTopics">
-      <rdfs:subClassOf rdf:resource="&comp_cap;Topic"/>
-    </owl:Class> 
-    
-    <!-- http://ias.cs.tum.edu/kb/comp_cap.owl#move_left_armTopics -->
-    
-    <owl:Class rdf:about="&comp_cap;move_left_armTopics">
-      <rdfs:subClassOf rdf:resource="&comp_cap;move_armTopics"/>
-    </owl:Class>
-    
-    <owl:Class rdf:about="&comp_cap;move_left_arm_._goal">
-      <rdfs:subClassOf rdf:resource="&comp_cap;move_left_armTopics"/>
-    </owl:Class>
-    
-    <owl:Class rdf:about="&comp_cap;move_left_arm_._cancel">
-      <rdfs:subClassOf rdf:resource="&comp_cap;move_left_armTopics"/>
-    </owl:Class>    
-    
-    <owl:Class rdf:about="&comp_cap;move_left_arm_._feedback">
-      <rdfs:subClassOf rdf:resource="&comp_cap;move_left_armTopics"/>
-    </owl:Class>
-      
-    <owl:Class rdf:about="&comp_cap;move_left_arm_._status">
-      <rdfs:subClassOf rdf:resource="&comp_cap;move_left_armTopics"/>
-    </owl:Class>
-    
-    <owl:Class rdf:about="&comp_cap;move_left_arm_._result">
-      <rdfs:subClassOf rdf:resource="&comp_cap;move_left_armTopics"/>
-    </owl:Class>
-    
-    <!-- http://ias.cs.tum.edu/kb/comp_cap.owl#move_right_armTopics -->
-    
-    <owl:Class rdf:about="&comp_cap;move_right_armTopics">
-      <rdfs:subClassOf rdf:resource="&comp_cap;move_armTopics"/>
-    </owl:Class>
-     
-    <owl:Class rdf:about="&comp_cap;move_right_arm_._goal">
-      <rdfs:subClassOf rdf:resource="&comp_cap;move_right_armTopics"/>
-    </owl:Class>
-    
-    <owl:Class rdf:about="&comp_cap;move_right_arm_._cancel">
-      <rdfs:subClassOf rdf:resource="&comp_cap;move_right_armTopics"/>
-    </owl:Class>    
-    
-    <owl:Class rdf:about="&comp_cap;move_right_arm_._feedback">
-      <rdfs:subClassOf rdf:resource="&comp_cap;move_right_armTopics"/>
-    </owl:Class>
-      
-    <owl:Class rdf:about="&comp_cap;move_right_arm_._status">
-      <rdfs:subClassOf rdf:resource="&comp_cap;move_right_armTopics"/>
-    </owl:Class>
-    
-    <owl:Class rdf:about="&comp_cap;move_right_arm_._result">
-      <rdfs:subClassOf rdf:resource="&comp_cap;move_right_armTopics"/>
-    </owl:Class>
-    
+
     <!-- http://ias.cs.tum.edu/kb/comp_cap.owl#gripper_actionTopics -->
     
     <owl:Class rdf:about="&comp_cap;gripper_actionTopics">
       <rdfs:subClassOf rdf:resource="&comp_cap;Topic"/>
-    </owl:Class> 
-    
-    <!-- http://ias.cs.tum.edu/kb/comp_cap.owl#left_gripper_actionTopics -->
-    
-    <owl:Class rdf:about="&comp_cap;left_gripper_actionTopics">
-      <rdfs:subClassOf rdf:resource="&comp_cap;gripper_actionTopics"/>
-    </owl:Class> 
-    
-    <owl:Class rdf:about="&comp_cap;l_gripper_controller_._gripper_action_._goal">
-      <rdfs:subClassOf rdf:resource="&comp_cap;left_gripper_actionTopics"/>
     </owl:Class>
-    
-    <owl:Class rdf:about="&comp_cap;l_gripper_controller_._gripper_action_._cancel">
-      <rdfs:subClassOf rdf:resource="&comp_cap;left_gripper_actionTopics"/>
-    </owl:Class> 
-    
-    <owl:Class rdf:about="&comp_cap;l_gripper_controller_._gripper_action_._feedback">
-      <rdfs:subClassOf rdf:resource="&comp_cap;left_gripper_actionTopics"/>
-    </owl:Class>
-    
-    <owl:Class rdf:about="&comp_cap;l_gripper_controller_._gripper_action_._status">
-      <rdfs:subClassOf rdf:resource="&comp_cap;left_gripper_actionTopics"/>
-    </owl:Class>
-    
-    <owl:Class rdf:about="&comp_cap;l_gripper_controller_._gripper_action_._result">
-      <rdfs:subClassOf rdf:resource="&comp_cap;left_gripper_actionTopics"/>
-    </owl:Class>
-    
-    <!-- http://ias.cs.tum.edu/kb/comp_cap.owl#right_gripper_actionTopics -->
-    
-    <owl:Class rdf:about="&comp_cap;right_gripper_actionTopics">
+
+    <owl:Class rdf:about="&comp_cap;pr2_controllers_msgs_._Pr2GripperCommandActionGoal">
       <rdfs:subClassOf rdf:resource="&comp_cap;gripper_actionTopics"/>
     </owl:Class>
     
-    <owl:Class rdf:about="&comp_cap;r_gripper_controller_._gripper_action_._goal">
-      <rdfs:subClassOf rdf:resource="&comp_cap;right_gripper_actionTopics"/>
+    <owl:Class rdf:about="&comp_cap;pr2_controllers_msgs_._Pr2GripperCommandActionResult">
+      <rdfs:subClassOf rdf:resource="&comp_cap;gripper_actionTopics"/>
+    </owl:Class>    
+    
+    <owl:Class rdf:about="&comp_cap;pr2_controllers_msgs_._JointControllerState">
+      <rdfs:subClassOf rdf:resource="&comp_cap;gripper_actionTopics"/>
     </owl:Class>
     
-    <owl:Class rdf:about="&comp_cap;r_gripper_controller_._gripper_action_._cancel">
-      <rdfs:subClassOf rdf:resource="&comp_cap;right_gripper_actionTopics"/>
-    </owl:Class> 
-    
-    <owl:Class rdf:about="&comp_cap;r_gripper_controller_._gripper_action_._feedback">
-      <rdfs:subClassOf rdf:resource="&comp_cap;right_gripper_actionTopics"/>
-    </owl:Class>
-    
-    <owl:Class rdf:about="&comp_cap;r_gripper_controller_._gripper_action_._status">
-      <rdfs:subClassOf rdf:resource="&comp_cap;right_gripper_actionTopics"/>
-    </owl:Class>
-    
-    <owl:Class rdf:about="&comp_cap;r_gripper_controller_._gripper_action_._result">
-      <rdfs:subClassOf rdf:resource="&comp_cap;right_gripper_actionTopics"/>
+    <owl:Class rdf:about="&comp_cap;pr2_controllers_msgs_._Pr2GripperCommand">
+      <rdfs:subClassOf rdf:resource="&comp_cap;gripper_actionTopics"/>
     </owl:Class>
     
     <!-- http://ias.cs.tum.edu/kb/comp_cap.owl#point_head_actionTopics -->
@@ -251,25 +157,95 @@
     <owl:Class rdf:about="&comp_cap;point_head_actionTopics">
       <rdfs:subClassOf rdf:resource="&comp_cap;Topic"/>
     </owl:Class>
-    
-    <owl:Class rdf:about="&comp_cap;point_head_action_._goal">
+
+    <owl:Class rdf:about="&comp_cap;pr2_controllers_msgs_._PointHeadActionFeedback">
       <rdfs:subClassOf rdf:resource="&comp_cap;point_head_actionTopics"/>
     </owl:Class>
     
-    <owl:Class rdf:about="&comp_cap;point_head_action_._cancel">
+    <owl:Class rdf:about="&comp_cap;pr2_controllers_msgs_._PointHeadActionGoal">
       <rdfs:subClassOf rdf:resource="&comp_cap;point_head_actionTopics"/>
     </owl:Class>
     
-    <owl:Class rdf:about="&comp_cap;point_head_action_._feedback">
+    <owl:Class rdf:about="&comp_cap;pr2_controllers_msgs_._PointHeadActionResult">
       <rdfs:subClassOf rdf:resource="&comp_cap;point_head_actionTopics"/>
     </owl:Class>
     
-    <owl:Class rdf:about="&comp_cap;point_head_action_._result">
-      <rdfs:subClassOf rdf:resource="&comp_cap;point_head_actionTopics"/>
-    </owl:Class>  
+    <!-- http://ias.cs.tum.edu/kb/comp_cap.owl#BaseCollisionCheckCapabilityTopics -->
     
-    <owl:Class rdf:about="&comp_cap;point_head_action_._status">
-      <rdfs:subClassOf rdf:resource="&comp_cap;point_head_actionTopics"/>
+    <owl:Class rdf:about="&comp_cap;BaseCollisionCheckCapabilityTopics">
+      <rdfs:subClassOf rdf:resource="&comp_cap;Topic"/>
+    </owl:Class>
+
+    <owl:Class rdf:about="&comp_cap;sensor_msgs_._LaserScan">
+      <rdfs:subClassOf rdf:resource="&comp_cap;BaseCollisionCheckCapabilityTopics"/>
+    </owl:Class>
+    
+    <owl:Class rdf:about="&comp_cap;sensor_msgs_._PointCloud">
+      <rdfs:subClassOf rdf:resource="&comp_cap;BaseCollisionCheckCapabilityTopics"/>
+    </owl:Class>
+    
+    <owl:Class rdf:about="&comp_cap;nav_msgs_._Odometry">
+      <rdfs:subClassOf rdf:resource="&comp_cap;BaseCollisionCheckCapabilityTopics"/>
+    </owl:Class>
+    
+    <owl:Class rdf:about="&comp_cap;tf_._tfMessage">
+      <rdfs:subClassOf rdf:resource="&comp_cap;BaseCollisionCheckCapabilityTopics"/>
+    </owl:Class>
+    
+    <!-- http://ias.cs.tum.edu/kb/comp_cap.owl#BaseCollisionCheckCapability -->
+
+    <owl:Class rdf:about="&comp_cap;BaseCollisionCheckCapability">
+	<rdfs:subClassOf rdf:resource="&srdl2-cap;BaseCollisionCheckCapability"/>
+	<owl:intersectionOf rdf:parseType="Collection">
+             <owl:Restriction>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnSubscribedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;sensor_msgs_._LaserScan"/>
+            </owl:Restriction>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnSubscribedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;sensor_msgs_._PointCloud"/>
+            </owl:Restriction>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;nav_msgs_._Odometry"/>
+            </owl:Restriction>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;tf_._tfMessage"/>
+            </owl:Restriction>
+	</owl:intersectionOf>
+    </owl:Class>
+
+    <!-- http://ias.cs.tum.edu/kb/comp_cap.owl#point_head_action -->
+    
+    <owl:Class rdf:about="&comp_cap;point_head_action">
+	<rdfs:subClassOf rdf:resource="&srdl2-cap;point_head_action"/>
+	<owl:intersectionOf rdf:parseType="Collection">
+             <owl:Restriction>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnSubscribedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;pr2_controllers_msgs_._PointHeadActionGoal"/>
+            </owl:Restriction>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnSubscribedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;pr2_controllers_msgs_._PointHeadActionGoal"/>
+            </owl:Restriction>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;pr2_controllers_msgs_._PointHeadActionFeedback"/>
+            </owl:Restriction>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;pr2_controllers_msgs_._PointHeadActionFeedback"/>
+            </owl:Restriction>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;pr2_controllers_msgs_._PointHeadActionResult"/>
+            </owl:Restriction>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;pr2_controllers_msgs_._PointHeadActionResult"/>
+            </owl:Restriction>
+	</owl:intersectionOf>
     </owl:Class>
     
     <!-- http://ias.cs.tum.edu/kb/comp_cap.owl#gripper_action -->
@@ -277,121 +253,69 @@
     <owl:Class rdf:about="&comp_cap;gripper_action">
 	<rdfs:subClassOf rdf:resource="&srdl2-cap;gripper_action"/>
 	<owl:intersectionOf rdf:parseType="Collection">
-	   <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnSubscribedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;l_gripper_controller_._gripper_action_._goal"/>
+             <owl:Restriction>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnSubscribedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;pr2_controllers_msgs_._Pr2GripperCommandActionGoal"/>
             </owl:Restriction>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnSubscribedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;l_gripper_controller_._gripper_action_._cancel"/>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnSubscribedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;pr2_controllers_msgs_._JointControllerState"/>
             </owl:Restriction>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;l_gripper_controller_._gripper_action_._feedback"/>
+		<owl:onProperty rdf:resource="&comp_cap;dependsOnSubscribedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;pr2_controllers_msgs_._Pr2GripperCommandActionGoal"/>
             </owl:Restriction>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;l_gripper_controller_._gripper_action_._status"/>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnSubscribedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;pr2_controllers_msgs_._JointControllerState"/>
             </owl:Restriction>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;l_gripper_controller_._gripper_action_._result"/>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;pr2_controllers_msgs_._Pr2GripperCommandActionGoal"/>
             </owl:Restriction>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnSubscribedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;r_gripper_controller_._gripper_action_._goal"/>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;pr2_controllers_msgs_._Pr2GripperCommand"/>
             </owl:Restriction>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnSubscribedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;r_gripper_controller_._gripper_action_._cancel"/>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;pr2_controllers_msgs_._Pr2GripperCommandActionGoal"/>
             </owl:Restriction>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;l_gripper_controller_._gripper_action_._feedback"/>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;pr2_controllers_msgs_._Pr2GripperCommand"/>
             </owl:Restriction>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;r_gripper_controller_._gripper_action_._status"/>
-            </owl:Restriction>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;r_gripper_controller_._gripper_action_._result"/>
-            </owl:Restriction>
-      </owl:intersectionOf>
+	</owl:intersectionOf>
     </owl:Class>
-   
-    <!-- http://ias.cs.tum.edu/kb/comp_cap.owl#point_head_action -->
-   
-   <owl:Class rdf:about="&comp_cap;point_head_action">
-      <rdfs:subClassOf rdf:resource="&srdl2-cap;point_head_action"/>
-      <owl:intersectionOf rdf:parseType="Collection">
-	   <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnSubscribedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;point_head_action_._goal"/>
-            </owl:Restriction>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnSubscribedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;point_head_action_._cancel"/>
-            </owl:Restriction>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;point_head_action_._feedback"/>
-            </owl:Restriction>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;point_head_action_._status"/>
-            </owl:Restriction>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;point_head_action_._result"/>
-            </owl:Restriction>
-      </owl:intersectionOf>
-   </owl:Class>   
-   
+    
     <!-- http://ias.cs.tum.edu/kb/comp_cap.owl#move_arm -->
 
     <owl:Class rdf:about="&comp_cap;move_arm">
 	<rdfs:subClassOf rdf:resource="&srdl2-cap;move_arm"/>
 	<owl:intersectionOf rdf:parseType="Collection">
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnSubscribedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;move_right_arm_._goal"/>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnSubscribedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;move_arm_msgs_._MoveArmActionGoal"/>
             </owl:Restriction>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnSubscribedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;move_right_arm_._cancel"/>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnSubscribedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;move_arm_msgs_._MoveArmActionGoal"/>
             </owl:Restriction>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;move_right_arm_._feedback"/>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;move_arm_msgs_._MoveArmActionFeedback"/>
             </owl:Restriction>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;move_right_arm_._status"/>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;move_arm_msgs_._MoveArmActionFeedback"/>
             </owl:Restriction>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;move_right_arm_._result"/>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;move_arm_msgs_._MoveArmActionResult"/>
             </owl:Restriction>
              <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnSubscribedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;move_left_arm_._goal"/>
-            </owl:Restriction>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnSubscribedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;move_left_arm_._cancel"/>
-            </owl:Restriction>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;move_left_arm_._feedback"/>
-            </owl:Restriction>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;move_left_arm_._status"/>
-            </owl:Restriction>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;move_left_arm_._result"/>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;move_arm_msgs_._MoveArmActionResult"/>
             </owl:Restriction>
         </owl:intersectionOf>
     </owl:Class>
@@ -402,35 +326,28 @@
 	<rdfs:subClassOf rdf:resource="&srdl2-cap;move_base"/>
 	<owl:intersectionOf rdf:parseType="Collection">
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnSubscribedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;move_base_._goal"/>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnSubscribedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;move_base_msgs_._MoveBaseActionGoal"/>
             </owl:Restriction>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnSubscribedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;move_base_._cancel"/>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnSubscribedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;geometry_msgs_._PoseStamped"/>
             </owl:Restriction>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnSubscribedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;move_base_simple_._goal"/>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;move_base_msgs_._MoveBaseActionFeedback"/>
             </owl:Restriction>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;move_base_._feedback"/>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;move_base_msgs_._MoveBaseActionResult"/>
             </owl:Restriction>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;move_base_._status"/>
-            </owl:Restriction>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;move_base_._result"/>
-            </owl:Restriction>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedTopic"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap;cmd_vel"/>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedMessageType"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap;geometry_msgs_._Twist"/>
             </owl:Restriction>
         </owl:intersectionOf>
     </owl:Class>
+    
     
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -441,12 +358,12 @@
      -->
 
     <!-- http://ias.cs.tum.edu/kb/comp_cap.owl#computeCapability -->
-
+    
     <computable:PrologClass rdf:about="&comp_cap;computeCapability">
       <computable:command rdf:datatype="&xsd;string">comp_cap:comp_capability</computable:command>
       <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
       <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
       <computable:target rdf:resource="&srdl2;Capability"/>
-    </computable:PrologClass>     
+    </computable:PrologClass> 
     
 </rdf:RDF>

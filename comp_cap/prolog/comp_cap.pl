@@ -26,7 +26,7 @@
 % @param
 % @param 
 % 
-comp_capability(Inst, Class) :-
+comp_capability_topicname(Inst, Class) :-
   jpl_new('edu.tum.cs.ias.knowrob.comp_cap.CapabilityBase',[], CapabilityBase),
   findall(SubTopic,srdl2:class_properties(Class, comp_cap:dependsOnSubscribedTopic, SubTopic), SubTopics),
   jpl_list_to_array(SubTopics, JPLSubTopics),
@@ -36,6 +36,16 @@ comp_capability(Inst, Class) :-
   jpl_array_to_list(Res,MisTopics),
   length(MisTopics,X),
   X = 0,
-  rdf_instance_from_class(Class, Inst);
-  member(Inst,MisTopics).
+  rdf_instance_from_class(Class, Inst).
   
+comp_capability_msgtype(Inst, Class) :-
+  jpl_new('edu.tum.cs.ias.knowrob.comp_cap.CapabilityBase',[], CapabilityBase),
+  findall(SubTopic,srdl2:class_properties(Class, comp_cap:dependsOnSubscribedMessageType, SubTopic), SubTopics),
+  jpl_list_to_array(SubTopics, JPLSubTopics),
+  findall(PubTopic,srdl2:class_properties(Class, comp_cap:dependsOnPublishedMessageType, PubTopic), PubTopics),
+  jpl_list_to_array(PubTopics, JPLPubTopics),
+  jpl_call(CapabilityBase, 'comp_capability',[JPLPubTopics, JPLSubTopics], Res),
+  jpl_array_to_list(Res,MisTopics),
+  length(MisTopics,X),
+  X = 0,
+  rdf_instance_from_class(Class, Inst).
