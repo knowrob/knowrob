@@ -1,6 +1,5 @@
 package edu.tum.cs.ias.knowrob.comp_cap;
 
-import java.io.*;
 import java.util.ArrayList;
 
 public class CapabilityBase {

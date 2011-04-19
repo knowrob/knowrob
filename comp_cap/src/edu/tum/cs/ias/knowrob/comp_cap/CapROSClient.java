@@ -26,17 +26,9 @@ public class CapROSClient {
 	/*
 	 * returns published topics
 	 */
-	public ArrayList<String> getPublishedTopics() {
-		ArrayList<String> topics = new ArrayList<String>();
-		Collection<Topic> help;
-
-		help = node.getTopics();// seems to have the same function as 'rostopic
-								// list -p'
-		for (Topic t : help) {
-			topics.add(t.getName());
-		}
-
-		return topics;
+	public Collection<Topic> getPublishedTopics() {
+		return node.getTopics();// seems to have the same function as 'rostopic
+		// list -p
 	}
 
 	public void destroy() {
@@ -44,17 +36,11 @@ public class CapROSClient {
 	}
 
 	public ArrayList<String> getMsgTypesOfPublishedTopics() {
-		ArrayList<String> publishedTopics = this.getPublishedTopics();
+		Collection<Topic> publishedTopics = this.getPublishedTopics();
 		ArrayList<String> msgTypes = new ArrayList<String>();
 
-		ArrayList<String> help;
-		for (String p : publishedTopics) {
-			help = this.executeCommand("rostopic info " + p); // bis ich rausgefunden habe wie ich das mit rosjava hinbekomme
-			for(String s : help){
-				if(s.contains("Type:")){
-					msgTypes.add(s.replace("Type:", ""));
-				}
-			}
+		for (Topic p : publishedTopics) {
+			msgTypes.add(p.getDatatype());
 		}
 
 		return msgTypes;
