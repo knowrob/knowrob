@@ -56,6 +56,7 @@ public class CapROSClient {
 			for(String s : help){
 				if(s.contains("Type:")){
 					msgTypes.add(s.replace("Type:", ""));
+					break;
 				}
 			}
 		}		
