@@ -16,6 +16,7 @@
 
   <depend package="rosprolog"/>
   <depend package="ias_prolog_addons"/>
+<depend package="mod_vis"/>
 
   <export>
     <rosdoc config="rosdoc.yaml" />
