@@ -68,6 +68,12 @@
     
 
 
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Cereals -->
+
+    <owl:Class rdf:about="&germandeli;Cereals"/>
+    
+
+
     <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Choco_Cookies_200g -->
 
     <owl:Class rdf:about="&germandeli;Choco_Cookies_200g"/>
@@ -104,6 +110,12 @@
     
 
 
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Frk_Breakfast -->
+
+    <owl:Class rdf:about="&germandeli;Frk_Breakfast"/>
+    
+
+
     <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Haendlmaiers_Sweet_Mustard_385_g -->
 
     <owl:Class rdf:about="&germandeli;Haendlmaiers_Sweet_Mustard_385_g"/>
@@ -113,6 +125,12 @@
     <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Hengstenberg_Mixed_Pickles -->
 
     <owl:Class rdf:about="&germandeli;Hengstenberg_Mixed_Pickles"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Juices_Apfelschorle_Iced_Tea -->
+
+    <owl:Class rdf:about="&germandeli;Juices_Apfelschorle_Iced_Tea"/>
     
 
 
@@ -182,6 +200,12 @@
     
 
 
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Teas -->
+
+    <owl:Class rdf:about="&germandeli;Teas"/>
+    
+
+
     <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Teekanne_Rotbusch_Tee_20_Bags -->
 
     <owl:Class rdf:about="&germandeli;Teekanne_Rotbusch_Tee_20_Bags"/>
@@ -242,6 +266,18 @@
     
 
 
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Juice -->
+
+    <owl:Class rdf:about="&knowrob;Juice"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Milk -->
+
+    <owl:Class rdf:about="&knowrob;Milk"/>
+    
+
+
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Saucer -->
 
     <owl:Class rdf:about="&knowrob;Saucer"/>
@@ -281,6 +317,147 @@
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#WoodenSpoon -->
 
     <owl:Class rdf:about="&knowrob;WoodenSpoon"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#AlpenMilch_Fettarme_Milch -->
+
+    <owl:Class rdf:about="&orgprinciples_demo;AlpenMilch_Fettarme_Milch">
+        <rdfs:subClassOf rdf:resource="&knowrob;Milk"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Aro-HVollMilch -->
+
+    <owl:Class rdf:about="&orgprinciples_demo;Aro-HVollMilch">
+        <rdfs:subClassOf rdf:resource="&knowrob;Milk"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Bergbauern_HMilch -->
+
+    <owl:Class rdf:about="&orgprinciples_demo;Bergbauern_HMilch">
+        <rdfs:subClassOf rdf:resource="&knowrob;Milk"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#EinHerzFuerErzeuger_Fettarme_HMilch -->
+
+    <owl:Class rdf:about="&orgprinciples_demo;EinHerzFuerErzeuger_Fettarme_HMilch">
+        <rdfs:subClassOf rdf:resource="&knowrob;Milk"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Kellogs_Cereals -->
+
+    <owl:Class rdf:about="&orgprinciples_demo;Kellogs_Cereals">
+        <rdfs:subClassOf rdf:resource="&germandeli;Cereals"/>
+        <rdfs:subClassOf rdf:resource="&germandeli;Frk_Breakfast"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Kellogs_Frosties -->
+
+    <owl:Class rdf:about="&orgprinciples_demo;Kellogs_Frosties">
+        <rdfs:subClassOf rdf:resource="&orgprinciples_demo;Kellogs_Cereals"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Kellogs_HoneyLoops -->
+
+    <owl:Class rdf:about="&orgprinciples_demo;Kellogs_HoneyLoops">
+        <rdfs:subClassOf rdf:resource="&orgprinciples_demo;Kellogs_Cereals"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#LancasterTea -->
+
+    <owl:Class rdf:about="&orgprinciples_demo;LancasterTea">
+        <rdfs:subClassOf rdf:resource="&germandeli;Teas"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#LancasterTea_CeylonAssan -->
+
+    <owl:Class rdf:about="&orgprinciples_demo;LancasterTea_CeylonAssan">
+        <rdfs:subClassOf rdf:resource="&orgprinciples_demo;LancasterTea"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#MessmerTea -->
+
+    <owl:Class rdf:about="&orgprinciples_demo;MessmerTea">
+        <rdfs:subClassOf rdf:resource="&germandeli;Teas"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Messmer_MildeHagebutten -->
+
+    <owl:Class rdf:about="&orgprinciples_demo;Messmer_MildeHagebutten">
+        <rdfs:subClassOf rdf:resource="&orgprinciples_demo;MessmerTea"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Messmer_Waldbere -->
+
+    <owl:Class rdf:about="&orgprinciples_demo;Messmer_Waldbere">
+        <rdfs:subClassOf rdf:resource="&orgprinciples_demo;MessmerTea"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Nestle_Cereals -->
+
+    <owl:Class rdf:about="&orgprinciples_demo;Nestle_Cereals">
+        <rdfs:subClassOf rdf:resource="&germandeli;Cereals"/>
+        <rdfs:subClassOf rdf:resource="&germandeli;Frk_Breakfast"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Nestle_Clusters_Cereal -->
+
+    <owl:Class rdf:about="&orgprinciples_demo;Nestle_Clusters_Cereal">
+        <rdfs:subClassOf rdf:resource="&orgprinciples_demo;Nestle_Cereals"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Pfanner_IceTea -->
+
+    <owl:Class rdf:about="&orgprinciples_demo;Pfanner_IceTea">
+        <rdfs:subClassOf rdf:resource="&germandeli;Juices_Apfelschorle_Iced_Tea"/>
+        <rdfs:subClassOf rdf:resource="&knowrob;Juice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Pfanner_IceTeaLight -->
+
+    <owl:Class rdf:about="&orgprinciples_demo;Pfanner_IceTeaLight">
+        <rdfs:subClassOf rdf:resource="&germandeli;Juices_Apfelschorle_Iced_Tea"/>
+        <rdfs:subClassOf rdf:resource="&knowrob;Juice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#StarMarke_Traubensaft -->
+
+    <owl:Class rdf:about="&orgprinciples_demo;StarMarke_Traubensaft">
+        <rdfs:subClassOf rdf:resource="&germandeli;Juices_Apfelschorle_Iced_Tea"/>
+        <rdfs:subClassOf rdf:resource="&knowrob;Juice"/>
+    </owl:Class>
     
 
 
