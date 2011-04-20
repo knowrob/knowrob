@@ -243,7 +243,7 @@ to_local(Class, Local) :-
 % init mod_vis:
 % register_ros_package(mod_vis).
 % use_module(library('mod_vis')). 
-% mod_vis:visualization_canvas(C).
+% mod_vis:visualisation_canvas(C).
 
 %% highlight_best_location_maxMaxWup(+Object, +Canvas) 
 % 
