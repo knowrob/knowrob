@@ -14,6 +14,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/comp_orgprinciples</url>
 
+<depend package="comp_germandeli"/>
   <depend package="rosprolog"/>
   <depend package="ias_prolog_addons"/>
 <depend package="mod_vis"/>
