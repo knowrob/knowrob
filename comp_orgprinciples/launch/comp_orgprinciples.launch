@@ -1,4 +1,4 @@
 <launch>
-<node name="knowrob" pkg="rosprolog" type="run_with_prolog_env"
+<node name="json_prolog" pkg="rosprolog" type="run_with_prolog_env"
                args="comp_orgprinciples $(find json_prolog)/bin/json_prolog" />
 </launch>
