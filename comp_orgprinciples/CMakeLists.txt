@@ -34,16 +34,26 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #######################################
 # reset paths in OWL files
 rosbuild_find_ros_package(ias_knowledge_base)
-set( OWL_PATH_PREFIX ${ias_knowledge_base_PACKAGE_PATH} )
+set( IAS_KNOWLEDGE_BASE_PACKAGE_PATH ${ias_knowledge_base_PACKAGE_PATH} )
 
-#file(GLOB inputs owl/*.in)
-#foreach( _in ${inputs} )
-#  string(REPLACE ".in" "" _out ${_in})
-#  configure_file( ${_in} ${_out} )
-#endforeach( _in )
+rosbuild_find_ros_package(comp_germandeli)
+set( GERMANDELI_PACKAGE_PATH ${comp_germandeli_PACKAGE_PATH} )
+
+rosbuild_find_ros_package(ias_semantic_map)
+set( IAS_SEMANTIC_MAP_PACKAGE_PATH ${ias_semantic_map_PACKAGE_PATH} )
 
 rosbuild_find_ros_package(comp_orgprinciples)
 set( LOCAL_PACKAGE_PATH ${comp_orgprinciples_PACKAGE_PATH} )
+
+
+
+file(GLOB inputs owl/*.in)
+foreach( _in ${inputs} )
+  string(REPLACE ".in" "" _out ${_in})
+  configure_file( ${_in} ${_out} )
+endforeach( _in )
+
+
 
 file(GLOB inputs prolog/*.in)
 foreach( _in ${inputs} )

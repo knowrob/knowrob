@@ -2,6 +2,10 @@
 
 
 <!DOCTYPE rdf:RDF [
+    <!ENTITY semantic_map_path 'file://@IAS_SEMANTIC_MAP_PACKAGE_PATH@/owl/'>
+    <!ENTITY germandeli_path 'file://@GERMANDELI_PACKAGE_PATH@/owl/'>
+    <!ENTITY kb_path 'file://@IAS_KNOWLEDGE_BASE_PACKAGE_PATH@/owl/'>
+
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
     <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
@@ -22,8 +26,8 @@
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#">
     <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/orgprinciples_demo.owl">
-        <owl:imports rdf:resource="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#"/>
-        <owl:imports rdf:resource="http://ias.cs.tum.edu/kb/germandeli.owl#"/>
+        <owl:imports rdf:resource="&semantic_map_path;ccrl2_semantic_map.owl#"/>
+        <owl:imports rdf:resource="&germandeli_path;germandeli.owl#"/>
     </owl:Ontology>
     
 
@@ -769,6 +773,15 @@
     <owl:NamedIndividual rdf:about="&orgprinciples_demo;Milchreis1">
         <rdf:type rdf:resource="&germandeli;Milch_Reis_500g"/>
         <knowrob:in-ContGeneric rdf:resource="&knowrob;Drawer49"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/orgprinciples_demo.owl#Milk2 -->
+
+    <owl:NamedIndividual rdf:about="&orgprinciples_demo;Milk2">
+        <rdf:type rdf:resource="&orgprinciples_demo;Bergbauern_HMilch"/>
+        <knowrob:in-ContGeneric rdf:resource="&knowrob;Refrigerator67"/>
     </owl:NamedIndividual>
     
 
