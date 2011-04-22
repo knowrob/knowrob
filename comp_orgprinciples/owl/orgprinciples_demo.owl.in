@@ -120,6 +120,12 @@
     
 
 
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#GermanDeliObject -->
+
+    <owl:Class rdf:about="&germandeli;GermanDeliObject"/>
+    
+
+
     <!-- http://ias.cs.tum.edu/kb/germandeli.owl#Haendlmaiers_Sweet_Mustard_385_g -->
 
     <owl:Class rdf:about="&germandeli;Haendlmaiers_Sweet_Mustard_385_g"/>
@@ -278,7 +284,16 @@
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Milk -->
 
-    <owl:Class rdf:about="&knowrob;Milk"/>
+    <owl:Class rdf:about="&knowrob;Milk">
+        <rdfs:subClassOf rdf:resource="&germandeli;GermanDeliObject"/>
+        <rdfs:subClassOf rdf:resource="&knowrob;Perishable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Perishable -->
+
+    <owl:Class rdf:about="&knowrob;Perishable"/>
     
 
 
