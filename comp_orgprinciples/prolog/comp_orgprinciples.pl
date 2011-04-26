@@ -32,7 +32,8 @@
 		best_location_maxMaxWup/2,
 		best_location_dtree/2,
 		highlight_best_location_maxMaxWup/2,
-		highlight_best_location_dtree/2
+		highlight_best_location_dtree/2,
+		display_object_images_at_location/2
     ]).
 
 :- use_module(library('semweb/rdf_db')).
@@ -44,7 +45,8 @@
 	  classes_of_objects(t,t),
 	  highlight_best_location_maxMaxWup(r,+),
 	  highlight_best_location_dtree(r,+),
-	  print_objects_at_location(r,r).
+	  print_objects_at_location(r,r),
+	  display_object_images_at_location(r).
 
 %% best_location_maxMaxWup(+Object, -BestLocation).	  
 %
@@ -239,6 +241,10 @@ to_local(Class, Local) :-
 	(rdf_global_id(Short,Class) -> Local = Short ; Local = Class).
 	  
 	  
+%-------------------------------------------------------------------------
+% visualization utilities:	  
+	  
+	  
 % visualize with mod_vis:
 % init mod_vis:
 % register_ros_package(mod_vis).
@@ -271,6 +277,42 @@ highlight_best_location_dtree(Object, Canvas) :-
 	 mod_vis:highlight_object(LGlobal, (@true),0,70,130,Canvas)
 	 )).
  
+ 
+%display image of object:
+%get a single product ID, read it from the ontology
+get_class_product_ID_ontology(Class, PID) :- 
+		rdf_has(Class,_,O), 
+		rdf_has(O, rdf:type, 'http://www.w3.org/2002/07/owl#Restriction'), 
+		rdf_has(O, owl:onProperty, germandeli:productID), 
+		rdf_has(O, owl:hasValue, R),
+		R = literal(type('http://www.w3.org/2001/XMLSchema#string',PID)).
+		
+get_image_filename(Class, Filename) :-
+    get_class_product_ID_ontology(Class, PID),
+    sformat(Filename,'~w.jpg', [PID]).
+    
+% display image for object class if available in  (image name is $germandeli_product_id.jpg)
+show_object_images(Classes, ImageDir) :-
+    working_directory(CWD, CWD),
+    findall(PathAtom, (member(Class, Classes),
+    	(get_image_filename(Class, Filename) -> (
+    		format(string(Path),'~w/product_images/~w', [ImageDir, Filename]),
+    		format('show image: ~w',[Path]),nl,
+    		term_to_atom(Path, PathAtom)) 
+    	; (PathAtom = [], format('Warning: no product ID set for ~w -> no product image', [Class])))
+    ), PathAtomList),
+    flatten(PathAtomList, PathAtomListFlat),
+    write(PathAtomListFlat),nl,
+    mod_vis:show_images(PathAtomListFlat, _).
+ 
+% display all objects at a location in canvas for which images are available in ImageDir
+% display_object_images_at_location(knowrob:'Refrigerator67').
+display_object_images_at_location(Location, ImageDir) :- 
+    to_global(Location, LocationGlobal),
+    objects_at_location(LocationGlobal, ObjectsAtLocation), 
+    findall(ClassAtLocation, (member(ObjectAtLocation, ObjectsAtLocation),
+	    class_of_object(ClassAtLocation, ObjectAtLocation)
+    ), AllClasses), show_object_images(AllClasses, ImageDir). 
  
 %% print_objects_at_location(+Location, +Object) 
 % 
