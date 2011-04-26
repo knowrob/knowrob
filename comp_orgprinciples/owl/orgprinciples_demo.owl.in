@@ -52,6 +52,23 @@
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/germandeli.owl#productID -->
+
+    <owl:DatatypeProperty rdf:about="&germandeli;productID"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
     // Classes
     //
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -359,6 +376,12 @@
 
     <owl:Class rdf:about="&orgprinciples_demo;Bergbauern_HMilch">
         <rdfs:subClassOf rdf:resource="&knowrob;Milk"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&germandeli;productID"/>
+                <owl:hasValue rdf:datatype="&xsd;string">bergbauernhmilch1</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 
