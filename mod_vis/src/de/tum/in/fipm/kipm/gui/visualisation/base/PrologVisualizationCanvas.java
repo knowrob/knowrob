@@ -1,6 +1,7 @@
 package de.tum.in.fipm.kipm.gui.visualisation.base;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.FileInputStream;
@@ -42,11 +43,13 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 	private StandaloneKitchenVisApplet KVObject;
 	public ControlP5 controlP5;
 	private ControlWindow controlWindow;
-	public ImageViewerApplet iviewer;
+	//public ImageViewerApplet iviewer;
 	public JFrame img_window;
-	
+
 	
 	public PrologVisualizationCanvas() {
+
+        img_window = null;
 		
 		// not required when calling from Prolog
 		//initProlog();
@@ -291,22 +294,31 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
     	KVObject.redraw();
     }   
     
-	public void showImageInNewWindow(String img) {
-		
+	public void showImagesInNewWindow(String[] imgs) {
+
+		img_window = new JFrame();
+        img_window.setLayout(new GridLayout(1,imgs.length));  
+  		
 		int frameWidth = 0;
 		int frameHeight = 30;
-		
-		iviewer = new ImageViewerApplet();
-		img_window = new JFrame();
-		img_window.getContentPane().add(iviewer, BorderLayout.CENTER);
 
-		iviewer.init();
-		iviewer.setImage(img);
-		img_window.setSize(iviewer.width + frameWidth, iviewer.height + frameHeight);		
-		
+        int totalWidth = frameWidth;
+        int totalHeight = frameHeight;
+
+        for(String img : imgs) {
+            ImageViewerApplet iviewer = new ImageViewerApplet(img);
+            iviewer.init();
+		    //iviewer.setImage(img);
+		    img_window.getContentPane().add(iviewer);
+            iviewer.setSize(iviewer.width,iviewer.height);
+            totalWidth += iviewer.width;
+            totalHeight = max(iviewer.height + frameHeight, totalHeight); 
+        }
+
+		img_window.setSize(totalWidth, totalHeight);		    
+        img_window.pack();
 		img_window.setVisible(true);
 		img_window.setResizable(false);
-
 	}
     
 

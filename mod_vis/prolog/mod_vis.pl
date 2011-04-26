@@ -47,7 +47,7 @@
       highlight_object_with_children/2,
       highlight_object_with_children/3,
       reset_highlighting/1,
-      show_image/2
+      show_images/2
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -395,13 +395,14 @@ reset_highlighting(Canvas) :-
     ((var(Canvas)) -> (v_canvas(Canvas));(true)),
     jpl_call(Canvas, 'clearHighlight', [], _).
 
-%% show_image(+ImagePath, +Canvas) is det.
+%% show_images(+ImagePaths, +Canvas) is det.
 %
-% Visualize the image specified by ImagePath in a new JFrame.
+% Visualize the images specified by ImagePaths in a new JFrame.
 %
-% @param ImagePath  Global path+filename to an image
+% @param ImagePaths  List of: global path+filename for each image
 % @param Canvas     Visualization canvas
 %
-show_image(Image, Canvas) :-
+show_images(ImagePaths, Canvas) :-
+    jpl_list_to_array(ImagePaths, ImagePathsArray),
     ((var(Canvas)) -> (v_canvas(Canvas));(true)),
-    jpl_call(Canvas, 'showImageInNewWindow', [Image], _).
+    jpl_call(Canvas, 'showImagesInNewWindow', [ImagePathsArray], _).
