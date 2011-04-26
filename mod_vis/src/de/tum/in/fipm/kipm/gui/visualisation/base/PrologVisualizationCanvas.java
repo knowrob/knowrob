@@ -1,10 +1,14 @@
 package de.tum.in.fipm.kipm.gui.visualisation.base;
 
+import java.awt.BorderLayout;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.util.*;
+
+import javax.swing.JFrame;
+
 import controlP5.ControlP5;
 import controlP5.ControlWindow;
 import controlP5.Radio;
@@ -16,6 +20,7 @@ import controlP5.Textlabel;
 import de.tum.in.fipm.kipm.gui.visualisation.applets.ActionVisApplet;
 import de.tum.in.fipm.kipm.gui.visualisation.applets.StandaloneKitchenVisApplet;
 import de.tum.in.fipm.kipm.gui.visualisation.items.ItemBase;
+import de.tum.in.fipm.kipm.gui.visualisation.applets.ImageViewerApplet;
 
 import processing.core.*;
 import jpl.Query;
@@ -37,6 +42,9 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 	private StandaloneKitchenVisApplet KVObject;
 	public ControlP5 controlP5;
 	private ControlWindow controlWindow;
+	public ImageViewerApplet iviewer;
+	public JFrame img_window;
+	
 	
 	public PrologVisualizationCanvas() {
 		
@@ -282,6 +290,25 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
     	KVObject.setViewParameters(xShift, yShift, xRot, yRot, zoom);
     	KVObject.redraw();
     }   
+    
+	public void showImageInNewWindow(String img) {
+		
+		int frameWidth = 0;
+		int frameHeight = 30;
+		
+		iviewer = new ImageViewerApplet();
+		img_window = new JFrame();
+		img_window.getContentPane().add(iviewer, BorderLayout.CENTER);
+
+		iviewer.init();
+		iviewer.setImage(img);
+		img_window.setSize(iviewer.width + frameWidth, iviewer.height + frameHeight);		
+		
+		img_window.setVisible(true);
+		img_window.setResizable(false);
+
+	}
+    
 
 	/**
 	 * initializes prolog
