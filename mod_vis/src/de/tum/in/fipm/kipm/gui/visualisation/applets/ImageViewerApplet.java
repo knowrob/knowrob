@@ -23,11 +23,12 @@ public class ImageViewerApplet extends PApplet {
 	public void setup() {
 
         if(this.image != null) {
-            this.img=loadImage(image);
+            System.out.println("Loading " + image);
+            this.img = loadImage(image);
             size(img.width, img.height, P2D);
         }
         else
-		size(150, 140, P2D);
+		size(279, 400, P2D);
 	}
 
 	public void draw() {

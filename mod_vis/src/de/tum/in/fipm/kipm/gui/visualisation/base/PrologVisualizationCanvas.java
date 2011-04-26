@@ -306,6 +306,8 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
         int totalHeight = frameHeight;
 
         for(String img : imgs) {
+            img = img.replaceAll( "\"", "" ); //remove ""
+
             ImageViewerApplet iviewer = new ImageViewerApplet(img);
             iviewer.init();
 		    //iviewer.setImage(img);
@@ -318,7 +320,7 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 		img_window.setSize(totalWidth, totalHeight);		    
         img_window.pack();
 		img_window.setVisible(true);
-		img_window.setResizable(false);
+		img_window.setResizable(true);
 	}
     
 
