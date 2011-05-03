@@ -22,14 +22,14 @@
 :- register_ros_package(mod_vis).
 :- register_ros_package(ias_semantic_map).
 
-:- use_module(library('comp_human_traj')).
+:- use_module(library('comp_eye_traj')).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % parse OWL files, register name spaces
 
-:- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/comp_human_traj.owl', false, false, true).
-:- rdf_db:rdf_register_ns(comp_traj, 'http://ias.cs.tum.edu/kb/comp_human_traj.owl#',     [keep(true)]).
+:- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/comp_eye_traj.owl', false, false, true).
+:- rdf_db:rdf_register_ns(comp_traj, 'http://ias.cs.tum.edu/kb/comp_eye_traj.owl#',     [keep(true)]).
 
 
 
