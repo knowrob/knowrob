@@ -1,0 +1,383 @@
+<?xml version="1.0"?>
+<!DOCTYPE rdf:RDF [
+          
+          <!ENTITY local_path 'file://@OWL_PATH_PREFIX@/owl/'>
+	  <!ENTITY local_path_semweb 'file://@OWL_PATH_PREFIX_SEMWEB@/owl/'> 
+      
+          <!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns'>
+          <!ENTITY rdfs 'http://www.w3.org/2000/01/rdf-schema'>
+          <!ENTITY owl 'http://www.w3.org/2002/07/owl'>
+          <!ENTITY xsd 'http://www.w3.org/2001/XMLSchema'>
+          <!ENTITY knowrob 'http://ias.cs.tum.edu/kb/knowrob.owl'>
+          <!ENTITY actionmodel 'http://ias.cs.tum.edu/kb/actionmodel.owl'>
+          <!ENTITY db_pancake 'Pancake'>
+          <!ENTITY db_user 'karinne'>
+          <!ENTITY db_pwd  'karinne'>
+          
+	  <!ENTITY tab_eye_traj '`EyeTrajectory`'>  
+	  <!ENTITY tab_action '`ActionData`'>        
+          <!ENTITY tab_object_rec '`ObjectRecognition`'>
+          <!ENTITY eye_traj_id	'CONCAT("t_", Occurrence_nr)'>
+          <!ENTITY eye_point_id  'CONCAT("p_",Occurrence_nr,"_",Instance_nr)'>
+          <!ENTITY action_id 'CONCAT(Action,"_",OCCURRENCE_NR)'>
+          <!ENTITY eye_point_data  'CONCAT("p_",Occurrence_nr,"_",Instance_nr,"-",XCoor,"-",YCoor)'>
+
+]>
+ 
+<rdf:RDF
+    xmlns:computable="http://ias.cs.tum.edu/kb/computable.owl#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://ias.cs.tum.edu/kb/comp_eye_traj.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:am="&actionmodel;#"
+    xmlns:knowrob="&knowrob;#"
+  xml:base="http://ias.cs.tum.edu/kb/comp_eye_traj.owl">
+  <owl:Ontology rdf:about="">
+    <rdfs:comment rdf:datatype="&xsd;#string"
+    >ontology for knowrob action modeling</rdfs:comment>
+    <owl:imports rdf:resource="&local_path;knowrob.owl"/>
+    <owl:imports rdf:resource="&local_path_semweb;actionmodel.owl"/>   
+  </owl:Ontology>
+  <owl:ObjectProperty rdf:ID="onObjectClass">
+    <rdfs:range>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <rdf:Description rdf:about="&knowrob;#FoodVessel"/>
+          <rdf:Description rdf:about="&knowrob;#FoodUtensil"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:range>
+    <rdfs:subPropertyOf rdf:resource="&knowrob;#onObjectClass"/>
+    <rdfs:domain rdf:resource="&actionmodel;#Action"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="ofType">
+    <rdfs:subPropertyOf rdf:resource="&knowrob;#ofType"/>
+    <rdfs:domain rdf:resource="&actionmodel;#Action"/>
+    <rdfs:range rdf:resource="&knowrob;#ActionOnObject"/>
+  </owl:ObjectProperty>
+  <owl:DatatypeProperty rdf:ID="postureLabel">
+    <rdfs:domain rdf:resource="&knowrob;#Posture-Configuration"/>
+    <rdfs:range rdf:resource="&xsd;#string"/>
+  </owl:DatatypeProperty>
+  <owl:ObjectProperty rdf:ID="robotPlace">
+    <rdfs:range rdf:resource="&knowrob;#Place-NonAgent"/>
+    <rdfs:domain rdf:resource="&actionmodel;#Situation"/>
+    <rdfs:subPropertyOf rdf:resource="&knowrob;#robotPlace"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="doneBy">
+    <rdfs:range rdf:resource="&knowrob;#Agent-Generic"/>
+    <rdfs:domain rdf:resource="&actionmodel;#Action"/>
+    <rdfs:subPropertyOf rdf:resource="&knowrob;#doneBy"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="startSituation">
+    <rdfs:subPropertyOf rdf:resource="&actionmodel;#startSituation"/>
+    <rdfs:range rdf:resource="&actionmodel;#Situation"/>
+    <rdfs:domain rdf:resource="&actionmodel;#Action"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="pointOfPlace">
+    <rdfs:range rdf:resource="&knowrob;#Point2D"/>
+    <rdfs:domain rdf:resource="&knowrob;#ManipulationPlace"/>
+  </owl:ObjectProperty>
+  <owl:DatatypeProperty rdf:ID="xCoord">
+    <rdfs:comment rdf:datatype="&xsd;#string">calculates the x coordinate for a point</rdfs:comment>
+    <rdfs:domain rdf:resource="&knowrob;#Point2D"/>
+    <rdfs:range rdf:resource="&xsd;#float"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="yCoord">
+    <rdfs:comment rdf:datatype="&xsd;#string">calculates the y coordinate for a point</rdfs:comment>
+    <rdfs:domain rdf:resource="&knowrob;#Point2D"/>
+    <rdfs:range rdf:resource="&xsd;#float"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="xMean">
+    <rdfs:comment rdf:datatype="&xsd;#string">calculates the x coordinate for the cluster mean</rdfs:comment>
+    <rdfs:domain rdf:resource="&knowrob;#ManipulationPlace"/>
+    <rdfs:range rdf:resource="&xsd;#float"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="yMean">
+    <rdfs:comment rdf:datatype="&xsd;#string">calculates the y coordinate for the cluster mean</rdfs:comment>
+    <rdfs:domain rdf:resource="&knowrob;#ManipulationPlace"/>
+    <rdfs:range rdf:resource="&xsd;#float"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="xVar">
+    <rdfs:comment rdf:datatype="&xsd;#string">calculates the cluster x variance</rdfs:comment>
+    <rdfs:domain rdf:resource="&knowrob;#ManipulationPlace"/>
+    <rdfs:range rdf:resource="&xsd;#float"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="yVar">
+    <rdfs:comment rdf:datatype="&xsd;#string">calculates the cluster y variance</rdfs:comment>
+    <rdfs:domain rdf:resource="&knowrob;#ManipulationPlace"/>
+    <rdfs:range rdf:resource="&xsd;#float"/>
+  </owl:DatatypeProperty>
+  <rdf:Description rdf:about="&knowrob;#perceivedThings"/>
+  <owl:ObjectProperty rdf:about="&knowrob;#perceivedThings"/>
+    <owl:ObjectProperty rdf:about="#placematActedOn">
+        <rdfs:domain rdf:resource="&knowrob;#Action"/>
+        <rdfs:range rdf:resource="&knowrob;#PlaceMat"/>
+        <rdfs:subPropertyOf rdf:resource="&knowrob;#perceivedThings"/>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="#plateActedOn">
+        <rdfs:domain rdf:resource="&knowrob;#Action"/>
+        <rdfs:range rdf:resource="&knowrob;#DinnerPlate"/>
+        <rdfs:subPropertyOf rdf:resource="&knowrob;#perceivedThings"/>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="#cupActedOn">
+        <rdfs:domain rdf:resource="&knowrob;#Action"/>
+        <rdfs:range rdf:resource="&knowrob;#DrinkingMug"/>
+        <rdfs:subPropertyOf rdf:resource="&knowrob;#perceivedThings"/>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="#napkinActedOn">
+        <rdfs:domain rdf:resource="&knowrob;#Action"/>
+        <rdfs:range rdf:resource="&knowrob;#Napkin"/>
+        <rdfs:subPropertyOf rdf:resource="&knowrob;#perceivedThings"/>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="#knifeActedOn">
+        <rdfs:domain rdf:resource="&knowrob;#Action"/>
+        <rdfs:range rdf:resource="&knowrob;#TableKnife"/>
+        <rdfs:subPropertyOf rdf:resource="&knowrob;#perceivedThings"/>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="#forkActedOn">
+        <rdfs:domain rdf:resource="&knowrob;#Action"/>
+        <rdfs:range rdf:resource="&knowrob;#Fork-SilverwarePiece"/>
+        <rdfs:subPropertyOf rdf:resource="&knowrob;#perceivedThings"/>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="#spoonActedOn">
+        <rdfs:domain rdf:resource="&knowrob;#Action"/>
+        <rdfs:range rdf:resource="&knowrob;#Spoon-SilverwarePiece"/>
+        <rdfs:subPropertyOf rdf:resource="&knowrob;#perceivedThings"/>
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="#postureAtTimePoint">
+        <rdfs:domain rdf:resource="&knowrob;#TimePoint"/>
+        <rdfs:range rdf:resource="&knowrob;#Posture-Configuration"/>
+    </owl:ObjectProperty>
+   
+
+
+  <!-- #################################################################### -->
+  <!-- HUMAN EYE OBSERVATION STUFF   -->
+  <!-- #################################################################### -->
+  
+  <!-- ############################### -->
+  <!-- HUMAN ACTION INSTANCES FOR THE EYE   -->
+  
+  <computable:SqlClass rdf:ID="computeReaching">
+    <computable:target rdf:resource="&knowrob;#Reaching"/>
+    <computable:command rdf:datatype="&xsd;#string">SELECT &action_id; FROM &tab_action; WHERE Action="Reaching"</computable:command>
+    <computable:testCommand rdf:datatype="&xsd;#string">SELECT &action_id; FROM &tab_action; WHERE &action_id;=~instance~</computable:testCommand>
+    <computable:user rdf:datatype="&xsd;#string">&db_user;</computable:user>
+    <computable:password rdf:datatype="&xsd;#string">&db_pwd;</computable:password>
+    <computable:database rdf:datatype="&xsd;#string">&db_pancake;</computable:database>
+    <computable:cache rdf:datatype="&xsd;#string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;#string">unvisible</computable:visible>
+  </computable:SqlClass>
+  
+  <computable:SqlClass rdf:ID="computeClosingABottle">
+    <computable:target rdf:resource="&knowrob;#ClosingABottle"/>
+    <computable:command rdf:datatype="&xsd;#string">SELECT &action_id; FROM &tab_action; WHERE Action="ClosingABottle"</computable:command>
+    <computable:testCommand rdf:datatype="&xsd;#string">SELECT &action_id; FROM &tab_action; WHERE &action_id;=~instance~</computable:testCommand>
+    <computable:user rdf:datatype="&xsd;#string">&db_user;</computable:user>
+    <computable:password rdf:datatype="&xsd;#string">&db_pwd;</computable:password>
+    <computable:database rdf:datatype="&xsd;#string">&db_pancake;</computable:database>
+    <computable:cache rdf:datatype="&xsd;#string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;#string">unvisible</computable:visible>
+  </computable:SqlClass>
+
+  <computable:SqlClass rdf:ID="computeOpeningABottle">
+    <computable:target rdf:resource="&knowrob;#OpeningABottle"/>
+    <computable:command rdf:datatype="&xsd;#string">SELECT &action_id; FROM &tab_action; WHERE Action="OpeningABottle"</computable:command>
+    <computable:testCommand rdf:datatype="&xsd;#string">SELECT &action_id; FROM &tab_action; WHERE &action_id;=~instance~</computable:testCommand>
+    <computable:user rdf:datatype="&xsd;#string">&db_user;</computable:user>
+    <computable:password rdf:datatype="&xsd;#string">&db_pwd;</computable:password>
+    <computable:database rdf:datatype="&xsd;#string">&db_pancake;</computable:database>
+    <computable:cache rdf:datatype="&xsd;#string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;#string">unvisible</computable:visible>
+  </computable:SqlClass>
+
+  <computable:SqlClass rdf:ID="computePouring-MakingSomethingAvailable">
+    <computable:target rdf:resource="&knowrob;#Pouring-MakingSomethingAvailable"/>
+    <computable:command rdf:datatype="&xsd;#string">SELECT &action_id; FROM &tab_action; WHERE Action="Pouring-MakingSomethingAvailable"</computable:command>
+    <computable:testCommand rdf:datatype="&xsd;#string">SELECT &action_id; FROM &tab_action; WHERE &action_id;=~instance~</computable:testCommand>
+    <computable:user rdf:datatype="&xsd;#string">&db_user;</computable:user>
+    <computable:password rdf:datatype="&xsd;#string">&db_pwd;</computable:password>
+    <computable:database rdf:datatype="&xsd;#string">&db_pancake;</computable:database>
+    <computable:cache rdf:datatype="&xsd;#string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;#string">unvisible</computable:visible>
+  </computable:SqlClass>
+
+  <computable:SqlClass rdf:ID="computeRealeasingGraspOfSomething">
+    <computable:target rdf:resource="&knowrob;#RealeasingGraspOfSomething"/>
+    <computable:command rdf:datatype="&xsd;#string">SELECT &action_id; FROM &tab_action; WHERE Action="RealeasingGraspOfSomething"</computable:command>
+    <computable:testCommand rdf:datatype="&xsd;#string">SELECT &action_id; FROM &tab_action; WHERE &action_id;=~instance~</computable:testCommand>
+    <computable:user rdf:datatype="&xsd;#string">&db_user;</computable:user>
+    <computable:password rdf:datatype="&xsd;#string">&db_pwd;</computable:password>
+    <computable:database rdf:datatype="&xsd;#string">&db_pancake;</computable:database>
+    <computable:cache rdf:datatype="&xsd;#string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;#string">unvisible</computable:visible>
+  </computable:SqlClass>
+
+  <computable:SqlClass rdf:ID="computeSettingAnObjectDown">
+    <computable:target rdf:resource="&knowrob;#SettingAnObjectDown"/>
+    <computable:command rdf:datatype="&xsd;#string">SELECT &action_id; FROM &tab_action; WHERE Action="SettingAnObjectDown"</computable:command>
+    <computable:testCommand rdf:datatype="&xsd;#string">SELECT &action_id; FROM &tab_action; WHERE &action_id;=~instance~</computable:testCommand>
+    <computable:user rdf:datatype="&xsd;#string">&db_user;</computable:user>
+    <computable:password rdf:datatype="&xsd;#string">&db_pwd;</computable:password>
+    <computable:database rdf:datatype="&xsd;#string">&db_pancake;</computable:database>
+    <computable:cache rdf:datatype="&xsd;#string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;#string">unvisible</computable:visible>
+  </computable:SqlClass>
+
+  <computable:SqlClass rdf:ID="computeFlipping">
+    <computable:target rdf:resource="&knowrob;#Flipping"/>
+    <computable:command rdf:datatype="&xsd;#string">SELECT &action_id; FROM &tab_action; WHERE Action="Flipping"</computable:command>
+    <computable:testCommand rdf:datatype="&xsd;#string">SELECT &action_id; FROM &tab_action; WHERE &action_id;=~instance~</computable:testCommand>
+    <computable:user rdf:datatype="&xsd;#string">&db_user;</computable:user>
+    <computable:password rdf:datatype="&xsd;#string">&db_pwd;</computable:password>
+    <computable:database rdf:datatype="&xsd;#string">&db_pancake;</computable:database>
+    <computable:cache rdf:datatype="&xsd;#string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;#string">unvisible</computable:visible>
+  </computable:SqlClass>
+  
+  <computable:SqlClass rdf:ID="computePickingUpAnObject">
+    <computable:target rdf:resource="&knowrob;#PickingUpAnObject"/>
+    <computable:command rdf:datatype="&xsd;#string">SELECT &action_id; FROM &tab_action; WHERE Action = "PickingUpAnObject" </computable:command>
+    <computable:testCommand rdf:datatype="&xsd;#string">SELECT &action_id; FROM &tab_action; WHERE &action_id;=~instance~</computable:testCommand>
+    <computable:user rdf:datatype="&xsd;#string">&db_user;</computable:user>
+    <computable:password rdf:datatype="&xsd;#string">&db_pwd;</computable:password>
+    <computable:database rdf:datatype="&xsd;#string">&db_pancake;</computable:database>
+    <computable:cache rdf:datatype="&xsd;#string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;#string">unvisible</computable:visible>
+  </computable:SqlClass>  
+
+  <computable:SqlClass rdf:ID="computePuttingDownAnObject">
+    <computable:target rdf:resource="&knowrob;#PuttingDownAnObject"/>
+    <computable:command rdf:datatype="&xsd;#string">SELECT &action_id; FROM &tab_action; WHERE Action = "PuttingDownAnObject"</computable:command>
+    <computable:testCommand rdf:datatype="&xsd;#string">SELECT &action_id; FROM &tab_action; WHERE &action_id;=~instance~</computable:testCommand>
+    <computable:user rdf:datatype="&xsd;#string">&db_user;</computable:user>
+    <computable:password rdf:datatype="&xsd;#string">&db_pwd;</computable:password>
+    <computable:database rdf:datatype="&xsd;#string">&db_pancake;</computable:database>
+    <computable:cache rdf:datatype="&xsd;#string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;#string">unvisible</computable:visible>
+  </computable:SqlClass> 
+
+
+<!-- ################################## -->
+<!-- EYE TRAJECTORY PROOERTIES          -->
+
+  <computable:SqlProperty rdf:ID="computeTrajEye">
+    <computable:target rdf:resource="&knowrob;#trajectory-Eye"/>
+    <computable:valueSelect rdf:datatype="&xsd;#string">SELECT &eye_traj_id; FROM &tab_eye_traj; WHERE &action_id;="~frame~" </computable:valueSelect>
+    <computable:frameSelect rdf:datatype="&xsd;#string">SELECT &action_id; FROM &tab_eye_traj; WHERE &eye_traj_id; = "~value~"</computable:frameSelect>
+    <computable:frameValueSelect rdf:datatype="&xsd;#string">SELECT &action_id;, &eye_traj_id; FROM &tab_eye_traj;</computable:frameValueSelect>
+    <computable:user rdf:datatype="&xsd;#string">&db_user;</computable:user>
+    <computable:password rdf:datatype="&xsd;#string">&db_pwd;</computable:password>
+    <computable:database rdf:datatype="&xsd;#string">&db_pancake;</computable:database>
+    <computable:cache rdf:datatype="&xsd;#string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;#string">unvisible</computable:visible>
+  </computable:SqlProperty>
+
+  <computable:SqlProperty rdf:ID="computePointOnEyeTrajectory">
+    <computable:target rdf:resource="&knowrob;#pointOnEyeTrajectory"/>
+    <computable:valueSelect rdf:datatype="&xsd;#string">SELECT &eye_point_data; FROM &tab_eye_traj; WHERE &eye_traj_id; ="~frame~" </computable:valueSelect>
+    <computable:frameSelect rdf:datatype="&xsd;#string">SELECT &eye_traj_id; FROM &tab_eye_traj; WHERE &eye_point_data; = "~value~"</computable:frameSelect>
+    <computable:frameValueSelect rdf:datatype="&xsd;#string">SELECT &eye_traj_id;, &eye_point_data; FROM &tab_eye_traj;</computable:frameValueSelect>
+    <computable:user rdf:datatype="&xsd;#string">&db_user;</computable:user>
+    <computable:password rdf:datatype="&xsd;#string">&db_pwd;</computable:password>
+    <computable:database rdf:datatype="&xsd;#string">&db_pancake;</computable:database>
+    <computable:cache rdf:datatype="&xsd;#string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;#string">unvisible</computable:visible>
+  </computable:SqlProperty>
+
+
+<!-- ###################################-->
+<!-- Object properties-->
+
+ <!-- Define the object that is manipulated -->
+   <computable:SqlProperty rdf:ID="computeObjectActedOn">
+    <computable:target rdf:resource="&knowrob;#objectActedOn"/>
+    <computable:valueSelect rdf:datatype="&xsd;#string">SELECT ObjectActedOn FROM &tab_action; WHERE &action_id; ="~frame~"</computable:valueSelect>
+    <computable:frameSelect rdf:datatype="&xsd;#string">SELECT  &action_id; FROM &tab_action; WHERE ObjectActedOn ="~value~"</computable:frameSelect>
+    <computable:frameValueSelect rdf:datatype="&xsd;#string">SELECT &action_id;, ObjectActedOn FROM &tab_action;</computable:frameValueSelect>
+    <computable:user rdf:datatype="&xsd;#string">&db_user;</computable:user>
+    <computable:password rdf:datatype="&xsd;#string">&db_pwd;</computable:password>
+    <computable:database rdf:datatype="&xsd;#string">&db_pancake;</computable:database>
+    <computable:cache rdf:datatype="&xsd;#string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;#string">unvisible</computable:visible>
+  </computable:SqlProperty>
+
+ <!-- define the object that is recognized -->
+   <computable:SqlProperty rdf:ID="computeDetectedObject">
+    <computable:target rdf:resource="&knowrob;#detectedObject"/>
+    <computable:valueSelect rdf:datatype="&xsd;#string">SELECT DetectedObject FROM &tab_object_rec; WHERE Frame BETWEEN (SELECT StartFrame FROM &tab_action; WHERE &action_id;="~frame~") AND (SELECT EndFrame FROM &tab_action; WHERE &action_id;="~frame~")</computable:valueSelect>
+    <computable:frameSelect rdf:datatype="&xsd;#string">SELECT CONCAT(act.Action,"_",act.OCCURRENCE_NR) FROM &tab_action; AS act, &tab_object_rec; AS obj WHERE obj.DetectedObject="~value~" AND obj.Frame BETWEEN act.StartFrame AND act.EndFrame </computable:frameSelect>
+    <computable:frameValueSelect rdf:datatype="&xsd;#string">SELECT CONCAT(a.Action,"_",a.OCCURRENCE_NR), o.`DetectedObject` FROM &tab_action; AS a, &tab_object_rec; AS o WHERE o.Frame BETWEEN a.StartFrame AND a.EndFrame</computable:frameValueSelect>
+    <computable:user rdf:datatype="&xsd;#string">&db_user;</computable:user>
+    <computable:password rdf:datatype="&xsd;#string">&db_pwd;</computable:password>
+    <computable:database rdf:datatype="&xsd;#string">&db_pancake;</computable:database>
+    <computable:cache rdf:datatype="&xsd;#string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;#string">unvisible</computable:visible>
+  </computable:SqlProperty>
+
+  <computable:SqlProperty rdf:ID="computeBodyPartsUsed">
+    <computable:target rdf:resource="&knowrob;#bodyPartsUsed"/>
+    <computable:valueSelect rdf:datatype="&xsd;#string"> SELECT Hand FROM &tab_action; WHERE &action_id;= "~frame~"  </computable:valueSelect>
+    <computable:frameSelect rdf:datatype="&xsd;#string">SELECT &action_id; FROM &tab_action; WHERE Hand="~value~"  </computable:frameSelect>
+    <computable:frameValueSelect rdf:datatype="&xsd;#string">SELECT &action_id;, Hand FROM &tab_action;</computable:frameValueSelect>
+    <computable:user rdf:datatype="&xsd;#string">&db_user;</computable:user>
+    <computable:password rdf:datatype="&xsd;#string">&db_pwd;</computable:password>
+    <computable:database rdf:datatype="&xsd;#string">&db_pancake;</computable:database>
+    <computable:cache rdf:datatype="&xsd;#string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;#string">unvisible</computable:visible>
+  </computable:SqlProperty>
+
+ <!-- Defines the the object that the person has in his hand-->
+    <computable:SqlProperty rdf:ID="computeOnObject">
+    <computable:target rdf:resource="&knowrob;#onObject"/>
+    <computable:valueSelect rdf:datatype="&xsd;#string">SELECT ObjectInHand FROM &tab_action; WHERE &action_id; = '~frame~'</computable:valueSelect>
+    <computable:frameSelect rdf:datatype="&xsd;#string">SELECT &action_id; FROM &tab_action; WHERE ObjectInHand = '~value~'</computable:frameSelect>
+    <computable:frameValueSelect rdf:datatype="&xsd;#string">SELECT &action_id;, ObjectInHand FROM &tab_action; </computable:frameValueSelect>
+    <computable:user rdf:datatype="&xsd;#string">&db_user;</computable:user>
+    <computable:password rdf:datatype="&xsd;#string">&db_pwd;</computable:password>
+    <computable:database rdf:datatype="&xsd;#string">&db_pancake;</computable:database>
+    <computable:cache rdf:datatype="&xsd;#string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;#string">unvisible</computable:visible>
+    </computable:SqlProperty>
+
+ <!-- Defines the object detected before certain activity-->
+    <computable:SqlProperty rdf:ID="computeBefore">
+    <computable:target rdf:resource="&knowrob;#before"/>
+    <computable:valueSelect rdf:datatype="&xsd;#string">SELECT DetectedObject FROM &tab_object_rec; WHERE Frame BETWEEN  (Select `StartFrame` FROM &tab_action; where &action_id;='~frame~')- 20 and (Select `StartFrame` FROM &tab_action; where &action_id;='~frame~') </computable:valueSelect>
+    <computable:frameSelect rdf:datatype="&xsd;#string">SELECT CONCAT(a.Action,"_",a.OCCURRENCE_NR) FROM &tab_action; AS a, &tab_object_rec; AS o WHERE o.DetectedObject='~value~'</computable:frameSelect>
+    <computable:frameValueSelect rdf:datatype="&xsd;#string">SELECT CONCAT(a.Action,"_",a.OCCURRENCE_NR), DetectedObject FROM &tab_action; AS a, &tab_object_rec; AS o </computable:frameValueSelect>
+    <computable:user rdf:datatype="&xsd;#string">&db_user;</computable:user>
+    <computable:password rdf:datatype="&xsd;#string">&db_pwd;</computable:password>
+    <computable:database rdf:datatype="&xsd;#string">&db_pancake;</computable:database>
+    <computable:cache rdf:datatype="&xsd;#string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;#string">unvisible</computable:visible>
+    </computable:SqlProperty>
+
+    <computable:SqlProperty rdf:ID="computeStartTime">
+    <computable:target rdf:resource="&knowrob;#startTime"/>
+    <computable:valueSelect rdf:datatype="&xsd;#string">SELECT StartFrame FROM &tab_action; WHERE &action_id; = '~frame~'</computable:valueSelect>
+    <computable:frameSelect rdf:datatype="&xsd;#string">SELECT &action_id; FROM &tab_action; WHERE StartFrame = '~value~'</computable:frameSelect>
+    <computable:frameValueSelect rdf:datatype="&xsd;#string">SELECT &action_id;, StartFrame FROM &tab_action; </computable:frameValueSelect>
+    <computable:user rdf:datatype="&xsd;#string">&db_user;</computable:user>
+    <computable:password rdf:datatype="&xsd;#string">&db_pwd;</computable:password>
+    <computable:database rdf:datatype="&xsd;#string">&db_pancake;</computable:database>
+    <computable:cache rdf:datatype="&xsd;#string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;#string">unvisible</computable:visible>
+    </computable:SqlProperty>
+
+    <computable:SqlProperty rdf:ID="computeEndTime">
+    <computable:target rdf:resource="&knowrob;#endTime"/>
+    <computable:valueSelect rdf:datatype="&xsd;#string">SELECT EndFrame FROM &tab_action; WHERE &action_id; = '~frame~'</computable:valueSelect>
+    <computable:frameSelect rdf:datatype="&xsd;#string">SELECT &action_id; FROM &tab_action; WHERE EndFrame = '~value~'</computable:frameSelect>
+    <computable:frameValueSelect rdf:datatype="&xsd;#string">SELECT &action_id;, EndFrame FROM &tab_action; </computable:frameValueSelect>
+    <computable:user rdf:datatype="&xsd;#string">&db_user;</computable:user>
+    <computable:password rdf:datatype="&xsd;#string">&db_pwd;</computable:password>
+    <computable:database rdf:datatype="&xsd;#string">&db_pancake;</computable:database>
+    <computable:cache rdf:datatype="&xsd;#string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;#string">unvisible</computable:visible>
+    </computable:SqlProperty>
+
+</rdf:RDF>

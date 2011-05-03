@@ -1,0 +1,16 @@
+<package>
+  <description brief="comp_eye_traj">
+
+     compute the trajectories from the gaze camera
+
+  </description>
+  <author>Karinne Ramirez-Amaro</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/comp_eye_traj</url>
+  <depend package="ias_knowledge_base"/>
+  <depend package="mod_vis"/>
+
+</package>
+
+
