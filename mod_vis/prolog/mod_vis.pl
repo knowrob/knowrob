@@ -32,6 +32,7 @@
       display_information_for/2,
       display_action/2,
       display_action_fixed/2,
+      display_eye_trajectory/2,
       show_actionseq/4,
       add_object/2,
       add_object_perception/2,
@@ -168,6 +169,18 @@ display_action(Identifier, Canvas) :-
 display_action_fixed(Identifier, Canvas) :-
     ((var(Canvas)) -> (v_canvas(Canvas));(true)),
     jpl_call(Canvas, 'displayFixed', [Identifier], _).
+
+%% display_eye_trajectory(+Identifier, +Canvas) is det.
+% 
+% Displays an eye trajectory in the Kitchen environment via its fixed identifier
+% for example "'http://ias.cs.tum.edu/kb/knowrob.owl#PickingUpAnObject'"
+% 
+% @param Identifier, e.g. 'http://ias.cs.tum.edu/kb/knowrob.owl#PickingUpAnObject' 
+% @param Canvas     Visualization canvas
+% 
+display_eye_trajectory(Identifier, Canvas) :-
+    ((var(Canvas)) -> (v_canvas(Canvas));(true)),
+    jpl_call(Canvas, 'displayEyeTrajectory', [Identifier], _).
   
 
 %% show_actionseq(+SeqInfos, +Canvas, +Hand, +Level) is det.

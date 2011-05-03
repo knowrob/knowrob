@@ -1,6 +1,7 @@
 package de.tum.in.fipm.kipm.gui.visualisation.applets;
 
 
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -11,8 +12,8 @@ import java.io.BufferedReader;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -237,7 +238,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 
 	/**
-	 * draws everything
+	 * draws everything that is define in the semantic map
 	 */
 	public void draw() {
 		PMatrix save = getMatrix();
@@ -636,8 +637,77 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			drawBackground();
 		}
 	}
+	
+	/** Displays the eye trajectory from the gaze camera 
+	 * 
+	 * @param identifier = 'http://ias.cs.tum.edu/kb/knowrob.owl#PickingUpAnObject'
+	 */
+	public void displayEyeTrajectory (String identifier) {
+		Integer Occ=1, auxOcc=1; 
+		int col=0, contP=0 ; 
+		int[][] Xc, Yc;
+		boolean band=true;
+		
+		Trajectories traj = new Trajectories();
+		
+		queryString = identifier;
+		HashMap<String, Vector<Object>> o= PrologVisualizationCanvas.executeQuery(""+ "readEyeTrajectory("+identifier+", T, P, XCoor, YCoor)", null);
+		
+		Vector<Object> pointId = o.get("P");
+		//String pointId = (String)c.get("P").get(0);
+		Vector<Object> XCoor = o.get("XCoor");
+		Vector<Object> YCoor = o.get("YCoor");
+		Xc= new int[35][4];
+		Yc= new int[35][4];
+		for (Object p: pointId){
+			//System.out.println("pointId: " +p);
+			String s_p=p.toString(); //example s_p=p_1_0
+			String[] tokenP=s_p.split("_");
+			// example: tokenP[0]=p, tokenP[1]=1 (occurrence), tokenP[2]=0 (instance)
+			//System.out.println("token 0: " +tokenP[0]+" token 1:"+tokenP[1]);
+			if (Occ.equals(Integer.parseInt(tokenP[1])) && band==true) {
+				//Save the values of the coordinates in 2 vectors
+				//displayMessage("instance_nr: "+ Integer.parseInt(tokenP[2]));
+				Xc[Integer.parseInt(tokenP[2])][col] = Integer.parseInt(XCoor.get(contP).toString());
+				Yc[Integer.parseInt(tokenP[2])][col] = Integer.parseInt(YCoor.get(contP).toString());
+				//displayMessage("Xc["+Integer.parseInt(tokenP[2])+"]["+col+"]= "+Xc[Integer.parseInt(tokenP[2])][col]);
+				
 
+			} else {
+				Occ=Integer.parseInt(tokenP[1]); //new occurrence_nr
+				if (Occ>auxOcc) {
+					col=Occ-1; band=true; auxOcc=Occ; //displayMessage("auxOcc: "+auxOcc);
+					Xc[Integer.parseInt(tokenP[2])][col] = Integer.parseInt(XCoor.get(contP).toString());
+					Yc[Integer.parseInt(tokenP[2])][col] = Integer.parseInt(YCoor.get(contP).toString());
+					}else{ band=false;}
+			}
+			contP=contP+1;
+		}
+		// Now I just need to plot the stupid points!!!!1 
+		/* other colors:  white = 0xFFFFFFFF
+		lightGray =	0xFFC0C0C0
+	    gray =	0xFF808080
+		darkGray = 0xFF404040
+		black =	0xFF000000
+		red =	0xFFFF0000
+		pink =	0xFFFFAFAF
+		orange = 0xFFFFC800
+		yellow = 0xFFFFFF00
+		green =	0xFF00FF00
+		magenta = 0xFFFF00FF
+		cyan =	0xFF00FFFF
+		blue =	0xFF0000FF */
+		for (int j=0;j<Xc[0].length;j++ ){
+			for (int i=0;i<(Xc.length)-1; i++) {
+				traj.addTraj(Xc[i][j], Yc[i][j], 0);
+				
+			}
+		}
+		allItems.add(traj);
+		animatedItemsRef.put("traj", traj);
 
+	}
+ 
 	/**
 	 * displays one PROLOG-instance of an action BY IT'S FIXED IDENTIFIER,
 	 * for example "'http://ias.cs.tum.edu/kb/knowrob.owl#Reaching_0_2'"
@@ -697,7 +767,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	public void highlightItem(String identifier, boolean highlight, int color) {
 		ItemBase itm = animatedItemsRef.get(identifier);
 		if(itm == null) {
-			//displayMessage("item "+identifier+" not in scene");
+			displayMessage("item "+identifier+" not in scene");
 			return;
 		}
 
@@ -1130,7 +1200,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 					"atom_to_term(_W,W,_), atom_to_term(_H,H,_), atom_to_term(_D,D,_)", null);
 			if (knobs.get("M00") != null && knobs.get("M00").size() > 0)
 			{
-				ItemBase item = new Sphere(
+				Sphere item = new Sphere(
 						Float.valueOf(knobs.get("M00").get(0).toString()),
 						Float.valueOf(knobs.get("M01").get(0).toString()),
 						Float.valueOf(knobs.get("M02").get(0).toString()),
@@ -1219,6 +1289,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 				int col = grayValues[(++grayLevelCounter) % grayValues.length];      
 				item.defaultColor = convertColor(col, col, col, 255);
+				//System.out.println("color code: "+item.defaultColor);
 				item.setColor(item.defaultColor);
 				item.name = identifier;
 				return item;
@@ -1855,6 +1926,9 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 		} else if (type.endsWith("#PancakeMix'")) {
 			return new PancakeMix(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
+			
+		} else if (type.endsWith("#Pancake'")) {
+			return new Pancake(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
 
 			/////////////////////////////////////////////

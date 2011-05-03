@@ -17,7 +17,7 @@ public class Sphere extends Handle {
 		this.radius=(float) (0.5 * Math.sqrt(xdim*xdim + ydim*ydim + zdim*zdim));
 	}
 
-
+	
 	@Override
 	public void drawIt(Canvas c) {
 				

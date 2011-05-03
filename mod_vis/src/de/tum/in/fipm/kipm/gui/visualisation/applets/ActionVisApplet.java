@@ -1,8 +1,7 @@
 package de.tum.in.fipm.kipm.gui.visualisation.applets;
 
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.Graphics;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -109,7 +108,7 @@ public class ActionVisApplet extends PApplet implements MouseListener, MouseMoti
     
   }
 
-
+// This applet has the information of the abstract level for actions
   public void draw() {
     
 	background(20, 20, 20);

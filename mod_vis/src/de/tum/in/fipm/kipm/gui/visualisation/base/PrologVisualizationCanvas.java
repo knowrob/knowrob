@@ -107,6 +107,14 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
     	KVObject.redraw();
     }
     
+    /**
+     * display a 2D trajectory via its identifier
+     * @param e.g. ""
+     */
+    public void displayEyeTrajectory(String identifier) {
+    	KVObject.displayEyeTrajectory(addSingleQuotes(identifier));
+    	KVObject.redraw();
+    }
 	
 	/**
 	 * setActionInformation
