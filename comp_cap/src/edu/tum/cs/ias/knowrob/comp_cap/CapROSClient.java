@@ -1,12 +1,17 @@
 package edu.tum.cs.ias.knowrob.comp_cap;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import ros.*;
+import org.apache.xmlrpc.XmlRpcException;
+import org.apache.xmlrpc.client.XmlRpcClient;
+import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
+
+import ros.NodeHandle;
+import ros.Ros;
+import ros.Topic;
 
 public class CapROSClient {
 	boolean isInitialized = false;
@@ -24,75 +29,117 @@ public class CapROSClient {
 	}
 
 	/*
-	 * returns published topics
+	 * returns a Object containing published, subscribed Topics and published Services
+	 * with information about which nodes is subscribed to, or is publishing the Topic and Service 
+	 */
+	public Object[] getSystemState() {
+		String ros_master_uri = "http://" + node.getMasterHost() + ":"
+				+ node.getMasterPort();
+
+		XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
+		try {
+			config.setServerURL(new URL(ros_master_uri));
+		} catch (MalformedURLException e) {
+		}
+		XmlRpcClient rosmaster = new XmlRpcClient();
+		rosmaster.setConfig(config);
+
+		Object[] params = new Object[] { new String(node.getName()) };
+		try {
+			return (Object[]) rosmaster.execute("getSystemState", params);
+		} catch (XmlRpcException e) {
+		}
+
+		return null;
+	}
+
+	/*
+	 * returns a Object containing the published Topics 
+	 */
+	public Object[] getXMLRPCPublishedTopics() {
+		String ros_master_uri = "http://" + node.getMasterHost() + ":"
+				+ node.getMasterPort();
+
+		XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
+		try {
+			config.setServerURL(new URL(ros_master_uri));
+		} catch (MalformedURLException e) {
+		}
+		XmlRpcClient rosmaster = new XmlRpcClient();
+		rosmaster.setConfig(config);
+
+		Object[] params = new Object[] { new String(node.getName()), new String("") };
+		try {
+			return (Object[]) rosmaster.execute("getPublishedTopics", params);
+		} catch (XmlRpcException e) {
+		}
+
+		return null;
+	}
+	
+	/*
+	 * returns published topics with messageType
 	 */
 	public Collection<Topic> getPublishedTopics() {
-		return node.getTopics();// seems to have the same function as 'rostopic
-		// list -p
+		ArrayList<Topic> pubTopics = new ArrayList<Topic>();
+		Object[] xmlrpcPublished = this.getXMLRPCPublishedTopics();
+		xmlrpcPublished = (Object[]) xmlrpcPublished[2];
+
+		for (Object input : xmlrpcPublished) {
+			Object[] output = (Object[]) input;
+			String topicName = (String) output[0];
+			String msgsType = (String) output[1];
+			pubTopics.add(new Topic(topicName, msgsType, null));
+		}
+
+		return pubTopics;
+	}
+
+	/*
+	 * return subscribed Topics with messageType
+	 */
+	public Collection<Topic> getSubscribedTopics() {
+		ArrayList<Topic> subTopics = new ArrayList<Topic>();
+		Object[] systemState = this.getSystemState();
+		systemState = (Object[]) systemState[2];
+		Object[] subscribed = (Object[]) systemState[1];
+
+		for (Object input : subscribed) {
+			Object[] output = (Object[]) input;
+			String topicName = (String) output[0];
+			String msgsType = "Still unknown";
+			subTopics.add(new Topic(topicName, msgsType, null));
+		}
+
+		return subTopics;
+	}
+
+	/*
+	 * returns published services
+	 */
+	public Collection<Service> getService() {
+		ArrayList<Service> service = new ArrayList<Service>();
+		Object[] systemState = this.getSystemState();
+		systemState = (Object[]) systemState[2];
+		Object[] srvs = (Object[]) systemState[2];
+
+		for (Object input : srvs) {
+			Object[] output = (Object[]) input;
+			String serviceName = (String) output[0];
+			String serviceType = "Still unknown";
+			output = (Object[]) output[1];
+			String[] provider = new String[output.length];
+			for(int i = 0; i < output.length; i++){
+				provider[i] = (String) output[i];
+			}
+			service.add(new Service(serviceName, serviceType, null, provider));
+		}
+
+		return service;
 	}
 
 	public void destroy() {
 		node.shutdown();
-	}
-
-	public ArrayList<String> getMsgTypesOfPublishedTopics() {
-		Collection<Topic> publishedTopics = this.getPublishedTopics();
-		ArrayList<String> msgTypes = new ArrayList<String>();
-
-		for (Topic p : publishedTopics) {
-			msgTypes.add(p.getDatatype());
-		}
-
-		return msgTypes;
-	}
-
-	public ArrayList<String> getMsgTypesOfSubscribedTopics(){
-		ArrayList<String> subscribedTopics = this.executeCommand("rostopic list -s");
-		ArrayList<String> msgTypes = new ArrayList<String>();
-		
-		ArrayList<String> help;
-		for (String p : subscribedTopics) {
-			help = this.executeCommand("rostopic info " + p);
-			for(String s : help){
-				if(s.contains("Type:")){
-					msgTypes.add(s.replace("Type:", ""));
-					break;
-				}
-			}
-		}		
-		
-		return msgTypes;
-	}
-
-	public ArrayList<String> executeCommand(String command) {
-		ArrayList<String> output = new ArrayList<String>();
-		String s = null;
-
-		try {
-			String[] command1 = { "bash", "-c", command };
-			Process p = Runtime.getRuntime().exec(command1);
-
-			BufferedReader stdInput = new BufferedReader(new InputStreamReader(
-					p.getInputStream()));
-			BufferedReader stdError = new BufferedReader(new InputStreamReader(
-					p.getErrorStream()));
-
-			// read the output from the command and write it to output
-			while ((s = stdInput.readLine()) != null) {
-				output.add(s);
-			}
-
-			// read any errors from the attempted command
-			while ((s = stdError.readLine()) != null) {
-				System.out.println(s);
-			}
-
-			return output;
-		} catch (IOException e) {
-			System.out.println("exception happened - here's what I know: ");
-			e.printStackTrace();
-			return null;
-		}
 	}
 
 }

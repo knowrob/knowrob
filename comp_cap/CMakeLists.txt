@@ -22,15 +22,16 @@ rosbuild_find_ros_package(mod_srdl)
 set( SRDL_PATH_PREFIX ${mod_srdl_PACKAGE_PATH})
 fix_ros_destination_path(SRDL_PATH_PREFIX)
 
+rosbuild_find_ros_package(comp_cap)
+set( LOCAL_PACKAGE_PATH ${comp_cap_PACKAGE_PATH} )
+fix_ros_destination_path(LOCAL_PACKAGE_PATH)
+
 file(GLOB inputs owl/*.in)
 foreach( _in ${inputs} )
   string(REPLACE ".in" "" _out ${_in})
   configure_file( ${_in} ${_out} )
 endforeach( _in )
 
-rosbuild_find_ros_package(comp_cap)
-set( LOCAL_PACKAGE_PATH ${comp_cap_PACKAGE_PATH} )
-fix_ros_destination_path(LOCAL_PACKAGE_PATH)
 
 file(GLOB inputs prolog/*.in)
 foreach( _in ${inputs} )
@@ -53,7 +54,12 @@ add_classpath(${jpl_PACKAGE_PATH}/prolog/jpl.jar)
 rosbuild_find_ros_package(rosjava)
 add_classpath(${rosjava_PACKAGE_PATH}/bin)
 
+rosbuild_find_ros_package(comp_cap)
+add_jar_dir(${comp_cap_PACKAGE_PATH}/lib)
 
+rospack_add_java_executable(XmlRpcException org.apache.xmlrpc.XmlRpcException)
+rospack_add_java_executable(XmlRpcClient org.apache.xmlrpc.client.XmlRpcClient)
+rospack_add_java_executable(XmlRpcClientConfigImpl org.apache.xmlrpc.client.XmlRpcClientConfigImpl)
 rospack_add_java_executable(CapabilityBase edu.tum.cs.ias.knowrob.comp_cap.CapabilityBase)
 rospack_add_java_executable(CapROSClient edu.tum.cs.ias.knowrob.comp_cap.CapROSClient)
 

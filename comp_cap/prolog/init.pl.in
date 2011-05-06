@@ -16,3 +16,8 @@
 :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/comp_cap.owl', false, false, true).
 :- rdf_db:rdf_register_ns(comp_cap, 'http://ias.cs.tum.edu/kb/comp_cap.owl#',     [keep(true)]).
 
+:- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/comp_cap_topics.owl', false, false, true).
+:- rdf_db:rdf_register_ns(comp_cap, 'http://ias.cs.tum.edu/kb/comp_cap_topics.owl#',     [keep(true)]).
+
+:- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/comp_cap_roslaunch.owl', false, false, true).
+:- rdf_db:rdf_register_ns(comp_cap, 'http://ias.cs.tum.edu/kb/comp_cap_roslaunch.owl#',     [keep(true)]).
