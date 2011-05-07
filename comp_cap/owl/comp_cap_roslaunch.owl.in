@@ -57,11 +57,24 @@
       <rdfs:subClassOf rdf:resource="&comp_cap_roslaunch;Roslaunch"/>
     </owl:Class>
     
+    <owl:Class rdf:about="&comp_cap_roslaunch;move_left_arm.launch">
+      <rdfs:subClassOf rdf:resource="&comp_cap_roslaunch;Roslaunch"/>
+    </owl:Class>
+    
+    <owl:Class rdf:about="&comp_cap_roslaunch;move_right_arm.launch">
+      <rdfs:subClassOf rdf:resource="&comp_cap_roslaunch;Roslaunch"/>
+    </owl:Class>
+    
     <owl:Class rdf:about="&comp_cap_roslaunch;Rospackage">
     </owl:Class>
     
     <owl:Class rdf:about="&comp_cap_roslaunch;pr2_arm_navigation_perception">
       <rdfs:subClassOf rdf:resource="&comp_cap_roslaunch;Rospackage"/>
-    </owl:Class>   
+    </owl:Class>  
+    
+    <owl:Class rdf:about="&comp_cap_roslaunch;pr2_arm_navigation_action">
+      <rdfs:subClassOf rdf:resource="&comp_cap_roslaunch;Rospackage"/>
+    </owl:Class>
+    
         
 </rdf:RDF>

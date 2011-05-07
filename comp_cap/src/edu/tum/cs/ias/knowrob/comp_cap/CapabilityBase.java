@@ -54,7 +54,7 @@ public class CapabilityBase {
 	public String[] comp_cap_all(String[] published, String[] subscribed,
 			String[] services) {
 		ArrayList<String> result = new ArrayList<String>();
-		String[] pubRes = this.testTopics(subscribed, false, true);
+		String[] pubRes = this.testTopics(published, false, true);
 		for (String s : pubRes) {
 			result.add(s);
 		}
@@ -74,7 +74,7 @@ public class CapabilityBase {
 
 	public String[] comp_cap_pub_sub(String[] published, String[] subscribed) {
 		ArrayList<String> result = new ArrayList<String>();
-		String[] pubRes = this.testTopics(subscribed, false, true);
+		String[] pubRes = this.testTopics(published, false, true);
 		for (String s : pubRes) {
 			result.add(s);
 		}
@@ -153,12 +153,18 @@ public class CapabilityBase {
 		return found.toArray(new String[found.size()]);
 	}
 
-	public void roslaunch(String[] rospackage, String[] launchFile) {
+	public void roslaunch(String[] rospackage, String[] launchFile){
+		for(String s : launchFile){
+			launch(rospackage[0],s);
+		}
+	}
+	
+	public void launch(String rospackage, String launchFile) {
 		// ArrayList<String> output = new ArrayList<String>();
 		// String s = null;
 		String command = "roslaunch "
-				+ rospackage[0].substring(rospackage[0].indexOf("#") + 1) + " "
-				+ launchFile[0].substring(launchFile[0].indexOf("#") + 1)
+				+ rospackage.substring(rospackage.indexOf("#") + 1) + " "
+				+ launchFile.substring(launchFile.indexOf("#") + 1)
 				+ " &";
 
 		try {

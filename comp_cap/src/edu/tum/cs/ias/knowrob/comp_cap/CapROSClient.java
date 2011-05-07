@@ -78,6 +78,69 @@ public class CapROSClient {
 	}
 	
 	/*
+	 * returns a Object containing all Topics with msgsType
+	 */
+	public Object[] getXMLRPCTopicTypes() {
+		String ros_master_uri = "http://" + node.getMasterHost() + ":"
+				+ node.getMasterPort();
+
+		XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
+		try {
+			config.setServerURL(new URL(ros_master_uri));
+		} catch (MalformedURLException e) {
+		}
+		XmlRpcClient rosmaster = new XmlRpcClient();
+		rosmaster.setConfig(config);
+
+		Object[] params = new Object[] { new String(node.getName())};
+		try {
+			return (Object[]) rosmaster.execute("getTopicTypes", params);
+		} catch (XmlRpcException e) {
+		}
+
+		return null;
+	}
+	
+	/*
+	 * return an Object containing the service_uri
+	 */
+	public Object[] getXMLRPClookupService(String service) {
+		String ros_master_uri = "http://" + node.getMasterHost() + ":"
+				+ node.getMasterPort();
+
+		XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
+		try {
+			config.setServerURL(new URL(ros_master_uri));
+		} catch (MalformedURLException e) {
+		}
+		XmlRpcClient rosmaster = new XmlRpcClient();
+		rosmaster.setConfig(config);
+
+		Object[] params = new Object[] { new String(node.getName()), service};
+		try {
+			return (Object[]) rosmaster.execute("lookupService", params);
+		} catch (XmlRpcException e) {
+		}
+
+		return null;
+	}
+	
+	/*
+	 * returns the service msgsType
+	 */
+	public String getServiceType(String service){
+		String srvsType = "Still unknown";
+		Object[] lookup = getXMLRPClookupService(service);
+		String code = (String) lookup[0];
+		String msg = (String) lookup[1];
+		String service_uri = (String) lookup[2];
+		
+		
+		
+		return srvsType;
+	}
+	
+	/*
 	 * returns published topics with messageType
 	 */
 	public Collection<Topic> getPublishedTopics() {
@@ -103,11 +166,19 @@ public class CapROSClient {
 		Object[] systemState = this.getSystemState();
 		systemState = (Object[]) systemState[2];
 		Object[] subscribed = (Object[]) systemState[1];
+		Object[] topics = getXMLRPCTopicTypes();
+		topics = (Object[]) topics[2];
 
 		for (Object input : subscribed) {
 			Object[] output = (Object[]) input;
 			String topicName = (String) output[0];
 			String msgsType = "Still unknown";
+			for(Object o : topics){
+				Object[] type = (Object[]) o;
+				if(topicName.equals((String) type[0])){
+					msgsType = (String) type[1];
+				}
+			}
 			subTopics.add(new Topic(topicName, msgsType, null));
 		}
 
@@ -115,7 +186,7 @@ public class CapROSClient {
 	}
 
 	/*
-	 * returns published services
+	 * returns published services with serviceType
 	 */
 	public Collection<Service> getService() {
 		ArrayList<Service> service = new ArrayList<Service>();
@@ -126,7 +197,7 @@ public class CapROSClient {
 		for (Object input : srvs) {
 			Object[] output = (Object[]) input;
 			String serviceName = (String) output[0];
-			String serviceType = "Still unknown";
+			String serviceType = getServiceType(serviceName);
 			output = (Object[]) output[1];
 			String[] provider = new String[output.length];
 			for(int i = 0; i < output.length; i++){

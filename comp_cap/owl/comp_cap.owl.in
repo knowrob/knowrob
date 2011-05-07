@@ -264,6 +264,18 @@
                 <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedMessageType"/>
                 <owl:someValuesFrom rdf:resource="&comp_cap_topics;move_arm_msgs_._MoveArmActionResult"/>
             </owl:Restriction>
+	    <owl:Restriction>
+                <owl:onProperty rdf:resource="&comp_cap;rospackage"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap_topics;pr2_arm_navigation_action"/>
+            </owl:Restriction>
+	    <owl:Restriction>
+                <owl:onProperty rdf:resource="&comp_cap;launchFile"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap_topics;move_left_arm.launch"/>
+            </owl:Restriction>
+	    <owl:Restriction>
+                <owl:onProperty rdf:resource="&comp_cap;launchFile"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap_topics;move_right_arm.launch"/>
+            </owl:Restriction>
         </owl:intersectionOf>
     </owl:Class>
     
