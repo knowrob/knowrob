@@ -41,6 +41,8 @@ endforeach( _in )
 
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+
+rosbuild_add_library(servicecpp servicecpp.cpp)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 set(JAVA_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/bin)
 
@@ -55,7 +57,8 @@ rosbuild_find_ros_package(rosjava)
 add_classpath(${rosjava_PACKAGE_PATH}/bin)
 
 rosbuild_find_ros_package(comp_cap)
-add_jar_dir(${comp_cap_PACKAGE_PATH}/lib)
+add_classpath(${rosjava_PACKAGE_PATH}/lib)
+add_runtime_classpath(${rosjava_PACKAGE_PATH}/lib)
 
 rospack_add_java_executable(XmlRpcException org.apache.xmlrpc.XmlRpcException)
 rospack_add_java_executable(XmlRpcClient org.apache.xmlrpc.client.XmlRpcClient)
@@ -65,3 +68,8 @@ rospack_add_java_executable(CapROSClient edu.tum.cs.ias.knowrob.comp_cap.CapROSC
 
 add_java_source_dir(${PROJECT_SOURCE_DIR}/src)
 
+add_ld_preload(${PROJECT_SOURCE_DIR}/lib)
+
+execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${PROJECT_SOURCE_DIR}/lib/org 
+							   ${PROJECT_SOURCE_DIR}/bin/org)
+execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${PROJECT_SOURCE_DIR}/lib/libservicecpp.so 					                                                           ${PROJECT_SOURCE_DIR}/bin/libservicecpp.so)

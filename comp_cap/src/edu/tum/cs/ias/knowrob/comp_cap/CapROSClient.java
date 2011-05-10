@@ -18,7 +18,14 @@ public class CapROSClient {
 
 	Ros ros;
 	NodeHandle node;
-
+	
+	//Native method declaration
+	private static native Object getHeader(String dest_addr, String dest_port);
+	//Load the library
+//	static{
+//		System.loadLibrary("servicecpp");
+//	}
+	
 	public CapROSClient(String node_name) {
 		ros = Ros.getInstance();
 
@@ -29,8 +36,9 @@ public class CapROSClient {
 	}
 
 	/*
-	 * returns a Object containing published, subscribed Topics and published Services
-	 * with information about which nodes is subscribed to, or is publishing the Topic and Service 
+	 * returns a Object containing published, subscribed Topics and published
+	 * Services with information about which nodes is subscribed to, or is
+	 * publishing the Topic and Service
 	 */
 	public Object[] getSystemState() {
 		String ros_master_uri = "http://" + node.getMasterHost() + ":"
@@ -54,7 +62,7 @@ public class CapROSClient {
 	}
 
 	/*
-	 * returns a Object containing the published Topics 
+	 * returns a Object containing the published Topics
 	 */
 	public Object[] getXMLRPCPublishedTopics() {
 		String ros_master_uri = "http://" + node.getMasterHost() + ":"
@@ -68,7 +76,8 @@ public class CapROSClient {
 		XmlRpcClient rosmaster = new XmlRpcClient();
 		rosmaster.setConfig(config);
 
-		Object[] params = new Object[] { new String(node.getName()), new String("") };
+		Object[] params = new Object[] { new String(node.getName()),
+				new String("") };
 		try {
 			return (Object[]) rosmaster.execute("getPublishedTopics", params);
 		} catch (XmlRpcException e) {
@@ -76,7 +85,7 @@ public class CapROSClient {
 
 		return null;
 	}
-	
+
 	/*
 	 * returns a Object containing all Topics with msgsType
 	 */
@@ -92,7 +101,7 @@ public class CapROSClient {
 		XmlRpcClient rosmaster = new XmlRpcClient();
 		rosmaster.setConfig(config);
 
-		Object[] params = new Object[] { new String(node.getName())};
+		Object[] params = new Object[] { new String(node.getName()) };
 		try {
 			return (Object[]) rosmaster.execute("getTopicTypes", params);
 		} catch (XmlRpcException e) {
@@ -100,7 +109,7 @@ public class CapROSClient {
 
 		return null;
 	}
-	
+
 	/*
 	 * return an Object containing the service_uri
 	 */
@@ -116,7 +125,7 @@ public class CapROSClient {
 		XmlRpcClient rosmaster = new XmlRpcClient();
 		rosmaster.setConfig(config);
 
-		Object[] params = new Object[] { new String(node.getName()), service};
+		Object[] params = new Object[] { new String(node.getName()), service };
 		try {
 			return (Object[]) rosmaster.execute("lookupService", params);
 		} catch (XmlRpcException e) {
@@ -124,21 +133,32 @@ public class CapROSClient {
 
 		return null;
 	}
-	
+
 	/*
 	 * returns the service msgsType
 	 */
-	public String getServiceType(String service){
+	public String getServiceType(String service) {
 		String srvsType = "Still unknown";
 		Object[] lookup = getXMLRPClookupService(service);
-		String code = (String) lookup[0];
-		String msg = (String) lookup[1];
+		Integer code = (Integer) lookup[0];
 		String service_uri = (String) lookup[2];
+		if (code.compareTo(new Integer(1)) == 0) {
+			String dest_addr = service_uri.substring(0, service_uri
+					.lastIndexOf(":"));
+			String dest_port = service_uri.substring(service_uri
+					.lastIndexOf(":") + 1);
+			Object serviceHeader = getHeader(dest_addr, dest_port);
+		}
 		
 		
-		
+		/**
+		 * probe the service for it's header
+		 * needs a TCPROS implementation for java
+		 */
+
 		return srvsType;
 	}
+
 	
 	/*
 	 * returns published topics with messageType
@@ -173,9 +193,9 @@ public class CapROSClient {
 			Object[] output = (Object[]) input;
 			String topicName = (String) output[0];
 			String msgsType = "Still unknown";
-			for(Object o : topics){
+			for (Object o : topics) {
 				Object[] type = (Object[]) o;
-				if(topicName.equals((String) type[0])){
+				if (topicName.equals((String) type[0])) {
 					msgsType = (String) type[1];
 				}
 			}
@@ -200,7 +220,7 @@ public class CapROSClient {
 			String serviceType = getServiceType(serviceName);
 			output = (Object[]) output[1];
 			String[] provider = new String[output.length];
-			for(int i = 0; i < output.length; i++){
+			for (int i = 0; i < output.length; i++) {
 				provider[i] = (String) output[i];
 			}
 			service.add(new Service(serviceName, serviceType, null, provider));
@@ -212,5 +232,5 @@ public class CapROSClient {
 	public void destroy() {
 		node.shutdown();
 	}
-
+	
 }
