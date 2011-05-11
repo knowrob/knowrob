@@ -72,12 +72,12 @@
       <rdfs:subPropertyOf rdf:resource="&comp_cap;dependsOnMessageType"/>
     </owl:ObjectProperty>
     
-    <!-- http://ias.cs.tum.edu/kb/comp_cap.owl#dependsOnService -->
+    <!-- http://ias.cs.tum.edu/kb/comp_cap.owl#dependsOnServiceType -->
     
-    <owl:ObjectProperty rdf:about="&comp_cap;dependsOnService">
+    <owl:ObjectProperty rdf:about="&comp_cap;dependsOnServiceType">
       <rdfs:domain rdf:resource="&srdl2-cap;Capability"/>
       <rdfs:range  rdf:resource="&comp_cap_topics;Service"/>
-      <rdfs:subPropertyOf rdf:resource="&comp_cap;dependsOn"/>
+      <rdfs:subPropertyOf rdf:resource="&comp_cap;dependsOnMessageType"/>
     </owl:ObjectProperty>
     
     <!-- http://ias.cs.tum.edu/kb/comp_cap.owl#package -->
@@ -277,11 +277,11 @@
 	<rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectRecognitionCapability"/>
 	<owl:intersectionOf rdf:parseType="Collection">
 	  <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnService"/>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnServiceTypeType"/>
                 <owl:someValuesFrom rdf:resource="&comp_cap_topics;cop_._in"/>
           </owl:Restriction>
 	  <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnService"/>
+                <owl:onProperty rdf:resource="&comp_cap;dependsOnServiceType"/>
                 <owl:someValuesFrom rdf:resource="&comp_cap_topics;cop_._save"/>
           </owl:Restriction>
         </owl:intersectionOf>
@@ -363,7 +363,7 @@
       <computable:command rdf:datatype="&xsd;string">comp_cap:comp_capability</computable:command>
       <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
       <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-      <computable:target rdf:resource="&srdl2;Capability"/>
+      <computable:target rdf:resource="&srdl2;dependsOn"/>
     </computable:PrologClass> 
     
 </rdf:RDF>

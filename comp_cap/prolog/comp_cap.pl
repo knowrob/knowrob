@@ -54,6 +54,9 @@ comp_capability(Inst, Class) :-
 
 comp_capability(Inst, Class) :-
   jpl_new('edu.tum.cs.ias.knowrob.comp_cap.CapabilityBase',[], CapabilityBase),
+  findall(Service,srdl2:class_properties(Class, comp_cap:dependsOnService, Service), Services),
+  length(Services,SL),
+  SL =:= 0,
   findall(SubTopic,srdl2:class_properties(Class, comp_cap:dependsOnSubscribedMessageType, SubTopic), SubTopics),
   length(SubTopics,STL),
   STL > 0,
@@ -71,6 +74,9 @@ comp_capability(Inst, Class) :-
 
 comp_capability(Inst, Class) :-
   jpl_new('edu.tum.cs.ias.knowrob.comp_cap.CapabilityBase',[], CapabilityBase),
+  findall(PubTopic,srdl2:class_properties(Class, comp_cap:dependsOnPublishedMessageType, PubTopic), PubTopics),
+  length(PubTopics,PTL),
+  PTL =:= 0,
   findall(SubTopic,srdl2:class_properties(Class, comp_cap:dependsOnSubscribedMessageType, SubTopic), SubTopics),
   length(SubTopics,STL),
   STL > 0,
@@ -88,6 +94,12 @@ comp_capability(Inst, Class) :-
 
 comp_capability(Inst, Class) :-
   jpl_new('edu.tum.cs.ias.knowrob.comp_cap.CapabilityBase',[], CapabilityBase),
+  findall(PubTopic,srdl2:class_properties(Class, comp_cap:dependsOnPublishedMessageType, PubTopic), PubTopics),
+  length(PubTopics,PTL),
+  PTL =:= 0,
+  findall(SubTopic,srdl2:class_properties(Class, comp_cap:dependsOnSubscribedMessageType, SubTopic), SubTopics),
+  length(SubTopics,STL),
+  STL =:= 0,
   findall(Service,srdl2:class_properties(Class, comp_cap:dependsOnService, Service), Services),
   length(Services,SL),
   SL > 0,
@@ -100,6 +112,12 @@ comp_capability(Inst, Class) :-
 
 comp_capability(Inst, Class) :-
   jpl_new('edu.tum.cs.ias.knowrob.comp_cap.CapabilityBase',[], CapabilityBase),
+  findall(SubTopic,srdl2:class_properties(Class, comp_cap:dependsOnSubscribedMessageType, SubTopic), SubTopics),
+  length(SubTopics,STL),
+  STL =:= 0,
+  findall(Service,srdl2:class_properties(Class, comp_cap:dependsOnService, Service), Services),
+  length(Services,SL),
+  SL =:= 0,
   findall(PubTopic,srdl2:class_properties(Class, comp_cap:dependsOnPublishedMessageType, PubTopic), PubTopics),
   length(PubTopics,PTL),
   PTL > 0,
