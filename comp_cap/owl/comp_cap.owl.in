@@ -148,7 +148,7 @@
 	    </owl:Restriction>
 	    <owl:Restriction>
                 <owl:onProperty rdf:resource="&comp_cap;launchFile"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap_roslaunch;collision_map_self_occ.launch"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap_roslaunch;laser-perception.launch"/>
 	    </owl:Restriction>
         </owl:intersectionOf>
     </owl:Class>
@@ -235,14 +235,6 @@
             </owl:Restriction>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedMessageType"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap_topics;move_arm_msgs_._MoveArmActionFeedback"/>
-            </owl:Restriction>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedMessageType"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap_topics;move_arm_msgs_._MoveArmActionResult"/>
-            </owl:Restriction>
-             <owl:Restriction>
-                <owl:onProperty rdf:resource="&comp_cap;dependsOnPublishedMessageType"/>
                 <owl:someValuesFrom rdf:resource="&comp_cap_topics;move_arm_msgs_._MoveArmActionResult"/>
             </owl:Restriction>
 	</owl:intersectionOf>
@@ -266,15 +258,15 @@
             </owl:Restriction>
 	    <owl:Restriction>
                 <owl:onProperty rdf:resource="&comp_cap;rospackage"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap_topics;pr2_arm_navigation_action"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap_roslaunch;pr2_arm_navigation_action"/>
             </owl:Restriction>
 	    <owl:Restriction>
                 <owl:onProperty rdf:resource="&comp_cap;launchFile"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap_topics;move_left_arm.launch"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap_roslaunch;move_left_arm.launch"/>
             </owl:Restriction>
 	    <owl:Restriction>
                 <owl:onProperty rdf:resource="&comp_cap;launchFile"/>
-                <owl:someValuesFrom rdf:resource="&comp_cap_topics;move_right_arm.launch"/>
+                <owl:someValuesFrom rdf:resource="&comp_cap_roslaunch;move_right_arm.launch"/>
             </owl:Restriction>
         </owl:intersectionOf>
     </owl:Class>

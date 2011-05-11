@@ -52,7 +52,6 @@ comp_capability(Inst, Class) :-
   NL >= X,
   rdf_instance_from_class(Class, Inst).
 
-  
 comp_capability(Inst, Class) :-
   jpl_new('edu.tum.cs.ias.knowrob.comp_cap.CapabilityBase',[], CapabilityBase),
   findall(SubTopic,srdl2:class_properties(Class, comp_cap:dependsOnSubscribedMessageType, SubTopic), SubTopics),
@@ -70,7 +69,6 @@ comp_capability(Inst, Class) :-
   NL >= X,
   rdf_instance_from_class(Class, Inst).
 
-
 comp_capability(Inst, Class) :-
   jpl_new('edu.tum.cs.ias.knowrob.comp_cap.CapabilityBase',[], CapabilityBase),
   findall(SubTopic,srdl2:class_properties(Class, comp_cap:dependsOnSubscribedMessageType, SubTopic), SubTopics),
@@ -87,7 +85,6 @@ comp_capability(Inst, Class) :-
   X is STL + SL,
   NL >= X,
   rdf_instance_from_class(Class, Inst).
-
 
 comp_capability(Inst, Class) :-
   jpl_new('edu.tum.cs.ias.knowrob.comp_cap.CapabilityBase',[], CapabilityBase),

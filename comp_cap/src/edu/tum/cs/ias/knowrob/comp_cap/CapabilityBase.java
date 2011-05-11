@@ -39,6 +39,8 @@ public class CapabilityBase {
 		return false;
 	}
 
+	
+	
 	private String[] convertOwlNameToTopicName(String[] input) {
 		String[] output = new String[input.length];
 		int i = 0;
@@ -146,6 +148,7 @@ public class CapabilityBase {
 			for (Topic t : topics) {
 				if (t.getDatatype().equals(s)) {
 					found.add(t.getDatatype());
+					break;
 				}
 			}
 		}
@@ -153,19 +156,21 @@ public class CapabilityBase {
 		return found.toArray(new String[found.size()]);
 	}
 
-	public void roslaunch(String[] rospackage, String[] launchFile){
-		for(String s : launchFile){
-			launch(rospackage[0],s);
+	public void roslaunch(String[] rospackage, String[] launchFile) {
+		String[] commands = new String[launchFile.length];
+		int i = 0;
+		for (String s : launchFile) {
+			commands[i] = launch(rospackage[0], s);
+			i++;
 		}
 	}
-	
-	public void launch(String rospackage, String launchFile) {
+
+	public String launch(String rospackage, String launchFile) {
 		// ArrayList<String> output = new ArrayList<String>();
 		// String s = null;
 		String command = "roslaunch "
 				+ rospackage.substring(rospackage.indexOf("#") + 1) + " "
-				+ launchFile.substring(launchFile.indexOf("#") + 1)
-				+ " &";
+				+ launchFile.substring(launchFile.indexOf("#") + 1) + " &";
 
 		try {
 			String[] command1 = { "bash", "-c", command };
@@ -189,11 +194,11 @@ public class CapabilityBase {
 			// System.out.println(s);
 			// }
 			//
-			// return output;
+			return command;
 		} catch (IOException e) {
 			System.out.println("exception happened - here's what I know: ");
 			e.printStackTrace();
-			// return null;
+			return "Error";
 		}
 	}
 }
