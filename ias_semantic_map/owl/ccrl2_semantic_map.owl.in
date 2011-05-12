@@ -22,9 +22,10 @@
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#"
-     xmlns:ccrl2_semantic_map="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#">
+     xmlns:ccrl2_semantic_map="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#"
+     xmlns:srdl2-comp="http://ias.cs.tum.edu/kb/srdl2-comp.owl#">
     <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#">
-        <owl:imports rdf:resource="&local_path;knowrob.owl"/>
+      <owl:imports rdf:resource="&local_path;knowrob.owl"/>
     </owl:Ontology>
     
 
@@ -73,7 +74,6 @@
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#startTime -->
 
     <owl:ObjectProperty rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#startTime"/>
-
 
 
     <!--
@@ -283,7 +283,14 @@
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#TimePoint"/>
 
 
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#HingedJoint -->
 
+    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#HingedJoint"/>
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint -->
+
+    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
+    
     <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -2824,7 +2831,9 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.57500005</knowrob:widthOfObject>
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">2.0500002</knowrob:depthOfObject>
         <knowrob:describedInMap rdf:resource="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#SemanticEnvironmentMap0"/>
+        
         <rdfs:label rdf:datatype="&xsd;string">counter</rdfs:label>
+        <srdl2-comp:urdfName>counter_top_sink_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -2838,6 +2847,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">2.49</knowrob:depthOfObject>
         <knowrob:describedInMap rdf:resource="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#SemanticEnvironmentMap0"/>
         <rdfs:label rdf:datatype="&xsd;string">kitchen-island</rdfs:label>
+        <srdl2-comp:urdfName>counter_top_island_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -2851,6 +2861,8 @@
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.723777</knowrob:heightOfObject>
         <knowrob:describedInMap rdf:resource="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door40"/>
+        <srdl2-comp:urdfName>drawer_sink_col2_fixed_link</srdl2-comp:urdfName>
+
     </owl:NamedIndividual>
 
 
@@ -2864,6 +2876,13 @@
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.31567</knowrob:heightOfObject>
         <knowrob:hingedTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer7"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Handle130"/>
+        <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Slider10"/>
+        <srdl2-comp:urdfName>drawer_oven_right_link</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.ed/kb/knowrob.owl#Slider10">
+      <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
+      <srdl2-comp:urdfName>oven_block_drawer_oven_right_joint</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -2877,8 +2896,14 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.6000001</knowrob:widthOfObject>
         <knowrob:hingedTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer97"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Handle175"/>
+        <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Slider100"/>
+        <srdl2-comp:urdfName>drawer_island_col3_center_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.ed/kb/knowrob.owl#Slider100">
+      <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
+      <srdl2-comp:urdfName>island_block_drawer_island_col3_center_joint</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Door106 -->
@@ -2890,7 +2915,15 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.6000001</knowrob:widthOfObject>
         <knowrob:hingedTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer103"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Handle178"/>
+        <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Slider106"/>
+        <srdl2-comp:urdfName>drawer_island_col3_top_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Slider106">
+      <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
+      <srdl2-comp:urdfName>island_block_drawer_island_col3_top_joint</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
+
 
 
 
@@ -2903,7 +2936,15 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.6</knowrob:widthOfObject>
         <knowrob:hingedTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer109"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Handle181"/>
+        <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Slider112"/>
+        <srdl2-comp:urdfName>drawer_island_col2_bottom_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Slider112">
+      <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
+      <srdl2-comp:urdfName>island_block_drawer_island_col2_bottom_joint</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
+
 
 
 
@@ -2916,8 +2957,14 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.6</knowrob:widthOfObject>
         <knowrob:hingedTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer115"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Handle184"/>
+        <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Slider118"/>        
+        <srdl2-comp:urdfName>drawer_island_col2_center_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Slider118">
+      <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
+      <srdl2-comp:urdfName>island_block_drawer_island_col2_center_joint</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Door124 -->
@@ -2929,8 +2976,14 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.6</knowrob:widthOfObject>
         <knowrob:hingedTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer121"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Handle187"/>
+        <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Slider124"/>        
+        <srdl2-comp:urdfName>drawer_island_col2_top_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Slider124">
+      <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
+      <srdl2-comp:urdfName>island_block_drawer_island_col2_top_joint</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Door16 -->
@@ -2942,6 +2995,12 @@
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.318202</knowrob:heightOfObject>
         <knowrob:hingedTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer13"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Handle133"/>
+        <srdl2-comp:urdfName>drawer_oven_left_link</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Slider16">
+      <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
+      <srdl2-comp:urdfName>oven_block_drawer_oven_left_joint</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -2959,8 +3018,16 @@
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ControlKnob199"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ControlKnob202"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Handle136"/>
+        <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Slider22"/>
         <knowrob:hingedTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Oven19"/>
+        <srdl2-comp:urdfName>drawer_oven_oven_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Slider22">
+      <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
+      <srdl2-comp:urdfName>oven_block_drawer_oven_oven_joint</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
+
 
 
 
@@ -2973,8 +3040,14 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.5742007</knowrob:widthOfObject>
         <knowrob:hingedTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer25"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Handle139"/>
+        <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Slider28"/>
+        <srdl2-comp:urdfName>drawer_oven_bottom_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Slider22">
+      <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
+      <srdl2-comp:urdfName>oven_block_drawer_oven_bottom_joint</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Door34 -->
@@ -2986,6 +3059,13 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.61296</knowrob:widthOfObject>
         <knowrob:hingedTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer31"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Handle142"/>
+        <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Slider34"/>
+        <srdl2-comp:urdfName>drawer_sink_col3_bottom_link</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Slider22">
+      <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
+      <srdl2-comp:urdfName>"sink_block_drawer_sink_col3_bottom_joint"</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -2999,7 +3079,15 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.58045006</knowrob:widthOfObject>
         <knowrob:hingedTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer1"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Handle127"/>
+        <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Slider4"/>
+        <srdl2-comp:urdfName>drawer_fridge_bottom_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Slider4">
+      <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
+      <srdl2-comp:urdfName>fridge_block_drawer_fridge_bottom_joint</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
+
 
 
 
@@ -3012,7 +3100,15 @@
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.723777</knowrob:heightOfObject>
         <knowrob:hingedTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Dishwasher37"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Handle145"/>
+        <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Slider40"/>
+        <srdl2-comp:urdfName>drawer_sink_col2_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.ed/kb/knowrob.owl#Slider40">
+      <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
+      <srdl2-comp:urdfName>sink_block_drawer_sink_col2_joint</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
+
 
 
 
@@ -3025,8 +3121,14 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.78538793</knowrob:widthOfObject>
         <knowrob:hingedTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer43"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Handle148"/>
+        <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Slider46"/>
+        <srdl2-comp:urdfName>drawer_sink_col1_bottom_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.ed/kb/knowrob.owl#Slider46">
+      <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
+      <srdl2-comp:urdfName>sink_block_drawer_sink_col1_bottom_joint</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Door52 -->
@@ -3038,8 +3140,14 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.7862201</knowrob:widthOfObject>
         <knowrob:hingedTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer49"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Handle151"/>
+        <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Slider52"/>
+        <srdl2-comp:urdfName>drawer_sink_col1_center_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.ed/kb/knowrob.owl#Slider52">
+      <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
+      <srdl2-comp:urdfName>sink_block_drawer_sink_col1_center_joint</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Door58 -->
@@ -3051,8 +3159,14 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.784871</knowrob:widthOfObject>
         <knowrob:hingedTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer55"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Handle154"/>
+        <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Slider58"/>
+        <srdl2-comp:urdfName>drawer_sink_col1_top_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.ed/kb/knowrob.owl#Slider58">
+      <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
+      <srdl2-comp:urdfName>sink_block_drawer_sink_col1_top_joint</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Door64 -->
@@ -3064,8 +3178,14 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.5742007</knowrob:widthOfObject>
         <knowrob:hingedTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer61"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Handle157"/>
+        <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Slider64"/>
+        <srdl2-comp:urdfName>drawer_oven_center_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.ed/kb/knowrob.owl#Slider64">
+      <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
+      <srdl2-comp:urdfName>oven_block_drawer_oven_center_joint</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Door70 -->
@@ -3076,8 +3196,16 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.58045006</knowrob:widthOfObject>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.98</knowrob:heightOfObject>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Handle160"/>
+        <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hinge70"/>        
         <knowrob:hingedTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Refrigerator67"/>
+        <srdl2-comp:urdfName>fridge_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Hinge70">
+      <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#HingedJoint"/>
+      <srdl2-comp:urdfName>fridge_block_fridge_joint</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
+
 
 
 
@@ -3090,8 +3218,14 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</knowrob:widthOfObject>
         <knowrob:hingedTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer73"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Handle163"/>
+        <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Slider76"/>
+        <srdl2-comp:urdfName>drawer_island_col2_bottom_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Slider76">
+      <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
+      <srdl2-comp:urdfName>island_block_drawer_island_col2_bottom_joint</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Door82 -->
@@ -3103,8 +3237,14 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</knowrob:widthOfObject>
         <knowrob:hingedTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer79"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Handle166"/>
+        <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Slider82"/>
+        <srdl2-comp:urdfName>drawer_island_col2_center_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Slider82">
+      <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#HingedJoint"/>
+      <srdl2-comp:urdfName>island_block_drawer_island_col2_center_joint</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Door88 -->
@@ -3116,8 +3256,14 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</knowrob:widthOfObject>
         <knowrob:hingedTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer85"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Handle169"/>
+        <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Slider88"/>
+        <srdl2-comp:urdfName>drawer_island_col2_top_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Slider88">
+      <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#HingedJoint"/>
+      <srdl2-comp:urdfName>island_block_drawer_island_col2_top_joint</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Door94 -->
@@ -3129,8 +3275,14 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.6000001</knowrob:widthOfObject>
         <knowrob:hingedTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer91"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Handle172"/>
+        <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Slider94"/>
+        <srdl2-comp:urdfName>drawer_island_col3_bottom_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Slider94">
+      <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#HingedJoint"/>
+      <srdl2-comp:urdfName>island_block_drawer_island_col3_bottom_joint</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Drawer1 -->
@@ -3142,6 +3294,7 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.58045006</knowrob:widthOfObject>
         <knowrob:describedInMap rdf:resource="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door4"/>
+        <srdl2-comp:urdfName>drawer_fridge_bottom_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -3155,6 +3308,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.60000014</knowrob:depthOfObject>
         <knowrob:describedInMap rdf:resource="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door106"/>
+        <srdl2-comp:urdfName>drawer_island_col3_top_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -3168,6 +3322,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.60000014</knowrob:depthOfObject>
         <knowrob:describedInMap rdf:resource="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door112"/>
+        <srdl2-comp:urdfName>drawer_island_col2_bottom_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -3181,6 +3336,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.60000014</knowrob:depthOfObject>
         <knowrob:describedInMap rdf:resource="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door118"/>
+        <srdl2-comp:urdfName>drawer_island_col2_center_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -3194,6 +3350,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.60000014</knowrob:depthOfObject>
         <knowrob:describedInMap rdf:resource="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door124"/>
+        <srdl2-comp:urdfName>drawer_island_col2_top_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -3207,6 +3364,7 @@
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.318202</knowrob:heightOfObject>
         <knowrob:describedInMap rdf:resource="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door16"/>
+        <srdl2-comp:urdfName>drawer_oven_left_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -3220,6 +3378,7 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.5742007</knowrob:widthOfObject>
         <knowrob:describedInMap rdf:resource="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door28"/>
+        <srdl2-comp:urdfName>drawer_oven_bottom_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -3233,6 +3392,7 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.61296</knowrob:widthOfObject>
         <knowrob:describedInMap rdf:resource="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door34"/>
+        <srdl2-comp:urdfName>drawer_sink_col3_bottom_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -3246,6 +3406,7 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.78538793</knowrob:widthOfObject>
         <knowrob:describedInMap rdf:resource="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door46"/>
+        <srdl2-comp:urdfName>drawer_sink_col1_bottom_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -3259,6 +3420,7 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.7862201</knowrob:widthOfObject>
         <knowrob:describedInMap rdf:resource="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door52"/>
+        <srdl2-comp:urdfName>drawer_sink_col1_center_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -3272,6 +3434,7 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.784871</knowrob:widthOfObject>
         <knowrob:describedInMap rdf:resource="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door58"/>
+        <srdl2-comp:urdfName>drawer_sink_col1_top_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -3285,6 +3448,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.574795</knowrob:depthOfObject>
         <knowrob:describedInMap rdf:resource="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door64"/>
+        <srdl2-comp:urdfName>drawer_oven_center_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -3298,6 +3462,7 @@
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.31567</knowrob:heightOfObject>
         <knowrob:describedInMap rdf:resource="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door10"/>
+        <srdl2-comp:urdfName>drawer_oven_right_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -3311,6 +3476,7 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</knowrob:widthOfObject>
         <knowrob:describedInMap rdf:resource="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door76"/>
+        <srdl2-comp:urdfName>drawer_island_col2_bottom_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -3324,6 +3490,7 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</knowrob:widthOfObject>
         <knowrob:describedInMap rdf:resource="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door82"/>
+        <srdl2-comp:urdfName>drawer_island_col2_center_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -3337,6 +3504,7 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</knowrob:widthOfObject>
         <knowrob:describedInMap rdf:resource="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door88"/>
+        <srdl2-comp:urdfName>drawer_island_col2_top_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -3350,6 +3518,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.60000014</knowrob:depthOfObject>
         <knowrob:describedInMap rdf:resource="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door94"/>
+        <srdl2-comp:urdfName>drawer_island_col3_bottom_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -3363,6 +3532,7 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.60000014</knowrob:depthOfObject>
         <knowrob:describedInMap rdf:resource="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door100"/>
+        <srdl2-comp:urdfName>drawer_island_col3_center_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -3607,6 +3777,7 @@
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.60763</knowrob:heightOfObject>
         <knowrob:describedInMap rdf:resource="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door22"/>
+        <srdl2-comp:urdfName>drawer_oven_oven_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -3620,6 +3791,7 @@
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.98</knowrob:heightOfObject>
         <knowrob:describedInMap rdf:resource="http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#SemanticEnvironmentMap0"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door70"/>
+        <srdl2-comp:urdfName>fridge_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 </rdf:RDF>
 
