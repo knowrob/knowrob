@@ -12,6 +12,7 @@ import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import ros.NodeHandle;
 import ros.Ros;
 import ros.Topic;
+import rosjava.Service;
 
 public class CapROSClient {
 	boolean isInitialized = false;

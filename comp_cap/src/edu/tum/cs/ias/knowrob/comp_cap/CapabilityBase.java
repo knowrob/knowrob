@@ -5,42 +5,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import ros.Topic;
+import rosjava.Service;
 
 public class CapabilityBase {
 	CapROSClient ros;
-	ArrayList<String> usedNamespace;
 
 	public CapabilityBase() {
 		ros = new CapROSClient("CapRosClient");
-		usedNamespace = new ArrayList<String>();
 	}
 
 	public CapabilityBase(String nodeName) {
 		ros = new CapROSClient(nodeName);
-		usedNamespace = new ArrayList<String>();
 	}
 
-	public void resetUsedNamespace() {
-		usedNamespace = new ArrayList<String>();
-	}
-
-	public void setNamespaceUsed(String namespace) {
-		if (usedNamespace.contains(namespace)) {
-			usedNamespace.add(namespace);
-		}
-	}
-
-	public boolean isNamespaceUsed(String namespace) {
-		for (String s : usedNamespace) {
-			if (s.contains(namespace)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	
-	
 	private String[] convertOwlNameToTopicName(String[] input) {
 		String[] output = new String[input.length];
 		int i = 0;

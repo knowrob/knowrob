@@ -363,7 +363,7 @@
       <computable:command rdf:datatype="&xsd;string">comp_cap:comp_capability</computable:command>
       <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
       <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-      <computable:target rdf:resource="&srdl2;dependsOn"/>
+      <computable:target rdf:resource="&srdl2;Capability"/>
     </computable:PrologClass> 
     
 </rdf:RDF>
