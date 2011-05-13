@@ -4,18 +4,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import ros.Topic;
+import ros.NodeHandle;
+import ros.Ros;
+import rosjava.Master;
 import rosjava.Service;
+import rosjava.Topic;
 
 public class CapabilityBase {
-	CapROSClient ros;
+	Ros ros;
+	NodeHandle node;
+	Master rosmaster;
 
 	public CapabilityBase() {
-		ros = new CapROSClient("CapRosClient");
-	}
-
-	public CapabilityBase(String nodeName) {
-		ros = new CapROSClient(nodeName);
+		ros = Ros.getInstance();
+		node = ros.createNodeHandle("comp_cap");
+		rosmaster = new Master(node.getMasterHost(), node.getMasterPort());
 	}
 
 	private String[] convertOwlNameToTopicName(String[] input) {
@@ -91,7 +94,7 @@ public class CapabilityBase {
 
 	public String[] testServices(String[] srvs) {
 		ArrayList<String> found = new ArrayList<String>();
-		Collection<Service> service = ros.getService();
+		Collection<Service> service = rosmaster.getServices();
 
 		srvs = this.convertOwlNameToTopicName(srvs);
 
@@ -114,10 +117,10 @@ public class CapabilityBase {
 
 		topicTypes = convertOwlNameToTopicName(topicTypes);
 		if (subscribed) {
-			topics = ros.getSubscribedTopics();
+			topics = rosmaster.getSubscribedTopics();
 		}
 		if (published) {
-			topics = ros.getPublishedTopics();
+			topics = rosmaster.getPublishedTopics();
 		}
 
 		for (int j = 0; j < topicTypes.length; j++) {

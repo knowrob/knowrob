@@ -30,9 +30,9 @@ public class Master {
 		this.masterPort = masterPort;
 	}
 
-	public Master(String master_uri, int master_uri_port) {
-		this.setMasterHost(master_uri);
-		this.setMasterPort(master_uri_port);
+	public Master(String masterHost, int masterPort) {
+		this.setMasterHost(masterHost);
+		this.setMasterPort(masterPort);
 	}
 
 	/**
@@ -300,7 +300,7 @@ public class Master {
 	 * 
 	 * @return
 	 */
-	public Collection<Service> getService() {
+	public Collection<Service> getServices() {
 		ArrayList<Service> service = new ArrayList<Service>();
 		Object[] systemState = this.getSystemState();
 		Object[] srvs = (Object[]) systemState[2];
