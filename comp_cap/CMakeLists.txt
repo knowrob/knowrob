@@ -42,7 +42,6 @@ endforeach( _in )
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 
-#rosbuild_add_library(servicecpp servicecpp.cpp)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 set(JAVA_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/bin)
 
@@ -72,4 +71,3 @@ add_ld_preload(${PROJECT_SOURCE_DIR}/lib)
 
 execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${PROJECT_SOURCE_DIR}/lib/org 
 							   ${PROJECT_SOURCE_DIR}/bin/org)
-#execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${PROJECT_SOURCE_DIR}/lib/libservicecpp.so 					                                                           ${PROJECT_SOURCE_DIR}/bin/libservicecpp.so)
