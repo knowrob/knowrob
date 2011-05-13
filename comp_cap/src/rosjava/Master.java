@@ -249,8 +249,24 @@ public class Master {
 		
 		srvsHeader = rosjava.Network.getServiceHeader(host, port, serviceName); 
 		
-		return srvsHeader[2];
+		return srvsHeader[2].substring(srvsHeader[2].indexOf("=")+1);
 	}
+	
+	public String getMD5Sum(String serviceName) {
+		String lookup;
+		String host;
+		int port;
+		String[] srvsHeader ;
+		
+		lookup = lookupService(serviceName);
+		host = lookup.substring(9, lookup.lastIndexOf(":")); 
+		port = Integer.parseInt(lookup.substring(lookup.lastIndexOf(":") + 1));
+		
+		srvsHeader = rosjava.Network.getServiceHeader(host, port, serviceName); 
+		
+		return srvsHeader[1].substring(srvsHeader[1].indexOf("=")+1);
+	}
+	
 
 	/**
 	 * 
@@ -270,7 +286,7 @@ public class Master {
 			pubTopics.add(new Topic(topicName, msgsType, null, publisher,
 					subscriber));
 		}
-
+		pubTopics.trimToSize();
 		return pubTopics;
 	}
 
@@ -292,7 +308,7 @@ public class Master {
 			subTopics.add(new Topic(topicName, msgsType, null, publisher,
 					subscriber));
 		}
-
+		subTopics.trimToSize();
 		return subTopics;
 	}
 
@@ -309,10 +325,11 @@ public class Master {
 			Object[] output = (Object[]) input;
 			String serviceName = (String) output[0];
 			String serviceType = getServiceType(serviceName);
+			String md5Sum = getMD5Sum(serviceName);
 			String[] provider = getServiceProviders(serviceName);
-			service.add(new Service(serviceName, serviceType, null, provider));
+			service.add(new Service(serviceName, serviceType, md5Sum, provider));
 		}
-
+		service.trimToSize();
 		return service;
 	}
 

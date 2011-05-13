@@ -66,7 +66,7 @@ public class Network {
 		return headerResponse;
 	}
 
-	// Fehlerbehandlung muss noch eingefügt werden
+	// Fehlerbehandlung muss noch eingefügt werden, code restrukturieren
 	public static byte[] encode_ros_handshake_header(String[] header) {
 		byte[] encode_header;
 		ArrayList<byte[]> header_byte = new ArrayList<byte[]>();
@@ -203,7 +203,6 @@ public class Network {
 	public static byte[] subArray(int begin, int end, byte[] b) {
 		byte[] result;
 		int j;
-
 		if ((end > begin) && (b.length > (end - begin + 1))) {
 			result = new byte[end - (begin - 1)];
 			j = begin;
@@ -213,7 +212,6 @@ public class Network {
 			}
 			return result;
 		}
-
 		return null;
 	}
 }
