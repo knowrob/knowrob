@@ -2880,7 +2880,7 @@
         <srdl2-comp:urdfName>drawer_oven_right_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.ed/kb/knowrob.owl#Slider10">
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Slider10">
       <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
       <srdl2-comp:urdfName>oven_block_drawer_oven_right_joint</srdl2-comp:urdfName>
     </owl:NamedIndividual>
@@ -2900,7 +2900,7 @@
         <srdl2-comp:urdfName>drawer_island_col3_center_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.ed/kb/knowrob.owl#Slider100">
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Slider100">
       <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
       <srdl2-comp:urdfName>island_block_drawer_island_col3_center_joint</srdl2-comp:urdfName>
     </owl:NamedIndividual>
@@ -3104,7 +3104,7 @@
         <srdl2-comp:urdfName>drawer_sink_col2_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.ed/kb/knowrob.owl#Slider40">
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Slider40">
       <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
       <srdl2-comp:urdfName>sink_block_drawer_sink_col2_joint</srdl2-comp:urdfName>
     </owl:NamedIndividual>
@@ -3125,7 +3125,7 @@
         <srdl2-comp:urdfName>drawer_sink_col1_bottom_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.ed/kb/knowrob.owl#Slider46">
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Slider46">
       <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
       <srdl2-comp:urdfName>sink_block_drawer_sink_col1_bottom_joint</srdl2-comp:urdfName>
     </owl:NamedIndividual>
@@ -3144,7 +3144,7 @@
         <srdl2-comp:urdfName>drawer_sink_col1_center_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.ed/kb/knowrob.owl#Slider52">
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Slider52">
       <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
       <srdl2-comp:urdfName>sink_block_drawer_sink_col1_center_joint</srdl2-comp:urdfName>
     </owl:NamedIndividual>
@@ -3163,7 +3163,7 @@
         <srdl2-comp:urdfName>drawer_sink_col1_top_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.ed/kb/knowrob.owl#Slider58">
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Slider58">
       <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
       <srdl2-comp:urdfName>sink_block_drawer_sink_col1_top_joint</srdl2-comp:urdfName>
     </owl:NamedIndividual>
@@ -3182,7 +3182,7 @@
         <srdl2-comp:urdfName>drawer_oven_center_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.ed/kb/knowrob.owl#Slider64">
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Slider64">
       <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
       <srdl2-comp:urdfName>oven_block_drawer_oven_center_joint</srdl2-comp:urdfName>
     </owl:NamedIndividual>
