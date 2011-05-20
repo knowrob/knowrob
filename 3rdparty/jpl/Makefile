@@ -7,7 +7,7 @@ BUILD_TOPDIR = $(shell pwd)
 
 JPL_DIR = jpl
 JPL_URL = http://code.in.tum.de/files/jpl.tar.gz
-
+LIBSWIPL=/usr/lib/libswipl.so
 
 $(JPL_DIR):
 	wget $(JPL_URL)
@@ -17,6 +17,7 @@ $(JPL_DIR):
 
 installed: $(JPL_DIR)
 	cd $(JPL_DIR) && autoconf
+	if test -e $(LIBSWIPL); then sed 's/-lpl/-lswipl/' jpl/configure > jpl/configure.sed; mv jpl/configure.sed jpl/configure; chmod +x jpl/configure; fi
 	cd $(JPL_DIR) && ./configure
 	make -C $(JPL_DIR)
 	mkdir -p $(INSTALL_DIR)
