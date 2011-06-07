@@ -35,13 +35,7 @@ public class Master {
 		this.setMasterPort(masterPort);
 	}
 
-	/**
-	 * Returns an Object containing Published Topics with Publisher, Subscribed
-	 * Topics with Subscribers and Services with service Provider
-	 * 
-	 * @return an Object(String[String[]], String[String[]], String[String[]])
-	 */
-	public Object[] getSystemState() {
+	public Object[] executeXMLRPCCommand(String command, Object[] params) {
 		String ros_master_uri = "http://" + getMasterHost() + ":"
 				+ getMasterPort();
 
@@ -52,22 +46,200 @@ public class Master {
 		}
 		XmlRpcClient rosmaster = new XmlRpcClient();
 		rosmaster.setConfig(config);
-
-		Object[] params = new Object[] { "rosjava.Master" };
 		try {
-			Object[] result = (Object[]) rosmaster.execute("getSystemState",
-					params);
-			Integer code = (Integer) result[0];
-			if (code.compareTo(new Integer(1)) == 0) {
-				return (Object[]) result[2];
-			}
+			return (Object[]) rosmaster.execute(command, params);
 		} catch (XmlRpcException e) {
 			System.out
-					.println("Error: An Error occured  during rosjava.Master.getSystemState()");
+					.println("Error: An Error occured  during rosjava.Master.executeXMLRPCCommand("
+							+ command + ", params)");
 			System.out.println(e.getMessage());
 		}
 
 		return null;
+	}
+
+	/**
+	 * Register the caller as a provider of the specified service.
+	 * 
+	 * @param caller_id
+	 *            ROS caller ID
+	 * @param service
+	 *            Fully-qualified name of service
+	 * @param service_api
+	 *            ROSRPC Service URI
+	 * @param caller_api
+	 *            XML-RPC URI of caller node
+	 * @return code
+	 */
+	public Integer registerService(String caller_id, String service,
+			String service_api, String caller_api) {
+		Object[] params = new Object[] { caller_id, service, service_api,
+				caller_api };
+		Object[] result = this.executeXMLRPCCommand("registerService", params);
+		Integer code = (Integer) result[0];
+		return code;
+	}
+
+	/**
+	 * Unregister the caller as a provider of the specified service.
+	 * 
+	 * @param caller_id
+	 *            ROS caller ID
+	 * @param service
+	 *            Fully-qualified name of service
+	 * @param service_api
+	 *            ROSRPC Service URI
+	 * @return (code, statusMessage, numUnregistered) Number of unregistrations
+	 *         (either 0 or 1). If this is zero it means that the caller was not
+	 *         registered as a service provider. The call still succeeds as the
+	 *         intended final state is reached.
+	 */
+	public Object unregisterService(String caller_id, String service,
+			String service_api) {
+		Object[] params = new Object[] { caller_id, service, service_api };
+		Object[] result = this
+				.executeXMLRPCCommand("unregisterService", params);
+		return result;
+	}
+
+	/**
+	 * Subscribe the caller to the specified topic. In addition to receiving a
+	 * list of current publishers, the subscriber will also receive
+	 * notifications of new publishers via the publisherUpdate API.
+	 * 
+	 * @param caller_id
+	 *            ROS caller ID
+	 * @param topic
+	 *            Fully-qualified name of topic.
+	 * @param topic_type
+	 *            Datatype for topic. Must be a package-resource name, i.e. the
+	 *            .msg name.
+	 * @param caller_api
+	 *            API URI of subscriber to register. Will be used for new
+	 *            publisher notifications.
+	 * @return (code, statusMessage, publishers) Publishers is a list of XMLRPC
+	 *         API URIs for nodes currently publishing the specified topic.
+	 */
+	public Object[] registerSubscriber(String caller_id, String topic,
+			String topic_type, String caller_api) {
+		Object[] params = new Object[] { caller_id, topic, topic_type,
+				caller_api };
+		Object[] result = this.executeXMLRPCCommand("registerSubscriber",
+				params);
+		return result;
+	}
+
+	/**
+	 * 
+	 * @param caller_id
+	 *            ROS caller ID
+	 * @param topic
+	 *            Fully-qualified name of topic.
+	 * @param caller_api
+	 *            API URI of subscriber to register. Will be used for new
+	 *            publisher notifications.
+	 * @return (code, statusMessage, numUnsubscribed) If numUnsubscribed is zero
+	 *         it means that the caller was not registered as a subscriber. The
+	 *         call still succeeds as the intended final state is reached.
+	 */
+	public Object[] unregisterSubscriber(String caller_id, String topic,
+			String caller_api) {
+		Object[] params = new Object[] { caller_id, topic, caller_api };
+		Object[] result = this.executeXMLRPCCommand("unregisterSubscriber",
+				params);
+		return result;
+	}
+
+	/**
+	 * Register the caller as a publisher the topic.
+	 * 
+	 * @param caller_id
+	 *            ROS caller ID
+	 * @param topic
+	 *            Fully-qualified name of topic.
+	 * @param topic_type
+	 *            Datatype for topic. Must be a package-resource name, i.e. the
+	 *            .msg name.
+	 * @param caller_api
+	 *            API URI of subscriber to register. Will be used for new
+	 *            publisher notifications.
+	 * @return (code, statusMessage, subscriberApis) List of current subscribers
+	 *         of topic in the form of XMLRPC URIs.
+	 */
+	public Object[] registerPublisher(String caller_id, String topic,
+			String topic_type, String caller_api) {
+		Object[] params = new Object[] { caller_id, topic, topic_type,
+				caller_api };
+		Object[] result = this
+				.executeXMLRPCCommand("registerPublisher", params);
+		return result;
+	}
+
+	/**
+	 * Unregister the caller as a publisher of the topic.
+	 * 
+	 * @param caller_id
+	 *            ROS caller ID
+	 * @param topic
+	 *            Fully-qualified name of topic.
+	 * @param caller_api
+	 *            API URI of subscriber to register. Will be used for new
+	 *            publisher notifications.
+	 * @return (code, statusMessage, numUnregistered) If numUnregistered is zero
+	 *         it means that the caller was not registered as a publisher. The
+	 *         call still succeeds as the intended final state is reached.
+	 */
+	public Object[] unregisterPublisher(String caller_id, String topic,
+			String caller_api) {
+		Object[] params = new Object[] { caller_id, topic, caller_api };
+		Object[] result = this.executeXMLRPCCommand("unregisterPublisher",
+				params);
+		return result;
+	}
+
+	/**
+	 * Get the XML-RPC URI of the node with the associated name/caller_id. This
+	 * API is for looking information about publishers and subscribers. Use
+	 * lookupService instead to lookup ROS-RPC URIs.
+	 * 
+	 * @param caller_id
+	 *            ROS caller ID
+	 * @param node_name
+	 *            Name of node to lookup
+	 * @return
+	 */
+	public String lookupNode(String caller_id, String node_name) {
+		Object[] params = new Object[] { caller_id, node_name };
+		Object[] result;
+
+		Integer code = new Integer(0);
+		do {
+			result = executeXMLRPCCommand("lookupNode", params);
+			code = (Integer) result[0];
+		} while (code.compareTo(new Integer(1)) != 0);
+
+		return (String) result[2];
+	}
+
+	/**
+	 * Returns an Object that contains Published Topics with Publisher,
+	 * Subscribed Topics with Subscribers and Services with service Providers
+	 * 
+	 * @param caller_id
+	 *            ROS caller ID
+	 * @return an Object(String[String[]], String[String[]], String[String[]])
+	 */
+	public Object[] getSystemState(String caller_id) {
+		Object[] params = new Object[] { caller_id };
+		Object[] result;
+
+		Integer code = new Integer(0);
+		do {
+			result = executeXMLRPCCommand("getSystemState", params);
+			code = (Integer) result[0];
+		} while (code.compareTo(new Integer(1)) != 0);
+
+		return (Object[]) result[2];
 	}
 
 	/**
@@ -76,65 +248,38 @@ public class Master {
 	 * @return an Object[](String, String)
 	 */
 	public Object[] getTopicTypes() {
-		String ros_master_uri = "http://" + getMasterHost() + ":"
-				+ getMasterPort();
-
-		XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-		try {
-			config.setServerURL(new URL(ros_master_uri));
-		} catch (MalformedURLException e) {
-		}
-		XmlRpcClient rosmaster = new XmlRpcClient();
-		rosmaster.setConfig(config);
-
 		Object[] params = new Object[] { "rosjava.Master" };
-		try {
-			Object[] result = (Object[]) rosmaster.execute("getTopicTypes",
-					params);
-			Integer code = (Integer) result[0];
-			if (code.compareTo(new Integer(1)) == 0) {
-				return (Object[]) result[2];
-			}
-		} catch (XmlRpcException e) {
-			System.out
-					.println("Error: An Error occured  during rosjava.Master.getTopicTypes()");
-		}
-		;
-		return null;
+		Object[] result;
+
+		Integer code = new Integer(0);
+		do {
+			result = executeXMLRPCCommand("getTopicTypes", params);
+			code = (Integer) result[0];
+		} while (code.compareTo(new Integer(1)) != 0);
+
+		return (Object[]) result[2];
 	}
 
 	/**
+	 * Lookup all provider of a particular service.
 	 * 
+	 * @param caller_id
+	 *            ROS caller ID
 	 * @param service
-	 * @return
+	 *            Fully-qualified name of service
+	 * @return serviceUrl
 	 */
-	public String lookupService(String service) {
-		String ros_master_uri = "http://" + getMasterHost() + ":"
-				+ getMasterPort();
+	public String lookupService(String caller_id, String service) {
+		Object[] params = new Object[] { caller_id, service };
+		Object[] result;
 
-		XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-		try {
-			config.setServerURL(new URL(ros_master_uri));
-		} catch (MalformedURLException e) {
-		}
-		XmlRpcClient rosmaster = new XmlRpcClient();
-		rosmaster.setConfig(config);
+		Integer code = new Integer(0);
+		do {
+			result = executeXMLRPCCommand("lookupService", params);
+			code = (Integer) result[0];
+		} while (code.compareTo(new Integer(1)) != 0);
 
-		Object[] params = new Object[] { "rosjava.Master", service };
-		try {
-			Object[] result = (Object[]) rosmaster.execute("lookupService",
-					params);
-			Integer code = (Integer) result[0];
-			if (code.compareTo(new Integer(1)) == 0) {
-				return (String) result[2];
-			}
-		} catch (XmlRpcException e) {
-			System.out
-					.println("Error: An Error occured  during rosjava.Master.lookupService("
-							+ service + ")");
-		}
-
-		return null;
+		return (String) result[2];
 	}
 
 	/**
@@ -164,7 +309,8 @@ public class Master {
 	 */
 	public String[] getPublisher(String topicName) {
 		ArrayList<String> publisher = new ArrayList<String>();
-		Object[] systemState = this.getSystemState();
+		Object[] systemState = this
+				.getSystemState("rosjava.Master.getPublisher");
 		Object[] publishedTopics = (Object[]) systemState[0];
 
 		for (Object o : publishedTopics) {
@@ -190,7 +336,8 @@ public class Master {
 	 */
 	public String[] getSubscriber(String topicName) {
 		ArrayList<String> subscriber = new ArrayList<String>();
-		Object[] systemState = this.getSystemState();
+		Object[] systemState = this
+				.getSystemState("rosjava.Master.getSubscriber");
 		Object[] subscribedTopics = (Object[]) systemState[1];
 
 		for (Object o : subscribedTopics) {
@@ -208,13 +355,15 @@ public class Master {
 	}
 
 	/**
+	 * return an string[] that contains all providers of a given service
 	 * 
 	 * @param service
 	 * @return
 	 */
 	public String[] getServiceProviders(String service) {
 		ArrayList<String> provider = new ArrayList<String>();
-		Object[] systemState = this.getSystemState();
+		Object[] systemState = this
+				.getSystemState("rosjava.Master.getServiceProviders");
 		Object[] srvs = (Object[]) systemState[2];
 
 		for (Object o : srvs) {
@@ -232,49 +381,58 @@ public class Master {
 	}
 
 	/**
-	 * Returns the srvsType
+	 * Get the srvsType
 	 * 
-	 * @param serviceName
-	 * @return a String
+	 * @param service
+	 *            Fully-qualified name of service
+	 * @return
 	 */
-	public String getServiceType(String serviceName) {
+	public String getServiceType(String service) {
 		String lookup;
 		String host;
 		int port;
-		String[] srvsHeader ;
-		
-		lookup = lookupService(serviceName);
-		host = lookup.substring(9, lookup.lastIndexOf(":")); 
+		String[] srvsHeader;
+
+		lookup = lookupService("rosjava.Master.getServiceType", service);
+		host = lookup.substring(9, lookup.lastIndexOf(":"));
 		port = Integer.parseInt(lookup.substring(lookup.lastIndexOf(":") + 1));
-		
-		srvsHeader = rosjava.Network.getServiceHeader(host, port, serviceName); 
-		
-		return srvsHeader[2].substring(srvsHeader[2].indexOf("=")+1);
+
+		srvsHeader = rosjava.Network.getServiceHeader(host, port, service);
+
+		return srvsHeader[2].substring(srvsHeader[2].indexOf("=") + 1);
 	}
-	
-	public String getMD5Sum(String serviceName) {
-		String lookup;
-		String host;
-		int port;
-		String[] srvsHeader ;
-		
-		lookup = lookupService(serviceName);
-		host = lookup.substring(9, lookup.lastIndexOf(":")); 
-		port = Integer.parseInt(lookup.substring(lookup.lastIndexOf(":") + 1));
-		
-		srvsHeader = rosjava.Network.getServiceHeader(host, port, serviceName); 
-		
-		return srvsHeader[1].substring(srvsHeader[1].indexOf("=")+1);
-	}
-	
 
 	/**
+	 * Get the md5sum of a given service
+	 * 
+	 * @param service
+	 *            Fully-qualified name of service
+	 * @return
+	 */
+	public String getMD5Sum(String service) {
+		String lookup;
+		String host;
+		int port;
+		String[] srvsHeader;
+
+		lookup = lookupService("rosjava.Master.getMD5Sum", service);
+		host = lookup.substring(9, lookup.lastIndexOf(":"));
+		port = Integer.parseInt(lookup.substring(lookup.lastIndexOf(":") + 1));
+
+		srvsHeader = rosjava.Network.getServiceHeader(host, port, service);
+
+		return srvsHeader[1].substring(srvsHeader[1].indexOf("=") + 1);
+	}
+
+	/**
+	 * Get list of topics that can be subscribed to.
 	 * 
 	 * @return
 	 */
 	public Collection<Topic> getPublishedTopics() {
 		ArrayList<Topic> pubTopics = new ArrayList<Topic>();
-		Object[] systemState = this.getSystemState();
+		Object[] systemState = this
+				.getSystemState("rosjava.Master.getPublishedTopics");
 		Object[] publishedTopics = (Object[]) systemState[0];
 
 		for (Object o : publishedTopics) {
@@ -291,12 +449,14 @@ public class Master {
 	}
 
 	/**
+	 * Get a collection of topics that are subscribed.
 	 * 
 	 * @return
 	 */
 	public Collection<Topic> getSubscribedTopics() {
 		ArrayList<Topic> subTopics = new ArrayList<Topic>();
-		Object[] systemState = this.getSystemState();
+		Object[] systemState = this
+				.getSystemState("rosjava.Master.getSubscribedTopics");
 		Object[] subscribedTopics = (Object[]) systemState[1];
 
 		for (Object o : subscribedTopics) {
@@ -313,12 +473,14 @@ public class Master {
 	}
 
 	/**
+	 * returns a collection that contains all provided services
 	 * 
 	 * @return
 	 */
 	public Collection<Service> getServices() {
 		ArrayList<Service> service = new ArrayList<Service>();
-		Object[] systemState = this.getSystemState();
+		Object[] systemState = this
+				.getSystemState("rosjava.Master.getServices");
 		Object[] srvs = (Object[]) systemState[2];
 
 		for (Object input : srvs) {
@@ -327,10 +489,31 @@ public class Master {
 			String serviceType = getServiceType(serviceName);
 			String md5Sum = getMD5Sum(serviceName);
 			String[] provider = getServiceProviders(serviceName);
-			service.add(new Service(serviceName, serviceType, md5Sum, provider));
+			service
+					.add(new Service(serviceName, serviceType, md5Sum, provider));
 		}
 		service.trimToSize();
 		return service;
+	}
+
+	/**
+	 * Get the URI of the the master.
+	 * 
+	 * @param caller_id
+	 *            ROS caller ID
+	 * @return
+	 */
+	public String getUri(String caller_id) {
+		Object[] params = new Object[] { caller_id };
+		Object[] result;
+
+		Integer code = new Integer(0);
+		do {
+			result = executeXMLRPCCommand("getUri", params);
+			code = (Integer) result[0];
+		} while (code.compareTo(new Integer(1)) != 0);
+
+		return (String) result[2];
 	}
 
 }

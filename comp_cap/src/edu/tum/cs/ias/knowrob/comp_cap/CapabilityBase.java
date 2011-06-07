@@ -1,6 +1,8 @@
 package edu.tum.cs.ias.knowrob.comp_cap;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -17,6 +19,9 @@ public class CapabilityBase {
 
 	public CapabilityBase() {
 		ros = Ros.getInstance();
+		if(!ros.isInitialized()){
+			ros.init("comp_cap");
+		}
 		node = ros.createNodeHandle("comp_cap");
 		rosmaster = new Master(node.getMasterHost(), node.getMasterPort());
 	}
@@ -157,9 +162,14 @@ public class CapabilityBase {
 			@SuppressWarnings("unused")
 			Process p = Runtime.getRuntime().exec(command1);
 
-			// BufferedReader stdInput = new BufferedReader(new
-			// InputStreamReader(
-			// p.getInputStream()));
+			 BufferedReader stdInput = new BufferedReader(new
+			 InputStreamReader(
+			 p.getInputStream()));
+			 
+			 String line = stdInput.readLine();
+			 
+			 System.out.println(line);
+			 
 			// BufferedReader stdError = new BufferedReader(new
 			// InputStreamReader(
 			// p.getErrorStream()));

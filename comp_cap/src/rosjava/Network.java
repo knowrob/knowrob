@@ -15,8 +15,8 @@ public class Network {
 			int servicePort, String serviceName) {
 		String[] headerRequest;
 		String[] headerResponse;
-		byte[] encode_header;
-		byte[] header_recived;
+		byte[] header_encoded;
+		byte[] header_received;
 
 		SocketAddress addr;
 		Socket s;
@@ -26,7 +26,7 @@ public class Network {
 
 		headerRequest = new String[] { "service=" + serviceName, "probe=1",
 				"callerid=/rosservice", "md5sum=*" };
-		encode_header = rosjava.Network
+		header_encoded = rosjava.Network
 				.encode_ros_handshake_header(headerRequest);
 		headerResponse = new String[4];
 
@@ -40,12 +40,12 @@ public class Network {
 				out = new DataOutputStream(s.getOutputStream());
 
 				do {
-					out.write(encode_header);
+					out.write(header_encoded);
 					out.flush();
-					header_recived = new byte[in.available()];
-					in.read(header_recived);
-				} while (!rosjava.Network.decode_ros_hanshake_header(
-						header_recived, headerResponse));
+					header_received = new byte[in.available()];
+					in.read(header_received);
+				} while (!rosjava.Network.decode_ros_handshake_header(
+						header_received, headerResponse));
 
 			} catch (UnknownHostException e) {
 				System.out
@@ -112,7 +112,7 @@ public class Network {
 		return encode_header;
 	}
 
-	public static boolean decode_ros_hanshake_header(byte[] header,
+	public static boolean decode_ros_handshake_header(byte[] header,
 			String[] result) {
 		byte[] length_all;
 		byte[] length_first;
