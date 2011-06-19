@@ -1363,15 +1363,164 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 				return c;
 			}
 
-
-
-			// check if it is some kind of box (e.g. Bed)
-			HashMap<String, Vector<Object>> box = PrologVisualizationCanvas.executeQuery(
+      HashMap<String, Vector<Object>> level = PrologVisualizationCanvas.executeQuery(
 					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
-					"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'Bed-PieceOfFurniture')," +
+          "rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'LevelOfAConstruction')," +
 					"rdf_has("+identifier+",knowrob:widthOfObject,literal(type(_,_W)))," + 
 					"rdf_has("+identifier+",knowrob:heightOfObject,literal(type(_,_H))), " + 
 					"rdf_has("+identifier+",knowrob:depthOfObject,literal(type(_,_D))), " +
+
+					"rdf_triple(knowrob:orientation,"+identifier+",Or), " +
+
+					"rdf_triple(knowrob:m00,Or,literal(type(_,_M00))), term_to_atom(M00,_M00)," +
+					"rdf_triple(knowrob:m01,Or,literal(type(_,_M01))), term_to_atom(M01,_M01)," +
+					"rdf_triple(knowrob:m02,Or,literal(type(_,_M02))), term_to_atom(M02,_M02)," +
+					"rdf_triple(knowrob:m03,Or,literal(type(_,_M03))), term_to_atom(M03,_M03)," +
+
+					"rdf_triple(knowrob:m10,Or,literal(type(_,_M10))), term_to_atom(M10,_M10)," +
+					"rdf_triple(knowrob:m11,Or,literal(type(_,_M11))), term_to_atom(M11,_M11)," +
+					"rdf_triple(knowrob:m12,Or,literal(type(_,_M12))), term_to_atom(M12,_M12)," +
+					"rdf_triple(knowrob:m13,Or,literal(type(_,_M13))), term_to_atom(M13,_M13)," +
+
+					"rdf_triple(knowrob:m20,Or,literal(type(_,_M20))), term_to_atom(M20,_M20)," +
+					"rdf_triple(knowrob:m21,Or,literal(type(_,_M21))), term_to_atom(M21,_M21)," +
+					"rdf_triple(knowrob:m22,Or,literal(type(_,_M22))), term_to_atom(M22,_M22)," +
+					"rdf_triple(knowrob:m23,Or,literal(type(_,_M23))), term_to_atom(M23,_M23)," +
+
+					"rdf_triple(knowrob:m30,Or,literal(type(_,_M30))), term_to_atom(M30,_M30)," +
+					"rdf_triple(knowrob:m31,Or,literal(type(_,_M31))), term_to_atom(M31,_M31)," +
+					"rdf_triple(knowrob:m32,Or,literal(type(_,_M32))), term_to_atom(M32,_M32)," +
+					"rdf_triple(knowrob:m33,Or,literal(type(_,_M33))), term_to_atom(M33,_M33)," +
+
+					"atom_to_term(_W,W,_), atom_to_term(_H,H,_), atom_to_term(_D,D,_)" , null);
+
+			if( level.get("M00") != null && level.get("M00").size() > 0) {
+
+				LevelOfAConstruction l = new LevelOfAConstruction(
+						Float.valueOf(level.get("M00").get(0).toString()),
+						Float.valueOf(level.get("M01").get(0).toString()),
+						Float.valueOf(level.get("M02").get(0).toString()),
+						100*Float.valueOf(level.get("M03").get(0).toString()),
+
+						Float.valueOf(level.get("M10").get(0).toString()),
+						Float.valueOf(level.get("M11").get(0).toString()),
+						Float.valueOf(level.get("M12").get(0).toString()),
+						100*Float.valueOf(level.get("M13").get(0).toString()),
+
+						Float.valueOf(level.get("M20").get(0).toString()),
+						Float.valueOf(level.get("M21").get(0).toString()),
+						Float.valueOf(level.get("M22").get(0).toString()),
+						100*Float.valueOf(level.get("M23").get(0).toString()),
+
+						Float.valueOf(level.get("M30").get(0).toString()),
+						Float.valueOf(level.get("M31").get(0).toString()),
+						Float.valueOf(level.get("M32").get(0).toString()),
+						Float.valueOf(level.get("M33").get(0).toString()),
+
+						100*Float.valueOf(level.get("D").get(0).toString()),
+						100*Float.valueOf(level.get("W").get(0).toString()),
+						100*Float.valueOf(level.get("H").get(0).toString()));
+
+				int col = grayValues[(++grayLevelCounter) % grayValues.length];      
+				l.defaultColor = convertColor(col, col, col, 255);
+				l.setColor(l.defaultColor);
+				l.name = identifier;
+
+				return l;
+			}
+
+      HashMap<String, Vector<Object>> room = PrologVisualizationCanvas.executeQuery(
+					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
+          "rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'RoomInAConstruction')," +
+					"rdf_has("+identifier+",knowrob:widthOfObject,literal(type(_,_W)))," + 
+					"rdf_has("+identifier+",knowrob:heightOfObject,literal(type(_,_H))), " + 
+					"rdf_has("+identifier+",knowrob:depthOfObject,literal(type(_,_D))), " +
+
+          // "rdf_has("+identifier+",knowrob:translationX,literal(type(_,_X)))," + 
+					// "rdf_has("+identifier+",knowrob:translationY,literal(type(_,_Y))), " + 
+					// "rdf_has("+identifier+",knowrob:translationZ,literal(type(_,_Z))), " +
+          // "atom_to_term(_X,X,_), atom_to_term(_Y,Y,_), atom_to_term(_Z,Z,_)," +
+
+					"rdf_triple(knowrob:orientation,"+identifier+",Or), " +
+
+					"rdf_triple(knowrob:m00,Or,literal(type(_,_M00))), term_to_atom(M00,_M00)," +
+					"rdf_triple(knowrob:m01,Or,literal(type(_,_M01))), term_to_atom(M01,_M01)," +
+					"rdf_triple(knowrob:m02,Or,literal(type(_,_M02))), term_to_atom(M02,_M02)," +
+					"rdf_triple(knowrob:m03,Or,literal(type(_,_M03))), term_to_atom(M03,_M03)," +
+
+					"rdf_triple(knowrob:m10,Or,literal(type(_,_M10))), term_to_atom(M10,_M10)," +
+					"rdf_triple(knowrob:m11,Or,literal(type(_,_M11))), term_to_atom(M11,_M11)," +
+					"rdf_triple(knowrob:m12,Or,literal(type(_,_M12))), term_to_atom(M12,_M12)," +
+					"rdf_triple(knowrob:m13,Or,literal(type(_,_M13))), term_to_atom(M13,_M13)," +
+
+					"rdf_triple(knowrob:m20,Or,literal(type(_,_M20))), term_to_atom(M20,_M20)," +
+					"rdf_triple(knowrob:m21,Or,literal(type(_,_M21))), term_to_atom(M21,_M21)," +
+					"rdf_triple(knowrob:m22,Or,literal(type(_,_M22))), term_to_atom(M22,_M22)," +
+					"rdf_triple(knowrob:m23,Or,literal(type(_,_M23))), term_to_atom(M23,_M23)," +
+
+					"rdf_triple(knowrob:m30,Or,literal(type(_,_M30))), term_to_atom(M30,_M30)," +
+					"rdf_triple(knowrob:m31,Or,literal(type(_,_M31))), term_to_atom(M31,_M31)," +
+					"rdf_triple(knowrob:m32,Or,literal(type(_,_M32))), term_to_atom(M32,_M32)," +
+					"rdf_triple(knowrob:m33,Or,literal(type(_,_M33))), term_to_atom(M33,_M33)," +
+
+          "rdf_triple(knowrob:eventOccursAt, Ev , Or), " +
+          "rdf_triple(knowrob:frameTransformation, Ev , FrameTrans), " +
+          "rdf_triple(knowrob:m03,FrameTrans,literal(type(_,_X))), term_to_atom(X,_X)," +
+          "rdf_triple(knowrob:m13,FrameTrans,literal(type(_,_Y))), term_to_atom(Y,_Y)," +
+					"rdf_triple(knowrob:m23,FrameTrans,literal(type(_,_Z))), term_to_atom(Z,_Z)," +
+          
+					"atom_to_term(_W,W,_), atom_to_term(_H,H,_), atom_to_term(_D,D,_)" , null);
+
+			if( room.get("M00") != null && room.get("M00").size() > 0) {
+
+				RoomInAConstruction ro = new RoomInAConstruction(
+						Float.valueOf(room.get("M00").get(0).toString()),
+						Float.valueOf(room.get("M01").get(0).toString()),
+						Float.valueOf(room.get("M02").get(0).toString()),
+						100*Float.valueOf(room.get("M03").get(0).toString()),
+
+						Float.valueOf(room.get("M10").get(0).toString()),
+						Float.valueOf(room.get("M11").get(0).toString()),
+						Float.valueOf(room.get("M12").get(0).toString()),
+						100*Float.valueOf(room.get("M13").get(0).toString()),
+
+						Float.valueOf(room.get("M20").get(0).toString()),
+						Float.valueOf(room.get("M21").get(0).toString()),
+						Float.valueOf(room.get("M22").get(0).toString()),
+						100*Float.valueOf(room.get("M23").get(0).toString()),
+
+						Float.valueOf(room.get("M30").get(0).toString()),
+						Float.valueOf(room.get("M31").get(0).toString()),
+						Float.valueOf(room.get("M32").get(0).toString()),
+						Float.valueOf(room.get("M33").get(0).toString()),
+
+            100*Float.valueOf(room.get("D").get(0).toString()),
+						100*Float.valueOf(room.get("W").get(0).toString()),
+						100*Float.valueOf(room.get("H").get(0).toString()),
+
+						100*Float.valueOf(room.get("X").get(0).toString()),
+						100*Float.valueOf(room.get("Y").get(0).toString()),
+						100*Float.valueOf(room.get("Z").get(0).toString()));
+
+				int col = grayValues[(++grayLevelCounter) % grayValues.length];      
+				ro.defaultColor = convertColor(col, col, col, 255);
+				ro.setColor(ro.defaultColor);
+				ro.name = identifier;
+
+				return ro;
+			}
+
+
+      
+			// check if it is some kind of box (e.g. Bed)
+			HashMap<String, Vector<Object>> box = PrologVisualizationCanvas.executeQuery(
+					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
+					//"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'Bed-PieceOfFurniture')," +
+          "rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'ConstructionArtifact')," +
+					"rdf_has("+identifier+",knowrob:widthOfObject,literal(type(_,_W)))," + 
+					"rdf_has("+identifier+",knowrob:heightOfObject,literal(type(_,_H))), " + 
+					"rdf_has("+identifier+",knowrob:depthOfObject,literal(type(_,_D))), " +
+
 
 					"rdf_triple(knowrob:orientation,"+identifier+",Or), " +
 
