@@ -25,15 +25,12 @@
     <owl:imports rdf:resource="&local_path;knowrob.owl"/>
   </owl:Ontology>
 
-
     <computable:PrologProperty rdf:about="#computeNumberOfLevels">
         <computable:command rdf:datatype="&xsd;string">comp_number_of_levels</computable:command>
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
         <computable:target rdf:resource="#numberOfLevels"/>
     </computable:PrologProperty>
-
-
 
     <computable:PrologProperty rdf:about="#computeNumberOfStories">
         <computable:command rdf:datatype="&xsd;string">comp_number_of_stories</computable:command>
@@ -42,6 +39,12 @@
         <computable:target rdf:resource="#numberOfStories"/>
     </computable:PrologProperty>
 
+    <computable:PrologProperty rdf:about="#computeHasRoom">
+      <computable:command rdf:datatype="&xsd;string">comp_has_rooms</computable:command>
+      <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+      <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+      <computable:target rdf:resource="#hasRooms"/>
+    </computable:PrologProperty>
 
     <owl:DatatypeProperty rdf:about="#numberOfLevels">
       <rdfs:domain rdf:resource="&knowrob;#Building"/>
@@ -49,13 +52,16 @@
       <rdfs:subPropertyOf rdf:resource="&knowrob;#numberOfLevels"/>
     </owl:DatatypeProperty>
     
-
     <owl:DatatypeProperty rdf:about="#numberOfStories">
       <rdfs:domain rdf:resource="&knowrob;#Building"/>
       <rdfs:range rdf:resource="&xsd;positiveInteger"/>
       <rdfs:subPropertyOf rdf:resource="&knowrob;#numberOfStories"/>
     </owl:DatatypeProperty>
 
-
-
+    <owl:DatatypeProperty rdf:about="#hasRooms">
+      <rdfs:domain rdf:resource="&knowrob;#ConstructionArtifact"/>
+      <rdfs:range rdf:resource="&knowrob;#RoomInAConstruction"/>
+      <rdfs:subPropertyOf rdf:resource="&knowrob;#hasRooms"/>
+    </owl:DatatypeProperty>
+        
 </rdf:RDF>

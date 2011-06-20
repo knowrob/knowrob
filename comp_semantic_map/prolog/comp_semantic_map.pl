@@ -39,6 +39,7 @@ POSSIBILITY OF SUCH DAMAGE.
      
      comp_number_of_levels/2,
      comp_number_of_stories/2,
+     comp_has_rooms/2,
      nth_level_of_building/3
     ]).
 
@@ -74,6 +75,12 @@ comp_number_of_stories(B, N) :-
             rdf_triple(knowrob:'hasLevels',B, L),
             owl_has(L, rdf:type, knowrob:'AboveGroundLevelInAConstruction')), Ls),
   length(Ls, N).
+
+comp_has_rooms(I, R) :-
+  rdf_reachable(C, rdfs:subClassOf, knowrob:'ConstructionArtifact'),
+  rdf_has(I, rdf:type, C),
+  rdf_triple(knowrob:'hasLevels',I, L),
+  rdf_triple(knowrob:'hasRooms',L, R).
 
 nth_level_of_building(Number, Building, Level) :-
   owl_has(Building, knowrob:hasLevels, Level), 
