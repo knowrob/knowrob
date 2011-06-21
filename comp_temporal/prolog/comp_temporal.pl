@@ -1,4 +1,4 @@
-/** <module> comp_ehow
+/** <module> comp_temporal
 
   Description:
     Contains all computables that calculate temporal relations between events
@@ -7,7 +7,7 @@
     Now extended with predicates for reasoning on other relations over time (esp.
     holds/holds_tt)
 
-  Copyright (C) 2010 by Moritz Tenorth
+  Copyright (C) 2010 by Moritz Tenorth, Lars Kunze
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -22,21 +22,49 @@
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-@author Moritz Tenorth
+@author Moritz Tenorth, Lars Kunze
 @license GPL
 */
 :- module(comp_temporal,
     [
-      comp_temporallySubsumes/2,
-      comp_after/2,
-      comp_duration/2
+     comp_temporallySubsumes/2,
+     comp_after/2,
+     comp_duration/2,
+     comp_equalI/2,
+     comp_afterI/2,
+     comp_beforeI/2,
+     comp_meetsI/2,
+     comp_meetsInvI/2,
+     comp_overlapsI/2,
+     comp_overlapsInvI/2,
+     comp_startsI/2,
+     comp_startsInvI/2,
+     comp_duringI/2,
+     comp_duringInvI/2,
+     comp_finishesI/2,
+     comp_finishesInvI/2
     ]).
 
 :-  rdf_meta
     comp_temporallySubsumes(r, r),
     comp_after(r, r),
-    comp_duration(r, r).
-
+    comp_duration(r, r),
+    comp_equalI(r, r),
+    comp_afterI(r, r),
+    comp_beforeI(r, r),
+    comp_meetsI(r, r),
+    comp_meetsInvI(r, r),
+    comp_overlapsI(r, r),
+    comp_overlapsInvI(r, r),
+    comp_startsI(r, r),
+    comp_startsInvI(r, r),
+    comp_duringI(r, r),
+    comp_duringInvI(r, r),
+    comp_finishesI(r, r),
+    comp_finishesInvI(r, r),
+    time_point_value(r,-),
+    start_time_value(r,-),
+    end_time_value(r,-).
 
 
 :- use_module(library('semweb/rdfs')).
@@ -47,8 +75,6 @@
 
 :- rdf_db:rdf_register_ns(knowrob,      'http://ias.cs.tum.edu/kb/knowrob.owl#',      [keep(true)]).
 :- rdf_db:rdf_register_ns(comp_temporal, 'http://ias.cs.tum.edu/kb/comp_temporal.owl#', [keep(true)]).
-
-
 
 
 %% comp_temporallySubsumes(?Long, ?Short) is nondet.
@@ -154,4 +180,88 @@
 
       Duration is (End-Start).
 
+%%  Allen's 13 temporal relations for intervals 
 
+comp_equalI(I1,I2):-
+   start_time_value(I1,ST),
+   end_time_value(I1,ET),
+   start_time_value(I2,ST),
+   end_time_value(I2,ET).
+   %I1 \= I2.
+
+comp_beforeI(I1,I2):-
+   end_time_value(I1,ET),
+   start_time_value(I2,ST),
+   %I1 \= I2,
+   ET < ST.
+
+comp_afterI(I1,I2):-
+   comp_beforeI(I2,I1).
+
+comp_overlapsI(I1,I2):-
+   start_time_value(I1,ST1),
+   end_time_value(I1,ET1),
+   start_time_value(I2,ST2),
+   end_time_value(I2,ET2),
+   (ST1 < ST2),
+   (ET1 > ST2),
+   (ET1 < ET2).
+
+comp_overlapsInvI(I1,I2):-
+   comp_overlapsI(I2,I1).
+
+comp_meetsI(I1,I2):-
+   end_time_value(I1,T),
+   start_time_value(I2,T).
+
+comp_meetsInvI(I1,I2):-
+   comp_meetsI(I2,I1).
+
+comp_duringI(I1,I2):-
+   start_time_value(I1,ST1),
+   end_time_value(I1,ET1),
+   start_time_value(I2,ST2),
+   end_time_value(I2,ET2),
+   ST1 > ST2,
+   ET1 < ET2.
+
+comp_duringInvI(I1,I2):-
+   comp_duringI(I2,I1).
+   
+comp_startsI(I1,I2):-
+   start_time_value(I1,ST1),
+   end_time_value(I1,ET1),
+   start_time_value(I2,ST2),
+   end_time_value(I2,ET2),
+   ST1 = ST2,
+   ET1 < ET2.
+
+comp_startsInvI(I1,I2):-
+   comp_startsI(I2,I1).
+
+comp_finishesI(I1,I2):-
+   start_time_value(I1,ST1),
+   end_time_value(I1,ET1),
+   start_time_value(I2,ST2),
+   end_time_value(I2,ET2),
+   ST1 > ST2,
+   ET1 = ET2.
+
+comp_finishesInvI(I1,I2):-
+   comp_finishesI(I2,I1).
+
+%% helper predicates 
+
+time_point_value(TP, Value) :-
+  rdf_split_url(_, StartLocal, TP),
+  atom_concat('timepoint_', StartAtom, StartLocal),
+  term_to_atom(Value, StartAtom).
+
+start_time_value(I,Value) :-
+  rdf_has(I, knowrob:startTime, TP),
+  time_point_value(TP, Value).
+  
+end_time_value(I, Value) :-
+  ( rdf_has(I, knowrob:endTime, TP),
+    time_point_value(TP, Value), ! ) ;
+  start_time_value(I,Value).

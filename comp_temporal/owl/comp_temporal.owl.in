@@ -9,91 +9,256 @@
           <!ENTITY knowrob 'http://ias.cs.tum.edu/kb/knowrob.owl'>
           <!ENTITY actionmodel 'http://ias.cs.tum.edu/kb/actionmodel.owl'>
 
-]>
-          
+          ]>
+
 <rdf:RDF
-    xmlns:computable="http://ias.cs.tum.edu/kb/computable.owl#"
-    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
-    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-    xmlns="http://ias.cs.tum.edu/kb/comp_temporal.owl#"
-    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-    xmlns:owl="http://www.w3.org/2002/07/owl#"
-    xmlns:am="&actionmodel;#"
-    xmlns:knowrob="&knowrob;#"
-    xml:base="http://ias.cs.tum.edu/kb/comp_temporal.owl">
+   xmlns:computable="http://ias.cs.tum.edu/kb/computable.owl#"
+   xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns="http://ias.cs.tum.edu/kb/comp_temporal.owl#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+   xmlns:owl="http://www.w3.org/2002/07/owl#"
+   xmlns:am="&actionmodel;#"
+   xmlns:knowrob="&knowrob;#"
+   xml:base="http://ias.cs.tum.edu/kb/comp_temporal.owl">
   <owl:Ontology rdf:about="">
     <owl:imports rdf:resource="&local_path;knowrob.owl"/>
   </owl:Ontology>
 
 
-    <owl:ObjectProperty rdf:about="#after">
-        <rdfs:range rdf:resource="&knowrob;#TimePoint"/>
-        <rdfs:domain rdf:resource="&knowrob;#TimePoint"/>
-        <rdfs:subPropertyOf rdf:resource="&knowrob;#after"/>
-    </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#after">
+    <rdfs:range rdf:resource="&knowrob;#TimePoint"/>
+    <rdfs:domain rdf:resource="&knowrob;#TimePoint"/>
+    <rdfs:subPropertyOf rdf:resource="&knowrob;#after"/>
+  </owl:ObjectProperty>
 
+  <owl:ObjectProperty rdf:about="#duration">
+    <rdfs:domain rdf:resource="&knowrob;#TemporalThing"/>
+    <rdfs:range rdf:resource="&knowrob;#TimeInterval"/>
+    <rdfs:subPropertyOf rdf:resource="&knowrob;#duration"/>
+  </owl:ObjectProperty>
 
-    <owl:ObjectProperty rdf:about="#duration">
-        <rdfs:domain rdf:resource="&knowrob;#TemporalThing"/>
-        <rdfs:range rdf:resource="&knowrob;#TimeInterval"/>
-        <rdfs:subPropertyOf rdf:resource="&knowrob;#duration"/>
-    </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#temporallySubsumes">
+    <rdfs:range rdf:resource="&knowrob;#TemporalThing"/>
+    <rdfs:domain rdf:resource="&knowrob;#TemporalThing"/>
+    <rdfs:subPropertyOf rdf:resource="&knowrob;#temporallySubsumes"/>
+  </owl:ObjectProperty>
 
+  <owl:ObjectProperty rdf:about="#timePointStartTime">
+    <rdfs:range rdf:resource="&knowrob;#TimePoint"/>
+    <rdfs:domain rdf:resource="&knowrob;#TimePoint"/>
+    <rdfs:subPropertyOf rdf:resource="&knowrob;#startTime"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#timePointEndTime">
+    <rdfs:range rdf:resource="&knowrob;#TimePoint"/>
+    <rdfs:domain rdf:resource="&knowrob;#TimePoint"/>
+    <rdfs:subPropertyOf rdf:resource="&knowrob;#endTime"/>
+  </owl:ObjectProperty>
 
-    <owl:ObjectProperty rdf:about="#temporallySubsumes">
-        <rdfs:range rdf:resource="&knowrob;#TemporalThing"/>
-        <rdfs:domain rdf:resource="&knowrob;#TemporalThing"/>
-        <rdfs:subPropertyOf rdf:resource="&knowrob;#temporallySubsumes"/>
-    </owl:ObjectProperty>
+  <computable:PrologProperty rdf:about="#computeDuration">
+    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_duration</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="#duration"/>
+  </computable:PrologProperty>
+  
+  <computable:PrologProperty rdf:about="#computeAfter">
+    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_after</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="#after"/>
+  </computable:PrologProperty>
 
-    <owl:ObjectProperty rdf:about="#timePointStartTime">
-        <rdfs:range rdf:resource="&knowrob;#TimePoint"/>
-        <rdfs:domain rdf:resource="&knowrob;#TimePoint"/>
-        <rdfs:subPropertyOf rdf:resource="&knowrob;#startTime"/>
-    </owl:ObjectProperty>
-    <owl:ObjectProperty rdf:about="#timePointEndTime">
-        <rdfs:range rdf:resource="&knowrob;#TimePoint"/>
-        <rdfs:domain rdf:resource="&knowrob;#TimePoint"/>
-        <rdfs:subPropertyOf rdf:resource="&knowrob;#endTime"/>
-    </owl:ObjectProperty>
+  <computable:PrologProperty rdf:about="#computeTemporallySubsumes">
+    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_temporallySubsumes</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="#temporallySubsumes"/>
+  </computable:PrologProperty>
 
+  <computable:PrologProperty rdf:about="#computeTimePointStartTime">
+    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_time_point_start_time</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="#timePointStartTime"/>
+  </computable:PrologProperty>
+  
+  <computable:PrologProperty rdf:about="#computeTimePointEndTime">
+    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_time_point_end_time</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="#timePointEndTime"/>
+  </computable:PrologProperty>
 
-    <computable:PrologProperty rdf:about="#computeDuration">
-        <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_duration</computable:command>
-        <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
-        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-        <computable:target rdf:resource="#duration"/>
-    </computable:PrologProperty>
+  <!-- Allen's 13 temporal relations for intervals -->
+  
+  <owl:ObjectProperty rdf:about="#afterI">
+    <rdfs:range rdf:resource="&knowrob;#TemporallyExtendedThing"/>
+    <rdfs:domain rdf:resource="&knowrob;#TemporallyExtendedThing"/>
+    <rdfs:subPropertyOf rdf:resource="&knowrob;#afterI"/>
+  </owl:ObjectProperty>
 
+  <owl:ObjectProperty rdf:about="#beforeI">
+    <rdfs:range rdf:resource="&knowrob;#TemporallyExtendedThing"/>
+    <rdfs:domain rdf:resource="&knowrob;#TemporallyExtendedThing"/>
+    <rdfs:subPropertyOf rdf:resource="&knowrob;#beforeI"/>
+  </owl:ObjectProperty>
 
-    <computable:PrologProperty rdf:about="#computeAfter">
-        <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_after</computable:command>
-        <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
-        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-        <computable:target rdf:resource="#after"/>
-    </computable:PrologProperty>
+  <owl:ObjectProperty rdf:about="#duringI">
+    <rdfs:range rdf:resource="&knowrob;#TemporallyExtendedThing"/>
+    <rdfs:domain rdf:resource="&knowrob;#TemporallyExtendedThing"/>
+    <rdfs:subPropertyOf rdf:resource="&knowrob;#duringI"/>
+  </owl:ObjectProperty>
 
+  <owl:ObjectProperty rdf:about="#duringInvI">
+    <rdfs:range rdf:resource="&knowrob;#TemporallyExtendedThing"/>
+    <rdfs:domain rdf:resource="&knowrob;#TemporallyExtendedThing"/>
+    <rdfs:subPropertyOf rdf:resource="&knowrob;#duringInvI"/>
+  </owl:ObjectProperty>
 
-    <computable:PrologProperty rdf:about="#computeTemporallySubsumes">
-        <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_temporallySubsumes</computable:command>
-        <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
-        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-        <computable:target rdf:resource="#temporallySubsumes"/>
-    </computable:PrologProperty>
+  <owl:ObjectProperty rdf:about="#finishesI">
+    <rdfs:range rdf:resource="&knowrob;#TemporallyExtendedThing"/>
+    <rdfs:domain rdf:resource="&knowrob;#TemporallyExtendedThing"/>
+    <rdfs:subPropertyOf rdf:resource="&knowrob;#finishesI"/>
+  </owl:ObjectProperty>
+  
+  <owl:ObjectProperty rdf:about="#finishesInvI">
+    <rdfs:range rdf:resource="&knowrob;#TemporallyExtendedThing"/>
+    <rdfs:domain rdf:resource="&knowrob;#TemporallyExtendedThing"/>
+    <rdfs:subPropertyOf rdf:resource="&knowrob;#finishesInvI"/>
+  </owl:ObjectProperty>
 
-    <computable:PrologProperty rdf:about="#computeTimePointStartTime">
-        <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_time_point_start_time</computable:command>
-        <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
-        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-        <computable:target rdf:resource="#timePointStartTime"/>
-    </computable:PrologProperty>
+  <owl:ObjectProperty rdf:about="#meetsI">
+    <rdfs:range rdf:resource="&knowrob;#TemporallyExtendedThing"/>
+    <rdfs:domain rdf:resource="&knowrob;#TemporallyExtendedThing"/>
+    <rdfs:subPropertyOf rdf:resource="&knowrob;#meetsI"/>
+  </owl:ObjectProperty>
+  
+  <owl:ObjectProperty rdf:about="#meetsInvI">
+    <rdfs:range rdf:resource="&knowrob;#TemporallyExtendedThing"/>
+    <rdfs:domain rdf:resource="&knowrob;#TemporallyExtendedThing"/>
+    <rdfs:subPropertyOf rdf:resource="&knowrob;#meetsInvI"/>
+  </owl:ObjectProperty>
 
-    <computable:PrologProperty rdf:about="#computeTimePointEndTime">
-        <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_time_point_end_time</computable:command>
-        <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
-        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-        <computable:target rdf:resource="#timePointEndTime"/>
-    </computable:PrologProperty>
+  <owl:ObjectProperty rdf:about="#overlapsI">
+    <rdfs:range rdf:resource="&knowrob;#TemporallyExtendedThing"/>
+    <rdfs:domain rdf:resource="&knowrob;#TemporallyExtendedThing"/>
+    <rdfs:subPropertyOf rdf:resource="&knowrob;#overlapsI"/>
+  </owl:ObjectProperty>
 
+  <owl:ObjectProperty rdf:about="#overlapsInvI">
+    <rdfs:range rdf:resource="&knowrob;#TemporallyExtendedThing"/>
+    <rdfs:domain rdf:resource="&knowrob;#TemporallyExtendedThing"/>
+    <rdfs:subPropertyOf rdf:resource="&knowrob;#overlapsInvI"/>
+  </owl:ObjectProperty>
+
+  <owl:ObjectProperty rdf:about="#startsI">
+    <rdfs:range rdf:resource="&knowrob;#TemporallyExtendedThing"/>
+    <rdfs:domain rdf:resource="&knowrob;#TemporallyExtendedThing"/>
+    <rdfs:subPropertyOf rdf:resource="&knowrob;#startsI"/>
+  </owl:ObjectProperty>
+
+  <owl:ObjectProperty rdf:about="#startsInvI">
+    <rdfs:range rdf:resource="&knowrob;#TemporallyExtendedThing"/>
+    <rdfs:domain rdf:resource="&knowrob;#TemporallyExtendedThing"/>
+    <rdfs:subPropertyOf rdf:resource="&knowrob;#startsInvI"/>
+  </owl:ObjectProperty>
+
+  <owl:ObjectProperty rdf:about="#equalI">
+    <rdfs:range rdf:resource="&knowrob;#TemporallyExtendedThing"/>
+    <rdfs:domain rdf:resource="&knowrob;#TemporallyExtendedThing"/>
+    <rdfs:subPropertyOf rdf:resource="&knowrob;#equalI"/>
+  </owl:ObjectProperty>
+
+  <computable:PrologProperty rdf:about="#computeAfterI">
+    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_afterI</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="#afterI"/>
+  </computable:PrologProperty>
+
+  <computable:PrologProperty rdf:about="#computeBeforeI">
+    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_beforeI</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="#beforeI"/>
+  </computable:PrologProperty>
+
+  <computable:PrologProperty rdf:about="#computeMeetsI">
+    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_meetsI</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="#meetsI"/>
+  </computable:PrologProperty>
+  
+  <computable:PrologProperty rdf:about="#computeMeetsInvI">
+    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_meetsInvI</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="#meetsInvI"/>
+  </computable:PrologProperty>
+
+  <computable:PrologProperty rdf:about="#computeOverlapsI">
+    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_overlapsI</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="#overlapsI"/>
+  </computable:PrologProperty>
+  
+  <computable:PrologProperty rdf:about="#computeOverlapsInvI">
+    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_overlapsInvI</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="#overlapsInvI"/>
+  </computable:PrologProperty>
+
+  <computable:PrologProperty rdf:about="#computeStartsI">
+    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_startsI</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="#startsI"/>
+  </computable:PrologProperty>
+  
+  <computable:PrologProperty rdf:about="#computeStartsInvI">
+    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_startsInvI</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="#startsInvI"/>
+  </computable:PrologProperty>
+
+  <computable:PrologProperty rdf:about="#computeDuringI">
+    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_duringI</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="#duringI"/>
+  </computable:PrologProperty>
+
+  <computable:PrologProperty rdf:about="#computeDuringInvI">
+    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_duringInvI</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="#duringInvI"/>
+  </computable:PrologProperty>
+
+  <computable:PrologProperty rdf:about="#computeFinihesI">
+    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_finishesI</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="#finishesI"/>
+  </computable:PrologProperty>
+  
+  <computable:PrologProperty rdf:about="#computeFinishesInvI">
+    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_finishesInvI</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="#finishesInvI"/>
+  </computable:PrologProperty>
+
+  <computable:PrologProperty rdf:about="#computeEqualI">
+    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_equalI</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="#equalI"/>
+  </computable:PrologProperty>
 
 </rdf:RDF>
