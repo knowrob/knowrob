@@ -15,6 +15,7 @@
   <depend stack="client_rosjava" /> <!-- rosjava -->
   <depend stack="ias_common" /> <!-- vision_srvs -->
   <depend stack="robot_model" /> <!-- urdf -->
-  <depend stack="ros" /> <!-- rosbuild, rospy -->
+  <depend stack="ros" /> <!-- rosbuild -->
+  <depend stack="ros_comm" /> <!-- rospy, roscpp -->
 
 </stack>
