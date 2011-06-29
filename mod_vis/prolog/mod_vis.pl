@@ -27,7 +27,7 @@
     [
       visualisation_canvas/1,
       clear_canvas/1,
-      draw_background/2,
+      draw_background/1,
       set_view_parameters/6,
       display_information_for/2,
       display_action/2,
