@@ -9,6 +9,10 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/comp_semantic_map</url>
   <depend package="ias_knowledge_base"/>
+  <depend package="comp_spatial"/>
+  <depend package="comp_temporal"/>
+  <depend package="ias_prolog_addons"/>
+  <!--<depend package="comp_orgprinciples"/>-->
 
 </package>
 
