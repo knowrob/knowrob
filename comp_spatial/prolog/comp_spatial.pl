@@ -502,7 +502,7 @@ holds(comp_inCenterOf(Inner, Outer), T) :-
 % Check if InnerObj is contained by OuterObj. Currently does not take the orientation
 % into account, only the position and dimension.
 %
-% Implemented as a wrapper predicate around holds(...) that computes the relation for the
+                                % Implemented as a wrapper predicate around holds(...) that computes the relation for the
 % current point in time
 % 
 % @param InnerObj Identifier of the inner Object
@@ -554,9 +554,9 @@ holds(in_ContGeneric(InnerObj, OuterObj), T) :-
 
     % InnerObj is contained by OuterObj if (center_i+0.5*dim_i)<=(center_o+0.5*dim_o)
     % for all dimensions (x, y, z)
-    >=( (IX - 0.5*ID), (OX - 0.5*OD)+0.05 ), =<( (IX + 0.5*ID), (OX + 0.5*OD)-0.05 ),
-    >=( (IY - 0.5*IW), (OY - 0.5*OW)+0.05 ), =<( (IY + 0.5*IW), (OY + 0.5*OW)-0.05 ),
-    >=( (IZ - 0.5*IH), (OZ - 0.5*OH)+0.05 ), =<( (IZ + 0.5*IH), (OZ + 0.5*OH)-0.05 ),
+    >=( (IX - 0.5*ID), (OX - 0.5*OD) ), =<( (IX + 0.5*ID), (OX + 0.5*OD) ),
+    >=( (IY - 0.5*IW), (OY - 0.5*OW) ), =<( (IY + 0.5*IW), (OY + 0.5*OW) ),
+    >=( (IZ - 0.5*IH), (OZ - 0.5*OH) ), =<( (IZ + 0.5*IH), (OZ + 0.5*OH) ),
     InnerObj \= OuterObj.
 
 
