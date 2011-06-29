@@ -1,5 +1,8 @@
 package de.tum.in.fipm.kipm.gui.visualisation.items;
 
+import javax.vecmath.Matrix4d;
+import javax.vecmath.Vector3d;
+
 import edu.tum.cs.vis.Canvas;
 
 public class Sphere extends Handle {
@@ -17,7 +20,12 @@ public class Sphere extends Handle {
 		this.radius=(float) (0.5 * Math.sqrt(xdim*xdim + ydim*ydim + zdim*zdim));
 	}
 
+	public Sphere(Matrix4d pose, Vector3d dim){
+		super(pose, dim);
+		this.radius=(float) (0.5 * Math.sqrt(xdim*xdim + ydim*ydim + zdim*zdim));
+	}
 	
+
 	@Override
 	public void drawIt(Canvas c) {
 				

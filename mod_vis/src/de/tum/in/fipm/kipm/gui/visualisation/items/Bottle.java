@@ -1,5 +1,8 @@
 package de.tum.in.fipm.kipm.gui.visualisation.items;
 
+import javax.vecmath.Matrix4d;
+import javax.vecmath.Vector3d;
+
 import edu.tum.cs.vis.Canvas;
 import edu.tum.cs.util.math.Vector3f;
 import edu.tum.cs.vis.items.Cylinder;
@@ -15,6 +18,10 @@ public class Bottle extends Item {
 				m32, m33, xdim, ydim, zdim);
 	}
 
+	public Bottle(Matrix4d pose, Vector3d dim){
+		super(pose, dim);
+	}
+	
 	@Override
 	public void drawIt(Canvas c) {
 		

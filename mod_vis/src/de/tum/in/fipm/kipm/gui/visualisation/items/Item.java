@@ -1,11 +1,26 @@
 package de.tum.in.fipm.kipm.gui.visualisation.items;
 
+import javax.vecmath.Matrix4d;
+import javax.vecmath.Vector3d;
+
 import edu.tum.cs.vis.Canvas;
 
 /**
  * TODO This class should probably be rewritten to be based on edu.tum.cs.vis.items.GenericItem (sooner or later), since that class handles transformations applied to the renderer that may change over time much more generically  
  */
 public abstract class Item extends ItemBase {
+	
+	 Item(Matrix4d pose, Vector3d dim){
+		
+		this.trafoMatrix = new float[] {
+				(float) pose.m00, (float) pose.m01, (float) pose.m02, (float) pose.m03,
+				(float) pose.m10, (float) pose.m11, (float) pose.m12, (float) pose.m13, 
+				(float) pose.m20, (float) pose.m21, (float) pose.m22, (float) pose.m23, 
+				(float) pose.m30, (float) pose.m31, (float) pose.m32, (float) pose.m33	};
+			this.xdim=(float) dim.x;
+			this.ydim=(float) dim.y;
+			this.zdim=(float) dim.z;	
+	}
 	
 	
 	public Item(float m00,float m01,float m02,float m03,

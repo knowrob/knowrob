@@ -74,6 +74,7 @@ visualisation_canvas(Canvas) :-
     jpl_call(Frame, 'resize', [800, 600], _),
     jpl_new('de.tum.in.fipm.kipm.gui.visualisation.base.PrologVisualizationCanvas', [], Canvas),
     jpl_call(Canvas, 'init', [], _),
+    jpl_call(Canvas, 'drawBackground', [], _),
     jpl_call(Frame, 'add', [Canvas], _),
     jpl_call(Frame, 'setVisible', [@(true)], _),
     retract(v_canvas(fail)),
@@ -97,16 +98,11 @@ clear_canvas(Canvas) :-
 %
 % Reset the scene and draw the background (i.e. usually the kitchen environment)
 %
-% same as
-%   clear();
-%   addObject("http://ias.cs.tum.edu/kb/ias_semantic_map.owl#F360-Containers-revised-walls");
-% 
-% @param Identifier Map instance, e.g. 'http://ias.cs.tum.edu/kb/ias_semantic_map.owl#F360-Containers-revised-walls'
 % @param Canvas     Visualization canvas
-% 
-draw_background(Identifier, Canvas) :-
+%
+draw_background(Canvas) :-
     ((var(Canvas)) -> (v_canvas(Canvas));(true)),
-    jpl_call(Canvas, 'drawBackground', [Identifier], _).
+    jpl_call(Canvas, 'drawBackground', [], _).
 
 
 %% set_view_parameters(+XShift, +YShift, +XRot, +YRot, +Zoom, +Canvas) is det.

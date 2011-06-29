@@ -148,7 +148,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		noLoop();
 		hint(ENABLE_DEPTH_SORT);
 		hint(DISABLE_DEPTH_TEST);
-		drawBackground();
+//		drawBackground();
 		draw();
 		isInitialized = true;
 		if(prologVisCanvas != null) {
@@ -898,6 +898,12 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 	}
 
+	public void addItem(ItemBase item) {
+		this.allItems.add(item);
+		animatedItemsRef.put(item.name, item);
+	}
+	
+	
 	public void reFetchInfo() {
 		String[] items = new String[allItems.size()];
 		for(int i=0;i<items.length;i++) {

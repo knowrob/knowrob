@@ -39,10 +39,10 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 	
 	
 	// components
-	private ActionVisApplet AVObject;
-	private StandaloneKitchenVisApplet KVObject;
+	protected ActionVisApplet AVObject;
+	protected StandaloneKitchenVisApplet KVObject;
 	public ControlP5 controlP5;
-	private ControlWindow controlWindow;
+	protected ControlWindow controlWindow;
 	//public ImageViewerApplet iviewer;
 	public JFrame img_window;
 
@@ -141,7 +141,7 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
      * clear();
      * addObject("http://ias.cs.tum.edu/kb/ias_semantic_map.owl#F360-Containers-revised-walls");
      */
-    public void drawBackground(String identifier){
+    public void drawBackground(){
     	KVObject.drawBackground();
     	KVObject.redraw();
     }
@@ -336,7 +336,7 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 	 * initializes prolog
 	 */
 	@SuppressWarnings("unused")
-	private static void initProlog() {
+	protected static void initProlog() {
 		try {
 			Vector<String> args= new Vector<String>(Arrays.asList(Prolog.get_default_init_args()));
 			args.add( "-G256M" );
@@ -513,7 +513,11 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 		  return "'"+removeSingleQuotes(str)+"'";
 	  }
 	  
-	  
+
+		public StandaloneKitchenVisApplet getKitchenVisApplet() {
+			return this.KVObject;
+		}
+		
 	  
 	/**
 	 * Execute the given query. Assert the given premises and retract them after querying.

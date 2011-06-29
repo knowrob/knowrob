@@ -1,5 +1,8 @@
 package de.tum.in.fipm.kipm.gui.visualisation.items;
 
+import javax.vecmath.Matrix4d;
+import javax.vecmath.Vector3d;
+
 
 public abstract class Handle extends Item{
 
@@ -12,5 +15,11 @@ public abstract class Handle extends Item{
 		
 		this.color = convertColor(90, 90, 90, 255);
 	}
+	
+	public Handle(Matrix4d pose, Vector3d dim){
+		super(pose, dim);
+		this.color = convertColor(90, 90, 90, 255);
+	}
+	
 	
 }
