@@ -1238,7 +1238,9 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 			// check if Table
 			HashMap<String, Vector<Object>> tables = PrologVisualizationCanvas.executeQuery(
-					"rdf_has("+identifier+", rdf:type, knowrob:'KitchenTable'), " +
+           "rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
+          "rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'Table-PieceOfFurniture')," +                                                                            
+					// "rdf_has("+identifier+", rdf:type, knowrob:'KitchenTable'), " +
 					"rdf_has("+identifier+",knowrob:widthOfObject,literal(type(_,_W)))," + 
 					"rdf_has("+identifier+",knowrob:heightOfObject,literal(type(_,_H))), " + 
 					"rdf_has("+identifier+",knowrob:depthOfObject,literal(type(_,_D))), " +

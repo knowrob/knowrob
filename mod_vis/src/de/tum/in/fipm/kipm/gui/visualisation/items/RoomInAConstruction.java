@@ -27,36 +27,33 @@ public class RoomInAConstruction extends Item {
       // ensure box size = image size?!?
       //c.stroke(200,200,200);
       //c.noFill();
-      c.box(this.xdim, this.ydim, this.zdim);
+      c.translate(0,0,-zdim/2);
+      c.box(this.xdim, this.ydim, 1f);//this.zdim);
       
-      // center of room
-      //c.translate(0f,0f,0f);
+      // // center of room
+      // //c.translate(0f,0f,0f);
       c.fill(0,0,200);
-      c.sphere(2f);
+      //c.sphere(2f); // visualization very slow when using spheres!
+      c.box(20f,20f,20f);
 
       
-      //c.translate(- (this.trafoMatrix[3] - xtrans), - (this.trafoMatrix[7] - ytrans), 0f);
+      // float diff_x = - (this.trafoMatrix[3] - xtrans); 
+      // float diff_y = - (this.trafoMatrix[7] - ytrans);
+
+      // // rotation only works since it is a 180 degree rotation!?
+      // float rot_x = trafoMatrix[0] * diff_x + trafoMatrix[1] * diff_y;
+      // float rot_y = trafoMatrix[4] * diff_x + trafoMatrix[5] * diff_y;
       
-      
-      float diff_x = - (this.trafoMatrix[3] - xtrans); 
-      float diff_y = - (this.trafoMatrix[7] - ytrans);
+      // // origin
+      // //c.translate(rot_x,rot_y,8f);
+      // //c.stroke(250,200,0);
+      // //c.noFill();
+      // //c.strokeWeight(1f);
+      // //c.box(1f, 8f, 16f);
 
-      // rotation only works since it is a 180 degree rotation!?
-      float rot_x = trafoMatrix[0] * diff_x + trafoMatrix[1] * diff_y;
-      float rot_y = trafoMatrix[4] * diff_x + trafoMatrix[5] * diff_y;
-      
-      c.translate(rot_x,rot_y,8f);
-          
-      c.stroke(250,200,0);
-      c.noFill();
-      //c.sphere(2f);
-      c.strokeWeight(1f);
-      c.box(1f, 8f, 16f);
-
-      
-
-
-
+      // c.translate(rot_x,rot_y,0f);
+      // c.fill(250,200,0);
+      // c.box(20f,20f,20f);
      
   }
 }
