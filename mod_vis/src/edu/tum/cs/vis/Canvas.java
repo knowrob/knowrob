@@ -255,145 +255,145 @@ public class Canvas extends PApplet implements MouseListener, MouseMotionListene
 			System.out.println("Turned camera " + (useCamera ? "on" : "off"));
 			break;
 		}
-		switch(key) {
-		case '+':
-			zoom(-2);
-			redraw();
-			break;
-		case '-':
-			zoom(2);
-			redraw();
-			break;
-		}		
+//		switch(key) {
+//		case '+':
+//			zoom(-2);
+//			redraw();
+//			break;
+//		case '-':
+//			zoom(2);
+//			redraw();
+//			break;
+//		}		
 	}
-
-	public void mousePressed(MouseEvent e) {
-
-		// general: save mouse positions for calculating rotation and translation
-		if (e.getButton() == MouseEvent.BUTTON1) {
-			leftMouseX = e.getX();
-			leftMouseY = e.getY();
-		}
-		else if (e.getButton() == MouseEvent.BUTTON3) {
-			rightMouseX = e.getX();
-			rightMouseY = e.getY();
-		}
-		else if (e.getButton() == MouseEvent.BUTTON2) {
-			centerMouseY = e.getY();
-		}
-
-	}
-
-	public void mouseReleased(MouseEvent e) {
-
-		if (e.getButton() == MouseEvent.BUTTON1) { // reset the buffers
-			leftMouseX = -1.0f;
-			leftMouseY = -1.0f;
-		}
-		else if (e.getButton() == MouseEvent.BUTTON3) { // reset the buffers
-			rightMouseX = -1.0f;
-			rightMouseY = -1.0f;
-		}
-		else if (e.getButton() == MouseEvent.BUTTON2) {
-			centerMouseY = -1.0f;
-		}
-
-	}
-
-	public void mouseDragged(MouseEvent e) {
-
-		if (leftMouseX != -1.0f) { // change rotation
-			if(!useCamera) {
-				yRotDisplay += (e.getY() - leftMouseY) * 0.03;
-				xRotDisplay += (e.getX() - leftMouseX) * 0.05;
-			}
-			else {
-				float dx = (e.getX() - leftMouseX) * 0.02f;
-				float dy = (e.getY() - leftMouseY) * 0.02f;
-				
-				// translate eye, so that the origin is its target
-				Vector3f negTarget = new Vector3f(eyeTarget);
-				negTarget.negate();
-				eye.add(negTarget);
-				
-				// rotation around vertical axis
-				eye.rotate(dx, eyeUp);
-	
-				// rotation around horizontal axis
-				Vector3f dir = new Vector3f(eyeTarget);
-				dir.subtract(eye);
-				Vector3f horDir = new Vector3f();
-				horDir.cross(eyeUp, dir);			
-				eye.rotate(dy, horDir);
-				//eyeUp.rotate(dy, horDir);
-				//eyeUp.normalize();
-				
-				// reverse translation
-				eye.add(eyeTarget);
-			}
-			
-			leftMouseX = e.getX();
-			leftMouseY = e.getY();
-		}
-		else if (rightMouseX != -1.0f) { // change translation
-			if(!useCamera) {
-				xShiftDisplay += -(e.getY() - rightMouseY) * 0.5;
-				zShiftDisplay += -(e.getX() - rightMouseX) * 0.5;
-			}
-			else {
-				float dx = (e.getX() - rightMouseX) * sceneSize / 1000;
-				float dy = (e.getY() - rightMouseY) * sceneSize / 1000;
-				
-				// horizontal translation
-				Vector3f dir = new Vector3f(eyeTarget);
-				dir.subtract(eye);
-				Vector3f horDir = new Vector3f();
-				horDir.cross(eyeUp, dir);
-				horDir.normalize();
-				horDir.scale(dx);
-				
-				// vertical translation
-				Vector3f vertDir = new Vector3f(eyeUp);
-				vertDir.normalize();
-				vertDir.scale(dy);
-				vertDir.negate();
-				//System.out.println("hor move: " + horDir);
-				//System.out.println("vert mode: " + vertDir);
-				
-				eye.add(horDir);
-				eye.add(vertDir);
-				eyeTarget.add(horDir);
-				eyeTarget.add(vertDir);
-			}
-			
-			rightMouseX = e.getX();
-			rightMouseY = e.getY();
-		}
-		else if (centerMouseY != -1.0f) { // zoom
-			zoom(e.getY() - (int)centerMouseY);
-			centerMouseY = e.getY();
-		}
-
-		redraw();
-	}
-	
-	public void zoom(int delta) {
-		if(!useCamera) {				
-			zoomDisplay += -(delta) * 10 / sceneSize;
-			if (zoomDisplay < 0.01) {
-				zoomDisplay = 0.01f;
-			}
-		}
-		else {
-			float dy = -(delta) * sceneSize / 1000;			
-			
-			Vector3f dir = new Vector3f(eyeTarget);
-			dir.subtract(eye);
-			dir.normalize();
-			dir.scale(dy);			
-			eye.add(dir);
-		}	
-	}
+//
+//	public void mousePressed(MouseEvent e) {
+//
+//		// general: save mouse positions for calculating rotation and translation
+//		if (e.getButton() == MouseEvent.BUTTON1) {
+//			leftMouseX = e.getX();
+//			leftMouseY = e.getY();
+//		}
+//		else if (e.getButton() == MouseEvent.BUTTON3) {
+//			rightMouseX = e.getX();
+//			rightMouseY = e.getY();
+//		}
+//		else if (e.getButton() == MouseEvent.BUTTON2) {
+//			centerMouseY = e.getY();
+//		}
+//
+//	}
+//
+//	public void mouseReleased(MouseEvent e) {
+//
+//		if (e.getButton() == MouseEvent.BUTTON1) { // reset the buffers
+//			leftMouseX = -1.0f;
+//			leftMouseY = -1.0f;
+//		}
+//		else if (e.getButton() == MouseEvent.BUTTON3) { // reset the buffers
+//			rightMouseX = -1.0f;
+//			rightMouseY = -1.0f;
+//		}
+//		else if (e.getButton() == MouseEvent.BUTTON2) {
+//			centerMouseY = -1.0f;
+//		}
+//
+//	}
+//
+//	public void mouseDragged(MouseEvent e) {
+//
+//		if (leftMouseX != -1.0f) { // change rotation
+//			if(!useCamera) {
+//				yRotDisplay += (e.getY() - leftMouseY) * 0.03;
+//				xRotDisplay += (e.getX() - leftMouseX) * 0.05;
+//			}
+//			else {
+//				float dx = (e.getX() - leftMouseX) * 0.02f;
+//				float dy = (e.getY() - leftMouseY) * 0.02f;
+//				
+//				// translate eye, so that the origin is its target
+//				Vector3f negTarget = new Vector3f(eyeTarget);
+//				negTarget.negate();
+//				eye.add(negTarget);
+//				
+//				// rotation around vertical axis
+//				eye.rotate(dx, eyeUp);
+//	
+//				// rotation around horizontal axis
+//				Vector3f dir = new Vector3f(eyeTarget);
+//				dir.subtract(eye);
+//				Vector3f horDir = new Vector3f();
+//				horDir.cross(eyeUp, dir);			
+//				eye.rotate(dy, horDir);
+//				//eyeUp.rotate(dy, horDir);
+//				//eyeUp.normalize();
+//				
+//				// reverse translation
+//				eye.add(eyeTarget);
+//			}
+//			
+//			leftMouseX = e.getX();
+//			leftMouseY = e.getY();
+//		}
+//		else if (rightMouseX != -1.0f) { // change translation
+//			if(!useCamera) {
+//				xShiftDisplay += -(e.getY() - rightMouseY) * 0.5;
+//				zShiftDisplay += -(e.getX() - rightMouseX) * 0.5;
+//			}
+//			else {
+//				float dx = (e.getX() - rightMouseX) * sceneSize / 1000;
+//				float dy = (e.getY() - rightMouseY) * sceneSize / 1000;
+//				
+//				// horizontal translation
+//				Vector3f dir = new Vector3f(eyeTarget);
+//				dir.subtract(eye);
+//				Vector3f horDir = new Vector3f();
+//				horDir.cross(eyeUp, dir);
+//				horDir.normalize();
+//				horDir.scale(dx);
+//				
+//				// vertical translation
+//				Vector3f vertDir = new Vector3f(eyeUp);
+//				vertDir.normalize();
+//				vertDir.scale(dy);
+//				vertDir.negate();
+//				//System.out.println("hor move: " + horDir);
+//				//System.out.println("vert mode: " + vertDir);
+//				
+//				eye.add(horDir);
+//				eye.add(vertDir);
+//				eyeTarget.add(horDir);
+//				eyeTarget.add(vertDir);
+//			}
+//			
+//			rightMouseX = e.getX();
+//			rightMouseY = e.getY();
+//		}
+//		else if (centerMouseY != -1.0f) { // zoom
+//			zoom(e.getY() - (int)centerMouseY);
+//			centerMouseY = e.getY();
+//		}
+//
+//		redraw();
+//	}
+//	
+//	public void zoom(int delta) {
+//		if(!useCamera) {				
+//			zoomDisplay += -(delta) * 10 / sceneSize;
+//			if (zoomDisplay < 0.01) {
+//				zoomDisplay = 0.01f;
+//			}
+//		}
+//		else {
+//			float dy = -(delta) * sceneSize / 1000;			
+//			
+//			Vector3f dir = new Vector3f(eyeTarget);
+//			dir.subtract(eye);
+//			dir.normalize();
+//			dir.scale(dy);			
+//			eye.add(dir);
+//		}	
+//	}
 
 
 	/**

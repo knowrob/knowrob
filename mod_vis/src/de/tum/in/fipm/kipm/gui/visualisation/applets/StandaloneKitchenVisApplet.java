@@ -21,6 +21,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
+import peasy.PeasyCam;
 import processing.core.PFont;
 import processing.core.PMatrix;
 import processing.pdf.PGraphicsPDF;
@@ -31,6 +32,7 @@ import de.tum.in.fipm.kipm.util.datastructures.Point;
 
 import edu.tum.cs.vis.AnimatedCanvas;
 import edu.tum.cs.vis.Canvas;
+
 
 
 public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseListener, MouseMotionListener {
@@ -88,6 +90,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	private int currentFrame = 0;
 	private String queryString = "";
 
+	PeasyCam cam;
 
 
 
@@ -111,22 +114,24 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	 * automatically called once when applet is started.
 	 */
 	public void setup() {
-		/*
-	  if(isInitialized) return;
-
-	  buffer = new Canvas();
-	  buffer.init();
-	  buffer.setup();
-	  buffer.size(700,600,P3D);
-	  buffer.noLights();
-
-		 */
-
 
 		size(700, 600, P3D);
-		lights();
 
+		
+		// define camera parameters
+		cam = new PeasyCam(this, 0,0,0, 50);
+		
+		// values for zooming (min distance to which one can zoom in)
+		cam.setMinimumDistance(10);
+		cam.setMaximumDistance(200);
+		
+		cam.setRightDragHandler(cam.getPanDragHandler());
+		cam.setLeftDragHandler(cam.getRotateDragHandler());
+		
+		// initialize camera view parameters
+		cam.setRotations(1.9074943, -0.6844337, 0.14366905);
 
+		
 		buffer = new EmptyCanvas(700,600,P3D);
 
 		verdana = createFont("Verdana", 11);
@@ -137,15 +142,14 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		textFont(dejavu);    
 
 		ellipseMode(RADIUS);
-		frameRate(20);
-		noSmooth();
+//		noSmooth();
 
 		sphereDetail(10);
 
 
 		setColors();
 
-		noLoop();
+//		noLoop();
 		hint(ENABLE_DEPTH_SORT);
 		hint(DISABLE_DEPTH_TEST);
 //		drawBackground();
@@ -162,73 +166,6 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 
 
-	/**
-	 * reads the mesh data from a file.
-	 * @param file
-	 */
-	@SuppressWarnings("unused")
-	private void readMeshData(String file) {
-
-		BufferedReader reader = createReader(file);
-		try{
-
-			String line;
-			boolean pointFlag=false, triangleFlag=false;
-
-			// offset needed when reading multiple meshes to a single array
-			int ptOffset = meshpoints.size();
-
-			while(true) {
-
-				line = reader.readLine();
-				if(line==null){break;}
-
-
-				// read point data
-				if(pointFlag && (line.matches("\\-?[\\d]*\\.?[\\d]*e?\\-?[\\d]* \\-?[\\d]*\\.?[\\d]*e?\\-?[\\d]* \\-?[\\d]*\\.?[\\d]*e?\\-?[\\d]*"))) { 
-					String[] coords = line.split(" ");
-					if(coords.length==3) {
-
-						this.meshpoints.add(new float[] {
-								Float.valueOf(coords[0]), 
-								Float.valueOf(coords[1]),
-								Float.valueOf(coords[2])});
-					}
-					continue;
-				}
-
-
-				// read triangle data
-				if(triangleFlag && (line.matches("3 [\\d]* [\\d]* [\\d]*"))) {
-					String[] pts = line.split(" ");
-					if(pts.length==4) {
-
-						this.meshtriangles.add(new int[] {
-								Integer.valueOf(pts[1])+ptOffset, 
-								Integer.valueOf(pts[2])+ptOffset,
-								Integer.valueOf(pts[3])+ptOffset});
-
-					}          
-					continue;}
-
-
-				if(line.matches("POINTS.*")) {
-					pointFlag=true;
-					triangleFlag=false;
-					continue;
-				}
-
-				if(line.matches("POLYGONS.*")) {
-					pointFlag=false;
-					triangleFlag=true;
-					continue;
-				}
-			}
-
-		} catch (IOException e) {}
-	}
-
-
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////
@@ -240,39 +177,23 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	/**
 	 * draws everything that is define in the semantic map
 	 */
+	@Override
 	public void draw() {
 		PMatrix save = getMatrix();
 		try{
-			if (record) {
-				beginRaw(PDF, "output.pdf");
-			}
 
-
-
+			scale(10);
+			
 			background(20, 20, 20);
 			cursor(CROSS);
 
 			pushMatrix();
-			lights();
+
 			applyMatrix(	1,  0,  0, 0,
 					0,  1,  0, 0,
 					0,  0, -1, 0,
 					0,  0,  0, 1);
-
-
-			scale(zoomDisplay);
-			translate(xShiftDisplay, yShiftDisplay, 0.0f);
-
-			// print out view values (useful to determine good initial values)
-			//	System.out.println("xShift: " + xShiftDisplay + ", yShift: " + yShiftDisplay + ", zoom:" +zoomDisplay+ ", xRot: " + xRotDisplay + ", yRot:" +yRotDisplay);
-
-			pushMatrix();
-			rotateZ( -PI/2 );
-			rotateY( PI/2 );
-
-
-			rotateY( radians( -yRotDisplay) );
-			rotateZ( radians(xRotDisplay) );
+			lights();
 
 			strokeWeight(1.5f);
 			stroke(255, 0, 0);      line(0, 0, 0,   500, 0, 0);
@@ -283,27 +204,14 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			// draw the meshes
 			if(drawMeshes)
 				drawMeshes();
-
+			
 			// draw all Items
 			for(int i=0;i<allItems.size();i++) {
 				hint(ENABLE_DEPTH_TEST);
 				allItems.get(i).draw(this, currentFrame);	
 			}
 
-
-
-			//	drawTime();
-			popMatrix(); 
 			popMatrix();
-
-			//this.menu_human.drawMenu();
-			
-			if (record) {
-				endRaw();
-				System.err.println("Writing PDF...");
-				record = false;
-			}
-
 			
 		}catch(ArrayIndexOutOfBoundsException e) {
 			System.out.println("Some Drawing error occured... ");
@@ -320,39 +228,26 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 		try{
 
-			if(bufferMatrix==null)
-				bufferMatrix = buffer.getMatrix();
-
 
 			buffer.setSize(700, 600);
+			
 
 			buffer.resetMatrix();
-			buffer.applyMatrix(bufferMatrix);
-
-
+			cam.getState().apply(buffer);
 			buffer.noLights();
+			buffer.scale(10);
+
 			buffer.pushMatrix();	    
 			buffer.background(60, 60, 60);
 
+			
 			buffer.applyMatrix(	1,  0,  0, 0,
 					0,  1,  0, 0,
 					0,  0, -1, 0,
 					0,  0,  0, 1);
-			buffer.scale(zoomDisplay);
-			buffer.translate(xShiftDisplay, yShiftDisplay, 0.0f);
 			buffer.ellipseMode(RADIUS);
-			buffer.rotateZ( -PI/2 );
-			buffer.rotateY( PI/2 );
-
-			buffer.rotateY( radians( -yRotDisplay) );
-			buffer.rotateZ( radians(xRotDisplay) );
-
-			//			stroke(255, 0, 0);      line(0, 0, 0,   500, 0, 0);
-			//			stroke(0, 255, 0);      line(0, 0, 0,   0, 500, 0); 
-			//			stroke(0, 0, 255);      line(0, 0, 0,   0, 0, 500);
-			//			stroke(0, 0, 0);
-
-
+			buffer.pushMatrix();
+			
 			// draw all Items
 			id = new String[allItems.size()];
 			for(int i=0;i<allItems.size();i++) {
@@ -363,16 +258,16 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 				id[i] = itm.name;
 			}
 
-
 			// get color
 			clicked = ((buffer.get(x,y)-1) & 0x00ffffff)/1;
 
 			buffer.freeze();
 			buffer.redraw();
 
-
+			buffer.popMatrix();
 			buffer.popMatrix();
 
+			
 		}catch(Exception e){}
 
 		if(clicked >= 0 && clicked<id.length)
@@ -451,47 +346,179 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	// 
-	// ADD-FUNCTIONS AS INTERFACE TO EXTERNAL VISUALISATIONS
+	// METHODS FOR ADDING AND REMOVING OBJECTS
 	// 
+	//
+
+
+	public void addItem(ItemBase item) {
+		this.allItems.add(item);
+		animatedItemsRef.put(item.name, item);
+	}
+	
+	public void addObject(String identifier) {
+		
+		ItemBase item = getItem(identifier);
+
+		if(item != null) {
+			removeObject(identifier);
+			addItem(item);
+		}
+	}
+
+	public void addObjectWithChildren(String identifier) {
+		HashMap<String, Vector<Object>> physicalParts = PrologVisualizationCanvas.executeQuery(
+				"rdf_reachable("+identifier+", knowrob:properPhysicalPartTypes, PART)",null);
+
+		if(physicalParts.get("PART") != null)
+			for(int i=0;i<physicalParts.get("PART").size();i++)
+				if(!physicalParts.get("PART").get(i).toString().equals(identifier))
+					addObject(physicalParts.get("PART").get(i).toString());
+
+		HashMap<String, Vector<Object>> mapParts = PrologVisualizationCanvas.executeQuery(
+				"rdf_reachable(PART, knowrob:describedInMap, "+identifier+")",null);
+
+
+		if(mapParts.get("PART") != null)
+			for(int i=0;i<mapParts.get("PART").size();i++)
+				if(!mapParts.get("PART").get(i).toString().equals(identifier))
+				{
+					HashMap<String, Vector<Object>> parts = PrologVisualizationCanvas.executeQuery(
+							"rdf_reachable("+mapParts.get("PART").get(i).toString()+", knowrob:properPhysicalParts, P)"
+							,null);
+
+					Vector<Object> p = parts.get("P");
+
+					if(p != null)
+						for(int j=0;j<p.size();j++)
+							if(!p.get(j).toString().equals(mapParts.get("PART").get(i).toString()))
+								addObject(p.get(j).toString());
+
+					addObject(mapParts.get("PART").get(i).toString());	
+				}
+		addObject(identifier);
+
+	}
+
+	
+	public void removeItem(ItemBase item) {
+		allItems.remove(item);
+		animatedItemsRef.remove(item.name);
+	}
+
+	
+	public void removeObject(String identifier) {
+		
+		ItemBase item = animatedItemsRef.get(identifier);
+		if(item == null) {
+			return;
+		}
+		removeItem(item);
+	}
+	
+	
+	public void removeObjectWithChildren(String identifier) {
+		HashMap<String, Vector<Object>> physicalParts = PrologVisualizationCanvas.executeQuery(
+				"rdf_reachable("+identifier+", knowrob:properPhysicalPartTypes, PART)",null);
+
+		if(physicalParts.get("PART") != null)
+			for(int i=0;i<physicalParts.get("PART").size();i++)
+				if(!physicalParts.get("PART").get(i).toString().equals(identifier))
+					removeObject(physicalParts.get("PART").get(i).toString());
+
+		HashMap<String, Vector<Object>> mapParts = PrologVisualizationCanvas.executeQuery(
+				"rdf_reachable(PART, knowrob:describedInMap, "+identifier+")",null);
+
+		if(mapParts.get("PART") != null)
+			for(int i=0;i<mapParts.get("PART").size();i++)
+				if(!mapParts.get("PART").get(i).toString().equals(identifier))
+				{
+					HashMap<String, Vector<Object>> parts = PrologVisualizationCanvas.executeQuery(
+							"rdf_reachable("+mapParts.get("PART").get(i).toString()+", knowrob:properPhysicalPartTypes, P)"
+							,null);
+
+					Vector<Object> p = parts.get("P");
+
+					if(p != null)
+						for(int j=0;j<p.size();j++)
+							if(!p.get(j).toString().equals(mapParts.get("PART").get(i).toString()))
+								addObject(p.get(j).toString());
+
+					removeObject(mapParts.get("PART").get(i).toString());	
+				}
+		removeObject(identifier);
+
+	}
+
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	// 
+	// METHODS FOR HIGHLIGHTING OBJECTS
+	// 
+	//
+
+	
 
 	/**
-	 * queries prolog for kitchen layout and draws / initializes the kitchen
-	 * called by setup()
-	 * can also be used to reset the applet completely.
-	 */
-	public void drawBackground() {
-		clear();
-		// get the current semantic map
-		HashMap<String, Vector<Object>> tpe = PrologVisualizationCanvas.executeQuery(
-				"rdf_has(SUBJECT, rdf:type, knowrob:'SemanticEnvironmentMap')",null);
-		String type = null;
+	 * Highlights one object, only if it is present in the scene (does not add anything)
+	 * @param identifier e.g.: "'http://ias.cs.tum.edu/kb/ias_semantic_map.owl#drawer3'" (WITH single quotes!)
+	 */  	
+	public void highlightItem(String identifier, boolean highlight, int color) {
+		ItemBase itm = animatedItemsRef.get(identifier);
+		if(itm == null) {
+			displayMessage("item "+identifier+" not in scene");
+			return;
+		}
 
-		// check if exists
-		try{
-			type = tpe.get("SUBJECT").get(0).toString();
-			//displayMessage("subject: "+tpe);
-
-		} catch(Exception e) {
-			displayMessage("Semantic map not found");
-		}  
-		addObjectWithChildren(type);
-		// 	  addObjectWithChildren("'http://ias.cs.tum.edu/kb/semRoom_semantic_map.owl#SemanticEnvironmentMap2'");
-		//	  addObjectWithChildren("'http://ias.cs.tum.edu/kb/ias_semantic_map.owl#F360-Containers-revised-walls'");
-		// 	  addObjectWithChildren("'http://ias.cs.tum.edu/kb/ccrl2_semantic_map.owl#SemanticEnvironmentMap0'");
-		// 	  addObjectWithChildren("'http://ias.cs.tum.edu/kb/ias_map_addons.owl#table0'");
+		if(highlight)
+			itm.setColor(color);
+		else
+			itm.setColor(itm.defaultColor);
 	}
 
-
-	public void clear() {
-		allItems.clear();
-		animatedItemsRef.clear();
-		startTime = 0;
-		endTime = 0;
-		numberFrames = 1;
-		currentFrame = 0;
-		grayLevelCounter = 0;
+	public void highlightItem(String identifier, boolean highlight) {
+		highlightItem(identifier, highlight, convertColor(255, 0, 0, 255));
 	}
 
+	/**
+	 * Highlights object with children
+	 */  	
+	public void highlightReachable(String identifier, boolean highlight) {
+		highlightItem(identifier, highlight);
+
+		HashMap<String, Vector<Object>> others = PrologVisualizationCanvas.executeQuery(
+				"rdf_reachable("+identifier+", knowrob:properPhysicalPartTypes, I)", null);
+
+		Vector<Object> itms = others.get("I");
+		if(itms == null) return;
+
+		for(Object o : itms)
+			highlightItem(o.toString(), highlight);
+
+	}
+
+	public void clearHighlights() {
+		// draw all Items
+		for(String j : animatedItemsRef.keySet()) {
+			animatedItemsRef.get(j).setColor(animatedItemsRef.get(j).defaultColor);
+		}
+	}
+
+	
+	
+	
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	// 
+	// METHODS FOR ADDING AND REMOVING ACTION AND TRAJECTORY INFORMATION
+	// 
+	//
+	
+	
 	/**
 	 * displays one PROLOG-instance of an action BY IT'S DYNAMIC IDENTIFIER,
 	 * for example "'http://ias.cs.tum.edu/kb/knowrob.owl#Reaching50'"
@@ -760,161 +787,54 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		System.out.print("ALL DONE");
 	}
 
+	
+	
+	
+	
 	/**
-	 * Highlights one object, only if it is present in the scene (does not add anything)
-	 * @param identifier e.g.: "'http://ias.cs.tum.edu/kb/ias_semantic_map.owl#drawer3'" (WITH single quotes!)
-	 */  	
-	public void highlightItem(String identifier, boolean highlight, int color) {
-		ItemBase itm = animatedItemsRef.get(identifier);
-		if(itm == null) {
-			displayMessage("item "+identifier+" not in scene");
-			return;
-		}
+	 * queries prolog for kitchen layout and draws / initializes the kitchen
+	 * called by setup()
+	 * can also be used to reset the applet completely.
+	 */
 
-		if(highlight)
-			itm.setColor(color);
-		else
-			itm.setColor(itm.defaultColor);
-	}
-
-	public void highlightItem(String identifier, boolean highlight) {
-		highlightItem(identifier, highlight, convertColor(255, 0, 0, 255));
-	}
-
-	public void clearHighlights() {
-		// draw all Items
-		for(String j : animatedItemsRef.keySet()) {
-			animatedItemsRef.get(j).setColor(animatedItemsRef.get(j).defaultColor);
-		}
-	}
-
-	public void highlightReachable(String identifier, boolean highlight) {
-		highlightItem(identifier, highlight);
-
-		HashMap<String, Vector<Object>> others = PrologVisualizationCanvas.executeQuery(
-				"rdf_reachable("+identifier+", knowrob:properPhysicalPartTypes, I)", null);
-
-		Vector<Object> itms = others.get("I");
-		if(itms == null) return;
-
-		for(Object o : itms)
-			highlightItem(o.toString(), highlight);
-
-	}
-
-	public void removeObject(String identifier) {
-		ItemBase item = animatedItemsRef.get(identifier);
-		if(item == null) {
-			//displayMessage("item "+identifier+" not in scene");
-			return;
-		}
-
-		allItems.remove(item);
-		animatedItemsRef.remove(identifier);
-
-	}
-
-	public void addObject(String identifier) {
-		ItemBase item = getItem(identifier);
-		//displayMessage("current identifier: "+identifier);
-		if(item != null) {
-			removeObject(identifier);  			
-			allItems.add(item);
-			animatedItemsRef.put(identifier, item);
-			//displayMessage("added Item: "+identifier);
-		}
-	}
-
-
-	public void addObjectWithChildren(String identifier) {
-		HashMap<String, Vector<Object>> physicalParts = PrologVisualizationCanvas.executeQuery(
-				"rdf_reachable("+identifier+", knowrob:properPhysicalPartTypes, PART)",null);
-
-		if(physicalParts.get("PART") != null)
-			for(int i=0;i<physicalParts.get("PART").size();i++)
-				if(!physicalParts.get("PART").get(i).toString().equals(identifier))
-					addObject(physicalParts.get("PART").get(i).toString());
-
-
-
-		HashMap<String, Vector<Object>> mapParts = PrologVisualizationCanvas.executeQuery(
-				"rdf_reachable(PART, knowrob:describedInMap, "+identifier+")",null);
-
-
-		if(mapParts.get("PART") != null)
-			for(int i=0;i<mapParts.get("PART").size();i++)
-				if(!mapParts.get("PART").get(i).toString().equals(identifier))
-				{
-					HashMap<String, Vector<Object>> parts = PrologVisualizationCanvas.executeQuery(
-							"rdf_reachable("+mapParts.get("PART").get(i).toString()+", knowrob:properPhysicalParts, P)"
-							,null);
-
-					Vector<Object> p = parts.get("P");
-
-					if(p != null)
-						for(int j=0;j<p.size();j++)
-							if(!p.get(j).toString().equals(mapParts.get("PART").get(i).toString()))
-								addObject(p.get(j).toString());
-
-					addObject(mapParts.get("PART").get(i).toString());	
-				}
-		addObject(identifier);
-
-	}
-
-	public void removeObjectWithChildren(String identifier) {
-		HashMap<String, Vector<Object>> physicalParts = PrologVisualizationCanvas.executeQuery(
-				"rdf_reachable("+identifier+", knowrob:properPhysicalPartTypes, PART)",null);
-
-		if(physicalParts.get("PART") != null)
-			for(int i=0;i<physicalParts.get("PART").size();i++)
-				if(!physicalParts.get("PART").get(i).toString().equals(identifier))
-					removeObject(physicalParts.get("PART").get(i).toString());
-
-
-
-		HashMap<String, Vector<Object>> mapParts = PrologVisualizationCanvas.executeQuery(
-				"rdf_reachable(PART, knowrob:describedInMap, "+identifier+")",null);
-
-
-		if(mapParts.get("PART") != null)
-			for(int i=0;i<mapParts.get("PART").size();i++)
-				if(!mapParts.get("PART").get(i).toString().equals(identifier))
-				{
-					HashMap<String, Vector<Object>> parts = PrologVisualizationCanvas.executeQuery(
-							"rdf_reachable("+mapParts.get("PART").get(i).toString()+", knowrob:properPhysicalPartTypes, P)"
-							,null);
-
-					Vector<Object> p = parts.get("P");
-
-					if(p != null)
-						for(int j=0;j<p.size();j++)
-							if(!p.get(j).toString().equals(mapParts.get("PART").get(i).toString()))
-								addObject(p.get(j).toString());
-
-					removeObject(mapParts.get("PART").get(i).toString());	
-				}
-		removeObject(identifier);
-
-	}
-
-	public void addItem(ItemBase item) {
-		this.allItems.add(item);
-		animatedItemsRef.put(item.name, item);
-	}
-	
-	
-	public void reFetchInfo() {
-		String[] items = new String[allItems.size()];
-		for(int i=0;i<items.length;i++) {
-			items[i] = allItems.get(i).name;
-		}
+	public void drawBackground() {
 		clear();
-		for(int i=0;i<items.length;i++) {
-			addObject(items[i]);
-		}
+		// get the current semantic map
+		HashMap<String, Vector<Object>> tpe = PrologVisualizationCanvas.executeQuery(
+				"rdf_has(SUBJECT, rdf:type, knowrob:'SemanticEnvironmentMap')",null);
+		String type = null;
+
+		// check if exists
+		try{
+			type = tpe.get("SUBJECT").get(0).toString();
+			//displayMessage("subject: "+tpe);
+
+		} catch(Exception e) {
+			displayMessage("Semantic map not found");
+		}  
+		addObjectWithChildren(type);
 	}
 
+
+	/** 
+	 * Reset the visualization (clear all internal buffers)
+	 */
+	public void clear() {
+		allItems.clear();
+		animatedItemsRef.clear();
+		startTime = 0;
+		endTime = 0;
+		numberFrames = 1;
+		currentFrame = 0;
+		grayLevelCounter = 0;
+	}
+	
+	
+	
+	
+	
+	
+	
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////
@@ -952,15 +872,15 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 					Float.parseFloat(nfo.get("M00").get(0).toString()),
 					Float.parseFloat(nfo.get("M01").get(0).toString()),
 					Float.parseFloat(nfo.get("M02").get(0).toString()),
-					100*Float.parseFloat(nfo.get("M03").get(0).toString()),
+					Float.parseFloat(nfo.get("M03").get(0).toString()),
 					Float.parseFloat(nfo.get("M10").get(0).toString()),
 					Float.parseFloat(nfo.get("M11").get(0).toString()),
 					Float.parseFloat(nfo.get("M12").get(0).toString()),
-					100*Float.parseFloat(nfo.get("M13").get(0).toString()),
+					Float.parseFloat(nfo.get("M13").get(0).toString()),
 					Float.parseFloat(nfo.get("M20").get(0).toString()),
 					Float.parseFloat(nfo.get("M21").get(0).toString()),
 					Float.parseFloat(nfo.get("M22").get(0).toString()),
-					100*Float.parseFloat(nfo.get("M23").get(0).toString()),
+					Float.parseFloat(nfo.get("M23").get(0).toString()),
 					Float.parseFloat(nfo.get("M30").get(0).toString()),
 					Float.parseFloat(nfo.get("M31").get(0).toString()),
 					Float.parseFloat(nfo.get("M32").get(0).toString()),
@@ -981,12 +901,9 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		String type = null;
 
 
-
-
 		// check if exists
 		try{
 			type = tpe.get("OBJECTCLASS").get(0).toString();
-			//displayMessage("Objectclass: "+type);
 		} catch(Exception e) {
 			displayMessage("item "+identifier+" not found");
 			return null;
@@ -997,8 +914,6 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 				|| type.equals("'http://ias.cs.tum.edu/kb/knowrob.owl#HingedJoint'")
 				|| type.equals("'http://ias.cs.tum.edu/kb/knowrob.owl#Door'")
 				|| type.equals("'http://ias.cs.tum.edu/kb/knowrob.owl#WallOfAConstruction'")
-				|| type.equals("'http://ias.cs.tum.edu/kb/knowrob.owl#JAN'")
-				|| type.equals("'http://ias.cs.tum.edu/kb/knowrob.owl#JAN'")
 		) {
 			return null;
 
@@ -1057,51 +972,51 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 							Float.valueOf(storage.get("M00").get(0).toString()),
 							Float.valueOf(storage.get("M01").get(0).toString()),
 							Float.valueOf(storage.get("M02").get(0).toString()),
-							100*Float.valueOf(storage.get("M03").get(0).toString()),
+							Float.valueOf(storage.get("M03").get(0).toString()),
 
 							Float.valueOf(storage.get("M10").get(0).toString()),
 							Float.valueOf(storage.get("M11").get(0).toString()),
 							Float.valueOf(storage.get("M12").get(0).toString()),
-							100*Float.valueOf(storage.get("M13").get(0).toString()),
+							Float.valueOf(storage.get("M13").get(0).toString()),
 
 							Float.valueOf(storage.get("M20").get(0).toString()),
 							Float.valueOf(storage.get("M21").get(0).toString()),
 							Float.valueOf(storage.get("M22").get(0).toString()),
-							100*Float.valueOf(storage.get("M23").get(0).toString()),
+							Float.valueOf(storage.get("M23").get(0).toString()),
 
 							Float.valueOf(storage.get("M30").get(0).toString()),
 							Float.valueOf(storage.get("M31").get(0).toString()),
 							Float.valueOf(storage.get("M32").get(0).toString()),
 							Float.valueOf(storage.get("M33").get(0).toString()),
 
-							100*Float.valueOf(storage.get("D").get(0).toString()),
-							100*Float.valueOf(storage.get("W").get(0).toString()),
-							100*Float.valueOf(storage.get("H").get(0).toString()));
+							Float.valueOf(storage.get("D").get(0).toString()),
+							Float.valueOf(storage.get("W").get(0).toString()),
+							Float.valueOf(storage.get("H").get(0).toString()));
 				} else {
 					c = new Drawer(
 							Float.valueOf(storage.get("M00").get(0).toString()),
 							Float.valueOf(storage.get("M01").get(0).toString()),
 							Float.valueOf(storage.get("M02").get(0).toString()),
-							100*Float.valueOf(storage.get("M03").get(0).toString()),
+							Float.valueOf(storage.get("M03").get(0).toString()),
 
 							Float.valueOf(storage.get("M10").get(0).toString()),
 							Float.valueOf(storage.get("M11").get(0).toString()),
 							Float.valueOf(storage.get("M12").get(0).toString()),
-							100*Float.valueOf(storage.get("M13").get(0).toString()),
+							Float.valueOf(storage.get("M13").get(0).toString()),
 
 							Float.valueOf(storage.get("M20").get(0).toString()),
 							Float.valueOf(storage.get("M21").get(0).toString()),
 							Float.valueOf(storage.get("M22").get(0).toString()),
-							100*Float.valueOf(storage.get("M23").get(0).toString()),
+							Float.valueOf(storage.get("M23").get(0).toString()),
 
 							Float.valueOf(storage.get("M30").get(0).toString()),
 							Float.valueOf(storage.get("M31").get(0).toString()),
 							Float.valueOf(storage.get("M32").get(0).toString()),
 							Float.valueOf(storage.get("M33").get(0).toString()),
 
-							100*Float.valueOf(storage.get("D").get(0).toString()),
-							100*Float.valueOf(storage.get("W").get(0).toString()),
-							100*Float.valueOf(storage.get("H").get(0).toString()));
+							Float.valueOf(storage.get("D").get(0).toString()),
+							Float.valueOf(storage.get("W").get(0).toString()),
+							Float.valueOf(storage.get("H").get(0).toString()));
 				}
 				int col = grayValues[(++grayLevelCounter) % grayValues.length];
 
@@ -1150,26 +1065,26 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 						Float.valueOf(handles.get("M00").get(0).toString()),
 						Float.valueOf(handles.get("M01").get(0).toString()),
 						Float.valueOf(handles.get("M02").get(0).toString()),
-						100*Float.valueOf(handles.get("M03").get(0).toString()),
+						Float.valueOf(handles.get("M03").get(0).toString()),
 
 						Float.valueOf(handles.get("M10").get(0).toString()),
 						Float.valueOf(handles.get("M11").get(0).toString()),
 						Float.valueOf(handles.get("M12").get(0).toString()),
-						100*Float.valueOf(handles.get("M13").get(0).toString()),
+						Float.valueOf(handles.get("M13").get(0).toString()),
 
 						Float.valueOf(handles.get("M20").get(0).toString()),
 						Float.valueOf(handles.get("M21").get(0).toString()),
 						Float.valueOf(handles.get("M22").get(0).toString()),
-						100*Float.valueOf(handles.get("M23").get(0).toString()),
+						Float.valueOf(handles.get("M23").get(0).toString()),
 
 						Float.valueOf(handles.get("M30").get(0).toString()),
 						Float.valueOf(handles.get("M31").get(0).toString()),
 						Float.valueOf(handles.get("M32").get(0).toString()),
 						Float.valueOf(handles.get("M33").get(0).toString()),
 
-						100*Float.valueOf(handles.get("D").get(0).toString()),
-						100*Float.valueOf(handles.get("W").get(0).toString()),
-						100*Float.valueOf(handles.get("H").get(0).toString()));
+						Float.valueOf(handles.get("D").get(0).toString()),
+						Float.valueOf(handles.get("W").get(0).toString()),
+						Float.valueOf(handles.get("H").get(0).toString()));
 				item.name = identifier;
 				return item;
 			}
@@ -1210,26 +1125,26 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 						Float.valueOf(knobs.get("M00").get(0).toString()),
 						Float.valueOf(knobs.get("M01").get(0).toString()),
 						Float.valueOf(knobs.get("M02").get(0).toString()),
-						100*Float.valueOf(knobs.get("M03").get(0).toString()),
+						Float.valueOf(knobs.get("M03").get(0).toString()),
 
 						Float.valueOf(knobs.get("M10").get(0).toString()),
 						Float.valueOf(knobs.get("M11").get(0).toString()),
 						Float.valueOf(knobs.get("M12").get(0).toString()),
-						100*Float.valueOf(knobs.get("M13").get(0).toString()),
+						Float.valueOf(knobs.get("M13").get(0).toString()),
 
 						Float.valueOf(knobs.get("M20").get(0).toString()),
 						Float.valueOf(knobs.get("M21").get(0).toString()),
 						Float.valueOf(knobs.get("M22").get(0).toString()),
-						100*Float.valueOf(knobs.get("M23").get(0).toString()),
+						Float.valueOf(knobs.get("M23").get(0).toString()),
 
 						Float.valueOf(knobs.get("M30").get(0).toString()),
 						Float.valueOf(knobs.get("M31").get(0).toString()),
 						Float.valueOf(knobs.get("M32").get(0).toString()),
 						Float.valueOf(knobs.get("M33").get(0).toString()),
 
-						100*Float.valueOf(knobs.get("D").get(0).toString()),
-						100*Float.valueOf(knobs.get("W").get(0).toString()),
-						100*Float.valueOf(knobs.get("H").get(0).toString()));
+						Float.valueOf(knobs.get("D").get(0).toString()),
+						Float.valueOf(knobs.get("W").get(0).toString()),
+						Float.valueOf(knobs.get("H").get(0).toString()));
 
 				item.name = identifier;
 				return item;
@@ -1274,26 +1189,26 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 						Float.valueOf(tables.get("M00").get(0).toString()),
 						Float.valueOf(tables.get("M01").get(0).toString()),
 						Float.valueOf(tables.get("M02").get(0).toString()),
-						100*Float.valueOf(tables.get("M03").get(0).toString()),
+						Float.valueOf(tables.get("M03").get(0).toString()),
 
 						Float.valueOf(tables.get("M10").get(0).toString()),
 						Float.valueOf(tables.get("M11").get(0).toString()),
 						Float.valueOf(tables.get("M12").get(0).toString()),
-						100*Float.valueOf(tables.get("M13").get(0).toString()),
+						Float.valueOf(tables.get("M13").get(0).toString()),
 
 						Float.valueOf(tables.get("M20").get(0).toString()),
 						Float.valueOf(tables.get("M21").get(0).toString()),
 						Float.valueOf(tables.get("M22").get(0).toString()),
-						100*Float.valueOf(tables.get("M23").get(0).toString()),
+						Float.valueOf(tables.get("M23").get(0).toString()),
 
 						Float.valueOf(tables.get("M30").get(0).toString()),
 						Float.valueOf(tables.get("M31").get(0).toString()),
 						Float.valueOf(tables.get("M32").get(0).toString()),
 						Float.valueOf(tables.get("M33").get(0).toString()),
 
-						100*Float.valueOf(tables.get("D").get(0).toString()),
-						100*Float.valueOf(tables.get("W").get(0).toString()),
-						100*Float.valueOf(tables.get("H").get(0).toString()));
+						Float.valueOf(tables.get("D").get(0).toString()),
+						Float.valueOf(tables.get("W").get(0).toString()),
+						Float.valueOf(tables.get("H").get(0).toString()));
 
 				int col = grayValues[(++grayLevelCounter) % grayValues.length];      
 				item.defaultColor = convertColor(col, col, col, 255);
@@ -1342,26 +1257,26 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 						Float.valueOf(counter.get("M00").get(0).toString()),
 						Float.valueOf(counter.get("M01").get(0).toString()),
 						Float.valueOf(counter.get("M02").get(0).toString()),
-						100*Float.valueOf(counter.get("M03").get(0).toString()),
+						Float.valueOf(counter.get("M03").get(0).toString()),
 
 						Float.valueOf(counter.get("M10").get(0).toString()),
 						Float.valueOf(counter.get("M11").get(0).toString()),
 						Float.valueOf(counter.get("M12").get(0).toString()),
-						100*Float.valueOf(counter.get("M13").get(0).toString()),
+						Float.valueOf(counter.get("M13").get(0).toString()),
 
 						Float.valueOf(counter.get("M20").get(0).toString()),
 						Float.valueOf(counter.get("M21").get(0).toString()),
 						Float.valueOf(counter.get("M22").get(0).toString()),
-						100*Float.valueOf(counter.get("M23").get(0).toString()),
+						Float.valueOf(counter.get("M23").get(0).toString()),
 
 						Float.valueOf(counter.get("M30").get(0).toString()),
 						Float.valueOf(counter.get("M31").get(0).toString()),
 						Float.valueOf(counter.get("M32").get(0).toString()),
 						Float.valueOf(counter.get("M33").get(0).toString()),
 
-						100*Float.valueOf(counter.get("D").get(0).toString()),
-						100*Float.valueOf(counter.get("W").get(0).toString()),
-						100*Float.valueOf(counter.get("H").get(0).toString()));
+						Float.valueOf(counter.get("D").get(0).toString()),
+						Float.valueOf(counter.get("W").get(0).toString()),
+						Float.valueOf(counter.get("H").get(0).toString()));
 
 				int col = grayValues[(++grayLevelCounter) % grayValues.length];      
 				c.defaultColor = convertColor(col, col, col, 255);
@@ -1408,26 +1323,26 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 						Float.valueOf(level.get("M00").get(0).toString()),
 						Float.valueOf(level.get("M01").get(0).toString()),
 						Float.valueOf(level.get("M02").get(0).toString()),
-						100*Float.valueOf(level.get("M03").get(0).toString()),
+						Float.valueOf(level.get("M03").get(0).toString()),
 
 						Float.valueOf(level.get("M10").get(0).toString()),
 						Float.valueOf(level.get("M11").get(0).toString()),
 						Float.valueOf(level.get("M12").get(0).toString()),
-						100*Float.valueOf(level.get("M13").get(0).toString()),
+						Float.valueOf(level.get("M13").get(0).toString()),
 
 						Float.valueOf(level.get("M20").get(0).toString()),
 						Float.valueOf(level.get("M21").get(0).toString()),
 						Float.valueOf(level.get("M22").get(0).toString()),
-						100*Float.valueOf(level.get("M23").get(0).toString()),
+						Float.valueOf(level.get("M23").get(0).toString()),
 
 						Float.valueOf(level.get("M30").get(0).toString()),
 						Float.valueOf(level.get("M31").get(0).toString()),
 						Float.valueOf(level.get("M32").get(0).toString()),
 						Float.valueOf(level.get("M33").get(0).toString()),
 
-						100*Float.valueOf(level.get("D").get(0).toString()),
-						100*Float.valueOf(level.get("W").get(0).toString()),
-						100*Float.valueOf(level.get("H").get(0).toString()));
+						Float.valueOf(level.get("D").get(0).toString()),
+						Float.valueOf(level.get("W").get(0).toString()),
+						Float.valueOf(level.get("H").get(0).toString()));
 
 				int col = grayValues[(++grayLevelCounter) % grayValues.length];      
 				l.defaultColor = convertColor(col, col, col, 255);
@@ -1485,30 +1400,30 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 						Float.valueOf(room.get("M00").get(0).toString()),
 						Float.valueOf(room.get("M01").get(0).toString()),
 						Float.valueOf(room.get("M02").get(0).toString()),
-						100*Float.valueOf(room.get("M03").get(0).toString()),
+						Float.valueOf(room.get("M03").get(0).toString()),
 
 						Float.valueOf(room.get("M10").get(0).toString()),
 						Float.valueOf(room.get("M11").get(0).toString()),
 						Float.valueOf(room.get("M12").get(0).toString()),
-						100*Float.valueOf(room.get("M13").get(0).toString()),
+						Float.valueOf(room.get("M13").get(0).toString()),
 
 						Float.valueOf(room.get("M20").get(0).toString()),
 						Float.valueOf(room.get("M21").get(0).toString()),
 						Float.valueOf(room.get("M22").get(0).toString()),
-						100*Float.valueOf(room.get("M23").get(0).toString()),
+						Float.valueOf(room.get("M23").get(0).toString()),
 
 						Float.valueOf(room.get("M30").get(0).toString()),
 						Float.valueOf(room.get("M31").get(0).toString()),
 						Float.valueOf(room.get("M32").get(0).toString()),
 						Float.valueOf(room.get("M33").get(0).toString()),
 
-            100*Float.valueOf(room.get("D").get(0).toString()),
-						100*Float.valueOf(room.get("W").get(0).toString()),
-						100*Float.valueOf(room.get("H").get(0).toString()),
+            Float.valueOf(room.get("D").get(0).toString()),
+						Float.valueOf(room.get("W").get(0).toString()),
+						Float.valueOf(room.get("H").get(0).toString()),
 
-						100*Float.valueOf(room.get("X").get(0).toString()),
-						100*Float.valueOf(room.get("Y").get(0).toString()),
-						100*Float.valueOf(room.get("Z").get(0).toString()));
+						Float.valueOf(room.get("X").get(0).toString()),
+						Float.valueOf(room.get("Y").get(0).toString()),
+						Float.valueOf(room.get("Z").get(0).toString()));
 
 				int col = grayValues[(++grayLevelCounter) % grayValues.length];      
 				ro.defaultColor = convertColor(col, col, col, 255);
@@ -1560,26 +1475,26 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 						Float.valueOf(box.get("M00").get(0).toString()),
 						Float.valueOf(box.get("M01").get(0).toString()),
 						Float.valueOf(box.get("M02").get(0).toString()),
-						100*Float.valueOf(box.get("M03").get(0).toString()),
+						Float.valueOf(box.get("M03").get(0).toString()),
 
 						Float.valueOf(box.get("M10").get(0).toString()),
 						Float.valueOf(box.get("M11").get(0).toString()),
 						Float.valueOf(box.get("M12").get(0).toString()),
-						100*Float.valueOf(box.get("M13").get(0).toString()),
+						Float.valueOf(box.get("M13").get(0).toString()),
 
 						Float.valueOf(box.get("M20").get(0).toString()),
 						Float.valueOf(box.get("M21").get(0).toString()),
 						Float.valueOf(box.get("M22").get(0).toString()),
-						100*Float.valueOf(box.get("M23").get(0).toString()),
+						Float.valueOf(box.get("M23").get(0).toString()),
 
 						Float.valueOf(box.get("M30").get(0).toString()),
 						Float.valueOf(box.get("M31").get(0).toString()),
 						Float.valueOf(box.get("M32").get(0).toString()),
 						Float.valueOf(box.get("M33").get(0).toString()),
 
-						100*Float.valueOf(box.get("D").get(0).toString()),
-						100*Float.valueOf(box.get("W").get(0).toString()),
-						100*Float.valueOf(box.get("H").get(0).toString()));
+						Float.valueOf(box.get("D").get(0).toString()),
+						Float.valueOf(box.get("W").get(0).toString()),
+						Float.valueOf(box.get("H").get(0).toString()));
 
 				int col = grayValues[(++grayLevelCounter) % grayValues.length];      
 				b.defaultColor = convertColor(col, col, col, 255);
@@ -1605,73 +1520,73 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	// 
 	// EVENT HANDLER
 	// 
-
-	public void mousePressed(MouseEvent e) {
-
-		// general: save mouse positions for calculating rotation and translation
-		if(e.getButton()==MouseEvent.BUTTON1) {
-			leftMouseX = e.getX();
-			leftMouseY = e.getY();
-		} else if(e.getButton()==MouseEvent.BUTTON3) {
-			rightMouseX = e.getX();
-			rightMouseY = e.getY();
-		} else if (e.getButton()==MouseEvent.BUTTON2) {
-			centerMouseY = e.getY();
-		}
-
-
-
-		//	  // ------------- menu stuff -------------- 
-		//	  // play forward
-		//	  if(menu_human.mouseInTriangle(e.getX(), e.getY(), menu_human.xpl1, menu_human.ypl1, menu_human.xpl2, menu_human.ypl2, menu_human.xpl3, menu_human.ypl3)){
-		//		  playingForward = true;
-		//		  timer.start();		 	  
-		//	  }
-		//	  
-		//	  // pause
-		//	  else if(menu_human.mouseInRectangle(e.getX(), e.getY(), menu_human.xps, menu_human.yps, menu_human.widthps, menu_human.heightps)){
-		//		  timer.stop();
-		//	  }
-		//	  
-		//	  // play backward
-		//	  else if(menu_human.mouseInTriangle(e.getX(), e.getY(), menu_human.xrew1, menu_human.yrew1, menu_human.xrew2, menu_human.yrew2, menu_human.xrew3, menu_human.yrew3)){		  
-		//		  playingForward = false;
-		//		  timer.start();	  
-		//	  }
-		//	  
-		//	  // stop button
-		//	  else if(menu_human.mouseInRectangle(e.getX(), e.getY(), menu_human.xstop, menu_human.ystop, menu_human.widthstop, menu_human.heightstop)){
-		//		  timer.stop();
-		//		  currentFrame = 0;
-		//	  }
-		//	  
-		//	  // step forward
-		//	  else if(menu_human.mouseInRectangle(e.getX(), e.getY(), menu_human.xpls, menu_human.ypls, menu_human.widthpls, menu_human.heightpls)){
-		//		  timer.stop();
-		//		  currentFrame++;
-		//	  }
-		//	  
-		//	  // step backward
-		//	  else if(menu_human.mouseInRectangle(e.getX(), e.getY(), menu_human.xrews, menu_human.yrews, menu_human.widthrews, menu_human.heightrews)){
-		//		  timer.stop();
-		//		  currentFrame--;
-		//	  } 
-
-
-
-
-
-		if(currentFrame < 0) currentFrame = 0;
-		if(currentFrame>= numberFrames) currentFrame = numberFrames-1;
-
-
-
-
-
-
-
-		redraw();
-	}
+//
+//	public void mousePressed(MouseEvent e) {
+//
+//		// general: save mouse positions for calculating rotation and translation
+//		if(e.getButton()==MouseEvent.BUTTON1) {
+//			leftMouseX = e.getX();
+//			leftMouseY = e.getY();
+//		} else if(e.getButton()==MouseEvent.BUTTON3) {
+//			rightMouseX = e.getX();
+//			rightMouseY = e.getY();
+//		} else if (e.getButton()==MouseEvent.BUTTON2) {
+//			centerMouseY = e.getY();
+//		}
+//
+//
+//
+//		//	  // ------------- menu stuff -------------- 
+//		//	  // play forward
+//		//	  if(menu_human.mouseInTriangle(e.getX(), e.getY(), menu_human.xpl1, menu_human.ypl1, menu_human.xpl2, menu_human.ypl2, menu_human.xpl3, menu_human.ypl3)){
+//		//		  playingForward = true;
+//		//		  timer.start();		 	  
+//		//	  }
+//		//	  
+//		//	  // pause
+//		//	  else if(menu_human.mouseInRectangle(e.getX(), e.getY(), menu_human.xps, menu_human.yps, menu_human.widthps, menu_human.heightps)){
+//		//		  timer.stop();
+//		//	  }
+//		//	  
+//		//	  // play backward
+//		//	  else if(menu_human.mouseInTriangle(e.getX(), e.getY(), menu_human.xrew1, menu_human.yrew1, menu_human.xrew2, menu_human.yrew2, menu_human.xrew3, menu_human.yrew3)){		  
+//		//		  playingForward = false;
+//		//		  timer.start();	  
+//		//	  }
+//		//	  
+//		//	  // stop button
+//		//	  else if(menu_human.mouseInRectangle(e.getX(), e.getY(), menu_human.xstop, menu_human.ystop, menu_human.widthstop, menu_human.heightstop)){
+//		//		  timer.stop();
+//		//		  currentFrame = 0;
+//		//	  }
+//		//	  
+//		//	  // step forward
+//		//	  else if(menu_human.mouseInRectangle(e.getX(), e.getY(), menu_human.xpls, menu_human.ypls, menu_human.widthpls, menu_human.heightpls)){
+//		//		  timer.stop();
+//		//		  currentFrame++;
+//		//	  }
+//		//	  
+//		//	  // step backward
+//		//	  else if(menu_human.mouseInRectangle(e.getX(), e.getY(), menu_human.xrews, menu_human.yrews, menu_human.widthrews, menu_human.heightrews)){
+//		//		  timer.stop();
+//		//		  currentFrame--;
+//		//	  } 
+//
+//
+//
+//
+//
+//		if(currentFrame < 0) currentFrame = 0;
+//		if(currentFrame>= numberFrames) currentFrame = numberFrames-1;
+//
+//
+//
+//
+//
+//
+//
+//		redraw();
+//	}
 
 	public void mouseClicked(MouseEvent e) {
 		String clickedOn = getItemAt(e.getX(), e.getY());
@@ -1684,53 +1599,49 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	}
 
 
-
-
-	public void mouseReleased(MouseEvent e) {
-
-		if(e.getButton()==MouseEvent.BUTTON1) {	// reset the buffers
-			leftMouseX = -1.0f;
-			leftMouseY = -1.0f;
-		} else if(e.getButton()==MouseEvent.BUTTON3) {	// reset the buffers
-			rightMouseX = -1.0f;
-			rightMouseY = -1.0f;
-		} else if (e.getButton()==MouseEvent.BUTTON2) {
-			centerMouseY = -1.0f;
-		}
-		redraw();
-	}
-
-	public void mouseDragged(MouseEvent e) {
-
-
-		if(leftMouseX != -1.0f) {	// change rotation
-			yRotDisplay-= (e.getY()-leftMouseY) * 0.05;
-			xRotDisplay+= (e.getX()-leftMouseX) * 0.05;
-			leftMouseX = e.getX();
-			leftMouseY = e.getY();
-
-		}else if(rightMouseX != -1.0f) {	// change translation
-			yShiftDisplay+= (e.getY()-rightMouseY) * 0.5;
-			xShiftDisplay+= (e.getX()-rightMouseX) * 0.5;
-			rightMouseX = e.getX();
-			rightMouseY = e.getY();
-
-		} else if (centerMouseY != -1.0f) {	// zoom
-			zoomDisplay+= (e.getY()-centerMouseY) * 0.02;
-			if(zoomDisplay<0.01){zoomDisplay=0.01f;}
-			centerMouseY = e.getY();
-		}
-
-		redraw();
-	}
+//
+//
+//	public void mouseReleased(MouseEvent e) {
+//
+//		if(e.getButton()==MouseEvent.BUTTON1) {	// reset the buffers
+//			leftMouseX = -1.0f;
+//			leftMouseY = -1.0f;
+//		} else if(e.getButton()==MouseEvent.BUTTON3) {	// reset the buffers
+//			rightMouseX = -1.0f;
+//			rightMouseY = -1.0f;
+//		} else if (e.getButton()==MouseEvent.BUTTON2) {
+//			centerMouseY = -1.0f;
+//		}
+//		redraw();
+//	}
+//
+//	public void mouseDragged(MouseEvent e) {
+//
+//
+//		if(leftMouseX != -1.0f) {	// change rotation
+//			yRotDisplay-= (e.getY()-leftMouseY) * 0.05;
+//			xRotDisplay+= (e.getX()-leftMouseX) * 0.05;
+//			leftMouseX = e.getX();
+//			leftMouseY = e.getY();
+//
+//		}else if(rightMouseX != -1.0f) {	// change translation
+//			yShiftDisplay+= (e.getY()-rightMouseY) * 0.5;
+//			xShiftDisplay+= (e.getX()-rightMouseX) * 0.5;
+//			rightMouseX = e.getX();
+//			rightMouseY = e.getY();
+//
+//		} else if (centerMouseY != -1.0f) {	// zoom
+//			zoomDisplay+= (e.getY()-centerMouseY) * 0.02;
+//			if(zoomDisplay<0.01){zoomDisplay=0.01f;}
+//			centerMouseY = e.getY();
+//		}
+//
+//		redraw();
+//	}
 
 
 	public void keyPressed(){
-		// hook: when running as slave, just propagate key events for proper synchronization
-		//if(prologVisCanvas != null) {
-		//	prologVisCanvas.keyPressed(keyCode);
-		//	return;
-		//}
+
 		switch(keyCode) {
 		case RIGHT:
 			currentFrame++;
@@ -1756,37 +1667,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			break;
 		case KeyEvent.VK_B:
 			drawBackground();
-			break;	
-		case KeyEvent.VK_R:
-			reFetchInfo();
 			break;
-
-			// debug stuff
-			//		case KeyEvent.VK_H:
-			//			highlightItem("'http://ias.cs.tum.edu/kb/ias_semantic_map.owl#drawer6'", true);
-			//			break;
-			//		case KeyEvent.VK_U:
-			//			clearHighlights();
-			//			break;
-			//		case KeyEvent.VK_D:
-			//			displayActionFixedIdent("'http://ias.cs.tum.edu/kb/knowrob.owl#Reaching_0_2'");
-			//			break;
-			//		case KeyEvent.VK_V:
-			//			highlightReachable("'http://ias.cs.tum.edu/kb/ias_semantic_map.owl#drawer6'", true);
-			//			break;
-			//		case KeyEvent.VK_I:
-			//			addObject("'http://ias.cs.tum.edu/kb/map_addons.owl#table0'");
-			//			break;	
-			//		case KeyEvent.VK_M:
-			//			removeObject("'http://ias.cs.tum.edu/kb/ias_entities.owl#fork1'");
-			//			break;	
-			//		case KeyEvent.VK_T:
-			//			
-			//			displayMessage("JAN");
-			//			addObjectWithChildren("'http://ias.cs.tum.edu/kb/ias_semantic_map.owl#F360-Containers-revised-walls'");
-			//			//addObjectWithChildren("'http://ias.cs.tum.edu/kb/ias_semantic_map.owl#cupboard3'");
-			//			
-			//			break;
 		case KeyEvent.VK_X:
 			bufferFrame.setVisible(!bufferFrame.isVisible());
 			break;
@@ -1868,11 +1749,6 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		colors.add(makeColor(186,85,211));
 		colors.add(makeColor(221,160,221));	  
 	}       
-
-
-	public StandaloneKitchenVisApplet() {
-
-	}
 
 	final Timer timer = new Timer(40, new ActionListener() {
 		public void actionPerformed(ActionEvent event) {
@@ -2002,6 +1878,72 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 	public static int convertColor(int red, int green, int blue, int alpha) {
 		return (((((alpha << 8) + red) << 8) + green) << 8) + blue;
+	}
+
+
+	/**
+	 * reads the mesh data from a file.
+	 * @param file
+	 */
+	private void readMeshData(String file) {
+
+		BufferedReader reader = createReader(file);
+		try{
+
+			String line;
+			boolean pointFlag=false, triangleFlag=false;
+
+			// offset needed when reading multiple meshes to a single array
+			int ptOffset = meshpoints.size();
+
+			while(true) {
+
+				line = reader.readLine();
+				if(line==null){break;}
+
+
+				// read point data
+				if(pointFlag && (line.matches("\\-?[\\d]*\\.?[\\d]*e?\\-?[\\d]* \\-?[\\d]*\\.?[\\d]*e?\\-?[\\d]* \\-?[\\d]*\\.?[\\d]*e?\\-?[\\d]*"))) { 
+					String[] coords = line.split(" ");
+					if(coords.length==3) {
+
+						this.meshpoints.add(new float[] {
+								Float.valueOf(coords[0]), 
+								Float.valueOf(coords[1]),
+								Float.valueOf(coords[2])});
+					}
+					continue;
+				}
+
+
+				// read triangle data
+				if(triangleFlag && (line.matches("3 [\\d]* [\\d]* [\\d]*"))) {
+					String[] pts = line.split(" ");
+					if(pts.length==4) {
+
+						this.meshtriangles.add(new int[] {
+								Integer.valueOf(pts[1])+ptOffset, 
+								Integer.valueOf(pts[2])+ptOffset,
+								Integer.valueOf(pts[3])+ptOffset});
+
+					}          
+					continue;}
+
+
+				if(line.matches("POINTS.*")) {
+					pointFlag=true;
+					triangleFlag=false;
+					continue;
+				}
+
+				if(line.matches("POLYGONS.*")) {
+					pointFlag=false;
+					triangleFlag=true;
+					continue;
+				}
+			}
+
+		} catch (IOException e) {}
 	}
 
 
@@ -2175,7 +2117,7 @@ class EmptyCanvas extends Canvas {
 		this.height = height;		
 		init();
 		snapshot = new int[width*height];
-		noLoop();
+//		noLoop();
 		try{super.size(width, height, P3D);}catch(RendererChangeException e) {};
 		noLoop();
 		//this.resize(width, height);
@@ -2189,16 +2131,16 @@ class EmptyCanvas extends Canvas {
 				for(int j=0;j<height;j++)
 					set(i, j, snapshot[i*height+j]);
 	};
-	@Override
-	public void keyPressed() {};
-	@Override
-	public void mousePressed(MouseEvent e) {};
-	@Override
-	public void mouseReleased(MouseEvent e) {};
-	@Override
-	public void mouseDragged(MouseEvent e) {};
-	@Override
-	public void zoom(int delta) {};
+//	@Override
+//	public void keyPressed() {};
+//	@Override
+//	public void mousePressed(MouseEvent e) {};
+//	@Override
+//	public void mouseReleased(MouseEvent e) {};
+//	@Override
+//	public void mouseDragged(MouseEvent e) {};
+////	@Override
+////	public void zoom(int delta) {};
 	@Override
 	public void runMain() {};
 	@Override
