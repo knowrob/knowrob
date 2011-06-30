@@ -21,33 +21,23 @@ public class LevelOfAConstruction extends Item {
 	@Override
 	public void drawIt(Canvas c) {
 
-      // ensure box size = image size?!?
       c.translate(0,0,-zdim/2);
-      c.stroke(200,200,200);
-      c.noFill();
+      c.stroke(100,100,100);
+      c.strokeWeight((float)1.5);
+      c.fill(250,250,250,15);
       c.box(this.xdim, this.ydim, 1f);
       
       // PImage a = c.loadImage("/home/lars/tmp/eng2-7f.png");
       // a.filter(PConstants.OPAQUE);
+      // c.noStroke();
       // c.textureMode(PConstants.NORMALIZED);
-      // //c.image(a,-(xdim/2),-(xdim/2),1200,1200);
       // c.rotateX((float) Math.PI);
-      // //c.rotateZ((float) (Math.PI + Math.PI/2));
       // c.beginShape();
-      // //c.normal(0,0,-1);
       // c.texture(a);
-
-      // float m03 = trafoMatrix[3];
-      // float m13 = trafoMatrix[7];
-
-      // c.vertex(-xdim/2, -xdim/2,  0, 0);
-      // c.vertex(xdim/2, -xdim/2,  1,  0);
-      // c.vertex(xdim/2, xdim/2,  1, 1);
-      // c.vertex(-xdim/2, xdim/2, 0, 1);
-      // //c.vertex(m03 - xdim/2, m13 - xdim/2,     0,    0);
-      // // c.vertex(m03 + xdim/2, m13 - xdim/2,  1200,    0);
-      // // c.vertex(m03 + xdim/2, m13 + xdim/2,  1200, 1200);
-      // // c.vertex(m03 - xdim/2, m13 + xdim/2,     0, 1200);
+      // c.vertex(-xdim/2, -ydim/2, 0,  0, 0);
+      // c.vertex( xdim/2, -ydim/2, 0,  1, 0);
+      // c.vertex( xdim/2,  ydim/2, 0,  1, 1);
+      // c.vertex(-xdim/2,  ydim/2, 0,  0, 1);
       // c.endShape();
       
 	}
