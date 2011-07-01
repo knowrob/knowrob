@@ -127,6 +127,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		
 		cam.setRightDragHandler(cam.getPanDragHandler());
 		cam.setLeftDragHandler(cam.getRotateDragHandler());
+		cam.setDampingFactor(0.05);
 		
 		// initialize camera view parameters
 		cam.setRotations(1.9074943, -0.6844337, 0.14366905);
