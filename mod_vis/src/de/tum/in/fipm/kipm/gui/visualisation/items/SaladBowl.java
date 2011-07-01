@@ -27,7 +27,7 @@ public class SaladBowl extends Item {
 	@Override
 	public void drawIt(Canvas c) {
 
-		(new Cylinder(new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0f, 16f), 10f)).draw(c); 
+		(new Cylinder(new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0f, 0.16f), 0.10f)).draw(c); 
 		    
 	}
 

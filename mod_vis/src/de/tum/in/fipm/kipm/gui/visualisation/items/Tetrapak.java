@@ -25,33 +25,33 @@ public class Tetrapak extends Item {
 	public void drawIt(Canvas c) {
 
 		// translate it down by half its height
-		c.translate(0.0f, 0.0f, -12.5f);
+		c.translate(0.0f, 0.0f, -0.125f);
 
 		// "wrapper"
 		c.beginShape(PConstants.QUAD_STRIP);
-		c.vertex(5,5,0); c.vertex(-5,5,0);
-		c.vertex(5,5,20); c.vertex(-5,5,20);
-		c.vertex(5,0,25); c.vertex(-5,0,25);
-		c.vertex(5,-5,20); c.vertex(-5,-5,20);
-		c.vertex(5,-5,0); c.vertex(-5,-5,0);
+		c.vertex(0.05f, 0.05f, 0f);    c.vertex(-0.05f,  0.05f,0f);
+		c.vertex(0.05f, 0.05f, 0.20f); c.vertex(-0.05f,  0.05f,0.20f);
+		c.vertex(0.05f, 0f,    0.25f); c.vertex(-0.05f,  0f,   0.25f);
+		c.vertex(0.05f,-0.05f, 0.20f); c.vertex(-0.05f, -0.05f,0.20f);
+		c.vertex(0.05f,-0.05f, 0f);    c.vertex(-0.05f, -0.05f,0f);
 		c.endShape(PConstants.CLOSE);
 		
 		// front side
 		c.beginShape(PConstants.TRIANGLE_STRIP);
-		c.vertex(-5,5,0);
-		c.vertex(-5,-5,0);
-		c.vertex(-5,5,20);
-		c.vertex(-5,-5,20);
-		c.vertex(-5,0,25);
+		c.vertex(-0.05f, 0.05f,0);
+		c.vertex(-0.05f,-0.05f,0);
+		c.vertex(-0.05f, 0.05f,0.20f);
+		c.vertex(-0.05f,-0.05f,0.20f);
+		c.vertex(-0.05f, 0,    0.25f);
 		c.endShape();
 		
 		// back side
 		c.beginShape(PConstants.TRIANGLE_STRIP);
-		c.vertex(5,5,0);
-		c.vertex(5,-5,0);
-		c.vertex(5,5,20);
-		c.vertex(5,-5,20);
-		c.vertex(5,0,25);
+		c.vertex(0.05f, 0.05f,0);
+		c.vertex(0.05f,-0.05f,0);
+		c.vertex(0.05f, 0.05f,0.20f);
+		c.vertex(0.05f,-0.05f,0.20f);
+		c.vertex(0.05f, 0,    0.25f);
 		c.endShape();
 
 	}

@@ -24,15 +24,17 @@ public class Chair extends Item {
 	@Override
 	public void drawIt(Canvas c) {
 		
-		c.translate(0, 0, 45f);	  
-		c.box(40f, 40f, -2f);
-		c.translate(20.0f, 20.0f, -20.0f);	c.box(-5f, 5f, 45f);
-		c.translate(-40.0f,0,22.5f);		c.box(-5f, 5f, 90f);
-		// back rest
-		c.translate(0.0f,-20f,30f);c.box(-2f, 40f, 20f);
+		c.translate(0, 0, 0.45f);	  
+		c.box(0.40f, 0.40f, -0.02f);
 		
-		c.translate(0,-20.0f,-30);			c.box(-5f, 5f, 90f);
-		c.translate(40f,0,-22.5f);			c.box(-5f, 5f, 45f);
+		c.translate(0.20f,  0.2f, -0.2f);   c.box(-0.05f, 0.05f, 0.45f);
+		c.translate(-0.40f, 0,    0.225f);  c.box(-0.05f, 0.05f, 0.90f);
+		
+		// back rest
+		c.translate(0.0f,-0.2f,0.3f);       c.box(-0.02f, 0.4f, 0.2f);
+		
+		c.translate(0,   -0.2f, -0.3f);     c.box(-0.05f, 0.05f, 0.9f);
+		c.translate(0.4f, 0,   -0.225f);    c.box(-0.05f, 0.05f, 0.45f);
 
 	}
 

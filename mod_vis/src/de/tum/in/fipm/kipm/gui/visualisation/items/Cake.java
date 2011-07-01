@@ -26,7 +26,7 @@ public class Cake extends Item {
 	public void drawIt(Canvas c) {
 
 		// RSS: use box-shaped cake
-		c.box(20f, 8f, -8f);
+		c.box(0.020f, 0.08f, -0.08f);
 		
 		
 		//(new Cylinder(new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0f, 5f), 10f)).draw(c); // lower part

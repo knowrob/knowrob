@@ -27,65 +27,71 @@ public class Fork extends Item {
 	@Override
 	public void drawIt(Canvas c) {
 
-		(new Cylinder(new Vector3f(-7.8f, 0f, -1.04f), new Vector3f(1.69f, 0f, -1.04f), 1.04f)).draw(c);  // main spree
-		  
-		c.beginShape(PConstants.QUAD_STRIP);
-		c.vertex(1.3f,1.04f,-0.39f); c.vertex(1.3f,1.04f,0.39f);
-		c.vertex(2.6f,1.04f,-0.39f); c.vertex(2.6f,1.04f,0.39f);
-		c.vertex(2.6f,2.34f,-0.39f); c.vertex(2.6f,2.34f,0.39f);
-		c.vertex(9.1f,2.34f,-0.39f); c.vertex(9.1f,2.34f,0.39f);
-		c.vertex(9.1f,1.56f,-0.39f); c.vertex(9.1f,1.56f,0.39f);
-		c.vertex(3.9f,1.56f,-0.39f); c.vertex(3.9f,1.56f,0.39f);
-		c.vertex(3.9f,0.52f,-0.39f); c.vertex(3.9f,0.52f,0.39f);
-		c.vertex(9.1f,0.52f,-0.39f); c.vertex(9.1f,0.52f,0.39f);
-		c.vertex(9.1f,-0.52f,-0.39f); c.vertex(9.1f,-0.52f,0.39f);
-		c.vertex(3.9f,-0.52f,-0.39f); c.vertex(3.9f,-0.52f,0.39f);
-		c.vertex(3.9f,-1.56f,-0.39f); c.vertex(3.9f,-1.56f,0.39f);
-		c.vertex(9.1f,-1.56f,-0.39f); c.vertex(9.1f,-1.56f,0.39f);
-		c.vertex(9.1f,-2.34f,-0.39f); c.vertex(9.1f,-2.34f,0.39f);
-		c.vertex(2.6f,-2.34f,-0.39f); c.vertex(2.6f,-2.34f,0.39f);
-		c.vertex(2.6f,-1.04f,-0.39f); c.vertex(2.6f,-1.04f,0.39f);
-		c.vertex(1.3f,-1.04f,-0.39f); c.vertex(1.3f,-1.04f,0.39f);
-		c.endShape(PConstants.CLOSE);
+		c.pushMatrix();
 		
-		c.beginShape();
-		c.vertex(1.3f,1.04f,-0.39f);
-		c.vertex(2.6f,1.04f,-0.39f);
-		c.vertex(2.6f,2.34f,-0.39f);
-		c.vertex(9.1f,2.34f,-0.39f);
-		c.vertex(9.1f,1.56f,-0.39f);
-		c.vertex(3.9f,1.56f,-0.39f);
-		c.vertex(3.9f,0.52f,-0.39f);
-		c.vertex(9.1f,0.52f,-0.39f);
-		c.vertex(9.1f,-0.52f,-0.39f);
-		c.vertex(3.9f,-0.52f,-0.39f);
-		c.vertex(3.9f,-1.56f,-0.39f);
-		c.vertex(9.1f,-1.56f,-0.39f);
-		c.vertex(9.1f,-2.34f,-0.39f);
-		c.vertex(2.6f,-2.34f,-0.39f);
-		c.vertex(2.6f,-1.04f,-0.39f);
-		c.vertex(1.3f,-1.04f,-0.39f);
-		c.endShape(PConstants.CLOSE);
+			c.scale(0.01f);
+			
+			(new Cylinder(new Vector3f(-7.8f, 0f, -1.04f), new Vector3f(1.69f, 0f, -1.04f), 1.04f)).draw(c);  // main spree
 		
-		c.beginShape();
-		c.vertex(1.3f,1.04f,0.39f);
-		c.vertex(2.6f,1.04f,0.39f);
-		c.vertex(2.6f,2.34f,0.39f);
-		c.vertex(9.1f,2.34f,0.39f);
-		c.vertex(9.1f,1.56f,0.39f);
-		c.vertex(3.9f,1.56f,0.39f);
-		c.vertex(3.9f,0.52f,0.39f);
-		c.vertex(9.1f,0.52f,0.39f);
-		c.vertex(9.1f,-0.52f,0.39f);
-		c.vertex(3.9f,-0.52f,0.39f);
-		c.vertex(3.9f,-1.56f,0.39f);
-		c.vertex(9.1f,-1.56f,0.39f);
-		c.vertex(9.1f,-2.34f,0.39f);
-		c.vertex(2.6f,-2.34f,0.39f);
-		c.vertex(2.6f,-1.04f,0.39f);
-		c.vertex(1.3f,-1.04f,0.39f);
-		c.endShape(PConstants.CLOSE);	
+			c.beginShape(PConstants.QUAD_STRIP);
+			c.vertex(1.3f,1.04f,-0.39f); c.vertex(1.3f,1.04f,0.39f);
+			c.vertex(2.6f,1.04f,-0.39f); c.vertex(2.6f,1.04f,0.39f);
+			c.vertex(2.6f,2.34f,-0.39f); c.vertex(2.6f,2.34f,0.39f);
+			c.vertex(9.1f,2.34f,-0.39f); c.vertex(9.1f,2.34f,0.39f);
+			c.vertex(9.1f,1.56f,-0.39f); c.vertex(9.1f,1.56f,0.39f);
+			c.vertex(3.9f,1.56f,-0.39f); c.vertex(3.9f,1.56f,0.39f);
+			c.vertex(3.9f,0.52f,-0.39f); c.vertex(3.9f,0.52f,0.39f);
+			c.vertex(9.1f,0.52f,-0.39f); c.vertex(9.1f,0.52f,0.39f);
+			c.vertex(9.1f,-0.52f,-0.39f); c.vertex(9.1f,-0.52f,0.39f);
+			c.vertex(3.9f,-0.52f,-0.39f); c.vertex(3.9f,-0.52f,0.39f);
+			c.vertex(3.9f,-1.56f,-0.39f); c.vertex(3.9f,-1.56f,0.39f);
+			c.vertex(9.1f,-1.56f,-0.39f); c.vertex(9.1f,-1.56f,0.39f);
+			c.vertex(9.1f,-2.34f,-0.39f); c.vertex(9.1f,-2.34f,0.39f);
+			c.vertex(2.6f,-2.34f,-0.39f); c.vertex(2.6f,-2.34f,0.39f);
+			c.vertex(2.6f,-1.04f,-0.39f); c.vertex(2.6f,-1.04f,0.39f);
+			c.vertex(1.3f,-1.04f,-0.39f); c.vertex(1.3f,-1.04f,0.39f);
+			c.endShape(PConstants.CLOSE);
+			
+			c.beginShape();
+			c.vertex(1.3f,1.04f,-0.39f);
+			c.vertex(2.6f,1.04f,-0.39f);
+			c.vertex(2.6f,2.34f,-0.39f);
+			c.vertex(9.1f,2.34f,-0.39f);
+			c.vertex(9.1f,1.56f,-0.39f);
+			c.vertex(3.9f,1.56f,-0.39f);
+			c.vertex(3.9f,0.52f,-0.39f);
+			c.vertex(9.1f,0.52f,-0.39f);
+			c.vertex(9.1f,-0.52f,-0.39f);
+			c.vertex(3.9f,-0.52f,-0.39f);
+			c.vertex(3.9f,-1.56f,-0.39f);
+			c.vertex(9.1f,-1.56f,-0.39f);
+			c.vertex(9.1f,-2.34f,-0.39f);
+			c.vertex(2.6f,-2.34f,-0.39f);
+			c.vertex(2.6f,-1.04f,-0.39f);
+			c.vertex(1.3f,-1.04f,-0.39f);
+			c.endShape(PConstants.CLOSE);
+			
+			c.beginShape();
+			c.vertex(1.3f,1.04f,0.39f);
+			c.vertex(2.6f,1.04f,0.39f);
+			c.vertex(2.6f,2.34f,0.39f);
+			c.vertex(9.1f,2.34f,0.39f);
+			c.vertex(9.1f,1.56f,0.39f);
+			c.vertex(3.9f,1.56f,0.39f);
+			c.vertex(3.9f,0.52f,0.39f);
+			c.vertex(9.1f,0.52f,0.39f);
+			c.vertex(9.1f,-0.52f,0.39f);
+			c.vertex(3.9f,-0.52f,0.39f);
+			c.vertex(3.9f,-1.56f,0.39f);
+			c.vertex(9.1f,-1.56f,0.39f);
+			c.vertex(9.1f,-2.34f,0.39f);
+			c.vertex(2.6f,-2.34f,0.39f);
+			c.vertex(2.6f,-1.04f,0.39f);
+			c.vertex(1.3f,-1.04f,0.39f);
+			c.endShape(PConstants.CLOSE);	
 
+		c.popMatrix();
+		
 	}
 
 

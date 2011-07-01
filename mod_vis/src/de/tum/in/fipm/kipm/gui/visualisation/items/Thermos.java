@@ -25,8 +25,8 @@ public class Thermos extends Item {
 	public void drawIt(Canvas c) {
 		
 		// RSS: use box instead of jug for coffee
-		c.translate(0, 0, 10);
-		c.box(-10f, 6f, 20f);
+		c.translate(0, 0, 0.10f);
+		c.box(-0.10f, 0.06f, 0.20f);
 		
 //		(new Cylinder(new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0f, 27f), 7f)).draw(c); // body
 //		(new Cylinder(new Vector3f(7f, 1f, 15f), new Vector3f(7f, -1f, 15f),7f)).draw(c); // handle

@@ -25,9 +25,9 @@ public class CookingPot extends Item {
 	@Override
 	public void drawIt(Canvas c) {
 		
-		(new Cylinder(new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0f, -11f), 11f)).draw(c);
-		(new Cylinder(new Vector3f(-1f, -11f, -7f), new Vector3f(1f, -11f, -7f), 2.5f)).draw(c);
-		(new Cylinder(new Vector3f(-1f, 11f, -7f), new Vector3f(1f, 11f, -7f), 2.5f)).draw(c);
+		(new Cylinder(new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0f, -0.11f), 0.11f)).draw(c);
+		(new Cylinder(new Vector3f(-0.01f, -0.11f, -0.07f), new Vector3f(0.01f, -0.11f, -0.07f), 0.025f)).draw(c);
+		(new Cylinder(new Vector3f(-0.01f, 0.11f, -0.07f), new Vector3f(0.01f, 0.11f, -0.07f), 0.025f)).draw(c);
 
 	}
 

@@ -23,15 +23,16 @@ public class Table extends Item {
 		float width = ydim;
 		float height= zdim;
 
-    	float legs  = 5f;
-    	float ttop  = 2f;
+    	float legs  = 0.05f;
+    	float ttop  = 0.02f;
 
 	    c.translate(0, 0, 0.5f*height);
 	    c.box(depth, width, -ttop);
-	    c.translate (0.45f*depth, 0.45f*width, -0.5f*height); c.box(-legs, legs, height);
-	    c.translate(-0.9f*depth,0,0);                         c.box(-legs, legs, height);
-	    c.translate(0,-0.9f*width,0);                         c.box(-legs, legs, height);
-	    c.translate(0.9f*depth,0,0);                          c.box(-legs, legs, height);
+	    
+	    c.translate( 0.45f*depth, 0.45f*width, -0.5f*height); c.box(-legs, legs, height);
+	    c.translate(-0.9f*depth,  0,            0);           c.box(-legs, legs, height);
+	    c.translate( 0,          -0.9f*width,   0);           c.box(-legs, legs, height);
+	    c.translate( 0.9f*depth,  0,            0);           c.box(-legs, legs, height);
 		
 	}
 

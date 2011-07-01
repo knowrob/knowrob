@@ -24,8 +24,8 @@ public class Napkin extends Item {
 	@Override
 	public void drawIt(Canvas c) {
 
-		c.translate(0,0,0.5f);	  
-		c.box(18f, 9f, -1f);
+		c.translate(0,0,0.005f);	  
+		c.box(0.18f, 0.09f, -0.01f);
 		
 	}
 

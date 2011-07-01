@@ -24,7 +24,7 @@ public class CerealBox extends Item {
 	@Override
 	public void drawIt(Canvas c) {
 
-		c.box(20f, 8f, 30f);
+		c.box(0.020f, 0.08f, 0.030f);
 		
 	}
 

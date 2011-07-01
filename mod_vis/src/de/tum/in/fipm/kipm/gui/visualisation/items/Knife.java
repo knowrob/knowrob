@@ -26,9 +26,9 @@ public class Knife extends Item {
 	@Override
 	public void drawIt(Canvas c) {
 	
-		(new Cylinder(new Vector3f(-7.8f, 0f, -1.04f), new Vector3f(1.3f, 0f, -1.04f), 1.04f)).draw(c); // handle
-		c.translate(3.9f, 0f, -1.04f);	  
-		c.box(8.45f, 2.34f, 0.52f);
+		(new Cylinder(new Vector3f(-0.078f, 0f, -0.0104f), new Vector3f(0.013f, 0f, -0.0104f), 0.0104f)).draw(c); // handle
+		c.translate(0.039f, 0f, -0.0104f);
+		c.box(0.0845f, 0.0234f, 0.0052f);
 		
 	}
 

@@ -25,10 +25,10 @@ public class Spatula extends Item {
 	public void drawIt(Canvas c) {
 
 		// main spree
-		(new Cylinder(new Vector3f(-11.7f, 0f, -1.04f), new Vector3f(5.85f, 0f, -1.04f), 1.04f)).draw(c);
+		(new Cylinder(new Vector3f(-0.117f, 0f, -0.0104f), new Vector3f(0.0585f, 0f, -0.0104f), 0.0104f)).draw(c);
 		
 		// spoon
-		(new Cylinder(new Vector3f(7.8f, 0f, -0.78f), new Vector3f(7.8f, 0f, -1.3f), 5)).draw(c);
+		(new Cylinder(new Vector3f(0.078f, 0f, -0.0078f), new Vector3f(0.078f, 0f, -0.013f), 0.05f)).draw(c);
 		
 	}
 

@@ -25,8 +25,8 @@ public class Platter extends Item {
 	@Override
 	public void drawIt(Canvas c) {
 		
-		(new Cylinder(new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0f, 1.65f), 6.6f)).draw(c); // lower part
-		(new Cylinder(new Vector3f(0f, 0f, 1.69f), new Vector3f(0f, 0f, 3.0f), 15f)).draw(c);	// upper part
+		(new Cylinder(new Vector3f(0f, 0f, 0f),      new Vector3f(0f, 0f, 0.0165f), 0.066f)).draw(c); // lower part
+		(new Cylinder(new Vector3f(0f, 0f, 0.0169f), new Vector3f(0f, 0f, 0.030f),  0.15f)).draw(c);	// upper part
 
 	}
 

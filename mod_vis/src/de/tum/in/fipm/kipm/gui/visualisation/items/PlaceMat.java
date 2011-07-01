@@ -25,7 +25,7 @@ public class PlaceMat extends Item {
 	public void drawIt(Canvas c) {
 		
 		c.translate(0,0,0.25f);	  
-		c.box(25f, 35f, -0.5f);
+		c.box(0.25f, 0.35f, -0.005f);
 		
 	}
 
