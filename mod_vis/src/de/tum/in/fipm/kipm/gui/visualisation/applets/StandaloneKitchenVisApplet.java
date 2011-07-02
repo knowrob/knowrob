@@ -22,6 +22,9 @@ import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
 import peasy.PeasyCam;
+import peasy.CameraState;
+import peasy.org.apache.commons.math.geometry.*;
+
 import processing.core.PFont;
 import processing.core.PMatrix;
 import processing.pdf.PGraphicsPDF;
@@ -38,6 +41,8 @@ import edu.tum.cs.vis.Canvas;
 public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseListener, MouseMotionListener {
 
 	static final long serialVersionUID=0;
+
+  public static final double ROTATE_Y_DELTA = 0.05;
 
 	////////////////////////////////////////////////////////////////////////////////
 	// DISPLAY PROPERTIES (ROTATION, ZOOM, ...)
@@ -122,12 +127,12 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		cam = new PeasyCam(this, 0,0,0, 50);
 		
 		// values for zooming (min distance to which one can zoom in)
-		cam.setMinimumDistance(10);
-		cam.setMaximumDistance(200);
+		cam.setMinimumDistance(1);
+		cam.setMaximumDistance(500);
 		
 		cam.setRightDragHandler(cam.getPanDragHandler());
 		cam.setLeftDragHandler(cam.getRotateDragHandler());
-		cam.setDampingFactor(0.05);
+		cam.setDampingFactor(0.03);
 		
 		// initialize camera view parameters
 		cam.setRotations(1.9074943, -0.6844337, 0.14366905);
@@ -144,7 +149,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 		ellipseMode(RADIUS);
 //		noSmooth();
-
+    
 		sphereDetail(10);
 
 
@@ -1287,6 +1292,73 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 				return c;
 			}
 
+      HashMap<String, Vector<Object>> building = PrologVisualizationCanvas.executeQuery(
+					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
+          "rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'Building')," +
+					"rdf_has("+identifier+",knowrob:widthOfObject,literal(type(_,_W)))," + 
+					"rdf_has("+identifier+",knowrob:heightOfObject,literal(type(_,_H))), " + 
+					"rdf_has("+identifier+",knowrob:depthOfObject,literal(type(_,_D))), " +
+
+					"rdf_triple(knowrob:orientation,"+identifier+",Or), " +
+
+					"rdf_triple(knowrob:m00,Or,literal(type(_,_M00))), term_to_atom(M00,_M00)," +
+					"rdf_triple(knowrob:m01,Or,literal(type(_,_M01))), term_to_atom(M01,_M01)," +
+					"rdf_triple(knowrob:m02,Or,literal(type(_,_M02))), term_to_atom(M02,_M02)," +
+					"rdf_triple(knowrob:m03,Or,literal(type(_,_M03))), term_to_atom(M03,_M03)," +
+
+					"rdf_triple(knowrob:m10,Or,literal(type(_,_M10))), term_to_atom(M10,_M10)," +
+					"rdf_triple(knowrob:m11,Or,literal(type(_,_M11))), term_to_atom(M11,_M11)," +
+					"rdf_triple(knowrob:m12,Or,literal(type(_,_M12))), term_to_atom(M12,_M12)," +
+					"rdf_triple(knowrob:m13,Or,literal(type(_,_M13))), term_to_atom(M13,_M13)," +
+
+					"rdf_triple(knowrob:m20,Or,literal(type(_,_M20))), term_to_atom(M20,_M20)," +
+					"rdf_triple(knowrob:m21,Or,literal(type(_,_M21))), term_to_atom(M21,_M21)," +
+					"rdf_triple(knowrob:m22,Or,literal(type(_,_M22))), term_to_atom(M22,_M22)," +
+					"rdf_triple(knowrob:m23,Or,literal(type(_,_M23))), term_to_atom(M23,_M23)," +
+
+					"rdf_triple(knowrob:m30,Or,literal(type(_,_M30))), term_to_atom(M30,_M30)," +
+					"rdf_triple(knowrob:m31,Or,literal(type(_,_M31))), term_to_atom(M31,_M31)," +
+					"rdf_triple(knowrob:m32,Or,literal(type(_,_M32))), term_to_atom(M32,_M32)," +
+					"rdf_triple(knowrob:m33,Or,literal(type(_,_M33))), term_to_atom(M33,_M33)," +
+
+					"atom_to_term(_W,W,_), atom_to_term(_H,H,_), atom_to_term(_D,D,_)" , null);
+
+			if( building.get("M00") != null && building.get("M00").size() > 0) {
+
+				Building b = new Building(
+						Float.valueOf(building.get("M00").get(0).toString()),
+						Float.valueOf(building.get("M01").get(0).toString()),
+						Float.valueOf(building.get("M02").get(0).toString()),
+						100*Float.valueOf(building.get("M03").get(0).toString()),
+
+						Float.valueOf(building.get("M10").get(0).toString()),
+						Float.valueOf(building.get("M11").get(0).toString()),
+						Float.valueOf(building.get("M12").get(0).toString()),
+						100*Float.valueOf(building.get("M13").get(0).toString()),
+
+						Float.valueOf(building.get("M20").get(0).toString()),
+						Float.valueOf(building.get("M21").get(0).toString()),
+						Float.valueOf(building.get("M22").get(0).toString()),
+						100*Float.valueOf(building.get("M23").get(0).toString()),
+
+						Float.valueOf(building.get("M30").get(0).toString()),
+						Float.valueOf(building.get("M31").get(0).toString()),
+						Float.valueOf(building.get("M32").get(0).toString()),
+						Float.valueOf(building.get("M33").get(0).toString()),
+
+						100*Float.valueOf(building.get("D").get(0).toString()),
+						100*Float.valueOf(building.get("W").get(0).toString()),
+						100*Float.valueOf(building.get("H").get(0).toString()));
+
+				int col = grayValues[(++grayLevelCounter) % grayValues.length];      
+				b.defaultColor = convertColor(col, col, col, 255);
+				b.setColor(b.defaultColor);
+				b.name = identifier;
+
+				return b;
+			}
+
+
       HashMap<String, Vector<Object>> level = PrologVisualizationCanvas.executeQuery(
 					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
           "rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'LevelOfAConstruction')," +
@@ -1360,11 +1432,6 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 					"rdf_has("+identifier+",knowrob:heightOfObject,literal(type(_,_H))), " + 
 					"rdf_has("+identifier+",knowrob:depthOfObject,literal(type(_,_D))), " +
 
-          // "rdf_has("+identifier+",knowrob:translationX,literal(type(_,_X)))," + 
-					// "rdf_has("+identifier+",knowrob:translationY,literal(type(_,_Y))), " + 
-					// "rdf_has("+identifier+",knowrob:translationZ,literal(type(_,_Z))), " +
-          // "atom_to_term(_X,X,_), atom_to_term(_Y,Y,_), atom_to_term(_Z,Z,_)," +
-
 					"rdf_triple(knowrob:orientation,"+identifier+",Or), " +
 
 					"rdf_triple(knowrob:m00,Or,literal(type(_,_M00))), term_to_atom(M00,_M00)," +
@@ -1387,12 +1454,6 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 					"rdf_triple(knowrob:m32,Or,literal(type(_,_M32))), term_to_atom(M32,_M32)," +
 					"rdf_triple(knowrob:m33,Or,literal(type(_,_M33))), term_to_atom(M33,_M33)," +
 
-          "rdf_triple(knowrob:eventOccursAt, Ev , Or), " +
-          "rdf_triple(knowrob:frameTransformation, Ev , FrameTrans), " +
-          "rdf_triple(knowrob:m03,FrameTrans,literal(type(_,_X))), term_to_atom(X,_X)," +
-          "rdf_triple(knowrob:m13,FrameTrans,literal(type(_,_Y))), term_to_atom(Y,_Y)," +
-					"rdf_triple(knowrob:m23,FrameTrans,literal(type(_,_Z))), term_to_atom(Z,_Z)," +
-          
 					"atom_to_term(_W,W,_), atom_to_term(_H,H,_), atom_to_term(_D,D,_)" , null);
 
 			if( room.get("M00") != null && room.get("M00").size() > 0) {
@@ -1420,11 +1481,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
             Float.valueOf(room.get("D").get(0).toString()),
 						Float.valueOf(room.get("W").get(0).toString()),
-						Float.valueOf(room.get("H").get(0).toString()),
-
-						Float.valueOf(room.get("X").get(0).toString()),
-						Float.valueOf(room.get("Y").get(0).toString()),
-						Float.valueOf(room.get("Z").get(0).toString()));
+						Float.valueOf(room.get("H").get(0).toString()));
 
 				int col = grayValues[(++grayLevelCounter) % grayValues.length];      
 				ro.defaultColor = convertColor(col, col, col, 255);
@@ -1675,10 +1732,58 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		case KeyEvent.VK_Y:
 			buffer.resetMatrix();
 			this.resetMatrix();
-
 		case KeyEvent.VK_P:
 			this.record = true;
 			break;
+
+    case KeyEvent.VK_Q:
+        cam.setRotations(-Math.PI/2,Math.PI/4,-Math.PI);
+        cam.lookAt(0.0,0.0,0.0,cam.getDistance());
+        break;
+    case KeyEvent.VK_E:
+        cam.setRotations(-Math.PI,0.0,0.0);
+        cam.lookAt(0.0,0.0,0.0,cam.getDistance());
+        break;
+    case KeyEvent.VK_A:
+        cam.rotateY(-ROTATE_Y_DELTA);
+			break;
+    case KeyEvent.VK_D:
+        cam.rotateY(ROTATE_Y_DELTA);
+			break;
+    case KeyEvent.VK_W:
+        float[] rpy = cam.getRotations();
+        float[] lat = cam.getLookAt();
+        float[] pos = cam.getPosition();
+        double dist = cam.getDistance();
+        CameraState state = new CameraState(new Rotation(RotationOrder.XYZ,
+                                                         rpy[0],
+                                                         rpy[1],
+                                                         rpy[2]),
+                                            new Vector3D((lat[0])* 0.75,
+                                                         (lat[1])* 0.75,
+                                                         (lat[2])* 0.75),
+                                            dist);
+        state.apply(this);
+        cam.setState(state);
+			break;
+    case KeyEvent.VK_S:
+        float[] rpy2 = cam.getRotations();
+        float[] lat2 = cam.getLookAt();
+        float[] pos2 = cam.getPosition();
+        double dist2 = cam.getDistance();
+        CameraState state2 = new CameraState(new Rotation(RotationOrder.XYZ,
+                                                         rpy2[0],
+                                                         rpy2[1],
+                                                         rpy2[2]),
+                                            new Vector3D((lat2[0] + pos2[0])/2,
+                                                         (lat2[1] + pos2[1])/2,
+                                                         (lat2[2] + pos2[2])/2),
+                                            dist2);
+        state2.apply(this);
+        cam.setState(state2);
+
+			break;
+
 		}
 		if(currentFrame < 0) currentFrame = 0;
 		if(currentFrame>= numberFrames) currentFrame = numberFrames-1;
@@ -2093,7 +2198,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			return new Ellipse(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
 		} else if(type.endsWith("#Place'")) {
-			return new Ellipse(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
+      return new Ellipse(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1, 0.325f,0.325f,0f);
 
 		} else if(type.endsWith("#Point3D'")) {
 			return new Sphere(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  3f,3f,3f);

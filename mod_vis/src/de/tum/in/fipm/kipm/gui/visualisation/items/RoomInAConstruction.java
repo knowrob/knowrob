@@ -5,31 +5,25 @@ import edu.tum.cs.vis.Canvas;
 
 public class RoomInAConstruction extends Item {
     
-    float xtrans, ytrans, ztrans;
-    
 	public RoomInAConstruction(float m00, float m01, float m02, float m03, float m10,
 			float m11, float m12, float m13, float m20, float m21, float m22,
 			float m23, float m30, float m31, float m32, float m33, 
-                             float xdim, float ydim, float zdim,
-                             float xtrans, float ytrans, float ztrans) {
+                             float xdim, float ydim, float zdim){
 		
 
 		super(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31,
 				m32, m33, xdim, ydim, zdim);
-    this.xtrans = xtrans;
-    this.ytrans = ytrans;
-    this.ztrans = ztrans;
 	}
 
 	@Override
 	public void drawIt(Canvas c) {
 
-      c.translate(0,0,-zdim/2);
-      c.box(this.xdim, this.ydim, 1f); 
+      c.translate(0,0,-zdim/2 - 0.1f);
+      c.box(this.xdim, this.ydim, 0.05f); 
       
       // center of room
       c.fill(0,0,200);
-      c.box(xdim/15,ydim/15,2f);
+      c.box(xdim/15,ydim/15,0.1f);
 
       
       // float diff_x = - (this.trafoMatrix[3] - xtrans); 
