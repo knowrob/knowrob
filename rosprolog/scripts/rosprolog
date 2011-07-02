@@ -18,4 +18,8 @@ if [ -n "$1" ] && [ -n "$(rospack find $1)" ]; then
     PL_ARGS=${@:1}
 fi
 
+if [ -n "$2" ]; then
+    SCRIPT_FILE=$SCRIPT_FILE",$2"
+fi
+
 exec /usr/bin/xpce -s ${PL_INIT_FILE} ${SCRIPT_FILE} ${PL_ARGS}
