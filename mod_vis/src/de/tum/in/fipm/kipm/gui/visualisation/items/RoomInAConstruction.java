@@ -18,14 +18,13 @@ public class RoomInAConstruction extends Item {
 	@Override
 	public void drawIt(Canvas c) {
 
-      c.translate(0,0,-zdim/2 - 0.1f);
-      c.box(this.xdim, this.ydim, 0.05f); 
+      c.translate(0,0,-zdim/2 - 0.05f);
+      c.box(this.xdim, this.ydim, 0.02f); 
       
       // center of room
       c.fill(0,0,200);
       c.box(xdim/15,ydim/15,0.1f);
 
-      
       // float diff_x = - (this.trafoMatrix[3] - xtrans); 
       // float diff_y = - (this.trafoMatrix[7] - ytrans);
       // // rotation only works since it is a 180 degree rotation!?

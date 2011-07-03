@@ -21,11 +21,11 @@ public class LevelOfAConstruction extends Item {
 	@Override
 	public void drawIt(Canvas c) {
 
-      c.translate(0,0,-zdim/2 - 0.2f);
+      c.translate(0,0,-0.2f);
       c.stroke(100,100,100);
       c.strokeWeight((float)1.5);
       c.fill(250,250,250,15);
-      c.box(this.xdim, this.ydim, 0.1f);
+      c.box(this.xdim, this.ydim, 0.02f);
       
       // PImage a = c.loadImage("/home/lars/tmp/eng2-7f.png");
       // a.filter(PConstants.OPAQUE);

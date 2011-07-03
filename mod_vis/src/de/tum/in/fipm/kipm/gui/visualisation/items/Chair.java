@@ -7,6 +7,9 @@ import edu.tum.cs.vis.Canvas;
 
 public class Chair extends Item {
 
+    private final static float LEG_DIM  = 0.05f;
+    private final static float SEAT_DIM = 0.02f;
+    
 	
 	public Chair(float m00, float m01, float m02, float m03, float m10,
 			float m11, float m12, float m13, float m20, float m21, float m22,
@@ -23,19 +26,20 @@ public class Chair extends Item {
 	
 	@Override
 	public void drawIt(Canvas c) {
+      
+      c.box(xdim, ydim, SEAT_DIM);
 		
-		c.translate(0, 0, 0.45f);	  
-		c.box(0.40f, 0.40f, -0.02f);
+      // frontside legs
+      c.translate(xdim/2 - LEG_DIM,ydim/2-LEG_DIM, -zdim/4);   c.box(LEG_DIM, LEG_DIM, zdim/2);
+      c.translate(-(xdim - 2*LEG_DIM), 0,  0);   c.box(LEG_DIM, LEG_DIM, zdim/2);
 		
-		c.translate(0.20f,  0.2f, -0.2f);   c.box(-0.05f, 0.05f, 0.45f);
-		c.translate(-0.40f, 0,    0.225f);  c.box(-0.05f, 0.05f, 0.90f);
-		
-		// back rest
-		c.translate(0.0f,-0.2f,0.3f);       c.box(-0.02f, 0.4f, 0.2f);
-		
-		c.translate(0,   -0.2f, -0.3f);     c.box(-0.05f, 0.05f, 0.9f);
-		c.translate(0.4f, 0,   -0.225f);    c.box(-0.05f, 0.05f, 0.45f);
+      // backside legs
+      c.translate(0,  - (ydim - 2*LEG_DIM), zdim/4);     c.box(LEG_DIM, LEG_DIM, zdim);
+      c.translate(xdim - 2*LEG_DIM, 0, 0);            c.box(LEG_DIM, LEG_DIM, zdim);
 
+      // back rest
+      c.translate(- (xdim/2 - LEG_DIM) ,0.0f, 0.75f * zdim/2);      c.box(xdim,SEAT_DIM, zdim/4);
+      
 	}
 
 }

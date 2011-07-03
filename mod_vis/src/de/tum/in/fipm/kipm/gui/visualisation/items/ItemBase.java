@@ -67,8 +67,8 @@ public abstract class ItemBase implements Drawable, DrawableAnimated {
 	
 	public void setPosition(float x, float y, float z) {
 		this.trafoMatrix[3]=x;
-		this.trafoMatrix[7]=x;
-		this.trafoMatrix[11]=x;
+		this.trafoMatrix[7]=y;
+		this.trafoMatrix[11]=z;
 	}
 	
 	public void setDimensions(float xdim, float ydim, float zdim) {

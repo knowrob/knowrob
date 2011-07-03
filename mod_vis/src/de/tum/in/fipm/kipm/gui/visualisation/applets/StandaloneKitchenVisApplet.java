@@ -155,10 +155,12 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 		setColors();
 
-//		noLoop();
-		hint(ENABLE_DEPTH_SORT);
-		hint(DISABLE_DEPTH_TEST);
-//		drawBackground();
+    //    noLoop();
+    hint(ENABLE_DEPTH_TEST);
+    hint(DISABLE_DEPTH_SORT);
+    //hint(ENABLE_DEPTH_SORT);
+		//hint(DISABLE_DEPTH_TEST);
+    //drawBackground();
 		draw();
 		isInitialized = true;
 		if(prologVisCanvas != null) {
@@ -213,7 +215,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			
 			// draw all Items
 			for(int i=0;i<allItems.size();i++) {
-				hint(ENABLE_DEPTH_TEST);
+          //hint(ENABLE_DEPTH_TEST);
 				allItems.get(i).draw(this, currentFrame);	
 			}
 
@@ -848,6 +850,24 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	// INTERNAL HELPERS
 	// 
 
+    private float[] getDimensionsOfItem(String identifier) {
+        try{
+            HashMap<String, Vector<Object>> nfo = PrologVisualizationCanvas.executeQuery(
+                 "rdf_has("+identifier+",knowrob:widthOfObject,literal(type(_,_W)))," + 
+                 "rdf_has("+identifier+",knowrob:heightOfObject,literal(type(_,_H))), " + 
+                 "rdf_has("+identifier+",knowrob:depthOfObject,literal(type(_,_D))), " +
+                 "atom_to_term(_W,W,_), atom_to_term(_H,H,_), atom_to_term(_D,D,_)" , null);
+            
+            return new float[] {
+                Float.parseFloat(nfo.get("D").get(0).toString()),
+                Float.parseFloat(nfo.get("W").get(0).toString()),
+                Float.parseFloat(nfo.get("H").get(0).toString())};
+
+        } catch(Exception e) {
+            return null;
+        }
+    }
+
 
 	private float[] getOrientationOfItem(String identifier) {
 		try{
@@ -931,10 +951,15 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 		if(it!=null) {
 			float[] o = getOrientationOfItem(identifier);
-
 			if(o!=null) {
 				it.setPose(o);
-			} else {System.out.println("ORIENTATION NULL");}
+			} else {System.out.println("NO ORIENTATION FOR " + identifier);}
+
+      float[] d = getDimensionsOfItem(identifier);
+			if(d!=null) {
+          it.setDimensions(d[0],d[1],d[2]);
+			} else {System.out.println("NO DIMENSIONS FOR " + identifier);}
+
 			it.name = identifier;
 			return it;
 
@@ -1425,6 +1450,8 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 				return l;
 			}
 
+      
+
       HashMap<String, Vector<Object>> room = PrologVisualizationCanvas.executeQuery(
 					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
           "rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'RoomInAConstruction')," +
@@ -1491,7 +1518,65 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 				return ro;
 			}
 
+      HashMap<String, Vector<Object>> pose = PrologVisualizationCanvas.executeQuery(
+					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
+          "rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'Place')," +
+					"rdf_triple(knowrob:orientation,"+identifier+",Or), " +
 
+					"rdf_triple(knowrob:m00,Or,literal(type(_,_M00))), term_to_atom(M00,_M00)," +
+					"rdf_triple(knowrob:m01,Or,literal(type(_,_M01))), term_to_atom(M01,_M01)," +
+					"rdf_triple(knowrob:m02,Or,literal(type(_,_M02))), term_to_atom(M02,_M02)," +
+					"rdf_triple(knowrob:m03,Or,literal(type(_,_M03))), term_to_atom(M03,_M03)," +
+
+					"rdf_triple(knowrob:m10,Or,literal(type(_,_M10))), term_to_atom(M10,_M10)," +
+					"rdf_triple(knowrob:m11,Or,literal(type(_,_M11))), term_to_atom(M11,_M11)," +
+					"rdf_triple(knowrob:m12,Or,literal(type(_,_M12))), term_to_atom(M12,_M12)," +
+					"rdf_triple(knowrob:m13,Or,literal(type(_,_M13))), term_to_atom(M13,_M13)," +
+
+					"rdf_triple(knowrob:m20,Or,literal(type(_,_M20))), term_to_atom(M20,_M20)," +
+					"rdf_triple(knowrob:m21,Or,literal(type(_,_M21))), term_to_atom(M21,_M21)," +
+					"rdf_triple(knowrob:m22,Or,literal(type(_,_M22))), term_to_atom(M22,_M22)," +
+					"rdf_triple(knowrob:m23,Or,literal(type(_,_M23))), term_to_atom(M23,_M23)," +
+
+					"rdf_triple(knowrob:m30,Or,literal(type(_,_M30))), term_to_atom(M30,_M30)," +
+					"rdf_triple(knowrob:m31,Or,literal(type(_,_M31))), term_to_atom(M31,_M31)," +
+					"rdf_triple(knowrob:m32,Or,literal(type(_,_M32))), term_to_atom(M32,_M32)," +
+					"rdf_triple(knowrob:m33,Or,literal(type(_,_M33))), term_to_atom(M33,_M33)", null);
+
+			if( pose.get("M00") != null && pose.get("M00").size() > 0) {
+
+				Pose p = new Pose(
+						Float.valueOf(pose.get("M00").get(0).toString()),
+						Float.valueOf(pose.get("M01").get(0).toString()),
+						Float.valueOf(pose.get("M02").get(0).toString()),
+						Float.valueOf(pose.get("M03").get(0).toString()),
+
+						Float.valueOf(pose.get("M10").get(0).toString()),
+						Float.valueOf(pose.get("M11").get(0).toString()),
+						Float.valueOf(pose.get("M12").get(0).toString()),
+						Float.valueOf(pose.get("M13").get(0).toString()),
+
+						Float.valueOf(pose.get("M20").get(0).toString()),
+						Float.valueOf(pose.get("M21").get(0).toString()),
+						Float.valueOf(pose.get("M22").get(0).toString()),
+						Float.valueOf(pose.get("M23").get(0).toString()),
+
+						Float.valueOf(pose.get("M30").get(0).toString()),
+						Float.valueOf(pose.get("M31").get(0).toString()),
+						Float.valueOf(pose.get("M32").get(0).toString()),
+						Float.valueOf(pose.get("M33").get(0).toString()),
+
+						0.35f,
+						0.35f,
+						0.0f);
+
+				int col = grayValues[(++grayLevelCounter) % grayValues.length];      
+				p.defaultColor = convertColor(col, col, col, 255);
+				p.setColor(p.defaultColor);
+				p.name = identifier;
+
+				return p;
+			}
       
 			// check if it is some kind of box (e.g. Bed)
 			HashMap<String, Vector<Object>> box = PrologVisualizationCanvas.executeQuery(
@@ -1733,9 +1818,9 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			buffer.resetMatrix();
 			this.resetMatrix();
 		case KeyEvent.VK_P:
-			this.record = true;
-			break;
-
+        background(255,255,255);
+        this.record = true;
+        break;
     case KeyEvent.VK_Q:
         cam.setRotations(-Math.PI/2,Math.PI/4,-Math.PI);
         cam.lookAt(0.0,0.0,0.0,cam.getDistance());
@@ -2197,8 +2282,8 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		} else if(type.endsWith("#SpatialThing-Localized'")) {
 			return new Ellipse(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
-		} else if(type.endsWith("#Place'")) {
-      return new Ellipse(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1, 0.325f,0.325f,0f);
+		// } else if(type.endsWith("#Place'")) {
+    //   return new Ellipse(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1, 0.325f,0.325f,0f);
 
 		} else if(type.endsWith("#Point3D'")) {
 			return new Sphere(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  3f,3f,3f);
