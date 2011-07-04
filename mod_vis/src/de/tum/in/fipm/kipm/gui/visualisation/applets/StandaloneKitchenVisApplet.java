@@ -156,10 +156,13 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		setColors();
 
     //    noLoop();
+    
     hint(ENABLE_DEPTH_TEST);
-    hint(DISABLE_DEPTH_SORT);
+    //hint(DISABLE_DEPTH_TEST);
+
     //hint(ENABLE_DEPTH_SORT);
-		//hint(DISABLE_DEPTH_TEST);
+    hint(DISABLE_DEPTH_SORT);
+		
     //drawBackground();
 		draw();
 		isInitialized = true;
@@ -1454,7 +1457,8 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
       HashMap<String, Vector<Object>> room = PrologVisualizationCanvas.executeQuery(
 					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
-          "rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'RoomInAConstruction')," +
+          "( rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'RoomInAConstruction');" +
+          "  rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'MultiRoomUnit') )," +
 					"rdf_has("+identifier+",knowrob:widthOfObject,literal(type(_,_W)))," + 
 					"rdf_has("+identifier+",knowrob:heightOfObject,literal(type(_,_H))), " + 
 					"rdf_has("+identifier+",knowrob:depthOfObject,literal(type(_,_D))), " +

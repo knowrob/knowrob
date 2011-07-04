@@ -30,15 +30,15 @@ public class Chair extends Item {
       c.box(xdim, ydim, SEAT_DIM);
 		
       // frontside legs
-      c.translate(xdim/2 - LEG_DIM,ydim/2-LEG_DIM, -zdim/4);   c.box(LEG_DIM, LEG_DIM, zdim/2);
-      c.translate(-(xdim - 2*LEG_DIM), 0,  0);   c.box(LEG_DIM, LEG_DIM, zdim/2);
+      c.translate(xdim/2 - LEG_DIM, ydim/2-LEG_DIM, -zdim/4);   c.box(LEG_DIM, LEG_DIM, zdim/2);
+      c.translate(0 ,-(ydim - 2*LEG_DIM),  0);   c.box(LEG_DIM, LEG_DIM, zdim/2);
 		
       // backside legs
-      c.translate(0,  - (ydim - 2*LEG_DIM), zdim/4);     c.box(LEG_DIM, LEG_DIM, zdim);
-      c.translate(xdim - 2*LEG_DIM, 0, 0);            c.box(LEG_DIM, LEG_DIM, zdim);
+      c.translate(- (xdim - 2*LEG_DIM),0, zdim/4);     c.box(LEG_DIM, LEG_DIM, zdim);
+      c.translate(0, ydim - 2*LEG_DIM, 0);            c.box(LEG_DIM, LEG_DIM, zdim);
 
       // back rest
-      c.translate(- (xdim/2 - LEG_DIM) ,0.0f, 0.75f * zdim/2);      c.box(xdim,SEAT_DIM, zdim/4);
+      c.translate(0.0f, - (ydim/2 - LEG_DIM), 0.75f * zdim/2);   c.box(SEAT_DIM,ydim, zdim/4);
       
 	}
 

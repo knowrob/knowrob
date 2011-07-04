@@ -19,6 +19,7 @@ public class RoomInAConstruction extends Item {
 	public void drawIt(Canvas c) {
 
       c.translate(0,0,-zdim/2 - 0.05f);
+      c.stroke(50,50,50);
       c.box(this.xdim, this.ydim, 0.02f); 
       
       // center of room

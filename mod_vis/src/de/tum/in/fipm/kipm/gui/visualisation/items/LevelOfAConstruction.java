@@ -21,8 +21,8 @@ public class LevelOfAConstruction extends Item {
 	@Override
 	public void drawIt(Canvas c) {
 
-      c.translate(0,0,-0.2f);
-      c.stroke(100,100,100);
+      c.translate(0,0,-zdim/2 - 0.2f);
+      c.stroke(150,150,150);
       c.strokeWeight((float)1.5);
       c.fill(250,250,250,15);
       c.box(this.xdim, this.ydim, 0.02f);
