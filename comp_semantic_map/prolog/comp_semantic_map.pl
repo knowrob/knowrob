@@ -43,6 +43,7 @@ POSSIBILITY OF SUCH DAMAGE.
      
      locOfObj/2,
      locOfObjT/2,
+
      locOfSimilarObjT/2,
      locOfMostSimilarObjT/2,
      locOfKMostSimilarObjT/3,
@@ -55,8 +56,26 @@ POSSIBILITY OF SUCH DAMAGE.
      searchFoodOrDrinkTypeAtLocation/2,
      searchFoodOrDrinkTypeAtLocationType/2,
      searchFoodOrDrinkTypeInStorageConstruct/2,
-     searchFoodOrDrinkTypeAtServiceLocation/2
-    ]).
+     searchFoodOrDrinkTypeAtServiceLocation/2,
+
+     euclidean_distance/3,
+     in_room/2,
+     same_room/2,
+     in_level/2,
+     same_level/2,
+     sort_path_costs/3,
+     path_cost/3,
+     intra_level_cost/3,
+     inter_level_cost/3,
+     level_distance/3,
+    
+     create_perception_instance/1,
+     create_object_instance/2,
+     set_object_perception/2,
+     set_perception_pose/2,
+     update_pose/2
+     
+     ]).
 
 %%  hasRooms(L|B,R), hasLevels(B,L), objLoc(O,L), objLocWrtMap(O,L,M)
 
@@ -84,9 +103,8 @@ POSSIBILITY OF SUCH DAMAGE.
   searchFoodOrDrinkTypeAtServiceLocation(r,r),
 
   locOfObj(r, r),
-
   locOfObjT(r, r),
-  
+
   locOfSimilarObjT(r, r),
   locOfMostSimilarObjT(r, r),
   locOfKMostSimilarObjT(r, -, r),
@@ -95,8 +113,26 @@ POSSIBILITY OF SUCH DAMAGE.
   locOfSimilarObjTBecause(r, r, r),
   locOfMostSimilarObjTBecause(r, r, r),
   locOfKMostSimilarObjTBecause(r, -, r, r),
-  locOfSimilarObjTGtWupBecause(r, -, r, r).
+  locOfSimilarObjTGtWupBecause(r, -, r, r),
 
+  euclidean_distance(r,r,-),
+  in_room(r, r),
+  same_room(r, r),
+  in_level(r, r),
+  same_level(r, r),
+  sort_path_costs(r, r, -),
+  path_cost(r,r,-),
+  intra_level_cost(r,r,-),
+  inter_level_cost(r,r,-),
+  level_distance(r,r,-),
+
+  create_object_instance(r,r),
+  update_pose(r,-),
+  create_perception_instance(-),
+  set_object_perception(r,r),
+  set_perception_pose(r,-),
+
+  data_value(r,r,-).
 
 
 comp_number_of_levels(B, N):-
@@ -141,10 +177,7 @@ locOfObjT(ObjT, Loc):-
   rdf_triple(knowrob:orientation, Obj, Loc).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% locations of objects with similar type
-% object is known or unknown
-% if unknown look at locations of similar object types (using WUP)
-
+% locations of objects with similar type using WUP 
 
 locOfSimilarObjT(ObjT, Loc):-
   locOfSimilarObjTBecause(ObjT, Loc, _).
@@ -254,7 +287,6 @@ locOfStoragePlaceForObjTBecause(ObjT, SPForType, LocT, Loc):-
   locOfObjT(LocT, Loc).
 
 
-
 searchFoodOrDrinkTypeAtLocation(FoodOrDrink, Location) :-
   searchFoodOrDrinkTypeAtLocationType(FoodOrDrink, LocationT),
   owl_individual_of(Location, LocationT).
@@ -277,5 +309,167 @@ searchFoodOrDrinkTypeAtServiceLocation(FoodOrDrinkT, LocationT) :-
   owl_restriction_on(FoodAndBeverageOrganizationT, restriction(knowrob:'servesCuisine', some_values_from(CuisineT))),
   owl_subclass_of(LocationT, knowrob:'MultiRoomUnit'),
   owl_restriction_on(FoodAndBeverageOrganizationT, restriction(knowrob:'servesCuisineAtLocation', some_values_from(LocationT))).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Precidates for calculating distances between poses
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% this precidate should be in a package like knowrob_owl_addons
+% somehow not working, but why?
+data_value(DataProperty,Ind,Value):-
+  rdf_triple(DataProperty, Ind, LiteralType),
+  strip_literal_type(LiteralType,AtomVal),
+  atom_to_term(AtomVal,Value,_).
   
 
+% distance in 3d
+euclidean_distance(A,B,D):-
+  data_value(knowrob:m03, A, AX),
+  data_value(knowrob:m13, A, AY),
+  data_value(knowrob:m23, A, AZ),
+  data_value(knowrob:m03, B, BX),
+  data_value(knowrob:m13, B, BY),
+  data_value(knowrob:m23, B, BZ),
+  DX is AX - BX,
+  DY is AY - BY,
+  DZ is AZ - BZ,
+  D is sqrt( ((DX*DX) + (DY*DY)) + (DZ*DZ)).
+
+in_room(Place, Room):-
+  setof(R, owl_individual_of(R, knowrob:'RoomInAConstruction'), Rs),
+  member(Room, Rs),
+  setof(P, owl_individual_of(P, knowrob:'Place'), Ps),
+  member(Place,Ps),
+  rdf_triple(knowrob:'in-ContGeneric',Place, Room).
+
+same_room(A, B):-
+  in_room(A,R),
+  in_room(B,R).
+
+in_level(Place, Level):-
+  setof(L, owl_individual_of(L, knowrob:'LevelOfAConstruction'), Ls),
+  member(Level, Ls),
+  setof(P, owl_individual_of(P, knowrob:'EnduringThing-Localized'), Ps),
+  member(Place,Ps),
+  rdf_triple(knowrob:'in-ContGeneric',Place, Level).
+
+same_level(A, B):-
+  in_level(A,L),
+  in_level(B,L).
+ 
+sort_path_costs(Current, GoalList, SortedGoals):-
+  findall([Cost,G], ( member(G, GoalList), path_cost(Current,G,Cost)), PCs),
+  sort(PCs,SortedGoals).
+
+path_cost(Current,Goal,Cost):-
+  same_level(Current,Goal),
+  intra_level_cost(Current,Goal,Cost),!.
+
+path_cost(Current,Goal,Cost):-
+  \+same_level(Current,Goal),
+  setof(E, owl_individual_of(E,knowrob:'Elevator'), Es),
+  member(E1, Es),
+  same_level(Current,E1),
+  path_cost(Current,E1,C1),
+  member(E2, Es),
+  same_level(Goal,E2),
+  path_cost(Goal,E2,C2),
+  in_level(Current,CurrentLevel),
+  in_level(Goal,GoalLevel),
+  inter_level_cost(CurrentLevel, GoalLevel, C3),
+  Cost is C1 + C2 + C3.
+  
+intra_level_cost(A,B,D):-
+  % todo: replace by more accurate heuristic
+  % call to path planner? only if available, otherwise heuristic
+  rdf_triple(knowrob:orientation,A,RA),
+  rdf_triple(knowrob:orientation,B,RB),
+  euclidean_distance(RA,RB,D).
+
+inter_level_cost(A,B,Cost):-
+  level_distance(A,B,LevelDistance),
+  data_value(knowrob:heightOfObject,A, LevelHeight),
+  LevelCost is LevelDistance * LevelHeight,
+  % + waiting time for calling, intermediate stops, etc
+  Cost is LevelCost.
+  
+level_distance(A,B,D):-
+  setof(L, owl_individual_of(L,knowrob:'LevelOfAConstruction'), Ls),
+  member(A,Ls),
+  member(B,Ls),
+  rdf_triple(knowrob:floorNumber, A, NA),
+  rdf_triple(knowrob:floorNumber, B, NB),
+  strip_literal_type(NA,AtomA), atom_to_term(AtomA, TermA, _),
+  strip_literal_type(NB,AtomB), atom_to_term(AtomB, TermB, _),
+  D is abs(TermA -TermB).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Predicates to create new instances, set and update their poses.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% create_perception_instance(-Perception) is det.
+%
+% Create perception instance 
+%
+create_perception_instance(Perception) :-
+
+  rdf_instance_from_class('http://ias.cs.tum.edu/kb/knowrob.owl#Perceiving', Perception),
+
+  % create detection time point
+  get_timepoint(TimePoint),
+  rdf_assert(Perception, knowrob:startTime, TimePoint).
+
+
+
+%% create_object_instance(+Type, +ID) is det.
+%
+% Create object instance having type 
+%
+create_object_instance(Type, Obj) :-
+
+  (rdf_has(Obj, rdf:type, Type), !) ;
+
+  rdf_assert(Obj, rdf:type, Type).
+
+
+%% set_object_perception(?A, ?B) is det.
+%
+% Link the object instance to the perception instance
+%
+set_object_perception(Object, Perception) :-
+  rdf_assert(Perception, knowrob:objectActedOn, Object).
+
+
+%% set_perception_pose(+Perception, +PoseList) is det.
+%
+% Set the pose of an object perception
+%
+set_perception_pose(Perception, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]) :-
+
+  % set the pose
+  atomic_list_concat(['rotMat3D_',M00,'_',M01,'_',M02,'_',M03,'_',M10,'_',M11,'_',M12,'_',M13,'_',M20,'_',M21,'_',M22,'_',M23,'_',M30,'_',M31,'_',M32,'_',M33], LocIdentifier),
+
+  atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', LocIdentifier, Loc),
+  rdf_assert(Loc, rdf:type, knowrob:'RotationMatrix3D'),
+  rdf_assert(Perception, knowrob:eventOccursAt, Loc).
+
+%% set_perception_pose(+Perception, +PoseList) is det.
+%
+% Set the pose of an object perception
+%
+update_pose(Object, Pose):-
+
+  % Object should already exist to update a pose,
+  % i.e. have at least a type
+  % it would also be possible to remove this check, but then,
+  % if object does not exist it would be asserterd
+  owl_has(Object, rdf:type, _Type),!,
+ 
+  create_perception_instance(Perception),
+
+  set_perception_pose(Perception, Pose),
+  
+  set_object_perception(Object, Perception).
+
+    
