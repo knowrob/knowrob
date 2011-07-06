@@ -1872,6 +1872,12 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
         cam.setState(state2);
 
 			break;
+    case KeyEvent.VK_J:
+        hint(DISABLE_DEPTH_SORT);
+            break;
+    case KeyEvent.VK_K:
+        hint(ENABLE_DEPTH_SORT);
+            break;
 
 		}
 		if(currentFrame < 0) currentFrame = 0;
