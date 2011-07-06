@@ -1,3 +1,4 @@
+
 /** <module> comp_spatial
 
   This module contains all computables that calculate qualitative spatial relations
@@ -554,9 +555,9 @@ holds(in_ContGeneric(InnerObj, OuterObj), T) :-
 
     % InnerObj is contained by OuterObj if (center_i+0.5*dim_i)<=(center_o+0.5*dim_o)
     % for all dimensions (x, y, z)
-    >=( (IX - 0.5*ID), (OX - 0.5*OD) ), =<( (IX + 0.5*ID), (OX + 0.5*OD) ),
-    >=( (IY - 0.5*IW), (OY - 0.5*OW) ), =<( (IY + 0.5*IW), (OY + 0.5*OW) ),
-    >=( (IZ - 0.5*IH), (OZ - 0.5*OH) ), =<( (IZ + 0.5*IH), (OZ + 0.5*OH) ),
+    >=( (IX - 0.5*ID), (OX - 0.5*OD)-0.05), =<( (IX + 0.5*ID),  (OX + 0.5*OD)+0.05 ),
+    >=( (IY - 0.5*IW), (OY - 0.5*OW)-0.05 ), =<( (IY + 0.5*IW), (OY + 0.5*OW)+0.05 ),
+    >=( (IZ - 0.5*IH), (OZ - 0.5*OH)-0.05 ), =<( (IZ + 0.5*IH), (OZ + 0.5*OH)+0.05 ),
     InnerObj \= OuterObj.
 
 
