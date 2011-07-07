@@ -18,10 +18,10 @@ public class Pose extends Item {
 
       c.ellipse(0,0,xdim,xdim);
 
-      c.translate(xdim/2,0,0);
+      c.translate(xdim/2,0,0.05f);
       
       c.fill(10,10,10);
-      c.box(0.1f,0.1f,0.5f);
+      c.triangle(-xdim/4, -ydim/4, xdim/4, 0, -xdim/4, ydim/4);
       
           
 	}
