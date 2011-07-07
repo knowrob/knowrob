@@ -481,9 +481,9 @@ create_object_instance(Type, Obj) :-
   (rdf_has(Obj, rdf:type, Type), !) ;
 
   (rdf_assert(Obj, rdf:type, Type),
-   rdf_assert(Obj, knowrob:'widthOfObject',  '0.0'),
-   rdf_assert(Obj, knowrob:'heightOfObject', '0.0'),
-   rdf_assert(Obj, knowrob:'depthOfObject',  '0.0')).
+   rdf_assert(Obj, knowrob:'widthOfObject',  literal(type('http://www.w3.org/2001/XMLSchema#float','0.0'))),
+   rdf_assert(Obj, knowrob:'heightOfObject', literal(type('http://www.w3.org/2001/XMLSchema#float','0.0'))),
+   rdf_assert(Obj, knowrob:'depthOfObject',  literal(type('http://www.w3.org/2001/XMLSchema#float','0.0')))).
    
 
 %% set_object_perception(?A, ?B) is det.
