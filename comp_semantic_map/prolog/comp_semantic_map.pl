@@ -480,8 +480,11 @@ create_object_instance(Type, Obj) :-
 
   (rdf_has(Obj, rdf:type, Type), !) ;
 
-  rdf_assert(Obj, rdf:type, Type).
-
+  (rdf_assert(Obj, rdf:type, Type),
+   rdf_assert(Obj, knowrob:'widthOfObject',  '0.0'),
+   rdf_assert(Obj, knowrob:'heightOfObject', '0.0'),
+   rdf_assert(Obj, knowrob:'depthOfObject',  '0.0')).
+   
 
 %% set_object_perception(?A, ?B) is det.
 %

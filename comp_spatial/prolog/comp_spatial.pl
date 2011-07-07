@@ -534,24 +534,24 @@ holds(in_ContGeneric(InnerObj, OuterObj), T) :-
     rdf_triple(knowrob:eventOccursAt, VPO, OuterObjMatrix),
 
     % read the center coordinates of the left entity
-    rdf_triple(knowrob:m03, InnerObjMatrix, literal(type(_,ICx))),atom_to_term(ICx,IX,_),
-    rdf_triple(knowrob:m13, InnerObjMatrix, literal(type(_,ICy))),atom_to_term(ICy,IY,_),
-    rdf_triple(knowrob:m23, InnerObjMatrix, literal(type(_,ICz))),atom_to_term(ICz,IZ,_),
+    rdf_triple(knowrob:m03, InnerObjMatrix, LICX),strip_literal_type(LICX,ICx),atom_to_term(ICx,IX,_),
+    rdf_triple(knowrob:m13, InnerObjMatrix, LICY),strip_literal_type(LICY,ICy),atom_to_term(ICy,IY,_),
+    rdf_triple(knowrob:m23, InnerObjMatrix, LICZ),strip_literal_type(LICZ,ICz),atom_to_term(ICz,IZ,_),
 
     % read the center coordinates of the right entity
-    rdf_triple(knowrob:m03, OuterObjMatrix, literal(type(_,OCx))),atom_to_term(OCx,OX,_),
-    rdf_triple(knowrob:m13, OuterObjMatrix, literal(type(_,OCy))),atom_to_term(OCy,OY,_),
-    rdf_triple(knowrob:m23, OuterObjMatrix, literal(type(_,OCz))),atom_to_term(OCz,OZ,_),
+    rdf_triple(knowrob:m03, OuterObjMatrix, LOCX),strip_literal_type(LOCX,OCx),atom_to_term(OCx,OX,_),
+    rdf_triple(knowrob:m13, OuterObjMatrix, LOCY),strip_literal_type(LOCY,OCy),atom_to_term(OCy,OY,_),
+    rdf_triple(knowrob:m23, OuterObjMatrix, LOCZ),strip_literal_type(LOCZ,OCz),atom_to_term(OCz,OZ,_),
 
     % read the dimensions of the outer entity
-    rdf_has(OuterObj, knowrob:widthOfObject, literal(type(_,Ow))),atom_to_term(Ow,OW,_),
-    rdf_has(OuterObj, knowrob:heightOfObject,literal(type(_,Oh))),atom_to_term(Oh,OH,_),
-    rdf_has(OuterObj, knowrob:depthOfObject, literal(type(_,Od))),atom_to_term(Od,OD,_),
+    rdf_has(OuterObj, knowrob:widthOfObject, LOW),strip_literal_type(LOW,Ow),atom_to_term(Ow,OW,_),
+    rdf_has(OuterObj, knowrob:heightOfObject,LOH),strip_literal_type(LOH,Oh),atom_to_term(Oh,OH,_),
+    rdf_has(OuterObj, knowrob:depthOfObject, LOD),strip_literal_type(LOD,Od),atom_to_term(Od,OD,_),
 
     % read the dimensions of the inner entity
-    rdf_has(InnerObj, knowrob:widthOfObject, literal(type(_,Iw))),atom_to_term(Iw,IW,_),
-    rdf_has(InnerObj, knowrob:heightOfObject,literal(type(_,Ih))),atom_to_term(Ih,IH,_),
-    rdf_has(InnerObj, knowrob:depthOfObject, literal(type(_,Id))),atom_to_term(Id,ID,_),
+    rdf_has(InnerObj, knowrob:widthOfObject, LIW),strip_literal_type(LIW,Iw),atom_to_term(Iw,IW,_),
+    rdf_has(InnerObj, knowrob:heightOfObject,LIH),strip_literal_type(LIH,Ih),atom_to_term(Ih,IH,_),
+    rdf_has(InnerObj, knowrob:depthOfObject, LID),strip_literal_type(LID,Id),atom_to_term(Id,ID,_),
 
     % InnerObj is contained by OuterObj if (center_i+0.5*dim_i)<=(center_o+0.5*dim_o)
     % for all dimensions (x, y, z)
