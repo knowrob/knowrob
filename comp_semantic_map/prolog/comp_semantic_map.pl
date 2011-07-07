@@ -41,29 +41,35 @@ POSSIBILITY OF SUCH DAMAGE.
      comp_has_rooms/2,
      nth_level_of_building/3,
      
-     locOfObj/2,
-     locOfObjT/2,
+     lookForObj/2,
+     lookForObjT/2,
 
-     locOfSimilarObjT/2,
-     locOfMostSimilarObjT/2,
-     locOfKMostSimilarObjT/3,
-     locOfSimilarObjTGtWup/3,
-     locOfSimilarObjTBecause/3,
-     locOfMostSimilarObjTBecause/3,
-     locOfKMostSimilarObjTBecause/4,
-     locOfSimilarObjTGtWupBecause/4,
+     lookForSimilarObjT/2,
+     lookForMostSimilarObjT/2,
+     lookForKMostSimilarObjT/3,
+     lookForSimilarObjTGtWup/3,
+     lookForSimilarObjTBecause/3,
+     lookForMostSimilarObjTBecause/3,
+     lookForKMostSimilarObjTBecause/4,
+     lookForSimilarObjTGtWupBecause/4,
 
      searchFoodOrDrinkTypeAtLocation/2,
      searchFoodOrDrinkTypeAtLocationType/2,
      searchFoodOrDrinkTypeInStorageConstruct/2,
      searchFoodOrDrinkTypeAtServiceLocation/2,
 
+
+     object_info/2,
+     get_url/2,
+     get_room/2,
+     get_level/2,
+    
      euclidean_distance/3,
      in_room/2,
      same_room/2,
      in_level/2,
      same_level/2,
-     sort_path_costs/3,
+     get_sorted_path_costs/3,
      path_cost/3,
      intra_level_cost/3,
      inter_level_cost/3,
@@ -74,10 +80,9 @@ POSSIBILITY OF SUCH DAMAGE.
      set_object_perception/2,
      set_perception_pose/2,
      update_pose/2
-     
-     ]).
 
-%%  hasRooms(L|B,R), hasLevels(B,L), objLoc(O,L), objLocWrtMap(O,L,M)
+    
+     ]).
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
@@ -102,19 +107,24 @@ POSSIBILITY OF SUCH DAMAGE.
   searchFoodOrDrinkTypeInStorageConstruct(r,r),
   searchFoodOrDrinkTypeAtServiceLocation(r,r),
 
-  locOfObj(r, r),
-  locOfObjT(r, r),
+  lookForObj(r, r),
+  lookForObjT(r, r),
 
-  locOfSimilarObjT(r, r),
-  locOfMostSimilarObjT(r, r),
-  locOfKMostSimilarObjT(r, -, r),
-  locOfSimilarObjTGtWup(r, -, r),
+  lookForSimilarObjT(r, r),
+  lookForMostSimilarObjT(r, r),
+  lookForKMostSimilarObjT(r, -, r),
+  lookForSimilarObjTGtWup(r, -, r),
 
-  locOfSimilarObjTBecause(r, r, r),
-  locOfMostSimilarObjTBecause(r, r, r),
-  locOfKMostSimilarObjTBecause(r, -, r, r),
-  locOfSimilarObjTGtWupBecause(r, -, r, r),
+  lookForSimilarObjTBecause(r, r, r),
+  lookForMostSimilarObjTBecause(r, r, r),
+  lookForKMostSimilarObjTBecause(r, -, r, r),
+  lookForSimilarObjTGtWupBecause(r, -, r, r),
 
+  object_info(r,-),
+  get_url(r, -),
+  get_room(r, -),
+  get_level(r, -),
+  
   euclidean_distance(r,r,-),
   in_room(r, r),
   same_room(r, r),
@@ -133,6 +143,13 @@ POSSIBILITY OF SUCH DAMAGE.
   set_perception_pose(r,-),
 
   data_value(r,r,-).
+
+% Example query:
+% setof(_O, lookForObjT(knowrob:'Cup', _O), _Objs),
+% get_sorted_path_costs('http://www.jsk.t.u-tokyo.ac.jp/jsk_map.owl#cup-3', _Objs, _Sorted),
+% member([_Cost,_Obj], _Sorted),
+% object_info(_Obj,_Info),
+% append([_Obj,_Cost],_Info,Result).
 
 
 comp_number_of_levels(B, N):-
@@ -165,57 +182,57 @@ nth_level_of_building(Number, Building, Level) :-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-locOfObj(Obj, Loc):-
-  owl_individual_of(Obj, knowrob:'SpatialThing-Localized'),
-  rdf_triple(knowrob:orientation, Obj, Loc).
+lookForObj(Obj,Obj):-
+  owl_individual_of(Obj, knowrob:'SpatialThing-Localized').
+  %rdf_triple(knowrob:orientation, Obj, Loc).
 
 % computable wrappers for all predicates below obj -> objT? 
 
-locOfObjT(ObjT, Loc):-
+lookForObjT(ObjT, Obj):-
   owl_subclass_of(ObjT, knowrob:'SpatialThing-Localized'),
-  owl_has(Obj, rdf:type, ObjT),
-  rdf_triple(knowrob:orientation, Obj, Loc).
+  owl_has(Obj, rdf:type, ObjT).
+  %rdf_triple(knowrob:orientation, Obj, Loc).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % locations of objects with similar type using WUP 
 
-locOfSimilarObjT(ObjT, Loc):-
-  locOfSimilarObjTBecause(ObjT, Loc, _).
+lookForSimilarObjT(ObjT, Loc):-
+  lookForSimilarObjTBecause(ObjT, Loc, _).
 
-locOfSimilarObjTBecause(ObjT, Loc, [S,T]):-
+lookForSimilarObjTBecause(ObjT, Loc, [S,T]):-
   similarObjTypes(ObjT,SimTypes),
   member([S,T], SimTypes),
-  locOfObjT(T,Loc).
+  lookForObjT(T,Loc).
 
-locOfMostSimilarObjT(ObjT, Loc):-
-  locOfMostSimilarObjTBecause(ObjT, Loc, _).
+lookForMostSimilarObjT(ObjT, Loc):-
+  lookForMostSimilarObjTBecause(ObjT, Loc, _).
 
-locOfMostSimilarObjTBecause(ObjT, Loc, Because):-
-  locOfKMostSimilarObjTBecause(ObjT, 1, Loc, Because).
+lookForMostSimilarObjTBecause(ObjT, Loc, Because):-
+  lookForKMostSimilarObjTBecause(ObjT, 1, Loc, Because).
 
-locOfKMostSimilarObjT(ObjT, K, Loc):-
-  locOfKMostSimilarObjTBecause(ObjT, K, Loc, _).
+lookForKMostSimilarObjT(ObjT, K, Loc):-
+  lookForKMostSimilarObjTBecause(ObjT, K, Loc, _).
   
-locOfKMostSimilarObjTBecause(ObjT, K, Loc, [S, T]):-
+lookForKMostSimilarObjTBecause(ObjT, K, Loc, [S, T]):-
   similarObjTypes(ObjT,SimTypes),
   nth0(N, SimTypes, [S,T]),
   N < K,
-  locOfObjT(T,Loc).
+  lookForObjT(T,Loc).
 
-locOfSimilarObjTGtWup(ObjT, Wup, Loc):-
-  locOfSimilarObjTGtWupBecause(ObjT, Wup, Loc, _).
+lookForSimilarObjTGtWup(ObjT, Wup, Loc):-
+  lookForSimilarObjTGtWupBecause(ObjT, Wup, Loc, _).
 
-locOfSimilarObjTGtWupBecause(ObjT, Wup, Loc, [S,T]):-
+lookForSimilarObjTGtWupBecause(ObjT, Wup, Loc, [S,T]):-
   similarObjTypes(ObjT,SimTypes),
   member([S,T], SimTypes),
   S >= Wup,
-  locOfObjT(T,Loc).
+  lookForObjT(T,Loc).
   
 similarObjTypes(ObjT, DecreasingSimTypes):- 
   % find all located instances (with orientation)
   % in the map and compare their types with ObjT
   % return sorted list of [Similarity, Type] tuples
-  findall(T, (locOfObj(O,_L), owl_has(O, rdf:type, T)), TypesL),
+  findall(T, (lookForObj(O,_L), owl_has(O, rdf:type, T)), TypesL),
   list_to_set(TypesL, TypesS),
   findall([Sim,T], (member(T,TypesS), rdf_wup_similarity(ObjT, T, Sim)), SimTypes),
   sort(SimTypes, IncreasingSimTypes),
@@ -234,12 +251,12 @@ similarObjTypes(ObjT, DecreasingSimTypes):-
 %   searchSpaceForObjTBecauseEvtT(ObjT, _, _, Loc).
 
 % look at places where instances of this objT are created.
-locOfCreationEvtOfObjT(ObjT, Loc):-
-  locOfCreationEvtOfObjTBecause(ObjT, _, _, Loc).
+lookForCreationEvtOfObjT(ObjT, Loc):-
+  lookForCreationEvtOfObjTBecause(ObjT, _, _, Loc).
 
-locOfCreationEvtOfObjTBecause(ObjT, EvtT, LocT, Loc):-
+lookForCreationEvtOfObjTBecause(ObjT, EvtT, LocT, Loc):-
   createdAtLocationTBecause(ObjT, LocT, EvtT),
-  locOfObjT(LocT,Loc).
+  lookForObjT(LocT,Loc).
 
 createdAtLocationTBecause(ObjT, LocT, EvtT) :-
   createdInEventT(ObjT, EvtT),
@@ -268,7 +285,7 @@ createdInEventT(ObjT, EvtT) :-
 %   owl_subclass_of(R, knowrob:'Restaurant-Organization'),
 %   owl_restriction_on(R, restriction(knowrob:servesCuisineAtLocation, some_values_from(LocT))),
 %   owl_individual_of(Loc,LoT),
-%   locOfObj(Loc,MAT),
+%   lookForObj(Loc,MAT),
 %   owl_restriction_on(R, restriction(knowrob:servesCuisine, some_values_from(CuisineT))),
 %   owl_restriction_on(ObjT, restriction(knowrob:commonFoodTypeOfCuisine, some_values_from(CuisineT))),
 %   findall(Ri, owl_individual_of(Ri, R), Rs),
@@ -277,14 +294,14 @@ createdInEventT(ObjT, EvtT) :-
   
 
 
-locOfStoragePlaceForObjT(ObjT, Loc):-
-  locOfStoragePlaceForObjTBecause(ObjT, _, _ ,Loc).
+lookForStoragePlaceForObjT(ObjT, Loc):-
+  lookForStoragePlaceForObjTBecause(ObjT, _, _ ,Loc).
 
-locOfStoragePlaceForObjTBecause(ObjT, SPForType, LocT, Loc):-
+lookForStoragePlaceForObjTBecause(ObjT, SPForType, LocT, Loc):-
   owl_subclass_of(LocT,    knowrob:'StorageConstruct'),
   owl_restriction_on(LocT, restriction(knowrob:'typePrimaryFunction-StoragePlaceFor', some_values_from(SPForType))),
   owl_subclass_of(ObjT, SPForType),
-  locOfObjT(LocT, Loc).
+  lookForObjT(LocT, Loc).
 
 
 searchFoodOrDrinkTypeAtLocation(FoodOrDrink, Location) :-
@@ -309,6 +326,40 @@ searchFoodOrDrinkTypeAtServiceLocation(FoodOrDrinkT, LocationT) :-
   owl_restriction_on(FoodAndBeverageOrganizationT, restriction(knowrob:'servesCuisine', some_values_from(CuisineT))),
   owl_subclass_of(LocationT, knowrob:'MultiRoomUnit'),
   owl_restriction_on(FoodAndBeverageOrganizationT, restriction(knowrob:'servesCuisineAtLocation', some_values_from(LocationT))).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Helper predicates
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+object_info(Obj,[Url, Room, Level]):-
+  get_url(Obj, Url),
+  get_room(Obj, Room),
+  get_level(Obj, Level).
+  
+
+get_url(Obj, Url):-
+  ( owl_has(Obj, knowrob:'linkToImageFile', URL)
+  -> strip_literal_type(URL,Url)
+  ; Url = false
+  ).
+
+get_room(Obj, Room):-
+  ( in_room(Obj, ROOM )
+  -> Room = ROOM
+  ; Room = false
+  ).
+
+get_level(Obj, Level):-
+  ( in_level(Obj, LEVEL)
+  -> Level = LEVEL
+  ; Level = false
+  ).
+
+get_cost(Cur, Goal, Cost):-
+  path_cost(Cur,Goal,Cost).
+  
+ 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Precidates for calculating distances between poses
@@ -338,7 +389,7 @@ euclidean_distance(A,B,D):-
 in_room(Place, Room):-
   setof(R, owl_individual_of(R, knowrob:'RoomInAConstruction'), Rs),
   member(Room, Rs),
-  setof(P, owl_individual_of(P, knowrob:'Place'), Ps),
+  setof(P, owl_individual_of(P, knowrob:'HumanScaleObject'), Ps),
   member(Place,Ps),
   rdf_triple(knowrob:'in-ContGeneric',Place, Room).
 
@@ -357,7 +408,7 @@ same_level(A, B):-
   in_level(A,L),
   in_level(B,L).
  
-sort_path_costs(Current, GoalList, SortedGoals):-
+get_sorted_path_costs(Current, GoalList, SortedGoals):-
   findall([Cost,G], ( member(G, GoalList), path_cost(Current,G,Cost)), PCs),
   sort(PCs,SortedGoals).
 
@@ -419,7 +470,6 @@ create_perception_instance(Perception) :-
   % create detection time point
   get_timepoint(TimePoint),
   rdf_assert(Perception, knowrob:startTime, TimePoint).
-
 
 
 %% create_object_instance(+Type, +ID) is det.
