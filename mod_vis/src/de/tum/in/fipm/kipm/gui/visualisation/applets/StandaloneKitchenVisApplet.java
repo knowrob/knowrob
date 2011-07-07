@@ -1585,8 +1585,10 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			// check if it is some kind of box (e.g. Bed)
 			HashMap<String, Vector<Object>> box = PrologVisualizationCanvas.executeQuery(
 					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
+          //"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'HumanScaleObject')," + // too general?
+          "( rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'ConstructionArtifact');" +
+            "rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'FurniturePiece'))," +
 					//"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'Bed-PieceOfFurniture')," +
-          "rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'ConstructionArtifact')," +
 					"rdf_has("+identifier+",knowrob:widthOfObject,literal(type(_,_W)))," + 
 					"rdf_has("+identifier+",knowrob:heightOfObject,literal(type(_,_H))), " + 
 					"rdf_has("+identifier+",knowrob:depthOfObject,literal(type(_,_D))), " +
@@ -2156,7 +2158,10 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		if(type.endsWith("#Cup'")) {
 			return new Cup(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
-		} else if(type.endsWith("#DinnerPlate'")) {
+    } else if(type.endsWith("#DrinkingMug'")) { // todo: make drinking mug item
+        return new Cup(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
+
+		} else if(type.endsWith("#DinnerPlate'")) { 
 			return new Plate(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
 		} else if (type.endsWith("#DrinkingGlass'")) {
@@ -2168,8 +2173,8 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		} else if (type.endsWith("#DrinkingBottle'")) {
 			return new Box(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0.05f,0.05f,0.15f);
 
-
-
+    } else if (type.endsWith("#Kettle'")) {
+        return new Kettle(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
 			/////////////////////////////////////////////
 			// silverware	
@@ -2180,6 +2185,9 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		} else if(type.endsWith("#TableKnife'")) {
 			return new Knife(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
+    } else if(type.endsWith("#Knife'")) { // toso: make general knife item?
+			return new Knife(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
+
 		} else if(type.endsWith("#SoupSpoon'")) {
 			return new Spoon(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
@@ -2187,10 +2195,16 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			/////////////////////////////////////////////
 			// serving and cooking
 
+    } else if(type.endsWith("#Sponge-CleaningImplement'")) {
+        return new Box(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0.05f,0.10f,0.05f);
+
 		} else if(type.endsWith("#Napkin'")) {
 			return new Napkin(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
 		} else if(type.endsWith("#PlaceMat'")) {
+			return new PlaceMat(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
+
+    } else if(type.endsWith("#Tray'")) { //todo: make Tray item
 			return new PlaceMat(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
 		} else if (type.endsWith("#Platter'")) {
@@ -2293,7 +2307,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			return new Ellipse(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
 		// } else if(type.endsWith("#Place'")) {
-    //   return new Ellipse(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1, 0.325f,0.325f,0f);
+    //   return new Ellipse(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1, 0.0f,0.0f,0f);
 
 		} else if(type.endsWith("#Point3D'")) {
 			return new Sphere(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  3f,3f,3f);
