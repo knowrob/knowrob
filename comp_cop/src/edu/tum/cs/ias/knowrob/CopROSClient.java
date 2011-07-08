@@ -47,8 +47,8 @@ public class CopROSClient {
 	static NodeHandle n;
 
 	
-	static CopCallback<cop_answer> copObjectDetectionsCallback;
-	static CopCallback<cop_answer> copModelDBCallback;
+	static Subscriber.QueueingCallback<cop_answer> copObjectDetectionsCallback;
+	static Subscriber.QueueingCallback<cop_answer> copModelDBCallback;
 
 	Thread listenToCopDB;
 	Thread updateKnowRobModelDB;
@@ -66,8 +66,8 @@ public class CopROSClient {
 
 		initRos(node_name);
 		
-		copObjectDetectionsCallback = new CopCallback<cop_answer>();
-		copModelDBCallback = new CopCallback<cop_answer>();
+		copObjectDetectionsCallback = new Subscriber.QueueingCallback<cop_answer>();
+		copModelDBCallback = new Subscriber.QueueingCallback<cop_answer>();
 		
 	}
 
@@ -530,7 +530,7 @@ public class CopROSClient {
 		try {
 			
 			// create a queuing callback that is used for listening on the answer topic
-			CopCallback<cop_answer> cop_callback = new CopCallback<cop_answer>();
+			Subscriber.QueueingCallback<cop_answer> cop_callback = new Subscriber.QueueingCallback<cop_answer>();
 			Subscriber<cop_answer> sub = n.subscribe(output_topic, new cop_answer(), cop_callback, 10);
 			
 			
@@ -558,62 +558,5 @@ public class CopROSClient {
 		return r;
     }
     
-    
-    
-    /**
-     * Callback methods writing the results into a queue. (taken from rosjava tutorial) 
-     *
-     * @param <M>
-     */
-    public static class CopCallback<M extends cop_answer> implements Subscriber.Callback<M> {
-		private Queue<M> queue;
-		
-		public CopCallback() {
-			queue = new ConcurrentLinkedQueue<M>();
-		}
-		
-		@SuppressWarnings({ "unchecked"})
-		public void call(M request) {
-			synchronized(queue) {
-				queue.add((M) request.clone());
-				queue.notify();
-			}
-		}
-		
-		public M pop() throws InterruptedException {
-			synchronized(queue) {
-				while(queue.isEmpty()) {
-					queue.wait();
-				}
-				return queue.remove();
-			}
-		}
-		
-
-		public M peek() throws InterruptedException {
-			synchronized(queue) {
-				while(queue.isEmpty()) {
-					queue.wait();
-				}
-				return queue.peek();
-			}
-		}
-
-		public void clear() {
-			synchronized(queue) {
-				queue.clear();
-			}
-		}
-
-		
-		public boolean isEmpty() {
-			return queue.isEmpty();
-		}
-		
-		public int size() {
-			return queue.size();
-		}
-		
-	}
     
 }

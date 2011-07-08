@@ -1,0 +1,14 @@
+<package>
+  <description brief="knowrob_actions">
+
+     knowrob_actions
+
+  </description>
+  <author>Moritz Tenorth</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/knowrob_actions</url>
+
+</package>
+
+
