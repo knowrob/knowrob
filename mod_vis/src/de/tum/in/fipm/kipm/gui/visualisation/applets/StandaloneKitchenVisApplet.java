@@ -675,6 +675,66 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		}
 	}
 	
+	/** Displays human trajectories 
+	 * 
+	 * @param identifier= 'http://ias.cs.tum.edu/kb/knowrob.owl#PickingUpAnObject'
+	 * @param handUsed = 'RightHand' or 'LeftHand'
+	 */
+	
+	public void displayHumanTrajectory(String identifier, String handUsed) {
+		queryString =identifier;
+		Integer Occ=0, auxOcc=0;
+		boolean band=true;
+		int row=0, contP=0, col=0;
+		float[][] Xp=new float[80][19];
+		float[][] Yp=new float[80][19];
+		float[][] Zp=new float[80][19];
+		
+		Trajectories traj = new Trajectories();
+		
+		HashMap<String, Vector<Object>> o= PrologVisualizationCanvas.executeQuery(""+"handTrajectory("+handUsed+", "+identifier+", T, P, X, Y, Z)", null);
+		
+		Vector<Object> pointID = o.get("P");
+		Vector<Object> Xc      = o.get("X");
+		Vector<Object> Yc      = o.get("Y");
+		Vector<Object> Zc      = o.get("Z");
+				
+		for (Object p: pointID){
+			String s_p=p.toString(); //example s_p=p_1_2_36 (Ep, Occ, Inst)
+			String[] tokenP=s_p.split("_");
+			if (Occ.equals(Integer.parseInt(tokenP[2])) && band==true){
+				Xp[row][col]=Float.parseFloat(Xc.get(contP).toString());
+				Yp[row][col]=Float.parseFloat(Yc.get(contP).toString());
+				Zp[row][col]=Float.parseFloat(Zc.get(contP).toString());
+				row=row+1;
+				System.out.println("Xp ="+Float.parseFloat(Xc.get(contP).toString()));
+			} else {
+				Occ=Integer.parseInt(tokenP[2]);
+				if (Occ > auxOcc) {
+					col=col+1; row=0; band=true; auxOcc=Occ;
+					System.out.println("Occ=" +Occ);
+				} else {band=false;}
+				
+			}
+			contP=contP+1;	
+		}
+		System.out.println("columnas"+Xp[0].length);
+		
+		for (int j=0;j<Xp[0].length;j++ ){ //number of columns from Xp
+			System.out.println("New traj");
+			for (int i=0;i<(Xp.length)-1; i++) {
+				if (Xp[i][j]!=0.0 && Yp[i][j]!=0){
+					traj.addTraj(Xp[i][j], Yp[i][j], Zp[i][j]);
+					System.out.println("traj= "+Xp[i][j]);
+				}
+			}
+			traj.addTraj(0, 0, 0);
+			
+		}
+		allItems.add(traj);
+		animatedItemsRef.put("traj", traj); 
+	}
+	
 	/** Displays the eye trajectory from the gaze camera 
 	 * 
 	 * @param identifier = 'http://ias.cs.tum.edu/kb/knowrob.owl#PickingUpAnObject'
@@ -691,17 +751,14 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		HashMap<String, Vector<Object>> o= PrologVisualizationCanvas.executeQuery(""+ "readEyeTrajectory("+identifier+", T, P, XCoor, YCoor)", null);
 		
 		Vector<Object> pointId = o.get("P");
-		//String pointId = (String)c.get("P").get(0);
 		Vector<Object> XCoor = o.get("XCoor");
 		Vector<Object> YCoor = o.get("YCoor");
 		Xc= new int[35][4];
 		Yc= new int[35][4];
 		for (Object p: pointId){
-			//System.out.println("pointId: " +p);
 			String s_p=p.toString(); //example s_p=p_1_0
 			String[] tokenP=s_p.split("_");
 			// example: tokenP[0]=p, tokenP[1]=1 (occurrence), tokenP[2]=0 (instance)
-			//System.out.println("token 0: " +tokenP[0]+" token 1:"+tokenP[1]);
 			if (Occ.equals(Integer.parseInt(tokenP[1])) && band==true) {
 				//Save the values of the coordinates in 2 vectors
 				//displayMessage("instance_nr: "+ Integer.parseInt(tokenP[2]));
@@ -720,20 +777,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			}
 			contP=contP+1;
 		}
-		// Now I just need to plot the stupid points!!!!1 
-		/* other colors:  white = 0xFFFFFFFF
-		lightGray =	0xFFC0C0C0
-	    gray =	0xFF808080
-		darkGray = 0xFF404040
-		black =	0xFF000000
-		red =	0xFFFF0000
-		pink =	0xFFFFAFAF
-		orange = 0xFFFFC800
-		yellow = 0xFFFFFF00
-		green =	0xFF00FF00
-		magenta = 0xFFFF00FF
-		cyan =	0xFF00FFFF
-		blue =	0xFF0000FF */
+	
 		for (int j=0;j<Xc[0].length;j++ ){
 			for (int i=0;i<(Xc.length)-1; i++) {
 				traj.addTraj(Xc[i][j], Yc[i][j], 0);

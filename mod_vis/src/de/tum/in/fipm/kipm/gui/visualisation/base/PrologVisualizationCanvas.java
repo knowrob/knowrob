@@ -116,6 +116,11 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
     	KVObject.redraw();
     }
 	
+    public void displayHumanTrajectory(String identifier, String handUsed){
+    	KVObject.displayHumanTrajectory(addSingleQuotes(identifier), addSingleQuotes(handUsed));
+    	KVObject.redraw();
+    }
+    
 	/**
 	 * setActionInformation
 	 * @param pl_list

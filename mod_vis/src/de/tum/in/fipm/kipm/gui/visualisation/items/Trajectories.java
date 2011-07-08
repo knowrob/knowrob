@@ -30,28 +30,30 @@ public class Trajectories extends ItemBase{
 		c.pushMatrix();
 		//c.scale(100);
 		
-		
 		Point prev=null;
 		c.sphereDetail(3);
 	
 		for(Point p : pointsTraj) {
     		p.draw(c);
-    		if (cont<=0){
-    			prev=p;
+    		//System.out.println("p.v= "+p.v);
+    		if (cont<=0 && p.v.x!=0 ){
+    			prev=p; 
     			//System.out.println("prev: "+prev.v);
+    			
     			cont++;
-    		} else if (p.v.x != 0) {
+    		} else if (p.v.x !=0) {
 			 // draw line connecting previous point with current point
 				//System.out.println("prev: " +prev.v +" current: "+p.v);
 				c.drawLine(prev.v, p.v, lineColor);
 				
 				//add the point
-				
 				prev = p;
+				//System.out.println("p.v= "+p.v);
 			} else if (p.v.x==0){
 				cont=0;
-				lineColor=0xFFFF0000;
-			}
+				//lineColor=0xFFFF0000;
+				//System.out.println("0000000");
+			  }
 			
 		}
 		c.sphereDetail(30);

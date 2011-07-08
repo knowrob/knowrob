@@ -33,6 +33,7 @@
       display_action/2,
       display_action_fixed/2,
       display_eye_trajectory/2,
+      display_human_trajectory/3,
       show_actionseq/4,
       add_object/2,
       add_object_perception/2,
@@ -178,6 +179,13 @@ display_eye_trajectory(Identifier, Canvas) :-
     ((var(Canvas)) -> (v_canvas(Canvas));(true)),
     jpl_call(Canvas, 'displayEyeTrajectory', [Identifier], _).
   
+
+
+display_human_trajectory(Identifier, HandUsed, Canvas):-
+   ((var(Canvas)) -> (v_canvas(Canvas));(true)),
+   jpl_call(Canvas, 'displayHumanTrajectory', [Identifier, HandUsed], _).
+
+
 
 %% show_actionseq(+SeqInfos, +Canvas, +Hand, +Level) is det.
 %
