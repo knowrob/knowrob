@@ -260,23 +260,29 @@ public final class JSONPrologNode {
    */
   public void execute(String args[]) throws InterruptedException, RosException, IOException, RospackError {
 
-    // initialize the Prolog environment
-    synchronized(jpl.Query.class) {
-
-      initProlog();
-
-      if(!this.initPackage.equals("")) {
-        new jpl.Query("ensure_loaded('" + findRosPackage(initPackage)
-            + "/prolog/init.pl')").oneSolution();
-      }
-    }
-
     // init ROS
     final Ros ros = Ros.getInstance();
     if(!Ros.getInstance().isInitialized()) {
       ros.init("json_prolog", false, false, false, args);
     }
     NodeHandle n = ros.createNodeHandle("~");
+
+    // initialize the Prolog environment
+    synchronized(jpl.Query.class) {
+
+      initProlog();
+
+      if(n.hasParam("initial_package"))
+      {
+        if(!initPackage.equals(""))
+          ros.logWarn("Initial package has been specivied via command line parameter but the ROS parameter ~initial_package has been set. Using ROS parameter."); 
+        initPackage = n.getStringParam("initial_package");
+      }
+      if(!this.initPackage.equals("")) {
+        new jpl.Query("ensure_loaded('" + findRosPackage(initPackage)
+            + "/prolog/init.pl')").oneSolution();
+      }
+    }
 
     // create services
     @SuppressWarnings("unused")
@@ -356,11 +362,15 @@ public final class JSONPrologNode {
   public static void main(String args[]) {
 
     try {
-
-      if(args.length>0)
+      // We need to ignore ros specific params such as topic remappings and __name. 
+      // The easiest way seems to be to just check for := in the string.
+      if(args.length>0 && !args[0].contains(":="))
+      {
+        Ros.getInstance().logWarn("Using deprecated specification of package to load. Please use the corresponding ROS parameter ~initial_package instead");
         new JSONPrologNode(args[0]).execute(args);
+      }
       else
-        new JSONPrologNode().execute(args);	
+        new JSONPrologNode().execute(args);
 
     } catch (Exception e) {
       e.printStackTrace();
