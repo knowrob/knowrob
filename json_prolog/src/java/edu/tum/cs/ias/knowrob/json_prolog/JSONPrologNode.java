@@ -51,16 +51,9 @@ public final class JSONPrologNode {
   private Hashtable<String, PrologSolutions> queries;
   private boolean hasIncrementalQuery = false; 
   private String initPackage="";
-  private String initGoal="";
-    
-  public JSONPrologNode() {
-      this("");
-  }
 
-  public JSONPrologNode(String initpkg, String initGoal) {
-    this.initPackage=initpkg;
-    this.initGoal=initGoal;
-    queries = new Hashtable<String, PrologSolutions>();
+  public JSONPrologNode() {
+    this("");
   }
 
   public JSONPrologNode(String initpkg) {
@@ -276,10 +269,6 @@ public final class JSONPrologNode {
         new jpl.Query("ensure_loaded('" + findRosPackage(initPackage)
             + "/prolog/init.pl')").oneSolution();
       }
-      if(!this.initGoal.equals("")) {
-          new jpl.Query(initGoal).oneSolution();
-      }
-
     }
 
     // init ROS
@@ -368,10 +357,8 @@ public final class JSONPrologNode {
 
     try {
 
-      if(args.length == 1)
+      if(args.length>0)
         new JSONPrologNode(args[0]).execute(args);
-      else if (args.length == 2)
-        new JSONPrologNode(args[0],args[1]).execute(args);
       else
         new JSONPrologNode().execute(args);	
 
