@@ -707,7 +707,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 				Yp[row][col]=Float.parseFloat(Yc.get(contP).toString());
 				Zp[row][col]=Float.parseFloat(Zc.get(contP).toString());
 				row=row+1;
-				System.out.println("Xp ="+Float.parseFloat(Xc.get(contP).toString()));
+				//System.out.println("Xp ="+Float.parseFloat(Xc.get(contP).toString()));
 			} else {
 				Occ=Integer.parseInt(tokenP[2]);
 				if (Occ > auxOcc) {
@@ -721,11 +721,11 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		System.out.println("columnas"+Xp[0].length);
 		
 		for (int j=0;j<Xp[0].length;j++ ){ //number of columns from Xp
-			System.out.println("New traj");
+			//System.out.println("New traj");
 			for (int i=0;i<(Xp.length)-1; i++) {
 				if (Xp[i][j]!=0.0 && Yp[i][j]!=0){
 					traj.addTraj(Xp[i][j], Yp[i][j], Zp[i][j]);
-					System.out.println("traj= "+Xp[i][j]);
+					//System.out.println("traj= "+Xp[i][j]);
 				}
 			}
 			traj.addTraj(0, 0, 0);
