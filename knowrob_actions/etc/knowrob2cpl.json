@@ -85,5 +85,14 @@
   "Remembering" : "achieve",
   "UsingAnObject" : "use",
 
+
+  "MoveBaseToHandoverPose" : "arms-at",
+  "MoveBaseToGraspPose" : "loc",
+  "HandoverObject" : "arms-at",
+  "GraspBottle" : "object-in-hand",
+  "OpenGripperForHandover" : "arms-at",
+  "DrinkingBottle" : "drinking-bottle",
+  "Bed-PieceOfFurniture" : "bed"
+
 }
 

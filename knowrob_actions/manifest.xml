@@ -8,7 +8,8 @@
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/knowrob_actions</url>
-
+  <rosdep name="libjson_java"/>
+  <depend package="knowrob_common"/>
 </package>
 
 

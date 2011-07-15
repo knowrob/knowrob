@@ -8,6 +8,13 @@
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/knowrob_common</url>
+  <depend package="rosjava"/>
+  <depend package="jpl"/>
+  <depend package="semweb"/>
+
+  <export>
+    <java classpath="${prefix}/bin:${prefix}/lib/guava-r09.jar"/>
+  </export>
 
 </package>
 

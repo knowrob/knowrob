@@ -8,14 +8,35 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 set(JAVA_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/bin)
 
 
+
+
 # external dependencies in other packages
 rosbuild_find_ros_package(jpl)
 add_classpath(${jpl_PACKAGE_PATH}/prolog/jpl.jar)
+add_runtime_classpath(${jpl_PACKAGE_PATH}/prolog/jpl.jar)
 
 rosbuild_find_ros_package(rosjava)
 add_classpath(${rosjava_PACKAGE_PATH}/bin)
 
-# generate launch script
-rospack_add_java_executable(BarcodeWebLookup edu.tum.cs.ias.knowrob.BarcodeWebLookup)
+rosbuild_find_ros_package(knowrob_common)
+add_classpath(${knowrob_common_PACKAGE_PATH}/bin)
+add_classpath(${knowrob_common_PACKAGE_PATH}/lib/commons-lang-2.6.jar)
 
+add_classpath(/usr/share/java/json-lib.jar)
+add_classpath(/usr/share/java/commons-collections3.jar)
+add_classpath(/usr/share/java/ezmorph.jar)
+add_classpath(/usr/share/java/commons-beanutils.jar)
+add_classpath(/usr/share/java/commons-lang.jar)
+add_classpath(/usr/share/java/commons-logging.jar)
+
+add_runtime_classpath(${jpl_PACKAGE_PATH}/prolog/jpl.jar)
+add_runtime_classpath(/usr/share/java/json-lib.jar)
+add_runtime_classpath(/usr/share/java/commons-collections3.jar)
+add_runtime_classpath(/usr/share/java/ezmorph.jar)
+add_runtime_classpath(/usr/share/java/commons-beanutils.jar)
+add_runtime_classpath(/usr/share/java/commons-lang.jar)
+add_runtime_classpath(/usr/share/java/commons-logging.jar)
+
+
+add_jar_dir(lib)
 add_java_source_dir(${PROJECT_SOURCE_DIR}/src)

@@ -14,4 +14,5 @@ add_classpath(${jpl_PACKAGE_PATH}/prolog/jpl.jar)
 rosbuild_find_ros_package(rosjava)
 add_classpath(${rosjava_PACKAGE_PATH}/bin)
 
+add_jar_dir(lib)
 add_java_source_dir(${PROJECT_SOURCE_DIR}/src)
