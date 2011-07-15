@@ -29,8 +29,7 @@
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/rdfs_computable')).
 
-:- rdf_meta
-        class_properties(r,r,r).
+:- rdf_meta(class_properties(r,r,r)).
 
 
 %% class_properties(?Class, ?Prop, ?Values) is nondet.
@@ -43,16 +42,21 @@
 
 class_properties(Class, Prop, Val) :-         % read directly asserted properties
   class_properties_1(Class, Prop, Val).
+
 class_properties(Class, Prop, Val) :-         % also consider properties of superclasses
   owl_subclass_of(Class, Super), Class\=Super,
   class_properties_1(Super, Prop, Val).
 
 % read restrictions defined for Class for Prop or a sub-property of Prop
-class_properties_1(Class, Prop, Val) :-
-  owl_direct_subclass_of(Class, Sup),
-  owl_direct_subclass_of(Sup, Sup2),
-  ( (nonvar(Prop)) -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
-  owl_restriction(Sup2,restriction(SubProp, some_values_from(Val))).
+
+% TODO: Do we need this alternative? results in double results, and super-classes
+% should already be handled by the second alternative of class_properties
+%
+% class_properties_1(Class, Prop, Val) :-
+%   owl_direct_subclass_of(Class, Sup),
+%   owl_direct_subclass_of(Sup, Sup2),
+%   ( (nonvar(Prop)) -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
+%   owl_restriction(Sup2,restriction(SubProp, some_values_from(Val))).
 
 class_properties_1(Class, Prop, Val) :-
   owl_direct_subclass_of(Class, Sup),

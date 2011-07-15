@@ -22,4 +22,4 @@ if [ -n "$2" ]; then
     SCRIPT_FILE=$SCRIPT_FILE",$2"
 fi
 
-exec /usr/bin/xpce -s ${PL_INIT_FILE} ${SCRIPT_FILE} ${PL_ARGS}
+exec /usr/bin/swipl -s ${PL_INIT_FILE} ${SCRIPT_FILE} ${PL_ARGS}
