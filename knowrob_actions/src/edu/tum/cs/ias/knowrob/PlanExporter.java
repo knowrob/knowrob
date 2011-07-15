@@ -89,7 +89,7 @@ public class PlanExporter {
 
 
 		            // create action goal
-		            String rplAction = knowrobToCPL.getString(PrologInterface.valueFromIRI(action));
+		            String rplAction = knowrobToCpl(action);
 
 		            String action_spec = "";
 		            if(rplAction.endsWith("object-in-hand")) {
@@ -102,7 +102,7 @@ public class PlanExporter {
 		                action_spec = "(achieve (arm-parked ?side))";
 
 		            } else if(rplAction.endsWith("arms-at")) {
-		                action_spec = "(achieve (arms-at ?traj))";
+		                action_spec = "(achieve (arms-at " + loc_desig + "))";
 
 		            } else if(rplAction.endsWith("looking-at")) {
 		                action_spec = "(achieve (looking-at "+ loc_desig +"))";
@@ -111,37 +111,13 @@ public class PlanExporter {
 		                action_spec = "(perceive-all "+ obj_desig +")";
 
 		            } else if(rplAction.endsWith("perceive")) {
-		                action_spec = "(perceive "+ obj_desig +")"; 
-		            } 
+                        action_spec = "(perceive "+ obj_desig +")"; 
+                        
+                    }  else if(rplAction.endsWith("loc")) {
+                        action_spec = "(achieve (loc "+ loc_desig +"))"; 
+                    } 
 
 		            plan.add(action_spec);
-
-		            //			String plan = "(def-top-level-plan ehow-make-pancakes1 ()" +
-		            //			
-		            //				    "(with-designators (" +
-		            //				    
-		            //				    "      (pancake2 (an object '((type pancake))))" + 
-		            //				    "      (mixforbakedgoods2 (some stuff '((type pancake-mix))))" + 
-		            //				    "      (refrigerator2 (an object '((type refrigerator))))" + 
-		            //				    "      (cookingvessel2 (an object '((type pan))))" + 
-		            //				    "      (dinnerplate2 (an object '((type plate))))" + 
-		            //				    
-		            //				    "      (location1 (a location `((in ,refrigerator2)" + 
-		            //				    "                               (of ,mixforbakedgoods2))))" + 
-		            //				    "      (location2 (a location `((in ,cookingvessel2)" + 
-		            //				    "                               (of ,mixforbakedgoods2))))" + 
-		            //				    "      (location0 (a location `((on ,dinnerplate2)" + 
-		            //				    "                               (for ,pancake2)))))" + 
-		            //				  
-		            //				  "(achieve `(object-in-hand ,mixforbakedgoods2))" + 
-		            //				  "(achieve `(container-content-transfilled" + 
-		            //				  "                              ,mixforbakedgoods2" + 
-		            //				  "                              ,cookingvessel2))" + 
-		            //				  "(sleep 180)" + 
-		            //				  "(achieve `(object-flipped ,pancake2))" + 
-		            //				  "(sleep 180)" + 
-		            //				  "(achieve `(loc ,pancake2 ,location0)) )))";
-		            //			
 
 		        }
 
@@ -165,6 +141,8 @@ public class PlanExporter {
 	}
 
     
+    
+    
     /**
      * Create an object designator based on an OWL class specification
      * 
@@ -186,17 +164,17 @@ public class PlanExporter {
         // first case: objdef is an instance
         if (!types.get("T").isEmpty()) {
             
-            obj_type = knowrobToCPL.getString(PrologInterface.valueFromIRI(types.get("T").firstElement()));
-            obj_inst = PrologInterface.valueFromIRI(objdef);
+            obj_type = knowrobToCpl(types.get("T").firstElement());
+            obj_inst = knowrobToCpl(objdef);
             
-            obj_desig = "(" + lispify(obj_inst) + " (an object\n             '((name ," + lispify(obj_inst) + ")\n              (type ,"+lispify(obj_type)+")) ))\n";
+            obj_desig = "(" + lispify(obj_inst) + " (an object\n             `((name ," + knowrobToCpl(obj_inst) + ")\n              (type ,"+lispify(obj_type)+")) ))\n";
 
         } else { // second case: objdef is a class
             
-            obj_type = knowrobToCPL.getString(PrologInterface.valueFromIRI(objdef));
-            obj_inst = PrologInterface.valueFromIRI(instanceFromClass(obj_type));
+            obj_type = knowrobToCpl(objdef);
+            obj_inst = knowrobToCpl(instanceFromClass(obj_type));
             
-            obj_desig = "(" + lispify(obj_inst) + " (an object\n             '((type ," + lispify(obj_type) + ")) ))\n";
+            obj_desig = "(" + lispify(obj_inst) + " (an object\n             `((type ," + knowrobToCpl(obj_type) + ")) ))\n";
         }
         // TODO: (part-of <object-desig>)
 
@@ -204,8 +182,6 @@ public class PlanExporter {
         return obj_inst;
     }
 
-    
-    
     
     /**
      * Create a location designator based on an OWL class specification
@@ -216,14 +192,19 @@ public class PlanExporter {
      */
     private String locationDesignatorFromOWLclass(String loc, String obj_desig) {
 
-        // recursively build the location designator
-        String loc_desig = "(" + lispify(loc) + " ";
-        loc_desig += "(a location `(";
+        
         
         
         HashMap<String, Vector<String>> params = PrologInterface
-                .executeQuery("class_properties(" + PrologInterface.addSingleQuotes(loc) + ", Prop, Val); owl_has("+PrologInterface.addSingleQuotes(loc)+", Prop, Val)");
-
+                .executeQuery("class_properties(" + PrologInterface.addSingleQuotes(loc) + ", Prop, Val); " +
+                		      "owl_has("+PrologInterface.addSingleQuotes(loc)+", Prop, Val)");
+        
+        
+        loc = knowrobToCpl(loc);
+        
+        // recursively build the location designator
+        String loc_desig = "(" + loc + " ";
+        loc_desig += "(a location `(";
         
         
         if(params!=null && params.get("Prop")!=null) {
@@ -240,7 +221,7 @@ public class PlanExporter {
                         || prop.endsWith("from-UnderspecifiedLocation"))) {
     
                     loc_desig += "\n              (in ,"
-                            + lispify(locationDesignatorFromOWLclass(val, obj_desig));
+                            + knowrobToCpl(locationDesignatorFromOWLclass(val, obj_desig));
                     
                     if(!obj_desig.isEmpty())
                         loc_desig += ")\n              (of ," + obj_desig + ")";
@@ -250,26 +231,26 @@ public class PlanExporter {
                         || prop.endsWith("aboveOf")
                         || prop.endsWith("inCenterOf")) {
                     loc_desig += "\n              (on ,"
-                            + lispify(locationDesignatorFromOWLclass(val, obj_desig));
+                            + knowrobToCpl(locationDesignatorFromOWLclass(val, obj_desig));
                     
                     if(!obj_desig.isEmpty())
                         loc_desig += ")\n              (for ," + obj_desig + ")";
     
                 } else if (prop.endsWith("inReachOf") ||
                         prop.endsWith("inFrontOf-Generally")) {
-                    loc_desig += "\n              (to reach ," + lispify(objectDesignatorFromOWLclass(val)) + ")";
+                    loc_desig += "\n              (to reach ," + knowrobToCpl(objectDesignatorFromOWLclass(val)) + ")";
     
                 } else if (prop.endsWith("visibleFrom")) {
-                    loc_desig += "\n              (to see ," + lispify(objectDesignatorFromOWLclass(val)) + ")";
+                    loc_desig += "\n              (to see ," + knowrobToCpl(objectDesignatorFromOWLclass(val)) + ")";
     
                 } else if (prop.endsWith("orientation")) {
-                    loc_desig += "\n              (pose ," + lispify(objectDesignatorFromOWLclass(val)) + ")";
+                    loc_desig += "\n              (pose ," + knowrobToCpl(objectDesignatorFromOWLclass(val)) + ")";
     
                 } else if (prop.endsWith("type")) {
-                    loc_desig += "\n              (type ," +  lispify(val) + ")";
+                    loc_desig += "\n              (type ," +  knowrobToCpl(val) + ")";
     
                 } else {
-                    loc_desig += "\n              (name ," +  lispify(val) + ")";
+                    loc_desig += "\n              (name ," +  knowrobToCpl(val) + ")";
                 }
     
             }
@@ -280,7 +261,46 @@ public class PlanExporter {
         return loc;
     }
 
+
     
+    /**
+     * Convert KnowRob identifier to CPL
+     * 
+     * If there is a mapping defined in the knowrobToCPL HashMap, this
+     * mapping will be used. Otherwise, the methods returns a 'lispified'
+     * string, i.e. a string that is converted from CamelCase to 
+     * lower-case-hyphenated 
+     * 
+     * @param val KnowRob identifier
+     * @return Lispified identifier that can be used in CPL
+     */
+    private String knowrobToCpl(String val) {
+        
+        if(knowrobToCPL.containsKey(PrologInterface.valueFromIRI(val))) {
+            return knowrobToCPL.getString(PrologInterface.valueFromIRI(val));
+            
+        } else {
+            
+            // check whether there are definitions for superclasses, take the first one
+            HashMap<String, Vector<String>> supercl = PrologInterface.
+                    executeQuery("owl_subclass_of(" + PrologInterface.addSingleQuotes(val) + ", Super)");
+            
+            for(String sup : supercl.get("Super")) {
+                if(knowrobToCPL.containsKey(PrologInterface.valueFromIRI(sup))) {
+                    return knowrobToCPL.getString(PrologInterface.valueFromIRI(sup));
+                }
+            }
+            return lispify(val);
+        }
+    }
+    
+    /**
+     * 'Lispify' a string: convert from Java CamelCaseSyntax into
+     *  hyphenated-lower-case-syntax.
+     *  
+     * @param pl String to be lispified
+     * @return Resulting string in lowercase, hyphenated style
+     */
     private String lispify(String pl) {
         
         // extract value from IRI
