@@ -21,7 +21,10 @@
 
 :- module(knowrob_owl,
     [
-      class_properties/3
+      class_properties/3,
+      rdf_instance_from_class/2,
+      get_timepoint/1,
+      get_timepoint/2
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -29,7 +32,81 @@
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/rdfs_computable')).
 
-:- rdf_meta(class_properties(r,r,r)).
+:- rdf_meta(class_properties(r,r,r)),
+            rdf_instance_from_class(r,r),
+            get_timepoint(r),
+            get_timepoint(+,r).
+
+
+
+%% rdf_instance_from_class(+Class, -Inst) is nondet.
+%
+% Utility predicate to generate unique instance identifiers
+%
+% @param Class   Class describing the type of the instance
+% @param Inst    Identifier of the generated instance of Class
+
+:- assert(instance_nr(0)).
+rdf_instance_from_class(Class, Instance) :-
+
+  % retrieve global index
+  instance_nr(Index),
+
+  % create instance from type
+  ((concat_atom(List, '#', Class),length(List,Length),Length>1) -> (
+    % Class is already a URI
+    T=Class
+  );(
+    atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', Class, T)
+  )),
+  atom_concat(T, Index, Instance),
+  rdf_assert(Instance, rdf:type, T),
+
+  % update index
+  retract(instance_nr(_)),
+  Index1 is Index+1,
+  assert(instance_nr(Index1)).
+
+
+
+
+%% get_timepoint(-T) is det.
+%
+% Create a timepoint-identifier for the current time
+%
+% @param T TimePoint instance identifying the current time stamp
+%
+get_timepoint(T) :-
+  set_prolog_flag(float_format, '%.12g'),
+  get_time(Ts),
+  atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#timepoint_', Ts, T),
+  rdf_assert(T, rdf:type, knowrob:'TimePoint').
+
+%% get_timepoint(+Diff, -T) is det.
+%
+% Create a timepoint-identifier for the current time +/- Diff
+%
+% @param Diff Time difference to the current time
+% @param T    TimePoint instance identifying the current time stamp
+%
+get_timepoint(Diff, Time) :-
+
+  get_time(Ts),
+
+  ((atom_concat('+', Dunit, Diff), atom_concat(DiffSeconds, 's', Dunit),term_to_atom(A, DiffSeconds)) -> (T is Ts + A) ;
+   (atom_concat('+', Dunit, Diff), atom_concat(DiffMinutes, 'm', Dunit),term_to_atom(A, DiffMinutes)) -> (T is Ts + 60.0 * A) ;
+   (atom_concat('+', Dunit, Diff), atom_concat(DiffHours,   'h', Dunit),term_to_atom(A, DiffHours))   -> (T is Ts + 3600.0 * A) ;
+
+   (atom_concat('-', Dunit, Diff), atom_concat(DiffSeconds, 's', Dunit),term_to_atom(A, DiffSeconds)) -> (T is Ts - A) ;
+   (atom_concat('-', Dunit, Diff), atom_concat(DiffMinutes, 'm', Dunit),term_to_atom(A, DiffMinutes)) -> (T is Ts - 60.0 * A) ;
+   (atom_concat('-', Dunit, Diff), atom_concat(DiffHours,   'h', Dunit),term_to_atom(A, DiffHours))   -> (T is Ts - 3600.0 * A) ),
+
+
+  atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#timepoint_', T, Time),
+  rdf_assert(Time, rdf:type, knowrob:'TimePoint').
+
+
+
 
 
 %% class_properties(?Class, ?Prop, ?Values) is nondet.
