@@ -1,0 +1,14 @@
+<package>
+  <description brief="knowrob_objects">
+
+     knowrob_objects
+
+  </description>
+  <author>Moritz Tenorth</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/knowrob_objects</url>
+  <depend package="knowrob_common"/>
+</package>
+
+
