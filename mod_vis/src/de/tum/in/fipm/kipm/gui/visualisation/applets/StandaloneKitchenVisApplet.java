@@ -192,10 +192,16 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	public void draw() {
 		PMatrix save = getMatrix();
 		try{
+      
+      
+        if (record) {
+            beginRaw(PDF, "output.pdf");
+        }
 
 			scale(10);
 			
-			background(20, 20, 20);
+			//background(20, 20, 20);
+      background(255, 255, 255);
 
 			pushMatrix();
 
@@ -222,6 +228,12 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			}
 
 			popMatrix();
+
+      if (record) {
+          endRaw();
+          System.err.println("Writing PDF...");
+          record = false;
+      }
 			
 		}catch(ArrayIndexOutOfBoundsException e) {
 			System.out.println("Some Drawing error occured... ");
@@ -248,7 +260,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			buffer.scale(10);
 
 			buffer.pushMatrix();	    
-			buffer.background(60, 60, 60);
+			//buffer.background(60, 60, 60);
 
 			
 			buffer.applyMatrix(	1,  0,  0, 0,
@@ -276,7 +288,6 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 			buffer.popMatrix();
 			buffer.popMatrix();
-
 			
 		}catch(Exception e){}
 
@@ -1569,26 +1580,22 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
           "rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'Place')," +
 					"rdf_triple(knowrob:orientation,"+identifier+",Or), " +
-
-					"rdf_triple(knowrob:m00,Or,literal(type(_,_M00))), term_to_atom(M00,_M00)," +
-					"rdf_triple(knowrob:m01,Or,literal(type(_,_M01))), term_to_atom(M01,_M01)," +
-					"rdf_triple(knowrob:m02,Or,literal(type(_,_M02))), term_to_atom(M02,_M02)," +
-					"rdf_triple(knowrob:m03,Or,literal(type(_,_M03))), term_to_atom(M03,_M03)," +
-
-					"rdf_triple(knowrob:m10,Or,literal(type(_,_M10))), term_to_atom(M10,_M10)," +
-					"rdf_triple(knowrob:m11,Or,literal(type(_,_M11))), term_to_atom(M11,_M11)," +
-					"rdf_triple(knowrob:m12,Or,literal(type(_,_M12))), term_to_atom(M12,_M12)," +
-					"rdf_triple(knowrob:m13,Or,literal(type(_,_M13))), term_to_atom(M13,_M13)," +
-
-					"rdf_triple(knowrob:m20,Or,literal(type(_,_M20))), term_to_atom(M20,_M20)," +
-					"rdf_triple(knowrob:m21,Or,literal(type(_,_M21))), term_to_atom(M21,_M21)," +
-					"rdf_triple(knowrob:m22,Or,literal(type(_,_M22))), term_to_atom(M22,_M22)," +
-					"rdf_triple(knowrob:m23,Or,literal(type(_,_M23))), term_to_atom(M23,_M23)," +
-
-					"rdf_triple(knowrob:m30,Or,literal(type(_,_M30))), term_to_atom(M30,_M30)," +
-					"rdf_triple(knowrob:m31,Or,literal(type(_,_M31))), term_to_atom(M31,_M31)," +
-					"rdf_triple(knowrob:m32,Or,literal(type(_,_M32))), term_to_atom(M32,_M32)," +
-					"rdf_triple(knowrob:m33,Or,literal(type(_,_M33))), term_to_atom(M33,_M33)", null);
+					"rdf_triple(knowrob:m00,Or,_LM00),strip_literal_type(_LM00,_M00),atom_to_term(_M00,M00,_)," +
+					"rdf_triple(knowrob:m01,Or,_LM01),strip_literal_type(_LM01,_M01),atom_to_term(_M01,M01,_)," +
+					"rdf_triple(knowrob:m02,Or,_LM02),strip_literal_type(_LM02,_M02),atom_to_term(_M02,M02,_)," +
+					"rdf_triple(knowrob:m03,Or,_LM03),strip_literal_type(_LM03,_M03),atom_to_term(_M03,M03,_)," +
+					"rdf_triple(knowrob:m10,Or,_LM10),strip_literal_type(_LM10,_M10),atom_to_term(_M10,M10,_)," +
+					"rdf_triple(knowrob:m11,Or,_LM11),strip_literal_type(_LM11,_M11),atom_to_term(_M11,M11,_)," +
+					"rdf_triple(knowrob:m12,Or,_LM12),strip_literal_type(_LM12,_M12),atom_to_term(_M12,M12,_)," +
+					"rdf_triple(knowrob:m13,Or,_LM13),strip_literal_type(_LM13,_M13),atom_to_term(_M13,M13,_)," +
+					"rdf_triple(knowrob:m20,Or,_LM20),strip_literal_type(_LM20,_M20),atom_to_term(_M20,M20,_)," +
+					"rdf_triple(knowrob:m21,Or,_LM21),strip_literal_type(_LM21,_M21),atom_to_term(_M21,M21,_)," +
+					"rdf_triple(knowrob:m22,Or,_LM22),strip_literal_type(_LM22,_M22),atom_to_term(_M22,M22,_)," +
+					"rdf_triple(knowrob:m23,Or,_LM23),strip_literal_type(_LM23,_M23),atom_to_term(_M23,M23,_)," +
+					"rdf_triple(knowrob:m30,Or,_LM30),strip_literal_type(_LM30,_M30),atom_to_term(_M30,M30,_)," +
+					"rdf_triple(knowrob:m31,Or,_LM31),strip_literal_type(_LM31,_M31),atom_to_term(_M31,M31,_)," +
+					"rdf_triple(knowrob:m32,Or,_LM32),strip_literal_type(_LM32,_M32),atom_to_term(_M32,M32,_)," +
+					"rdf_triple(knowrob:m33,Or,_LM33),strip_literal_type(_LM33,_M33),atom_to_term(_M33,M33,_)", null);
 
 			if( pose.get("M00") != null && pose.get("M00").size() > 0) {
 
@@ -1867,7 +1874,6 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			buffer.resetMatrix();
 			this.resetMatrix();
 		case KeyEvent.VK_P:
-        background(255,255,255);
         this.record = true;
         break;
     case KeyEvent.VK_Q:
