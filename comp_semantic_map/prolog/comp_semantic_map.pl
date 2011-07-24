@@ -130,7 +130,7 @@ POSSIBILITY OF SUCH DAMAGE.
   same_room(r, r),
   in_level(r, r),
   same_level(r, r),
-  sort_path_costs(r, r, -),
+  get_sorted_path_costs(r, -, -),
   path_cost(r,r,-),
   intra_level_cost(r,r,-),
   inter_level_cost(r,r,-),
@@ -400,7 +400,7 @@ same_room(A, B):-
 in_level(Place, Level):-
   setof(L, owl_individual_of(L, knowrob:'LevelOfAConstruction'), Ls),
   member(Level, Ls),
-  setof(P, owl_individual_of(P, knowrob:'EnduringThing-Localized'), Ps),
+  setof(P, owl_individual_of(P, knowrob:'SpatialThing-Localized'), Ps),
   member(Place,Ps),
   rdf_triple(knowrob:'in-ContGeneric',Place, Level).
 
