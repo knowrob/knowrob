@@ -1,0 +1,2245 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE rdf:RDF[
+     <!ENTITY ns1 'http://ias.cs.tum.edu/kb/knowrob.owl#'>
+    <!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+ ]><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:ns1="http://ias.cs.tum.edu/kb/knowrob.owl#">
+    <rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-0">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CitrusFruit"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-1">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bowl-Eating"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-10">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-100">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vegetable-Food"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-101">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ComputerDisplay"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-102">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bagel"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-103">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#TableSpoon-MeasuringTool"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-104">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Onion-Foodstuff"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-105">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Plant-NonWoody"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-106">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SaladDressing"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-107">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Tympani"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-108">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bun"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-109">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Egg-Foodstuff"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-11">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sink"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-110">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-111">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-112">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#BananaTree"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-113">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#AppleTree"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-114">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-115">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-116">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Soup"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-117">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Telephone"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-118">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#FoodOrDrink"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-119">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Tongs"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-12">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-120">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Wine"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-121">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bill-PaymentRequest"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-122">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#EdibleNut"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-123">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ContainerArtifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-124">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#BoxTheContainer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-125">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Doughnut"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-126">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SodaCan"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-127">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sandwich"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-128">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CoffeeBush"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-129">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Mushroom"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-13">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Stool-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-130">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Nail"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-131">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#GourdPlant"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-132">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cake"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-133">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Oil"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-134">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CowsMilk-Product"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-135">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Flashlight"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-136">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Pick-TheTool"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-137">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Amphetamine"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-138">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cheese"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-139">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Biscuit"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-14">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Oven"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-140">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ContainerArtifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-141">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Tomato-Foodstuff"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-142">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sandwich"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-143">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CookingRange"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-144">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Tomato-Foodstuff"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-145">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Pie"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-146">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#WatermelonPlant"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-147">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CombustibleFuelSubstance"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-148">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Pasta"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-149">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CookingRange"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-15">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ComputerMouse"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-150">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Preservative-Food"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-151">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PaperTowel"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-152">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ElectricalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-153">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Spice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-154">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sink"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-155">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bell"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-156">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bottle"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-157">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Telephone"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-158">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#GameBoard"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-159">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-16">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CookingVessel"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-160">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Pancake"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-161">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drink"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-162">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Knife"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-163">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SilverwarePiece"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-164">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ElectricalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-165">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ContainerArtifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-166">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#GrapeVine"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-167">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#BellPepper"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-168">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CocaCola"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-169">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CookingVessel"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-17">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Spoon-SilverwarePiece"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-170">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-171">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CoffeeMaker"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-172">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Jar"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-173">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#NewZealandPerson"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-174">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Food-ReadyToEat"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-175">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bun"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-176">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SoftDrink"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-177">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Napkin"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-178">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#DessertFood"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-179">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sauce"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-18">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bucket"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-180">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Wine"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-181">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Crayon"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-182">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#FruitTree"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-183">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Partition-ConstructionArtifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-184">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sugar-Table"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-185">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Platform"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-186">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Helicopter"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-187">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cup"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-188">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Meat"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-189">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PartiallyTangible"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-19">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cockroach"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-190">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Container"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-191">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#TableKnife"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-192">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PartiallyTangible"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-193">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Ketchup"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-194">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Implement"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-195">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bacon"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-196">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CoconutMeat"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-197">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Pizza"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-198">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Waffle"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-199">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#StrawberryPlant"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-2">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#KeyOfLock"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-20">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CookingRange"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-200">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bottle"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-201">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CookingRange"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-202">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sauce"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-203">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SaltShaker"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-204">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Framework-SupportingStructure"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-205">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ContainerArtifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-206">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Skillet"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-207">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LemonJuice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-208">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chopstick"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-209">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#FrenchFry"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-21">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Board-PieceOfWood"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-210">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Artifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-211">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#AdultMaleHuman"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-212">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Lemonade"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-213">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Nut-TheFruit"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-214">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drink"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-215">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-216">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Gravy"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-217">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#FruitTree"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-218">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Fruit"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-219">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Fruit"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-22">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Fork-SilverwarePiece"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-220">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Rice-Foodstuff"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-221">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Colander"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-222">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#MechanicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-223">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bowl-Eating"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-224">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#FlourOrMeal"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-225">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-226">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OliveTree"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-227">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PaperBag"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-228">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Artifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-229">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Artifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-23">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Refrigerator"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-230">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ContainerArtifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-231">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Food-ReadyToEat"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-232">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Lunch"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-233">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Food-ReadyToEat"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-234">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-235">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cupboard"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-236">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Implement"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-237">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sponge-CleaningImplement"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-238">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Salad"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-239">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-24">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PepperShaker"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-240">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Gin"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-241">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sandwich"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-242">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Tobacco"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-243">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Dishwasher"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-244">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#WashCloth"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-245">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-246">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Fuse-ElectricalComponent"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-247">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#TabletDrug"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-248">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Mustard-ThePreparation"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-249">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#BakingSoda"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-25">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#DishTowel"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-250">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Pastry-Stuff"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-251">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Homemaker"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-252">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Implement"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-253">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Pasta"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-254">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Scissors"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-255">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ElectronicDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-256">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Connector"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-257">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PostageStamp"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-258">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-259">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PersonalComputer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-26">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#FoodOrDrinkPreparationDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-260">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PostageStamp"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-261">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Ledger"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-262">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Typewriter"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-263">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Computer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-264">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#InstrumentalArtifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-265">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LaptopComputer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-266">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#File-Tool"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-267">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Stapler"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-268">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Artifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-269">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-27">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CookingVessel"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-270">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#NewspaperCopy"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-271">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VideoScreen"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-272">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Pencil"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-273">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-274">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#AnimalPen"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-275">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LetterOpener"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-276">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Covering-Object"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-277">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Ledger"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-278">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-279">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-28">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ProtectiveCovering"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-280">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#FileCabinet-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-281">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Covering-Object"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-282">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Board-PieceOfWood"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-283">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ElectronicDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-284">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PostalService"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-285">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Telephone"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-286">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LaunchPad"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-287">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Staple"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-288">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#BusinessPerson"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-289">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#InstrumentalArtifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-29">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Refrigerator"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-290">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Notepad"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-291">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Clock"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-292">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Connector"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-293">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VideoScreen"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-294">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Modem"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-295">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Computer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-296">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Envelope"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-297">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SkilledWorker"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-298">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#FileCabinet-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-299">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RadioDish"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-3">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Muffin"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-30">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-300">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CreditCard"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-301">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Rampart"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-302">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cup"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-303">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LaptopComputer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-304">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ElectronicDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-305">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#InstrumentalArtifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-306">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Pencil"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-307">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Tape"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-308">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ProjectionDisplayDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-309">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#InformationStorageDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-31">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Container"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-310">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Strip-Artifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-311">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#InformationStorageDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-312">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficialDocument"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-313">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ComputerMouse"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-314">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Briefcase"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-315">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Artifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-316">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Marker-WritingImplement"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-317">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-318">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#BoxTheContainer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-319">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SurfaceRegion-Tangible"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-32">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Knife"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-320">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-321">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Tool-PowerTool"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-322">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhonographRecord"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-323">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-324">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ComputerWorkstation"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-325">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#TranscriptCopy"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-326">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Receptionist"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-327">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#DeviceRequiringSkillForProperUse"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-328">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-329">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Solution"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-33">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Muffin"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-330">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Fuse-ElectricalComponent"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-331">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ButtonTheFastener"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-332">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#TelephoneReceiver"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-333">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Manager"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-334">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-335">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Paper"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-336">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalPartOfObject"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-337">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ChinaCabinet-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-338">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#WindowPortal"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-339">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficialDocument"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-34">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#DrinkingGlass"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-340">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Stairway"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-341">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RoomInAConstruction"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-342">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Framework-SupportingStructure"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-343">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Doorway"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-344">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Painting-ArtForm"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-345">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Pole-Rod"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-346">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Photograph"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-347">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Framework-SupportingStructure"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-348">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-349">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-35">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Water"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-350">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SportsEquipment"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-351">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Carpet"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-352">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Rug"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-353">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Framework-SupportingStructure"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-354">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Stairway"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-355">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Closet"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-356">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Covering-Object"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-357">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Doorway"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-358">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Fedora"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-359">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Person"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-36">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Food-ReadyToEat"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-360">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Shoe"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-361">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Classroom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-362">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Classroom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ProjectionDisplayDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-363">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Classroom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SheetOfSomeStuff"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-364">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Classroom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-365">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Classroom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SheetOfSomeStuff"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-366">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Classroom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Ledger"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-367">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Classroom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Crayon"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-368">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Classroom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-369">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Classroom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Board-PieceOfWood"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-37">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ButtonTheFastener"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-370">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Classroom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Teacher"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-371">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Classroom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Doorway"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-372">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Coat"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-373">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CedarChest"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-374">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VendingMachine"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-375">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-376">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Mirror"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-377">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LightingDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-378">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hallway"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-379">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ConferenceRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-38">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Water"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-380">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ConferenceRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ProjectionDisplayDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-381">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ConferenceRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-382">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ConferenceRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-383">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ConferenceRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-384">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ConferenceRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Telephone"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-385">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ConferenceRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-386">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ConferenceRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-387">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ConferenceRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Notepad"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-388">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RestaurantSpace"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#DrinkingGlass"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-389">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RestaurantSpace"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cup"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-39">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bread"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-390">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RestaurantSpace"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#AlcoholicBeverage"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-391">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RestaurantSpace"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShotGlass"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-392">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RestaurantSpace"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Stool-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-393">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RestaurantSpace"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sink"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-394">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RestaurantSpace"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sandwich"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-395">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RestaurantSpace"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Tap-FlowControlDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-396">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RestaurantSpace"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CocktailDrink"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-397">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RestaurantSpace"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bottle"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-398">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RestaurantSpace"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Beer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-399">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RestaurantSpace"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Employee"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-4">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#FoodBlender"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-40">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Handle"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-400">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RestaurantSpace"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drink"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-401">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RestaurantSpace"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Person"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-402">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RestaurantSpace"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-403">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RestaurantSpace"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CocktailDrink"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-404">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Telephone"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-405">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Computer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-406">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LaptopComputer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-407">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-408">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Stapler"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-409">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LightingDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-41">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cookie"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-410">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#FileCabinet-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-411">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PersonalComputer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-412">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Telephone"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-413">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LaptopComputer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-414">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Painting-ArtForm"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-415">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#MechanicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-416">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-417">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#File-Tool"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-418">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#InstrumentalArtifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-419">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VideoScreen"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-42">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Broom"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-420">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficeRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalPartOfObject"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-421">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LockerRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PlumbingFixture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-422">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LockerRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Lock"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-423">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LockerRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Connector"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-424">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LockerRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bench-Topographical"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-425">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LockerRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Connector"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-426">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LockerRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Towel"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-427">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LockerRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sock"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-428">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LockerRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Jacket"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-429">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LockerRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Clothing-Generic"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-43">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#DoorInABuilding"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-430">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LockerRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#MusicalPerformer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-431">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#AuditoriumRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SeatingDeviceSeat"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-432">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#AuditoriumRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ElectricalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-433">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#AuditoriumRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VideoScreen"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-434">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#AuditoriumRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#StageForPerformances"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-435">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#AuditoriumRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Lectern"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-436">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#AuditoriumRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Doorway"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-437">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#AuditoriumRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Pencil"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-438">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#AuditoriumRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-439">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#AuditoriumRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Gathering-SocialGroup"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-44">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#MagazineCopy"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-440">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Laboratory"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sandal"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-441">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Laboratory"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#DrinkingGlass"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-442">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Laboratory"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ChemicallyAcidicSubstance"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-443">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Laboratory"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ComputerMouse"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-444">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Laboratory"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Microscope"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-445">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Laboratory"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LaptopComputer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-446">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Laboratory"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Doctor-Medical"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-447">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Laboratory"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Rat"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-45">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CoffeeMaker"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-46">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SaladFork"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-47">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Pipe-GenericConduit"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-48">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Egg-Birds"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-49">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Snack"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-5">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ManualCanOpener"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-50">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CoffeeCup"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-51">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Eyelid"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-52">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-53">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bread"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-54">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sink"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-55">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cup"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-56">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Refrigerator"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-57">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CowsMilk-Product"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-58">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Plant-NonWoody"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-59">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Peer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-6">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Eyeglasses"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-60">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Dishwasher"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-61">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CuttingBoard"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-62">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#MeasuringCup"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-63">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-64">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Skillet"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-65">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Scissors"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-66">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vegetable-Food"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-67">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Skillet"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-68">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Buttocks"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-69">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CookingRange"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-7">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cup"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-70">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Purse"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-71">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#BlackPepperVine"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-72">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Root"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-73">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Refrigerator"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-74">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Spoon-SilverwarePiece"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-75">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CookingRange"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-76">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Towel"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-77">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-78">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#DeviceRequiringSkillForProperUse"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-79">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Teaspoon"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-8">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#HotBeveragePot"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-80">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Egg-Foodstuff"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-81">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#DinnerPlate"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-82">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CoffeeBush"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-83">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#MeatGrinder"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-84">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ElectronicDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-85">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cup"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-86">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#MechanicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-87">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Beer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-88">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#MicrowaveOven"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-89">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Jar"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-9">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Saucer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-90">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-91">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cake"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-92">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Spatula"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-93">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Pliers"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-94">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#DinnerPlate"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-95">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Burner"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-96">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#EdibleFruit"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-97">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Tap-PlumbingFixture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-98">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#BladeOfADevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-99">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Kitchen"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#DrinkingGlass"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+</rdf:RDF>

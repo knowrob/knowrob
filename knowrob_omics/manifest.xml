@@ -1,0 +1,15 @@
+<package>
+  <description brief="knowrob_omics">
+
+     knowrob_omics
+
+  </description>
+  <author>Lars Kunze</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/knowrob_omics</url>
+  <depend package="ias_knowledge_base"/>
+
+</package>
+
+
