@@ -23,7 +23,7 @@ public class RoomInAConstruction extends Item {
       c.box(this.xdim, this.ydim, 0.02f); 
       
       // center of room
-      c.fill(0,0,200);
+      //c.fill(0,0,200);
       c.box(xdim/15,ydim/15,0.1f);
 
       // float diff_x = - (this.trafoMatrix[3] - xtrans); 
