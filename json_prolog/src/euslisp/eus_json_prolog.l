@@ -149,30 +149,41 @@
 ;; string  -> string
 ;; keyword -> string-upcase
 ;; symbol  -> string-downcase
+;; vector  -> list []
 ;; list    -> map list->prolog
 (defun list->prolog (lst)
   (flet ((conv-item (x)
-					(cond ((numberp x) (string x))
-						  ((stringp x) x)
-						  ((keywordp x) (string-upcase x))
-						  ((listp x) (list->prolog (list x)))
-						  (t (string-downcase x)))))
-	(let (expr exprs ret)
-	  (dolist (l lst)
-		(cond ((stringp l) (setq expr l))
-			  ((numberp l) (setq expr l))
-			  (t
-			   (setq expr (format nil "~a(~a" (car l) (conv-item (cadr l))))
-			   (dolist (item (cddr l))
-				 (setq expr (format nil "~a,~a" expr (conv-item item))))
-			   (setq expr (format nil "~a)" expr))))
-		(push expr exprs))
-	  (nreverse exprs)
-	  ;;
-	  (setq ret (format nil "~a" (car exprs)))
-	  (dolist (ex (cdr exprs))
-		(setq ret (format nil "~a, ~a" ret ex)))
-	  ret )))
+    (cond ((numberp x) (string x))
+          ((stringp x) x)
+          ((keywordp x) (string-upcase x))
+	  ((vectorp x) (list->prolog x))
+          ((listp x) (list->prolog (list x)))
+          (t (string-downcase x)))))
+      (let (expr exprs ret)
+        ;;
+        (when (vectorp lst)
+          (setq ret "[")
+          (dotimes (i (length lst))
+            (setq ret (format nil "~a~a" ret (conv-item (elt lst i))))
+            (if (not (equal (1+ i) (length lst)))
+              (setq ret (format nil "~a," ret))))
+            (setq ret (format nil "~a]" ret)))
+        ;;
+        (when (listp lst)
+          (dolist (l lst)
+            (cond ((stringp l) (setq expr l))
+              ((numberp l) (setq expr l))
+              (t
+               (setq expr (format nil "~a(~a" (car l) (conv-item (cadr l))))
+               (dolist (item (cddr l))
+                 (setq expr (format nil "~a,~a" expr (conv-item item))))
+               (setq expr (format nil "~a)" expr))))
+            (push expr exprs))
+          (nreverse exprs)
+          (setq ret (format nil "~a" (car exprs)))
+          (dolist (ex (cdr exprs))
+            (setq ret (format nil "~a, ~a" ret ex))))
+        ret )))
 
 ;;
 ;; samples
