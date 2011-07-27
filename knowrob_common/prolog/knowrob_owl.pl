@@ -32,7 +32,7 @@
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/rdfs_computable')).
 
-:- rdf_meta(class_properties(r,r,r)),
+:- rdf_meta class_properties(r,r,r),
             rdf_instance_from_class(r,r),
             get_timepoint(r),
             get_timepoint(+,r).
