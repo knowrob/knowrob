@@ -93,13 +93,6 @@
 
 
 
-
-    <!-- http://ias.cs.tum.edu/kb/knowrob_units.owl#Hour -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/knowrob_units.owl#Hour"/>
-
-
-
     <!-- http://qudt.org/schema/qudt#Unit -->
 
     <rdf:Description rdf:about="&qudt;Unit">
