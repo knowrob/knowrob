@@ -1,0 +1,18 @@
+<package>
+  <description brief="mod_tf">
+
+     mod_tf
+
+  </description>
+  <author>Sjoerd van den Dries, Moritz Tenorth</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/tf_test</url>
+  <depend package="jpl"/>
+  <depend package="tfjava"/>
+
+  <export>
+    <java classpath="${prefix}/bin"/>
+  </export>
+
+</package>
