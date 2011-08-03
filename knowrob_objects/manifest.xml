@@ -9,6 +9,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/knowrob_objects</url>
   <depend package="knowrob_common"/>
+  <depend package="tf_prolog"/>
 </package>
 
 

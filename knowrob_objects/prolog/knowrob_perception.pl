@@ -21,7 +21,7 @@
 
 :- module(knowrob_perception,
     [
-
+      create_object_perception/4
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -29,6 +29,19 @@
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/rdfs_computable')).
 :- use_module(library('knowrob_owl')).
+
+
+
+%% create_object_perception(ObjClass, ObjPose, PerceptionTypes, ObjInst)
+%
+% Convenience predicate: create the complete structure of object instance,
+% perception instance, and the pose matrix where the object was perceived.
+%
+create_object_perception(ObjClass, ObjPose, PerceptionTypes, ObjInst) :-
+    rdf_instance_from_class(ObjClass, ObjInst),
+    create_perception_instance(PerceptionTypes, Perception),
+    set_object_perception(ObjInst, Perception),
+    set_perception_pose(Perception, ObjPose).
 
 
 
@@ -42,7 +55,7 @@
 create_perception_instance(PerceptionTypes, Perception) :-
 
   % create individual from first type in the list
-  noth0(0, PerceptionTypes, PType),
+  nth0(0, PerceptionTypes, PType),
   atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', PType, PClass),
   rdf_instance_from_class(PClass, Perception),
 
@@ -59,7 +72,7 @@ create_perception_instance(PerceptionTypes, Perception) :-
 create_perception_instance(PerceptionTypes, ModelTypes, Perception) :-
 
   % create individual from first type in the list
-  noth0(0, PerceptionTypes, PType),
+  nth0(0, PerceptionTypes, PType),
   atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', PType, PClass),
   rdf_instance_from_class(PClass, Perception),
 
@@ -134,7 +147,7 @@ set_perception_pose(Perception, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M2
 %
 % Set the covariance of an object perception
 %
-cop_set_perception_cov(Perception, [M00, M01, M02, M03, M04, M05, M10, M11, M12, M13, M14, M15, M20, M21, M22, M23, M24, M25, M30, M31, M32, M33, M34, M35, M40, M41, M42, M43, M44, M45, M50, M51, M52, M53, M54, M55]) :-
+set_perception_cov(Perception, [M00, M01, M02, M03, M04, M05, M10, M11, M12, M13, M14, M15, M20, M21, M22, M23, M24, M25, M30, M31, M32, M33, M34, M35, M40, M41, M42, M43, M44, M45, M50, M51, M52, M53, M54, M55]) :-
 
   % set the pose
   atomic_list_concat(['covMat3D_',M00,'_',M01,'_',M02,'_',M03,'_',M04,'_',M05,'_',M10,'_',M11,'_',M12,'_',M13,'_',M14,'_',M15,'_',M20,'_',M21,'_',M22,'_',M23,'_',M24,'_',M25,'_',M30,'_',M31,'_',M32,'_',M33,'_',M34,'_',M35,'_',M40,'_',M41,'_',M42,'_',M43,'_',M44,'_',M45,'_',M50,'_',M51,'_',M52,'_',M53,'_',M54,'_',M55], CovIdentifier),
@@ -180,5 +193,5 @@ compatible_obj_types(A, B) :-
 to_knowrob('chair', K)    :- K= 'http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture',!.
 to_knowrob('bed', K)      :- K= 'http://ias.cs.tum.edu/kb/knowrob.owl#Bed-PieceOfFurniture',!.
 to_knowrob('cabinet', K)  :- K= 'http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture',!.
-to_knowrob('bottle1', K) :- K= 'http://ias.cs.tum.edu/kb/knowrob.owl#DrinkingBottle',!.
-
+to_knowrob('bottle1', K)  :- K= 'http://ias.cs.tum.edu/kb/knowrob.owl#DrinkingBottle',!.
+to_knowrob(A, K)          :- K= A,!.
