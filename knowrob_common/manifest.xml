@@ -13,7 +13,7 @@
   <depend package="semweb"/>
 
   <export>
-    <java classpath="${prefix}/bin:${prefix}/lib/guava-r09.jar"/>
+    <java classpath="${prefix}/bin:${prefix}/lib/guava-r09.jar:${prefix}/lib/vecmath.jar"/>
   </export>
 
 </package>

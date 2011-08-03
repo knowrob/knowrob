@@ -21,10 +21,10 @@
 
 :- module(knowrob_owl,
     [
-      class_properties/3,
-      rdf_instance_from_class/2,
-      get_timepoint/1,
-      get_timepoint/2
+      class_properties/3%,
+%       rdf_instance_from_class/2%,
+%       get_timepoint/1,
+%       get_timepoint/2
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -138,4 +138,14 @@ class_properties(Class, Prop, Val) :-         % also consider properties of supe
 class_properties_1(Class, Prop, Val) :-
   owl_direct_subclass_of(Class, Sup),
   ( (nonvar(Prop)) -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
-  owl_restriction(Sup,restriction(SubProp, some_values_from(Val))).
+
+  ( owl_restriction(Sup,restriction(SubProp, some_values_from(Val))) ;
+    owl_restriction(Sup,restriction(SubProp, has_value(Val))) ).
+
+
+
+
+
+
+
+
