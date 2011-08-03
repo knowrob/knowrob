@@ -17,7 +17,7 @@
 
   <depend package="ias_knowledge_base"/>
   <depend package="jpl"/>
-  <depend package="rosjava"/>
+  <depend package="rosjava_jni"/>
 
   <export>
     <java classpath="${prefix}/bin:${prefix}/lib/controlP5.jar:${prefix}/lib/core.jar:${prefix}/lib/vecmath.jar:${prefix}/lib/itext.jar:${prefix}/lib/pdf.jar:${prefix}/lib/PeasyCam.jar"/>

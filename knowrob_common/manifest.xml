@@ -8,7 +8,7 @@
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/knowrob_common</url>
-  <depend package="rosjava"/>
+  <depend package="rosjava_jni"/>
   <depend package="jpl"/>
   <depend package="semweb"/>
 

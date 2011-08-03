@@ -9,7 +9,7 @@
   <url>http://ros.org/wiki/json_prolog</url>
   <rosdep name="libjson_java"/>
   <rosdep name="libjson_glib"/>
-  <depend package="rosjava"/>
+  <depend package="rosjava_jni"/>
   <depend package="rosprolog"/>
   <depend package="jpl"/>
   <depend package="rospy"/>

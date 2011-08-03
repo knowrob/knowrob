@@ -7,7 +7,7 @@
   <author>Dominik Jain, Stefan Waldherr, Moritz Tenorth</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <depend package="rosjava"/>
+  <depend package="rosjava_jni"/>
 
   <url>http://ros.org/wiki/srldb</url>
   <export>

@@ -14,7 +14,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://www.ros.org/wiki/comp_germandeli</url>
 
-  <depend package="rosjava"/>
+  <depend package="rosjava_jni"/>
   <depend package="ias_knowledge_base"/>
   <depend package="comp_cop"/>
   <depend package="jpl"/>

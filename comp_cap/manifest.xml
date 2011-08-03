@@ -10,7 +10,7 @@
   <url>http://ros.org/wiki/comp_cap</url>
   
   <depend package="ias_knowledge_base"/>
-  <depend package="rosjava"/>
+  <depend package="rosjava_jni"/>
   <depend package="jpl"/>
   <depend package="mod_srdl"/>
   <depend package="roscpp"/>
