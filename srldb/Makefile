@@ -37,7 +37,7 @@ wiped: Makefile
 	touch wiped
 
 clean:
-	rm -rf $(BUILD_DIR) $(SOURCE_DIR) apps datagen examples experiments papers docs lib make_apps.py make_dist models python readme.txt trajvis trajvis.bat *.tar.gz
+	rm -rf $(BUILD_DIR) $(SOURCE_DIR) apps datagen examples experiments papers docs lib make_apps.py make_dist models python readme.txt trajvis trajvis.bat *.tar.gz build msg_gen srv_gen
 	rm -f checkedout wiped installed
 
 wipe: clean
