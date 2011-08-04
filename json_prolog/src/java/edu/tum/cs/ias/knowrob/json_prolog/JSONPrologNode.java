@@ -282,6 +282,11 @@ public final class JSONPrologNode {
         new jpl.Query("ensure_loaded('" + findRosPackage(initPackage)
             + "/prolog/init.pl')").oneSolution();
       }
+      if(n.hasParam("goal"))
+      {
+          String goal = n.getStringParam("goal");
+          new jpl.Query(goal).oneSolution();
+      }
     }
 
     // create services
