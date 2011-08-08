@@ -39,15 +39,30 @@
 
 
 
+
+
 %% rdf_instance_from_class(+Class, -Inst) is nondet.
 %
 % Utility predicate to generate unique instance identifiers
 %
 % @param Class   Class describing the type of the instance
 % @param Inst    Identifier of the generated instance of Class
+rdf_instance_from_class(Class, Instance) :-
+    rdf_instance_from_class(Class, _, Instance).
+
+
+
+%% rdf_instance_from_class(+Class, +SourceRef -Inst) is nondet.
+%
+% Utility predicate to generate unique instance identifiers using
+% the source reference SourceRef for rdf_assert
+%
+% @param Class     Class describing the type of the instance
+% @param SourceRef Atom as source reference for rdf_assert
+% @param Inst      Identifier of the generated instance of Class
 
 :- assert(instance_nr(0)).
-rdf_instance_from_class(Class, Instance) :-
+rdf_instance_from_class(Class, SourceRef, Instance) :-
 
   % retrieve global index
   instance_nr(Index),
@@ -60,7 +75,9 @@ rdf_instance_from_class(Class, Instance) :-
     atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', Class, T)
   )),
   atom_concat(T, Index, Instance),
-  rdf_assert(Instance, rdf:type, T),
+
+  ( ( nonvar(SourceRef), rdf_assert(Instance, rdf:type, T, SourceRef));
+    ( rdf_assert(Instance, rdf:type, T)) ),
 
   % update index
   retract(instance_nr(_)),
