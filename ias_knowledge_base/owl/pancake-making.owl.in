@@ -411,7 +411,6 @@
                         <owl:onProperty rdf:resource="&knowrob;orderingConstraints"/>
                         <owl:hasValue rdf:resource="#MakingPancakes15"/>
                     </owl:Restriction>
-                </owl:intersectionOf>
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;orderingConstraints"/>
                         <owl:hasValue rdf:resource="#MakingPancakes23"/>
@@ -436,6 +435,7 @@
                         <owl:onProperty rdf:resource="&knowrob;orderingConstraints"/>
                         <owl:hasValue rdf:resource="#MakingPancakes45"/>
                     </owl:Restriction>
+                </owl:intersectionOf>
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>

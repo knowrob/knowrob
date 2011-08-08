@@ -40,6 +40,17 @@
         action_effects(r,r).
 
 
+
+%% clean_projection_cache is det.
+%
+% remove all triples that have been asserted as part of the projection methods
+%
+clean_projection_cache :-
+    rdf_retractall(_, _, _,knowrob_projection).
+
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % action effects
@@ -50,10 +61,10 @@
 %
 % Perform projection of action effects and those of processes that have
 % been triggered as indirect effects
-% 
+%
 % @param Action     Action instance
 % @param PostActors Effects of the action
-% 
+%
 action_effects(Action, PostActors) :-
 
   % project what is happening when performing the action
@@ -98,14 +109,14 @@ transformed_into(From, To) :-
 
 
 %% transformed_into_transitive(?From, ?To)
-% 
+%
 % Transitive version of the transformed_into predicate that tracks
 % in- and outputs of actions over several steps and different
 % properties
 %
 % @param From Input of some action
 % @param To   Output created by this action
-% 
+%
 transformed_into_transitive(From, To) :-
   transformed_into(From, To).
 
@@ -122,13 +133,13 @@ transformed_into_transitive(From, To) :-
 %
 
 %% comp_thermicallyConnectedTo(?Obj1, ?Obj2)
-% 
+%
 % Compute if a heat path exists between two objects. This is the case if
 % they are either on top of each other or if one contains the other one
 %
 % @param Obj1 Object instance
-% @param Obj2 Object instance 
-% 
+% @param Obj2 Object instance
+%
 comp_thermicallyConnectedTo(Obj1, Obj2) :-
   rdf_triple(knowrob:'on-Physical', Obj1, Obj2);
   rdf_triple(knowrob:'on-Physical', Obj2, Obj1).
@@ -146,7 +157,7 @@ comp_thermicallyConnectedTo(Obj1, Obj2) :-
 
 
 %% project_and_debug(+Plan, -OrigActionSeq, -ResultActSeq)
-% 
+%
 % Project a plan, infer actions that are missing in the original
 % action sequence, and add these actions to the plan.
 %
@@ -154,7 +165,7 @@ comp_thermicallyConnectedTo(Obj1, Obj2) :-
 % @param OrigActionSeq  Sequence of subActions of the Plan
 % @param ResultActSeq   Debugged action sequence, including actions that have been added
 %                       in order to match the input specifications of all actions
-% 
+%
 project_and_debug(Plan, OrigActionSeq, ResultActSeq) :-
 
   % read action seq
@@ -171,7 +182,7 @@ project_and_debug(Plan, OrigActionSeq, ResultActSeq) :-
 
 
 %% integrate_additional_actions(+ActSeq, -ResultActSeq)
-% 
+%
 % add additional actions (required to make an intermediate
 % action possible) just before this action)
 %
@@ -179,7 +190,7 @@ project_and_debug(Plan, OrigActionSeq, ResultActSeq) :-
 % @param ResultActSeq   Resulting sequence, with additional actions integrated into ActSeq,
 %                       so that all inputs of an action are filled with either existing objects
 %                       or by the output of another action
-% 
+%
 integrate_additional_actions([],[]).
 integrate_additional_actions([A|ActSeq], ResultActSeq) :-
 
@@ -192,28 +203,28 @@ integrate_additional_actions([A|ActSeq], ResultActSeq) :-
 
 
 %% project_action_class(+Action, -Inst, -PostActors)
-% 
+%
 % create instances for the plan
 %
 % @param Action       Action class that is to be projected
 % @param Inst         Generated action instance
 % @param PostActors   Created outputs
-% 
+%
 project_action_class(Action, Inst, PostActors) :-
 
   % create instance of the action
-  rdf_instance_from_class(Action, Inst),
+  rdf_instance_from_class(Action, knowrob_projection, Inst),
 
   % startTime: now
   get_timepoint(NOW),
-  rdf_assert(Inst, knowrob:'startTime', NOW),
+  rdf_assert(Inst, knowrob:'startTime', NOW, knowrob_projection),
 
   % bind the action properties from the class description to object instances
   findall([P,OT], ( class_properties(Action, P, OT)), PrObjTs),
 
   findall(ObjInst, (member([P, OT], PrObjTs),
                     obj_inst(OT, ObjInst),
-                    rdf_assert(Inst, P, ObjInst)), _),
+                    rdf_assert(Inst, P, ObjInst, knowrob_projection)), _),
 
   % project action effects
   (action_effects(Inst, PostActors);true).
@@ -224,16 +235,15 @@ obj_inst(OT, ObjInst) :-
 
 
 
-
 %% add_subactions_for_action(+Action, -SubActions)
-% 
+%
 % An action is possible if all prerequisites are fulfilled
 % or if all of the missing ones can be provides by possible actions
 %
 % @param Action     Action whose availability is to be checked
 % @param SubActions List of additional actions that need to be performed before
 %                   Action to generate the missing inputs (possibly empty)
-% 
+%
 add_subactions_for_action(Action, []) :-
   action_missing_inputs(Action, []),!.
 
@@ -247,35 +257,35 @@ add_subactions_for_action(Action, SubActions) :-
 
 
 %% action_inputs(+Action, -Input)
-% 
+%
 % Required inputs for an action
 %
 % @param Action   Action class
 % @param Input    Input linked via a preActors restriction
-% 
+%
 action_inputs(Action, Input) :-
   class_properties(Action, knowrob:'preActors', Input).
 
 
 
 %% action_missing_inputs(+Action, -Missing)
-% 
+%
 % Missing inputs of an action (required, but not available)
 %
 % @param Action   Action class
 % @param Missing  Input linked via a preActors restriction, but not available
-% 
+%
 action_missing_inputs(Action, Missing) :-
   findall(Pre, (action_inputs(Action, Pre), \+ resource_available(Pre)), Missing).
 
 
 %% action_outputs(+Action, -Output)
-% 
+%
 % Outputs of an action
 %
 % @param Action   Action class
 % @param Output   Output linked via a postActors restriction
-% 
+%
 action_outputs(Action, Output) :-
   class_properties(Action, knowrob:'postActors', Output).
 %TODO: check class subsumption (allow more complex requirements)
@@ -283,22 +293,22 @@ action_outputs(Action, Output) :-
 
 
 %% resource_available(+Resource)
-% 
+%
 % Resource is available (TODO: check destruction etc)
 %
 % @param Resource Resource whose availability is to be checked (e.g. object class, check if instance of that class exists)
-% 
+%
 resource_available(Resource) :-
   owl_individual_of(_, Resource).
 
 
 %% resource_provided_by_actionseq(Resource, [SubActions|SubAction])
-% 
+%
 % Resouce can be provided by a sequence of SubActions
 %
 % @param Resource     Resource whose availability is to be checked (e.g. object class)
 % @param SubActions   List of action classes that need to be performed in order to obtain Resource
-% 
+%
 resource_provided_by_actionseq(Resource, [SubActions|SubAction]) :-
   action_outputs(SubAction, Resource),
   add_subactions_for_action(SubAction, SubActions).
@@ -309,29 +319,29 @@ resource_provided_by_actionseq(Resource, [SubActions|SubAction]) :-
 
 
 
-% 
+%
 % project_and_debug(Plan, ActionSeq, Result) :-
-% 
+%
 %   object_change:plan_subevents(Plan, SubEvents),
-% 
+%
 %   % project
 %   findall(Inst, (member(Sub, SubEvents), object_change:project_action_class(Sub, Inst, Post)), Actions),
-% 
+%
 %   % check if result created
 %   findall(P, class_properties(Plan, knowrob:'taskToAchieve', P), Ps), member(Post, Ps),
 %   ( (owl_individual_of(Result, Post), member(A, Actions), owl_has(A, knowrob:postActors, Result)) ->
 %       (AddActions=[]) ;
 %       (additional_actions_req_for_output(Post, AddActions) )),
-% 
+%
 %   flatten([AddActions|Actions], ActionSeq).
 %
-% 
-% 
+%
+%
 % additional_actions_req_for_output(Post, Actions) :-
 %   findall(A, action_outputs(A, Post), As), member(Action, As),
 %   add_subactions_for_action(Action, SubActions),
 %   append(SubActions, [Action], Actions),
-% 
+%
 %   findall(_, (member(Sub, Actions), object_change:project_action_class(Sub, _, _)), _).
 
 
@@ -341,7 +351,7 @@ resource_provided_by_actionseq(Resource, [SubActions|SubAction]) :-
 
 
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
 %   vv   COPIED FROM OTHER MODULES -- TO BE REMOVED   vv

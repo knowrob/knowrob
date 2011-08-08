@@ -55,13 +55,13 @@ project_action_effects(Action) :-
   findall(Obj, owl_has(Action, knowrob:objectActedOn, Obj), Objs), !,
 
   % new objects: Dough is created, things are added to Dough
-  rdf_instance_from_class(knowrob:'Dough', Dough),
-  rdf_assert(Action, knowrob:objectAddedTo,  Dough),
-  rdf_assert(Action, knowrob:outputsCreated, Dough),
+  rdf_instance_from_class(knowrob:'Dough', knowrob_projection, knowrob_projection, Dough),
+  rdf_assert(Action, knowrob:objectAddedTo,  Dough, knowrob_projection),
+  rdf_assert(Action, knowrob:outputsCreated, Dough, knowrob_projection),
 
   % new relations
   findall(O, (member(O, Objs),
-              rdf_assert(Action, knowrob:thingIncorporated, O),
+              rdf_assert(Action, knowrob:thingIncorporated, O, knowrob_projection),
               print(O),print(' added to -> '), print(Dough), print('\n') ), _).
 
 
@@ -91,16 +91,24 @@ project_action_effects(Action) :-
   owl_individual_of(Action, knowrob:'HeatingFood'),
   \+ owl_has(Action, knowrob:'', _).  % TODO: implement!
 
+% temperature: 100 degree?
+
+
 
 % % % % % % % % % % % % % % % %
 % Boil food
 project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'BoilingFood'),
-  \+ owl_has(Action, knowrob:'', _).  % TODO: implement!
+  owl_has(Action, knowrob:objectActedOn, Obj),
+  \+ owl_individual_of(Obj, knowrob:'Boiled'),!,
 
+  rdf_assert(Obj, rdf:type, knowrob:'Boiled', knowrob_projection),
+  rdf_assert(Action, knowrob:outputsCreated, Obj, knowrob_projection),
 
+  rdf_assert(Obj, knowrob:temperatureOfObject, literal(type('http://www.w3.org/2001/XMLSchema#integer', '100')), knowrob_projection),
 
+  print(Obj),print(' boiled '), print('\n').
 
 
 
@@ -113,18 +121,19 @@ project_action_effects(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Chopping something into small pieces
-project_action_effects(Action) :-
-
-  owl_individual_of(Action, knowrob:'ChoppingSomething'),
-  \+ owl_has(Action, knowrob:'', _).  % TODO: implement!
+% project_action_effects(Action) :-
+%
+%   owl_individual_of(Action, knowrob:'ChoppingSomething'),
+%   \+ owl_has(Action, knowrob:'', _).  % TODO: implement!
 
 
 % % % % % % % % % % % % % % % %
 % Taking something out of a container (sugar, coffee grains)
-project_action_effects(Action) :-
+% project_action_effects(Action) :-
+%
+%   owl_individual_of(Action, knowrob:'RemovingMaterialFromAContainer'),
+%   \+ owl_has(Action, knowrob:'', _).  % TODO: implement!
 
-  owl_individual_of(Action, knowrob:'RemovingMaterialFromAContainer'),
-  \+ owl_has(Action, knowrob:'', _).  % TODO: implement!
 
 
 % % % % % % % % % % % % % % % %
@@ -132,8 +141,23 @@ project_action_effects(Action) :-
 project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'Cleaning'),
-  \+ owl_has(Action, knowrob:'', _).  % TODO: implement!
+  \+ owl_has(Action, knowrob:'objectOfStateChange', _),
 
+  owl_has(Action, knowrob:objectActedOn, Obj),
+  \+ owl_has(Obj, knowrob:'stateOfObject', knowrob:'Clean'),!,
+
+  % new relations
+  remove_object_properties(Obj, knowrob:'stateOfObject'),
+  rdf_assert(Obj, knowrob:'stateOfObject', knowrob:'Clean', knowrob_projection),
+
+  rdf_assert(Action, knowrob:'objectOfStateChange', Obj, knowrob_projection),
+  rdf_assert(Action, knowrob:'toState',   knowrob:'Clean', knowrob_projection),
+
+  % optionally: fromState
+  ((owl_has(Obj, knowrob:'stateOfObject', PreState),
+    rdf_assert(Action, knowrob:'fromState', PreState, knowrob_projection)) ; (true)),
+
+  print(Obj),print(' cleaned '), print('\n').
 
 
 
@@ -150,11 +174,11 @@ project_action_effects(Action) :-
   ObjType \= 'http://www.w3.org/2002/07/owl#NamedIndividual',!,
 
   % new objects
-  rdf_instance_from_class(ObjType, Slice),
+  rdf_instance_from_class(ObjType, knowrob_projection, Slice),
 
   % new relations
-  rdf_assert(Action, knowrob:outputsRemaining, Obj),
-  rdf_assert(Action, knowrob:outputsCreated, Slice),
+  rdf_assert(Action, knowrob:outputsRemaining, Obj, knowrob_projection),
+  rdf_assert(Action, knowrob:outputsCreated, Slice, knowrob_projection),
 
   print(Obj),print(' -> '), print(Slice), print('\n').
 
@@ -171,13 +195,13 @@ project_action_effects(Action) :-
   owl_individual_of(Obj, knowrob:'Egg-Chickens'),!,
 
   % new objects
-  rdf_instance_from_class(knowrob:'EggShell', Shell),
-  rdf_instance_from_class(knowrob:'EggYolk-Food', Yolk),
+  rdf_instance_from_class(knowrob:'EggShell', knowrob_projection, Shell),
+  rdf_instance_from_class(knowrob:'EggYolk-Food', knowrob_projection, Yolk),
 
   % new relations
-  rdf_assert(Action, knowrob:inputsDestroyed, Obj),
-  rdf_assert(Action, knowrob:outputsCreated, Shell),
-  rdf_assert(Action, knowrob:outputsCreated, Yolk),
+  rdf_assert(Action, knowrob:inputsDestroyed, Obj, knowrob_projection),
+  rdf_assert(Action, knowrob:outputsCreated, Shell, knowrob_projection),
+  rdf_assert(Action, knowrob:outputsCreated, Yolk, knowrob_projection),
 
   print(Obj),print(' -> '), print(Shell), print('\n'),
   print(Obj),print(' -> '), print(Yolk), print('\n').
@@ -209,7 +233,7 @@ project_action_effects(Action) :-
   % TODO: qualify these relations to hold only for limited time
   % Hack: retract all topological relations between OBJ and something else
   remove_object_properties(Obj, knowrob:topologicalRelations),
-  rdf_assert(Obj, knowrob:'on-Physical', To),
+  rdf_assert(Obj, knowrob:'on-Physical', To, knowrob_projection),
 
   print(Obj),print(' on top of '), print(To), print('\n').
 
@@ -230,7 +254,7 @@ project_action_effects(Action) :-
   % TODO: qualify these relations to hold only for limited time
   % Hack: retract all topological relations between OBJ and something else
   remove_object_properties(Obj, knowrob:topologicalRelations),
-  rdf_assert(Obj, knowrob:'on-Physical', To),
+  rdf_assert(Obj, knowrob:'on-Physical', To, knowrob_projection),
 
   print(Obj),print(' on top of '), print(To), print('\n').
 
@@ -250,7 +274,7 @@ project_action_effects(Action) :-
   % TODO: qualify these relations to hold only for limited time
   % Hack: retract all topological relations between OBJ and something else
   remove_object_properties(Obj, knowrob:topologicalRelations),
-  rdf_assert(Obj, knowrob:'in-ContGeneric', To),
+  rdf_assert(Obj, knowrob:'in-ContGeneric', To, knowrob_projection),
 
   print(Obj),print(' on top of '), print(To), print('\n').
 
@@ -267,19 +291,19 @@ project_action_effects(Action) :-
   owl_has(Action, knowrob:toLocation, To),!,
 
   % predict the object to be at the toLocation of the action
-  rdf_instance_from_class(knowrob:'ThoughtExperimenting', Pred),
-  rdf_assert(Pred, knowrob:'objectActedOn', Obj),
+  rdf_instance_from_class(knowrob:'ThoughtExperimenting', knowrob_projection, Pred),
+  rdf_assert(Pred, knowrob:'objectActedOn', Obj, knowrob_projection),
 
   get_timepoint(NOW), % TODO: add predicted action duration
-  rdf_assert(Pred, knowrob:'startTime', NOW),
+  rdf_assert(Pred, knowrob:'startTime', NOW, knowrob_projection),
 
   ((owl_individual_of(To, knowrob:'RotationMatrix'),!) -> (
     % if toLocation is given as pose matrix, use this one
-    rdf_assert(Pred, knowrob:'eventOccursAt', To)
+    rdf_assert(Pred, knowrob:'eventOccursAt', To, knowrob_projection)
    ) ; (
     % otherwise use the knowrob:orientation of the toLocation
     rdf_triple(knowrob:orientation, To, ToPose),
-    rdf_assert(Pred, knowrob:'eventOccursAt', ToPose)
+    rdf_assert(Pred, knowrob:'eventOccursAt', ToPose, knowrob_projection)
   )),
 
   print(Obj),print(' at location '), print(To), print('\n').
@@ -301,7 +325,7 @@ project_action_effects(Action) :-
   % TODO: qualify these relations to hold only for limited time
   % Hack: retract all topological relations between OBJ and something else
   remove_object_properties(Obj, knowrob:topologicalRelations),
-  rdf_assert(Obj, knowrob:'on-Physical', To),
+  rdf_assert(Obj, knowrob:'on-Physical', To, knowrob_projection),
 
   print(Obj),print(' on top of '), print(To), print('\n').
 
@@ -326,11 +350,11 @@ project_action_effects(Action) :-
   % TODO: qualify these relations to hold only for limited time
   % Hack: retract all asserted states of OBJ
   remove_object_properties(Obj, knowrob:'stateOfObject'),
-  rdf_assert(Obj, knowrob:'stateOfObject', knowrob:'DeviceStateOn'),
+  rdf_assert(Obj, knowrob:'stateOfObject', knowrob:'DeviceStateOn', knowrob_projection),
 
-  rdf_assert(Action, knowrob:'objectOfStateChange', Obj),
-  rdf_assert(Action, knowrob:'fromState', knowrob:'DeviceStateOff'),
-  rdf_assert(Action, knowrob:'toState',   knowrob:'DeviceStateOn'),
+  rdf_assert(Action, knowrob:'objectOfStateChange', Obj, knowrob_projection),
+  rdf_assert(Action, knowrob:'fromState', knowrob:'DeviceStateOff', knowrob_projection),
+  rdf_assert(Action, knowrob:'toState',   knowrob:'DeviceStateOn', knowrob_projection),
 
   print(Obj),print(' switched on '), print('\n').
 
@@ -349,11 +373,11 @@ project_action_effects(Action) :-
   % TODO: qualify these relations to hold only for limited time
   % Hack: retract all asserted states of OBJ
   remove_object_properties(Obj, knowrob:stateOfObject),
-  rdf_assert(Obj, knowrob:'stateOfObject', knowrob:'DeviceStateOff'),
+  rdf_assert(Obj, knowrob:'stateOfObject', knowrob:'DeviceStateOff', knowrob_projection),
 
-  rdf_assert(Action, knowrob:'objectOfStateChange', Obj),
-  rdf_assert(Action, knowrob:'fromState', knowrob:'DeviceStateOn'),
-  rdf_assert(Action, knowrob:'toState',   knowrob:'DeviceStateOff'),
+  rdf_assert(Action, knowrob:'objectOfStateChange', Obj, knowrob_projection),
+  rdf_assert(Action, knowrob:'fromState', knowrob:'DeviceStateOn', knowrob_projection),
+  rdf_assert(Action, knowrob:'toState',   knowrob:'DeviceStateOff', knowrob_projection),
 
   print(Obj),print(' switched off'), print('\n').
 
@@ -372,11 +396,11 @@ project_action_effects(Action) :-
   % TODO: qualify these relations to hold only for limited time
   % Hack: retract all asserted states of OBJ
   remove_object_properties(Obj, knowrob:stateOfObject),
-  rdf_assert(Obj, knowrob:'stateOfObject', knowrob:'DeviceStateOn'),
+  rdf_assert(Obj, knowrob:'stateOfObject', knowrob:'DeviceStateOn', knowrob_projection),
 
-  rdf_assert(Action, knowrob:'objectOfStateChange', Obj),
-  rdf_assert(Action, knowrob:'fromState', knowrob:'DeviceStateOff'),
-  rdf_assert(Action, knowrob:'toState',   knowrob:'DeviceStateOn'),
+  rdf_assert(Action, knowrob:'objectOfStateChange', Obj, knowrob_projection),
+  rdf_assert(Action, knowrob:'fromState', knowrob:'DeviceStateOff', knowrob_projection),
+  rdf_assert(Action, knowrob:'toState',   knowrob:'DeviceStateOn', knowrob_projection),
 
   print(Obj),print(' switched on'), print('\n').
 
@@ -395,11 +419,11 @@ project_action_effects(Action) :-
   % TODO: qualify these relations to hold only for limited time
   % Hack: retract all asserted states of OBJ
   remove_object_properties(Obj, knowrob:stateOfObject),
-  rdf_assert(Obj, knowrob:'stateOfObject', knowrob:'DeviceStateOff'),
+  rdf_assert(Obj, knowrob:'stateOfObject', knowrob:'DeviceStateOff', knowrob_projection),
 
-  rdf_assert(Action, knowrob:'objectOfStateChange', Obj),
-  rdf_assert(Action, knowrob:'fromState', knowrob:'DeviceStateOn'),
-  rdf_assert(Action, knowrob:'toState',   knowrob:'DeviceStateOff'),
+  rdf_assert(Action, knowrob:'objectOfStateChange', Obj, knowrob_projection),
+  rdf_assert(Action, knowrob:'fromState', knowrob:'DeviceStateOn', knowrob_projection),
+  rdf_assert(Action, knowrob:'toState',   knowrob:'DeviceStateOff', knowrob_projection),
 
   print(Obj),print(' switched off'), print('\n').
 
@@ -418,11 +442,11 @@ project_action_effects(Action) :-
   % TODO: qualify these relations to hold only for limited time
   % Hack: retract all asserted states of OBJ
   remove_object_properties(Obj, knowrob:stateOfObject),
-  rdf_assert(Obj, knowrob:'stateOfObject', knowrob:'ObjectStateOpen'),
+  rdf_assert(Obj, knowrob:'stateOfObject', knowrob:'ObjectStateOpen', knowrob_projection),
 
-  rdf_assert(Action, knowrob:'objectOfStateChange', Obj),
-  rdf_assert(Action, knowrob:'fromState', knowrob:'ObjectStateClosed'),
-  rdf_assert(Action, knowrob:'toState',   knowrob:'ObjectStateOpen'),
+  rdf_assert(Action, knowrob:'objectOfStateChange', Obj, knowrob_projection),
+  rdf_assert(Action, knowrob:'fromState', knowrob:'ObjectStateClosed', knowrob_projection),
+  rdf_assert(Action, knowrob:'toState',   knowrob:'ObjectStateOpen', knowrob_projection),
 
   print(Obj),print(' opened'), print('\n').
 
@@ -441,11 +465,11 @@ project_action_effects(Action) :-
   % TODO: qualify these relations to hold only for limited time
   % Hack: retract all asserted states of OBJ
   remove_object_properties(Obj, knowrob:stateOfObject),
-  rdf_assert(Obj, knowrob:'stateOfObject', knowrob:'ObjectStateClosed'),
+  rdf_assert(Obj, knowrob:'stateOfObject', knowrob:'ObjectStateClosed', knowrob_projection),
 
-  rdf_assert(Action, knowrob:'objectOfStateChange', Obj),
-  rdf_assert(Action, knowrob:'fromState', knowrob:'ObjectStateOpen'),
-  rdf_assert(Action, knowrob:'toState',   knowrob:'ObjectStateClosed'),
+  rdf_assert(Action, knowrob:'objectOfStateChange', Obj, knowrob_projection),
+  rdf_assert(Action, knowrob:'fromState', knowrob:'ObjectStateOpen', knowrob_projection),
+  rdf_assert(Action, knowrob:'toState',   knowrob:'ObjectStateClosed', knowrob_projection),
 
   print(Obj),print(' opened'), print('\n').
 

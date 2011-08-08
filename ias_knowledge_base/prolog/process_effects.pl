@@ -76,11 +76,11 @@ project_process_effects :-
 
   % % % % % % % % % % % % %
   % Influences of the process on the individuals
-  rdf_instance_from_class(knowrob:'BakingFood', Ev),
-  rdf_instance_from_class(knowrob:'Baked', Res),
+  rdf_instance_from_class(knowrob:'BakingFood', knowrob_projection, Ev),
+  rdf_instance_from_class(knowrob:'Baked', knowrob_projection, Res),
 
-  rdf_assert(Ev, knowrob:inputsDestroyed, Dough),
-  rdf_assert(Ev, knowrob:outputsCreated,  Res),
+  rdf_assert(Ev, knowrob:inputsDestroyed, Dough, knowrob_projection),
+  rdf_assert(Ev, knowrob:outputsCreated,  Res, knowrob_projection),
 
   % remove references to the Dough (spatial relations)
   action_effects:unlink_object(Dough),
@@ -88,10 +88,10 @@ project_process_effects :-
   print(Dough),print(' -> '), print(Res), print('\n'),
 
   get_timepoint(NOW),
-  rdf_assert(Ev, knowrob:startTime, NOW),
+  rdf_assert(Ev, knowrob:startTime, NOW, knowrob_projection),
 
   get_timepoint('+2m', THEN),
-  rdf_assert(Ev, knowrob:endTime, THEN).
+  rdf_assert(Ev, knowrob:endTime, THEN, knowrob_projection).
 
 
 
@@ -120,7 +120,7 @@ project_process_effects :-
 
   % simplified view: working temperature reached immediately after switching on the device
   owl_has(Device, knowrob:workingTemperature, WorkingTemp),!,
-  rdf_assert(Device, knowrob:temperatureOfObject, WorkingTemp).
+  rdf_assert(Device, knowrob:temperatureOfObject, WorkingTemp, knowrob_projection).
 
 
 
@@ -149,7 +149,7 @@ project_process_effects :-
   % Influences of the process on the individuals
 
   % simplified view: room temperature reached immediately after switching off the device
-  rdf_assert(Device, knowrob:temperatureOfObject, literal(type('http://www.w3.org/2001/XMLSchema#integer', '20'))).
+  rdf_assert(Device, knowrob:temperatureOfObject, literal(type('http://www.w3.org/2001/XMLSchema#integer', '20')), knowrob_projection).
 
 
 
