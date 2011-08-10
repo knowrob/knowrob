@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY local_path 'file://@OWL_PATH_PREFIX@/owl/'>
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY swrl "http://www.w3.org/2003/11/swrl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY computable "http://ias.cs.tum.edu/kb/computable.owl#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://ias.cs.tum.edu/kb/knowrob_owlapi_test.owl#"
+     xml:base="http://ias.cs.tum.edu/kb/knowrob_owlapi_test.owl"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:computable="http://ias.cs.tum.edu/kb/computable.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#">
+    <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/knowrob_owlapi_test.owl">
+        <owl:imports rdf:resource="&local_path;/knowrob.owl"/>
+    </owl:Ontology>
+
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#outputsCreated -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;outputsCreated"/>
+
+
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Dough -->
+
+    <owl:Class rdf:about="&knowrob;Dough"/>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Event -->
+
+    <owl:Class rdf:about="&knowrob;Event"/>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#LiquidTangibleThing -->
+
+    <owl:Class rdf:about="&knowrob;LiquidTangibleThing"/>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Mixing -->
+
+    <owl:Class rdf:about="&knowrob;Mixing"/>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob_owlapi_test.owl#CreateDough -->
+
+    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/knowrob_owlapi_test.owl#CreateDough">
+        <rdfs:subClassOf rdf:resource="&knowrob;Mixing"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;outputsCreated"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;Dough"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob_owlapi_test.owl#CreateLiquid -->
+
+    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/knowrob_owlapi_test.owl#CreateLiquid">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&knowrob;Event"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;outputsCreated"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;LiquidTangibleThing"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+</rdf:RDF>

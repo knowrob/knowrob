@@ -13,8 +13,10 @@
   <depend package="semweb"/>
 
   <export>
-    <java classpath="${prefix}/bin:${prefix}/lib/guava-r09.jar:${prefix}/lib/vecmath.jar"/>
-  </export>
+<!--     <java classpath="${prefix}/bin:${prefix}/lib/guava-r09.jar:${prefix}/lib/vecmath.jar"/> -->
+  <java classpath="${prefix}/bin:${prefix}/lib/owlapi-bin.jar:${prefix}/lib/vecmath.jar:${prefix}/lib/guava-r09.jar:${prefix}/lib/commons-lang-2.6.jar:${prefix}/lib/HermiT.jar"/>
+</export>
+
 
 </package>
 
