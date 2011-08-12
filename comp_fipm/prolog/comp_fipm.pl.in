@@ -85,7 +85,7 @@ initCmdProlog :-
 % @param CRF Returned handle identifying the trained CRF instance
 
 trainLeftHandPoseCRF(CRF) :- 
-    jpl_new('de.tum.in.fipm.base.kipmmodels.util.KipmEpisodeData', [ 'stt-human',  'iaskitchen', 'set-the-table',  5.12, 3.8, '', '29-08-2008', 'localhost', 'stt-human', '/usr/wiss/tenorth/work/owl/gram_ias_human.pl'], Context),
+    jpl_new('de.tum.in.fipm.base.kipmmodels.util.KipmEpisodeData', [ 'set-table',  'iaskitchen', 'set-the-table',  5.12, 3.8, '', '29-08-2008', 'localhost', 'set-table', '/usr/wiss/tenorth/work/owl/gram_ias_human.pl'], Context),
     jpl_call('de.tum.in.fipm.base.data.query.QueryFactory', 'readQuery', ['LeftHandPosGradientJointAnglesFeatures'], Q),
     jpl_new('fipm.gui.InteractiveQuery', [Q], IQ),
     jpl_call(IQ, 'execute', [Context], Qres),
@@ -112,7 +112,7 @@ trainLeftHandPoseCRF(CRF) :-
 % @param CRF Returned handle identifying the trained CRF instance
 
 trainRightHandPoseCRF(CRF) :- 
-    jpl_new('de.tum.in.fipm.base.kipmmodels.util.KipmEpisodeData', [ 'stt-human',  'iaskitchen', 'set-the-table',  5.12, 3.8, '', '29-08-2008', 'localhost', 'stt-human', '/usr/wiss/tenorth/work/owl/gram_ias_human.pl'], Context),
+    jpl_new('de.tum.in.fipm.base.kipmmodels.util.KipmEpisodeData', [ 'set-table',  'iaskitchen', 'set-the-table',  5.12, 3.8, '', '29-08-2008', 'localhost', 'set-table', '/usr/wiss/tenorth/work/owl/gram_ias_human.pl'], Context),
     jpl_call('de.tum.in.fipm.base.data.query.QueryFactory', 'readQuery', ['RightHandPosGradientJointAnglesFeatures'], Q),
     jpl_new('fipm.gui.InteractiveQuery', [Q], IQ),
     jpl_call(IQ, 'execute', [Context], Qres),
@@ -143,7 +143,7 @@ trainRightHandPoseCRF(CRF) :-
 leftHandPosesLabeled(Frames, Labels, Times) :-
 
     print('Reading poses from database...'),
-    jpl_new('de.tum.in.fipm.base.kipmmodels.util.KipmEpisodeData', [ 'stt-human',  'iaskitchen', 'set-the-table',  5.12, 3.8, '', '29-08-2008', 'localhost', 'stt-human', '/usr/wiss/tenorth/work/owl/gram_ias_human.pl'], Context),
+    jpl_new('de.tum.in.fipm.base.kipmmodels.util.KipmEpisodeData', [ 'set-table',  'iaskitchen', 'set-the-table',  5.12, 3.8, '', '29-08-2008', 'localhost', 'set-table', '/usr/wiss/tenorth/work/owl/gram_ias_human.pl'], Context),
     jpl_call('de.tum.in.fipm.base.data.query.QueryFactory', 'readQuery', ['LeftHandPosGradientJointAnglesFeatures'], Q),
     jpl_new('fipm.gui.InteractiveQuery', [Q], IQ),
 
@@ -172,7 +172,7 @@ leftHandPosesLabeled(Frames, Labels, Times) :-
 rightHandPosesLabeled(Frames, Labels, Times) :-
 
     print('Reading poses from database...'),
-    jpl_new('de.tum.in.fipm.base.kipmmodels.util.KipmEpisodeData', [ 'stt-human',  'iaskitchen', 'set-the-table',  5.12, 3.8, '', '29-08-2008', 'localhost', 'stt-human', '/usr/wiss/tenorth/work/owl/gram_ias_human.pl'], Context),
+    jpl_new('de.tum.in.fipm.base.kipmmodels.util.KipmEpisodeData', [ 'set-table',  'iaskitchen', 'set-the-table',  5.12, 3.8, '', '29-08-2008', 'localhost', 'set-table', '/usr/wiss/tenorth/work/owl/gram_ias_human.pl'], Context),
     jpl_call('de.tum.in.fipm.base.data.query.QueryFactory', 'readQuery', ['RightHandPosGradientJointAnglesFeatures'], Q),
     jpl_new('fipm.gui.InteractiveQuery', [Q], IQ),
 
@@ -214,7 +214,7 @@ bothHandPosesLabeled(LFrames, LLabels, LTimes, RFrames, RLabels, RTimes) :-
 % @param Times List of time stamps for the frames
 
 timeStampsOfFrames(Times) :-
-    jpl_new('de.tum.in.fipm.base.kipmmodels.util.KipmEpisodeData', [ 'stt-human',  'iaskitchen', 'set-the-table',  5.12, 3.8, '', '29-08-2008', 'localhost', 'stt-human', '/usr/wiss/tenorth/work/owl/gram_ias_human.pl'], Context),
+    jpl_new('de.tum.in.fipm.base.kipmmodels.util.KipmEpisodeData', [ 'set-table',  'iaskitchen', 'set-the-table',  5.12, 3.8, '', '29-08-2008', 'localhost', 'set-table', '/usr/wiss/tenorth/work/owl/gram_ias_human.pl'], Context),
     jpl_call('de.tum.in.fipm.base.data.query.QueryFactory', 'readQuery', ['TimeStamps'], Q),
     jpl_new('fipm.gui.InteractiveQuery', [Q], IQ),
     jpl_call(IQ, 'execute', [Context], Qres),

@@ -3953,9 +3953,9 @@
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Drawer67 -->
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Refrigerator67 -->
 
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer67">
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Refrigerator67">
         <knowrob:openingTrajectory rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ArmTrajectory563"/>
     </owl:NamedIndividual>
 

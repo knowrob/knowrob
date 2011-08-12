@@ -225,20 +225,29 @@ sub_component(Super, Sub) :-
 class_properties(Class, Prop, Val) :-         % read directly asserted properties
   class_properties_1(Class, Prop, Val).
 class_properties(Class, Prop, Val) :-         % also consider properties of superclasses
+  nonvar(Class),
   owl_subclass_of(Class, Super), Class\=Super,
   class_properties_1(Super, Prop, Val).
 
 % read restrictions defined for Class for Prop or a sub-property of Prop
 class_properties_1(Class, Prop, Val) :-
+  nonvar(Class),
   owl_direct_subclass_of(Class, Sup),
   owl_direct_subclass_of(Sup, Sup2),
   ( (nonvar(Prop)) -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
   owl_restriction(Sup2,restriction(SubProp, some_values_from(Val))).
 
 class_properties_1(Class, Prop, Val) :-
+  nonvar(Class),
   owl_direct_subclass_of(Class, Sup),
   ( (nonvar(Prop)) -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
   owl_restriction(Sup,restriction(SubProp, some_values_from(Val))).
+
+class_properties_1(Class, Prop, Val) :-
+  var(Class),
+  ( (nonvar(Prop)) -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
+  owl_restriction(Sup,restriction(SubProp, some_values_from(Val))),
+  owl_direct_subclass_of(Class, Sup).
 
 
 
