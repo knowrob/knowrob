@@ -404,6 +404,22 @@
     
 
 
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Charcoal -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Charcoal">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#CombustibleFuelSubstance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CharcoalLighter -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#CharcoalLighter">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#CombustibleFuelSubstance"/>
+    </owl:Class>
+    
+
+
     <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CheeseSpaetzle-Instant -->
 
     <owl:Class rdf:about="&kb;kitchenobjects.owl#CheeseSpaetzle-Instant">
@@ -508,6 +524,14 @@
         <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Meal"/>
         <rdfs:comment>Coffee or Tea and optional cake etc., usually during the afternoon
 </rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CombustibleFuelSubstance -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#CombustibleFuelSubstance">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#OrganicMaterial"/>
     </owl:Class>
     
 
@@ -882,6 +906,14 @@
     
 
 
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#InanimateObject-Natural_ -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#InanimateObject-Natural_">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#SolidTangibleThing"/>
+    </owl:Class>
+    
+
+
     <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#InstantCappuccinoPowder -->
 
     <owl:Class rdf:about="&kb;kitchenobjects.owl#InstantCappuccinoPowder">
@@ -1139,6 +1171,14 @@
 
     <owl:Class rdf:about="&kb;kitchenobjects.owl#Olives-Pickled">
         <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#PickledFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#OrganicMaterial -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#OrganicMaterial">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#EnduringThing-Localized"/>
     </owl:Class>
     
 
@@ -1449,6 +1489,14 @@
     
 
 
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#SaladPlate -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#SaladPlate">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#EatingVessel"/>
+    </owl:Class>
+    
+
+
     <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#SaladSpoon -->
 
     <owl:Class rdf:about="&kb;kitchenobjects.owl#SaladSpoon">
@@ -1734,6 +1782,14 @@
 
     <owl:Class rdf:about="&kb;kitchenobjects.owl#StickyTape">
         <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#AdhesiveTape"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Straw -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Straw">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#InanimateObject-Natural_"/>
     </owl:Class>
     
 
@@ -2317,11 +2373,101 @@
     
 
 
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Bowl1 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Bowl1">
+        <rdf:type rdf:resource="&kb;knowrob.owl#Bowl-Mixing"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard41"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Bowl2 -->
 
     <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Bowl2">
         <rdf:type rdf:resource="&kb;knowrob.owl#Bowl-Eating"/>
         <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard29"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Bowl3 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Bowl3">
+        <rdf:type rdf:resource="&kb;knowrob.owl#Bowl-Eating"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard33"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Bowl4 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Bowl4">
+        <rdf:type rdf:resource="&kb;knowrob.owl#Bowl-Eating"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard33"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Bowl5 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Bowl5">
+        <rdf:type rdf:resource="&kb;knowrob.owl#Bowl-Eating"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard33"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Bowl6 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Bowl6">
+        <rdf:type rdf:resource="&kb;knowrob.owl#Bowl-Eating"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard33"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CappuchinoAssimo -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#CappuchinoAssimo">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#InstantCappuccinoPowder"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard53"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CerealShreddedWheat -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#CerealShreddedWheat">
+        <rdf:type rdf:resource="&kb;knowrob.owl#BreakfastCereal"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard57"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CerealSwissMuesli -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#CerealSwissMuesli">
+        <rdf:type rdf:resource="&kb;knowrob.owl#BreakfastCereal"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard57"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Charcoal1 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Charcoal1">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#Charcoal"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard13"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CharcoalLighter1 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#CharcoalLighter1">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#CharcoalLighter"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard13"/>
     </owl:NamedIndividual>
     
 
@@ -2353,6 +2499,33 @@
     
 
 
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CocoaGreatValue -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#CocoaGreatValue">
+        <rdf:type rdf:resource="&kb;knowrob.owl#Cocoa-ThePowder"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard57"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CocoaNesquik -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#CocoaNesquik">
+        <rdf:type rdf:resource="&kb;knowrob.owl#Cocoa-ThePowder"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard57"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CoffeeStarbucks -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#CoffeeStarbucks">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#Coffee-Ground"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard53"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#DishwasherDetergentCascade -->
 
     <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#DishwasherDetergentCascade">
@@ -2376,6 +2549,69 @@
     <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#DisinfectingWipesLysol">
         <rdf:type rdf:resource="&kb;knowrob.owl#PaperTowel"/>
         <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#EspressoAssimo -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#EspressoAssimo">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#InstantEspressoPowder"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard53"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#EspressoCup1 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#EspressoCup1">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#EspressoCup"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard49"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#EspressoCup2 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#EspressoCup2">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#EspressoCup"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard49"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#EspressoCup3 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#EspressoCup3">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#EspressoCup"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard49"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Fork1 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Fork1">
+        <rdf:type rdf:resource="&kb;knowrob.owl#Fork-SilverwarePiece"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard37"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Fork2 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Fork2">
+        <rdf:type rdf:resource="&kb;knowrob.owl#Fork-SilverwarePiece"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard37"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Fork3 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Fork3">
+        <rdf:type rdf:resource="&kb;knowrob.owl#Fork-SilverwarePiece"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard37"/>
     </owl:NamedIndividual>
     
 
@@ -2407,11 +2643,146 @@
     
 
 
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#HoneyTraderJoes -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#HoneyTraderJoes">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#Honey"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard57"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Knife1 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Knife1">
+        <rdf:type rdf:resource="&kb;knowrob.owl#TableKnife"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard37"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Knife2 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Knife2">
+        <rdf:type rdf:resource="&kb;knowrob.owl#TableKnife"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard37"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Knife3 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Knife3">
+        <rdf:type rdf:resource="&kb;knowrob.owl#TableKnife"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard37"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#LargeGlass1 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#LargeGlass1">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#DrinkingGlass-Large"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard45"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#LargeGlass2 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#LargeGlass2">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#DrinkingGlass-Large"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard45"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#LargeGlass3 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#LargeGlass3">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#DrinkingGlass-Large"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard45"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#LondonTea1 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#LondonTea1">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#InstantTeaPowder"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard57"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#LondonTea2 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#LondonTea2">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#InstantTeaPowder"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard57"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#MileChaiTea500 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#MileChaiTea500">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#InstantTeaPowder"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard57"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#MilkaHotChocolade -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#MilkaHotChocolade">
+        <rdf:type rdf:resource="&kb;knowrob.owl#Cocoa-ThePowder"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard53"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Mug1 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Mug1">
+        <rdf:type rdf:resource="&kb;knowrob.owl#DrinkingMug"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard49"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Mug2 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Mug2">
+        <rdf:type rdf:resource="&kb;knowrob.owl#DrinkingMug"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard49"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Mug3 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Mug3">
+        <rdf:type rdf:resource="&kb;knowrob.owl#DrinkingMug"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard49"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#OriginalScentTide -->
 
     <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#OriginalScentTide">
         <rdf:type rdf:resource="&kb;knowrob.owl#LaundryDetergent"/>
         <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PaperTowelSparkle -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#PaperTowelSparkle">
+        <rdf:type rdf:resource="&kb;knowrob.owl#PaperTowel"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard37"/>
     </owl:NamedIndividual>
     
 
@@ -2461,6 +2832,33 @@
     
 
 
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PlasticCup6 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#PlasticCup6">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#DrinkingGlass-Large"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard41"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PlasticCup7 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#PlasticCup7">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#DrinkingGlass-Large"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard41"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PlasticCup8 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#PlasticCup8">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#DrinkingGlass-Large"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard41"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Plate -->
 
     <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Plate">
@@ -2497,6 +2895,96 @@
     
 
 
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Plate5 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Plate5">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#PizzaPlate"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard33"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Plate6 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Plate6">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#PizzaPlate"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard33"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Plate7 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Plate7">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#PizzaPlate"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard33"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Plate8 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Plate8">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#PizzaPlate"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard33"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#SaladPlate1 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#SaladPlate1">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#SaladPlate"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard37"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#SaladPlate2 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#SaladPlate2">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#SaladPlate"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard37"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#SaladPlate3 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#SaladPlate3">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#SaladPlate"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard37"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#SaladPlate4 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#SaladPlate4">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#SaladPlate"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard37"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Saucer1 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Saucer1">
+        <rdf:type rdf:resource="&kb;knowrob.owl#Saucer"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard41"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Saucer2 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Saucer2">
+        <rdf:type rdf:resource="&kb;knowrob.owl#Saucer"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard41"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#ShampooGarnierFructis -->
 
     <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#ShampooGarnierFructis">
@@ -2515,11 +3003,119 @@
     
 
 
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#SmallGlass1 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#SmallGlass1">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#DrinkingGlass-Small"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard41"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#SmallGlass2 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#SmallGlass2">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#DrinkingGlass-Small"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard41"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#SmallGlass3 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#SmallGlass3">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#DrinkingGlass-Small"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard41"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Spoon1 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Spoon1">
+        <rdf:type rdf:resource="&kb;knowrob.owl#Spoon-SilverwarePiece"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard37"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Spoon2 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Spoon2">
+        <rdf:type rdf:resource="&kb;knowrob.owl#Spoon-SilverwarePiece"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard37"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Spoon3 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Spoon3">
+        <rdf:type rdf:resource="&kb;knowrob.owl#Spoon-SilverwarePiece"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard37"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Straw1 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Straw1">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#Straw"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard53"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Straw2 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Straw2">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#Straw"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard53"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Straw3 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Straw3">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#Straw"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard53"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#TeaSpicyTraderJoes -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#TeaSpicyTraderJoes">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#InstantTeaPowder"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard57"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#VanillaCaramelCoffeeMate -->
 
     <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#VanillaCaramelCoffeeMate">
         <rdf:type rdf:resource="&kb;knowrob.owl#Coffee-Beverage"/>
         <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard29"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#WineGlass1 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#WineGlass1">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#WineGlass"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard45"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#WineGlass2 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#WineGlass2">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#WineGlass"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard45"/>
     </owl:NamedIndividual>
 </rdf:RDF>
 
