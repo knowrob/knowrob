@@ -1,0 +1,2529 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY kb "http://ias.cs.tum.edu/kb/" >
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="&kb;kitchenobjects.owl#"
+     xml:base="&kb;kitchenobjects.owl"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:kb="http://ias.cs.tum.edu/kb/"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:knowrob="&kb;knowrob.owl#">
+    <owl:Ontology rdf:about="&kb;kitchenobjects.owl">
+        <owl:imports rdf:resource="file:///home/pangerci/diamondback_ros/tum-stacks/knowrob/ias_knowledge_base/owl/knowrob.owl"/>
+        <owl:imports rdf:resource="&kb;bosch_semantic_map.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <owl:AnnotationProperty rdf:about="&rdfs;comment"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#usedForPurpose -->
+
+    <owl:ObjectProperty rdf:about="&kb;kitchenobjects.owl#usedForPurpose">
+        <rdfs:domain rdf:resource="&kb;knowrob.owl#SpatialThing"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#AdhesiveTape -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#AdhesiveTape">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Tape"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Almond -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Almond">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#EdibleNut"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#AluminiumFoil -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#AluminiumFoil">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#FlatObject"/>
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#FoodVessel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#AntiMiteSpray -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#AntiMiteSpray">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Surfactant"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#AppleVinegar -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#AppleVinegar">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Vinegar"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#ApricotDried -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#ApricotDried">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#DriedFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#AsiaNoodles-Instant -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#AsiaNoodles-Instant">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#InstantFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Bag -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Bag">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#StorageConstruct"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#BakingDish -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#BakingDish">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#CookingVessel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#BakingPaper -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#BakingPaper">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Paper"/>
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#FoodVessel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#BalsamicVinegarRed -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#BalsamicVinegarRed">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Vinegar"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#BalsamicVinegarWhite -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#BalsamicVinegarWhite">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Vinegar"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#BasicOfficeConncetor -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#BasicOfficeConncetor">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#HumanScaleObject"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Basil-TheSpice -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Basil-TheSpice">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Herbs"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#BasmatiRice-Uncooked -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#BasmatiRice-Uncooked">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Rice-Uncooked"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#BathroomCleaner -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#BathroomCleaner">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Surfactant"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#BeanSalad-Canned -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#BeanSalad-Canned">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#CannedFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Beer -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Beer">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Drink"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#BeerGlass -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#BeerGlass">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#DrinkingGlass"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#BeerGlassLarge -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#BeerGlassLarge">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#BeerGlass"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#BeerGlassMedium -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#BeerGlassMedium">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#BeerGlass"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#BeerGlassSmall -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#BeerGlassSmall">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#BeerGlass"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#BladeSharpener -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#BladeSharpener">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#HandTool"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Book -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Book">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#HumanScaleObject"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#BottleOpener -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#BottleOpener">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#HandTool"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Brazilnut-TheSeed -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Brazilnut-TheSeed">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#EdibleNut"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#BreadKnife -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#BreadKnife">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#CookingUtensil"/>
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Knife"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#BreadSpread -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#BreadSpread">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Food"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Breading -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Breading">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#FoodIngredientOnly"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Brush -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Brush">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#DomesticCleaningTool"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Bun -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Bun">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Bread"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Buns-Packed -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Buns-Packed">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Bread"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#ButterDish -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#ButterDish">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#ServingVessel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CanOpener -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#CanOpener">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#HandTool"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Candy -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Candy">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Food-ReadyToEat"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CannedFood -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#CannedFood">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Food"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CappuccinoCup -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#CappuccinoCup">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Cup"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CappuccinoSaucer -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#CappuccinoSaucer">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Saucer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Cashew-TheSeed -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Cashew-TheSeed">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#EdibleNut"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Casserole -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Casserole">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#BakingDish"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CheeseSpaetzle-Instant -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#CheeseSpaetzle-Instant">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#InstantFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#ChefsKnife -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#ChefsKnife">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#CookingUtensil"/>
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Knife"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CherryDried -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#CherryDried">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#DriedFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Chili-TheSpice -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Chili-TheSpice">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Spice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Chocolate -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Chocolate">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Food-ReadyToEat"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Chocolatedrop -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Chocolatedrop">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Candy"/>
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Chocolate"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CleaningRag -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#CleaningRag">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#DomesticCleaningTool"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Cocoa-ThePowder -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Cocoa-ThePowder">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#FoodOrDrinkOrIngredient"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Coffee-Capsule -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Coffee-Capsule">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#FoodIngredientOnly"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Coffee-Ground -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Coffee-Ground">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#FoodIngredientOnly"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CoffeeCapsule-Refillable -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#CoffeeCapsule-Refillable">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#FoodVessel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CoffeeFilter -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#CoffeeFilter">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#PysicalFilter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Coffeebreak -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Coffeebreak">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Meal"/>
+        <rdfs:comment>Coffee or Tea and optional cake etc., usually during the afternoon
+</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#ConsumeableProduct -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#ConsumeableProduct">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#HumanScaleObject"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CookBook -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#CookBook">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Book"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CookingPot-Large -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#CookingPot-Large">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#StoveTopCookingPot"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CookingPot-Small -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#CookingPot-Small">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#StoveTopCookingPot"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Corkscrew -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Corkscrew">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#HandTool"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Cornflakes -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Cornflakes">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#BreakfastCereal"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CranberryDried -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#CranberryDried">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#DriedFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CreamCheese -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#CreamCheese">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Cheese"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Cucumber-Pickled -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Cucumber-Pickled">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#PickledFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CurrySauce-Red -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#CurrySauce-Red">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Sauce"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CurrySauce-Yellow -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#CurrySauce-Yellow">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Sauce"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CuttingBoard -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#CuttingBoard">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#FoodOrDrinkPreparationDevice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#DateDried -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#DateDried">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#DriedFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Dextrosedrop -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Dextrosedrop">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Candy"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#DishTowel -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#DishTowel">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Towel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#DriedFood -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#DriedFood">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Food"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#DrinkingGlass-Large -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#DrinkingGlass-Large">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#DrinkingGlass"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#DrinkingGlass-Small -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#DrinkingGlass-Small">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#DrinkingGlass"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#EdibleNut -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#EdibleNut">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#MeatOrLegumeFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#EspressoCup -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#EspressoCup">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Cup"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#EspressoSaucer -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#EspressoSaucer">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Saucer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#FlatObject -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#FlatObject">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#HumanScaleObject"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#FloorCleaner -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#FloorCleaner">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Surfactant"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#FreezerBag -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#FreezerBag">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#PlasticBag"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#FryingPan -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#FryingPan">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#CookingVessel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Fusilli -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Fusilli">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Pasta"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#GarbageBag -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#GarbageBag">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#TrashContainer"/>
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#PlasticBag"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#GarbageCan -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#GarbageCan">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#TrashContainer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Garlic-TheSpice -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Garlic-TheSpice">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Spice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#GarlicCreamSoup -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#GarlicCreamSoup">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Soup"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#GarlicPress -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#GarlicPress">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#HandTool"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Gingerdrop -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Gingerdrop">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Candy"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#GlassCleaner -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#GlassCleaner">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Surfactant"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#GratedCheese -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#GratedCheese">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Cheese"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Grater -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Grater">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#FoodOrDrinkPreparationDevice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#GroceryBag -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#GroceryBag">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#PlasticBag"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Gumdrop -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Gumdrop">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Candy"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#HandTowel -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#HandTowel">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Towel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#HandTowelLarge -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#HandTowelLarge">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#HandTowel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#HandTowelSmall -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#HandTowelSmall">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#HandTowel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#HardCheese -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#HardCheese">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Cheese"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Hazelnut-Chocolate -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Hazelnut-Chocolate">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Chocolate"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Hazelnut-TheSeed -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Hazelnut-TheSeed">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#EdibleNut"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Herbs -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Herbs">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Spice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Honey -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Honey">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#BreadSpread"/>
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Food"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#IcingSugar -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#IcingSugar">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Sugar"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#InstantCappuccinoPowder -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#InstantCappuccinoPowder">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#FoodIngredientOnly"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#InstantEspressoPowder -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#InstantEspressoPowder">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#FoodIngredientOnly"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#InstantFood -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#InstantFood">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Food"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#InstantFood-Frozen -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#InstantFood-Frozen">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#InstantFood"/>
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Frozen"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#InstantTeaPowder -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#InstantTeaPowder">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#FoodIngredientOnly"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Jam-Foodstuff -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Jam-Foodstuff">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#BreadSpread"/>
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Food"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Ketchup -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Ketchup">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Sauce"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#KidneyBeans-Canned -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#KidneyBeans-Canned">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#CannedFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#KitchenKnife -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#KitchenKnife">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#CookingUtensil"/>
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Knife"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#KitchenScissors -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#KitchenScissors">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#CuttingDevice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Ladle -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Ladle">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#CookingUtensil"/>
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Spoon"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Leberkaes -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Leberkaes">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Meat"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#LemonVitaminDrink -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#LemonVitaminDrink">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#InfusionDrink"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Lentils-Canned -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Lentils-Canned">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#CannedFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#LimePickle -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#LimePickle">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#PickledFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#LongGrainRice-Uncooked -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#LongGrainRice-Uncooked">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Rice-Uncooked"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Maccheroni -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Maccheroni">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Pasta"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#MashedPotatoes -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#MashedPotatoes">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#InstantFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Mentholdrop -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Mentholdrop">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Candy"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#MilkFrother -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#MilkFrother">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#HandTool"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#MilletSoup -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#MilletSoup">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Soup"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Minestrone-Canned -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Minestrone-Canned">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#CannedFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Muesli -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Muesli">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#BreakfastCereal"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#MultiVitaminPill -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#MultiVitaminPill">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#VitaminPill"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Mustard -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Mustard">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Sauce"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#NoodleSieve -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#NoodleSieve">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Sieve"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#NoodleSnack-Instant -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#NoodleSnack-Instant">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#InstantFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#NoodleSoup -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#NoodleSoup">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Soup"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Nutella -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Nutella">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#BreadSpread"/>
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Food"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Oatmeal -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Oatmeal">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#BreakfastCereal"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#OliveOil -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#OliveOil">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#VegetableOil"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Olives-Pickled -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Olives-Pickled">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#PickledFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PackingTape -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#PackingTape">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#AdhesiveTape"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Paper -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Paper">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#FlatObject"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PastaPlate -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#PastaPlate">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#DinnerPlate"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PastryFork -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#PastryFork">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Fork-SilverwarePiece"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PeaSoup -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#PeaSoup">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Soup"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Peanut-TheSeed -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Peanut-TheSeed">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#EdibleNut"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Peas-Canned -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Peas-Canned">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#CannedFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Peeler -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Peeler">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#CookingUtensil"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Pencil -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Pencil">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#WritingImplement"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Penne-Instant -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Penne-Instant">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#InstantFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Pepper-TheSpice -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Pepper-TheSpice">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Spice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PepperMill -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#PepperMill">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#ServingVessel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PestoSauce -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#PestoSauce">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Sauce"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PickledFood -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#PickledFood">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Food"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Pill -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Pill">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#ConsumeableProduct"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PilsnerGlass -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#PilsnerGlass">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#BeerGlass"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PipeCleaner -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#PipeCleaner">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#CleaningSubstance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Pistachio -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Pistachio">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#EdibleNut"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Pizza-Frozen -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Pizza-Frozen">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#InstantFood-Frozen"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PizzaCutter -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#PizzaCutter">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#CookingUtensil"/>
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Knife"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PizzaPlate -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#PizzaPlate">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#DinnerPlate"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PlasticBag -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#PlasticBag">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Bag"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PlasticContainer -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#PlasticContainer">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#FoodVessel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PotatoSoup -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#PotatoSoup">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Soup"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PowerStrips -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#PowerStrips">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#AdhesiveTape"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PrewashSpray -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#PrewashSpray">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Surfactant"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PrincipalMeal -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#PrincipalMeal">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Meal"/>
+        <rdfs:comment>usually lunch or dinner. usually a hot meal.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PuddingPowder -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#PuddingPowder">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#FoodIngredientOnly"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PumpkinSoup -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#PumpkinSoup">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Soup"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PysicalFilter -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#PysicalFilter">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#FoodOrDrinkPreparationDevice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Raisin -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Raisin">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#DriedFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Ravioli-Canned -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Ravioli-Canned">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#CannedFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Remoulade -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Remoulade">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Sauce"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Rice-Uncooked -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Rice-Uncooked">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#FoodIngredientOnly"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Risoni -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Risoni">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Pasta"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#RubberBand -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#RubberBand">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#BasicOfficeConncetor"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Sagedrop -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Sagedrop">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Candy"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#SaladFork -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#SaladFork">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Fork-SilverwarePiece"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#SaladSpoon -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#SaladSpoon">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Spoon-SilverwarePiece"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Salami -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Salami">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Sausage"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Salsa-TheSauce -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Salsa-TheSauce">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Sauce"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Salt-TheSpice -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Salt-TheSpice">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Spice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#SaltShaker -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#SaltShaker">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#ServingVessel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Sandwich -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Sandwich">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Meal"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#SandwichToaster -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#SandwichToaster">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#HouseholdAppliance"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Sauce -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Sauce">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Food"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Saucepan -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Saucepan">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#StoveTopCookingPot"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Sauerkraut-Canned -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Sauerkraut-Canned">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#CannedFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Seasoning -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Seasoning">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#FoodIngredientOnly"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Seasoning-Chili -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Seasoning-Chili">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#SeasoningMix"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Seasoning-NoodleGratin -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Seasoning-NoodleGratin">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#SeasoningMix"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Seasoning-TomatoSauce -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Seasoning-TomatoSauce">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#SeasoningMix"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#SeasoningMix -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#SeasoningMix">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Seasoning"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Semolina -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Semolina">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#FoodIngredientOnly"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#ShortGrainRice-Uncooked -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#ShortGrainRice-Uncooked">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Rice-Uncooked"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#ShotGlass -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#ShotGlass">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#DrinkingGlass"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Shovel -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Shovel">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#DomesticCleaningTool"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Sieve -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Sieve">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#FoodVessel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Skimmer -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Skimmer">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#CookingUtensil"/>
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Spoon"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#SoupCube -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#SoupCube">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#SeasoningMix"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#SoupPlate -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#SoupPlate">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#EatingVessel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#SoyBurger -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#SoyBurger">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#SoyFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#SoyFood -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#SoyFood">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#MeatOrLegumeFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#SoyLeberkaes -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#SoyLeberkaes">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#SoyFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#SoyMilk -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#SoyMilk">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Milk"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#SoySauce -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#SoySauce">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Sauce"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#SoySausage -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#SoySausage">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#SoyFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#SoySchnitzel -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#SoySchnitzel">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#SoyFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Spaghetti -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Spaghetti">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Pasta"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#SpeltFlour -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#SpeltFlour">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#FoodIngredientOnly"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Spice -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Spice">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Seasoning"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Sponge -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Sponge">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#DomesticCleaningTool"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Squeezer -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Squeezer">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#FoodOrDrinkPreparationDevice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#StickyTape -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#StickyTape">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#AdhesiveTape"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Sugar-Brown -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Sugar-Brown">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Sugar"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Sugar-Table -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Sugar-Table">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Sugar"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#SunflowerOil -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#SunflowerOil">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#VegetableOil"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Tape -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Tape">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#FlatObject"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#TapiokaFlour -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#TapiokaFlour">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#FoodIngredientOnly"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#TeaBag -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#TeaBag">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#FoodIngredientOnly"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#TeaLeaves -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#TeaLeaves">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#FoodIngredientOnly"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#ThermosBottle -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#ThermosBottle">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Thermos"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#ThermosFlask -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#ThermosFlask">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Thermos"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Thyme-TheSpice -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Thyme-TheSpice">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Herbs"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#ToiletCleaner -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#ToiletCleaner">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Surfactant"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Tomato -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Tomato">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Vegetable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#TomatoSoup -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#TomatoSoup">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Soup"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Tortiglioni -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Tortiglioni">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Pasta"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Towel -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Towel">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Cloth"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#TrashBag -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#TrashBag">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#PlasticBag"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#TrashContainer -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#TrashContainer">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#StorageConstruct"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Vegetable -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Vegetable">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Food"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Vinegar -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Vinegar">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#Food"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#VitaminCPill -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#VitaminCPill">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#VitaminPill"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#VitaminPill -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#VitaminPill">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Pill"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Walnut-TheSeed -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Walnut-TheSeed">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#EdibleNut"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#WheatBeerGlass -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#WheatBeerGlass">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#BeerGlass"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#WhiskeyGlass -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#WhiskeyGlass">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#DrinkingGlass"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#WineGlass -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#WineGlass">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#DrinkingGlass"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Wok-CookingPot -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#Wok-CookingPot">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#CookingVessel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#WrappingPaper -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#WrappingPaper">
+        <rdfs:subClassOf rdf:resource="&kb;kitchenobjects.owl#Paper"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#WritingImplement -->
+
+    <owl:Class rdf:about="&kb;kitchenobjects.owl#WritingImplement">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#HandTool"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Bread -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#Bread"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Breakfast -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#Breakfast"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#BreakfastCereal -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#BreakfastCereal"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Cheese -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#Cheese"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#CleaningSubstance -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#CleaningSubstance"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Cloth -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#Cloth"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#CookingUtensil -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#CookingUtensil"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#CookingVessel -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#CookingVessel"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Cup -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#Cup"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#CuttingDevice -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#CuttingDevice">
+        <rdfs:subClassOf rdf:resource="&kb;knowrob.owl#HandTool"/>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#DinnerPlate -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#DinnerPlate"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#DomesticCleaningTool -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#DomesticCleaningTool"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Drink -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#Drink"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#DrinkingGlass -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#DrinkingGlass"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#EatingVessel -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#EatingVessel"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Food -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#Food"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Food-ReadyToEat -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#Food-ReadyToEat"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#FoodIngredientOnly -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#FoodIngredientOnly"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#FoodOrDrinkOrIngredient -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#FoodOrDrinkOrIngredient"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#FoodOrDrinkPreparationDevice -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#FoodOrDrinkPreparationDevice"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#FoodVessel -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#FoodVessel"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Fork-SilverwarePiece -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#Fork-SilverwarePiece"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Frozen -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#Frozen"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#HandTool -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#HandTool"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#HouseholdAppliance -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#HouseholdAppliance"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#HumanScaleObject -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#HumanScaleObject"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#InfusionDrink -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#InfusionDrink"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Knife -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#Knife"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Meal -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#Meal"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Meat -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#Meat"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#MeatOrLegumeFood -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#MeatOrLegumeFood"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Milk -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#Milk"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Pasta -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#Pasta"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PlasticBag -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#PlasticBag"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Saucer -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#Saucer"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Sausage -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#Sausage"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#ServingVessel -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#ServingVessel"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Snack -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#Snack"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Soup -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#Soup"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#SpatialThing -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#SpatialThing"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Spoon -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#Spoon"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Spoon-SilverwarePiece -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#Spoon-SilverwarePiece"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#StorageConstruct -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#StorageConstruct"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#StoveTopCookingPot -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#StoveTopCookingPot"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Sugar -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#Sugar"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Surfactant -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#Surfactant"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Thermos -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#Thermos"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#VegetableOil -->
+
+    <owl:Class rdf:about="&kb;knowrob.owl#VegetableOil"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#BeerPaleAle -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#BeerPaleAle">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#Beer"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard17"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#BeerPaleAle2 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#BeerPaleAle2">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#Beer"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard17"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#BeerPaleAle3 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#BeerPaleAle3">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#Beer"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard17"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#BeerPaleAle4 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#BeerPaleAle4">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#Beer"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard17"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#BeerPaleAle5 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#BeerPaleAle5">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#Beer"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard17"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Bowl -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Bowl">
+        <rdf:type rdf:resource="&kb;knowrob.owl#Bowl-Eating"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard29"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Bowl2 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Bowl2">
+        <rdf:type rdf:resource="&kb;knowrob.owl#Bowl-Eating"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard29"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CleanerCitrus -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#CleanerCitrus">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#FloorCleaner"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CleanerWindex -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#CleanerWindex">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#FloorCleaner"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#CleaningPadClearasil -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#CleaningPadClearasil">
+        <rdf:type rdf:resource="&kb;knowrob.owl#BodyWash"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard29"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#DishwasherDetergentCascade -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#DishwasherDetergentCascade">
+        <rdf:type rdf:resource="&kb;knowrob.owl#DishwashingSoap"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard9"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#DishwasherDetergentFinish -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#DishwasherDetergentFinish">
+        <rdf:type rdf:resource="&kb;knowrob.owl#DishwashingSoap"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard9"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#DisinfectingWipesLysol -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#DisinfectingWipesLysol">
+        <rdf:type rdf:resource="&kb;knowrob.owl#PaperTowel"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#GroceryBagIKEA -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#GroceryBagIKEA">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#GroceryBag"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard9"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#GroceryBagIKEA3 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#GroceryBagIKEA3">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#GroceryBag"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard9"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#GroveryBagIKEA2 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#GroveryBagIKEA2">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#GroceryBag"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard9"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#OriginalScentTide -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#OriginalScentTide">
+        <rdf:type rdf:resource="&kb;knowrob.owl#LaundryDetergent"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PlasticCup -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#PlasticCup">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#DrinkingGlass-Large"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard29"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PlasticCup2 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#PlasticCup2">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#DrinkingGlass-Large"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard29"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PlasticCup3 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#PlasticCup3">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#DrinkingGlass-Large"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard29"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PlasticCup4 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#PlasticCup4">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#DrinkingGlass-Large"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard29"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#PlasticCup5 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#PlasticCup5">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#DrinkingGlass-Large"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard29"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Plate -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Plate">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#PizzaPlate"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard29"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Plate2 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Plate2">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#PizzaPlate"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard29"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Plate3 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Plate3">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#PizzaPlate"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard29"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#Plate4 -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#Plate4">
+        <rdf:type rdf:resource="&kb;kitchenobjects.owl#PizzaPlate"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard25"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#ShampooGarnierFructis -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#ShampooGarnierFructis">
+        <rdf:type rdf:resource="&kb;knowrob.owl#Shampoo"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard29"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#ShampooSuave -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#ShampooSuave">
+        <rdf:type rdf:resource="&kb;knowrob.owl#Shampoo"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard29"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/kitchenobjects.owl#VanillaCaramelCoffeeMate -->
+
+    <owl:NamedIndividual rdf:about="&kb;kitchenobjects.owl#VanillaCaramelCoffeeMate">
+        <rdf:type rdf:resource="&kb;knowrob.owl#Coffee-Beverage"/>
+        <knowrob:in-ContGeneric rdf:resource="&kb;knowrob.owl#Cupboard29"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.2.3.1824) http://owlapi.sourceforge.net -->
+
