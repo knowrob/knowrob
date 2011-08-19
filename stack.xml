@@ -12,10 +12,10 @@
   <license>GPL,BSD</license>  
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/knowrob</url>
-  <depend stack="client_rosjava" /> <!-- rosjava -->
+  <depend stack="client_rosjava_jni" /> <!-- rosjava_jni -->
   <depend stack="ias_common" /> <!-- vision_srvs -->
   <depend stack="robot_model" /> <!-- urdf -->
   <depend stack="ros" /> <!-- rosbuild -->
-  <depend stack="ros_comm" /> <!-- rospy, roscpp -->
+  <depend stack="ros_comm" /> <!-- rospy -->
 
 </stack>
