@@ -96,7 +96,9 @@ Check computables, e.g. Top, Bottom
 ?- rdf_triple(knowrob:'on-Physical', Bottom, 'http://ias.cs.tum.edu/kb/knowrob.owl#Cupboard1').
 
 
-
+Appendix:
+OpenCyc (helps you shape out taxonomy of your objects by following their inheritance style, see genls for Arg1 and Arg2):
+http://atbeetz9.informatik.tu-muenchen.de:3602/cgi-bin/cyccgi/cg?cb-start
 
 
 
