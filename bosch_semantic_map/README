@@ -76,7 +76,7 @@ Where is BeerPaleAle2:
 ?- rdf_triple(knowrob:'in-ContGeneric', 'http://ias.cs.tum.edu/kb/kitchenobjects.owl#BeerPaleAle2', B).
 
 Which objects are in Cupboard 1:
-%TODO
+?- owl_has(A, knowrob:'in-ContGeneric', knowrob:'Cupboard1').
 
 %TODO: Replace with my object
 Check if the buttermilk is placed correctly (i.e. at its storage location)
