@@ -25,10 +25,10 @@
   <dc:subject>OWL; Web Ontology Language; Semantic Web</dc:subject>
   <dc:description>This file specifies in RDF Schema format the
     built-in classes and properties that together form the basis of
-    the RDF/XML syntax of OWL Full, OWL DL and OWL Lite with the help  
+    the RDF/XML syntax of OWL Full, OWL DL and OWL Lite with the help
     of RDF Schema. We do not expect people to import this file
     explicitly into their ontology. People that do import this file
-    should expect their ontology to be an OWL Full ontology. 
+    should expect their ontology to be an OWL Full ontology.
   </dc:description>
   <dc:publisher>W3C</dc:publisher>
   <dc:date>2003-02-10</dc:date>
@@ -82,7 +82,7 @@
   <rdfs:subPropertyOf rdf:resource="#sameAs"/>
 </rdf:Property>
 
-<rdf:Property rdf:ID="sameAs"> 
+<rdf:Property rdf:ID="sameAs">
   <rdfs:label>sameAs</rdfs:label>
   <rdfs:subPropertyOf rdf:resource="#sameIndividualAs"/>
 </rdf:Property>
@@ -102,7 +102,7 @@
   <rdfs:domain rdf:resource="#AllDifferent"/>
   <rdfs:range rdf:resource="&rdf;List"/>
 </rdf:Property>
-  
+
 <rdf:Property rdf:ID="unionOf">
   <rdfs:label>unionOf</rdfs:label>
   <rdfs:domain rdf:resource="#Class"/>

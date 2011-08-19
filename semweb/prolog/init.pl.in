@@ -36,12 +36,12 @@
 :- use_module(library('thea/owl_parser')).
 
 :- use_module(library('semweb/rdfs_computable')).
-:- use_module(library('semweb/actionmodel')).
+% :- use_module(library('semweb/actionmodel')).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % parse OWL files, register name spaces
-:- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/actionmodel.owl', false, false, true).
+% :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/actionmodel.owl', false, false, true).
 
-:- rdf_db:rdf_register_ns(am,         'http://ias.cs.tum.edu/kb/actionmodel.owl#', [keep(true)]).
+% :- rdf_db:rdf_register_ns(am,         'http://ias.cs.tum.edu/kb/actionmodel.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(computable, 'http://ias.cs.tum.edu/kb/computable.owl#', [keep(true)]).
 

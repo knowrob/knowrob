@@ -3,8 +3,8 @@
 
 <!DOCTYPE rdf:RDF [
     <!ENTITY roboearth_path 'http://ias.cs.tum.edu/kb/'>
-    <!ENTITY map 'http://www.roboearth.org/kb/map_hospital_room.owl#'> 
-    
+    <!ENTITY map 'http://www.roboearth.org/kb/map_hospital_room.owl#'>
+
     <!ENTITY kb "http://ias.cs.tum.edu/kb/" >
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
@@ -78,30 +78,30 @@
 
     <knowrob:Bed-PieceOfFurniture rdf:about="&map;bed1"/>
     <knowrob:Cabinet-PieceOfFurniture rdf:about="&map;cabinet1"/>
-    <knowrob:RightHand rdf:about="#robotRightHand" /> 
+    <knowrob:RightHand rdf:about="#robotRightHand" />
 
-    <knowrob:Point2D rdf:about="#robotPose-grasping1"> 
-      <knowrob:inReachOf rdf:resource="&map;bottle1"/> 
-    </knowrob:Point2D> 
+    <knowrob:Point2D rdf:about="#robotPose-grasping1">
+      <knowrob:inReachOf rdf:resource="&map;bottle1"/>
+    </knowrob:Point2D>
 
-    <knowrob:Point2D rdf:about="#robotPose-handover1"> 
-      <knowrob:inReachOf rdf:resource="&map;bed1"/> 
-    </knowrob:Point2D> 
+    <knowrob:Point2D rdf:about="#robotPose-handover1">
+      <knowrob:inReachOf rdf:resource="&map;bed1"/>
+    </knowrob:Point2D>
 
-    <knowrob:Point3D rdf:about="#handPose-handover1"> 
-      <knowrob:aboveOf rdf:resource="&map;bed1"/> 
+    <knowrob:Point3D rdf:about="#handPose-handover1">
+      <knowrob:aboveOf rdf:resource="&map;bed1"/>
     </knowrob:Point3D>
 
     <knowrob:Point3D rdf:about="#handPose-approachObject">
       <knowrob:inFrontOf-Generally rdf:resource="&map;bottle1"/>
-    </knowrob:Point3D> 
+    </knowrob:Point3D>
 
-    <knowrob:Point3D rdf:about="#handPose-graspObject"> 
-      <knowrob:inCenterOf rdf:resource="&map;bottle1"/> 
-    </knowrob:Point3D> 
+    <knowrob:Point3D rdf:about="#handPose-graspObject">
+      <knowrob:inCenterOf rdf:resource="&map;bottle1"/>
+    </knowrob:Point3D>
 
 
-    <knowrob:Point3D rdf:about="#parkingpose"/> 
+    <knowrob:Point3D rdf:about="#parkingpose"/>
 
 
 
@@ -156,7 +156,7 @@
                         <owl:onProperty rdf:resource="&knowrob;orderingConstraints"/>
                         <owl:hasValue rdf:resource="#ServeADrinkOrder13"/>
                     </owl:Restriction>
-                    
+
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;orderingConstraints"/>
                         <owl:hasValue rdf:resource="#ServeADrinkOrder20"/>
@@ -169,7 +169,7 @@
                         <owl:onProperty rdf:resource="&knowrob;orderingConstraints"/>
                         <owl:hasValue rdf:resource="#ServeADrinkOrder22"/>
                     </owl:Restriction>
-                    
+
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;orderingConstraints"/>
                         <owl:hasValue rdf:resource="#ServeADrinkOrder30"/>
@@ -178,7 +178,7 @@
                         <owl:onProperty rdf:resource="&knowrob;orderingConstraints"/>
                         <owl:hasValue rdf:resource="#ServeADrinkOrder31"/>
                     </owl:Restriction>
-                    
+
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;orderingConstraints"/>
                         <owl:hasValue rdf:resource="#ServeADrinkOrder4"/>
@@ -274,7 +274,7 @@
         <knowrob:occursBeforeInOrdering rdf:resource="#MoveBaseToGraspPose"/>
         <knowrob:occursAfterInOrdering rdf:resource="#OpenGripperForHandover"/>
     </knowrob:PartialOrdering-Strict>
-    
+
     <knowrob:PartialOrdering-Strict rdf:about="#ServeADrinkOrder20">
         <knowrob:occursBeforeInOrdering rdf:resource="#GraspBottle"/>
         <knowrob:occursAfterInOrdering rdf:resource="#MoveBaseToHandoverPose"/>
@@ -287,7 +287,7 @@
         <knowrob:occursBeforeInOrdering rdf:resource="#GraspBottle"/>
         <knowrob:occursAfterInOrdering rdf:resource="#OpenGripperForHandover"/>
     </knowrob:PartialOrdering-Strict>
-    
+
     <knowrob:PartialOrdering-Strict rdf:about="#ServeADrinkOrder30">
         <knowrob:occursBeforeInOrdering rdf:resource="#MoveBaseToHandoverPose"/>
         <knowrob:occursAfterInOrdering rdf:resource="#HandoverObject"/>
@@ -296,7 +296,7 @@
         <knowrob:occursBeforeInOrdering rdf:resource="#MoveBaseToHandoverPose"/>
         <knowrob:occursAfterInOrdering rdf:resource="#OpenGripperForHandover"/>
     </knowrob:PartialOrdering-Strict>
-    
+
     <knowrob:PartialOrdering-Strict rdf:about="#ServeADrinkOrder4">
         <knowrob:occursBeforeInOrdering rdf:resource="#HandoverObject"/>
         <knowrob:occursAfterInOrdering rdf:resource="#OpenGripperForHandover"/>
@@ -497,7 +497,7 @@
         <knowrob:occursBeforeInOrdering rdf:resource="#ReachToApproachPose"/>
         <knowrob:occursAfterInOrdering rdf:resource="#ReachToParkingPose"/>
     </knowrob:PartialOrdering-Strict>
-    
+
     <knowrob:PartialOrdering-Strict rdf:about="#GraspBottleOrder20">
         <knowrob:occursBeforeInOrdering rdf:resource="#OpenGripperForGrasping"/>
         <knowrob:occursAfterInOrdering rdf:resource="#ReachForObjectPose"/>
@@ -514,7 +514,7 @@
         <knowrob:occursBeforeInOrdering rdf:resource="#OpenGripperForGrasping"/>
         <knowrob:occursAfterInOrdering rdf:resource="#ReachToParkingPose"/>
     </knowrob:PartialOrdering-Strict>
-    
+
     <knowrob:PartialOrdering-Strict rdf:about="#GraspBottleOrder30">
         <knowrob:occursBeforeInOrdering rdf:resource="#ReachForObjectPose"/>
         <knowrob:occursAfterInOrdering rdf:resource="#CloseGripperForGrasping"/>
@@ -527,7 +527,7 @@
         <knowrob:occursBeforeInOrdering rdf:resource="#ReachForObjectPose"/>
         <knowrob:occursAfterInOrdering rdf:resource="#ReachToParkingPose"/>
     </knowrob:PartialOrdering-Strict>
-    
+
     <knowrob:PartialOrdering-Strict rdf:about="#GraspBottleOrder40">
         <knowrob:occursBeforeInOrdering rdf:resource="#CloseGripperForGrasping"/>
         <knowrob:occursAfterInOrdering rdf:resource="#LiftObjectToApproachPose"/>
@@ -536,7 +536,7 @@
         <knowrob:occursBeforeInOrdering rdf:resource="#CloseGripperForGrasping"/>
         <knowrob:occursAfterInOrdering rdf:resource="#ReachToParkingPose"/>
     </knowrob:PartialOrdering-Strict>
-    
+
     <knowrob:PartialOrdering-Strict rdf:about="#GraspBottleOrder5">
         <knowrob:occursBeforeInOrdering rdf:resource="#LiftObjectToApproachPose"/>
         <knowrob:occursAfterInOrdering rdf:resource="#ReachToParkingPose"/>

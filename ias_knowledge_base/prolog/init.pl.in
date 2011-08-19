@@ -101,9 +101,11 @@ rdf_instance_from_class(Class, Instance) :-
 :-  rdf_meta
     holds_tt(:,t).
 
+
+
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % KnowRob-Base: holds() and related predicates
-% 
+%
 
 
 %% holds_tt(+Goal, +StartEndList) is nondet.
@@ -134,43 +136,6 @@ holds_tt(Goal, [Start, End]) :-
               holds(Goal, DStT) ),
 
     rdf_retractall(knowrob:'holds_tt', _, _).
-
-
-
-%% get_timepoint(-T) is det.
-%
-% Create a timepoint-identifier for the current time
-%
-% @param T TimePoint instance identifying the current time stamp
-%
-get_timepoint(T) :-
-  set_prolog_flag(float_format, '%.12g'),
-  get_time(Ts),
-  atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#timepoint_', Ts, T),
-  rdf_assert(T, rdf:type, knowrob:'TimePoint').
-
-%% get_timepoint(+Diff, -T) is det.
-%
-% Create a timepoint-identifier for the current time +/- Diff
-%
-% @param Diff Time difference to the current time
-% @param T    TimePoint instance identifying the current time stamp
-%
-get_timepoint(Diff, Time) :-
-
-  get_time(Ts),
-
-  ((atom_concat('+', Dunit, Diff), atom_concat(DiffSeconds, 's', Dunit),term_to_atom(A, DiffSeconds)) -> (T is Ts + A) ;
-   (atom_concat('+', Dunit, Diff), atom_concat(DiffMinutes, 'm', Dunit),term_to_atom(A, DiffMinutes)) -> (T is Ts + 60.0 * A) ;
-   (atom_concat('+', Dunit, Diff), atom_concat(DiffHours,   'h', Dunit),term_to_atom(A, DiffHours))   -> (T is Ts + 3600.0 * A) ;
-
-   (atom_concat('-', Dunit, Diff), atom_concat(DiffSeconds, 's', Dunit),term_to_atom(A, DiffSeconds)) -> (T is Ts - A) ;
-   (atom_concat('-', Dunit, Diff), atom_concat(DiffMinutes, 'm', Dunit),term_to_atom(A, DiffMinutes)) -> (T is Ts - 60.0 * A) ;
-   (atom_concat('-', Dunit, Diff), atom_concat(DiffHours,   'h', Dunit),term_to_atom(A, DiffHours))   -> (T is Ts - 3600.0 * A) ),
-
-
-  atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#timepoint_', T, Time),
-  rdf_assert(Time, rdf:type, knowrob:'TimePoint').
 
 
 
@@ -436,7 +401,7 @@ detection_endtime(Detection, EndTime) :-
 %
 % Sort detections by their start time
 %
-% 
+%
 %
 % @param Delta  One of '>', '<', '='
 % @param P1     List [_, _, Time] as used in latest_detection_of_instance, latest_detection_of_type, latest_inferred_object_set
@@ -451,7 +416,7 @@ compare_object_detections(Delta, P1, P2) :-
 %% compare_inferences_by_prob(-Delta, +P1, +P2) is det.
 %
 % Sort inference results by their probability
-% 
+%
 % @param Delta  One of '>', '<'
 % @param P1     List [_, _, Time] as used in latest_detection_of_instance, latest_detection_of_type, latest_inferred_object_set
 % @param P2     List [_, _, Time] as used in latest_detection_of_instance, latest_detection_of_type, latest_inferred_object_set

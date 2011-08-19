@@ -62,7 +62,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Visualization canvas management
-% 
+%
 
 %% visualisation_canvas(-Canvas) is det.
 %
@@ -85,11 +85,11 @@ visualisation_canvas(Canvas) :-
 
 
 %% clear_canvas(+Canvas) is det.
-% 
+%
 % Completely clears the scene
-% 
+%
 % @param Canvas Visualization canvas
-% 
+%
 clear_canvas(Canvas) :-
     ((var(Canvas)) -> (v_canvas(Canvas));(true)),
     jpl_call(Canvas, 'clear', [], _).
@@ -109,14 +109,14 @@ draw_background(Canvas) :-
 %% set_view_parameters(+XShift, +YShift, +XRot, +YRot, +Zoom, +Canvas) is det.
 %
 % Change the display parameters of the visualization applet.
-% 
+%
 % @param XShift   Shift in x-direction
 % @param YShift   Shift in y-direction
 % @param XRot     Rotation in x-direction
 % @param YRot     Rotation in x-direction
 % @param Zoom     Zoom factor
 % @param Canvas   Visualization canvas
-% 
+%
 set_view_parameters(XShift, YShift, XRot, YRot, Zoom, Canvas) :-
     ((var(Canvas)) -> (v_canvas(Canvas));(true)),
     jpl_call(Canvas, 'setViewParameters', [XShift, YShift, XRot, YRot, Zoom], _).
@@ -126,10 +126,10 @@ set_view_parameters(XShift, YShift, XRot, YRot, Zoom, Canvas) :-
 %
 % Show any information that can be retrieved with rdf_has(Identifier, P, O) in the
 % external control window of the visualization canvas.
-% 
+%
 % @param Identifier Identifier of any kind of instance, e.g. an object or an action
 % @param Canvas     Visualization canvas
-% 
+%
 display_information_for(Identifier, Canvas) :-
     ((var(Canvas)) -> (v_canvas(Canvas));(true)),
     jpl_call(Canvas, 'displayInfoFor', [Identifier], _).
@@ -140,45 +140,45 @@ display_information_for(Identifier, Canvas) :-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Action display predicates
-% 
+%
 
 %% display_action(+Identifier, +Canvas) is det.
-% 
+%
 % Displays an action in the Kitchen environment via its dynamic identifier (created e.g. by CRF segmentation)
 % for example "'http://ias.cs.tum.edu/kb/knowrob.owl#Reaching50'"
-% 
+%
 % @param Identifier Action instance, e.g. 'http://ias.cs.tum.edu/kb/knowrob.owl#Reaching50'
 % @param Canvas     Visualization canvas
-% 
+%
 display_action(Identifier, Canvas) :-
     ((var(Canvas)) -> (v_canvas(Canvas));(true)),
     jpl_call(Canvas, 'displayAction', [Identifier], _).
 
 
 %% display_action_fixed(+Identifier, +Canvas) is det.
-% 
+%
 % Displays an action in the Kitchen environment via its fixed identifier (including EPISODE_NR and INSTANCE_NR, usually read from the DB)
 % for example "'http://ias.cs.tum.edu/kb/knowrob.owl#Reaching_0_2'"
-% 
+%
 % @param Identifier Action instance, e.g. 'http://ias.cs.tum.edu/kb/knowrob.owl#Reaching_0_2'
 % @param Canvas     Visualization canvas
-% 
+%
 display_action_fixed(Identifier, Canvas) :-
     ((var(Canvas)) -> (v_canvas(Canvas));(true)),
     jpl_call(Canvas, 'displayFixed', [Identifier], _).
 
 %% display_eye_trajectory(+Identifier, +Canvas) is det.
-% 
+%
 % Displays an eye trajectory in the Kitchen environment via its fixed identifier
 % for example "'http://ias.cs.tum.edu/kb/knowrob.owl#PickingUpAnObject'"
-% 
-% @param Identifier, e.g. 'http://ias.cs.tum.edu/kb/knowrob.owl#PickingUpAnObject' 
+%
+% @param Identifier, e.g. 'http://ias.cs.tum.edu/kb/knowrob.owl#PickingUpAnObject'
 % @param Canvas     Visualization canvas
-% 
+%
 display_eye_trajectory(Identifier, Canvas) :-
     ((var(Canvas)) -> (v_canvas(Canvas));(true)),
     jpl_call(Canvas, 'displayEyeTrajectory', [Identifier], _).
-  
+
 
 
 display_human_trajectory(Identifier, HandUsed, Canvas):-
@@ -195,7 +195,7 @@ display_human_trajectory(Identifier, HandUsed, Canvas):-
 % @param Hand       Hand, one of 'left' or 'right', corresponding to two stacks of action sequences
 % @param Level      Abstraction level (displayed as vertical axis)
 % @param Canvas     Visualization canvas
-% 
+%
 show_actionseq(SeqInfos, Canvas, Hand, Level) :-
     ((var(Canvas)) -> (v_canvas(Canvas));(true)),
     jpl_call(Canvas, 'setActionInformation', [SeqInfos, Hand, Level], _).
@@ -203,28 +203,28 @@ show_actionseq(SeqInfos, Canvas, Hand, Level) :-
 
 %
 % Adding/removing objects
-% 
+%
 
 %% add_object(+Identifier, +Canvas) is nondet.
-%  
+%
 % Add object to the scene
-% 
+%
 % @param Identifier Object identifier, eg. "http://ias.cs.tum.edu/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
 % @param Canvas     Visualization canvas
-% 
+%
 add_object(Identifier, Canvas) :-
     ((var(Canvas)) -> (v_canvas(Canvas));(true)),
     jpl_call(Canvas, 'addObject', [Identifier], _).
 
 
 %% add_object_with_children(+Identifier, +Canvas)
-% 
+%
 % Adds objects to the scene, including all items that are reachable via knowrob:properPhysicalPartTypes
 % or via knowrob:describedInMap
-% 
+%
 % @param Identifier eg. "http://ias.cs.tum.edu/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
 % @param Canvas     Visualization canvas
-% 
+%
 add_object_with_children(Identifier, Canvas) :-
     ((var(Canvas)) -> (v_canvas(Canvas));(true)),
     jpl_call(Canvas, 'addObjectWithChildren', [Identifier], _).
@@ -245,25 +245,25 @@ add_trajectory(Identifiers, Canvas) :-
 
 
 %% remove_object(+Identifier, +Canvas) is det.
-%  
+%
 % Remove object from the scene
 %
 % @param Identifier Object identifier, eg. "http://ias.cs.tum.edu/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
 % @param Canvas     Visualization canvas
-% 
+%
 remove_object(Identifier, Canvas) :-
     ((var(Canvas)) -> (v_canvas(Canvas));(true)),
     jpl_call(Canvas, 'removeObject', [Identifier], _).
 
 
 %% remove_object_with_children(+Identifier, +Canvas) is det.
-% 
+%
 % Removes objects from the scene, including all items that are reachable via knowrob:properPhysicalPartTypes
 % or via knowrob:describedInMap
-% 
+%
 % @param Identifier eg. "http://ias.cs.tum.edu/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
 % @param Canvas     Visualization canvas
-% 
+%
 remove_object_with_children(Identifier, Canvas) :-
     ((var(Canvas)) -> (v_canvas(Canvas));(true)),
     jpl_call(Canvas, 'removeObjectWithChildren', [Identifier], _).
@@ -317,25 +317,25 @@ add_object_perception(Identifier, Canvas) :-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Highlighting objects
-% 
+%
 
 %% highlight_object(+Identifier, +Canvas) is det.
 %% highlight_object(Identifier, Highlight, Canvas) is det.
 %% highlight_object(Identifier, Highlight, Color, Canvas) is det.
 %% highlight_object(Identifier, Highlight, R, B, G, Canvas) is det.
 %% highlight_object(Identifier, Highlight, R, B, G, Prob, Canvas) is det.
-% 
+%
 % Different methods for highlighting objects. By default, objects are drawn in bright red
 % if they are highlighted, but different colors can be specified using either one integer
 % value (e.g. #00FF00) or separate values for red, green, and blue.
 %
 % The parameter Highlight specifies if the highlighting shall be activated or reset; if
 % it is missing, a value of @(true) is assumed.
-% 
+%
 % If the object detection was uncertain, its probability can be visualized using the Prob
 % parameter. This is done e.g. using the alpha channel or the hue value in HSV space
 % (ignoring, in this case, the parameters R, B, G).
-% 
+%
 % @param Identifier eg. "http://ias.cs.tum.edu/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
 % @param Highlight  @(true) = highlight; @(false)=remove highlighting
 % @param Color      Color value as integer, e.g. #AARRBBGG
@@ -344,7 +344,7 @@ add_object_perception(Identifier, Canvas) :-
 % @param G          Green color value
 % @param Prob       Object existence probability
 % @param Canvas     Visualization canvas
-% 
+%
 highlight_object(Identifier, Canvas) :-
     ((var(Canvas)) -> (v_canvas(Canvas));(true)),
     jpl_call(Canvas, 'highlight', [Identifier, @(true)], _).
@@ -370,10 +370,10 @@ highlight_object(Identifier, Highlight, R, B, G, Prob, Canvas) :-
 %% add_and_highlight_object(+Identifier, +Canvas) is det.
 %
 % Shortcut to add an object and highlight it at the same time.
-% 
+%
 % @param Identifier eg. "http://ias.cs.tum.edu/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
 % @param Canvas     Visualization canvas
-% 
+%
 add_and_highlight_object(Identifier, Canvas) :-
     ((var(Canvas)) -> (v_canvas(Canvas));(true)),
     jpl_call(Canvas, 'addObject', [Identifier], _),
@@ -388,7 +388,7 @@ add_and_highlight_object(Identifier, Canvas) :-
 %
 % The parameter Highlight specifies if the highlighting shall be activated or reset; if
 % it is missing, a value of @(true) is assumed.
-% 
+%
 % @param Identifier eg. "http://ias.cs.tum.edu/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
 % @param Canvas     Visualization canvas
 %

@@ -32,15 +32,15 @@
 
 
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%
 % Query predicates
-% 
+%
 
 
 %% rdf_triple(?Property, ?Frame, ?Value) is nondet.
-% 
+%
 % Hook entry that computes triples:
 % (rdfs_computable_compute_property_concatenation, rdf_has, rdfs_computable_triple).
 %
@@ -88,7 +88,7 @@ rdf_triple(Property, Frame, Value) :-
 
 
 %% rdfs_instance_of(?Resource, ?Class) is nondet.
-% 
+%
 % combine rdfs_computable_instance_of (with subclass handling) and rdfs:rdfs_individual_of
 %
 rdfs_instance_of(Resource, Class) :-
@@ -98,7 +98,7 @@ rdfs_instance_of(Resource, Class) :-
   -> ( nonvar(Class)
 
        % check if Resource belongs to Class
-       -> ((rdfs_individual_of(Resource, Class) ; 
+       -> ((rdfs_individual_of(Resource, Class) ;
             rdfs_computable_instance_of_subclass(Resource, Class)),!)
 
        % compute the class of the given instance
@@ -114,16 +114,16 @@ rdfs_instance_of(Resource, Class) :-
 
 
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%
 % Find computable definitions
-% 
+%
 
 %% rdfs_computable_class(+Class, -ComputableClass) is nondet.
 %
 % Search for computable classes with the target Class
-% 
+%
 rdfs_computable_class(Class, ComputableClass) :-
 
   rdfs_computable_sql_class(Class, ComputableClass);
@@ -168,7 +168,7 @@ rdfs_computable_property(Property, ComputableProperty) :-
 % Implementation of rdfs_computable_Property for SQLProperties.
 %
 rdfs_computable_sql_property(Property, ComputableProperty) :-
-  
+
   findall(CP, rdf_has(CP,computable:'target',Property), ComputableProperties),
   member(ComputableProperty, ComputableProperties),
   once(rdfs_individual_of(ComputableProperty,computable:'SqlProperty')).
@@ -179,25 +179,25 @@ rdfs_computable_sql_property(Property, ComputableProperty) :-
 % Implementation of rdfs_computable_Property for PrologProperties.
 %
 rdfs_computable_prolog_property(Property, ComputableProperty) :-
-  
+
   findall(CP, rdf_has(CP,computable:'target',Property), ComputableProperties),
   member(ComputableProperty, ComputableProperties),
   once(rdfs_individual_of(ComputableProperty,computable:'PrologProperty')).
 
 
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%
 % Perform computation (caching, call the different types of computables)
-% 
+%
 
 
 
 %% rdfs_computable_instance_of_subclass(?Instance, ?Class) is nondet.
 %
 % Compute computable instances of all sub-classes of Class
-% 
+%
 rdfs_computable_instance_of_subclass(Resource, Class) :-
   nonvar(Class), !,
   findall(SC, rdfs_subclass_of(SC, Class), SCs),
@@ -215,9 +215,9 @@ rdfs_computable_instance_of_subclass(_,_) :-  % both are Variables
 %% rdfs_computable_instance_of(?Instance, ?Class) is nondet.
 %
 % Compute computable instances of Class
-% 
+%
 % At least one of Instance and Class needs to be nonvar.
-% 
+%
 rdfs_computable_instance_of(Instance, Class) :-
   var(Class),
   var(Instance),!,
@@ -245,49 +245,49 @@ rdfs_computable_instance_of(Instance, Class) :-
 % Unify the property triple for a computable property.
 % Full caching is enabled for everything but (+,-,-).
 %
-% 
+%
 % TODO: check where findall could make sense
-% 
+%
 rdfs_computable_triple(Property, _, _) :-
   var(Property),!,
   throw(error(instantiation_error, _)).
 rdfs_computable_triple(Property, Frame, Value) :-
   nonvar(Frame)
-  
+
   -> ( nonvar(Value)  % both frame and value bound:
     -> ( rdf(Property, Frame, Value, cache)
       -> true
       ; ( rdfs_computable_triple_1(Property, Frame, Value),
           ((rdf_has(CP, computable:target, Property), rdf_has(CP, computable:cache, literal(type('http://www.w3.org/2001/XMLSchema#string', cache))))
-          -> rdf_assert(Property, Frame, Value, cache) 
+          -> rdf_assert(Property, Frame, Value, cache)
           ; true)))
-        
+
     ; ( % frame bound, value unbound
       rdf(computable:cachedAllValuesFor, Property, Frame, cache)
-      
-      -> % return cached values 
+
+      -> % return cached values
         setof(MyValue, rdf(Property, Frame, MyValue, cache), Values),
         member(Value, Values)
-        
+
       ; % compute values and cache them
         setof(MyValue, rdfs_computable_triple_1(Property, Frame, MyValue), Values),
         ( (rdf_has(CP, computable:target, Property), rdf_has(CP, computable:cache, literal(type('http://www.w3.org/2001/XMLSchema#string', cache))))
           -> rdf_assert(computable:cachedAllValuesFor, Property, Frame, cache),
-             maplist(rdfs_computable_cache_values(Property, Frame), Values) 
+             maplist(rdfs_computable_cache_values(Property, Frame), Values)
           ; true),
         member(Value, Values)
       ))
   ; nonvar(Value)
-    -> ( % frame unbound, value bound 
+    -> ( % frame unbound, value bound
         rdf(Property, Value, computable:cachedAllFramesFor, cache)
-        
+
       -> setof(MyFrame, rdf(Property, MyFrame, Value, cache), Frames),
         member(Frame, Frames)
-        
+
       ; setof(MyFrame, rdfs_computable_triple_1(Property, MyFrame, Value), Frames),
         ( (rdf_has(CP, computable:target, Property), rdf_has(CP, computable:cache, literal(type('http://www.w3.org/2001/XMLSchema#string', cache))))
           -> rdf_assert(Property, Value, computable:cachedAllFramesFor, cache),
-             maplist(rdfs_computable_cache_frames(Property, Value), Frames) 
+             maplist(rdfs_computable_cache_frames(Property, Value), Frames)
           ; true),
         member(Frame, Frames))
     ; % both frame and value unbound -> no caching
@@ -298,7 +298,7 @@ rdfs_computable_triple_1(Property, Frame, Value) :-
     catch(rdfs_computable_sql_triple(Property,    Frame, Value), error(instantiation_error, _), fail)
   ; catch(rdfs_computable_prolog_triple(Property, Frame, Value), error(instantiation_error, _), fail).
 
-      
+
 % Helpers for caching...
 rdfs_computable_cache_values(Property, Frame, Value) :- rdf_assert(Property, Frame, Value, cache).
 rdfs_computable_cache_frames(Property, Value, Frame) :- rdf_assert(Property, Frame, Value, cache).
@@ -311,11 +311,11 @@ rdfs_computable_cache_frames(Property, Value, Frame) :- rdf_assert(Property, Fra
 
 
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%
 % Implementation: Computable classes
-% 
+%
 
 
 %%
@@ -390,7 +390,7 @@ rdfs_computable_sql_instance_of(Instance, Class) :-
 %% rdfs_computable_prolog_instance_of(?Instance, ?Class).
 %
 % Implementation of rdfs_computable_instance_of for PrologClasses.
-% 
+%
 %
 rdfs_computable_prolog_instance_of(Instance, Class) :-
 
@@ -403,8 +403,8 @@ rdfs_computable_prolog_instance_of(Instance, Class) :-
   rdf_has(ComputableClass, computable:command, literal(type(_, Cmd))),
 
   % handle the case that the predicate is defined in another module
-  ((term_to_atom(Module:Pred, Cmd)) -> 
-    (Command=Module:Pred) ; 
+  ((term_to_atom(Module:Pred, Cmd)) ->
+    (Command=Module:Pred) ;
     (Command=Cmd)),
 
   (
@@ -414,7 +414,7 @@ rdfs_computable_prolog_instance_of(Instance, Class) :-
 
     call(Command, MyInstance, Class),
 
-    % check if MyInstance is already a global RDF URI 
+    % check if MyInstance is already a global RDF URI
     ((rdf_split_url('', _, MyInstance)) -> (
       rdf_split_url(Namespace, _, Class),
       rdf_split_url(Namespace, MyInstance, Instance),
@@ -436,11 +436,11 @@ rdfs_computable_prolog_instance_of(Instance, Class) :-
 
 
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%
 % Implementation: Computable properties
-% 
+%
 
 
 %% rdfs_computable_sql_triple(Property, Frame, Value).
@@ -499,19 +499,19 @@ rdfs_computable_prolog_triple(Property, Frame, Value) :-
   rdf_has(ComputableProperty, computable:command, literal(type(_, Cmd))),
 
   % handle the case that the predicate is defined in another module
-  ((term_to_atom(Module:Pred, Cmd)) -> 
-    (Command=Module:Pred) ; 
+  ((term_to_atom(Module:Pred, Cmd)) ->
+    (Command=Module:Pred) ;
     (Command=user:Cmd)),
 
   % execute the Prolog predicate (namespace expansion etc.)
   (
-    (nonvar(Value)) -> 
+    (nonvar(Value)) ->
       (call(Command, Frame, Value))
     ;
       (call(Command, Frame, PrologValue),
-      
+
         % result: PrologValue
-        (PrologValue=[_|_] 
+        (PrologValue=[_|_]
         -> member(Temp, PrologValue),
           rdfs_prolog_to_rdf(Property, Temp, Value)
         ; PrologValue=[]
@@ -522,17 +522,17 @@ rdfs_computable_prolog_triple(Property, Frame, Value) :-
 
 
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%
 % Helper predicates: Convert results
-% 
+%
 
 
-% 
+%
 % Convert between Prolog and RDF values (i.e. name spaces, assert types etc)
-% 
-% 
+%
+%
 rdfs_prolog_to_rdf(Property, PrologValue, RDFValue) :-
   rdf_has(Property, rdfs:range, Range),
   ((rdfs_individual_of(Range, rdf:'Class')
@@ -580,11 +580,11 @@ rdfs_computable_value_from_url(Property, Value, MyValue) :-
 
 
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%
 % Helper predicates: Property concatenations
-% 
+%
 
 %%
 % Create a propertyConcatenation from a prolog list
@@ -630,11 +630,11 @@ rdfs_computable_compute_property_concatenation(Parameter, Frame, ParameterValue)
 
 
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%
 % Helper predicates: Class hierarchy
-% 
+%
 
 %%
 % Helper predicates for rdf_common_ancestor/2.

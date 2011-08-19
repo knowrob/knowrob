@@ -629,7 +629,7 @@
         <rdfs:domain rdf:resource="&knowrob;#SpatialThing-Localized"/>
         <rdfs:subPropertyOf rdf:resource="&knowrob;#orientation"/>
     </owl:DatatypeProperty>
-    
+
 
 
 

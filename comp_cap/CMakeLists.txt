@@ -51,23 +51,26 @@ set(JAVA_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/bin)
 # external dependencies in other packages
 rosbuild_find_ros_package(jpl)
 add_classpath(${jpl_PACKAGE_PATH}/prolog/jpl.jar)
+add_runtime_classpath(${jpl_PACKAGE_PATH}/prolog/jpl.jar)
 
-rosbuild_find_ros_package(rosjava)
-add_classpath(${rosjava_PACKAGE_PATH}/bin)
+rosbuild_find_ros_package(rosjava_jni)
+add_classpath(${rosjava_jni_PACKAGE_PATH}/bin)
+add_runtime_classpath(${rosjava_jni_PACKAGE_PATH}/bin)
 
 rosbuild_find_ros_package(comp_cap)
-add_classpath(${rosjava_PACKAGE_PATH}/lib)
-add_runtime_classpath(${rosjava_PACKAGE_PATH}/lib)
 
-rospack_add_java_executable(XmlRpcException org.apache.xmlrpc.XmlRpcException)
-rospack_add_java_executable(XmlRpcClient org.apache.xmlrpc.client.XmlRpcClient)
-rospack_add_java_executable(XmlRpcClientConfigImpl org.apache.xmlrpc.client.XmlRpcClientConfigImpl)
+# rospack_add_java_executable(XmlRpcException org.apache.xmlrpc.XmlRpcException)
+# rospack_add_java_executable(XmlRpcClientConfigImpl org.apache.xmlrpc.client.XmlRpcClientConfigImpl)
+# rospack_add_java_executable(XmlRpcClient org.apache.xmlrpc.client.XmlRpcClient)
 rospack_add_java_executable(CapabilityBase edu.tum.cs.ias.knowrob.comp_cap.CapabilityBase)
-rospack_add_java_executable(CapROSClient edu.tum.cs.ias.knowrob.comp_cap.CapROSClient)
+# rospack_add_java_executable(CapROSClient edu.tum.cs.ias.knowrob.comp_cap.CapROSClient)
 
+add_classpath(${PROJECT_SOURCE_DIR}/lib)
+add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib)
 add_java_source_dir(${PROJECT_SOURCE_DIR}/src)
 
-add_ld_preload(${PROJECT_SOURCE_DIR}/lib)
+# add_ld_preload(${PROJECT_SOURCE_DIR}/lib)
 
-execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${PROJECT_SOURCE_DIR}/lib/org 
-							   ${PROJECT_SOURCE_DIR}/bin/org)
+# execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${PROJECT_SOURCE_DIR}/lib/org 
+# 							   ${PROJECT_SOURCE_DIR}/bin/org)
+

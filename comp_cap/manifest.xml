@@ -13,10 +13,10 @@
   <depend package="rosjava_jni"/>
   <depend package="jpl"/>
   <depend package="mod_srdl"/>
-  <depend package="roscpp"/>
+  
 
   <export>
-    <java classpath="${prefix}/bin" />
+    <java classpath="${prefix}/bin:${prefix}/lib" />
    </export>
   
 </package>

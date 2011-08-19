@@ -127,7 +127,7 @@
 %% on_Physical(?Top, ?Bottom) is nondet.
 %
 % Check if Top is in the area of and above Bottom.
-% 
+%
 % Implemented as a wrapper predicate around holds(...) that computes the relation for the
 % current point in time
 %
@@ -154,35 +154,35 @@ on_Physical(Top, Bottom) :-
 %
 
 %%% holds(on_Physical(Top, Bottom), T) :-
-%%% 
+%%%
 %%%     object_detection(Top, T, VPT),
 %%%     object_detection(Bottom, T, VPB),
-%%% 
+%%%
 %%%     rdf_triple(knowrob:eventOccursAt, VPT,    TopMatrix),
 %%%     rdf_triple(knowrob:eventOccursAt, VPB, BottomMatrix),
-%%% 
+%%%
 %%%     rdf_triple(knowrob:m03, TopMatrix, literal(type(_,TCx))),atom_to_term(TCx,TX,_),
 %%%     rdf_triple(knowrob:m13, TopMatrix, literal(type(_,TCy))),atom_to_term(TCy,TY,_),
 %%%     rdf_triple(knowrob:m23, TopMatrix, literal(type(_,TCz))),atom_to_term(TCz,TZ,_),
-%%% 
+%%%
 %%%     rdf_triple(knowrob:m03, BottomMatrix, literal(type(_,BCx))),atom_to_term(BCx,BX,_),
 %%%     rdf_triple(knowrob:m13, BottomMatrix, literal(type(_,BCy))),atom_to_term(BCy,BY,_),
 %%%     rdf_triple(knowrob:m23, BottomMatrix, literal(type(_,BCz))),atom_to_term(BCz,BZ,_),
-%%% 
+%%%
 %%%     % read the dimensions of the bottom entity
 %%%     rdf_has(Bottom, knowrob:widthOfObject, literal(type(_,Bw))),atom_to_term(Bw,BW,_),
 %%%     rdf_has(Bottom, knowrob:depthOfObject, literal(type(_,Bd))),atom_to_term(Bd,BD,_),
-%%% 
+%%%
 %%%     % the criterion is if the difference between them is less than epsilon=5cm
 %%%     =<( BZ, TZ ),
-%%% 
+%%%
 %%%     % additional criterion: center of the top entity has to be inside the
 %%%     % area of the bottom entity
 %%%     =<( (BX - 0.5*BD), TX ), >=( (BX + 0.5*BD), TX ),
 %%%     =<( (BY - 0.5*BW), TY ), >=( (BY + 0.5*BW), TY ),
 %%%     Top \= Bottom.
 holds(on_Physical(Top, Bottom),T) :-
-    % get object center for Top 
+    % get object center for Top
     object_detection(Top, T, VPT),
     rdf_triple(knowrob:eventOccursAt, VPT,    TopMatrix),
     rdf_triple(knowrob:m03, TopMatrix, TCxx),strip_literal_type(TCxx, TCx),atom_to_term(TCx,TX,_),
@@ -286,7 +286,7 @@ holds(comp_below_of(Bottom, Top),T) :-
 %
 % @param Left Identifier of the left Object
 % @param Right Identifier of the right Object
-% 
+%
 comp_toTheLeftOf(Left, Right) :-
     get_timepoint(T),
     holds(comp_toTheLeftOf(Left, Right), T).
@@ -334,14 +334,14 @@ holds(comp_toTheLeftOf(Left, Right), T) :-
 %% comp_toTheRightOf(?Right,?Left) is nondet.
 %
 % Check if Right is to the right of Left.
-% 
+%
 % Implemented as a wrapper predicate around holds(...) that computes the relation for the
 % current point in time
 %
 % @param Right Identifier of the right Object
 % @param Left Identifier of the left Object
 % @see comp_toTheLeftOf
-% 
+%
 comp_toTheRightOf(Right, Left) :-
     get_timepoint(T),
     holds(comp_toTheRightOf(Right, Left), T).
@@ -357,7 +357,7 @@ comp_toTheRightOf(Right, Left) :-
 % @param Left Identifier of the left Object
 % @param T      TimePoint or Event for which the relations is supposed to hold
 % @see comp_toTheLeftOf
-% 
+%
 holds(comp_toTheRightOf(Right, Left), T) :-
     holds(comp_toTheLeftOf(Left, Right), T).
 
@@ -370,12 +370,12 @@ holds(comp_toTheRightOf(Right, Left), T) :-
 %
 % Implemented as a wrapper predicate around holds(...) that computes the relation for the
 % current point in time
-% 
+%
 % @param A Identifier of Object A
 % @param B Identifier of Object B
 % @see comp_toTheLeftOf
 % @see comp_toTheRightOf
-% 
+%
 comp_toTheSideOf(A, B) :-
     get_timepoint(T),
     holds(comp_toTheSideOf(A, B), T).
@@ -391,7 +391,7 @@ comp_toTheSideOf(A, B) :-
 % @param T TimePoint or Event for which the relations is supposed to hold
 % @see comp_toTheLeftOf
 % @see comp_toTheRightOf
-% 
+%
 holds(comp_toTheSideOf(A, B), T) :-
     holds(comp_toTheRightOf(A, B), T);
     holds(comp_toTheLeftOf(A, B), T).
@@ -403,13 +403,13 @@ holds(comp_toTheSideOf(A, B), T) :-
 %
 % Check if Front is in front of Back. Currently does not take the orientation
 % into account, only the position and dimension.
-% 
+%
 % Implemented as a wrapper predicate around holds(...) that computes the relation for the
 % current point in time
 %
 % @param Front Identifier of the front Object
 % @param Back Identifier of the back Object
-% 
+%
 comp_inFrontOf(Front, Back) :-
     get_timepoint(T),
     holds(comp_inFrontOf(Front, Back), T).
@@ -417,14 +417,14 @@ comp_inFrontOf(Front, Back) :-
 %% holds(+InFrontOf:compound, +T) is nondet.
 %
 % Usage: holds(comp_inFrontOf(?Front, ?Back), +T)
-% 
+%
 % Check if Front is in front of Back. Currently does not take the orientation
 % into account, only the position and dimension.
 %
 % @param Front Identifier of the front Object
 % @param Back Identifier of the back Object
 % @param T TimePoint or Event for which the relations is supposed to hold
-% 
+%
 holds(comp_inFrontOf(Front, Back), T) :-
     %
     % TODO: adapt this to take rotations and object dimensions into account
@@ -455,10 +455,10 @@ holds(comp_inFrontOf(Front, Back), T) :-
 %
 % Implemented as a wrapper predicate around holds(...) that computes the relation for the
 % current point in time
-% 
+%
 % @param Inner Identifier of the inner Object
 % @param Outer Identifier of the outer Object
-% 
+%
 comp_inCenterOf(Inner, Outer) :-
     get_timepoint(T),
     holds(comp_inCenterOf(Inner, Outer), T).
@@ -473,7 +473,7 @@ comp_inCenterOf(Inner, Outer) :-
 % @param Inner Identifier of the inner Object
 % @param Outer Identifier of the outer Object
 % @param T TimePoint or Event for which the relations is supposed to hold
-% 
+%
 holds(comp_inCenterOf(Inner, Outer), T) :-
 
     object_detection(Inner, T, VPI),
@@ -505,10 +505,10 @@ holds(comp_inCenterOf(Inner, Outer), T) :-
 %
                                 % Implemented as a wrapper predicate around holds(...) that computes the relation for the
 % current point in time
-% 
+%
 % @param InnerObj Identifier of the inner Object
 % @param OuterObj Identifier of the outer Object
-% 
+%
 in_ContGeneric(InnerObj, OuterObj) :-
     get_timepoint(T),
     holds(in_ContGeneric(InnerObj, OuterObj), T).
@@ -524,7 +524,7 @@ in_ContGeneric(InnerObj, OuterObj) :-
 % @param InnerObj Identifier of the inner Object
 % @param OuterObj Identifier of the outer Object
 % @param T TimePoint or Event for which the relations is supposed to hold
-% 
+%
 holds(in_ContGeneric(InnerObj, OuterObj), T) :-
 
     object_detection(InnerObj, T, VPI),
@@ -568,10 +568,10 @@ holds(in_ContGeneric(InnerObj, OuterObj), T) :-
 % Wrapper to compute the (deprecated) object orientation property by
 % finding the most current object detection. Intended as convenience
 % and compatibility predicate.
-% 
+%
 % @param InnerObj Identifier of the inner Object
 % @param OuterObj Identifier of the outer Object
-% 
+%
 comp_orientation(Object, Orientation) :-
 
     % find all perceptions of the object and sort by their start time
@@ -1148,37 +1148,37 @@ objectAtPoint2D(PX,PY,Obj) :-
     P2X is (OX - 0.5*OW),
     P2Y is (OY - 0.5*OD),
     % rotate points
-    RP0X is (OX + (P0X - OX) * M00 + (P0Y - OY) * M01), 
-    RP0Y is (OY + (P0X - OX) * M10 + (P0Y - OY) * M11), 
-    RP1X is (OX + (P1X - OX) * M00 + (P1Y - OY) * M01), 
-    RP1Y is (OY + (P1X - OX) * M10 + (P1Y - OY) * M11), 
-    RP2X is (OX + (P2X - OX) * M00 + (P2Y - OY) * M01), 
+    RP0X is (OX + (P0X - OX) * M00 + (P0Y - OY) * M01),
+    RP0Y is (OY + (P0X - OX) * M10 + (P0Y - OY) * M11),
+    RP1X is (OX + (P1X - OX) * M00 + (P1Y - OY) * M01),
+    RP1Y is (OY + (P1X - OX) * M10 + (P1Y - OY) * M11),
+    RP2X is (OX + (P2X - OX) * M00 + (P2Y - OY) * M01),
     RP2Y is (OY + (P2X - OX) * M10 + (P2Y - OY) * M11),
 
     % debug: print rotated points
-    %write('P0 X: '), write(P0X), write(' -> '), writeln(RP0X), 
-    %write('P0 Y: '), write(P0Y), write(' -> '), writeln(RP0Y), 
-    %write('P1 X: '), write(P1X), write(' -> '), writeln(RP1X), 
-    %write('P1 Y: '), write(P1Y), write(' -> '), writeln(RP1Y), 
-    %write('P2 X: '), write(P2X), write(' -> '), writeln(RP2X), 
+    %write('P0 X: '), write(P0X), write(' -> '), writeln(RP0X),
+    %write('P0 Y: '), write(P0Y), write(' -> '), writeln(RP0Y),
+    %write('P1 X: '), write(P1X), write(' -> '), writeln(RP1X),
+    %write('P1 Y: '), write(P1Y), write(' -> '), writeln(RP1Y),
+    %write('P2 X: '), write(P2X), write(' -> '), writeln(RP2X),
     %write('P2 Y: '), write(P2Y), write(' -> '), writeln(RP2Y),
 
-    V1X is (RP1X - RP0X), 
-    V1Y is (RP1Y - RP0Y), 
+    V1X is (RP1X - RP0X),
+    V1Y is (RP1Y - RP0Y),
 
-    V2X is (RP2X - RP0X), 
-    V2Y is (RP2Y - RP0Y), 
+    V2X is (RP2X - RP0X),
+    V2Y is (RP2Y - RP0Y),
 
-    VPX is (PX - RP0X), 
-    VPY is (PY - RP0Y), 
+    VPX is (PX - RP0X),
+    VPY is (PY - RP0Y),
 
     DOT1 is (VPX * V1X + VPY * V1Y),
     DOT2 is (VPX * V2X + VPY * V2Y),
     DOTV1 is (V1X * V1X + V1Y * V1Y),
     DOTV2 is (V2X * V2X + V2Y * V2Y),
 
-    =<(0,DOT1), =<(DOT1, DOTV1), 
-    =<(0,DOT2), =<(DOT2, DOTV2). 
+    =<(0,DOT1), =<(DOT1, DOTV1),
+    =<(0,DOT2), =<(DOT2, DOTV2).
 
 
 % compatibility with Prolog < 5.8
