@@ -1006,18 +1006,18 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 
 		if(it!=null) {
-			float[] o = getOrientationOfItem(identifier);
-			if(o!=null) {
-				it.setPose(o);
-			} else {System.out.println("NO ORIENTATION FOR " + identifier);}
+		    float[] o = getOrientationOfItem(identifier);
+		    if(o!=null) {
+		        it.setPose(o);
+		    } else {System.out.println("NO ORIENTATION FOR " + identifier);}
 
-      float[] d = getDimensionsOfItem(identifier);
-			if(d!=null) {
-          it.setDimensions(d[0],d[1],d[2]);
-			} else {System.out.println("NO DIMENSIONS FOR " + identifier);}
+		    float[] d = getDimensionsOfItem(identifier);
+		    if(d!=null) {
+		        it.setDimensions(d[0],d[1],d[2]);
+		    } //else {System.out.println("NO DIMENSIONS FOR " + identifier);}
 
-			it.name = identifier;
-			return it;
+		    it.name = identifier;
+		    return it;
 
 		} else {
 
@@ -2358,7 +2358,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
     //   return new Ellipse(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1, 0.0f,0.0f,0f);
 
 		} else if(type.endsWith("#Point3D'")) {
-			return new Sphere(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  3f,3f,3f);
+			return new Sphere(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0.03f,0.03f,0.03f);
 		}
 		return null;	
 
