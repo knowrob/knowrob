@@ -22,8 +22,6 @@
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:knowrob="&kb;knowrob.owl#">
     <owl:Ontology rdf:about="&kb;kitchenobjects.owl">
-        <owl:imports rdf:resource="file:///home/pangerci/diamondback_ros/tum-stacks/knowrob/ias_knowledge_base/owl/knowrob.owl"/>
-        <owl:imports rdf:resource="&kb;bosch_semantic_map.owl"/>
     </owl:Ontology>
     
 

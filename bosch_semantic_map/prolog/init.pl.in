@@ -23,6 +23,7 @@
 :- consult('bosch_semantic_map').
 :- consult('semantic_map_utils').
 
- :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/ias_map_addons.owl', false, false, true).
- :- rdf_db:rdf_register_ns(map_addons, 'http://ias.cs.tum.edu/kb/map_addons.owl#', [keep(true)]).
+ :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/bosch_semantic_map_addons.owl', false, false, true).
+ :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/kitchenobjects.owl', false, false, true).
+%% :- rdf_db:rdf_register_ns(map_addons, 'http://ias.cs.tum.edu/kb/map_addons.owl#', [keep(true)]).
 
