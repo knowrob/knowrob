@@ -57,7 +57,7 @@ public class JSONQuery {
 
       return new Query(makeCompoundTerm(json_query));
     } catch (Exception e) {
-      throw new InvalidJSONQuery("Unable to parse JSON query.");
+      throw new InvalidJSONQuery("Unable to parse JSON query: " + json + ", Exception: " + e.toString());
     }
   }
 
@@ -94,12 +94,22 @@ public class JSONQuery {
       throw new InvalidJSONQuery("makeCompoundTerm: no predicate given.");
 
     String[] split_predicate = predicate.split(":");
-    if(split_predicate.length == 1)
-      return new jpl.Compound(predicate, decodeJSONArray(val, 1));
-    else if(split_predicate.length == 2)
-      return new jpl.Compound(":", new Term[] {
-          new jpl.Atom(split_predicate[0]), 
-          new jpl.Compound(split_predicate[1], decodeJSONArray(val, 1)) });
+    if(split_predicate.length == 1) {
+      if(val.size() > 1)
+        return new jpl.Compound(predicate, decodeJSONArray(val, 1));
+      else
+        return new jpl.Atom(predicate);
+    }
+    else if(split_predicate.length == 2) {
+      if(val.size() > 1)
+        return new jpl.Compound(":", new Term[] {
+            new jpl.Atom(split_predicate[0]), 
+            new jpl.Compound(split_predicate[1], decodeJSONArray(val, 1)) });
+      else
+        return new jpl.Compound(":", new Term[] {
+            new jpl.Atom(split_predicate[0]), 
+            new jpl.Atom(split_predicate[1]) });
+    }
     else
       throw new InvalidJSONQuery("Predicate encoding wrong. Found more than one ':' in " + predicate);
   }
@@ -110,6 +120,9 @@ public class JSONQuery {
 
   static private Term[] decodeJSONArray(JSONArray val, int startIndex)
       throws InvalidJSONQuery {
+    if(startIndex >= val.size())
+      return new Term[0];
+
     Term[] terms = new Term[val.size() - startIndex];
 
     for (int i = startIndex; i < val.size(); i++) {
