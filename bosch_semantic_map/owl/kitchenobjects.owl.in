@@ -2,6 +2,9 @@
 
 
 <!DOCTYPE rdf:RDF [
+    <!ENTITY bosch_semantic_map_path 'file://@LOCAL_PACKAGE_PATH@/owl/'>
+    <!ENTITY kb_path 'file://@IAS_KNOWLEDGE_BASE_PATH@/owl/'>
+
     <!ENTITY kb "http://ias.cs.tum.edu/kb/" >
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
@@ -22,6 +25,9 @@
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:knowrob="&kb;knowrob.owl#">
     <owl:Ontology rdf:about="&kb;kitchenobjects.owl">
+        <owl:imports rdf:resource="&kb_path;knowrob.owl#"/>
+        <owl:imports rdf:resource="&bosch_semantic_map_path;bosch_semantic_map.owl#"/>
+         <!-- <owl:imports rdf:resource="&bosch_semantic_map_path;bosch_semantic_map_addons.owl#"/> -->
     </owl:Ontology>
     
 

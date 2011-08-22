@@ -24,7 +24,7 @@
      xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#"
      xmlns:bosch_semantic_map_addons="http://ias.cs.tum.edu/kb/bosch_semantic_map_addons.owl#">
     <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/bosch_semantic_map_addons.owl#">
-        <owl:imports rdf:resource="&local_path;knowrob.owl"/>
+        <owl:imports rdf:resource="/work/ros-schuster/stacks/knowrob_new/ias_knowledge_base/owl/knowrob.owl"/>
     </owl:Ontology>
     
 

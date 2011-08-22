@@ -10,6 +10,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://www.ros.org/wiki/bosch_semantic_map</url>
   <depend package="comp_spatial"/>
+  <depend package="json_prolog" />
   <export>
     <rosdoc config="rosdoc.yaml" />
   </export>
