@@ -1,16 +1,21 @@
 package de.tum.in.fipm.kipm.gui.visualisation.applets;
 
-import java.awt.Graphics;
-import java.awt.event.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Vector;
-import processing.core.*;
-import controlP5.*;
-import de.tum.in.fipm.kipm.gui.visualisation.base.PrologVisualizationCanvas;
+
 import jpl.Query;
-import java.io.Serializable;
+import processing.core.PApplet;
+import processing.core.PFont;
+import processing.core.PGraphics;
+import controlP5.ControlEvent;
+import controlP5.Radio;
+import de.tum.in.fipm.kipm.gui.visualisation.base.PrologVisualizationCanvas;
 
 public class ActionVisApplet extends PApplet implements MouseListener, MouseMotionListener {
 
@@ -82,8 +87,8 @@ public class ActionVisApplet extends PApplet implements MouseListener, MouseMoti
     actionTypes= new ArrayList<String>();
     objectTypes= new ArrayList<String>();
                      
-	size(550, 600, P3D);
-	buffer = createGraphics(width, height, P3D);
+		size(550, 600, P3D);
+		buffer = createGraphics(width, height, P3D);
     lights();
     
     verdana = createFont("Verdana", 11);
