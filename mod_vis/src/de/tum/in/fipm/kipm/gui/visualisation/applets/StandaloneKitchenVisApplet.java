@@ -160,7 +160,8 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
     hint(ENABLE_DEPTH_TEST);
 //    hint(DISABLE_DEPTH_TEST);
 
-    hint(ENABLE_DEPTH_SORT);
+		// Don't enable, causes huge performance break
+		// hint(ENABLE_DEPTH_SORT);
 //    hint(DISABLE_DEPTH_SORT);
 		
     //drawBackground();
