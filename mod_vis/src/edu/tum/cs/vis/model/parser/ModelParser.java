@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import javax.vecmath.Point3f;
 
 import processing.core.PApplet;
+import edu.tum.cs.vis.model.util.Line;
 import edu.tum.cs.vis.model.util.Triangle;
 
 /**
@@ -16,6 +17,7 @@ import edu.tum.cs.vis.model.util.Triangle;
 public abstract class ModelParser {
 
 	protected LinkedList<Triangle> triangles = new LinkedList<Triangle>();
+	protected LinkedList<Line> lines = new LinkedList<Line>();
 
 	private Float minX = null;
 	private Float maxX = null;
@@ -37,6 +39,21 @@ public abstract class ModelParser {
 		for (Triangle tri : triangles) {
 
 			tri.draw(applet);
+		}
+	}
+
+	/**
+	 * Draw the lines list to the applet
+	 * 
+	 * @param applet
+	 *            Applet to draw on
+	 */
+	protected void drawLines(PApplet applet) {
+
+		// Shapes are not effected by translate
+		for (Line line : lines) {
+
+			line.draw(applet);
 		}
 	}
 
@@ -75,7 +92,7 @@ public abstract class ModelParser {
 	 * 
 	 * @param pos
 	 */
-	public void setModelPosition(Point3f pos) {
+	protected void setModelPosition(Point3f pos) {
 		if (currentPosition == null)
 			centerModel();
 		for (Triangle tri : triangles) {

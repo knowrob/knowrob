@@ -35,6 +35,7 @@ import de.tum.in.fipm.kipm.util.datastructures.Point;
 
 import edu.tum.cs.vis.AnimatedCanvas;
 import edu.tum.cs.vis.Canvas;
+import edu.tum.cs.vis.model.ItemModel;
 
 
 
@@ -973,6 +974,22 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		}
 	}
 
+	private ItemModel getModelOfItem(String identifier) {
+		try {
+			HashMap<String, Vector<Object>> nfo = PrologVisualizationCanvas
+					.executeQuery(
+							"rdf_has("
+									+ identifier
+							+ ",knowrob:pathModel,literal(type(_,_P))) "
+							+ "atom_to_term(_P,P,_)",
+							null);
+
+			return new ItemModel(nfo.get("P").get(0).toString());
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
 
 
 	private ItemBase getItem(String identifier) {
@@ -1016,6 +1033,8 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		    if(d!=null) {
 		        it.setDimensions(d[0],d[1],d[2]);
 		    } //else {System.out.println("NO DIMENSIONS FOR " + identifier);}
+
+			it.setModel(getModelOfItem(identifier));
 
 		    it.name = identifier;
 		    return it;

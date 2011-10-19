@@ -18,6 +18,18 @@ public class Color {
         this.blue = blue;
         this.transparency = transp;
     }
+
+	/**
+	 * 
+	 * @param col
+	 *            Array with colors. Size: 4
+	 */
+	public Color(float col[]) {
+		this.red = col[0];
+		this.green = col[1];
+		this.blue = col[2];
+		this.transparency = col[3];
+	}
     /**
      * from 0 to 1.0
      */

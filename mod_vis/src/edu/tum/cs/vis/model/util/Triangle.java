@@ -5,7 +5,6 @@ import javax.vecmath.Point3f;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
-import processing.core.PImage;
 
 public class Triangle {
 	 /**
@@ -16,26 +15,11 @@ public class Triangle {
      * Texture-Points
      */
 	public Point2f texPosition[];
-    /**
-     * the Filename of the texture-Image
-     */
-    public String imageFileName;
-    /**
-     * says if the Triangle has Texture
-     */
-    public boolean containsTexture = false;
-    /**
-     * an Objectreference of a loaded image. Default is null.
-     */
-    public PImage imageReference;
-    /**
-     * the color of the Triangle if the Triangle has no texture
-     */
-     public Color colour;
+
+	public Appearance appearance;
      
 	public Triangle() {
 		position = new Point3f[3];
-		texPosition = new Point2f[3];
 	}
 
      /**
@@ -44,9 +28,12 @@ public class Triangle {
       */
      public void draw(PApplet applet)
      {
-         if (!containsTexture)
+		if (!appearance.containsTexture)
          {
-             applet.fill(colour.red*255, colour.green*255, colour.blue*255, colour.transparency * 255);
+			applet.fill(appearance.colour.red * 255,
+					appearance.colour.green * 255,
+					appearance.colour.blue * 255,
+					appearance.colour.transparency * 255);
              applet.beginShape(PConstants.TRIANGLES);
 
 			applet.vertex(position[0].x, position[0].y, position[0].z);
@@ -58,7 +45,7 @@ public class Triangle {
          } else
          {
         	 applet.beginShape(PConstants.TRIANGLES);
-        	 applet.texture(imageReference);
+			applet.texture(appearance.imageReference);
 
 			applet.vertex(position[0].x, position[0].y, position[0].z,
 					texPosition[0].x, texPosition[0].y);

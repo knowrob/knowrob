@@ -454,7 +454,7 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 	      act_label.setFont(3);
 	      act_label.moveTo(controlWindow);
 	      
-	      Radio act_radio = controlP5.addRadio("act_radio",80,60);
+		Radio act_radio = controlP5.addRadio("act_radio", 80, 60);
 	      act_radio.addItem("activity",3);
 	      act_radio.addItem("2",2);
 	      act_radio.addItem("1",1);
