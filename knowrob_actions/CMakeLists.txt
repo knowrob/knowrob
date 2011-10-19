@@ -15,8 +15,8 @@ rosbuild_find_ros_package(jpl)
 add_classpath(${jpl_PACKAGE_PATH}/prolog/jpl.jar)
 add_runtime_classpath(${jpl_PACKAGE_PATH}/prolog/jpl.jar)
 
-rosbuild_find_ros_package(rosjava)
-add_classpath(${rosjava_PACKAGE_PATH}/bin)
+rosbuild_find_ros_package(rosjava_jni)
+add_classpath(${rosjava_jni_PACKAGE_PATH}/bin)
 
 rosbuild_find_ros_package(knowrob_common)
 add_classpath(${knowrob_common_PACKAGE_PATH}/bin)

@@ -21,8 +21,8 @@ endforeach( _in )
 rosbuild_find_ros_package(jpl)
 add_classpath(${jpl_PACKAGE_PATH}/prolog/jpl.jar)
 
-rosbuild_find_ros_package(rosjava)
-add_classpath(${rosjava_PACKAGE_PATH}/bin)
+rosbuild_find_ros_package(rosjava_jni)
+add_classpath(${rosjava_jni_PACKAGE_PATH}/bin)
 
 add_jar_dir(lib)
 

@@ -41,8 +41,8 @@ set(JAVA_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/bin)
 add_jar_dir(lib)
 
 # external dependencies in other packages
-rosbuild_find_ros_package(rosjava)
-add_classpath(${rosjava_PACKAGE_PATH}/bin)
+rosbuild_find_ros_package(rosjava_jni)
+add_classpath(${rosjava_jni_PACKAGE_PATH}/bin)
 
 
 # generate launch script
