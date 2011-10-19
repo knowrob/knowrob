@@ -14,6 +14,7 @@ set(JAVA_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/bin)
 rosbuild_find_ros_package(jpl)
 
 add_jni_path(${jpl_PACKAGE_PATH}/prolog)
+add_ld_preload(/usr/lib/libswipl.so)
 add_ld_preload(/usr/lib/libpl.so)
   
 add_classpath(${jpl_PACKAGE_PATH}/prolog/jpl.jar)
