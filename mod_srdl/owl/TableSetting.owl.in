@@ -2,6 +2,7 @@
 
 
 <!DOCTYPE rdf:RDF [
+    <!ENTITY srdl_path 'file://@SRDL_PACKAGE_PATH@/owl/'>
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
     <!ENTITY SRDL "http://ias.cs.tum.edu/kb/SRDL.owl#" >
@@ -25,12 +26,12 @@
      xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#">
     <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/TableSetting.owl">
         <rdfs:comment rdf:datatype="&rdf;PlainLiteral">Description of a table-seting task</rdfs:comment>
-        <owl:imports rdf:resource="file://@SRDL_PACKAGE_PATH@/owl/srdl2-action.owl"/>
+        <owl:imports rdf:resource="&srdl_path;srdl2-action.owl"/>
     </owl:Ontology>
-    
 
 
-    <!-- 
+
+    <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Annotation properties
@@ -39,10 +40,10 @@
      -->
 
     <owl:AnnotationProperty rdf:about="&rdfs;comment"/>
-    
 
 
-    <!-- 
+
+    <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Object Properties
@@ -50,22 +51,22 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#objectActedOn -->
 
     <owl:ObjectProperty rdf:about="&knowrob;objectActedOn"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#subAction -->
 
     <owl:ObjectProperty rdf:about="&knowrob;subAction"/>
-    
 
 
-    <!-- 
+
+    <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Classes
@@ -73,7 +74,7 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/TableSetting.owl#TableSetting -->
@@ -115,7 +116,7 @@
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/TableSetting.owl#TableSettingStep1 -->
@@ -133,7 +134,7 @@
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/TableSetting.owl#TableSettingStep2 -->
@@ -151,7 +152,7 @@
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/TableSetting.owl#TableSettingStep3 -->
@@ -169,7 +170,7 @@
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/TableSetting.owl#TableSettingStep4 -->
@@ -187,7 +188,7 @@
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/TableSetting.owl#TableSettingStep5 -->
@@ -205,7 +206,7 @@
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/TableSetting.owl#TableSettingStep6 -->
@@ -223,7 +224,7 @@
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/TableSetting.owl#TableSettingStep7 -->
@@ -241,55 +242,55 @@
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Action -->
 
     <owl:Class rdf:about="&knowrob;Action"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Cup -->
 
     <owl:Class rdf:about="&knowrob;Cup"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#DinnerPlate -->
 
     <owl:Class rdf:about="&knowrob;DinnerPlate"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Fork-SilverwarePiece -->
 
     <owl:Class rdf:about="&knowrob;Fork-SilverwarePiece"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Knife -->
 
     <owl:Class rdf:about="&knowrob;Knife"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Napkin -->
 
     <owl:Class rdf:about="&knowrob;Napkin"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PlaceMat -->
 
     <owl:Class rdf:about="&knowrob;PlaceMat"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PuttingSomethingSomewhere -->
 
     <owl:Class rdf:about="&knowrob;PuttingSomethingSomewhere"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Spoon-SilverwarePiece -->

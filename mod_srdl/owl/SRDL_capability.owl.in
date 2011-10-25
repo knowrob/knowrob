@@ -2,6 +2,8 @@
 
 
 <!DOCTYPE rdf:RDF [
+    <!ENTITY local_path 'file://@IAS_KB_PACKAGE_PATH@/owl/'>
+
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY dc "http://purl.org/dc/elements/1.1/" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
@@ -30,9 +32,9 @@
             >Capability Ontology - ontology of capabilities</rdfs:comment>
         <rdfs:comment
             >Part of semlang - semantic robot description language</rdfs:comment>
-        <owl:imports rdf:resource="file://@IAS_KB_PACKAGE_PATH@/owl/knowrob.owl"/>
+        <owl:imports rdf:resource="&local_path;knowrob.owl"/>
     </owl:Ontology>
-    
+
 
 
     <!--

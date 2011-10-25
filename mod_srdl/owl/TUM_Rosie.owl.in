@@ -2,6 +2,7 @@
 
 
 <!DOCTYPE rdf:RDF [
+    <!ENTITY srdl_path 'file://@SRDL_PACKAGE_PATH@/owl/'>
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY swrl "http://www.w3.org/2003/11/swrl#" >
     <!ENTITY dc "http://purl.org/dc/elements/1.1/" >
@@ -31,7 +32,7 @@
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:srdl2-comp="http://ias.cs.tum.edu/kb/srdl2-comp.owl#">
     <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/TUM_Rosie.owl">
-        <owl:imports rdf:resource="file://@SRDL_PACKAGE_PATH@/owl/srdl2-cap.owl"/>
+        <owl:imports rdf:resource="&srdl_path;srdl2-cap.owl"/>
     </owl:Ontology>
 
 
@@ -224,7 +225,7 @@
         <srdl2-comp:succeedingLink rdf:resource="#TUM_Rosie_base_link"/>
         <srdl2-comp:subComponent rdf:resource="#VectorFieldArmController1"/>
     </owl:NamedIndividual>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/TUM_Rosie.owl#VectorFieldArmController1 -->

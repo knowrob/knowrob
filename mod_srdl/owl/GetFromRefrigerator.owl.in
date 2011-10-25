@@ -2,6 +2,9 @@
 
 
 <!DOCTYPE rdf:RDF [
+
+    <!ENTITY srdl_path 'file://@SRDL_PACKAGE_PATH@/owl/'>
+
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY swrl "http://www.w3.org/2003/11/swrl#" >
     <!ENTITY dc "http://purl.org/dc/elements/1.1/" >
@@ -37,8 +40,8 @@
      xmlns:SRDL_action="http://ias.cs.tum.edu/kb/SRDL_action.owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <owl:Ontology rdf:about="">
-        <owl:imports rdf:resource="file://@SRDL_PACKAGE_PATH@/owl/PR2.owl"/>
-        <owl:imports rdf:resource="file://@SRDL_PACKAGE_PATH@/owl/TUM_Rosie.owl"/>
+        <owl:imports rdf:resource="&srdl_path;PR2.owl"/>
+        <owl:imports rdf:resource="&srdl_path;TUM_Rosie.owl"/>
     </owl:Ontology>
 
 

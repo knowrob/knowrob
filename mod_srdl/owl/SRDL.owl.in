@@ -2,6 +2,10 @@
 
 
 <!DOCTYPE rdf:RDF [
+    <!ENTITY local_path 'file://@IAS_KB_PACKAGE_PATH@/owl/'>
+    <!ENTITY srdl_path 'file://@SRDL_PACKAGE_PATH@/owl/'>
+
+
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY swrl "http://www.w3.org/2003/11/swrl#" >
     <!ENTITY dc "http://purl.org/dc/elements/1.1/" >
@@ -40,15 +44,15 @@
             >Main ontology of semlang -  semantic robot description language</rdfs:comment>
         <rdfs:comment
             >Combines and relates elements from the component, task and capability ontologies</rdfs:comment>
-        <owl:imports rdf:resource="file://@IAS_KB_PACKAGE_PATH@/owl/knowrob.owl"/>
-        <owl:imports rdf:resource="file://@SRDL_PACKAGE_PATH@/owl/SRDL_action.owl"/>
-        <owl:imports rdf:resource="file://@SRDL_PACKAGE_PATH@/owl/SRDL_capability.owl"/>
-        <owl:imports rdf:resource="file://@SRDL_PACKAGE_PATH@/owl/SRDL_component.owl"/>
+        <owl:imports rdf:resource="&local_path;knowrob.owl"/>
+        <owl:imports rdf:resource="&srdl_path;SRDL_action.owl"/>
+        <owl:imports rdf:resource="&srdl_path;SRDL_capability.owl"/>
+        <owl:imports rdf:resource="&srdl_path;SRDL_component.owl"/>
     </owl:Ontology>
-    
 
 
-    <!-- 
+
+    <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Annotation properties
@@ -58,10 +62,10 @@
 
     <owl:AnnotationProperty rdf:about="&dc;title"/>
     <owl:AnnotationProperty rdf:about="&dc;contributor"/>
-    
 
 
-    <!-- 
+
+    <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Object Properties
@@ -69,7 +73,7 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#hasBaseLinkInKinematicChain -->
@@ -81,7 +85,7 @@
         <rdfs:domain rdf:resource="#SrdlRobot"/>
         <rdfs:range rdf:resource="&SRDL_component;HardwareComponent"/>
     </owl:ObjectProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#hasCapability -->
@@ -94,7 +98,7 @@ Later capabilities should be inferred automatically from robot components!</rdfs
         <rdfs:domain rdf:resource="#SrdlRobot"/>
         <rdfs:range rdf:resource="&SRDL_capability;PrimitiveCapability"/>
     </owl:ObjectProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#hasCapabilityDependency -->
@@ -106,7 +110,7 @@ Semantics: For task t capability c is necessary/ required</rdfs:comment>
         <rdfs:domain rdf:resource="&SRDL_action;SrdlAction"/>
         <rdfs:range rdf:resource="&SRDL_capability;Capability"/>
     </owl:ObjectProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#hasCapabilityProvisionAlternative -->
@@ -126,7 +130,7 @@ Capability provision alternatives can be added without modifying the SRDL ontolo
         <rdfs:range rdf:resource="#CapabilityProvisionAlternative"/>
         <rdfs:domain rdf:resource="&SRDL_capability;Capability"/>
     </owl:ObjectProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#hasComponent -->
@@ -137,7 +141,7 @@ Capability provision alternatives can be added without modifying the SRDL ontolo
         <rdfs:domain rdf:resource="#SrdlRobot"/>
         <rdfs:range rdf:resource="&SRDL_component;Component"/>
     </owl:ObjectProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#hasHardwareComponent -->
@@ -147,7 +151,7 @@ Capability provision alternatives can be added without modifying the SRDL ontolo
         <rdfs:subPropertyOf rdf:resource="#hasComponent"/>
         <rdfs:range rdf:resource="&SRDL_component;HardwareComponent"/>
     </owl:ObjectProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#hasLearningComponent -->
@@ -158,7 +162,7 @@ Capability provision alternatives can be added without modifying the SRDL ontolo
         <rdfs:domain rdf:resource="&SRDL_capability;Capability"/>
         <rdfs:range rdf:resource="&SRDL_component;LearningComponent"/>
     </owl:ObjectProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#hasSoftwareComponent -->
@@ -172,7 +176,7 @@ Capability provision alternatives can be added without modifying the SRDL ontolo
             <rdf:Description rdf:about="&SRDL_component;executesSoftware"/>
         </owl:propertyChainAxiom>
     </owl:ObjectProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#needsComponent -->
@@ -183,7 +187,7 @@ Capability provision alternatives can be added without modifying the SRDL ontolo
 Semantic: For capability provision cpa  component comp is necessary</rdfs:comment>
         <rdfs:range rdf:resource="&SRDL_component;Component"/>
     </owl:ObjectProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#providesCapability -->
@@ -193,19 +197,19 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
         <rdfs:domain rdf:resource="#CapabilityProvisionAlternative"/>
         <rdfs:range rdf:resource="&SRDL_capability;Capability"/>
     </owl:ObjectProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#hasSubCapability -->
 
     <owl:ObjectProperty rdf:about="&SRDL_capability;hasSubCapability"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#executesSoftware -->
 
     <owl:ObjectProperty rdf:about="&SRDL_component;executesSoftware"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasSuccessorInKinematicChain -->
@@ -213,10 +217,10 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
     <owl:ObjectProperty rdf:about="&SRDL_component;hasSuccessorInKinematicChain">
         <rdfs:subPropertyOf rdf:resource="#hasHardwareComponent"/>
     </owl:ObjectProperty>
-    
 
 
-    <!-- 
+
+    <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Data properties
@@ -224,7 +228,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#hasNumOfAttempts -->
@@ -234,7 +238,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
         <rdfs:domain rdf:resource="&knowrob;PurposefulAction"/>
         <rdfs:range rdf:resource="&xsd;positiveInteger"/>
     </owl:DatatypeProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#hasNumOfSuccesses -->
@@ -244,7 +248,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
         <rdfs:domain rdf:resource="&knowrob;PurposefulAction"/>
         <rdfs:range rdf:resource="&xsd;positiveInteger"/>
     </owl:DatatypeProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#hasSuccessProbability -->
@@ -267,16 +271,16 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </rdf:Description>
         </rdfs:range>
     </owl:DatatypeProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#hasValue -->
 
     <owl:DatatypeProperty rdf:about="#hasValue"/>
-    
 
 
-    <!-- 
+
+    <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Classes
@@ -284,7 +288,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#B21Srdl -->
@@ -293,7 +297,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
         <rdfs:subClassOf rdf:resource="#SrdlRobot"/>
         <rdfs:subClassOf rdf:resource="&knowrob;B21"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#BakingFoodRobot -->
@@ -308,7 +312,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#CapabilityProvisionAlternative -->
@@ -325,7 +329,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
         <rdfs:comment
             >One (of possibly several) possibilities to provide a capability</rdfs:comment>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#CarryingWhileLocomotingRobot -->
@@ -352,7 +356,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#CommunicateWithAgentAlternative1 -->
@@ -380,7 +384,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#CompositeCapabilityAlternative -->
@@ -388,7 +392,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
     <owl:Class rdf:about="#CompositeCapabilityAlternative">
         <rdfs:subClassOf rdf:resource="#CapabilityProvisionAlternative"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#ControlDeviceAlternative1 -->
@@ -420,7 +424,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#EggCrackingAlternative1 -->
@@ -448,7 +452,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#HoldAndRotateObjectAlternative1 -->
@@ -476,7 +480,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#Integer -->
@@ -484,7 +488,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
     <owl:Class rdf:about="#Integer">
         <rdfs:subClassOf rdf:resource="#Number-General"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#LookBackAlternative1 -->
@@ -504,7 +508,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#LoweringAnObjectRobot -->
@@ -531,7 +535,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#MixingByControllingMixer -->
@@ -559,7 +563,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#MixingByStirring -->
@@ -587,7 +591,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#Number-General -->
@@ -595,7 +599,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
     <owl:Class rdf:about="#Number-General">
         <rdfs:subClassOf rdf:resource="&knowrob;MathematicalObject"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#ObjectRecognitionAlternative1 -->
@@ -627,7 +631,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#OperateOvenAlternative1 -->
@@ -655,7 +659,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#OperateOvenRobot -->
@@ -670,7 +674,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#PickAndPlaceAlternative1 -->
@@ -698,7 +702,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#PickUpAnObjectAlternative1 -->
@@ -726,7 +730,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#PickingUpAnObjectRobot -->
@@ -741,7 +745,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#PositiveInteger -->
@@ -764,7 +768,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#PourAlternative1 -->
@@ -792,7 +796,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#Pouring-PourFromOneContainerIntoAnotherRobot -->
@@ -807,7 +811,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#PowerGripAlternative1 -->
@@ -835,7 +839,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#PreheatOvenRobot -->
@@ -850,7 +854,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#PressWithForceAlternative1 -->
@@ -878,7 +882,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#PrimitiveCapabilityAlternative -->
@@ -886,7 +890,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
     <owl:Class rdf:about="#PrimitiveCapabilityAlternative">
         <rdfs:subClassOf rdf:resource="#CapabilityProvisionAlternative"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#ProbabilityValue -->
@@ -894,7 +898,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
     <owl:Class rdf:about="#ProbabilityValue">
         <rdfs:subClassOf rdf:resource="&knowrob;MathematicalObject"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#PutDownAnObjectAlternative1 -->
@@ -922,7 +926,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#PuttingSomethingSomewhereRobot -->
@@ -949,7 +953,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#ReachingRobot -->
@@ -976,7 +980,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#ReleasingGraspOfSomethingRobot -->
@@ -1003,7 +1007,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#SrdlRobot -->
@@ -1019,7 +1023,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#SrdlRobotAction -->
@@ -1029,7 +1033,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
         <rdfs:comment
             >Action that is/ can/ may be carried out by a robot</rdfs:comment>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#StirringAlternative1 -->
@@ -1057,7 +1061,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#StirringRobot -->
@@ -1072,7 +1076,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#SuccessProbability -->
@@ -1121,7 +1125,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#TakingSomethingRobot -->
@@ -1142,7 +1146,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#TransportationAlternative1 -->
@@ -1170,7 +1174,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#WaitForPredefinedTimeIntervalRobot -->
@@ -1185,7 +1189,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#WaitForTimeIntervallAlternative1 -->
@@ -1213,7 +1217,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#grasp_executionAlternative1 -->
@@ -1245,7 +1249,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#move_armAlternative1 -->
@@ -1273,7 +1277,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#move_baseAlternative1 -->
@@ -1313,7 +1317,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#CrushCokeCan -->
@@ -1327,7 +1331,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#DriveBackwards -->
@@ -1349,13 +1353,13 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#SrdlAction -->
 
     <owl:Class rdf:about="&SRDL_action;SrdlAction"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#TableSetting -->
@@ -1375,13 +1379,13 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#Capability -->
 
     <owl:Class rdf:about="&SRDL_capability;Capability"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#CommunicateWithAgentCapability -->
@@ -1394,7 +1398,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#ControlDeviceCapability -->
@@ -1407,7 +1411,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#CupRecognitionCapability -->
@@ -1420,7 +1424,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#EggCrackingCapability -->
@@ -1433,7 +1437,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#HoldAndRotateObjectCapability -->
@@ -1446,7 +1450,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#KnifeRecognitionCapability -->
@@ -1459,13 +1463,13 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#LookBackCapability -->
 
     <owl:Class rdf:about="&SRDL_capability;LookBackCapability"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#MixingCapability -->
@@ -1484,7 +1488,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#ObjectRecognitionCapability -->
@@ -1497,7 +1501,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#OperateOvenCapability -->
@@ -1510,7 +1514,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#PickAndPlaceCapability -->
@@ -1523,7 +1527,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#PickUpAnObjectCapability -->
@@ -1536,7 +1540,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#PlateRecognitionCapability -->
@@ -1549,7 +1553,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#PourCapability -->
@@ -1562,13 +1566,13 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#PowerGripCapability -->
 
     <owl:Class rdf:about="&SRDL_capability;PowerGripCapability"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#PressWithForceCapability -->
@@ -1581,13 +1585,13 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#PrimitiveCapability -->
 
     <owl:Class rdf:about="&SRDL_capability;PrimitiveCapability"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#PutDownAnObjectCapability -->
@@ -1600,7 +1604,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#RedCupRecognitionCapability -->
@@ -1613,7 +1617,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#StirringCapability -->
@@ -1626,7 +1630,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#TransportationCapability -->
@@ -1639,7 +1643,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#WaitForTimeintervallCapability -->
@@ -1652,7 +1656,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#grasp_execution -->
@@ -1665,7 +1669,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#move_arm -->
@@ -1678,7 +1682,7 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#move_base -->
@@ -1691,259 +1695,259 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#ArmComponent -->
 
     <owl:Class rdf:about="&SRDL_component;ArmComponent"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#Clock -->
 
     <owl:Class rdf:about="&SRDL_component;Clock"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#CommunicationComponent -->
 
     <owl:Class rdf:about="&SRDL_component;CommunicationComponent"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#CommunicationMechanism -->
 
     <owl:Class rdf:about="&SRDL_component;CommunicationMechanism"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#Component -->
 
     <owl:Class rdf:about="&SRDL_component;Component"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#ControllerComponent -->
 
     <owl:Class rdf:about="&SRDL_component;ControllerComponent"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#HardwareComponent -->
 
     <owl:Class rdf:about="&SRDL_component;HardwareComponent"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#LearningComponent -->
 
     <owl:Class rdf:about="&SRDL_component;LearningComponent"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#LocalizationAndNavigation -->
 
     <owl:Class rdf:about="&SRDL_component;LocalizationAndNavigation"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#ManipulationEntity -->
 
     <owl:Class rdf:about="&SRDL_component;ManipulationEntity"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#MobileBase -->
 
     <owl:Class rdf:about="&SRDL_component;MobileBase"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#ObjectRecognitionComponent -->
 
     <owl:Class rdf:about="&SRDL_component;ObjectRecognitionComponent"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#OtherDeviceControllingComponent -->
 
     <owl:Class rdf:about="&SRDL_component;OtherDeviceControllingComponent"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#PerceptionArchitecture_ObjectPerception -->
 
     <owl:Class rdf:about="&SRDL_component;PerceptionArchitecture_ObjectPerception"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#PowerGrippManipulationEntity -->
 
     <owl:Class rdf:about="&SRDL_component;PowerGrippManipulationEntity"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#PressingManipulationEntity -->
 
     <owl:Class rdf:about="&SRDL_component;PressingManipulationEntity"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#RedCupClassification_LearningComp -->
 
     <owl:Class rdf:about="&SRDL_component;RedCupClassification_LearningComp"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#RotatableArm -->
 
     <owl:Class rdf:about="&SRDL_component;RotatableArm"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#SelfMotionControllerComponent -->
 
     <owl:Class rdf:about="&SRDL_component;SelfMotionControllerComponent"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#SoftwareComponent -->
 
     <owl:Class rdf:about="&SRDL_component;SoftwareComponent"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#TriggeringActionComponent -->
 
     <owl:Class rdf:about="&SRDL_component;TriggeringActionComponent"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#VisualSensor -->
 
     <owl:Class rdf:about="&SRDL_component;VisualSensor"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#VisualSensorToBack -->
 
     <owl:Class rdf:about="&SRDL_component;VisualSensorToBack"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#B21 -->
 
     <owl:Class rdf:about="&knowrob;B21"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#BakingFood -->
 
     <owl:Class rdf:about="&knowrob;BakingFood"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#CarryingWhileLocomoting -->
 
     <owl:Class rdf:about="&knowrob;CarryingWhileLocomoting"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#CupObjectModel -->
 
     <owl:Class rdf:about="&knowrob;CupObjectModel"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#KnifeObjectModel -->
 
     <owl:Class rdf:about="&knowrob;KnifeObjectModel"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#LoweringAnObject -->
 
     <owl:Class rdf:about="&knowrob;LoweringAnObject"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Map -->
 
     <owl:Class rdf:about="&knowrob;Map"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#MathematicalObject -->
 
     <owl:Class rdf:about="&knowrob;MathematicalObject"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#OperateOven -->
 
     <owl:Class rdf:about="&knowrob;OperateOven"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PickingUpAnObject -->
 
     <owl:Class rdf:about="&knowrob;PickingUpAnObject"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PlateObjectModel -->
 
     <owl:Class rdf:about="&knowrob;PlateObjectModel"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Pouring-PourFromOneContainerIntoAnother -->
 
     <owl:Class rdf:about="&knowrob;Pouring-PourFromOneContainerIntoAnother"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PreheatOven -->
 
     <owl:Class rdf:about="&knowrob;PreheatOven"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PurposefulAction -->
 
     <owl:Class rdf:about="&knowrob;PurposefulAction"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PuttingSomethingSomewhere -->
 
     <owl:Class rdf:about="&knowrob;PuttingSomethingSomewhere"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Reaching -->
 
     <owl:Class rdf:about="&knowrob;Reaching"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#ReleasingGraspOfSomething -->
 
     <owl:Class rdf:about="&knowrob;ReleasingGraspOfSomething"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Robot -->
 
     <owl:Class rdf:about="&knowrob;Robot"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Stirring -->
 
     <owl:Class rdf:about="&knowrob;Stirring"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#TakingSomething -->
@@ -1964,13 +1968,13 @@ Semantic: For capability provision cpa  component comp is necessary</rdfs:commen
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#WaitForPredefinedTimeInterval -->
 
     <owl:Class rdf:about="&knowrob;WaitForPredefinedTimeInterval"/>
-    
+
 
 
     <!-- http://www.w3.org/2002/07/owl#Thing -->

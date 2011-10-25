@@ -2,6 +2,8 @@
 
 
 <!DOCTYPE rdf:RDF [
+    <!ENTITY local_path 'file://@IAS_KB_PACKAGE_PATH@/owl/'>
+
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY swrl "http://www.w3.org/2003/11/swrl#" >
     <!ENTITY dc "http://purl.org/dc/elements/1.1/" >
@@ -40,12 +42,12 @@
             >Part of semlang - semantic robot description language</rdfs:comment>
         <rdfs:comment
             >Component ontology - ontology of robot components</rdfs:comment>
-        <owl:imports rdf:resource="file://@IAS_KB_PACKAGE_PATH@/owl/knowrob.owl"/>
+        <owl:imports rdf:resource="&local_path;knowrob.owl"/>
     </owl:Ontology>
-    
 
 
-    <!-- 
+
+    <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Annotation properties
@@ -55,10 +57,10 @@
 
     <owl:AnnotationProperty rdf:about="&dc;title"/>
     <owl:AnnotationProperty rdf:about="&dc;contributor"/>
-    
 
 
-    <!-- 
+
+    <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Object Properties
@@ -66,7 +68,7 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#dependsOnComponent -->
@@ -82,7 +84,7 @@ e.g. MapBuildingAlgo dependsOn some Laserscanner</rdfs:comment>
         <rdfs:range rdf:resource="#Component"/>
         <rdfs:domain rdf:resource="#Component"/>
     </owl:ObjectProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#executedOn -->
@@ -95,7 +97,7 @@ Models which software runs on which node</rdfs:comment>
         <rdfs:range rdf:resource="#ComputationCore"/>
         <rdfs:domain rdf:resource="#SoftwareComponent"/>
     </owl:ObjectProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#executesSoftware -->
@@ -108,7 +110,7 @@ Models which software runs on which node</rdfs:comment>
         <rdfs:range rdf:resource="#SoftwareComponent"/>
         <owl:inverseOf rdf:resource="#executedOn"/>
     </owl:ObjectProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasAttribute -->
@@ -117,7 +119,7 @@ Models which software runs on which node</rdfs:comment>
         <rdfs:domain rdf:resource="#Component"/>
         <rdfs:range rdf:resource="#ComponentAttribute"/>
     </owl:ObjectProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasBaseLinkOfComposition -->
@@ -129,7 +131,7 @@ Semantics: The link pointed to is the unique base link (=the first link in kinem
         <rdfs:domain rdf:resource="#ComponentComposition"/>
         <rdfs:range rdf:resource="#UrdfLink"/>
     </owl:ObjectProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasEndLinkOfComposition -->
@@ -141,7 +143,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
         <rdfs:domain rdf:resource="#ComponentComposition"/>
         <rdfs:range rdf:resource="#UrdfLink"/>
     </owl:ObjectProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasPrecedingLink -->
@@ -150,7 +152,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
         <rdfs:domain rdf:resource="#UrdfJoint"/>
         <rdfs:range rdf:resource="#UrdfLink"/>
     </owl:ObjectProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasSucceedingJoint -->
@@ -160,7 +162,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
         <rdfs:domain rdf:resource="#UrdfLink"/>
         <owl:inverseOf rdf:resource="#hasPrecedingLink"/>
     </owl:ObjectProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasSucceedingLink -->
@@ -169,7 +171,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
         <rdfs:domain rdf:resource="#UrdfJoint"/>
         <rdfs:range rdf:resource="#UrdfLink"/>
     </owl:ObjectProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasSuccessorInKinematicChain -->
@@ -179,10 +181,10 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
         <rdfs:range rdf:resource="#HardwareComponent"/>
         <rdfs:domain rdf:resource="#HardwareComponent"/>
     </owl:ObjectProperty>
-    
 
 
-    <!-- 
+
+    <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Data properties
@@ -190,13 +192,13 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#ComponentAttributeProperty -->
 
     <owl:DatatypeProperty rdf:about="#ComponentAttributeProperty"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasAttributeName -->
@@ -207,7 +209,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
         <rdfs:subPropertyOf rdf:resource="#ComponentAttributeProperty"/>
         <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasAttributeUnitOfMeasure -->
@@ -218,7 +220,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
         <rdfs:subPropertyOf rdf:resource="#ComponentAttributeProperty"/>
         <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasAttributeValue -->
@@ -229,7 +231,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
         <rdfs:subPropertyOf rdf:resource="#ComponentAttributeProperty"/>
         <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasUrdfName -->
@@ -240,10 +242,10 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
         <rdfs:domain rdf:resource="#UrdfComponent"/>
         <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
-    
 
 
-    <!-- 
+
+    <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Classes
@@ -251,7 +253,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#1500GbHardDrive -->
@@ -259,7 +261,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
     <owl:Class rdf:about="#1500GbHardDrive">
         <rdfs:subClassOf rdf:resource="#HardDrive"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#24GbMemory -->
@@ -267,7 +269,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
     <owl:Class rdf:about="#24GbMemory">
         <rdfs:subClassOf rdf:resource="#Memory"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#500GbHardDrive -->
@@ -275,7 +277,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
     <owl:Class rdf:about="#500GbHardDrive">
         <rdfs:subClassOf rdf:resource="#HardDrive"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#5MegapixelCamera -->
@@ -283,7 +285,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
     <owl:Class rdf:about="#5MegapixelCamera">
         <rdfs:subClassOf rdf:resource="#Camera"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#5MegapixelGlobalShutterColorCamera -->
@@ -293,7 +295,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
         <rdfs:subClassOf rdf:resource="#ColorCamera"/>
         <rdfs:subClassOf rdf:resource="#GlobalShutterCamera"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#Accelerometer -->
@@ -301,7 +303,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
     <owl:Class rdf:about="#Accelerometer">
         <rdfs:subClassOf rdf:resource="#Sensor"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#ArmComponent -->
@@ -311,7 +313,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
         <rdfs:comment
             >Arms or similiar components that consist of some links connected by joints, are fixed to the robot body, can move around in space and have usually affixed a hand or sth similiar to manipulate the world</rdfs:comment>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#Base -->
@@ -321,7 +323,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
         <rdfs:comment
             >Base component that connects robot to environment (mostly the ground)</rdfs:comment>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#BluetoothDevice -->
@@ -329,7 +331,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
     <owl:Class rdf:about="#BluetoothDevice">
         <rdfs:subClassOf rdf:resource="#CommunicationMechanism"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#Camera -->
@@ -337,7 +339,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
     <owl:Class rdf:about="#Camera">
         <rdfs:subClassOf rdf:resource="#VisualSensor"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#Clock -->
@@ -345,7 +347,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
     <owl:Class rdf:about="#Clock">
         <rdfs:subClassOf rdf:resource="#HardwareComponent"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#ColorCamera -->
@@ -354,7 +356,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
         <rdfs:subClassOf rdf:resource="#Camera"/>
         <owl:disjointWith rdf:resource="#MonochromeCamera"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#CommunicationComponent -->
@@ -370,7 +372,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
         <dc:contributor
             >Component that controls the communication of the robot with another entity</dc:contributor>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#CommunicationMechanism -->
@@ -380,7 +382,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
         <dc:contributor
             >A hardware component that enables a robot to communicate</dc:contributor>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#Component -->
@@ -389,13 +391,13 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
         <rdfs:subClassOf rdf:resource="&knowrob;Artifact"/>
         <rdfs:subClassOf rdf:resource="&owl;Thing"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#ComponentAttribute -->
 
     <owl:Class rdf:about="#ComponentAttribute"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#ComponentComposition -->
@@ -421,7 +423,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
             >Models composite components (components that are made of other components)
 Example: hand that is made of several links and joints</rdfs:comment>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#ComputationCore -->
@@ -429,7 +431,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#ComputationCore">
         <rdfs:subClassOf rdf:resource="#HardwareComponent"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#ContinuousUrdfJoint -->
@@ -437,7 +439,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#ContinuousUrdfJoint">
         <rdfs:subClassOf rdf:resource="#UrdfJoint"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#ControllerComponent -->
@@ -445,7 +447,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#ControllerComponent">
         <rdfs:subClassOf rdf:resource="#RosComponent"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#DlrHitHand -->
@@ -453,7 +455,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#DlrHitHand">
         <rdfs:subClassOf rdf:resource="#HandComponent"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#DualRadioWifiNetwork -->
@@ -461,7 +463,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#DualRadioWifiNetwork">
         <rdfs:subClassOf rdf:resource="#WirelessNetwork"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#EtherCatNetwork -->
@@ -469,7 +471,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#EtherCatNetwork">
         <rdfs:subClassOf rdf:resource="#WiredNetwork"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#FingertipPressureSensorArray -->
@@ -477,7 +479,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#FingertipPressureSensorArray">
         <rdfs:subClassOf rdf:resource="#PressureSensor"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#FixedHardDrive -->
@@ -485,7 +487,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#FixedHardDrive">
         <rdfs:subClassOf rdf:resource="#HardDrive"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#FixedUrdfJoint -->
@@ -493,7 +495,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#FixedUrdfJoint">
         <rdfs:subClassOf rdf:resource="#UrdfJoint"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#FlirThermalCamera -->
@@ -501,7 +503,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#FlirThermalCamera">
         <rdfs:subClassOf rdf:resource="#InfraredCamera"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#FloatingUrdfJoint -->
@@ -509,7 +511,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#FloatingUrdfJoint">
         <rdfs:subClassOf rdf:resource="#UrdfJoint"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#GigabitEthernetNetwork -->
@@ -517,7 +519,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#GigabitEthernetNetwork">
         <rdfs:subClassOf rdf:resource="#WiredNetwork"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#GlobalShutterCamera -->
@@ -525,7 +527,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#GlobalShutterCamera">
         <rdfs:subClassOf rdf:resource="#Camera"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#GripperComponent -->
@@ -534,7 +536,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
         <rdfs:subClassOf rdf:resource="#PressingManipulationEntity"/>
         <owl:disjointWith rdf:resource="#HandComponent"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#HandComponent -->
@@ -542,7 +544,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#HandComponent">
         <rdfs:subClassOf rdf:resource="#PressingManipulationEntity"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#HardDrive -->
@@ -550,7 +552,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#HardDrive">
         <rdfs:subClassOf rdf:resource="#HardwareComponent"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#HardwareComponent -->
@@ -560,7 +562,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
         <rdfs:subClassOf rdf:resource="&knowrob;PhysicalDevice"/>
         <owl:disjointWith rdf:resource="#SoftwareComponent"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#HokuyoURG04LX -->
@@ -568,7 +570,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#HokuyoURG04LX">
         <rdfs:subClassOf rdf:resource="#LaserScanner"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#HokuyoUTM-30LX -->
@@ -576,7 +578,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#HokuyoUTM-30LX">
         <rdfs:subClassOf rdf:resource="#LaserScanner"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#InertialSensor -->
@@ -584,7 +586,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#InertialSensor">
         <rdfs:subClassOf rdf:resource="#Sensor"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#InfraredCamera -->
@@ -592,7 +594,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#InfraredCamera">
         <rdfs:subClassOf rdf:resource="#Camera"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#KukaLwr4 -->
@@ -600,7 +602,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#KukaLwr4">
         <rdfs:subClassOf rdf:resource="#RotatableArm"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#KukaOmnidirPlatform -->
@@ -608,7 +610,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#KukaOmnidirPlatform">
         <rdfs:subClassOf rdf:resource="#WheeledBase"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#LEDTextureProjector -->
@@ -616,7 +618,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#LEDTextureProjector">
         <rdfs:subClassOf rdf:resource="#TextureProjector"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#LanDevice -->
@@ -624,7 +626,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#LanDevice">
         <rdfs:subClassOf rdf:resource="#CommunicationMechanism"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#LaserScanner -->
@@ -632,7 +634,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#LaserScanner">
         <rdfs:subClassOf rdf:resource="#VisualSensor"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#LaserScannerController -->
@@ -640,7 +642,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#LaserScannerController">
         <rdfs:subClassOf rdf:resource="#SensorController"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#LearningComponent -->
@@ -648,7 +650,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#LearningComponent">
         <rdfs:subClassOf rdf:resource="#RosComponent"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#LocalizationAndNavigation -->
@@ -656,7 +658,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#LocalizationAndNavigation">
         <rdfs:subClassOf rdf:resource="#RosComponent"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#ManipulationEntity -->
@@ -666,7 +668,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
         <rdfs:comment
             >Entity that is attached to an arm and that can manipulate the world/ use different tools</rdfs:comment>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#Memory -->
@@ -674,7 +676,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#Memory">
         <rdfs:subClassOf rdf:resource="#HardwareComponent"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#Microstrain3DM-GX2IMU -->
@@ -682,7 +684,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#Microstrain3DM-GX2IMU">
         <rdfs:subClassOf rdf:resource="#InertialSensor"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#MobileBase -->
@@ -692,7 +694,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
         <rdfs:comment
             >A base that allows a robot to move and change its position</rdfs:comment>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#MonoCamera -->
@@ -701,7 +703,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
         <rdfs:subClassOf rdf:resource="#Camera"/>
         <owl:disjointWith rdf:resource="#StereoCamera"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#MonochromeCamera -->
@@ -709,7 +711,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#MonochromeCamera">
         <rdfs:subClassOf rdf:resource="#Camera"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#NarrowAngleCamera -->
@@ -718,7 +720,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
         <rdfs:subClassOf rdf:resource="#Camera"/>
         <owl:disjointWith rdf:resource="#WideAngleCamera"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#NarrowAngleGlobalShutterMonochromeStereoCamera -->
@@ -729,7 +731,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
         <rdfs:subClassOf rdf:resource="#NarrowAngleCamera"/>
         <rdfs:subClassOf rdf:resource="#StereoCamera"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#Network -->
@@ -737,7 +739,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#Network">
         <rdfs:subClassOf rdf:resource="#HardwareComponent"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#NetworkAccessPoint -->
@@ -745,7 +747,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#NetworkAccessPoint">
         <rdfs:subClassOf rdf:resource="#WirelessNetwork"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#ObjectRecognitionComponent -->
@@ -755,7 +757,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
         <dc:contributor
             >Component that can classify objects based on visual data</dc:contributor>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#OtherDeviceControllingComponent -->
@@ -779,7 +781,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
         <dc:contributor
             >Component that can control another device (e.g. household appliance, ...)</dc:contributor>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#PerceptionArchitecture_ObjectPerception -->
@@ -801,7 +803,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
         <rdfs:comment
             >Intergrates time-of-flight and camera data to perceive objects</rdfs:comment>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#PerceptionComponent -->
@@ -809,7 +811,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#PerceptionComponent">
         <rdfs:subClassOf rdf:resource="#RosComponent"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#PerceptionPipeline_3dSemanticMap -->
@@ -825,7 +827,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
         <rdfs:comment
             >Using laser data to create 3D semantic map</rdfs:comment>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#PlanBasedController -->
@@ -835,7 +837,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
         <rdfs:comment
             >Invokes and monitors perception and actions</rdfs:comment>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#PlanarUrdfJoint -->
@@ -843,7 +845,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#PlanarUrdfJoint">
         <rdfs:subClassOf rdf:resource="#UrdfJoint"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#PowerGrippManipulationEntity -->
@@ -851,7 +853,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#PowerGrippManipulationEntity">
         <rdfs:subClassOf rdf:resource="#ManipulationEntity"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#Pr2Arm -->
@@ -859,7 +861,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#Pr2Arm">
         <rdfs:subClassOf rdf:resource="#RotatableArm"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#Pr2Base -->
@@ -867,7 +869,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#Pr2Base">
         <rdfs:subClassOf rdf:resource="#WheeledBase"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#Pr2Gripper -->
@@ -876,7 +878,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
         <rdfs:subClassOf rdf:resource="#GripperComponent"/>
         <rdfs:subClassOf rdf:resource="#PowerGrippManipulationEntity"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#PressingManipulationEntity -->
@@ -886,7 +888,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
         <rdfs:comment
             >A manipulation entity that can exercise force on an object</rdfs:comment>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#PressureSensor -->
@@ -894,7 +896,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#PressureSensor">
         <rdfs:subClassOf rdf:resource="#Sensor"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#PrismaticUrdfJoint -->
@@ -902,7 +904,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#PrismaticUrdfJoint">
         <rdfs:subClassOf rdf:resource="#UrdfJoint"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#Projector -->
@@ -910,7 +912,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#Projector">
         <rdfs:subClassOf rdf:resource="#HardwareComponent"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#RedCupClassification_LearningComp -->
@@ -920,7 +922,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
         <rdfs:comment
             >Learning component that can train a robot to detect red cups</rdfs:comment>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#RemovableHardDrive -->
@@ -928,7 +930,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#RemovableHardDrive">
         <rdfs:subClassOf rdf:resource="#HardDrive"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#RevoluteUrdfJoint -->
@@ -936,7 +938,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#RevoluteUrdfJoint">
         <rdfs:subClassOf rdf:resource="#UrdfJoint"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#RosComponent -->
@@ -944,7 +946,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#RosComponent">
         <rdfs:subClassOf rdf:resource="#SoftwareComponent"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#RotatableArm -->
@@ -954,7 +956,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
         <rdfs:comment
             >Arm that can rotate with around one axis</rdfs:comment>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#SelfMotionControllerComponent -->
@@ -962,7 +964,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#SelfMotionControllerComponent">
         <rdfs:subClassOf rdf:resource="#ControllerComponent"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#Sensor -->
@@ -970,7 +972,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#Sensor">
         <rdfs:subClassOf rdf:resource="#HardwareComponent"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#SensorController -->
@@ -978,7 +980,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="#SensorController">
         <rdfs:subClassOf rdf:resource="#ControllerComponent"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#SimpleGraspPlanner -->
@@ -995,7 +997,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
             >Grasp planner for one-handed grasps and unknown objects
 takes into account object form, obstacles (as perceived by TOF camera), feedback from torque sensors in hand</rdfs:comment>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#Simulation -->
@@ -1003,7 +1005,7 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
     <owl:Class rdf:about="#Simulation">
         <rdfs:subClassOf rdf:resource="#RosComponent"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#SoftwareComponent -->
@@ -1012,7 +1014,7 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
         <rdfs:subClassOf rdf:resource="#Component"/>
         <rdfs:subClassOf rdf:resource="&knowrob;SoftwareObject"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#StereoCamera -->
@@ -1020,7 +1022,7 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
     <owl:Class rdf:about="#StereoCamera">
         <rdfs:subClassOf rdf:resource="#Camera"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#SwissRangerSR4000 -->
@@ -1028,7 +1030,7 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
     <owl:Class rdf:about="#SwissRangerSR4000">
         <rdfs:subClassOf rdf:resource="#TimeOfFlightCamera"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#TextureProjector -->
@@ -1036,7 +1038,7 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
     <owl:Class rdf:about="#TextureProjector">
         <rdfs:subClassOf rdf:resource="#Projector"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#ThreeAxisAccelerometer -->
@@ -1044,7 +1046,7 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
     <owl:Class rdf:about="#ThreeAxisAccelerometer">
         <rdfs:subClassOf rdf:resource="#Accelerometer"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#TimeControllerComponent -->
@@ -1052,7 +1054,7 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
     <owl:Class rdf:about="#TimeControllerComponent">
         <rdfs:subClassOf rdf:resource="#ControllerComponent"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#TimeOfFlightCamera -->
@@ -1060,7 +1062,7 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
     <owl:Class rdf:about="#TimeOfFlightCamera">
         <rdfs:subClassOf rdf:resource="#VisualSensor"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#Torso -->
@@ -1070,7 +1072,7 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
         <rdfs:comment
             >Rigid link on which parts are fixed but that itself is not movable</rdfs:comment>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#TriggeringActionComponent -->
@@ -1080,7 +1082,7 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
         <rdfs:comment
             >Component that can trigger an action at a specified date or after a specified time interval</rdfs:comment>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#UrdfComponent -->
@@ -1088,7 +1090,7 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
     <owl:Class rdf:about="#UrdfComponent">
         <rdfs:subClassOf rdf:resource="#HardwareComponent"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#UrdfJoint -->
@@ -1112,7 +1114,7 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#UrdfLink -->
@@ -1120,7 +1122,7 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
     <owl:Class rdf:about="#UrdfLink">
         <rdfs:subClassOf rdf:resource="#UrdfComponent"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#VectorFieldArmController -->
@@ -1136,7 +1138,7 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
         <rdfs:comment
             >Provides basic obstacle avoidance</rdfs:comment>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#VidereStereoOnChip -->
@@ -1144,7 +1146,7 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
     <owl:Class rdf:about="#VidereStereoOnChip">
         <rdfs:subClassOf rdf:resource="#StereoCamera"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#VisualSensor -->
@@ -1152,7 +1154,7 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
     <owl:Class rdf:about="#VisualSensor">
         <rdfs:subClassOf rdf:resource="#Sensor"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#VisualSensorToBack -->
@@ -1160,7 +1162,7 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
     <owl:Class rdf:about="#VisualSensorToBack">
         <rdfs:subClassOf rdf:resource="#VisualSensor"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#WheeledBase -->
@@ -1168,7 +1170,7 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
     <owl:Class rdf:about="#WheeledBase">
         <rdfs:subClassOf rdf:resource="#MobileBase"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#WideAngleCamera -->
@@ -1176,7 +1178,7 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
     <owl:Class rdf:about="#WideAngleCamera">
         <rdfs:subClassOf rdf:resource="#Camera"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#WideAngleGlobalShutterColorStereoCamera -->
@@ -1187,7 +1189,7 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
         <rdfs:subClassOf rdf:resource="#StereoCamera"/>
         <rdfs:subClassOf rdf:resource="#WideAngleCamera"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#WiredNetwork -->
@@ -1195,7 +1197,7 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
     <owl:Class rdf:about="#WiredNetwork">
         <rdfs:subClassOf rdf:resource="#Network"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#WirelessLan -->
@@ -1203,7 +1205,7 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
     <owl:Class rdf:about="#WirelessLan">
         <rdfs:subClassOf rdf:resource="#CommunicationMechanism"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#WirelessNetwork -->
@@ -1211,7 +1213,7 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
     <owl:Class rdf:about="#WirelessNetwork">
         <rdfs:subClassOf rdf:resource="#Network"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#Xeoni7QuadCoreProcessor -->
@@ -1219,34 +1221,34 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
     <owl:Class rdf:about="#Xeoni7QuadCoreProcessor">
         <rdfs:subClassOf rdf:resource="#ComputationCore"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Artifact -->
 
     <owl:Class rdf:about="&knowrob;Artifact"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice -->
 
     <owl:Class rdf:about="&knowrob;PhysicalDevice"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#SoftwareObject -->
 
     <owl:Class rdf:about="&knowrob;SoftwareObject"/>
-    
+
 
 
     <!-- http://www.w3.org/2002/07/owl#Thing -->
 
     <owl:Class rdf:about="&owl;Thing"/>
-    
 
 
-    <!-- 
+
+    <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // General axioms

@@ -112,8 +112,8 @@ required_cap_for_action(Action, Cap) :-
 
 %% cap_available_on_robot(Cap, Robot) is nondet.
 %
-% Check if a capability is available on a robot. This is the case if the capability 
-% 
+% Check if a capability is available on a robot. This is the case if the capability
+%
 % 1) is asserted for this robot class
 % 2) is asserted for this robot instance
 % 3) depends only on available components and sub-capabilites
@@ -215,9 +215,9 @@ sub_component(Super, Sub) :-
 % OWL/ DL Predicates
 
 %% class_properties(?Class, ?Prop, ?Values) is nondet.
-% 
+%
 % Collect all property values of someValuesFrom-restrictions of a class
-% 
+%
 % @param Class   Class whose restrictions are being considered
 % @param Prop    Property whose restrictions in Class are being considered
 % @param Values  List of all classes that appear in a restriction of a superclass of Class along Property

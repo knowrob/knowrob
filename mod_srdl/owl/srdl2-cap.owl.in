@@ -2,6 +2,9 @@
 
 
 <!DOCTYPE rdf:RDF [
+
+    <!ENTITY srdl_path 'file://@SRDL_PACKAGE_PATH@/owl/'>
+
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY dc "http://purl.org/dc/elements/1.1/" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
@@ -26,12 +29,12 @@
      xmlns:srdl2-comp="http://ias.cs.tum.edu/kb/srdl2-comp.owl#"
      xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#">
     <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl">
-        <owl:imports rdf:resource="file://@SRDL_PACKAGE_PATH@/owl/srdl2-comp.owl"/>
+        <owl:imports rdf:resource="&srdl_path;srdl2-comp.owl"/>
     </owl:Ontology>
-    
 
 
-    <!-- 
+
+    <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Annotation properties
@@ -39,10 +42,10 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
 
 
-    <!-- 
+
+    <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Datatypes
@@ -50,10 +53,10 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
 
 
-    <!-- 
+
+    <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Object Properties
@@ -61,7 +64,7 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#dependsOnCapability -->
@@ -71,7 +74,7 @@
         <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability"/>
         <rdfs:subPropertyOf rdf:resource="&srdl2;dependsOn"/>
     </owl:ObjectProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#hasCapability -->
@@ -80,10 +83,10 @@
         <rdfs:domain rdf:resource="&knowrob;Robot"/>
         <rdfs:range rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability"/>
     </owl:ObjectProperty>
-    
 
 
-    <!-- 
+
+    <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Classes
@@ -91,13 +94,13 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#TemporalThing -->
 
     <owl:Class rdf:about="&knowrob;TemporalThing"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ArmCollisionCheckCapability -->
@@ -111,7 +114,7 @@
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ArmMotionCapability -->
@@ -131,7 +134,7 @@
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#BaseCollisionCheckCapability -->
@@ -145,7 +148,7 @@
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#BaseMotionCapability -->
@@ -159,7 +162,7 @@
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#BodyMotionCapability -->
@@ -167,7 +170,7 @@
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#BodyMotionCapability">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability -->
@@ -177,7 +180,7 @@
         <rdfs:subClassOf rdf:resource="&owl;Thing"/>
         <rdfs:comment>Taxonomy based capability representation</rdfs:comment>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingABottleCapability -->
@@ -185,7 +188,7 @@
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingABottleCapability">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingAContainer"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingAContainer -->
@@ -193,7 +196,7 @@
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingAContainer">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingAContainerCapability -->
@@ -201,7 +204,7 @@
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingAContainerCapability">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingADoorCapability -->
@@ -209,7 +212,7 @@
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingADoorCapability">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingAContainer"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingADrawerCapability -->
@@ -217,7 +220,7 @@
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingADrawerCapability">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingAContainer"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionCheckCapability -->
@@ -225,7 +228,7 @@
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionCheckCapability">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ComputationalCapability"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionFreeArmMotionCapability -->
@@ -239,7 +242,7 @@
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionFreeNavigationCapability -->
@@ -253,7 +256,7 @@
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ComputationalCapability -->
@@ -261,7 +264,7 @@
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ComputationalCapability">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#CuttingAPieceOfFoodCapability -->
@@ -269,7 +272,7 @@
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CuttingAPieceOfFoodCapability">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CuttingSomethingCapability"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#CuttingSomethingCapability -->
@@ -277,7 +280,7 @@
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CuttingSomethingCapability">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#GraspingCapability -->
@@ -285,7 +288,7 @@
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#GraspingCapability">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#GripperMotionCapability -->
@@ -299,7 +302,7 @@
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#HeadMotionCapability -->
@@ -307,7 +310,7 @@
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#HeadMotionCapability">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#BodyMotionCapability"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#LocalizationCapability -->
@@ -321,7 +324,7 @@
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#NavigationCapability -->
@@ -341,7 +344,7 @@
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability -->
@@ -367,7 +370,7 @@
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectRecognitionCapability -->
@@ -387,7 +390,7 @@
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningABottleCapability -->
@@ -395,7 +398,7 @@
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningABottleCapability">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningAContainer"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningAContainer -->
@@ -403,7 +406,7 @@
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningAContainer">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningADoorCapability -->
@@ -411,7 +414,7 @@
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningADoorCapability">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningAContainer"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningADrawerCapability -->
@@ -419,7 +422,7 @@
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningADrawerCapability">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningAContainer"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#PerceptionCapability -->
@@ -427,7 +430,7 @@
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#PerceptionCapability">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#PickingUpAnObjectCapability -->
@@ -435,7 +438,7 @@
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#PickingUpAnObjectCapability">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#PouringSomethingCapability -->
@@ -444,7 +447,7 @@
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability"/>
         <rdfs:comment>Capability to pour a liquid from one container (e.g. cup, bowl) into another</rdfs:comment>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#PuttingDownAnObjectCapability -->
@@ -452,7 +455,7 @@
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#PuttingDownAnObjectCapability">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#gripper_action -->
@@ -460,7 +463,7 @@
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#gripper_action">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#GripperMotionCapability"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#move_arm -->
@@ -468,7 +471,7 @@
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#move_arm">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionFreeArmMotionCapability"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#move_base -->
@@ -476,7 +479,7 @@
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#move_base">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionFreeNavigationCapability"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#point_head_action -->
@@ -484,13 +487,13 @@
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#point_head_action">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#HeadMotionCapability"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/srdl2.owl#MovingBase -->
 
     <owl:Class rdf:about="&srdl2;MovingBase"/>
-    
+
 
 
     <!-- http://www.w3.org/2002/07/owl#Thing -->

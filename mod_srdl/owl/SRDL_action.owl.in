@@ -2,6 +2,9 @@
 
 
 <!DOCTYPE rdf:RDF [
+
+    <!ENTITY local_path 'file://@IAS_KB_PACKAGE_PATH@/owl/'>
+
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
     <!ENTITY SRDL "http://ias.cs.tum.edu/kb/SRDL.owl#" >
@@ -28,12 +31,12 @@
             >Part of semlang - semantic robot description language</rdfs:comment>
         <rdfs:comment
             >Task Ontology - ontology of tasks</rdfs:comment>
-        <owl:imports rdf:resource="file://@IAS_KB_PACKAGE_PATH@/owl/knowrob.owl"/>
+        <owl:imports rdf:resource="&local_path;knowrob.owl"/>
     </owl:Ontology>
-    
 
 
-    <!-- 
+
+    <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Object Properties
@@ -41,7 +44,7 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#hasSubAction -->
@@ -53,22 +56,22 @@
         <rdfs:domain rdf:resource="&knowrob;PurposefulAction"/>
         <rdfs:subPropertyOf rdf:resource="&knowrob;subAction"/>
     </owl:ObjectProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#objectActedOn -->
 
     <owl:ObjectProperty rdf:about="&knowrob;objectActedOn"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#subAction -->
 
     <owl:ObjectProperty rdf:about="&knowrob;subAction"/>
-    
 
 
-    <!-- 
+
+    <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Classes
@@ -76,7 +79,7 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#ChocolateCakeBaking -->
@@ -121,7 +124,7 @@
             >Recipe for baking a chocolate cake
 Extracted from wikihow.com (http://www.wikihow.com/Make-a-Chocolate-Cake)</rdfs:comment>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#ChocolateCakeBakingStep1 -->
@@ -169,7 +172,7 @@ Extracted from wikihow.com (http://www.wikihow.com/Make-a-Chocolate-Cake)</rdfs:
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#ChocolateCakeBakingStep2 -->
@@ -215,7 +218,7 @@ Extracted from wikihow.com (http://www.wikihow.com/Make-a-Chocolate-Cake)</rdfs:
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#ChocolateCakeBakingStep3 -->
@@ -257,7 +260,7 @@ Extracted from wikihow.com (http://www.wikihow.com/Make-a-Chocolate-Cake)</rdfs:
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#ChocolateCakeBakingStep4 -->
@@ -297,7 +300,7 @@ Extracted from wikihow.com (http://www.wikihow.com/Make-a-Chocolate-Cake)</rdfs:
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#ChocolateCakeBakingStep5 -->
@@ -345,7 +348,7 @@ Extracted from wikihow.com (http://www.wikihow.com/Make-a-Chocolate-Cake)</rdfs:
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#ChocolateCakeBakingStep6 -->
@@ -381,7 +384,7 @@ Extracted from wikihow.com (http://www.wikihow.com/Make-a-Chocolate-Cake)</rdfs:
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#ChocolateCakeBakingStep7 -->
@@ -417,7 +420,7 @@ Extracted from wikihow.com (http://www.wikihow.com/Make-a-Chocolate-Cake)</rdfs:
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#CrushCokeCan -->
@@ -425,7 +428,7 @@ Extracted from wikihow.com (http://www.wikihow.com/Make-a-Chocolate-Cake)</rdfs:
     <owl:Class rdf:about="#CrushCokeCan">
         <rdfs:subClassOf rdf:resource="#SrdlAction"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#DriveBackwards -->
@@ -433,7 +436,7 @@ Extracted from wikihow.com (http://www.wikihow.com/Make-a-Chocolate-Cake)</rdfs:
     <owl:Class rdf:about="#DriveBackwards">
         <rdfs:subClassOf rdf:resource="#SrdlAction"/>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#SrdlAction -->
@@ -444,7 +447,7 @@ Extracted from wikihow.com (http://www.wikihow.com/Make-a-Chocolate-Cake)</rdfs:
         <rdfs:comment
             >Cyc Mapping: Task = PurposefulAction</rdfs:comment>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#TableSetting -->
@@ -489,7 +492,7 @@ Extracted from wikihow.com (http://www.wikihow.com/Make-a-Chocolate-Cake)</rdfs:
             >Recipe for setting a table
 Source: ehow import</rdfs:comment>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#TableSettingStep1 -->
@@ -507,7 +510,7 @@ Source: ehow import</rdfs:comment>
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#TableSettingStep2 -->
@@ -525,7 +528,7 @@ Source: ehow import</rdfs:comment>
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#TableSettingStep3 -->
@@ -543,7 +546,7 @@ Source: ehow import</rdfs:comment>
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#TableSettingStep4 -->
@@ -561,7 +564,7 @@ Source: ehow import</rdfs:comment>
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#TableSettingStep5 -->
@@ -579,7 +582,7 @@ Source: ehow import</rdfs:comment>
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#TableSettingStep6 -->
@@ -597,7 +600,7 @@ Source: ehow import</rdfs:comment>
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_action.owl#TableSettingStep7 -->
@@ -615,235 +618,235 @@ Source: ehow import</rdfs:comment>
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#AddingAnEgg -->
 
     <owl:Class rdf:about="&knowrob;AddingAnEgg"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#AddingSth -->
 
     <owl:Class rdf:about="&knowrob;AddingSth"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#ApplyingStuffToSurface -->
 
     <owl:Class rdf:about="&knowrob;ApplyingStuffToSurface"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#BakingFood -->
 
     <owl:Class rdf:about="&knowrob;BakingFood"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#BakingSoda -->
 
     <owl:Class rdf:about="&knowrob;BakingSoda"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Bowl-Mixing -->
 
     <owl:Class rdf:about="&knowrob;Bowl-Mixing"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Butter -->
 
     <owl:Class rdf:about="&knowrob;Butter"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Cake -->
 
     <owl:Class rdf:about="&knowrob;Cake"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#CakePan -->
 
     <owl:Class rdf:about="&knowrob;CakePan"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Cocoa-ThePowder -->
 
     <owl:Class rdf:about="&knowrob;Cocoa-ThePowder"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Cup -->
 
     <owl:Class rdf:about="&knowrob;Cup"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#DinnerPlate -->
 
     <owl:Class rdf:about="&knowrob;DinnerPlate"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Dough -->
 
     <owl:Class rdf:about="&knowrob;Dough"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Egg-Chickens -->
 
     <owl:Class rdf:about="&knowrob;Egg-Chickens"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Fork-SilverwarePiece -->
 
     <owl:Class rdf:about="&knowrob;Fork-SilverwarePiece"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Frosting -->
 
     <owl:Class rdf:about="&knowrob;Frosting"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Knife -->
 
     <owl:Class rdf:about="&knowrob;Knife"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Milk -->
 
     <owl:Class rdf:about="&knowrob;Milk"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Mixing -->
 
     <owl:Class rdf:about="&knowrob;Mixing"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#MixingPowders -->
 
     <owl:Class rdf:about="&knowrob;MixingPowders"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Napkin -->
 
     <owl:Class rdf:about="&knowrob;Napkin"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#OperateOven -->
 
     <owl:Class rdf:about="&knowrob;OperateOven"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Oven -->
 
     <owl:Class rdf:about="&knowrob;Oven"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PickingUpAnObject -->
 
     <owl:Class rdf:about="&knowrob;PickingUpAnObject"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PlaceMat -->
 
     <owl:Class rdf:about="&knowrob;PlaceMat"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Pouring-PourFromOneContainerIntoAnother -->
 
     <owl:Class rdf:about="&knowrob;Pouring-PourFromOneContainerIntoAnother"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PreheatOven -->
 
     <owl:Class rdf:about="&knowrob;PreheatOven"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PurposefulAction -->
 
     <owl:Class rdf:about="&knowrob;PurposefulAction"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PuttingSomethingSomewhere -->
 
     <owl:Class rdf:about="&knowrob;PuttingSomethingSomewhere"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Spoon-SilverwarePiece -->
 
     <owl:Class rdf:about="&knowrob;Spoon-SilverwarePiece"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Stirring-Beating -->
 
     <owl:Class rdf:about="&knowrob;Stirring-Beating"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Sugar -->
 
     <owl:Class rdf:about="&knowrob;Sugar"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#TableSalt -->
 
     <owl:Class rdf:about="&knowrob;TableSalt"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#VanillaExtract -->
 
     <owl:Class rdf:about="&knowrob;VanillaExtract"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#WaitForPredefinedTimeInterval -->
 
     <owl:Class rdf:about="&knowrob;WaitForPredefinedTimeInterval"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Waiting -->
 
     <owl:Class rdf:about="&knowrob;Waiting"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Water -->
 
     <owl:Class rdf:about="&knowrob;Water"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#WheatFlour -->
 
     <owl:Class rdf:about="&knowrob;WheatFlour"/>
-    
+
 
 
     <!-- http://www.w3.org/2002/07/owl#Thing -->

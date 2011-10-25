@@ -2,6 +2,8 @@
 
 
 <!DOCTYPE rdf:RDF [
+    <!ENTITY srdl_path 'file://@SRDL_PACKAGE_PATH@/owl/'>
+
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
     <!ENTITY SRDL "http://ias.cs.tum.edu/kb/SRDL.owl#" >
@@ -26,12 +28,12 @@
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#">
     <owl:Ontology rdf:about="">
-        <owl:imports rdf:resource="file://@SRDL_PACKAGE_PATH@/owl/SRDL.owl"/>
+        <owl:imports rdf:resource="&srdl_path;SRDL.owl"/>
     </owl:Ontology>
-    
 
 
-    <!-- 
+
+    <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Object Properties
@@ -39,16 +41,16 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/computable.owl#target -->
 
     <owl:ObjectProperty rdf:about="&computable;target"/>
-    
 
 
-    <!-- 
+
+    <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Data properties
@@ -56,13 +58,13 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL.owl#hasSuccessProbability -->
 
     <owl:DatatypeProperty rdf:about="&SRDL;hasSuccessProbability"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_computables.owl#hasSuccessProbability -->
@@ -71,28 +73,28 @@
         <rdfs:subPropertyOf rdf:resource="&SRDL;hasSuccessProbability"/>
         <rdfs:domain rdf:resource="&knowrob;PurposefulAction"/>
     </owl:DatatypeProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/computable.owl#cache -->
 
     <owl:DatatypeProperty rdf:about="&computable;cache"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/computable.owl#command -->
 
     <owl:DatatypeProperty rdf:about="&computable;command"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/computable.owl#visible -->
 
     <owl:DatatypeProperty rdf:about="&computable;visible"/>
-    
 
 
-    <!-- 
+
+    <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Classes
@@ -100,28 +102,28 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/computable.owl#PrologProperty -->
 
     <owl:Class rdf:about="&computable;PrologProperty"/>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PurposefulAction -->
 
     <owl:Class rdf:about="&knowrob;PurposefulAction"/>
-    
+
 
 
     <!-- http://www.w3.org/2002/07/owl#Thing -->
 
     <owl:Class rdf:about="&owl;Thing"/>
-    
 
 
-    <!-- 
+
+    <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Individuals
@@ -129,7 +131,7 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_computables.owl#computeSuccessProbability -->
@@ -142,7 +144,7 @@
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
         <computable:target rdf:resource="#hasSuccessProbability"/>
     </computable:PrologProperty>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/SRDL_computables.owl#hasSuccessProbability -->
