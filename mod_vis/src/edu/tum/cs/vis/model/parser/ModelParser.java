@@ -1,6 +1,14 @@
 package edu.tum.cs.vis.model.parser;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Enumeration;
 import java.util.LinkedList;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import javax.vecmath.Point3f;
 
@@ -19,12 +27,12 @@ public abstract class ModelParser {
 	protected LinkedList<Triangle> triangles = new LinkedList<Triangle>();
 	protected LinkedList<Line> lines = new LinkedList<Line>();
 
-	private Float minX = null;
-	private Float maxX = null;
-	private Float minY = null;
-	private Float maxY = null;
-	private Float minZ = null;
-	private Float maxZ = null;
+	protected Float minX = null;
+	protected Float maxX = null;
+	protected Float minY = null;
+	protected Float maxY = null;
+	protected Float minZ = null;
+	protected Float maxZ = null;
 	private Point3f currentPosition = null;
 
 	/**
@@ -89,6 +97,29 @@ public abstract class ModelParser {
 	}
 
 	/**
+	 * Scales all coordinates by the given factor
+	 * 
+	 * @param factor
+	 *            The scale factor
+	 */
+	protected void scaleModel(float factor) {
+		for (Triangle tri : triangles) {
+
+			tri.scale(factor);
+		}
+		for (Line line : lines) {
+
+			line.scale(factor);
+		}
+		minX *= factor;
+		maxX *= factor;
+		minY *= factor;
+		maxY *= factor;
+		minZ *= factor;
+		maxZ *= factor;
+	}
+
+	/**
 	 * 
 	 * @param pos
 	 */
@@ -99,6 +130,11 @@ public abstract class ModelParser {
 
 			tri.translate(pos.x - currentPosition.x, pos.y - currentPosition.y,
 					pos.z - currentPosition.z);
+		}
+		for (Line line : lines) {
+
+			line.translate(pos.x - currentPosition.x,
+					pos.y - currentPosition.y, pos.z - currentPosition.z);
 		}
 		currentPosition = pos;
 	}
@@ -117,7 +153,7 @@ public abstract class ModelParser {
 	 */
 	public float getModelHeight() {
 		if (minY != null && maxY != null)
-			return maxY - minY;
+			return Math.abs(maxY - minY);
 		minY = Float.MAX_VALUE;
 		maxY = Float.MIN_VALUE;
 
@@ -138,7 +174,7 @@ public abstract class ModelParser {
 	 */
 	public float getModelWidth() {
 		if (minX != null && maxX != null)
-			return maxX - minX;
+			return Math.abs(maxX - minX);
 		minX = Float.MAX_VALUE;
 		maxX = Float.MIN_VALUE;
 
@@ -159,7 +195,7 @@ public abstract class ModelParser {
 	 */
 	public float getModelDepth() {
 		if (minZ != null && maxZ != null)
-			return maxZ - minZ;
+			return Math.abs(maxZ - minZ);
 		minZ = Float.MAX_VALUE;
 		maxZ = Float.MIN_VALUE;
 
@@ -170,6 +206,72 @@ public abstract class ModelParser {
 			}
 		}
 		return maxZ - minZ;
+	}
+
+	public static boolean Unzip(String zipFile, String outputDirectory) {
+		if (!outputDirectory.endsWith("/") && !outputDirectory.endsWith("\\"))
+			outputDirectory += "/";
+
+		BufferedOutputStream dest = null;
+		BufferedInputStream is = null;
+		int BUFFER = 2048;
+		ZipEntry entry;
+		ZipFile zipfile;
+		try {
+			zipfile = new ZipFile(zipFile);
+			Enumeration<? extends ZipEntry> e = zipfile.entries();
+			while (e.hasMoreElements()) {
+				entry = (ZipEntry) e.nextElement();
+				if (entry.isDirectory()) {
+					(new File(outputDirectory + entry.getName())).mkdir();
+					continue;
+				}
+
+				String filename = outputDirectory + entry.getName();
+				String filePath = filename.substring(0,
+						filename.lastIndexOf(File.separator));
+
+				// Create directory if not existing
+				if (!(new File(filePath)).exists()) {
+					(new File(filePath)).mkdirs();
+				}
+				is = new BufferedInputStream(zipfile.getInputStream(entry));
+				int count;
+				byte data[] = new byte[BUFFER];
+				FileOutputStream fos = new FileOutputStream(filename);
+				dest = new BufferedOutputStream(fos, BUFFER);
+				while ((count = is.read(data, 0, BUFFER)) != -1) {
+					dest.write(data, 0, count);
+				}
+				dest.flush();
+				dest.close();
+				is.close();
+			}
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			System.err.println("Couldn't unzip file: " + zipFile);
+			e1.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	public static File createTempDirectory() throws IOException {
+		final File temp;
+
+		temp = File.createTempFile("temp", Long.toString(System.nanoTime()));
+
+		if (!(temp.delete())) {
+			throw new IOException("Could not delete temp file: "
+					+ temp.getAbsolutePath());
+		}
+
+		if (!(temp.mkdir())) {
+			throw new IOException("Could not create temp directory: "
+					+ temp.getAbsolutePath());
+		}
+
+		return (temp);
 	}
 
 }

@@ -4,11 +4,8 @@ import javax.vecmath.Point3f;
 
 import processing.core.PApplet;
 
-public class Line {
-	/**
-	 * the 2 Vertices of the Line
-	 */
-	public Point3f position[];
+public class Line extends DrawObject {
+
 	public Appearance appearance;
 
 	public Line() {

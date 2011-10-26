@@ -6,11 +6,8 @@ import javax.vecmath.Point3f;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
-public class Triangle {
-	 /**
-     * the 3 Vertices of the Triangle
-     */
-	public Point3f position[];
+public class Triangle extends DrawObject {
+
     /**
      * Texture-Points
      */
@@ -58,22 +55,4 @@ public class Triangle {
 
          }
      }
-
-	/**
-	 * Moves the triangle in the given direction. Used to center model
-	 * 
-	 * @param x
-	 *            direction in x
-	 * @param y
-	 *            direction in y
-	 * @param z
-	 *            direction in z
-	 */
-	public void translate(float x, float y, float z) {
-		for (int v = 0; v < 3; v++) {
-			position[v].x += x;
-			position[v].y += y;
-			position[v].z += z;
-		}
-	}
 }
