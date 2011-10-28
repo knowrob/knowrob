@@ -2,7 +2,7 @@
 
 
 <!DOCTYPE rdf:RDF [
-    <!ENTITY local_path 'file://@SRDL_PACKAGE_PATH@/owl/'>
+    <!ENTITY srdl_path 'file://@SRDL_PACKAGE_PATH@/owl/'>
 
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
@@ -25,7 +25,7 @@
      xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#">
     <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/ChocolateCakeBaking.owl">
         <rdfs:comment rdf:datatype="&rdf;PlainLiteral">Description of a chocolate cake baking task</rdfs:comment>
-        <owl:imports rdf:resource="&local_path;srdl2-action.owl"/>
+        <owl:imports rdf:resource="&srdl_path;srdl2-action.owl"/>
     </owl:Ontology>
 
 
