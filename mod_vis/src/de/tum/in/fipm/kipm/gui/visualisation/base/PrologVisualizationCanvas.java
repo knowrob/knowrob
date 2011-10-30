@@ -1,6 +1,5 @@
 package de.tum.in.fipm.kipm.gui.visualisation.base;
 
-import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -20,7 +19,6 @@ import controlP5.ControlEvent;
 import controlP5.Textlabel;
 import de.tum.in.fipm.kipm.gui.visualisation.applets.ActionVisApplet;
 import de.tum.in.fipm.kipm.gui.visualisation.applets.StandaloneKitchenVisApplet;
-import de.tum.in.fipm.kipm.gui.visualisation.items.ItemBase;
 import de.tum.in.fipm.kipm.gui.visualisation.applets.ImageViewerApplet;
 
 import processing.core.*;
@@ -340,7 +338,6 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 	/**
 	 * initializes prolog
 	 */
-	@SuppressWarnings("unused")
 	protected static void initProlog() {
 		try {
 			Vector<String> args= new Vector<String>(Arrays.asList(Prolog.get_default_init_args()));
@@ -454,7 +451,7 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 	      act_label.setFont(3);
 	      act_label.moveTo(controlWindow);
 	      
-		Radio act_radio = controlP5.addRadio("act_radio", 80, 60);
+	      Radio act_radio = controlP5.addRadio("act_radio", 80, 60);
 	      act_radio.addItem("activity",3);
 	      act_radio.addItem("2",2);
 	      act_radio.addItem("1",1);
@@ -529,6 +526,7 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 	 * @param query the query.
 	 * @return the HashMap representing the bindings of the variables.
 	 */
+	@SuppressWarnings("rawtypes")
 	public static HashMap<String, Vector<Object>> executeQuery(String query, String plFile) {
 		
 		HashMap<String, Vector<Object>> result = new HashMap< String, Vector<Object> >();

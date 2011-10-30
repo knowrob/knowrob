@@ -2,6 +2,13 @@ package edu.tum.cs.vis.model.util;
 
 import processing.core.PImage;
 
+/**
+ * Appearance of triangle or line.
+ * May contain texture or simply a color.
+ * 
+ * @author Stefan Profanter
+ *
+ */
 public class Appearance {
 	/**
 	 * the Filename of the texture-Image
@@ -12,7 +19,7 @@ public class Appearance {
 	 */
 	public boolean containsTexture = false;
 	/**
-	 * an Objectreference of a loaded image. Default is null.
+	 * an Object reference of a loaded image. Default is null.
 	 */
 	public PImage imageReference;
 	/**

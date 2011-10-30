@@ -34,6 +34,7 @@ public class MultiIterator<T> implements Iterable<T> {
 		return iterator().hasNext();
 	}
 	
+	@SuppressWarnings("hiding")
 	public class LocalIterator<T> implements Iterator<T> {
 
 		Vector<Iterable<T>> collections;

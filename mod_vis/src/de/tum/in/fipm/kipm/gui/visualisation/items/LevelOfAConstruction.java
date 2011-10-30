@@ -2,8 +2,6 @@
 package de.tum.in.fipm.kipm.gui.visualisation.items;
 
 import edu.tum.cs.vis.Canvas;
-import processing.core.PImage;
-import processing.core.PConstants;
 
 
 public class LevelOfAConstruction extends Item {

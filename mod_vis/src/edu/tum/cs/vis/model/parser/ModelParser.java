@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -24,16 +26,96 @@ import edu.tum.cs.vis.model.util.Triangle;
  */
 public abstract class ModelParser {
 
+	/**
+	 * List of all triangles parsed from file
+	 */
 	protected LinkedList<Triangle> triangles = new LinkedList<Triangle>();
+	/**
+	 * List of all lines parsed from file
+	 */
 	protected LinkedList<Line> lines = new LinkedList<Line>();
 
+	/**
+	 * Minimum position values of model position
+	 */
 	protected Float minX = null;
 	protected Float maxX = null;
 	protected Float minY = null;
 	protected Float maxY = null;
 	protected Float minZ = null;
 	protected Float maxZ = null;
+	
+	/**
+	 * Current position (volumetric center) of model.
+	 * If model is centered, it is (0|0|0)
+	 */
 	private Point3f currentPosition = null;
+	
+	/**
+	 * Contains for each valid file extension the appropriate parser.
+	 * Used to automatically determine the correct parser for a file.
+	 */
+	private static final HashMap<String,Class<? extends ModelParser>> extensionAssignment = new HashMap<String,Class<? extends ModelParser>>();
+    static {
+    	/*
+    	 * Add here other parsers with file extension
+    	 */
+    	extensionAssignment.put("dae", ColladaParser.class);
+    	extensionAssignment.put("kmz", ColladaParser.class);
+    }
+    
+    /**
+     * Gets the filename extension of a filename. Usually the last 3 characters
+     * @param filename The filename
+     * @return the extension without dot
+     */
+    protected static String getExtension(String filename)
+    {
+    	return filename.substring(filename.lastIndexOf('.') + 1);
+    }
+    
+    /**
+     * Checks if the given filename has a valid extension for the extended class.
+     * @param filename Filename to check
+     * @return true if extension is valid
+     */
+    protected boolean isValidExtension(String filename)
+    {
+    	if (extensionAssignment.get(getExtension(filename)) == this.getClass())
+    		return true;
+    	return false;
+    }
+    
+    /**
+     * Checks if the file extension is valid for this class
+     * @param filename file to check
+     */
+    protected boolean checkExtension(String filename) {
+    	if (!isValidExtension(filename))
+    	{
+    		System.out.println("Unknown file extension for class: " + this.getClass().getName() + " " + filename + "\n Must be one of: " + getValidExtensions());
+    		return false;
+    	} else {
+    		return true;
+    	}
+    }
+    
+    
+    /**
+     * Returns a komma separated string with all valid file extensions of this class
+     * @return List of file extensions: eg "kmz, dae,"
+     */
+    protected String getValidExtensions() {
+    	Iterator<String> it = extensionAssignment.keySet().iterator();
+    	String extensions = "";
+    	while(it.hasNext()) {
+    		String key = it.next();
+    		Object val = extensionAssignment.get(key);
+    		if (val.getClass() == this.getClass())
+    			extensions += key + ", "; 
+    	}
+    	return extensions;
+    }
 
 	/**
 	 * Draw the triangles list to the applet
@@ -120,8 +202,9 @@ public abstract class ModelParser {
 	}
 
 	/**
-	 * 
-	 * @param pos
+	 * Set absolute position of the model. Only used for centering model.
+	 * If you want to move the model when drawing, use transformation matrix.
+	 * @param pos new absolute position of model
 	 */
 	protected void setModelPosition(Point3f pos) {
 		if (currentPosition == null)
@@ -144,6 +227,22 @@ public abstract class ModelParser {
 	 * @param applet The applet to draw on.
 	 */
 	public abstract void draw(PApplet applet);
+
+	/**
+	 * Main function to parse the model from the given filename
+	 * @param filename Physical file of model to parse
+	 */
+	public abstract boolean loadModel(String filename);
+	
+	/**
+	 * Finds the appropriate parser for the given filename by comaring the file extension.
+	 * @param filename Filename to find parser for
+	 * @return the Parser Class for this file
+	 */
+	public static Class<? extends ModelParser> findParser(String filename)
+	{
+		return extensionAssignment.get(getExtension(filename));
+	}
 	
 	/**
 	 * Returns the height of the model by searching the biggest distance on the
@@ -208,6 +307,12 @@ public abstract class ModelParser {
 		return maxZ - minZ;
 	}
 
+	/**
+	 * Unzip a zipped file (eg. kmz) into given directory 
+	 * @param zipFile zipped file to unzip
+	 * @param outputDirectory destination directory for unzipped content
+	 * @return true if successfully unzipped
+	 */
 	public static boolean Unzip(String zipFile, String outputDirectory) {
 		if (!outputDirectory.endsWith("/") && !outputDirectory.endsWith("\\"))
 			outputDirectory += "/";
@@ -256,6 +361,11 @@ public abstract class ModelParser {
 		return true;
 	}
 
+	/**
+	 * creates a temporary directory used for unzipping
+	 * @return File with path to created dir
+	 * @throws IOException if not successfully created
+	 */
 	public static File createTempDirectory() throws IOException {
 		final File temp;
 

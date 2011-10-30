@@ -6,6 +6,12 @@ import javax.vecmath.Point3f;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
+/**
+ * Triangle of a model. May have color or texture.
+ * 
+ * @author Stefan Profanter
+ *
+ */
 public class Triangle extends DrawObject {
 
     /**
@@ -13,8 +19,14 @@ public class Triangle extends DrawObject {
      */
 	public Point2f texPosition[];
 
+	/**
+	 * Color or texture of triangle
+	 */
 	public Appearance appearance;
      
+	/**
+	 * Default constructor
+	 */
 	public Triangle() {
 		position = new Point3f[3];
 	}

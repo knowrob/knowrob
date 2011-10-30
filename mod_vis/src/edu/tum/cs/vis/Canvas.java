@@ -44,7 +44,7 @@ public class Canvas extends PApplet implements MouseListener, MouseMotionListene
 	/** 
 	 * parameters for non-camera-based viewing 
 	 */	
-	protected float xRotDisplay, yRotDisplay, xShiftDisplay, zShiftDisplay, zoomDisplay;
+	protected float xRotDisplay, yRotDisplay, xShiftDisplay, yShiftDisplay, zShiftDisplay, zoomDisplay;
 	
 	/**
 	 * parameters for camera-based viewing
@@ -410,7 +410,6 @@ public class Canvas extends PApplet implements MouseListener, MouseMotionListene
 
 		try {
 			boolean external = false;
-			int location[] = null;
 
 			String name = null;
 			boolean present = false;
@@ -547,13 +546,7 @@ public class Canvas extends PApplet implements MouseListener, MouseMotionListene
 
 				frame.setSize(windowW, windowH);
 
-				if(location != null) {
-					// a specific location was received from PdeRuntime
-					// (applet has been run more than once, user placed window)
-					frame.setLocation(location[0], location[1]);
-
-				}
-				else if(external) {
+				if(external) {
 //					int locationX = editorLocation[0] - 20;
 //					int locationY = editorLocation[1];
 //

@@ -31,7 +31,7 @@ public abstract class ItemBase implements Drawable, DrawableAnimated {
 	
 	protected int color;
 	
-	private ItemModel model = null;
+	protected ItemModel model = null;
 
 	public void draw(Canvas c) {
 		draw(c,0);

@@ -669,6 +669,7 @@ public class ActionVisApplet extends PApplet implements MouseListener, MouseMoti
 	 * @param query the query.
 	 * @return the HashMap representing the bindings of the variables.
 	 */
+	@SuppressWarnings("rawtypes")
 	public static HashMap<String, Vector<Object>> executeQuery(String query, String plFile) {
 				
 

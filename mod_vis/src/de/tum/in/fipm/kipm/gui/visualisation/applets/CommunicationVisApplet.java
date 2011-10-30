@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import controlP5.Textarea;
 import processing.core.*;
 import ros.NodeHandle;
 import ros.Ros;

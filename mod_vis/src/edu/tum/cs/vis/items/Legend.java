@@ -36,10 +36,8 @@ public class Legend implements Drawable {
 	protected void loadLabels(java.io.File ascFile) throws NumberFormatException, IOException{
 		BufferedReader r = new BufferedReader(new FileReader(ascFile));
 		String line;
-		int iLine = 0;
 		while((line = r.readLine()) != null) {			
 			this.stringLeg.add(line);
-			iLine++;
 		}
 	}
 }

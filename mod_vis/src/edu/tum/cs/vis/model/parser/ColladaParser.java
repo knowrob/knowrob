@@ -51,22 +51,31 @@ import edu.tum.cs.vis.model.util.Triangle;
 /**
  * Connection between dae4j library and processing applet.
  * Used to parse COLLADA (.dae) files and draw them on the processing applet.
- * Also .kml files are supported. These are exctracted and the dae file init will be loaded.
+ * Also .kmz files are supported. These are exctracted to tmp dir and the dae file init will be loaded.
  * 
  * @author Stefan Profanter
  *
  */
 public class ColladaParser extends ModelParser {
 
+	/**
+	 * Base path of the texture files. In the dae file are only relative paths. So we
+	 * need a base.
+	 * If kmz is parsed, this will be set automatically
+	 */
 	private String textureBasePath = "";
+	
+	/**
+	 * When parsing, the textures aren't loaded but for each triangle is stored the filename to the texture.
+	 * This variable indicates if the texture of each triangle is already loaded from the filename.
+	 */
 	private Boolean texturesInitialized = false;
 	
 
 	/**
-	 * Convert a collada source to the corresponding float array
+	 * Convert a collada source item to the corresponding float array
 	 * 
-	 * @param the
-	 *            collaca source
+	 * @param the collada source
 	 * @return float array with float[count][stride]
 	 */
     private static float[][] SourceToFloat(Source s)
@@ -78,11 +87,6 @@ public class ColladaParser extends ModelParser {
             ret[i][j] = s.getFloatArray().get(k);
         }
     	return ret;
-    }
-    
-    //Hide constructor
-    private ColladaParser() {
-    	
     }
     
 	@Override
@@ -99,6 +103,13 @@ public class ColladaParser extends ModelParser {
 		drawLines(applet);
 	}
 
+	/**
+	 * Searches in the given nList nodes tree for the node represented by nodeNames and returns the inner value of this node.
+	 * @param nList the list of all nodes (returned by getElementsByTagName)
+	 * @param nodeNames A linked list with the structure to search. The first name is the name of the root, the next name
+	 * 			is the name of the child to search in the root and so on.
+	 * @return The inner value of the node or null if not found
+	 */
 	private static String getNodeValue(NodeList nList,
 			LinkedList<String> nodeNames) {
 		if (nodeNames.isEmpty() || nList == null) {
@@ -144,6 +155,12 @@ public class ColladaParser extends ModelParser {
 		return null;
 	}
 
+	/**
+	 * Tries to determine the location of the .dae file when a .kmz file was extracted.
+	 * The path to the .dae file is stored in the doc.kml file withing the zipped kmz.
+	 * @param tmpPath Path to the extracted .kmz file
+	 * @return Absolute path to the .dae file or null if not found.
+	 */
 	private static String getDaeLocation(String tmpPath) {
 		File kmlFile = new File(tmpPath + "doc.kml");
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -190,16 +207,18 @@ public class ColladaParser extends ModelParser {
 		return tmpPath + loc;
 	}
 
-	/**
-	 * Load a model from a file
-	 * @param filename The filename to the model
-	 * @return The loaded Model
-	 */
-	public static ColladaParser loadModel(String filename) {
+	@Override
+	public boolean loadModel(String filename) {
 		Collada collada = null;
-		String textureBasePath = null;
+		textureBasePath = null;
 		String daeFile = null;
-		String extension = filename.substring(filename.lastIndexOf('.') + 1);
+		
+		if (!checkExtension(filename)) {
+			return false;
+		}
+		
+		
+		String extension = getExtension(filename);
 		if (extension.equalsIgnoreCase(
 				"kmz")) {
 			String tmpPath = null;
@@ -208,7 +227,7 @@ public class ColladaParser extends ModelParser {
 			} catch (IOException e) {
 				System.err.println("Couldn't create temporary directory.");
 				e.printStackTrace();
-				return null;
+				return false;
 			}
 			if (!tmpPath.endsWith("/") && !tmpPath.endsWith("\\"))
 				tmpPath += "/";
@@ -227,49 +246,47 @@ public class ColladaParser extends ModelParser {
 				.equalsIgnoreCase("dae")) {
 			textureBasePath = "";
 			daeFile = filename;
-		} else {
-			System.out
-					.println("Unknown file extension for collada file. Must be .dae or .kmz but is: "
-							+ extension);
-			return null;
-
 		}
 
 		try {
 			collada = Collada.readFile(daeFile);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+			System.err.println("File doesn't exists: " + daeFile);
 			e.printStackTrace();
+			return false;
 		} catch (SAXException e) {
-			// TODO Auto-generated catch block
+			System.err.println("XML-Exception in : " + daeFile);
 			e.printStackTrace();
+			return false;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			System.err.println("IO-Exception in : " + daeFile);
 			e.printStackTrace();
+			return false;
 		}
 
-		ColladaParser parser = new ColladaParser();
-		parser.textureBasePath = textureBasePath;
-
-		parser.texturesInitialized = false;
-		parser.triangles.clear();
-		parser.lines.clear();
+		texturesInitialized = false;
+		triangles.clear();
+		lines.clear();
 
 		// This is where everything begins
 		VisualScene scene = collada.getLibraryVisualScenes().getScene(
 				collada.getScene().getInstanceVisualScene().getUrl());
 
 		for (Node n : scene.getNodes()) {
-			parser.parseNode(n, new ArrayList<BaseXform>(), collada);
+			parseNode(n, new ArrayList<BaseXform>(), collada);
 		}
 
-		parser.centerModel();
+		centerModel();
 
 		Unit unit = collada.getUnit();
 		if (unit != null && unit.getMeter() != 1.0) {
-			parser.scaleModel(unit.getMeter());
+			scaleModel(unit.getMeter());
 		}
 		
+		
+		/*
+		 * Set the correct orientation of the parsed model
+		 */
 		
 		/*
 		 *  Value 	Right Axis 		Up Axis 		In Axis
@@ -281,37 +298,37 @@ public class ColladaParser extends ModelParser {
 		String axis = collada.getUpAxis();
 		if (axis!= null && axis.equalsIgnoreCase("X_UP"))
 		{
-			for (Triangle tri : parser.triangles) {
+			for (Triangle tri : triangles) {
 				for (int v = 0; v < tri.position.length; v++) {
 					float tmp = tri.position[v].y;
 					tri.position[v].y = tri.position[v].x;
 					tri.position[v].x = -tmp;
 				}
 			}
-			for (Line line : parser.lines) {
+			for (Line line : lines) {
 				for (int v = 0; v < line.position.length; v++) {
 					float tmp = line.position[v].y;
 					line.position[v].y = line.position[v].x;
 					line.position[v].x = -tmp;
 				}
 			}
-			float tmp = parser.minY;
-			parser.minY = parser.minX;
-			parser.minX = -tmp;
-			tmp = parser.maxY;
-			parser.maxY = parser.maxX;
-			parser.maxX = -tmp;
+			float tmp = minY;
+			minY = minX;
+			minX = -tmp;
+			tmp = maxY;
+			maxY = maxX;
+			maxX = -tmp;
 			
 		} else if (axis!= null && axis.equalsIgnoreCase("Z_UP"))
 			{
-				for (Triangle tri : parser.triangles) {
+				for (Triangle tri : triangles) {
 					for (int v = 0; v < tri.position.length; v++) {
 						float tmp = tri.position[v].y;
 						tri.position[v].y = tri.position[v].z;
 						tri.position[v].z = -tmp;
 					}
 				}
-				for (Line line : parser.lines) {
+				for (Line line : lines) {
 					for (int v = 0; v < line.position.length; v++) {
 						float tmp = line.position[v].y;
 						line.position[v].y = line.position[v].z;
@@ -319,16 +336,23 @@ public class ColladaParser extends ModelParser {
 					}
 				}
 			}
-			float tmp = parser.minY;
-			parser.minY = parser.minZ;
-			parser.minZ = -tmp;
-			tmp = parser.maxY;
-			parser.maxY = parser.maxZ;
-			parser.maxZ = -tmp;
+			float tmp = minY;
+			minY = minZ;
+			minZ = -tmp;
+			tmp = maxY;
+			maxY = maxZ;
+			maxZ = -tmp;
 
-		return parser;
+		return true;
 	}
 
+	/**
+	 * Parses a node from the collada structure and stores the triangles and lines information.
+	 * @param node Node to parse (may have other sub-Nodes => called recursively)
+	 * @param transformations List of all parent transformations which should be applied to this and it's
+	 * 			subsequent nodes
+	 * @param collada the collada Structure
+	 */
 	private void parseNode(Node node, ArrayList<BaseXform> transformations,
 			Collada collada) {
 		if (node.getChildNodes() != null) {
@@ -360,6 +384,14 @@ public class ColladaParser extends ModelParser {
 			transformations.removeAll(node.getXforms());
 	}
 
+	/**
+	 * Parse a geometry object from the collada structure
+	 * @param g Geometry object to parse
+	 * @param instanceMaterial List of all known materials which may be referred by the geometry object
+	 * @param transformations List of all parent transformations which should be applied to this and it's
+	 * 			subsequent geometries
+	 * @param collada the collada Structure
+	 */
 	private void parseGeometry(Geometry g,
 			HashMap<String, String> instanceMaterial,
 			ArrayList<BaseXform> transformations, Collada collada) {
@@ -377,6 +409,15 @@ public class ColladaParser extends ModelParser {
 		}
 	}
 
+	/**
+	 * Parse a line from a geometry object from the collada structure.
+	 * @param l the line object to parse
+	 * @param m parent mesh for the line
+	 * @param instanceMaterial List of all known materials which may be referred by the geometry object
+	 * @param transformations List of all parent transformations which should be applied to this and it's
+	 * 			subsequent geometries
+	 * @param collada the collada Structure
+	 */
 	private void parseGeometryLine(Lines l, Mesh m,
 			HashMap<String, String> instanceMaterial,
 			ArrayList<BaseXform> transformations, Collada collada) {
@@ -396,7 +437,7 @@ public class ColladaParser extends ModelParser {
 				vertexSource = m.getSource(in.getSource().substring(1));
 			}
 		}
-		// commons for the set of triangles
+		// commons for the set of lines
 		float[][] vertPoints = SourceToFloat(vertexSource);
 
 		int stride = l.getInputs().size();
@@ -419,7 +460,7 @@ public class ColladaParser extends ModelParser {
 		Appearance appearance = getAppearance(mat, collada);
 
 
-		// one single triangle from the triangle-set
+		// one single line from the line-set
 		for (int i = 0; i < indexes.length && i + 2 < indexes.length; i++) {
 			Line line = new Line();
 			line.appearance = appearance;
@@ -441,6 +482,15 @@ public class ColladaParser extends ModelParser {
 		}
 	}
 
+	/**
+	 * Parse a triangle from a geometry object from the collada structure.
+	 * @param t the line object to parse
+	 * @param m parent mesh for the line
+	 * @param instanceMaterial List of all known materials which may be referred by the geometry object
+	 * @param transformations List of all parent transformations which should be applied to this and it's
+	 * 			subsequent geometries
+	 * @param collada the collada Structure
+	 */
 	private void parseGeometryTriangle(Triangles t, Mesh m,
 			HashMap<String, String> instanceMaterial,
 			ArrayList<BaseXform> transformations, Collada collada) {
@@ -529,21 +579,13 @@ public class ColladaParser extends ModelParser {
 
 	}
 
+	/**
+	 * Applies the list of transformations in the correct order to the DrawObject (Line / Triangle)
+	 * @param obj Object to apply the transformation onto
+	 * @param transformations list of transformations to apply
+	 */
 	private static void useTransformation(DrawObject obj,
 			ArrayList<BaseXform> transformations) {
-		/*
-		 * float endMatrix[][] = null; for (int idx = transformations.size() -
-		 * 1; idx >= 0; idx--) { BaseXform transform = transformations.get(idx);
-		 * if (transform instanceof Matrix) { float matrix[][] = new
-		 * float[4][4]; int v = 0; for (int ma_y = 0; ma_y < 4; ma_y++) { for
-		 * (int ma_x = 0; ma_x < 4; ma_x++) { matrix[ma_y][ma_x] = ((Matrix)
-		 * transform).getData()[v]; v++; } } if (endMatrix == null) endMatrix =
-		 * matrix; else endMatrix = DrawObject.MatrixMultiply(endMatrix,
-		 * matrix); } else {
-		 * System.out.println("Transformation not implemented: ");
-		 * transform.dump(System.out, 4); } } if (endMatrix != null)
-		 * obj.transform(endMatrix);
-		 */
 		for (int idx = transformations.size() - 1; idx >= 0; idx--) {
 			BaseXform transform = transformations.get(idx);
 			if (transform instanceof Matrix) {
@@ -563,6 +605,12 @@ public class ColladaParser extends ModelParser {
 		}
 	}
 
+	/**
+	 * Returns the instantiated Apperance by reading the material information from mat.
+	 * @param mat Collada Material which holds information about the appearance
+	 * @param collada Collada structure
+	 * @return Instance of Apperance set according to mat.
+	 */
 	private Appearance getAppearance(Material mat, Collada collada) {
 		Appearance appearance = new Appearance();
 		Effect effect = collada.findEffect(mat.getInstanceEffect().getUrl()
@@ -640,6 +688,8 @@ public class ColladaParser extends ModelParser {
 	 * a passed in root. If path is absolute then a file object constructed from
 	 * new File(path) is returned, otherwise a file object is returned from new
 	 * File(root, path) if root is not null, otherwise null is returned.
+	 * @param root root file path
+	 * @param path relative file path
 	 */
 	public static String getAbsoluteFilePath(String root, String path) {
 		File file = new File(path);

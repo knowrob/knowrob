@@ -1,7 +1,5 @@
 package de.tum.in.fipm.kipm.gui.visualisation.applets;
 
-
-import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -11,7 +9,6 @@ import java.awt.event.MouseMotionListener;
 import java.io.BufferedReader;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +24,6 @@ import peasy.org.apache.commons.math.geometry.*;
 
 import processing.core.PFont;
 import processing.core.PMatrix;
-import processing.pdf.PGraphicsPDF;
 
 import de.tum.in.fipm.kipm.gui.visualisation.base.PrologVisualizationCanvas;
 import de.tum.in.fipm.kipm.gui.visualisation.items.*;
@@ -47,8 +43,8 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 	////////////////////////////////////////////////////////////////////////////////
 	// DISPLAY PROPERTIES (ROTATION, ZOOM, ...)
-	private float leftMouseX=-1.0f, leftMouseY=-1.0f, rightMouseX=-1.0f, rightMouseY=-1.0f, centerMouseY=-1.0f;
-	private float xRotDisplay=143.6f, yRotDisplay=-9.14f, xShiftDisplay=420.5f, yShiftDisplay=359.0f, zoomDisplay=1.19f;
+	//private float leftMouseX=-1.0f, leftMouseY=-1.0f, rightMouseX=-1.0f, rightMouseY=-1.0f, centerMouseY=-1.0f;
+	//private float xRotDisplay=143.6f, yRotDisplay=-9.14f, xShiftDisplay=420.5f, yShiftDisplay=359.0f, zoomDisplay=1.19f;
 
 	////////////////////////////////////////////////////////////////////////////////
 	// SETTINGS
@@ -71,7 +67,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	private static int grayLevelCounter = 0;
 	private EmptyCanvas buffer;
 	private JFrame bufferFrame;
-	private PMatrix bufferMatrix;
+	//private PMatrix bufferMatrix;
 
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -90,11 +86,8 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 	////////////////////////////////////////////////////////////////////////////////
 	// INFO ABOUT CURRENT DISPLAY
-	private double startTime = 0;
-	private double endTime = 0;
 	private int numberFrames = 1;
 	private int currentFrame = 0;
-	private String queryString = "";
 
 	PeasyCam cam;
 
@@ -337,7 +330,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	/**
 	 * draws the time, frame and other textual info
 	 */
-	private void drawTime(){
+	/*private void drawTime(){
 		DecimalFormat df2 = new DecimalFormat( "##0.00" );
 		fill(0, 255, 0);
 		textFont(verdana);
@@ -349,7 +342,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 		if(framesToTimes != null)
 			text("Time: "+df2.format(framesToTimes[currentFrame]), 10, 98);
-	}
+	}*/
 
 	/**
 	 * prints a message.
@@ -563,7 +556,6 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		addObject("'http://ias.cs.tum.edu/kb/ias_entities.owl#knife1'");
 
 		try{
-			queryString = identifier;
 			HashMap<String, Vector<Object>> c = PrologVisualizationCanvas.executeQuery(
 					"rdf_has("+identifier+", 'http://ias.cs.tum.edu/kb/knowrob.owl#startTime', S), "
 					+"rdf_has("+identifier+", 'http://ias.cs.tum.edu/kb/knowrob.owl#endTime', E)",null);	
@@ -578,7 +570,6 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			System.out.println(startTimeStr);
 
 			float startTime = Float.parseFloat(startTimeStr);
-			this.startTime = startTime;
 
 
 			String endTimeStr = (String)c.get("E").get(0);
@@ -588,7 +579,6 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 				endTimeStr=endTimeStr.split("_")[1];
 			}
 			float endTime = Float.parseFloat(endTimeStr);
-			this.endTime = endTime;
 
 
 			c = PrologVisualizationCanvas.executeQuery(
@@ -694,7 +684,6 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	 */
 	
 	public void displayHumanTrajectory(String identifier, String handUsed) {
-		queryString =identifier;
 		Integer Occ=0, auxOcc=0;
 		boolean band=true;
 		int row=0, contP=0, col=0;
@@ -759,7 +748,6 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		
 		Trajectories traj = new Trajectories();
 		
-		queryString = identifier;
 		HashMap<String, Vector<Object>> o= PrologVisualizationCanvas.executeQuery(""+ "readEyeTrajectory("+identifier+", T, P, XCoor, YCoor)", null);
 		
 		Vector<Object> pointId = o.get("P");
@@ -809,7 +797,6 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	 */
 	public void displayActionFixedIdent(String identifier)
 	{
-		queryString = identifier;
 		HashMap<String, Vector<Object>> c = PrologVisualizationCanvas.executeQuery(""+
 				"readPostureSeqForAction("+identifier+", P, EPISODENR, INSTANCENR, TIME, BECX, BECY, BECZ, ULWX, ULWY, ULWZ, OLWX, OLWY, OLWZ, UBWX, UBWY, UBWZ, OBWX, OBWY, OBWZ, UHWX, UHWY, UHWZ, BRKX, BRKY, BRKZ, OHWX, OHWY, OHWZ, KOX, KOY, KOZ, SEHX, SEHY, SEHZ, OSLX, OSLY, OSLZ, USLX, USLY, USLZ, FULX, FULY, FULZ, FBLX, FBLY, FBLZ, OSRX, OSRY, OSRZ, USRX, USRY, USRZ, FURX, FURY, FURZ, FBRX, FBRY, FBRZ, SBLX, SBLY, SBLZ, OALX, OALY, OALZ, UALX, UALY, UALZ, HALX, HALY, HALZ, FILX, FILY, FILZ, SBRX, SBRY, SBRZ, OARX, OARY, OARZ, UARX, UARY, UARZ, HARX, HARY, HARZ, FIRX, FIRY, FIRZ)"
 				,null);		
@@ -846,8 +833,8 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		allItems.add(skeleton);
 		animatedItemsRef.put("skeleton", skeleton);
 
-		startTime = Double.parseDouble(times.get(0).toString());
-		endTime = Double.parseDouble(times.get(times.size()-1).toString());
+		//startTime = Double.parseDouble(times.get(0).toString());
+		//endTime = Double.parseDouble(times.get(times.size()-1).toString());
 		numberFrames = times.size();
 
 		System.out.print("ALL DONE");
@@ -888,8 +875,6 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	public void clear() {
 		allItems.clear();
 		animatedItemsRef.clear();
-		startTime = 0;
-		endTime = 0;
 		numberFrames = 1;
 		currentFrame = 0;
 		grayLevelCounter = 0;
@@ -1912,7 +1897,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
     case KeyEvent.VK_W:
         float[] rpy = cam.getRotations();
         float[] lat = cam.getLookAt();
-        float[] pos = cam.getPosition();
+        //float[] pos = cam.getPosition();
         double dist = cam.getDistance();
         CameraState state = new CameraState(new Rotation(RotationOrder.XYZ,
                                                          rpy[0],
