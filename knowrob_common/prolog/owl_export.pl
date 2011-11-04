@@ -36,6 +36,8 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs_computable')).
 :- use_module(library('thea/owl_parser')).
+:- use_module(library('knowrob_owl')).
+
 
 :- rdf_meta export_object(r,r),
       export_object_class(r,r),
@@ -236,13 +238,13 @@ read_objclass_info(ObjClass, ObjClassInfosSorted) :-
 
 
 
-class_properties(ObjClass, ObjProperties) :-
-
-  findall(Value, (action_properties(ObjClass, _, Value)), DirectObjProperties),
-  findall(SubObjProps, (member(SubObj, DirectObjProperties), class_properties(SubObj, SubObjProps)), SubObjProperties),
-
-  append([DirectObjProperties, SubObjProperties], ObjProps),
-  flatten(ObjProps, ObjProperties).
+% class_properties(ObjClass, ObjProperties) :-
+%
+%   findall(Value, (action_properties(ObjClass, _, Value)), DirectObjProperties),
+%   findall(SubObjProps, (member(SubObj, DirectObjProperties), class_properties(SubObj, SubObjProps)), SubObjProperties),
+%
+%   append([DirectObjProperties, SubObjProperties], ObjProps),
+%   flatten(ObjProps, ObjProperties).
 
 
 

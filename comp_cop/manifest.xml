@@ -1,6 +1,6 @@
 <package>
   <description brief="comp_cop">
-  
+
      Interface between KnowRob and the CoP cognitive perception system
      that allows to query for objects to perceive and listens on the
      cop_answers topic for results, also for results of object perception

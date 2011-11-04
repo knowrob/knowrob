@@ -7,4 +7,4 @@
 
 :- use_module(library('knowrob_actions')).
 
-:- owl_parser:owl_parse('../owl/serve_drink.owl', false, false, true).
+% :- owl_parser:owl_parse('../owl/serve_drink.owl', false, false, true).

@@ -4,11 +4,12 @@
     provides model and reasoning tools to match prerequisites of actions
     to the capabilities of a robot.
   </description>
-  <author>Tobias Roehm</author>
+  <author>Moritz Tenorth, Tobias Roehm</author>
   <license>GPL</license>
   <url>http://ros.org/wiki/mod_srdl</url>
   <review status="unreviewed" notes=""/>
   <depend package="ias_knowledge_base"/>
+  <depend package="knowrob_common"/>
   <depend package="urdf"/>
   <export>
     <rosdoc config="rosdoc.yaml" />

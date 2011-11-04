@@ -19,10 +19,10 @@
 :- register_ros_package(thea).
 :- register_ros_package(ias_knowledge_base).
 :- register_ros_package(mod_srdl).
-
-
+:- register_ros_package(knowrob_common).
 
 :- use_module(library('srdl2')).
+:- use_module(library('knowrob_owl')).
 
 
 

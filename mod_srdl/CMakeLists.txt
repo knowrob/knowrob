@@ -15,7 +15,7 @@ foreach( _in ${inputs} )
   configure_file( ${_in} ${_out} )
 endforeach( _in )
 
-# set local package path of mod_srdl in owl and prolog files 
+# set local package path of mod_srdl in owl and prolog files
 rosbuild_find_ros_package(mod_srdl)
 set( SRDL_PACKAGE_PATH ${mod_srdl_PACKAGE_PATH} )
 fix_ros_destination_path(SRDL_PACKAGE_PATH)
@@ -33,5 +33,5 @@ foreach( _in ${inputs} )
 endforeach( _in )
 
 # Build urdf converter (converter from urdf to srdl)
-rosbuild_add_executable(urdfImporter src/urdfImporter.cpp)
+# rosbuild_add_executable(urdfImporter src/urdfImporter.cpp)
 

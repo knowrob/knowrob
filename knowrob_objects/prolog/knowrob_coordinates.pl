@@ -94,7 +94,7 @@ instantiate_at_position(ObjClassDef, PoseList, ObjInst) :-
     % something else, and transform them before instantiation
     findall(PartInst, (
         instantiate_physical_part(ObjClassDef, ObjInst, PartInst)
-    ), _Parts)
+    ), _Parts),
 
     retractall(class_to_pose(_,_)).
 

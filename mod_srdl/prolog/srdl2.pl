@@ -33,22 +33,16 @@
 :- use_module(library('thea/owl_parser')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/rdfs_computable')).
+:- use_module(library('knowrob_owl')).
 
 
-% :- owl_parser:owl_parse('../owl/srdl2-action.owl', false, false, true).
-:- owl_parser:owl_parse('../owl/TUM_Rosie.owl', false, false, true).
-:- owl_parser:owl_parse('../owl/ChocolateCakeBaking.owl', false, false, true).
-:- owl_parser:owl_parse('../owl/TableSetting.owl', false, false, true).
+:- owl_parser:owl_parse('../owl/srdl2-action.owl', false, false, true).
 
-:- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
-:- rdf_db:rdf_register_ns(owl, 'http://www.w3.org/2002/07/owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(srdl2, 'http://ias.cs.tum.edu/kb/srdl2.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(srdl2comp, 'http://ias.cs.tum.edu/kb/srdl2-comp.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(srdl2cap, 'http://ias.cs.tum.edu/kb/srdl2-cap.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(tumrosie, 'http://ias.cs.tum.edu/kb/TUM_Rosie.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(tablesetting, 'http://ias.cs.tum.edu/kb/TableSetting.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(chocolatecake, 'http://ias.cs.tum.edu/kb/ChocolateCakeBaking.owl#', [keep(true)]).
+
 
 :- rdf_meta
         action_feasible_on_robot(r,r),
@@ -57,7 +51,6 @@
         required_cap_for_action(r,r),
         missing_comp_for_action(r,r,r),
         required_comp_for_action(r,r),
-        class_properties(r,r,r),
         cap_available_on_robot(r,r),
         comp_type_available(r,r),
         sub_component(r,r).
@@ -220,42 +213,6 @@ sub_component(Super, Sub) :-
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % OWL/ DL Predicates
-
-%% class_properties(?Class, ?Prop, ?Values) is nondet.
-%
-% Collect all property values of someValuesFrom-restrictions of a class
-%
-% @param Class   Class whose restrictions are being considered
-% @param Prop    Property whose restrictions in Class are being considered
-% @param Values  List of all classes that appear in a restriction of a superclass of Class along Property
-
-class_properties(Class, Prop, Val) :-         % read directly asserted properties
-  class_properties_1(Class, Prop, Val).
-class_properties(Class, Prop, Val) :-         % also consider properties of superclasses
-  nonvar(Class),
-  owl_subclass_of(Class, Super), Class\=Super,
-  class_properties_1(Super, Prop, Val).
-
-% read restrictions defined for Class for Prop or a sub-property of Prop
-class_properties_1(Class, Prop, Val) :-
-  nonvar(Class),
-  owl_direct_subclass_of(Class, Sup),
-  owl_direct_subclass_of(Sup, Sup2),
-  ( (nonvar(Prop)) -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
-  owl_restriction(Sup2,restriction(SubProp, some_values_from(Val))).
-
-class_properties_1(Class, Prop, Val) :-
-  nonvar(Class),
-  owl_direct_subclass_of(Class, Sup),
-  ( (nonvar(Prop)) -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
-  owl_restriction(Sup,restriction(SubProp, some_values_from(Val))).
-
-class_properties_1(Class, Prop, Val) :-
-  var(Class),
-  ( (nonvar(Prop)) -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
-  owl_restriction(Sup,restriction(SubProp, some_values_from(Val))),
-  owl_direct_subclass_of(Class, Sup).
-
 
 
 %% plan_subevents_recursive(+Plan, ?SubEvents) is semidet.

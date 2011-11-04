@@ -181,17 +181,3 @@ compatible_obj_types(A, B) :-
   not(owl_disjoint_with(Akr, Bkr)).
 
 
-
-%% to_knowrob(?Identifier, ?KnowrobIdentifier) is det.
-%
-% This predicate defines a simple mapping to translate from any kind of identifier in the vision system
-% (class names, model names, etc) into the corresponding identifiers in KnowRob.
-%
-% @param Identifier        Atom identifying something in the vision system
-% @param KnowrobIdentifier Corresponding atom identifying something in KnowRob
-%
-to_knowrob('chair', K)    :- K= 'http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture',!.
-to_knowrob('bed', K)      :- K= 'http://ias.cs.tum.edu/kb/knowrob.owl#Bed-PieceOfFurniture',!.
-to_knowrob('cabinet', K)  :- K= 'http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture',!.
-to_knowrob('bottle1', K)  :- K= 'http://ias.cs.tum.edu/kb/knowrob.owl#DrinkingBottle',!.
-to_knowrob(A, K)          :- K= A,!.

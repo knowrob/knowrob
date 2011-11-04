@@ -142,7 +142,7 @@ class_properties(Class, Prop, Val) :-         % also consider properties of supe
   class_properties_1(Super, Prop, Val).
 
 % read restrictions defined for Class for Prop or a sub-property of Prop
-
+%
 % TODO: Do we need this alternative? results in double results, and super-classes
 % should already be handled by the second alternative of class_properties
 %
@@ -158,9 +158,6 @@ class_properties_1(Class, Prop, Val) :-
 
   ( owl_restriction(Sup,restriction(SubProp, some_values_from(Val))) ;
     owl_restriction(Sup,restriction(SubProp, has_value(Val))) ).
-
-
-
 
 
 
