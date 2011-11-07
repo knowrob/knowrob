@@ -9,5 +9,5 @@ function get_pkg_classpath() {
 
 function get_pkg_ld_lib_path() {
     ROS_EXPORT_LD=$(rospack export --lang=java --attrib=ld_lib_path $1)
-    export $2=$(echo $ROS_EXPORT_LD | sed 's/ /:/g'):$(rospack find rosjava)/bin
+    export $2=$(echo $ROS_EXPORT_LD | sed 's/ /:/g'):$(rospack find rosjava_jni)/bin
 }
