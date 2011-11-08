@@ -14,9 +14,6 @@
     <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
     <!ENTITY roboearth "http://www.roboearth.org/kb/roboearth.owl#" >
     <!ENTITY serve_drink "http://www.roboearth.org/kb/serve_drink.owl#" >
-    <!ENTITY SRDL "http://ias.cs.tum.edu/kb/SRDL.owl#" >
-    <!ENTITY SRDL_component "http://ias.cs.tum.edu/kb/SRDL_component.owl#" >
-    <!ENTITY SRDL_capability "http://ias.cs.tum.edu/kb/SRDL_capability.owl#" >
 ]>
 
 
@@ -78,7 +75,7 @@
 
     <knowrob:Bed-PieceOfFurniture rdf:about="&map;bed1"/>
     <knowrob:Cabinet-PieceOfFurniture rdf:about="&map;cabinet1"/>
-    <knowrob:RightHand rdf:about="#robotRightHand" />
+    <knowrob:HolderGripper rdf:about="#robotRightGripper" />
 
     <knowrob:Point2D rdf:about="#robotPose-grasping1">
       <knowrob:inReachOf rdf:resource="&map;bottle1"/>
@@ -131,13 +128,12 @@
                     </owl:Restriction>
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;subAction"/>
-                        <owl:someValuesFrom rdf:resource="#GraspBottle"/>
+                        <owl:someValuesFrom rdf:resource="#GraspObjectWithRightGripper"/>
                     </owl:Restriction>
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;subAction"/>
                         <owl:someValuesFrom rdf:resource="#OpenGripperForHandover"/>
                     </owl:Restriction>
-
 
 
                     <owl:Restriction>
@@ -184,83 +180,16 @@
                         <owl:hasValue rdf:resource="#ServeADrinkOrder4"/>
                     </owl:Restriction>
 
-                    <!-- temporarily here until SRDL supports dynamic computation of object model requirements -->
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="&SRDL;hasCapabilityDependency"/>
-                        <owl:someValuesFrom rdf:resource="#serve_drink_cap"/>
-                    </owl:Restriction>
                 </owl:intersectionOf>
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
 
-    <!-- ##################################################################################### -->
-    <!-- temporarily here until SRDL supports dynamic computation of object model requirements -->
-    <owl:Class rdf:about="#serve_drink_cap">
-        <rdfs:subClassOf rdf:resource="&SRDL_capability;CompositeCapability"/>
-    </owl:Class>
-
-    <owl:Class rdf:about="#serve_drink_capAlternative1">
-        <rdfs:subClassOf rdf:resource="&SRDL;CompositeCapabilityAlternative"/>
-        <rdfs:subClassOf>
-            <owl:Class>
-                <owl:intersectionOf rdf:parseType="Collection">
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="&SRDL;providesCapability"/>
-                        <owl:someValuesFrom rdf:resource="#serve_drink_cap"/>
-                    </owl:Restriction>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="&SRDL;needsComponent"/>
-                        <owl:someValuesFrom rdf:resource="#BottleRecModel"/>
-                    </owl:Restriction>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="&SRDL;needsComponent"/>
-                        <owl:someValuesFrom rdf:resource="#CabinetRecModel"/>
-                    </owl:Restriction>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="&SRDL;needsComponent"/>
-                        <owl:someValuesFrom rdf:resource="#BedRecModel"/>
-                    </owl:Restriction>
-                </owl:intersectionOf>
-            </owl:Class>
-        </rdfs:subClassOf>
-    </owl:Class>
-
-
-    <owl:Class rdf:about="#BottleRecModel">
-        <rdfs:subClassOf rdf:resource="&roboearth;ObjectRecognitionModel"/>
-        <owl:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&roboearth;providesModelFor"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;Bottle"/>
-            </owl:Restriction>
-        </owl:subClassOf>
-    </owl:Class>
-    <owl:Class rdf:about="#CabinetRecModel">
-        <rdfs:subClassOf rdf:resource="&roboearth;ObjectRecognitionModel"/>
-        <owl:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&roboearth;providesModelFor"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;Cabinet"/>
-            </owl:Restriction>
-        </owl:subClassOf>
-    </owl:Class>
-    <owl:Class rdf:about="#BedRecModel">
-        <rdfs:subClassOf rdf:resource="&roboearth;ObjectRecognitionModel"/>
-        <owl:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&roboearth;providesModelFor"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;Bed"/>
-            </owl:Restriction>
-        </owl:subClassOf>
-    </owl:Class>
-
-    <!-- ##################################################################################### -->
 
     <!-- ordering constraints for ServeADrink -->
     <knowrob:PartialOrdering-Strict rdf:about="#ServeADrinkOrder10">
         <knowrob:occursBeforeInOrdering rdf:resource="#MoveBaseToGraspPose"/>
-        <knowrob:occursAfterInOrdering rdf:resource="#GraspBottle"/>
+        <knowrob:occursAfterInOrdering rdf:resource="#GraspObjectWithRightGripper"/>
     </knowrob:PartialOrdering-Strict>
     <knowrob:PartialOrdering-Strict rdf:about="#ServeADrinkOrder11">
         <knowrob:occursBeforeInOrdering rdf:resource="#MoveBaseToGraspPose"/>
@@ -276,15 +205,15 @@
     </knowrob:PartialOrdering-Strict>
 
     <knowrob:PartialOrdering-Strict rdf:about="#ServeADrinkOrder20">
-        <knowrob:occursBeforeInOrdering rdf:resource="#GraspBottle"/>
+        <knowrob:occursBeforeInOrdering rdf:resource="#GraspObjectWithRightGripper"/>
         <knowrob:occursAfterInOrdering rdf:resource="#MoveBaseToHandoverPose"/>
     </knowrob:PartialOrdering-Strict>
     <knowrob:PartialOrdering-Strict rdf:about="#ServeADrinkOrder21">
-        <knowrob:occursBeforeInOrdering rdf:resource="#GraspBottle"/>
+        <knowrob:occursBeforeInOrdering rdf:resource="#GraspObjectWithRightGripper"/>
         <knowrob:occursAfterInOrdering rdf:resource="#HandoverObject"/>
     </knowrob:PartialOrdering-Strict>
     <knowrob:PartialOrdering-Strict rdf:about="#ServeADrinkOrder22">
-        <knowrob:occursBeforeInOrdering rdf:resource="#GraspBottle"/>
+        <knowrob:occursBeforeInOrdering rdf:resource="#GraspObjectWithRightGripper"/>
         <knowrob:occursAfterInOrdering rdf:resource="#OpenGripperForHandover"/>
     </knowrob:PartialOrdering-Strict>
 
@@ -355,7 +284,7 @@
                 <owl:intersectionOf rdf:parseType="Collection">
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;deviceUsed"/>
-                        <owl:someValuesFrom rdf:resource="#robotRightHand"/>
+                        <owl:someValuesFrom rdf:resource="#robotRightGripper"/>
                     </owl:Restriction>
                 </owl:intersectionOf>
             </owl:Class>
@@ -364,22 +293,26 @@
 
 
 
-
     <!-- ################################################
     GRASPING A BOTTLE RECIPE
     ##################################################### -->
 
 
-
-    <owl:Class rdf:ID="GraspBottle">
+    <owl:Class rdf:ID="GraspObjectWithRightGripper">
         <rdfs:subClassOf rdf:resource="&roboearth;GraspingSomething"/>
         <rdfs:label rdf:datatype="&xsd;string">grasping a bottle</rdfs:label>
         <rdfs:subClassOf>
             <owl:Class>
                 <owl:intersectionOf rdf:parseType="Collection">
+
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
-                        <owl:someValuesFrom rdf:resource="&map;bottle1"/>
+                        <owl:someValuesFrom rdf:resource="#robotRightGripper"/>
+                    </owl:Restriction>
+
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&knowrob;deviceUsed"/>
+                        <owl:someValuesFrom rdf:resource="&knowrob;DrinkingBottle"/>
                     </owl:Restriction>
 
                     <!-- intentionally unsorted, sorting is done using the ordering constraints -->
@@ -412,63 +345,63 @@
 
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;orderingConstraints"/>
-                        <owl:hasValue rdf:resource="#GraspBottleOrder10"/>
+                        <owl:hasValue rdf:resource="#GraspObjectWithRightGripperOrder10"/>
                     </owl:Restriction>
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;orderingConstraints"/>
-                        <owl:hasValue rdf:resource="#GraspBottleOrder11"/>
+                        <owl:hasValue rdf:resource="#GraspObjectWithRightGripperOrder11"/>
                     </owl:Restriction>
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;orderingConstraints"/>
-                        <owl:hasValue rdf:resource="#GraspBottleOrder12"/>
+                        <owl:hasValue rdf:resource="#GraspObjectWithRightGripperOrder12"/>
                     </owl:Restriction>
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;orderingConstraints"/>
-                        <owl:hasValue rdf:resource="#GraspBottleOrder13"/>
+                        <owl:hasValue rdf:resource="#GraspObjectWithRightGripperOrder13"/>
                     </owl:Restriction>
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;orderingConstraints"/>
-                        <owl:hasValue rdf:resource="#GraspBottleOrder14"/>
+                        <owl:hasValue rdf:resource="#GraspObjectWithRightGripperOrder14"/>
                     </owl:Restriction>
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;orderingConstraints"/>
-                        <owl:hasValue rdf:resource="#GraspBottleOrder20"/>
+                        <owl:hasValue rdf:resource="#GraspObjectWithRightGripperOrder20"/>
                     </owl:Restriction>
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;orderingConstraints"/>
-                        <owl:hasValue rdf:resource="#GraspBottleOrder21"/>
+                        <owl:hasValue rdf:resource="#GraspObjectWithRightGripperOrder21"/>
                     </owl:Restriction>
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;orderingConstraints"/>
-                        <owl:hasValue rdf:resource="#GraspBottleOrder22"/>
+                        <owl:hasValue rdf:resource="#GraspObjectWithRightGripperOrder22"/>
                     </owl:Restriction>
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;orderingConstraints"/>
-                        <owl:hasValue rdf:resource="#GraspBottleOrder23"/>
+                        <owl:hasValue rdf:resource="#GraspObjectWithRightGripperOrder23"/>
                     </owl:Restriction>
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;orderingConstraints"/>
-                        <owl:hasValue rdf:resource="#GraspBottleOrder30"/>
+                        <owl:hasValue rdf:resource="#GraspObjectWithRightGripperOrder30"/>
                     </owl:Restriction>
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;orderingConstraints"/>
-                        <owl:hasValue rdf:resource="#GraspBottleOrder31"/>
+                        <owl:hasValue rdf:resource="#GraspObjectWithRightGripperOrder31"/>
                     </owl:Restriction>
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;orderingConstraints"/>
-                        <owl:hasValue rdf:resource="#GraspBottleOrder32"/>
+                        <owl:hasValue rdf:resource="#GraspObjectWithRightGripperOrder32"/>
                     </owl:Restriction>
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;orderingConstraints"/>
-                        <owl:hasValue rdf:resource="#GraspBottleOrder40"/>
+                        <owl:hasValue rdf:resource="#GraspObjectWithRightGripperOrder40"/>
                     </owl:Restriction>
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;orderingConstraints"/>
-                        <owl:hasValue rdf:resource="#GraspBottleOrder41"/>
+                        <owl:hasValue rdf:resource="#GraspObjectWithRightGripperOrder41"/>
                     </owl:Restriction>
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;orderingConstraints"/>
-                        <owl:hasValue rdf:resource="#GraspBottleOrder5"/>
+                        <owl:hasValue rdf:resource="#GraspObjectWithRightGripperOrder5"/>
                     </owl:Restriction>
 
                 </owl:intersectionOf>
@@ -476,68 +409,68 @@
         </rdfs:subClassOf>
     </owl:Class>
 
-    <!-- ordering constraints for GraspBottle -->
-    <knowrob:PartialOrdering-Strict rdf:about="#GraspBottleOrder10">
+    <!-- ordering constraints for GraspObjectWithRightGripper -->
+    <knowrob:PartialOrdering-Strict rdf:about="#GraspObjectWithRightGripperOrder10">
         <knowrob:occursBeforeInOrdering rdf:resource="#ReachToApproachPose"/>
         <knowrob:occursAfterInOrdering rdf:resource="#OpenGripperForGrasping"/>
     </knowrob:PartialOrdering-Strict>
-    <knowrob:PartialOrdering-Strict rdf:about="#GraspBottleOrder11">
+    <knowrob:PartialOrdering-Strict rdf:about="#GraspObjectWithRightGripperOrder11">
         <knowrob:occursBeforeInOrdering rdf:resource="#ReachToApproachPose"/>
         <knowrob:occursAfterInOrdering rdf:resource="#ReachForObjectPose"/>
     </knowrob:PartialOrdering-Strict>
-    <knowrob:PartialOrdering-Strict rdf:about="#GraspBottleOrder12">
+    <knowrob:PartialOrdering-Strict rdf:about="#GraspObjectWithRightGripperOrder12">
         <knowrob:occursBeforeInOrdering rdf:resource="#ReachToApproachPose"/>
         <knowrob:occursAfterInOrdering rdf:resource="#CloseGripperForGrasping"/>
     </knowrob:PartialOrdering-Strict>
-    <knowrob:PartialOrdering-Strict rdf:about="#GraspBottleOrder13">
+    <knowrob:PartialOrdering-Strict rdf:about="#GraspObjectWithRightGripperOrder13">
         <knowrob:occursBeforeInOrdering rdf:resource="#ReachToApproachPose"/>
         <knowrob:occursAfterInOrdering rdf:resource="#LiftObjectToApproachPose"/>
     </knowrob:PartialOrdering-Strict>
-    <knowrob:PartialOrdering-Strict rdf:about="#GraspBottleOrder14">
+    <knowrob:PartialOrdering-Strict rdf:about="#GraspObjectWithRightGripperOrder14">
         <knowrob:occursBeforeInOrdering rdf:resource="#ReachToApproachPose"/>
         <knowrob:occursAfterInOrdering rdf:resource="#ReachToParkingPose"/>
     </knowrob:PartialOrdering-Strict>
 
-    <knowrob:PartialOrdering-Strict rdf:about="#GraspBottleOrder20">
+    <knowrob:PartialOrdering-Strict rdf:about="#GraspObjectWithRightGripperOrder20">
         <knowrob:occursBeforeInOrdering rdf:resource="#OpenGripperForGrasping"/>
         <knowrob:occursAfterInOrdering rdf:resource="#ReachForObjectPose"/>
     </knowrob:PartialOrdering-Strict>
-    <knowrob:PartialOrdering-Strict rdf:about="#GraspBottleOrder21">
+    <knowrob:PartialOrdering-Strict rdf:about="#GraspObjectWithRightGripperOrder21">
         <knowrob:occursBeforeInOrdering rdf:resource="#OpenGripperForGrasping"/>
         <knowrob:occursAfterInOrdering rdf:resource="#CloseGripperForGrasping"/>
     </knowrob:PartialOrdering-Strict>
-    <knowrob:PartialOrdering-Strict rdf:about="#GraspBottleOrder22">
+    <knowrob:PartialOrdering-Strict rdf:about="#GraspObjectWithRightGripperOrder22">
         <knowrob:occursBeforeInOrdering rdf:resource="#OpenGripperForGrasping"/>
         <knowrob:occursAfterInOrdering rdf:resource="#LiftObjectToApproachPose"/>
     </knowrob:PartialOrdering-Strict>
-    <knowrob:PartialOrdering-Strict rdf:about="#GraspBottleOrder23">
+    <knowrob:PartialOrdering-Strict rdf:about="#GraspObjectWithRightGripperOrder23">
         <knowrob:occursBeforeInOrdering rdf:resource="#OpenGripperForGrasping"/>
         <knowrob:occursAfterInOrdering rdf:resource="#ReachToParkingPose"/>
     </knowrob:PartialOrdering-Strict>
 
-    <knowrob:PartialOrdering-Strict rdf:about="#GraspBottleOrder30">
+    <knowrob:PartialOrdering-Strict rdf:about="#GraspObjectWithRightGripperOrder30">
         <knowrob:occursBeforeInOrdering rdf:resource="#ReachForObjectPose"/>
         <knowrob:occursAfterInOrdering rdf:resource="#CloseGripperForGrasping"/>
     </knowrob:PartialOrdering-Strict>
-    <knowrob:PartialOrdering-Strict rdf:about="#GraspBottleOrder31">
+    <knowrob:PartialOrdering-Strict rdf:about="#GraspObjectWithRightGripperOrder31">
         <knowrob:occursBeforeInOrdering rdf:resource="#ReachForObjectPose"/>
         <knowrob:occursAfterInOrdering rdf:resource="#LiftObjectToApproachPose"/>
     </knowrob:PartialOrdering-Strict>
-    <knowrob:PartialOrdering-Strict rdf:about="#GraspBottleOrder32">
+    <knowrob:PartialOrdering-Strict rdf:about="#GraspObjectWithRightGripperOrder32">
         <knowrob:occursBeforeInOrdering rdf:resource="#ReachForObjectPose"/>
         <knowrob:occursAfterInOrdering rdf:resource="#ReachToParkingPose"/>
     </knowrob:PartialOrdering-Strict>
 
-    <knowrob:PartialOrdering-Strict rdf:about="#GraspBottleOrder40">
+    <knowrob:PartialOrdering-Strict rdf:about="#GraspObjectWithRightGripperOrder40">
         <knowrob:occursBeforeInOrdering rdf:resource="#CloseGripperForGrasping"/>
         <knowrob:occursAfterInOrdering rdf:resource="#LiftObjectToApproachPose"/>
     </knowrob:PartialOrdering-Strict>
-    <knowrob:PartialOrdering-Strict rdf:about="#GraspBottleOrder41">
+    <knowrob:PartialOrdering-Strict rdf:about="#GraspObjectWithRightGripperOrder41">
         <knowrob:occursBeforeInOrdering rdf:resource="#CloseGripperForGrasping"/>
         <knowrob:occursAfterInOrdering rdf:resource="#ReachToParkingPose"/>
     </knowrob:PartialOrdering-Strict>
 
-    <knowrob:PartialOrdering-Strict rdf:about="#GraspBottleOrder5">
+    <knowrob:PartialOrdering-Strict rdf:about="#GraspObjectWithRightGripperOrder5">
         <knowrob:occursBeforeInOrdering rdf:resource="#LiftObjectToApproachPose"/>
         <knowrob:occursAfterInOrdering rdf:resource="#ReachToParkingPose"/>
     </knowrob:PartialOrdering-Strict>
@@ -569,7 +502,7 @@
                 <owl:intersectionOf rdf:parseType="Collection">
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;deviceUsed"/>
-                        <owl:someValuesFrom rdf:resource="#robotRightHand"/>
+                        <owl:someValuesFrom rdf:resource="#robotRightGripper"/>
                     </owl:Restriction>
                 </owl:intersectionOf>
             </owl:Class>
@@ -599,7 +532,7 @@
               <owl:intersectionOf rdf:parseType="Collection">
                 <owl:Restriction>
                     <owl:onProperty rdf:resource="&knowrob;deviceUsed"/>
-                    <owl:someValuesFrom rdf:resource="#robotRightHand"/>
+                    <owl:someValuesFrom rdf:resource="#robotRightGripper"/>
                 </owl:Restriction>
             </owl:intersectionOf>
           </owl:Class>

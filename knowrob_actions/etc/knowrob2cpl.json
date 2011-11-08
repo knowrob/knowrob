@@ -84,13 +84,10 @@
   "CausingToBeInACertainCondition" : "achieve",
   "Remembering" : "achieve",
   "UsingAnObject" : "use",
-
-
   "Translation-LocationChange" : "loc",
   "Reaching" : "arms-at",
   "GraspingSomething" : "object-in-hand",
-  "OpeningAGripper" : "arms-at",
+  "OpeningAGripper" : "gripper-opened",
   "DrinkingBottle" : "drinking-bottle"
-
 }
 

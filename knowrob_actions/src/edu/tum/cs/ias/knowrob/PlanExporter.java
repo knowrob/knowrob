@@ -60,7 +60,7 @@ public class PlanExporter {
 		            HashMap<String, Vector<String>> params = 
 		                PrologInterface.executeQuery("class_properties("+action+", Prop, Val)");
 
-		            String obj_desig="", loc_desig="";
+		            String obj_desig="", loc_desig="", device="";
 
 		            for(int i=0;i<params.get("Prop").size();i++) {
 
@@ -84,7 +84,10 @@ public class PlanExporter {
 		                    
 		                    loc_desig = locationDesignatorFromOWLclass(val, obj);
 		                    
+		                } else if(prop.endsWith("deviceUsed")) {
+		                	device = val;
 		                }
+		                
 		            }
 
 
@@ -99,7 +102,7 @@ public class PlanExporter {
 		                action_spec = "(achieve (object-placed-at "+ obj_desig +" "+ loc_desig +"))";
 
 		            } else if(rplAction.endsWith("arm-parked")) {
-		                action_spec = "(achieve (arm-parked ?side))";
+		                action_spec = "(achieve (arm-parked "+device+"))";
 
 		            } else if(rplAction.endsWith("arms-at")) {
 		                action_spec = "(achieve (arms-at " + loc_desig + "))";
@@ -111,11 +114,14 @@ public class PlanExporter {
 		                action_spec = "(perceive-all "+ obj_desig +")";
 
 		            } else if(rplAction.endsWith("perceive")) {
-                        action_spec = "(perceive "+ obj_desig +")"; 
-                        
-                    }  else if(rplAction.endsWith("loc")) {
-                        action_spec = "(achieve (loc "+ loc_desig +"))"; 
-                    } 
+		            	action_spec = "(perceive "+ obj_desig +")"; 
+
+		            }  else if(rplAction.endsWith("loc")) {
+		            	action_spec = "(achieve (loc "+ loc_desig +"))"; 
+
+		            } else if(rplAction.endsWith("gripper-opened")) {
+		            	action_spec = "(achieve (gripper-opened "+ device +"))";
+		            }
 
 		            plan.add(action_spec);
 
