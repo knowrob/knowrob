@@ -10,6 +10,11 @@
   <url>http://ros.org/wiki/knowrob_actions</url>
   <rosdep name="libjson_java"/>
   <depend package="knowrob_common"/>
+
+  <export>
+    <java classpath="${prefix}/bin:/usr/share/java/json-lib.jar:/usr/share/java/commons-collections3.jar:/usr/share/java/ezmorph.jar:/usr/share/java/commons-beanutils.jar:/usr/share/java/commons-lang.jar:/usr/share/java/commons-logging.jar"/>
+  </export>
+
 </package>
 
 

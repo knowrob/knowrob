@@ -15,6 +15,7 @@ import com.google.common.base.Joiner;
 
 import net.sf.json.*;
 import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
+import edu.tum.cs.ias.knowrob.ros.RosUtilities;
 
 public class PlanExporter {
 
@@ -37,7 +38,7 @@ public class PlanExporter {
     public PlanExporter() throws IOException {
 
         designators = new HashMap<String, String>();
-        knowrobToCPL = readCplMapping(MAPPING_CONFIG_FILE);
+        knowrobToCPL = readCplMapping(RosUtilities.rospackFind("knowrob_actions") + "/" +MAPPING_CONFIG_FILE);
         plan = new ArrayList<String>();
     }
 
