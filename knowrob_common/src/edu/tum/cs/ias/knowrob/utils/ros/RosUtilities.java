@@ -1,6 +1,7 @@
-package edu.tum.cs.ias.knowrob.ros;
+package edu.tum.cs.ias.knowrob.utils.ros;
 
 import java.io.*;
+
 
 public class RosUtilities {
 

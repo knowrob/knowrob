@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import edu.tum.cs.ias.knowrob.ros.RosUtilities;
+import edu.tum.cs.ias.knowrob.utils.ros.RosUtilities;
 import jpl.*;
 
 
