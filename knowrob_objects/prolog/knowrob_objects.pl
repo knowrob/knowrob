@@ -21,7 +21,14 @@
 
 :- module(knowrob_objects,
     [
-
+      storagePlaceFor/2,
+      storagePlaceForBecause/3,
+      current_object_pose/2,
+      rotmat_to_list/2,
+      create_joint_information/8,
+      update_joint_information/6,
+      read_joint_information/8,
+      delete_joint_information/1
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -29,16 +36,24 @@
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/rdfs_computable')).
 :- use_module(library('knowrob_owl')).
+:- use_module(library('knowrob_perception')).
 
 
 :-  rdf_meta
     storagePlaceFor(r,r),
-    storagePlaceForBecause(r,r,r).
+    storagePlaceForBecause(r,r,r),
+    current_object_pose(r,-),
+    rotmat_to_list(r,-),
+    create_joint_information(r, r, r, +, ?, +, +, r),
+    update_joint_information(r, r, +, ?, +, +),
+    read_joint_information(r, r, r, r, -, -, -, -),
+    delete_joint_information(r).
+
 
 :- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
 :- rdf_db:rdf_register_ns(owl, 'http://www.w3.org/2002/07/owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
-
+:- rdf_db:rdf_register_ns(xsd, 'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
 
 
 
@@ -97,6 +112,190 @@ rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23
     rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#m31',Pose,M31literal), strip_literal_type(M31literal, M31a), term_to_atom(M31, M31a),
     rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#m32',Pose,M32literal), strip_literal_type(M32literal, M32a), term_to_atom(M32, M32a),
     rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#m33',Pose,M33literal), strip_literal_type(M33literal, M33a), term_to_atom(M33, M33a),!.
+
+
+
+
+%% create_joint_information(+Type, +Parent, +Child, +Pose, +Direction, +Qmin, +Qmax, -Joint) is det.
+%
+% Create a joint of class Type at pose Pose, linking Parent and Child
+% Qmin and Qmax are joint limits as used in the ROS articulation stack
+%
+% Usage:
+% create_joint_information('HingedJoint', knowrob:'cupboard1', knowrob:'door1', [1,0,0,...], [], 0.23, 0.42, -Joint)
+% create_joint_information('PrismaticJoint', knowrob:'cupboard1', knowrob:'drawer1', [1,0,0,...], [1,0,0], 0.23, 0.42, -Joint)
+%
+% @param Type       Type of the joint instance (knowrob:HingedJoint or knowrob:PrismaticJoint)
+% @param Parent     Parent object instance (e.g. cupboard)
+% @param Child      Child object instance (e.g. door)
+% @param Pose       Pose matrix of the joint as list float[16]
+% @param Direction  Direction vector of the joint. float[3] for prismatic joints, [] for rotational joints
+% @param Qmin       Minimal configuration value (joint limit)
+% @param Qmax       Minimal configuration value (joint limit)
+% @param Joint      Joint instance that has been created
+%
+create_joint_information(Type, Parent, Child, Pose, [DirX, DirY, DirZ], Qmin, Qmax, Joint) :-
+
+  % create individual
+  create_object_perception(Type, Pose, ['TouchPerception'], Joint),
+
+  % set parent and child
+  rdf_assert(Joint, knowrob:'properPhysicalParts', Child),
+  rdf_assert(Joint, knowrob:'connectedTo-Rigidly', Parent),
+
+  % set joint limits
+  rdf_assert(Joint, knowrob:'minJointValue', literal(type(xsd:float, Qmin))),
+  rdf_assert(Joint, knowrob:'maxJointValue', literal(type(xsd:float, Qmax))),
+
+  % set joint-specific information
+  ( (Type = 'PrismaticJoint') -> (
+      rdf_assert(Parent, knowrob:'prismaticallyConnectedTo', Child),
+
+      rdf_instance_from_class(knowrob:'Vector', DirVec),
+      rdf_assert(DirVec, knowrob:'vectorX', literal(type(xsd:float, DirX))),
+      rdf_assert(DirVec, knowrob:'vectorY', literal(type(xsd:float, DirY))),
+      rdf_assert(DirVec, knowrob:'vectorZ', literal(type(xsd:float, DirZ))),
+
+      rdf_assert(Joint, knowrob:'direction', DirVec),
+
+    ) ; (
+      rdf_assert(Parent, knowrob:'hingedTo', Child),
+    ) ).
+
+%% update_joint_information(+Joint, +Type, +Pose, +Direction, +Qmin, +Qmax)
+%
+% Update type, pose and articulation information for a joint after creation.
+% Leaves Parent and Child untouched, i.e. assumes that only the estimated
+% joint parameters have changed.
+%
+% @param Joint      Joint instance to be updated
+% @param Type       Type of the joint instance (knowrob:HingedJoint or knowrob:PrismaticJoint)
+% @param Pose       Pose matrix of the joint as list float[16]
+% @param Direction  Direction vector of the joint. float[3] for prismatic joints, [] for rotational joints
+% @param Qmin       Minimal configuration value (joint limit)
+% @param Qmax       Minimal configuration value (joint limit)
+%
+update_joint_information(Joint, Type, Pose, [DirX, DirY, DirZ], Qmin, Qmax) :-
+
+  % % % % % % % % % % % % % % % % % % %
+  % update joint type
+  rdf_retractall(Joint, rdf:type, _),
+  rdf_assert(Joint, rdf:type, Type),
+
+  % % % % % % % % % % % % % % % % % % %
+  % update pose by creating a new perception instance (remembering the old data)
+  create_perception_instance(['TouchPerception'], Perception),
+  set_perception_pose(Perception, Pose),
+  set_object_perception(Joint, Perception),
+
+  % % % % % % % % % % % % % % % % % % %
+  % update joint limits
+  rdf_retractall(Joint, knowrob:'minJointValue', _),
+  rdf_retractall(Joint, knowrob:'maxJointValue', _),
+  rdf_assert(Joint, knowrob:'minJointValue', literal(type(xsd:float, Qmin))),
+  rdf_assert(Joint, knowrob:'maxJointValue', literal(type(xsd:float, Qmax))),
+
+  % % % % % % % % % % % % % % % % % % %
+  % update connectedTo:
+
+  % determine parent/child
+  rdf_has(Parent, knowrob:'properPhysicalParts', Joint),
+  rdf_has(Joint, knowrob:'connectedTo-Rigidly', Parent),
+  rdf_has(Joint, knowrob:'connectedTo-Rigidly', Child),
+
+  % retract old connections between parent and child
+  rdf_retractall(Parent, knowrob:'prismaticallyConnectedTo', Child),
+  rdf_retractall(Parent, knowrob:'hingedTo', Child),
+
+  % remove direction vector if set
+  ((rdf_has(Joint, knowrob:direction, OldDirVec),
+    rdf_retractall(DirVec, _, _),
+    rdf_retractall(_, _, DirVec),
+    ) ; true),
+
+  % set new articulation information
+  ( (Type = 'PrismaticJoint') -> (
+      rdf_assert(Parent, knowrob:'prismaticallyConnectedTo', Child),
+
+      rdf_instance_from_class(knowrob:'Vector', DirVec),
+      rdf_assert(DirVec, knowrob:'vectorX', literal(type(xsd:float, DirX))),
+      rdf_assert(DirVec, knowrob:'vectorY', literal(type(xsd:float, DirY))),
+      rdf_assert(DirVec, knowrob:'vectorZ', literal(type(xsd:float, DirZ))),
+
+      rdf_assert(Joint, knowrob:'direction', DirVec),
+
+    ) ; (
+      rdf_assert(Parent, knowrob:'hingedTo', Child),
+    ) ).
+
+
+
+%% read_joint_information(+Joint, -Type, -Parent, -Child, -Pose, -Direction, -Qmin, -Qmax) is nondet.
+%
+% Read information stored about a particular joint.
+%
+% @param Joint      Joint instance to be read
+% @param Type       Type of the joint instance (knowrob:HingedJoint or knowrob:PrismaticJoint)
+% @param Parent     Parent object instance (e.g. cupboard)
+% @param Child      Child object instance (e.g. door)
+% @param Pose       Pose matrix of the joint as list float[16]
+% @param Direction  Direction vector of the joint. float[3] for prismatic joints, [] for rotational joints
+% @param Qmin       Minimal configuration value (joint limit)
+% @param Qmax       Minimal configuration value (joint limit)
+%
+read_joint_information(Joint, Type, Parent, Child, Pose, Direction, Qmin, Qmax) :-
+
+  rdf_has(Joint, rdf:type, Type),
+
+  rdf_has(Parent, knowrob:'properPhysicalParts', Joint),
+  rdf_has(Joint, knowrob:'connectedTo-Rigidly', Parent),
+  rdf_has(Joint, knowrob:'connectedTo-Rigidly', Child),
+
+  current_object_pose(Joint, Pose),
+
+  ((rdf_has(Joint, knowrob:'direction', DirVec),
+    rdf_has(DirVec, knowrob:'vectorX', literal(type(xsd:float, DirX))),
+    rdf_has(DirVec, knowrob:'vectorY', literal(type(xsd:float, DirY))),
+    rdf_has(DirVec, knowrob:'vectorZ', literal(type(xsd:float, DirZ))),
+    Direction=[DirX, DirY, DirZ]);
+    (Direction=[])),
+
+  rdf_has(Joint, knowrob:'minJointValue', literal(type(xsd:float, Qmin))),
+  rdf_has(Joint, knowrob:'maxJointValue', literal(type(xsd:float, Qmax))).
+
+
+
+%% delete_joint_information(Joint) is det.
+%
+% Remove joint instance and all information stored for this joint
+%
+% @param Joint Joint instance to be deleted
+%
+delete_joint_information(Joint) :-
+
+  % remove pose/perception instances
+  % removes timepoint, pose, perception itself
+  findall(Perception, (rdf_has(Perception, knowrob:objectActedOn, Joint),
+                       rdf_retractall(Perception, _, _)), _),
+
+  % remove connection between parent and child
+  rdf_has(Parent, knowrob:'properPhysicalParts', Joint),
+  rdf_has(Joint, knowrob:'connectedTo-Rigidly', Parent),
+  rdf_has(Joint, knowrob:'connectedTo-Rigidly', Child),
+
+  rdf_retractall(Parent, knowrob:'prismaticallyConnectedTo', Child),
+  rdf_retractall(Parent, knowrob:'hingedTo', Child),
+
+  % remove direction vector if set
+  ((rdf_has(Joint, knowrob:direction, OldDirVec),
+    rdf_retractall(DirVec, _, _),
+    rdf_retractall(_, _, DirVec),
+    ) ; true),
+
+  % remove everything directly connected to the joint instance
+  rdf_retractall(Joint, _, _),
+  rdf_retractall(_, _, Joint).
+
 
 
 

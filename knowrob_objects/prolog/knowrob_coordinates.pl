@@ -29,6 +29,7 @@
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/rdfs_computable')).
 :- use_module(library('tf_prolog')).
+:- use_module(library('knowrob_objects')).
 
 
 :- rdf_meta relative_to_pose(r,r,r),
