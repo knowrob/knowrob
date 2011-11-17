@@ -156,10 +156,10 @@ create_joint_information(Type, Parent, Child, Pose, [DirX, DirY, DirZ], Qmin, Qm
       rdf_assert(DirVec, knowrob:'vectorY', literal(type(xsd:float, DirY))),
       rdf_assert(DirVec, knowrob:'vectorZ', literal(type(xsd:float, DirZ))),
 
-      rdf_assert(Joint, knowrob:'direction', DirVec),
+      rdf_assert(Joint, knowrob:'direction', DirVec)
 
     ) ; (
-      rdf_assert(Parent, knowrob:'hingedTo', Child),
+      rdf_assert(Parent, knowrob:'hingedTo', Child)
     ) ).
 
 %% update_joint_information(+Joint, +Type, +Pose, +Direction, +Qmin, +Qmax)
@@ -209,8 +209,8 @@ update_joint_information(Joint, Type, Pose, [DirX, DirY, DirZ], Qmin, Qmax) :-
 
   % remove direction vector if set
   ((rdf_has(Joint, knowrob:direction, OldDirVec),
-    rdf_retractall(DirVec, _, _),
-    rdf_retractall(_, _, DirVec),
+    rdf_retractall(OldDirVec, _, _),
+    rdf_retractall(_, _, OldDirVec)
     ) ; true),
 
   % set new articulation information
@@ -222,10 +222,10 @@ update_joint_information(Joint, Type, Pose, [DirX, DirY, DirZ], Qmin, Qmax) :-
       rdf_assert(DirVec, knowrob:'vectorY', literal(type(xsd:float, DirY))),
       rdf_assert(DirVec, knowrob:'vectorZ', literal(type(xsd:float, DirZ))),
 
-      rdf_assert(Joint, knowrob:'direction', DirVec),
+      rdf_assert(Joint, knowrob:'direction', DirVec)
 
     ) ; (
-      rdf_assert(Parent, knowrob:'hingedTo', Child),
+      rdf_assert(Parent, knowrob:'hingedTo', Child)
     ) ).
 
 
@@ -288,8 +288,8 @@ delete_joint_information(Joint) :-
 
   % remove direction vector if set
   ((rdf_has(Joint, knowrob:direction, OldDirVec),
-    rdf_retractall(DirVec, _, _),
-    rdf_retractall(_, _, DirVec),
+    rdf_retractall(OldDirVec, _, _),
+    rdf_retractall(_, _, OldDirVec)
     ) ; true),
 
   % remove everything directly connected to the joint instance
