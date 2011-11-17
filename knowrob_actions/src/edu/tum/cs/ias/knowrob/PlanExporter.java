@@ -8,14 +8,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Vector;
-import org.apache.commons.lang.StringUtils;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
 
 import net.sf.json.*;
 import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
-import edu.tum.cs.ias.knowrob.ros.RosUtilities;
+import edu.tum.cs.ias.knowrob.utils.ros.RosUtilities;
 
 public class PlanExporter {
 
