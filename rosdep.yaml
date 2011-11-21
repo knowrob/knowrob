@@ -10,7 +10,7 @@ swi_prolog_clib:
     10.04: swi-prolog-clib
     10.10: swi-prolog
     11.04: swi-prolog
-    11.10: swi-prolog
+    oneiric: swi-prolog
 
 swi_prolog_http:
   debian: swi-prolog-http
@@ -20,7 +20,7 @@ swi_prolog_http:
     10.04: swi-prolog-http
     10.10: swi-prolog
     11.04: swi-prolog
-    11.10: swi-prolog
+    oneiric: swi-prolog
 
 swi_prolog_odbc:
   debian: swi-prolog-odbc
@@ -30,7 +30,7 @@ swi_prolog_odbc:
     10.04: swi-prolog-odbc
     10.10: swi-prolog-odbc
     11.04: swi-prolog-odbc
-    11.10: swi-prolog-odbc
+    oneiric: swi-prolog-odbc
 
 swi_prolog_semweb:
   debian: swi-prolog-semweb
@@ -40,7 +40,7 @@ swi_prolog_semweb:
     10.04: swi-prolog-semweb
     10.10: swi-prolog
     11.04: swi-prolog
-    11.10: swi-prolog
+    oneiric: swi-prolog
 
 swi_prolog_sgml:
   debian: swi-prolog-sgml
@@ -50,7 +50,7 @@ swi_prolog_sgml:
     10.04: swi-prolog-sgml
     10.10: swi-prolog
     11.04: swi-prolog
-    11.10: swi-prolog
+    oneiric: swi-prolog
 
 swi_prolog_xpce:
   debian: swi-prolog-xpce
@@ -60,7 +60,7 @@ swi_prolog_xpce:
     10.04: swi-prolog-xpce
     10.10: swi-prolog
     11.04: swi-prolog
-    11.10: swi-prolog
+    oneiric: swi-prolog
 
 libjson_java:
   debian: libjson-java
@@ -70,7 +70,7 @@ libjson_java:
     10.04: libjson-java
     10.10: libjson-java
     11.04: libjson-java
-    11.10: libjson-java
+    oneiric: libjson-java
 
 libjson_glib:
   debian: libjson-glib-dev
@@ -80,5 +80,5 @@ libjson_glib:
     10.04: libjson-glib-dev
     10.10: libjson-glib-dev
     11.04: libjson-glib-dev
-    11.10: libjson-glib-dev
+    oneiric: libjson-glib-dev
 
