@@ -1,6 +1,6 @@
 /** <module> comp_similarity
 
-  This module contains all computables that calculate semantic similarities 
+  This module contains all computables that calculate semantic similarities
   between objects.
 
 
@@ -27,7 +27,7 @@
     [
       rdf_wup_similarity/3,
       rdf_wup_similarity_given_LCS/4,
-      
+
       %old:
       %rdf_wup_distance/3,
       rdf_path_distance/3,
@@ -47,10 +47,10 @@
 	  rdf_most_specific_classes(t,t,-),
 	  rdf_superclass_of_any_class_in_list(r,t),
 	  rdf_least_common_ancestors(t,-),
-	  
+
 	  rdf_superclass_list(t,t),
 	  rdf_common_ancestor(t, -),
-	  
+
 	  %old:
       %rdf_wup_distance(r,r,-),
       rdf_path_distance(r,r,-),
@@ -97,23 +97,23 @@ rdf_wup_similarity_given_LCS(A, B, LCS, Sim) :-
   	rdf_shortest_dist_up(A,   LCS, DepthA),
   	rdf_shortest_dist_up(B,   LCS, DepthB),
   	Sim is 2*DepthLCS / (DepthA + DepthB + 2*DepthLCS).
-  	
+
 %% rdf_shortest_dist_up(+A, +B, -Dist)
-%  
-% searches the shortest distance of a directed path from A to B 
+%
+% searches the shortest distance of a directed path from A to B
 %
 % @param A
-% @param B 
+% @param B
 % @param Dist shortest distance from A to B, will be false if no such path exists
 rdf_shortest_dist_up(A, B, Dist) :-
-	rdf_shortest_dist_up_superclasses([A], B, [], Dist).  
+	rdf_shortest_dist_up_superclasses([A], B, [], Dist).
 
 %% rdf_shortest_dist_up_superclasses(+SearchList, +Goal, +DoneList, -Dist)
-%  
-% searches the shortest distance of a directed path from any class in SearchList to the class Goal. 
+%
+% searches the shortest distance of a directed path from any class in SearchList to the class Goal.
 %
 % @param SearchList
-% @param Goal 
+% @param Goal
 % @param DoneList contains all classes searched so far, they will be excluded from the search
 % @param Dist shortest distance from any class in SearchList to Goal, will be false if no such path exists
 rdf_shortest_dist_up_superclasses(SearchList, Goal, DoneList, Dist) :-
@@ -122,10 +122,10 @@ rdf_shortest_dist_up_superclasses(SearchList, Goal, DoneList, Dist) :-
     ->
     	Dist is 0 %done
     ;
-    	findall(NewSuperClasses, 
+    	findall(NewSuperClasses,
     	(
     		member(Class, SearchList),
-	    	findall(SuperClass, 
+	    	findall(SuperClass,
 			 	(
 			 		rdf_has(Class, rdfs:subClassOf, SuperClass),
 				 	\+ member(SuperClass, DoneList)
@@ -143,28 +143,28 @@ rdf_shortest_dist_up_superclasses(SearchList, Goal, DoneList, Dist) :-
 			Dist is NewDist + 1
 		)
 	 ).
-	 
+
 %% rdf_most_specific_classes(+List:list, -CMs:list)
-%  
+%
 % return all classes in List as CMs that do not have any (real) subclasses in List
 %
 % @param List list of classes
 % @param CMs most specific superclasses of all classes in List
 rdf_most_specific_classes(List, CMs) :-
     rdf_most_specific_classes_(List, List, CMs).
-    
+
 rdf_most_specific_classes_([],_, []).
 rdf_most_specific_classes_([C1|Cs], All, CMs) :-
 	(
 	  	rdf_superclass_of_any_class_in_list(C1, All)
-	-> 
+	->
 	  	rdf_most_specific_classes_(Cs, All, CMs)
-	; 
-		rdf_most_specific_classes_(Cs, All, NewCMs), CMs = [C1|NewCMs] 
+	;
+		rdf_most_specific_classes_(Cs, All, NewCMs), CMs = [C1|NewCMs]
     ).
-    
+
 %% rdf_superclass_of_any_class_in_list(+C:rdf_class, -[C1|Cs]:list)
-%  
+%
 % checks if the class C is superclass of any class in the list
 % return false if the only superclass is itself
 %

@@ -49,7 +49,7 @@
 % Interface to the Weka machine learning library
 %
 % Trains a classifier on the provided training data and returns the classifier instance
-% 
+%
 % Example: classifier_trained(C, 'weka.classifiers.bayes.NaiveBayes', '', [['ClassA', 3, 5] , ['ClassB', 1, 9], ...]).
 %
 % @param Classifier     The resulting classifier instance
@@ -68,9 +68,9 @@ classifier_trained(Classifier, Type, Options, Trainingsdata) :-
 %% clusterer_trained(- Classifier, + Type, + Options, + Trainingsdata) is nondet.
 %
 % Interface to the Weka machine learning library
-% 
+%
 % Trains a clusterer on the provided training data and returns the clusterer instance
-% 
+%
 % Example: classifier_trained(C, 'weka.clusterers.SimpleKMeans', '', [[3, 5] , [1, 9], ...]).
 %
 % @param Clusterer      The resulting clusterer instance
@@ -109,11 +109,11 @@ crf_trained(CRF, Options, Trainingsdata, Labels) :-
 %% classify_instances(+ Classifier, + Instances, - Classified) is nondet.
 %
 % Interface to the Weka machine learning library
-% 
+%
 % Classifies a list of instances, using a previously trained Clusterer / Classifier.
-% 
+%
 % Returns a list of the assigned classes in Classified.
-% 
+%
 % Example: classify_instances(C, [[3,b],[9,a]], R).
 %          -> R = [classA,classB]
 %
@@ -133,9 +133,9 @@ classify_instances(Classifier, Instances, Classified) :-
 %% classify_instances_return_complete(+ Classifier, + Instances, - Classified) is nondet.
 %
 % Interface to the Weka machine learning library
-% 
+%
 % Similar to classify_instances, but returns the whole data with the class label added as first attribute.
-% 
+%
 % Example: classify_instances(C, [[3,b],[9,a]], R).
 %          -> R = [[classA,3,b],[classB,9,a]]
 %
@@ -154,7 +154,7 @@ classify_instances_return_complete(Classifier, Instances, Classified) :-
 % Interface to the Mallet machine learning library
 %
 % Labels data using a given CRF
-% 
+%
 % @param CRF        CRF instance that is to be used for classification
 % @param Testdata   Data to be labeled
 % @param Labels     Inferred list of labels
@@ -169,7 +169,7 @@ crf_label(CRF, Testdata, Labels) :-
 %% classifier_saved(?File,?Classifier) is nondet.
 %
 % Interface to the Weka machine learning library
-% 
+%
 % Loads / saves a classifier that has been created via classifier_trained to a specified file.
 % Loading: classifier_saved(+File,-Classifier)
 % Saving:  classifier_saved(+File,+Classifier)
@@ -186,7 +186,7 @@ classifier_saved(File, Classifier) :-
 %% clusterer_saved(?File,?Clusterer) is nondet.
 %
 % Interface to the Weka machine learning library
-% 
+%
 % Loads / saves a clusterer that has been created via clusterer_trained to a specified file.
 % Loading: clusterer_trained(+File,-Clusterer)
 % Saving:  clusterer_trained(+File,+Clusterer)
@@ -214,7 +214,7 @@ classifier_saved(File, Classifier) :-
   crf_saved(File, CRF) :-
     (var(CRF), print('Loading CRF...'), jpl_call('de.tum.in.fipm.kipm.util.MalletCRFWrapper','loadFromFile',[File],CRF)) ;
     (nonvar(CRF), print('Saving CRF...'),jpl_call(CRF,'saveToFile',[File],_)).
-  
+
 
 
 
@@ -240,9 +240,9 @@ crf_test_data(D,L) :- D=[[1,1,1,3,3,3,1,1],
                          [a,b,d],
                          [a,b,b,b,d]].
 
-  
+
 % prepare_data(+Data, -Result)
-% takes (multiple) lists, and 
+% takes (multiple) lists, and
 % - replaces every numeric values with the corresponding string.
 % - removes literal(type(_,Value))
 %
@@ -266,8 +266,8 @@ crf_test_data(D,L) :- D=[[1,1,1,3,3,3,1,1],
 % merge_classify_results(+ Data, +FirstElements, -Result)
 %
 % appends elements of FirstElement to Data.
-merge_classify_results([D1 | Data], [FE1 | FirstElements], [[FE1 | D1] | Result]) :- 
+merge_classify_results([D1 | Data], [FE1 | FirstElements], [[FE1 | D1] | Result]) :-
   merge_classify_results(Data, FirstElements, Result).
-  
+
 merge_classify_results([], [], []).
-  
+

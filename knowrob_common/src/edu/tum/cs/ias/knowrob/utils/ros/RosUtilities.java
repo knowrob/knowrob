@@ -51,28 +51,19 @@ public class RosUtilities {
     public static String rosrun(String pkg, String binary, String[] arg) throws IOException {
 
         String handle = null;
-//        try
-//        {
+        try
+        {
         	String args = Joiner.on(" ").join(arg);
         	Process p = Runtime.getRuntime().exec("rosrun " + pkg + " " + binary + " " + args);
-        	
-//        	BufferedReader br = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-        	
-//        	int lines = 10;
-//        	while(lines > 0) {
-//        		System.out.println(br.readLine());
-//        		lines --;
-//        	}
-        	
-//            Process p = new ProcessBuilder( "rosrun " + pkg + " " + binary + " " + pkg + " " ).start();
-            handle = UUID.randomUUID().toString();
+
+        	handle = UUID.randomUUID().toString();
             processMap.put(handle, p);
             
-//        }
-//        catch (Exception e)
-//        {
-//            e.printStackTrace();
-//        }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
         return handle;
     }
     
@@ -83,24 +74,7 @@ public class RosUtilities {
      * @param binary name of the binary
      */
     public static void kill(String handle) {
-
-//        try {
-    	System.out.println(processMap.get(handle).toString());
-            processMap.get(handle).destroy();
-            
-            
-//        } catch (Exception e)
-//        {
-//            e.printStackTrace();
-//        }
-    }
-    
-    public static void main(String[] args) throws IOException {
-    	
-    	RosUtilities.rosrun("map_server", "map_server", new String[]{"/work/tenorth/work/roboearth/ros_roboearth/re_ias_hospital_room/map/hospital_room.yaml"});
-    	
-    	System.out.print("bla");
-    	
+    	processMap.get(handle).destroy();
     }
     
 }
