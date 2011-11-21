@@ -33,5 +33,5 @@ foreach( _in ${inputs} )
 endforeach( _in )
 
 # Build urdf converter (converter from urdf to srdl)
-# rosbuild_add_executable(urdfImporter src/urdfImporter.cpp)
+rosbuild_add_executable(urdfImporter src/urdfImporter.cpp)
 
