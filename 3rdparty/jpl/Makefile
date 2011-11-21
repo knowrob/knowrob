@@ -17,7 +17,7 @@ $(JPL_DIR):
 
 installed: $(JPL_DIR)
 	cd $(JPL_DIR) && autoconf
-	sed 's/-cc-options\,//' jpl/configure > jpl/configure.sed; mv jpl/configure.sed jpl/configure
+	sed 's/-cc-options\,//' jpl/configure > jpl/configure.sed; mv jpl/configure.sed jpl/configure; chmod +x jpl/configure
 	if test -e $(LIBSWIPL); then sed 's/-lpl/-lswipl/' jpl/configure > jpl/configure.sed; mv jpl/configure.sed jpl/configure; chmod +x jpl/configure; fi
 	cd $(JPL_DIR) && ./configure
 	make -C $(JPL_DIR)
