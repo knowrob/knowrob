@@ -23,7 +23,7 @@ public class Box extends Item {
 	@Override
 	public void drawIt(Canvas c) {
 
-		c.box(this.xdim, this.ydim, this.zdim);
+		c.box(this.xdim, this.ydim, -this.zdim);
 
 	}
 }

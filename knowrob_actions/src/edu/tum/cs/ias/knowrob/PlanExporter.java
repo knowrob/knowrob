@@ -60,8 +60,10 @@ public class PlanExporter {
 		            HashMap<String, Vector<String>> params = 
 		                PrologInterface.executeQuery("class_properties("+action+", Prop, Val)");
 
-		            String obj_desig="", loc_desig="", device="";
-
+		            String obj_desig="", loc_desig="", act_desig="", device="", bodypart="";
+		            String cplAction = knowrobToCpl(action);
+		            
+		            
 		            for(int i=0;i<params.get("Prop").size();i++) {
 
 		                String prop = PrologInterface.removeSingleQuotes(params.get("Prop").get(i));
@@ -74,53 +76,93 @@ public class PlanExporter {
 
 		                } else if(prop.endsWith("toLocation") || prop.endsWith("fromLocation")) {
 
-		                    int idx = params.get("Prop").lastIndexOf(PrologInterface.addSingleQuotes("http://ias.cs.tum.edu/kb/knowrob.owl#objectActedOn"));
-
-		                    // set object parameter ('location for object') if objectActedOn is set
-		                    String obj = "";
-		                    if(idx>-1 && params.get("Val").contains(idx)) {
-		                        obj = params.get("Val").get(idx);
-		                    }
+	                		// location specification
+		                	loc_desig = locationDesignatorFromOWLclass(val);
 		                    
-		                    loc_desig = locationDesignatorFromOWLclass(val, obj);
+		                	// trajectory specification for reaching motions
+	                		act_desig = actionDesignatorFromOWLclass(action, prop, loc_desig);
 		                    
 		                } else if(prop.endsWith("deviceUsed")) {
 		                	device = val;
+		                	
+		                } else if(prop.endsWith("bodyPartsUsed")) {
+		                	bodypart = val;
 		                }
 		                
 		            }
 
 
 		            // create action goal
-		            String rplAction = knowrobToCpl(action);
+
 
 		            String action_spec = "";
-		            if(rplAction.endsWith("object-in-hand")) {
-		                action_spec = "(achieve (object-in-hand "+ obj_desig +" ?side))";
+		            if(cplAction.endsWith("object-in-hand")) {
+		            	
+		            	if(bodypart!=null && bodypart.contains("left")) {
+		            		action_spec = "(achieve `(object-in-hand ,"+ obj_desig +" :left))";
+		            	} else {
+		            		action_spec = "(achieve `(object-in-hand ,"+ obj_desig +" :right))";
+		            	}
 
-		            } else if(rplAction.endsWith("object-placed-at")) {
-		                action_spec = "(achieve (object-placed-at "+ obj_desig +" "+ loc_desig +"))";
+		            	
+		            } else if(cplAction.endsWith("object-placed-at")) {
+		            	
+		            	if(bodypart!=null && bodypart.contains("left")) {
+		            		action_spec = "(achieve `(object-placed-at ,"+ obj_desig +" ,"+ loc_desig +" :left))";
+		            	} else {
+		            		action_spec = "(achieve `(object-placed-at ,"+ obj_desig +" ,"+ loc_desig +" :right))";
+		            	}
 
-		            } else if(rplAction.endsWith("arm-parked")) {
-		                action_spec = "(achieve (arm-parked "+device+"))";
+		            	
+		            } else if(cplAction.endsWith("arm-parked")) {
+		                action_spec = "(achieve `(arm-parked ,"+device+"))";
 
-		            } else if(rplAction.endsWith("arms-at")) {
-		                action_spec = "(achieve (arms-at " + loc_desig + "))";
+		                
+		            } else if(cplAction.endsWith("open-gripper")) {
 
-		            } else if(rplAction.endsWith("looking-at")) {
-		                action_spec = "(achieve (looking-at "+ loc_desig +"))";
+		            	String act_desig2 = "unhand-action"+(inst_counter++);
+	            		String act_desig2_content = "";
+		            	if(bodypart!=null && bodypart.contains("left")) {
+		            		act_desig2_content = "("+act_desig2+" (action `((type trajectory) (to open) (gripper :left))))\n";
+		            	} else {
+		            		act_desig2_content = "("+act_desig2+" (action `((type trajectory) (to open) (gripper :right))))\n";
+		            	}
+	            		
+	            		action_spec = "(achieve `(arms-at ," + act_desig2 + "))";
+	            		designators.put(act_desig2, act_desig2_content);
+	            	      
+		            } else if(cplAction.endsWith("close-gripper")) {
 
-		            } else if(rplAction.endsWith("perceive-all")) {
-		                action_spec = "(perceive-all "+ obj_desig +")";
+		            	String act_desig2 = "unhand-action"+(inst_counter++);
+	            		String act_desig2_content = "";
+		            	if(bodypart!=null && bodypart.contains("left")) {
+		            		act_desig2_content = "("+act_desig2+" (action `((type trajectory) (to close) (gripper :left))))\n";
+		            	} else {
+		            		act_desig2_content = "("+act_desig2+" (action `((type trajectory) (to close) (gripper :right))))\n";
+		            	}
+	            		
+	            		action_spec = "(achieve `(arms-at ," + act_desig2 + "))";
+	            		designators.put(act_desig2, act_desig2_content);
 
-		            } else if(rplAction.endsWith("perceive")) {
-		            	action_spec = "(perceive "+ obj_desig +")"; 
+	            		
+		            } else if(cplAction.endsWith("arms-at")) {
+		                action_spec = "(achieve `(arms-at ,"+ act_desig +"))";
 
-		            }  else if(rplAction.endsWith("loc")) {
-		            	action_spec = "(achieve (loc "+ loc_desig +"))"; 
+	            		
+		            } else if(cplAction.endsWith("looking-at")) {
+		                action_spec = "(achieve `(looking-at ,"+ loc_desig +"))";
 
-		            } else if(rplAction.endsWith("gripper-opened")) {
-		            	action_spec = "(achieve (gripper-opened "+ device +"))";
+		                
+		            } else if(cplAction.endsWith("perceive-all")) {
+		                action_spec = "(perceive-all ,"+ obj_desig +")";
+
+		                
+		            } else if(cplAction.endsWith("perceive")) {
+		            	action_spec = "(perceive ,"+ obj_desig +")"; 
+
+		            	
+		            }  else if(cplAction.endsWith("loc")) {
+		            	action_spec = "(at-location ("+ loc_desig +"))"; // TODO: extend the closing parenthesis around all actions to be performed here 
 		            }
 
 		            plan.add(action_spec);
@@ -134,7 +176,7 @@ public class PlanExporter {
 
 		// export to string
 		res += "(def-top-level-plan " + lispify(plan_name) + " () \n";
-		res += "(with-designators (\n\n      ";
+		res += "(with-designators (\n      ";
 		res += Joiner.on("\n      ").join(designators.values());
 		
 		res += ")\n\n";
@@ -173,14 +215,14 @@ public class PlanExporter {
             obj_type = knowrobToCpl(types.get("T").firstElement());
             obj_inst = knowrobToCpl(objdef);
             
-            obj_desig = "(" + lispify(obj_inst) + " (an object\n             `((name ," + knowrobToCpl(obj_inst) + ")\n              (type ,"+lispify(obj_type)+")) ))\n";
+            obj_desig = "(" + lispify(obj_inst) + " (object `((name " + knowrobToCpl(obj_inst) + ") (type "+lispify(obj_type)+"))))";
 
         } else { // second case: objdef is a class
             
             obj_type = knowrobToCpl(objdef);
             obj_inst = knowrobToCpl(instanceFromClass(obj_type));
             
-            obj_desig = "(" + lispify(obj_inst) + " (an object\n             `((type ," + knowrobToCpl(obj_type) + ")) ))\n";
+            obj_desig = "(" + lispify(obj_inst) + " (object  `((type " + knowrobToCpl(obj_type) + "))))";
         }
         // TODO: (part-of <object-desig>)
 
@@ -189,6 +231,25 @@ public class PlanExporter {
     }
 
     
+    
+    
+    
+    private String locationDesignatorForObject(String objClass) {
+    	
+    	// first create object designator:
+    	String obj_desig = objectDesignatorFromOWLclass(objClass);
+    	
+    	String loc_desig="";
+    	loc_desig = "(location-" + obj_desig + " (location `((of ," + obj_desig + "))))";
+    	
+    	designators.put("location-" + obj_desig, loc_desig);
+    	return "location-" + obj_desig;
+    }
+    
+    
+    
+    
+    
     /**
      * Create a location designator based on an OWL class specification
      * 
@@ -196,10 +257,7 @@ public class PlanExporter {
      *            OWL class specification of a location
      * @return ID of the generated designator
      */
-    private String locationDesignatorFromOWLclass(String loc, String obj_desig) {
-
-        
-        
+    private String locationDesignatorFromOWLclass(String loc) {
         
         HashMap<String, Vector<String>> params = PrologInterface
                 .executeQuery("class_properties(" + PrologInterface.addSingleQuotes(loc) + ", Prop, Val); " +
@@ -210,7 +268,7 @@ public class PlanExporter {
         
         // recursively build the location designator
         String loc_desig = "(" + loc + " ";
-        loc_desig += "(a location `(";
+        loc_desig += "(location `(";
         
         
         if(params!=null && params.get("Prop")!=null) {
@@ -226,48 +284,74 @@ public class PlanExporter {
                         || prop.endsWith("into-UnderspecifiedContainer") 
                         || prop.endsWith("from-UnderspecifiedLocation"))) {
     
-                    loc_desig += "\n              (in ,"
-                            + knowrobToCpl(locationDesignatorFromOWLclass(val, obj_desig));
+                    loc_desig += "(in ,"
+                            + knowrobToCpl(locationDesignatorForObject(val))+ ")";
                     
-                    if(!obj_desig.isEmpty())
-                        loc_desig += ")\n              (of ," + obj_desig + ")";
-    
                 } else if (prop.endsWith("to-UnderspecifiedLocation")
                         || prop.endsWith("on-Physical")
                         || prop.endsWith("aboveOf")
                         || prop.endsWith("inCenterOf")) {
-                    loc_desig += "\n              (on ,"
-                            + knowrobToCpl(locationDesignatorFromOWLclass(val, obj_desig));
-                    
-                    if(!obj_desig.isEmpty())
-                        loc_desig += ")\n              (for ," + obj_desig + ")";
+                    loc_desig += "(on ,"
+                            + knowrobToCpl(locationDesignatorForObject(val))+ ")";
     
                 } else if (prop.endsWith("inReachOf") ||
                         prop.endsWith("inFrontOf-Generally")) {
-                    loc_desig += "\n              (to reach ," + knowrobToCpl(objectDesignatorFromOWLclass(val)) + ")";
+                    loc_desig += "(to reach ," + knowrobToCpl(locationDesignatorForObject(val)) + ")";
     
                 } else if (prop.endsWith("visibleFrom")) {
-                    loc_desig += "\n              (to see ," + knowrobToCpl(objectDesignatorFromOWLclass(val)) + ")";
+                    loc_desig += "(to see ," + knowrobToCpl(locationDesignatorForObject(val)) + ")";
     
                 } else if (prop.endsWith("orientation")) {
-                    loc_desig += "\n              (pose ," + knowrobToCpl(objectDesignatorFromOWLclass(val)) + ")";
-    
-                } else if (prop.endsWith("type")) {
-                    loc_desig += "\n              (type ," +  knowrobToCpl(val) + ")";
-    
-                } else {
-                    loc_desig += "\n              (name ," +  knowrobToCpl(val) + ")";
+                    loc_desig += "(pose ," + knowrobToCpl(locationDesignatorForObject(val)) + ")";
                 }
     
             }
         }
-        loc_desig += "))\n";
+        loc_desig += ")))";
 
         designators.put(loc, loc_desig);
         return loc;
     }
 
+    
+    
+    private String actionDesignatorFromOWLclass(String action, String prop, String loc_desig) {
+    	
+    	String cplAction = knowrobToCpl(action);
+    	String act_desig = cplAction+(inst_counter++);
+    	String act_descr="";
+    	act_descr += "("+act_desig+" (action `(";
+        
+    	// check action type: only Reaching
+    	
+    	if(cplAction.endsWith("arms-at")) {
+    		
+        	act_descr += "(type trajectory) (pose ," + loc_desig + ")";
 
+        	// check if side is set
+        	HashMap<String, Vector<String>> params = 
+                    PrologInterface.executeQuery("class_properties("+action+", Prop, Val)");
+
+    		int idx = params.get("Prop").lastIndexOf(PrologInterface.
+    				addSingleQuotes("http://ias.cs.tum.edu/kb/knowrob.owl#bodyPartsUsed"));
+    		
+            if(idx>-1) {
+            	if(params.get("Val").get(idx).contains("right") ||
+            			params.get("Val").get(idx).contains("Right")) {
+            		act_descr+=" (side :right)";
+            	} else if(params.get("Val").get(idx).contains("left") ||
+            			params.get("Val").get(idx).contains("Left")) {
+            		act_descr+=" (side :left)";	
+            	}
+            }
+            act_descr+=")))";
+
+        	designators.put(act_desig, act_descr);
+
+		}
+		return act_desig;		
+		
+    }
     
     /**
      * Convert KnowRob identifier to CPL

@@ -87,7 +87,9 @@
   "Translation-LocationChange" : "loc",
   "Reaching" : "arms-at",
   "GraspingSomething" : "object-in-hand",
-  "OpeningAGripper" : "gripper-opened",
+  "PickingUpAnObject" : "object-in-hand",
+  "OpeningAGripper" : "open-gripper",
+  "ClosingAGripper" : "close-gripper",
   "DrinkingBottle" : "drinking-bottle"
 }
 

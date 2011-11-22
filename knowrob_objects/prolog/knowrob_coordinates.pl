@@ -44,8 +44,6 @@
 
 
 
-
-
 % TODO: export of template derived from an actual object in the map
 %
 % create a TBOX description of an object configuration including
@@ -54,7 +52,7 @@
 % transforms global poses into poses of the sub-parts into poses
 % relative to the pose of the main object ObjInst
 %
-% object_template_from_instance(ObjInst, ObjTempl) :-
+% object_template_from_instance(ObjInst, ObjClassDef) :-
 
     % determine physical parts
 
@@ -65,6 +63,20 @@
     % generate TBOX description
 
 
+% rdf_triple(knowrob:orientation, O, Or),
+% translate_to_relative(Or, OrLocal)
+
+
+% abox_to_tbox(A, T) :-
+%   rdf_has(A, P, O),
+%
+%
+% if(O class definition)
+%   rdf_assert_some_values_from(A, P, O)
+% else
+%   abox_to_tbox(O, OT),
+%   rdf_assert_some_values_from(A, P, OT)
+%
 
 
 

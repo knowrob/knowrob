@@ -23,7 +23,7 @@ public class Cupboard extends StorageFacility {
 
 	@Override
 	protected void drawIt(Canvas c) {
-		c.box(xdim, ydim, zdim);
+		c.box(xdim, ydim, -zdim);
 		
 	}
 }

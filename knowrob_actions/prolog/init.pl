@@ -7,4 +7,4 @@
 
 :- use_module(library('knowrob_actions')).
 
-% :- owl_parser:owl_parse('../owl/serve_drink.owl', false, false, true).
+% :- owl_parser:owl_parse('/work/tenorth/work/roboearth/ros_roboearth/re_ontology/owl/serve_drink_new.owl', false, false, true).
