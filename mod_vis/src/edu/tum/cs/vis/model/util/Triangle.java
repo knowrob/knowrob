@@ -35,11 +35,14 @@ public class Triangle extends DrawObject {
       * Draw the triangle onto the applet.
       * @param applet Applet to draw on
       */
-     public void draw(PApplet applet)
+     public void draw(PApplet applet, int overrideColor)
      {
-		if (!appearance.containsTexture)
+		if (!appearance.containsTexture || overrideColor != 0)
          {
-			applet.fill(appearance.colour.red * 255,
+			if (overrideColor != 0)
+				applet.fill(overrideColor);
+			else
+				applet.fill(appearance.colour.red * 255,
 					appearance.colour.green * 255,
 					appearance.colour.blue * 255,
 					appearance.colour.transparency * 255);

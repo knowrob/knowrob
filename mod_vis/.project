@@ -14,4 +14,16 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>resource_retriever_srv</name>
+			<type>2</type>
+			<location>/home/stefan/ros/resource_retriever_srv/srv_gen/java</location>
+		</link>
+		<link>
+			<name>src_java</name>
+			<type>2</type>
+			<location>/home/stefan/ros/resource_retriever_srv/src_java</location>
+		</link>
+	</linkedResources>
 </projectDescription>

@@ -20,8 +20,6 @@ foreach( _in ${inputs} )
   configure_file( ${_in} ${_out} )
 endforeach( _in )
 
-
-
 add_classpath(${PROJECT_SOURCE_DIR}/lib/controlP5.jar)
 add_classpath(${PROJECT_SOURCE_DIR}/lib/core.jar)
 add_classpath(${PROJECT_SOURCE_DIR}/lib/vecmath.jar)

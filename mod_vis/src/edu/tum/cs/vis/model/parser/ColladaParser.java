@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+
 import javax.vecmath.Point2f;
 import javax.vecmath.Point3f;
 import javax.xml.parsers.DocumentBuilder;
@@ -18,7 +20,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import processing.core.PApplet;
-import processing.core.PImage;
 
 import com.dddviewr.collada.Collada;
 import com.dddviewr.collada.Input;
@@ -42,9 +43,11 @@ import com.dddviewr.collada.visualscene.InstanceNode;
 import com.dddviewr.collada.visualscene.Matrix;
 import com.dddviewr.collada.visualscene.VisualScene;
 
+import edu.tum.cs.util.ResourceRetriever;
 import edu.tum.cs.vis.model.util.Appearance;
 import edu.tum.cs.vis.model.util.Color;
 import edu.tum.cs.vis.model.util.DrawObject;
+import edu.tum.cs.vis.model.util.Group;
 import edu.tum.cs.vis.model.util.Line;
 import edu.tum.cs.vis.model.util.Triangle;
 
@@ -66,13 +69,6 @@ public class ColladaParser extends ModelParser {
 	private String textureBasePath = "";
 	
 	/**
-	 * When parsing, the textures aren't loaded but for each triangle is stored the filename to the texture.
-	 * This variable indicates if the texture of each triangle is already loaded from the filename.
-	 */
-	private Boolean texturesInitialized = false;
-	
-
-	/**
 	 * Convert a collada source item to the corresponding float array
 	 * 
 	 * @param the collada source
@@ -90,17 +86,16 @@ public class ColladaParser extends ModelParser {
     }
     
 	@Override
-	public void draw(PApplet applet) {
-
-		if (!texturesInitialized)
-			setTextureImage(applet);
+	public void draw(PApplet applet, int overrideColor) {
 
 		applet.noStroke();
 
-		applet.fill(127);
+		if (overrideColor != 0)
+			applet.fill(overrideColor);
+		else
+			applet.fill(127); //set a default color value
 
-		drawTriangles(applet);
-		drawLines(applet);
+		group.draw(applet, overrideColor);
 	}
 
 	/**
@@ -217,18 +212,20 @@ public class ColladaParser extends ModelParser {
 			return false;
 		}
 		
+		System.out.println("Retrieve file: " + filename);
+		filename = retrieveFile(filename);
+		
+		if ((new File(filename)).exists()==false)
+		{
+			System.err.println("ERROR: Can't load model. File not found: " + filename + "\n");
+			return false;
+		}
+		
 		
 		String extension = getExtension(filename);
 		if (extension.equalsIgnoreCase(
 				"kmz")) {
-			String tmpPath = null;
-			try {
-				tmpPath = createTempDirectory().getAbsolutePath();
-			} catch (IOException e) {
-				System.err.println("Couldn't create temporary directory.");
-				e.printStackTrace();
-				return false;
-			}
+			String tmpPath = ResourceRetriever.createTempDirectory();
 			if (!tmpPath.endsWith("/") && !tmpPath.endsWith("\\"))
 				tmpPath += "/";
 			Unzip(filename, tmpPath);
@@ -263,24 +260,24 @@ public class ColladaParser extends ModelParser {
 			e.printStackTrace();
 			return false;
 		}
-
-		texturesInitialized = false;
-		triangles.clear();
-		lines.clear();
-
+		
+		group = new Group();
+				
+		//collada.dump(System.out, 0);
+		
 		// This is where everything begins
 		VisualScene scene = collada.getLibraryVisualScenes().getScene(
 				collada.getScene().getInstanceVisualScene().getUrl());
 
 		for (Node n : scene.getNodes()) {
-			parseNode(n, new ArrayList<BaseXform>(), collada);
+			parseNode(n,group, new ArrayList<BaseXform>(), collada);
 		}
-
-		centerModel();
+		
+		group.initialize(textureBasePath);
 
 		Unit unit = collada.getUnit();
 		if (unit != null && unit.getMeter() != 1.0) {
-			scaleModel(unit.getMeter());
+			group.scale(unit.getMeter());
 		}
 		
 		
@@ -295,7 +292,7 @@ public class ColladaParser extends ModelParser {
 		 *	Z_UP 	Positive x 		Positive z		Negative y
 		 *
 		 */
-		String axis = collada.getUpAxis();
+		/*String axis = collada.getUpAxis();
 		if (axis!= null && axis.equalsIgnoreCase("X_UP"))
 		{
 			for (Triangle tri : triangles) {
@@ -319,30 +316,44 @@ public class ColladaParser extends ModelParser {
 			maxY = maxX;
 			maxX = -tmp;
 			
-		} else if (axis!= null && axis.equalsIgnoreCase("Z_UP"))
-			{
-				for (Triangle tri : triangles) {
-					for (int v = 0; v < tri.position.length; v++) {
-						float tmp = tri.position[v].y;
-						tri.position[v].y = tri.position[v].z;
-						tri.position[v].z = -tmp;
-					}
-				}
-				for (Line line : lines) {
-					for (int v = 0; v < line.position.length; v++) {
-						float tmp = line.position[v].y;
-						line.position[v].y = line.position[v].z;
-						line.position[v].z = -tmp;
-					}
+		}
+		else if (axis!= null && axis.equalsIgnoreCase("Z_UP"))
+		{
+			for (Triangle tri : triangles) {
+				for (int v = 0; v < tri.position.length; v++) {
+					float tmp = tri.position[v].y;
+					tri.position[v].y = tri.position[v].z;
+					tri.position[v].z = -tmp;
 				}
 			}
+			for (Line line : lines) {
+				for (int v = 0; v < line.position.length; v++) {
+					float tmp = line.position[v].y;
+					line.position[v].y = line.position[v].z;
+					line.position[v].z = -tmp;
+				}
+			}
+
 			float tmp = minY;
 			minY = minZ;
 			minZ = -tmp;
 			tmp = maxY;
 			maxY = maxZ;
 			maxZ = -tmp;
+		}
+		for (Triangle tri : triangles) {
+			for (int v = 0; v < tri.position.length; v++) {
+				tri.position[v].y *= (-1);
+			}
+		}
+		for (Line line : lines) {
+			for (int v = 0; v < line.position.length; v++) {
+				line.position[v].y *= (-1);
+			}
+		}
 
+		minY *= (-1);
+		maxY *= (-1);*/
 		return true;
 	}
 
@@ -353,29 +364,40 @@ public class ColladaParser extends ModelParser {
 	 * 			subsequent nodes
 	 * @param collada the collada Structure
 	 */
-	private void parseNode(Node node, ArrayList<BaseXform> transformations,
+	private void parseNode(Node node, Group currGroup, ArrayList<BaseXform> transformations,
 			Collada collada) {
-		if (node.getChildNodes() != null) {
-			for (Node child : node.getChildNodes())
-				parseNode(child, transformations, collada);
-		}
 
 		// Add transformations like a stack
 		if (node.getXforms() != null)
 			transformations.addAll(node.getXforms());
+		
+		//Parse all child nodes
+		if (node.getChildNodes() != null) {
+			for (Node child : node.getChildNodes())
+			{
+				Group g = new Group();
+				g.setName(child.getName());
+				currGroup.addChild(g);
+				parseNode(child,g, transformations, collada);
+			}
+		}
 
+		//Parse referencing nodes
 		InstanceNode instNode = node.getInstanceNode();
 		if (instNode != null) {
-			parseNode(collada.findNode(instNode.getUrl()), transformations,
+			parseNode(collada.findNode(instNode.getUrl()),currGroup, transformations,
 					collada);
 		}
-		InstanceGeometry instGeo = node.getInstanceGeometry();
-		if (instGeo != null) {
+		
+		//Parse referencing geometries and Material
+		List<InstanceGeometry> instGeoList = node.getInstanceGeometry();
+		
+		for (InstanceGeometry instGeo : instGeoList) {
 			HashMap<String, String> instanceMaterial = new HashMap<String, String>();
 			for (InstanceMaterial mat : instGeo.getInstanceMaterials()) {
 				instanceMaterial.put(mat.getSymbol(), mat.getTarget());
 			}
-			parseGeometry(collada.findGeometry(instGeo.getUrl()),
+			parseGeometry(collada.findGeometry(instGeo.getUrl()),currGroup,
 					instanceMaterial, transformations, collada);
 		}
 
@@ -392,18 +414,18 @@ public class ColladaParser extends ModelParser {
 	 * 			subsequent geometries
 	 * @param collada the collada Structure
 	 */
-	private void parseGeometry(Geometry g,
+	private void parseGeometry(Geometry g, Group currGroup,
 			HashMap<String, String> instanceMaterial,
 			ArrayList<BaseXform> transformations, Collada collada) {
 		Mesh m = g.getMesh();
 		for (Primitives p : m.getPrimitives()) {
 			if (p instanceof Triangles) {
 				Triangles t = (Triangles) p;
-				parseGeometryTriangle(t, m, instanceMaterial, transformations,
+				parseGeometryTriangle(t, m,currGroup, instanceMaterial, transformations,
 						collada);
 			} else if (p instanceof Lines) {
 				Lines l = (Lines) p;
-				parseGeometryLine(l, m, instanceMaterial, transformations,
+				parseGeometryLine(l, m,currGroup, instanceMaterial, transformations,
 						collada);
 			}
 		}
@@ -418,7 +440,7 @@ public class ColladaParser extends ModelParser {
 	 * 			subsequent geometries
 	 * @param collada the collada Structure
 	 */
-	private void parseGeometryLine(Lines l, Mesh m,
+	private void parseGeometryLine(Lines l, Mesh m, Group currGroup,
 			HashMap<String, String> instanceMaterial,
 			ArrayList<BaseXform> transformations, Collada collada) {
 		Material mat = null;
@@ -478,7 +500,7 @@ public class ColladaParser extends ModelParser {
 
 			useTransformation(line, transformations);
 			// add it to the Collection
-			lines.add(line);
+			currGroup.getMesh().lines.add(line);
 		}
 	}
 
@@ -491,7 +513,7 @@ public class ColladaParser extends ModelParser {
 	 * 			subsequent geometries
 	 * @param collada the collada Structure
 	 */
-	private void parseGeometryTriangle(Triangles t, Mesh m,
+	private void parseGeometryTriangle(Triangles t, Mesh m, Group currGroup,
 			HashMap<String, String> instanceMaterial,
 			ArrayList<BaseXform> transformations, Collada collada) {
 		Material mat = null;
@@ -574,7 +596,7 @@ public class ColladaParser extends ModelParser {
 			useTransformation(tri, transformations);
 
 			// add it to the Collection
-			triangles.add(tri);
+			currGroup.getMesh().triangles.add(tri);
 		}
 
 	}
@@ -681,70 +703,5 @@ public class ColladaParser extends ModelParser {
 
 		}
 		return appearance;
-	}
-
-	/**
-	 * Convert a file path into a File object with an absolute path relative to
-	 * a passed in root. If path is absolute then a file object constructed from
-	 * new File(path) is returned, otherwise a file object is returned from new
-	 * File(root, path) if root is not null, otherwise null is returned.
-	 * @param root root file path
-	 * @param path relative file path
-	 */
-	public static String getAbsoluteFilePath(String root, String path) {
-		File file = new File(path);
-		if (file.isAbsolute())
-			return file.getAbsolutePath();
-
-		if (root == null)
-			return null;
-
-		return new File(new File(root), path).getAbsolutePath();
-	}
-
-	/**
-	 * per definition is: textureProcessing x = textureSketchup x *
-	 * picture.width textureProcessing y = picture.height - textureSketchup y *
-	 * picture.height it also creates an PImage to each Triangle (if it contains
-	 * any Texture)
-	 */
-	private void setTextureImage(PApplet applet) {
-		// load all Texture-Images only once (memory efficiency)
-		HashMap<String, PImage> pictures = new HashMap<String, PImage>();
-		for (Triangle tri : triangles) {
-			if (!tri.appearance.containsTexture)
-				continue;
-			String texfile = getAbsoluteFilePath(textureBasePath,
-					tri.appearance.imageFileName);
-			if (tri.appearance.containsTexture && pictures.get(texfile) == null) {
-				PImage tex = applet.loadImage(texfile);
-				pictures.put(texfile, tex);
-			}
-		}
-
-		for (Triangle tri : triangles) {
-			if (tri.appearance.containsTexture) {
-				String texfile = getAbsoluteFilePath(textureBasePath,
-						tri.appearance.imageFileName);
-				// PImage tex = applet.loadImage(texfile);
-				PImage tex = pictures.get(texfile);
-				float AprocX = tri.texPosition[0].x * tex.width;
-				float AprocY = tex.height - tri.texPosition[0].y * tex.height;
-				float BprocX = tri.texPosition[1].x * tex.width;
-				float BprocY = tex.height - tri.texPosition[1].y * tex.height;
-				float CprocX = tri.texPosition[2].x * tex.width;
-				float CprocY = tex.height - tri.texPosition[2].y * tex.height;
-
-				tri.texPosition[0].x = AprocX;
-				tri.texPosition[0].y = AprocY;
-				tri.texPosition[1].x = BprocX;
-				tri.texPosition[1].y = BprocY;
-				tri.texPosition[2].x = CprocX;
-				tri.texPosition[2].y = CprocY;
-
-				tri.appearance.imageReference = tex;
-			}
-		}
-		texturesInitialized = true;
 	}
 }

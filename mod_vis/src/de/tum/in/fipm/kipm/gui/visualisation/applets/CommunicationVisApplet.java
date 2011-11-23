@@ -17,6 +17,7 @@ import ros.pkg.mod_vis.srv.CommVisSetRightImg;
 import ros.pkg.mod_vis.srv.CommVisSetReqText;
 import ros.pkg.mod_vis.srv.CommVisSetResText;
 import de.tum.in.fipm.kipm.gui.visualisation.base.PrologVisualizationCanvas;
+import edu.tum.cs.util.ResourceRetriever;
 
 public class CommunicationVisApplet extends PApplet {
 
@@ -65,7 +66,7 @@ public class CommunicationVisApplet extends PApplet {
 
 
         static Ros ros;
-        static NodeHandle n;
+        public static NodeHandle n;
 
 
         /**
@@ -93,7 +94,7 @@ public class CommunicationVisApplet extends PApplet {
     this.frame.setBackground(new Color(20, 20, 20));
     background(20, 20, 20);
     
-    imagePath = findPackage("mod_vis");
+    imagePath = ResourceRetriever.findPackage("mod_vis");
     
     dejavu = createFont("DejaVu Sans",13);
     textFont(dejavu);
@@ -487,23 +488,6 @@ public class CommunicationVisApplet extends PApplet {
                 }
         }
 
-        
-        
-	protected static String findPackage(String pkgname) {
-			
-		try {	
-			String line;		
-			Process p = Runtime.getRuntime().exec( "rospack find " + pkgname +"");
-			BufferedReader pathreader = new BufferedReader(new InputStreamReader(p.getInputStream(), "UTF-8"));
-            if( (line = pathreader.readLine()) != null) {
-            	return line;
-            }
-		} catch (IOException e) {
-			e.printStackTrace(System.err);
-		}
-		return null;
-	}
-
 
 
   public void setPrologVisCanvas(PrologVisualizationCanvas c){
@@ -512,7 +496,7 @@ public class CommunicationVisApplet extends PApplet {
 
   public static void main(String args[]) {
 	  
-	  System.err.println(findPackage("mod_vis"));
+	  System.err.println(ResourceRetriever.findPackage("mod_vis"));
 	  
       PApplet.main(new String[] { "de.tum.in.fipm.kipm.gui.visualisation.applets.CommunicationVisApplet" });
   }
