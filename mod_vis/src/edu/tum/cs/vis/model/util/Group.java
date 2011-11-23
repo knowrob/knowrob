@@ -125,6 +125,10 @@ public class Group {
 		}
 	}
 	
+	/**
+	 * Translates (moves) the group and its children by the specified vector.
+	 * @param translation Translation vector
+	 */
 	private void translate(Point3f translation) {
 		minX += translation.x;
 		maxX += translation.x;

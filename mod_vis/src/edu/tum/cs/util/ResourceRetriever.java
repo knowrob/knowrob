@@ -13,8 +13,26 @@ import java.net.URLConnection;
 
 import org.apache.commons.net.ftp.FTPClient;
 
+/**
+ * Retrieves a file from given url to a temporary path and returns this path.
+ * Supported protocol types: http, ftp, package
+ * 
+ * Notes about package type:
+ * You can use an url like 'package://mod_vis/path/to/file.zip' to get the physical file path
+ * of the specified file in the package. So this url will be transformed to something like:
+ * '/path_to_ros/mod_vis/path/to/file.zip'
+ * ResourceRetriever tries to find the specified package by calling "rospack find PACKAGE"
+ * 
+ * @author Stefan Profanter
+ *
+ */
 public class ResourceRetriever {
 
+	/**
+	 * Retrieve a file to a temporary path. This temporary path will be returned. Valid protocol types: ftp, http, package
+	 * @param url URL to retrieve
+	 * @return NULL on error. On success the path to the file is returned.
+	 */
 	public static File retrieve(String url)
 	{
 		int start = url.indexOf('/')+2;
@@ -100,7 +118,8 @@ public class ResourceRetriever {
 	
 
 	/**
-	 * creates a temporary directory used for unzipping
+	 * Creates a temporary directory (normally in the /tmp folder)
+	 * 
 	 * @return File with path to created dir
 	 */
 	public static String createTempDirectory()
@@ -127,6 +146,12 @@ public class ResourceRetriever {
 		return temp.getAbsolutePath();
 	}
 	
+	/**
+	 * Tries to find the specified ros package by calling 'rospack find'.
+	 * 
+	 * @param pkgname Package to search for
+	 * @return Absolute path to the package or null if not found
+	 */
 	public static String findPackage(String pkgname) {
 		
 		try {	
