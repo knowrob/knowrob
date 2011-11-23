@@ -1,9 +1,13 @@
 package edu.tum.cs.vis.model.util;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import javax.imageio.ImageIO;
 import javax.vecmath.Point3f;
 
 import processing.core.PApplet;
@@ -61,7 +65,7 @@ public class Mesh {
 	 */
 	protected void drawTriangles(PApplet applet, int overrideColor) {
 		if (!texturesInitialized)
-			setTextureImage(applet);
+			setTextureImage();
 		// Shapes are not effected by translate
 		for (Triangle tri : triangles) {
 			tri.draw(applet,overrideColor);
@@ -171,7 +175,7 @@ public class Mesh {
 				}
 			}
 			for (Line line : lines) {
-				for (int v = 0; v < 3; v++) {
+				for (int v = 0; v < 2; v++) {
 					minY = Math.min(line.position[v].y, minY);
 					maxY = Math.max(line.position[v].y, maxY);
 				}
@@ -204,7 +208,7 @@ public class Mesh {
 				}
 			}
 			for (Line line : lines) {
-				for (int v = 0; v < 3; v++) {
+				for (int v = 0; v < 2; v++) {
 					minX = Math.min(line.position[v].x, minX);
 					maxX = Math.max(line.position[v].x, maxX);
 				}
@@ -237,7 +241,7 @@ public class Mesh {
 				}
 			}
 			for (Line line : lines) {
-				for (int v = 0; v < 3; v++) {
+				for (int v = 0; v < 2; v++) {
 					minZ = Math.min(line.position[v].z, minZ);
 					maxZ = Math.max(line.position[v].z, maxZ);
 				}
@@ -296,17 +300,29 @@ public class Mesh {
 	 * picture.height it also creates an PImage to each Triangle (if it contains
 	 * any Texture)
 	 */
-	private void setTextureImage(PApplet applet) {
+	private void setTextureImage() {
 		// load all Texture-Images only once (memory efficiency)
 		HashMap<String, PImage> pictures = new HashMap<String, PImage>();
 		for (Triangle tri : triangles) {
 			if (!tri.appearance.containsTexture)
-				continue;
+				continue;		
 			String texfile = getAbsoluteFilePath(textureBasePath,
 					tri.appearance.imageFileName);
-			if (tri.appearance.containsTexture && pictures.get(texfile) == null) {
-				PImage img = applet.loadImage(texfile);
-				pictures.put(texfile, img);
+			if (pictures.get(texfile) == null) {
+				BufferedImage img = null;
+				try {
+				    img = ImageIO.read(new File(texfile));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}	
+				
+				/*
+				 * Convert BufferedImage to Image otherwise PImage constructor will fail!!
+				 */
+				Image i = img.getScaledInstance(img.getWidth(), img.getHeight(), 0);
+				
+				PImage pImg = new PImage(i);
+				pictures.put(texfile, pImg);
 			}
 		}
 
@@ -314,7 +330,7 @@ public class Mesh {
 			if (tri.appearance.containsTexture) {
 				String texfile = getAbsoluteFilePath(textureBasePath,
 						tri.appearance.imageFileName);
-				// PImage tex = applet.loadImage(texfile);
+				//PImage tex = applet.loadImage(texfile);
 				PImage tex = pictures.get(texfile);
 				float AprocX = tri.texPosition[0].x * tex.width;
 				float AprocY = tex.height - tri.texPosition[0].y * tex.height;
