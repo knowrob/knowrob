@@ -919,25 +919,25 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			HashMap<String, Vector<Object>> nfo = PrologVisualizationCanvas.executeQuery(
 					"rdf_triple(knowrob:orientation,"+identifier+",Or), " +
 
-					"rdf_triple(knowrob:m00,Or,literal(_M00l)), actionmodel:am_strip_literal_type(_M00l, _M00), term_to_atom(M00,_M00)," +
-					"rdf_triple(knowrob:m01,Or,literal(_M01l)), actionmodel:am_strip_literal_type(_M01l, _M01), term_to_atom(M01,_M01)," +
-					"rdf_triple(knowrob:m02,Or,literal(_M02l)), actionmodel:am_strip_literal_type(_M02l, _M02), term_to_atom(M02,_M02)," +
-					"rdf_triple(knowrob:m03,Or,literal(_M03l)), actionmodel:am_strip_literal_type(_M03l, _M03), term_to_atom(M03,_M03)," +
+					"rdf_triple(knowrob:m00,Or,_M00l), actionmodel:am_strip_literal_type(_M00l, _M00), term_to_atom(M00,_M00)," +
+					"rdf_triple(knowrob:m01,Or,_M01l), actionmodel:am_strip_literal_type(_M01l, _M01), term_to_atom(M01,_M01)," +
+					"rdf_triple(knowrob:m02,Or,_M02l), actionmodel:am_strip_literal_type(_M02l, _M02), term_to_atom(M02,_M02)," +
+					"rdf_triple(knowrob:m03,Or,_M03l), actionmodel:am_strip_literal_type(_M03l, _M03), term_to_atom(M03,_M03)," +
 
-					"rdf_triple(knowrob:m10,Or,literal(_M10l)), actionmodel:am_strip_literal_type(_M10l, _M10), term_to_atom(M10,_M10)," +
-					"rdf_triple(knowrob:m11,Or,literal(_M11l)), actionmodel:am_strip_literal_type(_M11l, _M11), term_to_atom(M11,_M11)," +
-					"rdf_triple(knowrob:m12,Or,literal(_M12l)), actionmodel:am_strip_literal_type(_M12l, _M12), term_to_atom(M12,_M12)," +
-					"rdf_triple(knowrob:m13,Or,literal(_M13l)), actionmodel:am_strip_literal_type(_M13l, _M13), term_to_atom(M13,_M13)," +
+					"rdf_triple(knowrob:m10,Or,_M10l), actionmodel:am_strip_literal_type(_M10l, _M10), term_to_atom(M10,_M10)," +
+					"rdf_triple(knowrob:m11,Or,_M11l), actionmodel:am_strip_literal_type(_M11l, _M11), term_to_atom(M11,_M11)," +
+					"rdf_triple(knowrob:m12,Or,_M12l), actionmodel:am_strip_literal_type(_M12l, _M12), term_to_atom(M12,_M12)," +
+					"rdf_triple(knowrob:m13,Or,_M13l), actionmodel:am_strip_literal_type(_M13l, _M13), term_to_atom(M13,_M13)," +
 
-					"rdf_triple(knowrob:m20,Or,literal(_M20l)), actionmodel:am_strip_literal_type(_M20l, _M20), term_to_atom(M20,_M20)," +
-					"rdf_triple(knowrob:m21,Or,literal(_M21l)), actionmodel:am_strip_literal_type(_M21l, _M21), term_to_atom(M21,_M21)," +
-					"rdf_triple(knowrob:m22,Or,literal(_M22l)), actionmodel:am_strip_literal_type(_M22l, _M22), term_to_atom(M22,_M22)," +
-					"rdf_triple(knowrob:m23,Or,literal(_M23l)), actionmodel:am_strip_literal_type(_M23l, _M23), term_to_atom(M23,_M23)," +
+					"rdf_triple(knowrob:m20,Or,_M20l), actionmodel:am_strip_literal_type(_M20l, _M20), term_to_atom(M20,_M20)," +
+					"rdf_triple(knowrob:m21,Or,_M21l), actionmodel:am_strip_literal_type(_M21l, _M21), term_to_atom(M21,_M21)," +
+					"rdf_triple(knowrob:m22,Or,_M22l), actionmodel:am_strip_literal_type(_M22l, _M22), term_to_atom(M22,_M22)," +
+					"rdf_triple(knowrob:m23,Or,_M23l), actionmodel:am_strip_literal_type(_M23l, _M23), term_to_atom(M23,_M23)," +
 
-					"rdf_triple(knowrob:m30,Or,literal(_M30l)), actionmodel:am_strip_literal_type(_M30l, _M30), term_to_atom(M30,_M30)," +
-					"rdf_triple(knowrob:m31,Or,literal(_M31l)), actionmodel:am_strip_literal_type(_M31l, _M31), term_to_atom(M31,_M31)," +
-					"rdf_triple(knowrob:m32,Or,literal(_M32l)), actionmodel:am_strip_literal_type(_M32l, _M32), term_to_atom(M32,_M32)," +
-					"rdf_triple(knowrob:m33,Or,literal(_M33l)), actionmodel:am_strip_literal_type(_M33l, _M33), term_to_atom(M33,_M33)", null);
+					"rdf_triple(knowrob:m30,Or,_M30l), actionmodel:am_strip_literal_type(_M30l, _M30), term_to_atom(M30,_M30)," +
+					"rdf_triple(knowrob:m31,Or,_M31l), actionmodel:am_strip_literal_type(_M31l, _M31), term_to_atom(M31,_M31)," +
+					"rdf_triple(knowrob:m32,Or,_M32l), actionmodel:am_strip_literal_type(_M32l, _M32), term_to_atom(M32,_M32)," +
+					"rdf_triple(knowrob:m33,Or,_M33l), actionmodel:am_strip_literal_type(_M33l, _M33), term_to_atom(M33,_M33)", null);
 			return new float[] {
 					Float.parseFloat(nfo.get("M00").get(0).toString()),
 					Float.parseFloat(nfo.get("M01").get(0).toString()),
