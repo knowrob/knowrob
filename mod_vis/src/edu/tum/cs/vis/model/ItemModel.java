@@ -70,7 +70,7 @@ public class ItemModel {
 			System.out.println("Couldn't instantiate parser for: " + path);
 			e.printStackTrace();
 		}
-		return parser.loadModel(path);
+		return parser.parseModel(path);
 	}
 
 }

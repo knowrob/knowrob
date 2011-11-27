@@ -19,6 +19,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % dependencies
 
+:- register_ros_package(knowrob_common).
 :- register_ros_package(ias_knowledge_base).
 :- register_ros_package(mod_vis).
 

@@ -964,9 +964,8 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		try {
 			HashMap<String, Vector<Object>> nfo = PrologVisualizationCanvas
 					.executeQuery(
-							"rdf_has("
-									+ identifier
-							+ ",knowrob:pathToCadModel,literal(P))",
+							"rdf_has(" + identifier	+ ",knowrob:pathToCadModel,literal(P)) ; "
+							+ "owl_individual_of(" + identifier	+ ", Class), class_properties(Class, 'http://ias.cs.tum.edu/kb/knowrob.owl#pathToCadModel',literal(P))",
 							null);
 			String str = nfo.get("P").get(0).toString();
 			if (str == null)

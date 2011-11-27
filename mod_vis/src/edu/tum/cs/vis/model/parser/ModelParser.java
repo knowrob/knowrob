@@ -36,6 +36,13 @@ public abstract class ModelParser {
     	extensionAssignment.put("dae", ColladaParser.class);
     	extensionAssignment.put("kmz", ColladaParser.class);
     }
+    
+    /**
+     * This is a buffer for already parsed models.
+     * If a model is loaded through parseModel method it will be stored in this HashMap.
+     * It it is loaded a second time, instead of parsing it again it will be taken from this HashMap
+     */
+    private static HashMap<String,Group> modelBuffer = new HashMap<String,Group>();
        
     /**
      * Contains mesh of the model
@@ -107,10 +114,31 @@ public abstract class ModelParser {
 	public abstract void draw(PApplet applet, int colorOverride);
 
 	/**
-	 * Main function to parse the model from the given filename
+	 * This function will be called from parseModel if the model isn't in the Buffer
 	 * @param filename Physical file of model to parse
 	 */
-	public abstract boolean loadModel(String filename);
+	protected abstract boolean loadModel(String filename);
+	
+	/**
+	 * Main function to parse the model from the given filename.
+	 * If model has already been parsed, it will be taken from modelBuffer instead of parsing it again.
+	 * @param filename Physical file of model to parse
+	 * @return
+	 */
+	public boolean parseModel(String filename)
+	{
+		Group g = modelBuffer.get(filename);
+		boolean retVal = true;
+		
+		if (g == null)
+		{
+			retVal =  loadModel(filename);
+			modelBuffer.put(filename, this.group);
+		}
+		else
+			this.group = g;
+		return retVal;
+	}
 	
 	/**
 	 * Checks if the given filename is an uri or a local filename.

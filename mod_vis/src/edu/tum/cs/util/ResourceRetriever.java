@@ -1,6 +1,7 @@
 package edu.tum.cs.util;
 
 import java.io.BufferedOutputStream;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -28,12 +30,29 @@ import org.apache.commons.net.ftp.FTPClient;
  */
 public class ResourceRetriever {
 
+	private static final String tmpPrefix = "knowrob_resource_";
+	
 	/**
 	 * Retrieve a file to a temporary path. This temporary path will be returned. Valid protocol types: ftp, http, package
+	 * If a file has already be downloaded (the file is existing in tmp directory) it will not be redownloaded again. Simply the 
+	 * path to this file will be returned.
 	 * @param url URL to retrieve
 	 * @return NULL on error. On success the path to the file is returned.
 	 */
 	public static File retrieve(String url)
+	{
+		return retrieve(url, true);
+	}
+	
+	/**
+	 * Retrieve a file to a temporary path. This temporary path will be returned. Valid protocol types: ftp, http, package
+	 * If a file has already be downloaded (the file is existing in tmp directory) it will not be redownloaded again. Simply the 
+	 * path to this file will be returned.
+	 * @param url URL to retrieve
+	 * @param checkAlreadyRetrieved if false, always download the file and ignore, if it is already existing
+	 * @return NULL on error. On success the path to the file is returned.
+	 */
+	public static File retrieve(String url, boolean checkAlreadyRetrieved)
 	{
 		int start = url.indexOf('/')+2;
 		int end = url.indexOf('/', start);
@@ -53,7 +72,15 @@ public class ResourceRetriever {
 		    URLConnection conn = null;
 		    InputStream in = null;
 		    String filename = url.substring(url.lastIndexOf('/')+1);
-			File tmpPath = new File(ResourceRetriever.createTempDirectory(),filename);
+		    
+		    File tmpPath = getTmpName(url, filename);
+		    
+		    if (checkAlreadyRetrieved && tmpPath.exists())
+		    {
+		    	System.out.println("Already retrieved: " + url + " to " + tmpPath.getAbsolutePath());
+		    	return tmpPath;
+		    }
+		    
 		    try {
 		        // Get the URL
 		        URL urlClass = new URL(url);
@@ -88,7 +115,15 @@ public class ResourceRetriever {
 			FTPClient client = new FTPClient( );
 			OutputStream outStream = null;
 		    String filename = url.substring(url.lastIndexOf('/')+1);
-			File tmpPath = new File(ResourceRetriever.createTempDirectory(),filename);
+		    
+		    File tmpPath = getTmpName(url, filename);
+		    
+		    if (checkAlreadyRetrieved && tmpPath.exists())
+		    {
+		    	System.out.println("Already retrieved: " + url + " to " + tmpPath.getAbsolutePath());
+		    	return tmpPath;
+		    }
+		    
 			try {
 			    // Connect to the FTP server as anonymous
 			    client.connect( serverName );
@@ -116,6 +151,42 @@ public class ResourceRetriever {
 		return null;
 	}
 	
+	
+    private static String MD5(String md5) {
+	    try {
+		    java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+		    byte[] array = md.digest(md5.getBytes("UTF-8"));
+		    StringBuffer sb = new StringBuffer();
+		    for (int i = 0; i < array.length; ++i) {
+			    sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1,3));
+		    }
+		    return sb.toString();
+	    } catch (java.security.NoSuchAlgorithmException e) {
+			System.err.println("ResourceRetriever UnsupportedEncodingException Error: " + e.getMessage());
+	    } catch (UnsupportedEncodingException e) {
+			System.err.println("ResourceRetriever NoSuchAlgorithmException Error: " + e.getMessage());
+		}
+	    return null;
+    }
+	
+	private static File getTmpName(String url, String filename)
+	{
+		String hashName = MD5(url);
+		if (hashName == null )
+			return null;
+		
+		int idx = filename.lastIndexOf('.');
+		String ext = "";
+		if (idx > 0)
+			ext = filename.substring(idx);
+		
+		String tmpDir = System.getProperty("java.io.tmpdir");
+		
+		File f = new File(tmpDir,tmpPrefix + hashName + ext );
+		
+		return f;
+	}
+	
 
 	/**
 	 * Creates a temporary directory (normally in the /tmp folder)
@@ -124,25 +195,16 @@ public class ResourceRetriever {
 	 */
 	public static String createTempDirectory()
 	{
-		File temp;
 
-		try {
-			temp = File.createTempFile("temp", Long.toString(System.nanoTime()));
-			if (!(temp.delete())) {
-				throw new IOException("Could not delete temp file: "
-						+ temp.getAbsolutePath());
-			}
-
-			if (!(temp.mkdir())) {
-				throw new IOException("Could not create temp directory: "
-						+ temp.getAbsolutePath());
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			return "";
+		String tmpDir = System.getProperty("java.io.tmpdir");
+		
+		File temp = new File(tmpDir,"temp"+ Long.toString(System.nanoTime()) );
+		
+		if (!(temp.mkdir())) {
+			System.err.println("Could not create temp directory: "
+					+ temp.getAbsolutePath());
 		}
-
-
+		
 		return temp.getAbsolutePath();
 	}
 	

@@ -203,7 +203,7 @@ public class ColladaParser extends ModelParser {
 	}
 
 	@Override
-	public boolean loadModel(String filename) {
+	protected boolean loadModel(String filename) {
 		Collada collada = null;
 		textureBasePath = null;
 		String daeFile = null;
