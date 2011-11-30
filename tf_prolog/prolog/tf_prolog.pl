@@ -96,7 +96,8 @@ start_tf_listener :-
     jpl_call('tfjava.TFListener', 'getInstance', [], Client),
     assert(tf_listener(Client)).
 
-:- start_tf_listener.
+% do not automatically start tf listener
+% :- start_tf_listener.
 
 
 
