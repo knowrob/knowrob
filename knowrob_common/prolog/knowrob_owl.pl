@@ -21,10 +21,11 @@
 
 :- module(knowrob_owl,
     [
-      class_properties/3%,
-%       rdf_instance_from_class/2%,
-%       get_timepoint/1,
-%       get_timepoint/2
+      class_properties/3,
+      create_restr/6,
+      rdf_instance_from_class/2,
+      get_timepoint/1,
+      get_timepoint/2
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -34,9 +35,14 @@
 
 :- rdf_meta class_properties(r,r,t),
             rdf_instance_from_class(r,r),
+            rdf_instance_from_class(r,r,r),
             get_timepoint(r),
-            get_timepoint(+,r).
+            get_timepoint(+,r),
+            create_restr(r, r, r, r, +, r).
 
+:- rdf_db:rdf_register_ns(owl,    'http://www.w3.org/2002/07/owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(rdfs,   'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob,'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
 
 
 
@@ -76,7 +82,7 @@ rdf_instance_from_class(Class, SourceRef, Instance) :-
   )),
   atom_concat(T, Index, Instance),
 
-  ( ( nonvar(SourceRef), rdf_assert(Instance, rdf:type, T, SourceRef));
+  ( ( nonvar(SourceRef), rdf_assert(Instance, rdf:type, T, SourceRef),!);
     ( rdf_assert(Instance, rdf:type, T)) ),
 
   % update index
@@ -84,6 +90,26 @@ rdf_instance_from_class(Class, SourceRef, Instance) :-
   Index1 is Index+1,
   assert(instance_nr(Index1)).
 
+
+
+%% create_restr(+Class, +Prop, +Value, +RestrType, +SourceRef, -Restr) is det.
+%
+% Create a restriction for property Prop and value Value on class Class
+% with the sourceRef SourceRef
+% 
+% @param Class     Class that is to be annotated with the restriction
+% @param Prop      Property to be used for the restriction
+% @param Value     Value to be used for the restriction
+% @param RestrType Restriction type as OWL identifier, e.g. owl:someValuesFrom or owl:hasValue
+% @param SourceRef Atom as source reference for rdf_assert
+%
+create_restr(Class, Prop, Value, RestrType, SourceRef, Restr) :-
+
+  rdf_instance_from_class(owl:'Restriction', SourceRef, Restr),
+
+  rdf_assert(Class, rdfs:'subClassOf', Restr, SourceRef),
+  rdf_assert(Restr, owl:'onProperty', Prop, SourceRef),
+  rdf_assert(Restr, RestrType, Value, SourceRef).
 
 
 
