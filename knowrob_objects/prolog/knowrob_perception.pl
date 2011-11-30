@@ -21,7 +21,8 @@
 
 :- module(knowrob_perception,
     [
-      create_object_perception/4
+      create_object_perception/4,
+      create_pose/2
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -134,12 +135,18 @@ set_object_perception(Object, Perception) :-
 %
 set_perception_pose(Perception, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]) :-
 
+  create_pose([M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33], Loc),
+  rdf_assert(Perception, knowrob:eventOccursAt, Loc).
+
+
+create_pose([M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33], Loc) :-
+
   % set the pose
   atomic_list_concat(['rotMat3D_',M00,'_',M01,'_',M02,'_',M03,'_',M10,'_',M11,'_',M12,'_',M13,'_',M20,'_',M21,'_',M22,'_',M23,'_',M30,'_',M31,'_',M32,'_',M33], LocIdentifier),
 
   atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', LocIdentifier, Loc),
-  rdf_assert(Loc, rdf:type, knowrob:'RotationMatrix3D'),
-  rdf_assert(Perception, knowrob:eventOccursAt, Loc).
+  rdf_assert(Loc, rdf:type, knowrob:'RotationMatrix3D').
+
 
 
 

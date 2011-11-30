@@ -21,7 +21,10 @@
 
 :- module(knowrob_coordinates,
     [
-%       relative_to_pose/3
+      instantiate_at_position/3,
+      transform_relative_to/3,
+      pose_into_relative_coord/3,
+      pose_into_global_coord/3
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -32,8 +35,8 @@
 :- use_module(library('knowrob_objects')).
 
 
-:- rdf_meta relative_to_pose(r,r,r),
-            transform_relative_to_obj(r,r,r).
+:- rdf_meta instantiate_at_position(r,+,r),
+            transform_relative_to(r,r,-).
 
 
 :- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
@@ -148,18 +151,19 @@ instantiate_physical_part(ObjClassDef, ObjInst, PartInst) :-
 
 % compute relative pose of an object or pose matrix with respect to a
 % reference object or pose
-transform_relative_to(In, Ref, MatRel) :-
+transform_relative_to(In, Ref, PoseListRel) :-
 
-    ((owl_individual_of(In, knowrob:'RotationMatrix3D'), InPose = In) ;
+    ((owl_individual_of(In, knowrob:'RotationMatrix3D'), rotmat_to_list(In, InPose)) ;
       knowrob_objects:current_object_pose(In, InPose) ),
 
-    ((owl_individual_of(Ref, knowrob:'RotationMatrix3D'), RefPose = Ref) ;
+    ((owl_individual_of(Ref, knowrob:'RotationMatrix3D'), rotmat_to_list(Ref, RefPose)) ;
      knowrob_objects:current_object_pose(Ref, RefPose) ),
 
     list_to_matrix4d(InPose,  MatIn),
     list_to_matrix4d(RefPose, MatRef),
 
-    pose_into_relative_coord(MatIn, MatRef, MatRel).
+    pose4d_into_relative_coord(MatIn, MatRef, MatRel),
+    matrix4d_to_list(MatRel,PoseListRel).
 
 
 
@@ -176,6 +180,8 @@ transform_relative_to(In, Ref, MatRel) :-
 % @param RelativePose   Pose matrix with coordinates relative to ReferencePose, as row-based float[16]
 %
 pose_into_relative_coord(GlobalPose, ReferencePose, RelativePose) :-
+
+    is_list(GlobalPose), is_list(ReferencePose),
 
     list_to_matrix4d(GlobalPose,  GlobalPose4d),
     list_to_matrix4d(ReferencePose, ReferencePose4d),
