@@ -87,7 +87,8 @@ public class ColladaParser extends ModelParser {
     
 	@Override
 	public void draw(PApplet applet, int overrideColor) {
-
+		if (group == null)
+			return;
 		applet.noStroke();
 
 		if (overrideColor != 0)
@@ -212,7 +213,6 @@ public class ColladaParser extends ModelParser {
 			return false;
 		}
 		
-		System.out.println("Retrieve file: " + filename);
 		filename = retrieveFile(filename);
 		
 		if ((new File(filename)).exists()==false)

@@ -26,9 +26,9 @@ public class ItemModel {
 	 * @param path Path to the model
 	 */
 	public ItemModel(String path) {
-		System.out.println("MODEL PATH: " + path);
 		this.path = path;
-		parseModel();
+		if (!parseModel())
+			parser = null;
 	}
 
 	public String getPath() {

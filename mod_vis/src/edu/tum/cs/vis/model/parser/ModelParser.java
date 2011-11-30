@@ -158,7 +158,6 @@ public abstract class ModelParser {
 				file = "retrievedFile";
 			else
 				file = filename.substring(idx+1);
-			System.out.println("File: " + file);
 			File tmpPath = ResourceRetriever.retrieve(filename);
 			if (tmpPath != null)
 				return tmpPath.getAbsolutePath();

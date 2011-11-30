@@ -33,6 +33,7 @@ import de.tum.in.fipm.kipm.util.datastructures.Point;
 import edu.tum.cs.vis.AnimatedCanvas;
 import edu.tum.cs.vis.Canvas;
 import edu.tum.cs.vis.model.ItemModel;
+import edu.tum.cs.vis.model.Properties;
 
 
 
@@ -960,27 +961,6 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		}
 	}
 
-	private ItemModel getModelOfItem(String identifier) {
-		try {
-			HashMap<String, Vector<Object>> nfo = PrologVisualizationCanvas
-					.executeQuery(
-							"rdf_has(" + identifier	+ ",knowrob:pathToCadModel,literal(P)) ; "
-							+ "owl_individual_of(" + identifier	+ ", Class), class_properties(Class, 'http://ias.cs.tum.edu/kb/knowrob.owl#pathToCadModel',literal(P))",
-							null);
-			String str = nfo.get("P").get(0).toString();
-			if (str == null)
-				return null;
-			if (str.startsWith("'") && str.endsWith("'"))
-			{
-				str = str.substring(1, str.length()-1);
-			}
-			return new ItemModel(str);
-		} catch (Exception e) {
-			return null;
-		}
-	}
-
-
 
 	private ItemBase getItem(String identifier) {
 
@@ -1027,7 +1007,9 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		    } //else {System.out.println("NO DIMENSIONS FOR " + identifier);}
 
 			// set CAD model if existing
-			it.setModel(getModelOfItem(identifier));
+		    ItemModel model = Properties.getModelOfItem(identifier);
+		    if (model != null && model.getParser()!=null)
+		    	it.setModel(model);
 		    
 		    it.name = identifier;
 		    return it;
