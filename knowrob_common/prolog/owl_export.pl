@@ -37,12 +37,97 @@
 :- use_module(library('semweb/rdfs_computable')).
 :- use_module(library('thea/owl_parser')).
 :- use_module(library('knowrob_owl')).
+:- use_module(library('knowrob_coordinates')).
+
+
+:- rdf_db:rdf_register_ns(owl,    'http://www.w3.org/2002/07/owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(rdfs,   'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob,'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
 
 
 :- rdf_meta export_object(r,r),
       export_object_class(r,r),
       export_map(r,r),
-      export_action(r,r).
+      export_action(r,r),
+      class_properties_transitive(r,r,r).
+
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% tboxify playground
+
+
+tboxify_object_inst(ObjInst, ClassName, ReferenceObj, ReferenceObjCl, SourceRef) :-
+
+  % assert types as superclasses
+  findall(T, rdf_has(ObjInst, rdf:type, T), Ts),
+  findall(T, (member(T, Ts), rdf_assert(ClassName, rdfs:subClassOf, T, SourceRef)), _),
+
+
+  % read object pose if ReferenceObj is set (obj is part of another obj)
+  ((nonvar(ReferenceObj),
+
+    % read pose and transform into relative pose
+    transform_relative_to(ObjInst, ReferenceObj, RelativePoseList),
+
+    % create new pose matrix instance
+    create_pose(RelativePoseList, RelativePose),
+    rdf_assert(RelativePose, knowrob:relativeTo, ReferenceObjCl),
+
+    % add pose restriction to the class definition
+    create_restr(ClassName, knowrob:orientation, RelativePose, owl:hasValue, SourceRef, _PoseRestr),!)
+  ; true),
+
+
+  % read object properties
+  findall([P, O], (rdf_has(ObjInst, P, O),
+                   owl_individual_of(P, owl:'ObjectProperty'),
+                   \+ rdfs_subproperty_of(P, knowrob:parts)), ObjPs),
+  sort(ObjPs, ObjPsSorted),
+  
+  findall(ObjRestr,(member([P,O], ObjPsSorted),
+                    create_restr(ClassName, P, O, owl:someValuesFrom, SourceRef, ObjRestr)), _ObjRestrs),
+
+
+  % read data properties
+  findall([P, O], (rdf_has(ObjInst, P, O),
+                   owl_individual_of(P, owl:'DatatypeProperty')), DataPs),
+  sort(DataPs, DataPsSorted),
+  
+  findall(DataRestr, (member([P,O], DataPsSorted),
+                     create_restr(ClassName, P, O, owl:hasValue, SourceRef, DataRestr)), _DataRestrs),
+
+
+
+  % iterate over physicalParts
+  findall(Part, (rdf_has(ObjInst, P, Part),
+                 rdfs_subproperty_of(P, knowrob:parts)), Parts),
+  sort(Parts, PartsSorted),
+
+  findall(Part, (member(Part, PartsSorted),
+                 rdf_unique_class_id('http://ias.cs.tum.edu/kb/knowrob.owl#SpatialThing', SourceRef, PartClassName),
+                 create_restr(ClassName, knowrob:properPhysicalParts, PartClassName, owl:someValuesFrom, SourceRef, ObjRestr),
+                 tboxify_object_inst(Part, PartClassName, ObjInst, ClassName, SourceRef)), _).
+
+
+
+:- assert(instance_nr(0)).
+rdf_unique_class_id(BaseClass, SourceRef, ID) :-
+
+  instance_nr(Index),
+  atom_concat(BaseClass, Index, ID),
+
+  ( ( nonvar(SourceRef), rdf_assert(ID, rdf:type, owl:'Class', SourceRef),!);
+    ( rdf_assert(ID, rdf:type, owl:'Class')) ),
+
+  % update index
+  retract(instance_nr(_)),
+  Index1 is Index+1,
+  assert(instance_nr(Index1)),!.
+
+
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
 
 
 %% export_object(+Obj, -File)
@@ -109,7 +194,9 @@ export_to_owl(Atoms, File) :-
 
   findall(_, (
     member(Atom, Atoms),
-    rdf_save_subject(Stream, Atom, _)
+    ((atom(Atom),
+      rdf_save_subject(Stream, Atom, _))
+    ; true)
   ), _),
 
   rdf_save_footer(Stream),
@@ -197,10 +284,10 @@ read_map_info(Map, MapInfosSorted) :-
 read_action_info(Action, ActionInfosSorted) :-
 
   % recursively read all sub-actions of the action
-  plan_subevents_recursive(Action, SubEvents),
+  findall(SubEvent, plan_subevents_recursive(Action, SubEvent), SubEvents),
 
   % read all properties for each of them
-  findall(Value, (member(Act, SubEvents), action_properties(Act, _, Value)), ActionProperties),
+  findall(Value, (member(Act, SubEvents), class_properties(Act, _, Value)), ActionProperties),
 
   % read everything related to these things by an ObjectProperty
   findall(PropVal, (member(ActProp, ActionProperties),
@@ -222,30 +309,37 @@ read_action_info(Action, ActionInfosSorted) :-
 %
 read_objclass_info(ObjClass, ObjClassInfosSorted) :-
 
-  % read all properties for each of them
+  findall(ObjSuperClass, owl_direct_subclass_of(ObjClass, ObjSuperClass), ObjSuperClasses),
 
-  class_properties(ObjClass, ObjProperties),
-%   findall(Value, (member(Act, SubEvents), action_properties(Act, _, Value)), ObjProperties),
+  % read all parts of the object class to be exported
+  findall(ObjPart, class_properties_transitive(ObjClass, knowrob:parts, ObjPart), ObjParts),
+
+  append([[ObjClass], ObjParts, ObjSuperClasses], ObjClassDefs),
+  sort(ObjClassDefs, ObjClassDefsSorted),
+
+  % read all properties for each of them
+  findall(ObjPr, (member(ObjCl,ObjClassDefsSorted), knowrob_owl:class_properties_1(ObjCl, _, ObjPr)), ObjProperties),
 
   % read everything related to these things by an ObjectProperty
   findall(PropVal, (member(ObjProp, ObjProperties),
-                    owl_has(ObjProp, P, PropVal),
-                    rdfs_individual_of(P, 'http://www.w3.org/2002/07/owl#ObjectProperty')), ObjClassPropProperties),
+                    rdf_has(ObjProp, _P, PropVal)), ObjClassPropProperties),
 
-  append([[ObjClass], ObjProperties, ObjClassPropProperties], ObjClassInfos),
+  append([ObjClassDefsSorted, ObjProperties, ObjClassPropProperties], ObjClassInfos),
+
   flatten(ObjClassInfos, ObjClassInfosFlat),
   sort(ObjClassInfosFlat, ObjClassInfosSorted).
 
 
 
-% class_properties(ObjClass, ObjProperties) :-
-%
-%   findall(Value, (action_properties(ObjClass, _, Value)), DirectObjProperties),
-%   findall(SubObjProps, (member(SubObj, DirectObjProperties), class_properties(SubObj, SubObjProps)), SubObjProperties),
-%
-%   append([DirectObjProperties, SubObjProperties], ObjProps),
-%   flatten(ObjProps, ObjProperties).
 
+
+class_properties_transitive(Class, Prop, SubComp) :-
+    class_properties(Class, Prop, SubComp).
+class_properties_transitive(Class, Prop, SubComp) :-
+    class_properties(Class, Prop, Sub),
+    owl_individual_of(Prop, owl:'TransitiveProperty'),
+    Sub \= Class,
+    class_properties_transitive(Sub, Prop, SubComp).
 
 
 
