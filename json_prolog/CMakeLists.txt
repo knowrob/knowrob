@@ -35,6 +35,7 @@ add_runtime_classpath(/usr/share/java/commons-logging.jar)
 
 add_java_source_dir( ${PROJECT_SOURCE_DIR}/src/java )
 rospack_add_java_executable( json_prolog edu.tum.cs.ias.knowrob.json_prolog.JSONPrologNode )
+rospack_add_java_executable( java_test_client JSONPrologTestClient )
 
 # C++ client library
 

@@ -152,7 +152,7 @@ public final class JSONPrologNode {
             try {
               Ros.getInstance().logDebug("Received query with id " + request.id);
 
-              jpl.Query currentQuery = new jpl.Query(request.query);
+              jpl.Query currentQuery = new jpl.Query("expand_goal(("+request.query+"),_Q), call(_Q)");
               String currentQueryId = request.id;
 
               if(request.mode == PrologQuery.Request.INCREMENTAL) {
