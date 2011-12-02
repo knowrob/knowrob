@@ -32,11 +32,13 @@ public class PlanExporter {
      */
     private JSONObject knowrobToCPL;
     private HashMap<String, String> designators;
+    private Vector<String> designator_order;
     private int inst_counter = 100;
 
     public PlanExporter() throws IOException {
 
         designators = new HashMap<String, String>();
+        designator_order = new Vector<String>();
         knowrobToCPL = readCplMapping(RosUtilities.rospackFind("knowrob_actions") + "/" +MAPPING_CONFIG_FILE);
         plan = new ArrayList<String>();
     }
@@ -129,6 +131,9 @@ public class PlanExporter {
 		            	}
 	            		
 	            		action_spec = "(achieve `(arms-at ," + act_desig2 + "))";
+	            		
+	            		if(!designator_order.contains(act_desig2))
+	            			designator_order.add(act_desig2);
 	            		designators.put(act_desig2, act_desig2_content);
 	            	      
 		            } else if(cplAction.endsWith("close-gripper")) {
@@ -142,6 +147,9 @@ public class PlanExporter {
 		            	}
 	            		
 	            		action_spec = "(achieve `(arms-at ," + act_desig2 + "))";
+	            		
+	            		if(!designator_order.contains(act_desig2))
+	            			designator_order.add(act_desig2);
 	            		designators.put(act_desig2, act_desig2_content);
 
 	            		
@@ -173,11 +181,16 @@ public class PlanExporter {
 		}
         
 
+		ArrayList<String> orderedDesigValues = new ArrayList<String>();
+		
+		for(String key : designator_order)
+			orderedDesigValues.add(designators.get(key));
+
 
 		// export to string
 		res += "(def-top-level-plan " + lispify(plan_name) + " () \n";
 		res += "(with-designators (\n      ";
-		res += Joiner.on("\n      ").join(designators.values());
+		res += Joiner.on("\n      ").join(orderedDesigValues);
 		
 		res += ")\n\n";
 		
@@ -224,8 +237,10 @@ public class PlanExporter {
             
             obj_desig = "(" + lispify(obj_inst) + " (object  `((type " + knowrobToCpl(obj_type) + "))))";
         }
-        // TODO: (part-of <object-desig>)
 
+        if(!designator_order.contains(obj_inst))
+        	designator_order.add(obj_inst);
+        
         designators.put(obj_inst, obj_desig);
         return obj_inst;
     }
@@ -242,6 +257,8 @@ public class PlanExporter {
     	String loc_desig="";
     	loc_desig = "(location-" + obj_desig + " (location `((of ," + obj_desig + "))))";
     	
+    	if(!designator_order.contains("location-" + obj_desig))
+    		designator_order.add("location-" + obj_desig);
     	designators.put("location-" + obj_desig, loc_desig);
     	return "location-" + obj_desig;
     }
@@ -296,7 +313,7 @@ public class PlanExporter {
     
                 } else if (prop.endsWith("inReachOf") ||
                         prop.endsWith("inFrontOf-Generally")) {
-                    loc_desig += "(to reach ," + knowrobToCpl(locationDesignatorForObject(val)) + ")";
+                    loc_desig += "(to reach) (loc ," + knowrobToCpl(locationDesignatorForObject(val)) + ")";
     
                 } else if (prop.endsWith("visibleFrom")) {
                     loc_desig += "(to see ," + knowrobToCpl(locationDesignatorForObject(val)) + ")";
@@ -309,6 +326,8 @@ public class PlanExporter {
         }
         loc_desig += ")))";
 
+        if(!designator_order.contains(loc))
+        	designator_order.add(loc);
         designators.put(loc, loc_desig);
         return loc;
     }
@@ -346,6 +365,8 @@ public class PlanExporter {
             }
             act_descr+=")))";
 
+            if(!designator_order.contains(act_desig))
+            	designator_order.add(act_desig);
         	designators.put(act_desig, act_descr);
 
 		}
