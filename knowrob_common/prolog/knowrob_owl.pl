@@ -96,7 +96,7 @@ rdf_instance_from_class(Class, SourceRef, Instance) :-
 %
 % Create a restriction for property Prop and value Value on class Class
 % with the sourceRef SourceRef
-% 
+%
 % @param Class     Class that is to be annotated with the restriction
 % @param Prop      Property to be used for the restriction
 % @param Value     Value to be used for the restriction
@@ -105,9 +105,13 @@ rdf_instance_from_class(Class, SourceRef, Instance) :-
 %
 create_restr(Class, Prop, Value, RestrType, SourceRef, Restr) :-
 
-  rdf_instance_from_class(owl:'Restriction', SourceRef, Restr),
+  rdf_node(Restr),
+%   rdf_assert(Restr, rdf:'type', owl:'Restriction', SourceRef),
 
   rdf_assert(Class, rdfs:'subClassOf', Restr, SourceRef),
+
+%   assert(blanknode(Prop, someValuesFrom(Value), used)),
+
   rdf_assert(Restr, owl:'onProperty', Prop, SourceRef),
   rdf_assert(Restr, RestrType, Value, SourceRef).
 

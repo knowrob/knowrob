@@ -49,6 +49,8 @@
       export_object_class(r,r),
       export_map(r,r),
       export_action(r,r),
+      rdf_unique_class_id(r, +, r),
+      tboxify_object_inst(r,r,r,r,+),
       class_properties_transitive(r,r,r).
 
 
@@ -83,7 +85,7 @@ tboxify_object_inst(ObjInst, ClassName, ReferenceObj, ReferenceObjCl, SourceRef)
                    owl_individual_of(P, owl:'ObjectProperty'),
                    \+ rdfs_subproperty_of(P, knowrob:parts)), ObjPs),
   sort(ObjPs, ObjPsSorted),
-  
+
   findall(ObjRestr,(member([P,O], ObjPsSorted),
                     create_restr(ClassName, P, O, owl:someValuesFrom, SourceRef, ObjRestr)), _ObjRestrs),
 
@@ -92,7 +94,7 @@ tboxify_object_inst(ObjInst, ClassName, ReferenceObj, ReferenceObjCl, SourceRef)
   findall([P, O], (rdf_has(ObjInst, P, O),
                    owl_individual_of(P, owl:'DatatypeProperty')), DataPs),
   sort(DataPs, DataPsSorted),
-  
+
   findall(DataRestr, (member([P,O], DataPsSorted),
                      create_restr(ClassName, P, O, owl:hasValue, SourceRef, DataRestr)), _DataRestrs),
 
@@ -309,10 +311,10 @@ read_action_info(Action, ActionInfosSorted) :-
 %
 read_objclass_info(ObjClass, ObjClassInfosSorted) :-
 
-  findall(ObjSuperClass, owl_direct_subclass_of(ObjClass, ObjSuperClass), ObjSuperClasses),
+  findall(ObjSuperClass, (owl_direct_subclass_of(ObjClass, ObjSuperClass), not(is_bnode(ObjSuperClass))), ObjSuperClasses),
 
   % read all parts of the object class to be exported
-  findall(ObjPart, class_properties_transitive(ObjClass, knowrob:parts, ObjPart), ObjParts),
+  findall(ObjPart, (class_properties_transitive(ObjClass, knowrob:parts, ObjPart), not(is_bnode(ObjPart))), ObjParts),
 
   append([[ObjClass], ObjParts, ObjSuperClasses], ObjClassDefs),
   sort(ObjClassDefs, ObjClassDefsSorted),
@@ -322,7 +324,8 @@ read_objclass_info(ObjClass, ObjClassInfosSorted) :-
 
   % read everything related to these things by an ObjectProperty
   findall(PropVal, (member(ObjProp, ObjProperties),
-                    rdf_has(ObjProp, _P, PropVal)), ObjClassPropProperties),
+                    rdf_has(ObjProp, _P, PropVal),
+                    not(is_bnode(PropVal))), ObjClassPropProperties),
 
   append([ObjClassDefsSorted, ObjProperties, ObjClassPropProperties], ObjClassInfos),
 
@@ -330,7 +333,9 @@ read_objclass_info(ObjClass, ObjClassInfosSorted) :-
   sort(ObjClassInfosFlat, ObjClassInfosSorted).
 
 
-
+is_bnode(Node) :-
+  atom(Node),
+  sub_string(Node,0,2,_,'__').
 
 
 class_properties_transitive(Class, Prop, SubComp) :-
