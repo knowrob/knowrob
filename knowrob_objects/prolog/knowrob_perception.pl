@@ -31,6 +31,11 @@
 :- use_module(library('semweb/rdfs_computable')).
 :- use_module(library('knowrob_owl')).
 
+:- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
+:- rdf_db:rdf_register_ns(owl, 'http://www.w3.org/2002/07/owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(xsd, 'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
+
 
 
 %% create_object_perception(ObjClass, ObjPose, PerceptionTypes, ObjInst)
@@ -141,11 +146,27 @@ set_perception_pose(Perception, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M2
 
 create_pose([M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33], Loc) :-
 
-  % set the pose
-  atomic_list_concat(['rotMat3D_',M00,'_',M01,'_',M02,'_',M03,'_',M10,'_',M11,'_',M12,'_',M13,'_',M20,'_',M21,'_',M22,'_',M23,'_',M30,'_',M31,'_',M32,'_',M33], LocIdentifier),
+  rdf_instance_from_class(knowrob:'RotationMatrix3D', Loc),
 
-  atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', LocIdentifier, Loc),
-  rdf_assert(Loc, rdf:type, knowrob:'RotationMatrix3D').
+  rdf_assert(Loc,'http://ias.cs.tum.edu/kb/knowrob.owl#m00',literal(type(xsd:float, M00))),
+  rdf_assert(Loc,'http://ias.cs.tum.edu/kb/knowrob.owl#m01',literal(type(xsd:float, M01))),
+  rdf_assert(Loc,'http://ias.cs.tum.edu/kb/knowrob.owl#m02',literal(type(xsd:float, M02))),
+  rdf_assert(Loc,'http://ias.cs.tum.edu/kb/knowrob.owl#m03',literal(type(xsd:float, M03))),
+
+  rdf_assert(Loc,'http://ias.cs.tum.edu/kb/knowrob.owl#m10',literal(type(xsd:float, M10))),
+  rdf_assert(Loc,'http://ias.cs.tum.edu/kb/knowrob.owl#m11',literal(type(xsd:float, M11))),
+  rdf_assert(Loc,'http://ias.cs.tum.edu/kb/knowrob.owl#m12',literal(type(xsd:float, M12))),
+  rdf_assert(Loc,'http://ias.cs.tum.edu/kb/knowrob.owl#m13',literal(type(xsd:float, M13))),
+
+  rdf_assert(Loc,'http://ias.cs.tum.edu/kb/knowrob.owl#m20',literal(type(xsd:float, M20))),
+  rdf_assert(Loc,'http://ias.cs.tum.edu/kb/knowrob.owl#m21',literal(type(xsd:float, M21))),
+  rdf_assert(Loc,'http://ias.cs.tum.edu/kb/knowrob.owl#m22',literal(type(xsd:float, M22))),
+  rdf_assert(Loc,'http://ias.cs.tum.edu/kb/knowrob.owl#m23',literal(type(xsd:float, M23))),
+
+  rdf_assert(Loc,'http://ias.cs.tum.edu/kb/knowrob.owl#m30',literal(type(xsd:float, M30))),
+  rdf_assert(Loc,'http://ias.cs.tum.edu/kb/knowrob.owl#m31',literal(type(xsd:float, M31))),
+  rdf_assert(Loc,'http://ias.cs.tum.edu/kb/knowrob.owl#m32',literal(type(xsd:float, M32))),
+  rdf_assert(Loc,'http://ias.cs.tum.edu/kb/knowrob.owl#m33',literal(type(xsd:float, M33))).
 
 
 
@@ -156,11 +177,51 @@ create_pose([M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M3
 %
 set_perception_cov(Perception, [M00, M01, M02, M03, M04, M05, M10, M11, M12, M13, M14, M15, M20, M21, M22, M23, M24, M25, M30, M31, M32, M33, M34, M35, M40, M41, M42, M43, M44, M45, M50, M51, M52, M53, M54, M55]) :-
 
-  % set the pose
-  atomic_list_concat(['covMat3D_',M00,'_',M01,'_',M02,'_',M03,'_',M04,'_',M05,'_',M10,'_',M11,'_',M12,'_',M13,'_',M14,'_',M15,'_',M20,'_',M21,'_',M22,'_',M23,'_',M24,'_',M25,'_',M30,'_',M31,'_',M32,'_',M33,'_',M34,'_',M35,'_',M40,'_',M41,'_',M42,'_',M43,'_',M44,'_',M45,'_',M50,'_',M51,'_',M52,'_',M53,'_',M54,'_',M55], CovIdentifier),
 
-  atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', CovIdentifier, Cov),
-  rdf_assert(Cov, rdf:type, knowrob:'CovarianceMatrix'),
+  rdf_instance_from_class(knowrob:'CovarianceMatrix', Cov),
+
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m00',literal(type(xsd:float, M00))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m01',literal(type(xsd:float, M01))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m02',literal(type(xsd:float, M02))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m03',literal(type(xsd:float, M03))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m03',literal(type(xsd:float, M04))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m03',literal(type(xsd:float, M05))),
+
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m10',literal(type(xsd:float, M10))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m11',literal(type(xsd:float, M11))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m12',literal(type(xsd:float, M12))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m13',literal(type(xsd:float, M13))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m13',literal(type(xsd:float, M14))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m13',literal(type(xsd:float, M15))),
+
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m20',literal(type(xsd:float, M20))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m21',literal(type(xsd:float, M21))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m22',literal(type(xsd:float, M22))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m23',literal(type(xsd:float, M23))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m23',literal(type(xsd:float, M24))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m23',literal(type(xsd:float, M25))),
+
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m30',literal(type(xsd:float, M30))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m31',literal(type(xsd:float, M31))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m32',literal(type(xsd:float, M32))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m33',literal(type(xsd:float, M33))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m33',literal(type(xsd:float, M34))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m33',literal(type(xsd:float, M35))),
+
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m40',literal(type(xsd:float, M40))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m41',literal(type(xsd:float, M41))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m42',literal(type(xsd:float, M42))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m43',literal(type(xsd:float, M43))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m43',literal(type(xsd:float, M44))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m43',literal(type(xsd:float, M45))),
+
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m50',literal(type(xsd:float, M50))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m51',literal(type(xsd:float, M51))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m52',literal(type(xsd:float, M52))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m53',literal(type(xsd:float, M53))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m53',literal(type(xsd:float, M54))),
+  rdf_assert(Cov,'http://ias.cs.tum.edu/kb/knowrob.owl#m53',literal(type(xsd:float, M55))),
+
   rdf_assert(Perception, knowrob:covariance, Cov).
 
 
