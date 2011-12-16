@@ -6,409 +6,65 @@
     <!ENTITY srdl_path 'file://@SRDL_PACKAGE_PATH@/owl/'>
 
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
-    <!ENTITY PR2 "http://ias.cs.tum.edu/kb/PR2.owl#" >
+    <!ENTITY pr2 "http://ias.cs.tum.edu/kb/PR2.owl#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
-    <!ENTITY SRDL "http://ias.cs.tum.edu/kb/SRDL.owl#" >
+    <!ENTITY srdl2 "http://ias.cs.tum.edu/kb/srdl2.owl#" >
     <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
     <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
-    <!ENTITY SRDL_component "http://ias.cs.tum.edu/kb/SRDL_component.owl#" >
-    <!ENTITY SRDL_component3 "http://ias.cs.tum.edu/kb/SRDL_component.owl#5" >
-    <!ENTITY SRDL_capability "http://ias.cs.tum.edu/kb/SRDL_capability.owl#" >
-    <!ENTITY SRDL_component2 "http://ias.cs.tum.edu/kb/SRDL_component.owl#24" >
-    <!ENTITY SRDL_component5 "http://ias.cs.tum.edu/kb/SRDL_component.owl#500" >
-    <!ENTITY SRDL_component4 "http://ias.cs.tum.edu/kb/SRDL_component.owl#1500" >
+    <!ENTITY srdl2-comp "http://ias.cs.tum.edu/kb/srdl2-comp.owl#" >
+    <!ENTITY srdl2-cap "http://ias.cs.tum.edu/kb/srdl2-cap.owl#" >
 ]>
 
 
 <rdf:RDF xmlns="http://ias.cs.tum.edu/kb/PR2.owl#"
      xml:base="http://ias.cs.tum.edu/kb/PR2.owl"
-     xmlns:SRDL_component="http://ias.cs.tum.edu/kb/SRDL_component.owl#"
+     xmlns:srdl2-comp="http://ias.cs.tum.edu/kb/srdl2-comp.owl#"
      xmlns:PR2="http://ias.cs.tum.edu/kb/PR2.owl#"
-     xmlns:SRDL_component2="&SRDL_component;24"
-     xmlns:SRDL_component3="&SRDL_component;5"
-     xmlns:SRDL_component4="&SRDL_component;1500"
      xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
-     xmlns:SRDL="http://ias.cs.tum.edu/kb/SRDL.owl#"
-     xmlns:SRDL_component5="&SRDL_component;500"
+     xmlns:srdl2="http://ias.cs.tum.edu/kb/srdl2.owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
-     xmlns:SRDL_capability="http://ias.cs.tum.edu/kb/SRDL_capability.owl#"
+     xmlns:srdl2-cap="http://ias.cs.tum.edu/kb/srdl2-cap.owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <owl:Ontology rdf:about="">
-        <owl:imports rdf:resource="&srdl_path;SRDL.owl"/>
+    <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/PR2.owl">
+        <owl:imports rdf:resource="&srdl_path;srdl2.owl"/>
     </owl:Ontology>
 
 
 
-    <!--
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Object Properties
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL.owl#hasBaseLinkInKinematicChain -->
-
-    <owl:ObjectProperty rdf:about="&SRDL;hasBaseLinkInKinematicChain"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL.owl#hasCapability -->
-
-    <owl:ObjectProperty rdf:about="&SRDL;hasCapability"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL.owl#hasHardwareComponent -->
-
-    <owl:ObjectProperty rdf:about="&SRDL;hasHardwareComponent"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#executedOn -->
-
-    <owl:ObjectProperty rdf:about="&SRDL_component;executedOn"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasAttribute -->
-
-    <owl:ObjectProperty rdf:about="&SRDL_component;hasAttribute"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasBaseLinkOfComposition -->
-
-    <owl:ObjectProperty rdf:about="&SRDL_component;hasBaseLinkOfComposition"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasEndLinkOfComposition -->
-
-    <owl:ObjectProperty rdf:about="&SRDL_component;hasEndLinkOfComposition"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasSucceedingJoint -->
-
-    <owl:ObjectProperty rdf:about="&SRDL_component;hasSucceedingJoint"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasSucceedingLink -->
-
-    <owl:ObjectProperty rdf:about="&SRDL_component;hasSucceedingLink"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasSuccessorInKinematicChain -->
-
-    <owl:ObjectProperty rdf:about="&SRDL_component;hasSuccessorInKinematicChain"/>
-
-
-
-    <!--
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Data properties
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasAttributeName -->
-
-    <owl:DatatypeProperty rdf:about="&SRDL_component;hasAttributeName"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasAttributeUnitOfMeasure -->
-
-    <owl:DatatypeProperty rdf:about="&SRDL_component;hasAttributeUnitOfMeasure"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasAttributeValue -->
-
-    <owl:DatatypeProperty rdf:about="&SRDL_component;hasAttributeValue"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#hasUrdfName -->
-
-    <owl:DatatypeProperty rdf:about="&SRDL_component;hasUrdfName"/>
-
-
-
-    <!--
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Classes
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2Srdl -->
-
-    <owl:Class rdf:about="#PR2Srdl">
-        <rdfs:subClassOf rdf:resource="&SRDL;SrdlRobot"/>
-        <rdfs:subClassOf rdf:resource="&knowrob;PR2"/>
+    <owl:Class rdf:about="&knowrob;PR2">
         <rdfs:subClassOf>
             <owl:Class>
                 <owl:intersectionOf rdf:parseType="Collection">
                     <owl:Restriction>
-                        <owl:onProperty rdf:resource="&SRDL;hasCapability"/>
-                        <owl:someValuesFrom rdf:resource="&SRDL_capability;grasp_execution"/>
+                        <owl:onProperty rdf:resource="&srdl2-cap;hasCapability"/>
+                        <owl:someValuesFrom rdf:resource="&srdl2-cap;ClosingADoorCapability"/>
                     </owl:Restriction>
                     <owl:Restriction>
-                        <owl:onProperty rdf:resource="&SRDL;hasCapability"/>
-                        <owl:someValuesFrom rdf:resource="&SRDL_capability;move_arm"/>
+                        <owl:onProperty rdf:resource="&srdl2-cap;hasCapability"/>
+                        <owl:someValuesFrom rdf:resource="&srdl2-cap;OpeningADoorCapability"/>
                     </owl:Restriction>
                     <owl:Restriction>
-                        <owl:onProperty rdf:resource="&SRDL;hasCapability"/>
-                        <owl:someValuesFrom rdf:resource="&SRDL_capability;move_base"/>
+                        <owl:onProperty rdf:resource="&srdl2-cap;hasCapability"/>
+                        <owl:someValuesFrom rdf:resource="&srdl2-cap;GraspingCapability"/>
                     </owl:Restriction>
                     <owl:Restriction>
-                        <owl:onProperty rdf:resource="&SRDL;hasCapability"/>
-                        <owl:someValuesFrom rdf:resource="&SRDL_capability;OpeningAContainer"/>
+                        <owl:onProperty rdf:resource="&srdl2-cap;hasCapability"/>
+                        <owl:someValuesFrom rdf:resource="&srdl2-cap;move_arm"/>
                     </owl:Restriction>
                     <owl:Restriction>
-                        <owl:onProperty rdf:resource="&SRDL;hasCapability"/>
-                        <owl:someValuesFrom rdf:resource="&SRDL_capability;ClosingAContainer"/>
+                        <owl:onProperty rdf:resource="&srdl2-cap;hasCapability"/>
+                        <owl:someValuesFrom rdf:resource="&srdl2-cap;move_base"/>
                     </owl:Restriction>
                 </owl:intersectionOf>
             </owl:Class>
         </rdfs:subClassOf>
     </owl:Class>
 
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL.owl#SrdlRobot -->
-
-    <owl:Class rdf:about="&SRDL;SrdlRobot"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#grasp_execution -->
-
-    <owl:Class rdf:about="&SRDL_capability;grasp_execution"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#move_arm -->
-
-    <owl:Class rdf:about="&SRDL_capability;move_arm"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_capability.owl#move_base -->
-
-    <owl:Class rdf:about="&SRDL_capability;move_base"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#1500GbHardDrive -->
-
-    <owl:Class rdf:about="&SRDL_component;1500GbHardDrive"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#24GbMemory -->
-
-    <owl:Class rdf:about="&SRDL_component;24GbMemory"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#500GbHardDrive -->
-
-    <owl:Class rdf:about="&SRDL_component;500GbHardDrive"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#5MegapixelGlobalShutterColorCamera -->
-
-    <owl:Class rdf:about="&SRDL_component;5MegapixelGlobalShutterColorCamera"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#ComponentAttribute -->
-
-    <owl:Class rdf:about="&SRDL_component;ComponentAttribute"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#ComponentComposition -->
-
-    <owl:Class rdf:about="&SRDL_component;ComponentComposition"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#ContinuousUrdfJoint -->
-
-    <owl:Class rdf:about="&SRDL_component;ContinuousUrdfJoint"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#DualRadioWifiNetwork -->
-
-    <owl:Class rdf:about="&SRDL_component;DualRadioWifiNetwork"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#EtherCatNetwork -->
-
-    <owl:Class rdf:about="&SRDL_component;EtherCatNetwork"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#FingertipPressureSensorArray -->
-
-    <owl:Class rdf:about="&SRDL_component;FingertipPressureSensorArray"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#FixedHardDrive -->
-
-    <owl:Class rdf:about="&SRDL_component;FixedHardDrive"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#FixedUrdfJoint -->
-
-    <owl:Class rdf:about="&SRDL_component;FixedUrdfJoint"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#GigabitEthernetNetwork -->
-
-    <owl:Class rdf:about="&SRDL_component;GigabitEthernetNetwork"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#HokuyoUTM-30LX -->
-
-    <owl:Class rdf:about="&SRDL_component;HokuyoUTM-30LX"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#LEDTextureProjector -->
-
-    <owl:Class rdf:about="&SRDL_component;LEDTextureProjector"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#Microstrain3DM-GX2IMU -->
-
-    <owl:Class rdf:about="&SRDL_component;Microstrain3DM-GX2IMU"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#NarrowAngleGlobalShutterMonochromeStereoCamera -->
-
-    <owl:Class rdf:about="&SRDL_component;NarrowAngleGlobalShutterMonochromeStereoCamera"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#NetworkAccessPoint -->
-
-    <owl:Class rdf:about="&SRDL_component;NetworkAccessPoint"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#Pr2Arm -->
-
-    <owl:Class rdf:about="&SRDL_component;Pr2Arm"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#Pr2Base -->
-
-    <owl:Class rdf:about="&SRDL_component;Pr2Base"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#Pr2Gripper -->
-
-    <owl:Class rdf:about="&SRDL_component;Pr2Gripper"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#PrismaticUrdfJoint -->
-
-    <owl:Class rdf:about="&SRDL_component;PrismaticUrdfJoint"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#RemovableHardDrive -->
-
-    <owl:Class rdf:about="&SRDL_component;RemovableHardDrive"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#RevoluteUrdfJoint -->
-
-    <owl:Class rdf:about="&SRDL_component;RevoluteUrdfJoint"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#SelfMotionControllerComponent -->
-
-    <owl:Class rdf:about="&SRDL_component;SelfMotionControllerComponent"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#SensorController -->
-
-    <owl:Class rdf:about="&SRDL_component;SensorController"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#UrdfLink -->
-
-    <owl:Class rdf:about="&SRDL_component;UrdfLink"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#WideAngleCamera -->
-
-    <owl:Class rdf:about="&SRDL_component;WideAngleCamera"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#WideAngleGlobalShutterColorStereoCamera -->
-
-    <owl:Class rdf:about="&SRDL_component;WideAngleGlobalShutterColorStereoCamera"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/SRDL_component.owl#Xeoni7QuadCoreProcessor -->
-
-    <owl:Class rdf:about="&SRDL_component;Xeoni7QuadCoreProcessor"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PR2 -->
-
-    <owl:Class rdf:about="&knowrob;PR2"/>
-
-
-
-    <!-- http://www.w3.org/2002/07/owl#Thing -->
-
-    <owl:Class rdf:about="&owl;Thing"/>
 
 
 
@@ -422,2199 +78,1860 @@
 
 
 
+    <!-- &pr2;PR2_BaseComposition -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_ -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_BaseComposition">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
+        <rdf:type rdf:resource="&srdl2-comp;Pr2Base"/>
 
-    <owl:Thing rdf:about="#PR2_"/>
+        <srdl2-comp:baseLinkOfComposition rdf:resource="&pr2;PR2_base_link"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;PR2_bl_caster_l_wheel_link"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;PR2_bl_caster_r_wheel_link"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;PR2_br_caster_l_wheel_link"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;PR2_br_caster_r_wheel_link"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;PR2_fl_caster_l_wheel_link"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;PR2_fl_caster_r_wheel_link"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;PR2_fr_caster_l_wheel_link"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;PR2_fr_caster_r_wheel_link"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_5MegapixelGlobalShutterColorCamera1 -->
 
-    <owl:Thing rdf:about="#PR2_5MegapixelGlobalShutterColorCamera1">
-        <rdf:type rdf:resource="&SRDL_component;5MegapixelGlobalShutterColorCamera"/>
-        <rdfs:comment
-            >Camera was not modelled in URDF file</rdfs:comment>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_Instance1 -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2Robot1">
+        <rdf:type rdf:resource="&knowrob;PR2"/>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_AccessPoint_Instance1 -->
+        <!-- Hardware component compositions -->
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_base_footprint"/>
+        <srdl2-comp:subComponent rdf:resource="&pr2;PR2_BaseComposition"/>
+        <srdl2-comp:subComponent rdf:resource="&pr2;PR2_l_ArmComposition"/>
+        <srdl2-comp:subComponent rdf:resource="&pr2;PR2_r_ArmComposition"/>
+        <srdl2-comp:subComponent rdf:resource="&pr2;PR2_l_GripperComposition"/>
+        <srdl2-comp:subComponent rdf:resource="&pr2;PR2_r_GripperComposition"/>
 
-    <owl:Thing rdf:about="#PR2_AccessPoint_Instance1">
-        <rdf:type rdf:resource="&SRDL_component;NetworkAccessPoint"/>
-    </owl:Thing>
+        <!-- Software components -->
+        <srdl2-comp:subComponent rdf:resource="&pr2;LeftArmController"/>
+        <srdl2-comp:subComponent rdf:resource="&pr2;RightArmController"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_BaseComposition -->
 
-    <owl:Thing rdf:about="#PR2_BaseComposition">
-        <rdf:type rdf:resource="&SRDL_component;ComponentComposition"/>
-        <rdf:type rdf:resource="&SRDL_component;Pr2Base"/>
-        <SRDL_component:hasBaseLinkOfComposition rdf:resource="#PR2_base_link"/>
-        <SRDL_component:hasEndLinkOfComposition rdf:resource="#PR2_bl_caster_l_wheel_link"/>
-        <SRDL_component:hasEndLinkOfComposition rdf:resource="#PR2_bl_caster_r_wheel_link"/>
-        <SRDL_component:hasEndLinkOfComposition rdf:resource="#PR2_br_caster_l_wheel_link"/>
-        <SRDL_component:hasEndLinkOfComposition rdf:resource="#PR2_br_caster_r_wheel_link"/>
-        <SRDL_component:hasEndLinkOfComposition rdf:resource="#PR2_fl_caster_l_wheel_link"/>
-        <SRDL_component:hasEndLinkOfComposition rdf:resource="#PR2_fl_caster_r_wheel_link"/>
-        <SRDL_component:hasEndLinkOfComposition rdf:resource="#PR2_fr_caster_l_wheel_link"/>
-        <SRDL_component:hasEndLinkOfComposition rdf:resource="#PR2_fr_caster_r_wheel_link"/>
-    </owl:Thing>
+    <owl:NamedIndividual rdf:about="&pr2;LeftArmController">
+        <rdf:type rdf:resource="&srdl2-comp;ArmMotionController"/>
+    </owl:NamedIndividual>
 
+    <owl:NamedIndividual rdf:about="&pr2;RightArmController">
+        <rdf:type rdf:resource="&srdl2-comp;ArmMotionController"/>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_BaseController -->
 
-    <SRDL_component:SelfMotionControllerComponent rdf:about="#PR2_BaseController">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:executedOn rdf:resource="#PR2_Processor1"/>
-    </SRDL_component:SelfMotionControllerComponent>
+    <!-- &pr2;PR2_LedTextureProjector1 -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_LedTextureProjector1">
+        <rdf:type rdf:resource="&srdl2-comp;LEDTextureProjector"/>
+        <rdfs:comment>Projector was not modelled in URDF file</rdfs:comment>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_DualRadioWifiNetwork_Instance1 -->
 
-    <owl:Thing rdf:about="#PR2_DualRadioWifiNetwork_Instance1">
-        <rdf:type rdf:resource="&SRDL_component;DualRadioWifiNetwork"/>
-    </owl:Thing>
+    <!-- &pr2;PR2_base_footprint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_base_footprint">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>base_footprint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_base_footprint_joint"/>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_EtherCatNetwork_Instance1 -->
 
-    <owl:Thing rdf:about="#PR2_EtherCatNetwork_Instance1">
-        <rdf:type rdf:resource="&SRDL_component;EtherCatNetwork"/>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_base_footprint_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_base_footprint_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>base_footprint_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_base_link"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_FixedHardDrive1 -->
 
-    <SRDL_component:FixedHardDrive rdf:about="#PR2_FixedHardDrive1">
-        <rdf:type rdf:resource="&SRDL_component;500GbHardDrive"/>
-        <rdf:type rdf:resource="&owl;Thing"/>
-    </SRDL_component:FixedHardDrive>
 
 
+    <!-- &pr2;PR2_base_laser_joint -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_FixedHardDrive2 -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_base_laser_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>base_laser_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_base_laser_link"/>
+    </owl:NamedIndividual>
 
-    <SRDL_component:FixedHardDrive rdf:about="#PR2_FixedHardDrive2">
-        <rdf:type rdf:resource="&SRDL_component;500GbHardDrive"/>
-        <rdf:type rdf:resource="&owl;Thing"/>
-    </SRDL_component:FixedHardDrive>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_GigabitEthernetNetwork_Instance1 -->
+    <!-- &pr2;PR2_base_laser_link -->
 
-    <owl:Thing rdf:about="#PR2_GigabitEthernetNetwork_Instance1">
-        <rdf:type rdf:resource="&SRDL_component;GigabitEthernetNetwork"/>
-    </owl:Thing>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_base_laser_link">
+        <rdf:type rdf:resource="&srdl2-comp;HokuyoUTM-30LX"/>
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>base_laser_link</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_GripperController -->
+    <!-- &pr2;PR2_base_link -->
 
-    <SRDL_component:SelfMotionControllerComponent rdf:about="#PR2_GripperController">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:executedOn rdf:resource="#PR2_Processor1"/>
-    </SRDL_component:SelfMotionControllerComponent>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_base_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>base_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_base_laser_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_bl_caster_rotation_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_br_caster_rotation_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_fl_caster_rotation_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_fr_caster_rotation_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_torso_lift_joint"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_Instance1 -->
+    <!-- &pr2;PR2_bl_caster_l_wheel_joint -->
 
-    <PR2Srdl rdf:about="#PR2_Instance1">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL:hasHardwareComponent rdf:resource="#PR2_5MegapixelGlobalShutterColorCamera1"/>
-        <SRDL:hasHardwareComponent rdf:resource="#PR2_AccessPoint_Instance1"/>
-        <SRDL:hasHardwareComponent rdf:resource="#PR2_DualRadioWifiNetwork_Instance1"/>
-        <SRDL:hasHardwareComponent rdf:resource="#PR2_EtherCatNetwork_Instance1"/>
-        <SRDL:hasHardwareComponent rdf:resource="#PR2_FixedHardDrive1"/>
-        <SRDL:hasHardwareComponent rdf:resource="#PR2_FixedHardDrive2"/>
-        <SRDL:hasHardwareComponent rdf:resource="#PR2_GigabitEthernetNetwork_Instance1"/>
-        <SRDL:hasHardwareComponent rdf:resource="#PR2_LedTextureProjector1"/>
-        <SRDL:hasHardwareComponent rdf:resource="#PR2_Memory1"/>
-        <SRDL:hasHardwareComponent rdf:resource="#PR2_Memory2"/>
-        <SRDL:hasHardwareComponent rdf:resource="#PR2_Processor1"/>
-        <SRDL:hasHardwareComponent rdf:resource="#PR2_Processor2"/>
-        <SRDL:hasHardwareComponent rdf:resource="#PR2_Processor3"/>
-        <SRDL:hasHardwareComponent rdf:resource="#PR2_Processor4"/>
-        <SRDL:hasHardwareComponent rdf:resource="#PR2_RemovableHardDrive1"/>
-        <SRDL:hasHardwareComponent rdf:resource="#PR2_RemovableHardDrive2"/>
-        <SRDL:hasBaseLinkInKinematicChain rdf:resource="#PR2_base_footprint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_base_footprint"/>
-    </PR2Srdl>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_bl_caster_l_wheel_joint">
+        <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
+        <srdl2-comp:urdfName>bl_caster_l_wheel_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_bl_caster_l_wheel_link"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_LaserScannerTrajectoryController -->
+    <!-- &pr2;PR2_bl_caster_l_wheel_link -->
 
-    <SRDL_component:SensorController rdf:about="#PR2_LaserScannerTrajectoryController">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <rdfs:comment
-            >Controls tilting laser scanner</rdfs:comment>
-        <SRDL_component:executedOn rdf:resource="#PR2_Processor1"/>
-    </SRDL_component:SensorController>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_bl_caster_l_wheel_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>bl_caster_l_wheel_link</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_LedTextureProjector1 -->
+    <!-- &pr2;PR2_bl_caster_r_wheel_joint -->
 
-    <owl:Thing rdf:about="#PR2_LedTextureProjector1">
-        <rdf:type rdf:resource="&SRDL_component;LEDTextureProjector"/>
-        <rdfs:comment
-            >Projector was not modelled in URDF file</rdfs:comment>
-    </owl:Thing>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_bl_caster_r_wheel_joint">
+        <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
+        <srdl2-comp:urdfName>bl_caster_r_wheel_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_bl_caster_r_wheel_link"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_Memory1 -->
 
-    <owl:Thing rdf:about="#PR2_Memory1">
-        <rdf:type rdf:resource="&SRDL_component;24GbMemory"/>
-    </owl:Thing>
+    <!-- &pr2;PR2_bl_caster_r_wheel_link -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_bl_caster_r_wheel_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>bl_caster_r_wheel_link</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_Memory2 -->
 
-    <owl:Thing rdf:about="#PR2_Memory2">
-        <rdf:type rdf:resource="&SRDL_component;24GbMemory"/>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_bl_caster_rotation_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_bl_caster_rotation_joint">
+        <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
+        <srdl2-comp:urdfName>bl_caster_rotation_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_bl_caster_rotation_link"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_Processor1 -->
 
-    <owl:Thing rdf:about="#PR2_Processor1">
-        <rdf:type rdf:resource="&SRDL_component;Xeoni7QuadCoreProcessor"/>
-    </owl:Thing>
 
 
+    <!-- &pr2;PR2_bl_caster_rotation_link -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_Processor2 -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_bl_caster_rotation_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>bl_caster_rotation_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_bl_caster_l_wheel_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_bl_caster_r_wheel_joint"/>
+    </owl:NamedIndividual>
 
-    <owl:Thing rdf:about="#PR2_Processor2">
-        <rdf:type rdf:resource="&SRDL_component;Xeoni7QuadCoreProcessor"/>
-    </owl:Thing>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_Processor3 -->
+    <!-- &pr2;PR2_br_caster_l_wheel_joint -->
 
-    <SRDL_component:Xeoni7QuadCoreProcessor rdf:about="#PR2_Processor3">
-        <rdf:type rdf:resource="&owl;Thing"/>
-    </SRDL_component:Xeoni7QuadCoreProcessor>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_br_caster_l_wheel_joint">
+        <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
+        <srdl2-comp:urdfName>br_caster_l_wheel_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_br_caster_l_wheel_link"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_Processor4 -->
 
-    <owl:Thing rdf:about="#PR2_Processor4">
-        <rdf:type rdf:resource="&SRDL_component;Xeoni7QuadCoreProcessor"/>
-    </owl:Thing>
+    <!-- &pr2;PR2_br_caster_l_wheel_link -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_br_caster_l_wheel_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>br_caster_l_wheel_link</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_RemovableHardDrive1 -->
 
-    <SRDL_component4:GbHardDrive rdf:about="#PR2_RemovableHardDrive1">
-        <rdf:type rdf:resource="&SRDL_component;RemovableHardDrive"/>
-        <rdf:type rdf:resource="&owl;Thing"/>
-    </SRDL_component4:GbHardDrive>
+    <!-- &pr2;PR2_br_caster_r_wheel_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_br_caster_r_wheel_joint">
+        <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
+        <srdl2-comp:urdfName>br_caster_r_wheel_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_br_caster_r_wheel_link"/>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_RemovableHardDrive2 -->
 
-    <owl:Thing rdf:about="#PR2_RemovableHardDrive2">
-        <rdf:type rdf:resource="&SRDL_component;1500GbHardDrive"/>
-        <rdf:type rdf:resource="&SRDL_component;RemovableHardDrive"/>
-    </owl:Thing>
+    <!-- &pr2;PR2_br_caster_r_wheel_link -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_br_caster_r_wheel_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
 
+        <srdl2-comp:urdfName>br_caster_r_wheel_link</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_base_footprint -->
 
-    <owl:Thing rdf:about="#PR2_base_footprint">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName>base_footprint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_base_footprint_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_base_footprint_joint"/>
-    </owl:Thing>
 
 
+    <!-- &pr2;PR2_br_caster_rotation_joint -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_base_footprint_joint -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_br_caster_rotation_joint">
+        <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
+        <srdl2-comp:urdfName>br_caster_rotation_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_br_caster_rotation_link"/>
+    </owl:NamedIndividual>
 
-    <owl:Thing rdf:about="#PR2_base_footprint_joint">
-        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >base_footprint_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_base_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_base_link"/>
-    </owl:Thing>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_base_laser_joint -->
+    <!-- &pr2;PR2_br_caster_rotation_link -->
 
-    <owl:Thing rdf:about="#PR2_base_laser_joint">
-        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >base_laser_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_base_laser_link"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_base_laser_link"/>
-    </owl:Thing>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_br_caster_rotation_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>br_caster_rotation_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_br_caster_l_wheel_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_br_caster_r_wheel_joint"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_base_laser_link -->
 
-    <SRDL_component:HokuyoUTM-30LX rdf:about="#PR2_base_laser_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName>base_laser_link</SRDL_component:hasUrdfName>
-    </SRDL_component:HokuyoUTM-30LX>
+    <!-- &pr2;PR2_double_stereo_frame_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_double_stereo_frame_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>double_stereo_frame_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_double_stereo_link"/>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_base_link -->
 
-    <SRDL_component:UrdfLink rdf:about="#PR2_base_link">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName>base_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_base_laser_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_base_laser_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_bl_caster_rotation_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_bl_caster_rotation_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_br_caster_rotation_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_br_caster_rotation_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_fl_caster_rotation_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_fl_caster_rotation_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_fr_caster_rotation_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_fr_caster_rotation_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_torso_lift_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_torso_lift_joint"/>
-    </SRDL_component:UrdfLink>
+    <!-- &pr2;PR2_double_stereo_link -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_double_stereo_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>double_stereo_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_narrow_stereo_frame_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_wide_stereo_frame_joint"/>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_bl_caster_l_wheel_joint -->
 
-    <SRDL_component:ContinuousUrdfJoint rdf:about="#PR2_bl_caster_l_wheel_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >bl_caster_l_wheel_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_bl_caster_l_wheel_link"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_bl_caster_l_wheel_link"/>
-    </SRDL_component:ContinuousUrdfJoint>
+    <!-- &pr2;PR2_fl_caster_l_wheel_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_fl_caster_l_wheel_joint">
+        <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
 
+        <srdl2-comp:urdfName>fl_caster_l_wheel_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_fl_caster_l_wheel_link"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_bl_caster_l_wheel_link -->
 
-    <SRDL_component:UrdfLink rdf:about="#PR2_bl_caster_l_wheel_link">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >bl_caster_l_wheel_link</SRDL_component:hasUrdfName>
-    </SRDL_component:UrdfLink>
 
 
+    <!-- &pr2;PR2_fl_caster_l_wheel_link -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_bl_caster_r_wheel_joint -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_fl_caster_l_wheel_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
 
-    <owl:Thing rdf:about="#PR2_bl_caster_r_wheel_joint">
-        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >bl_caster_r_wheel_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_bl_caster_r_wheel_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_bl_caster_r_wheel_link"/>
-    </owl:Thing>
+        <srdl2-comp:urdfName>fl_caster_l_wheel_link</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_bl_caster_r_wheel_link -->
 
-    <owl:Thing rdf:about="#PR2_bl_caster_r_wheel_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >bl_caster_r_wheel_link</SRDL_component:hasUrdfName>
-    </owl:Thing>
+    <!-- &pr2;PR2_fl_caster_r_wheel_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_fl_caster_r_wheel_joint">
+        <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
+        <srdl2-comp:urdfName>fl_caster_r_wheel_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_fl_caster_r_wheel_link"/>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_bl_caster_rotation_joint -->
 
-    <owl:Thing rdf:about="#PR2_bl_caster_rotation_joint">
-        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >bl_caster_rotation_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_bl_caster_rotation_link"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_bl_caster_rotation_link"/>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_fl_caster_r_wheel_link -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_fl_caster_r_wheel_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>fl_caster_r_wheel_link</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_bl_caster_rotation_link -->
 
-    <owl:Thing rdf:about="#PR2_bl_caster_rotation_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >bl_caster_rotation_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_bl_caster_l_wheel_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_bl_caster_l_wheel_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_bl_caster_r_wheel_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_bl_caster_r_wheel_joint"/>
-    </owl:Thing>
 
 
+    <!-- &pr2;PR2_fl_caster_rotation_joint -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_br_caster_l_wheel_joint -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_fl_caster_rotation_joint">
+        <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
+        <srdl2-comp:urdfName>fl_caster_rotation_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_fl_caster_rotation_link"/>
+    </owl:NamedIndividual>
 
-    <owl:Thing rdf:about="#PR2_br_caster_l_wheel_joint">
-        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >br_caster_l_wheel_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_br_caster_l_wheel_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_br_caster_l_wheel_link"/>
-    </owl:Thing>
 
 
+    <!-- &pr2;PR2_fl_caster_rotation_link -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_br_caster_l_wheel_link -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_fl_caster_rotation_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>fl_caster_rotation_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_fl_caster_l_wheel_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_fl_caster_r_wheel_joint"/>
+    </owl:NamedIndividual>
 
-    <SRDL_component:UrdfLink rdf:about="#PR2_br_caster_l_wheel_link">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >br_caster_l_wheel_link</SRDL_component:hasUrdfName>
-    </SRDL_component:UrdfLink>
 
 
+    <!-- &pr2;PR2_fr_caster_l_wheel_joint -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_br_caster_r_wheel_joint -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_fr_caster_l_wheel_joint">
+        <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
+        <srdl2-comp:urdfName>fr_caster_l_wheel_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_fr_caster_l_wheel_link"/>
+    </owl:NamedIndividual>
 
-    <SRDL_component:ContinuousUrdfJoint rdf:about="#PR2_br_caster_r_wheel_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >br_caster_r_wheel_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_br_caster_r_wheel_link"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_br_caster_r_wheel_link"/>
-    </SRDL_component:ContinuousUrdfJoint>
 
 
+    <!-- &pr2;PR2_fr_caster_l_wheel_link -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_br_caster_r_wheel_link -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_fr_caster_l_wheel_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>fr_caster_l_wheel_link</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
-    <owl:Thing rdf:about="#PR2_br_caster_r_wheel_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >br_caster_r_wheel_link</SRDL_component:hasUrdfName>
-    </owl:Thing>
 
 
+    <!-- &pr2;PR2_fr_caster_r_wheel_joint -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_br_caster_rotation_joint -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_fr_caster_r_wheel_joint">
+        <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
+        <srdl2-comp:urdfName>fr_caster_r_wheel_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_fr_caster_r_wheel_link"/>
+    </owl:NamedIndividual>
 
-    <owl:Thing rdf:about="#PR2_br_caster_rotation_joint">
-        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >br_caster_rotation_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_br_caster_rotation_link"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_br_caster_rotation_link"/>
-    </owl:Thing>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_br_caster_rotation_link -->
+    <!-- &pr2;PR2_fr_caster_r_wheel_link -->
 
-    <owl:Thing rdf:about="#PR2_br_caster_rotation_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >br_caster_rotation_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_br_caster_l_wheel_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_br_caster_l_wheel_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_br_caster_r_wheel_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_br_caster_r_wheel_joint"/>
-    </owl:Thing>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_fr_caster_r_wheel_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>fr_caster_r_wheel_link</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_double_stereo_frame_joint -->
+    <!-- &pr2;PR2_fr_caster_rotation_joint -->
 
-    <SRDL_component:FixedUrdfJoint rdf:about="#PR2_double_stereo_frame_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >double_stereo_frame_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_double_stereo_link"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_double_stereo_link"/>
-    </SRDL_component:FixedUrdfJoint>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_fr_caster_rotation_joint">
+        <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
+        <srdl2-comp:urdfName>fr_caster_rotation_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_fr_caster_rotation_link"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_double_stereo_link -->
 
-    <SRDL_component:UrdfLink rdf:about="#PR2_double_stereo_link">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >double_stereo_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_narrow_stereo_frame_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_narrow_stereo_frame_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_wide_stereo_frame_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_wide_stereo_frame_joint"/>
-    </SRDL_component:UrdfLink>
+    <!-- &pr2;PR2_fr_caster_rotation_link -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_fr_caster_rotation_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>fr_caster_rotation_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_fr_caster_l_wheel_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_fr_caster_r_wheel_joint"/>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_fl_caster_l_wheel_joint -->
 
-    <owl:Thing rdf:about="#PR2_fl_caster_l_wheel_joint">
-        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >fl_caster_l_wheel_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_fl_caster_l_wheel_link"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_fl_caster_l_wheel_link"/>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_head_pan_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_head_pan_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>head_pan_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_head_pan_link"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_fl_caster_l_wheel_link -->
 
-    <owl:Thing rdf:about="#PR2_fl_caster_l_wheel_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >fl_caster_l_wheel_link</SRDL_component:hasUrdfName>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_head_pan_link -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_head_pan_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>head_pan_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_head_tilt_joint"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_fl_caster_r_wheel_joint -->
 
-    <owl:Thing rdf:about="#PR2_fl_caster_r_wheel_joint">
-        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >fl_caster_r_wheel_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_fl_caster_r_wheel_link"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_fl_caster_r_wheel_link"/>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_head_plate_frame -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_head_plate_frame">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>head_plate_frame</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_sensor_mount_frame_joint"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_fl_caster_r_wheel_link -->
 
-    <owl:Thing rdf:about="#PR2_fl_caster_r_wheel_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >fl_caster_r_wheel_link</SRDL_component:hasUrdfName>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_head_plate_frame_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_head_plate_frame_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_fl_caster_rotation_joint -->
+        <srdl2-comp:urdfName>head_plate_frame_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_head_plate_frame"/>
+    </owl:NamedIndividual>
 
-    <SRDL_component:ContinuousUrdfJoint rdf:about="#PR2_fl_caster_rotation_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >fl_caster_rotation_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_fl_caster_rotation_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_fl_caster_rotation_link"/>
-    </SRDL_component:ContinuousUrdfJoint>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_fl_caster_rotation_link -->
+    <!-- &pr2;PR2_head_tilt_joint -->
 
-    <SRDL_component:UrdfLink rdf:about="#PR2_fl_caster_rotation_link">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >fl_caster_rotation_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_fl_caster_l_wheel_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_fl_caster_l_wheel_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_fl_caster_r_wheel_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_fl_caster_r_wheel_joint"/>
-    </SRDL_component:UrdfLink>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_head_tilt_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>head_tilt_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_head_tilt_link"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_fr_caster_l_wheel_joint -->
+    <!-- &pr2;PR2_head_tilt_link -->
 
-    <SRDL_component:ContinuousUrdfJoint rdf:about="#PR2_fr_caster_l_wheel_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >fr_caster_l_wheel_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_fr_caster_l_wheel_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_fr_caster_l_wheel_link"/>
-    </SRDL_component:ContinuousUrdfJoint>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_head_tilt_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>head_tilt_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_head_plate_frame_joint"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_fr_caster_l_wheel_link -->
 
-    <SRDL_component:UrdfLink rdf:about="#PR2_fr_caster_l_wheel_link">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >fr_caster_l_wheel_link</SRDL_component:hasUrdfName>
-    </SRDL_component:UrdfLink>
+    <!-- &pr2;PR2_high_def_frame -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_high_def_frame">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <rdf:type rdf:resource="&srdl2-comp;MonocularCamera"/>
+        <srdl2-comp:urdfName>high_def_frame</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_high_def_optical_frame_joint"/>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_fr_caster_r_wheel_joint -->
 
-    <owl:Thing rdf:about="#PR2_fr_caster_r_wheel_joint">
-        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >fr_caster_r_wheel_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_fr_caster_r_wheel_link"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_fr_caster_r_wheel_link"/>
-    </owl:Thing>
+    <!-- &pr2;PR2_high_def_frame_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_high_def_frame_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>high_def_frame_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_high_def_frame"/>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_fr_caster_r_wheel_link -->
 
-    <SRDL_component:UrdfLink rdf:about="#PR2_fr_caster_r_wheel_link">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >fr_caster_r_wheel_link</SRDL_component:hasUrdfName>
-    </SRDL_component:UrdfLink>
+    <!-- &pr2;PR2_high_def_optical_frame -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_high_def_optical_frame">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>high_def_optical_frame</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_fr_caster_rotation_joint -->
 
-    <owl:Thing rdf:about="#PR2_fr_caster_rotation_joint">
-        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >fr_caster_rotation_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_fr_caster_rotation_link"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_fr_caster_rotation_link"/>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_high_def_optical_frame_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_high_def_optical_frame_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>high_def_optical_frame_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_high_def_optical_frame"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_fr_caster_rotation_link -->
 
-    <owl:Thing rdf:about="#PR2_fr_caster_rotation_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >fr_caster_rotation_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_fr_caster_l_wheel_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_fr_caster_l_wheel_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_fr_caster_r_wheel_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_fr_caster_r_wheel_joint"/>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_imu_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_imu_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>imu_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_imu_link"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_head_pan_joint -->
 
-    <SRDL_component:RevoluteUrdfJoint rdf:about="#PR2_head_pan_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName>head_pan_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_head_pan_link"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_head_pan_link"/>
-    </SRDL_component:RevoluteUrdfJoint>
 
 
+    <!-- &pr2;PR2_imu_link -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_head_pan_link -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_imu_link">
+        <rdf:type rdf:resource="&srdl2-comp;Microstrain3DM-GX2IMU"/>
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>imu_link</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
-    <SRDL_component:UrdfLink rdf:about="#PR2_head_pan_link">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName>head_pan_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_head_tilt_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_head_tilt_joint"/>
-    </SRDL_component:UrdfLink>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_head_plate_frame -->
+    <!-- &pr2;PR2_l_ArmComposition -->
 
-    <SRDL_component:UrdfLink rdf:about="#PR2_head_plate_frame">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >head_plate_frame</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_sensor_mount_frame_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_sensor_mount_frame_joint"/>
-    </SRDL_component:UrdfLink>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_ArmComposition">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
+        <rdf:type rdf:resource="&srdl2-comp;Pr2Arm"/>
+        <srdl2-comp:hasAttribute rdf:resource="&pr2;PR2_l_Arm_ElbowFlexAttribute"/>
+        <srdl2-comp:hasAttribute rdf:resource="&pr2;PR2_l_Arm_ForearmRollAttribute"/>
+        <srdl2-comp:hasAttribute rdf:resource="&pr2;PR2_l_Arm_GripperMaxAttribute"/>
+        <srdl2-comp:hasAttribute rdf:resource="&pr2;PR2_l_Arm_ShoulderPanAttribute"/>
+        <srdl2-comp:hasAttribute rdf:resource="&pr2;PR2_l_Arm_ShoulderTiltAttribute"/>
+        <srdl2-comp:hasAttribute rdf:resource="&pr2;PR2_l_Arm_UpperArmRollAttribute"/>
+        <srdl2-comp:hasAttribute rdf:resource="&pr2;PR2_l_Arm_WristPitchAttribute"/>
+        <srdl2-comp:hasAttribute rdf:resource="&pr2;PR2_l_Arm_WristRollAttribute"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;PR2_l_forearm_cam_optical_frame"/>
+        <srdl2-comp:baseLinkOfComposition rdf:resource="&pr2;PR2_l_shoulder_pan_link"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;PR2_l_wrist_roll_link"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_head_plate_frame_joint -->
+    <!-- &pr2;PR2_l_Arm_ElbowFlexAttribute -->
 
-    <owl:Thing rdf:about="#PR2_head_plate_frame_joint">
-        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >head_plate_frame_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_head_plate_frame"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_head_plate_frame"/>
-    </owl:Thing>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_Arm_ElbowFlexAttribute">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentAttribute"/>
+        <srdl2-comp:hasAttributeValue>140</srdl2-comp:hasAttributeValue>
+        <srdl2-comp:hasAttributeName>Elbow Flex</srdl2-comp:hasAttributeName>
+        <srdl2-comp:hasAttributeUnitOfMeasure>Degree</srdl2-comp:hasAttributeUnitOfMeasure>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_head_tilt_joint -->
 
-    <SRDL_component:RevoluteUrdfJoint rdf:about="#PR2_head_tilt_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName>head_tilt_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_head_tilt_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_head_tilt_link"/>
-    </SRDL_component:RevoluteUrdfJoint>
+    <!-- &pr2;PR2_l_Arm_ForearmRollAttribute -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_Arm_ForearmRollAttribute">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentAttribute"/>
+        <srdl2-comp:hasAttributeName>Forearm Roll</srdl2-comp:hasAttributeName>
+        <srdl2-comp:hasAttributeUnitOfMeasure>Degree</srdl2-comp:hasAttributeUnitOfMeasure>
+        <srdl2-comp:hasAttributeValue>Continous</srdl2-comp:hasAttributeValue>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_head_tilt_link -->
 
-    <owl:Thing rdf:about="#PR2_head_tilt_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName>head_tilt_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_head_plate_frame_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_head_plate_frame_joint"/>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_l_Arm_GripperMaxAttribute -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_Arm_GripperMaxAttribute">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentAttribute"/>
+        <srdl2-comp:hasAttributeValue>90</srdl2-comp:hasAttributeValue>
+        <srdl2-comp:hasAttributeName>Gripper Max</srdl2-comp:hasAttributeName>
+        <srdl2-comp:hasAttributeUnitOfMeasure>Millimeter</srdl2-comp:hasAttributeUnitOfMeasure>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_high_def_frame -->
 
-    <SRDL_component:UrdfLink rdf:about="#PR2_high_def_frame">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName>high_def_frame</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_high_def_optical_frame_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_high_def_optical_frame_joint"/>
-    </SRDL_component:UrdfLink>
 
+    <!-- &pr2;PR2_l_Arm_ShoulderPanAttribute -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_Arm_ShoulderPanAttribute">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentAttribute"/>
+        <srdl2-comp:hasAttributeValue>170</srdl2-comp:hasAttributeValue>
+        <srdl2-comp:hasAttributeUnitOfMeasure>Degree</srdl2-comp:hasAttributeUnitOfMeasure>
+        <srdl2-comp:hasAttributeName>Shoulder Pan</srdl2-comp:hasAttributeName>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_high_def_frame_joint -->
 
-    <SRDL_component:FixedUrdfJoint rdf:about="#PR2_high_def_frame_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >high_def_frame_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_high_def_frame"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_high_def_frame"/>
-    </SRDL_component:FixedUrdfJoint>
 
+    <!-- &pr2;PR2_l_Arm_ShoulderTiltAttribute -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_Arm_ShoulderTiltAttribute">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentAttribute"/>
+        <srdl2-comp:hasAttributeName>Shoulder Tilt</srdl2-comp:hasAttributeName>
+        <srdl2-comp:hasAttributeUnitOfMeasure>Degree</srdl2-comp:hasAttributeUnitOfMeasure>
+        <srdl2-comp:hasAttributeValue>115</srdl2-comp:hasAttributeValue>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_high_def_optical_frame -->
 
-    <owl:Thing rdf:about="#PR2_high_def_optical_frame">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >high_def_optical_frame</SRDL_component:hasUrdfName>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_l_Arm_UpperArmRollAttribute -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_Arm_UpperArmRollAttribute">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentAttribute"/>
+        <srdl2-comp:hasAttributeValue>270</srdl2-comp:hasAttributeValue>
+        <srdl2-comp:hasAttributeUnitOfMeasure>Degree</srdl2-comp:hasAttributeUnitOfMeasure>
+        <srdl2-comp:hasAttributeName>Upper Arm Roll</srdl2-comp:hasAttributeName>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_high_def_optical_frame_joint -->
 
-    <SRDL_component:FixedUrdfJoint rdf:about="#PR2_high_def_optical_frame_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >high_def_optical_frame_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_high_def_optical_frame"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_high_def_optical_frame"/>
-    </SRDL_component:FixedUrdfJoint>
 
+    <!-- &pr2;PR2_l_Arm_WristPitchAttribute -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_Arm_WristPitchAttribute">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentAttribute"/>
+        <srdl2-comp:hasAttributeUnitOfMeasure>Degree</srdl2-comp:hasAttributeUnitOfMeasure>
+        <srdl2-comp:hasAttributeName>Wrist Pitch</srdl2-comp:hasAttributeName>
+        <srdl2-comp:hasAttributeValue>130</srdl2-comp:hasAttributeValue>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_imu_joint -->
 
-    <owl:Thing rdf:about="#PR2_imu_joint">
-        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
-        <SRDL_component:hasUrdfName>imu_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_imu_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_imu_link"/>
-    </owl:Thing>
 
 
+    <!-- &pr2;PR2_l_Arm_WristRollAttribute -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_imu_link -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_Arm_WristRollAttribute">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentAttribute"/>
+        <srdl2-comp:hasAttributeUnitOfMeasure>Degree</srdl2-comp:hasAttributeUnitOfMeasure>
+        <srdl2-comp:hasAttributeName>Wrist Roll</srdl2-comp:hasAttributeName>
+        <srdl2-comp:hasAttributeValue>Continous</srdl2-comp:hasAttributeValue>
+    </owl:NamedIndividual>
 
-    <owl:Thing rdf:about="#PR2_imu_link">
-        <rdf:type rdf:resource="&SRDL_component;Microstrain3DM-GX2IMU"/>
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName>imu_link</SRDL_component:hasUrdfName>
-    </owl:Thing>
 
 
+    <!-- &pr2;PR2_l_GripperComposition -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_ArmComposition -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_GripperComposition">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
+        <rdf:type rdf:resource="&srdl2-comp;Pr2Gripper"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;PR2_l_gripper_l_finger_tip_link"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;PR2_l_gripper_led_frame"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;PR2_l_gripper_motor_accelerometer_link"/>
+        <srdl2-comp:baseLinkOfComposition rdf:resource="&pr2;PR2_l_gripper_palm_link"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;PR2_l_gripper_r_finger_tip_link"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;PR2_l_gripper_tool_frame"/>
+    </owl:NamedIndividual>
 
-    <SRDL_component:Pr2Arm rdf:about="#PR2_l_ArmComposition">
-        <rdf:type rdf:resource="&SRDL_component;ComponentComposition"/>
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasAttribute rdf:resource="#PR2_l_Arm_ElbowFlexAttribute"/>
-        <SRDL_component:hasAttribute rdf:resource="#PR2_l_Arm_ForearmRollAttribute"/>
-        <SRDL_component:hasAttribute rdf:resource="#PR2_l_Arm_GripperMaxAttribute"/>
-        <SRDL_component:hasAttribute rdf:resource="#PR2_l_Arm_ShoulderPanAttribute"/>
-        <SRDL_component:hasAttribute rdf:resource="#PR2_l_Arm_ShoulderTiltAttribute"/>
-        <SRDL_component:hasAttribute rdf:resource="#PR2_l_Arm_UpperArmRollAttribute"/>
-        <SRDL_component:hasAttribute rdf:resource="#PR2_l_Arm_WristPitchAttribute"/>
-        <SRDL_component:hasAttribute rdf:resource="#PR2_l_Arm_WristRollAttribute"/>
-        <SRDL_component:hasEndLinkOfComposition rdf:resource="#PR2_l_forearm_cam_optical_frame"/>
-        <SRDL_component:hasBaseLinkOfComposition rdf:resource="#PR2_l_shoulder_pan_link"/>
-        <SRDL_component:hasEndLinkOfComposition rdf:resource="#PR2_l_wrist_roll_link"/>
-    </SRDL_component:Pr2Arm>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_Arm_ElbowFlexAttribute -->
+    <!-- &pr2;PR2_l_elbow_flex_joint -->
 
-    <owl:Thing rdf:about="#PR2_l_Arm_ElbowFlexAttribute">
-        <rdf:type rdf:resource="&SRDL_component;ComponentAttribute"/>
-        <SRDL_component:hasAttributeName>Elbow Flex</SRDL_component:hasAttributeName>
-        <SRDL_component:hasAttributeValue>140</SRDL_component:hasAttributeValue>
-        <SRDL_component:hasAttributeUnitOfMeasure>Degree</SRDL_component:hasAttributeUnitOfMeasure>
-    </owl:Thing>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_elbow_flex_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>l_elbow_flex_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_l_elbow_flex_link"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_Arm_ForearmRollAttribute -->
 
-    <owl:Thing rdf:about="#PR2_l_Arm_ForearmRollAttribute">
-        <rdf:type rdf:resource="&SRDL_component;ComponentAttribute"/>
-        <SRDL_component:hasAttributeValue>Continous</SRDL_component:hasAttributeValue>
-        <SRDL_component:hasAttributeName>Forearm Roll</SRDL_component:hasAttributeName>
-        <SRDL_component:hasAttributeUnitOfMeasure>Degree</SRDL_component:hasAttributeUnitOfMeasure>
-    </owl:Thing>
+    <!-- &pr2;PR2_l_elbow_flex_link -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_elbow_flex_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>l_elbow_flex_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_l_forearm_roll_joint"/>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_Arm_GripperMaxAttribute -->
 
-    <SRDL_component:ComponentAttribute rdf:about="#PR2_l_Arm_GripperMaxAttribute">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasAttributeValue>90</SRDL_component:hasAttributeValue>
-        <SRDL_component:hasAttributeName>Gripper Max</SRDL_component:hasAttributeName>
-        <SRDL_component:hasAttributeUnitOfMeasure>Millimeter</SRDL_component:hasAttributeUnitOfMeasure>
-    </SRDL_component:ComponentAttribute>
 
+    <!-- &pr2;PR2_l_forearm_cam_frame -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_forearm_cam_frame">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <rdf:type rdf:resource="&srdl2-comp;WideAngleCamera"/>
+        <srdl2-comp:urdfName>l_forearm_cam_frame</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_l_forearm_cam_optical_frame_joint"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_Arm_ShoulderPanAttribute -->
 
-    <SRDL_component:ComponentAttribute rdf:about="#PR2_l_Arm_ShoulderPanAttribute">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasAttributeUnitOfMeasure>Degree</SRDL_component:hasAttributeUnitOfMeasure>
-        <SRDL_component:hasAttributeName>Shoulder Pan</SRDL_component:hasAttributeName>
-        <SRDL_component:hasAttributeValue>170</SRDL_component:hasAttributeValue>
-    </SRDL_component:ComponentAttribute>
 
 
+    <!-- &pr2;PR2_l_forearm_cam_frame_joint -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_Arm_ShoulderTiltAttribute -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_forearm_cam_frame_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>l_forearm_cam_frame_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_l_forearm_cam_frame"/>
+    </owl:NamedIndividual>
 
-    <SRDL_component:ComponentAttribute rdf:about="#PR2_l_Arm_ShoulderTiltAttribute">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasAttributeUnitOfMeasure>Degree</SRDL_component:hasAttributeUnitOfMeasure>
-        <SRDL_component:hasAttributeName>Shoulder Tilt</SRDL_component:hasAttributeName>
-        <SRDL_component:hasAttributeValue>115</SRDL_component:hasAttributeValue>
-    </SRDL_component:ComponentAttribute>
 
 
+    <!-- &pr2;PR2_l_forearm_cam_optical_frame -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_Arm_UpperArmRollAttribute -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_forearm_cam_optical_frame">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>l_forearm_cam_optical_frame</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
-    <SRDL_component:ComponentAttribute rdf:about="#PR2_l_Arm_UpperArmRollAttribute">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasAttributeName>Upper Arm Roll</SRDL_component:hasAttributeName>
-        <SRDL_component:hasAttributeUnitOfMeasure>Degree</SRDL_component:hasAttributeUnitOfMeasure>
-        <SRDL_component:hasAttributeValue>270</SRDL_component:hasAttributeValue>
-    </SRDL_component:ComponentAttribute>
 
 
+    <!-- &pr2;PR2_l_forearm_cam_optical_frame_joint -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_Arm_WristPitchAttribute -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_forearm_cam_optical_frame_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>l_forearm_cam_optical_frame_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_l_forearm_cam_optical_frame"/>
+    </owl:NamedIndividual>
 
-    <owl:Thing rdf:about="#PR2_l_Arm_WristPitchAttribute">
-        <rdf:type rdf:resource="&SRDL_component;ComponentAttribute"/>
-        <SRDL_component:hasAttributeValue>130</SRDL_component:hasAttributeValue>
-        <SRDL_component:hasAttributeUnitOfMeasure>Degree</SRDL_component:hasAttributeUnitOfMeasure>
-        <SRDL_component:hasAttributeName>Wrist Pitch</SRDL_component:hasAttributeName>
-    </owl:Thing>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_Arm_WristRollAttribute -->
+    <!-- &pr2;PR2_l_forearm_joint -->
 
-    <SRDL_component:ComponentAttribute rdf:about="#PR2_l_Arm_WristRollAttribute">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasAttributeUnitOfMeasure>Degree</SRDL_component:hasAttributeUnitOfMeasure>
-        <SRDL_component:hasAttributeValue>Continous</SRDL_component:hasAttributeValue>
-        <SRDL_component:hasAttributeName>Wrist Roll</SRDL_component:hasAttributeName>
-    </SRDL_component:ComponentAttribute>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_forearm_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>l_forearm_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_l_forearm_link"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_GripperComposition -->
 
-    <owl:Thing rdf:about="#PR2_l_GripperComposition">
-        <rdf:type rdf:resource="&SRDL_component;ComponentComposition"/>
-        <rdf:type rdf:resource="&SRDL_component;Pr2Gripper"/>
-        <SRDL_component:hasEndLinkOfComposition rdf:resource="#PR2_l_gripper_l_finger_tip_link"/>
-        <SRDL_component:hasEndLinkOfComposition rdf:resource="#PR2_l_gripper_led_frame"/>
-        <SRDL_component:hasEndLinkOfComposition rdf:resource="#PR2_l_gripper_motor_accelerometer_link"/>
-        <SRDL_component:hasBaseLinkOfComposition rdf:resource="#PR2_l_gripper_palm_link"/>
-        <SRDL_component:hasEndLinkOfComposition rdf:resource="#PR2_l_gripper_r_finger_tip_link"/>
-        <SRDL_component:hasEndLinkOfComposition rdf:resource="#PR2_l_gripper_tool_frame"/>
-    </owl:Thing>
+    <!-- &pr2;PR2_l_forearm_link -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_forearm_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>l_forearm_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_l_wrist_flex_joint"/>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_elbow_flex_joint -->
 
-    <owl:Thing rdf:about="#PR2_l_elbow_flex_joint">
-        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >l_elbow_flex_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_elbow_flex_link"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_l_elbow_flex_link"/>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_l_forearm_roll_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_forearm_roll_joint">
+        <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
+        <srdl2-comp:urdfName>l_forearm_roll_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_l_forearm_roll_link"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_elbow_flex_link -->
 
-    <owl:Thing rdf:about="#PR2_l_elbow_flex_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >l_elbow_flex_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_l_forearm_roll_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_forearm_roll_joint"/>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_l_forearm_roll_link -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_forearm_roll_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>l_forearm_roll_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_l_forearm_cam_frame_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_l_forearm_joint"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_forearm_cam_frame -->
 
-    <owl:Thing rdf:about="#PR2_l_forearm_cam_frame">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <rdf:type rdf:resource="&SRDL_component;WideAngleCamera"/>
-        <SRDL_component:hasUrdfName
-            >l_forearm_cam_frame</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_forearm_cam_optical_frame_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_l_forearm_cam_optical_frame_joint"/>
-    </owl:Thing>
 
 
+    <!-- &pr2;PR2_l_gripper_joint -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_forearm_cam_frame_joint -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_gripper_joint">
+        <rdf:type rdf:resource="&srdl2-comp;PrismaticUrdfJoint"/>
+        <srdl2-comp:urdfName>l_gripper_joint</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
-    <SRDL_component:FixedUrdfJoint rdf:about="#PR2_l_forearm_cam_frame_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >l_forearm_cam_frame_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_forearm_cam_frame"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_l_forearm_cam_frame"/>
-    </SRDL_component:FixedUrdfJoint>
 
 
+    <!-- &pr2;PR2_l_gripper_l_finger_joint -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_forearm_cam_optical_frame -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_gripper_l_finger_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>l_gripper_l_finger_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_l_gripper_l_finger_link"/>
+    </owl:NamedIndividual>
 
-    <SRDL_component:UrdfLink rdf:about="#PR2_l_forearm_cam_optical_frame">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >l_forearm_cam_optical_frame</SRDL_component:hasUrdfName>
-    </SRDL_component:UrdfLink>
 
 
+    <!-- &pr2;PR2_l_gripper_l_finger_link -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_forearm_cam_optical_frame_joint -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_gripper_l_finger_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>l_gripper_l_finger_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_l_gripper_l_finger_tip_joint"/>
+    </owl:NamedIndividual>
 
-    <owl:Thing rdf:about="#PR2_l_forearm_cam_optical_frame_joint">
-        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >l_forearm_cam_optical_frame_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_forearm_cam_optical_frame"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_l_forearm_cam_optical_frame"/>
-    </owl:Thing>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_forearm_joint -->
+    <!-- &pr2;PR2_l_gripper_l_finger_tip_joint -->
 
-    <owl:Thing rdf:about="#PR2_l_forearm_joint">
-        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
-        <SRDL_component:hasUrdfName>l_forearm_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_l_forearm_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_forearm_link"/>
-    </owl:Thing>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_gripper_l_finger_tip_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>l_gripper_l_finger_tip_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_l_gripper_l_finger_tip_link"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_forearm_link -->
 
-    <owl:Thing rdf:about="#PR2_l_forearm_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName>l_forearm_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_l_wrist_flex_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_wrist_flex_joint"/>
-    </owl:Thing>
+    <!-- &pr2;PR2_l_gripper_l_finger_tip_link -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_gripper_l_finger_tip_link">
+        <rdf:type rdf:resource="&srdl2-comp;FingertipPressureSensorArray"/>
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>l_gripper_l_finger_tip_link</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_forearm_roll_joint -->
 
-    <SRDL_component:ContinuousUrdfJoint rdf:about="#PR2_l_forearm_roll_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >l_forearm_roll_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_l_forearm_roll_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_forearm_roll_link"/>
-    </SRDL_component:ContinuousUrdfJoint>
 
+    <!-- &pr2;PR2_l_gripper_led_frame -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_gripper_led_frame">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>l_gripper_led_frame</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_forearm_roll_link -->
 
-    <owl:Thing rdf:about="#PR2_l_forearm_roll_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >l_forearm_roll_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_l_forearm_cam_frame_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_forearm_cam_frame_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_l_forearm_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_forearm_joint"/>
-    </owl:Thing>
 
 
+    <!-- &pr2;PR2_l_gripper_led_joint -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_gripper_joint -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_gripper_led_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>l_gripper_led_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_l_gripper_led_frame"/>
+    </owl:NamedIndividual>
 
-    <SRDL_component:PrismaticUrdfJoint rdf:about="#PR2_l_gripper_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName>l_gripper_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_"/>
-    </SRDL_component:PrismaticUrdfJoint>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_gripper_l_finger_joint -->
+    <!-- &pr2;PR2_l_gripper_motor_accelerometer_joint -->
 
-    <SRDL_component:RevoluteUrdfJoint rdf:about="#PR2_l_gripper_l_finger_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >l_gripper_l_finger_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_l_gripper_l_finger_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_gripper_l_finger_link"/>
-    </SRDL_component:RevoluteUrdfJoint>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_gripper_motor_accelerometer_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>l_gripper_motor_accelerometer_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_l_gripper_motor_accelerometer_link"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_gripper_l_finger_link -->
+    <!-- &pr2;PR2_l_gripper_motor_accelerometer_link -->
 
-    <owl:Thing rdf:about="#PR2_l_gripper_l_finger_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >l_gripper_l_finger_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_l_gripper_l_finger_tip_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_gripper_l_finger_tip_joint"/>
-    </owl:Thing>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_gripper_motor_accelerometer_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>l_gripper_motor_accelerometer_link</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_gripper_l_finger_tip_joint -->
 
-    <owl:Thing rdf:about="#PR2_l_gripper_l_finger_tip_joint">
-        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >l_gripper_l_finger_tip_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_l_gripper_l_finger_tip_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_gripper_l_finger_tip_link"/>
-    </owl:Thing>
+    <!-- &pr2;PR2_l_gripper_palm_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_gripper_palm_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>l_gripper_palm_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_l_gripper_palm_link"/>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_gripper_l_finger_tip_link -->
 
-    <owl:Thing rdf:about="#PR2_l_gripper_l_finger_tip_link">
-        <rdf:type rdf:resource="&SRDL_component;FingertipPressureSensorArray"/>
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >l_gripper_l_finger_tip_link</SRDL_component:hasUrdfName>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_l_gripper_palm_link -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_gripper_palm_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>l_gripper_palm_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_l_gripper_l_finger_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_l_gripper_led_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_l_gripper_motor_accelerometer_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_l_gripper_r_finger_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_l_gripper_tool_joint"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_gripper_led_frame -->
 
-    <owl:Thing rdf:about="#PR2_l_gripper_led_frame">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >l_gripper_led_frame</SRDL_component:hasUrdfName>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_l_gripper_r_finger_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_gripper_r_finger_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>l_gripper_r_finger_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_l_gripper_r_finger_link"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_gripper_led_joint -->
 
-    <owl:Thing rdf:about="#PR2_l_gripper_led_joint">
-        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >l_gripper_led_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_gripper_led_frame"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_l_gripper_led_frame"/>
-    </owl:Thing>
 
 
+    <!-- &pr2;PR2_l_gripper_r_finger_link -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_gripper_motor_accelerometer_joint -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_gripper_r_finger_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>l_gripper_r_finger_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_l_gripper_r_finger_tip_joint"/>
+    </owl:NamedIndividual>
 
-    <SRDL_component:FixedUrdfJoint rdf:about="#PR2_l_gripper_motor_accelerometer_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >l_gripper_motor_accelerometer_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_gripper_motor_accelerometer_link"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_l_gripper_motor_accelerometer_link"/>
-    </SRDL_component:FixedUrdfJoint>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_gripper_motor_accelerometer_link -->
+    <!-- &pr2;PR2_l_gripper_r_finger_tip_joint -->
 
-    <owl:Thing rdf:about="#PR2_l_gripper_motor_accelerometer_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >l_gripper_motor_accelerometer_link</SRDL_component:hasUrdfName>
-    </owl:Thing>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_gripper_r_finger_tip_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>l_gripper_r_finger_tip_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_l_gripper_r_finger_tip_link"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_gripper_palm_joint -->
+    <!-- &pr2;PR2_l_gripper_r_finger_tip_link -->
 
-    <owl:Thing rdf:about="#PR2_l_gripper_palm_joint">
-        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >l_gripper_palm_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_gripper_palm_link"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_l_gripper_palm_link"/>
-    </owl:Thing>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_gripper_r_finger_tip_link">
+        <rdf:type rdf:resource="&srdl2-comp;FingertipPressureSensorArray"/>
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>l_gripper_r_finger_tip_link</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_gripper_palm_link -->
 
-    <SRDL_component:UrdfLink rdf:about="#PR2_l_gripper_palm_link">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >l_gripper_palm_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_gripper_l_finger_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_l_gripper_l_finger_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_l_gripper_led_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_gripper_led_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_gripper_motor_accelerometer_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_l_gripper_motor_accelerometer_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_l_gripper_r_finger_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_gripper_r_finger_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_gripper_tool_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_l_gripper_tool_joint"/>
-    </SRDL_component:UrdfLink>
+    <!-- &pr2;PR2_l_gripper_tool_frame -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_gripper_tool_frame">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>l_gripper_tool_frame</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_gripper_r_finger_joint -->
 
-    <owl:Thing rdf:about="#PR2_l_gripper_r_finger_joint">
-        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >l_gripper_r_finger_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_gripper_r_finger_link"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_l_gripper_r_finger_link"/>
-    </owl:Thing>
+    <!-- &pr2;PR2_l_gripper_tool_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_gripper_tool_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>l_gripper_tool_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_l_gripper_tool_frame"/>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_gripper_r_finger_link -->
 
-    <owl:Thing rdf:about="#PR2_l_gripper_r_finger_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >l_gripper_r_finger_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_gripper_r_finger_tip_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_l_gripper_r_finger_tip_joint"/>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_l_shoulder_lift_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_shoulder_lift_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>l_shoulder_lift_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_l_shoulder_lift_link"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_gripper_r_finger_tip_joint -->
 
-    <SRDL_component:RevoluteUrdfJoint rdf:about="#PR2_l_gripper_r_finger_tip_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >l_gripper_r_finger_tip_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_gripper_r_finger_tip_link"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_l_gripper_r_finger_tip_link"/>
-    </SRDL_component:RevoluteUrdfJoint>
 
+    <!-- &pr2;PR2_l_shoulder_lift_link -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_shoulder_lift_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>l_shoulder_lift_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_l_upper_arm_roll_joint"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_gripper_r_finger_tip_link -->
 
-    <owl:Thing rdf:about="#PR2_l_gripper_r_finger_tip_link">
-        <rdf:type rdf:resource="&SRDL_component;FingertipPressureSensorArray"/>
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >l_gripper_r_finger_tip_link</SRDL_component:hasUrdfName>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_l_shoulder_pan_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_shoulder_pan_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>l_shoulder_pan_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_l_shoulder_pan_link"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_gripper_tool_frame -->
 
-    <SRDL_component:UrdfLink rdf:about="#PR2_l_gripper_tool_frame">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >l_gripper_tool_frame</SRDL_component:hasUrdfName>
-    </SRDL_component:UrdfLink>
 
+    <!-- &pr2;PR2_l_shoulder_pan_link -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_shoulder_pan_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>l_shoulder_pan_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_l_shoulder_lift_joint"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_gripper_tool_joint -->
 
-    <owl:Thing rdf:about="#PR2_l_gripper_tool_joint">
-        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >l_gripper_tool_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_gripper_tool_frame"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_l_gripper_tool_frame"/>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_l_upper_arm_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_upper_arm_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>l_upper_arm_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_l_upper_arm_link"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_shoulder_lift_joint -->
 
-    <SRDL_component:RevoluteUrdfJoint rdf:about="#PR2_l_shoulder_lift_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >l_shoulder_lift_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_l_shoulder_lift_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_shoulder_lift_link"/>
-    </SRDL_component:RevoluteUrdfJoint>
 
 
+    <!-- &pr2;PR2_l_upper_arm_link -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_shoulder_lift_link -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_upper_arm_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>l_upper_arm_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_l_elbow_flex_joint"/>
+    </owl:NamedIndividual>
 
-    <SRDL_component:UrdfLink rdf:about="#PR2_l_shoulder_lift_link">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >l_shoulder_lift_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_upper_arm_roll_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_l_upper_arm_roll_joint"/>
-    </SRDL_component:UrdfLink>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_shoulder_pan_joint -->
+    <!-- &pr2;PR2_l_upper_arm_roll_joint -->
 
-    <SRDL_component:RevoluteUrdfJoint rdf:about="#PR2_l_shoulder_pan_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >l_shoulder_pan_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_l_shoulder_pan_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_shoulder_pan_link"/>
-    </SRDL_component:RevoluteUrdfJoint>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_upper_arm_roll_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>l_upper_arm_roll_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_l_upper_arm_roll_link"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_shoulder_pan_link -->
 
-    <SRDL_component:UrdfLink rdf:about="#PR2_l_shoulder_pan_link">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >l_shoulder_pan_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_shoulder_lift_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_l_shoulder_lift_joint"/>
-    </SRDL_component:UrdfLink>
+    <!-- &pr2;PR2_l_upper_arm_roll_link -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_upper_arm_roll_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>l_upper_arm_roll_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_l_upper_arm_joint"/>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_upper_arm_joint -->
 
-    <owl:Thing rdf:about="#PR2_l_upper_arm_joint">
-        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >l_upper_arm_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_l_upper_arm_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_upper_arm_link"/>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_l_wrist_flex_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_wrist_flex_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>l_wrist_flex_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_l_wrist_flex_link"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_upper_arm_link -->
 
-    <owl:Thing rdf:about="#PR2_l_upper_arm_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >l_upper_arm_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_l_elbow_flex_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_elbow_flex_joint"/>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_l_wrist_flex_link -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_wrist_flex_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>l_wrist_flex_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_l_wrist_roll_joint"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_upper_arm_roll_joint -->
 
-    <owl:Thing rdf:about="#PR2_l_upper_arm_roll_joint">
-        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >l_upper_arm_roll_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_upper_arm_roll_link"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_l_upper_arm_roll_link"/>
-    </owl:Thing>
 
 
+    <!-- &pr2;PR2_l_wrist_roll_joint -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_upper_arm_roll_link -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_wrist_roll_joint">
+        <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
+        <srdl2-comp:urdfName>l_wrist_roll_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_l_wrist_roll_link"/>
+    </owl:NamedIndividual>
 
-    <owl:Thing rdf:about="#PR2_l_upper_arm_roll_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >l_upper_arm_roll_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_l_upper_arm_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_upper_arm_joint"/>
-    </owl:Thing>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_wrist_flex_joint -->
+    <!-- &pr2;PR2_l_wrist_roll_link -->
 
-    <SRDL_component:RevoluteUrdfJoint rdf:about="#PR2_l_wrist_flex_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >l_wrist_flex_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_l_wrist_flex_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_wrist_flex_link"/>
-    </SRDL_component:RevoluteUrdfJoint>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_l_wrist_roll_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>l_wrist_roll_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_l_gripper_palm_joint"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_wrist_flex_link -->
+    <!-- &pr2;PR2_laser_tilt_joint -->
 
-    <owl:Thing rdf:about="#PR2_l_wrist_flex_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >l_wrist_flex_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_wrist_roll_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_l_wrist_roll_joint"/>
-    </owl:Thing>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_laser_tilt_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>laser_tilt_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_laser_tilt_link"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_wrist_roll_joint -->
 
-    <owl:Thing rdf:about="#PR2_l_wrist_roll_joint">
-        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >l_wrist_roll_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_l_wrist_roll_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_wrist_roll_link"/>
-    </owl:Thing>
+    <!-- &pr2;PR2_laser_tilt_link -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_laser_tilt_link">
+        <rdf:type rdf:resource="&srdl2-comp;HokuyoUTM-30LX"/>
+        <rdf:type rdf:resource="&srdl2-comp;Tilting2DLaserScanner"/>
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>laser_tilt_link</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_l_wrist_roll_link -->
 
-    <SRDL_component:UrdfLink rdf:about="#PR2_l_wrist_roll_link">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >l_wrist_roll_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_gripper_palm_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_l_gripper_palm_joint"/>
-    </SRDL_component:UrdfLink>
+    <!-- &pr2;PR2_laser_tilt_mount_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_laser_tilt_mount_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>laser_tilt_mount_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_laser_tilt_mount_link"/>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_laser_tilt_joint -->
 
-    <owl:Thing rdf:about="#PR2_laser_tilt_joint">
-        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >laser_tilt_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_laser_tilt_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_laser_tilt_link"/>
-    </owl:Thing>
+    <!-- &pr2;PR2_laser_tilt_mount_link -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_laser_tilt_mount_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>laser_tilt_mount_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_laser_tilt_joint"/>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_laser_tilt_link -->
 
-    <SRDL_component:HokuyoUTM-30LX rdf:about="#PR2_laser_tilt_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName>laser_tilt_link</SRDL_component:hasUrdfName>
-    </SRDL_component:HokuyoUTM-30LX>
 
+    <!-- &pr2;PR2_narrow_stereo_frame_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_narrow_stereo_frame_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>narrow_stereo_frame_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_narrow_stereo_link"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_laser_tilt_mount_joint -->
 
-    <SRDL_component:RevoluteUrdfJoint rdf:about="#PR2_laser_tilt_mount_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >laser_tilt_mount_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_laser_tilt_mount_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_laser_tilt_mount_link"/>
-    </SRDL_component:RevoluteUrdfJoint>
 
 
+    <!-- &pr2;PR2_narrow_stereo_gazebo_l_stereo_camera_frame -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_laser_tilt_mount_link -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_narrow_stereo_gazebo_l_stereo_camera_frame">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>narrow_stereo_gazebo_l_stereo_camera_frame</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_narrow_stereo_gazebo_l_stereo_camera_optical_frame_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_narrow_stereo_gazebo_r_stereo_camera_frame_joint"/>
+    </owl:NamedIndividual>
 
-    <owl:Thing rdf:about="#PR2_laser_tilt_mount_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >laser_tilt_mount_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_laser_tilt_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_laser_tilt_joint"/>
-    </owl:Thing>
 
 
+    <!-- &pr2;PR2_narrow_stereo_gazebo_l_stereo_camera_frame_joint -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_narrow_stereo_frame_joint -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_narrow_stereo_gazebo_l_stereo_camera_frame_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>narrow_stereo_gazebo_l_stereo_camera_frame_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_narrow_stereo_gazebo_l_stereo_camera_frame"/>
+    </owl:NamedIndividual>
 
-    <owl:Thing rdf:about="#PR2_narrow_stereo_frame_joint">
-        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >narrow_stereo_frame_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_narrow_stereo_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_narrow_stereo_link"/>
-    </owl:Thing>
 
 
+    <!-- &pr2;PR2_narrow_stereo_gazebo_l_stereo_camera_optical_frame -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_narrow_stereo_gazebo_l_stereo_camera_frame -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_narrow_stereo_gazebo_l_stereo_camera_optical_frame">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>narrow_stereo_gazebo_l_stereo_camera_optical_frame</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
-    <SRDL_component:UrdfLink rdf:about="#PR2_narrow_stereo_gazebo_l_stereo_camera_frame">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >narrow_stereo_gazebo_l_stereo_camera_frame</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_narrow_stereo_gazebo_l_stereo_camera_optical_frame_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_narrow_stereo_gazebo_l_stereo_camera_optical_frame_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_narrow_stereo_gazebo_r_stereo_camera_frame_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_narrow_stereo_gazebo_r_stereo_camera_frame_joint"/>
-    </SRDL_component:UrdfLink>
 
 
+    <!-- &pr2;PR2_narrow_stereo_gazebo_l_stereo_camera_optical_frame_joint -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_narrow_stereo_gazebo_l_stereo_camera_frame_joint -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_narrow_stereo_gazebo_l_stereo_camera_optical_frame_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>narrow_stereo_gazebo_l_stereo_camera_optical_frame_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_narrow_stereo_gazebo_l_stereo_camera_optical_frame"/>
+    </owl:NamedIndividual>
 
-    <SRDL_component:FixedUrdfJoint rdf:about="#PR2_narrow_stereo_gazebo_l_stereo_camera_frame_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >narrow_stereo_gazebo_l_stereo_camera_frame_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_narrow_stereo_gazebo_l_stereo_camera_frame"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_narrow_stereo_gazebo_l_stereo_camera_frame"/>
-    </SRDL_component:FixedUrdfJoint>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_narrow_stereo_gazebo_l_stereo_camera_optical_frame -->
+    <!-- &pr2;PR2_narrow_stereo_gazebo_r_stereo_camera_frame -->
 
-    <SRDL_component:UrdfLink rdf:about="#PR2_narrow_stereo_gazebo_l_stereo_camera_optical_frame">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >narrow_stereo_gazebo_l_stereo_camera_optical_frame</SRDL_component:hasUrdfName>
-    </SRDL_component:UrdfLink>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_narrow_stereo_gazebo_r_stereo_camera_frame">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>narrow_stereo_gazebo_r_stereo_camera_frame</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_narrow_stereo_gazebo_r_stereo_camera_optical_frame_joint"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_narrow_stereo_gazebo_l_stereo_camera_optical_frame_joint -->
 
-    <owl:Thing rdf:about="#PR2_narrow_stereo_gazebo_l_stereo_camera_optical_frame_joint">
-        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >narrow_stereo_gazebo_l_stereo_camera_optical_frame_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_narrow_stereo_gazebo_l_stereo_camera_optical_frame"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_narrow_stereo_gazebo_l_stereo_camera_optical_frame"/>
-    </owl:Thing>
+    <!-- &pr2;PR2_narrow_stereo_gazebo_r_stereo_camera_frame_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_narrow_stereo_gazebo_r_stereo_camera_frame_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>narrow_stereo_gazebo_r_stereo_camera_frame_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_narrow_stereo_gazebo_r_stereo_camera_frame"/>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_narrow_stereo_gazebo_r_stereo_camera_frame -->
 
-    <owl:Thing rdf:about="#PR2_narrow_stereo_gazebo_r_stereo_camera_frame">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >narrow_stereo_gazebo_r_stereo_camera_frame</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_narrow_stereo_gazebo_r_stereo_camera_optical_frame_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_narrow_stereo_gazebo_r_stereo_camera_optical_frame_joint"/>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_narrow_stereo_gazebo_r_stereo_camera_optical_frame -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_narrow_stereo_gazebo_r_stereo_camera_optical_frame">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>narrow_stereo_gazebo_r_stereo_camera_optical_frame</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_narrow_stereo_gazebo_r_stereo_camera_frame_joint -->
 
-    <owl:Thing rdf:about="#PR2_narrow_stereo_gazebo_r_stereo_camera_frame_joint">
-        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >narrow_stereo_gazebo_r_stereo_camera_frame_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_narrow_stereo_gazebo_r_stereo_camera_frame"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_narrow_stereo_gazebo_r_stereo_camera_frame"/>
-    </owl:Thing>
 
 
+    <!-- &pr2;PR2_narrow_stereo_gazebo_r_stereo_camera_optical_frame_joint -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_narrow_stereo_gazebo_r_stereo_camera_optical_frame -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_narrow_stereo_gazebo_r_stereo_camera_optical_frame_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>narrow_stereo_gazebo_r_stereo_camera_optical_frame_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_narrow_stereo_gazebo_r_stereo_camera_optical_frame"/>
+    </owl:NamedIndividual>
 
-    <owl:Thing rdf:about="#PR2_narrow_stereo_gazebo_r_stereo_camera_optical_frame">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >narrow_stereo_gazebo_r_stereo_camera_optical_frame</SRDL_component:hasUrdfName>
-    </owl:Thing>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_narrow_stereo_gazebo_r_stereo_camera_optical_frame_joint -->
+    <!-- &pr2;PR2_narrow_stereo_link -->
 
-    <owl:Thing rdf:about="#PR2_narrow_stereo_gazebo_r_stereo_camera_optical_frame_joint">
-        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >narrow_stereo_gazebo_r_stereo_camera_optical_frame_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_narrow_stereo_gazebo_r_stereo_camera_optical_frame"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_narrow_stereo_gazebo_r_stereo_camera_optical_frame"/>
-    </owl:Thing>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_narrow_stereo_link">
+        <rdf:type rdf:resource="&srdl2-comp;StereoCamera"/>
+        <rdf:type rdf:resource="&srdl2-comp;MonochromeCamera"/>
+        <rdf:type rdf:resource="&srdl2-comp;GlobalShutterCamera"/>
+        <rdf:type rdf:resource="&srdl2-comp;NarrowAngleCamera"/>
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>narrow_stereo_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_narrow_stereo_gazebo_l_stereo_camera_frame_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_narrow_stereo_optical_frame_joint"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_narrow_stereo_link -->
+    <!-- &pr2;PR2_narrow_stereo_optical_frame -->
 
-    <SRDL_component:UrdfLink rdf:about="#PR2_narrow_stereo_link">
-        <rdf:type rdf:resource="&SRDL_component;NarrowAngleGlobalShutterMonochromeStereoCamera"/>
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >narrow_stereo_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_narrow_stereo_gazebo_l_stereo_camera_frame_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_narrow_stereo_gazebo_l_stereo_camera_frame_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_narrow_stereo_optical_frame_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_narrow_stereo_optical_frame_joint"/>
-    </SRDL_component:UrdfLink>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_narrow_stereo_optical_frame">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>narrow_stereo_optical_frame</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_narrow_stereo_optical_frame -->
 
-    <owl:Thing rdf:about="#PR2_narrow_stereo_optical_frame">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >narrow_stereo_optical_frame</SRDL_component:hasUrdfName>
-    </owl:Thing>
+    <!-- &pr2;PR2_narrow_stereo_optical_frame_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_narrow_stereo_optical_frame_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>narrow_stereo_optical_frame_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_narrow_stereo_optical_frame"/>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_narrow_stereo_optical_frame_joint -->
 
-    <owl:Thing rdf:about="#PR2_narrow_stereo_optical_frame_joint">
-        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >narrow_stereo_optical_frame_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_narrow_stereo_optical_frame"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_narrow_stereo_optical_frame"/>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_r_ArmComposition -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_ArmComposition">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
+        <rdf:type rdf:resource="&srdl2-comp;Pr2Arm"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;PR2_r_forearm_cam_optical_frame"/>
+        <srdl2-comp:baseLinkOfComposition rdf:resource="&pr2;PR2_r_shoulder_pan_link"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;PR2_r_wrist_roll_link"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_ArmComposition -->
 
-    <SRDL_component:ComponentComposition rdf:about="#PR2_r_ArmComposition">
-        <rdf:type rdf:resource="&SRDL_component;Pr2Arm"/>
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasEndLinkOfComposition rdf:resource="#PR2_r_forearm_cam_optical_frame"/>
-        <SRDL_component:hasBaseLinkOfComposition rdf:resource="#PR2_r_shoulder_pan_link"/>
-        <SRDL_component:hasEndLinkOfComposition rdf:resource="#PR2_r_wrist_roll_link"/>
-    </SRDL_component:ComponentComposition>
 
+    <!-- &pr2;PR2_r_GripperComposition -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_GripperComposition">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
+        <rdf:type rdf:resource="&srdl2-comp;Pr2Gripper"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;PR2_r_gripper_l_finger_tip_link"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;PR2_r_gripper_led_frame"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;PR2_r_gripper_motor_accelerometer_link"/>
+        <srdl2-comp:baseLinkOfComposition rdf:resource="&pr2;PR2_r_gripper_palm_link"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;PR2_r_gripper_r_finger_tip_link"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;PR2_r_gripper_tool_frame"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_GripperComposition -->
 
-    <SRDL_component:Pr2Gripper rdf:about="#PR2_r_GripperComposition">
-        <rdf:type rdf:resource="&SRDL_component;ComponentComposition"/>
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasEndLinkOfComposition rdf:resource="#PR2_r_gripper_l_finger_tip_link"/>
-        <SRDL_component:hasEndLinkOfComposition rdf:resource="#PR2_r_gripper_led_frame"/>
-        <SRDL_component:hasEndLinkOfComposition rdf:resource="#PR2_r_gripper_motor_accelerometer_link"/>
-        <SRDL_component:hasBaseLinkOfComposition rdf:resource="#PR2_r_gripper_palm_link"/>
-        <SRDL_component:hasEndLinkOfComposition rdf:resource="#PR2_r_gripper_r_finger_tip_link"/>
-        <SRDL_component:hasEndLinkOfComposition rdf:resource="#PR2_r_gripper_tool_frame"/>
-    </SRDL_component:Pr2Gripper>
 
+    <!-- &pr2;PR2_r_elbow_flex_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_elbow_flex_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>r_elbow_flex_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_r_elbow_flex_link"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_elbow_flex_joint -->
 
-    <owl:Thing rdf:about="#PR2_r_elbow_flex_joint">
-        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >r_elbow_flex_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_elbow_flex_link"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_r_elbow_flex_link"/>
-    </owl:Thing>
 
 
+    <!-- &pr2;PR2_r_elbow_flex_link -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_elbow_flex_link -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_elbow_flex_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>r_elbow_flex_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_r_forearm_roll_joint"/>
+    </owl:NamedIndividual>
 
-    <owl:Thing rdf:about="#PR2_r_elbow_flex_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >r_elbow_flex_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_forearm_roll_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_r_forearm_roll_joint"/>
-    </owl:Thing>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_forearm_cam_frame -->
+    <!-- &pr2;PR2_r_forearm_cam_frame -->
 
-    <SRDL_component:WideAngleCamera rdf:about="#PR2_r_forearm_cam_frame">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >r_forearm_cam_frame</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_forearm_cam_optical_frame_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_r_forearm_cam_optical_frame_joint"/>
-    </SRDL_component:WideAngleCamera>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_forearm_cam_frame">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <rdf:type rdf:resource="&srdl2-comp;WideAngleCamera"/>
+        <srdl2-comp:urdfName>r_forearm_cam_frame</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_r_forearm_cam_optical_frame_joint"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_forearm_cam_frame_joint -->
+    <!-- &pr2;PR2_r_forearm_cam_frame_joint -->
 
-    <owl:Thing rdf:about="#PR2_r_forearm_cam_frame_joint">
-        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >r_forearm_cam_frame_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_r_forearm_cam_frame"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_forearm_cam_frame"/>
-    </owl:Thing>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_forearm_cam_frame_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>r_forearm_cam_frame_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_r_forearm_cam_frame"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_forearm_cam_optical_frame -->
 
-    <owl:Thing rdf:about="#PR2_r_forearm_cam_optical_frame">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >r_forearm_cam_optical_frame</SRDL_component:hasUrdfName>
-    </owl:Thing>
+    <!-- &pr2;PR2_r_forearm_cam_optical_frame -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_forearm_cam_optical_frame">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>r_forearm_cam_optical_frame</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_forearm_cam_optical_frame_joint -->
 
-    <owl:Thing rdf:about="#PR2_r_forearm_cam_optical_frame_joint">
-        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >r_forearm_cam_optical_frame_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_forearm_cam_optical_frame"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_r_forearm_cam_optical_frame"/>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_r_forearm_cam_optical_frame_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_forearm_cam_optical_frame_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>r_forearm_cam_optical_frame_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_r_forearm_cam_optical_frame"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_forearm_joint -->
 
-    <SRDL_component:FixedUrdfJoint rdf:about="#PR2_r_forearm_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName>r_forearm_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_r_forearm_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_forearm_link"/>
-    </SRDL_component:FixedUrdfJoint>
 
 
+    <!-- &pr2;PR2_r_forearm_joint -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_forearm_link -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_forearm_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>r_forearm_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_r_forearm_link"/>
+    </owl:NamedIndividual>
 
-    <owl:Thing rdf:about="#PR2_r_forearm_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName>r_forearm_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_r_wrist_flex_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_wrist_flex_joint"/>
-    </owl:Thing>
 
 
+    <!-- &pr2;PR2_r_forearm_link -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_forearm_roll_joint -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_forearm_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>r_forearm_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_r_wrist_flex_joint"/>
+    </owl:NamedIndividual>
 
-    <owl:Thing rdf:about="#PR2_r_forearm_roll_joint">
-        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >r_forearm_roll_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_r_forearm_roll_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_forearm_roll_link"/>
-    </owl:Thing>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_forearm_roll_link -->
+    <!-- &pr2;PR2_r_forearm_roll_joint -->
 
-    <owl:Thing rdf:about="#PR2_r_forearm_roll_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >r_forearm_roll_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_r_forearm_cam_frame_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_forearm_cam_frame_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_r_forearm_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_forearm_joint"/>
-    </owl:Thing>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_forearm_roll_joint">
+        <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
+        <srdl2-comp:urdfName>r_forearm_roll_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_r_forearm_roll_link"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_gripper_joint -->
 
-    <owl:Thing rdf:about="#PR2_r_gripper_joint">
-        <rdf:type rdf:resource="&SRDL_component;PrismaticUrdfJoint"/>
-        <SRDL_component:hasUrdfName>r_gripper_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_"/>
-    </owl:Thing>
+    <!-- &pr2;PR2_r_forearm_roll_link -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_forearm_roll_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>r_forearm_roll_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_r_forearm_cam_frame_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_r_forearm_joint"/>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_gripper_l_finger_joint -->
 
-    <owl:Thing rdf:about="#PR2_r_gripper_l_finger_joint">
-        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >r_gripper_l_finger_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_r_gripper_l_finger_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_gripper_l_finger_link"/>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_r_gripper_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_gripper_joint">
+        <rdf:type rdf:resource="&srdl2-comp;PrismaticUrdfJoint"/>
+        <srdl2-comp:urdfName>r_gripper_joint</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_gripper_l_finger_link -->
 
-    <owl:Thing rdf:about="#PR2_r_gripper_l_finger_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >r_gripper_l_finger_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_gripper_l_finger_tip_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_r_gripper_l_finger_tip_joint"/>
-    </owl:Thing>
 
 
+    <!-- &pr2;PR2_r_gripper_l_finger_joint -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_gripper_l_finger_tip_joint -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_gripper_l_finger_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>r_gripper_l_finger_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_r_gripper_l_finger_link"/>
+    </owl:NamedIndividual>
 
-    <SRDL_component:RevoluteUrdfJoint rdf:about="#PR2_r_gripper_l_finger_tip_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >r_gripper_l_finger_tip_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_r_gripper_l_finger_tip_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_gripper_l_finger_tip_link"/>
-    </SRDL_component:RevoluteUrdfJoint>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_gripper_l_finger_tip_link -->
+    <!-- &pr2;PR2_r_gripper_l_finger_link -->
 
-    <owl:Thing rdf:about="#PR2_r_gripper_l_finger_tip_link">
-        <rdf:type rdf:resource="&SRDL_component;FingertipPressureSensorArray"/>
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >r_gripper_l_finger_tip_link</SRDL_component:hasUrdfName>
-    </owl:Thing>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_gripper_l_finger_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>r_gripper_l_finger_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_r_gripper_l_finger_tip_joint"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_gripper_led_frame -->
 
-    <owl:Thing rdf:about="#PR2_r_gripper_led_frame">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >r_gripper_led_frame</SRDL_component:hasUrdfName>
-    </owl:Thing>
+    <!-- &pr2;PR2_r_gripper_l_finger_tip_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_gripper_l_finger_tip_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>r_gripper_l_finger_tip_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_r_gripper_l_finger_tip_link"/>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_gripper_led_joint -->
 
-    <owl:Thing rdf:about="#PR2_r_gripper_led_joint">
-        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >r_gripper_led_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_r_gripper_led_frame"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_gripper_led_frame"/>
-    </owl:Thing>
+    <!-- &pr2;PR2_r_gripper_l_finger_tip_link -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_gripper_l_finger_tip_link">
+        <rdf:type rdf:resource="&srdl2-comp;FingertipPressureSensorArray"/>
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>r_gripper_l_finger_tip_link</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_gripper_motor_accelerometer_joint -->
 
-    <owl:Thing rdf:about="#PR2_r_gripper_motor_accelerometer_joint">
-        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >r_gripper_motor_accelerometer_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_r_gripper_motor_accelerometer_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_gripper_motor_accelerometer_link"/>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_r_gripper_led_frame -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_gripper_led_frame">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>r_gripper_led_frame</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_gripper_motor_accelerometer_link -->
 
-    <owl:Thing rdf:about="#PR2_r_gripper_motor_accelerometer_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >r_gripper_motor_accelerometer_link</SRDL_component:hasUrdfName>
-    </owl:Thing>
 
 
+    <!-- &pr2;PR2_r_gripper_led_joint -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_gripper_palm_joint -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_gripper_led_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>r_gripper_led_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_r_gripper_led_frame"/>
+    </owl:NamedIndividual>
 
-    <SRDL_component:FixedUrdfJoint rdf:about="#PR2_r_gripper_palm_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >r_gripper_palm_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_gripper_palm_link"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_r_gripper_palm_link"/>
-    </SRDL_component:FixedUrdfJoint>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_gripper_palm_link -->
+    <!-- &pr2;PR2_r_gripper_motor_accelerometer_joint -->
 
-    <SRDL_component:UrdfLink rdf:about="#PR2_r_gripper_palm_link">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >r_gripper_palm_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_gripper_l_finger_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_r_gripper_l_finger_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_gripper_led_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_r_gripper_led_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_r_gripper_motor_accelerometer_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_gripper_motor_accelerometer_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_gripper_r_finger_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_r_gripper_r_finger_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_gripper_tool_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_r_gripper_tool_joint"/>
-    </SRDL_component:UrdfLink>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_gripper_motor_accelerometer_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>r_gripper_motor_accelerometer_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_r_gripper_motor_accelerometer_link"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_gripper_r_finger_joint -->
 
-    <owl:Thing rdf:about="#PR2_r_gripper_r_finger_joint">
-        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >r_gripper_r_finger_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_r_gripper_r_finger_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_gripper_r_finger_link"/>
-    </owl:Thing>
+    <!-- &pr2;PR2_r_gripper_motor_accelerometer_link -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_gripper_motor_accelerometer_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>r_gripper_motor_accelerometer_link</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_gripper_r_finger_link -->
 
-    <owl:Thing rdf:about="#PR2_r_gripper_r_finger_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >r_gripper_r_finger_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_gripper_r_finger_tip_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_r_gripper_r_finger_tip_joint"/>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_r_gripper_palm_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_gripper_palm_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>r_gripper_palm_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_r_gripper_palm_link"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_gripper_r_finger_tip_joint -->
 
-    <SRDL_component:RevoluteUrdfJoint rdf:about="#PR2_r_gripper_r_finger_tip_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >r_gripper_r_finger_tip_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_r_gripper_r_finger_tip_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_gripper_r_finger_tip_link"/>
-    </SRDL_component:RevoluteUrdfJoint>
 
+    <!-- &pr2;PR2_r_gripper_palm_link -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_gripper_palm_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>r_gripper_palm_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_r_gripper_l_finger_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_r_gripper_led_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_r_gripper_motor_accelerometer_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_r_gripper_r_finger_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_r_gripper_tool_joint"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_gripper_r_finger_tip_link -->
 
-    <owl:Thing rdf:about="#PR2_r_gripper_r_finger_tip_link">
-        <rdf:type rdf:resource="&SRDL_component;FingertipPressureSensorArray"/>
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >r_gripper_r_finger_tip_link</SRDL_component:hasUrdfName>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_r_gripper_r_finger_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_gripper_r_finger_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>r_gripper_r_finger_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_r_gripper_r_finger_link"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_gripper_tool_frame -->
 
-    <SRDL_component:UrdfLink rdf:about="#PR2_r_gripper_tool_frame">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >r_gripper_tool_frame</SRDL_component:hasUrdfName>
-    </SRDL_component:UrdfLink>
 
 
+    <!-- &pr2;PR2_r_gripper_r_finger_link -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_gripper_tool_joint -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_gripper_r_finger_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>r_gripper_r_finger_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_r_gripper_r_finger_tip_joint"/>
+    </owl:NamedIndividual>
 
-    <owl:Thing rdf:about="#PR2_r_gripper_tool_joint">
-        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >r_gripper_tool_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_r_gripper_tool_frame"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_gripper_tool_frame"/>
-    </owl:Thing>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_shoulder_lift_joint -->
+    <!-- &pr2;PR2_r_gripper_r_finger_tip_joint -->
 
-    <SRDL_component:RevoluteUrdfJoint rdf:about="#PR2_r_shoulder_lift_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >r_shoulder_lift_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_shoulder_lift_link"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_r_shoulder_lift_link"/>
-    </SRDL_component:RevoluteUrdfJoint>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_gripper_r_finger_tip_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>r_gripper_r_finger_tip_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_r_gripper_r_finger_tip_link"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_shoulder_lift_link -->
+    <!-- &pr2;PR2_r_gripper_r_finger_tip_link -->
 
-    <owl:Thing rdf:about="#PR2_r_shoulder_lift_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >r_shoulder_lift_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_r_upper_arm_roll_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_upper_arm_roll_joint"/>
-    </owl:Thing>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_gripper_r_finger_tip_link">
+        <rdf:type rdf:resource="&srdl2-comp;FingertipPressureSensorArray"/>
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>r_gripper_r_finger_tip_link</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_shoulder_pan_joint -->
 
-    <owl:Thing rdf:about="#PR2_r_shoulder_pan_joint">
-        <rdf:type rdf:resource="&SRDL_component;RevoluteUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >r_shoulder_pan_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_r_shoulder_pan_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_shoulder_pan_link"/>
-    </owl:Thing>
+    <!-- &pr2;PR2_r_gripper_tool_frame -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_gripper_tool_frame">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>r_gripper_tool_frame</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_shoulder_pan_link -->
 
-    <SRDL_component:UrdfLink rdf:about="#PR2_r_shoulder_pan_link">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >r_shoulder_pan_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_shoulder_lift_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_r_shoulder_lift_joint"/>
-    </SRDL_component:UrdfLink>
+    <!-- &pr2;PR2_r_gripper_tool_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_gripper_tool_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>r_gripper_tool_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_r_gripper_tool_frame"/>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_upper_arm_joint -->
 
-    <SRDL_component:FixedUrdfJoint rdf:about="#PR2_r_upper_arm_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >r_upper_arm_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_upper_arm_link"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_r_upper_arm_link"/>
-    </SRDL_component:FixedUrdfJoint>
 
+    <!-- &pr2;PR2_r_shoulder_lift_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_shoulder_lift_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>r_shoulder_lift_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_r_shoulder_lift_link"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_upper_arm_link -->
 
-    <owl:Thing rdf:about="#PR2_r_upper_arm_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >r_upper_arm_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_r_elbow_flex_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_elbow_flex_joint"/>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_r_shoulder_lift_link -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_shoulder_lift_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>r_shoulder_lift_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_r_upper_arm_roll_joint"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_upper_arm_roll_joint -->
 
-    <SRDL_component:RevoluteUrdfJoint rdf:about="#PR2_r_upper_arm_roll_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >r_upper_arm_roll_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_upper_arm_roll_link"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_r_upper_arm_roll_link"/>
-    </SRDL_component:RevoluteUrdfJoint>
 
 
+    <!-- &pr2;PR2_r_shoulder_pan_joint -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_upper_arm_roll_link -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_shoulder_pan_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>r_shoulder_pan_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_r_shoulder_pan_link"/>
+    </owl:NamedIndividual>
 
-    <owl:Thing rdf:about="#PR2_r_upper_arm_roll_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >r_upper_arm_roll_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_upper_arm_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_r_upper_arm_joint"/>
-    </owl:Thing>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_wrist_flex_joint -->
+    <!-- &pr2;PR2_r_shoulder_pan_link -->
 
-    <SRDL_component:RevoluteUrdfJoint rdf:about="#PR2_r_wrist_flex_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >r_wrist_flex_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_r_wrist_flex_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_wrist_flex_link"/>
-    </SRDL_component:RevoluteUrdfJoint>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_shoulder_pan_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>r_shoulder_pan_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_r_shoulder_lift_joint"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_wrist_flex_link -->
+    <!-- &pr2;PR2_r_upper_arm_joint -->
 
-    <SRDL_component:UrdfLink rdf:about="#PR2_r_wrist_flex_link">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >r_wrist_flex_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_r_wrist_roll_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_wrist_roll_joint"/>
-    </SRDL_component:UrdfLink>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_upper_arm_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>r_upper_arm_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_r_upper_arm_link"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_wrist_roll_joint -->
+    <!-- &pr2;PR2_r_upper_arm_link -->
 
-    <owl:Thing rdf:about="#PR2_r_wrist_roll_joint">
-        <rdf:type rdf:resource="&SRDL_component;ContinuousUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >r_wrist_roll_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_r_wrist_roll_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_wrist_roll_link"/>
-    </owl:Thing>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_upper_arm_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>r_upper_arm_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_r_elbow_flex_joint"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_r_wrist_roll_link -->
 
-    <SRDL_component:UrdfLink rdf:about="#PR2_r_wrist_roll_link">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >r_wrist_roll_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_r_gripper_palm_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_gripper_palm_joint"/>
-    </SRDL_component:UrdfLink>
+    <!-- &pr2;PR2_r_upper_arm_roll_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_upper_arm_roll_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>r_upper_arm_roll_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_r_upper_arm_roll_link"/>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_sensor_mount_frame_joint -->
 
-    <SRDL_component:FixedUrdfJoint rdf:about="#PR2_sensor_mount_frame_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >sensor_mount_frame_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_sensor_mount_link"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_sensor_mount_link"/>
-    </SRDL_component:FixedUrdfJoint>
+    <!-- &pr2;PR2_r_upper_arm_roll_link -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_upper_arm_roll_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>r_upper_arm_roll_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_r_upper_arm_joint"/>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_sensor_mount_link -->
 
-    <SRDL_component:UrdfLink rdf:about="#PR2_sensor_mount_link">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >sensor_mount_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_double_stereo_frame_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_double_stereo_frame_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_high_def_frame_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_high_def_frame_joint"/>
-    </SRDL_component:UrdfLink>
 
+    <!-- &pr2;PR2_r_wrist_flex_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_wrist_flex_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>r_wrist_flex_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_r_wrist_flex_link"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_torso_lift_joint -->
 
-    <SRDL_component:PrismaticUrdfJoint rdf:about="#PR2_torso_lift_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >torso_lift_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_torso_lift_link"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_torso_lift_link"/>
-    </SRDL_component:PrismaticUrdfJoint>
 
+    <!-- &pr2;PR2_r_wrist_flex_link -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_wrist_flex_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>r_wrist_flex_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_r_wrist_roll_joint"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_torso_lift_link -->
 
-    <owl:Thing rdf:about="#PR2_torso_lift_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName>torso_lift_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_head_pan_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_head_pan_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_imu_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_imu_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_l_shoulder_pan_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_l_shoulder_pan_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_laser_tilt_mount_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_laser_tilt_mount_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_r_shoulder_pan_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_r_shoulder_pan_joint"/>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_r_wrist_roll_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_wrist_roll_joint">
+        <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
+        <srdl2-comp:urdfName>r_wrist_roll_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_r_wrist_roll_link"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_wide_stereo_frame_joint -->
 
-    <SRDL_component:FixedUrdfJoint rdf:about="#PR2_wide_stereo_frame_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >wide_stereo_frame_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_wide_stereo_link"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_wide_stereo_link"/>
-    </SRDL_component:FixedUrdfJoint>
 
 
+    <!-- &pr2;PR2_r_wrist_roll_link -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_wide_stereo_gazebo_l_stereo_camera_frame -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_r_wrist_roll_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>r_wrist_roll_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_r_gripper_palm_joint"/>
+    </owl:NamedIndividual>
 
-    <owl:Thing rdf:about="#PR2_wide_stereo_gazebo_l_stereo_camera_frame">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >wide_stereo_gazebo_l_stereo_camera_frame</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_wide_stereo_gazebo_l_stereo_camera_optical_frame_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_wide_stereo_gazebo_l_stereo_camera_optical_frame_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_wide_stereo_gazebo_r_stereo_camera_frame_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_wide_stereo_gazebo_r_stereo_camera_frame_joint"/>
-    </owl:Thing>
 
 
+    <!-- &pr2;PR2_sensor_mount_frame_joint -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_wide_stereo_gazebo_l_stereo_camera_frame_joint -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_sensor_mount_frame_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>sensor_mount_frame_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_sensor_mount_link"/>
+    </owl:NamedIndividual>
 
-    <owl:Thing rdf:about="#PR2_wide_stereo_gazebo_l_stereo_camera_frame_joint">
-        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >wide_stereo_gazebo_l_stereo_camera_frame_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_wide_stereo_gazebo_l_stereo_camera_frame"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_wide_stereo_gazebo_l_stereo_camera_frame"/>
-    </owl:Thing>
 
 
+    <!-- &pr2;PR2_sensor_mount_link -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_wide_stereo_gazebo_l_stereo_camera_optical_frame -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_sensor_mount_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>sensor_mount_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_double_stereo_frame_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_high_def_frame_joint"/>
+    </owl:NamedIndividual>
 
-    <SRDL_component:UrdfLink rdf:about="#PR2_wide_stereo_gazebo_l_stereo_camera_optical_frame">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >wide_stereo_gazebo_l_stereo_camera_optical_frame</SRDL_component:hasUrdfName>
-    </SRDL_component:UrdfLink>
 
 
+    <!-- &pr2;PR2_torso_lift_joint -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_wide_stereo_gazebo_l_stereo_camera_optical_frame_joint -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_torso_lift_joint">
+        <rdf:type rdf:resource="&srdl2-comp;PrismaticUrdfJoint"/>
+        <srdl2-comp:urdfName>torso_lift_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_torso_lift_link"/>
+    </owl:NamedIndividual>
 
-    <owl:Thing rdf:about="#PR2_wide_stereo_gazebo_l_stereo_camera_optical_frame_joint">
-        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >wide_stereo_gazebo_l_stereo_camera_optical_frame_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_wide_stereo_gazebo_l_stereo_camera_optical_frame"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_wide_stereo_gazebo_l_stereo_camera_optical_frame"/>
-    </owl:Thing>
 
 
+    <!-- &pr2;PR2_torso_lift_link -->
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_wide_stereo_gazebo_r_stereo_camera_frame -->
+    <owl:NamedIndividual rdf:about="&pr2;PR2_torso_lift_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>torso_lift_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_head_pan_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_imu_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_l_shoulder_pan_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_laser_tilt_mount_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_r_shoulder_pan_joint"/>
+    </owl:NamedIndividual>
 
-    <SRDL_component:UrdfLink rdf:about="#PR2_wide_stereo_gazebo_r_stereo_camera_frame">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >wide_stereo_gazebo_r_stereo_camera_frame</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_wide_stereo_gazebo_r_stereo_camera_optical_frame_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_wide_stereo_gazebo_r_stereo_camera_optical_frame_joint"/>
-    </SRDL_component:UrdfLink>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_wide_stereo_gazebo_r_stereo_camera_frame_joint -->
+    <!-- &pr2;PR2_wide_stereo_frame_joint -->
 
-    <SRDL_component:FixedUrdfJoint rdf:about="#PR2_wide_stereo_gazebo_r_stereo_camera_frame_joint">
-        <rdf:type rdf:resource="&owl;Thing"/>
-        <SRDL_component:hasUrdfName
-            >wide_stereo_gazebo_r_stereo_camera_frame_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_wide_stereo_gazebo_r_stereo_camera_frame"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_wide_stereo_gazebo_r_stereo_camera_frame"/>
-    </SRDL_component:FixedUrdfJoint>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_wide_stereo_frame_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>wide_stereo_frame_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_wide_stereo_link"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_wide_stereo_gazebo_r_stereo_camera_optical_frame -->
+    <!-- &pr2;PR2_wide_stereo_gazebo_l_stereo_camera_frame -->
 
-    <owl:Thing rdf:about="#PR2_wide_stereo_gazebo_r_stereo_camera_optical_frame">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >wide_stereo_gazebo_r_stereo_camera_optical_frame</SRDL_component:hasUrdfName>
-    </owl:Thing>
+    <owl:NamedIndividual rdf:about="&pr2;PR2_wide_stereo_gazebo_l_stereo_camera_frame">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>wide_stereo_gazebo_l_stereo_camera_frame</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_wide_stereo_gazebo_l_stereo_camera_optical_frame_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_wide_stereo_gazebo_r_stereo_camera_frame_joint"/>
+    </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_wide_stereo_gazebo_r_stereo_camera_optical_frame_joint -->
 
-    <owl:Thing rdf:about="#PR2_wide_stereo_gazebo_r_stereo_camera_optical_frame_joint">
-        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >wide_stereo_gazebo_r_stereo_camera_optical_frame_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_wide_stereo_gazebo_r_stereo_camera_optical_frame"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_wide_stereo_gazebo_r_stereo_camera_optical_frame"/>
-    </owl:Thing>
+    <!-- &pr2;PR2_wide_stereo_gazebo_l_stereo_camera_frame_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_wide_stereo_gazebo_l_stereo_camera_frame_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>wide_stereo_gazebo_l_stereo_camera_frame_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_wide_stereo_gazebo_l_stereo_camera_frame"/>
+    </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_wide_stereo_link -->
 
-    <owl:Thing rdf:about="#PR2_wide_stereo_link">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <rdf:type rdf:resource="&SRDL_component;WideAngleGlobalShutterColorStereoCamera"/>
-        <SRDL_component:hasUrdfName
-            >wide_stereo_link</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_wide_stereo_gazebo_l_stereo_camera_frame_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_wide_stereo_gazebo_l_stereo_camera_frame_joint"/>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_wide_stereo_optical_frame_joint"/>
-        <SRDL_component:hasSucceedingJoint rdf:resource="#PR2_wide_stereo_optical_frame_joint"/>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_wide_stereo_gazebo_l_stereo_camera_optical_frame -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_wide_stereo_gazebo_l_stereo_camera_optical_frame">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>wide_stereo_gazebo_l_stereo_camera_optical_frame</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_wide_stereo_optical_frame -->
 
-    <owl:Thing rdf:about="#PR2_wide_stereo_optical_frame">
-        <rdf:type rdf:resource="&SRDL_component;UrdfLink"/>
-        <SRDL_component:hasUrdfName
-            >wide_stereo_optical_frame</SRDL_component:hasUrdfName>
-    </owl:Thing>
 
+    <!-- &pr2;PR2_wide_stereo_gazebo_l_stereo_camera_optical_frame_joint -->
 
+    <owl:NamedIndividual rdf:about="&pr2;PR2_wide_stereo_gazebo_l_stereo_camera_optical_frame_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>wide_stereo_gazebo_l_stereo_camera_optical_frame_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_wide_stereo_gazebo_l_stereo_camera_optical_frame"/>
+    </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/PR2.owl#PR2_wide_stereo_optical_frame_joint -->
 
-    <owl:Thing rdf:about="#PR2_wide_stereo_optical_frame_joint">
-        <rdf:type rdf:resource="&SRDL_component;FixedUrdfJoint"/>
-        <SRDL_component:hasUrdfName
-            >wide_stereo_optical_frame_joint</SRDL_component:hasUrdfName>
-        <SRDL_component:hasSuccessorInKinematicChain rdf:resource="#PR2_wide_stereo_optical_frame"/>
-        <SRDL_component:hasSucceedingLink rdf:resource="#PR2_wide_stereo_optical_frame"/>
-    </owl:Thing>
+
+
+    <!-- &pr2;PR2_wide_stereo_gazebo_r_stereo_camera_frame -->
+
+    <owl:NamedIndividual rdf:about="&pr2;PR2_wide_stereo_gazebo_r_stereo_camera_frame">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>wide_stereo_gazebo_r_stereo_camera_frame</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_wide_stereo_gazebo_r_stereo_camera_optical_frame_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;PR2_wide_stereo_gazebo_r_stereo_camera_frame_joint -->
+
+    <owl:NamedIndividual rdf:about="&pr2;PR2_wide_stereo_gazebo_r_stereo_camera_frame_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>wide_stereo_gazebo_r_stereo_camera_frame_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_wide_stereo_gazebo_r_stereo_camera_frame"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;PR2_wide_stereo_gazebo_r_stereo_camera_optical_frame -->
+
+    <owl:NamedIndividual rdf:about="&pr2;PR2_wide_stereo_gazebo_r_stereo_camera_optical_frame">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+
+        <srdl2-comp:urdfName>wide_stereo_gazebo_r_stereo_camera_optical_frame</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
+
+
+
+
+    <!-- &pr2;PR2_wide_stereo_gazebo_r_stereo_camera_optical_frame_joint -->
+
+    <owl:NamedIndividual rdf:about="&pr2;PR2_wide_stereo_gazebo_r_stereo_camera_optical_frame_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>wide_stereo_gazebo_r_stereo_camera_optical_frame_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_wide_stereo_gazebo_r_stereo_camera_optical_frame"/>
+    </owl:NamedIndividual>
+
+
+
+
+    <!-- &pr2;PR2_wide_stereo_link -->
+
+    <owl:NamedIndividual rdf:about="&pr2;PR2_wide_stereo_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <rdf:type rdf:resource="&srdl2-comp;StereoCamera"/>
+        <rdf:type rdf:resource="&srdl2-comp;WideAngleCamera"/>
+        <rdf:type rdf:resource="&srdl2-comp;GlobalShutterCamera"/>
+        <rdf:type rdf:resource="&srdl2-comp;ColorCamera"/>
+        <srdl2-comp:urdfName>wide_stereo_link</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_wide_stereo_gazebo_l_stereo_camera_frame_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&pr2;PR2_wide_stereo_optical_frame_joint"/>
+    </owl:NamedIndividual>
+
+
+
+
+    <!-- &pr2;PR2_wide_stereo_optical_frame -->
+
+    <owl:NamedIndividual rdf:about="&pr2;PR2_wide_stereo_optical_frame">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>wide_stereo_optical_frame</srdl2-comp:urdfName>
+    </owl:NamedIndividual>
+
+
+
+
+    <!-- &pr2;PR2_wide_stereo_optical_frame_joint -->
+
+    <owl:NamedIndividual rdf:about="&pr2;PR2_wide_stereo_optical_frame_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>wide_stereo_optical_frame_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&pr2;PR2_wide_stereo_optical_frame"/>
+    </owl:NamedIndividual>
+
 </rdf:RDF>
 
-
-
-<!-- Generated by the OWL API (version 2.2.1.1138) http://owlapi.sourceforge.net -->
 
