@@ -40,6 +40,10 @@ public abstract class ModelParser {
      */
     protected Group group;
 
+    /**
+     * Get the group containing the model (meshes)
+     * @return
+     */
     public Group getGroup() {
 		return group;
 	}

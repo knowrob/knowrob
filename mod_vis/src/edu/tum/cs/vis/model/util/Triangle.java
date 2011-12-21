@@ -47,7 +47,7 @@ public class Triangle extends DrawObject {
 				applet.fill(appearance.colour.getRed(),
 					appearance.colour.getGreen(),
 					appearance.colour.getBlue(),
-					appearance.colour.getTransparency());
+					appearance.colour.getAlpha());
              applet.beginShape(PConstants.TRIANGLES);
 
              for (int i=0; i<3; i++)

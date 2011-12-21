@@ -40,6 +40,8 @@ public class Properties {
 			}
 			return new ItemModel(str);
 		} catch (Exception e) {
+			System.err.println("Parsing of " + identifier  + " failed:");
+			e.printStackTrace();
 			return null;
 		}
 	}

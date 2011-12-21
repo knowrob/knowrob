@@ -245,6 +245,7 @@ public class ColladaParser extends ModelParser {
 			textureBasePath = "";
 			daeFile = filename;
 		}
+		
 
 		try {
 			collada = Collada.readFile(daeFile);
@@ -581,6 +582,7 @@ public class ColladaParser extends ModelParser {
 								.getSurface().getInitFrom()).getInitFrom();
 			} else {
 				float[] colors = diffuse.getData();
+				System.out.println("Diffuse");
 				materialColor = new Color(colors[0], colors[1], colors[2],
 						colors[3]);
 			}
@@ -626,9 +628,7 @@ public class ColladaParser extends ModelParser {
 						result[i] += (float) Math
 								.pow(specular[i], shininess[0]);
 				}
-				// TODO: add support for transparency
-
-				appearance.colour = new Color(result[0],result[1],result[2],result[3]);
+				appearance.colour = new Color(result[0],result[1],result[2],Math.min(result[3],1f));
 			}
 
 		}

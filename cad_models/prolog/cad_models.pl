@@ -31,7 +31,10 @@
     ]).
 
 :- register_ros_package(knowrob_common).
+use_module(library('cad_models/knowrob_owl')).
 % :- use_module(library('knowrob_common/knowrob_owl')).
+
+:- owl_parser:owl_parse('/home/stefan/ros/knowrob/cad_models/owl/cad_models.owl', false, false, true).
 
 :- rdf_meta cad_model_xdim(r,t),
             cad_model_ydim(r,t),
