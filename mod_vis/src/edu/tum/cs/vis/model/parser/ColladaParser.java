@@ -43,6 +43,7 @@ import com.dddviewr.collada.visualscene.InstanceNode;
 import com.dddviewr.collada.visualscene.Matrix;
 import com.dddviewr.collada.visualscene.VisualScene;
 
+import edu.tum.cs.util.FileUtil;
 import edu.tum.cs.util.ResourceRetriever;
 import edu.tum.cs.vis.model.util.Appearance;
 import edu.tum.cs.vis.model.util.Color;
@@ -213,7 +214,7 @@ public class ColladaParser extends ModelParser {
 			return false;
 		}
 		
-		filename = retrieveFile(filename);
+		filename = ResourceRetriever.retrieve(filename).getAbsolutePath();
 		
 		if ((new File(filename)).exists()==false)
 		{
@@ -228,7 +229,7 @@ public class ColladaParser extends ModelParser {
 			String tmpPath = ResourceRetriever.createTempDirectory();
 			if (!tmpPath.endsWith("/") && !tmpPath.endsWith("\\"))
 				tmpPath += "/";
-			Unzip(filename, tmpPath);
+			FileUtil.Unzip(filename, tmpPath);
 
 			daeFile = getDaeLocation(tmpPath);
 
@@ -280,80 +281,9 @@ public class ColladaParser extends ModelParser {
 			group.scale(unit.getMeter());
 		}
 		
+		group.mirrorX();
 		
-		/*
-		 * Set the correct orientation of the parsed model
-		 */
 		
-		/*
-		 *  Value 	Right Axis 		Up Axis 		In Axis
-		 * 	X_UP 	Negative y 		Positive x 		Positive z
-		 *	Y_UP 	Positive x 		Positive y 		Positive z
-		 *	Z_UP 	Positive x 		Positive z		Negative y
-		 *
-		 */
-		/*String axis = collada.getUpAxis();
-		if (axis!= null && axis.equalsIgnoreCase("X_UP"))
-		{
-			for (Triangle tri : triangles) {
-				for (int v = 0; v < tri.position.length; v++) {
-					float tmp = tri.position[v].y;
-					tri.position[v].y = tri.position[v].x;
-					tri.position[v].x = -tmp;
-				}
-			}
-			for (Line line : lines) {
-				for (int v = 0; v < line.position.length; v++) {
-					float tmp = line.position[v].y;
-					line.position[v].y = line.position[v].x;
-					line.position[v].x = -tmp;
-				}
-			}
-			float tmp = minY;
-			minY = minX;
-			minX = -tmp;
-			tmp = maxY;
-			maxY = maxX;
-			maxX = -tmp;
-			
-		}
-		else if (axis!= null && axis.equalsIgnoreCase("Z_UP"))
-		{
-			for (Triangle tri : triangles) {
-				for (int v = 0; v < tri.position.length; v++) {
-					float tmp = tri.position[v].y;
-					tri.position[v].y = tri.position[v].z;
-					tri.position[v].z = -tmp;
-				}
-			}
-			for (Line line : lines) {
-				for (int v = 0; v < line.position.length; v++) {
-					float tmp = line.position[v].y;
-					line.position[v].y = line.position[v].z;
-					line.position[v].z = -tmp;
-				}
-			}
-
-			float tmp = minY;
-			minY = minZ;
-			minZ = -tmp;
-			tmp = maxY;
-			maxY = maxZ;
-			maxZ = -tmp;
-		}
-		for (Triangle tri : triangles) {
-			for (int v = 0; v < tri.position.length; v++) {
-				tri.position[v].y *= (-1);
-			}
-		}
-		for (Line line : lines) {
-			for (int v = 0; v < line.position.length; v++) {
-				line.position[v].y *= (-1);
-			}
-		}
-
-		minY *= (-1);
-		maxY *= (-1);*/
 		return true;
 	}
 

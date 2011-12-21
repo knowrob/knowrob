@@ -28,7 +28,6 @@ add_classpath(${PROJECT_SOURCE_DIR}/lib/itext.jar)
 add_classpath(${PROJECT_SOURCE_DIR}/lib/PeasyCam.jar)
 add_classpath(${PROJECT_SOURCE_DIR}/lib/dae4j.jar)
 add_classpath(${PROJECT_SOURCE_DIR}/lib/commons-net-3.0.1.jar)
-
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/controlP5.jar)
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/core.jar)
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/vecmath.jar)
@@ -37,6 +36,7 @@ add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/itext.jar)
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/PeasyCam.jar)
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/dae4j.jar)
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/commons-net-3.0.1.jar)
+
 
 rosbuild_find_ros_package(jpl)
 add_classpath(${jpl_PACKAGE_PATH}/jpl/jpl.jar)

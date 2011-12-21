@@ -1,17 +1,8 @@
 package edu.tum.cs.vis.model.parser;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
-import edu.tum.cs.util.ResourceRetriever;
 import edu.tum.cs.vis.model.util.Group;
 
 import processing.core.PApplet;
@@ -141,36 +132,6 @@ public abstract class ModelParser {
 	}
 	
 	/**
-	 * Checks if the given filename is an uri or a local filename.
-	 * If local: the filename is simply returned
-	 * If uri: The file will be retrieved to tmp directory by calling retrieveFile(String,String)
-	 * 			and the tmp path will be returned
-	 * @param filename Local file or Uri to retrieve. For valid format see http://www.ros.org/wiki/resource_retriever
-	 * @return filename if is local, path to retrieved file if is url
-	 */
-	public static String retrieveFile(String filename)
-	{
-		if (filename.indexOf("://")>0)
-		{
-			int idx = Math.max(filename.lastIndexOf('/'), filename.lastIndexOf('\\'));
-			String file = "";
-			if (idx <= 0)
-				file = "retrievedFile";
-			else
-				file = filename.substring(idx+1);
-			File tmpPath = ResourceRetriever.retrieve(filename);
-			if (tmpPath != null)
-				return tmpPath.getAbsolutePath();
-			else
-			{
-				System.out.println("Couldn't retrieve file: " + filename);
-				return null;
-			}
-		}
-		return filename;
-	}
-	
-	/**
 	 * Finds the appropriate parser for the given filename by comaring the file extension.
 	 * @param filename Filename to find parser for
 	 * @return the Parser Class for this file
@@ -178,60 +139,6 @@ public abstract class ModelParser {
 	public static Class<? extends ModelParser> findParser(String filename)
 	{
 		return extensionAssignment.get(getExtension(filename));
-	}
-
-	/**
-	 * Unzip a zipped file (eg. kmz) into given directory 
-	 * @param zipFile zipped file to unzip
-	 * @param outputDirectory destination directory for unzipped content
-	 * @return true if successfully unzipped
-	 */
-	public static boolean Unzip(String zipFile, String outputDirectory) {
-		if (!outputDirectory.endsWith("/") && !outputDirectory.endsWith("\\"))
-			outputDirectory += "/";
-
-		BufferedOutputStream dest = null;
-		BufferedInputStream is = null;
-		int BUFFER = 2048;
-		ZipEntry entry;
-		ZipFile zipfile;
-		try {
-			zipfile = new ZipFile(zipFile);
-			Enumeration<? extends ZipEntry> e = zipfile.entries();
-			while (e.hasMoreElements()) {
-				entry = (ZipEntry) e.nextElement();
-				if (entry.isDirectory()) {
-					(new File(outputDirectory + entry.getName())).mkdir();
-					continue;
-				}
-
-				String filename = outputDirectory + entry.getName();
-				String filePath = filename.substring(0,
-						filename.lastIndexOf(File.separator));
-
-				// Create directory if not existing
-				if (!(new File(filePath)).exists()) {
-					(new File(filePath)).mkdirs();
-				}
-				is = new BufferedInputStream(zipfile.getInputStream(entry));
-				int count;
-				byte data[] = new byte[BUFFER];
-				FileOutputStream fos = new FileOutputStream(filename);
-				dest = new BufferedOutputStream(fos, BUFFER);
-				while ((count = is.read(data, 0, BUFFER)) != -1) {
-					dest.write(data, 0, count);
-				}
-				dest.flush();
-				dest.close();
-				is.close();
-			}
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			System.err.println("Couldn't unzip file: " + zipFile);
-			e1.printStackTrace();
-			return false;
-		}
-		return true;
 	}
 
 }

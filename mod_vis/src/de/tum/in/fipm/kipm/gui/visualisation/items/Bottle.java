@@ -6,7 +6,6 @@ import javax.vecmath.Vector3d;
 import edu.tum.cs.util.math.Vector3f;
 import edu.tum.cs.vis.Canvas;
 import edu.tum.cs.vis.items.Cylinder;
-import edu.tum.cs.vis.model.ItemModel;
 
 public class Bottle extends Item {
 	

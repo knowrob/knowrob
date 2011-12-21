@@ -128,13 +128,12 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		
 		cam.setRightDragHandler(cam.getPanDragHandler());
 		cam.setLeftDragHandler(cam.getRotateDragHandler());
-		cam.setDampingFactor(0.03);
 		
 		// initialize camera view parameters
 		cam.setRotations(1.9074943, -0.6844337, 0.14366905);
 
 		
-		buffer = new EmptyCanvas(700,600,P3D);
+		buffer = new EmptyCanvas(700,600,PGraphics3D.P3D);
 
 		verdana = createFont("Verdana", 11);
 		verdanaBold = createFont("Verdana-Bold", 18);
@@ -1780,6 +1779,15 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 //
 //		redraw();
 //	}
+	
+	public void delay(int millis)
+	{
+
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+		}
+	}
 
 	public void mouseClicked(MouseEvent e) {
 		String clickedOn = getItemAt(e.getX(), e.getY());
@@ -2131,6 +2139,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	 * reads the mesh data from a file.
 	 * @param file
 	 */
+	@SuppressWarnings("unused")
 	private void readMeshData(String file) {
 
 		BufferedReader reader = createReader(file);
@@ -2376,7 +2385,7 @@ class EmptyCanvas extends Canvas {
 		init();
 		snapshot = new int[width*height];
 //		noLoop();
-		try{super.size(width, height, P3D);}catch(RendererChangeException e) {};
+		try{super.size(width, height, PGraphics3D.P3D);}catch(RendererChangeException e) {};
 		noLoop();
 		//this.resize(width, height);
 	}

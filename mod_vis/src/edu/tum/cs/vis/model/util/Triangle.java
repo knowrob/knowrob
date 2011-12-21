@@ -37,6 +37,8 @@ public class Triangle extends DrawObject {
       */
      public void draw(PApplet applet, int overrideColor)
      {
+
+ 		applet.noStroke();
 		if (!appearance.containsTexture || overrideColor != 0)
          {
 			if (overrideColor != 0)
@@ -48,25 +50,32 @@ public class Triangle extends DrawObject {
 					appearance.colour.transparency * 255);
              applet.beginShape(PConstants.TRIANGLES);
 
-			applet.vertex(position[0].x, position[0].y, position[0].z);
-			applet.vertex(position[1].x, position[1].y, position[1].z);
-			applet.vertex(position[2].x, position[2].y, position[2].z);
+             for (int i=0; i<3; i++)
+            	 applet.vertex(position[i].x, position[i].y, position[i].z);
 
              applet.endShape();
 
          } else
          {
-        	 applet.beginShape(PConstants.TRIANGLES);
+        	 if (overrideColor != 0)
+ 				applet.fill(overrideColor);
+ 			else
+ 				applet.fill(1 * 255,
+ 					1 * 255,
+ 					1 * 255,
+ 					0 * 255);
+			applet.beginShape(PConstants.TRIANGLES);
 			applet.texture(appearance.imageReference);
+			
+			for (int i=0; i<3; i++)
+			{
+				applet.vertex(position[i].x, position[i].y, position[i].z,
+						texPosition[i].x, texPosition[i].y);				
+			}
+			
 
-			applet.vertex(position[0].x, position[0].y, position[0].z,
-					texPosition[0].x, texPosition[0].y);
-			applet.vertex(position[1].x, position[1].y, position[1].z,
-					texPosition[1].x, texPosition[1].y);
-			applet.vertex(position[2].x, position[2].y, position[2].z,
-					texPosition[2].x, texPosition[2].y);
-
-        	 applet.endShape();
+			
+			applet.endShape();
 
          }
      }

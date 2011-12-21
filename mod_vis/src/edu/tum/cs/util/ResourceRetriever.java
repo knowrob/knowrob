@@ -54,6 +54,11 @@ public class ResourceRetriever {
 	 */
 	public static File retrieve(String url, boolean checkAlreadyRetrieved)
 	{
+		if (url.indexOf("://")<= 0)
+		{
+			//Is local file
+			return new File(url);
+		}
 		int start = url.indexOf('/')+2;
 		int end = url.indexOf('/', start);
 		String serverName = url.substring(start,end);

@@ -65,7 +65,7 @@ public class Mesh {
 	 */
 	protected void drawTriangles(PApplet applet, int overrideColor) {
 		if (!texturesInitialized)
-			setTextureImage();
+			setTextureImage(applet);
 		// Shapes are not effected by translate
 		for (Triangle tri : triangles) {
 			tri.draw(applet,overrideColor);
@@ -300,7 +300,7 @@ public class Mesh {
 	 * picture.height it also creates an PImage to each Triangle (if it contains
 	 * any Texture)
 	 */
-	private void setTextureImage() {
+	private void setTextureImage(PApplet applet) {
 		// load all Texture-Images only once (memory efficiency)
 		HashMap<String, PImage> pictures = new HashMap<String, PImage>();
 		for (Triangle tri : triangles) {
@@ -309,19 +309,20 @@ public class Mesh {
 			String texfile = getAbsoluteFilePath(textureBasePath,
 					tri.appearance.imageFileName);
 			if (pictures.get(texfile) == null) {
-				BufferedImage img = null;
+				BufferedImage bimg = null;
 				try {
-				    img = ImageIO.read(new File(texfile));
+					bimg = ImageIO.read(new File(texfile));
 				} catch (IOException e) {
+					System.err.println("Couldn't read file: " + texfile);
 					e.printStackTrace();
 				}	
 				
-				/*
-				 * Convert BufferedImage to Image otherwise PImage constructor will fail!!
-				 */
-				Image i = img.getScaledInstance(img.getWidth(), img.getHeight(), 0);
+				// Convert BufferedImage to Image otherwise PImage constructor will fail!!
+				
+				Image i = bimg.getScaledInstance(bimg.getWidth(), bimg.getHeight(), 0);
 				
 				PImage pImg = new PImage(i);
+				
 				pictures.put(texfile, pImg);
 			}
 		}
@@ -332,23 +333,57 @@ public class Mesh {
 						tri.appearance.imageFileName);
 				//PImage tex = applet.loadImage(texfile);
 				PImage tex = pictures.get(texfile);
-				float AprocX = tri.texPosition[0].x * tex.width;
-				float AprocY = tex.height - tri.texPosition[0].y * tex.height;
-				float BprocX = tri.texPosition[1].x * tex.width;
-				float BprocY = tex.height - tri.texPosition[1].y * tex.height;
-				float CprocX = tri.texPosition[2].x * tex.width;
-				float CprocY = tex.height - tri.texPosition[2].y * tex.height;
+				
+				double xMin = Double.MAX_VALUE;
+				double yMin = Double.MAX_VALUE;
+				
+				for (int i=0; i< 3; i++)
+				{
 
-				tri.texPosition[0].x = AprocX;
-				tri.texPosition[0].y = AprocY;
-				tri.texPosition[1].x = BprocX;
-				tri.texPosition[1].y = BprocY;
-				tri.texPosition[2].x = CprocX;
-				tri.texPosition[2].y = CprocY;
+					double x = tri.texPosition[i].x * tex.width;
+					double y = tex.height - tri.texPosition[i].y * tex.height;
+					tri.texPosition[i].x = (float)x;
+					tri.texPosition[i].y = (float)y;
+					xMin = Math.min(x, xMin);
+					yMin = Math.min(y, yMin);
+				}
+				
+				//Remove offset of texture coordinate if all coordinates are greater than texture
+				xMin = Math.floor(xMin/tex.width);
+				yMin = Math.floor(yMin/tex.height);
+				
+				for (int i=0; i< 3; i++)
+				{
+					tri.texPosition[i].x -= xMin * tex.width;
+					tri.texPosition[i].y -= yMin * tex.height;
+				}
+				
 
 				tri.appearance.imageReference = tex;
 			}
 		}
 		texturesInitialized = true;
+	}
+	
+	/**
+	 * Mirrors whole group and children on the x coordinate.by setting each x to the inverse -x
+	 */
+	public void mirrorX() {
+
+
+		minX *= (-1);
+		float tmp = minX;
+		minX = maxX * (-1);
+		maxX = tmp;
+		for (Triangle tri : triangles) {
+			for (int v = 0; v < 3; v++) {
+				tri.position[v].x *= (-1);
+			}
+		}
+		for (Line line : lines) {
+			for (int v = 0; v < 2; v++) {
+				line.position[v].x *= (-1);
+			}
+		}
 	}
 }

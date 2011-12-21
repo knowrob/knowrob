@@ -21,6 +21,7 @@ import edu.tum.cs.util.math.Vector3f;
 
 import processing.core.PApplet;
 import processing.core.PFont;
+import processing.core.PGraphics3D;
 
 
 public class Canvas extends PApplet implements MouseListener, MouseMotionListener {
@@ -118,7 +119,7 @@ public class Canvas extends PApplet implements MouseListener, MouseMotionListene
 	}
 	
 	public void setup() {
-		size(width, height, P3D);
+		size(width, height, PGraphics3D.P3D);
 		lights();
 
 		PFont font = createFont("Verdana", 12);

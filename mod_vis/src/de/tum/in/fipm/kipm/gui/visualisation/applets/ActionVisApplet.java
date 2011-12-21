@@ -13,8 +13,9 @@ import jpl.Query;
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PGraphics;
+import processing.core.PGraphics3D;
 import controlP5.ControlEvent;
-import controlP5.Radio;
+import controlP5.RadioButton;
 import de.tum.in.fipm.kipm.gui.visualisation.base.PrologVisualizationCanvas;
 
 public class ActionVisApplet extends PApplet implements MouseListener, MouseMotionListener {
@@ -87,8 +88,8 @@ public class ActionVisApplet extends PApplet implements MouseListener, MouseMoti
     actionTypes= new ArrayList<String>();
     objectTypes= new ArrayList<String>();
                      
-		size(550, 600, P3D);
-		buffer = createGraphics(width, height, P3D);
+		size(550, 600, PGraphics3D.P3D);
+		buffer = createGraphics(width, height, PGraphics3D.P3D);
     lights();
     
     verdana = createFont("Verdana", 11);
@@ -239,7 +240,7 @@ public class ActionVisApplet extends PApplet implements MouseListener, MouseMoti
 	  }
 	  
 	  // select color based on controlWindow.colorType	
-	  if(prologVisCanvas != null && (prologVisCanvas.controlP5.controller("color_radio")!=null) && ((Radio) prologVisCanvas.controlP5.controller("color_radio")).value()==0) {
+	  if(prologVisCanvas != null && (prologVisCanvas.controlP5.controller("color_radio")!=null) && ((RadioButton) prologVisCanvas.controlP5.getGroup("color_radio")).value()==0) {
 		  
 		  // action type
 		  String[] act = item.getTypes();
@@ -248,7 +249,7 @@ public class ActionVisApplet extends PApplet implements MouseListener, MouseMoti
 		  if(idx<0 || idx>this.colors.size()) {System.out.println("Missing color for " + act[0]); return 0;}
 		  return this.colors.get(idx);
 	  
-	  } else if(prologVisCanvas != null && (prologVisCanvas.controlP5.controller("color_radio")!=null) && ((Radio) prologVisCanvas.controlP5.controller("color_radio")).value()==1) {
+	  } else if(prologVisCanvas != null && (prologVisCanvas.controlP5.controller("color_radio")!=null) && ((RadioButton) prologVisCanvas.controlP5.getGroup("color_radio")).value()==1) {
 		  
 		  // object type		  
 		  String obj = item.getObjecttype();
@@ -259,7 +260,7 @@ public class ActionVisApplet extends PApplet implements MouseListener, MouseMoti
 		  
 		  return this.colors.get(idx);
 		  
-	  } else if(prologVisCanvas != null && (prologVisCanvas.controlP5.controller("color_radio")!=null) && ((Radio) prologVisCanvas.controlP5.controller("color_radio")).value()==2) {
+	  } else if(prologVisCanvas != null && (prologVisCanvas.controlP5.controller("color_radio")!=null) && ((RadioButton) prologVisCanvas.controlP5.getGroup("color_radio")).value()==2) {
 		  
 		  // missing in activity -> return red until activities are implemented
 		  if(item.isInActivity()) {
@@ -486,17 +487,13 @@ public class ActionVisApplet extends PApplet implements MouseListener, MouseMoti
 //	}
     
     
-    void controlEvent(ControlEvent theEvent) {
-
-
-        if(prologVisCanvas != null && theEvent.controller().id()==100) {
+    public 	void controlEvent(ControlEvent theEvent) {
+        if(prologVisCanvas != null && theEvent.isGroup() && theEvent.group().id()==100) {
         	// act_radio
-        	this.maxLevel =(int)prologVisCanvas.controlP5.controller("act_radio").value();
+        	this.maxLevel =(int)prologVisCanvas.controlP5.getGroup("act_radio").value();
 
-        } else if(theEvent.controller().id()==101) {
+        } else if(theEvent.isGroup() && theEvent.group().id()==101) {
            	// act_color
-        	
-
         }
         redraw();
     }

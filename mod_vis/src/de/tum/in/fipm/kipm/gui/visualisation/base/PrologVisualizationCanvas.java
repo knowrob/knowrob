@@ -11,10 +11,9 @@ import javax.swing.JFrame;
 
 import controlP5.ControlP5;
 import controlP5.ControlWindow;
-import controlP5.Radio;
+import controlP5.RadioButton;
 import controlP5.Textarea;
 import controlP5.Textfield;
-import controlP5.ControlListener;
 import controlP5.ControlEvent;
 import controlP5.Textlabel;
 import de.tum.in.fipm.kipm.gui.visualisation.applets.ActionVisApplet;
@@ -447,11 +446,11 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 	      controlWindow.frameRate(5);
 
 	      Textlabel act_label = controlP5.addTextlabel("act_label","Abstraction Level",80,40);
-	      act_label.setColorValue(0xffffffff);
+	      act_label.setColorValueLabel(0xffffffff);
 	      act_label.setFont(3);
 	      act_label.moveTo(controlWindow);
 	      
-	      Radio act_radio = controlP5.addRadio("act_radio", 80, 60);
+	      RadioButton act_radio = controlP5.addRadioButton("act_radio", 80, 60);
 	      act_radio.addItem("activity",3);
 	      act_radio.addItem("2",2);
 	      act_radio.addItem("1",1);
@@ -460,17 +459,16 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 	      act_radio.setId(100);
 	      
 	      Textlabel color_label = controlP5.addTextlabel("color_label","Colors",220,40);
-	      color_label.setColorValue(0xffffffff);
+	      color_label.setColorValueLabel(0xffffffff);
 	      color_label.setFont(3);
 	      color_label.moveTo(controlWindow);
 	      
-	      Radio color_radio = controlP5.addRadio("color_radio",220,60);
+	      RadioButton color_radio = controlP5.addRadioButton("color_radio",220,60);
 	      color_radio.addItem("by action type",0);
 	      color_radio.addItem("by object",1);
 	      color_radio.addItem("missing in activity",2);
 	      color_radio.moveTo(controlWindow);
 	      color_radio.setId(101);
-	      color_radio.addListener(new RadioButtonListener(this));
 	      
 	      controlP5.addTextfield("CurrentAction",80,120,200,20).moveTo(controlWindow);
 	      Textarea text = controlP5.addTextarea("CurrentAttributes","", 80,160,200,130);
@@ -478,6 +476,13 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 	      text.moveTo(controlWindow);
 	      
 	  }
+	  
+		public void controlEvent(ControlEvent e) {
+				
+				if(e.controller().id()==101 && e.value()==2.0)
+					actionsInActivity();
+				
+		}
 
 
 	  private ArrayList<String[]> dottedPairsToArrayList(String rest) {
@@ -575,22 +580,6 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 	
 	public static void main(String args[]) {
 		PApplet.main(new String[] { "de.tum.in.fipm.kipm.gui.visualisation.base.PrologVisualizationCanvas" });
-	}
-}
-
-class RadioButtonListener implements ControlListener {
-	
-	PrologVisualizationCanvas pvc;
-	
-	RadioButtonListener(PrologVisualizationCanvas p) {
-		this.pvc = p;
-	}
-	
-	public void controlEvent(ControlEvent e) {
-		
-		if(e.controller().id()==101 && e.value()==2.0)
-			pvc.actionsInActivity();
-		
 	}
 }
 

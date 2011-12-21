@@ -21,7 +21,8 @@ public class Appearance {
 	/**
 	 * an Object reference of a loaded image. Default is null.
 	 */
-	public PImage imageReference;
+	public PImage imageReference = null;
+
 	/**
 	 * the color of the Triangle if the Triangle has no texture
 	 */

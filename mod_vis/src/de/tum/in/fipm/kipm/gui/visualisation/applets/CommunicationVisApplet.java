@@ -1,9 +1,6 @@
 package de.tum.in.fipm.kipm.gui.visualisation.applets;
 
 import java.awt.Color;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import processing.core.*;
@@ -285,6 +282,15 @@ public class CommunicationVisApplet extends PApplet {
         
         
   }
+  
+	public void delay(int millis)
+	{
+
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+		}
+	}
   
 	
   /**

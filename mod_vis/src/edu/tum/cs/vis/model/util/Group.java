@@ -269,4 +269,19 @@ public class Group {
 	{
 		children.add(g);
 	}
+
+	/**
+	 * Mirrors whole group and children on the x coordinate.by setting each x to the inverse -x
+	 */
+	public void mirrorX() {
+		mesh.mirrorX();
+		minX *= (-1);
+		float tmp = minX;
+		minX = maxX * (-1);
+		maxX = tmp;
+		for (Group g : children)
+		{
+			g.mirrorX();			
+		}	
+	}
 }
