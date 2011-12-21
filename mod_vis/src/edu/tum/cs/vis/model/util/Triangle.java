@@ -44,10 +44,10 @@ public class Triangle extends DrawObject {
 			if (overrideColor != 0)
 				applet.fill(overrideColor);
 			else
-				applet.fill(appearance.colour.red * 255,
-					appearance.colour.green * 255,
-					appearance.colour.blue * 255,
-					appearance.colour.transparency * 255);
+				applet.fill(appearance.colour.getRed(),
+					appearance.colour.getGreen(),
+					appearance.colour.getBlue(),
+					appearance.colour.getTransparency());
              applet.beginShape(PConstants.TRIANGLES);
 
              for (int i=0; i<3; i++)

@@ -34,8 +34,8 @@ public class Line extends DrawObject {
 		if (overrideColor != 0)
 			applet.stroke(overrideColor);
 		else
-			applet.stroke(appearance.colour.red * 255,
-				appearance.colour.green * 255, appearance.colour.blue * 255);
+			applet.stroke(appearance.colour.getRed(),
+				appearance.colour.getGreen(), appearance.colour.getBlue());
 		applet.strokeWeight(2);
 		applet.line(position[0].x, position[0].y, position[0].z, position[1].x,
 				position[1].y, position[1].z);

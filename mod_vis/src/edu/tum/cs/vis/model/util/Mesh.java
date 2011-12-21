@@ -47,11 +47,18 @@ public class Mesh {
 	public LinkedList<Line> lines = new LinkedList<Line>();
 	
 	
-	
+	/**
+	 * Return base path for relative paths of texture images.
+	 * @return the base path
+	 */
 	public String getTextureBasePath() {
 		return textureBasePath;
 	}
 
+	/**
+	 * Set base path for relative paths of texture images.
+	 * @param textureBasePath the base path
+	 */
 	public void setTextureBasePath(String textureBasePath) {
 		this.textureBasePath = textureBasePath;
 	}
@@ -250,26 +257,56 @@ public class Mesh {
 		return maxZ - minZ;
 	}
 
+	/**
+	 * Set minimum x coordinate of this mesh. No coordinate of all its children should be smaller than this value.
+	 * Used for drawing a bounding box.
+	 * @return minimum x
+	 */
 	public Float getMinX() {
 		return minX;
 	}
 
+	/**
+	 * Set maximum x coordinate of this mesh. No coordinate of all its children should be bigger than this value.
+	 * Used for drawing a bounding box.
+	 * @return maximum x
+	 */
 	public Float getMaxX() {
 		return maxX;
 	}
-
+	
+	/**
+	 * Set minimum y coordinate of this mesh. No coordinate of all its children should be smaller than this value.
+	 * Used for drawing a bounding box.
+	 * @return minimum y
+	 */
 	public Float getMinY() {
 		return minY;
 	}
 
+	/**
+	 * Set maximum y coordinate of this mesh. No coordinate of all its children should be bigger than this value.
+	 * Used for drawing a bounding box.
+	 * @return maximum y
+	 */
 	public Float getMaxY() {
 		return maxY;
 	}
 
+	/**
+	 * Set minimum z coordinate of this mesh. No coordinate of all its children should be smaller than this value.
+	 * Used for drawing a bounding box.
+	 * @return minimum z
+	 */
 	public Float getMinZ() {
 		return minZ;
 	}
 
+	/**
+	 * Set maximum z coordinate of this mesh. No coordinate of all its children should be bigger than this value.
+	 * Used for drawing a bounding box.
+	 * @return maximum z
+	 */
 	public Float getMaxZ() {
 		return maxZ;
 	}

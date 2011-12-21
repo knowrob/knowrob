@@ -31,18 +31,34 @@ public class ItemModel {
 			parser = null;
 	}
 
+	/**
+	 * Get physical file path of model
+	 * @return physical file path
+	 */
 	public String getPath() {
 		return path;
 	}
 
+	/**
+	 * Set physical file path of model
+	 * @param path physical file path
+	 */
 	public void setPath(String path) {
 		this.path = path;
 	}
 
+	/**
+	 * Get associated model parser which contains the model for this item 
+	 * @return the model parser
+	 */
 	public ModelParser getParser() {
 		return parser;
 	}
 
+	/**
+	 * Set associated model parser which contains the model for this item 
+	 * @param parser the model parser
+	 */
 	public void setParser(ModelParser parser) {
 		this.parser = parser;
 	}

@@ -1,5 +1,6 @@
 package edu.tum.cs.vis.model.parser;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -46,7 +47,6 @@ import com.dddviewr.collada.visualscene.VisualScene;
 import edu.tum.cs.util.FileUtil;
 import edu.tum.cs.util.ResourceRetriever;
 import edu.tum.cs.vis.model.util.Appearance;
-import edu.tum.cs.vis.model.util.Color;
 import edu.tum.cs.vis.model.util.DrawObject;
 import edu.tum.cs.vis.model.util.Group;
 import edu.tum.cs.vis.model.util.Line;
@@ -628,7 +628,7 @@ public class ColladaParser extends ModelParser {
 				}
 				// TODO: add support for transparency
 
-				appearance.colour = new Color(result);
+				appearance.colour = new Color(result[0],result[1],result[2],result[3]);
 			}
 
 		}

@@ -40,50 +40,104 @@ public class Group {
 	 */
 	private ArrayList<Group> children = new ArrayList<Group>();
 
+	/**
+	 * Get the mesh containing triangles and lines
+	 * @return the mesh
+	 */
 	public Mesh getMesh() {
 		return mesh;
 	}
 
+	/**
+	 * Set the mesh containing triangles and lines
+	 * @param mesh the mesh
+	 */
 	public void setMesh(Mesh mesh) {
 		this.mesh = mesh;
 	}
 
+	/**
+	 * Get name of this group (normally parsed from model file)
+	 * @return the name
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Set name of this group (normally parsed from model file)
+	 * @return the name
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
+	/**
+	 * Get all direct child groups
+	 * @return list with all child groups
+	 */
 	public ArrayList<Group> getChildren() {
 		return children;
 	}
 
+	/**
+	 * Set child groups of this group. Used to create a hierarchy
+	 * @param children list of children
+	 */
 	public void setChildren(ArrayList<Group> children) {
 		this.children = children;
 	}
 	
+	/**
+	 * Set minimum x coordinate of this group. No coordinate of all its children should be smaller than this value.
+	 * Used for drawing a bounding box.
+	 * @return minimum x
+	 */
 	public Float getMinX() {
 		return minX;
 	}
 
+	/**
+	 * Set maximum x coordinate of this group. No coordinate of all its children should be bigger than this value.
+	 * Used for drawing a bounding box.
+	 * @return maximum x
+	 */
 	public Float getMaxX() {
 		return maxX;
 	}
-
+	
+	/**
+	 * Set minimum y coordinate of this group. No coordinate of all its children should be smaller than this value.
+	 * Used for drawing a bounding box.
+	 * @return minimum y
+	 */
 	public Float getMinY() {
 		return minY;
 	}
 
+	/**
+	 * Set maximum y coordinate of this group. No coordinate of all its children should be bigger than this value.
+	 * Used for drawing a bounding box.
+	 * @return maximum y
+	 */
 	public Float getMaxY() {
 		return maxY;
 	}
 
+	/**
+	 * Set minimum z coordinate of this group. No coordinate of all its children should be smaller than this value.
+	 * Used for drawing a bounding box.
+	 * @return minimum z
+	 */
 	public Float getMinZ() {
 		return minZ;
 	}
 
+	/**
+	 * Set maximum z coordinate of this group. No coordinate of all its children should be bigger than this value.
+	 * Used for drawing a bounding box.
+	 * @return maximum z
+	 */
 	public Float getMaxZ() {
 		return maxZ;
 	}
@@ -265,6 +319,10 @@ public class Group {
 		}
 	}
 	
+	/**
+	 * Add a child to this group
+	 * @param g group to add as a child of this
+	 */
 	public void addChild(Group g)
 	{
 		children.add(g);

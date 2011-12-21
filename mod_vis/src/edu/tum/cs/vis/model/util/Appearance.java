@@ -1,5 +1,7 @@
 package edu.tum.cs.vis.model.util;
 
+import java.awt.Color;
+
 import processing.core.PImage;
 
 /**
