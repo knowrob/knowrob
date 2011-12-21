@@ -10,14 +10,14 @@
 ]>
 
 
-<rdf:RDF xmlns="http://ias.cs.tum.edu/kb/cad_models.owl#"
-     xml:base="http://ias.cs.tum.edu/kb/cad_models.owl"
+<rdf:RDF xmlns="http://ias.cs.tum.edu/kb/knowrob_cad_models.owl#"
+     xml:base="http://ias.cs.tum.edu/kb/knowrob_cad_models.owl"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#">
-    <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/cad_models.owl">
+    <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/knowrob_cad_models.owl">
         <owl:imports rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl"/>
     </owl:Ontology>
     
@@ -51,7 +51,7 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;pathToCadModel"/>
-                <owl:hasValue>package://cad_models/models/collada/bottle.kmz</owl:hasValue>
+                <owl:hasValue>package://knowrob_cad_models/models/collada/bottle.kmz</owl:hasValue>
             </owl:Restriction>
         </rdfs:subClassOf>
     </rdf:Description>
@@ -69,18 +69,18 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/cad_models.owl#CokeBottle -->
+    <!-- http://ias.cs.tum.edu/kb/knowrob_cad_models.owl#CokeBottle -->
 
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/cad_models.owl#CokeBottle">
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob_cad_models.owl#CokeBottle">
         <rdf:type rdf:resource="&knowrob;DrinkingBottle"/>
-        <knowrob:pathToCadModel>package://cad_models/models/collada/coke.kmz</knowrob:pathToCadModel>
+        <knowrob:pathToCadModel>package://knowrob_cad_models/models/collada/coke.kmz</knowrob:pathToCadModel>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/cad_models.owl#TestBottle -->
+    <!-- http://ias.cs.tum.edu/kb/knowrob_cad_models.owl#TestBottle -->
 
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/cad_models.owl#TestBottle">
+    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob_cad_models.owl#TestBottle">
         <rdf:type rdf:resource="&knowrob;DrinkingBottle"/>
     </owl:NamedIndividual>
 </rdf:RDF>

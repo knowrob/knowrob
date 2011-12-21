@@ -1,4 +1,4 @@
-/** <module> cad_models
+/** <module> knowrob_cad_models
 
   Description:
     Module providing predicates for cad model examination
@@ -23,7 +23,7 @@
 @license GPL
 */
 
-:- module(cad_models,
+:- module(knowrob_cad_models,
     [
       cad_model_xdim/2,
       cad_model_ydim/2,
@@ -31,11 +31,11 @@
     ]).
 
 :- register_ros_package(knowrob_common).
-use_module(library('cad_models/knowrob_owl')).
+use_module(library('knowrob_cad_models/knowrob_owl')).
 % :- use_module(library('knowrob_common/knowrob_owl')).
 
 
-:- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/cad_models.owl', false, false, true).
+:- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/knowrob_cad_models.owl', false, false, true).
 
 :- rdf_meta cad_model_xdim(r,t),
             cad_model_ydim(r,t),

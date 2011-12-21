@@ -16,6 +16,6 @@
 %%
 
 
-:- register_ros_package(cad_models).
-:- use_module(library('cad_models')).
+:- register_ros_package(knowrob_cad_models).
+:- use_module(library('knowrob_cad_models')).
 

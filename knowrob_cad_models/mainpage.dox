@@ -2,7 +2,7 @@
 \mainpage
 \htmlinclude manifest.html
 
-\b cad_models is ...
+\b knowrob_cad_models is ...
 a package which contains CAD Models (3D Models) used in mod_vis package.
 
 \section codeapi Code API

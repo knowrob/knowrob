@@ -1,13 +1,13 @@
 <package>
-  <description brief="cad_models">
+  <description brief="knowrob_cad_models">
 
-     cad_models
+     knowrob_cad_models
 
   </description>
   <author>Stefan Profanter</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/cad_models</url>
+  <url>http://ros.org/wiki/knowrob_cad_models</url>
 
 </package>
 
