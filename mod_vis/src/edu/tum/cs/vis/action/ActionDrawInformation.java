@@ -1,10 +1,14 @@
 package edu.tum.cs.vis.action;
 
 import java.awt.Color;
+import java.awt.Rectangle;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
 import javax.vecmath.Vector2f;
+
+import edu.tum.cs.vis.gui.applet.PlanVisApplet;
 
 import processing.core.PApplet;
 
@@ -24,6 +28,12 @@ public class ActionDrawInformation {
 	private final static Color hoverBackgroundColor = new Color(60,60,60);
 	private final static Color hoverBackgroundBrightColor = new Color(100,100,100);
 	private final static Color hoverTextColor = new Color(255,255,255);
+	
+	private final static Color arrowBorderColor = new Color(27, 56, 102);
+	private final static Color arrowBackgroundColor = new Color(51,105,192,200);
+	
+	private final static float defaultStroke = 1f;
+	private final static float currentStroke = 1.5f;
 	
 	private Color currentBorderColor = borderColor;
 	private Color currentBackgroundColor = backgroundColor;
@@ -48,6 +58,9 @@ public class ActionDrawInformation {
 	
 	private Vector2f sequenceBoxDimension = new Vector2f();
 	
+	private Vector2f position;
+	
+	
 	public ActionDrawInformation(Action parent)
 	{
 		action = parent;
@@ -61,6 +74,11 @@ public class ActionDrawInformation {
 	public float getNameBoxHeight()
 	{
 		return textHeight*3;
+	}
+	
+	public float getNameWidth()
+	{
+		return nameWidth;
 	}
 	
 	public Vector2f getSimpleBoxDimension()
@@ -147,20 +165,19 @@ public class ActionDrawInformation {
 	private void drawBorderAndTitle(PApplet applet, Vector2f position, Vector2f dimension)
 	{
 		//Draw outer border and background
-		applet.stroke(currentBorderColor.getRed(), currentBorderColor.getBlue(), currentBorderColor.getGreen(), currentBorderColor.getAlpha());
-	    applet.fill(currentBackgroundColor.getRed(), currentBackgroundColor.getBlue(), currentBackgroundColor.getGreen(), currentBackgroundColor.getAlpha());
+	    applet.fill(currentBackgroundColor.getRed(), currentBackgroundColor.getGreen(), currentBackgroundColor.getBlue(), currentBackgroundColor.getAlpha());
 		applet.rect(position.x, position.y, dimension.x, dimension.y);
 		
 		//Draw box title
-		applet.fill(currentBackgroundBrightColor.getRed(), currentBackgroundBrightColor.getBlue(), currentBackgroundBrightColor.getGreen(), currentBackgroundBrightColor.getAlpha());
+		applet.fill(currentBackgroundBrightColor.getRed(), currentBackgroundBrightColor.getGreen(), currentBackgroundBrightColor.getBlue(), currentBackgroundBrightColor.getAlpha());
 		applet.rect(position.x,position.y,dimension.x, getNameBoxHeight());
-		applet.fill(currentTextColor.getRed(), currentTextColor.getBlue(), currentTextColor.getGreen(), currentTextColor.getAlpha());
+		applet.fill(currentTextColor.getRed(), currentTextColor.getGreen(), currentTextColor.getBlue(), currentTextColor.getAlpha());
 		applet.text(action.getName(),position.x + MAIN_BOX_PADDING,position.y + textHeight*2f);
 	}
 	
 	private void drawProperties(PApplet applet, Vector2f position)
 	{
-		applet.fill(currentTextColor.getRed(), currentTextColor.getBlue(), currentTextColor.getGreen(), currentTextColor.getAlpha());
+		applet.fill(currentTextColor.getRed(), currentTextColor.getGreen(), currentTextColor.getBlue(), currentTextColor.getAlpha());
 		Collection<String> keys = action.getProperties().keySet();
 		for (Iterator<String> it = keys.iterator(); it.hasNext(); )
 		{
@@ -176,9 +193,11 @@ public class ActionDrawInformation {
 	
 	public void drawSimpleBox(PApplet applet,Vector2f position, float minHeight)
 	{
+		this.position = new Vector2f(position);
 		Vector2f tmpPos = new Vector2f(position);
 		recalculateDimensions(applet);
 		
+		applet.stroke(currentBorderColor.getRed(), currentBorderColor.getGreen(), currentBorderColor.getBlue(), currentBorderColor.getAlpha());
 		drawBorderAndTitle(applet, tmpPos,new Vector2f(getSimpleBoxDimension().x,Math.max(minHeight, getSimpleBoxDimension().y)));		
 		
 		tmpPos.x += MAIN_BOX_PADDING;
@@ -197,7 +216,7 @@ public class ActionDrawInformation {
 			
 			inf.drawSimpleBox(applet, tmpPos, parentsMaxHeight);
 			
-			applet.stroke(inf.currentBorderColor.getRed(), inf.currentBorderColor.getBlue(), inf.currentBorderColor.getGreen(), inf.currentBorderColor.getAlpha());
+			applet.stroke(inf.currentBorderColor.getRed(), inf.currentBorderColor.getGreen(), inf.currentBorderColor.getBlue(), inf.currentBorderColor.getAlpha());
 			applet.line(tmpPos.x + inf.getSimpleBoxDimension().x/2f, tmpPos.y+parentsMaxHeight, connectionPoint.x,connectionPoint.y);
 			
 			tmpPos.x += inf.getSimpleBoxDimension().x + MAIN_BOX_PADDING;
@@ -214,7 +233,7 @@ public class ActionDrawInformation {
 			
 			inf.drawSimpleBox(applet, tmpPos, childrenMaxHeight);
 			
-			applet.stroke(inf.currentBorderColor.getRed(), inf.currentBorderColor.getBlue(), inf.currentBorderColor.getGreen(), inf.currentBorderColor.getAlpha());
+			applet.stroke(inf.currentBorderColor.getRed(), inf.currentBorderColor.getGreen(), inf.currentBorderColor.getBlue(), inf.currentBorderColor.getAlpha());
 			applet.line(tmpPos.x + inf.getSimpleBoxDimension().x/2f, tmpPos.y, connectionPoint.x,connectionPoint.y);
 			
 			tmpPos.x += inf.getSimpleBoxDimension().x + MAIN_BOX_PADDING;
@@ -223,9 +242,12 @@ public class ActionDrawInformation {
 	
 	private void drawSequence(PApplet applet, Vector2f position)
 	{
-		//Draw outer box of sequence list
-		applet.stroke(currentBorderColor.getRed(), currentBorderColor.getBlue(), currentBorderColor.getGreen(), currentBorderColor.getAlpha());
-	    applet.fill(currentBackgroundBrightColor.getRed(), currentBackgroundBrightColor.getBlue(), currentBackgroundBrightColor.getGreen(), currentBackgroundBrightColor.getAlpha());
+		//Draw outer box of sequence listc
+		if (!action.getSequenceIterator().hasNext())
+			return;
+		
+		applet.stroke(currentBorderColor.getRed(), currentBorderColor.getGreen(), currentBorderColor.getBlue(), currentBorderColor.getAlpha());
+	    applet.fill(currentBackgroundBrightColor.getRed(), currentBackgroundBrightColor.getGreen(), currentBackgroundBrightColor.getBlue(), currentBackgroundBrightColor.getAlpha());
 		applet.rect(position.x, position.y, sequenceBoxDimension.x, sequenceBoxDimension.y);
 		
 		float boxMinHeight = sequenceBoxDimension.y - 2*SEQUENCE_BOX_PADDING;
@@ -233,12 +255,23 @@ public class ActionDrawInformation {
 		tmpPos.y += SEQUENCE_BOX_PADDING;
 		tmpPos.x += SEQUENCE_BOX_PADDING;
 		
+		ArrayList<Float> pos = new ArrayList<Float>();
+		
 		for (Iterator<Action> i = action.getSequenceIterator(); i.hasNext();)
 		{
 			ActionDrawInformation inf = i.next().getDrawInfo();
 			
 			inf.drawSimpleBox(applet, tmpPos, boxMinHeight);
+			
 			tmpPos.x += inf.getSimpleBoxDimension().x + SEQUENCE_BOX_PADDING;
+			pos.add(tmpPos.x);
+		}
+		
+		for (int i=0; i<pos.size()-1; i++)
+		{
+			applet.stroke(arrowBorderColor.getRed(), arrowBorderColor.getGreen(), arrowBorderColor.getBlue(), arrowBorderColor.getAlpha());
+		    applet.fill(arrowBackgroundColor.getRed(), arrowBackgroundColor.getGreen(), arrowBackgroundColor.getBlue(), arrowBackgroundColor.getAlpha());
+			PlanVisApplet.arrow(applet,pos.get(i)-SEQUENCE_BOX_PADDING - 5,tmpPos.y+getNameBoxHeight()/2-10,20,SEQUENCE_BOX_PADDING+11);
 		}
 	}
 	
@@ -251,8 +284,12 @@ public class ActionDrawInformation {
 		drawParentBoxes(applet, position, new Vector2f(position.x+extendedDim.x/2f,position.y+parentsMaxHeight+MAIN_BOX_PADDING));
 		
 		position.y += parentsMaxHeight+MAIN_BOX_PADDING;
-		
-		drawBorderAndTitle(applet, position,extendedDim);		
+
+		this.position = new Vector2f(position);
+		applet.strokeWeight(currentStroke);
+		applet.stroke(hoverBorderColor.getRed(), hoverBorderColor.getGreen(), hoverBorderColor.getBlue(), hoverBorderColor.getAlpha());
+		drawBorderAndTitle(applet, position,extendedDim);	
+		applet.strokeWeight(defaultStroke);	
 		
 		position.x += MAIN_BOX_PADDING;
 		position.y += getNameBoxHeight()+INNER_CONTENT_PADDING;
@@ -268,5 +305,113 @@ public class ActionDrawInformation {
 		
 		position.y += MAIN_BOX_PADDING*2;
 		drawChildrenBoxes(applet, position, new Vector2f(position.x+extendedDim.x/2f,position.y-MAIN_BOX_PADDING));
+	}
+	
+	private void setHover(boolean hover)
+	{
+		if (hover)
+		{
+			currentBorderColor = hoverBorderColor;
+			currentBackgroundColor = hoverBackgroundColor;
+			currentBackgroundBrightColor = hoverBackgroundBrightColor;
+			currentTextColor = hoverTextColor;
+		} else 
+		{
+			currentBorderColor = borderColor;
+			currentBackgroundColor = backgroundColor;
+			currentBackgroundBrightColor = backgroundBrightColor;
+			currentTextColor = textColor;
+		}
+		isHover = hover;
+	}
+	
+	
+	private ActionDrawInformation checkHover(float x, float y, boolean isSimple)
+	{
+
+		if (position == null)
+			return null;
+		ActionDrawInformation found = null;
+		
+		
+		float boxX,boxY,boxW,boxH;
+		boxX = position.x;
+		boxY = position.y;
+		
+		if (!isSimple)
+		{
+			for (Iterator<Action> i = action.getSequenceIterator(); i.hasNext();)
+			{
+				ActionDrawInformation inf = i.next().getDrawInfo();
+				
+				if (found != null)
+					inf.setHover(false);
+				else
+					if (inf.checkHover(x, y,true)!=null)
+						found = inf;
+			}
+			
+			for (Iterator<Action> i = action.getParentActionsIterator(); i.hasNext(); )
+			{
+				ActionDrawInformation inf = i.next().getDrawInfo();
+				
+				if (found != null)
+					inf.setHover(false);
+				else
+					if (inf.checkHover(x, y,true)!=null)
+						found = inf;
+			}
+			
+			for (Iterator<Action> i = action.getChildActionsIterator(); i.hasNext(); )
+			{
+				ActionDrawInformation inf = i.next().getDrawInfo();
+				
+				if (found != null)
+					inf.setHover(false);
+				else
+					if (inf.checkHover(x, y,true)!=null)
+						found = inf;
+			}
+			
+			setHover(false);
+			return found;
+			
+			
+			
+		} else {
+			Vector2f dim = getSimpleBoxDimension();
+			boxW = dim.x;
+			boxH = dim.y;
+		}
+		
+		if (x>boxX && x<boxX+boxW && y>boxY && y<boxY+boxH)
+		{
+			setHover(true);
+			return this;
+		} else {
+			setHover(false);
+			return null;
+		}
+		
+		
+	}
+	
+	public boolean updateHover(float x, float y)
+	{
+		return checkHover(x,y,false)!=null;
+	}
+	
+	public Action checkClick(float x, float y)
+	{
+		ActionDrawInformation a = checkHover(x,y,false);
+		if (a==null)
+			return null;
+		else
+			return a.action;
+	}
+	
+	public float getTextHeight()
+	{
+		return textHeight;
 	}
 }
