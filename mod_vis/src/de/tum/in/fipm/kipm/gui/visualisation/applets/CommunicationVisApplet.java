@@ -441,6 +441,7 @@ public class CommunicationVisApplet extends PApplet {
                                 cl.call(vis_req);
                                 cl.shutdown();                                
                         	} catch(RosException e) {
+                        		e.printStackTrace();
                         		// fail silently if service has not been advertised
                         	}
                         }
@@ -455,6 +456,7 @@ public class CommunicationVisApplet extends PApplet {
                                 cl.call(vis_req);
                                 cl.shutdown();                                
                         	} catch(RosException e) {
+                        		e.printStackTrace();
                         		// fail silently if service has not been advertised
                         	}
                         }

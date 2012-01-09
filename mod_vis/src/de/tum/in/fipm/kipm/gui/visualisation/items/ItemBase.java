@@ -1,5 +1,7 @@
 package de.tum.in.fipm.kipm.gui.visualisation.items;
 
+import javax.vecmath.Matrix4d;
+
 import de.tum.in.fipm.kipm.gui.visualisation.applets.StandaloneKitchenVisApplet;
 import edu.tum.cs.vis.Canvas;
 import edu.tum.cs.vis.Drawable;
@@ -50,6 +52,20 @@ public abstract class ItemBase implements Drawable, DrawableAnimated {
 
 	public void setColor(int color,int start, int end){
 		this.color=color;
+	}
+
+	public void setPose(Matrix4d pose) {
+		if(pose!=null) {
+			this.trafoMatrix = new float[] {
+					(float)pose.m00, (float)pose.m01, (float)pose.m02, (float)pose.m03,
+					(float)pose.m10, (float)pose.m11, (float)pose.m12, (float)pose.m13, 
+					(float)pose.m20, (float)pose.m21, (float)pose.m22, (float)pose.m23, 
+					(float)pose.m30, (float)pose.m31, (float)pose.m32, (float)pose.m33	};
+		}
+	}
+	
+	public void setPose(double[] pose) {
+		this.setPose(new Matrix4d(pose));
 	}
 	
 	public void setPose(float[] pose) {

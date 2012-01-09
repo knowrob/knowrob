@@ -1,6 +1,9 @@
 package de.tum.in.fipm.kipm.gui.visualisation.items;
 
 
+import javax.vecmath.Matrix4d;
+import javax.vecmath.Vector3d;
+
 import edu.tum.cs.vis.Canvas;
 
 public class Drawer extends StorageFacility {
@@ -15,6 +18,9 @@ public class Drawer extends StorageFacility {
 		super( m00, m01, m02, m03, m10, m11, m12, m13, 
 			   m20, m21, m22, m23, m30, m31, m32, m33, 
 		       xdepth,  ywidth,  zheight);
+	}
+	public Drawer(Matrix4d pose, Vector3d dim){
+		super(pose, dim);
 	}
 	
 	

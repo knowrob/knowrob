@@ -31,14 +31,22 @@ public class Properties {
 							"rdf_has(" + identifier	+ ",knowrob:pathToCadModel,literal(P)) ; "
 							+ "owl_individual_of(" + identifier	+ ", Class), class_properties(Class, knowrob:pathToCadModel,literal(P))",
 							null);
-			String str = nfo.get("P").get(0).toString();
-			if (str == null)
-				return null;
-			if (str.startsWith("'") && str.endsWith("'"))
-			{
-				str = str.substring(1, str.length()-1);
-			}
-			return new ItemModel(str);
+			
+			if (nfo.get("P") != null && nfo.get("P").size() > 0) {
+				String str = nfo.get("P").get(0).toString();
+				
+				System.err.println(str);
+				
+				if (str == null)
+					return null;
+				
+				if (str.startsWith("'") && str.endsWith("'")) {
+					str = str.substring(1, str.length()-1);
+				}
+				return new ItemModel(str);
+				
+			} else return null;
+			
 		} catch (Exception e) {
 			System.err.println("Parsing of " + identifier  + " failed:");
 			e.printStackTrace();

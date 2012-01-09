@@ -17,6 +17,8 @@ import java.util.Vector;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
+import javax.vecmath.Matrix4d;
+import javax.vecmath.Vector3d;
 
 import peasy.PeasyCam;
 import peasy.CameraState;
@@ -41,7 +43,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 	static final long serialVersionUID=0;
 
-  public static final double ROTATE_Y_DELTA = 0.05;
+	public static final double ROTATE_Y_DELTA = 0.05;
 
 	////////////////////////////////////////////////////////////////////////////////
 	// DISPLAY PROPERTIES (ROTATION, ZOOM, ...)
@@ -118,21 +120,21 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 		size(700, 600, PGraphics3D.P3D);
 
-		
+
 		// define camera parameters
 		cam = new PeasyCam(this, 0,0,0, 50);
-		
+
 		// values for zooming (min distance to which one can zoom in)
 		cam.setMinimumDistance(1);
 		cam.setMaximumDistance(500);
-		
+
 		cam.setRightDragHandler(cam.getPanDragHandler());
 		cam.setLeftDragHandler(cam.getRotateDragHandler());
-		
+
 		// initialize camera view parameters
 		cam.setRotations(1.9074943, -0.6844337, 0.14366905);
 
-		
+
 		buffer = new EmptyCanvas(700,600,PGraphics3D.P3D);
 
 		verdana = createFont("Verdana", 11);
@@ -143,23 +145,23 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		textFont(dejavu);    
 
 		ellipseMode(RADIUS);
-//		noSmooth();
-    
+		//		noSmooth();
+
 		sphereDetail(10);
 
 
 		setColors();
 
-    //    noLoop();
-    
-    hint(ENABLE_DEPTH_TEST);
-//    hint(DISABLE_DEPTH_TEST);
+		//    noLoop();
+
+		hint(ENABLE_DEPTH_TEST);
+		//    hint(DISABLE_DEPTH_TEST);
 
 		// Don't enable, causes huge performance break
 		// hint(ENABLE_DEPTH_SORT);
-//    hint(DISABLE_DEPTH_SORT);
-		
-    //drawBackground();
+		//    hint(DISABLE_DEPTH_SORT);
+
+		//drawBackground();
 		draw();
 		isInitialized = true;
 		if(prologVisCanvas != null) {
@@ -188,16 +190,16 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	public void draw() {
 		PMatrix save = getMatrix();
 		try{
-      
-      
-        if (record) {
-            beginRaw(PDF, "output.pdf");
-        }
+
+
+			if (record) {
+				beginRaw(PDF, "output.pdf");
+			}
 
 			scale(10);
-			
+
 			background(20, 20, 20);
-      
+
 			pushMatrix();
 
 			applyMatrix(	1,  0,  0, 0,
@@ -213,23 +215,23 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			stroke(0, 0, 0);
 
 			// draw the meshes
-			if(drawMeshes)
-				drawMeshes();
-			
+			//if(drawMeshes)
+			//	drawMeshes();
+
 			// draw all Items
 			for(int i=0;i<allItems.size();i++) {
-          //hint(ENABLE_DEPTH_TEST);
+				//hint(ENABLE_DEPTH_TEST);
 				allItems.get(i).draw(this, currentFrame);	
 			}
 
 			popMatrix();
 
-      if (record) {
-          endRaw();
-          System.err.println("Writing PDF...");
-          record = false;
-      }
-			
+			if (record) {
+				endRaw();
+				System.err.println("Writing PDF...");
+				record = false;
+			}
+
 		}catch(ArrayIndexOutOfBoundsException e) {
 			System.out.println("Some Drawing error occured... ");
 			resetMatrix();
@@ -247,7 +249,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 
 			buffer.setSize(700, 600);
-			
+
 
 			buffer.resetMatrix();
 			cam.getState().apply(buffer);
@@ -257,14 +259,14 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			buffer.pushMatrix();	    
 			//buffer.background(60, 60, 60);
 
-			
+
 			buffer.applyMatrix(	1,  0,  0, 0,
 					0,  1,  0, 0,
 					0,  0, -1, 0,
 					0,  0,  0, 1);
 			buffer.ellipseMode(RADIUS);
 			buffer.pushMatrix();
-			
+
 			// draw all Items
 			id = new String[allItems.size()];
 			for(int i=0;i<allItems.size();i++) {
@@ -283,7 +285,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 			buffer.popMatrix();
 			buffer.popMatrix();
-			
+
 		}catch(Exception e){}
 
 		if(clicked >= 0 && clicked<id.length)
@@ -371,9 +373,9 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		this.allItems.add(item);
 		animatedItemsRef.put(item.name, item);
 	}
-	
+
 	public void addObject(String identifier) {
-		
+
 		ItemBase item = getItem(identifier);
 
 		if(item != null) {
@@ -416,23 +418,23 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 	}
 
-	
+
 	public void removeItem(ItemBase item) {
 		allItems.remove(item);
 		animatedItemsRef.remove(item.name);
 	}
 
-	
+
 	public void removeObject(String identifier) {
-		
+
 		ItemBase item = animatedItemsRef.get(identifier);
 		if(item == null) {
 			return;
 		}
 		removeItem(item);
 	}
-	
-	
+
+
 	public void removeObjectWithChildren(String identifier) {
 		HashMap<String, Vector<Object>> physicalParts = PrologVisualizationCanvas.executeQuery(
 				"rdf_reachable("+identifier+", knowrob:properPhysicalPartTypes, PART)",null);
@@ -466,7 +468,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 	}
 
-	
+
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////
@@ -475,7 +477,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	// 
 	//
 
-	
+
 
 	/**
 	 * Highlights one object, only if it is present in the scene (does not add anything)
@@ -522,10 +524,10 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		}
 	}
 
-	
-	
-	
-	
+
+
+
+
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////
@@ -533,8 +535,8 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	// METHODS FOR ADDING AND REMOVING ACTION AND TRAJECTORY INFORMATION
 	// 
 	//
-	
-	
+
+
 	/**
 	 * displays one PROLOG-instance of an action BY IT'S DYNAMIC IDENTIFIER,
 	 * for example "'http://ias.cs.tum.edu/kb/knowrob.owl#Reaching50'"
@@ -559,7 +561,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		try{
 			HashMap<String, Vector<Object>> c = PrologVisualizationCanvas.executeQuery(
 					"rdf_has("+identifier+", 'http://ias.cs.tum.edu/kb/knowrob.owl#startTime', S), "
-					+"rdf_has("+identifier+", 'http://ias.cs.tum.edu/kb/knowrob.owl#endTime', E)",null);	
+							+"rdf_has("+identifier+", 'http://ias.cs.tum.edu/kb/knowrob.owl#endTime', E)",null);	
 
 			String startTimeStr = (String)c.get("S").get(0);
 			startTimeStr = startTimeStr.substring(1,startTimeStr.length()-1);
@@ -677,13 +679,13 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			drawBackground();
 		}
 	}
-	
+
 	/** Displays human trajectories 
 	 * 
 	 * @param identifier= 'http://ias.cs.tum.edu/kb/knowrob.owl#PickingUpAnObject'
 	 * @param handUsed = 'RightHand' or 'LeftHand'
 	 */
-	
+
 	public void displayHumanTrajectory(String identifier, String handUsed) {
 		Integer Occ=0, auxOcc=0;
 		boolean band=true;
@@ -691,16 +693,16 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		float[][] Xp=new float[80][19];
 		float[][] Yp=new float[80][19];
 		float[][] Zp=new float[80][19];
-		
+
 		Trajectories traj = new Trajectories();
-		
+
 		HashMap<String, Vector<Object>> o= PrologVisualizationCanvas.executeQuery(""+"handTrajectory("+handUsed+", "+identifier+", T, P, X, Y, Z)", null);
-		
+
 		Vector<Object> pointID = o.get("P");
 		Vector<Object> Xc      = o.get("X");
 		Vector<Object> Yc      = o.get("Y");
 		Vector<Object> Zc      = o.get("Z");
-				
+
 		for (Object p: pointID){
 			String s_p=p.toString(); //example s_p=p_1_2_36 (Ep, Occ, Inst)
 			String[] tokenP=s_p.split("_");
@@ -716,12 +718,12 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 					col=col+1; row=0; band=true; auxOcc=Occ;
 					System.out.println("Occ=" +Occ);
 				} else {band=false;}
-				
+
 			}
 			contP=contP+1;	
 		}
 		System.out.println("columnas"+Xp[0].length);
-		
+
 		for (int j=0;j<Xp[0].length;j++ ){ //number of columns from Xp
 			//System.out.println("New traj");
 			for (int i=0;i<(Xp.length)-1; i++) {
@@ -731,12 +733,12 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 				}
 			}
 			traj.addTraj(0, 0, 0);
-			
+
 		}
 		allItems.add(traj);
 		animatedItemsRef.put("traj", traj); 
 	}
-	
+
 	/** Displays the eye trajectory from the gaze camera 
 	 * 
 	 * @param identifier = 'http://ias.cs.tum.edu/kb/knowrob.owl#PickingUpAnObject'
@@ -746,11 +748,11 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		int col=0, contP=0 ; 
 		int[][] Xc, Yc;
 		boolean band=true;
-		
+
 		Trajectories traj = new Trajectories();
-		
+
 		HashMap<String, Vector<Object>> o= PrologVisualizationCanvas.executeQuery(""+ "readEyeTrajectory("+identifier+", T, P, XCoor, YCoor)", null);
-		
+
 		Vector<Object> pointId = o.get("P");
 		Vector<Object> XCoor = o.get("XCoor");
 		Vector<Object> YCoor = o.get("YCoor");
@@ -766,7 +768,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 				Xc[Integer.parseInt(tokenP[2])][col] = Integer.parseInt(XCoor.get(contP).toString());
 				Yc[Integer.parseInt(tokenP[2])][col] = Integer.parseInt(YCoor.get(contP).toString());
 				//displayMessage("Xc["+Integer.parseInt(tokenP[2])+"]["+col+"]= "+Xc[Integer.parseInt(tokenP[2])][col]);
-				
+
 
 			} else {
 				Occ=Integer.parseInt(tokenP[1]); //new occurrence_nr
@@ -774,22 +776,22 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 					col=Occ-1; band=true; auxOcc=Occ; //displayMessage("auxOcc: "+auxOcc);
 					Xc[Integer.parseInt(tokenP[2])][col] = Integer.parseInt(XCoor.get(contP).toString());
 					Yc[Integer.parseInt(tokenP[2])][col] = Integer.parseInt(YCoor.get(contP).toString());
-					}else{ band=false;}
+				}else{ band=false;}
 			}
 			contP=contP+1;
 		}
-	
+
 		for (int j=0;j<Xc[0].length;j++ ){
 			for (int i=0;i<(Xc.length)-1; i++) {
 				traj.addTraj(Xc[i][j], Yc[i][j], 0);
-				
+
 			}
 		}
 		allItems.add(traj);
 		animatedItemsRef.put("traj", traj);
 
 	}
- 
+
 	/**
 	 * displays one PROLOG-instance of an action BY IT'S FIXED IDENTIFIER,
 	 * for example "'http://ias.cs.tum.edu/kb/knowrob.owl#Reaching_0_2'"
@@ -841,10 +843,10 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		System.out.print("ALL DONE");
 	}
 
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * queries prolog for kitchen layout and draws / initializes the kitchen
 	 * called by setup()
@@ -880,13 +882,13 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		currentFrame = 0;
 		grayLevelCounter = 0;
 	}
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////
@@ -894,79 +896,13 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	// INTERNAL HELPERS
 	// 
 
-    private float[] getDimensionsOfItem(String identifier) {
-        try{
-            HashMap<String, Vector<Object>> nfo = PrologVisualizationCanvas.executeQuery(
-                 "rdf_has("+identifier+",knowrob:widthOfObject,literal(type(_,_W)))," + 
-                 "rdf_has("+identifier+",knowrob:heightOfObject,literal(type(_,_H))), " + 
-                 "rdf_has("+identifier+",knowrob:depthOfObject,literal(type(_,_D))), " +
-                 "atom_to_term(_W,W,_), atom_to_term(_H,H,_), atom_to_term(_D,D,_)" , null);
-            
-            return new float[] {
-                Float.parseFloat(nfo.get("D").get(0).toString()),
-                Float.parseFloat(nfo.get("W").get(0).toString()),
-                Float.parseFloat(nfo.get("H").get(0).toString())};
-
-        } catch(Exception e) {
-            return null;
-        }
-    }
-
-
-	private float[] getOrientationOfItem(String identifier) {
-		try{
-			// get orientation
-			HashMap<String, Vector<Object>> nfo = PrologVisualizationCanvas.executeQuery(
-					"rdf_triple(knowrob:orientation,"+identifier+",Or), " +
-
-					"rdf_triple(knowrob:m00,Or,_M00l), actionmodel:am_strip_literal_type(_M00l, _M00), term_to_atom(M00,_M00)," +
-					"rdf_triple(knowrob:m01,Or,_M01l), actionmodel:am_strip_literal_type(_M01l, _M01), term_to_atom(M01,_M01)," +
-					"rdf_triple(knowrob:m02,Or,_M02l), actionmodel:am_strip_literal_type(_M02l, _M02), term_to_atom(M02,_M02)," +
-					"rdf_triple(knowrob:m03,Or,_M03l), actionmodel:am_strip_literal_type(_M03l, _M03), term_to_atom(M03,_M03)," +
-
-					"rdf_triple(knowrob:m10,Or,_M10l), actionmodel:am_strip_literal_type(_M10l, _M10), term_to_atom(M10,_M10)," +
-					"rdf_triple(knowrob:m11,Or,_M11l), actionmodel:am_strip_literal_type(_M11l, _M11), term_to_atom(M11,_M11)," +
-					"rdf_triple(knowrob:m12,Or,_M12l), actionmodel:am_strip_literal_type(_M12l, _M12), term_to_atom(M12,_M12)," +
-					"rdf_triple(knowrob:m13,Or,_M13l), actionmodel:am_strip_literal_type(_M13l, _M13), term_to_atom(M13,_M13)," +
-
-					"rdf_triple(knowrob:m20,Or,_M20l), actionmodel:am_strip_literal_type(_M20l, _M20), term_to_atom(M20,_M20)," +
-					"rdf_triple(knowrob:m21,Or,_M21l), actionmodel:am_strip_literal_type(_M21l, _M21), term_to_atom(M21,_M21)," +
-					"rdf_triple(knowrob:m22,Or,_M22l), actionmodel:am_strip_literal_type(_M22l, _M22), term_to_atom(M22,_M22)," +
-					"rdf_triple(knowrob:m23,Or,_M23l), actionmodel:am_strip_literal_type(_M23l, _M23), term_to_atom(M23,_M23)," +
-
-					"rdf_triple(knowrob:m30,Or,_M30l), actionmodel:am_strip_literal_type(_M30l, _M30), term_to_atom(M30,_M30)," +
-					"rdf_triple(knowrob:m31,Or,_M31l), actionmodel:am_strip_literal_type(_M31l, _M31), term_to_atom(M31,_M31)," +
-					"rdf_triple(knowrob:m32,Or,_M32l), actionmodel:am_strip_literal_type(_M32l, _M32), term_to_atom(M32,_M32)," +
-					"rdf_triple(knowrob:m33,Or,_M33l), actionmodel:am_strip_literal_type(_M33l, _M33), term_to_atom(M33,_M33)", null);
-			return new float[] {
-					Float.parseFloat(nfo.get("M00").get(0).toString()),
-					Float.parseFloat(nfo.get("M01").get(0).toString()),
-					Float.parseFloat(nfo.get("M02").get(0).toString()),
-					Float.parseFloat(nfo.get("M03").get(0).toString()),
-					Float.parseFloat(nfo.get("M10").get(0).toString()),
-					Float.parseFloat(nfo.get("M11").get(0).toString()),
-					Float.parseFloat(nfo.get("M12").get(0).toString()),
-					Float.parseFloat(nfo.get("M13").get(0).toString()),
-					Float.parseFloat(nfo.get("M20").get(0).toString()),
-					Float.parseFloat(nfo.get("M21").get(0).toString()),
-					Float.parseFloat(nfo.get("M22").get(0).toString()),
-					Float.parseFloat(nfo.get("M23").get(0).toString()),
-					Float.parseFloat(nfo.get("M30").get(0).toString()),
-					Float.parseFloat(nfo.get("M31").get(0).toString()),
-					Float.parseFloat(nfo.get("M32").get(0).toString()),
-					Float.parseFloat(nfo.get("M33").get(0).toString())};
-		} catch(Exception e) {
-			return null;
-		}
-	}
-
 
 	private ItemBase getItem(String identifier) {
 
 		// get type
 		HashMap<String, Vector<Object>> tpe = PrologVisualizationCanvas.executeQuery(
 				"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," + 
-				"OBJECTCLASS\\='http://www.w3.org/2002/07/owl#NamedIndividual'",null);
+						"OBJECTCLASS\\='http://www.w3.org/2002/07/owl#NamedIndividual'",null);
 		String type = null;
 
 
@@ -983,717 +919,204 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 				|| type.equals("'http://ias.cs.tum.edu/kb/knowrob.owl#HingedJoint'")
 				|| type.equals("'http://ias.cs.tum.edu/kb/knowrob.owl#Door'")
 				|| type.equals("'http://ias.cs.tum.edu/kb/knowrob.owl#WallOfAConstruction'")
-		) {
+				) {
 			return null;
 
 		}
-
-		// simple types
-		ItemBase it =itemForObjType(type);
 		
+		ItemBase it = null;	
+		Matrix4d pose = null;
+		Vector3d dim = null;
+		
+		
+		double[] p = getOrientationOfItem(identifier);
+		if(p!=null) {
+			pose = new Matrix4d(p);
+			System.err.println("pose != null");
+		}
+		
+		double[] v = getDimensionsOfItem(identifier);
+		if(v!=null) {
+			dim = new Vector3d(v);
+			System.err.println("dim != null");
+		}
 
-
+		
+		// check whether CAD model is specified:
+		ItemModel model = Properties.getModelOfItem(identifier);
+		
+		if (model != null && model.getParser()!=null) {
+			
+			it = new CadModelItem(pose, dim);
+			it.name = identifier;
+			it.setModel(model);
+			return it;
+		}
+		
+		
+		// else: check if one of the simple types
+		it = itemForObjType(type);
 
 		if(it!=null) {
-		    float[] o = getOrientationOfItem(identifier);
-		    if(o!=null) {
-		        it.setPose(o);
-		    } else {System.out.println("NO ORIENTATION FOR " + identifier);}
+			
+			it.name = identifier;
+			if(pose!=null)
+				it.setPose(pose);
+			
+			if(dim!=null)
+				it.setDimensions((float)dim.x, (float)dim.y, (float)dim.z);
 
-		    float[] d = getDimensionsOfItem(identifier);
-		    if(d!=null) {
-		        it.setDimensions(d[0],d[1],d[2]);
-		    } //else {System.out.println("NO DIMENSIONS FOR " + identifier);}
+			return it;
 
-			// set CAD model if existing
-		    ItemModel model = Properties.getModelOfItem(identifier);
-		    if (model != null && model.getParser()!=null)
-		    	it.setModel(model);
-		    
-		    it.name = identifier;
-		    return it;
-
+			
 		} else {
 
 			// check if it is a storage facility, if it is: create; WITHOUT handles
 			HashMap<String, Vector<Object>> storage = PrologVisualizationCanvas.executeQuery(
 					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
-					"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'StorageConstruct')," +
-					"rdf_has("+identifier+",knowrob:widthOfObject,literal(type(_,_W)))," + 
-					"rdf_has("+identifier+",knowrob:heightOfObject,literal(type(_,_H))), " + 
-					"rdf_has("+identifier+",knowrob:depthOfObject,literal(type(_,_D))), " +
-
-					"rdf_triple(knowrob:orientation,"+identifier+",Or), " +
-
-					"rdf_triple(knowrob:m00,Or,literal(type(_,_M00))), term_to_atom(M00,_M00)," +
-					"rdf_triple(knowrob:m01,Or,literal(type(_,_M01))), term_to_atom(M01,_M01)," +
-					"rdf_triple(knowrob:m02,Or,literal(type(_,_M02))), term_to_atom(M02,_M02)," +
-					"rdf_triple(knowrob:m03,Or,literal(type(_,_M03))), term_to_atom(M03,_M03)," +
-
-					"rdf_triple(knowrob:m10,Or,literal(type(_,_M10))), term_to_atom(M10,_M10)," +
-					"rdf_triple(knowrob:m11,Or,literal(type(_,_M11))), term_to_atom(M11,_M11)," +
-					"rdf_triple(knowrob:m12,Or,literal(type(_,_M12))), term_to_atom(M12,_M12)," +
-					"rdf_triple(knowrob:m13,Or,literal(type(_,_M13))), term_to_atom(M13,_M13)," +
-
-					"rdf_triple(knowrob:m20,Or,literal(type(_,_M20))), term_to_atom(M20,_M20)," +
-					"rdf_triple(knowrob:m21,Or,literal(type(_,_M21))), term_to_atom(M21,_M21)," +
-					"rdf_triple(knowrob:m22,Or,literal(type(_,_M22))), term_to_atom(M22,_M22)," +
-					"rdf_triple(knowrob:m23,Or,literal(type(_,_M23))), term_to_atom(M23,_M23)," +
-
-					"rdf_triple(knowrob:m30,Or,literal(type(_,_M30))), term_to_atom(M30,_M30)," +
-					"rdf_triple(knowrob:m31,Or,literal(type(_,_M31))), term_to_atom(M31,_M31)," +
-					"rdf_triple(knowrob:m32,Or,literal(type(_,_M32))), term_to_atom(M32,_M32)," +
-					"rdf_triple(knowrob:m33,Or,literal(type(_,_M33))), term_to_atom(M33,_M33)," +
-
-					"atom_to_term(_W,W,_), atom_to_term(_H,H,_), atom_to_term(_D,D,_)", null);
-			if( storage.get("W") != null && storage.get("W").size() > 0) {
-				StorageFacility c = null;
+							"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'StorageConstruct')", null);
+			if (storage.get("OBJECTCLASS") != null && storage.get("OBJECTCLASS").size() > 0) {
+				
 				if(storage.get("OBJECTCLASS").get(0).toString().endsWith("Cupboard'")) {
-					c = new Cupboard(
-							Float.valueOf(storage.get("M00").get(0).toString()),
-							Float.valueOf(storage.get("M01").get(0).toString()),
-							Float.valueOf(storage.get("M02").get(0).toString()),
-							Float.valueOf(storage.get("M03").get(0).toString()),
-
-							Float.valueOf(storage.get("M10").get(0).toString()),
-							Float.valueOf(storage.get("M11").get(0).toString()),
-							Float.valueOf(storage.get("M12").get(0).toString()),
-							Float.valueOf(storage.get("M13").get(0).toString()),
-
-							Float.valueOf(storage.get("M20").get(0).toString()),
-							Float.valueOf(storage.get("M21").get(0).toString()),
-							Float.valueOf(storage.get("M22").get(0).toString()),
-							Float.valueOf(storage.get("M23").get(0).toString()),
-
-							Float.valueOf(storage.get("M30").get(0).toString()),
-							Float.valueOf(storage.get("M31").get(0).toString()),
-							Float.valueOf(storage.get("M32").get(0).toString()),
-							Float.valueOf(storage.get("M33").get(0).toString()),
-
-							Float.valueOf(storage.get("D").get(0).toString()),
-							Float.valueOf(storage.get("W").get(0).toString()),
-							Float.valueOf(storage.get("H").get(0).toString()));
+					it = new Cupboard(pose, dim);
 				} else {
-					c = new Drawer(
-							Float.valueOf(storage.get("M00").get(0).toString()),
-							Float.valueOf(storage.get("M01").get(0).toString()),
-							Float.valueOf(storage.get("M02").get(0).toString()),
-							Float.valueOf(storage.get("M03").get(0).toString()),
-
-							Float.valueOf(storage.get("M10").get(0).toString()),
-							Float.valueOf(storage.get("M11").get(0).toString()),
-							Float.valueOf(storage.get("M12").get(0).toString()),
-							Float.valueOf(storage.get("M13").get(0).toString()),
-
-							Float.valueOf(storage.get("M20").get(0).toString()),
-							Float.valueOf(storage.get("M21").get(0).toString()),
-							Float.valueOf(storage.get("M22").get(0).toString()),
-							Float.valueOf(storage.get("M23").get(0).toString()),
-
-							Float.valueOf(storage.get("M30").get(0).toString()),
-							Float.valueOf(storage.get("M31").get(0).toString()),
-							Float.valueOf(storage.get("M32").get(0).toString()),
-							Float.valueOf(storage.get("M33").get(0).toString()),
-
-							Float.valueOf(storage.get("D").get(0).toString()),
-							Float.valueOf(storage.get("W").get(0).toString()),
-							Float.valueOf(storage.get("H").get(0).toString()));
+					it = new Drawer(pose, dim);
 				}
+				
 				int col = grayValues[(++grayLevelCounter) % grayValues.length];
 
-				c.defaultColor = convertColor(col, col, col, 255);
-				c.setColor(c.defaultColor);
-				c.name = identifier;
+				it.defaultColor = convertColor(col, col, col, 255);
+				it.setColor(it.defaultColor);
+				it.name = identifier;
 
-				return c;
+				return it;
 			}
 
-
-
-			// check if Handle
-			HashMap<String, Vector<Object>> handles = PrologVisualizationCanvas.executeQuery(
-					"rdf_has("+identifier+", rdf:type, knowrob:'Handle'), " +
-					"rdf_has("+identifier+",knowrob:widthOfObject,literal(type(_,_W)))," + 
-					"rdf_has("+identifier+",knowrob:heightOfObject,literal(type(_,_H))), " + 
-					"rdf_has("+identifier+",knowrob:depthOfObject,literal(type(_,_D))), " +
-
-					"rdf_triple(knowrob:orientation,"+identifier+",Or), " +
-
-					"rdf_triple(knowrob:m00,Or,literal(type(_,_M00))), term_to_atom(M00,_M00)," +
-					"rdf_triple(knowrob:m01,Or,literal(type(_,_M01))), term_to_atom(M01,_M01)," +
-					"rdf_triple(knowrob:m02,Or,literal(type(_,_M02))), term_to_atom(M02,_M02)," +
-					"rdf_triple(knowrob:m03,Or,literal(type(_,_M03))), term_to_atom(M03,_M03)," +
-
-					"rdf_triple(knowrob:m10,Or,literal(type(_,_M10))), term_to_atom(M10,_M10)," +
-					"rdf_triple(knowrob:m11,Or,literal(type(_,_M11))), term_to_atom(M11,_M11)," +
-					"rdf_triple(knowrob:m12,Or,literal(type(_,_M12))), term_to_atom(M12,_M12)," +
-					"rdf_triple(knowrob:m13,Or,literal(type(_,_M13))), term_to_atom(M13,_M13)," +
-
-					"rdf_triple(knowrob:m20,Or,literal(type(_,_M20))), term_to_atom(M20,_M20)," +
-					"rdf_triple(knowrob:m21,Or,literal(type(_,_M21))), term_to_atom(M21,_M21)," +
-					"rdf_triple(knowrob:m22,Or,literal(type(_,_M22))), term_to_atom(M22,_M22)," +
-					"rdf_triple(knowrob:m23,Or,literal(type(_,_M23))), term_to_atom(M23,_M23)," +
-
-					"rdf_triple(knowrob:m30,Or,literal(type(_,_M30))), term_to_atom(M30,_M30)," +
-					"rdf_triple(knowrob:m31,Or,literal(type(_,_M31))), term_to_atom(M31,_M31)," +
-					"rdf_triple(knowrob:m32,Or,literal(type(_,_M32))), term_to_atom(M32,_M32)," +
-					"rdf_triple(knowrob:m33,Or,literal(type(_,_M33))), term_to_atom(M33,_M33)," +
-
-					"atom_to_term(_W,W,_), atom_to_term(_H,H,_), atom_to_term(_D,D,_)", null);
-			if (handles.get("M00") != null && handles.get("M00").size() > 0)
-			{
-				ItemBase item =  new BoxHandle(
-						Float.valueOf(handles.get("M00").get(0).toString()),
-						Float.valueOf(handles.get("M01").get(0).toString()),
-						Float.valueOf(handles.get("M02").get(0).toString()),
-						Float.valueOf(handles.get("M03").get(0).toString()),
-
-						Float.valueOf(handles.get("M10").get(0).toString()),
-						Float.valueOf(handles.get("M11").get(0).toString()),
-						Float.valueOf(handles.get("M12").get(0).toString()),
-						Float.valueOf(handles.get("M13").get(0).toString()),
-
-						Float.valueOf(handles.get("M20").get(0).toString()),
-						Float.valueOf(handles.get("M21").get(0).toString()),
-						Float.valueOf(handles.get("M22").get(0).toString()),
-						Float.valueOf(handles.get("M23").get(0).toString()),
-
-						Float.valueOf(handles.get("M30").get(0).toString()),
-						Float.valueOf(handles.get("M31").get(0).toString()),
-						Float.valueOf(handles.get("M32").get(0).toString()),
-						Float.valueOf(handles.get("M33").get(0).toString()),
-
-						Float.valueOf(handles.get("D").get(0).toString()),
-						Float.valueOf(handles.get("W").get(0).toString()),
-						Float.valueOf(handles.get("H").get(0).toString()));
-				item.name = identifier;
-				return item;
-			}
-
-			// check if knob
-			HashMap<String, Vector<Object>> knobs = PrologVisualizationCanvas.executeQuery(
-					"rdf_has("+identifier+", rdf:type, knowrob:'ControlKnob'), " +
-					"rdf_has("+identifier+",knowrob:widthOfObject,literal(type(_,_W)))," + 
-					"rdf_has("+identifier+",knowrob:heightOfObject,literal(type(_,_H))), " + 
-					"rdf_has("+identifier+",knowrob:depthOfObject,literal(type(_,_D))), " +
-
-					"rdf_triple(knowrob:orientation,"+identifier+",Or), " +
-
-					"rdf_triple(knowrob:m00,Or,literal(type(_,_M00))), term_to_atom(M00,_M00)," +
-					"rdf_triple(knowrob:m01,Or,literal(type(_,_M01))), term_to_atom(M01,_M01)," +
-					"rdf_triple(knowrob:m02,Or,literal(type(_,_M02))), term_to_atom(M02,_M02)," +
-					"rdf_triple(knowrob:m03,Or,literal(type(_,_M03))), term_to_atom(M03,_M03)," +
-
-					"rdf_triple(knowrob:m10,Or,literal(type(_,_M10))), term_to_atom(M10,_M10)," +
-					"rdf_triple(knowrob:m11,Or,literal(type(_,_M11))), term_to_atom(M11,_M11)," +
-					"rdf_triple(knowrob:m12,Or,literal(type(_,_M12))), term_to_atom(M12,_M12)," +
-					"rdf_triple(knowrob:m13,Or,literal(type(_,_M13))), term_to_atom(M13,_M13)," +
-
-					"rdf_triple(knowrob:m20,Or,literal(type(_,_M20))), term_to_atom(M20,_M20)," +
-					"rdf_triple(knowrob:m21,Or,literal(type(_,_M21))), term_to_atom(M21,_M21)," +
-					"rdf_triple(knowrob:m22,Or,literal(type(_,_M22))), term_to_atom(M22,_M22)," +
-					"rdf_triple(knowrob:m23,Or,literal(type(_,_M23))), term_to_atom(M23,_M23)," +
-
-					"rdf_triple(knowrob:m30,Or,literal(type(_,_M30))), term_to_atom(M30,_M30)," +
-					"rdf_triple(knowrob:m31,Or,literal(type(_,_M31))), term_to_atom(M31,_M31)," +
-					"rdf_triple(knowrob:m32,Or,literal(type(_,_M32))), term_to_atom(M32,_M32)," +
-					"rdf_triple(knowrob:m33,Or,literal(type(_,_M33))), term_to_atom(M33,_M33)," +
-
-					"atom_to_term(_W,W,_), atom_to_term(_H,H,_), atom_to_term(_D,D,_)", null);
-			if (knobs.get("M00") != null && knobs.get("M00").size() > 0)
-			{
-				Sphere item = new Sphere(
-						Float.valueOf(knobs.get("M00").get(0).toString()),
-						Float.valueOf(knobs.get("M01").get(0).toString()),
-						Float.valueOf(knobs.get("M02").get(0).toString()),
-						Float.valueOf(knobs.get("M03").get(0).toString()),
-
-						Float.valueOf(knobs.get("M10").get(0).toString()),
-						Float.valueOf(knobs.get("M11").get(0).toString()),
-						Float.valueOf(knobs.get("M12").get(0).toString()),
-						Float.valueOf(knobs.get("M13").get(0).toString()),
-
-						Float.valueOf(knobs.get("M20").get(0).toString()),
-						Float.valueOf(knobs.get("M21").get(0).toString()),
-						Float.valueOf(knobs.get("M22").get(0).toString()),
-						Float.valueOf(knobs.get("M23").get(0).toString()),
-
-						Float.valueOf(knobs.get("M30").get(0).toString()),
-						Float.valueOf(knobs.get("M31").get(0).toString()),
-						Float.valueOf(knobs.get("M32").get(0).toString()),
-						Float.valueOf(knobs.get("M33").get(0).toString()),
-
-						Float.valueOf(knobs.get("D").get(0).toString()),
-						Float.valueOf(knobs.get("W").get(0).toString()),
-						Float.valueOf(knobs.get("H").get(0).toString()));
-
-				item.name = identifier;
-				return item;
-			}
 
 
 			// check if Table
 			HashMap<String, Vector<Object>> tables = PrologVisualizationCanvas.executeQuery(
-           "rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
-          "rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'Table-PieceOfFurniture')," +                                                                            
-					// "rdf_has("+identifier+", rdf:type, knowrob:'KitchenTable'), " +
-					"rdf_has("+identifier+",knowrob:widthOfObject,literal(type(_,_W)))," + 
-					"rdf_has("+identifier+",knowrob:heightOfObject,literal(type(_,_H))), " + 
-					"rdf_has("+identifier+",knowrob:depthOfObject,literal(type(_,_D))), " +
-
-					"rdf_triple(knowrob:orientation,"+identifier+",Or), " +
-
-					"rdf_triple(knowrob:m00,Or,literal(type(_,_M00))), term_to_atom(M00,_M00)," +
-					"rdf_triple(knowrob:m01,Or,literal(type(_,_M01))), term_to_atom(M01,_M01)," +
-					"rdf_triple(knowrob:m02,Or,literal(type(_,_M02))), term_to_atom(M02,_M02)," +
-					"rdf_triple(knowrob:m03,Or,literal(type(_,_M03))), term_to_atom(M03,_M03)," +
-
-					"rdf_triple(knowrob:m10,Or,literal(type(_,_M10))), term_to_atom(M10,_M10)," +
-					"rdf_triple(knowrob:m11,Or,literal(type(_,_M11))), term_to_atom(M11,_M11)," +
-					"rdf_triple(knowrob:m12,Or,literal(type(_,_M12))), term_to_atom(M12,_M12)," +
-					"rdf_triple(knowrob:m13,Or,literal(type(_,_M13))), term_to_atom(M13,_M13)," +
-
-					"rdf_triple(knowrob:m20,Or,literal(type(_,_M20))), term_to_atom(M20,_M20)," +
-					"rdf_triple(knowrob:m21,Or,literal(type(_,_M21))), term_to_atom(M21,_M21)," +
-					"rdf_triple(knowrob:m22,Or,literal(type(_,_M22))), term_to_atom(M22,_M22)," +
-					"rdf_triple(knowrob:m23,Or,literal(type(_,_M23))), term_to_atom(M23,_M23)," +
-
-					"rdf_triple(knowrob:m30,Or,literal(type(_,_M30))), term_to_atom(M30,_M30)," +
-					"rdf_triple(knowrob:m31,Or,literal(type(_,_M31))), term_to_atom(M31,_M31)," +
-					"rdf_triple(knowrob:m32,Or,literal(type(_,_M32))), term_to_atom(M32,_M32)," +
-					"rdf_triple(knowrob:m33,Or,literal(type(_,_M33))), term_to_atom(M33,_M33)," +
-
-					"atom_to_term(_W,W,_), atom_to_term(_H,H,_), atom_to_term(_D,D,_)", null);
-			if (tables.get("M00") != null && tables.get("M00").size() > 0)
+					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
+							"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'Table-PieceOfFurniture')", null);
+			
+			if (tables.get("OBJECTCLASS") != null && tables.get("OBJECTCLASS").size() > 0)
 			{
-				ItemBase item =  new Table(
-						Float.valueOf(tables.get("M00").get(0).toString()),
-						Float.valueOf(tables.get("M01").get(0).toString()),
-						Float.valueOf(tables.get("M02").get(0).toString()),
-						Float.valueOf(tables.get("M03").get(0).toString()),
-
-						Float.valueOf(tables.get("M10").get(0).toString()),
-						Float.valueOf(tables.get("M11").get(0).toString()),
-						Float.valueOf(tables.get("M12").get(0).toString()),
-						Float.valueOf(tables.get("M13").get(0).toString()),
-
-						Float.valueOf(tables.get("M20").get(0).toString()),
-						Float.valueOf(tables.get("M21").get(0).toString()),
-						Float.valueOf(tables.get("M22").get(0).toString()),
-						Float.valueOf(tables.get("M23").get(0).toString()),
-
-						Float.valueOf(tables.get("M30").get(0).toString()),
-						Float.valueOf(tables.get("M31").get(0).toString()),
-						Float.valueOf(tables.get("M32").get(0).toString()),
-						Float.valueOf(tables.get("M33").get(0).toString()),
-
-						Float.valueOf(tables.get("D").get(0).toString()),
-						Float.valueOf(tables.get("W").get(0).toString()),
-						Float.valueOf(tables.get("H").get(0).toString()));
+				it =  new Table(pose, dim);
 
 				int col = grayValues[(++grayLevelCounter) % grayValues.length];      
-				item.defaultColor = convertColor(col, col, col, 255);
-				//System.out.println("color code: "+item.defaultColor);
-				item.setColor(item.defaultColor);
-				item.name = identifier;
-				return item;
+				it.defaultColor = convertColor(col, col, col, 255);
+				it.setColor(it.defaultColor);
+				it.name = identifier;
+				return it;
 			}
 
 
 			// check if it is a CounterTop
 			HashMap<String, Vector<Object>> counter = PrologVisualizationCanvas.executeQuery(
 					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
-					"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'CounterTop')," +
-					"rdf_has("+identifier+",knowrob:widthOfObject,literal(type(_,_W)))," + 
-					"rdf_has("+identifier+",knowrob:heightOfObject,literal(type(_,_H))), " + 
-					"rdf_has("+identifier+",knowrob:depthOfObject,literal(type(_,_D))), " +
+							"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'CounterTop')" , null);
 
-					"rdf_triple(knowrob:orientation,"+identifier+",Or), " +
+			if (counter.get("OBJECTCLASS") != null && counter.get("OBJECTCLASS").size() > 0) {
 
-					"rdf_triple(knowrob:m00,Or,literal(type(_,_M00))), term_to_atom(M00,_M00)," +
-					"rdf_triple(knowrob:m01,Or,literal(type(_,_M01))), term_to_atom(M01,_M01)," +
-					"rdf_triple(knowrob:m02,Or,literal(type(_,_M02))), term_to_atom(M02,_M02)," +
-					"rdf_triple(knowrob:m03,Or,literal(type(_,_M03))), term_to_atom(M03,_M03)," +
-
-					"rdf_triple(knowrob:m10,Or,literal(type(_,_M10))), term_to_atom(M10,_M10)," +
-					"rdf_triple(knowrob:m11,Or,literal(type(_,_M11))), term_to_atom(M11,_M11)," +
-					"rdf_triple(knowrob:m12,Or,literal(type(_,_M12))), term_to_atom(M12,_M12)," +
-					"rdf_triple(knowrob:m13,Or,literal(type(_,_M13))), term_to_atom(M13,_M13)," +
-
-					"rdf_triple(knowrob:m20,Or,literal(type(_,_M20))), term_to_atom(M20,_M20)," +
-					"rdf_triple(knowrob:m21,Or,literal(type(_,_M21))), term_to_atom(M21,_M21)," +
-					"rdf_triple(knowrob:m22,Or,literal(type(_,_M22))), term_to_atom(M22,_M22)," +
-					"rdf_triple(knowrob:m23,Or,literal(type(_,_M23))), term_to_atom(M23,_M23)," +
-
-					"rdf_triple(knowrob:m30,Or,literal(type(_,_M30))), term_to_atom(M30,_M30)," +
-					"rdf_triple(knowrob:m31,Or,literal(type(_,_M31))), term_to_atom(M31,_M31)," +
-					"rdf_triple(knowrob:m32,Or,literal(type(_,_M32))), term_to_atom(M32,_M32)," +
-					"rdf_triple(knowrob:m33,Or,literal(type(_,_M33))), term_to_atom(M33,_M33)," +
-
-					"atom_to_term(_W,W,_), atom_to_term(_H,H,_), atom_to_term(_D,D,_)" , null);
-
-			if( counter.get("M00") != null && counter.get("M00").size() > 0) {
-
-				CounterTop c = new CounterTop(
-						Float.valueOf(counter.get("M00").get(0).toString()),
-						Float.valueOf(counter.get("M01").get(0).toString()),
-						Float.valueOf(counter.get("M02").get(0).toString()),
-						Float.valueOf(counter.get("M03").get(0).toString()),
-
-						Float.valueOf(counter.get("M10").get(0).toString()),
-						Float.valueOf(counter.get("M11").get(0).toString()),
-						Float.valueOf(counter.get("M12").get(0).toString()),
-						Float.valueOf(counter.get("M13").get(0).toString()),
-
-						Float.valueOf(counter.get("M20").get(0).toString()),
-						Float.valueOf(counter.get("M21").get(0).toString()),
-						Float.valueOf(counter.get("M22").get(0).toString()),
-						Float.valueOf(counter.get("M23").get(0).toString()),
-
-						Float.valueOf(counter.get("M30").get(0).toString()),
-						Float.valueOf(counter.get("M31").get(0).toString()),
-						Float.valueOf(counter.get("M32").get(0).toString()),
-						Float.valueOf(counter.get("M33").get(0).toString()),
-
-						Float.valueOf(counter.get("D").get(0).toString()),
-						Float.valueOf(counter.get("W").get(0).toString()),
-						Float.valueOf(counter.get("H").get(0).toString()));
+				it = new CounterTop(pose, dim);
 
 				int col = grayValues[(++grayLevelCounter) % grayValues.length];      
-				c.defaultColor = convertColor(col, col, col, 255);
-				c.setColor(c.defaultColor);
-				c.name = identifier;
+				it.defaultColor = convertColor(col, col, col, 255);
+				it.setColor(it.defaultColor);
+				it.name = identifier;
 
-				return c;
+				return it;
 			}
 
-      HashMap<String, Vector<Object>> building = PrologVisualizationCanvas.executeQuery(
+			
+			
+			HashMap<String, Vector<Object>> building = PrologVisualizationCanvas.executeQuery(
 					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
-          "rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'Building')," +
-					"rdf_has("+identifier+",knowrob:widthOfObject,literal(type(_,_W)))," + 
-					"rdf_has("+identifier+",knowrob:heightOfObject,literal(type(_,_H))), " + 
-					"rdf_has("+identifier+",knowrob:depthOfObject,literal(type(_,_D))), " +
+							"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'Building')" , null);
 
-					"rdf_triple(knowrob:orientation,"+identifier+",Or), " +
+			if( building.get("OBJECTCLASS") != null && building.get("OBJECTCLASS").size() > 0) {
 
-					"rdf_triple(knowrob:m00,Or,literal(type(_,_M00))), term_to_atom(M00,_M00)," +
-					"rdf_triple(knowrob:m01,Or,literal(type(_,_M01))), term_to_atom(M01,_M01)," +
-					"rdf_triple(knowrob:m02,Or,literal(type(_,_M02))), term_to_atom(M02,_M02)," +
-					"rdf_triple(knowrob:m03,Or,literal(type(_,_M03))), term_to_atom(M03,_M03)," +
-
-					"rdf_triple(knowrob:m10,Or,literal(type(_,_M10))), term_to_atom(M10,_M10)," +
-					"rdf_triple(knowrob:m11,Or,literal(type(_,_M11))), term_to_atom(M11,_M11)," +
-					"rdf_triple(knowrob:m12,Or,literal(type(_,_M12))), term_to_atom(M12,_M12)," +
-					"rdf_triple(knowrob:m13,Or,literal(type(_,_M13))), term_to_atom(M13,_M13)," +
-
-					"rdf_triple(knowrob:m20,Or,literal(type(_,_M20))), term_to_atom(M20,_M20)," +
-					"rdf_triple(knowrob:m21,Or,literal(type(_,_M21))), term_to_atom(M21,_M21)," +
-					"rdf_triple(knowrob:m22,Or,literal(type(_,_M22))), term_to_atom(M22,_M22)," +
-					"rdf_triple(knowrob:m23,Or,literal(type(_,_M23))), term_to_atom(M23,_M23)," +
-
-					"rdf_triple(knowrob:m30,Or,literal(type(_,_M30))), term_to_atom(M30,_M30)," +
-					"rdf_triple(knowrob:m31,Or,literal(type(_,_M31))), term_to_atom(M31,_M31)," +
-					"rdf_triple(knowrob:m32,Or,literal(type(_,_M32))), term_to_atom(M32,_M32)," +
-					"rdf_triple(knowrob:m33,Or,literal(type(_,_M33))), term_to_atom(M33,_M33)," +
-
-					"atom_to_term(_W,W,_), atom_to_term(_H,H,_), atom_to_term(_D,D,_)" , null);
-
-			if( building.get("M00") != null && building.get("M00").size() > 0) {
-
-				Building b = new Building(
-						Float.valueOf(building.get("M00").get(0).toString()),
-						Float.valueOf(building.get("M01").get(0).toString()),
-						Float.valueOf(building.get("M02").get(0).toString()),
-						100*Float.valueOf(building.get("M03").get(0).toString()),
-
-						Float.valueOf(building.get("M10").get(0).toString()),
-						Float.valueOf(building.get("M11").get(0).toString()),
-						Float.valueOf(building.get("M12").get(0).toString()),
-						100*Float.valueOf(building.get("M13").get(0).toString()),
-
-						Float.valueOf(building.get("M20").get(0).toString()),
-						Float.valueOf(building.get("M21").get(0).toString()),
-						Float.valueOf(building.get("M22").get(0).toString()),
-						100*Float.valueOf(building.get("M23").get(0).toString()),
-
-						Float.valueOf(building.get("M30").get(0).toString()),
-						Float.valueOf(building.get("M31").get(0).toString()),
-						Float.valueOf(building.get("M32").get(0).toString()),
-						Float.valueOf(building.get("M33").get(0).toString()),
-
-						100*Float.valueOf(building.get("D").get(0).toString()),
-						100*Float.valueOf(building.get("W").get(0).toString()),
-						100*Float.valueOf(building.get("H").get(0).toString()));
+				it = new Building(pose, dim);
 
 				int col = grayValues[(++grayLevelCounter) % grayValues.length];      
-				b.defaultColor = convertColor(col, col, col, 255);
-				b.setColor(b.defaultColor);
-				b.name = identifier;
+				it.defaultColor = convertColor(col, col, col, 255);
+				it.setColor(it.defaultColor);
+				it.name = identifier;
 
-				return b;
+				return it;
 			}
 
 
-      HashMap<String, Vector<Object>> level = PrologVisualizationCanvas.executeQuery(
+			HashMap<String, Vector<Object>> level = PrologVisualizationCanvas.executeQuery(
 					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
-          "rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'LevelOfAConstruction')," +
-					"rdf_has("+identifier+",knowrob:widthOfObject,literal(type(_,_W)))," + 
-					"rdf_has("+identifier+",knowrob:heightOfObject,literal(type(_,_H))), " + 
-					"rdf_has("+identifier+",knowrob:depthOfObject,literal(type(_,_D))), " +
+							"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'LevelOfAConstruction')" , null);
 
-					"rdf_triple(knowrob:orientation,"+identifier+",Or), " +
+			if( level.get("OBJECTCLASS") != null && level.get("OBJECTCLASS").size() > 0) {
 
-					"rdf_triple(knowrob:m00,Or,literal(type(_,_M00))), term_to_atom(M00,_M00)," +
-					"rdf_triple(knowrob:m01,Or,literal(type(_,_M01))), term_to_atom(M01,_M01)," +
-					"rdf_triple(knowrob:m02,Or,literal(type(_,_M02))), term_to_atom(M02,_M02)," +
-					"rdf_triple(knowrob:m03,Or,literal(type(_,_M03))), term_to_atom(M03,_M03)," +
-
-					"rdf_triple(knowrob:m10,Or,literal(type(_,_M10))), term_to_atom(M10,_M10)," +
-					"rdf_triple(knowrob:m11,Or,literal(type(_,_M11))), term_to_atom(M11,_M11)," +
-					"rdf_triple(knowrob:m12,Or,literal(type(_,_M12))), term_to_atom(M12,_M12)," +
-					"rdf_triple(knowrob:m13,Or,literal(type(_,_M13))), term_to_atom(M13,_M13)," +
-
-					"rdf_triple(knowrob:m20,Or,literal(type(_,_M20))), term_to_atom(M20,_M20)," +
-					"rdf_triple(knowrob:m21,Or,literal(type(_,_M21))), term_to_atom(M21,_M21)," +
-					"rdf_triple(knowrob:m22,Or,literal(type(_,_M22))), term_to_atom(M22,_M22)," +
-					"rdf_triple(knowrob:m23,Or,literal(type(_,_M23))), term_to_atom(M23,_M23)," +
-
-					"rdf_triple(knowrob:m30,Or,literal(type(_,_M30))), term_to_atom(M30,_M30)," +
-					"rdf_triple(knowrob:m31,Or,literal(type(_,_M31))), term_to_atom(M31,_M31)," +
-					"rdf_triple(knowrob:m32,Or,literal(type(_,_M32))), term_to_atom(M32,_M32)," +
-					"rdf_triple(knowrob:m33,Or,literal(type(_,_M33))), term_to_atom(M33,_M33)," +
-
-					"atom_to_term(_W,W,_), atom_to_term(_H,H,_), atom_to_term(_D,D,_)" , null);
-
-			if( level.get("M00") != null && level.get("M00").size() > 0) {
-
-				LevelOfAConstruction l = new LevelOfAConstruction(
-						Float.valueOf(level.get("M00").get(0).toString()),
-						Float.valueOf(level.get("M01").get(0).toString()),
-						Float.valueOf(level.get("M02").get(0).toString()),
-						Float.valueOf(level.get("M03").get(0).toString()),
-
-						Float.valueOf(level.get("M10").get(0).toString()),
-						Float.valueOf(level.get("M11").get(0).toString()),
-						Float.valueOf(level.get("M12").get(0).toString()),
-						Float.valueOf(level.get("M13").get(0).toString()),
-
-						Float.valueOf(level.get("M20").get(0).toString()),
-						Float.valueOf(level.get("M21").get(0).toString()),
-						Float.valueOf(level.get("M22").get(0).toString()),
-						Float.valueOf(level.get("M23").get(0).toString()),
-
-						Float.valueOf(level.get("M30").get(0).toString()),
-						Float.valueOf(level.get("M31").get(0).toString()),
-						Float.valueOf(level.get("M32").get(0).toString()),
-						Float.valueOf(level.get("M33").get(0).toString()),
-
-						Float.valueOf(level.get("D").get(0).toString()),
-						Float.valueOf(level.get("W").get(0).toString()),
-						Float.valueOf(level.get("H").get(0).toString()));
+				it = new LevelOfAConstruction(pose, dim);
 
 				int col = grayValues[(++grayLevelCounter) % grayValues.length];      
-				l.defaultColor = convertColor(col, col, col, 255);
-				l.setColor(l.defaultColor);
-				l.name = identifier;
+				it.defaultColor = convertColor(col, col, col, 255);
+				it.setColor(it.defaultColor);
+				it.name = identifier;
 
-				return l;
+				return it;
 			}
 
-      
 
-      HashMap<String, Vector<Object>> room = PrologVisualizationCanvas.executeQuery(
+
+			HashMap<String, Vector<Object>> room = PrologVisualizationCanvas.executeQuery(
 					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
-          "( rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'RoomInAConstruction');" +
-          "  rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'MultiRoomUnit') )," +
-					"rdf_has("+identifier+",knowrob:widthOfObject,literal(type(_,_W)))," + 
-					"rdf_has("+identifier+",knowrob:heightOfObject,literal(type(_,_H))), " + 
-					"rdf_has("+identifier+",knowrob:depthOfObject,literal(type(_,_D))), " +
+							"( rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'RoomInAConstruction');" +
+							"  rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'MultiRoomUnit') )" , null);
 
-					"rdf_triple(knowrob:orientation,"+identifier+",Or), " +
+			if( room.get("OBJECTCLASS") != null && room.get("OBJECTCLASS").size() > 0) {
 
-					"rdf_triple(knowrob:m00,Or,literal(type(_,_M00))), term_to_atom(M00,_M00)," +
-					"rdf_triple(knowrob:m01,Or,literal(type(_,_M01))), term_to_atom(M01,_M01)," +
-					"rdf_triple(knowrob:m02,Or,literal(type(_,_M02))), term_to_atom(M02,_M02)," +
-					"rdf_triple(knowrob:m03,Or,literal(type(_,_M03))), term_to_atom(M03,_M03)," +
-
-					"rdf_triple(knowrob:m10,Or,literal(type(_,_M10))), term_to_atom(M10,_M10)," +
-					"rdf_triple(knowrob:m11,Or,literal(type(_,_M11))), term_to_atom(M11,_M11)," +
-					"rdf_triple(knowrob:m12,Or,literal(type(_,_M12))), term_to_atom(M12,_M12)," +
-					"rdf_triple(knowrob:m13,Or,literal(type(_,_M13))), term_to_atom(M13,_M13)," +
-
-					"rdf_triple(knowrob:m20,Or,literal(type(_,_M20))), term_to_atom(M20,_M20)," +
-					"rdf_triple(knowrob:m21,Or,literal(type(_,_M21))), term_to_atom(M21,_M21)," +
-					"rdf_triple(knowrob:m22,Or,literal(type(_,_M22))), term_to_atom(M22,_M22)," +
-					"rdf_triple(knowrob:m23,Or,literal(type(_,_M23))), term_to_atom(M23,_M23)," +
-
-					"rdf_triple(knowrob:m30,Or,literal(type(_,_M30))), term_to_atom(M30,_M30)," +
-					"rdf_triple(knowrob:m31,Or,literal(type(_,_M31))), term_to_atom(M31,_M31)," +
-					"rdf_triple(knowrob:m32,Or,literal(type(_,_M32))), term_to_atom(M32,_M32)," +
-					"rdf_triple(knowrob:m33,Or,literal(type(_,_M33))), term_to_atom(M33,_M33)," +
-
-					"atom_to_term(_W,W,_), atom_to_term(_H,H,_), atom_to_term(_D,D,_)" , null);
-
-			if( room.get("M00") != null && room.get("M00").size() > 0) {
-
-				RoomInAConstruction ro = new RoomInAConstruction(
-						Float.valueOf(room.get("M00").get(0).toString()),
-						Float.valueOf(room.get("M01").get(0).toString()),
-						Float.valueOf(room.get("M02").get(0).toString()),
-						Float.valueOf(room.get("M03").get(0).toString()),
-
-						Float.valueOf(room.get("M10").get(0).toString()),
-						Float.valueOf(room.get("M11").get(0).toString()),
-						Float.valueOf(room.get("M12").get(0).toString()),
-						Float.valueOf(room.get("M13").get(0).toString()),
-
-						Float.valueOf(room.get("M20").get(0).toString()),
-						Float.valueOf(room.get("M21").get(0).toString()),
-						Float.valueOf(room.get("M22").get(0).toString()),
-						Float.valueOf(room.get("M23").get(0).toString()),
-
-						Float.valueOf(room.get("M30").get(0).toString()),
-						Float.valueOf(room.get("M31").get(0).toString()),
-						Float.valueOf(room.get("M32").get(0).toString()),
-						Float.valueOf(room.get("M33").get(0).toString()),
-
-            Float.valueOf(room.get("D").get(0).toString()),
-						Float.valueOf(room.get("W").get(0).toString()),
-						Float.valueOf(room.get("H").get(0).toString()));
+				it = new RoomInAConstruction(pose, dim);
 
 				int col = grayValues[(++grayLevelCounter) % grayValues.length];      
-				ro.defaultColor = convertColor(col, col, col, 255);
-				ro.setColor(ro.defaultColor);
-				ro.name = identifier;
+				it.defaultColor = convertColor(col, col, col, 255);
+				it.setColor(it.defaultColor);
+				it.name = identifier;
 
-				return ro;
+				return it;
 			}
 
-      HashMap<String, Vector<Object>> pose = PrologVisualizationCanvas.executeQuery(
+			
+			
+			HashMap<String, Vector<Object>> place = PrologVisualizationCanvas.executeQuery(
 					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
-          "rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'Place')," +
-					"rdf_triple(knowrob:orientation,"+identifier+",Or), " +
-					"rdf_triple(knowrob:m00,Or,_LM00),strip_literal_type(_LM00,_M00),atom_to_term(_M00,M00,_)," +
-					"rdf_triple(knowrob:m01,Or,_LM01),strip_literal_type(_LM01,_M01),atom_to_term(_M01,M01,_)," +
-					"rdf_triple(knowrob:m02,Or,_LM02),strip_literal_type(_LM02,_M02),atom_to_term(_M02,M02,_)," +
-					"rdf_triple(knowrob:m03,Or,_LM03),strip_literal_type(_LM03,_M03),atom_to_term(_M03,M03,_)," +
-					"rdf_triple(knowrob:m10,Or,_LM10),strip_literal_type(_LM10,_M10),atom_to_term(_M10,M10,_)," +
-					"rdf_triple(knowrob:m11,Or,_LM11),strip_literal_type(_LM11,_M11),atom_to_term(_M11,M11,_)," +
-					"rdf_triple(knowrob:m12,Or,_LM12),strip_literal_type(_LM12,_M12),atom_to_term(_M12,M12,_)," +
-					"rdf_triple(knowrob:m13,Or,_LM13),strip_literal_type(_LM13,_M13),atom_to_term(_M13,M13,_)," +
-					"rdf_triple(knowrob:m20,Or,_LM20),strip_literal_type(_LM20,_M20),atom_to_term(_M20,M20,_)," +
-					"rdf_triple(knowrob:m21,Or,_LM21),strip_literal_type(_LM21,_M21),atom_to_term(_M21,M21,_)," +
-					"rdf_triple(knowrob:m22,Or,_LM22),strip_literal_type(_LM22,_M22),atom_to_term(_M22,M22,_)," +
-					"rdf_triple(knowrob:m23,Or,_LM23),strip_literal_type(_LM23,_M23),atom_to_term(_M23,M23,_)," +
-					"rdf_triple(knowrob:m30,Or,_LM30),strip_literal_type(_LM30,_M30),atom_to_term(_M30,M30,_)," +
-					"rdf_triple(knowrob:m31,Or,_LM31),strip_literal_type(_LM31,_M31),atom_to_term(_M31,M31,_)," +
-					"rdf_triple(knowrob:m32,Or,_LM32),strip_literal_type(_LM32,_M32),atom_to_term(_M32,M32,_)," +
-					"rdf_triple(knowrob:m33,Or,_LM33),strip_literal_type(_LM33,_M33),atom_to_term(_M33,M33,_)", null);
+							"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'Place')", null);
 
-			if( pose.get("M00") != null && pose.get("M00").size() > 0) {
+			if( place.get("OBJECTCLASS") != null && place.get("OBJECTCLASS").size() > 0) {
 
-				Pose p = new Pose(
-						Float.valueOf(pose.get("M00").get(0).toString()),
-						Float.valueOf(pose.get("M01").get(0).toString()),
-						Float.valueOf(pose.get("M02").get(0).toString()),
-						Float.valueOf(pose.get("M03").get(0).toString()),
-
-						Float.valueOf(pose.get("M10").get(0).toString()),
-						Float.valueOf(pose.get("M11").get(0).toString()),
-						Float.valueOf(pose.get("M12").get(0).toString()),
-						Float.valueOf(pose.get("M13").get(0).toString()),
-
-						Float.valueOf(pose.get("M20").get(0).toString()),
-						Float.valueOf(pose.get("M21").get(0).toString()),
-						Float.valueOf(pose.get("M22").get(0).toString()),
-						Float.valueOf(pose.get("M23").get(0).toString()),
-
-						Float.valueOf(pose.get("M30").get(0).toString()),
-						Float.valueOf(pose.get("M31").get(0).toString()),
-						Float.valueOf(pose.get("M32").get(0).toString()),
-						Float.valueOf(pose.get("M33").get(0).toString()),
-
-						0.35f,
-						0.35f,
-						0.0f);
+				it = new Pose(new Matrix4d(pose), new Vector3d(0.35f,0.35f,0.0f));
 
 				int col = grayValues[(++grayLevelCounter) % grayValues.length];      
-				p.defaultColor = convertColor(col, col, col, 255);
-				p.setColor(p.defaultColor);
-				p.name = identifier;
+				it.defaultColor = convertColor(col, col, col, 255);
+				it.setColor(it.defaultColor);
+				it.name = identifier;
 
-				return p;
+				return it;
 			}
-      
+
+			
 			// check if it is some kind of box (e.g. Bed)
 			HashMap<String, Vector<Object>> box = PrologVisualizationCanvas.executeQuery(
 					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
-          //"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'HumanScaleObject')," + // too general?
-          "( rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'ConstructionArtifact');" +
-            "rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'FurniturePiece'))," +
-					//"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'Bed-PieceOfFurniture')," +
-					"rdf_has("+identifier+",knowrob:widthOfObject,literal(type(_,_W)))," + 
-					"rdf_has("+identifier+",knowrob:heightOfObject,literal(type(_,_H))), " + 
-					"rdf_has("+identifier+",knowrob:depthOfObject,literal(type(_,_D))), " +
+							"( rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'ConstructionArtifact');" +
+							"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'FurniturePiece'))" , null);
 
+			if( box.get("OBJECTCLASS") != null && box.get("OBJECTCLASS").size() > 0) {
 
-					"rdf_triple(knowrob:orientation,"+identifier+",Or), " +
-
-					"rdf_triple(knowrob:m00,Or,literal(type(_,_M00))), term_to_atom(M00,_M00)," +
-					"rdf_triple(knowrob:m01,Or,literal(type(_,_M01))), term_to_atom(M01,_M01)," +
-					"rdf_triple(knowrob:m02,Or,literal(type(_,_M02))), term_to_atom(M02,_M02)," +
-					"rdf_triple(knowrob:m03,Or,literal(type(_,_M03))), term_to_atom(M03,_M03)," +
-
-					"rdf_triple(knowrob:m10,Or,literal(type(_,_M10))), term_to_atom(M10,_M10)," +
-					"rdf_triple(knowrob:m11,Or,literal(type(_,_M11))), term_to_atom(M11,_M11)," +
-					"rdf_triple(knowrob:m12,Or,literal(type(_,_M12))), term_to_atom(M12,_M12)," +
-					"rdf_triple(knowrob:m13,Or,literal(type(_,_M13))), term_to_atom(M13,_M13)," +
-
-					"rdf_triple(knowrob:m20,Or,literal(type(_,_M20))), term_to_atom(M20,_M20)," +
-					"rdf_triple(knowrob:m21,Or,literal(type(_,_M21))), term_to_atom(M21,_M21)," +
-					"rdf_triple(knowrob:m22,Or,literal(type(_,_M22))), term_to_atom(M22,_M22)," +
-					"rdf_triple(knowrob:m23,Or,literal(type(_,_M23))), term_to_atom(M23,_M23)," +
-
-					"rdf_triple(knowrob:m30,Or,literal(type(_,_M30))), term_to_atom(M30,_M30)," +
-					"rdf_triple(knowrob:m31,Or,literal(type(_,_M31))), term_to_atom(M31,_M31)," +
-					"rdf_triple(knowrob:m32,Or,literal(type(_,_M32))), term_to_atom(M32,_M32)," +
-					"rdf_triple(knowrob:m33,Or,literal(type(_,_M33))), term_to_atom(M33,_M33)," +
-
-					"atom_to_term(_W,W,_), atom_to_term(_H,H,_), atom_to_term(_D,D,_)" , null);
-
-			if( box.get("M00") != null && box.get("M00").size() > 0) {
-
-				Box b = new Box(
-						Float.valueOf(box.get("M00").get(0).toString()),
-						Float.valueOf(box.get("M01").get(0).toString()),
-						Float.valueOf(box.get("M02").get(0).toString()),
-						Float.valueOf(box.get("M03").get(0).toString()),
-
-						Float.valueOf(box.get("M10").get(0).toString()),
-						Float.valueOf(box.get("M11").get(0).toString()),
-						Float.valueOf(box.get("M12").get(0).toString()),
-						Float.valueOf(box.get("M13").get(0).toString()),
-
-						Float.valueOf(box.get("M20").get(0).toString()),
-						Float.valueOf(box.get("M21").get(0).toString()),
-						Float.valueOf(box.get("M22").get(0).toString()),
-						Float.valueOf(box.get("M23").get(0).toString()),
-
-						Float.valueOf(box.get("M30").get(0).toString()),
-						Float.valueOf(box.get("M31").get(0).toString()),
-						Float.valueOf(box.get("M32").get(0).toString()),
-						Float.valueOf(box.get("M33").get(0).toString()),
-
-						Float.valueOf(box.get("D").get(0).toString()),
-						Float.valueOf(box.get("W").get(0).toString()),
-						Float.valueOf(box.get("H").get(0).toString()));
+				it = new Box(pose, dim);
 
 				int col = grayValues[(++grayLevelCounter) % grayValues.length];      
-				b.defaultColor = convertColor(col, col, col, 255);
-				b.setColor(b.defaultColor);
-				b.name = identifier;
+				it.defaultColor = convertColor(col, col, col, 255);
+				it.setColor(it.defaultColor);
+				it.name = identifier;
 
-				return b;
+				return it;
 			}
 
 
@@ -1704,6 +1127,75 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 	}
 
+	private double[] getDimensionsOfItem(String identifier) {
+		try{
+			HashMap<String, Vector<Object>> nfo = PrologVisualizationCanvas.executeQuery(
+					"rdf_has("+identifier+",knowrob:widthOfObject,literal(type(_,_W)))," + 
+							"rdf_has("+identifier+",knowrob:heightOfObject,literal(type(_,_H))), " + 
+							"rdf_has("+identifier+",knowrob:depthOfObject,literal(type(_,_D))), " +
+							"atom_to_term(_W,W,_), atom_to_term(_H,H,_), atom_to_term(_D,D,_)" , null);
+
+			return new double[] {
+					Double.valueOf(nfo.get("D").get(0).toString()),
+					Double.valueOf(nfo.get("W").get(0).toString()),
+					Double.valueOf(nfo.get("H").get(0).toString())};
+
+		} catch(Exception e) {
+			return null;
+		}
+	}
+
+
+	private double[] getOrientationOfItem(String identifier) {
+		try{
+			
+			// get orientation
+			HashMap<String, Vector<Object>> nfo = PrologVisualizationCanvas.executeQuery(
+					"rdf_triple(knowrob:orientation,"+identifier+",Or), " +
+
+					"rdf_triple(knowrob:m00,Or,_M00l), util:strip_literal_type(_M00l, _M00), term_to_atom(M00,_M00)," +
+					"rdf_triple(knowrob:m01,Or,_M01l), util:strip_literal_type(_M01l, _M01), term_to_atom(M01,_M01)," +
+					"rdf_triple(knowrob:m02,Or,_M02l), util:strip_literal_type(_M02l, _M02), term_to_atom(M02,_M02)," +
+					"rdf_triple(knowrob:m03,Or,_M03l), util:strip_literal_type(_M03l, _M03), term_to_atom(M03,_M03)," +
+
+					"rdf_triple(knowrob:m10,Or,_M10l), util:strip_literal_type(_M10l, _M10), term_to_atom(M10,_M10)," +
+					"rdf_triple(knowrob:m11,Or,_M11l), util:strip_literal_type(_M11l, _M11), term_to_atom(M11,_M11)," +
+					"rdf_triple(knowrob:m12,Or,_M12l), util:strip_literal_type(_M12l, _M12), term_to_atom(M12,_M12)," +
+					"rdf_triple(knowrob:m13,Or,_M13l), util:strip_literal_type(_M13l, _M13), term_to_atom(M13,_M13)," +
+
+					"rdf_triple(knowrob:m20,Or,_M20l), util:strip_literal_type(_M20l, _M20), term_to_atom(M20,_M20)," +
+					"rdf_triple(knowrob:m21,Or,_M21l), util:strip_literal_type(_M21l, _M21), term_to_atom(M21,_M21)," +
+					"rdf_triple(knowrob:m22,Or,_M22l), util:strip_literal_type(_M22l, _M22), term_to_atom(M22,_M22)," +
+					"rdf_triple(knowrob:m23,Or,_M23l), util:strip_literal_type(_M23l, _M23), term_to_atom(M23,_M23)," +
+
+					"rdf_triple(knowrob:m30,Or,_M30l), util:strip_literal_type(_M30l, _M30), term_to_atom(M30,_M30)," +
+					"rdf_triple(knowrob:m31,Or,_M31l), util:strip_literal_type(_M31l, _M31), term_to_atom(M31,_M31)," +
+					"rdf_triple(knowrob:m32,Or,_M32l), util:strip_literal_type(_M32l, _M32), term_to_atom(M32,_M32)," +
+					"rdf_triple(knowrob:m33,Or,_M33l), util:strip_literal_type(_M33l, _M33), term_to_atom(M33,_M33)", null);
+			
+			return new double[] {
+					Double.valueOf(nfo.get("M00").get(0).toString()),
+					Double.valueOf(nfo.get("M01").get(0).toString()),
+					Double.valueOf(nfo.get("M02").get(0).toString()),
+					Double.valueOf(nfo.get("M03").get(0).toString()),
+					Double.valueOf(nfo.get("M10").get(0).toString()),
+					Double.valueOf(nfo.get("M11").get(0).toString()),
+					Double.valueOf(nfo.get("M12").get(0).toString()),
+					Double.valueOf(nfo.get("M13").get(0).toString()),
+					Double.valueOf(nfo.get("M20").get(0).toString()),
+					Double.valueOf(nfo.get("M21").get(0).toString()),
+					Double.valueOf(nfo.get("M22").get(0).toString()),
+					Double.valueOf(nfo.get("M23").get(0).toString()),
+					Double.valueOf(nfo.get("M30").get(0).toString()),
+					Double.valueOf(nfo.get("M31").get(0).toString()),
+					Double.valueOf(nfo.get("M32").get(0).toString()),
+					Double.valueOf(nfo.get("M33").get(0).toString())};
+		} catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 
 
 	//////////////////////////////////////////////////////////////////////////////////////////////
@@ -1712,74 +1204,74 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	// 
 	// EVENT HANDLER
 	// 
-//
-//	public void mousePressed(MouseEvent e) {
-//
-//		// general: save mouse positions for calculating rotation and translation
-//		if(e.getButton()==MouseEvent.BUTTON1) {
-//			leftMouseX = e.getX();
-//			leftMouseY = e.getY();
-//		} else if(e.getButton()==MouseEvent.BUTTON3) {
-//			rightMouseX = e.getX();
-//			rightMouseY = e.getY();
-//		} else if (e.getButton()==MouseEvent.BUTTON2) {
-//			centerMouseY = e.getY();
-//		}
-//
-//
-//
-//		//	  // ------------- menu stuff -------------- 
-//		//	  // play forward
-//		//	  if(menu_human.mouseInTriangle(e.getX(), e.getY(), menu_human.xpl1, menu_human.ypl1, menu_human.xpl2, menu_human.ypl2, menu_human.xpl3, menu_human.ypl3)){
-//		//		  playingForward = true;
-//		//		  timer.start();		 	  
-//		//	  }
-//		//	  
-//		//	  // pause
-//		//	  else if(menu_human.mouseInRectangle(e.getX(), e.getY(), menu_human.xps, menu_human.yps, menu_human.widthps, menu_human.heightps)){
-//		//		  timer.stop();
-//		//	  }
-//		//	  
-//		//	  // play backward
-//		//	  else if(menu_human.mouseInTriangle(e.getX(), e.getY(), menu_human.xrew1, menu_human.yrew1, menu_human.xrew2, menu_human.yrew2, menu_human.xrew3, menu_human.yrew3)){		  
-//		//		  playingForward = false;
-//		//		  timer.start();	  
-//		//	  }
-//		//	  
-//		//	  // stop button
-//		//	  else if(menu_human.mouseInRectangle(e.getX(), e.getY(), menu_human.xstop, menu_human.ystop, menu_human.widthstop, menu_human.heightstop)){
-//		//		  timer.stop();
-//		//		  currentFrame = 0;
-//		//	  }
-//		//	  
-//		//	  // step forward
-//		//	  else if(menu_human.mouseInRectangle(e.getX(), e.getY(), menu_human.xpls, menu_human.ypls, menu_human.widthpls, menu_human.heightpls)){
-//		//		  timer.stop();
-//		//		  currentFrame++;
-//		//	  }
-//		//	  
-//		//	  // step backward
-//		//	  else if(menu_human.mouseInRectangle(e.getX(), e.getY(), menu_human.xrews, menu_human.yrews, menu_human.widthrews, menu_human.heightrews)){
-//		//		  timer.stop();
-//		//		  currentFrame--;
-//		//	  } 
-//
-//
-//
-//
-//
-//		if(currentFrame < 0) currentFrame = 0;
-//		if(currentFrame>= numberFrames) currentFrame = numberFrames-1;
-//
-//
-//
-//
-//
-//
-//
-//		redraw();
-//	}
-	
+	//
+	//	public void mousePressed(MouseEvent e) {
+	//
+	//		// general: save mouse positions for calculating rotation and translation
+	//		if(e.getButton()==MouseEvent.BUTTON1) {
+	//			leftMouseX = e.getX();
+	//			leftMouseY = e.getY();
+	//		} else if(e.getButton()==MouseEvent.BUTTON3) {
+	//			rightMouseX = e.getX();
+	//			rightMouseY = e.getY();
+	//		} else if (e.getButton()==MouseEvent.BUTTON2) {
+	//			centerMouseY = e.getY();
+	//		}
+	//
+	//
+	//
+	//		//	  // ------------- menu stuff -------------- 
+	//		//	  // play forward
+	//		//	  if(menu_human.mouseInTriangle(e.getX(), e.getY(), menu_human.xpl1, menu_human.ypl1, menu_human.xpl2, menu_human.ypl2, menu_human.xpl3, menu_human.ypl3)){
+	//		//		  playingForward = true;
+	//		//		  timer.start();		 	  
+	//		//	  }
+	//		//	  
+	//		//	  // pause
+	//		//	  else if(menu_human.mouseInRectangle(e.getX(), e.getY(), menu_human.xps, menu_human.yps, menu_human.widthps, menu_human.heightps)){
+	//		//		  timer.stop();
+	//		//	  }
+	//		//	  
+	//		//	  // play backward
+	//		//	  else if(menu_human.mouseInTriangle(e.getX(), e.getY(), menu_human.xrew1, menu_human.yrew1, menu_human.xrew2, menu_human.yrew2, menu_human.xrew3, menu_human.yrew3)){		  
+	//		//		  playingForward = false;
+	//		//		  timer.start();	  
+	//		//	  }
+	//		//	  
+	//		//	  // stop button
+	//		//	  else if(menu_human.mouseInRectangle(e.getX(), e.getY(), menu_human.xstop, menu_human.ystop, menu_human.widthstop, menu_human.heightstop)){
+	//		//		  timer.stop();
+	//		//		  currentFrame = 0;
+	//		//	  }
+	//		//	  
+	//		//	  // step forward
+	//		//	  else if(menu_human.mouseInRectangle(e.getX(), e.getY(), menu_human.xpls, menu_human.ypls, menu_human.widthpls, menu_human.heightpls)){
+	//		//		  timer.stop();
+	//		//		  currentFrame++;
+	//		//	  }
+	//		//	  
+	//		//	  // step backward
+	//		//	  else if(menu_human.mouseInRectangle(e.getX(), e.getY(), menu_human.xrews, menu_human.yrews, menu_human.widthrews, menu_human.heightrews)){
+	//		//		  timer.stop();
+	//		//		  currentFrame--;
+	//		//	  } 
+	//
+	//
+	//
+	//
+	//
+	//		if(currentFrame < 0) currentFrame = 0;
+	//		if(currentFrame>= numberFrames) currentFrame = numberFrames-1;
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//		redraw();
+	//	}
+
 	public void delay(int millis)
 	{
 
@@ -1800,45 +1292,45 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	}
 
 
-//
-//
-//	public void mouseReleased(MouseEvent e) {
-//
-//		if(e.getButton()==MouseEvent.BUTTON1) {	// reset the buffers
-//			leftMouseX = -1.0f;
-//			leftMouseY = -1.0f;
-//		} else if(e.getButton()==MouseEvent.BUTTON3) {	// reset the buffers
-//			rightMouseX = -1.0f;
-//			rightMouseY = -1.0f;
-//		} else if (e.getButton()==MouseEvent.BUTTON2) {
-//			centerMouseY = -1.0f;
-//		}
-//		redraw();
-//	}
-//
-//	public void mouseDragged(MouseEvent e) {
-//
-//
-//		if(leftMouseX != -1.0f) {	// change rotation
-//			yRotDisplay-= (e.getY()-leftMouseY) * 0.05;
-//			xRotDisplay+= (e.getX()-leftMouseX) * 0.05;
-//			leftMouseX = e.getX();
-//			leftMouseY = e.getY();
-//
-//		}else if(rightMouseX != -1.0f) {	// change translation
-//			yShiftDisplay+= (e.getY()-rightMouseY) * 0.5;
-//			xShiftDisplay+= (e.getX()-rightMouseX) * 0.5;
-//			rightMouseX = e.getX();
-//			rightMouseY = e.getY();
-//
-//		} else if (centerMouseY != -1.0f) {	// zoom
-//			zoomDisplay+= (e.getY()-centerMouseY) * 0.02;
-//			if(zoomDisplay<0.01){zoomDisplay=0.01f;}
-//			centerMouseY = e.getY();
-//		}
-//
-//		redraw();
-//	}
+	//
+	//
+	//	public void mouseReleased(MouseEvent e) {
+	//
+	//		if(e.getButton()==MouseEvent.BUTTON1) {	// reset the buffers
+	//			leftMouseX = -1.0f;
+	//			leftMouseY = -1.0f;
+	//		} else if(e.getButton()==MouseEvent.BUTTON3) {	// reset the buffers
+	//			rightMouseX = -1.0f;
+	//			rightMouseY = -1.0f;
+	//		} else if (e.getButton()==MouseEvent.BUTTON2) {
+	//			centerMouseY = -1.0f;
+	//		}
+	//		redraw();
+	//	}
+	//
+	//	public void mouseDragged(MouseEvent e) {
+	//
+	//
+	//		if(leftMouseX != -1.0f) {	// change rotation
+	//			yRotDisplay-= (e.getY()-leftMouseY) * 0.05;
+	//			xRotDisplay+= (e.getX()-leftMouseX) * 0.05;
+	//			leftMouseX = e.getX();
+	//			leftMouseY = e.getY();
+	//
+	//		}else if(rightMouseX != -1.0f) {	// change translation
+	//			yShiftDisplay+= (e.getY()-rightMouseY) * 0.5;
+	//			xShiftDisplay+= (e.getX()-rightMouseX) * 0.5;
+	//			rightMouseX = e.getX();
+	//			rightMouseY = e.getY();
+	//
+	//		} else if (centerMouseY != -1.0f) {	// zoom
+	//			zoomDisplay+= (e.getY()-centerMouseY) * 0.02;
+	//			if(zoomDisplay<0.01){zoomDisplay=0.01f;}
+	//			centerMouseY = e.getY();
+	//		}
+	//
+	//		redraw();
+	//	}
 
 
 	public void keyPressed(){
@@ -1876,61 +1368,61 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			buffer.resetMatrix();
 			this.resetMatrix();
 		case KeyEvent.VK_P:
-        this.record = true;
-        break;
-    case KeyEvent.VK_Q:
-        cam.setRotations(-Math.PI/2,Math.PI/4,-Math.PI);
-        cam.lookAt(0.0,0.0,0.0,cam.getDistance());
-        break;
-    case KeyEvent.VK_E:
-        cam.setRotations(-Math.PI,0.0,0.0);
-        cam.lookAt(0.0,0.0,0.0,cam.getDistance());
-        break;
-    case KeyEvent.VK_A:
-        cam.rotateY(-ROTATE_Y_DELTA);
+			this.record = true;
 			break;
-    case KeyEvent.VK_D:
-        cam.rotateY(ROTATE_Y_DELTA);
+		case KeyEvent.VK_Q:
+			cam.setRotations(-Math.PI/2,Math.PI/4,-Math.PI);
+			cam.lookAt(0.0,0.0,0.0,cam.getDistance());
 			break;
-    case KeyEvent.VK_W:
-        float[] rpy = cam.getRotations();
-        float[] lat = cam.getLookAt();
-        //float[] pos = cam.getPosition();
-        double dist = cam.getDistance();
-        CameraState state = new CameraState(new Rotation(RotationOrder.XYZ,
-                                                         rpy[0],
-                                                         rpy[1],
-                                                         rpy[2]),
-                                            new Vector3D((lat[0])* 0.75,
-                                                         (lat[1])* 0.75,
-                                                         (lat[2])* 0.75),
-                                            dist);
-        state.apply(this);
-        cam.setState(state);
+		case KeyEvent.VK_E:
+			cam.setRotations(-Math.PI,0.0,0.0);
+			cam.lookAt(0.0,0.0,0.0,cam.getDistance());
 			break;
-    case KeyEvent.VK_S:
-        float[] rpy2 = cam.getRotations();
-        float[] lat2 = cam.getLookAt();
-        float[] pos2 = cam.getPosition();
-        double dist2 = cam.getDistance();
-        CameraState state2 = new CameraState(new Rotation(RotationOrder.XYZ,
-                                                         rpy2[0],
-                                                         rpy2[1],
-                                                         rpy2[2]),
-                                            new Vector3D((lat2[0] + pos2[0])/2,
-                                                         (lat2[1] + pos2[1])/2,
-                                                         (lat2[2] + pos2[2])/2),
-                                            dist2);
-        state2.apply(this);
-        cam.setState(state2);
+		case KeyEvent.VK_A:
+			cam.rotateY(-ROTATE_Y_DELTA);
+			break;
+		case KeyEvent.VK_D:
+			cam.rotateY(ROTATE_Y_DELTA);
+			break;
+		case KeyEvent.VK_W:
+			float[] rpy = cam.getRotations();
+			float[] lat = cam.getLookAt();
+			//float[] pos = cam.getPosition();
+			double dist = cam.getDistance();
+			CameraState state = new CameraState(new Rotation(RotationOrder.XYZ,
+					rpy[0],
+					rpy[1],
+					rpy[2]),
+					new Vector3D((lat[0])* 0.75,
+							(lat[1])* 0.75,
+							(lat[2])* 0.75),
+							dist);
+			state.apply(this);
+			cam.setState(state);
+			break;
+		case KeyEvent.VK_S:
+			float[] rpy2 = cam.getRotations();
+			float[] lat2 = cam.getLookAt();
+			float[] pos2 = cam.getPosition();
+			double dist2 = cam.getDistance();
+			CameraState state2 = new CameraState(new Rotation(RotationOrder.XYZ,
+					rpy2[0],
+					rpy2[1],
+					rpy2[2]),
+					new Vector3D((lat2[0] + pos2[0])/2,
+							(lat2[1] + pos2[1])/2,
+							(lat2[2] + pos2[2])/2),
+							dist2);
+			state2.apply(this);
+			cam.setState(state2);
 
 			break;
-    case KeyEvent.VK_J:
-        hint(DISABLE_DEPTH_SORT);
-            break;
-    case KeyEvent.VK_K:
-        hint(ENABLE_DEPTH_SORT);
-            break;
+		case KeyEvent.VK_J:
+			hint(DISABLE_DEPTH_SORT);
+			break;
+		case KeyEvent.VK_K:
+			hint(ENABLE_DEPTH_SORT);
+			break;
 
 		}
 		if(currentFrame < 0) currentFrame = 0;
@@ -2210,8 +1702,8 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		if(type.endsWith("#Cup'")) {
 			return new Cup(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
-    } else if(type.endsWith("#DrinkingMug'")) { // todo: make drinking mug item
-        return new Cup(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
+		} else if(type.endsWith("#DrinkingMug'")) { // todo: make drinking mug item
+			return new Cup(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
 		} else if(type.endsWith("#DinnerPlate'")) { 
 			return new Plate(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
@@ -2225,8 +1717,8 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		} else if (type.endsWith("#DrinkingBottle'")) {
 			return new Bottle(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0.05f,0.05f,0.15f);
 
-    } else if (type.endsWith("#Kettle'")) {
-        return new Kettle(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
+		} else if (type.endsWith("#Kettle'")) {
+			return new Kettle(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
 			/////////////////////////////////////////////
 			// silverware	
@@ -2237,7 +1729,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		} else if(type.endsWith("#TableKnife'")) {
 			return new Knife(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
-    } else if(type.endsWith("#Knife'")) { // toso: make general knife item?
+		} else if(type.endsWith("#Knife'")) { // toso: make general knife item?
 			return new Knife(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
 		} else if(type.endsWith("#SoupSpoon'")) {
@@ -2247,8 +1739,8 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			/////////////////////////////////////////////
 			// serving and cooking
 
-    } else if(type.endsWith("#Sponge-CleaningImplement'")) {
-        return new Box(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0.05f,0.10f,0.05f);
+		} else if(type.endsWith("#Sponge-CleaningImplement'")) {
+			return new Box(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0.05f,0.10f,0.05f);
 
 		} else if(type.endsWith("#Napkin'")) {
 			return new Napkin(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
@@ -2256,7 +1748,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		} else if(type.endsWith("#PlaceMat'")) {
 			return new PlaceMat(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
-    } else if(type.endsWith("#Tray'")) { //todo: make Tray item
+		} else if(type.endsWith("#Tray'")) { //todo: make Tray item
 			return new PlaceMat(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
 		} else if (type.endsWith("#Platter'")) {
@@ -2292,7 +1784,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 		} else if (type.endsWith("#PancakeMix'")) {
 			return new PancakeMix(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
-			
+
 		} else if (type.endsWith("#Pancake'")) {
 			return new Pancake(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
@@ -2351,6 +1843,12 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		} else if(type.endsWith("#Chair-PieceOfFurniture'")) {
 			return new Chair(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
+		} else if(type.endsWith("#Handle'")) {
+			return new BoxHandle(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0.03f,0.03f,0.03f);
+
+		} else if(type.endsWith("#ControlKnob'")) {
+			return new Sphere(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0.03f,0.03f,0.03f);
+
 
 			/////////////////////////////////////////////
 			// dummies
@@ -2358,8 +1856,8 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		} else if(type.endsWith("#SpatialThing-Localized'")) {
 			return new Ellipse(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
-		// } else if(type.endsWith("#Place'")) {
-    //   return new Ellipse(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1, 0.0f,0.0f,0f);
+			// } else if(type.endsWith("#Place'")) {
+			//   return new Ellipse(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1, 0.0f,0.0f,0f);
 
 		} else if(type.endsWith("#Point3D'")) {
 			return new Sphere(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0.03f,0.03f,0.03f);
@@ -2384,7 +1882,7 @@ class EmptyCanvas extends Canvas {
 		this.height = height;		
 		init();
 		snapshot = new int[width*height];
-//		noLoop();
+		//		noLoop();
 		try{super.size(width, height, PGraphics3D.P3D);}catch(RendererChangeException e) {};
 		noLoop();
 		//this.resize(width, height);
@@ -2398,16 +1896,16 @@ class EmptyCanvas extends Canvas {
 				for(int j=0;j<height;j++)
 					set(i, j, snapshot[i*height+j]);
 	};
-//	@Override
-//	public void keyPressed() {};
-//	@Override
-//	public void mousePressed(MouseEvent e) {};
-//	@Override
-//	public void mouseReleased(MouseEvent e) {};
-//	@Override
-//	public void mouseDragged(MouseEvent e) {};
-////	@Override
-////	public void zoom(int delta) {};
+	//	@Override
+	//	public void keyPressed() {};
+	//	@Override
+	//	public void mousePressed(MouseEvent e) {};
+	//	@Override
+	//	public void mouseReleased(MouseEvent e) {};
+	//	@Override
+	//	public void mouseDragged(MouseEvent e) {};
+	////	@Override
+	////	public void zoom(int delta) {};
 	@Override
 	public void runMain() {};
 	@Override

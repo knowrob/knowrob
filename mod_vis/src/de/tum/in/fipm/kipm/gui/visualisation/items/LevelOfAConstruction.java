@@ -1,6 +1,9 @@
 
 package de.tum.in.fipm.kipm.gui.visualisation.items;
 
+import javax.vecmath.Matrix4d;
+import javax.vecmath.Vector3d;
+
 import edu.tum.cs.vis.Canvas;
 
 
@@ -14,6 +17,9 @@ public class LevelOfAConstruction extends Item {
       
       //super(m00, m01, m02, m23, m10, m11, m12, m13, m20, m21, m22, (float) (m03  / 20f), m30, m31, m32, m33, xdim, ydim, zdim);
       super(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33, xdim, ydim, zdim);
+	}
+	public LevelOfAConstruction(Matrix4d pose, Vector3d dim){
+		super(pose, dim);
 	}
 
 	@Override

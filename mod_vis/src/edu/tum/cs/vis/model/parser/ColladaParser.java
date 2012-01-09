@@ -582,7 +582,7 @@ public class ColladaParser extends ModelParser {
 								.getSurface().getInitFrom()).getInitFrom();
 			} else {
 				float[] colors = diffuse.getData();
-				System.out.println("Diffuse");
+//				System.out.println("Diffuse");
 				materialColor = new Color(colors[0], colors[1], colors[2],
 						colors[3]);
 			}
