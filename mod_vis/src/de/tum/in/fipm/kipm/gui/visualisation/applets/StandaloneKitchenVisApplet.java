@@ -932,13 +932,11 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		double[] p = getOrientationOfItem(identifier);
 		if(p!=null) {
 			pose = new Matrix4d(p);
-			System.err.println("pose != null");
 		}
 		
 		double[] v = getDimensionsOfItem(identifier);
 		if(v!=null) {
 			dim = new Vector3d(v);
-			System.err.println("dim != null");
 		}
 
 		

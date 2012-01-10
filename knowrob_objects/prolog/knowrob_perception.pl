@@ -38,7 +38,7 @@
 
 
 
-%% create_object_perception(ObjClass, ObjPose, PerceptionTypes, ObjInst)
+%% create_object_perception(+ObjClass, +ObjPose, +PerceptionTypes, -ObjInst)
 %
 % Convenience predicate: create the complete structure of object instance,
 % perception instance, and the pose matrix where the object was perceived.

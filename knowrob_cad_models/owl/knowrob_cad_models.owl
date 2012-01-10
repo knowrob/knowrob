@@ -22,7 +22,7 @@
     <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/knowrob_cad_models.owl">
         <owl:imports rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl"/>
     </owl:Ontology>
-    
+
 
     <computable:PrologProperty rdf:about="#computeCadModelXDim">
         <computable:command rdf:datatype="&xsd;string"
@@ -49,7 +49,7 @@
     </computable:PrologProperty>
 
 
-    <!-- 
+    <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Annotation properties
@@ -58,10 +58,10 @@
      -->
 
     <owl:AnnotationProperty rdf:about="&knowrob;pathToCadModel"/>
-    
 
 
-    <!-- 
+
+    <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Datatypes
@@ -69,10 +69,10 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
 
 
-    <!-- 
+
+    <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Data properties
@@ -80,16 +80,16 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#pathToCadModel -->
 
     <owl:DatatypeProperty rdf:about="&knowrob;pathToCadModel"/>
-    
 
 
-    <!-- 
+
+    <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Classes
@@ -97,7 +97,7 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#DrinkingBottle -->
@@ -110,10 +110,32 @@
             </owl:Restriction>
         </rdfs:subClassOf>
     </rdf:Description>
-    
 
 
-    <!-- 
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#DrinkingBottle -->
+
+    <rdf:Description rdf:about="&knowrob;IkeaExpedit2x4">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;pathToCadModel"/>
+                <owl:hasValue>package://knowrob_cad_models/models/collada/Expedit/Expedit_2X4.kmz</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="&knowrob;Bed-PieceOfFurniture">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;pathToCadModel"/>
+                <owl:hasValue>package://knowrob_cad_models/models/collada/hospital_bed.kmz</owl:hasValue>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+
+
+
+    <!--
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Individuals
@@ -121,7 +143,7 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob_cad_models.owl#CokeBottle -->
@@ -130,7 +152,7 @@
         <rdf:type rdf:resource="&knowrob;DrinkingBottle"/>
         <knowrob:pathToCadModel>package://knowrob_cad_models/models/collada/coke.kmz</knowrob:pathToCadModel>
     </owl:NamedIndividual>
-    
+
 
 
     <!-- http://ias.cs.tum.edu/kb/knowrob_cad_models.owl#TestBottle -->
@@ -138,7 +160,7 @@
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob_cad_models.owl#TestBottle">
         <rdf:type rdf:resource="&knowrob;DrinkingBottle"/>
     </owl:NamedIndividual>
-    
+
 </rdf:RDF>
 
 
