@@ -44,10 +44,10 @@ public class PlanExporter {
     }
 
     public String exportPlanToCPL(String plan_name) {
-		
+    	
         plan_name = PrologInterface.addSingleQuotes(plan_name);
 		String res = "";
-
+		
 		HashMap<String, Vector<String>> plan_steps = 
 			PrologInterface.executeQuery("plan_subevents("+ plan_name +", Steps)");
 
@@ -64,8 +64,7 @@ public class PlanExporter {
 
 		            String obj_desig="", loc_desig="", act_desig="", device="", bodypart="";
 		            String cplAction = knowrobToCpl(action);
-		            
-		            
+
 		            for(int i=0;i<params.get("Prop").size();i++) {
 
 		                String prop = PrologInterface.removeSingleQuotes(params.get("Prop").get(i));
@@ -76,6 +75,7 @@ public class PlanExporter {
 
 		                    obj_desig = objectDesignatorFromOWLclass(val);
 
+
 		                } else if(prop.endsWith("toLocation") || prop.endsWith("fromLocation")) {
 
 	                		// location specification
@@ -83,20 +83,17 @@ public class PlanExporter {
 		                    
 		                	// trajectory specification for reaching motions
 	                		act_desig = actionDesignatorFromOWLclass(action, prop, loc_desig);
-		                    
+	                		
 		                } else if(prop.endsWith("deviceUsed")) {
 		                	device = val;
 		                	
 		                } else if(prop.endsWith("bodyPartsUsed")) {
 		                	bodypart = val;
 		                }
-		                
+
 		            }
-
-
+		            
 		            // create action goal
-
-
 		            String action_spec = "";
 		            if(cplAction.endsWith("object-in-hand")) {
 		            	
@@ -213,28 +210,24 @@ public class PlanExporter {
     private String objectDesignatorFromOWLclass(String objdef) {
 
         // create the appropriate object designators
-
         HashMap<String, Vector<String>> types = PrologInterface
                 .executeQuery("rdf_has(" + PrologInterface.addSingleQuotes(objdef) + ", rdf:type, T)");
 
         String obj_type = "";
         String obj_inst = "";
-
         String obj_desig = "";
         
         // first case: objdef is an instance
-        if (!types.get("T").isEmpty()) {
-            
+        if (types.get("T") != null && types.get("T").size() > 0) {
+        	
             obj_type = knowrobToCpl(types.get("T").firstElement());
             obj_inst = knowrobToCpl(objdef);
-            
             obj_desig = "(" + lispify(obj_inst) + " (object `((name " + knowrobToCpl(obj_inst) + ") (type "+lispify(obj_type)+"))))";
 
         } else { // second case: objdef is a class
             
             obj_type = knowrobToCpl(objdef);
             obj_inst = knowrobToCpl(instanceFromClass(obj_type));
-            
             obj_desig = "(" + lispify(obj_inst) + " (object  `((type " + knowrobToCpl(obj_type) + "))))";
         }
 
