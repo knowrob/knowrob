@@ -25,9 +25,9 @@
       storagePlaceForBecause/3,
       current_object_pose/2,
       rotmat_to_list/2,
-      create_joint_information/8,
-      update_joint_information/6,
-      read_joint_information/8,
+      create_joint_information/9,
+      update_joint_information/7,
+      read_joint_information/9,
       delete_joint_information/1
     ]).
 
@@ -44,9 +44,9 @@
     storagePlaceForBecause(r,r,r),
     current_object_pose(r,-),
     rotmat_to_list(r,-),
-    create_joint_information(r, r, r, +, ?, +, +, r),
-    update_joint_information(r, r, +, ?, +, +),
-    read_joint_information(r, r, r, r, -, -, -, -),
+    create_joint_information(r, r, r, +, ?, +, +, +, r),
+    update_joint_information(r, r, +, ?, +, +, +),
+    read_joint_information(r, r, r, r, -, -, -, -, -),
     delete_joint_information(r).
 
 
@@ -116,7 +116,7 @@ rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23
 
 
 
-%% create_joint_information(+Type, +Parent, +Child, +Pose, +Direction, +Qmin, +Qmax, -Joint) is det.
+%% create_joint_information(+Type, +Parent, +Child, +Pose, +Direction, +Radius, +Qmin, +Qmax, -Joint) is det.
 %
 % Create a joint of class Type at pose Pose, linking Parent and Child
 % Qmin and Qmax are joint limits as used in the ROS articulation stack
@@ -130,11 +130,12 @@ rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23
 % @param Child      Child object instance (e.g. door)
 % @param Pose       Pose matrix of the joint as list float[16]
 % @param Direction  Direction vector of the joint. float[3] for prismatic joints, [] for rotational joints
+% @param Radius     Radius of a rotational joint
 % @param Qmin       Minimal configuration value (joint limit)
 % @param Qmax       Minimal configuration value (joint limit)
 % @param Joint      Joint instance that has been created
 %
-create_joint_information(Type, Parent, Child, Pose, Dir, Qmin, Qmax, Joint) :-
+create_joint_information(Type, Parent, Child, Pose, Dir, Radius, Qmin, Qmax, Joint) :-
 
   % create individual
   create_object_perception(Type, Pose, ['TouchPerception'], Joint),
@@ -163,10 +164,11 @@ create_joint_information(Type, Parent, Child, Pose, Dir, Qmin, Qmax, Joint) :-
       rdf_assert(Joint, knowrob:'direction', DirVec)
 
     ) ; (
-      rdf_assert(Parent, knowrob:'hingedTo', Child)
+      rdf_assert(Parent, knowrob:'hingedTo', Child),
+      rdf_assert(Joint, knowrob:'turnRadius', literal(type(xsd:float, Radius)))
     ) ).
 
-%% update_joint_information(+Joint, +Type, +Pose, +Direction, +Qmin, +Qmax)
+%% update_joint_information(+Joint, +Type, +Pose, +Direction, +Radius, +Qmin, +Qmax)
 %
 % Update type, pose and articulation information for a joint after creation.
 % Leaves Parent and Child untouched, i.e. assumes that only the estimated
@@ -176,10 +178,11 @@ create_joint_information(Type, Parent, Child, Pose, Dir, Qmin, Qmax, Joint) :-
 % @param Type       Type of the joint instance (knowrob:HingedJoint or knowrob:PrismaticJoint)
 % @param Pose       Pose matrix of the joint as list float[16]
 % @param Direction  Direction vector of the joint. float[3] for prismatic joints, [] for rotational joints
+% @param Radius     Radius of a rotational joint
 % @param Qmin       Minimal configuration value (joint limit)
 % @param Qmax       Minimal configuration value (joint limit)
 %
-update_joint_information(Joint, Type, Pose, Dir, Qmin, Qmax) :-
+update_joint_information(Joint, Type, Pose, Dir, Radius, Qmin, Qmax) :-
 
   % % % % % % % % % % % % % % % % % % %
   % update joint type
@@ -232,12 +235,14 @@ update_joint_information(Joint, Type, Pose, Dir, Qmin, Qmax) :-
       rdf_assert(Joint, knowrob:'direction', DirVec)
 
     ) ; (
-      rdf_assert(Parent, knowrob:'hingedTo', Child)
+      rdf_assert(Parent, knowrob:'hingedTo', Child),
+      (rdf_retractall(Joint, knowrob:'turnRadius', _); true),
+      rdf_assert(Joint, knowrob:'turnRadius', literal(type(xsd:float, Radius)))
     ) ).
 
 
 
-%% read_joint_information(+Joint, -Type, -Parent, -Child, -Pose, -Direction, -Qmin, -Qmax) is nondet.
+%% read_joint_information(+Joint, -Type, -Parent, -Child, -Pose, -Direction, -Radius, -Qmin, -Qmax) is nondet.
 %
 % Read information stored about a particular joint.
 %
@@ -247,10 +252,11 @@ update_joint_information(Joint, Type, Pose, Dir, Qmin, Qmax) :-
 % @param Child      Child object instance (e.g. door)
 % @param Pose       Pose matrix of the joint as list float[16]
 % @param Direction  Direction vector of the joint. float[3] for prismatic joints, [] for rotational joints
+% @param Radius     Radius of a rotational joint
 % @param Qmin       Minimal configuration value (joint limit)
 % @param Qmax       Minimal configuration value (joint limit)
 %
-read_joint_information(Joint, Type, Parent, Child, Pose, Direction, Qmin, Qmax) :-
+read_joint_information(Joint, Type, Parent, Child, Pose, Direction, Radius, Qmin, Qmax) :-
 
   rdf_has(Joint, rdf:type, Type),
 
@@ -266,6 +272,8 @@ read_joint_information(Joint, Type, Parent, Child, Pose, Direction, Qmin, Qmax) 
     rdf_has(DirVec, knowrob:'vectorZ', literal(type(xsd:float, DirZ))),
     Direction=[DirX, DirY, DirZ]);
     (Direction=[])),
+
+  (rdf_has(Joint, knowrob:'turnRadius', literal(type(xsd:float, Radius))); (true,!)),
 
   rdf_has(Joint, knowrob:'minJointValue', literal(type(xsd:float, Qmin))),
   rdf_has(Joint, knowrob:'maxJointValue', literal(type(xsd:float, Qmax))).
