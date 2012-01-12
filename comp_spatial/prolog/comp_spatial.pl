@@ -86,6 +86,7 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs_computable')).
 :- use_module(library('thea/owl_parser')).
+:- use_module(library('knowrob_objects')).
 
 :- owl_parser:owl_parse('../owl/comp_spatial.owl', false, false, true).
 
@@ -582,7 +583,7 @@ comp_orientation(Object, Orientation) :-
                               atom_concat('timepoint_', StTa, StTl),
                               term_to_atom(St, StTa)), Perceptions),
 
-    predsort(compare_object_detections, Perceptions, Psorted),
+    predsort(knowrob_objects:compare_object_detections, Perceptions, Psorted),
 
     % compute the homography for the newest perception
     nth0(0, Psorted, Newest),

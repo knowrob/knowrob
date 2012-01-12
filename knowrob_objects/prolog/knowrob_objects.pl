@@ -134,13 +134,14 @@ rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23
 % @param Qmax       Minimal configuration value (joint limit)
 % @param Joint      Joint instance that has been created
 %
-create_joint_information(Type, Parent, Child, Pose, [DirX, DirY, DirZ], Qmin, Qmax, Joint) :-
+create_joint_information(Type, Parent, Child, Pose, Dir, Qmin, Qmax, Joint) :-
 
   % create individual
   create_object_perception(Type, Pose, ['TouchPerception'], Joint),
 
   % set parent and child
-  rdf_assert(Joint, knowrob:'properPhysicalParts', Child),
+  rdf_assert(Parent, knowrob:'properPhysicalParts', Joint),
+  rdf_assert(Joint, knowrob:'connectedTo-Rigidly', Child),
   rdf_assert(Joint, knowrob:'connectedTo-Rigidly', Parent),
 
   % set joint limits
@@ -149,6 +150,9 @@ create_joint_information(Type, Parent, Child, Pose, [DirX, DirY, DirZ], Qmin, Qm
 
   % set joint-specific information
   ( (Type = 'PrismaticJoint') -> (
+
+      Dir = [DirX, DirY, DirZ],
+
       rdf_assert(Parent, knowrob:'prismaticallyConnectedTo', Child),
 
       rdf_instance_from_class(knowrob:'Vector', DirVec),
@@ -175,7 +179,7 @@ create_joint_information(Type, Parent, Child, Pose, [DirX, DirY, DirZ], Qmin, Qm
 % @param Qmin       Minimal configuration value (joint limit)
 % @param Qmax       Minimal configuration value (joint limit)
 %
-update_joint_information(Joint, Type, Pose, [DirX, DirY, DirZ], Qmin, Qmax) :-
+update_joint_information(Joint, Type, Pose, Dir, Qmin, Qmax) :-
 
   % % % % % % % % % % % % % % % % % % %
   % update joint type
@@ -184,9 +188,9 @@ update_joint_information(Joint, Type, Pose, [DirX, DirY, DirZ], Qmin, Qmax) :-
 
   % % % % % % % % % % % % % % % % % % %
   % update pose by creating a new perception instance (remembering the old data)
-  create_perception_instance(['TouchPerception'], Perception),
-  set_perception_pose(Perception, Pose),
-  set_object_perception(Joint, Perception),
+  knowrob_perception:create_perception_instance(['TouchPerception'], Perception),
+  knowrob_perception:set_perception_pose(Perception, Pose),
+  knowrob_perception:set_object_perception(Joint, Perception),
 
   % % % % % % % % % % % % % % % % % % %
   % update joint limits
@@ -201,7 +205,7 @@ update_joint_information(Joint, Type, Pose, [DirX, DirY, DirZ], Qmin, Qmax) :-
   % determine parent/child
   rdf_has(Parent, knowrob:'properPhysicalParts', Joint),
   rdf_has(Joint, knowrob:'connectedTo-Rigidly', Parent),
-  rdf_has(Joint, knowrob:'connectedTo-Rigidly', Child),
+  rdf_has(Joint, knowrob:'connectedTo-Rigidly', Child),!,
 
   % retract old connections between parent and child
   rdf_retractall(Parent, knowrob:'prismaticallyConnectedTo', Child),
@@ -215,6 +219,9 @@ update_joint_information(Joint, Type, Pose, [DirX, DirY, DirZ], Qmin, Qmax) :-
 
   % set new articulation information
   ( (Type = 'PrismaticJoint') -> (
+
+      Dir = [DirX, DirY, DirZ],
+
       rdf_assert(Parent, knowrob:'prismaticallyConnectedTo', Child),
 
       rdf_instance_from_class(knowrob:'Vector', DirVec),
