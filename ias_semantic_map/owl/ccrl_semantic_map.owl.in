@@ -49,9 +49,9 @@
     
 
 
-    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#properPhysicalPartTypes -->
+    <!-- file:///home/lauravr/work/csm/owl/knowrob.owl#properPhysicalParts -->
 
-    <owl:ObjectProperty rdf:about="&knowrob;properPhysicalPartTypes"/>
+    <owl:ObjectProperty rdf:about="&knowrob;properPhysicalParts"/>
     
 
 
@@ -250,8 +250,8 @@
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.375</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.593</knowrob:widthOfObject>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.695</knowrob:heightOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#door19"/>
-        <knowrob:properPhysicalPartTypes rdf:resource="#door20"/>
+        <knowrob:properPhysicalParts rdf:resource="#door19"/>
+        <knowrob:properPhysicalParts rdf:resource="#door20"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_1"/>
     </knowrob:Cupboard>
     
@@ -263,8 +263,8 @@
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.375</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.593</knowrob:widthOfObject>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.695</knowrob:heightOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#door21"/>
-        <knowrob:properPhysicalPartTypes rdf:resource="#door22"/>
+        <knowrob:properPhysicalParts rdf:resource="#door21"/>
+        <knowrob:properPhysicalParts rdf:resource="#door22"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_2"/>
     </knowrob:Cupboard>
     
@@ -276,7 +276,7 @@
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.375</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.399</knowrob:widthOfObject>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.695</knowrob:heightOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#door23"/>
+        <knowrob:properPhysicalParts rdf:resource="#door23"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_3"/>
     </knowrob:Cupboard>
     
@@ -288,7 +288,7 @@
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.565</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.592</knowrob:widthOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.6</knowrob:depthOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#door16"/>
+        <knowrob:properPhysicalParts rdf:resource="#door16"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_4"/>
     </knowrob:Cupboard>
     
@@ -300,7 +300,7 @@
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.592</knowrob:widthOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.6</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-1.255</knowrob:heightOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#door18"/>
+        <knowrob:properPhysicalParts rdf:resource="#door18"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_6"/>
     </knowrob:Cupboard>
     
@@ -312,7 +312,7 @@
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.3</knowrob:widthOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.7</knowrob:heightOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#door0"/>
+        <knowrob:properPhysicalParts rdf:resource="#door0"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_7"/>
     </knowrob:Cupboard>
     
@@ -324,7 +324,7 @@
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.3</knowrob:widthOfObject>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.7</knowrob:heightOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#door7"/>
+        <knowrob:properPhysicalParts rdf:resource="#door7"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_14"/>
     </knowrob:Cupboard>
     
@@ -380,7 +380,7 @@
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.565</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#handle17003"/>
+        <knowrob:properPhysicalParts rdf:resource="#handle17003"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_43"/>
     </knowrob:Door>
     
@@ -436,7 +436,7 @@
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.345</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.592</knowrob:widthOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#handle17004"/>
+        <knowrob:properPhysicalParts rdf:resource="#handle17004"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_29"/>
     </knowrob:Door>
     
@@ -459,7 +459,7 @@
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.0135</knowrob:widthOfObject>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.695</knowrob:heightOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#handle17005"/>
+        <knowrob:properPhysicalParts rdf:resource="#handle17005"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_23"/>
     </knowrob:Door>
     
@@ -482,7 +482,7 @@
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.6065</knowrob:widthOfObject>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.695</knowrob:heightOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#handle17006"/>
+        <knowrob:properPhysicalParts rdf:resource="#handle17006"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_24"/>
     </knowrob:Door>
     
@@ -494,7 +494,7 @@
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.2965</knowrob:widthOfObject>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.695</knowrob:heightOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#handle17007"/>
+        <knowrob:properPhysicalParts rdf:resource="#handle17007"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_25"/>
     </knowrob:Door>
     
@@ -506,7 +506,7 @@
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.2965</knowrob:widthOfObject>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.695</knowrob:heightOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#handle17008"/>
+        <knowrob:properPhysicalParts rdf:resource="#handle17008"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_26"/>
     </knowrob:Door>
     
@@ -540,7 +540,7 @@
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.125</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.395</knowrob:widthOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#handle17000"/>
+        <knowrob:properPhysicalParts rdf:resource="#handle17000"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_35"/>
     </knowrob:Door>
     
@@ -552,7 +552,7 @@
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.255</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.395</knowrob:widthOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#handle17001"/>
+        <knowrob:properPhysicalParts rdf:resource="#handle17001"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_36"/>
     </knowrob:Door>
     
@@ -597,7 +597,7 @@
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.0</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.255</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#handle17002"/>
+        <knowrob:properPhysicalParts rdf:resource="#handle17002"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_40"/>
     </knowrob:Door>
     
@@ -609,7 +609,7 @@
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.125</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#door1"/>
+        <knowrob:properPhysicalParts rdf:resource="#door1"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_8"/>
     </knowrob:Drawer>
     
@@ -621,7 +621,7 @@
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.125</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.395</knowrob:widthOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#door4"/>
+        <knowrob:properPhysicalParts rdf:resource="#door4"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_11"/>
     </knowrob:Drawer>
     
@@ -633,7 +633,7 @@
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.125</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#door8"/>
+        <knowrob:properPhysicalParts rdf:resource="#door8"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_15"/>
     </knowrob:Drawer>
     
@@ -645,7 +645,7 @@
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.135</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#door11"/>
+        <knowrob:properPhysicalParts rdf:resource="#door11"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_18"/>
     </knowrob:Drawer>
     
@@ -657,7 +657,7 @@
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.125</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#door13"/>
+        <knowrob:properPhysicalParts rdf:resource="#door13"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_20"/>
     </knowrob:Drawer>
     
@@ -669,7 +669,7 @@
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.255</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#door2"/>
+        <knowrob:properPhysicalParts rdf:resource="#door2"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_9"/>
     </knowrob:Drawer>
     
@@ -681,7 +681,7 @@
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.255</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.395</knowrob:widthOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#door5"/>
+        <knowrob:properPhysicalParts rdf:resource="#door5"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_12"/>
     </knowrob:Drawer>
     
@@ -693,7 +693,7 @@
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.255</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#door9"/>
+        <knowrob:properPhysicalParts rdf:resource="#door9"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_16"/>
     </knowrob:Drawer>
     
@@ -705,7 +705,7 @@
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.565</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#door12"/>
+        <knowrob:properPhysicalParts rdf:resource="#door12"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_19"/>
     </knowrob:Drawer>
     
@@ -717,7 +717,7 @@
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.255</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#door14"/>
+        <knowrob:properPhysicalParts rdf:resource="#door14"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_21"/>
     </knowrob:Drawer>
     
@@ -729,7 +729,7 @@
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.32</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#door3"/>
+        <knowrob:properPhysicalParts rdf:resource="#door3"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_10"/>
     </knowrob:Drawer>
     
@@ -741,7 +741,7 @@
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.32</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.395</knowrob:widthOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#door6"/>
+        <knowrob:properPhysicalParts rdf:resource="#door6"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_13"/>
     </knowrob:Drawer>
     
@@ -753,7 +753,7 @@
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.32</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#door10"/>
+        <knowrob:properPhysicalParts rdf:resource="#door10"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_17"/>
     </knowrob:Drawer>
     
@@ -765,7 +765,7 @@
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.62</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.32</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.595</knowrob:widthOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#door15"/>
+        <knowrob:properPhysicalParts rdf:resource="#door15"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_22"/>
     </knowrob:Drawer>
     
@@ -876,7 +876,7 @@
         <knowrob:heightOfObject rdf:datatype="&xsd;float">-0.345</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;float">0.592</knowrob:widthOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;float">0.6</knowrob:depthOfObject>
-        <knowrob:properPhysicalPartTypes rdf:resource="#door17"/>
+        <knowrob:properPhysicalParts rdf:resource="#door17"/>
         <knowrob:orientation rdf:resource="#rotationmatrix3d_5"/>
     </knowrob:Oven>
     

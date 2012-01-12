@@ -386,7 +386,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 	public void addObjectWithChildren(String identifier) {
 		HashMap<String, Vector<Object>> physicalParts = PrologVisualizationCanvas.executeQuery(
-				"rdf_reachable("+identifier+", knowrob:properPhysicalPartTypes, PART)",null);
+				"rdf_reachable("+identifier+", knowrob:properPhysicalParts, PART)",null);
 
 		if(physicalParts.get("PART") != null)
 			for(int i=0;i<physicalParts.get("PART").size();i++)
@@ -437,7 +437,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 	public void removeObjectWithChildren(String identifier) {
 		HashMap<String, Vector<Object>> physicalParts = PrologVisualizationCanvas.executeQuery(
-				"rdf_reachable("+identifier+", knowrob:properPhysicalPartTypes, PART)",null);
+				"rdf_reachable("+identifier+", knowrob:properPhysicalParts, PART)",null);
 
 		if(physicalParts.get("PART") != null)
 			for(int i=0;i<physicalParts.get("PART").size();i++)
@@ -452,7 +452,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 				if(!mapParts.get("PART").get(i).toString().equals(identifier))
 				{
 					HashMap<String, Vector<Object>> parts = PrologVisualizationCanvas.executeQuery(
-							"rdf_reachable("+mapParts.get("PART").get(i).toString()+", knowrob:properPhysicalPartTypes, P)"
+							"rdf_reachable("+mapParts.get("PART").get(i).toString()+", knowrob:properPhysicalParts, P)"
 							,null);
 
 					Vector<Object> p = parts.get("P");
@@ -507,7 +507,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		highlightItem(identifier, highlight);
 
 		HashMap<String, Vector<Object>> others = PrologVisualizationCanvas.executeQuery(
-				"rdf_reachable("+identifier+", knowrob:properPhysicalPartTypes, I)", null);
+				"rdf_reachable("+identifier+", knowrob:properPhysicalParts, I)", null);
 
 		Vector<Object> itms = others.get("I");
 		if(itms == null) return;

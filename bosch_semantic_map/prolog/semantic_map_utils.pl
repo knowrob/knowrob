@@ -45,7 +45,7 @@ readMap([R0|EntityList]) :-
 
 readEntities([], _, []).
 readEntities([E|Es], P, Res) :-
-  ((setof(Prt, rdf_has(E, knowrob:properPhysicalPartTypes, Prt), Prts)) -> (
+  ((setof(Prt, rdf_has(E, knowrob:properPhysicalParts, Prt), Prts)) -> (
     readEntity(E, P, R0),
     readEntities(Prts, E, Rs),
     append([R0], Rs, R)
@@ -111,26 +111,26 @@ objectDimensions( O, W, D, H ) :-
     D is 0.03.
 
 childObject( P, C ) :-
-    rdf_has( P, knowrob:'properPhysicalPartTypes', C ),
+    rdf_has( P, knowrob:'properPhysicalParts', C ),
     not( owl_individual_of(C, knowrob:'Connection-Physical') ).
 
 objectLabel( O, L ) :-
     owl_has( O, rdfs:label, literal(type('http://www.w3.org/2001/XMLSchema#string', L)) ).
 
 connectionType( P, C, 'HingedJoint' ) :-
-    rdf_has( P, knowrob:'properPhysicalPartTypes', C ),
-    rdf_has( C, knowrob:'properPhysicalPartTypes', J ),
+    rdf_has( P, knowrob:'properPhysicalParts', C ),
+    rdf_has( C, knowrob:'properPhysicalParts', J ),
     owl_individual_of(J, knowrob:'HingedJoint'), !.
 
 connectionType( P, P, 'SliderJoint' ) :-
     rdf_has( P, rdf:type, knowrob:'Drawer' ), !.
 
 connectionType( P, C, 'Fixed' ) :-
-    rdf_has( P, knowrob:'properPhysicalPartTypes', C ).
+    rdf_has( P, knowrob:'properPhysicalParts', C ).
 
 jointName( P, C, Name ) :-
-    rdf_has( P, knowrob:'properPhysicalPartTypes', C ),
-    rdf_has( C, knowrob:'properPhysicalPartTypes', Name ),
+    rdf_has( P, knowrob:'properPhysicalParts', C ),
+    rdf_has( C, knowrob:'properPhysicalParts', Name ),
     owl_individual_of( Name, knowrob:'Connection-Physical' ).
 
 childObjects( P, Cs ) :-

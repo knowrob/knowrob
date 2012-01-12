@@ -65,9 +65,9 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#properPhysicalPartTypes -->
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#properPhysicalParts -->
 
-    <owl:ObjectProperty rdf:about="&knowrob;properPhysicalPartTypes"/>
+    <owl:ObjectProperty rdf:about="&knowrob;properPhysicalParts"/>
     
 
 

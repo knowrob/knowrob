@@ -224,7 +224,7 @@ read_object_info(Inst, ObjInfosSorted) :-
 
   % read all direct properties
   findall(PartInfo, (
-              rdf_reachable(Inst, 'http://ias.cs.tum.edu/kb/knowrob.owl#properPhysicalPartTypes', Part),
+              rdf_reachable(Inst, 'http://ias.cs.tum.edu/kb/knowrob.owl#properPhysicalParts', Part),
               Part \= Inst,
               read_object_info(Part, PartInfo)
           ), PartInfos),
@@ -263,9 +263,9 @@ read_map_info(Map, MapInfosSorted) :-
   % read all objects in the map (knowrob:describedInMap) ...
   findall(Obj,   (owl_has(Obj, 'http://ias.cs.tum.edu/kb/knowrob.owl#describedInMap', Map)), RootObjs),
 
-  % ... and their parts (properPhysicalPartTypes or properPhysicalParts)
+  % ... and their parts (properPhysicalParts or properPhysicalParts)
   findall(Part, (member(Obj, RootObjs),
-                  rdf_reachable(Obj, 'http://ias.cs.tum.edu/kb/knowrob.owl#properPhysicalPartTypes', Part)), Parts),
+                  rdf_reachable(Obj, 'http://ias.cs.tum.edu/kb/knowrob.owl#properPhysicalParts', Part)), Parts),
 
   append([RootObjs, Parts], Objs),
 
