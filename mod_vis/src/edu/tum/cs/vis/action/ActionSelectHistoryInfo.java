@@ -116,4 +116,10 @@ public class ActionSelectHistoryInfo {
 
 	}
 	
+
+	public boolean IsHover()
+	{
+		return isHover;
+	}
+	
 }

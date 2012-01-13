@@ -6,7 +6,9 @@ import java.util.Vector;
 import de.tum.in.fipm.kipm.gui.visualisation.base.PrologVisualizationCanvas;
 
 /**
- * Static class to obtain model properties such as width, height, depth.
+ * Static class to obtain model properties such as path to model file,
+ * width, height, depth.
+ * 
  * 
  * @author Stefan Profanter
  * @see ItemModel
@@ -15,10 +17,10 @@ public class Properties {
 	
 	/**
 	 * Instantiate an ItemModel from prolog identifier of Instance or Class.
-	 * The path to the model will be fetched with prolog an this model will then 
+	 * The path to the model will be gathered with prolog an this model will then 
 	 * be parsed.
 	 * @param identifier Class or Instance identifier
-	 * @return ItemModel class if model parsed successfully. null otherwise.
+	 * @return ItemModel instance if model parsed successfully. null otherwise.
 	 */
 	public static ItemModel getModelOfItem(String identifier) {
 		try {
@@ -34,8 +36,6 @@ public class Properties {
 			
 			if (nfo.get("P") != null && nfo.get("P").size() > 0) {
 				String str = nfo.get("P").get(0).toString();
-				
-				System.err.println(str);
 				
 				if (str == null)
 					return null;

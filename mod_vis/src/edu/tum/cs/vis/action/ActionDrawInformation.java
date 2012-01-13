@@ -1,7 +1,6 @@
 package edu.tum.cs.vis.action;
 
 import java.awt.Color;
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -12,75 +11,205 @@ import edu.tum.cs.vis.gui.applet.PlanVisApplet;
 
 import processing.core.PApplet;
 
+/**
+ * This class is used in an Action class for saving parameters used during draw of the action.
+ * For example this stores the position/size of the action box.
+ * 
+ * There are two different drawing types:
+ *  - Simple box: Contains only title and properties
+ *  - Extended box: Parents and children of action, properties and subsequences.
+ * 
+ * @author Stefan Profanter
+ * @see edu.tum.cs.vis.action.Action
+ */
 public class ActionDrawInformation {
 	
+	/**
+	 * Text line height
+	 */
 	public final static float LINE_HEIGHT = 1.5f;
+	
+	/**
+	 * Padding between sections of the action.
+	 * E.g. between properties and subsequence box 
+	 */
 	public final static float INNER_CONTENT_PADDING = 10f;
+	
+	/**
+	 * Padding between main box border and content
+	 */
 	public final static float MAIN_BOX_PADDING = 15f;
+	
+	/**
+	 * Padding around a single sequence box in the subsequence box
+	 */
 	public final static float SEQUENCE_BOX_PADDING = 10f;
 		
+	/**
+	 * Default border color for boxes
+	 */
 	private final static Color borderColor = new Color(100, 100, 100);
+	/**
+	 * Default background color for boxes
+	 */
 	private final static Color backgroundColor = new Color(30,30,30);
+	/**
+	 * Default background color for subsequence box
+	 */
 	private final static Color backgroundBrightColor = new Color(50,50,50);
+	/**
+	 * Default text color
+	 */
 	private final static Color textColor = new Color(240,240,240);
 	
+	/**
+	 * border color for boxes when hovering
+	 */
 	private final static Color hoverBorderColor = new Color(200, 200, 200);
+	/**
+	 * background color for boxes when hovering
+	 */
 	private final static Color hoverBackgroundColor = new Color(60,60,60);
+	/**
+	 * background color for subsequence box when hovering
+	 */
 	private final static Color hoverBackgroundBrightColor = new Color(100,100,100);
+	/**
+	 * text color when hovering
+	 */
 	private final static Color hoverTextColor = new Color(255,255,255);
 	
+	/**
+	 * Border color of arrow between sequence boxes
+	 */
 	private final static Color arrowBorderColor = new Color(27, 56, 102);
-	private final static Color arrowBackgroundColor = new Color(51,105,192,200);
+	/**
+	 * Background color of arrow between sequence boxes
+	 */
+	private final static Color arrowBackgroundColor = new Color(51,105,192,230);
 	
+	/**
+	 * Default line/border width
+	 */
 	private final static float defaultStroke = 1f;
+	/**
+	 * line/border width of current action 
+	 */
 	private final static float currentStroke = 1.5f;
 	
+	/**
+	 * Following colors are set to default colors if not hovering
+	 */
 	private Color currentBorderColor = borderColor;
 	private Color currentBackgroundColor = backgroundColor;
 	private Color currentBackgroundBrightColor = backgroundBrightColor;
 	private Color currentTextColor = textColor;
 	
+	/**
+	 * parent action of this draw info
+	 */
 	private Action action;
+	
+	/**
+	 * set to true if parameters need a recalculation.
+	 * This is the case if properties/subactions/... have changed
+	 */
 	private boolean needsRecalculation = true;
 	
+	/**
+	 * True if mouse if hovering over this action
+	 */
 	private boolean isHover = false;
 	
+	/**
+	 * Width of the name text, used to calculate max box width
+	 */
 	private float nameWidth;
 	
+	/**
+	 * Maximum width over all key texts, used to align properties text
+	 */
 	private float maxKeyWidth;
+	/**
+	 * Maximum width over all value texts, used to calculate max box width
+	 */
 	private float maxValueWidth;
+	/**
+	 * Height of properties all together. Used to calculate max box height
+	 */
 	private float propertiesHeight;
 	
+	/**
+	 * Height of a single text line. Used for calculating text positions
+	 */
 	private float textHeight;
 	
+	/**
+	 * Maximum box height over all parent actions of this action.
+	 * Used to draw all parents with same height
+	 */
 	private float parentsMaxHeight;
+	/**
+	 * Maximum box height over all child actions of this action.
+	 * Used to draw all parents with same height
+	 */
 	private float childrenMaxHeight;
 	
+	private float parentStartX;
+	private float childStartX;
+	private float boxOffsetLeft;
+	
+	/**
+	 * Size of the sequence box containing the subsequences of an action.
+	 */
 	private Vector2f sequenceBoxDimension = new Vector2f();
 	
+	/**
+	 * current position to draw the main box of the action
+	 */
 	private Vector2f position;
 	
-	
+	/**
+	 * Constructor
+	 * @param parent Parent action for which this draw infos are
+	 */
 	public ActionDrawInformation(Action parent)
 	{
 		action = parent;
 	}
 	
+	/**
+	 * Call this if action properties/subsequences/parents/children changed.
+	 * This tells the class to recalculate the dimensions of all boxes
+	 */
 	public void notifyModified()
 	{
 		needsRecalculation = true;
 	}
 	
+	/**
+	 * Height of title box of the action
+	 * @return Height of the name box in pixels
+	 */
 	public float getNameBoxHeight()
 	{
 		return textHeight*3;
 	}
 	
+	/**
+	 * Get width of name in pixels.
+	 * @return Width of name in pixels
+	 */
 	public float getNameWidth()
 	{
 		return nameWidth;
 	}
 	
+	/**
+	 * Get dimension of the simple box.
+	 * The simple box contains only title and properties
+	 * @return the dimension in pixels of the simple box
+	 */
 	public Vector2f getSimpleBoxDimension()
 	{
 		//Max with of name or properties
@@ -94,6 +223,11 @@ public class ActionDrawInformation {
 		return new Vector2f(width, height);
 	}
 	
+	/**
+	 * Get dimension of the extended box.
+	 * The extended box contains title, properties and subsequences
+	 * @return the dimension in pixels of the simple box
+	 */
 	public Vector2f getExtendedBoxDimension()
 	{
 		Vector2f dim = getSimpleBoxDimension();
@@ -103,14 +237,22 @@ public class ActionDrawInformation {
 		return dim;
 	}
 	
+	/**
+	 * Recalculate the dimension of simple/extended box.
+	 * Only executed if needsRecalculation is set to true (notifyModified called)
+	 * @param applet Applet used to draw the action. Only used for text calculation.
+	 * 	Because width of text is dependent on current text setting
+	 */
 	private void recalculateDimensions(PApplet applet)
 	{
 		if (!needsRecalculation)
 			return;
 		
+		//Text dimension
 		textHeight = applet.textAscent();
 		nameWidth = applet.textWidth(action.getName());
 		
+		//Properties of the action
 		maxKeyWidth = 0;
 		maxValueWidth = 0;
 		propertiesHeight = 0;
@@ -141,6 +283,7 @@ public class ActionDrawInformation {
 		
 		//Calculation for parent boxes
 		parentsMaxHeight = 0;
+		float parentsWidth = 0;
 		for (Iterator<Action> i = action.getParentActionsIterator(); i.hasNext(); )
 		{
 			ActionDrawInformation inf = i.next().getDrawInfo();
@@ -148,10 +291,13 @@ public class ActionDrawInformation {
 			inf.recalculateDimensions(applet);
 			
 			parentsMaxHeight = Math.max(parentsMaxHeight, inf.getSimpleBoxDimension().y);
+			parentsWidth += inf.getSimpleBoxDimension().x+MAIN_BOX_PADDING;
 		}
+		parentsWidth = Math.max(0, parentsWidth-MAIN_BOX_PADDING);
 		
 		//Calculation for child boxes
 		childrenMaxHeight = 0;
+		float childrenWidth = 0;
 		for (Iterator<Action> i = action.getChildActionsIterator(); i.hasNext(); )
 		{
 			ActionDrawInformation inf = i.next().getDrawInfo();
@@ -159,9 +305,22 @@ public class ActionDrawInformation {
 			inf.recalculateDimensions(applet);
 			
 			childrenMaxHeight = Math.max(childrenMaxHeight, inf.getSimpleBoxDimension().y);
+			childrenWidth += inf.getSimpleBoxDimension().x+MAIN_BOX_PADDING;
 		}
+		childrenWidth = Math.max(0, childrenWidth-MAIN_BOX_PADDING);
+		
+		this.boxOffsetLeft = Math.max(0, Math.max((parentsWidth-getExtendedBoxDimension().x)/2f,(childrenWidth-getExtendedBoxDimension().x)/2f));
+		
+		this.parentStartX = Math.max(0, getExtendedBoxDimension().x/2f-parentsWidth/2f);
+		this.childStartX = Math.max(0, getExtendedBoxDimension().x/2f-childrenWidth/2f);
 	}
 	
+	/**
+	 * Draw border and title of the action with given dimension at given position
+	 * @param applet Applet to draw on
+	 * @param position position where to draw the box
+	 * @param dimension dimension of the box to draw
+	 */
 	private void drawBorderAndTitle(PApplet applet, Vector2f position, Vector2f dimension)
 	{
 		//Draw outer border and background
@@ -175,6 +334,11 @@ public class ActionDrawInformation {
 		applet.text(action.getName(),position.x + MAIN_BOX_PADDING,position.y + textHeight*2f);
 	}
 	
+	/**
+	 * Draw the action properties beginning at the given position.
+	 * @param applet Applet to draw on
+	 * @param position The upper left position to begin the drawing
+	 */
 	private void drawProperties(PApplet applet, Vector2f position)
 	{
 		applet.fill(currentTextColor.getRed(), currentTextColor.getGreen(), currentTextColor.getBlue(), currentTextColor.getAlpha());
@@ -191,6 +355,12 @@ public class ActionDrawInformation {
 		}
 	}
 	
+	/**
+	 * Draw the simple box. Contains title and properties
+	 * @param applet Applet to draw on
+	 * @param position Position where to draw the box
+	 * @param minHeight minimum height of the box.
+	 */
 	public void drawSimpleBox(PApplet applet,Vector2f position, float minHeight)
 	{
 		this.position = new Vector2f(position);
@@ -206,26 +376,34 @@ public class ActionDrawInformation {
 		drawProperties(applet, tmpPos);
 	}
 	
-	private void drawParentBoxes(PApplet applet, Vector2f position, Vector2f connectionPoint)
+	/**
+	 * Draw the parent boxes of this action. These are located over the action box
+	 * @param applet Applet to draw on
+	 * @param position 
+	 * @param connectionPoint
+	 */
+	private ArrayList<Vector2f> drawParentBoxes(PApplet applet, Vector2f position, Vector2f connectionPoint)
 	{
 		Vector2f tmpPos = new Vector2f(position);
+		ArrayList<Vector2f> retPoints = new ArrayList<Vector2f>();
 		
 		for (Iterator<Action> i = action.getParentActionsIterator(); i.hasNext(); )
 		{
 			ActionDrawInformation inf = i.next().getDrawInfo();
 			
 			inf.drawSimpleBox(applet, tmpPos, parentsMaxHeight);
-			
-			applet.stroke(inf.currentBorderColor.getRed(), inf.currentBorderColor.getGreen(), inf.currentBorderColor.getBlue(), inf.currentBorderColor.getAlpha());
-			applet.line(tmpPos.x + inf.getSimpleBoxDimension().x/2f, tmpPos.y+parentsMaxHeight, connectionPoint.x,connectionPoint.y);
-			
+		
+		    retPoints.add(new Vector2f(tmpPos.x + inf.getSimpleBoxDimension().x/2f, tmpPos.y+parentsMaxHeight-5));
+	
 			tmpPos.x += inf.getSimpleBoxDimension().x + MAIN_BOX_PADDING;
 		}
+		return retPoints;
 	}
 	
-	private void drawChildrenBoxes(PApplet applet, Vector2f position, Vector2f connectionPoint)
+	private ArrayList<Vector2f> drawChildrenBoxes(PApplet applet, Vector2f position, Vector2f connectionPoint)
 	{
 		Vector2f tmpPos = new Vector2f(position);
+		ArrayList<Vector2f> retPoints = new ArrayList<Vector2f>();
 		
 		for (Iterator<Action> i = action.getChildActionsIterator(); i.hasNext(); )
 		{
@@ -233,16 +411,49 @@ public class ActionDrawInformation {
 			
 			inf.drawSimpleBox(applet, tmpPos, childrenMaxHeight);
 			
-			applet.stroke(inf.currentBorderColor.getRed(), inf.currentBorderColor.getGreen(), inf.currentBorderColor.getBlue(), inf.currentBorderColor.getAlpha());
-			applet.line(tmpPos.x + inf.getSimpleBoxDimension().x/2f, tmpPos.y, connectionPoint.x,connectionPoint.y);
+		    retPoints.add(new Vector2f(tmpPos.x + inf.getSimpleBoxDimension().x/2f, tmpPos.y+5));
 			
 			tmpPos.x += inf.getSimpleBoxDimension().x + MAIN_BOX_PADDING;
 		}
+		return retPoints;
 	}
+	
+	private void drawArrows(PApplet applet, ArrayList<Vector2f> parentPoints, ArrayList<Vector2f> childPoints)
+	{
+		applet.stroke(arrowBorderColor.getRed(), arrowBorderColor.getGreen(), arrowBorderColor.getBlue(), arrowBorderColor.getAlpha());
+	    applet.fill(arrowBackgroundColor.getRed(), arrowBackgroundColor.getGreen(), arrowBackgroundColor.getBlue(), arrowBackgroundColor.getAlpha());
+
+	    Vector2f connPointParent = new Vector2f(position);
+	    connPointParent.x+=boxOffsetLeft;
+	    Vector2f connPointChildren = new Vector2f(connPointParent);
+	    connPointChildren.y += getExtendedBoxDimension().y-5;
+	    connPointParent.y += 5;
+	    
+	    float diffParent = getExtendedBoxDimension().x / (parentPoints.size()+1);
+	    
+	    for (int i=0; i<parentPoints.size(); i++)
+	    {
+	    	connPointParent.x += diffParent;
+	    	PlanVisApplet.arrowFromTo(applet, parentPoints.get(i), connPointParent, 5);
+	    }
+	    
+	    float diffChild = getExtendedBoxDimension().x / (childPoints.size()+1);
+	    
+	    for (int i=0; i<childPoints.size(); i++)
+	    {
+	    	connPointChildren.x += diffChild;
+	    	PlanVisApplet.arrowFromTo(applet, connPointChildren,childPoints.get(i), 5);
+	    }
+	    
+	    
+		
+	    
+	}
+
 	
 	private void drawSequence(PApplet applet, Vector2f position)
 	{
-		//Draw outer box of sequence listc
+		//Draw outer box of sequence list
 		if (!action.getSequenceIterator().hasNext())
 			return;
 		
@@ -281,13 +492,14 @@ public class ActionDrawInformation {
 		
 		Vector2f extendedDim = getExtendedBoxDimension();
 		
-		drawParentBoxes(applet, position, new Vector2f(position.x+extendedDim.x/2f,position.y+parentsMaxHeight+MAIN_BOX_PADDING));
+		ArrayList<Vector2f> parentPoints = drawParentBoxes(applet, new Vector2f(position.x + parentStartX,position.y), new Vector2f(position.x+extendedDim.x/2f,position.y+parentsMaxHeight+MAIN_BOX_PADDING));
 		
 		position.y += parentsMaxHeight+MAIN_BOX_PADDING;
 
 		this.position = new Vector2f(position);
 		applet.strokeWeight(currentStroke);
 		applet.stroke(hoverBorderColor.getRed(), hoverBorderColor.getGreen(), hoverBorderColor.getBlue(), hoverBorderColor.getAlpha());
+		position.x += boxOffsetLeft;
 		drawBorderAndTitle(applet, position,extendedDim);	
 		applet.strokeWeight(defaultStroke);	
 		
@@ -302,9 +514,12 @@ public class ActionDrawInformation {
 		
 		position.y += sequenceBoxDimension.y;
 		position.x -= MAIN_BOX_PADDING;
+		position.x -= boxOffsetLeft;
 		
 		position.y += MAIN_BOX_PADDING*2;
-		drawChildrenBoxes(applet, position, new Vector2f(position.x+extendedDim.x/2f,position.y-MAIN_BOX_PADDING));
+		ArrayList<Vector2f> childPoints = drawChildrenBoxes(applet, new Vector2f(position.x + childStartX,position.y), new Vector2f(position.x+extendedDim.x/2f,position.y-MAIN_BOX_PADDING));
+		
+		drawArrows(applet, parentPoints, childPoints);
 	}
 	
 	private void setHover(boolean hover)
@@ -413,5 +628,10 @@ public class ActionDrawInformation {
 	public float getTextHeight()
 	{
 		return textHeight;
+	}
+	
+	public boolean IsHover()
+	{
+		return isHover;
 	}
 }

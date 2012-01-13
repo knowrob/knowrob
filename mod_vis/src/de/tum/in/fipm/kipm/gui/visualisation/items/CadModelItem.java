@@ -25,6 +25,7 @@ public class CadModelItem extends Item {
 			
 			model.getParser().draw(c,colorOverride);
 			
+			//If color override is on, also draw bounding box
 			if (colorOverride != 0)
 			{
 				c.noFill();

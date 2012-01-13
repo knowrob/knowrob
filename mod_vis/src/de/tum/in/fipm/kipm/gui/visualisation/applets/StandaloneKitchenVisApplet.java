@@ -6,9 +6,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.io.BufferedReader;
-
-import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -83,8 +80,6 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	 */
 	private HashMap<String,ItemBase> animatedItemsRef = new HashMap<String, ItemBase>();
 	private ArrayList<ItemBase> allItems = new ArrayList<ItemBase>();
-	private ArrayList<float[]> meshpoints = new ArrayList<float[]>();
-	private ArrayList<int[]>   meshtriangles = new ArrayList<int[]>();
 	private float[] framesToTimes;
 
 
@@ -99,7 +94,6 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 	////////////////////////////////////////////////////////////////////////////////
 	// FLAGS
-	private boolean drawMeshes = true;
 	public boolean isInitialized = false;
 	private boolean playingForward = true;
 	boolean record = false;
@@ -182,6 +176,13 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	// DRAW FUNCTIONS
 	// 
 
+	private void setLights()
+	{
+		float camPos[] = cam.getPosition();
+		
+		lights();
+		pointLight(80f, 80f, 100f, camPos[0],camPos[1], camPos[2]);
+	}
 
 	/**
 	 * draws everything that is define in the semantic map
@@ -206,7 +207,10 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 					0,  1,  0, 0,
 					0,  0, -1, 0,
 					0,  0,  0, 1);
-			lights();
+			//lights();
+			
+			setLights();
+			
 
 			strokeWeight(1.5f);
 			stroke(255, 0, 0);      line(0, 0, 0,   500, 0, 0);
@@ -293,42 +297,6 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		else
 			return null;
 	}
-
-
-
-	/**
-	 * draws the meshes. if enabled, called by draw().
-	 */
-	private void drawMeshes() {
-
-		pushMatrix();
-		scale(100);
-		strokeWeight(0.2f);
-
-		//if(printMode==false)
-		stroke(90, 90, 90);
-		//else 
-		//	stroke(180, 180, 180);
-
-		noFill();
-
-		beginShape(TRIANGLES);
-
-		for (int i = 0; i < meshtriangles.size(); i++) {
-
-			int p0 = meshtriangles.get(i)[0]; 
-			int p1 = meshtriangles.get(i)[1];
-			int p2 = meshtriangles.get(i)[2];
-
-			vertex(meshpoints.get(p0)[0], meshpoints.get(p0)[1], meshpoints.get(p0)[2]);
-			vertex(meshpoints.get(p1)[0], meshpoints.get(p1)[1], meshpoints.get(p1)[2]);
-			vertex(meshpoints.get(p2)[0], meshpoints.get(p2)[1], meshpoints.get(p2)[2]);
-
-		}
-		endShape();
-		popMatrix();
-	}
-
 
 	/**
 	 * draws the time, frame and other textual info
@@ -943,6 +911,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		// check whether CAD model is specified:
 		ItemModel model = Properties.getModelOfItem(identifier);
 		
+		
 		if (model != null && model.getParser()!=null) {
 			
 			it = new CadModelItem(pose, dim);
@@ -1170,7 +1139,6 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 					"rdf_triple(knowrob:m31,Or,_M31l), util:strip_literal_type(_M31l, _M31), term_to_atom(M31,_M31)," +
 					"rdf_triple(knowrob:m32,Or,_M32l), util:strip_literal_type(_M32l, _M32), term_to_atom(M32,_M32)," +
 					"rdf_triple(knowrob:m33,Or,_M33l), util:strip_literal_type(_M33l, _M33), term_to_atom(M33,_M33)", null);
-			
 			return new double[] {
 					Double.valueOf(nfo.get("M00").get(0).toString()),
 					Double.valueOf(nfo.get("M01").get(0).toString()),
@@ -1189,7 +1157,8 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 					Double.valueOf(nfo.get("M32").get(0).toString()),
 					Double.valueOf(nfo.get("M33").get(0).toString())};
 		} catch(Exception e) {
-			e.printStackTrace();
+			displayMessage("No orientation found for: " + identifier);
+			//e.printStackTrace();
 			return null;
 		}
 	}
@@ -1623,74 +1592,6 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	public static int convertColor(int red, int green, int blue, int alpha) {
 		return (((((alpha << 8) + red) << 8) + green) << 8) + blue;
 	}
-
-
-	/**
-	 * reads the mesh data from a file.
-	 * @param file
-	 */
-	@SuppressWarnings("unused")
-	private void readMeshData(String file) {
-
-		BufferedReader reader = createReader(file);
-		try{
-
-			String line;
-			boolean pointFlag=false, triangleFlag=false;
-
-			// offset needed when reading multiple meshes to a single array
-			int ptOffset = meshpoints.size();
-
-			while(true) {
-
-				line = reader.readLine();
-				if(line==null){break;}
-
-
-				// read point data
-				if(pointFlag && (line.matches("\\-?[\\d]*\\.?[\\d]*e?\\-?[\\d]* \\-?[\\d]*\\.?[\\d]*e?\\-?[\\d]* \\-?[\\d]*\\.?[\\d]*e?\\-?[\\d]*"))) { 
-					String[] coords = line.split(" ");
-					if(coords.length==3) {
-
-						this.meshpoints.add(new float[] {
-								Float.valueOf(coords[0]), 
-								Float.valueOf(coords[1]),
-								Float.valueOf(coords[2])});
-					}
-					continue;
-				}
-
-
-				// read triangle data
-				if(triangleFlag && (line.matches("3 [\\d]* [\\d]* [\\d]*"))) {
-					String[] pts = line.split(" ");
-					if(pts.length==4) {
-
-						this.meshtriangles.add(new int[] {
-								Integer.valueOf(pts[1])+ptOffset, 
-								Integer.valueOf(pts[2])+ptOffset,
-								Integer.valueOf(pts[3])+ptOffset});
-
-					}          
-					continue;}
-
-
-				if(line.matches("POINTS.*")) {
-					pointFlag=true;
-					triangleFlag=false;
-					continue;
-				}
-
-				if(line.matches("POLYGONS.*")) {
-					pointFlag=false;
-					triangleFlag=true;
-					continue;
-				}
-			}
-
-		} catch (IOException e) {}
-	}
-
 
 	ItemBase itemForObjType(String type) {
 

@@ -39,9 +39,16 @@ public class Action {
 	 */
 	private String name;
 
-	
+	/**
+	 * Holds information for drawing this action.
+	 * Used to avoid recalculation of position/size for each repainting
+	 */
 	private ActionDrawInformation drawInfo;
 	
+	/**
+	 * Constructor for initializing an action
+	 * @param name Name/Title of the action
+	 */
 	public Action(String name) {
 		this.properties = new LinkedHashMap<String, String>();
 		this.parentActions = new LinkedList<Action>();
@@ -245,9 +252,23 @@ public class Action {
 		return name;
 	}
 	
+	/**
+	 * Get information for drawing the action
+	 * @return object containing draw information
+	 */
 	public ActionDrawInformation getDrawInfo()
 	{
 		return drawInfo;
+	}
+	
+	public int getParentsCount()
+	{
+		return parentActions.size();
+	}
+	
+	public int getChildrenCount()
+	{
+		return childActions.size();
 	}
 	
 }
