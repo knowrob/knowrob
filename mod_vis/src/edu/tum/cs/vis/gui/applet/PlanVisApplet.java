@@ -100,6 +100,13 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		this.redraw();
 	}
 	
+	/**
+	 * Draw an arrow between the given two points with current stroke and fill settings.
+	 * @param applet Applet to draw on
+	 * @param from Start position of arrow
+	 * @param to End position of arrow
+	 * @param lineWidth Width of arrow line (not the stroke).
+	 */
 	public static void arrowFromTo(PApplet applet, Vector2f from, Vector2f to, float lineWidth)
 	{
 		Vector2f norm = new Vector2f(to.x - from.x, to.y-from.y);
@@ -111,8 +118,12 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		Vector2f distRight = new Vector2f(rot90);
 		distRight.scale(lineWidth);
 		
+		//following points are described as if the arrow is pointing from left to right horizontally
+		
+		//upper left
 		Vector2f p1 = new Vector2f(distLeft);
 		p1.add(from);
+		//bottom left
 		Vector2f p7 = new Vector2f(distRight);
 		p7.add(from);
 		
@@ -120,7 +131,9 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		Vector2f transl = new Vector2f(norm);
 		transl.scale(lenBreak);
 		
+		//middle up on line
 		Vector2f p2 = new Vector2f(distLeft);
+		//upper tip
 		Vector2f p3 = new Vector2f(distLeft);
 		p3.scale(2);
 		p2.add(transl);
@@ -128,7 +141,9 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		p3.add(transl);
 		p3.add(from);
 		
+		//middle bottom on line
 		Vector2f p6 = new Vector2f(distRight);
+		//bottom tip
 		Vector2f p5 = new Vector2f(distRight);
 		p5.scale(2);
 		p6.add(transl);
@@ -142,7 +157,7 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		applet.vertex(p1.x,p1.y);
 		applet.vertex(p2.x,p2.y);
 		applet.vertex(p3.x,p3.y);
-		applet.vertex(to.x,to.y);
+		applet.vertex(to.x,to.y); //front tip
 		applet.vertex(p5.x,p5.y);
 		applet.vertex(p6.x,p6.y);
 		applet.vertex(p7.x,p7.y);

@@ -98,6 +98,12 @@ public class ActionDrawInformation {
 	private final static float currentStroke = 1.5f;
 	
 	/**
+	 * Used for intern calculation such as if mouse is hovering.
+	 * Indicates if drawSimpleBox or drawExtendedBox was used to draw this action.
+	 */
+	private boolean drawnAsSimple;
+	
+	/**
 	 * Following colors are set to default colors if not hovering
 	 */
 	private Color currentBorderColor = borderColor;
@@ -363,6 +369,7 @@ public class ActionDrawInformation {
 	 */
 	public void drawSimpleBox(PApplet applet,Vector2f position, float minHeight)
 	{
+		this.drawnAsSimple = true;
 		this.position = new Vector2f(position);
 		Vector2f tmpPos = new Vector2f(position);
 		recalculateDimensions(applet);
@@ -379,10 +386,10 @@ public class ActionDrawInformation {
 	/**
 	 * Draw the parent boxes of this action. These are located over the action box
 	 * @param applet Applet to draw on
-	 * @param position 
-	 * @param connectionPoint
+	 * @param position start position where to begin to draw
+	 * @return ArrayList of Vector2f with the points at the center bottom for drawing connection arrows
 	 */
-	private ArrayList<Vector2f> drawParentBoxes(PApplet applet, Vector2f position, Vector2f connectionPoint)
+	private ArrayList<Vector2f> drawParentBoxes(PApplet applet, Vector2f position)
 	{
 		Vector2f tmpPos = new Vector2f(position);
 		ArrayList<Vector2f> retPoints = new ArrayList<Vector2f>();
@@ -400,7 +407,13 @@ public class ActionDrawInformation {
 		return retPoints;
 	}
 	
-	private ArrayList<Vector2f> drawChildrenBoxes(PApplet applet, Vector2f position, Vector2f connectionPoint)
+	/**
+	 * Draw the cild boxes of this action. These are located under the extended action box
+	 * @param applet Applet to draw on
+	 * @param position start position where to begin to draw
+	 * @return ArrayList of Vector2f with the points at the center bottom for drawing connection arrows
+	 */
+	private ArrayList<Vector2f> drawChildrenBoxes(PApplet applet, Vector2f position)
 	{
 		Vector2f tmpPos = new Vector2f(position);
 		ArrayList<Vector2f> retPoints = new ArrayList<Vector2f>();
@@ -418,6 +431,15 @@ public class ActionDrawInformation {
 		return retPoints;
 	}
 	
+	/**
+	 * Connect each point of parentPoints with the current action box. Do the same with child points.
+	 * The target points will be calculated by this function with a homogeneous distribution over the
+	 * whole with of the current action box.
+	 * 
+	 * @param applet Applet to draw on
+	 * @param parentPoints Connection points of parent actions
+	 * @param childPoints Connection points of child actions
+	 */
 	private void drawArrows(PApplet applet, ArrayList<Vector2f> parentPoints, ArrayList<Vector2f> childPoints)
 	{
 		applet.stroke(arrowBorderColor.getRed(), arrowBorderColor.getGreen(), arrowBorderColor.getBlue(), arrowBorderColor.getAlpha());
@@ -443,14 +465,14 @@ public class ActionDrawInformation {
 	    {
 	    	connPointChildren.x += diffChild;
 	    	PlanVisApplet.arrowFromTo(applet, connPointChildren,childPoints.get(i), 5);
-	    }
-	    
-	    
-		
-	    
+	    }	    
 	}
 
-	
+	/**
+	 * Draw the subsequence boxes of current action.
+	 * @param applet Applet to draw on
+	 * @param position Start position (upper left corner)
+	 */
 	private void drawSequence(PApplet applet, Vector2f position)
 	{
 		//Draw outer box of sequence list
@@ -461,13 +483,16 @@ public class ActionDrawInformation {
 	    applet.fill(currentBackgroundBrightColor.getRed(), currentBackgroundBrightColor.getGreen(), currentBackgroundBrightColor.getBlue(), currentBackgroundBrightColor.getAlpha());
 		applet.rect(position.x, position.y, sequenceBoxDimension.x, sequenceBoxDimension.y);
 		
+		//Calculate start pos of inner boxes
 		float boxMinHeight = sequenceBoxDimension.y - 2*SEQUENCE_BOX_PADDING;
 		Vector2f tmpPos = new Vector2f(position);
 		tmpPos.y += SEQUENCE_BOX_PADDING;
 		tmpPos.x += SEQUENCE_BOX_PADDING;
 		
+		//Store the positions of each box to connect them afterwards
 		ArrayList<Float> pos = new ArrayList<Float>();
-		
+
+		//Draw inner boxes
 		for (Iterator<Action> i = action.getSequenceIterator(); i.hasNext();)
 		{
 			ActionDrawInformation inf = i.next().getDrawInfo();
@@ -478,6 +503,7 @@ public class ActionDrawInformation {
 			pos.add(tmpPos.x);
 		}
 		
+		//Draw connection arrows for each sequence box
 		for (int i=0; i<pos.size()-1; i++)
 		{
 			applet.stroke(arrowBorderColor.getRed(), arrowBorderColor.getGreen(), arrowBorderColor.getBlue(), arrowBorderColor.getAlpha());
@@ -486,16 +512,25 @@ public class ActionDrawInformation {
 		}
 	}
 	
+	/**
+	 * Draw the extended action box which contains properties and subsequences. Also parent and child actions will be drawn.
+	 * @param applet Applet to draw on.
+	 * @param position Upper left corner where to begin to draw. If the action has parent action(s) it will be the position of
+	 * the first parent box. If none parent actions are present, this will be the upper left corner of the extended box.
+	 */
 	public void drawExtendedBox(PApplet applet, Vector2f position)
 	{
+		this.drawnAsSimple = false;
 		recalculateDimensions(applet);
 		
 		Vector2f extendedDim = getExtendedBoxDimension();
 		
-		ArrayList<Vector2f> parentPoints = drawParentBoxes(applet, new Vector2f(position.x + parentStartX,position.y), new Vector2f(position.x+extendedDim.x/2f,position.y+parentsMaxHeight+MAIN_BOX_PADDING));
+		//Draw parents
+		ArrayList<Vector2f> parentPoints = drawParentBoxes(applet, new Vector2f(position.x + parentStartX,position.y));
 		
 		position.y += parentsMaxHeight+MAIN_BOX_PADDING;
 
+		//Border & title
 		this.position = new Vector2f(position);
 		applet.strokeWeight(currentStroke);
 		applet.stroke(hoverBorderColor.getRed(), hoverBorderColor.getGreen(), hoverBorderColor.getBlue(), hoverBorderColor.getAlpha());
@@ -506,10 +541,12 @@ public class ActionDrawInformation {
 		position.x += MAIN_BOX_PADDING;
 		position.y += getNameBoxHeight()+INNER_CONTENT_PADDING;
 		
+		//Properties
 		drawProperties(applet, position);
 
 		position.y += INNER_CONTENT_PADDING;
 		
+		//Subsequences
 		drawSequence(applet, position);
 		
 		position.y += sequenceBoxDimension.y;
@@ -517,11 +554,17 @@ public class ActionDrawInformation {
 		position.x -= boxOffsetLeft;
 		
 		position.y += MAIN_BOX_PADDING*2;
-		ArrayList<Vector2f> childPoints = drawChildrenBoxes(applet, new Vector2f(position.x + childStartX,position.y), new Vector2f(position.x+extendedDim.x/2f,position.y-MAIN_BOX_PADDING));
+		//Children
+		ArrayList<Vector2f> childPoints = drawChildrenBoxes(applet, new Vector2f(position.x + childStartX,position.y));
 		
 		drawArrows(applet, parentPoints, childPoints);
 	}
 	
+	/**
+	 * Set the correct colors when hovering over action.
+	 * If mouse if over action, the hover* colors will be used to draw it.
+	 * @param hover If true use hover* colors, otherwise use normal colors
+	 */
 	private void setHover(boolean hover)
 	{
 		if (hover)
@@ -540,21 +583,23 @@ public class ActionDrawInformation {
 		isHover = hover;
 	}
 	
-	
-	private ActionDrawInformation checkHover(float x, float y, boolean isSimple)
+	/**
+	 * Check if mouse position x|y is over this action
+	 * @param x x coordinate of mouse
+	 * @param y y coordinate of mouse
+	 * @return the Action (it's draw info) over which the mouse is hovering or null if none.
+	 */
+	private ActionDrawInformation checkHover(float x, float y)
 	{
 
 		if (position == null)
 			return null;
 		ActionDrawInformation found = null;
-		
-		
-		float boxX,boxY,boxW,boxH;
-		boxX = position.x;
-		boxY = position.y;
-		
-		if (!isSimple)
+			
+		//Check for extended box
+		if (!drawnAsSimple)
 		{
+			//over sequences?
 			for (Iterator<Action> i = action.getSequenceIterator(); i.hasNext();)
 			{
 				ActionDrawInformation inf = i.next().getDrawInfo();
@@ -562,10 +607,11 @@ public class ActionDrawInformation {
 				if (found != null)
 					inf.setHover(false);
 				else
-					if (inf.checkHover(x, y,true)!=null)
+					if (inf.checkHover(x, y)!=null)
 						found = inf;
 			}
 			
+			//over parent?
 			for (Iterator<Action> i = action.getParentActionsIterator(); i.hasNext(); )
 			{
 				ActionDrawInformation inf = i.next().getDrawInfo();
@@ -573,10 +619,11 @@ public class ActionDrawInformation {
 				if (found != null)
 					inf.setHover(false);
 				else
-					if (inf.checkHover(x, y,true)!=null)
+					if (inf.checkHover(x, y)!=null)
 						found = inf;
 			}
 			
+			//over child
 			for (Iterator<Action> i = action.getChildActionsIterator(); i.hasNext(); )
 			{
 				ActionDrawInformation inf = i.next().getDrawInfo();
@@ -584,52 +631,75 @@ public class ActionDrawInformation {
 				if (found != null)
 					inf.setHover(false);
 				else
-					if (inf.checkHover(x, y,true)!=null)
+					if (inf.checkHover(x, y)!=null)
 						found = inf;
 			}
 			
+			//not hovering, so set correct colors
 			setHover(false);
-			return found;
+			return found; //will be null
 			
 			
 			
 		} else {
+			//Check hovering if drawn as simple box
 			Vector2f dim = getSimpleBoxDimension();
+			float boxX,boxY,boxW,boxH;
+			boxX = position.x;
+			boxY = position.y;
 			boxW = dim.x;
 			boxH = dim.y;
+			if (x>boxX && x<boxX+boxW && y>boxY && y<boxY+boxH)
+			{
+				setHover(true);
+				return this;
+			} else {
+				setHover(false);
+				return null;
+			}
 		}
-		
-		if (x>boxX && x<boxX+boxW && y>boxY && y<boxY+boxH)
-		{
-			setHover(true);
-			return this;
-		} else {
-			setHover(false);
-			return null;
-		}
-		
 		
 	}
 	
+	/**
+	 * Update color of action for current mouse position.
+	 * @param x x coordinate of mouse
+	 * @param y y coordinate of mouse
+	 * @return true if hovering, false if not
+	 */
 	public boolean updateHover(float x, float y)
 	{
-		return checkHover(x,y,false)!=null;
+		return checkHover(x,y)!=null;
 	}
 	
+	/**
+	 * Check if mouse click on position x|y was intended for an action.
+	 * @param x x coordinate of mouse
+	 * @param y y coordinate of mouse
+	 * @return Action which is under given coordinate of null if none
+	 */
 	public Action checkClick(float x, float y)
 	{
-		ActionDrawInformation a = checkHover(x,y,false);
+		ActionDrawInformation a = checkHover(x,y);
 		if (a==null)
 			return null;
 		else
 			return a.action;
 	}
 	
+	/**
+	 * Get height of drawing text
+	 * @return
+	 */
 	public float getTextHeight()
 	{
 		return textHeight;
 	}
 	
+	/**
+	 * Get action state if mouse is hovering over this action.
+	 * @return true if hovering
+	 */
 	public boolean IsHover()
 	{
 		return isHover;

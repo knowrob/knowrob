@@ -261,11 +261,19 @@ public class Action {
 		return drawInfo;
 	}
 	
+	/**
+	 * Return number of parent actions
+	 * @return number of parent actions
+	 */
 	public int getParentsCount()
 	{
 		return parentActions.size();
 	}
 	
+	/**
+	 * Return number of child actions
+	 * @return number of child actions
+	 */
 	public int getChildrenCount()
 	{
 		return childActions.size();

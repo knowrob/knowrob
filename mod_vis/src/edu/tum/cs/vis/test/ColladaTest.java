@@ -68,15 +68,15 @@ public class ColladaTest extends PApplet {
 	
 	float a; 
 
-	private Vector3f rotateVectorX(Vector3f v, float angle)
+	public Vector3f rotateVectorX(Vector3f v, float angle)
 	{
 		return new Vector3f(v.x,v.y*(float)Math.cos(angle)-v.z*(float)Math.sin(angle),v.y*(float)Math.sin(angle)+v.z*(float)Math.cos(angle));
 	}
-	private Vector3f rotateVectorY(Vector3f v, float angle)
+	public Vector3f rotateVectorY(Vector3f v, float angle)
 	{
 		return new Vector3f(v.x*(float)Math.cos(angle)-v.z*(float)Math.sin(angle),v.y,v.x*(float)Math.sin(angle)+v.z*(float)Math.cos(angle));
 	}
-	private Vector3f rotateVectorZ(Vector3f v, float angle)
+	public Vector3f rotateVectorZ(Vector3f v, float angle)
 	{
 		return new Vector3f(v.x*(float)Math.cos(angle)-v.y*(float)Math.sin(angle),v.x*(float)Math.sin(angle)+v.y*(float)Math.cos(angle),v.z);
 	}
