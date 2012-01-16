@@ -28,7 +28,8 @@
       create_joint_information/9,
       update_joint_information/7,
       read_joint_information/9,
-      delete_joint_information/1
+      delete_joint_information/1,
+      object_detection/3
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -502,7 +503,7 @@ latest_inferred_object_types(ObjectTypes) :-
 % @param Object     Object instance of interest
 % @param Time       Time point of interest. If unbound, all detections of the object are returned.
 % @param Detection  Detections of the object that are assumed to be valid at time Time
-%
+%<
 object_detection(Object, Time, Detection) :-
 
     findall([D_i,Object], (rdf_has(D_i, knowrob:objectActedOn, Object),
