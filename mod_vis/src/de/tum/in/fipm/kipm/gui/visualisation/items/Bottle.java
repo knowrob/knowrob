@@ -23,21 +23,7 @@ public class Bottle extends Item {
 	
 	@Override
 	public void drawIt(Canvas c) {
-		if (model == null)
-		{
-			(new Cylinder(new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0f, 0.1f), 0.04f)).draw(c); // cup
-			(new Cylinder(new Vector3f(0f, 0f, 0.1f), new Vector3f(0f, 0f, 0.2f), 0.015f)).draw(c); // nozzle
-		}
-		else
-		{
-			model.getParser().draw(c,colorOverride);
-			if (colorOverride != 0)
-			{
-				c.noFill();
-				c.strokeWeight(1);
-				c.stroke(204, 120, 15);
-				model.getParser().getGroup().drawBoundingBox(c, true);
-			}
-		}
+		(new Cylinder(new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0f, 0.1f), 0.04f)).draw(c); // cup
+		(new Cylinder(new Vector3f(0f, 0f, 0.1f), new Vector3f(0f, 0f, 0.2f), 0.015f)).draw(c); // nozzle
 	}
 }

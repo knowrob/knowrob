@@ -6,7 +6,6 @@ import de.tum.in.fipm.kipm.gui.visualisation.applets.StandaloneKitchenVisApplet;
 import edu.tum.cs.vis.Canvas;
 import edu.tum.cs.vis.Drawable;
 import edu.tum.cs.vis.DrawableAnimated;
-import edu.tum.cs.vis.model.ItemModel;
 
 /**
  * Abstract base class for items (animated or not) that have a default color and may have
@@ -33,8 +32,6 @@ public abstract class ItemBase implements Drawable, DrawableAnimated {
 	
 	protected int color;
 	
-	protected ItemModel model = null;
-
 	public void draw(Canvas c) {
 		draw(c,0);
 	}
@@ -93,13 +90,5 @@ public abstract class ItemBase implements Drawable, DrawableAnimated {
 		this.xdim=xdim;
 		this.ydim=ydim;
 		this.zdim=zdim;
-	}
-
-	public ItemModel getModel() {
-		return model;
-	}
-
-	public void setModel(ItemModel m) {
-		model = m;
 	}
 }

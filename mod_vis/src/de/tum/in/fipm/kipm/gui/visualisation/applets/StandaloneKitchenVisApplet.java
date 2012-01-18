@@ -892,7 +892,6 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 		}
 		
-		ItemBase it = null;	
 		Matrix4d pose = null;
 		Vector3d dim = null;
 		
@@ -913,8 +912,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		
 		
 		if (model != null && model.getParser()!=null) {
-			
-			it = new CadModelItem(pose, dim);
+			CadModelItem it = new CadModelItem(pose, dim);
 			it.name = identifier;
 			it.setModel(model);
 			return it;
@@ -922,7 +920,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		
 		
 		// else: check if one of the simple types
-		it = itemForObjType(type);
+		ItemBase it = itemForObjType(type);
 
 		if(it!=null) {
 			

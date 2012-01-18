@@ -3,6 +3,7 @@ package de.tum.in.fipm.kipm.gui.visualisation.items;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3d;
 import edu.tum.cs.vis.Canvas;
+import edu.tum.cs.vis.model.ItemModel;
 
 public class CadModelItem extends Item {
 	
@@ -18,21 +19,24 @@ public class CadModelItem extends Item {
 		super(pose, dim);
 	}
 	
+
+	protected ItemModel model = null;
+
+	public ItemModel getModel() {
+		return model;
+	}
+
+	public void setModel(ItemModel m) {
+		model = m;
+	}
+	
 	@Override
 	public void drawIt(Canvas c) {
 		
 		if (model != null) {
-			
 			model.getParser().draw(c,colorOverride);
-			
-			//If color override is on, also draw bounding box
-			if (colorOverride != 0)
-			{
-				c.noFill();
-				c.strokeWeight(1);
-				c.stroke(204, 120, 15);
-				model.getParser().getGroup().drawBoundingBox(c, true);
-			}
+		} else {
+			super.draw(c);
 		}
 	}
 }
