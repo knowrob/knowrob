@@ -26,11 +26,17 @@ public class RoomInAConstruction extends Item {
 
       c.translate(0,0,-zdim/2 - 0.05f);
       //c.stroke(50,50,50);
-      c.box(this.xdim, this.ydim, 0.02f); 
+      
+      // ground plane
+      c.box(this.xdim, this.ydim, 0.02f);
+      c.fill(127, 127, 127, 100);
+      c.translate(0,0,zdim/2);
+      c.box(this.xdim, this.ydim, this.zdim);
+      
       
       // center of room
       //c.fill(0,0,200);
-      c.box(xdim/15,ydim/15,0.1f);
+//      c.box(xdim/15,ydim/15,0.1f);
 
       // float diff_x = - (this.trafoMatrix[3] - xtrans); 
       // float diff_y = - (this.trafoMatrix[7] - ytrans);

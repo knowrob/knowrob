@@ -21,6 +21,7 @@
 
 % Semweb library for OWL/RDF access
 :- register_ros_package(semweb).
+:- register_ros_package(knowrob_actions).
 
 
 % TUM utilities library
