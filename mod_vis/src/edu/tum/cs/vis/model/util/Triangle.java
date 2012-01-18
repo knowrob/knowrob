@@ -40,7 +40,7 @@ public class Triangle extends DrawObject {
 
  		applet.noStroke();
 		if (!appearance.containsTexture || overrideColor != 0)
-         {
+        {
 			if (overrideColor != 0)
 				applet.fill(overrideColor);
 			else
@@ -55,28 +55,20 @@ public class Triangle extends DrawObject {
 
              applet.endShape();
 
-         } else
-         {
-        	 if (overrideColor != 0)
- 				applet.fill(overrideColor);
- 			else
- 				applet.fill(1 * 255,
- 					1 * 255,
- 					1 * 255,
- 					0 * 255);
+		} else
+		{
+			 //Use fallback if texture isn't drawn. So fill triangles with white color
+			applet.fill(255,255,255,0);
+			 
 			applet.beginShape(PConstants.TRIANGLES);
 			applet.texture(appearance.imageReference);
 			
 			for (int i=0; i<3; i++)
-			{
 				applet.vertex(position[i].x, position[i].y, position[i].z,
-						texPosition[i].x, texPosition[i].y);				
-			}
-			
-
-			
+						texPosition[i].x, texPosition[i].y);	
+						
 			applet.endShape();
 
-         }
-     }
+        }
+    }
 }

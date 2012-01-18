@@ -52,6 +52,17 @@ public class PlanVisTest {
 		crackEggs.addParentAction(getEggs);
 		crackEggs.addParentAction(getBowl);
 		
+		crackEggs.addSequence(getEggs);
+		crackEggs.addSequence(getBowl);
+		Action openDrawer = new Action("openDrawer");
+		getBowl.addSequence(openDrawer);
+		Action takeBowl1 = new Action("takeBowl");
+		getBowl.addSequence(takeBowl1);
+		Action closeDrawer = new Action("closeDrawer");
+		getBowl.addSequence(closeDrawer);
+		
+		getBowl.setProperty("Bowl location", "On the table");
+		
 		Action getFlour = new Action("get flour");
 		getFlour.setProperty("Amount", "500 g");
 		
@@ -64,6 +75,11 @@ public class PlanVisTest {
 		Action fillDoughIntoPan = new Action("Fill dough into pan");
 		fillDoughIntoPan.setProperty("TestKEy", "TestValue");
 		brownies.addSequence(fillDoughIntoPan);
+		Action takeBowl = new Action("take bowl");
+		getFlour.setProperty("Color", "green");
+		Action emptyBowl = new Action("empty bowl");
+		fillDoughIntoPan.addSequence(takeBowl);
+		fillDoughIntoPan.addSequence(emptyBowl);
 		
 		Action getBakingPan = new Action("get baking pan");
 		getBakingPan.setProperty("Color", "blue");

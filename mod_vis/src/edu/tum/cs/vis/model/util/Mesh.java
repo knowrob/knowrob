@@ -73,7 +73,6 @@ public class Mesh {
 	protected void drawTriangles(PApplet applet, int overrideColor) {
 		if (!texturesInitialized)
 			setTextureImage(applet);
-		// Shapes are not effected by translate
 		for (Triangle tri : triangles) {
 			tri.draw(applet,overrideColor);
 		}
@@ -87,8 +86,6 @@ public class Mesh {
 	 * @param colorOverride override the draw color an texture. Draw whole object in the given color if != 0
 	 */
 	protected void drawLines(PApplet applet, int overrideColor) {
-
-		// Shapes are not effected by translate
 		for (Line line : lines) {
 
 			line.draw(applet,overrideColor);
@@ -364,40 +361,43 @@ public class Mesh {
 			}
 		}
 
+		//Now remove offset of texture coordinates because there is a bug with P3D when texture should repeated
 		for (Triangle tri : triangles) {
-			if (tri.appearance.containsTexture) {
-				String texfile = getAbsoluteFilePath(textureBasePath,
-						tri.appearance.imageFileName);
-				//PImage tex = applet.loadImage(texfile);
-				PImage tex = pictures.get(texfile);
-				
-				double xMin = Double.MAX_VALUE;
-				double yMin = Double.MAX_VALUE;
-				
-				for (int i=0; i< 3; i++)
-				{
+			
+			if (!tri.appearance.containsTexture)
+				continue;		
+			
+			String texfile = getAbsoluteFilePath(textureBasePath,
+					tri.appearance.imageFileName);
+			//PImage tex = applet.loadImage(texfile);
+			PImage tex = pictures.get(texfile);
+			
+			double xMin = Double.MAX_VALUE;
+			double yMin = Double.MAX_VALUE;
+			
+			for (int i=0; i< 3; i++)
+			{
 
-					double x = tri.texPosition[i].x * tex.width;
-					double y = tex.height - tri.texPosition[i].y * tex.height;
-					tri.texPosition[i].x = (float)x;
-					tri.texPosition[i].y = (float)y;
-					xMin = Math.min(x, xMin);
-					yMin = Math.min(y, yMin);
-				}
-				
-				//Remove offset of texture coordinate if all coordinates are greater than texture
-				xMin = Math.floor(xMin/tex.width);
-				yMin = Math.floor(yMin/tex.height);
-				
-				for (int i=0; i< 3; i++)
-				{
-					tri.texPosition[i].x -= xMin * tex.width;
-					tri.texPosition[i].y -= yMin * tex.height;
-				}
-				
-
-				tri.appearance.imageReference = tex;
+				double x = tri.texPosition[i].x * tex.width;
+				double y = tex.height - tri.texPosition[i].y * tex.height;
+				tri.texPosition[i].x = (float)x;
+				tri.texPosition[i].y = (float)y;
+				xMin = Math.min(x, xMin);
+				yMin = Math.min(y, yMin);
 			}
+			
+			//Remove offset of texture coordinate if all coordinates are greater than texture
+			xMin = Math.floor(xMin/tex.width);
+			yMin = Math.floor(yMin/tex.height);
+			
+			for (int i=0; i< 3; i++)
+			{
+				tri.texPosition[i].x -= xMin * tex.width;
+				tri.texPosition[i].y -= yMin * tex.height;
+			}
+			
+
+			tri.appearance.imageReference = tex;
 		}
 		texturesInitialized = true;
 	}

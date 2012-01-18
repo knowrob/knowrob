@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.LinkedHashMap;
 
+import javax.vecmath.Vector2f;
+
 /**
  * A action for a plan.
  * An action can have dependencies (parents) which have to be executed before.
@@ -33,6 +35,16 @@ public class Action {
 	 * Subsequence of this action
 	 */
 	private LinkedList<Action> sequence;
+	
+	/**
+	 * Parent action if this action is in a subsequence
+	 */
+	private Action parentOfSequence = null;
+	
+	/**
+	 * reference to currently expanded sequence
+	 */
+	private Action expandedSequence = null;
 
 	/**
 	 * Name of the action
@@ -216,11 +228,21 @@ public class Action {
 	}
 
 	/**
+	 * Returns the number of subsequences for this action
+	 * @return length of sequence iterator
+	 */
+	public int getSequenceCount()
+	{
+		return sequence.size();
+	}
+	
+	/**
 	 * Add an action to the sequence list as a subsequence for this action.
 	 * @param sequence action to add
 	 */
 	public void addSequence(Action sequence) {
 		this.sequence.add(sequence);
+		sequence.parentOfSequence = this;
 		drawInfo.notifyModified();
 	}
 	
@@ -230,6 +252,10 @@ public class Action {
 	 */
 	public void addSequence(LinkedList<Action> sequences) {
 		this.sequence.addAll(sequences);
+		for (Action s : sequences)
+		{
+			s.parentOfSequence = this;
+		}
 		drawInfo.notifyModified();
 	}
 	
@@ -277,6 +303,41 @@ public class Action {
 	public int getChildrenCount()
 	{
 		return childActions.size();
+	}
+	
+	/**
+	 * Returns true if the sequence is expanded.
+	 * @return true if expanded
+	 */
+	public boolean isExpanded()
+	{
+		return (parentOfSequence.expandedSequence == this);
+	}
+	
+	public Action getExpandedSequence()
+	{
+		return expandedSequence;
+	}
+	
+	public void setExpandedSequence(Action sequence)
+	{
+		if (this.sequence.contains(sequence))
+		{
+			this.expandedSequence = sequence;
+			parentOfSequence.drawInfo.notifyModified();
+		}
+	}
+	
+	/**
+	 * Toggle the expanded value
+	 */
+	public void toggleExpand()
+	{
+		if (parentOfSequence.expandedSequence == this)
+			parentOfSequence.expandedSequence = null;
+		else
+			parentOfSequence.expandedSequence = this;
+			parentOfSequence.drawInfo.notifyModified();
 	}
 	
 }

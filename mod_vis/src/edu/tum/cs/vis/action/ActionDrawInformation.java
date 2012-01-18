@@ -44,6 +44,11 @@ public class ActionDrawInformation {
 	 * Padding around a single sequence box in the subsequence box
 	 */
 	public final static float SEQUENCE_BOX_PADDING = 10f;
+	
+	/**
+	 * total height of the expand box under a subsequence box
+	 */
+	public final static float EXPAND_BOX_HEIGHT = 18f;
 		
 	/**
 	 * Default border color for boxes
@@ -88,6 +93,24 @@ public class ActionDrawInformation {
 	 */
 	private final static Color arrowBackgroundColor = new Color(51,105,192,230);
 	
+
+	/**
+	 * Border color of arrow for expanding box
+	 */
+	private final static Color arrowExpandBorderColor = new Color(94, 61, 61);
+	/**
+	 * Background color of arrow expanding box
+	 */
+	private final static Color arrowExpandBackgroundColor = new Color(125,67,67,230);	
+	/**
+	 * Border color of arrow for expanding box
+	 */
+	private final static Color hoverArrowExpandBorderColor = new Color(190, 123, 123);
+	/**
+	 * Background color of arrow expanding box
+	 */
+	private final static Color hoverArrowExpandBackgroundColor = new Color(190,141,141,230);
+	
 	/**
 	 * Default line/border width
 	 */
@@ -110,6 +133,12 @@ public class ActionDrawInformation {
 	private Color currentBackgroundColor = backgroundColor;
 	private Color currentBackgroundBrightColor = backgroundBrightColor;
 	private Color currentTextColor = textColor;
+	
+	/**
+	 * Following colors are set to default colors if not hovering over expand box
+	 */
+	private Color currentExpandBorderColor = arrowExpandBorderColor;
+	private Color currentExpandBackgroundColor = arrowExpandBackgroundColor;
 	
 	/**
 	 * parent action of this draw info
@@ -170,6 +199,10 @@ public class ActionDrawInformation {
 	 */
 	private Vector2f sequenceBoxDimension = new Vector2f();
 	
+	private float maxSubsequenceHeight = 0;
+	
+	private boolean hasExpandButton = false;
+	
 	/**
 	 * current position to draw the main box of the action
 	 */
@@ -184,6 +217,14 @@ public class ActionDrawInformation {
 		action = parent;
 	}
 	
+	private void notifyModifiedSubsequences(Action a)
+	{
+		if (a==null)
+			return;
+		a.getDrawInfo().notifyModified();
+		notifyModifiedSubsequences(a.getExpandedSequence());
+	}
+	
 	/**
 	 * Call this if action properties/subsequences/parents/children changed.
 	 * This tells the class to recalculate the dimensions of all boxes
@@ -191,6 +232,7 @@ public class ActionDrawInformation {
 	public void notifyModified()
 	{
 		needsRecalculation = true;
+		notifyModifiedSubsequences(action.getExpandedSequence());
 	}
 	
 	/**
@@ -243,6 +285,18 @@ public class ActionDrawInformation {
 		return dim;
 	}
 	
+	private static void checkAndAddSizeOfExpandedSequence(PApplet applet,Vector2f currentSequenceBoxSize, Action currAction)
+	{
+		if (currAction.getDrawInfo().needsRecalculation)
+			currAction.getDrawInfo().recalculateDimensions(applet);
+		if (currAction.getExpandedSequence() != null)
+		{
+			Action exp = currAction.getExpandedSequence();
+			currentSequenceBoxSize.x = Math.max(currentSequenceBoxSize.x,exp.getDrawInfo().sequenceBoxDimension.x+2*SEQUENCE_BOX_PADDING);
+			currentSequenceBoxSize.y += exp.getDrawInfo().sequenceBoxDimension.y;
+		}
+	}
+	
 	/**
 	 * Recalculate the dimension of simple/extended box.
 	 * Only executed if needsRecalculation is set to true (notifyModified called)
@@ -277,15 +331,23 @@ public class ActionDrawInformation {
 		//Calculation for sequence boxes
 		sequenceBoxDimension.x = SEQUENCE_BOX_PADDING;
 		sequenceBoxDimension.y = 0;
+		hasExpandButton = false;
 		for (Iterator<Action> i = action.getSequenceIterator(); i.hasNext();)
 		{
-			ActionDrawInformation inf = i.next().getDrawInfo();
+			Action a = i.next();
+			if (a.getSequenceCount() > 0)
+				hasExpandButton = true;
+			ActionDrawInformation inf = a.getDrawInfo();
 			
 			inf.recalculateDimensions(applet);
 			
 			sequenceBoxDimension.x += inf.getSimpleBoxDimension().x + SEQUENCE_BOX_PADDING;
 			sequenceBoxDimension.y = Math.max(sequenceBoxDimension.y, inf.getSimpleBoxDimension().y + 2*SEQUENCE_BOX_PADDING);
 		}
+		maxSubsequenceHeight = sequenceBoxDimension.y- 2*SEQUENCE_BOX_PADDING;
+		if (hasExpandButton)
+			sequenceBoxDimension.y += EXPAND_BOX_HEIGHT;
+		checkAndAddSizeOfExpandedSequence(applet,sequenceBoxDimension,action);
 		
 		//Calculation for parent boxes
 		parentsMaxHeight = 0;
@@ -369,6 +431,17 @@ public class ActionDrawInformation {
 	 */
 	public void drawSimpleBox(PApplet applet,Vector2f position, float minHeight)
 	{
+		drawSimpleBox(applet, position, minHeight,false);
+	}
+	
+	/**
+	 * Draw the simple box. Contains title and properties
+	 * @param applet Applet to draw on
+	 * @param position Position where to draw the box
+	 * @param minHeight minimum height of the box.
+	 */
+	public void drawSimpleBox(PApplet applet,Vector2f position, float minHeight, boolean drawExpandBox)
+	{
 		this.drawnAsSimple = true;
 		this.position = new Vector2f(position);
 		Vector2f tmpPos = new Vector2f(position);
@@ -376,6 +449,20 @@ public class ActionDrawInformation {
 		
 		applet.stroke(currentBorderColor.getRed(), currentBorderColor.getGreen(), currentBorderColor.getBlue(), currentBorderColor.getAlpha());
 		drawBorderAndTitle(applet, tmpPos,new Vector2f(getSimpleBoxDimension().x,Math.max(minHeight, getSimpleBoxDimension().y)));		
+		
+		if (drawExpandBox)
+		{
+			applet.stroke(currentExpandBorderColor.getRed(), currentExpandBorderColor.getGreen(), currentExpandBorderColor.getBlue(), currentExpandBorderColor.getAlpha());
+		    applet.fill(currentExpandBackgroundColor.getRed(), currentExpandBackgroundColor.getGreen(), currentExpandBackgroundColor.getBlue(), currentExpandBackgroundColor.getAlpha());
+		    
+
+			Vector2f from = new Vector2f(tmpPos.x+getSimpleBoxDimension().x/2f,tmpPos.y+Math.max(minHeight, getSimpleBoxDimension().y)+4);
+			Vector2f to = new Vector2f(tmpPos.x+getSimpleBoxDimension().x/2f,tmpPos.y+Math.max(minHeight, getSimpleBoxDimension().y)+EXPAND_BOX_HEIGHT-4);
+		    if (action.isExpanded())
+		    	PlanVisApplet.arrowFromTo(applet, to, from, 6,0);
+		    else
+		    	PlanVisApplet.arrowFromTo(applet, from, to, 6,0);
+		}
 		
 		tmpPos.x += MAIN_BOX_PADDING;
 		tmpPos.y += getNameBoxHeight()+INNER_CONTENT_PADDING;
@@ -456,7 +543,7 @@ public class ActionDrawInformation {
 	    for (int i=0; i<parentPoints.size(); i++)
 	    {
 	    	connPointParent.x += diffParent;
-	    	PlanVisApplet.arrowFromTo(applet, parentPoints.get(i), connPointParent, 5);
+	    	PlanVisApplet.arrowFromTo(applet, parentPoints.get(i), connPointParent, 5,-1);
 	    }
 	    
 	    float diffChild = getExtendedBoxDimension().x / (childPoints.size()+1);
@@ -464,7 +551,7 @@ public class ActionDrawInformation {
 	    for (int i=0; i<childPoints.size(); i++)
 	    {
 	    	connPointChildren.x += diffChild;
-	    	PlanVisApplet.arrowFromTo(applet, connPointChildren,childPoints.get(i), 5);
+	    	PlanVisApplet.arrowFromTo(applet, connPointChildren,childPoints.get(i), 5,-1);
 	    }	    
 	}
 
@@ -473,18 +560,20 @@ public class ActionDrawInformation {
 	 * @param applet Applet to draw on
 	 * @param position Start position (upper left corner)
 	 */
-	private void drawSequence(PApplet applet, Vector2f position)
+	private void drawSequence(PApplet applet, Vector2f position, boolean isExpandedBox)
 	{
 		//Draw outer box of sequence list
 		if (!action.getSequenceIterator().hasNext())
 			return;
 		
 		applet.stroke(currentBorderColor.getRed(), currentBorderColor.getGreen(), currentBorderColor.getBlue(), currentBorderColor.getAlpha());
-	    applet.fill(currentBackgroundBrightColor.getRed(), currentBackgroundBrightColor.getGreen(), currentBackgroundBrightColor.getBlue(), currentBackgroundBrightColor.getAlpha());
+	    if (isExpandedBox)
+	    	applet.fill(currentBackgroundColor.getRed(), currentBackgroundColor.getGreen(), currentBackgroundColor.getBlue(), currentBackgroundColor.getAlpha());
+	    else
+	    	applet.fill(currentBackgroundBrightColor.getRed(), currentBackgroundBrightColor.getGreen(), currentBackgroundBrightColor.getBlue(), currentBackgroundBrightColor.getAlpha());
 		applet.rect(position.x, position.y, sequenceBoxDimension.x, sequenceBoxDimension.y);
 		
 		//Calculate start pos of inner boxes
-		float boxMinHeight = sequenceBoxDimension.y - 2*SEQUENCE_BOX_PADDING;
 		Vector2f tmpPos = new Vector2f(position);
 		tmpPos.y += SEQUENCE_BOX_PADDING;
 		tmpPos.x += SEQUENCE_BOX_PADDING;
@@ -492,12 +581,24 @@ public class ActionDrawInformation {
 		//Store the positions of each box to connect them afterwards
 		ArrayList<Float> pos = new ArrayList<Float>();
 
+		Vector2f expandedParentCorner1 = null;
+		Vector2f expandedParentCorner2 = null;
+
+		Action expSeq = action.getExpandedSequence();
+		
+		
 		//Draw inner boxes
 		for (Iterator<Action> i = action.getSequenceIterator(); i.hasNext();)
 		{
-			ActionDrawInformation inf = i.next().getDrawInfo();
+			Action a = i.next();
+			ActionDrawInformation inf = a.getDrawInfo();
 			
-			inf.drawSimpleBox(applet, tmpPos, boxMinHeight);
+			inf.drawSimpleBox(applet, tmpPos, maxSubsequenceHeight,a.getSequenceCount()>0);
+			if (a == expSeq)
+			{
+				expandedParentCorner1 = new Vector2f(tmpPos.x,tmpPos.y+maxSubsequenceHeight);
+				expandedParentCorner2 = new Vector2f(tmpPos.x+inf.getSimpleBoxDimension().x,tmpPos.y+maxSubsequenceHeight);
+			}
 			
 			tmpPos.x += inf.getSimpleBoxDimension().x + SEQUENCE_BOX_PADDING;
 			pos.add(tmpPos.x);
@@ -509,6 +610,29 @@ public class ActionDrawInformation {
 			applet.stroke(arrowBorderColor.getRed(), arrowBorderColor.getGreen(), arrowBorderColor.getBlue(), arrowBorderColor.getAlpha());
 		    applet.fill(arrowBackgroundColor.getRed(), arrowBackgroundColor.getGreen(), arrowBackgroundColor.getBlue(), arrowBackgroundColor.getAlpha());
 			PlanVisApplet.arrow(applet,pos.get(i)-SEQUENCE_BOX_PADDING - 5,tmpPos.y+getNameBoxHeight()/2-10,20,SEQUENCE_BOX_PADDING+11);
+		}
+		
+		//Draw expanded subsequences if any
+		Vector2f startPos = new Vector2f(position);
+		startPos.y +=SEQUENCE_BOX_PADDING + maxSubsequenceHeight + EXPAND_BOX_HEIGHT;
+		
+		if (expSeq != null && expandedParentCorner1 != null && expandedParentCorner2 != null)
+		{
+			Vector2f subDim = expSeq.getDrawInfo().sequenceBoxDimension;
+			startPos.x = (expandedParentCorner2.x+expandedParentCorner1.x)/2f;
+			startPos.x -= subDim.x/2f;
+			
+			startPos.x = Math.max(startPos.x, position.x+SEQUENCE_BOX_PADDING);
+			
+			startPos.x -= Math.max(0, (startPos.x +subDim.x) - (position.x+sequenceBoxDimension.x-SEQUENCE_BOX_PADDING));
+			
+			
+			//applet.stroke(currentBorderColor.getRed(), currentBorderColor.getGreen(), currentBorderColor.getBlue(), currentBorderColor.getAlpha());
+	    	//applet.fill(currentBackgroundColor.getRed(), currentBackgroundColor.getGreen(), currentBackgroundColor.getBlue(), currentBackgroundColor.getAlpha());
+			//applet.line(expandedParentCorner1.x, expandedParentCorner1.y, startPos.x, startPos.y);
+			//applet.line(expandedParentCorner2.x, expandedParentCorner2.y, startPos.x+subDim.x, startPos.y);
+			
+			expSeq.getDrawInfo().drawSequence(applet, startPos, true);
 		}
 	}
 	
@@ -547,7 +671,7 @@ public class ActionDrawInformation {
 		position.y += INNER_CONTENT_PADDING;
 		
 		//Subsequences
-		drawSequence(applet, position);
+		drawSequence(applet, position, false);
 		
 		position.y += sequenceBoxDimension.y;
 		position.x -= MAIN_BOX_PADDING;
@@ -584,21 +708,61 @@ public class ActionDrawInformation {
 	}
 	
 	/**
+	 * Set the correct colors when hovering over expand arrow.
+	 * If mouse if over expand arrow, the hover* colors will be used to draw it.
+	 * @param hover If true use hover* colors, otherwise use normal colors
+	 */
+	private void setHoverExpand(boolean hover)
+	{
+		if (hover || action.isExpanded())
+		{
+			currentExpandBorderColor = hoverArrowExpandBorderColor;
+			currentExpandBackgroundColor = hoverArrowExpandBackgroundColor;
+		} else 
+		{
+			currentExpandBorderColor = arrowExpandBorderColor;
+			currentExpandBackgroundColor = arrowExpandBackgroundColor;
+		}
+	}
+	
+	private ActionDrawInformation checkHoverExtendedSequence(float x, float y, Action currAction, ActionDrawInformation found)
+	{
+		if (currAction ==null)
+			return null;
+		//over sequences?
+		for (Iterator<Action> i = currAction.getSequenceIterator(); i.hasNext();)
+		{
+			ActionDrawInformation inf = i.next().getDrawInfo();
+			
+			if (found != null)
+				inf.setHover(false);
+			else {
+				found = inf.checkHover(x, y,found);	
+			}
+		}
+		return found;
+	}
+	
+	/**
 	 * Check if mouse position x|y is over this action
 	 * @param x x coordinate of mouse
 	 * @param y y coordinate of mouse
+	 * @param foundInParent set to true if aleady a matching box was found, so only setHover(false) is needed to call 
 	 * @return the Action (it's draw info) over which the mouse is hovering or null if none.
 	 */
-	private ActionDrawInformation checkHover(float x, float y)
+	private ActionDrawInformation checkHover(float x, float y, ActionDrawInformation found)
 	{
 
 		if (position == null)
-			return null;
-		ActionDrawInformation found = null;
+			return found;
 			
+		//over extended sequences?
+		found = checkHoverExtendedSequence(x,y,action.getExpandedSequence(), found);
+		
 		//Check for extended box
 		if (!drawnAsSimple)
 		{
+
 			//over sequences?
 			for (Iterator<Action> i = action.getSequenceIterator(); i.hasNext();)
 			{
@@ -607,7 +771,7 @@ public class ActionDrawInformation {
 				if (found != null)
 					inf.setHover(false);
 				else
-					if (inf.checkHover(x, y)!=null)
+					if (inf.checkHover(x, y,found)!=null)
 						found = inf;
 			}
 			
@@ -619,7 +783,7 @@ public class ActionDrawInformation {
 				if (found != null)
 					inf.setHover(false);
 				else
-					if (inf.checkHover(x, y)!=null)
+					if (inf.checkHover(x, y,found)!=null)
 						found = inf;
 			}
 			
@@ -631,7 +795,7 @@ public class ActionDrawInformation {
 				if (found != null)
 					inf.setHover(false);
 				else
-					if (inf.checkHover(x, y)!=null)
+					if (inf.checkHover(x, y,found)!=null)
 						found = inf;
 			}
 			
@@ -655,9 +819,64 @@ public class ActionDrawInformation {
 				return this;
 			} else {
 				setHover(false);
-				return null;
+				return found;
 			}
 		}
+		
+	}
+	
+	/**
+	 * Check if mouse position x|y is over an expand arrow
+	 * @param x x coordinate of mouse
+	 * @param y y coordinate of mouse
+	 * @param sequenceExpandHeight set to 0 for direct call. Only used for recursing
+	 * @return the parent Action (it's draw info) over which's expand arrow the mouse is hovering or null if none.
+	 */
+	private ActionDrawInformation checkHoverExpand(float x, float y, boolean hasExpandButton, float sequenceBoxHeight, boolean parentExpanded)
+	{
+
+		if (position == null)
+			return null;
+		ActionDrawInformation found = null;
+			
+		//over sequences?
+		if (parentExpanded)
+		{
+			for (Iterator<Action> i = action.getSequenceIterator(); i.hasNext();)
+			{
+				Action a = i.next();
+				ActionDrawInformation inf = a.getDrawInfo();
+				
+				if (found != null)
+					inf.setHoverExpand(false);
+				else
+				{
+					ActionDrawInformation d = inf.checkHoverExpand(x, y,this.hasExpandButton,this.maxSubsequenceHeight, a.isExpanded());
+					if (d!=null)
+						found = d;
+				}
+			}
+		}
+		
+		if (hasExpandButton) {
+			//Check hovering if drawn as simple box
+			Vector2f dim = getSimpleBoxDimension();
+			float boxX,boxY,boxW,boxH;
+			boxX = position.x;
+			boxY = position.y+sequenceBoxHeight;
+			boxW = dim.x;
+			boxH = EXPAND_BOX_HEIGHT;
+			if (action.getSequenceCount() > 0 && x>boxX && x<boxX+boxW && y>boxY && y<boxY+boxH)
+			{
+				setHoverExpand(true);
+				return this;
+			} else {
+				setHoverExpand(false);
+				return found;
+			}
+		}
+		
+		return found;
 		
 	}
 	
@@ -669,7 +888,8 @@ public class ActionDrawInformation {
 	 */
 	public boolean updateHover(float x, float y)
 	{
-		return checkHover(x,y)!=null;
+		boolean found = checkHover(x,y,null)!=null;
+		return (checkHoverExpand(x, y, false,0,true)!=null || found);
 	}
 	
 	/**
@@ -680,7 +900,22 @@ public class ActionDrawInformation {
 	 */
 	public Action checkClick(float x, float y)
 	{
-		ActionDrawInformation a = checkHover(x,y);
+		ActionDrawInformation a = checkHover(x,y,null);
+		if (a==null)
+			return null;
+		else
+			return a.action;
+	}
+	
+	/**
+	 * Check if mouse click on position x|y was intended for an expand button.
+	 * @param x x coordinate of mouse
+	 * @param y y coordinate of mouse
+	 * @return Action for which this expand button is
+	 */
+	public Action checkClickExpand(float x, float y)
+	{
+		ActionDrawInformation a = checkHoverExpand(x, y, false,0,true);
 		if (a==null)
 			return null;
 		else

@@ -45,6 +45,12 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 	private static final Cursor handCursor = new Cursor(Cursor.HAND_CURSOR);
 	
 	/**
+	 * mouseClicked has a bug so that for each click it is called two times.
+	 * Prevent it by time measure
+	 */
+	private long lastClickTime = 0;
+	
+	/**
 	 * history of selected actions.
 	 * It's used like a breadcrumbs menu. If you select an action it will be added to this arrray.
 	 * If you go back to a certain action in the history all remaining actions after the selected will be removed from history.
@@ -107,7 +113,7 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 	 * @param to End position of arrow
 	 * @param lineWidth Width of arrow line (not the stroke).
 	 */
-	public static void arrowFromTo(PApplet applet, Vector2f from, Vector2f to, float lineWidth)
+	public static void arrowFromTo(PApplet applet, Vector2f from, Vector2f to, float lineWidth, float blockLength)
 	{
 		Vector2f norm = new Vector2f(to.x - from.x, to.y-from.y);
 		float len = norm.length();
@@ -127,9 +133,12 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		Vector2f p7 = new Vector2f(distRight);
 		p7.add(from);
 		
-		float lenBreak = Math.max(len*0.5f, len - 3*lineWidth);
+		if (blockLength < 0)
+		{
+			blockLength = Math.max(len*0.5f, len - 3*lineWidth);
+		}
 		Vector2f transl = new Vector2f(norm);
-		transl.scale(lenBreak);
+		transl.scale(blockLength);
 		
 		//middle up on line
 		Vector2f p2 = new Vector2f(distLeft);
@@ -285,8 +294,14 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
     public void mouseExited(MouseEvent e) {
     }
 
+	boolean clicked = false;
 	@Override
     public void mouseClicked(MouseEvent e) {
+		long diff = System.currentTimeMillis()-lastClickTime;
+		lastClickTime = System.currentTimeMillis();
+		clicked = !clicked;
+		if (diff < 10 || ! clicked) //double fired event
+			return;
 		if (e.getButton() == MouseEvent.BUTTON1)
 		{
 			//Check if clicked on history element
@@ -302,9 +317,17 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 				return;
 			}
 			
+			//Check if clicked on an expand button
+			Action a = currAction.getDrawInfo().checkClickExpand(e.getX(), e.getY());
+			if (a!= null)
+			{
+				a.toggleExpand();
+				currAction.getDrawInfo().notifyModified();
+				return;
+			}
 			
 			//Check if clicked on an action
-			Action a = currAction.getDrawInfo().checkClick(e.getX(), e.getY());
+			a = currAction.getDrawInfo().checkClick(e.getX(), e.getY());
 			if (a!= null && a != currAction)
 			{
 				currAction = a;
@@ -314,6 +337,8 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 					clickHistory.add(new ActionSelectHistoryInfo(currAction));
 				updateHistoryPosition();
 			}
+			
+			
 		}
     }
 	

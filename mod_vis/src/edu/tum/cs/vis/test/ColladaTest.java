@@ -37,9 +37,9 @@ public class ColladaTest extends PApplet {
       size(1000, 1000, P3D);
       
       //model1 = new ItemModel("/home/stefan/Truck2.kmz");
-      model1 = new ItemModel("/home/stefan/ros/knowrob/knowrob_cad_models/models/collada/Expedit/Expedit_2X4.kmz");
+      //model1 = new ItemModel("/home/stefan/ros/knowrob/knowrob_cad_models/models/collada/Expedit/Expedit_2X4.kmz");
       model2 = new ItemModel("/home/stefan/ros/knowrob/knowrob_cad_models/models/collada/hospital_bed.kmz");
-      //model3 = new ItemModel("/home/stefan/ros/knowrob/knowrob_cad_models/models/collada/Expedit/Drawer.kmz");
+      //model3 = new ItemModel("/home/stefan/ros/knowrob/knowrob_cad_models/models/collada/Expedit/Door.kmz");
       //parser = ColladaParser.loadModel();
       
     
@@ -58,9 +58,9 @@ public class ColladaTest extends PApplet {
 		cam.rotateX((float)Math.PI/2f);
 		//cam.rotateY(3.141592654);
 
-		System.out.println("Model Width: " + model1.getParser().getGroup().getTotalWidth());
+		/*System.out.println("Model Width: " + model1.getParser().getGroup().getTotalWidth());
 		System.out.println("Model Height: " + model1.getParser().getGroup().getTotalHeight());
-		System.out.println("Model Depth: " + model1.getParser().getGroup().getTotalDepth());
+		System.out.println("Model Depth: " + model1.getParser().getGroup().getTotalDepth());*/
 		
 
     }
@@ -132,7 +132,7 @@ public class ColladaTest extends PApplet {
 	     // line(camLook.x, camLook.y, camLook.z, camDir.x, camDir.y, camDir.z);
       
      scale(5);
-      model1.getParser().draw(this,0);
+      //model1.getParser().draw(this,0);
      
      //x plane
    /*  pushMatrix();
