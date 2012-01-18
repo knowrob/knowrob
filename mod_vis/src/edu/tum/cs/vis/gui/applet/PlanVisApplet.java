@@ -2,6 +2,7 @@ package edu.tum.cs.vis.gui.applet;
 
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -44,6 +45,9 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 	 */
 	private static final Cursor handCursor = new Cursor(Cursor.HAND_CURSOR);
 	
+
+	private static final Cursor moveCursor = new Cursor(Cursor.MOVE_CURSOR);
+	
 	/**
 	 * mouseClicked has a bug so that for each click it is called two times.
 	 * Prevent it by time measure
@@ -56,6 +60,9 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 	 * If you go back to a certain action in the history all remaining actions after the selected will be removed from history.
 	 */
 	private ArrayList<ActionSelectHistoryInfo> clickHistory = new ArrayList<ActionSelectHistoryInfo>();
+	
+	Vector2f drawOffset = new Vector2f(0,0);
+	Vector2f draggingStart = new Vector2f(0,0);
 	
 	@Override
 	public void setup()
@@ -83,13 +90,11 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		
 		textFont(dejavuFont);
 	    textMode(SCREEN);
+	    	    
 	    
-	  //  stroke(27, 56, 102);
-	 //   fill(51,105,192,200);
-	 //   arrowFromTo(this,new Vector2f(100, 100),new Vector2f(200, 200),10);
-	    
-	    drawHistory();
 	    drawCurrAction();
+	    drawHistory();
+	    
 	    
 	}
 	
@@ -252,7 +257,8 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 	{
 		if (currAction == null)
 			return;
-		currAction.getDrawInfo().drawExtendedBox(this, new Vector2f(50,80));
+		
+		currAction.getDrawInfo().drawExtendedBox(this, new Vector2f(50+drawOffset.x,80+drawOffset.y));
 	}
 	
 	@Override
@@ -276,14 +282,36 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 
 	@Override
     public void mouseDragged(MouseEvent e) {
+		if (draggingStart != null)
+		{
+			drawOffset.x = Math.min(0, drawOffset.x+ e.getX() - draggingStart.x);
+			drawOffset.y = Math.min(0,drawOffset.y + e.getY() - draggingStart.y);
+			
+			float viewOffsetX = Math.min(0, this.getWidth()-(currAction.getDrawInfo().getBoundingBox().width+100));
+			float viewOffsetY = Math.min(0, this.getHeight()-(currAction.getDrawInfo().getBoundingBox().height+130));
+	
+			drawOffset.x = Math.max(viewOffsetX,drawOffset.x);
+			drawOffset.y = Math.max(viewOffsetY,drawOffset.y);
+
+			draggingStart.x = e.getX();
+			draggingStart.y = e.getY();
+		}
     }
 	
 	@Override
 	public void mousePressed(MouseEvent e) {
+		if (e.getButton() == 3)
+		{
+			draggingStart = new Vector2f(e.getX(),e.getY());
+			setCursor(moveCursor);
+		} else {
+			setCursor(normalCursor);
+		}
     }
 
 	@Override
     public void mouseReleased(MouseEvent e) {
+		setCursor(normalCursor);
     }
 
 	@Override

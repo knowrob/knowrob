@@ -1,6 +1,7 @@
 package edu.tum.cs.vis.action;
 
 import java.awt.Color;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -208,6 +209,9 @@ public class ActionDrawInformation {
 	 */
 	private Vector2f position;
 	
+	private Rectangle boundingBoxExtended = new Rectangle(0,0,0,0);
+	private Rectangle boundingBoxSimple = new Rectangle(0,0,0,0);
+	
 	/**
 	 * Constructor
 	 * @param parent Parent action for which this draw infos are
@@ -308,6 +312,9 @@ public class ActionDrawInformation {
 		if (!needsRecalculation)
 			return;
 		
+		float totalWidth = 0;
+		float totalHeight = 0;
+		
 		//Text dimension
 		textHeight = applet.textAscent();
 		nameWidth = applet.textWidth(action.getName());
@@ -363,6 +370,9 @@ public class ActionDrawInformation {
 		}
 		parentsWidth = Math.max(0, parentsWidth-MAIN_BOX_PADDING);
 		
+		totalWidth = Math.max(totalWidth, parentsWidth);
+		totalHeight += parentsMaxHeight+MAIN_BOX_PADDING;
+		
 		//Calculation for child boxes
 		childrenMaxHeight = 0;
 		float childrenWidth = 0;
@@ -376,11 +386,23 @@ public class ActionDrawInformation {
 			childrenWidth += inf.getSimpleBoxDimension().x+MAIN_BOX_PADDING;
 		}
 		childrenWidth = Math.max(0, childrenWidth-MAIN_BOX_PADDING);
+		totalWidth = Math.max(totalWidth, childrenWidth);
+		totalHeight += childrenMaxHeight+MAIN_BOX_PADDING;
 		
 		this.boxOffsetLeft = Math.max(0, Math.max((parentsWidth-getExtendedBoxDimension().x)/2f,(childrenWidth-getExtendedBoxDimension().x)/2f));
 		
 		this.parentStartX = Math.max(0, getExtendedBoxDimension().x/2f-parentsWidth/2f);
 		this.childStartX = Math.max(0, getExtendedBoxDimension().x/2f-childrenWidth/2f);
+		
+		totalWidth = Math.max(totalWidth, getExtendedBoxDimension().x);
+		totalHeight += getExtendedBoxDimension().y;
+		
+		boundingBoxExtended.width = (int)totalWidth;
+		boundingBoxExtended.height = (int)totalHeight;
+		
+		boundingBoxSimple.width = (int)getSimpleBoxDimension().x;
+		boundingBoxSimple.height = (int)getSimpleBoxDimension().y;
+
 	}
 	
 	/**
@@ -444,6 +466,8 @@ public class ActionDrawInformation {
 	{
 		this.drawnAsSimple = true;
 		this.position = new Vector2f(position);
+		boundingBoxSimple.x = (int)position.x;
+		boundingBoxSimple.y = (int)position.y;
 		Vector2f tmpPos = new Vector2f(position);
 		recalculateDimensions(applet);
 		
@@ -646,6 +670,9 @@ public class ActionDrawInformation {
 	{
 		this.drawnAsSimple = false;
 		recalculateDimensions(applet);
+		
+		boundingBoxExtended.x = (int)position.x;
+		boundingBoxExtended.y = (int)position.y;
 		
 		Vector2f extendedDim = getExtendedBoxDimension();
 		
@@ -938,5 +965,13 @@ public class ActionDrawInformation {
 	public boolean IsHover()
 	{
 		return isHover;
+	}
+	
+	public Rectangle getBoundingBox()
+	{
+		if (drawnAsSimple)
+			return boundingBoxSimple;
+		else
+			return boundingBoxExtended;
 	}
 }
