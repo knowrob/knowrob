@@ -51,7 +51,8 @@
       export_action(r,r),
       rdf_unique_class_id(r, +, r),
       tboxify_object_inst(r,r,r,r,+),
-      class_properties_transitive(r,r,r).
+      class_properties_transitive_nosup(r,r,r),
+      class_properties_transitive_nosup_1(r,r,r).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -93,8 +94,11 @@ tboxify_object_inst(ObjInst, ClassName, ReferenceObj, ReferenceObjCl, SourceRef)
                     create_restr(ClassName, P, O, owl:someValuesFrom, SourceRef, ObjRestr)), _ObjRestrs),
 
   % read data properties
-  findall([P, O], (rdf_has(ObjInst, P, O),
-                   owl_individual_of(P, owl:'DatatypeProperty')), DataPs),
+  findall([P, O], ((rdf_has(ObjInst, P, O),
+                    owl_individual_of(P, owl:'DatatypeProperty'));
+                   (rdf_has(ObjInst, rdf:type, T),
+                    P = 'http://ias.cs.tum.edu/kb/knowrob.owl#pathToCadModel',
+                    class_properties(T, P, O))), DataPs),
   sort(DataPs, DataPsSorted),
 
   findall(DataRestr, (member([P,O], DataPsSorted),
@@ -337,20 +341,21 @@ read_action_info(Action, ActionInfosSorted) :-
 %
 read_objclass_info(ObjClass, ObjClassInfosSorted) :-
 
-  findall(ObjSuperClass, (owl_direct_subclass_of(ObjClass, ObjSuperClass), not(is_bnode(ObjSuperClass))), ObjSuperClasses),
+%   findall(ObjSuperClass, (owl_direct_subclass_of(ObjClass, ObjSuperClass), not(is_bnode(ObjSuperClass))), ObjSuperClasses),
 
   % read all parts of the object class to be exported
-  findall(ObjPart, (class_properties_transitive(ObjClass, knowrob:parts, ObjPart), not(is_bnode(ObjPart))), ObjParts),
+  findall(ObjPart, (class_properties_transitive_nosup(ObjClass, knowrob:parts, ObjPart), not(is_bnode(ObjPart))), ObjParts),
 
-  append([[ObjClass], ObjParts, ObjSuperClasses], ObjClassDefs),
+%   append([[ObjClass], ObjParts, ObjSuperClasses], ObjClassDefs),
+  append([[ObjClass], ObjParts], ObjClassDefs),
   sort(ObjClassDefs, ObjClassDefsSorted),
 
   % read all properties for each of them
-  findall(ObjPr, (member(ObjCl,ObjClassDefsSorted), knowrob_owl:class_properties_1(ObjCl, _, ObjPr)), ObjProperties),
+  findall(ObjPr, (member(ObjCl,ObjClassDefsSorted), class_properties_nosup_1(ObjCl, P, ObjPr), not(rdfs_subproperty_of(P, owl:subClassOf))), ObjProperties),
 
   % read everything related to these things by an ObjectProperty
   findall(PropVal, (member(ObjProp, ObjProperties),
-                    rdf_has(ObjProp, _P, PropVal),
+                    rdf_has(ObjProp, P, PropVal), not(P='http://www.w3.org/2000/01/rdf-schema#subClassOf'),
                     not(is_bnode(PropVal))), ObjClassPropProperties),
 
   append([ObjClassDefsSorted, ObjProperties, ObjClassPropProperties], ObjClassInfos),
@@ -364,13 +369,30 @@ is_bnode(Node) :-
   sub_string(Node,0,2,_,'__').
 
 
-class_properties_transitive(Class, Prop, SubComp) :-
-    class_properties(Class, Prop, SubComp).
-class_properties_transitive(Class, Prop, SubComp) :-
-    class_properties(Class, Prop, Sub),
+% forked class_properties to get rid of export of super-classes
+
+class_properties_nosup(Class, Prop, Val) :-         % read directly asserted properties
+  class_properties_nosup_1(Class, Prop, Val).
+
+% class_properties_nosup(Class, Prop, Val) :-         % do not consider properties of superclasses
+%   owl_subclass_of(Class, Super), Class\=Super,
+%   class_properties_nosup_1(Super, Prop, Val).
+
+class_properties_nosup_1(Class, Prop, Val) :-
+  owl_direct_subclass_of(Class, Sup),
+  ( (nonvar(Prop)) -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
+
+  ( owl_restriction(Sup,restriction(SubProp, some_values_from(Val))) ;
+    owl_restriction(Sup,restriction(SubProp, has_value(Val))) ).
+
+
+class_properties_transitive_nosup(Class, Prop, SubComp) :-
+    class_properties_nosup(Class, Prop, SubComp).
+class_properties_transitive_nosup(Class, Prop, SubComp) :-
+    class_properties_nosup(Class, Prop, Sub),
     owl_individual_of(Prop, owl:'TransitiveProperty'),
     Sub \= Class,
-    class_properties_transitive(Sub, Prop, SubComp).
+    class_properties_transitive_nosup(Sub, Prop, SubComp).
 
 
 

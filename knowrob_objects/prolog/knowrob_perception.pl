@@ -110,7 +110,8 @@ create_object_instance(ObjTypes, ObjID, Obj) :-
   % map types to object classes
   member(ObjType, ObjTypes),
   string_to_atom(ObjType, TypeAtom),
-  to_knowrob(TypeAtom, TypeAtomKnowrob),
+%   to_knowrob(TypeAtom, TypeAtomKnowrob),
+  TypeAtomKnowrob = TypeAtom,
 
   %TODO: replace this with real entity resolution
   % here, we just update the first instance of
