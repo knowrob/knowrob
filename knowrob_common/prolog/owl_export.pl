@@ -60,6 +60,8 @@
 :- dynamic(tboxified/2).
 tboxify_object_inst(ObjInst, ClassName, ReferenceObj, ReferenceObjCl, SourceRef) :-
 
+  assert(tboxified(ObjInst, ClassName)),
+
   % assert types as superclasses
   findall(T, rdf_has(ObjInst, rdf:type, T), Ts),
   findall(T, (member(T, Ts), rdf_assert(ClassName, rdfs:subClassOf, T, SourceRef)), _),
@@ -106,14 +108,13 @@ tboxify_object_inst(ObjInst, ClassName, ReferenceObj, ReferenceObjCl, SourceRef)
   sort(Parts, PartsSorted),
 
   findall(Part, (member(Part, PartsSorted),
-                 ((not(tboxified(Part,_)),
-                   rdf_unique_class_id('http://ias.cs.tum.edu/kb/knowrob.owl#SpatialThing', SourceRef, PartClassName));
-                  (tboxified(Part, PartClassName))),
+                 ((tboxified(Part, PartClassName)) -> true ;
+                  (rdf_unique_class_id('http://ias.cs.tum.edu/kb/knowrob.owl#SpatialThing', SourceRef, PartClassName))),
 
                  create_restr(ClassName, knowrob:properPhysicalParts, PartClassName, owl:someValuesFrom, SourceRef, ObjRestr),
 
                  ((not(tboxified(Part,_)),
-                   assert(tboxified(Part, PartClassName)),
+%                    assert(tboxified(Part, PartClassName)),
                    tboxify_object_inst(Part, PartClassName, ObjInst, ClassName, SourceRef)) ; true ) ), _),
 
 
@@ -123,14 +124,13 @@ tboxify_object_inst(ObjInst, ClassName, ReferenceObj, ReferenceObjCl, SourceRef)
   sort(Connected, ConnectedSorted),
 
   findall(Conn, (member(Conn, ConnectedSorted),
-                ((not(tboxified(Conn,_)),
-                  rdf_unique_class_id('http://ias.cs.tum.edu/kb/knowrob.owl#SpatialThing', SourceRef, ConnectedClassName));
-                  (tboxified(Conn, ConnectedClassName))),
+                ((tboxified(Conn, ConnectedClassName))  -> true ;
+                 (rdf_unique_class_id('http://ias.cs.tum.edu/kb/knowrob.owl#SpatialThing', SourceRef, ConnectedClassName))),
 
                 create_restr(ClassName, knowrob:connectedTo, ConnectedClassName, owl:someValuesFrom, SourceRef, ObjRestr),
 
                 ((not(tboxified(Conn,_)),
-                  assert(tboxified(Conn, ConnectedClassName)),
+%                   assert(tboxified(Conn, ConnectedClassName)),
                   tboxify_object_inst(Conn, ConnectedClassName, ObjInst, ClassName, SourceRef)) ; true ) ), _),
 
 
