@@ -57,7 +57,7 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % tboxify playground
 
-
+:- dynamic(tboxified/2).
 tboxify_object_inst(ObjInst, ClassName, ReferenceObj, ReferenceObjCl, SourceRef) :-
 
   % assert types as superclasses
@@ -83,12 +83,12 @@ tboxify_object_inst(ObjInst, ClassName, ReferenceObj, ReferenceObjCl, SourceRef)
   % read object properties
   findall([P, O], (rdf_has(ObjInst, P, O),
                    owl_individual_of(P, owl:'ObjectProperty'),
-                   \+ rdfs_subproperty_of(P, knowrob:parts)), ObjPs),
+                   \+ rdfs_subproperty_of(P, knowrob:parts), % physicalParts and connectedTo need to refer to class descriptions
+                   \+ rdfs_subproperty_of(P, knowrob:connectedTo)), ObjPs),
   sort(ObjPs, ObjPsSorted),
 
   findall(ObjRestr,(member([P,O], ObjPsSorted),
                     create_restr(ClassName, P, O, owl:someValuesFrom, SourceRef, ObjRestr)), _ObjRestrs),
-
 
   % read data properties
   findall([P, O], (rdf_has(ObjInst, P, O),
@@ -96,7 +96,7 @@ tboxify_object_inst(ObjInst, ClassName, ReferenceObj, ReferenceObjCl, SourceRef)
   sort(DataPs, DataPsSorted),
 
   findall(DataRestr, (member([P,O], DataPsSorted),
-                     create_restr(ClassName, P, O, owl:hasValue, SourceRef, DataRestr)), _DataRestrs),
+                      create_restr(ClassName, P, O, owl:hasValue, SourceRef, DataRestr)), _DataRestrs),
 
 
 
@@ -106,9 +106,35 @@ tboxify_object_inst(ObjInst, ClassName, ReferenceObj, ReferenceObjCl, SourceRef)
   sort(Parts, PartsSorted),
 
   findall(Part, (member(Part, PartsSorted),
-                 rdf_unique_class_id('http://ias.cs.tum.edu/kb/knowrob.owl#SpatialThing', SourceRef, PartClassName),
+                 ((not(tboxified(Part,_)),
+                   rdf_unique_class_id('http://ias.cs.tum.edu/kb/knowrob.owl#SpatialThing', SourceRef, PartClassName));
+                  (tboxified(Part, PartClassName))),
+
                  create_restr(ClassName, knowrob:properPhysicalParts, PartClassName, owl:someValuesFrom, SourceRef, ObjRestr),
-                 tboxify_object_inst(Part, PartClassName, ObjInst, ClassName, SourceRef)), _).
+
+                 ((not(tboxified(Part,_)),
+                   assert(tboxified(Part, PartClassName)),
+                   tboxify_object_inst(Part, PartClassName, ObjInst, ClassName, SourceRef)) ; true ) ), _),
+
+
+  % iterate over connectedTo objects
+  findall(Connected, (rdf_has(ObjInst, P, Connected),
+                      rdfs_subproperty_of(P, knowrob:connectedTo)), Connected),
+  sort(Connected, ConnectedSorted),
+
+  findall(Conn, (member(Conn, ConnectedSorted),
+                ((not(tboxified(Conn,_)),
+                  rdf_unique_class_id('http://ias.cs.tum.edu/kb/knowrob.owl#SpatialThing', SourceRef, ConnectedClassName));
+                  (tboxified(Conn, ConnectedClassName))),
+
+                create_restr(ClassName, knowrob:connectedTo, ConnectedClassName, owl:someValuesFrom, SourceRef, ObjRestr),
+
+                ((not(tboxified(Conn,_)),
+                  assert(tboxified(Conn, ConnectedClassName)),
+                  tboxify_object_inst(Conn, ConnectedClassName, ObjInst, ClassName, SourceRef)) ; true ) ), _),
+
+
+  retractall(tboxified).
 
 
 
