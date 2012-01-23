@@ -884,7 +884,6 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 		// ignore list (not displayable):
 		if(type.equals("'http://ias.cs.tum.edu/kb/knowrob.owl#SemanticEnvironmentMap'")
-				|| type.equals("'http://ias.cs.tum.edu/kb/knowrob.owl#HingedJoint'")
 				|| type.equals("'http://ias.cs.tum.edu/kb/knowrob.owl#Door'")
 				|| type.equals("'http://ias.cs.tum.edu/kb/knowrob.owl#WallOfAConstruction'")
 				) {
@@ -906,7 +905,6 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			dim = new Vector3d(v);
 		}
 
-		
 		// check whether CAD model is specified:
 		ItemModel model = Properties.getModelOfItem(identifier);
 		
@@ -1747,6 +1745,16 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			return new Sphere(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0.03f,0.03f,0.03f);
 
 
+		} else if(type.endsWith("#HingedJoint'")) {
+			HingedJoint h = new HingedJoint(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0.03f,0.03f,0.03f);
+			h.setColor(StandaloneKitchenVisApplet.convertColor(70, 120, 255, 255));
+			return h; 
+			
+		} else if(type.endsWith("#PrismaticJoint'")) {
+			PrismaticJoint h = new PrismaticJoint(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0.03f,0.03f,0.03f);
+			h.setColor(StandaloneKitchenVisApplet.convertColor(70, 255, 120, 255));
+			return h; 
+			
 			/////////////////////////////////////////////
 			// dummies
 
