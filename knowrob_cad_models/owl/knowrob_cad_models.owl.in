@@ -107,7 +107,7 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;pathToCadModel"/>
-                <owl:hasValue>package://knowrob_cad_models/models/collada/bottle.kmz</owl:hasValue>
+                <owl:hasValue>package://knowrob_cad_models/models/collada/coke.kmz</owl:hasValue>
             </owl:Restriction>
         </rdfs:subClassOf>
     </rdf:Description>
@@ -134,33 +134,6 @@
         </rdfs:subClassOf>
     </rdf:Description>
 
-
-
-    <!--
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Individuals
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/knowrob_cad_models.owl#CokeBottle -->
-
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob_cad_models.owl#CokeBottle">
-        <rdf:type rdf:resource="&knowrob;DrinkingBottle"/>
-        <knowrob:pathToCadModel>package://knowrob_cad_models/models/collada/coke.kmz</knowrob:pathToCadModel>
-    </owl:NamedIndividual>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/knowrob_cad_models.owl#TestBottle -->
-
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob_cad_models.owl#TestBottle">
-        <rdf:type rdf:resource="&knowrob;DrinkingBottle"/>
-    </owl:NamedIndividual>
 
 </rdf:RDF>
 
