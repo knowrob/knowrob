@@ -2,6 +2,7 @@
 
 
 <!DOCTYPE rdf:RDF [
+    <!ENTITY local_path 'file://@OWL_PATH_PREFIX@/owl/'>
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
     <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
@@ -20,7 +21,7 @@
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#">
     <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/knowrob_cad_models.owl">
-        <owl:imports rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl"/>
+        <owl:imports rdf:resource="&local_path;/knowrob.owl"/>
     </owl:Ontology>
 
 
@@ -29,7 +30,7 @@
             >cad_model_xdim</computable:command>
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-        <computable:target rdf:resource="#widthOfObject"/>
+        <computable:target rdf:resource="&knowrob;widthOfObject"/>
     </computable:PrologProperty>
 
     <computable:PrologProperty rdf:about="#computeCadModelYDim">
@@ -37,7 +38,7 @@
             >cad_model_ydim</computable:command>
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-        <computable:target rdf:resource="#depthOfObject"/>
+        <computable:target rdf:resource="&knowrob;depthOfObject"/>
     </computable:PrologProperty>
 
     <computable:PrologProperty rdf:about="#computeCadModelZDim">
@@ -45,7 +46,7 @@
             >cad_model_zdim</computable:command>
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-        <computable:target rdf:resource="#heightOfObject"/>
+        <computable:target rdf:resource="&knowrob;heightOfObject"/>
     </computable:PrologProperty>
 
 
