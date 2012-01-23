@@ -171,8 +171,8 @@ on_Physical(Top, Bottom) :-
 %%%     rdf_triple(knowrob:m23, BottomMatrix, literal(type(_,BCz))),atom_to_term(BCz,BZ,_),
 %%%
 %%%     % read the dimensions of the bottom entity
-%%%     rdf_has(Bottom, knowrob:widthOfObject, literal(type(_,Bw))),atom_to_term(Bw,BW,_),
-%%%     rdf_has(Bottom, knowrob:depthOfObject, literal(type(_,Bd))),atom_to_term(Bd,BD,_),
+%%%     rdf_triple(knowrob:widthOfObject, Bottom, literal(type(_,Bw))),atom_to_term(Bw,BW,_),
+%%%     rdf_triple(knowrob:depthOfObject, Bottom, literal(type(_,Bd))),atom_to_term(Bd,BD,_),
 %%%
 %%%     % the criterion is if the difference between them is less than epsilon=5cm
 %%%     =<( BZ, TZ ),
@@ -190,7 +190,7 @@ holds(on_Physical(Top, Bottom),T) :-
     rdf_triple(knowrob:m13, TopMatrix, TCyy),strip_literal_type(TCyy, TCy),atom_to_term(TCy,TY,_),
 %     rdf_triple(knowrob:m23, TopMatrix, TCzz),strip_literal_type(TCzz, TCz),atom_to_term(TCz,TZ,_),
 
-%     rdf_has(Top, knowrob:heightOfObject, literal(type(_,Th))),atom_to_term(Th,TH,_),
+%     rdf_triple(knowrob:heightOfObject, Top, literal(type(_,Th))),atom_to_term(Th,TH,_),
 
     % query for objects at center point
     objectAtPoint2D(TX,TY,Bottom),
@@ -199,7 +199,7 @@ holds(on_Physical(Top, Bottom),T) :-
 %     object_detection(Bottom, T, VPB),
 %     rdf_triple(knowrob:eventOccursAt, VPB, BottomMatrix),
 %     rdf_triple(knowrob:m23, BottomMatrix, BCzz), strip_literal_type(BCzz, BCz),atom_to_term(BCz,BZ,_),
-%     rdf_has(Bottom, knowrob:heightOfObject, literal(type(_,Bh))),atom_to_term(Bh,BH,_),
+%     rdf_triple(knowrob:heightOfObject, Bottom, literal(type(_,Bh))),atom_to_term(Bh,BH,_),
 
 %     print('bottom height:'), print(BH),
 
@@ -545,14 +545,14 @@ holds(in_ContGeneric(InnerObj, OuterObj), T) :-
     rdf_triple(knowrob:m23, OuterObjMatrix, LOCZ),strip_literal_type(LOCZ,OCz),atom_to_term(OCz,OZ,_),
 
     % read the dimensions of the outer entity
-    rdf_has(OuterObj, knowrob:widthOfObject, LOW),strip_literal_type(LOW,Ow),atom_to_term(Ow,OW,_),
-    rdf_has(OuterObj, knowrob:heightOfObject,LOH),strip_literal_type(LOH,Oh),atom_to_term(Oh,OH,_),
-    rdf_has(OuterObj, knowrob:depthOfObject, LOD),strip_literal_type(LOD,Od),atom_to_term(Od,OD,_),
+    rdf_triple(knowrob:widthOfObject, OuterObj, LOW),strip_literal_type(LOW,Ow),atom_to_term(Ow,OW,_),
+    rdf_triple(knowrob:heightOfObject,OuterObj, LOH),strip_literal_type(LOH,Oh),atom_to_term(Oh,OH,_),
+    rdf_triple(knowrob:depthOfObject, OuterObj, LOD),strip_literal_type(LOD,Od),atom_to_term(Od,OD,_),
 
     % read the dimensions of the inner entity
-    rdf_has(InnerObj, knowrob:widthOfObject, LIW),strip_literal_type(LIW,Iw),atom_to_term(Iw,IW,_),
-    rdf_has(InnerObj, knowrob:heightOfObject,LIH),strip_literal_type(LIH,Ih),atom_to_term(Ih,IH,_),
-    rdf_has(InnerObj, knowrob:depthOfObject, LID),strip_literal_type(LID,Id),atom_to_term(Id,ID,_),
+    rdf_triple(knowrob:widthOfObject, InnerObj, LIW),strip_literal_type(LIW,Iw),atom_to_term(Iw,IW,_),
+    rdf_triple(knowrob:heightOfObject,InnerObj, LIH),strip_literal_type(LIH,Ih),atom_to_term(Ih,IH,_),
+    rdf_triple(knowrob:depthOfObject, InnerObj, LID),strip_literal_type(LID,Id),atom_to_term(Id,ID,_),
 
     % InnerObj is contained by OuterObj if (center_i+0.5*dim_i)<=(center_o+0.5*dim_o)
     % for all dimensions (x, y, z)
@@ -1127,8 +1127,8 @@ objectAtPoint2D(PX,PY,Obj) :-
 
     % get information of potential objects at positon point2d (x/y)
 
-    rdf_has(Obj, knowrob:depthOfObject, Oww), strip_literal_type(Oww, Ow),atom_to_term(Ow,OW,_),
-    rdf_has(Obj, knowrob:widthOfObject, Odd), strip_literal_type(Odd, Od),atom_to_term(Od,OD,_),
+    rdf_triple(knowrob:depthOfObject, Obj, Oww), strip_literal_type(Oww, Ow),atom_to_term(Ow,OW,_),
+    rdf_triple(knowrob:widthOfObject, Obj, Odd), strip_literal_type(Odd, Od),atom_to_term(Od,OD,_),
 
     rdf_triple(knowrob:orientation, Obj, Mat),
     rdf_triple(knowrob:m03, Mat, Tmm03), strip_literal_type(Tmm03, TM03),atom_to_term(TM03,OX,_),
