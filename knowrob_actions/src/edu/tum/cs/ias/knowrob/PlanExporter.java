@@ -122,9 +122,9 @@ public class PlanExporter {
 		            	String act_desig2 = "unhand-action"+(inst_counter++);
 	            		String act_desig2_content = "";
 		            	if(bodypart!=null && bodypart.contains("left")) {
-		            		act_desig2_content = "("+act_desig2+" (action `((type trajectory) (to open) (gripper :left))))\n";
+		            		act_desig2_content = "("+act_desig2+" (action `((to open-gripper) (side :left))))\n";
 		            	} else {
-		            		act_desig2_content = "("+act_desig2+" (action `((type trajectory) (to open) (gripper :right))))\n";
+		            		act_desig2_content = "("+act_desig2+" (action `((to open-gripper) (side :right))))\n";
 		            	}
 	            		
 	            		action_spec = "(achieve `(arms-at ," + act_desig2 + "))";
@@ -138,9 +138,9 @@ public class PlanExporter {
 		            	String act_desig2 = "unhand-action"+(inst_counter++);
 	            		String act_desig2_content = "";
 		            	if(bodypart!=null && bodypart.contains("left")) {
-		            		act_desig2_content = "("+act_desig2+" (action `((type trajectory) (to close) (gripper :left))))\n";
+		            		act_desig2_content = "("+act_desig2+" (action `((to close-gripper) (side :left))))\n";
 		            	} else {
-		            		act_desig2_content = "("+act_desig2+" (action `((type trajectory) (to close) (gripper :right))))\n";
+		            		act_desig2_content = "("+act_desig2+" (action `((to close-gripper) (side :right))))\n";
 		            	}
 	            		
 	            		action_spec = "(achieve `(arms-at ," + act_desig2 + "))";
@@ -235,6 +235,7 @@ public class PlanExporter {
         	designator_order.add(obj_inst);
         
         designators.put(obj_inst, obj_desig);
+        
         return obj_inst;
     }
 
@@ -246,14 +247,16 @@ public class PlanExporter {
     	
     	// first create object designator:
     	String obj_desig = objectDesignatorFromOWLclass(objClass);
+//    	
+//    	String loc_desig="";
+//    	loc_desig = "(location-" + obj_desig + " (location `((of ," + obj_desig + "))))";
+//    	
+//    	if(!designator_order.contains(obj_desig))
+//    		designator_order.add(obj_desig);
+//    	designators.put("location-" + obj_desig, loc_desig);
+//    	return "location-" + obj_desig;
     	
-    	String loc_desig="";
-    	loc_desig = "(location-" + obj_desig + " (location `((of ," + obj_desig + "))))";
-    	
-    	if(!designator_order.contains("location-" + obj_desig))
-    		designator_order.add("location-" + obj_desig);
-    	designators.put("location-" + obj_desig, loc_desig);
-    	return "location-" + obj_desig;
+    	return obj_desig;
     }
     
     
@@ -288,31 +291,74 @@ public class PlanExporter {
                 String prop = PrologInterface.removeSingleQuotes(params.get("Prop").get(i));
                 String val = params.get("Val").get(i);
     
+                // check if referring to object instance or another location
+                HashMap<String, Vector<String>> objtype = PrologInterface
+                        .executeQuery("rdf_has("+PrologInterface.addSingleQuotes(val)+", rdf:type, Type)");
                 
+                boolean isObject = true;
+                if(objtype!=null && objtype.get("Type")!=null) {
+                	for (int k = 0; k < objtype.get("Type").size(); k++) {
+                		
+                		String type = PrologInterface.removeSingleQuotes(objtype.get("Type").get(k));
+                		if( (type.endsWith("Point3D")) || (type.endsWith("Point2D"))) {
+                			isObject = false;
+                		}
+                	}
+                }
+                
+                String desig = "";                               
                 if ((prop.endsWith("in-ContGeneric")
                         || prop.endsWith("in-UnderspecifiedContainer")
                         || prop.endsWith("into-UnderspecifiedContainer") 
                         || prop.endsWith("from-UnderspecifiedLocation"))) {
-    
-                    loc_desig += "(in ,"
-                            + knowrobToCpl(locationDesignatorForObject(val))+ ")";
+                	
+                    if(isObject) {
+                    	desig = knowrobToCpl(locationDesignatorForObject(val));
+                    } else {
+                    	desig = knowrobToCpl(locationDesignatorFromOWLclass(val));
+                    }
+                    
+                    loc_desig += "(in ," + desig + ")";
                     
                 } else if (prop.endsWith("to-UnderspecifiedLocation")
                         || prop.endsWith("on-Physical")
                         || prop.endsWith("aboveOf")
                         || prop.endsWith("inCenterOf")) {
-                    loc_desig += "(on ,"
-                            + knowrobToCpl(locationDesignatorForObject(val))+ ")";
+                    if(isObject) {
+                    	desig = knowrobToCpl(locationDesignatorForObject(val));
+                    } else {
+                    	desig = knowrobToCpl(locationDesignatorFromOWLclass(val));
+                    }
+                    
+                    loc_desig += "(on ," + desig + ")";
     
                 } else if (prop.endsWith("inReachOf") ||
                         prop.endsWith("inFrontOf-Generally")) {
-                    loc_desig += "(to reach) (loc ," + knowrobToCpl(locationDesignatorForObject(val)) + ")";
+                    if(isObject) {
+                    	desig = knowrobToCpl(locationDesignatorForObject(val));
+                    } else {
+                    	desig = knowrobToCpl(locationDesignatorFromOWLclass(val));
+                    }
+                    
+                    loc_desig += "(to reach) (side :right) (loc ," + desig + ")";
     
                 } else if (prop.endsWith("visibleFrom")) {
-                    loc_desig += "(to see ," + knowrobToCpl(locationDesignatorForObject(val)) + ")";
+                    if(isObject) {
+                    	desig = knowrobToCpl(locationDesignatorForObject(val));
+                    } else {
+                    	desig = knowrobToCpl(locationDesignatorFromOWLclass(val));
+                    }
+                    
+                    loc_desig += "(to see ," + desig + ")";
     
                 } else if (prop.endsWith("orientation")) {
-                    loc_desig += "(pose ," + knowrobToCpl(locationDesignatorForObject(val)) + ")";
+                    if(isObject) {
+                    	desig = knowrobToCpl(locationDesignatorForObject(val));
+                    } else {
+                    	desig = knowrobToCpl(locationDesignatorFromOWLclass(val));
+                    }
+                    
+                    loc_desig += "(pose ," + desig + ")";
                 }
     
             }
@@ -338,7 +384,7 @@ public class PlanExporter {
     	
     	if(cplAction.endsWith("arms-at")) {
     		
-        	act_descr += "(type trajectory) (pose ," + loc_desig + ")";
+        	act_descr += "(to trajectory) (pose ," + loc_desig + ")";
 
         	// check if side is set
         	HashMap<String, Vector<String>> params = 
@@ -410,7 +456,7 @@ public class PlanExporter {
         // extract value from IRI
         String val = PrologInterface.valueFromIRI(PrologInterface.removeSingleQuotes(pl));
         val = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, val);
-        val = val.replaceAll("--", "-");
+        val = val.replaceAll("--", "_");
         
         return val;
     }
@@ -468,7 +514,7 @@ public class PlanExporter {
             
             PrologInterface.initJPLProlog("knowrob_actions");
             PlanExporter pl = new PlanExporter();
-            String plan = pl.exportPlanToCPL("http://www.roboearth.org/kb/serve_drink.owl#ServeADrink");
+            String plan = pl.exportPlanToCPL("http://www.roboearth.org/kb/roboearth.owl#ServeADrink");
             System.out.println(plan);
             
         } catch (IOException e) {
