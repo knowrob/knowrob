@@ -113,6 +113,33 @@ public class ActionDrawInformation {
 	private final static Color hoverArrowExpandBackgroundColor = new Color(190,141,141,230);
 	
 	/**
+	 * Border color of parents of highlighted action
+	 */
+	private final static Color highlightBorderColor = new Color(103,134,85);
+	
+	/**
+	 * Border color of hightlighted action
+	 */
+	private final static Color highlightBrightBorderColor = new Color(167,217,137);
+	
+	/**
+	 * Type of highlight.
+	 * Indicates if action is hightlighted or not and which color to use.
+	 * @author Stefan Profanter
+	 *
+	 */
+	private static enum HighlightType {
+		NOT_HIGHTLIGHTED, 	//Use default color
+		CHILD_HIGHLIGHTED, 	//Use highlight color
+		THIS_HIGHLIGHTED	//Use bright highlight color
+	}
+	
+	/**
+	 * Highlight state of current action
+	 */
+	private HighlightType highlight = HighlightType.NOT_HIGHTLIGHTED;
+	
+	/**
 	 * Default line/border width
 	 */
 	private final static float defaultStroke = 1f;
@@ -191,8 +218,20 @@ public class ActionDrawInformation {
 	 */
 	private float childrenMaxHeight;
 	
+	/**
+	 * X position of parent boxes
+	 */
 	private float parentStartX;
+	
+	/**
+	 * X position of child boxes
+	 */
 	private float childStartX;
+	
+	/**
+	 * If parent or child boxes are wider than the extended box, the extended box must be shifted a bit to the right.
+	 * This shift indicates the following variable.
+	 */
 	private float boxOffsetLeft;
 	
 	/**
@@ -200,8 +239,14 @@ public class ActionDrawInformation {
 	 */
 	private Vector2f sequenceBoxDimension = new Vector2f();
 	
+	/**
+	 * Height for all actions in the sequence box
+	 */
 	private float maxSubsequenceHeight = 0;
 	
+	/**
+	 * Set to true if this action has additional subsequences which can be expanded.
+	 */
 	private boolean hasExpandButton = false;
 	
 	/**
@@ -209,6 +254,9 @@ public class ActionDrawInformation {
 	 */
 	private Vector2f position;
 	
+	/**
+	 * Position and dimension of Expanded and Simple box
+	 */
 	private Rectangle boundingBoxExtended = new Rectangle(0,0,0,0);
 	private Rectangle boundingBoxSimple = new Rectangle(0,0,0,0);
 	
@@ -221,6 +269,10 @@ public class ActionDrawInformation {
 		action = parent;
 	}
 	
+	/**
+	 * Notify all subsequences that something has changed and recalculation is needed
+	 * @param a
+	 */
 	private void notifyModifiedSubsequences(Action a)
 	{
 		if (a==null)
@@ -289,6 +341,13 @@ public class ActionDrawInformation {
 		return dim;
 	}
 	
+	/**
+	 * Needed for calculating the total size of the sequence box.
+	 * Adds the size of an expanded box to the current calculated size 
+	 * @param applet Applet to draw on
+	 * @param currentSequenceBoxSize currently calculated size. If a child-sequence is expanded then it's size will be added to this.
+	 * @param currAction current action for which the subsequences should be checked
+	 */
 	private static void checkAndAddSizeOfExpandedSequence(PApplet applet,Vector2f currentSequenceBoxSize, Action currAction)
 	{
 		if (currAction.getDrawInfo().needsRecalculation)
@@ -327,10 +386,12 @@ public class ActionDrawInformation {
 		for (Iterator<String> it = keys.iterator(); it.hasNext(); )
 		{
 			String key = it.next();
-			String value = action.getProperty(key);
 			maxKeyWidth = Math.max(maxKeyWidth, applet.textWidth(key+":  "));
-			maxValueWidth = Math.max(maxValueWidth, applet.textWidth(value));
-			propertiesHeight += textHeight* LINE_HEIGHT;
+			for (String value : action.getProperty(key))
+			{
+				maxValueWidth = Math.max(maxValueWidth, applet.textWidth(value));
+				propertiesHeight += textHeight* LINE_HEIGHT;
+			}
 		}
 		
 		needsRecalculation = false;
@@ -436,12 +497,13 @@ public class ActionDrawInformation {
 		for (Iterator<String> it = keys.iterator(); it.hasNext(); )
 		{
 			String key = it.next();
-			String value = action.getProperty(key);
-			
-			applet.text(key + ":",position.x,position.y+textHeight);
-			applet.text(value,position.x + maxKeyWidth, position.y+textHeight);
-
-			position.y += textHeight * LINE_HEIGHT;
+			for (String value : action.getProperty(key))
+			{
+				applet.text(key + ":",position.x,position.y+textHeight);
+				applet.text(value,position.x + maxKeyWidth, position.y+textHeight);
+	
+				position.y += textHeight * LINE_HEIGHT;
+			}
 		}
 	}
 	
@@ -471,8 +533,17 @@ public class ActionDrawInformation {
 		Vector2f tmpPos = new Vector2f(position);
 		recalculateDimensions(applet);
 		
-		applet.stroke(currentBorderColor.getRed(), currentBorderColor.getGreen(), currentBorderColor.getBlue(), currentBorderColor.getAlpha());
-		drawBorderAndTitle(applet, tmpPos,new Vector2f(getSimpleBoxDimension().x,Math.max(minHeight, getSimpleBoxDimension().y)));		
+		if (highlight == HighlightType.NOT_HIGHTLIGHTED)
+			applet.stroke(currentBorderColor.getRed(), currentBorderColor.getGreen(), currentBorderColor.getBlue(), currentBorderColor.getAlpha());
+		else if (highlight == HighlightType.CHILD_HIGHLIGHTED)
+			applet.stroke(highlightBorderColor.getRed(), highlightBorderColor.getGreen(), highlightBorderColor.getBlue(), highlightBorderColor.getAlpha());
+		else if (highlight == HighlightType.THIS_HIGHLIGHTED)
+		{
+			applet.strokeWeight(currentStroke);
+			applet.stroke(highlightBrightBorderColor.getRed(), highlightBrightBorderColor.getGreen(), highlightBrightBorderColor.getBlue(), highlightBrightBorderColor.getAlpha());
+		}
+		drawBorderAndTitle(applet, tmpPos,new Vector2f(getSimpleBoxDimension().x,Math.max(minHeight, getSimpleBoxDimension().y)));
+		applet.strokeWeight(defaultStroke);
 		
 		if (drawExpandBox)
 		{
@@ -752,6 +823,14 @@ public class ActionDrawInformation {
 		}
 	}
 	
+	/**
+	 * Check if x|y coordinate is on a currently visible subsequence (also expanded ones)
+	 * @param x x coordinate
+	 * @param y y coordinate
+	 * @param currAction current action to check
+	 * @param found set to an action if already one action found and the others only need to be resetted.
+	 * @return the action where the coordinate is on
+	 */
 	private ActionDrawInformation checkHoverExtendedSequence(float x, float y, Action currAction, ActionDrawInformation found)
 	{
 		if (currAction ==null)
@@ -967,11 +1046,138 @@ public class ActionDrawInformation {
 		return isHover;
 	}
 	
+	/**
+	 * Get the bounding box of currently drawn action.
+	 * If drawn as simple, the simple bounding box is returned, otherwise the extended bounding box.
+	 * @return
+	 */
 	public Rectangle getBoundingBox()
 	{
 		if (drawnAsSimple)
 			return boundingBoxSimple;
 		else
 			return boundingBoxExtended;
+	}
+	
+	/**
+	 * Get the highlight status of the action
+	 * @return the highlight status
+	 */
+	public HighlightType getHighlight()
+	{
+		return highlight;
+	}
+	
+	/**
+	 * Set the highlight status of the action
+	 * @param h status to set
+	 */
+	public void setHightlight(HighlightType h)
+	{
+		this.highlight = h;
+	}
+	
+	/**
+	 * Clear the highlight status of the action (set it to NOT_HIGHLIGHTED).
+	 * Also clear the hightlight on all the children.
+	 */
+	public void clearHightlight()
+	{
+		if (this.highlight == HighlightType.NOT_HIGHTLIGHTED)
+			return;
+		else if (this.highlight == HighlightType.THIS_HIGHLIGHTED)
+		{
+			this.highlight = HighlightType.NOT_HIGHTLIGHTED;
+			return;
+		}
+		for (Iterator<Action> i = action.getSequenceIterator(); i.hasNext();)
+		{
+			Action a = i.next();
+			ActionDrawInformation inf = a.getDrawInfo();
+			
+			if (inf.highlight == HighlightType.CHILD_HIGHLIGHTED || inf.highlight == HighlightType.THIS_HIGHLIGHTED)
+			{
+				inf.clearHightlight();
+				this.highlight = HighlightType.NOT_HIGHTLIGHTED;
+				return;
+			}
+		}
+	}
+	
+	/**
+	 * Search for a subsequence with the given identifier and highlight it (and also it's parents).
+	 * If expand is true, all sequences will be expanded so that the highlighted sequence is visible. 
+	 * @param identifier Prolog identifier of the action to highlight
+	 * @param expand expand all parent actions
+	 * @return true if action found and highlighted
+	 */
+	public boolean highlightSubsequence(String identifier, boolean expand)
+	{
+		if (this.action.getIdentifier().compareTo(identifier)==0)
+		{
+			setHightlight(HighlightType.THIS_HIGHLIGHTED);
+			notifyModified();
+			return true;
+		}
+		//Check sequence of this action
+		for (Iterator<Action> i = action.getSequenceIterator(); i.hasNext();)
+		{
+			Action a = i.next();
+			ActionDrawInformation inf = a.getDrawInfo();
+			
+			if (a.getIdentifier().compareTo(identifier)==0)
+			{
+				inf.setHightlight(HighlightType.THIS_HIGHLIGHTED);
+				setHightlight(HighlightType.CHILD_HIGHLIGHTED);
+				notifyModified();
+				return true;
+			} else if (inf.highlightSubsequence(identifier, expand))
+			{
+				inf.setHightlight(HighlightType.CHILD_HIGHLIGHTED);
+				setHightlight(HighlightType.CHILD_HIGHLIGHTED);
+				if (expand)
+					action.setExpandedSequence(a);
+				notifyModified();
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Search for the subsequence <code>seq</code> and highlight it (and also it's parents).
+	 * If expand is true, all sequences will be expanded so that the highlighted sequence is visible. 
+	 * @param seq The action to highlight
+	 * @param expand expand all parent actions
+	 * @return true if action found and highlighted
+	 */
+	public boolean highlightSubsequence(Action seq, boolean expand)
+	{
+		if (this.action == seq)
+		{
+			setHightlight(HighlightType.THIS_HIGHLIGHTED);
+			return true;
+		}
+		//Check sequence of this action
+		for (Iterator<Action> i = action.getSequenceIterator(); i.hasNext();)
+		{
+			Action a = i.next();
+			ActionDrawInformation inf = a.getDrawInfo();
+			
+			if (a == seq)
+			{
+				inf.setHightlight(HighlightType.THIS_HIGHLIGHTED);
+				setHightlight(HighlightType.CHILD_HIGHLIGHTED);
+				return true;
+			} else if (inf.highlightSubsequence(seq, expand))
+			{
+				inf.setHightlight(HighlightType.CHILD_HIGHLIGHTED);
+				setHightlight(HighlightType.CHILD_HIGHLIGHTED);
+				if (expand)
+					action.setExpandedSequence(a);
+				return true;
+			}
+		}
+		return false;
 	}
 }

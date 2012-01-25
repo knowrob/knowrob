@@ -1,10 +1,10 @@
 package edu.tum.cs.vis.action;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.LinkedHashMap;
-
-import javax.vecmath.Vector2f;
+import java.util.List;
 
 /**
  * A action for a plan.
@@ -19,8 +19,9 @@ public class Action {
 
 	/**
 	 * Properties of this action
+	 * A key may have multiple values. So the type of value is an array of strings
 	 */
-	private LinkedHashMap<String, String> properties;
+	private LinkedHashMap<String, List<String>> properties;
 	
 	/**
 	 * Parent actions in hierarchy
@@ -50,6 +51,12 @@ public class Action {
 	 * Name of the action
 	 */
 	private String name;
+	
+
+	/**
+	 * Identifier of the action (from prolog)
+	 */
+	private String identifier;
 
 	/**
 	 * Holds information for drawing this action.
@@ -62,7 +69,7 @@ public class Action {
 	 * @param name Name/Title of the action
 	 */
 	public Action(String name) {
-		this.properties = new LinkedHashMap<String, String>();
+		this.properties = new LinkedHashMap<String, List<String>>();
 		this.parentActions = new LinkedList<Action>();
 		this.childActions = new LinkedList<Action>();
 		this.sequence = new LinkedList<Action>();
@@ -71,18 +78,34 @@ public class Action {
 	}
 	
 	/**
+	 * Constructor for initializing an action
+	 * @param name Name/Title of the action
+	 */
+	public Action(String name, String identifier) {
+		this.properties = new LinkedHashMap<String, List<String>>();
+		this.parentActions = new LinkedList<Action>();
+		this.childActions = new LinkedList<Action>();
+		this.sequence = new LinkedList<Action>();
+		this.name = name;
+		this.drawInfo = new ActionDrawInformation(this);
+		this.identifier = identifier;
+	}
+	
+	/**
 	 * Get list of properties.
+	 * Value is an array of strings because a property may have multiple values
 	 * @return list of action properties
 	 */
-	public LinkedHashMap<String, String> getProperties() {
+	public LinkedHashMap<String, List<String>> getProperties() {
 		return properties;
 	}
 
 	/**
 	 * Overwrite current list of properties
+	 * Value is an array of strings because a property may have multiple values
 	 * @param properties new properties list
 	 */
-	public void setProperties(LinkedHashMap<String, String> properties) {
+	public void setProperties(LinkedHashMap<String, List<String>> properties) {
 		this.properties = properties;
 		drawInfo.notifyModified();
 	}
@@ -92,7 +115,7 @@ public class Action {
 	 * @param key Key of property
 	 * @return Value of property or null if not found
 	 */
-	public String getProperty(String key)
+	public List<String> getProperty(String key)
 	{
 		return properties.get(key);
 	}
@@ -104,7 +127,13 @@ public class Action {
 	 */
 	public void setProperty(String key, String value)
 	{
-		properties.put(key, value);
+	    List<String> list = properties.get(key);
+	    if(list == null){
+	        list = new ArrayList<String>();
+	        properties.put(key, list);
+	    }
+	    list.add(value);
+
 		drawInfo.notifyModified();
 	}
 
@@ -279,6 +308,14 @@ public class Action {
 	}
 	
 	/**
+	 * Return identifier of the action	
+	 * @return identifier
+	 */
+	public String getIdentifier() {
+		return identifier;
+	}
+
+	/**
 	 * Get information for drawing the action
 	 * @return object containing draw information
 	 */
@@ -314,17 +351,26 @@ public class Action {
 		return (parentOfSequence.expandedSequence == this);
 	}
 	
+	/**
+	 * Get the currently expanded subsequence
+	 * @return Action which is currently expanded
+	 */
 	public Action getExpandedSequence()
 	{
 		return expandedSequence;
 	}
 	
+	/**
+	 * Expand the given action in this actions subsequence
+	 * @param sequence Subcation to expand
+	 */
 	public void setExpandedSequence(Action sequence)
 	{
 		if (this.sequence.contains(sequence))
 		{
 			this.expandedSequence = sequence;
-			parentOfSequence.drawInfo.notifyModified();
+			if (parentOfSequence != null)
+				parentOfSequence.drawInfo.notifyModified();
 		}
 	}
 	
@@ -339,5 +385,4 @@ public class Action {
 			parentOfSequence.expandedSequence = this;
 			parentOfSequence.drawInfo.notifyModified();
 	}
-	
 }

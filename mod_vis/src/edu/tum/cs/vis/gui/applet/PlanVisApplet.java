@@ -2,14 +2,20 @@ package edu.tum.cs.vis.gui.applet;
 
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Vector;
 
 import javax.vecmath.Vector2f;
 
+import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
 import edu.tum.cs.vis.action.Action;
 import edu.tum.cs.vis.action.ActionSelectHistoryInfo;
 
@@ -21,7 +27,7 @@ import processing.core.PFont;
  * @author Stefan Profanter
  * @see edu.tum.cs.vis.action.Action
  */
-public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotionListener {
+public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotionListener,MouseWheelListener {
 
 	private static final long serialVersionUID = 7695328948788620463L;
 
@@ -45,7 +51,9 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 	 */
 	private static final Cursor handCursor = new Cursor(Cursor.HAND_CURSOR);
 	
-
+	/**
+	 * Move cursor
+	 */
 	private static final Cursor moveCursor = new Cursor(Cursor.MOVE_CURSOR);
 	
 	/**
@@ -61,8 +69,22 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 	 */
 	private ArrayList<ActionSelectHistoryInfo> clickHistory = new ArrayList<ActionSelectHistoryInfo>();
 	
-	Vector2f drawOffset = new Vector2f(0,0);
-	Vector2f draggingStart = new Vector2f(0,0);
+	/**
+	 * Draw offset. Used when image moved/dragged.
+	 */
+	private Vector2f drawOffset = new Vector2f(0,0);
+	/**
+	 * Used in MouseDragging for calculating the dragging distance 
+	 */
+	private Vector2f draggingStart = new Vector2f(0,0);
+	
+	/**
+	 * Constructor
+	 */
+	public PlanVisApplet()
+	{
+		this.redraw();
+	}
 	
 	@Override
 	public void setup()
@@ -76,7 +98,7 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		
 		addMouseMotionListener(this);
 		addMouseListener(this);
-	    
+
 	    dejavuFont = createFont("DejaVu Sans",13);
 	    textFont(dejavuFont);
 	    hint(ENABLE_ACCURATE_TEXTURES);
@@ -96,6 +118,104 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 	    drawHistory();
 	    
 	    
+	}
+	
+	/**
+	 * Load a plan with the given prolog identifier and all it's subactions.
+	 * @param identifier Something like 'http://www.roboearth.org/kb/serve_drink.owl#ServeADrink'
+	 * @return The main action initialized by the identifier
+	 */
+	private Action loadPrologPlanRecursive(String identifier)
+	{		
+		//Get the action name
+		String name = "";
+		try
+		{
+			HashMap<String, Vector<Object>> qLabel = PrologUtil.executeQuery("rdf_has('"+identifier+"',rdfs:label,L),util:strip_literal_type(L,Label)", null);
+			name = qLabel.get("Label").get(0).toString();
+			if (name.startsWith("'") && name.endsWith("'"))
+			{
+				name = name.substring(1,name.length()-1);
+			}
+		} catch (Exception e)
+		{
+			if (identifier.indexOf('#') >=0)
+			{
+				name = identifier.substring(identifier.lastIndexOf('#')+1);
+			} else {
+				name = identifier;
+			}
+		}
+
+		Action ret = new Action(name, identifier);
+		
+		//get properties
+		try
+		{
+			HashMap<String, Vector<Object>> qProp = PrologUtil.executeQuery("class_properties('"+identifier+"', Key, V), util:strip_literal_type(V,Val)", null);
+		    Vector<Object> key = qProp.get("Key");
+		    Vector<Object> val = qProp.get("Val");
+		    
+		    //Make sure each property is added only once, it may be that some properties are present two or more times
+		    HashSet<String> alreadyAdded = new HashSet<String>();
+		    if(key != null && val != null)
+		    	for(int i=0;i<key.size() && i<val.size();i++) {
+		    		if (alreadyAdded.contains(key.get(i).toString()+val.get(i).toString()))
+		    			continue;
+		    		alreadyAdded.add(key.get(i).toString()+val.get(i).toString());
+		    		String k = PrologInterface.valueFromIRI(key.get(i).toString());
+		    		String v = PrologInterface.valueFromIRI(PrologInterface.removeSingleQuotes(val.get(i).toString()));
+
+		    		if (k.compareToIgnoreCase("subAction") != 0)
+		    			ret.setProperty(k, v);
+		    	}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}		
+
+		//get subactions
+		try {
+			HashMap<String, Vector<Object>> qSub = PrologUtil.executeQuery("plan_subevents('"+identifier+"',List)", null);
+			Vector<Object> list = qSub.get("List");
+			
+			//Add each action only once
+			HashSet<String> alreadyAdded = new HashSet<String>();
+			
+			if(list != null) {
+				for (Iterator<Object> i = list.iterator(); i.hasNext();)
+				{
+					Object o = i.next(); //Is array of strings
+					
+					for (String sArr[] : PrologInterface.dottedPairsToArrayList(o.toString()))
+					{
+						for (String s : sArr)
+						{
+							if (alreadyAdded.contains(s))
+								continue;
+							alreadyAdded.add(s);
+							ret.addSequence(loadPrologPlanRecursive(PrologInterface.removeSingleQuotes(s)));
+						}
+					}
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}		
+		
+		return ret;
+	}
+	
+	/**
+	 * Load a plan by starting with the given identifier and load all it's referenced actions recursively.
+	 * @param identifier Something like 'http://www.roboearth.org/kb/serve_drink.owl#ServeADrink'
+	 */
+	public void loadPrologPlan(String identifier)
+	{
+		Action a = loadPrologPlanRecursive(identifier);
+		if (a!= null)
+			setMainAction(a);
 	}
 	
 	/**
@@ -282,7 +402,7 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 
 	@Override
     public void mouseDragged(MouseEvent e) {
-		if (draggingStart != null)
+		if (draggingStart != null && currAction != null)
 		{
 			drawOffset.x = Math.min(0, drawOffset.x+ e.getX() - draggingStart.x);
 			drawOffset.y = Math.min(0,drawOffset.y + e.getY() - draggingStart.y);
@@ -322,15 +442,13 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
     public void mouseExited(MouseEvent e) {
     }
 
-	boolean clicked = false;
 	@Override
     public void mouseClicked(MouseEvent e) {
 		long diff = System.currentTimeMillis()-lastClickTime;
 		lastClickTime = System.currentTimeMillis();
-		clicked = !clicked;
-		if (diff < 10 || ! clicked) //double fired event
+		if (diff < 10) //double fired event
 			return;
-		if (e.getButton() == MouseEvent.BUTTON1)
+		if (e.getButton() == MouseEvent.BUTTON1 && currAction != null)
 		{
 			//Check if clicked on history element
 			int idx = getHistoryHover(e.getX(), e.getY());
@@ -393,6 +511,56 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 			}
 		}
 		return idx;
+	}
+	
+	/**
+	 * Highlight the action referenced by <code>a</code>
+	 * @param a action to highlight
+	 * @param expand Expand all the parents of <code>a</code> so that <code>a</code> is visible
+	 * @return true if action found and highlighted
+	 */
+	public boolean highlightAction(Action a, boolean expand)
+	{
+		if (currAction == null)
+			return false;
+		currAction.getDrawInfo().clearHightlight();
+		return currAction.getDrawInfo().highlightSubsequence(a,expand);
+	}
+	
+	/**
+	 * Highlight the action referenced by <code>identifier</code>
+	 * @param identifier action identified by <code>identifier</code> to highlight
+	 * @param expand Expand all the parents of <code>identifier</code> so that <code>identifier</code> is visible
+	 * @return true if action found and highlighted
+	 */
+	public boolean highlightAction(String identifier, boolean expand)
+	{
+		if (currAction == null)
+			return false;
+		currAction.getDrawInfo().clearHightlight();
+		return currAction.getDrawInfo().highlightSubsequence(identifier,expand);
+	}
+	
+	/**
+	 * Clear all highlighted actions so that none is highlighted.
+	 */
+	public void clearHighlight()
+	{
+		if (currAction == null)
+			return;
+		currAction.getDrawInfo().clearHightlight();
+	}
+
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent e) {
+			int totalScrollAmount = 0;
+			if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL)
+			{
+				totalScrollAmount = e.getUnitsToScroll() * e.getScrollAmount();
+			} else {
+				totalScrollAmount = e.getWheelRotation() * 30;
+			}
+			draggingStart.y += totalScrollAmount;
 	}
 
 }

@@ -107,6 +107,8 @@ public class PlanVisTest {
 		brownies.addChildAction(drinkSomething);
 		
 		applet.setMainAction(brownies);
+		applet.highlightAction(takeBowl, true);
+		applet.highlightAction(closeDrawer, true);
 		
 	}
 }

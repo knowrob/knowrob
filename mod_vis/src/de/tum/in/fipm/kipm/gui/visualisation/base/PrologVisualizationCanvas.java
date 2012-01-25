@@ -19,11 +19,10 @@ import controlP5.Textlabel;
 import de.tum.in.fipm.kipm.gui.visualisation.applets.ActionVisApplet;
 import de.tum.in.fipm.kipm.gui.visualisation.applets.StandaloneKitchenVisApplet;
 import de.tum.in.fipm.kipm.gui.visualisation.applets.ImageViewerApplet;
+import edu.tum.cs.vis.gui.applet.PrologUtil;
 
 import processing.core.*;
 import jpl.Query;
-import jpl.fli.Prolog;
-
 public class PrologVisualizationCanvas extends PApplet implements MouseListener, MouseMotionListener {
 
 	private static final long serialVersionUID = 4575739930038583994L;
@@ -333,23 +332,6 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 		img_window.setResizable(true);
 	}
     
-
-	/**
-	 * initializes prolog
-	 */
-	protected static void initProlog() {
-		try {
-			Vector<String> args= new Vector<String>(Arrays.asList(Prolog.get_default_init_args()));
-			args.add( "-G256M" );
-			args.add( "-q" );
-			args.add( "-nosignals" );
-			Prolog.set_default_init_args( args.toArray( new String[0] ) );
-		
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
 	
 	  //////////////////////////////////////////////////////////////////////////////////////////////
 	  //////////////////////////////////////////////////////////////////////////////////////////////
@@ -363,7 +345,7 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 			
 			// read list of attributes from Prolog
 		    ArrayList<String[]> bindings = new ArrayList<String[]>();
-		    HashMap<String, Vector<Object>> qres = executeQuery("findall([P|O], (rdf_has("+entity+", P, O)), Cs)", "/home/tenorth/work/owl/gram_ias.pl");
+		    HashMap<String, Vector<Object>> qres = PrologUtil.executeQuery("findall([P|O], (rdf_has("+entity+", P, O)), Cs)", "/home/tenorth/work/owl/gram_ias.pl");
 		    
 			for(String k : qres.keySet()) {
 			  	
@@ -382,7 +364,7 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 		}
 		
 		public void actionsInActivity() {
-			HashMap<String, Vector<Object>> qres = executeQuery("rdf_has(Plan, rdfs:label, literal(type('http://www.w3.org/2001/XMLSchema#string', 'set a table'))), " +
+			HashMap<String, Vector<Object>> qres = PrologUtil.executeQuery("rdf_has(Plan, rdfs:label, literal(type('http://www.w3.org/2001/XMLSchema#string', 'set a table'))), " +
 					                                            "comp_ehow:matching_actions(Plan, Act)", null);
 		    Vector<Object> act = qres.get("Act");
 
@@ -395,7 +377,7 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 		
 		private void displayInformationForEntity(String entity) {
 			
-			HashMap<String, Vector<Object>> qres = executeQuery("rdf_has("+entity+", P, O)", null);
+			HashMap<String, Vector<Object>> qres = PrologUtil.executeQuery("rdf_has("+entity+", P, O)", null);
 		    Vector<Object> P = qres.get("P");
 		    Vector<Object> O = qres.get("O");
 		    String info = "";
@@ -524,59 +506,6 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 		public StandaloneKitchenVisApplet getKitchenVisApplet() {
 			return this.KVObject;
 		}
-		
-	  
-	/**
-	 * Execute the given query. Assert the given premises and retract them after querying.
-	 * @param query the query.
-	 * @return the HashMap representing the bindings of the variables.
-	 */
-	@SuppressWarnings("rawtypes")
-	public static HashMap<String, Vector<Object>> executeQuery(String query, String plFile) {
-		
-		HashMap<String, Vector<Object>> result = new HashMap< String, Vector<Object> >();
-		Hashtable[] solutions;
-
-		Query q = new Query( "expand_goal(("+query+"),_9), call(_9)" );
-		
-			// Due to bugs we have to check for one answer beforehand.
-			if (!q.hasMoreSolutions())
-				return new HashMap<String, Vector<Object>>();
-			Hashtable oneSolution = q.nextSolution();
-			if (oneSolution.isEmpty())	// Due to a bug consulting a file without anything else results in shutdown
-				return new HashMap<String, Vector<Object>>();	// I will try to prevent it with this construction
-			
-		// Restart the query and fetch everything.
-		q.rewind();
-		solutions = q.allSolutions();
-			
-
-
-		for (Object key: solutions[0].keySet()) {
-			result.put(key.toString(), new Vector<Object>());
-		}
-		
-		// Build the result
-		for (int i=0; i<solutions.length; i++) {
-			Hashtable solution = solutions[i];
-			for (Object key: solution.keySet()) {
-				String keyStr = key.toString();
-				if (!result.containsKey( keyStr )) {
-
-					// previously unknown column, add result vector
-					Vector<Object> resultVector = new Vector<Object>(); 
-					resultVector.add( i, solution.get( key ).toString() );
-					result.put(keyStr, resultVector);
-
-				}
-				// Put the solution into the correct vector
-				Vector<Object> resultVector = result.get( keyStr );
-				resultVector.add( i, solution.get( key ).toString() );
-			}
-		}
-		// Generate the final QueryResult and return
-		return result;
-	}
 	
 	public static void main(String args[]) {
 		PApplet.main(new String[] { "de.tum.in.fipm.kipm.gui.visualisation.base.PrologVisualizationCanvas" });

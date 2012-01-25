@@ -47,6 +47,7 @@ public class PrologInterface {
 	 * @param query A query string in common SWI Prolog syntax
 	 * @return A HashMap<VariableName, ResultsVector>
 	 */
+	@SuppressWarnings("rawtypes")
 	public static HashMap<String, Vector<String>> executeQuery(String query) {
 		
 		HashMap<String, Vector<String>> result = new HashMap< String, Vector<String> >();
@@ -98,13 +99,14 @@ public class PrologInterface {
         
         ArrayList<String[]> bindings = new ArrayList<String[]>();
         while(rest.length()>0) {
+
             String[] l = rest.split("'\\.'", 2);
-            
             if((l[0].equals("")) || (l[0].equals("("))) {
                rest=l[1]; continue;
 
             } else {
-                bindings.add(new String[]{l[0].substring(1, l[0].length()-2).split(", ")[0]});
+            	if (l[0].length() > 2)            	
+            		bindings.add(new String[]{l[0].substring(1, l[0].length()-2).split(", ")[0]});
                                 
                 if(l.length>1) {
                     rest=l[1];  continue;

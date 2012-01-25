@@ -49,7 +49,12 @@
       highlight_object_with_children/2,
       highlight_object_with_children/3,
       reset_highlighting/1,
-      show_images/2
+      show_images/2,
+      planvis_create/1,
+      planvis_load/2,
+      planvis_highlight/2,
+      planvis_highlight/3,
+      planvis_clear_highlight/1
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -212,7 +217,7 @@ show_actionseq(SeqInfos, Canvas, Hand, Level) :-
 % @param Identifier Object identifier, eg. "http://ias.cs.tum.edu/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
 % @param Canvas     Visualization canvas
 %
-add_object(Identifier, Canvas) :-
+add_object(Identifier, Canvas) :-	
     ((var(Canvas)) -> (v_canvas(Canvas));(true)),
     jpl_call(Canvas, 'addObject', [Identifier], _).
 
@@ -423,3 +428,64 @@ show_images(ImagePaths, Canvas) :-
     jpl_list_to_array(ImagePaths, ImagePathsArray),
     ((var(Canvas)) -> (v_canvas(Canvas));(true)),
     jpl_call(Canvas, 'showImagesInNewWindow', [ImagePathsArray], _).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% PlanVis management
+%
+
+%% planvis_create(-PlanVis) is det.
+%
+% Launch the planvis applet
+%
+:- assert(planvis(fail)).
+planvis_create(PlanVis) :-
+    planvis(fail),
+    jpl_new('javax.swing.JFrame', [], Frame),
+    jpl_call(Frame, 'resize', [800, 600], _),
+    jpl_new('edu.tum.cs.vis.gui.applet.PlanVisApplet', [], PlanVis),
+    jpl_call(PlanVis, 'init', [], _),
+    jpl_call(Frame, 'add', [PlanVis], _),
+    jpl_call(Frame, 'setVisible', [@(true)], _),
+    retract(planvis(fail)),
+    assert(planvis(PlanVis)),!.
+planvis_create(PlanVis) :-
+    planvis(PlanVis).
+
+%% planvis_load(+Identifier,+Planvis) is det.
+%
+% Load the action/plan with given by Identifier and all its children recursively
+% to draw it on the PlanVis applet
+%
+% @param Identifier  eg. 'http://www.roboearth.org/kb/serve_drink.owl#ServeADrink'
+% @param PlanVis     PlanVis applet
+%
+planvis_load(Identifier,Planvis) :-
+    ((var(Planvis)) -> (planvis(Planvis));(true)),
+    jpl_call(Planvis, 'loadPrologPlan', [Identifier], _).
+
+%% planvis_highlight(+Identifier,+Planvis) is det.
+%% planvis_highlight(Identifier,Expand, Planvis) is det.
+%
+% Hightlights the action identified by identifier.
+%
+% @param Identifier  eg. 'http://www.roboearth.org/kb/serve_drink.owl#ServeADrink'
+% @param PlanVis     PlanVis applet
+% @param Expand	     Expand all sequences to show hightlighted action. Default: true
+%
+planvis_highlight(Identifier,Planvis) :-
+    ((var(Planvis)) -> (planvis(Planvis));(true)),
+    jpl_call(Planvis, 'highlightAction', [Identifier, @(true)], _).
+planvis_highlight(Identifier,Expand,Planvis) :-
+    ((var(Planvis)) -> (planvis(Planvis));(true)),
+    jpl_call(Planvis, 'highlightAction', [Identifier, Expand], _).
+
+%% planvis_clear_highlight(+Planvis) is det.
+%
+% Removes the hightlight from current highlighted action
+%
+% @param PlanVis     PlanVis applet
+%
+planvis_clear_highlight(Planvis) :-
+    ((var(Planvis)) -> (planvis(Planvis));(true)),
+    jpl_call(Planvis, 'clearHighlight', [], _).

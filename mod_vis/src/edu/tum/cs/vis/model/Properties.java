@@ -3,7 +3,7 @@ package edu.tum.cs.vis.model;
 import java.util.HashMap;
 import java.util.Vector;
 
-import de.tum.in.fipm.kipm.gui.visualisation.base.PrologVisualizationCanvas;
+import edu.tum.cs.vis.gui.applet.PrologUtil;
 
 /**
  * Static class to obtain model properties such as path to model file,
@@ -28,7 +28,7 @@ public class Properties {
 			{
 				identifier = "'" + identifier + "'";
 			} 
-			HashMap<String, Vector<Object>> nfo = PrologVisualizationCanvas
+			HashMap<String, Vector<Object>> nfo = PrologUtil
 					.executeQuery(
 							"rdf_has(" + identifier	+ ",knowrob:pathToCadModel,literal(P)) ; "
 							+ "owl_individual_of(" + identifier	+ ", Class), class_properties(Class, knowrob:pathToCadModel,literal(P))",

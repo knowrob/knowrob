@@ -31,6 +31,7 @@ import de.tum.in.fipm.kipm.util.datastructures.Point;
 
 import edu.tum.cs.vis.AnimatedCanvas;
 import edu.tum.cs.vis.Canvas;
+import edu.tum.cs.vis.gui.applet.PrologUtil;
 import edu.tum.cs.vis.model.ItemModel;
 import edu.tum.cs.vis.model.Properties;
 
@@ -353,7 +354,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	}
 
 	public void addObjectWithChildren(String identifier) {
-		HashMap<String, Vector<Object>> physicalParts = PrologVisualizationCanvas.executeQuery(
+		HashMap<String, Vector<Object>> physicalParts = PrologUtil.executeQuery(
 				"rdf_reachable("+identifier+", knowrob:properPhysicalParts, PART)",null);
 
 		if(physicalParts.get("PART") != null)
@@ -361,7 +362,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 				if(!physicalParts.get("PART").get(i).toString().equals(identifier))
 					addObject(physicalParts.get("PART").get(i).toString());
 
-		HashMap<String, Vector<Object>> mapParts = PrologVisualizationCanvas.executeQuery(
+		HashMap<String, Vector<Object>> mapParts = PrologUtil.executeQuery(
 				"rdf_reachable(PART, knowrob:describedInMap, "+identifier+")",null);
 
 
@@ -369,7 +370,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			for(int i=0;i<mapParts.get("PART").size();i++)
 				if(!mapParts.get("PART").get(i).toString().equals(identifier))
 				{
-					HashMap<String, Vector<Object>> parts = PrologVisualizationCanvas.executeQuery(
+					HashMap<String, Vector<Object>> parts = PrologUtil.executeQuery(
 							"rdf_reachable("+mapParts.get("PART").get(i).toString()+", knowrob:properPhysicalParts, P)"
 							,null);
 
@@ -404,7 +405,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 
 	public void removeObjectWithChildren(String identifier) {
-		HashMap<String, Vector<Object>> physicalParts = PrologVisualizationCanvas.executeQuery(
+		HashMap<String, Vector<Object>> physicalParts = PrologUtil.executeQuery(
 				"rdf_reachable("+identifier+", knowrob:properPhysicalParts, PART)",null);
 
 		if(physicalParts.get("PART") != null)
@@ -412,14 +413,14 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 				if(!physicalParts.get("PART").get(i).toString().equals(identifier))
 					removeObject(physicalParts.get("PART").get(i).toString());
 
-		HashMap<String, Vector<Object>> mapParts = PrologVisualizationCanvas.executeQuery(
+		HashMap<String, Vector<Object>> mapParts = PrologUtil.executeQuery(
 				"rdf_reachable(PART, knowrob:describedInMap, "+identifier+")",null);
 
 		if(mapParts.get("PART") != null)
 			for(int i=0;i<mapParts.get("PART").size();i++)
 				if(!mapParts.get("PART").get(i).toString().equals(identifier))
 				{
-					HashMap<String, Vector<Object>> parts = PrologVisualizationCanvas.executeQuery(
+					HashMap<String, Vector<Object>> parts = PrologUtil.executeQuery(
 							"rdf_reachable("+mapParts.get("PART").get(i).toString()+", knowrob:properPhysicalParts, P)"
 							,null);
 
@@ -474,7 +475,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	public void highlightReachable(String identifier, boolean highlight) {
 		highlightItem(identifier, highlight);
 
-		HashMap<String, Vector<Object>> others = PrologVisualizationCanvas.executeQuery(
+		HashMap<String, Vector<Object>> others = PrologUtil.executeQuery(
 				"rdf_reachable("+identifier+", knowrob:properPhysicalParts, I)", null);
 
 		Vector<Object> itms = others.get("I");
@@ -527,7 +528,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		addObject("'http://ias.cs.tum.edu/kb/ias_entities.owl#knife1'");
 
 		try{
-			HashMap<String, Vector<Object>> c = PrologVisualizationCanvas.executeQuery(
+			HashMap<String, Vector<Object>> c = PrologUtil.executeQuery(
 					"rdf_has("+identifier+", 'http://ias.cs.tum.edu/kb/knowrob.owl#startTime', S), "
 							+"rdf_has("+identifier+", 'http://ias.cs.tum.edu/kb/knowrob.owl#endTime', E)",null);	
 
@@ -552,7 +553,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			float endTime = Float.parseFloat(endTimeStr);
 
 
-			c = PrologVisualizationCanvas.executeQuery(
+			c = PrologUtil.executeQuery(
 					"rdf_has(A, rdf:type, knowrob:'Posture-Configuration'), rdf_has(A, knowrob:bodyPartsUsed, 'left'), rdf_triple(knowrob:startTime, A, T)",null);	
 
 			Vector<Object> allTimePoints = c.get("T");
@@ -575,7 +576,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 				if(timePoint >= startTime && timePoint <= endTime) {
 					try{		
-						HashMap<String, Vector<Object>> frameInfo = PrologVisualizationCanvas.executeQuery(
+						HashMap<String, Vector<Object>> frameInfo = PrologUtil.executeQuery(
 								"rdf_triple(ias_human:postureAtTimePoint,  "+s.toString()+", P)",
 								null);	
 
@@ -616,7 +617,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			numberFrames = totalFrames;
 
 			// add fromLocation and toLocation as colored spheres, if they are present
-			c = PrologVisualizationCanvas.executeQuery(
+			c = PrologUtil.executeQuery(
 					"rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#fromLocation', "+identifier+", From)",null);
 			if(c!=null && c.get("From")!= null) {
 				String fromLoc = (String)c.get("From").get(0);
@@ -625,7 +626,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 				}
 			}
 
-			c = PrologVisualizationCanvas.executeQuery(
+			c = PrologUtil.executeQuery(
 					"rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#toLocation', "+identifier+", To)",null);
 			if(c!=null && c.get("To")!=null) {
 				String toLoc = (String)c.get("To").get(0);
@@ -664,7 +665,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 		Trajectories traj = new Trajectories();
 
-		HashMap<String, Vector<Object>> o= PrologVisualizationCanvas.executeQuery(""+"handTrajectory("+handUsed+", "+identifier+", T, P, X, Y, Z)", null);
+		HashMap<String, Vector<Object>> o= PrologUtil.executeQuery(""+"handTrajectory("+handUsed+", "+identifier+", T, P, X, Y, Z)", null);
 
 		Vector<Object> pointID = o.get("P");
 		Vector<Object> Xc      = o.get("X");
@@ -719,7 +720,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 		Trajectories traj = new Trajectories();
 
-		HashMap<String, Vector<Object>> o= PrologVisualizationCanvas.executeQuery(""+ "readEyeTrajectory("+identifier+", T, P, XCoor, YCoor)", null);
+		HashMap<String, Vector<Object>> o= PrologUtil.executeQuery(""+ "readEyeTrajectory("+identifier+", T, P, XCoor, YCoor)", null);
 
 		Vector<Object> pointId = o.get("P");
 		Vector<Object> XCoor = o.get("XCoor");
@@ -768,7 +769,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	 */
 	public void displayActionFixedIdent(String identifier)
 	{
-		HashMap<String, Vector<Object>> c = PrologVisualizationCanvas.executeQuery(""+
+		HashMap<String, Vector<Object>> c = PrologUtil.executeQuery(""+
 				"readPostureSeqForAction("+identifier+", P, EPISODENR, INSTANCENR, TIME, BECX, BECY, BECZ, ULWX, ULWY, ULWZ, OLWX, OLWY, OLWZ, UBWX, UBWY, UBWZ, OBWX, OBWY, OBWZ, UHWX, UHWY, UHWZ, BRKX, BRKY, BRKZ, OHWX, OHWY, OHWZ, KOX, KOY, KOZ, SEHX, SEHY, SEHZ, OSLX, OSLY, OSLZ, USLX, USLY, USLZ, FULX, FULY, FULZ, FBLX, FBLY, FBLZ, OSRX, OSRY, OSRZ, USRX, USRY, USRZ, FURX, FURY, FURZ, FBRX, FBRY, FBRZ, SBLX, SBLY, SBLZ, OALX, OALY, OALZ, UALX, UALY, UALZ, HALX, HALY, HALZ, FILX, FILY, FILZ, SBRX, SBRY, SBRZ, OARX, OARY, OARZ, UARX, UARY, UARZ, HARX, HARY, HARZ, FIRX, FIRY, FIRZ)"
 				,null);		
 
@@ -824,7 +825,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	public void drawBackground() {
 		clear();
 		// get the current semantic map
-		HashMap<String, Vector<Object>> tpe = PrologVisualizationCanvas.executeQuery(
+		HashMap<String, Vector<Object>> tpe = PrologUtil.executeQuery(
 				"rdf_has(SUBJECT, rdf:type, knowrob:'SemanticEnvironmentMap')",null);
 		String type = null;
 
@@ -868,7 +869,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	private ItemBase getItem(String identifier) {
 
 		// get type
-		HashMap<String, Vector<Object>> tpe = PrologVisualizationCanvas.executeQuery(
+		HashMap<String, Vector<Object>> tpe = PrologUtil.executeQuery(
 				"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," + 
 						"OBJECTCLASS\\='http://www.w3.org/2002/07/owl#NamedIndividual'",null);
 		String type = null;
@@ -935,7 +936,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		} else {
 
 			// check if it is a storage facility, if it is: create; WITHOUT handles
-			HashMap<String, Vector<Object>> storage = PrologVisualizationCanvas.executeQuery(
+			HashMap<String, Vector<Object>> storage = PrologUtil.executeQuery(
 					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
 							"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'StorageConstruct')", null);
 			if (storage.get("OBJECTCLASS") != null && storage.get("OBJECTCLASS").size() > 0) {
@@ -958,7 +959,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 
 			// check if Table
-			HashMap<String, Vector<Object>> tables = PrologVisualizationCanvas.executeQuery(
+			HashMap<String, Vector<Object>> tables = PrologUtil.executeQuery(
 					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
 							"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'Table-PieceOfFurniture')", null);
 			
@@ -975,7 +976,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 
 			// check if it is a CounterTop
-			HashMap<String, Vector<Object>> counter = PrologVisualizationCanvas.executeQuery(
+			HashMap<String, Vector<Object>> counter = PrologUtil.executeQuery(
 					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
 							"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'CounterTop')" , null);
 
@@ -993,7 +994,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 			
 			
-			HashMap<String, Vector<Object>> building = PrologVisualizationCanvas.executeQuery(
+			HashMap<String, Vector<Object>> building = PrologUtil.executeQuery(
 					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
 							"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'Building')" , null);
 
@@ -1010,7 +1011,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			}
 
 
-			HashMap<String, Vector<Object>> level = PrologVisualizationCanvas.executeQuery(
+			HashMap<String, Vector<Object>> level = PrologUtil.executeQuery(
 					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
 							"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'LevelOfAConstruction')" , null);
 
@@ -1028,7 +1029,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 
 
-			HashMap<String, Vector<Object>> room = PrologVisualizationCanvas.executeQuery(
+			HashMap<String, Vector<Object>> room = PrologUtil.executeQuery(
 					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
 							"( rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'RoomInAConstruction');" +
 							"  rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'MultiRoomUnit') )" , null);
@@ -1047,7 +1048,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 			
 			
-			HashMap<String, Vector<Object>> place = PrologVisualizationCanvas.executeQuery(
+			HashMap<String, Vector<Object>> place = PrologUtil.executeQuery(
 					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
 							"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'Place')", null);
 
@@ -1065,7 +1066,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 			
 			// check if it is some kind of box (e.g. Bed)
-			HashMap<String, Vector<Object>> box = PrologVisualizationCanvas.executeQuery(
+			HashMap<String, Vector<Object>> box = PrologUtil.executeQuery(
 					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
 							"( rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'ConstructionArtifact');" +
 							"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'FurniturePiece'))" , null);
@@ -1092,7 +1093,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 	private double[] getDimensionsOfItem(String identifier) {
 		try{
-			HashMap<String, Vector<Object>> nfo = PrologVisualizationCanvas.executeQuery(
+			HashMap<String, Vector<Object>> nfo = PrologUtil.executeQuery(
 					"rdf_has("+identifier+",knowrob:widthOfObject,literal(type(_,_W)))," + 
 							"rdf_has("+identifier+",knowrob:heightOfObject,literal(type(_,_H))), " + 
 							"rdf_has("+identifier+",knowrob:depthOfObject,literal(type(_,_D))), " +
@@ -1113,7 +1114,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		try{
 			
 			// get orientation
-			HashMap<String, Vector<Object>> nfo = PrologVisualizationCanvas.executeQuery(
+			HashMap<String, Vector<Object>> nfo = PrologUtil.executeQuery(
 					"rdf_triple(knowrob:orientation,"+identifier+",Or), " +
 
 					"rdf_triple(knowrob:m00,Or,_M00l), util:strip_literal_type(_M00l, _M00), term_to_atom(M00,_M00)," +
