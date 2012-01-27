@@ -33,7 +33,7 @@ public class ResourceRetriever {
 	private static final String tmpPrefix = "knowrob_resource_";
 	
 	/**
-	 * Retrieve a file to a temporary path. This temporary path will be returned. Valid protocol types: ftp, http, package
+	 * Retrieve a file to a temporary path. This temporary path will be returned. Valid protocol types: ftp, http, package or local file
 	 * If a file has already be downloaded (the file is existing in tmp directory) it will not be redownloaded again. Simply the 
 	 * path to this file will be returned.
 	 * @param url URL to retrieve
@@ -45,7 +45,7 @@ public class ResourceRetriever {
 	}
 	
 	/**
-	 * Retrieve a file to a temporary path. This temporary path will be returned. Valid protocol types: ftp, http, package
+	 * Retrieve a file to a temporary path. This temporary path will be returned. Valid protocol types: ftp, http, package or local file
 	 * If a file has already be downloaded (the file is existing in tmp directory) it will not be redownloaded again. Simply the 
 	 * path to this file will be returned.
 	 * @param url URL to retrieve
@@ -82,7 +82,6 @@ public class ResourceRetriever {
 		    
 		    if (checkAlreadyRetrieved && tmpPath.exists())
 		    {
-		    	System.out.println("Already retrieved: " + url + " to " + tmpPath.getAbsolutePath());
 		    	return tmpPath;
 		    }
 		    

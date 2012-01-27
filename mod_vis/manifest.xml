@@ -20,7 +20,7 @@
   <depend package="rosjava_jni"/>
 
   <export>
-    <java classpath="${prefix}/bin:${prefix}/lib/controlP5.jar:${prefix}/lib/core.jar:${prefix}/lib/vecmath.jar:${prefix}/lib/itext.jar:${prefix}/lib/pdf.jar:${prefix}/lib/PeasyCam.jar:${prefix}/lib/dae4j.jar"/>
+    <java classpath="${prefix}/bin:${prefix}/lib/controlP5.jar:${prefix}/lib/core.jar:${prefix}/lib/vecmath.jar:${prefix}/lib/itext.jar:${prefix}/lib/pdf.jar:${prefix}/lib/PeasyCam.jar:${prefix}/lib/dae4j.jar:${prefix}/lib/snakeyaml-1.9.jar"/>
     <rosdoc config="rosdoc.yaml" />
   </export>
 

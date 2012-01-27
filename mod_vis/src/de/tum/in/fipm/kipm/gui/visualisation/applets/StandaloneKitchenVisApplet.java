@@ -892,6 +892,10 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 		}
 		
+		if(type.endsWith("#OccupancyGridMap'")) {
+			return new OccupancyGridMap(identifier);
+		}
+		
 		Matrix4d pose = null;
 		Vector3d dim = null;
 		
