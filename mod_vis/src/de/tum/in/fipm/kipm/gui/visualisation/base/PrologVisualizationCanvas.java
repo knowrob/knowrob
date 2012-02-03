@@ -65,7 +65,7 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 
 		
 		this.add(KVObject);
-		this.add(AVObject);
+		//this.add(AVObject);
 	
 	    initControlP5();
 		
@@ -456,6 +456,8 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 	      Textarea text = controlP5.addTextarea("CurrentAttributes","", 80,160,200,130);
 	      text.setColorBackground(0xFF000000);
 	      text.moveTo(controlWindow);
+	      
+	      controlWindow.hide();
 	      
 	  }
 	  

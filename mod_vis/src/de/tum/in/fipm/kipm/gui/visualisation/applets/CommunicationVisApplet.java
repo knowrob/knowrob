@@ -39,7 +39,7 @@ public class CommunicationVisApplet extends PApplet {
 
 	int transmitting = 0;
 	int receiving    = 0;
-	int FRAMES_TO_DISPLAY_MESSAGES = 100;
+	int FRAMES_TO_DISPLAY_MESSAGES = 70;
 
 	int LINE_LEFT_START = 250;
 	int LINE_RIGHT_END  = 550;
@@ -102,8 +102,9 @@ public class CommunicationVisApplet extends PApplet {
 		frameRate(25);
 
 
-		leftImg  = new PImage();
-		rightImg = loadImage(imagePath+"/images/rosie.png");
+		//leftImg  = new PImage();
+		leftImg = loadImage(imagePath+"/images/pr2.jpg");
+		rightImg = loadImage(imagePath+"/images/roboearth.png");
 		//rightImg = loadImage("/work/ros/tumros-internal/stacks/knowrob/mod_vis/images/pr2.jpg");
 
 		// init ros environment
@@ -162,6 +163,8 @@ public class CommunicationVisApplet extends PApplet {
 			ellipse(transmitPosition, UPPER_LINE_YPOS, 3, 3);
 			transmitPosition= LINE_LEFT_START + ((transmitPosition - LINE_LEFT_START + 10)%LINE_WIDTH);
 			transmitting--;
+		} else {
+			this.request="";
 		}
 
 		// display response text, draw moving circle
@@ -174,6 +177,8 @@ public class CommunicationVisApplet extends PApplet {
 			ellipse(receivePosition,  LOWER_LINE_YPOS, 3, 3);
 			receivePosition = LINE_RIGHT_END  - ((LINE_RIGHT_END   - receivePosition + 10)%LINE_WIDTH);
 			receiving--;
+		} else {
+			this.response="";
 		}
 	}
 

@@ -89,7 +89,7 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 	@Override
 	public void setup()
 	{
-		size(800, 600, P2D);
+		size(1600, 400, P2D);
 		if (this.frame != null)
 		{
 		    this.frame.setTitle("Action plans visualisation");

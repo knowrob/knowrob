@@ -6946,6 +6946,12 @@ For predicates that relate things to measurable quantities that characterize the
                 <owl:someValuesFrom rdf:resource="&knowrob;Reaching"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;orderingConstraints"/>
+                <owl:hasValue rdf:resource="&knowrob;SubEventOrderingPickingUp"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <owl:disjointWith rdf:resource="&knowrob;PuttingDownAnObject"/>
     </owl:Class>
 
@@ -9572,6 +9578,13 @@ Cf. Surface, whose instances are two-dimensional, intangible regions of space.</
     </owl:Thing>
 
 
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#SubEventOrderingPuttingSomethingSomewhere1 -->
+
+    <knowrob:PartialOrdering-Strict rdf:about="&knowrob;SubEventOrderingPickingUp">
+        <occursBeforeInOrdering rdf:resource="&knowrob;Reaching"/>
+        <occursAfterInOrdering rdf:resource="&knowrob;TakingSomething"/>
+    </knowrob:PartialOrdering-Strict>
+
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#SubEventOrderingPuttingSomethingSomewhere1 -->
 
@@ -9580,7 +9593,7 @@ Cf. Surface, whose instances are two-dimensional, intangible regions of space.</
         <rdf:type rdf:resource="&owl;NamedIndividual"/>
         <occursAfterInOrdering rdf:resource="&knowrob;CarryingWhileLocomoting"/>
         <occursBeforeInOrdering rdf:resource="&knowrob;PickingUpAnObject"/>
-    </owl:Thing>
+    </owl:Thing>1
 
 
 

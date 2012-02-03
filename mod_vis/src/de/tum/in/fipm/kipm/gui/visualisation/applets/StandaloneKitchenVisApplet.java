@@ -127,8 +127,10 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		cam.setLeftDragHandler(cam.getRotateDragHandler());
 
 		// initialize camera view parameters
-		cam.setRotations(1.9074943, -0.6844337, 0.14366905);
-
+		cam.setRotations(1.808507, -0.46793357, 0.056346834);
+		cam.setDistance(75.6322);
+		cam.lookAt(10.443167, -4.4923606, -3.8713489);
+		
 
 		buffer = new EmptyCanvas(700,600,PGraphics3D.P3D);
 
@@ -193,6 +195,8 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		PMatrix save = getMatrix();
 		try{
 
+			//System.out.println(cam.getRotations()[0] + ", " + cam.getRotations()[1] + ", " + cam.getRotations()[2]);
+			//System.out.println(cam.getDistance() + ", lookat  " + cam.getLookAt()[0] + ", " + cam.getLookAt()[1] + ", " + cam.getLookAt()[2] );
 
 			if (record) {
 				beginRaw(PDF, "output.pdf");

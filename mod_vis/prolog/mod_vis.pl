@@ -77,7 +77,7 @@
 visualisation_canvas(Canvas) :-
     v_canvas(fail),
     jpl_new('javax.swing.JFrame', [], Frame),
-    jpl_call(Frame, 'resize', [800, 600], _),
+    jpl_call(Frame, 'resize', [800, 630], _),
     jpl_new('de.tum.in.fipm.kipm.gui.visualisation.base.PrologVisualizationCanvas', [], Canvas),
     jpl_call(Canvas, 'init', [], _),
     jpl_call(Canvas, 'drawBackground', [], _),
@@ -217,7 +217,7 @@ show_actionseq(SeqInfos, Canvas, Hand, Level) :-
 % @param Identifier Object identifier, eg. "http://ias.cs.tum.edu/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
 % @param Canvas     Visualization canvas
 %
-add_object(Identifier, Canvas) :-	
+add_object(Identifier, Canvas) :-
     ((var(Canvas)) -> (v_canvas(Canvas));(true)),
     jpl_call(Canvas, 'addObject', [Identifier], _).
 
@@ -442,7 +442,7 @@ show_images(ImagePaths, Canvas) :-
 planvis_create(PlanVis) :-
     planvis(fail),
     jpl_new('javax.swing.JFrame', [], Frame),
-    jpl_call(Frame, 'resize', [800, 600], _),
+    jpl_call(Frame, 'resize', [1600, 400], _),
     jpl_new('edu.tum.cs.vis.gui.applet.PlanVisApplet', [], PlanVis),
     jpl_call(PlanVis, 'init', [], _),
     jpl_call(Frame, 'add', [PlanVis], _),
