@@ -9593,7 +9593,7 @@ Cf. Surface, whose instances are two-dimensional, intangible regions of space.</
         <rdf:type rdf:resource="&owl;NamedIndividual"/>
         <occursAfterInOrdering rdf:resource="&knowrob;CarryingWhileLocomoting"/>
         <occursBeforeInOrdering rdf:resource="&knowrob;PickingUpAnObject"/>
-    </owl:Thing>1
+    </owl:Thing>
 
 
 
