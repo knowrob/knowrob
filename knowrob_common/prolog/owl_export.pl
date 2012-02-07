@@ -69,7 +69,7 @@ tboxify_object_inst(ObjInst, ClassName, ReferenceObj, ReferenceObjCl, SourceRef)
 
 
   % read object pose if ReferenceObj is set (obj is part of another obj)
-  ((nonvar(ReferenceObj),
+  (nonvar(ReferenceObj) -> (
 
     % read pose and transform into relative pose
     transform_relative_to(ObjInst, ReferenceObj, RelativePoseList),
@@ -79,8 +79,11 @@ tboxify_object_inst(ObjInst, ClassName, ReferenceObj, ReferenceObjCl, SourceRef)
     rdf_assert(RelativePose, knowrob:relativeTo, ReferenceObjCl),
 
     % add pose restriction to the class definition
-    create_restr(ClassName, knowrob:orientation, RelativePose, owl:hasValue, SourceRef, _PoseRestr),!)
-  ; true),
+    create_restr(ClassName, knowrob:orientation, RelativePose, owl:hasValue, SourceRef, _PoseRestr))
+  ; (
+    ReferenceObj=ObjInst,
+    ReferenceObjCl=ClassName
+  )),
 
 
   % read object properties
@@ -119,7 +122,7 @@ tboxify_object_inst(ObjInst, ClassName, ReferenceObj, ReferenceObjCl, SourceRef)
 
                  ((not(tboxified(Part,_)),
 %                    assert(tboxified(Part, PartClassName)),
-                   tboxify_object_inst(Part, PartClassName, ObjInst, ClassName, SourceRef)) ; true ) ), _),
+                   tboxify_object_inst(Part, PartClassName, ReferenceObj, ReferenceObjCl, SourceRef)) ; true ) ), _),
 
 
   % iterate over connectedTo objects
@@ -135,7 +138,7 @@ tboxify_object_inst(ObjInst, ClassName, ReferenceObj, ReferenceObjCl, SourceRef)
 
                 ((not(tboxified(Conn,_)),
 %                   assert(tboxified(Conn, ConnectedClassName)),
-                  tboxify_object_inst(Conn, ConnectedClassName, ObjInst, ClassName, SourceRef)) ; true ) ), _),
+                  tboxify_object_inst(Conn, ConnectedClassName, ReferenceObj, ReferenceObjCl, SourceRef)) ; true ) ), _),
 
 
   retractall(tboxified).
