@@ -33,6 +33,7 @@
 :- use_module(library('semweb/rdfs_computable')).
 :- use_module(library('tf_prolog')).
 :- use_module(library('knowrob_objects')).
+:- use_module(library('owl_export')).
 
 
 :- rdf_meta instantiate_at_position(r,+,r),
@@ -112,6 +113,30 @@ instantiate_at_position(ObjClassDef, PoseList, ObjInst) :-
         instantiate_physical_part(ObjClassDef, ObjInst, PartInst)
     ), _Parts),
 
+
+    % read object properties
+    findall([Cinst, P, Oinst], (class_to_pose(C, _),
+                     owl_export:class_properties_nosup(C, P, O),
+                     owl_individual_of(P, owl:'ObjectProperty'),
+                     \+ rdfs_subproperty_of(P, knowrob:parts),
+                     \+ rdfs_subproperty_of(P, knowrob:orientation),
+                     rdfs_individual_of(Cinst, C),
+                     rdfs_individual_of(Oinst, O)), ObjPs),
+    sort(ObjPs, ObjPsSorted),print(ObjPsSorted),
+
+    findall(O,(member([Cinst,P,O], ObjPsSorted),
+               rdf_assert(Cinst, P, O)), _ObjRestrs),
+
+    % read data properties
+    findall([Cinst, P, O], (class_to_pose(C, _),
+                     class_properties(C, P, O),
+                     rdfs_individual_of(Cinst, C),
+                     owl_individual_of(P, owl:'DatatypeProperty')), DataPs),
+    sort(DataPs, DataPsSorted),
+
+    findall(O, (member([Cinst, P,O], DataPsSorted),
+                rdf_assert(Cinst, P, O)), _Os),
+
     retractall(class_to_pose(_,_)).
 
 
@@ -145,32 +170,11 @@ instantiate_physical_part(ObjClassDef, ObjInst, PartInst) :-
 
     asserta(class_to_pose(Part, PartPoseGlobal)),
 
+    % recursively create parts
     instantiate_physical_part(Part, PartInst, _).
 
 
 
-% %
-% %   % read object properties
-% %   findall([P, O], (rdf_has(ObjInst, P, O),
-% %                    owl_individual_of(P, owl:'ObjectProperty'),
-% %                    \+ rdfs_subproperty_of(P, knowrob:parts), % physicalParts and connectedTo need to refer to class descriptions
-% %                    \+ rdfs_subproperty_of(P, knowrob:connectedTo)), ObjPs),
-% %   sort(ObjPs, ObjPsSorted),
-% %
-% %   findall(ObjRestr,(member([P,O], ObjPsSorted),
-% %                     create_restr(ClassName, P, O, owl:someValuesFrom, SourceRef, ObjRestr)), _ObjRestrs),
-% %
-% %   % read data properties
-% %   findall([P, O], ((rdf_has(ObjInst, P, O),
-% %                     owl_individual_of(P, owl:'DatatypeProperty'));
-% %                    (rdf_has(ObjInst, rdf:type, T),
-% %                     P = 'http://ias.cs.tum.edu/kb/knowrob.owl#pathToCadModel',
-% %                     class_properties(T, P, O))), DataPs),
-% %   sort(DataPs, DataPsSorted),
-% %
-% %   findall(DataRestr, (member([P,O], DataPsSorted),
-% %                       create_restr(ClassName, P, O, owl:hasValue, SourceRef, DataRestr)), _DataRestrs),
-% %
 
 
 
