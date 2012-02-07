@@ -149,6 +149,107 @@ instantiate_physical_part(ObjClassDef, ObjInst, PartInst) :-
 
 
 
+% %
+% %   % read object properties
+% %   findall([P, O], (rdf_has(ObjInst, P, O),
+% %                    owl_individual_of(P, owl:'ObjectProperty'),
+% %                    \+ rdfs_subproperty_of(P, knowrob:parts), % physicalParts and connectedTo need to refer to class descriptions
+% %                    \+ rdfs_subproperty_of(P, knowrob:connectedTo)), ObjPs),
+% %   sort(ObjPs, ObjPsSorted),
+% %
+% %   findall(ObjRestr,(member([P,O], ObjPsSorted),
+% %                     create_restr(ClassName, P, O, owl:someValuesFrom, SourceRef, ObjRestr)), _ObjRestrs),
+% %
+% %   % read data properties
+% %   findall([P, O], ((rdf_has(ObjInst, P, O),
+% %                     owl_individual_of(P, owl:'DatatypeProperty'));
+% %                    (rdf_has(ObjInst, rdf:type, T),
+% %                     P = 'http://ias.cs.tum.edu/kb/knowrob.owl#pathToCadModel',
+% %                     class_properties(T, P, O))), DataPs),
+% %   sort(DataPs, DataPsSorted),
+% %
+% %   findall(DataRestr, (member([P,O], DataPsSorted),
+% %                       create_restr(ClassName, P, O, owl:hasValue, SourceRef, DataRestr)), _DataRestrs),
+% %
+
+
+
+
+% %% update_instance_from_class_def(+ObjClassDef, +PoseList, -ObjInst) is det.
+% %
+% % TODO: update
+% % reads all parts of the object described at the class level (ObjClassDef)
+% % and instantiates the object such that the main object is at pose PoseList
+% % and all physical parts of that object are at the correct poses relative
+% % to PoseList. Relies on the physical parts being specified using a poseRelativeTo
+% % description
+% %
+% % @param ObjClassDef Object class with physical parts described by restrictions on properPhysicalParts
+% % @param PoseList    List of numeric values describing the pose where the center of the main object is to be instantiated
+% % @param ObjInst     Instance of ObjClassDef that was created (and that is linked to the instances of the physical parts that have also been created)
+% %
+% :- dynamic class_to_pose/2.
+%
+% update_instance_from_class_def(ObjClassDef, PoseList, ObjInst) :-
+%
+%     % create main object
+%     create_object_perception(ObjClassDef, PoseList, ['VisualPerception'], ObjInst),
+%
+%     % remember class-pose relation
+%     asserta(class_to_pose(ObjClassDef, PoseList)),
+%
+%     % read parts of the object, check if their poses are relative to
+%     % something else, and transform them before instantiation
+%     findall(PartInst, (
+%         update_physical_part_from_class_def(ObjClassDef, ObjInst, PartInst)
+%     ), _Parts),
+%
+%     retractall(class_to_pose(_,_)).
+%
+%
+% %% update_physical_part_from_class_def(-ObjClassDef, -ObjInst, -PartInst)
+% %
+% % TODO: update
+% % Internal helper predicate to recursively read the physical parts of an object
+% % and create the respective instances together with the correctly transformed
+% % poses.
+% %
+% % @param ObjClassDef Object class, being the type of ObjInst and further describing physical parts in terms of restrictions
+% % @param ObjInst     Instance of ObjClassDef for which the physical parts are to be created
+% % @param PartInst    Instance of the physical part that is created by this predicate
+% %
+% update_physical_part_from_class_def(ObjClassDef, ObjInst, PartInst) :-
+%
+%     findall(P, class_properties(ObjClassDef, knowrob:properPhysicalParts, P), Ps),
+%     member(Part, Ps),
+%
+%     findall(Pp, class_properties(Part, knowrob:orientation, Pp), Pps),
+%     member(PartPose, Pps),
+%
+%     % transform into global coordinates if relativeTo relation is given
+%     (( owl_has(PartPose, knowrob:relativeTo, PartRef),
+%        class_to_pose(PartRef, RefPose),
+%        knowrob_objects:rotmat_to_list(PartPose, PartPoseList),
+%        pose_into_global_coord(PartPoseList, RefPose, PartPoseGlobal) ) ;
+%     (  PartPoseGlobal = PartPose) ),
+%
+%     create_object_perception(Part, PartPoseGlobal, ['VisualPerception'], PartInst),
+%     rdf_assert(ObjInst, knowrob:properPhysicalParts, PartInst),
+%
+%     asserta(class_to_pose(Part, PartPoseGlobal)),
+%
+%     update_physical_part_from_class_def(Part, PartInst, _).
+%
+
+
+
+
+
+
+
+
+
+
 % compute relative pose of an object or pose matrix with respect to a
 % reference object or pose
 transform_relative_to(In, Ref, PoseListRel) :-
