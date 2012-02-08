@@ -179,71 +179,104 @@ instantiate_physical_part(ObjClassDef, ObjInst, PartInst) :-
 
 
 
-% %% update_instance_from_class_def(+ObjClassDef, +PoseList, -ObjInst) is det.
-% %
-% % TODO: update
-% % reads all parts of the object described at the class level (ObjClassDef)
-% % and instantiates the object such that the main object is at pose PoseList
-% % and all physical parts of that object are at the correct poses relative
-% % to PoseList. Relies on the physical parts being specified using a poseRelativeTo
-% % description
-% %
-% % @param ObjClassDef Object class with physical parts described by restrictions on properPhysicalParts
-% % @param PoseList    List of numeric values describing the pose where the center of the main object is to be instantiated
-% % @param ObjInst     Instance of ObjClassDef that was created (and that is linked to the instances of the physical parts that have also been created)
-% %
-% :- dynamic class_to_pose/2.
+%% update_instance_from_class_def(+ObjClassDef, +PoseList, -ObjInst) is det.
 %
-% update_instance_from_class_def(ObjClassDef, PoseList, ObjInst) :-
+% TODO: update doc
 %
+% @param ObjClassDef Object class with physical parts described by restrictions on properPhysicalParts
+% @param ObjInst     Instance of ObjClassDef that was created (and that is linked to the instances of the physical parts that have also been created)
+%
+:- dynamic class_to_inst/2.
+
+update_instance_from_class_def(ObjClassDef, ObjInst) :-
+
 %     % create main object
 %     create_object_perception(ObjClassDef, PoseList, ['VisualPerception'], ObjInst),
+
+    % remember class-inst relation
+    asserta(class_to_inst(ObjClassDef, ObjInst)),
+
+    % read parts of the object, check if their poses are relative to
+    % something else, and transform them before instantiation
+    findall(PartInst, (
+        update_physical_part_from_class_def(ObjClassDef, ObjInst, PartInst)
+    ), _Parts),
+
+    % collect non-fulfilled object properties
+    findall([Inst, P, Oinst], (find_missing_objprops(Inst, P, Oinst)), ObjPs), 
+    sort(ObjPs, ObjPsSorted),print(ObjPsSorted),
+
+    findall(O,(member([Cinst,P,O], ObjPsSorted), % assert missing properties
+               rdf_assert(Cinst, P, O)), _ObjRestrs), 
+
+    % collect non-fulfilled data properties
+    findall([Inst, P, O], (find_missing_dataprops(Inst, P, O)), DataPs),
+    sort(DataPs, DataPsSorted),
+
+    findall(O, (member([Cinst, P,O], DataPsSorted),
+                rdf_assert(Cinst, P, O)), _Os),
+
+    retractall(class_to_inst(_,_)).
+
+
+find_missing_objprops(Inst, P, Oinst) :-
+    class_to_inst(C, Inst),
+    owl_export:class_properties_nosup(C, P, O),
+    owl_individual_of(P, owl:'ObjectProperty'),
+%     \+ rdfs_subproperty_of(P, knowrob:parts), % already handled before
+%     \+ rdfs_subproperty_of(P, knowrob:orientation),
+    (rdfs_individual_of(Inst, C) ; (rdfs_individual_of(Inst, Csup), owl_direct_subclass_of(C, Csup))),
+    (rdfs_individual_of(Oinst, O) ; (owl_direct_subclass_of(O, Osup), rdfs_individual_of(Oinst, Osup))),
+    \+rdf_has(Inst, P, Oinst).
+
+find_missing_dataprops(Inst, P, O) :-
+    class_to_inst(C, Inst),
+    owl_export:class_properties_nosup(C, P, O),
+    owl_individual_of(P, owl:'DatatypeProperty'),
+    (rdfs_individual_of(Inst, C) ; (rdfs_individual_of(Inst, Csup), owl_direct_subclass_of(C, Csup))),
+    \+rdf_has(Inst, P, O).
+
+
+%% update_physical_part_from_class_def(+ObjClassDef, +ObjInst, -PartInst)
 %
-%     % remember class-pose relation
-%     asserta(class_to_pose(ObjClassDef, PoseList)),
+% TODO: update doc
 %
-%     % read parts of the object, check if their poses are relative to
-%     % something else, and transform them before instantiation
-%     findall(PartInst, (
-%         update_physical_part_from_class_def(ObjClassDef, ObjInst, PartInst)
-%     ), _Parts),
+% @param ObjClassDef Object class, being the type of ObjInst and further describing physical parts in terms of restrictions
+% @param ObjInst     Instance of ObjClassDef for which the physical parts are to be created
+% @param PartInst    Instance of the physical part that is created by this predicate
 %
-%     retractall(class_to_pose(_,_)).
-%
-%
-% %% update_physical_part_from_class_def(-ObjClassDef, -ObjInst, -PartInst)
-% %
-% % TODO: update
-% % Internal helper predicate to recursively read the physical parts of an object
-% % and create the respective instances together with the correctly transformed
-% % poses.
-% %
-% % @param ObjClassDef Object class, being the type of ObjInst and further describing physical parts in terms of restrictions
-% % @param ObjInst     Instance of ObjClassDef for which the physical parts are to be created
-% % @param PartInst    Instance of the physical part that is created by this predicate
-% %
-% update_physical_part_from_class_def(ObjClassDef, ObjInst, PartInst) :-
-%
-%     findall(P, class_properties(ObjClassDef, knowrob:properPhysicalParts, P), Ps),
-%     member(Part, Ps),
-%
-%     findall(Pp, class_properties(Part, knowrob:orientation, Pp), Pps),
-%     member(PartPose, Pps),
-%
-%     % transform into global coordinates if relativeTo relation is given
-%     (( owl_has(PartPose, knowrob:relativeTo, PartRef),
-%        class_to_pose(PartRef, RefPose),
-%        knowrob_objects:rotmat_to_list(PartPose, PartPoseList),
-%        pose_into_global_coord(PartPoseList, RefPose, PartPoseGlobal) ) ;
-%     (  PartPoseGlobal = PartPose) ),
-%
-%     create_object_perception(Part, PartPoseGlobal, ['VisualPerception'], PartInst),
-%     rdf_assert(ObjInst, knowrob:properPhysicalParts, PartInst),
-%
-%     asserta(class_to_pose(Part, PartPoseGlobal)),
-%
-%     update_physical_part_from_class_def(Part, PartInst, _).
-%
+update_physical_part_from_class_def(ObjClassDef, ObjInst, PartInst) :-
+
+    findall(P, owl_export:class_properties_nosup(ObjClassDef, knowrob:properPhysicalParts, P), Ps),
+    member(Part, Ps),
+
+    findall(Pp, owl_export:class_properties_nosup(Part, knowrob:orientation, Pp), Pps),
+    member(PartPose, Pps),
+
+    % transform into global coordinates if relativeTo relation is given
+    (( owl_has(PartPose, knowrob:relativeTo, PartRef),
+       class_to_pose(PartRef, RefPose),
+       knowrob_objects:rotmat_to_list(PartPose, PartPoseList),
+       pose_into_global_coord(PartPoseList, RefPose, PartPoseGlobal) ) ;
+    (  PartPoseGlobal = PartPose) ),
+    rotmat_to_list(PartPoseGlobal, PartPoseGlobalList),
+
+    % check if part exists and is a part of obj
+    ((owl_direct_subclass_of(Part, PartT), % necessary since export is subClassOf object type
+      owl_individual_of(PartInst, PartT), 
+      owl_has(ObjInst, knowrob:properPhysicalParts, PartInst),!) -> 
+
+    ( knowrob_perception:create_perception_instance(['VisualPerception'], Perception), % part exists, only create new perception for parts
+      knowrob_perception:set_object_perception(PartInst, Perception),
+      knowrob_perception:set_perception_pose(Perception, PartPoseGlobalList),
+      rdf_assert(ObjInst, knowrob:properPhysicalParts, PartInst)) ; 
+
+    ( create_object_perception(Part, PartPoseGlobalList, ['VisualPerception'], PartInst) )), % create part
+
+    asserta(class_to_inst(Part, PartInst)),
+
+    update_physical_part_from_class_def(Part, PartInst, _).
+
 
 
 
