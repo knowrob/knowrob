@@ -43,6 +43,7 @@
 :- rdf_db:rdf_register_ns(owl,    'http://www.w3.org/2002/07/owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(rdfs,   'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob,'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(roboearth,'http://www.roboearth.org/kb/roboearth.owl#', [keep(true)]).
 
 
 :- rdf_meta export_object(r,r),
@@ -65,12 +66,16 @@ tboxify_object_inst(ObjInst, ClassName, ReferenceObj, ReferenceObjCl, SourceRef)
   assert(tboxified(ObjInst, ClassName)),
 
   % assert types as superclasses
-  findall(T, rdf_has(ObjInst, rdf:type, T), Ts),
+  findall(T, (rdf_has(ObjInst, rdf:type, T), T\= 'http://www.w3.org/2002/07/owl#NamedIndividual'), Ts),
   findall(T, (member(T, Ts), rdf_assert(ClassName, rdfs:subClassOf, T, SourceRef)), _),
 
+  % check if there is a providesModelFor
+  findall(M, (member(T, Ts), rdf_has(M, 'http://www.roboearth.org/kb/roboearth.owl#providesModelFor', T)), Ms),
+  findall(M, (member(M, Ms), rdf_assert(M, roboearth:providesModelFor, ClassName, SourceRef)), _),
+  
 
   % read object pose if ReferenceObj is set (obj is part of another obj)
-  ((nonvar(ReferenceObj),
+  ((ReferenceObj \= ObjInst,
 
     % read pose and transform into relative pose
     transform_relative_to(ObjInst, ReferenceObj, RelativePoseList),
@@ -120,7 +125,7 @@ tboxify_object_inst(ObjInst, ClassName, ReferenceObj, ReferenceObjCl, SourceRef)
 
                  ((not(tboxified(Part,_)),
 %                    assert(tboxified(Part, PartClassName)),
-                   tboxify_object_inst(Part, PartClassName, ObjInst, ClassName, SourceRef)) ; true ) ), _),
+                   tboxify_object_inst(Part, PartClassName, ReferenceObj, ReferenceObjCl, SourceRef)) ; true ) ), _),
 
 
   % iterate over connectedTo objects
@@ -136,8 +141,8 @@ tboxify_object_inst(ObjInst, ClassName, ReferenceObj, ReferenceObjCl, SourceRef)
 
                 ((not(tboxified(Conn,_)),
 %                   assert(tboxified(Conn, ConnectedClassName)),
-                  tboxify_object_inst(Conn, ConnectedClassName, ObjInst, ClassName, SourceRef)) ; true ) ), _),
-
+                  tboxify_object_inst(Conn, ConnectedClassName, ReferenceObj, ReferenceObjCl, SourceRef)) ; true ) ), _),
+                                                                % use referenceobj here?? -> error with relat
 
   retractall(tboxified).
 
@@ -294,11 +299,15 @@ read_map_info(Map, MapInfosSorted) :-
   % read all objects in the map (knowrob:describedInMap) ...
   findall(Obj,   (owl_has(Obj, 'http://ias.cs.tum.edu/kb/knowrob.owl#describedInMap', Map)), RootObjs),
 
-  % ... and their parts (properPhysicalParts or properPhysicalParts)
+  % ... and their parts
   findall(Part, (member(Obj, RootObjs),
-                  rdf_reachable(Obj, 'http://ias.cs.tum.edu/kb/knowrob.owl#properPhysicalParts', Part)), Parts),
+                  rdf_reachable(Obj, 'http://ias.cs.tum.edu/kb/knowrob.owl#parts', Part)), Parts),
 
-  append([RootObjs, Parts], Objs),
+  % ... as well as the things they are part of (e.g. street, building)
+  findall(Super, (member(Obj, RootObjs),
+                  rdf_reachable(Super, 'http://ias.cs.tum.edu/kb/knowrob.owl#parts', Obj)), SuperRootObjs),
+
+  append([SuperRootObjs, RootObjs, Parts], Objs),
 
   % combine information for each of these objects and object parts
   findall(MapInfo, (member(Obj, Objs),read_object_info(Obj, MapInfo)), MapInfos),
@@ -344,6 +353,9 @@ read_objclass_info(ObjClass, ObjClassInfosSorted) :-
 
 %   findall(ObjSuperClass, (owl_direct_subclass_of(ObjClass, ObjSuperClass), not(is_bnode(ObjSuperClass))), ObjSuperClasses),
 
+  % read models for this object class
+  findall(M, (rdf_has(M, 'http://www.roboearth.org/kb/roboearth.owl#providesModelFor', ObjClass)), Models),
+
   % read all parts of the object class to be exported
   findall(ObjPart, (class_properties_transitive_nosup(ObjClass, knowrob:parts, ObjPart), not(is_bnode(ObjPart))), ObjParts),
 
@@ -352,14 +364,16 @@ read_objclass_info(ObjClass, ObjClassInfosSorted) :-
   sort(ObjClassDefs, ObjClassDefsSorted),
 
   % read all properties for each of them
-  findall(ObjPr, (member(ObjCl,ObjClassDefsSorted), class_properties_nosup_1(ObjCl, P, ObjPr), not(rdfs_subproperty_of(P, owl:subClassOf))), ObjProperties),
+  findall(ObjPr, (member(ObjCl,ObjClassDefsSorted), 
+                  class_properties_nosup_1(ObjCl, P, ObjPr), 
+                  not(rdfs_subproperty_of(P, owl:subClassOf))), ObjProperties),
 
   % read everything related to these things by an ObjectProperty
   findall(PropVal, (member(ObjProp, ObjProperties),
                     rdf_has(ObjProp, P, PropVal), not(P='http://www.w3.org/2000/01/rdf-schema#subClassOf'),
                     not(is_bnode(PropVal))), ObjClassPropProperties),
 
-  append([ObjClassDefsSorted, ObjProperties, ObjClassPropProperties], ObjClassInfos),
+  append([Models, ObjClassDefsSorted, ObjProperties, ObjClassPropProperties], ObjClassInfos),
 
   flatten(ObjClassInfos, ObjClassInfosFlat),
   sort(ObjClassInfosFlat, ObjClassInfosSorted).

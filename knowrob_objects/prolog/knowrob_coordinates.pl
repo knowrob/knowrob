@@ -48,42 +48,6 @@
 
 
 
-% TODO: export of template derived from an actual object in the map
-%
-% create a TBOX description of an object configuration including
-% physical parts of the object and their poses
-%
-% transforms global poses into poses of the sub-parts into poses
-% relative to the pose of the main object ObjInst
-%
-% object_template_from_instance(ObjInst, ObjClassDef) :-
-
-    % determine physical parts
-
-    % determine their poses
-
-    % transform poses into local frame of ObjInst
-
-    % generate TBOX description
-
-
-% rdf_triple(knowrob:orientation, O, Or),
-% translate_to_relative(Or, OrLocal)
-
-
-% abox_to_tbox(A, T) :-
-%   rdf_has(A, P, O),
-%
-%
-% if(O class definition)
-%   rdf_assert_some_values_from(A, P, O)
-% else
-%   abox_to_tbox(O, OT),
-%   rdf_assert_some_values_from(A, P, OT)
-%
-
-
-
 
 %% instantiate_at_position(+ObjClassDef, +PoseList, -ObjInst) is det.
 %
@@ -122,7 +86,7 @@ instantiate_at_position(ObjClassDef, PoseList, ObjInst) :-
                      \+ rdfs_subproperty_of(P, knowrob:orientation),
                      rdfs_individual_of(Cinst, C),
                      rdfs_individual_of(Oinst, O)), ObjPs),
-    sort(ObjPs, ObjPsSorted),print(ObjPsSorted),
+    sort(ObjPs, ObjPsSorted),
 
     findall(O,(member([Cinst,P,O], ObjPsSorted),
                rdf_assert(Cinst, P, O)), _ObjRestrs),
@@ -154,7 +118,7 @@ instantiate_physical_part(ObjClassDef, ObjInst, PartInst) :-
 
     findall(P, class_properties(ObjClassDef, knowrob:properPhysicalParts, P), Ps),
     member(Part, Ps),
-
+print('Ps: '), print(Ps), print('\n'),
     findall(Pp, class_properties(Part, knowrob:orientation, Pp), Pps),
     member(PartPose, Pps),
 
@@ -167,7 +131,7 @@ instantiate_physical_part(ObjClassDef, ObjInst, PartInst) :-
 
     create_object_perception(Part, PartPoseGlobal, ['VisualPerception'], PartInst),
     rdf_assert(ObjInst, knowrob:properPhysicalParts, PartInst),
-
+print('PartInst: '), print(PartInst), print('\n'),
     asserta(class_to_pose(Part, PartPoseGlobal)),
 
     % recursively create parts
@@ -223,8 +187,8 @@ find_missing_objprops(Inst, P, Oinst) :-
     class_to_inst(C, Inst),
     owl_export:class_properties_nosup(C, P, O),
     owl_individual_of(P, owl:'ObjectProperty'),
-%     \+ rdfs_subproperty_of(P, knowrob:parts), % already handled before
-%     \+ rdfs_subproperty_of(P, knowrob:orientation),
+    \+ rdfs_subproperty_of(P, 'http://ias.cs.tum.edu/kb/knowrob.owl#orientation'), % already handled before
+    P\='http://ias.cs.tum.edu/kb/knowrob.owl#spatiallyRelated',
     (rdfs_individual_of(Inst, C) ; (rdfs_individual_of(Inst, Csup), owl_direct_subclass_of(C, Csup))),
     (rdfs_individual_of(Oinst, O) ; (owl_direct_subclass_of(O, Osup), rdfs_individual_of(Oinst, Osup))),
     \+rdf_has(Inst, P, Oinst).
@@ -255,11 +219,12 @@ update_physical_part_from_class_def(ObjClassDef, ObjInst, PartInst) :-
 
     % transform into global coordinates if relativeTo relation is given
     (( owl_has(PartPose, knowrob:relativeTo, PartRef),
-       class_to_pose(PartRef, RefPose),
+       ((rdfs_individual_of(RefInst, PartRef),!) ; (owl_direct_subclass_of(PartRef, Csup), rdfs_individual_of(RefInst, Csup),!)),
+       current_object_pose(RefInst, RefPose),
        knowrob_objects:rotmat_to_list(PartPose, PartPoseList),
-       pose_into_global_coord(PartPoseList, RefPose, PartPoseGlobal) ) ;
-    (  PartPoseGlobal = PartPose) ),
-    rotmat_to_list(PartPoseGlobal, PartPoseGlobalList),
+       pose_into_global_coord(PartPoseList, RefPose, PartPoseGlobalList) ) ;
+    (  rotmat_to_list(PartPose, PartPoseGlobalList)) ),
+%     rotmat_to_list(PartPoseGlobal, PartPoseGlobalList),
 
     % check if part exists and is a part of obj
     ((owl_direct_subclass_of(Part, PartT), % necessary since export is subClassOf object type
