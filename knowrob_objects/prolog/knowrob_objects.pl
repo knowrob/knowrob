@@ -262,8 +262,8 @@ read_joint_information(Joint, Type, Parent, Child, Pose, Direction, Radius, Qmin
   rdf_has(Joint, rdf:type, Type),
 
   rdf_has(Parent, knowrob:'properPhysicalParts', Joint),
-  rdf_has(Joint, knowrob:'connectedTo-Rigidly', Parent),
-  rdf_has(Joint, knowrob:'connectedTo-Rigidly', Child),
+  rdf_has(Joint, knowrob:'connectedTo', Parent),
+  rdf_has(Joint, knowrob:'connectedTo', Child),
 
   current_object_pose(Joint, Pose),
 
