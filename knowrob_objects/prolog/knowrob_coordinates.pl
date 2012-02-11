@@ -187,7 +187,7 @@ find_missing_objprops(Inst, P, Oinst) :-
     class_to_inst(C, Inst),
     owl_export:class_properties_nosup(C, P, O),
     owl_individual_of(P, owl:'ObjectProperty'),
-    \+ rdfs_subproperty_of(P, 'http://ias.cs.tum.edu/kb/knowrob.owl#orientation'), % already handled before
+%     \+ rdfs_subproperty_of(P, 'http://ias.cs.tum.edu/kb/knowrob.owl#orientation'), % already handled before
     P\='http://ias.cs.tum.edu/kb/knowrob.owl#spatiallyRelated',
     (rdfs_individual_of(Inst, C) ; (rdfs_individual_of(Inst, Csup), owl_direct_subclass_of(C, Csup))),
     (rdfs_individual_of(Oinst, O) ; (owl_direct_subclass_of(O, Osup), rdfs_individual_of(Oinst, Osup))),
