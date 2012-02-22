@@ -51,100 +51,10 @@
       export_map(r,r),
       export_action(r,r),
       rdf_unique_class_id(r, +, r),
-      tboxify_object_inst(r,r,r,r,+),
       class_properties_nosup(r,r,r),
       class_properties_transitive_nosup(r,r,r),
       class_properties_transitive_nosup_1(r,r,r).
 
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% tboxify playground
-
-:- dynamic(tboxified/2).
-tboxify_object_inst(ObjInst, ClassName, ReferenceObj, ReferenceObjCl, SourceRef) :-
-
-  assert(tboxified(ObjInst, ClassName)),
-
-  % assert types as superclasses
-  findall(T, (rdf_has(ObjInst, rdf:type, T), T\= 'http://www.w3.org/2002/07/owl#NamedIndividual'), Ts),
-  findall(T, (member(T, Ts), rdf_assert(ClassName, rdfs:subClassOf, T, SourceRef)), _),
-
-  % check if there is a providesModelFor
-  findall(M, (member(T, Ts), rdf_has(M, 'http://www.roboearth.org/kb/roboearth.owl#providesModelFor', T)), Ms),
-  findall(M, (member(M, Ms), rdf_assert(M, roboearth:providesModelFor, ClassName, SourceRef)), _),
-  
-
-  % read object pose if ReferenceObj is set (obj is part of another obj)
-  ((ReferenceObj \= ObjInst,
-
-    % read pose and transform into relative pose
-    transform_relative_to(ObjInst, ReferenceObj, RelativePoseList),
-
-    % create new pose matrix instance
-    create_pose(RelativePoseList, RelativePose),
-    rdf_assert(RelativePose, knowrob:relativeTo, ReferenceObjCl),
-
-    % add pose restriction to the class definition
-    create_restr(ClassName, knowrob:orientation, RelativePose, owl:hasValue, SourceRef, _PoseRestr),!)
-  ; true),
-
-
-  % read object properties
-  findall([P, O], (rdf_has(ObjInst, P, O),
-                   owl_individual_of(P, owl:'ObjectProperty'),
-                   \+ rdfs_subproperty_of(P, knowrob:parts), % physicalParts and connectedTo need to refer to class descriptions
-                   \+ rdfs_subproperty_of(P, knowrob:connectedTo)), ObjPs),
-  sort(ObjPs, ObjPsSorted),
-
-  findall(ObjRestr,(member([P,O], ObjPsSorted),
-                    create_restr(ClassName, P, O, owl:someValuesFrom, SourceRef, ObjRestr)), _ObjRestrs),
-
-  % read data properties
-  findall([P, O], ((rdf_has(ObjInst, P, O),
-                    owl_individual_of(P, owl:'DatatypeProperty'));
-                   (rdf_has(ObjInst, rdf:type, T),
-                    P = 'http://ias.cs.tum.edu/kb/knowrob.owl#pathToCadModel',
-                    class_properties(T, P, O))), DataPs),
-  sort(DataPs, DataPsSorted),
-
-  findall(DataRestr, (member([P,O], DataPsSorted),
-                      create_restr(ClassName, P, O, owl:hasValue, SourceRef, DataRestr)), _DataRestrs),
-
-
-
-  % iterate over physicalParts
-  findall(Part, (rdf_has(ObjInst, P, Part),
-                 rdfs_subproperty_of(P, knowrob:parts)), Parts),
-  sort(Parts, PartsSorted),
-
-  findall(Part, (member(Part, PartsSorted),
-                 ((tboxified(Part, PartClassName)) -> true ;
-                  (rdf_unique_class_id('http://ias.cs.tum.edu/kb/knowrob.owl#SpatialThing', SourceRef, PartClassName))),
-
-                 create_restr(ClassName, knowrob:properPhysicalParts, PartClassName, owl:someValuesFrom, SourceRef, ObjRestr),
-
-                 ((not(tboxified(Part,_)),
-%                    assert(tboxified(Part, PartClassName)),
-                   tboxify_object_inst(Part, PartClassName, ReferenceObj, ReferenceObjCl, SourceRef)) ; true ) ), _),
-
-
-  % iterate over connectedTo objects
-  findall(Connected, (rdf_has(ObjInst, P, Connected),
-                      rdfs_subproperty_of(P, knowrob:connectedTo)), Connected),
-  sort(Connected, ConnectedSorted),
-
-  findall(Conn, (member(Conn, ConnectedSorted),
-                ((tboxified(Conn, ConnectedClassName))  -> true ;
-                 (rdf_unique_class_id('http://ias.cs.tum.edu/kb/knowrob.owl#SpatialThing', SourceRef, ConnectedClassName))),
-
-                create_restr(ClassName, knowrob:connectedTo, ConnectedClassName, owl:someValuesFrom, SourceRef, ObjRestr),
-
-                ((not(tboxified(Conn,_)),
-%                   assert(tboxified(Conn, ConnectedClassName)),
-                  tboxify_object_inst(Conn, ConnectedClassName, ReferenceObj, ReferenceObjCl, SourceRef)) ; true ) ), _),
-                                                                % use referenceobj here?? -> error with relat
-
-  retractall(tboxified).
 
 
 
@@ -265,9 +175,6 @@ read_object_info(Inst, ObjInfosSorted) :-
               read_object_info(Part, PartInfo)
           ), PartInfos),
 
-  % TODO: take transitive properties into account, e.g. to export all parts of an object
-
-
   % read all perception instances
   findall(Perc, (
               owl_has(Perc, 'http://ias.cs.tum.edu/kb/knowrob.owl#objectActedOn', Inst),
@@ -364,8 +271,8 @@ read_objclass_info(ObjClass, ObjClassInfosSorted) :-
   sort(ObjClassDefs, ObjClassDefsSorted),
 
   % read all properties for each of them
-  findall(ObjPr, (member(ObjCl,ObjClassDefsSorted), 
-                  class_properties_nosup_1(ObjCl, P, ObjPr), 
+  findall(ObjPr, (member(ObjCl,ObjClassDefsSorted),
+                  class_properties_nosup_1(ObjCl, P, ObjPr),
                   not(rdfs_subproperty_of(P, owl:subClassOf))), ObjProperties),
 
   % read everything related to these things by an ObjectProperty
@@ -382,33 +289,3 @@ read_objclass_info(ObjClass, ObjClassInfosSorted) :-
 is_bnode(Node) :-
   atom(Node),
   sub_string(Node,0,2,_,'__').
-
-
-% forked class_properties to get rid of export of super-classes
-
-class_properties_nosup(Class, Prop, Val) :-         % read directly asserted properties
-  class_properties_nosup_1(Class, Prop, Val).
-
-% class_properties_nosup(Class, Prop, Val) :-         % do not consider properties of superclasses
-%   owl_subclass_of(Class, Super), Class\=Super,
-%   class_properties_nosup_1(Super, Prop, Val).
-
-class_properties_nosup_1(Class, Prop, Val) :-
-  owl_direct_subclass_of(Class, Sup),
-  ( (nonvar(Prop)) -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
-
-  ( owl_restriction(Sup,restriction(SubProp, some_values_from(Val))) ;
-    owl_restriction(Sup,restriction(SubProp, has_value(Val))) ).
-
-
-class_properties_transitive_nosup(Class, Prop, SubComp) :-
-    class_properties_nosup(Class, Prop, SubComp).
-class_properties_transitive_nosup(Class, Prop, SubComp) :-
-    class_properties_nosup(Class, Prop, Sub),
-    owl_individual_of(Prop, owl:'TransitiveProperty'),
-    Sub \= Class,
-    class_properties_transitive_nosup(Sub, Prop, SubComp).
-
-
-
-
