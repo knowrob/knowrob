@@ -131,8 +131,20 @@ create_object_instance(ObjTypes, ObjID, Obj) :-
 % Link the object instance to the perception instance
 %
 set_object_perception(Object, Perception) :-
-  rdf_assert(Perception, knowrob:objectActedOn, Object).
 
+  % add perception to linked list of object detections,
+  ((rdf_has(Object, knowrob:latestDetectionOfObject, Prev)) -> (
+
+    rdf_retractall(Object, knowrob:latestDetectionOfObject, _),
+    rdf_assert(Perception, knowrob:previousDetectionOfObject, Prev)
+
+  ) ; (
+    true
+  )),
+
+  % update latestDetectionOfObject pointer to list head
+  rdf_assert(Perception, knowrob:objectActedOn, Object),
+  rdf_assert(Object, knowrob:latestDetectionOfObject, Perception).
 
 
 %% set_perception_pose(+Perception, +PoseList) is det.

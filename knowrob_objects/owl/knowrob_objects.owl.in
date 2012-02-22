@@ -1,0 +1,345 @@
+<?xml version="1.0"?>
+<!DOCTYPE rdf:RDF [
+    <!ENTITY local_path 'file://@OWL_PATH_PREFIX@/owl/'>
+    <!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns'>
+    <!ENTITY rdfs 'http://www.w3.org/2000/01/rdf-schema'>
+    <!ENTITY owl 'http://www.w3.org/2002/07/owl'>
+    <!ENTITY xsd 'http://www.w3.org/2001/XMLSchema#'>
+    <!ENTITY knowrob 'http://ias.cs.tum.edu/kb/knowrob.owl#'>
+]>
+
+<rdf:RDF
+    xmlns:computable="http://ias.cs.tum.edu/kb/computable.owl#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://ias.cs.tum.edu/kb/knowrob_objects.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:knowrob="&knowrob;"
+    xml:base="http://ias.cs.tum.edu/kb/knowrob_objects.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="&local_path;knowrob.owl"/>
+  </owl:Ontology>
+
+
+    <computable:PrologProperty rdf:about="#computeOrientation">
+        <computable:command rdf:datatype="&xsd;string">comp_orientation</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;orientation"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM00">
+        <computable:command rdf:datatype="&xsd;string">comp_m00</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m00"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM01">
+        <computable:command rdf:datatype="&xsd;string">comp_m01</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m01"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM02">
+        <computable:command rdf:datatype="&xsd;string">comp_m02</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m02"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM03">
+        <computable:command rdf:datatype="&xsd;string">comp_m03</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m03"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM04">
+        <computable:command rdf:datatype="&xsd;string">comp_m04</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m04"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM05">
+        <computable:command rdf:datatype="&xsd;string">comp_m05</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m05"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM10">
+        <computable:command rdf:datatype="&xsd;string">comp_m10</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m10"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM11">
+        <computable:command rdf:datatype="&xsd;string">comp_m11</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m11"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM12">
+        <computable:command rdf:datatype="&xsd;string">comp_m12</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m12"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM13">
+        <computable:command rdf:datatype="&xsd;string">comp_m13</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m13"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM14">
+        <computable:command rdf:datatype="&xsd;string">comp_m14</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m14"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM15">
+        <computable:command rdf:datatype="&xsd;string">comp_m15</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m15"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM20">
+        <computable:command rdf:datatype="&xsd;string">comp_m20</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m20"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM21">
+        <computable:command rdf:datatype="&xsd;string">comp_m21</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m21"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM22">
+        <computable:command rdf:datatype="&xsd;string">comp_m22</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m22"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM23">
+        <computable:command rdf:datatype="&xsd;string">comp_m23</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m23"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM24">
+        <computable:command rdf:datatype="&xsd;string">comp_m24</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m24"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM25">
+        <computable:command rdf:datatype="&xsd;string">comp_m25</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m25"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM30">
+        <computable:command rdf:datatype="&xsd;string">comp_m30</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m30"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM31">
+        <computable:command rdf:datatype="&xsd;string">comp_m31</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m31"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM32">
+        <computable:command rdf:datatype="&xsd;string">comp_m32</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m32"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM33">
+        <computable:command rdf:datatype="&xsd;string">comp_m33</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m33"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM34">
+        <computable:command rdf:datatype="&xsd;string">comp_m34</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m34"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM35">
+        <computable:command rdf:datatype="&xsd;string">comp_m35</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m35"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM40">
+        <computable:command rdf:datatype="&xsd;string">comp_m40</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m40"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM41">
+        <computable:command rdf:datatype="&xsd;string">comp_m41</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m41"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM42">
+        <computable:command rdf:datatype="&xsd;string">comp_m42</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m42"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM43">
+        <computable:command rdf:datatype="&xsd;string">comp_m43</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m43"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM44">
+        <computable:command rdf:datatype="&xsd;string">comp_m44</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m44"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM45">
+        <computable:command rdf:datatype="&xsd;string">comp_m45</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m45"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM50">
+        <computable:command rdf:datatype="&xsd;string">comp_m50</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m50"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM51">
+        <computable:command rdf:datatype="&xsd;string">comp_m51</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m51"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM52">
+        <computable:command rdf:datatype="&xsd;string">comp_m52</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m52"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM53">
+        <computable:command rdf:datatype="&xsd;string">comp_m53</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m53"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM54">
+        <computable:command rdf:datatype="&xsd;string">comp_m54</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m54"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeM55">
+        <computable:command rdf:datatype="&xsd;string">comp_m55</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;m55"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computexCoord">
+        <computable:command rdf:datatype="&xsd;string">comp_xCoord</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;xCoord"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computeyCoord">
+        <computable:command rdf:datatype="&xsd;string">comp_yCoord</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;yCoord"/>
+    </computable:PrologProperty>
+
+
+    <computable:PrologProperty rdf:about="#computezCoord">
+        <computable:command rdf:datatype="&xsd;string">comp_zCoord</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;zCoord"/>
+    </computable:PrologProperty>
+
+
+</rdf:RDF>

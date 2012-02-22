@@ -29,7 +29,47 @@
       update_joint_information/7,
       read_joint_information/9,
       delete_joint_information/1,
-      object_detection/3
+      object_detection/3,
+      comp_m00/2,
+      comp_m01/2,
+      comp_m02/2,
+      comp_m03/2,
+      comp_m04/2,
+      comp_m05/2,
+      comp_m10/2,
+      comp_m11/2,
+      comp_m12/2,
+      comp_m13/2,
+      comp_m14/2,
+      comp_m15/2,
+      comp_m20/2,
+      comp_m21/2,
+      comp_m22/2,
+      comp_m23/2,
+      comp_m23/2,
+      comp_m25/2,
+      comp_m30/2,
+      comp_m31/2,
+      comp_m32/2,
+      comp_m33/2,
+      comp_m34/2,
+      comp_m35/2,
+      comp_m40/2,
+      comp_m41/2,
+      comp_m42/2,
+      comp_m43/2,
+      comp_m44/2,
+      comp_m45/2,
+      comp_m50/2,
+      comp_m51/2,
+      comp_m52/2,
+      comp_m53/2,
+      comp_m54/2,
+      comp_m55/2,
+      comp_xCoord/2,
+      comp_yCoord/2,
+      comp_zCoord/2,
+      comp_orientation/2
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -39,16 +79,27 @@
 :- use_module(library('knowrob_owl')).
 :- use_module(library('knowrob_perception')).
 
+:- owl_parser:owl_parse('../owl/knowrob_objects.owl', false, false, true).
+
+
 
 :-  rdf_meta
     storagePlaceFor(r,r),
     storagePlaceForBecause(r,r,r),
     current_object_pose(r,-),
     rotmat_to_list(r,-),
+    comp_orientation(r, r),
     create_joint_information(r, r, r, +, ?, +, +, +, r),
     update_joint_information(r, r, +, ?, +, +, +),
     read_joint_information(r, r, r, r, -, -, -, -, -),
-    delete_joint_information(r).
+    delete_joint_information(r),
+    comp_xCoord(r, r), comp_yCoord(r, r), comp_zCoord(r, r),
+    comp_m00(r, r),    comp_m01(r, r),    comp_m02(r, r),    comp_m03(r, r),    comp_m04(r, r),    comp_m05(r, r),
+    comp_m10(r, r),    comp_m11(r, r),    comp_m12(r, r),    comp_m13(r, r),    comp_m14(r, r),    comp_m15(r, r),
+    comp_m20(r, r),    comp_m21(r, r),    comp_m22(r, r),    comp_m23(r, r),    comp_m23(r, r),    comp_m25(r, r),
+    comp_m30(r, r),    comp_m31(r, r),    comp_m32(r, r),    comp_m33(r, r),    comp_m34(r, r),    comp_m35(r, r),
+    comp_m40(r, r),    comp_m41(r, r),    comp_m42(r, r),    comp_m43(r, r),    comp_m44(r, r),    comp_m45(r, r),
+    comp_m50(r, r),    comp_m51(r, r),    comp_m52(r, r),    comp_m53(r, r),    comp_m54(r, r),    comp_m55(r, r).
 
 
 :- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
@@ -340,6 +391,8 @@ holds_tt(Goal, [Start, End]) :-
     holds(Goal, Start),
     holds(Goal, End),
 
+% TODO: update this in order to use the linked list (go back until end time, then collect until start time)
+
     % find all detections of the objects at hand
     arg(1, Goal, Arg1),arg(2, Goal, Arg2),
     findall([D_i,Arg1], ( (rdf_has(D_i, knowrob:objectActedOn, Arg1);rdf_has(D_i, knowrob:objectActedOn, Arg2)),
@@ -366,18 +419,18 @@ holds_tt(Goal, [Start, End]) :-
 %
 latest_detection_of_instance(Object, LatestDetection) :-
 
+  ((rdf_has(Object, knowrob:latestDetectionOfObject, LatestDetection),!);
+
+   (% old version without linked list of detections
     findall([D_i,Object,St], (rdf_has(D_i, knowrob:objectActedOn, Object),
                               rdfs_individual_of(D_i,  knowrob:'MentalEvent'),
-                              rdf_triple(knowrob:startTime, D_i, StTg),
-                              rdf_split_url(_, StTl, StTg),
-                              atom_concat('timepoint_', StTa, StTl),
-                              term_to_atom(St, StTa)), Detections),
+                              detection_starttime(D_i, St)), Detections),
 
     predsort(compare_object_detections, Detections, Dsorted),
 
     % compute the homography for the newest perception
     nth0(0, Dsorted, Latest),
-    nth0(0, Latest, LatestDetection).
+    nth0(0, Latest, LatestDetection))).
 
 
 
@@ -394,12 +447,8 @@ latest_detection_of_instance(Object, LatestDetection) :-
 latest_detection_of_type(Type, LatestDetection) :-
 
     findall([D_i,Object,St], (rdfs_individual_of(Object, Type),
-                              rdf_has(D_i, knowrob:objectActedOn, Object),
-                              rdfs_individual_of(D_i,  knowrob:'MentalEvent'),
-                              rdf_triple(knowrob:startTime, D_i, StTg),
-                              rdf_split_url(_, StTl, StTg),
-                              atom_concat('timepoint_', StTa, StTl),
-                              term_to_atom(St, StTa)), Detections),
+                              latest_detection_of_instance(Object, D_i),
+                              detection_starttime(D_i, St)), Detections),
 
     predsort(compare_object_detections, Detections, Dsorted),
 
@@ -420,10 +469,7 @@ latest_perception_of_type(Type, LatestPerception) :-
     findall([P_i,Object,St], (rdfs_individual_of(Object, Type),
                               rdf_has(P_i, knowrob:objectActedOn, Object),
                               rdfs_individual_of(P_i,  knowrob:'VisualPerception'),
-                              rdf_triple(knowrob:startTime, P_i, StTg),
-                              rdf_split_url(_, StTl, StTg),
-                              atom_concat('timepoint_', StTa, StTl),
-                              term_to_atom(St, StTa)), Perceptions),
+                              detection_starttime(P_i, St)), Perceptions),
 
     predsort(compare_object_detections, Perceptions, Psorted),
 
@@ -463,10 +509,7 @@ latest_inferred_object_set(Objects) :-
                           rdf_has(Inf, knowrob:probability, InfProb),
                           term_to_atom(Prob, InfProb),
                           >(Prob, 0),
-                          rdf_triple(knowrob:startTime, D_i, StTg),
-                          rdf_split_url(_, StTl, StTg),
-                          atom_concat('timepoint_', StTa, StTl),
-                          term_to_atom(St, StTa)), Inferences),
+                          detection_starttime(D_i, St)), Inferences),
 
     predsort(compare_object_detections, Inferences, Psorted),
 
@@ -519,6 +562,24 @@ object_detection(Object, Time, Detection) :-
       ) ; (
         temporally_subsumes(Detection, Time)
     )).
+
+
+
+%% comp_orientation(+Object, -Orientation) is nondet.
+%
+% Wrapper to compute the (deprecated) object orientation property by
+% finding the most current object detection. Intended as convenience
+% and compatibility predicate.
+%
+% @param Object      Object identifier
+% @param Orientation Identifier of the pose matrix
+%
+comp_orientation(Object, Orientation) :-
+
+    latest_detection_of_instance(Object, LatestDetection),
+    rdf_triple(knowrob:eventOccursAt, LatestDetection, Orientation),!.
+
+
 
 
 %% temporally_subsumes(+Long, +Short) is nondet.
@@ -644,3 +705,511 @@ compare_inferences_by_prob('<', Inf1, Inf2) :-
   rdf_has(Inf1,knowrob:probability,Pr1), term_to_atom(P1,Pr1),
   rdf_has(Inf2,knowrob:probability,Pr2), term_to_atom(P2,Pr2),
   P1 >= P2.
+
+
+
+
+%% comp_xCoord(+Point, ?X) is semidet.
+%
+% Compute the x-coordinate of the point
+%
+% @param Obj The point identifier as a String 'translation_<rotation matrix identifier>'
+% @param X   The x coordinate value
+% @see comp_center
+    comp_xCoord(Point, X) :-
+      rdf_split_url(G, L, Point),
+      atom_concat('translation_', RotMat, L),
+      rdf_split_url(G, RotMat, Mat),
+      rdf_triple(knowrob:m03, Mat, X0),
+      ( (X0=literal(type(_,X)));
+         X0=X ).
+
+%% comp_yCoord(+Point, ?Y) is semidet.
+%
+% Compute the y-coordinate of the point
+%
+% @param Obj The point identifier as a String 'translation_<rotation matrix identifier>'
+% @param Y   The y coordinate value
+% @see comp_center
+    comp_yCoord(Point, Y) :-
+      rdf_split_url(G, L, Point),
+      atom_concat('translation_', RotMat, L),
+      rdf_split_url(G, RotMat, Mat),
+      rdf_triple(knowrob:m13, Mat, Y0),
+      ( (Y0=literal(type(_,Y)));
+         Y0=Y ).
+
+%% comp_zCoord(+Point, ?Z) is semidet.
+%
+% Compute the z-coordinate of the point
+%
+% @param Obj The point identifier as a String 'translation_<rotation matrix identifier>'
+% @param Z   The z coordinate value
+% @see comp_center
+    comp_zCoord(Point, Z) :-
+      rdf_split_url(G, L, Point),
+      atom_concat('translation_', RotMat, L),
+      rdf_split_url(G, RotMat, Mat),
+      rdf_triple(knowrob:m23, Mat, Z0),
+      ( (Z0=literal(type(_,Z)));
+         Z0=Z ).
+
+
+
+%% comp_m00(+Matrix, ?M00) is semidet.
+%
+% Extract component m(0,0) from a matrix
+%
+% @param Matrix The matrix (4x4 or 6x6, represented as String rotMat3D_M00_M01_M02_M03_M10_M11_M12_M13_M20_M21_M22_M23_M30_M31_M32_M33 for 4x4 and covMat3D_M00_M01... for 6x6)
+% @param M00 Component m(0,0)
+%
+    comp_m00(Matrix, M00) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([rotMat3D,M00,_,_,_,   _,_,_,_,   _,_,_,_,   _,_,_,_], '_', O),!.
+    comp_m00(Matrix, M00) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,M00,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_], '_', O),!.
+
+%% comp_m01(+Matrix, ?M01) is semidet.
+%
+% Extract component m(0,1) from a matrix
+%
+% @param Matrix The matrix (4x4 or 6x6, represented as String rotMat3D_M00_M01_M02_M03_M10_M11_M12_M13_M20_M21_M22_M23_M30_M31_M32_M33 for 4x4 and covMat3D_M00_M01... for 6x6)
+% @param M01 Component m(0,1)
+%
+    comp_m01(Matrix, M01) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([rotMat3D,_,M01,_,_,   _,_,_,_,   _,_,_,_,   _,_,_,_], '_', O),!.
+    comp_m01(Matrix, M01) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,M01,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_], '_', O),!.
+
+%% comp_m02(+Matrix, ?M02) is semidet.
+%
+% Extract component m(0,2) from a matrix
+%
+% @param Matrix The matrix (4x4 or 6x6, represented as String rotMat3D_M00_M01_M02_M03_M10_M11_M12_M13_M20_M21_M22_M23_M30_M31_M32_M33 for 4x4 and covMat3D_M00_M01... for 6x6)
+% @param M02 Component m(0,2)
+%
+    comp_m02(Matrix, M02) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([rotMat3D,_,_,M02,_,   _,_,_,_,   _,_,_,_   ,_,_,_,_], '_', O),!.
+    comp_m02(Matrix, M02) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,M02,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_], '_', O),!.
+
+%% comp_m03(+Matrix, ?M03) is semidet.
+%
+% Extract component m(0,3) from a matrix
+%
+% @param Matrix The matrix (4x4 or 6x6, represented as String rotMat3D_M00_M01_M02_M03_M10_M11_M12_M13_M20_M21_M22_M23_M30_M31_M32_M33 for 4x4 and covMat3D_M00_M01... for 6x6)
+% @param M03 Component m(0,3)
+%
+    comp_m03(Matrix, M03) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([rotMat3D,_,_,_,M03,   _,_,_,_,   _,_,_,_   ,_,_,_,_], '_', O),!.
+    comp_m03(Matrix, M03) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,M03,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_], '_', O),!.
+
+%% comp_m04(+Matrix, ?M04) is semidet.
+%
+% Extract component m(0,4) from a matrix
+%
+% @param Matrix The matrix (6x6, represented as String covMat3D_M00_M01...)
+% @param M04 Component m(0,4)
+%
+    comp_m04(Matrix, M04) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,M04,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_], '_', O),!.
+
+%% comp_m05(+Matrix, ?M05) is semidet.
+%
+% Extract component m(0,5) from a matrix
+%
+% @param Matrix The matrix (6x6, represented as String covMat3D_M00_M01...)
+% @param M05 Component m(0,5)
+%
+    comp_m05(Matrix, M05) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,M05,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_], '_', O),!.
+
+
+
+
+%% comp_m10(+Matrix, ?M10) is semidet.
+%
+% Extract component m(1,0) from a matrix
+%
+% @param Matrix The matrix (4x4 or 6x6, represented as String rotMat3D_M00_M01_M02_M03_M10_M11_M12_M13_M20_M21_M22_M23_M30_M31_M32_M33 for 4x4 and covMat3D_M00_M01... for 6x6)
+% @param M10 Component m(1,0)
+%
+    comp_m10(Matrix, M10) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([rotMat3D,_,_,_,_,   M10,_,_,_,   _,_,_,_,   _,_,_,_], '_', O),!.
+    comp_m10(Matrix, M10) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   M10,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_], '_', O),!.
+
+%% comp_m11(+Matrix, ?M11) is semidet.
+%
+% Extract component m(1,1) from a matrix
+%
+% @param Matrix The matrix (4x4 or 6x6, represented as String rotMat3D_M00_M01_M02_M03_M10_M11_M12_M13_M20_M21_M22_M23_M30_M31_M32_M33 for 4x4 and covMat3D_M00_M01... for 6x6)
+% @param M11 Component m(1,1)
+%
+    comp_m11(Matrix, M11) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([rotMat3D,_,_,_,_,   _,M11,_,_,   _,_,_,_,   _,_,_,_], '_', O),!.
+    comp_m11(Matrix, M11) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,M11,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_], '_', O),!.
+
+%% comp_m12(+Matrix, ?M12) is semidet.
+%
+% Extract component m(1,2) from a matrix
+%
+% @param Matrix The matrix (4x4 or 6x6, represented as String rotMat3D_M00_M01_M02_M03_M10_M11_M12_M13_M20_M21_M22_M23_M30_M31_M32_M33 for 4x4 and covMat3D_M00_M01... for 6x6)
+% @param M12 Component m(1,2)
+%
+    comp_m12(Matrix, M12) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([rotMat3D,_,_,_,_,   _,_,M12,_,   _,_,_,_,   _,_,_,_], '_', O),!.
+    comp_m12(Matrix, M12) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,M12,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_], '_', O),!.
+
+%% comp_m13(+Matrix, ?M13) is semidet.
+%
+% Extract component m(1,3) from a matrix
+%
+% @param Matrix The matrix (4x4 or 6x6, represented as String rotMat3D_M00_M01_M02_M03_M10_M11_M12_M13_M20_M21_M22_M23_M30_M31_M32_M33 for 4x4 and covMat3D_M00_M01... for 6x6)
+% @param M13 Component m(1,3)
+%
+    comp_m13(Matrix, M13) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([rotMat3D,_,_,_,_,   _,_,_,M13,   _,_,_,_,   _,_,_,_], '_', O),!.
+    comp_m13(Matrix, M13) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,M13,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_], '_', O),!.
+
+%% comp_m14(+Matrix, ?M14) is semidet.
+%
+% Extract component m(1,4) from a matrix
+%
+% @param Matrix The matrix (4x4 or 6x6, represented as String rotMat3D_M00_M01_M02_M03_M10_M11_M12_M13_M20_M21_M22_M23_M30_M31_M32_M33 for 4x4 and covMat3D_M00_M01... for 6x6)
+% @param M14 Component m(1,4)
+%
+    comp_m14(Matrix, M14) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,_,M14,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_], '_', O),!.
+
+%% comp_m15(+Matrix, ?M15) is semidet.
+%
+% Extract component m(1,5) from a matrix
+%
+% @param Matrix The matrix (6x6, represented as String covMat3D_M00_M01...)
+% @param M15 Component m(1,5)
+%
+    comp_m15(Matrix, M15) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,_,_,M15,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_], '_', O),!.
+
+
+
+
+%% comp_m20(+Matrix, ?M20) is semidet.
+%
+% Extract component m(2,0) from a matrix
+%
+% @param Matrix The matrix (4x4 or 6x6, represented as String rotMat3D_M00_M01_M02_M03_M10_M11_M12_M13_M20_M21_M22_M23_M30_M31_M32_M33 for 4x4 and covMat3D_M00_M01... for 6x6)
+% @param M20 Component m(2,0)
+%
+    comp_m20(Matrix, M20) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([rotMat3D,_,_,_,_,   _,_,_,_,   M20,_,_,_,   _,_,_,_], '_', O),!.
+    comp_m20(Matrix, M20) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,_,_,_,   M20,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_], '_', O),!.
+
+%% comp_m21(+Matrix, ?M21) is semidet.
+%
+% Extract component m(2,1) from a matrix
+%
+% @param Matrix The matrix (4x4 or 6x6, represented as String rotMat3D_M00_M01_M02_M03_M10_M11_M12_M13_M20_M21_M22_M23_M30_M31_M32_M33 for 4x4 and covMat3D_M00_M01... for 6x6)
+% @param M21 Component m(2,1)
+%
+    comp_m21(Matrix, M21) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([rotMat3D,_,_,_,_,   _,_,_,_,   _,M21,_,_,   _,_,_,_], '_', O),!.
+    comp_m21(Matrix, M21) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,_,_,_,   _,M21,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_], '_', O),!.
+
+%% comp_m22(+Matrix, ?M22) is semidet.
+%
+% Extract component m(2,2) from a matrix
+%
+% @param Matrix The matrix (4x4 or 6x6, represented as String rotMat3D_M00_M01_M02_M03_M10_M11_M12_M13_M20_M21_M22_M23_M30_M31_M32_M33 for 4x4 and covMat3D_M00_M01... for 6x6)
+% @param M22 Component m(2,2)
+%
+    comp_m22(Matrix, M22) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([rotMat3D,_,_,_,_,   _,_,_,_,   _,_,M22,_,   _,_,_,_], '_', O),!.
+    comp_m22(Matrix, M22) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,_,_,_,   _,_,M22,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_], '_', O),!.
+
+%% comp_m23(+Matrix, ?M23) is semidet.
+%
+% Extract component m(2,3) from a matrix
+%
+% @param Matrix The matrix (4x4 or 6x6, represented as String rotMat3D_M00_M01_M02_M03_M10_M11_M12_M13_M20_M21_M22_M23_M30_M31_M32_M33 for 4x4 and covMat3D_M00_M01... for 6x6)
+% @param M23 Component m(2,3)
+%
+    comp_m23(Matrix, M23) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([rotMat3D,_,_,_,_,   _,_,_,_,   _,_,_,M23,   _,_,_,_], '_', O),!.
+    comp_m23(Matrix, M23) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,M23,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_], '_', O),!.
+
+%% comp_m24(+Matrix, ?M24) is semidet.
+%
+% Extract component m(2,4) from a matrix
+%
+% @param Matrix The matrix (6x6, represented as String covMat3D_M00_M01...)
+% @param M24 Component m(2,4)
+%
+    comp_m24(Matrix, M24) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,M24,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_], '_', O),!.
+
+%% comp_m25(+Matrix, ?M25) is semidet.
+%
+% Extract component m(2,5) from a matrix
+%
+% @param Matrix The matrix (6x6, represented as String covMat3D_M00_M01...)
+% @param M25 Component m(2,5)
+%
+    comp_m25(Matrix, M25) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,M25,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_], '_', O),!.
+
+
+
+
+%% comp_m30(+Matrix, ?M30) is semidet.
+%
+% Extract component m(3,0) from a matrix
+%
+% @param Matrix The matrix (4x4 or 6x6, represented as String rotMat3D_M00_M01_M02_M03_M10_M11_M12_M13_M20_M21_M22_M23_M30_M31_M32_M33 for 4x4 and covMat3D_M00_M01... for 6x6)
+% @param M30 Component m(3,0)
+%
+    comp_m30(Matrix, M30) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([rotMat3D,_,_,_,_,   _,_,_,_,   _,_,_,_,   M30,_,_,_], '_', O),!.
+    comp_m30(Matrix, M30) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   M30,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_], '_', O),!.
+
+%% comp_m31(+Matrix, ?M31) is semidet.
+%
+% Extract component m(3,1) from a matrix
+%
+% @param Matrix The matrix (4x4 or 6x6, represented as String rotMat3D_M00_M01_M02_M03_M10_M11_M12_M13_M20_M21_M22_M23_M30_M31_M32_M33 for 4x4 and covMat3D_M00_M01... for 6x6)
+% @param M31 Component m(3,1)
+%
+    comp_m31(Matrix, M31) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([rotMat3D,_,_,_,_,   _,_,_,_,   _,_,_,_,   _,M31,_,_], '_', O),!.
+    comp_m31(Matrix, M31) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,M31,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_], '_', O),!.
+
+%% comp_m32(+Matrix, ?M32) is semidet.
+%
+% Extract component m(3,2) from a matrix
+%
+% @param Matrix The matrix (4x4 or 6x6, represented as String rotMat3D_M00_M01_M02_M03_M10_M11_M12_M13_M20_M21_M22_M23_M30_M31_M32_M33 for 4x4 and covMat3D_M00_M01... for 6x6)
+% @param M32 Component m(3,2)
+%
+    comp_m32(Matrix, M32) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([rotMat3D,_,_,_,_,   _,_,_,_,   _,_,_,_,   _,_,M32,_], '_', O),!.
+    comp_m32(Matrix, M32) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,M32,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_], '_', O),!.
+
+%% comp_m33(+Matrix, ?M33) is semidet.
+%
+% Extract component m(3,3) from a matrix
+%
+% @param Matrix The matrix (4x4 or 6x6, represented as String rotMat3D_M00_M01_M02_M03_M10_M11_M12_M13_M20_M21_M22_M23_M30_M31_M32_M33 for 4x4 and covMat3D_M00_M01... for 6x6)
+% @param M33 Component m(3,3)
+%
+    comp_m33(Matrix, M33) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([rotMat3D,_,_,_,_,   _,_,_,_,   _,_,_,_,   _,_,_,M33], '_', O),!.
+    comp_m33(Matrix, M33) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,M33,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_], '_', O),!.
+
+%% comp_m34(+Matrix, ?M34) is semidet.
+%
+% Extract component m(3,4) from a matrix
+%
+% @param Matrix The matrix (6x6, represented as String covMat3D_M00_M01...)
+% @param M34 Component m(3,4)
+%
+    comp_m34(Matrix, M34) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,M34,_,   _,_,_,_,_,_,   _,_,_,_,_,_], '_', O),!.
+
+%% comp_m35(+Matrix, ?M35) is semidet.
+%
+% Extract component m(3,5) from a matrix
+%
+% @param Matrix The matrix (6x6, represented as String covMat3D_M00_M01...)
+% @param M35 Component m(3,5)
+%
+    comp_m35(Matrix, M35) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,M35,   _,_,_,_,_,_,   _,_,_,_,_,_], '_', O),!.
+
+
+%% comp_m40(+Matrix, ?M40) is semidet.
+%
+% Extract component m(4,0) from a matrix
+%
+% @param Matrix The matrix (6x6, represented as String covMat3D_M00_M01...)
+% @param M40 Component m(4,0)
+%
+    comp_m40(Matrix, M40) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   M40,_,_,_,_,_,   _,_,_,_,_,_], '_', O),!.
+
+%% comp_m41(+Matrix, ?M41) is semidet.
+%
+% Extract component m(4,1) from a matrix
+%
+% @param Matrix The matrix (6x6, represented as String covMat3D_M00_M01...)
+% @param M41 Component m(4,1)
+%
+    comp_m41(Matrix, M41) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,M41,_,_,_,_,   _,_,_,_,_,_], '_', O),!.
+
+%% comp_m42(+Matrix, ?M42) is semidet.
+%
+% Extract component m(4,2) from a matrix
+%
+% @param Matrix The matrix (6x6, represented as String covMat3D_M00_M01...)
+% @param M42 Component m(4,2)
+%
+    comp_m42(Matrix, M42) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,M42,_,_,_,   _,_,_,_,_,_], '_', O),!.
+
+%% comp_m43(+Matrix, ?M43) is semidet.
+%
+% Extract component m(4,3) from a matrix
+%
+% @param Matrix The matrix (6x6, represented as String covMat3D_M00_M01...)
+% @param M43 Component m(4,3)
+%
+    comp_m43(Matrix, M43) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,M43,_,_,   _,_,_,_,_,_], '_', O),!.
+
+%% comp_m44(+Matrix, ?M44) is semidet.
+%
+% Extract component m(4,4) from a matrix
+%
+% @param Matrix The matrix (6x6, represented as String covMat3D_M00_M01...)
+% @param M44 Component m(4,4)
+%
+    comp_m44(Matrix, M44) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,M44,_,   _,_,_,_,_,_], '_', O),!.
+
+%% comp_m45(+Matrix, ?M45) is semidet.
+%
+% Extract component m(4,5) from a matrix
+%
+% @param Matrix The matrix (6x6, represented as String covMat3D_M00_M01...)
+% @param M45 Component m(4,5)
+%
+    comp_m45(Matrix, M45) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,M45,   _,_,_,_,_,_], '_', O),!.
+
+
+%% comp_m50(+Matrix, ?M50) is semidet.
+%
+% Extract component m(5,0) from a matrix
+%
+% @param Matrix The matrix (6x6, represented as String covMat3D_M00_M01...)
+% @param M50 Component m(5,0)
+%
+    comp_m50(Matrix, M50) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   M50,_,_,_,_,_], '_', O),!.
+
+%% comp_m51(+Matrix, ?M51) is semidet.
+%
+% Extract component m(5,1) from a matrix
+%
+% @param Matrix The matrix (6x6, represented as String covMat3D_M00_M01...)
+% @param M51 Component m(5,1)
+%
+    comp_m51(Matrix, M51) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,M51,_,_,_,_], '_', O),!.
+
+%% comp_m52(+Matrix, ?M52) is semidet.
+%
+% Extract component m(5,2) from a matrix
+%
+% @param Matrix The matrix (6x6, represented as String covMat3D_M00_M01...)
+% @param M52 Component m(5,2)
+%
+    comp_m52(Matrix, M52) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,M52,_,_,_], '_', O),!.
+
+%% comp_m53(+Matrix, ?M53) is semidet.
+%
+% Extract component m(5,3) from a matrix
+%
+% @param Matrix The matrix (6x6, represented as String covMat3D_M00_M01...)
+% @param M53 Component m(5,3)
+%
+    comp_m53(Matrix, M53) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,M53,_,_], '_', O),!.
+
+%% comp_m54(+Matrix, ?M54) is semidet.
+%
+% Extract component m(5,4) from a matrix
+%
+% @param Matrix The matrix (6x6, represented as String covMat3D_M00_M01...)
+% @param M54 Component m(5,4)
+%
+    comp_m54(Matrix, M54) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,M54,_], '_', O),!.
+
+%% comp_m55(+Matrix, ?M55) is semidet.
+%
+% Extract component m(5,5) from a matrix
+%
+% @param Matrix The matrix (6x6, represented as String covMat3D_M00_M01...)
+% @param M55 Component m(5,5)
+%
+    comp_m55(Matrix, M55) :-
+        rdf_split_url(_, O, Matrix),
+        atomic_list_concat([covMat3D,_,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,_,   _,_,_,_,_,M55], '_', O),!.
+
+
+
