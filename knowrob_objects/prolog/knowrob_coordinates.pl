@@ -167,11 +167,11 @@ update_instance_from_class_def(ObjClassDef, ObjInst) :-
     ), _Parts),
 
     % collect non-fulfilled object properties
-    findall([Inst, P, Oinst], (find_missing_objprops(Inst, P, Oinst)), ObjPs), 
+    findall([Inst, P, Oinst], (find_missing_objprops(Inst, P, Oinst)), ObjPs),
     sort(ObjPs, ObjPsSorted),print(ObjPsSorted),
 
     findall(O,(member([Cinst,P,O], ObjPsSorted), % assert missing properties
-               rdf_assert(Cinst, P, O)), _ObjRestrs), 
+               rdf_assert(Cinst, P, O)), _ObjRestrs),
 
     % collect non-fulfilled data properties
     findall([Inst, P, O], (find_missing_dataprops(Inst, P, O)), DataPs),
@@ -228,13 +228,13 @@ update_physical_part_from_class_def(ObjClassDef, ObjInst, PartInst) :-
 
     % check if part exists and is a part of obj
     ((owl_direct_subclass_of(Part, PartT), % necessary since export is subClassOf object type
-      owl_individual_of(PartInst, PartT), 
-      owl_has(ObjInst, knowrob:properPhysicalParts, PartInst),!) -> 
+      owl_individual_of(PartInst, PartT),
+      owl_has(ObjInst, knowrob:properPhysicalParts, PartInst),!) ->
 
     ( knowrob_perception:create_perception_instance(['VisualPerception'], Perception), % part exists, only create new perception for parts
       knowrob_perception:set_object_perception(PartInst, Perception),
       knowrob_perception:set_perception_pose(Perception, PartPoseGlobalList),
-      rdf_assert(ObjInst, knowrob:properPhysicalParts, PartInst)) ; 
+      rdf_assert(ObjInst, knowrob:properPhysicalParts, PartInst)) ;
 
     ( create_object_perception(Part, PartPoseGlobalList, ['VisualPerception'], PartInst) )), % create part
 
