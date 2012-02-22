@@ -22,7 +22,14 @@
 :- module(knowrob_perception,
     [
       create_object_perception/4,
-      create_pose/2
+      create_pose/2,
+      create_perception_instance/2,
+      create_perception_instance/3,
+      create_object_instance/3,
+      set_object_perception/2,
+      set_perception_pose/2
+      create_pose/2,
+      set_perception_cov/2
     ]).
 
 :- use_module(library('semweb/rdfs')).

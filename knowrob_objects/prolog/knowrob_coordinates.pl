@@ -1,5 +1,5 @@
 %%
-%% Copyright (C) 2011 by Moritz Tenorth
+%% Copyright (C) 2011-2012 by Moritz Tenorth
 %%
 %% This module provides utilities for handling units of measure and the
 %% conversion between different units in KnowRob.
@@ -24,7 +24,8 @@
       instantiate_at_position/3,
       transform_relative_to/3,
       pose_into_relative_coord/3,
-      pose_into_global_coord/3
+      pose_into_global_coord/3,
+      update_instance_from_class_def/2
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -37,7 +38,8 @@
 
 
 :- rdf_meta instantiate_at_position(r,+,r),
-            transform_relative_to(r,r,-).
+            transform_relative_to(r,r,-),
+            update_instance_from_class_def(r,r).
 
 
 :- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
@@ -143,9 +145,15 @@ print('PartInst: '), print(PartInst), print('\n'),
 
 
 
-%% update_instance_from_class_def(+ObjClassDef, +PoseList, -ObjInst) is det.
+%% update_instance_from_class_def(+ObjClassDef, -ObjInst) is det.
 %
-% TODO: update doc
+% Update a complex object instance based on the TBOX definition in ObjClassDef.
+%
+% The main use case is that an object, composed of multiple parts (e.g. a
+% cupboard with a door) has been instantiated in a map, and the class-level
+% description of this type of object has changed (e.g. including joint parameters
+% that have been estimated). In this case, this predicate allows to update the
+% existing instance according to the class description.
 %
 % @param ObjClassDef Object class with physical parts described by restrictions on properPhysicalParts
 % @param ObjInst     Instance of ObjClassDef that was created (and that is linked to the instances of the physical parts that have also been created)
@@ -187,7 +195,6 @@ find_missing_objprops(Inst, P, Oinst) :-
     class_to_inst(C, Inst),
     owl_export:class_properties_nosup(C, P, O),
     owl_individual_of(P, owl:'ObjectProperty'),
-%     \+ rdfs_subproperty_of(P, 'http://ias.cs.tum.edu/kb/knowrob.owl#orientation'), % already handled before
     P\='http://ias.cs.tum.edu/kb/knowrob.owl#spatiallyRelated',
     (rdfs_individual_of(Inst, C) ; (rdfs_individual_of(Inst, Csup), owl_direct_subclass_of(C, Csup))),
     (rdfs_individual_of(Oinst, O) ; (owl_direct_subclass_of(O, Osup), rdfs_individual_of(Oinst, Osup))),
@@ -203,7 +210,7 @@ find_missing_dataprops(Inst, P, O) :-
 
 %% update_physical_part_from_class_def(+ObjClassDef, +ObjInst, -PartInst)
 %
-% TODO: update doc
+% Helper predicate for update_instance_from_class_def
 %
 % @param ObjClassDef Object class, being the type of ObjInst and further describing physical parts in terms of restrictions
 % @param ObjInst     Instance of ObjClassDef for which the physical parts are to be created
@@ -224,7 +231,7 @@ update_physical_part_from_class_def(ObjClassDef, ObjInst, PartInst) :-
        knowrob_objects:rotmat_to_list(PartPose, PartPoseList),
        pose_into_global_coord(PartPoseList, RefPose, PartPoseGlobalList) ) ;
     (  rotmat_to_list(PartPose, PartPoseGlobalList)) ),
-%     rotmat_to_list(PartPoseGlobal, PartPoseGlobalList),
+
 
     % check if part exists and is a part of obj
     ((owl_direct_subclass_of(Part, PartT), % necessary since export is subClassOf object type
@@ -243,17 +250,15 @@ update_physical_part_from_class_def(ObjClassDef, ObjInst, PartInst) :-
     update_physical_part_from_class_def(Part, PartInst, _).
 
 
-
-
-
-
-
-
-
-
-
-% compute relative pose of an object or pose matrix with respect to a
+% transform_relative_to(+In, +Ref, -PoseListRel) is nondet.
+%
+% Compute relative pose of an object or pose matrix with respect to a
 % reference object or pose
+%
+% @param In          Object or pose to be transformed relative to Ref
+% @param Ref         Reference object or pose instance
+% @param PoseListRel Resulting pose of In relative to Ref as list[16]
+%
 transform_relative_to(In, Ref, PoseListRel) :-
 
     ((owl_individual_of(In, knowrob:'RotationMatrix3D'), rotmat_to_list(In, InPose)) ;
