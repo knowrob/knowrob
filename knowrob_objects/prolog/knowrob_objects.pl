@@ -390,7 +390,7 @@ tboxify_object_inst(ObjInst, ClassName, ReferenceObj, ReferenceObjCl, SourceRef)
 
   % check if there is a providesModelFor
   findall(M, (member(T, Ts), rdf_has(M, 'http://www.roboearth.org/kb/roboearth.owl#providesModelFor', T)), Ms),
-  findall(M, (member(M, Ms), rdf_assert(M, roboearth:providesModelFor, ClassName, SourceRef)), _),
+  findall(M, (member(M, Ms), rdf_assert(M, 'http://www.roboearth.org/kb/roboearth.owl#providesModelFor', ClassName, SourceRef)), _),
 
 
   % read object pose if ReferenceObj is set (obj is part of another obj)
