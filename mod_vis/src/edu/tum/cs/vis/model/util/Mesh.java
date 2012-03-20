@@ -338,7 +338,7 @@ public class Mesh {
 		// load all Texture-Images only once (memory efficiency)
 		HashMap<String, PImage> pictures = new HashMap<String, PImage>();
 		for (Triangle tri : triangles) {
-			if (!tri.appearance.containsTexture)
+			if (tri.appearance.imageFileName == null)
 				continue;		
 			String texfile = getAbsoluteFilePath(textureBasePath,
 					tri.appearance.imageFileName);
@@ -364,7 +364,7 @@ public class Mesh {
 		//Now remove offset of texture coordinates because there is a bug with P3D when texture should repeated
 		for (Triangle tri : triangles) {
 			
-			if (!tri.appearance.containsTexture)
+			if (tri.appearance.imageFileName == null)
 				continue;		
 			
 			String texfile = getAbsoluteFilePath(textureBasePath,

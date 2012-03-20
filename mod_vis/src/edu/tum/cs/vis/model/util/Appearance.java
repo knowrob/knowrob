@@ -15,11 +15,8 @@ public class Appearance {
 	/**
 	 * the Filename of the texture-Image
 	 */
-	public String imageFileName;
-	/**
-	 * says if the Triangle has Texture
-	 */
-	public boolean containsTexture = false;
+	public String imageFileName = null;
+
 	/**
 	 * an Object reference of a loaded image. Default is null.
 	 */
@@ -27,7 +24,19 @@ public class Appearance {
 
 	/**
 	 * the color of the Triangle if the Triangle has no texture
+	 * Set to null if no fill needed
 	 */
-	public Color colour;
+	public Color colourFill = null;
+	
+	/**
+	 * the color stroke for Triangle or Line
+	 * Set to null if no stroke needed
+	 */
+	public Color colourLine = null;
+
+	/**
+	 * Thickness of the stroke
+	 */
+	public int strokeWeight = 2;
 
 }

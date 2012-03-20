@@ -2,6 +2,8 @@ package edu.tum.cs.vis.model.util;
 
 import javax.vecmath.Point3f;
 
+import processing.core.PApplet;
+
 /**
  * Base class for all drawable model parts (Line / Triangle)
  * 
@@ -13,6 +15,11 @@ public abstract class DrawObject {
 	 * the position points of the object
 	 */
 	public Point3f position[];
+	
+	/**
+	 * Color or texture of the object
+	 */
+	public Appearance appearance;
 
 	/**
 	 * Moves the triangle in the given direction.
@@ -85,5 +92,41 @@ public abstract class DrawObject {
 		}
 		
 		return result;
+	}
+	
+	protected void setColor(PApplet applet, int overrideColor)
+	{
+		if (appearance.colourLine != null)
+		{
+			if (overrideColor != 0)
+				applet.stroke(overrideColor);
+			else
+				applet.stroke(appearance.colourLine.getRed(),
+					appearance.colourLine.getGreen(), appearance.colourLine.getBlue(), appearance.colourLine.getAlpha());
+			applet.strokeWeight(appearance.strokeWeight);
+		} else {
+			applet.noStroke();
+		}
+		
+		if (overrideColor != 0)
+			applet.fill(overrideColor);
+		else if (appearance.imageReference == null)
+		{
+			if (appearance.colourFill != null)
+	        {
+				applet.fill(appearance.colourFill.getRed(),
+					appearance.colourFill.getGreen(),
+					appearance.colourFill.getBlue(),
+					appearance.colourFill.getAlpha());
+	        } 
+			else
+			{
+				applet.noFill();
+			}
+		} else {
+        	//Has texture
+			 //Use fallback if texture isn't drawn. So fill triangles with white color
+			applet.fill(255,255,255,0);
+        }
 	}
 }
