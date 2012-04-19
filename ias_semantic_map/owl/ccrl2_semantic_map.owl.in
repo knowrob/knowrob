@@ -1570,7 +1570,7 @@
         <knowrob:m32 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m32>
         <knowrob:m02 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m02>
         <knowrob:m12 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m12>
-        <knowrob:m23 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.85</knowrob:m23>
+        <knowrob:m23 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.84</knowrob:m23>
         <knowrob:m10 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.99607825</knowrob:m10>
         <knowrob:m22 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</knowrob:m22>
         <knowrob:m33 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</knowrob:m33>
