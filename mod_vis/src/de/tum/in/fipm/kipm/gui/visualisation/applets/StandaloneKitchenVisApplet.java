@@ -957,7 +957,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 				
 				int col = grayValues[(++grayLevelCounter) % grayValues.length];
 
-				it.defaultColor = convertColor(col, col, col, 255);
+				it.defaultColor = convertColor(col, col, col, 170);
 				it.setColor(it.defaultColor);
 				it.name = identifier;
 
@@ -993,7 +993,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 				it = new CounterTop(pose, dim);
 
 				int col = grayValues[(++grayLevelCounter) % grayValues.length];      
-				it.defaultColor = convertColor(col, col, col, 255);
+				it.defaultColor = convertColor(col, col, col, 170);
 				it.setColor(it.defaultColor);
 				it.name = identifier;
 

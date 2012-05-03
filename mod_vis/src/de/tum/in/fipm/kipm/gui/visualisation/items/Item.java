@@ -23,6 +23,7 @@ public abstract class Item extends ItemBase {
 			this.ydim=(float) dim.y;
 			this.zdim=(float) dim.z;
 		}
+		this.color=defaultColor;
 	}
 	
 	
@@ -40,6 +41,8 @@ public abstract class Item extends ItemBase {
 		this.xdim=xdim;
 		this.ydim=ydim;
 		this.zdim=zdim;
+		
+		this.color=defaultColor;
 	}
 	
 	

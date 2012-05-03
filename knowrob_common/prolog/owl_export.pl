@@ -50,10 +50,7 @@
       export_object_class(r,r),
       export_map(r,r),
       export_action(r,r),
-      rdf_unique_class_id(r, +, r),
-      class_properties_nosup(r,r,r),
-      class_properties_transitive_nosup(r,r,r),
-      class_properties_transitive_nosup_1(r,r,r).
+      rdf_unique_class_id(r, +, r).
 
 
 

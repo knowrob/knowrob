@@ -428,7 +428,7 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 	      controlWindow.frameRate(5);
 
 	      Textlabel act_label = controlP5.addTextlabel("act_label","Abstraction Level",80,40);
-	      act_label.setColorValueLabel(0xffffffff);
+//	      act_label.setColorValueLabel(0xffffffff);
 	      act_label.setFont(3);
 	      act_label.moveTo(controlWindow);
 	      
@@ -441,7 +441,7 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 	      act_radio.setId(100);
 	      
 	      Textlabel color_label = controlP5.addTextlabel("color_label","Colors",220,40);
-	      color_label.setColorValueLabel(0xffffffff);
+//	      color_label.setColorValueLabel(0xffffffff);
 	      color_label.setFont(3);
 	      color_label.moveTo(controlWindow);
 	      

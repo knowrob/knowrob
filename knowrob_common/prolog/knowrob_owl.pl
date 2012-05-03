@@ -183,8 +183,9 @@ class_properties(Class, Prop, Val) :-         % also consider properties of supe
 %   owl_restriction(Sup2,restriction(SubProp, some_values_from(Val))).
 
 class_properties_1(Class, Prop, Val) :-
-  owl_direct_subclass_of(Class, Sup),
-  ( (nonvar(Prop)) -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
+
+  ( (nonvar(Class)) -> (owl_direct_subclass_of(Class, Sup)) ; (Sup     = Class)),
+  ( (nonvar(Prop))  -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
 
   ( owl_restriction(Sup,restriction(SubProp, some_values_from(Val))) ;
     owl_restriction(Sup,restriction(SubProp, has_value(Val))) ).
