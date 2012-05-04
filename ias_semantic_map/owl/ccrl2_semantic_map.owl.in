@@ -4558,7 +4558,6 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:widthOfObject>
         <knowrob:minJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:minJointValue>
-        <knowrob:turnRadius rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:turnRadius>
         <knowrob:connectedTo-Rigidly rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door10"/>
         <knowrob:connectedTo-Rigidly rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer7"/>
         <knowrob:direction rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vector192"/>
@@ -4573,7 +4572,6 @@
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:heightOfObject>
         <knowrob:minJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:minJointValue>
-        <knowrob:turnRadius rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:turnRadius>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:widthOfObject>
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:depthOfObject>
         <knowrob:maxJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.48</knowrob:maxJointValue>
@@ -4590,7 +4588,6 @@
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Slider106">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:heightOfObject>
-        <knowrob:turnRadius rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:turnRadius>
         <knowrob:minJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:minJointValue>
         <knowrob:maxJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.48</knowrob:maxJointValue>
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:depthOfObject>
@@ -4612,7 +4609,6 @@
         <knowrob:maxJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.48</knowrob:maxJointValue>
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:depthOfObject>
         <knowrob:minJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:minJointValue>
-        <knowrob:turnRadius rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:turnRadius>
         <knowrob:connectedTo-Rigidly rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door112"/>
         <knowrob:connectedTo-Rigidly rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer109"/>
         <knowrob:direction rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vector148"/>
@@ -4629,7 +4625,6 @@
         <knowrob:minJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:minJointValue>
         <knowrob:maxJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.48</knowrob:maxJointValue>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:heightOfObject>
-        <knowrob:turnRadius rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:turnRadius>
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:depthOfObject>
         <knowrob:connectedTo-Rigidly rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door118"/>
         <knowrob:connectedTo-Rigidly rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer115"/>
@@ -4645,7 +4640,6 @@
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
         <knowrob:minJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:minJointValue>
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:depthOfObject>
-        <knowrob:turnRadius rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:turnRadius>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:widthOfObject>
         <knowrob:maxJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.48</knowrob:maxJointValue>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:heightOfObject>
@@ -4665,7 +4659,6 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:depthOfObject>
         <knowrob:minJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:minJointValue>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:widthOfObject>
-        <knowrob:turnRadius rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:turnRadius>
         <knowrob:maxJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.48</knowrob:maxJointValue>
         <knowrob:connectedTo-Rigidly rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door16"/>
         <knowrob:connectedTo-Rigidly rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer13"/>
@@ -4680,7 +4673,6 @@
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Slider28">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:heightOfObject>
-        <knowrob:turnRadius rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:turnRadius>
         <knowrob:maxJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.48</knowrob:maxJointValue>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:widthOfObject>
         <knowrob:minJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:minJointValue>
@@ -4701,7 +4693,6 @@
         <knowrob:minJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:minJointValue>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:widthOfObject>
         <knowrob:maxJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.48</knowrob:maxJointValue>
-        <knowrob:turnRadius rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:turnRadius>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:heightOfObject>
         <knowrob:connectedTo-Rigidly rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door34"/>
         <knowrob:connectedTo-Rigidly rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer31"/>
@@ -4716,7 +4707,6 @@
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Slider4">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:heightOfObject>
-        <knowrob:turnRadius rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:turnRadius>
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:depthOfObject>
         <knowrob:maxJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.48</knowrob:maxJointValue>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:widthOfObject>
@@ -4733,7 +4723,6 @@
 
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Slider46">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
-        <knowrob:turnRadius rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:turnRadius>
         <knowrob:minJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:minJointValue>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:heightOfObject>
         <knowrob:maxJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.48</knowrob:maxJointValue>
@@ -4751,7 +4740,6 @@
 
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Slider52">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
-        <knowrob:turnRadius rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:turnRadius>
         <knowrob:maxJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.48</knowrob:maxJointValue>
         <knowrob:minJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:minJointValue>
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:depthOfObject>
@@ -4770,7 +4758,6 @@
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Slider58">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
         <knowrob:maxJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.48</knowrob:maxJointValue>
-        <knowrob:turnRadius rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:turnRadius>
         <knowrob:minJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:minJointValue>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:widthOfObject>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:heightOfObject>
@@ -4788,7 +4775,6 @@
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Slider64">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint"/>
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:depthOfObject>
-        <knowrob:turnRadius rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:turnRadius>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:widthOfObject>
         <knowrob:minJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:minJointValue>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:heightOfObject>
@@ -4808,7 +4794,6 @@
         <knowrob:minJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:minJointValue>
         <knowrob:maxJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.48</knowrob:maxJointValue>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:heightOfObject>
-        <knowrob:turnRadius rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:turnRadius>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:widthOfObject>
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:depthOfObject>
         <knowrob:connectedTo-Rigidly rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door76"/>
@@ -4826,7 +4811,6 @@
         <knowrob:minJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:minJointValue>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:widthOfObject>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:heightOfObject>
-        <knowrob:turnRadius rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:turnRadius>
         <knowrob:maxJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.48</knowrob:maxJointValue>
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:depthOfObject>
         <knowrob:connectedTo-Rigidly rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door82"/>
@@ -4846,7 +4830,6 @@
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:depthOfObject>
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:heightOfObject>
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:widthOfObject>
-        <knowrob:turnRadius rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:turnRadius>
         <knowrob:connectedTo-Rigidly rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door88"/>
         <knowrob:connectedTo-Rigidly rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer85"/>
         <knowrob:direction rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vector110"/>
@@ -4864,7 +4847,6 @@
         <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:heightOfObject>
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:depthOfObject>
         <knowrob:minJointValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:minJointValue>
-        <knowrob:turnRadius rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:turnRadius>
         <knowrob:connectedTo-Rigidly rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door94"/>
         <knowrob:connectedTo-Rigidly rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer91"/>
         <knowrob:direction rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vector119"/>
@@ -4877,9 +4859,9 @@
 
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Vector105">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vector"/>
-        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorY>
-        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorX>
-        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorZ>
+        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.997</knowrob:vectorX>
+        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.068</knowrob:vectorY>
+        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.004</knowrob:vectorZ>
     </owl:NamedIndividual>
 
 
@@ -4888,9 +4870,9 @@
 
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Vector110">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vector"/>
-        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorY>
-        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorX>
-        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorZ>
+        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.997</knowrob:vectorX>
+        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.068</knowrob:vectorY>
+        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.004</knowrob:vectorZ>
     </owl:NamedIndividual>
 
 
@@ -4899,9 +4881,9 @@
 
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Vector119">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vector"/>
-        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorX>
-        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorY>
-        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorZ>
+        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.997</knowrob:vectorX>
+        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.068</knowrob:vectorY>
+        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.004</knowrob:vectorZ>
     </owl:NamedIndividual>
 
 
@@ -4910,9 +4892,9 @@
 
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Vector132">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vector"/>
-        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorX>
-        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorY>
-        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorZ>
+        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.997</knowrob:vectorX>
+        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.068</knowrob:vectorY>
+        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.004</knowrob:vectorZ>
     </owl:NamedIndividual>
 
 
@@ -4921,9 +4903,9 @@
 
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Vector145">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vector"/>
-        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorX>
-        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorZ>
-        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorY>
+        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.997</knowrob:vectorX>
+        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.068</knowrob:vectorY>
+        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.004</knowrob:vectorZ>
     </owl:NamedIndividual>
 
 
@@ -4932,9 +4914,9 @@
 
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Vector148">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vector"/>
-        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorY>
-        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorZ>
-        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorX>
+        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.997</knowrob:vectorX>
+        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.068</knowrob:vectorY>
+        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.004</knowrob:vectorZ>
     </owl:NamedIndividual>
 
 
@@ -4943,9 +4925,9 @@
 
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Vector155">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vector"/>
-        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorY>
-        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorZ>
-        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorX>
+        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.997</knowrob:vectorX>
+        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.068</knowrob:vectorY>
+        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.004</knowrob:vectorZ>
     </owl:NamedIndividual>
 
 
@@ -4954,9 +4936,9 @@
 
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Vector16">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vector"/>
-        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorY>
-        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorZ>
-        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorX>
+        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.997</knowrob:vectorX>
+        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.068</knowrob:vectorY>
+        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.004</knowrob:vectorZ>
     </owl:NamedIndividual>
 
 
@@ -4965,9 +4947,9 @@
 
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Vector180">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vector"/>
-        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorX>
-        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorY>
-        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorZ>
+        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.997</knowrob:vectorX>
+        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.068</knowrob:vectorY>
+        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.004</knowrob:vectorZ>
     </owl:NamedIndividual>
 
 
@@ -4976,9 +4958,9 @@
 
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Vector187">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vector"/>
-        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorX>
-        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorZ>
-        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorY>
+        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.997</knowrob:vectorX>
+        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.068</knowrob:vectorY>
+        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.004</knowrob:vectorZ>
     </owl:NamedIndividual>
 
 
@@ -4987,9 +4969,9 @@
 
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Vector192">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vector"/>
-        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorZ>
-        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorX>
-        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorY>
+        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.997</knowrob:vectorX>
+        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.068</knowrob:vectorY>
+        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.004</knowrob:vectorZ>
     </owl:NamedIndividual>
 
 
@@ -4998,9 +4980,9 @@
 
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Vector5">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vector"/>
-        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorY>
-        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorZ>
-        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorX>
+        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.997</knowrob:vectorX>
+        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.068</knowrob:vectorY>
+        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.004</knowrob:vectorZ>
     </owl:NamedIndividual>
 
 
@@ -5009,9 +4991,9 @@
 
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Vector51">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vector"/>
-        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorX>
-        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorZ>
-        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorY>
+        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.997</knowrob:vectorX>
+        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.068</knowrob:vectorY>
+        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.004</knowrob:vectorZ>
     </owl:NamedIndividual>
 
 
@@ -5020,9 +5002,9 @@
 
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Vector60">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vector"/>
-        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorZ>
-        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorX>
-        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorY>
+        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.997</knowrob:vectorX>
+        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.068</knowrob:vectorY>
+        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.004</knowrob:vectorZ>
     </owl:NamedIndividual>
 
 
@@ -5031,9 +5013,9 @@
 
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Vector67">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vector"/>
-        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorY>
-        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorX>
-        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorZ>
+        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.997</knowrob:vectorX>
+        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.068</knowrob:vectorY>
+        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.004</knowrob:vectorZ>
     </owl:NamedIndividual>
 
 
@@ -5042,9 +5024,9 @@
 
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Vector74">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vector"/>
-        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorX>
-        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorZ>
-        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorY>
+        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.997</knowrob:vectorX>
+        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.068</knowrob:vectorY>
+        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.004</knowrob:vectorZ>
     </owl:NamedIndividual>
 
 
@@ -5053,9 +5035,9 @@
 
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Vector93">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vector"/>
-        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorX>
-        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorY>
-        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorZ>
+        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.997</knowrob:vectorX>
+        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.068</knowrob:vectorY>
+        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.004</knowrob:vectorZ>
     </owl:NamedIndividual>
 
 
@@ -5064,9 +5046,9 @@
 
     <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#Vector96">
         <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vector"/>
-        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorY>
-        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorZ>
-        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:vectorX>
+        <knowrob:vectorX rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.997</knowrob:vectorX>
+        <knowrob:vectorY rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.068</knowrob:vectorY>
+        <knowrob:vectorZ rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.004</knowrob:vectorZ>
     </owl:NamedIndividual>
 </rdf:RDF>
 
