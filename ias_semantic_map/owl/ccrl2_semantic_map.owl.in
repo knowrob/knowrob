@@ -805,7 +805,7 @@
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door112"/>
         <knowrob:prismaticallyConnectedTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door112"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Slider112"/>
-        <srdl2-comp:urdfName>drawer_island_col2_bottom_fixed_link</srdl2-comp:urdfName>
+        <srdl2-comp:urdfName>drawer_island_col1_bottom_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -821,7 +821,7 @@
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door118"/>
         <knowrob:prismaticallyConnectedTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door118"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Slider118"/>
-        <srdl2-comp:urdfName>drawer_island_col2_center_fixed_link</srdl2-comp:urdfName>
+        <srdl2-comp:urdfName>drawer_island_col1_center_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -837,7 +837,7 @@
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door124"/>
         <knowrob:prismaticallyConnectedTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door124"/>
         <knowrob:properPhysicalParts rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Slider124"/>
-        <srdl2-comp:urdfName>drawer_island_col2_top_fixed_link</srdl2-comp:urdfName>
+        <srdl2-comp:urdfName>drawer_island_col1_top_fixed_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -4616,7 +4616,7 @@
         <knowrob:connectedTo-Rigidly rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door112"/>
         <knowrob:connectedTo-Rigidly rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer109"/>
         <knowrob:direction rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vector148"/>
-        <srdl2-comp:urdfName>island_block_drawer_island_col2_bottom_joint</srdl2-comp:urdfName>
+        <srdl2-comp:urdfName>island_block_drawer_island_col1_bottom_joint</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -4634,7 +4634,7 @@
         <knowrob:connectedTo-Rigidly rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door118"/>
         <knowrob:connectedTo-Rigidly rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer115"/>
         <knowrob:direction rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vector155"/>
-        <srdl2-comp:urdfName>island_block_drawer_island_col2_center_joint</srdl2-comp:urdfName>
+        <srdl2-comp:urdfName>island_block_drawer_island_col1_center_joint</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -4652,7 +4652,7 @@
         <knowrob:connectedTo-Rigidly rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door124"/>
         <knowrob:connectedTo-Rigidly rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer121"/>
         <knowrob:direction rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vector16"/>
-        <srdl2-comp:urdfName>island_block_drawer_island_col2_top_joint</srdl2-comp:urdfName>
+        <srdl2-comp:urdfName>island_block_drawer_island_col1_top_joint</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -4688,7 +4688,7 @@
         <knowrob:connectedTo-Rigidly rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door28"/>
         <knowrob:connectedTo-Rigidly rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer25"/>
         <knowrob:direction rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vector5"/>
-        <srdl2-comp:urdfName>oven_block_drawer_oven_oven_joint</srdl2-comp:urdfName>
+        <srdl2-comp:urdfName>oven_block_drawer_oven_bottom_joint</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
@@ -4724,6 +4724,7 @@
         <knowrob:connectedTo-Rigidly rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Door4"/>
         <knowrob:connectedTo-Rigidly rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer1"/>
         <knowrob:direction rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vector67"/>
+        <srdl2-comp:urdfName>fridge_block_drawer_fridge_bottom_joint</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
 
