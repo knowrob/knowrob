@@ -63,6 +63,29 @@
 :- use_module(library('jpl')).
 
 
+:- rdf_meta planvis_load(r,?),
+            planvis_highlight(r,?),
+            planvis_highlight(r,?,?),
+            display_action_fixed(r,?),
+            display_action(r,?),
+            display_eye_trajectory(r,?),
+            display_human_trajectory(r,r,?),
+            add_object(r,?),
+            add_object_with_children(r,?),
+            add_object_perception(r,?),
+            add_trajectory(r,?),
+            remove_object(r,?),
+            remove_object_with_children(r,?),
+            highlight_object(r,?),
+            highlight_object(r,?,?),
+            highlight_object(r,?,?,?),
+            highlight_object(r,?,?,?,?,?),
+            highlight_object_with_children(r,?),
+            highlight_object_with_children(r,?,?),
+            add_and_highlight_object(r,?),
+            planvis_load(r,?),
+            planvis_highlight(r,?),
+            planvis_highlight(r,?,?).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
