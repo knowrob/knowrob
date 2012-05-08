@@ -17,7 +17,7 @@
 
 
 :- owl_parser:owl_parse('../owl/object-change.owl', false, false, true).
-:- owl_parser:owl_parse('../owl/pancake-making.owl', false, false, true).
+% :- owl_parser:owl_parse('../owl/pancake-making.owl', false, false, true).
 
 :- rdf_db:rdf_register_ns(knowrob,      'http://ias.cs.tum.edu/kb/knowrob.owl#',      [keep(true)]).
 :- rdf_db:rdf_register_ns(object_change, 'http://ias.cs.tum.edu/kb/object-change.owl#', [keep(true)]).
