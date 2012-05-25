@@ -31,7 +31,7 @@ public class BarcooImporter {
 	
 	// Base IRI for semantic map ontology	
 	public final static String BARCOO = "http://www.barcoo.com/barcoo.owl#";
-	public final static String BARCOO_PATH = "owl/barcoo.owl"; //TO BE CHANGED LATER
+	public static String BARCOO_PATH = "owl/barcoo.owl"; //TO BE CHANGED LATER
 	
 	//
 	//
@@ -236,11 +236,12 @@ public class BarcooImporter {
 		
 	}
 	public static void main(String[] args)
-	{		
+	{
+		BARCOO_PATH = args[1];
 		BarcooImporter b = new BarcooImporter();
 		try
-		{
-			File f = new File(args[1]);
+		{			
+			File f = new File(args[0]);			
 			b.Process(f);
 		}
 		catch(Exception ex)
