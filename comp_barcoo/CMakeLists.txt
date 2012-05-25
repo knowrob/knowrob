@@ -30,9 +30,9 @@ foreach( _in ${inputs} )
 endforeach( _in )
 
 
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
-set(JAVA_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/bin)
+#set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+#set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
+#set(JAVA_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/bin)
 
 
 #######################################
@@ -45,6 +45,6 @@ add_classpath(${rosjava_jni_PACKAGE_PATH}/bin)
 
 
 # generate launch script
-rospack_add_java_executable(BarcooImporter edu.tum.cs.ias.knowrob.comp_barcoo.BarcooImporter)
+rospack_add_java_executable(barcoo_importer edu.tum.cs.ias.knowrob.comp_barcoo.BarcooImporter)
 
 add_java_source_dir(${PROJECT_SOURCE_DIR}/src)

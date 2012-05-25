@@ -1,4 +1,6 @@
 
+package edu.tum.cs.ias.knowrob.comp_barcoo;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
