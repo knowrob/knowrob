@@ -1,0 +1,23 @@
+<package>
+  <description brief="comp_barcoo">
+
+     comp_barcoo
+
+  </description>
+  <author>Nacer Khalil</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/comp_barcoo</url>
+  
+  <depend package="rosjava_jni"/>
+  <depend package="ias_knowledge_base"/>
+  <depend package="comp_cop"/>
+  <depend package="jpl"/>
+
+  <export>
+    <java classpath="${prefix}/bin"/>
+    <rosdoc config="rosdoc.yaml" />
+  </export>
+</package>
+
+
