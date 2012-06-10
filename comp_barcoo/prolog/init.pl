@@ -28,10 +28,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % parse OWL files, register name spaces
 
-:- owl_parser:owl_parse('/owl/barcoo.owl', false, false, true).
+:- owl_parser:owl_parse('/home/banacer/ros_workspace/knowrob/comp_barcoo/owl/barcoo.owl', false, false, true).
 :- rdf_db:rdf_register_ns(comp_germandeli, 'http://www.barcoo.com/barcoo.owl#', [keep(true)]).
 
 
-:- owl_parser:owl_parse('/owl/barcoo.owl', false, false, true).
+:- owl_parser:owl_parse('/home/banacer/ros_workspace/knowrob/comp_barcoo/owl/barcoo.owl', false, false, true).
 :- rdf_db:rdf_register_ns(germandeli, 'http://www.barcoo.com/barcoo.owl#', [keep(true)]).
 
