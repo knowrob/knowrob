@@ -5,37 +5,36 @@ import ros.communication.*;
 import ros.roscpp.*;
 
 
+
 public class BarcooSubscriber{
 	
 	private String topic = "/barcode_reader_node/barcode";
 	private Subscriber.QueueingCallback<ros.pkg.std_msgs.msg.String> callback;
+	private BarcooImporter barcooImporter;
 	
-	public BarcooSubscriber(String barcooOWLPath, String mappingPath) throws Exception
+	public BarcooSubscriber(final String barcooOWLPath,final String mappingPath) throws Exception
 	{		
-		Ros ros = Ros.getInstance();
+		barcooImporter = new BarcooImporter(barcooOWLPath, mappingPath);
+		final Ros ros = Ros.getInstance();		
 		ros.init("Barcoosubscriber");		
+		ros.pkg.std_msgs.msg.String msg = new ros.pkg.std_msgs.msg.String();
 		NodeHandle n = ros.createNodeHandle();
-		callback = new Subscriber.QueueingCallback<ros.pkg.std_msgs.msg.String>();
-		Subscriber<ros.pkg.std_msgs.msg.String> sub = n.subscribe(topic, new ros.pkg.std_msgs.msg.String(), callback, 10);
-		 
-         System.out.println("Subscribed to " + topic);
-		 n.spinOnce();
-         while(true)
-         {
-	         while (!callback.isEmpty()) 
-	         {
-	        	 System.out.println(callback.pop().data);
-	        	 //write your code here
-	        	 createIndividuals(callback.pop().data, barcooOWLPath,mappingPath);
-	         }
-         }
-         //sub.shutdown();
-	}
-	
-	public void createIndividuals(String str, String path,String mappingPath)
-	{
-		BarcooImporter.createNotExistingClass(str, path, mappingPath);
-	}
+		Subscriber.Callback<ros.pkg.std_msgs.msg.String> callback = new Subscriber.Callback<ros.pkg.std_msgs.msg.String>() 
+		{
+			public void call(ros.pkg.std_msgs.msg.String msg) 
+			{
+				ros.logInfo("Received [" + msg.data + "]");
+				barcooImporter.createNotExistingClass(msg.data);
+			}
+		};
+		
+		Subscriber<ros.pkg.std_msgs.msg.String> sub; 
+        sub = n.subscribe(topic,new ros.pkg.std_msgs.msg.String(), callback, 100);
+		System.out.println("Subscribed to " + topic);
+		
+		n.spin();		
+		sub.shutdown();
+	}	
 	
 	public static void main(String[] args)
 	{

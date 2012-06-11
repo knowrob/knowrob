@@ -47,10 +47,11 @@ public class BarcooImporter {
 	private MyNode treeNode;
 	private HashMap<String, String> classMapping;
 	
-	public BarcooImporter(String barcooMapping)
+	public BarcooImporter(String barcooPath, String barcooMapping)
 	{
 		try
 		{
+			BARCOO_PATH = barcooPath;
 			// Get hold of an ontology manager
 			manager = OWLManager.createOWLOntologyManager();
 			
@@ -95,6 +96,13 @@ public class BarcooImporter {
 		//get the root element
 		Element docEle = doc.getDocumentElement();
 		//get a nodelist of elements
+		NodeList l = docEle.getElementsByTagName("answer");
+		Node n = l.item(0);
+		if(n.getNodeValue() == null || n.getNodeValue() == "0")
+			return null;
+		
+		//System.out.println("ANSWER = "+ n.getNodeValue());
+		
 		NodeList nl = docEle.getElementsByTagName("product");
 		Vector<AttrValue> list = new Vector<AttrValue>();
 		treeNode = new MyNode(false, "product");
@@ -378,11 +386,12 @@ public class BarcooImporter {
 		return str;
 	}
 	
-	public void Process(File file) throws Exception
+	public boolean Process(File file) throws Exception
 	{		
 		//PARSE XML FILE
 		Vector<AttrValue> list = parseXML(file);
-		
+		if(list == null)
+			return false;
 		//GET PARENT CLASS
 		String parent = getParent();
 		if(parent == null || parent.isEmpty())
@@ -404,7 +413,7 @@ public class BarcooImporter {
 		//Save Ontology		
 		manager.saveOntology(ontology);	
 		
-		
+		return true;
 		
 	}
 	//Retrieves XML page
@@ -442,17 +451,16 @@ public class BarcooImporter {
 		return individual;
 	}
 	
-	public static void createNotExistingClass(String barcode, String barcooPath, String barcooMapping)
-	{
-		BARCOO_PATH = barcooPath;
+	public void createNotExistingClass(String barcode)
+	{		
 		File barcooFile = null;
 		BufferedWriter bw = null;
-		BarcooImporter b = new BarcooImporter(barcooMapping);
+		boolean processed = false;
 		try
 		{
-			if(!b.classExist(barcode))
+			if(!classExist(barcode))
 			{
-				barcooFile = new File("data/" + barcode + ".xml");
+				barcooFile = new File("../data/" + barcode + ".xml");
 				bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(barcooFile)));
 				barcooFile.createNewFile();
 				String link = "http://www.barcoo.com/api/get_product_complete?pi="+barcode+"&amp;pins=ean&amp;format=xml&amp;source=ias-tum";
@@ -460,11 +468,14 @@ public class BarcooImporter {
 				URL url = new URL(link);
 				bw.write(getPage(url));
 				bw.flush();
-				b.Process(barcooFile);
+				processed = Process(barcooFile);
 				bw.close();
 				barcooFile.delete();
 			}
-			OWLClass myClass = b.getClass(barcode);
+			if(!processed)
+				return;
+			
+			OWLClass myClass = getClass(barcode);
 			
 			//create individual at this point
 			//first search for a non used name for the individual
@@ -472,10 +483,10 @@ public class BarcooImporter {
 			
 			do {				
 				number++;
-			}while(b.classExist(barcode + "_" + number));
+			}while(classExist(barcode + "_" + number));
 			
 			//The following function creates the ontology, creates the axiom and save the changes
-			b.createIndividual(barcode + "_" + number, myClass);
+			createIndividual(barcode + "_" + number, myClass);
 		}
 		catch(Exception ex)
 		{
@@ -483,8 +494,7 @@ public class BarcooImporter {
 		}
 	}
 	public static void main(String[] args) //5413987056260
-	{
-		System.out.println("Hey nacer");
+	{		
 		if(args == null || args[0] == null || args[1] == null || args[2] == null)
 		{
 			System.out.println("First argument should be the PATH of BARCOO.OWL.IN");
@@ -493,8 +503,8 @@ public class BarcooImporter {
 			System.exit(1);
 		}
 		
-		BARCOO_PATH = args[0];
-		BarcooImporter b = new BarcooImporter(args[2]);
+		
+		BarcooImporter b = new BarcooImporter(args[0],args[2]);
 		
 		BufferedReader br = null;
 		try
@@ -508,20 +518,27 @@ public class BarcooImporter {
 			boolean done = false;
 			while((barcode = br.readLine()) != null)
 			{
-				if(barcode.equalsIgnoreCase("5413987056260") || done)
+				try
 				{
-					done = true;
-					barcooFile = new File( barcode + ".xml");
-					bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(barcooFile)));
-					barcooFile.createNewFile();
-					String link = "http://www.barcoo.com/api/get_product_complete?pi="+barcode+"&amp;pins=ean&amp;format=xml&amp;source=ias-tum";
-					System.out.println(link);
-					url = new URL(link);
-					bw.write(getPage(url));
-					bw.flush();
-					b.Process(barcooFile);
-					bw.close();
-					barcooFile.delete();
+					if(barcode.equalsIgnoreCase("5400269227876") || done)
+					{
+						done = true;
+						barcooFile = new File( barcode + ".xml");
+						bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(barcooFile)));
+						barcooFile.createNewFile();
+						String link = "http://www.barcoo.com/api/get_product_complete?pi="+barcode+"&amp;pins=ean&amp;format=xml&amp;source=ias-tum";
+						System.out.println(link);
+						url = new URL(link);
+						bw.write(getPage(url));
+						bw.flush();
+						b.Process(barcooFile);
+						bw.close();
+						barcooFile.delete();
+					}
+				}
+				catch(Exception ex)
+				{
+					ex.printStackTrace();
 				}
 			}
 		}
