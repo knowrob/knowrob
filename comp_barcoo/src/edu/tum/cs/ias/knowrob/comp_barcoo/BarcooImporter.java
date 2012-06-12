@@ -7,9 +7,16 @@ import java.util.*;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.reasoner.ConsoleProgressMonitor;
+import org.semanticweb.owlapi.reasoner.NodeSet;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
+import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
+import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
 import org.semanticweb.owlapi.util.SimpleIRIMapper;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.semanticweb.owlapi.vocab.OWLFacet;
+import org.semanticweb.HermiT.Reasoner;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.*;
@@ -46,6 +53,7 @@ public class BarcooImporter {
 	private HashMap<String, OWLDataProperty> data_properties; 
 	private MyNode treeNode;
 	private HashMap<String, String> classMapping;
+	private OWLReasoner reasoner;
 	
 	public BarcooImporter(String barcooPath, String barcooMapping)
 	{
@@ -82,7 +90,13 @@ public class BarcooImporter {
 				classMapping.put(key, value);
 				
 			}
-			//Class mapping loaded			
+			//Class mapping loaded
+			
+			OWLReasonerFactory reasonerFactory = new Reasoner.ReasonerFactory();
+			ConsoleProgressMonitor progressMonitor = new ConsoleProgressMonitor();
+			OWLReasonerConfiguration config = new SimpleConfiguration(progressMonitor);
+			reasoner = reasonerFactory.createReasoner(this.ontology, config);
+			
 		}
 		catch(Exception ex)
 		{
@@ -98,10 +112,9 @@ public class BarcooImporter {
 		//get a nodelist of elements
 		NodeList l = docEle.getElementsByTagName("answer");
 		Node n = l.item(0);
+		n = n.getFirstChild();		
 		if(n.getNodeValue() == null || n.getNodeValue() == "0")
 			return null;
-		
-		//System.out.println("ANSWER = "+ n.getNodeValue());
 		
 		NodeList nl = docEle.getElementsByTagName("product");
 		Vector<AttrValue> list = new Vector<AttrValue>();
@@ -391,7 +404,10 @@ public class BarcooImporter {
 		//PARSE XML FILE
 		Vector<AttrValue> list = parseXML(file);
 		if(list == null)
+		{
+			
 			return false;
+		}		
 		//GET PARENT CLASS
 		String parent = getParent();
 		if(parent == null || parent.isEmpty())
@@ -426,15 +442,48 @@ public class BarcooImporter {
 		connection.connect();
 		
 		BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+		if(connection.getInputStream() == null)
+			return null;
 		
 		while((line = br.readLine()) != null)
 			file += line;
 		
 		return file;
 	}
+	
 	public boolean classExist(String barcode)
 	{
-		return manager.contains(IRI.create(ontologyIRI + barcode));
+		
+		OWLClass myClass = factory.getOWLClass(IRI.create(ontologyIRI + barcode));
+		NodeSet<OWLClass> set = reasoner.getSuperClasses(myClass, true);
+		
+		if(set == null || set.isEmpty())
+			return false;
+		else
+			return true;
+	}
+	
+	public int getNextIndividual(String barcode, OWLClass myClass)
+	{		
+		NodeSet<OWLNamedIndividual> set = reasoner.getInstances(myClass, true);
+		
+		
+		
+		if(set == null || set.isEmpty())
+		{
+			System.out.println("Hey the set is empty");
+			return 1;
+		}
+		OWLNamedIndividual individual = null;		
+		int count = 0;
+		
+		while(true)
+		{
+			count++;
+			individual = factory.getOWLNamedIndividual(IRI.create(ontologyIRI + barcode + "_" + count));			
+			if(!set.containsEntity(individual))
+				return count;				
+		}
 	}
 	
 	public OWLClass getClass(String barcode)
@@ -451,41 +500,88 @@ public class BarcooImporter {
 		return individual;
 	}
 	
+	public String createNewIndividual(String barcode)
+	{
+		File barcooFile = null;
+		BufferedWriter bw = null;
+		reasoner.flush();
+		try
+		{
+			barcooFile = new File("../data/" + barcode + ".xml");
+			bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(barcooFile)));
+			barcooFile.createNewFile();
+			String link = "http://www.barcoo.com/api/get_product_complete?pi="+barcode+"&amp;pins=ean&amp;format=xml&amp;source=ias-tum";
+			System.out.println(link);
+			URL url = new URL(link);
+			String content = getPage(url);
+			if(content !=null && !content.isEmpty())
+			{
+				bw.write(content);
+				bw.flush();
+				Vector<AttrValue> list = parseXML(barcooFile);
+				if(list !=null && !list.isEmpty())
+				{
+					Process(barcooFile);
+					System.out.println("File processed.");
+					
+					OWLClass myClass = getClass(barcode);
+					
+					//create individual at this point
+					int number = getNextIndividual(barcode,myClass);
+					//The following function creates the ontology, creates the axiom and save the changes					
+					createIndividual(barcode + "_" + number, myClass);
+					System.out.println("Individual name: "+barcode + "_" + number);
+					return (barcode + "_" + number);
+				}
+			}
+			bw.close();
+			barcooFile.delete();
+			
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
+		return null;
+	}
+	
 	public void createNotExistingClass(String barcode)
 	{		
 		File barcooFile = null;
 		BufferedWriter bw = null;
-		boolean processed = false;
+		boolean processed = true;
+		reasoner.flush();		
 		try
 		{
 			if(!classExist(barcode))
-			{
+			{				
+				System.out.println("Class does not exist");
 				barcooFile = new File("../data/" + barcode + ".xml");
 				bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(barcooFile)));
 				barcooFile.createNewFile();
 				String link = "http://www.barcoo.com/api/get_product_complete?pi="+barcode+"&amp;pins=ean&amp;format=xml&amp;source=ias-tum";
 				System.out.println(link);
 				URL url = new URL(link);
-				bw.write(getPage(url));
-				bw.flush();
-				processed = Process(barcooFile);
+				String content = getPage(url);
+				if(content != null && !content.isEmpty())
+				{
+					bw.write(content);
+					bw.flush();
+					processed = Process(barcooFile);
+					System.out.println("File processed: "+ processed);
+				}
 				bw.close();
 				barcooFile.delete();
-			}
+			}			
 			if(!processed)
 				return;
 			
 			OWLClass myClass = getClass(barcode);
 			
 			//create individual at this point
-			//first search for a non used name for the individual
-			int number = 0;
-			
-			do {				
-				number++;
-			}while(classExist(barcode + "_" + number));
-			
+			int number = getNextIndividual(barcode,myClass);
 			//The following function creates the ontology, creates the axiom and save the changes
+			//System.out.println("Individual name: "+barcode + "_" + number);
 			createIndividual(barcode + "_" + number, myClass);
 		}
 		catch(Exception ex)
@@ -529,11 +625,15 @@ public class BarcooImporter {
 						String link = "http://www.barcoo.com/api/get_product_complete?pi="+barcode+"&amp;pins=ean&amp;format=xml&amp;source=ias-tum";
 						System.out.println(link);
 						url = new URL(link);
-						bw.write(getPage(url));
-						bw.flush();
-						b.Process(barcooFile);
-						bw.close();
-						barcooFile.delete();
+						String content = getPage(url);
+						if(content !=null && !content.isEmpty())
+						{
+							bw.write(content);
+							bw.flush();
+							b.Process(barcooFile);
+							bw.close();
+							barcooFile.delete();
+						}
 					}
 				}
 				catch(Exception ex)
