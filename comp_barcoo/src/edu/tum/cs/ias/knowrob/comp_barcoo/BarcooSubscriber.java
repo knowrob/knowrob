@@ -32,7 +32,7 @@ public class BarcooSubscriber{
                 n.advertiseService("send_barcode", new send_barcode(), scb);
                 
         ros.logInfo("Ready to receive barcode and create new individuals"); 
-        System.out.println("LOADING COMPLETED.")
+        System.out.println("LOADING COMPLETED.");
 		n.spin();		
 		
 	}	
@@ -43,7 +43,7 @@ public class BarcooSubscriber{
 		{
 			//System.out.println("arg0 = barcoo owl path");
 			//System.out.println("arg1 = barcoo mapping path");
-			System.out.println("PLEASE WAIT.\n PROGRAM LOADING...")
+			System.out.println("PLEASE WAIT.\n PROGRAM LOADING...");
 			
 			BarcooSubscriber subscriber = new BarcooSubscriber(args[0],args[1]);
 		}
