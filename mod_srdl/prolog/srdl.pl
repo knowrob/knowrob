@@ -1,8 +1,8 @@
 %%
-%% Copyright (C) 2010 by Tobias Roehm 
+%% Copyright (C) 2010 by Tobias Roehm
 %%
 %% This module contains inference predicates for SRDL Semantic robot description language
-%% The SRDL language is used to describe robots, robot components, robot capabilities and robot tasks 
+%% The SRDL language is used to describe robots, robot components, robot capabilities and robot tasks
 %% It is the basis for matchmaking between tasks and robots
 %%
 %% This program is free software; you can redistribute it and/or modify
@@ -34,38 +34,38 @@
 	verifyCapAvailability/2,   %(Cap, RobotInst)
         verifyCapAvailabilityFromAssertions/2,   % (Cap, RobotInst) :-
         verifyCapAvailabilityFromComponents/2,   %(Cap, RobotInst)
-        checkAvailabilityOfCapList/2,   %(CapList, RobotInst) 
+        checkAvailabilityOfCapList/2,   %(CapList, RobotInst)
         filterReqListForUnmetReq/3,   % (ReqList, RobotInst, Result)
-        filterReqListForUnavailableComp/4,   %(reqList, RobotInst, Acc, Result) 
+        filterReqListForUnavailableComp/4,   %(reqList, RobotInst, Acc, Result)
 	checkCompAvailability/2,   %(Comp, RobotInst)
 	filterCapListForNotSupportedCaps/3,   %(CapList, RobotInst, Result)
 
         % Missing capability and component inference
-        returnMissingCapsForAction/3,   % (Action, RobotInst, Result) 
-        filterActionList/3,   % (ActionList, Acc, Result) 
+        returnMissingCapsForAction/3,   % (Action, RobotInst, Result)
+        filterActionList/3,   % (ActionList, Acc, Result)
         printMissingComponents/2,   %(Action, RobotInst)
         printMissingComponents/3,   %(Action, RobotInst, Indentation)
-        printMissingComponentsForCapList/3,   %(CapList, RobotInst, Indentation) 
-        printMissingComponentsForSingleCap/3,   % (Cap, RobotInst, Indentation) 
+        printMissingComponentsForCapList/3,   %(CapList, RobotInst, Indentation)
+        printMissingComponentsForSingleCap/3,   % (Cap, RobotInst, Indentation)
         printMissingComponentsForAlternativeList/3,   %(AltList, RobotInst, Indentation)
-        printMissingComponentsForSingleAlternative/3,   %(Alt, RobotInst, Indentation) 
+        printMissingComponentsForSingleAlternative/3,   %(Alt, RobotInst, Indentation)
 
         missing_components_for_action/3,
 
-        % Learnability Inference 
+        % Learnability Inference
         isLearnableCapability/2,   %(Cap, RobotInst)
- 
+
 	% Action/ Capability Inference
         checkFeasibilityOfActionList/2,   % (ActionList, RobotInst)
         checkActionFeasibility/2,   % (Action, RobotInst)
         checkActionFeasibilityByDependencies/2,   % (Action, RobotInst) :-
         returnRequiredCapForActionList/2,    % (ActionList, Result) :-
- 
+
         % Experience inference predicates
         computeSuccessProbability/2,   % (Action, SuccessProbability)
 	computeSuccessProbabilityFromDescendants/2,   % (Action, ResultProb)
 	enumerateSuccessProbabilities/2,   % (ActionList, Result)
- 
+
 	% OWL/ DL Predicates
 	propertyValuesFromRestrictions/3,   %(Class, Property, Result)
 	hasComponent/2,   %(RobotInst, Component)
@@ -110,7 +110,7 @@
 % Enable own predicates to use namespace expansion
 % For test purposes all predicates are listed here (such each predicate can be used with namespache expansion)
 :- rdf_meta
-	
+
         % Matching Predicates based on robot components
         matchRobotAndAction(r, r),
 
@@ -124,35 +124,35 @@
         verifyCapAvailabilityFromComponents(r, r),
         checkAvailabilityOfCapList(t, r),
         filterReqListForUnmetReq(t, r, -),
-        filterReqListForUnavailableComp(t, r, t, -), 
+        filterReqListForUnavailableComp(t, r, t, -),
 	checkCompAvailability(r, r),
 	filterCapListForNotSupportedCaps(t, r, -),
 
         % Missing capability and component inference
-        returnMissingCapsForAction(r, r, -), 
+        returnMissingCapsForAction(r, r, -),
         filterActionList(t, -, -),
         printMissingComponents(r, r),
         printMissingComponents(r, r, -),
-        printMissingComponentsForCapList(t, r, -), 
+        printMissingComponentsForCapList(t, r, -),
         printMissingComponentsForSingleCap(r, r, -),
         printMissingComponentsForAlternativeList(t, r, -),
-        printMissingComponentsForSingleAlternative(r, r, -), 
+        printMissingComponentsForSingleAlternative(r, r, -),
         missing_components_for_action(r,r, -),
 
-        % Learnability Inference 
+        % Learnability Inference
         isLearnableCapability(r, r),
- 
+
 	% Action/ Capability Inference
         checkFeasibilityOfActionList(t, r),
-        checkActionFeasibility(r, r), 
+        checkActionFeasibility(r, r),
         checkActionFeasibilityByDependencies(r, r),
         returnRequiredCapForActionList(t, -),
- 
+
         % Experience Inference Predicates
         computeSuccessProbability(r, -),
 	computeSuccessProbabilityFromDescendants(r, -),
 	enumerateSuccessProbabilities(t, -),
- 
+
 	% OWL/ DL Predicates
 	propertyValuesFromRestrictions(r, r, -),
 	hasComponent(r, r),
@@ -167,20 +167,20 @@
         printAttributesOfComponent(r),
         printAttributeList(t),
         printSingleAttribute(r).
- 
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Matching Predicates based on robot components 
+% Matching Predicates based on robot components
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Check if robot instance RobotInst is able to execute action Action 
+% Check if robot instance RobotInst is able to execute action Action
 matchRobotAndAction(RobotInst, Action) :-
     checkActionFeasibility(Action, RobotInst),
-    !.  % commit to first choice 
+    !.  % commit to first choice
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Action inference 
+% Action inference
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Return all subactions of an action
@@ -204,25 +204,25 @@ returnUnfeasibleActionsRec([H|T], RobotInst, UnsupportedActions, Result) :-
        Result = TmpResult
    ;
        appendNonredundant([H], TmpResult, Result)
-   ). 
+   ).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Capability/ Component Inference 
+% Capability/ Component Inference
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Check if capability Cap is available on robot RobotInst
 verifyCapAvailability(Cap, RobotInst) :-
     % CASE 1: cap is directly asserted
     (
-        verifyCapAvailabilityFromAssertions(Cap, RobotInst); 
+        verifyCapAvailabilityFromAssertions(Cap, RobotInst);
     % CASE 2: cap is available based on components of RobotInst
         verifyCapAvailabilityFromComponents(Cap, RobotInst)
     ),
     !.  % Commit to first result
 
 % check if capability Cap is available on robot RobotInst based on assertions
-% Assertions of capabilities are made in TBox on Robot class using restrictions on property 'hasCapability' 
+% Assertions of capabilities are made in TBox on Robot class using restrictions on property 'hasCapability'
 verifyCapAvailabilityFromAssertions(Cap, RobotInst) :-
     rdfs_individual_of(RobotInst, RobotClass),  % using rdfs_individual_of because owl_individual seems to have a bug
     owl_subclass_of(RobotClass,  srdl:'SrdlRobot'),
@@ -233,14 +233,14 @@ verifyCapAvailabilityFromAssertions(Cap, RobotInst) :-
 % Check for capability Cap if all components needed are available on robot instance RobotInst
 verifyCapAvailabilityFromComponents(Cap, RobotInst) :-
     % search cap provision alternative that provides cap
-    owl_subclass_of(Alt, srdl:'CapabilityProvisionAlternative'),  
-    propertyValuesFromRestrictions(Alt, srdl:'providesCapability', CapList), 
-    member(Cap, CapList),  
-    ( 
+    owl_subclass_of(Alt, srdl:'CapabilityProvisionAlternative'),
+    propertyValuesFromRestrictions(Alt, srdl:'providesCapability', CapList),
+    member(Cap, CapList),
+    (
         owl_subclass_of(Cap, srdl_cap:'PrimitiveCapability')
     ->
         % CASE 1: capability is a primitive capability
-        propertyValuesFromRestrictions(Alt, srdl:'needsComponent', ReqList),  % collect all requirements for current alternative   
+        propertyValuesFromRestrictions(Alt, srdl:'needsComponent', ReqList),  % collect all requirements for current alternative
         ReqList \== [],
         % OLD: filterReqListForUnavailableComp(ReqList, RobotInst)
         filterReqListForUnmetReq(ReqList, RobotInst, UnmetReq),
@@ -279,7 +279,7 @@ filterReqListForUnavailableComp([H|T], RobotInst, Acc, Result) :-
     (
         checkCompAvailability(H, RobotInst)
     ->
-        TmpList = []  
+        TmpList = []
     ;
         TmpList = [H]
     ),
@@ -290,7 +290,7 @@ filterReqListForUnavailableComp([H|T], RobotInst, Acc, Result) :-
 checkCompAvailability(Comp, RobotInst) :-
     owl_individual_of(CompInst, Comp),
     hasComponent(RobotInst, CompInst),
-    !. 
+    !.
 
 % Compute all elements of CapList that are not supported by robot RobotInst due to its components
 % This predicate just calls predicate returnNotSupportedCapsRec
@@ -315,7 +315,7 @@ returnNotSupportedCapsRec([H|T], RobotInst, NotSupportedCaps, Result) :-
 % Missing capability and component inference
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Return all capbilities that are needed for action Action but are not fulfilled 
+% Return all capbilities that are needed for action Action but are not fulfilled
 % CAUTION: In this predicate only the missing capabilities of actions are considered, that are unfeasible, that are leaves in action tree and that have a direct subclass which is also a subclass of srdl:'SrdlRobotAction' which carries the capability dependencies
 returnMissingCapsForAction(Action, RobotInst, Result) :-
     (
@@ -330,24 +330,24 @@ returnMissingCapsForAction(Action, RobotInst, Result) :-
         filterActionListForUnfeasibleActions(AllSubActions, RobotInst, UnfeasibleSubActions),
 
         % filter to have only actions that are leafs in action tree
-        findall(X, 
-                ( member(X, UnfeasibleSubActions), 
+        findall(X,
+                ( member(X, UnfeasibleSubActions),
                   treeSearchLeavesOnly([X], knowrob:'subAction', TmpSubActions),
                   delete(TmpSubActions, X, TmpSubActionsWithoutX),
-                  TmpSubActionsWithoutX = []),  
-                UnfeasibleLeafSubActions), 
+                  TmpSubActionsWithoutX = []),
+                UnfeasibleLeafSubActions),
 
         % filter to have only those actions that have a subclass which is also a subclass of srdl:'SrdlRobotAction'
-        filterActionList(UnfeasibleLeafSubActions, [], RelevantSubActions), 
+        filterActionList(UnfeasibleLeafSubActions, [], RelevantSubActions),
 
         % collect capabilities of primary unfeasible sub actions
-        returnRequiredCapForActionList(RelevantSubActions, RequiredCap),        
+        returnRequiredCapForActionList(RelevantSubActions, RequiredCap),
 
-        % filter to have only capabilites that are not supported 
+        % filter to have only capabilites that are not supported
         filterCapListForNotSupportedCaps(RequiredCap, RobotInst, MissingCaps),
 
         % return value
-        Result = MissingCaps 
+        Result = MissingCaps
     ),
     !.  % Commit to first result
 
@@ -357,9 +357,9 @@ filterActionList([A|T], Acc, Result) :-
     filterActionList(T, Acc, TmpResult),
     (
         owl_subclass_of(Sub, A),
-        owl_subclass_of(Sub, srdl:'SrdlRobotAction')   
+        owl_subclass_of(Sub, srdl:'SrdlRobotAction')
     ->
-        appendNonredundant(TmpResult, [Sub], Result) 
+        appendNonredundant(TmpResult, [Sub], Result)
     ;
         Result = TmpResult
     ).
@@ -403,13 +403,13 @@ printMissingComponents(Action, RobotInst) :-
 
 % Print components that are missing for action Action on robot RobotInst
 printMissingComponents(Action, RobotInst, Indentation) :-
-    ( 
+    (
         returnMissingCapsForAction(Action, RobotInst, MissingCap),
-        MissingCap \== [] 
-    -> 
-       printMissingComponentsForCapList(MissingCap, RobotInst, Indentation) 
+        MissingCap \== []
+    ->
+       printMissingComponentsForCapList(MissingCap, RobotInst, Indentation)
     ;
-       fail 
+       fail
     ),
     !.  % Commit to first result
 
@@ -419,12 +419,12 @@ printMissingComponentsForCapList([H|T], RobotInst, Indentation) :-
     printMissingComponentsForSingleCap(H, RobotInst, Indentation),
     printMissingComponentsForCapList(T, RobotInst, Indentation).
 
-% print missing components for a single cap 
+% print missing components for a single cap
 printMissingComponentsForSingleCap(Cap, RobotInst, Indentation) :-
     % owl_subclass_of(Cap, srdl_cap:'PrimitiveCapability'),
     nl, printIndentation(Indentation), print('### CAPABILITY ### '), print(Cap), nl,
-    findall(X, 
-              ( 
+    findall(X,
+              (
                   owl_subclass_of(X, srdl:'CapabilityProvisionAlternative'),
                   propertyValuesFromRestrictions(X, srdl:'providesCapability', CapList),
                   member(Cap, CapList)
@@ -440,18 +440,18 @@ printMissingComponentsForAlternativeList([H|T], RobotInst, Indentation) :-
 
 % print missing components for a single alternative
 printMissingComponentsForSingleAlternative(Alt, RobotInst, Indentation) :-
-    printIndentation(Indentation), print('# Provision alternative # '), print(Alt), nl, 
+    printIndentation(Indentation), print('# Provision alternative # '), print(Alt), nl,
     (
         owl_subclass_of(Alt, srdl:'PrimitiveCapabilityAlternative')
     ->
         % CASE 1: primitive cap
-        % collect all requirements 
-        propertyValuesFromRestrictions(Alt, srdl:'needsComponent', ReqList),    
+        % collect all requirements
+        propertyValuesFromRestrictions(Alt, srdl:'needsComponent', ReqList),
         % calculate and print unmet requirements
         filterReqListForUnmetReq(ReqList, RobotInst, UnmetReq),
-        printIndentation(Indentation), print('Unmet requirements: '), nl, printIndentation(Indentation), print(UnmetReq), nl, 
+        printIndentation(Indentation), print('Unmet requirements: '), nl, printIndentation(Indentation), print(UnmetReq), nl,
         % calculate and print  met requirements
-        findall(X, ( member(X, ReqList), \+ member(X, UnmetReq) ), MetReq), 
+        findall(X, ( member(X, ReqList), \+ member(X, UnmetReq) ), MetReq),
         printIndentation(Indentation), print('Met requirements: '), nl, printIndentation(Indentation), print(MetReq), nl
     ;
         % CASE 2: composite cap
@@ -463,20 +463,20 @@ printMissingComponentsForSingleAlternative(Alt, RobotInst, Indentation) :-
         % calculate and print unmet requirements
         filterReqListForUnmetReq(ReqList, RobotInst, UnmetReq),
         printIndentation(Indentation), print('Unmet requirements: '), nl, printIndentation(Indentation), print(UnmetReq), nl,
-        
-        
+
+
         printIndentation(Indentation), print('In the following alternatives for subcapabilities are shown:'), nl, printIndentation(Indentation), print('==>'),
-        
-        propertyValuesFromRestrictions(Alt, srdl_cap:'hasSubCapability', SubCapList),  
-        NextIndentation is Indentation + 4, 
+
+        propertyValuesFromRestrictions(Alt, srdl_cap:'hasSubCapability', SubCapList),
+        NextIndentation is Indentation + 4,
         printMissingComponentsForCapList(SubCapList, RobotInst, NextIndentation),
- 
-        printIndentation(Indentation), print('<==') 
+
+        printIndentation(Indentation), print('<==')
     ).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Learnability Inference 
+% Learnability Inference
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Check if capability Cap is potentially learnable (meaning it could be learned if training data are available)
@@ -486,17 +486,17 @@ isLearnableCapability(Cap, RobotInst) :-
     \+ ( propertyValuesFromRestrictions(Cap, srdl:'needsComponent', ReqList),
          member(HwComp, ReqList),
          owl_subclass_of(HwComp, srdl_comp:'HardwareComponent'),
-         checkCompAvailability(HwComp, RobotInst) 
+         checkCompAvailability(HwComp, RobotInst)
        ),
     % Cond 2: learning component existent
     propertyValuesFromRestrictions(Cap, srdl:'hasLearningComponent', LearnCompList),
     member(LearningComp, LearnCompList),
-    checkCompAvailability(LearningComp, RobotInst), 
+    checkCompAvailability(LearningComp, RobotInst),
     !. % Commit to first choice
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Action/ Capability Inference 
+% Action/ Capability Inference
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Iterate over action list and verify that each action can be executed by robot RobotInst
@@ -510,16 +510,16 @@ checkActionFeasibility(Action, RobotInst) :-
     owl_subclass_of(Action, knowrob:'PurposefulAction'),
     % CASE 1: capability dependencies for Action and all sub events are met
     ( (
-        checkActionFeasibilityByDependencies(Action, RobotInst) 
+        checkActionFeasibilityByDependencies(Action, RobotInst)
     )
     ;
-    % CASE 2: subclass SubAction of Action exist and is feasible 
+    % CASE 2: subclass SubAction of Action exist and is feasible
     (
         owl_subclass_of(ActionSubclass, Action),
         ActionSubclass \== Action,  % TODO: make sure not to go into infty loop in case of owl:equivalentClass
-        checkActionFeasibility(ActionSubclass, RobotInst) 
+        checkActionFeasibility(ActionSubclass, RobotInst)
     ) ),
-    !.  % Commit to first result 
+    !.  % Commit to first result
 
 % check if an action is feasible by checking capability dependencies of action and all of its direct childs
 checkActionFeasibilityByDependencies(Action, RobotInst) :-
@@ -533,12 +533,12 @@ checkActionFeasibilityByDependencies(Action, RobotInst) :-
     ->
         (
         propertyValuesFromRestrictions(Action, knowrob:'subAction', DirectSubActions),
-        checkFeasibilityOfActionList(DirectSubActions, RobotInst) 
+        checkFeasibilityOfActionList(DirectSubActions, RobotInst)
         )
     ;
         true
     ),
-     
+
     % make sure that either capability dependencies or sub events are specified MT: WHY?
     (
         ( DirectSubActions == [] , ActionCapDep == [] )
@@ -550,16 +550,16 @@ checkActionFeasibilityByDependencies(Action, RobotInst) :-
     !.  % commit to first result
 
 
-% Collect required capabilities for a list of tasks 
+% Collect required capabilities for a list of tasks
 returnRequiredCapForActionList([], []).
 returnRequiredCapForActionList([H|T], CapList) :-
     propertyValuesFromRestrictions(H, srdl:'hasCapabilityDependency', L1),
     returnRequiredCapForActionList(T, L2),
     appendNonredundant(L1, L2, CapList).
- 
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Experience Inference Predicates 
+% Experience Inference Predicates
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Compute successProbability of a cyc:PurposefulAction from its attempt and success numbers
@@ -578,34 +578,34 @@ computeSuccessProbability(Action, SuccessProbability) :-
         SuccessProbability is NumSuccesses / NumAttempts
     ;
         (
-            computeSuccessProbabilityFromDescendants(Action, TmpProb) 
+            computeSuccessProbabilityFromDescendants(Action, TmpProb)
         ->
-            SuccessProbability = TmpProb 
-        ; 
+            SuccessProbability = TmpProb
+        ;
             fail
         )
     ),
     !. % Commit to first result
 
-% Compute success probability on the base of all descendants using min prob 
+% Compute success probability on the base of all descendants using min prob
 computeSuccessProbabilityFromDescendants(Action, ResultProb) :-
     treeSearchAllNodes([Action], knowrob:'subAction', SubActionsTmp),
     delete(SubActionsTmp, Action, SubActions),
     (
-       SubActions == [] 
+       SubActions == []
     ->
         % in case of a taks with no descendants with no attempt and success numbers: fail
-        fail 
+        fail
     ;
-        % in case of a task with subtasks: enumerate all success probabilities and return min 
+        % in case of a task with subtasks: enumerate all success probabilities and return min
         enumerateSuccessProbabilities(SubActions, ProbList),
         min_list(ProbList, MinProb),
-        ResultProb = MinProb 
+        ResultProb = MinProb
     ),
-    !.  % Commit to first solution  
+    !.  % Commit to first solution
 
 % Compute success probabilities for actions in ActionList
-% Just calls predicate enumerateSuccessProbabilitiesRec 
+% Just calls predicate enumerateSuccessProbabilitiesRec
 enumerateSuccessProbabilities(ActionList, Result) :-
     enumerateSuccessProbabilitiesRec(ActionList, [], Result).
 
@@ -616,19 +616,19 @@ enumerateSuccessProbabilitiesRec([H|T], Acc, Result) :-
     (
         computeSuccessProbability(H, HeadSuccessProb)
     ->
-        appendNonredundant(TmpResult, [HeadSuccessProb], Result)    
+        appendNonredundant(TmpResult, [HeadSuccessProb], Result)
     ;
-        Result = TmpResult 
+        Result = TmpResult
     ).
 
- 
+
 %%%%%%%%%%%%%%%%%%%%%
-% OWL/ DL Predicates 
+% OWL/ DL Predicates
 %%%%%%%%%%%%%%%%%%%%%
 
-% Collect all property values of someValuesFrom-restrictions of a class 
+% Collect all property values of someValuesFrom-restrictions of a class
 % Input:  Class - base class/ class whose restrictions are being considered
-%         Property - property whose restrictions in Class are being considered 
+%         Property - property whose restrictions in Class are being considered
 % Output: Result - list of all classes that appear in a restriction of a superclass of Class along Property
 propertyValuesFromRestrictions(Class, Property, Result) :-
     % 1) all restrictions that are contained in an intersection
@@ -640,16 +640,16 @@ propertyValuesFromRestrictions(Class, Property, Result) :-
                         owl_has(R, owl:onProperty, P),
                         rdfs_subproperty_of(P, Property),
                         ( owl_has(R, owl:someValuesFrom, X) ; owl_has(R, owl:allValuesFrom, X) )
-                      ), 
-               L1), 
+                      ),
+               L1),
     % 2) all restrictions that are a single restriction (not in an intersection)
     findall(X, (
-                        owl_subclass_of(Class, S), 
+                        owl_subclass_of(Class, S),
                         owl_has(S, rdfs:subClassOf, R),
                         owl_has(R, owl:onProperty, P),
                         rdfs_subproperty_of(P, Property),
                         ( owl_has(R, owl:someValuesFrom, X) ; owl_has(R, owl:allValuesFrom, X) )
-                      ), 
+                      ),
                L2),
     % Merge lists and remove duplicates
     appendNonredundant(L1, L2, Result),
@@ -657,17 +657,17 @@ propertyValuesFromRestrictions(Class, Property, Result) :-
 
 % Calculate relation 'hasComponent' between a robot instance and a component
 % This relation is hard coded as a predicate because Prolog OWL does not support property chains
-hasComponent(S, O) :- 
+hasComponent(S, O) :-
     owl_has(S, srdl:'hasComponent', O).
 
 % hard coded property chain for software component
 hasComponent(S, O) :-
     owl_has(S, srdl:'hasHardwareComponent', HwComp),
-    owl_has(HwComp, srdl_comp:'executesSoftware', O).   
+    owl_has(HwComp, srdl_comp:'executesSoftware', O).
 
 % considering composite components
 hasComponent(S, CompositeComp) :-
-    owl_individual_of(CompositeComp, srdl_comp:'ComponentComposition'), 
+    owl_individual_of(CompositeComp, srdl_comp:'ComponentComposition'),
     owl_has(CompositeComp, srdl_comp:'hasBaseLinkOfComposition', BaseComp),
     hasComponent(S, BaseComp).
 
@@ -681,14 +681,14 @@ intValueFromHasValueRestriction(Subject, Property, IntValue) :-
     term_to_atom(IntValue, NumTerm),
     !.
 
- 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%
-% Tree search Predicates 
+% Tree search Predicates
 %%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Tree search that collects all nodes in the tree
 % Expansion of first node via property values in restrictions of class descriptions
-% Input:  List - search agenda 
+% Input:  List - search agenda
 %         Connective - The OWL property that spans the tree (via restrictions)
 % Output: Result - the list of all nodes in the tree
 treeSearchAllNodes([], _, []).
@@ -700,7 +700,7 @@ treeSearchAllNodes([H|T], Connective, Result) :-
 
 % Tree search that collects only leaf nodes in the tree
 % Expansion of first node via property values in restrictions of class descriptions
-% Input:  List - search agenda 
+% Input:  List - search agenda
 %         Connective - The OWL property that spans the tree (via restrictions)
 % Output: Result - the list of all leaf nodes in the tree
 treeSearchLeavesOnly([], _, []).
@@ -719,12 +719,12 @@ treeSearchLeavesOnly([H|T], Connective, Result) :-
 
 
 %%%%%%%%%%%%%%%%%%%%%
-% Utility Predicates 
+% Utility Predicates
 %%%%%%%%%%%%%%%%%%%%%
 
-% Append List L2 to L1 
+% Append List L2 to L1
 % nonredundant append: for each member m of L2 it is checked if it is already member of L1
-% member m is added only if it is not yet member of L1 
+% member m is added only if it is not yet member of L1
 appendNonredundant(L, [], L).
 appendNonredundant(L1, [H|T], Result) :-
     (
@@ -745,7 +745,7 @@ printAttributesOfComponent(Comp) :-
     printAttributeList(AttList),
     !.
 
-% iterate over attribute list and print each attribute 
+% iterate over attribute list and print each attribute
 printAttributeList([]).
 printAttributeList([H|T]) :-
     printSingleAttribute(H),
@@ -758,29 +758,29 @@ printSingleAttribute(Attr) :-
 
     % attribute name
     (
-        owl_has(Attr, srdl_comp:'hasAttributeName', NameLiteral) 
+        owl_has(Attr, srdl_comp:'hasAttributeName', NameLiteral)
     ->
         NameLiteral = literal(Name),
-        print(Name) 
+        print(Name)
     ;
         print('unspecified name')
     ),
     print(' = '),
 
-    % attribute value 
+    % attribute value
     (
-        owl_has(Attr, srdl_comp:'hasAttributeValue', ValueLiteral) 
+        owl_has(Attr, srdl_comp:'hasAttributeValue', ValueLiteral)
     ->
         ValueLiteral = literal(Value),
-        print(Value) 
+        print(Value)
     ;
         print('unspecified value')
     ),
     print(' '),
 
-    % attribute unit of measure 
+    % attribute unit of measure
     (
-        owl_has(Attr, srdl_comp:'hasAttributeUnitOfMeasure', UomLiteral) 
+        owl_has(Attr, srdl_comp:'hasAttributeUnitOfMeasure', UomLiteral)
     ->
         UomLiteral = literal(Uom),
         print(Uom)
@@ -790,11 +790,11 @@ printSingleAttribute(Attr) :-
     nl,
     !.
 
-% Print Indentation number of spaces recursively 
+% Print Indentation number of spaces recursively
 % This is used for formatting print output
 printIndentation(0).
 printIndentation(Indentation) :-
     print(' '),
     X is Indentation - 1,
     printIndentation(X),
-    !. 
+    !.

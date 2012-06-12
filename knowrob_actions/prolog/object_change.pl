@@ -11,6 +11,7 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs_computable')).
 :- use_module(library('thea/owl_parser')).
+:- use_module(library('knowrob_owl')).
 
 :- use_module(library('action_effects')).
 :- use_module(library('process_effects')).
@@ -27,7 +28,7 @@
         transformed_into(r, r),
         transformed_into_transitive(r, r),
         comp_thermicallyConnectedTo(r,r),
-        class_properties(r,r,r),
+%         class_properties(r,r,r),
         project_and_debug(r,r,r),
         project_action_class(r,r,r),
         add_subactions_for_action(r, ?),
@@ -427,31 +428,31 @@ compare_actions_partial_order('<', _, _).
 % @param Prop    Property whose restrictions in Class are being considered
 % @param Values  List of all classes that appear in a restriction of a superclass of Class along Property
 
-class_properties(Class, Prop, Val) :-         % read directly asserted properties
-  class_properties_1(Class, Prop, Val).
-class_properties(Class, Prop, Val) :-         % also consider properties of superclasses
-  nonvar(Class),
-  owl_subclass_of(Class, Super), Class\=Super,
-  class_properties_1(Super, Prop, Val).
-
-% read restrictions defined for Class for Prop or a sub-property of Prop
-class_properties_1(Class, Prop, Val) :-
-  nonvar(Class),
-  owl_direct_subclass_of(Class, Sup),
-  owl_direct_subclass_of(Sup, Sup2),
-  ( (nonvar(Prop)) -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
-  owl_restriction(Sup2,restriction(SubProp, some_values_from(Val))).
-
-class_properties_1(Class, Prop, Val) :-
-  nonvar(Class),
-  owl_direct_subclass_of(Class, Sup),
-  ( (nonvar(Prop)) -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
-  owl_restriction(Sup,restriction(SubProp, some_values_from(Val))).
-
-class_properties_1(Class, Prop, Val) :-
-  var(Class),
-  ( (nonvar(Prop)) -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
-  owl_restriction(Sup,restriction(SubProp, some_values_from(Val))),
-  owl_direct_subclass_of(Class, Sup).
+% class_properties(Class, Prop, Val) :-         % read directly asserted properties
+%   class_properties_1(Class, Prop, Val).
+% class_properties(Class, Prop, Val) :-         % also consider properties of superclasses
+%   nonvar(Class),
+%   owl_subclass_of(Class, Super), Class\=Super,
+%   class_properties_1(Super, Prop, Val).
+%
+% % read restrictions defined for Class for Prop or a sub-property of Prop
+% class_properties_1(Class, Prop, Val) :-
+%   nonvar(Class),
+%   owl_direct_subclass_of(Class, Sup),
+%   owl_direct_subclass_of(Sup, Sup2),
+%   ( (nonvar(Prop)) -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
+%   owl_restriction(Sup2,restriction(SubProp, some_values_from(Val))).
+%
+% class_properties_1(Class, Prop, Val) :-
+%   nonvar(Class),
+%   owl_direct_subclass_of(Class, Sup),
+%   ( (nonvar(Prop)) -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
+%   owl_restriction(Sup,restriction(SubProp, some_values_from(Val))).
+%
+% class_properties_1(Class, Prop, Val) :-
+%   var(Class),
+%   ( (nonvar(Prop)) -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
+%   owl_restriction(Sup,restriction(SubProp, some_values_from(Val))),
+%   owl_direct_subclass_of(Class, Sup).
 
 

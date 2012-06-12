@@ -30,6 +30,7 @@
 :- use_module(library('semweb/rdfs_computable')).
 :- use_module(library('thea/owl_parser')).
 :- use_module(library('action_effects')).
+:- use_module(library('knowrob_owl')).
 
 
 

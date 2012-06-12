@@ -7,6 +7,7 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs_computable')).
+:- use_module(library('knowrob_owl')).
 
 
 
@@ -55,7 +56,7 @@ project_action_effects(Action) :-
   findall(Obj, owl_has(Action, knowrob:objectActedOn, Obj), Objs), !,
 
   % new objects: Dough is created, things are added to Dough
-  rdf_instance_from_class(knowrob:'Dough', knowrob_projection, knowrob_projection, Dough),
+  rdf_instance_from_class(knowrob:'Dough', knowrob_projection, Dough),
   rdf_assert(Action, knowrob:objectAddedTo,  Dough, knowrob_projection),
   rdf_assert(Action, knowrob:outputsCreated, Dough, knowrob_projection),
 

@@ -24,6 +24,7 @@
       class_properties/3,
       create_restr/6,
       rdf_instance_from_class/2,
+      rdf_instance_from_class/3,
       get_timepoint/1,
       get_timepoint/2
     ]).

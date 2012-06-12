@@ -1612,6 +1612,9 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		} else if(type.endsWith("#DinnerPlate'")) { 
 			return new Plate(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
+		} else if(type.endsWith("#Saucer'")) { 
+			return new Plate(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
+
 		} else if (type.endsWith("#DrinkingGlass'")) {
 			return new DrinkingGlass(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
@@ -1677,6 +1680,9 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		} else if (type.endsWith("#Cheese'")) {
 			return new Cheese(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
+		} else if (type.endsWith("#Butter'")) {
+			return new Cheese(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
+
 		} else if (type.endsWith("#Sausage'")) {
 			return new Sausage(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
@@ -1691,6 +1697,9 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 		} else if (type.endsWith("#Pancake'")) {
 			return new Pancake(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
+
+		} else if (type.endsWith("#Yogurt'")) {
+			return new DrinkingGlass(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
 
 			/////////////////////////////////////////////
@@ -1738,6 +1747,9 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			return new Bread(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
 		} else if (type.endsWith("#CowsMilk-Product'")) {
+			return new Tetrapak(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
+
+		} else if (type.endsWith("#Buttermilk'")) {
 			return new Tetrapak(1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1,  0,0,0);
 
 

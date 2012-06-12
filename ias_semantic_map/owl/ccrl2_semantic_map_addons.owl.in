@@ -26,7 +26,7 @@
     <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/ccrl2_semantic_map_addons.owl#">
         <owl:imports rdf:resource="&local_path;knowrob.owl"/>
     </owl:Ontology>
-    
+
 
 
     <!--
@@ -6533,6 +6533,6 @@
     </owl:NamedIndividual>
 
 
-    
+
 </rdf:RDF>
 
