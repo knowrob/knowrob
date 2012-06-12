@@ -7,13 +7,13 @@
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://www.ros.org/wiki/rosprolog</url>
-  <rosdep name="swi_prolog"/>
-  <rosdep name="swi_prolog_clib"/>
-  <rosdep name="swi_prolog_http"/>
-  <rosdep name="swi_prolog_odbc"/>
-  <rosdep name="swi_prolog_semweb"/>
-  <rosdep name="swi_prolog_sgml"/>
-  <rosdep name="swi_prolog_xpce"/>
+  <rosdep name="swi-prolog"/>
+  <rosdep name="swi-prolog-clib"/>
+  <rosdep name="swi-prolog-http"/>
+  <rosdep name="swi-prolog-odbc"/>
+  <rosdep name="swi-prolog-semweb"/>
+  <rosdep name="swi-prolog-sgml"/>
+  <rosdep name="swi-prolog-xpce"/>
 
   <depend package="rosbuild"/>
   <export>

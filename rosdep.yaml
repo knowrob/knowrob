@@ -1,8 +1,8 @@
-swi_prolog:
+swi-prolog:
   debian: swi-prolog
   ubuntu: swi-prolog
 
-swi_prolog_clib:
+swi-prolog-clib:
   debian: swi-prolog-clib
   ubuntu: 
     9.04:  swi-prolog-clib
@@ -12,7 +12,7 @@ swi_prolog_clib:
     11.04: swi-prolog
     oneiric: swi-prolog
 
-swi_prolog_http:
+swi-prolog-http:
   debian: swi-prolog-http
   ubuntu: 
     9.04:  swi-prolog-http
@@ -22,7 +22,7 @@ swi_prolog_http:
     11.04: swi-prolog
     oneiric: swi-prolog
 
-swi_prolog_odbc:
+swi-prolog-odbc:
   debian: swi-prolog-odbc
   ubuntu: 
     9.04:  swi-prolog-odbc
@@ -32,7 +32,7 @@ swi_prolog_odbc:
     11.04: swi-prolog-odbc
     oneiric: swi-prolog-odbc
 
-swi_prolog_semweb:
+swi-prolog-semweb:
   debian: swi-prolog-semweb
   ubuntu: 
     9.04:  swi-prolog-semweb
@@ -42,7 +42,7 @@ swi_prolog_semweb:
     11.04: swi-prolog
     oneiric: swi-prolog
 
-swi_prolog_sgml:
+swi-prolog-sgml:
   debian: swi-prolog-sgml
   ubuntu: 
     9.04:  swi-prolog-sgml
@@ -52,7 +52,7 @@ swi_prolog_sgml:
     11.04: swi-prolog
     oneiric: swi-prolog
 
-swi_prolog_xpce:
+swi-prolog-xpce:
   debian: swi-prolog-xpce
   ubuntu: 
     9.04:  swi-prolog-xpce
