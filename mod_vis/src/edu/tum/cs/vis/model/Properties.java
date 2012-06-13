@@ -27,10 +27,12 @@ public class Properties {
 			if (!identifier.startsWith("'") || !identifier.endsWith("'"))
 			{
 				identifier = "'" + identifier + "'";
-			} 
+			}
 			HashMap<String, Vector<Object>> nfo = PrologUtil
 					.executeQuery(
-							"rdf_has(" + identifier	+ ",knowrob:pathToCadModel,literal(P)) ; "
+							"rdf_has(" + identifier	+ ",knowrob:pathToCadModel,literal(type(_,P))) ; "
+									+ "owl_individual_of(" + identifier	+ ", Class), class_properties(Class, knowrob:pathToCadModel,literal(type(_,P))); "
+									+ "rdf_has(" + identifier	+ ",knowrob:pathToCadModel,literal(P)) ; "
 							+ "owl_individual_of(" + identifier	+ ", Class), class_properties(Class, knowrob:pathToCadModel,literal(P))",
 							null);
 			
