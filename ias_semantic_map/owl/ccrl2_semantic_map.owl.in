@@ -448,7 +448,7 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.57500005</knowrob:widthOfObject>
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2.0500002</knowrob:depthOfObject>
         <knowrob:describedInMap rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#SemanticEnvironmentMap0"/>
-        <rdfs:label rdf:datatype="&xsd;string">counter</rdfs:label>
+        <rdfs:label rdf:datatype="&xsd;string">Counter</rdfs:label>
         <srdl2-comp:urdfName>counter_top_sink_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
 
@@ -462,7 +462,6 @@
         <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.79999995</knowrob:widthOfObject>
         <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2.49</knowrob:depthOfObject>
         <knowrob:describedInMap rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#SemanticEnvironmentMap0"/>
-        <rdfs:label rdf:datatype="&xsd;string">kitchen-island</rdfs:label>
         <rdfs:label rdf:datatype="&xsd;string">KitchenIsland</rdfs:label>
         <srdl2-comp:urdfName>counter_top_island_link</srdl2-comp:urdfName>
     </owl:NamedIndividual>
