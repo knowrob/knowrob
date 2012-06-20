@@ -155,7 +155,7 @@ public class ColladaTest extends PApplet {
      popMatrix();
      */
      
-      model2.getParser().draw(this,0);
+      model2.getParser().getModel().draw(this.g,null);
       //model3.getParser().draw(this,0);
       noFill();
       strokeWeight(1);

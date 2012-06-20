@@ -15,12 +15,14 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/mod_vis</url>
 
+  <depend package="knowrob_cad_models"/>
+  <depend package="knowrob_cad_parser"/>
   <depend package="ias_knowledge_base"/>
   <depend package="jpl"/>
   <depend package="rosjava_jni"/>
 
   <export>
-    <java classpath="${prefix}/bin:${prefix}/lib/controlP5.jar:${prefix}/lib/core.jar:${prefix}/lib/vecmath.jar:${prefix}/lib/itext.jar:${prefix}/lib/pdf.jar:${prefix}/lib/PeasyCam.jar:${prefix}/lib/dae4j.jar:${prefix}/lib/snakeyaml-1.9.jar"/>
+    <java classpath="${prefix}/bin:${prefix}/lib/vecmath.jar:${prefix}/lib/dae4j.jar:${prefix}/lib/processing/core.jar:${prefix}/lib/processing/PeasyCam.jar:${prefix}/lib/lib/log4j-1.2.16.jar:${prefix}/lib/controlP5.jar:${prefix}/lib/snakeyaml-1.9.jar"/>
     <rosdoc config="rosdoc.yaml" />
   </export>
 

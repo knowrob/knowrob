@@ -66,7 +66,7 @@ public class Properties {
 		ItemModel model = getModelOfItem(ObjClassOrIdentifier);
 		if (model == null || model.getParser() == null)
 			return -1;
-		return model.getParser().getGroup().getTotalWidth();
+		return model.getParser().getModel().getGroup().getTotalWidth();
 	}
 	
 
@@ -81,7 +81,7 @@ public class Properties {
 		ItemModel model = getModelOfItem(ObjClassOrIdentifier);
 		if (model == null || model.getParser() == null)
 			return -1;
-		return model.getParser().getGroup().getTotalDepth();
+		return model.getParser().getModel().getGroup().getTotalDepth();
 	}
 	
 
@@ -95,7 +95,7 @@ public class Properties {
 		ItemModel model = getModelOfItem(ObjClassOrIdentifier);
 		if (model == null || model.getParser() == null)
 			return -1;
-		return model.getParser().getGroup().getTotalHeight();
+		return model.getParser().getModel().getGroup().getTotalHeight();
 	}
 	
 	

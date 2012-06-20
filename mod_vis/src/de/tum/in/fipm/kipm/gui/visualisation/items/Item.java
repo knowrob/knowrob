@@ -74,7 +74,10 @@ public abstract class Item extends ItemBase {
 							  trafoMatrix[4],  trafoMatrix[5],  trafoMatrix[6],  trafoMatrix[7], 
 							  trafoMatrix[8],  trafoMatrix[9],  trafoMatrix[10], trafoMatrix[11], 
 							  trafoMatrix[12], trafoMatrix[13], trafoMatrix[14], trafoMatrix[15]);
-			c.fill(colorOverride!=0 ? colorOverride : color);
+			if (colorOverride != null)
+				c.fill(colorOverride.getRed(), colorOverride.getGreen(), colorOverride.getBlue(), colorOverride.getAlpha());
+			else
+				c.fill(color);
 			drawIt(c);
 			
 		c.popMatrix();

@@ -1,5 +1,6 @@
 package de.tum.in.fipm.kipm.gui.visualisation.applets;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -280,9 +281,9 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			id = new String[allItems.size()];
 			for(int i=0;i<allItems.size();i++) {
 				ItemBase itm = allItems.get(i);
-				itm.colorOverride = 0xff000000 | ( 1*i + 1);
+				itm.colorOverride = new Color(0xff000000 | ( 1*i + 1));
 				allItems.get(i).draw(buffer, currentFrame);
-				itm.colorOverride = 0;
+				itm.colorOverride = null;
 				id[i] = itm.name;
 			}
 

@@ -1,5 +1,7 @@
 package de.tum.in.fipm.kipm.gui.visualisation.items;
 
+import java.awt.Color;
+
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3d;
 import edu.tum.cs.vis.Canvas;
@@ -34,7 +36,7 @@ public class CadModelItem extends Item {
 	public void drawIt(Canvas c) {
 		
 		if (model != null) {
-			model.getParser().draw(c,colorOverride);
+			model.getParser().getModel().draw(c.g,colorOverride);
 		} else {
 			super.draw(c);
 		}

@@ -1,15 +1,17 @@
 <package>
   <description brief="knowrob_cad_models">
 
-     a package which contains CAD Models (3D Models) used in mod_vis package.
+    a package which contains CAD Models (3D Models) used in mod_vis package.
 
   </description>
   <author>Stefan Profanter</author>
-  <license>BSD</license>
+  <license>GPL</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/knowrob_cad_models</url>
-  <depend package="mod_vis"/>
+
   <depend package="knowrob_common"/>
+  <depend package="jpl"/>
+  <depend package="rosjava_jni"/>
 
 </package>
 

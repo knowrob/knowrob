@@ -1,5 +1,7 @@
 package de.tum.in.fipm.kipm.gui.visualisation.items;
 
+import java.awt.Color;
+
 import javax.vecmath.Matrix4d;
 
 import de.tum.in.fipm.kipm.gui.visualisation.applets.StandaloneKitchenVisApplet;
@@ -18,7 +20,7 @@ public abstract class ItemBase implements Drawable, DrawableAnimated {
 	 * FIXME It is bad practice to use a static method of a class that is completely unrelated to this class. It destroys modularity. The static method convertColor should probably be moved here or some place else that is neutral.
 	 */
 	public int defaultColor = StandaloneKitchenVisApplet.convertColor(220, 220, 220, 255);
-	public int colorOverride = 0;
+	public Color colorOverride = null;
 	
 	/**
 	 * a transformation matrix to apply before drawing
