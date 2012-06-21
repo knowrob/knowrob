@@ -23,6 +23,7 @@ import edu.tum.cs.vis.model.uima.analyzer.MeshAnalyzer;
 import edu.tum.cs.vis.model.uima.analyzer.NeighborAnalyzer;
 import edu.tum.cs.vis.model.uima.analyzer.PrimitiveAnalyzer;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
+import edu.tum.cs.vis.model.util.algorithm.CurvatureCalculation;
 import edu.tum.cs.vis.model.view.MeshReasoningView;
 import edu.tum.cs.vis.model.view.MeshReasoningViewControl;
 
@@ -57,10 +58,10 @@ public class MeshReasoning {
 		// ItemModel itemModel = new ItemModel("models/quader.dae");
 		// ItemModel itemModel = new ItemModel("models/open_box.kmz");
 
-		ItemModel itemModel = new ItemModel("models/cup2.kmz");
+		// ItemModel itemModel = new ItemModel("models/cup2.kmz");
 		// ItemModel itemModel = new ItemModel("models/sphere.dae");
 		// ItemModel itemModel = new ItemModel("models/two_spheres.dae");
-		// ItemModel itemModel = new ItemModel("models/test.dae");
+		ItemModel itemModel = new ItemModel("models/test.dae");
 
 		// ItemModel itemModel = new ItemModel("models/cylinders.dae");
 		// ItemModel itemModel = new ItemModel("models/CylinderCone.dae");
@@ -91,7 +92,7 @@ public class MeshReasoning {
 
 		logger.debug("Calculating curvature ...");
 		model.normalize();
-		model.calculateCurvatures();
+		CurvatureCalculation.calculateCurvatures(model);
 
 		MeshCas cas = new MeshCas();
 

@@ -27,7 +27,6 @@ import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation;
-import edu.tum.cs.vis.model.uima.annotation.primitive.ConeAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.util.Triangle;
 
@@ -372,16 +371,6 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 					}
 			}
 		}
-
-		if (selectedAnnotations.size() == 1) {
-			MeshAnnotation a = selectedAnnotations.get(0);
-
-			if (a instanceof ConeAnnotation) {
-				ConeAnnotation ca = (ConeAnnotation) a;
-				System.out.println("Large: " + ca.getRadiusLarge() + " " + ca.getRadiusSmall());
-			}
-		}
-
 		control.showSelectedAnnotation(selectedAnnotations);
 
 	}

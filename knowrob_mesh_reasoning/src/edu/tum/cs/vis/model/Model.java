@@ -10,26 +10,16 @@ package edu.tum.cs.vis.model;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.Callable;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import org.apache.commons.math3.linear.Array2DRowRealMatrix;
-import org.apache.commons.math3.linear.ArrayRealVector;
-import org.apache.commons.math3.linear.DecompositionSolver;
-import org.apache.commons.math3.linear.LUDecomposition;
-import org.apache.commons.math3.linear.RealMatrix;
-import org.apache.commons.math3.linear.RealVector;
 import org.apache.log4j.Logger;
 
 import processing.core.PGraphics;
-import edu.tum.cs.vis.model.util.Curvature;
+import edu.tum.cs.vis.model.util.BSphere;
 import edu.tum.cs.vis.model.util.Group;
 import edu.tum.cs.vis.model.util.Line;
-import edu.tum.cs.vis.model.util.ThreadPool;
 import edu.tum.cs.vis.model.util.Triangle;
 import edu.tum.cs.vis.model.util.Vertex;
 
@@ -42,290 +32,7 @@ public class Model {
 	/**
 	 * Log4J Logger
 	 */
-	private static Logger	logger	= Logger.getLogger(Model.class);
-
-	static void calculateCurvatureForTriangle(Triangle tri) {
-		// Edges
-		Vector3f e[] = new Vector3f[3];
-
-		for (int j = 0; j < 3; j++) {
-			e[j] = new Vector3f(tri.getPosition()[(j + 2) % 3]);
-			e[j].sub(tri.getPosition()[(j + 1) % 3]);
-		}
-
-		// N-T-B coordinate system per face
-		Vector3f t = new Vector3f(e[0]);
-		t.normalize();
-		Vector3f n = new Vector3f();
-		n.cross(e[0], e[1]);
-		Vector3f b = new Vector3f();
-		b.cross(n, t);
-		b.normalize();
-
-		// Estimate curvature based on variation of normals
-		// along edges
-		float m[] = { 0, 0, 0 };
-		double w[][] = { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } };
-		for (int j = 0; j < 3; j++) {
-
-			float u = e[j].dot(t);
-			float v = e[j].dot(b);
-			w[0][0] += u * u;
-			w[0][1] += u * v;
-			// w[1][1] += v*v + u*u;
-			// w[1][2] += u*v;
-			w[2][2] += v * v;
-			Vector3f dn = new Vector3f(tri.getPosition()[(j + 2) % 3].getNormalVector());
-			dn.sub(tri.getPosition()[(j + 1) % 3].getNormalVector());
-			float dnu = dn.dot(t);
-			float dnv = dn.dot(b);
-			m[0] += dnu * u;
-			m[1] += dnu * v + dnv * u;
-			m[2] += dnv * v;
-		}
-		w[1][1] = w[0][0] + w[2][2];
-		w[1][2] = w[0][1];
-
-		RealMatrix coefficients = new Array2DRowRealMatrix(w, false);
-		DecompositionSolver solver = new LUDecomposition(coefficients).getSolver();
-		if (!solver.isNonSingular()) {
-			return;
-		}
-
-		RealVector constants = new ArrayRealVector(new double[] { m[0], m[1], m[2] }, false);
-		RealVector solution = solver.solve(constants);
-
-		m[0] = (float) solution.getEntry(0);
-		m[1] = (float) solution.getEntry(1);
-		m[2] = (float) solution.getEntry(2);
-
-		// Push it back out to the vertices
-		for (int j = 0; j < 3; j++) {
-			Vertex vj = tri.getPosition()[j];
-
-			float c1, c12, c2;
-			float ret[] = proj_curv(t, b, m[0], m[1], m[2], vj.getCurvature()
-					.getPrincipleDirectionMax(), vj.getCurvature().getPrincipleDirectionMin());
-			c1 = ret[0];
-			c12 = ret[1];
-			c2 = ret[2];
-
-			float wt;
-			if (j == 0)
-				wt = tri.getCornerarea().x / vj.getPointarea();
-			else if (j == 1)
-				wt = tri.getCornerarea().y / vj.getPointarea();
-			else
-				wt = tri.getCornerarea().z / vj.getPointarea();
-
-			synchronized (vj.getCurvature()) {
-				vj.getCurvature().setCurvatureMax(vj.getCurvature().getCurvatureMax() + wt * c1);
-				vj.getCurvature().setCurvatureMinMax(
-						vj.getCurvature().getCurvatureMinMax() + wt * c12);
-				vj.getCurvature().setCurvatureMin(vj.getCurvature().getCurvatureMin() + wt * c2);
-			}
-		}
-	}
-
-	static void calculateVoronoiAreaForTriangle(Triangle t) {
-		// Edges
-		Vector3f e[] = new Vector3f[3];
-
-		for (int i = 0; i < 3; i++) {
-			e[i] = new Vector3f(t.getPosition()[(i + 2) % 3]);
-			e[i].sub(t.getPosition()[(i + 1) % 3]);
-		}
-
-		// Compute corner weights
-		Vector3f tmp = new Vector3f();
-		tmp.cross(e[0], e[1]);
-		float area = 0.5f * tmp.length();
-		float l2[] = { e[0].lengthSquared(), e[1].lengthSquared(), e[2].lengthSquared() };
-		float ew[] = { l2[0] * (l2[1] + l2[2] - l2[0]), l2[1] * (l2[2] + l2[0] - l2[1]),
-				l2[2] * (l2[0] + l2[1] - l2[2]) };
-		t.setCornerarea(new Vector3f());
-		if (ew[0] <= 0.0f) {
-			t.getCornerarea().y = -0.25f * l2[2] * area / (e[0].dot(e[2]));
-			t.getCornerarea().z = -0.25f * l2[1] * area / (e[0].dot(e[1]));
-			t.getCornerarea().x = area - t.getCornerarea().y - t.getCornerarea().z;
-		} else if (ew[1] <= 0.0f) {
-			t.getCornerarea().z = -0.25f * l2[0] * area / (e[1].dot(e[0]));
-			t.getCornerarea().x = -0.25f * l2[2] * area / (e[1].dot(e[2]));
-			t.getCornerarea().y = area - t.getCornerarea().z - t.getCornerarea().x;
-		} else if (ew[2] <= 0.0f) {
-			t.getCornerarea().x = -0.25f * l2[1] * area / (e[2].dot(e[1]));
-			t.getCornerarea().y = -0.25f * l2[0] * area / (e[2].dot(e[0]));
-			t.getCornerarea().z = area - t.getCornerarea().x - t.getCornerarea().y;
-		} else {
-			float ewscale = 0.5f * area / (ew[0] + ew[1] + ew[2]);
-			t.getCornerarea().x = ewscale * (ew[1] + ew[2]);
-			t.getCornerarea().y = ewscale * (ew[2] + ew[0]);
-			t.getCornerarea().z = ewscale * (ew[0] + ew[1]);
-		}
-
-		synchronized (t.getPosition()[0]) {
-			t.getPosition()[0]
-					.setPointarea(t.getPosition()[0].getPointarea() + t.getCornerarea().x);
-		}
-		synchronized (t.getPosition()[1]) {
-			t.getPosition()[1]
-					.setPointarea(t.getPosition()[1].getPointarea() + t.getCornerarea().y);
-		}
-		synchronized (t.getPosition()[2]) {
-			t.getPosition()[2]
-					.setPointarea(t.getPosition()[2].getPointarea() + t.getCornerarea().z);
-		}
-	}
-
-	/**
-	 * Given a curvature tensor, find principal directions and curvatures. Makes sure that pdir1 and
-	 * pdir2 are perpendicular to normal
-	 * 
-	 * returns pdir1
-	 */
-	static void diagonalize_curv(final Vector3f old_u, final Vector3f old_v, float ku, float kuv,
-			float kv, final Vector3f new_norm, Vector3f pdir[], float k[]) {
-		Vector3f r_old_u = new Vector3f(), r_old_v = new Vector3f();
-		rot_coord_sys(old_u, old_v, new_norm, r_old_u, r_old_v);
-
-		float c = 1, s = 0, tt = 0;
-		if (kuv != 0.0f) {
-			// Jacobi rotation to diagonalize
-			float h = 0.5f * (kv - ku) / kuv;
-			tt = (float) ((h < 0.0f) ? 1.0f / (h - Math.sqrt(1.0f + h * h)) : 1.0f / (h + Math
-					.sqrt(1.0f + h * h)));
-			c = (float) (1.0f / Math.sqrt(1.0f + tt * tt));
-			s = tt * c;
-		}
-
-		k[0] = ku - tt * kuv;
-		k[1] = kv + tt * kuv;
-
-		if (Math.abs(k[0]) >= Math.abs(k[1])) {
-			r_old_u.scale(c);
-			r_old_v.scale(s);
-			r_old_u.sub(r_old_v);
-			pdir[0] = r_old_u;
-		} else {
-			float kt = k[0];
-			k[0] = k[1];
-			k[1] = kt;
-
-			r_old_u.scale(s);
-			r_old_v.scale(c);
-			r_old_u.sub(r_old_v);
-			pdir[0] = r_old_u;
-		}
-		pdir[1] = new Vector3f();
-		pdir[1].cross(new_norm, pdir[0]);
-	}
-
-	/**
-	 * Convert hsv to rgb color space acording to:
-	 * https://en.wikipedia.org/wiki/HSL_and_HSV#From_HSV
-	 * 
-	 * @param h
-	 * @param s
-	 * @param v
-	 * @return
-	 */
-	private static Color hsv2srgb(float h, float s, float v) {
-		// From FvD
-		float H = h, S = s, V = v;
-		if (S <= 0.0f)
-			return new Color(V, V, V);
-		H = (float) (H % (2 * Math.PI));
-		if (H < 0.0f)
-			H += 2 * Math.PI;
-		// S and V is now between 0 and 1, H between 0 an 2*PI
-
-		float hi = (float) (H * (Math.PI / 3)); // Divide by 60 degree
-		int i = (int) Math.floor(hi);
-		float f = hi - i;
-		float p = V * (1.0f - S);
-		float q = V * (1.0f - (S * f));
-		float t = V * (1.0f - (S * (1.0f - f)));
-		switch (i) {
-			case 0:
-				return new Color(V, t, p);
-			case 1:
-				return new Color(q, V, p);
-			case 2:
-				return new Color(p, V, t);
-			case 3:
-				return new Color(p, q, V);
-			case 4:
-				return new Color(t, p, V);
-			default:
-				return new Color(V, p, q);
-		}
-	}
-
-	/**
-	 * Reproject a curvature tensor from the basis spanned by old_u and old_v (which are assumed to
-	 * be unit-length and perpendicular) to the new_u, new_v basis. returns [new_ku, new_kuv,
-	 * new_kv]
-	 * 
-	 * @param old_u
-	 * @param old_v
-	 * @param old_ku
-	 * @param old_kuv
-	 * @param old_kv
-	 * @param new_u
-	 * @param new_v
-	 * @return
-	 */
-	private static float[] proj_curv(final Vector3f old_u, final Vector3f old_v, float old_ku,
-			float old_kuv, float old_kv, final Vector3f new_u, final Vector3f new_v) {
-		Vector3f r_new_u = new Vector3f(), r_new_v = new Vector3f();
-		Vector3f tmp = new Vector3f();
-		tmp.cross(old_u, old_v);
-		rot_coord_sys(new_u, new_v, tmp, r_new_u, r_new_v);
-
-		float u1 = r_new_u.dot(old_u);
-		float v1 = r_new_u.dot(old_v);
-		float u2 = r_new_v.dot(old_u);
-		float v2 = r_new_v.dot(old_v);
-		float ret[] = new float[3];
-		ret[0] = old_ku * u1 * u1 + old_kuv * (2.0f * u1 * v1) + old_kv * v1 * v1;
-		ret[1] = old_ku * u1 * u2 + old_kuv * (u1 * v2 + u2 * v1) + old_kv * v1 * v2;
-		ret[2] = old_ku * u2 * u2 + old_kuv * (2.0f * u2 * v2) + old_kv * v2 * v2;
-		return ret;
-	}
-
-	/**
-	 * Rotate a coordinate system to be perpendicular to the given normal
-	 */
-	static void rot_coord_sys(final Vector3f old_u, final Vector3f old_v, final Vector3f new_norm,
-			Vector3f new_u, Vector3f new_v) {
-		old_u.get(new_u);
-		old_v.get(new_v);
-
-		Vector3f old_norm = new Vector3f();
-		old_norm.cross(old_u, old_v);
-		float ndot = old_norm.dot(new_norm);
-		if (ndot <= -1.0f) {
-			new_u.scale(-1);
-			new_v.scale(-1);
-			return;
-		}
-		Vector3f perp_old = new Vector3f(new_norm);
-		Vector3f tmp = new Vector3f(old_norm);
-		tmp.scale(ndot);
-		perp_old.sub(tmp);
-
-		Vector3f dperp = new Vector3f(old_norm);
-		dperp.add(new_norm);
-		dperp.scale(1.0f / (1 + ndot));
-
-		tmp = new Vector3f(dperp);
-		tmp.scale(new_u.dot(perp_old));
-		new_u.sub(tmp);
-
-		tmp = new Vector3f(dperp);
-		tmp.scale(new_v.dot(perp_old));
-		new_v.sub(tmp);
-	}
+	private static Logger			logger			= Logger.getLogger(Model.class);
 
 	private String					textureBasePath	= null;
 
@@ -337,210 +44,7 @@ public class Model {
 
 	private final ArrayList<Line>	lines			= new ArrayList<Line>();
 
-	private void calculateCurvature() {
-
-		for (int i = 0; i < vertices.size(); i++) {
-			vertices.get(i).setCurvature(new Curvature());
-		}
-
-		// Set up an initial coordinate system per vertex
-		for (int i = 0; i < triangles.size(); i++) {
-			Triangle t = triangles.get(i);
-			for (int j = 0; j < 3; j++) {
-				Vertex v = t.getPosition()[j];
-				v.getCurvature().setPrincipleDirectionMax(
-						new Vector3f(t.getPosition()[(j + 1) % 3]));
-				v.getCurvature().getPrincipleDirectionMax().sub(v);
-			}
-		}
-		for (int i = 0; i < vertices.size(); i++) {
-
-			Vector3f tmp = new Vector3f();
-			tmp.cross(vertices.get(i).getCurvature().getPrincipleDirectionMax(), vertices.get(i)
-					.getNormalVector());
-			tmp.normalize();
-			vertices.get(i).getCurvature().setPrincipleDirectionMax(tmp);
-
-			tmp = new Vector3f();
-			tmp.cross(vertices.get(i).getNormalVector(), vertices.get(i).getCurvature()
-					.getPrincipleDirectionMax());
-			vertices.get(i).getCurvature().setPrincipleDirectionMin(tmp);
-		}
-
-		// Compute curvature per-face
-
-		List<Callable<Void>> threads = new LinkedList<Callable<Void>>();
-
-		final int interval = 500;
-
-		for (int start = 0; start < triangles.size(); start += interval) {
-			final int st = start;
-			threads.add(new Callable<Void>() {
-
-				@Override
-				public Void call() throws Exception {
-					int end = Math.min(st + interval, triangles.size());
-					for (int i = st; i < end; i++) {
-						calculateCurvatureForTriangle(triangles.get(i));
-					}
-					return null;
-				}
-
-			});
-		};
-
-		ThreadPool.executeInPool(threads);
-
-		/*for (int i = 0; i < triangles.size(); i++) {
-			calculateCurvatureForTriangle(triangles.get(i));
-		}*/
-
-		// Compute principal directions and curvatures at each vertex
-		for (int i = 0; i < vertices.size(); i++) {
-			Curvature c = vertices.get(i).getCurvature();
-			Vector3f pdirRet[] = new Vector3f[2];
-			float kRet[] = new float[2];
-			diagonalize_curv(c.getPrincipleDirectionMax(), c.getPrincipleDirectionMin(),
-					c.getCurvatureMax(), c.getCurvatureMinMax(), c.getCurvatureMin(),
-					vertices.get(i).getNormalVector(), pdirRet, kRet);
-			c.setPrincipleDirectionMax(pdirRet[0]);
-			c.setPrincipleDirectionMin(pdirRet[1]);
-			c.setCurvatureMax(kRet[0]);
-			c.setCurvatureMin(kRet[1]);
-		}
-	}
-
-	public void calculateCurvatures() {
-
-		if (vertices.size() == 0)
-			return;
-		calculateVertexNormals();
-		calculateVoronoiArea();
-		calculateCurvature();
-		setCurvatureHueSaturation(false);
-	}
-
-	/**
-	 * Ported from trimesh2 (Szymon Rusinkiewicz Princeton University)
-	 * 
-	 * uses average of per-face normals, weighted according to: Max, N.
-	 * "Weights for Computing Vertex Normals from Facet Normals," Journal of Graphics Tools, Vol. 4,
-	 * No. 2, 1999.
-	 */
-	private void calculateVertexNormals() {
-		// Compute from faces
-
-		List<Callable<Void>> threads = new LinkedList<Callable<Void>>();
-
-		final int interval = 500;
-
-		for (int start = 0; start < triangles.size(); start += interval) {
-			final int st = start;
-			threads.add(new Callable<Void>() {
-
-				@Override
-				public Void call() throws Exception {
-					int end = Math.min(st + interval, triangles.size());
-					for (int i = st; i < end; i++) {
-						calculateVertexNormalsForTriangle(triangles.get(i));
-					}
-					return null;
-				}
-
-			});
-		};
-
-		ThreadPool.executeInPool(threads);
-
-		/*for (int i = 0; i < triangles.size(); i++) {
-			Triangle t = triangles.get(i);
-			if (Float.isNaN(t.getNormalVector().x) || Float.isNaN(t.getNormalVector().y)
-					|| Float.isNaN(t.getNormalVector().z)) {
-				System.out.println("Nomr is nan");
-			}
-			calculateVertexNormalsForTriangle(triangles.get(i));
-		};*/
-
-		for (Vertex v : vertices)
-			v.getNormalVector().normalize();
-
-	}
-
-	void calculateVertexNormalsForTriangle(Triangle t) {
-		Vertex p0 = t.getPosition()[0];
-		Vertex p1 = t.getPosition()[1];
-		Vertex p2 = t.getPosition()[2];
-
-		Vector3f a = new Vector3f(p0);
-		a.sub(p1);
-		Vector3f b = new Vector3f(p1);
-		b.sub(p2);
-		Vector3f c = new Vector3f(p2);
-		c.sub(p0);
-		float l2a = a.lengthSquared(), l2b = b.lengthSquared(), l2c = c.lengthSquared();
-		if (l2a == 0 || l2b == 0 || l2c == 0)
-			return;
-
-		Vector3f facenormal = new Vector3f();
-		facenormal.cross(b, a);
-
-		Vector3f normalP0 = (Vector3f) facenormal.clone();
-		normalP0.scale(1.0f / (l2a * l2c));
-		synchronized (p0.getNormalVector()) {
-			p0.getNormalVector().add(normalP0);
-		}
-
-		Vector3f normalP1 = (Vector3f) facenormal.clone();
-		normalP1.scale(1.0f / (l2b * l2a));
-		synchronized (p1.getNormalVector()) {
-			p1.getNormalVector().add(normalP1);
-		}
-
-		Vector3f normalP2 = (Vector3f) facenormal.clone();
-		normalP2.scale(1.0f / (l2c * l2b));
-		synchronized (p2.getNormalVector()) {
-			p2.getNormalVector().add(normalP2);
-		}
-	}
-
-	/**
-	 * Ported from trimesh2 (Szymon Rusinkiewicz Princeton University)
-	 * 
-	 * Compute the area "belonging" to each vertex or each corner of a triangle (defined as Voronoi
-	 * area restricted to the 1-ring of a vertex, or to the triangle).
-	 */
-	private void calculateVoronoiArea() {
-		// Compute from faces
-
-		List<Callable<Void>> threads = new LinkedList<Callable<Void>>();
-
-		final int interval = 500;
-
-		for (Vertex v : vertices)
-			v.setPointarea(0);
-
-		/*for (int start = 0; start < triangles.size(); start++) {
-			calculateVoronoiAreaForTriangle(triangles.get(start));
-		};*/
-
-		for (int start = 0; start < triangles.size(); start += interval) {
-			final int st = start;
-			threads.add(new Callable<Void>() {
-
-				@Override
-				public Void call() throws Exception {
-					int end = Math.min(st + interval, triangles.size());
-					for (int i = st; i < end; i++) {
-						calculateVoronoiAreaForTriangle(triangles.get(i));
-					}
-					return null;
-				}
-
-			});
-		};
-
-		ThreadPool.executeInPool(threads);
-	}
+	private BSphere					boundingSphere	= null;
 
 	/**
 	 * @param g
@@ -587,6 +91,13 @@ public class Model {
 		}
 		Arrays.sort(samples);
 		return (float) Math.sqrt(samples[samples.length / 2]);
+	}
+
+	/**
+	 * @return the boundingSphere
+	 */
+	public BSphere getBoundingSphere() {
+		return boundingSphere;
 	}
 
 	/**
@@ -660,34 +171,12 @@ public class Model {
 		group.resetMinMaxValues();
 	}
 
-	void setCurvatureHueSaturation(boolean setColor) {
-		/*	float smoothsigma = smooth;
-			if (smoothsigma > 0.0f) {
-				smoothsigma *= feature_size();
-				diffuse_curv(mesh, smoothsigma);
-			}*/
-		float cscale = 10.0f * 10 * typical_scale();
-		cscale = cscale * cscale;
-
-		float min = Float.MAX_VALUE;
-		float max = Float.MIN_VALUE;
-
-		int nv = vertices.size();
-		for (int i = 0; i < nv; i++) {
-			Curvature c = vertices.get(i).getCurvature();
-			float H = 0.5f * (c.getCurvatureMax() + c.getCurvatureMin());
-			float K = c.getCurvatureMax() * c.getCurvatureMin();
-			float h = (float) (4.0f / 3.0f * Math
-					.abs(Math.atan2(H * H - K, H * H * Math.signum(H))));
-			float s = (float) ((2 / Math.PI) * Math.atan((2.0f * H * H - K) * cscale));
-			min = Math.min(h, min);
-			max = Math.max(h, max);
-			if (setColor) {
-				vertices.get(i).color = hsv2srgb(h, s, 1.0f);
-			}
-			vertices.get(i).getCurvature().setHue(h);
-			vertices.get(i).getCurvature().setSaturation(s);
-		}
+	/**
+	 * @param boundingSphere
+	 *            the boundingSphere to set
+	 */
+	public void setBoundingSphere(BSphere boundingSphere) {
+		this.boundingSphere = boundingSphere;
 	}
 
 	/**
@@ -706,42 +195,4 @@ public class Model {
 		this.textureBasePath = textureBasePath;
 	}
 
-	/**
-	 * Compute a "typical scale" for the mesh: computed as 1% of the reciprocal of the 10-th
-	 * percentile curvature
-	 * 
-	 * @return
-	 */
-	float typical_scale() {
-		float frac = 0.1f;
-		float mult = 0.01f;
-
-		int nv = vertices.size();
-		int nsamp = Math.min(nv, 500);
-		if (nsamp == 0)
-			return 0;
-
-		float samples[] = new float[nsamp * 2];
-		int idx = 0;
-		for (int i = 0; i < nsamp; i++) {
-			int ind = (int) (Math.random() * nv);
-
-			samples[idx++] = Math.abs(vertices.get(ind).getCurvature().getCurvatureMax());
-			samples[idx++] = Math.abs(vertices.get(ind).getCurvature().getCurvatureMin());
-		}
-
-		int which = (int) (frac * samples.length);
-		Arrays.sort(samples);
-
-		float f = 0;
-		if (samples[which] == 0.0f || Float.isNaN(samples[which])) {
-			// mesh->need_bsphere();
-			// f = mult * mesh->bsphere.r;
-			f = 10;
-			logger.warn("Couldn't determine typical scale. Using fixed value: " + f + ".");
-		} else {
-			f = mult / samples[which];
-		}
-		return f;
-	}
 }

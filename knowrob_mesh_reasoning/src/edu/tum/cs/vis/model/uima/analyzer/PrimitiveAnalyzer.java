@@ -233,6 +233,8 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 		if (dot > 1.0) // due to floating point arithmetic
 			dot = 1.0;
 
+		// Angle between 0 and 180 degree because angle of normal vector may be exactly 0 or 180
+		// degree for same plane
 		double angle = Math.acos(dot) + Math.PI * 2;
 		angle = angle % Math.PI;
 
