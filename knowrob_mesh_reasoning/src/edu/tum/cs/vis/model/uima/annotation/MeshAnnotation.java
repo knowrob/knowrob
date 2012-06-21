@@ -1,12 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2012 Stefan Profanter.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Public License v3.0
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/gpl.html
+ * Copyright (c) 2012 Stefan Profanter. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the GNU Public License v3.0 which accompanies
+ * this distribution, and is available at http://www.gnu.org/licenses/gpl.html
  * 
- * Contributors:
- *     Stefan Profanter - initial API and implementation, Year: 2012
+ * Contributors: Stefan Profanter - initial API and implementation, Year: 2012
  ******************************************************************************/
 package edu.tum.cs.vis.model.uima.annotation;
 
@@ -30,6 +27,15 @@ public abstract class MeshAnnotation extends Annotation {
 	private static final long	serialVersionUID	= 1222063742441634463L;
 
 	/**
+	 * The annotation color for this type of annotation.
+	 */
+	protected Color				annotationColor;
+	/**
+	 * A random annotation color. Each annotation gets also a random color.
+	 */
+	private final Color			randomAnnotationColor;
+
+	/**
 	 * Mesh which contains the referenced Polygons for which this annotation stands.
 	 */
 	protected Mesh				mesh				= new Mesh();
@@ -40,6 +46,24 @@ public abstract class MeshAnnotation extends Annotation {
 	protected boolean			drawAnnotation		= true;
 
 	/**
+	 * Use random color for drawing the annotation
+	 */
+	protected boolean			useRandomColor		= false;
+
+	/**
+	 * Default constructor. Sets the annotation color. Each type of annotation should have a
+	 * different color.
+	 * 
+	 * @param annotationColor
+	 *            The annotation color for this type of annotation
+	 */
+	public MeshAnnotation(final Color annotationColor) {
+		randomAnnotationColor = new Color((float) Math.random(), (float) Math.random(),
+				(float) Math.random(), 0.5f);
+		this.annotationColor = annotationColor;
+	}
+
+	/**
 	 * Draw the annotation with color from <code>getAnnotationColor()</code>
 	 * 
 	 * @param g
@@ -47,18 +71,23 @@ public abstract class MeshAnnotation extends Annotation {
 	 */
 	public void draw(PGraphics g) {
 		if (drawAnnotation) {
-			mesh.drawLines(g, getAnnotationColor());
-			mesh.drawPolygons(g, getAnnotationColor());
+			mesh.drawLines(g, getDrawColor());
+			mesh.drawPolygons(g, getDrawColor());
 		}
 	}
 
 	/**
-	 * Returns the color for drawing this annotation. Each type of annotation should have a
-	 * different color.
+	 * Returns the color for drawing this annotation. If useRandomColor is true, the random color
+	 * will be returned.
 	 * 
-	 * @return the color
+	 * @return randomAnnotationColor if useRandomColor. Otherwise: annotationColor
 	 */
-	public abstract Color getAnnotationColor();
+	public Color getDrawColor() {
+		if (useRandomColor)
+			return randomAnnotationColor;
+
+		return annotationColor;
+	}
 
 	/**
 	 * @return the mesh
@@ -72,6 +101,13 @@ public abstract class MeshAnnotation extends Annotation {
 	 */
 	public boolean isDrawAnnotation() {
 		return drawAnnotation;
+	}
+
+	/**
+	 * @return the useRandomColor
+	 */
+	public boolean isUseRandomColor() {
+		return useRandomColor;
 	}
 
 	/**
@@ -99,6 +135,14 @@ public abstract class MeshAnnotation extends Annotation {
 	 */
 	public void setMesh(Mesh mesh) {
 		this.mesh = mesh;
+	}
+
+	/**
+	 * @param useRandomColor
+	 *            the useRandomColor to set
+	 */
+	public void setUseRandomColor(boolean useRandomColor) {
+		this.useRandomColor = useRandomColor;
 	}
 
 }

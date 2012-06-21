@@ -8,6 +8,8 @@
 package edu.tum.cs.vis.model.view;
 
 import java.awt.Color;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
@@ -24,10 +26,13 @@ import edu.tum.cs.vis.model.util.Polygon;
 /**
  * Viewing applet for showing the results of the reasoning process.
  * 
+ * Supported keys: + Increase scale, - Decrease scale
+ * 
  * @author Stefan Profanter
  * 
  */
-public final class MeshReasoningView extends PAppletSelection implements MouseInputListener {
+public final class MeshReasoningView extends PAppletSelection implements MouseInputListener,
+		KeyListener {
 
 	/**
 	 * 
@@ -58,6 +63,11 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	private ArrayList<MeshCas>				casList				= new ArrayList<MeshCas>();
 
 	/**
+	 * current scale factor
+	 */
+	private int								currentScale		= 20;
+
+	/**
 	 * List of selected polygons (polygons which intersect with mouse ray)
 	 */
 	private final ArrayList<Polygon>		selectedPolygons	= new ArrayList<Polygon>();
@@ -74,7 +84,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	@Override
 	public void draw() {
 
-		scale(20);
+		scale(currentScale);
 		background(bgcolor.getRed(), bgcolor.getGreen(), bgcolor.getBlue());
 		// draw axis
 		noFill();
@@ -134,6 +144,16 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	 */
 	public ArrayList<MeshCas> getCasList() {
 		return casList;
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		char c = e.getKeyChar();
+		if (c == '+') {
+			currentScale += 10;
+		} else if (c == '-') {
+			currentScale = Math.max(10, currentScale - 10);
+		}
 	}
 
 	@Override

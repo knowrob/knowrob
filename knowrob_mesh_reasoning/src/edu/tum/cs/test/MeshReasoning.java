@@ -53,7 +53,9 @@ public class MeshReasoning {
 				"/home/stefan/ros/knowrob/knowrob_cad_models/models/collada/hospital_bed.kmz");
 		// ItemModel model = new ItemModel("/home/stefan/Downloads/triangle.dae");
 		// ItemModel model = new ItemModel("/home/stefan/Downloads/saintpeter.kmz");
+
 		// ItemModel model = new ItemModel("/home/stefan/CoTeSys/cups/cup2.kmz");
+		// ItemModel model = new ItemModel("/home/stefan/CoTeSys/cups/cup_round.kmz");
 		// ItemModel model = new ItemModel("/home/stefan/Downloads/cube.kmz");
 		if (!model.parseModel()) {
 			throw new RuntimeException("Couldn't parse model. Maybe path to model is wrong.");

@@ -227,6 +227,11 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 
 		executeInPool(threads);
 
+		/*for (Polygon p : allPolygons) {
+			polygonBFS(p, cas);
+			polygonsElaborated.incrementAndGet();
+		}*/
+
 		logger.debug("Number of FlatSurfaceAnnotations: " + cas.getAnnotations().size());
 
 	}

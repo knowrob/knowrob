@@ -32,19 +32,14 @@ public class FlatSurfaceAnnotation extends MeshAnnotation {
 	private static final long	serialVersionUID	= 8767464136366533135L;
 
 	/**
-	 * Color for drawing this annotation
-	 */
-	// TODO change to static
-	private Color				annotationColor		= new Color(255, 0, 0, 128);
-
-	/**
 	 * Total area of the flat surface
 	 */
-	private final Area			area				= new Area();					;
+	private final Area			area				= new Area();
+
 	/**
 	 * Dimension2D of the surface in x and y coordinates. So normal vector will be (0,0,1)
 	 */
-	private final Dimension2D	dimension			= new Dimension2D();
+	private final Dimension2D	dimension			= new Dimension2D();	;
 	/**
 	 * surface normal
 	 */
@@ -53,15 +48,8 @@ public class FlatSurfaceAnnotation extends MeshAnnotation {
 	/**
 	 * Default constructor
 	 */
-	// TODO remove
 	public FlatSurfaceAnnotation() {
-		annotationColor = new Color((float) Math.random(), (float) Math.random(),
-				(float) Math.random());
-	}
-
-	@Override
-	public Color getAnnotationColor() {
-		return annotationColor;
+		super(new Color(255, 0, 0, 128));
 	}
 
 	/**
@@ -107,4 +95,5 @@ public class FlatSurfaceAnnotation extends MeshAnnotation {
 
 		// TODO calculate dimension
 	}
+
 }

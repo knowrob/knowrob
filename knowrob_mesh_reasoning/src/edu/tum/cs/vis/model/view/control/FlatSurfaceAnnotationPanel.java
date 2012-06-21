@@ -112,6 +112,8 @@ public class FlatSurfaceAnnotationPanel extends AnnotationPanel<FlatSurfaceAnnot
 		c.gridy = 1;
 		pnlSettings.add(maxArea, c);
 
+		add(getColorPanel(), BorderLayout.NORTH);
+
 		add(pnlSettings, BorderLayout.CENTER);
 
 		pnlInfo = new JPanel(new GridBagLayout());
