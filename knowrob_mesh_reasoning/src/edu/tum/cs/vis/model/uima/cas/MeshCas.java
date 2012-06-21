@@ -8,6 +8,7 @@
 package edu.tum.cs.vis.model.uima.cas;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import processing.core.PGraphics;
@@ -16,7 +17,9 @@ import edu.tum.cs.uima.JCas;
 import edu.tum.cs.vis.model.Model;
 import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
+import edu.tum.cs.vis.model.util.Curvature;
 import edu.tum.cs.vis.model.util.Triangle;
+import edu.tum.cs.vis.model.util.Vertex;
 
 /**
  * UIMA CAS for 3D meshes.
@@ -29,16 +32,18 @@ public class MeshCas extends JCas implements Serializable {
 	/**
 	 * Auto generated
 	 */
-	private static final long	serialVersionUID	= 4603166505444872760L;
+	private static final long					serialVersionUID	= 4603166505444872760L;
 	/**
 	 * Group which represents the mesh and its child groups
 	 */
-	private Model				model;
+	private Model								model;
 
 	/**
 	 * Indicates if the original mesh should be drawn or not.
 	 */
-	private boolean				drawMesh			= true;
+	private boolean								drawMesh			= true;
+
+	private final HashMap<Vertex, Curvature>	curvatures			= new HashMap<Vertex, Curvature>();
 
 	/**
 	 * adds a new annotation to the annotations list
@@ -111,6 +116,14 @@ public class MeshCas extends JCas implements Serializable {
 		return an;
 	}
 
+	public Curvature getCurvature(Vertex v) {
+		return curvatures.get(v);
+	}
+
+	public HashMap<Vertex, Curvature> getCurvatures() {
+		return curvatures;
+	}
+
 	/**
 	 * @return the model
 	 */
@@ -123,6 +136,10 @@ public class MeshCas extends JCas implements Serializable {
 	 */
 	public boolean isDrawMesh() {
 		return drawMesh;
+	}
+
+	public void setCurvature(Vertex v, Curvature c) {
+		curvatures.put(v, c);
 	}
 
 	/**

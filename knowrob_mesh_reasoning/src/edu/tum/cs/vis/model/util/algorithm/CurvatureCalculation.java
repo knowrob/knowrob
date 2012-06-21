@@ -8,6 +8,7 @@
 package edu.tum.cs.vis.model.util.algorithm;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -40,34 +41,32 @@ public class CurvatureCalculation {
 	 */
 	private static Logger	logger	= Logger.getLogger(CurvatureCalculation.class);
 
-	private static void calculateCurvature(final Model m) {
-
-		for (int i = 0; i < m.getVertices().size(); i++) {
-			m.getVertices().get(i).setCurvature(new Curvature());
-		}
+	private static void calculateCurvature(final HashMap<Vertex, Curvature> curvatures,
+			final Model m) {
 
 		// Set up an initial coordinate system with min and max curvature as u and v per vertex
 		for (int i = 0; i < m.getTriangles().size(); i++) {
 			Triangle t = m.getTriangles().get(i);
 			for (int j = 0; j < 3; j++) {
 				Vertex v = t.getPosition()[j];
-				v.getCurvature().setPrincipleDirectionMax(
-						new Vector3f(t.getPosition()[(j + 1) % 3]));
-				v.getCurvature().getPrincipleDirectionMax().sub(v);
+				Curvature c = new Curvature();
+				curvatures.put(v, c);
+				c.setPrincipleDirectionMax(new Vector3f(t.getPosition()[(j + 1) % 3]));
+				c.getPrincipleDirectionMax().sub(v);
 			}
 		}
 		for (int i = 0; i < m.getVertices().size(); i++) {
 
 			Vector3f tmp = new Vector3f();
-			tmp.cross(m.getVertices().get(i).getCurvature().getPrincipleDirectionMax(), m
+			tmp.cross(curvatures.get(m.getVertices().get(i)).getPrincipleDirectionMax(), m
 					.getVertices().get(i).getNormalVector());
 			tmp.normalize();
-			m.getVertices().get(i).getCurvature().setPrincipleDirectionMax(tmp);
+			curvatures.get(m.getVertices().get(i)).setPrincipleDirectionMax(tmp);
 
 			tmp = new Vector3f();
-			tmp.cross(m.getVertices().get(i).getNormalVector(), m.getVertices().get(i)
-					.getCurvature().getPrincipleDirectionMax());
-			m.getVertices().get(i).getCurvature().setPrincipleDirectionMin(tmp);
+			tmp.cross(m.getVertices().get(i).getNormalVector(),
+					curvatures.get(m.getVertices().get(i)).getPrincipleDirectionMax());
+			curvatures.get(m.getVertices().get(i)).setPrincipleDirectionMin(tmp);
 		}
 
 		// Compute curvature per-face
@@ -84,7 +83,7 @@ public class CurvatureCalculation {
 				public Void call() throws Exception {
 					int end = Math.min(st + interval, m.getTriangles().size());
 					for (int i = st; i < end; i++) {
-						calculateCurvatureForTriangle(m.getTriangles().get(i));
+						calculateCurvatureForTriangle(curvatures, m.getTriangles().get(i));
 					}
 					return null;
 				}
@@ -100,7 +99,7 @@ public class CurvatureCalculation {
 
 		// Compute principal directions and curvatures at each vertex
 		for (int i = 0; i < m.getVertices().size(); i++) {
-			Curvature c = m.getVertices().get(i).getCurvature();
+			Curvature c = curvatures.get(m.getVertices().get(i));
 			Vector3f pdirRet[] = new Vector3f[2];
 			float kRet[] = new float[2];
 			diagonalize_curv(c.getPrincipleDirectionMax(), c.getPrincipleDirectionMin(),
@@ -113,7 +112,7 @@ public class CurvatureCalculation {
 		}
 	}
 
-	static void calculateCurvatureForTriangle(Triangle tri) {
+	static void calculateCurvatureForTriangle(HashMap<Vertex, Curvature> curvatures, Triangle tri) {
 		// Edges
 		Vector3f e[] = new Vector3f[3];
 
@@ -173,8 +172,8 @@ public class CurvatureCalculation {
 			Vertex vj = tri.getPosition()[j];
 
 			float c1, c12, c2;
-			float ret[] = proj_curv(t, b, m[0], m[1], m[2], vj.getCurvature()
-					.getPrincipleDirectionMax(), vj.getCurvature().getPrincipleDirectionMin());
+			float ret[] = proj_curv(t, b, m[0], m[1], m[2], curvatures.get(vj)
+					.getPrincipleDirectionMax(), curvatures.get(vj).getPrincipleDirectionMin());
 			c1 = ret[0];
 			c12 = ret[1];
 			c2 = ret[2];
@@ -187,23 +186,23 @@ public class CurvatureCalculation {
 			else
 				wt = tri.getCornerarea().z / vj.getPointarea();
 
-			synchronized (vj.getCurvature()) {
-				vj.getCurvature().setCurvatureMax(vj.getCurvature().getCurvatureMax() + wt * c1);
-				vj.getCurvature().setCurvatureMinMax(
-						vj.getCurvature().getCurvatureMinMax() + wt * c12);
-				vj.getCurvature().setCurvatureMin(vj.getCurvature().getCurvatureMin() + wt * c2);
+			Curvature c = curvatures.get(vj);
+			synchronized (c) {
+				c.setCurvatureMax(c.getCurvatureMax() + wt * c1);
+				c.setCurvatureMinMax(c.getCurvatureMinMax() + wt * c12);
+				c.setCurvatureMin(c.getCurvatureMin() + wt * c2);
 			}
 		}
 	}
 
-	public static void calculateCurvatures(final Model m) {
+	public static void calculateCurvatures(HashMap<Vertex, Curvature> curvatures, final Model m) {
 
 		if (m.getVertices().size() == 0)
 			return;
 		calculateVertexNormals(m);
 		calculateVoronoiArea(m);
-		calculateCurvature(m);
-		setCurvatureHueSaturation(m);
+		calculateCurvature(curvatures, m);
+		setCurvatureHueSaturation(curvatures, m);
 	}
 
 	/**
@@ -509,19 +508,19 @@ public class CurvatureCalculation {
 		new_v.sub(tmp);
 	}
 
-	private static void setCurvatureHueSaturation(Model m) {
-		float cscale = 100.0f * typical_scale(m);
+	private static void setCurvatureHueSaturation(HashMap<Vertex, Curvature> curvatures, Model m) {
+		float cscale = 100.0f * typical_scale(curvatures, m);
 		cscale = cscale * cscale;
 		int nv = m.getVertices().size();
 		for (int i = 0; i < nv; i++) {
-			Curvature c = m.getVertices().get(i).getCurvature();
+			Curvature c = curvatures.get(m.getVertices().get(i));
 			float H = 0.5f * (c.getCurvatureMax() + c.getCurvatureMin()); // mean curvature
 			float K = c.getCurvatureMax() * c.getCurvatureMin(); // gaussian curvature
 			float h = (float) (4.0f / 3.0f * Math
 					.abs(Math.atan2(H * H - K, H * H * Math.signum(H))));
 			float s = (float) ((2 / Math.PI) * Math.atan((2.0f * H * H - K) * cscale));
-			m.getVertices().get(i).getCurvature().setHue(h);
-			m.getVertices().get(i).getCurvature().setSaturation(s);
+			c.setHue(h);
+			c.setSaturation(s);
 		}
 	}
 
@@ -531,7 +530,7 @@ public class CurvatureCalculation {
 	 * 
 	 * @return
 	 */
-	private static float typical_scale(Model m) {
+	private static float typical_scale(HashMap<Vertex, Curvature> curvatures, Model m) {
 		float frac = 0.1f;
 		float mult = 0.01f;
 
@@ -545,8 +544,8 @@ public class CurvatureCalculation {
 		for (int i = 0; i < nsamp; i++) {
 			int ind = (int) (Math.random() * nv);
 
-			samples[idx++] = Math.abs(m.getVertices().get(ind).getCurvature().getCurvatureMax());
-			samples[idx++] = Math.abs(m.getVertices().get(ind).getCurvature().getCurvatureMin());
+			samples[idx++] = Math.abs(curvatures.get(m.getVertices().get(ind)).getCurvatureMax());
+			samples[idx++] = Math.abs(curvatures.get(m.getVertices().get(ind)).getCurvatureMin());
 		}
 
 		int which = (int) (frac * samples.length);

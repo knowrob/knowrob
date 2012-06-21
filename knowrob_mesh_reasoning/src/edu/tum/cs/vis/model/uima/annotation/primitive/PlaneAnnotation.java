@@ -24,6 +24,7 @@ import processing.core.PConstants;
 import processing.core.PGraphics;
 import edu.tum.cs.vis.model.Model;
 import edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation;
+import edu.tum.cs.vis.model.util.Curvature;
 import edu.tum.cs.vis.model.util.Vertex;
 import edu.tum.cs.vis.model.util.algorithm.BestFitRectangle2D;
 
@@ -38,20 +39,55 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 	 */
 	private static final long	serialVersionUID	= 7758656289829843165L;
 
-	private final Vector3f		planeNormal			= new Vector3f();
+	private static Point2f[] projectPointsInto2D(HashMap<Vertex, Float> vertices,
+			Vector3f normalVector, Vector3f centroid, Vector3f v, Vector3f u) {
 
-	private Vector3f			centroid			= new Vector3f();
-	private final Vector3f		shortSide			= new Vector3f();
+		// Get an additional vector besides the normal for creating an orthonormal basis
+		Vector3f rightVector = null;
 
-	private final Vector3f		longSide			= new Vector3f();
+		if (Math.abs(normalVector.x) > Math.abs(normalVector.y))
+			rightVector = new Vector3f(0, 1, 0);
+		else
 
-	private final Point3f		corner[]			= new Point3f[4];
+			rightVector = new Vector3f(1, 0, 0);
+
+		// Once you have a normal and a "right," you can calculate an orthonormal basis:
+		v.cross(rightVector, normalVector);
+		v.normalize();
+
+		u.cross(normalVector, v);
+
+		Point2f[] points = new Point2f[vertices.size()];
+
+		// And once you have your orthonormal basis, you can simply classify each point by dot
+		// products:
+		int i = 0;
+
+		for (Entry<Vertex, Float> e : vertices.entrySet()) {
+			Vertex p3d = e.getKey();
+			Vector3f po = new Vector3f(p3d);
+			po.sub(centroid);
+			points[i++] = new Point2f(u.dot(po), v.dot(po));
+		}
+
+		return points;
+
+	}
+
+	private final Vector3f	planeNormal	= new Vector3f();
+	private Vector3f		centroid	= new Vector3f();
+
+	private final Vector3f	shortSide	= new Vector3f();
+
+	private final Vector3f	longSide	= new Vector3f();
+
+	private final Point3f	corner[]	= new Point3f[4];
 
 	/**
 	 * @param annotationColor
 	 */
-	public PlaneAnnotation(Model model) {
-		super(model, new Color(250, 200, 255));
+	public PlaneAnnotation(HashMap<Vertex, Curvature> curvatures, Model model) {
+		super(curvatures, model, new Color(250, 200, 255));
 	}
 
 	/* (non-Javadoc)
@@ -73,7 +109,7 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 		g.line(centroid.x, centroid.y, centroid.z, centroid.x + longSide.x,
 				centroid.y + longSide.y, centroid.z + longSide.z);*/
 
-		g.fill(getDrawColor().getRed(), getDrawColor().getGreen(), getDrawColor().getBlue(), 120);
+		g.fill(getDrawColor().getRed(), getDrawColor().getGreen(), getDrawColor().getBlue(), 200);
 		g.noStroke();
 
 		g.beginShape(PConstants.QUADS);
@@ -145,7 +181,7 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 		planeNormal.x = (float) svd.getV().get(0, 3);
 		planeNormal.y = (float) svd.getV().get(1, 3);
 		planeNormal.z = (float) svd.getV().get(2, 3);
-		if (planeNormal.length() == 0) {
+		if (planeNormal.length() == 0) { // if svd fails, should never happen
 			planeNormal.get(mesh.getTriangles().get(0).getNormalVector());
 		} else
 			planeNormal.normalize();
@@ -240,53 +276,21 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 		return model.getUnscaled(shortSide);
 	}
 
-	private Point2f[] projectPlaneInto2D(HashMap<Vertex, Float> vertices, Vector3f v, Vector3f u) {
-
-		// Get an additional vector besides the normal for creating an orthonormal basis
-		Vector3f rightVector = null;
-
-		if (Math.abs(planeNormal.x) > Math.abs(planeNormal.y))
-			rightVector = new Vector3f(0, 1, 0);
-		else
-
-			rightVector = new Vector3f(1, 0, 0);
-
-		// Once you have a normal and a "right," you can calculate an orthonormal basis:
-		v.cross(rightVector, planeNormal);
-		v.normalize();
-
-		u.cross(planeNormal, v);
-
-		Point2f[] points = new Point2f[vertices.size()];
-
-		// And once you have your orthonormal basis, you can simply classify each point by dot
-		// products:
-		int i = 0;
-
-		for (Entry<Vertex, Float> e : vertices.entrySet()) {
-			Vertex p3d = e.getKey();
-			Vector3f po = new Vector3f(p3d);
-			po.sub(centroid);
-			points[i++] = new Point2f(u.dot(po), v.dot(po));
-		}
-
-		return points;
-
-	}
-
 	private void updateFeatures(HashMap<Vertex, Float> vertices) {
 		// Find the 2D minimal bounding box
 
 		Vector3f axisU = new Vector3f();
 		Vector3f axisV = new Vector3f();
 
-		Point2f points[] = projectPlaneInto2D(vertices, axisU, axisV);
+		// 3d points to 2d
+		Point2f points[] = projectPointsInto2D(vertices, planeNormal, centroid, axisU, axisV);
 
 		Vector2f axisURect = new Vector2f();
 		Vector2f axisVRect = new Vector2f();
-
+		// get corner of 2D best fit rectangle
 		Point2f corner2d[] = BestFitRectangle2D.getBestFitRectangle(points, axisURect, axisVRect);
 
+		// project corner2d back to 3D corner
 		for (int i = 0; i < 4; i++) {
 			Vector3f tmpU = (Vector3f) axisU.clone();
 			Vector3f tmpV = (Vector3f) axisV.clone();
@@ -297,6 +301,7 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 			corner[i] = new Point3f(tmpU);
 		}
 
+		// reset centroid to center of rectangle
 		centroid.scale(0);
 
 		for (int i = 0; i < 4; i++) {
@@ -304,6 +309,7 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 		}
 		centroid.scale(1f / 4);
 
+		// calculate length of each side
 		Vector3f c1 = new Vector3f(corner[1]);
 		Vector3f c2 = new Vector3f(corner[2]);
 		Vector3f c3 = new Vector3f(corner[3]);

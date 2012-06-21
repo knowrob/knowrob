@@ -46,25 +46,26 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 
 	private static double	PLANE_TOLERANCE	= 2f * Math.PI / 180f;
 
-	static void analyzeVertex(Vertex v) {
+	static void analyzeVertex(HashMap<Vertex, Curvature> curvatures, Vertex v) {
 
-		Curvature c = v.getCurvature();
-		c.setPrimitiveType(getPrimitiveType(v));
+		Curvature c = curvatures.get(v);
+		c.setPrimitiveType(getPrimitiveType(curvatures, v));
 	}
 
-	private static PrimitiveType getPrimitiveType(Vertex v) {
+	private static PrimitiveType getPrimitiveType(HashMap<Vertex, Curvature> curvatures, Vertex v) {
 
-		Curvature c = v.getCurvature();
+		Curvature c = curvatures.get(v);
 		if (c.getSaturation() < 0.45)
 			return PrimitiveType.PLANE;
 
 		float hue = c.getHue();
 
-		if (hue < 35 * Math.PI / 180 || hue >= 230 * Math.PI / 180)
+		if (hue < 35 * Math.PI / 180)
 			return PrimitiveType.SPHERE_CONVEX;
 		else if (hue >= 35 * Math.PI / 180 && hue < 75 * Math.PI / 180)
 			return PrimitiveType.CONE_CONVEX;
-		else if (hue >= 75 * Math.PI / 180 && hue < 150 * Math.PI / 180)
+		else if (hue >= 75 * Math.PI / 180 && hue < 150 * Math.PI / 180
+				|| hue >= 230 * Math.PI / 180)
 			return PrimitiveType.SPHERE_CONCAV;
 		else
 			return PrimitiveType.CONE_CONCAV;
@@ -127,13 +128,15 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 			return;
 
 		PrimitiveAnnotation annotation;
-		PrimitiveType type = getTrianglePrimitiveType(triangle);
+		PrimitiveType type = getTrianglePrimitiveType(cas.getCurvatures(), triangle);
 		if (type == PrimitiveType.PLANE)
-			annotation = new PlaneAnnotation(cas.getModel());
+			annotation = new PlaneAnnotation(cas.getCurvatures(), cas.getModel());
 		else if (type == PrimitiveType.SPHERE_CONCAV || type == PrimitiveType.SPHERE_CONVEX)
-			annotation = new SphereAnnotation(cas.getModel(), type == PrimitiveType.SPHERE_CONCAV);
+			annotation = new SphereAnnotation(cas.getCurvatures(), cas.getModel(),
+					type == PrimitiveType.SPHERE_CONCAV);
 		else
-			annotation = new ConeAnnotation(cas.getModel(), type == PrimitiveType.CONE_CONCAV);
+			annotation = new ConeAnnotation(cas.getCurvatures(), cas.getModel(),
+					type == PrimitiveType.CONE_CONCAV);
 
 		annotation.getMesh().getTriangles().add(triangle);
 		alreadyInAnnotation.add(triangle);
@@ -160,7 +163,7 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 				continue;
 
 			// First check if surface normal is exactly the same direction
-			boolean isEqual = (type == getTrianglePrimitiveType(currNeighbor));
+			boolean isEqual = (type == getTrianglePrimitiveType(cas.getCurvatures(), currNeighbor));
 
 			if (isEqual && type == PrimitiveType.PLANE) {
 				isEqual = planeAngleWithinTolerance(triangle.getNormalVector(),
@@ -206,11 +209,13 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 		return "Primitive";
 	}
 
-	private PrimitiveType getTrianglePrimitiveType(Triangle triangle) {
-		return getTrianglePrimitiveType(triangle, true);
+	private PrimitiveType getTrianglePrimitiveType(HashMap<Vertex, Curvature> curvatures,
+			Triangle triangle) {
+		return getTrianglePrimitiveType(curvatures, triangle, true);
 	}
 
-	private PrimitiveType getTrianglePrimitiveType(Triangle triangle, boolean checkNeighbors) {
+	private PrimitiveType getTrianglePrimitiveType(HashMap<Vertex, Curvature> curvatures,
+			Triangle triangle, boolean checkNeighbors) {
 		if (!checkNeighbors && trianglePrimitiveTypeMap.containsKey(triangle))
 			return trianglePrimitiveTypeMap.get(triangle);
 
@@ -219,17 +224,20 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 		int sphereConcavCnt = 0;
 		int coneConvexCnt = 0;
 		int coneConcavCnt = 0;
-		for (Vertex v : triangle.getPosition())
-			if (v.getCurvature().getPrimitiveType() == PrimitiveType.PLANE)
+		for (Vertex v : triangle.getPosition()) {
+
+			Curvature c = curvatures.get(v);
+			if (c.getPrimitiveType() == PrimitiveType.PLANE)
 				planeCnt++;
-			else if (v.getCurvature().getPrimitiveType() == PrimitiveType.SPHERE_CONVEX)
+			else if (c.getPrimitiveType() == PrimitiveType.SPHERE_CONVEX)
 				sphereConvexCnt++;
-			else if (v.getCurvature().getPrimitiveType() == PrimitiveType.SPHERE_CONCAV)
+			else if (c.getPrimitiveType() == PrimitiveType.SPHERE_CONCAV)
 				sphereConcavCnt++;
-			else if (v.getCurvature().getPrimitiveType() == PrimitiveType.CONE_CONVEX)
+			else if (c.getPrimitiveType() == PrimitiveType.CONE_CONVEX)
 				coneConvexCnt++;
-			else if (v.getCurvature().getPrimitiveType() == PrimitiveType.CONE_CONCAV)
+			else if (c.getPrimitiveType() == PrimitiveType.CONE_CONCAV)
 				coneConcavCnt++;
+		}
 
 		trianglePrimitiveTypeMap.put(
 				triangle,
@@ -238,7 +246,7 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 
 		if (checkNeighbors) {
 			for (Triangle t : triangle.getNeighbors()) {
-				PrimitiveType type = getTrianglePrimitiveType(t, false);
+				PrimitiveType type = getTrianglePrimitiveType(curvatures, t, false);
 
 				if (type == PrimitiveType.PLANE)
 					planeCnt += 1;
@@ -278,7 +286,7 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 				public Void call() throws Exception {
 					int end = Math.min(st + interval, allVertices.size());
 					for (int i = st; i < end; i++) {
-						analyzeVertex(allVertices.get(i));
+						analyzeVertex(cas.getCurvatures(), allVertices.get(i));
 						itemsElaborated.incrementAndGet();
 					}
 					return null;

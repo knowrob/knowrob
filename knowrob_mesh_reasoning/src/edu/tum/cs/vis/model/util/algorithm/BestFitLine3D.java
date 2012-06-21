@@ -67,17 +67,10 @@ public class BestFitLine3D {
 		@SuppressWarnings("rawtypes")
 		SimpleSVD svd = A.svd();
 
-		// find the largest singular value in W and extract from V the corresponding right singular
-		// vector
-		int idx = 0;
-		for (int i = 1; i < 3; i++) {
-			if (svd.getW().get(i, i) > svd.getW().get(idx, idx))
-				idx = i;
-		}
-
-		dir.x = (float) svd.getV().get(0, idx);
-		dir.y = (float) svd.getV().get(1, idx);
-		dir.z = (float) svd.getV().get(2, idx);
+		// Take the column with biggest singular value (it is the first one).
+		dir.x = (float) svd.getV().get(0, 0);
+		dir.y = (float) svd.getV().get(1, 0);
+		dir.z = (float) svd.getV().get(2, 0);
 
 	}
 }

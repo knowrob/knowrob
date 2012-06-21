@@ -9,6 +9,7 @@ package edu.tum.cs.vis.model.uima.annotation.primitive;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -20,6 +21,7 @@ import javax.vecmath.Vector3f;
 import processing.core.PGraphics;
 import edu.tum.cs.vis.model.Model;
 import edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation;
+import edu.tum.cs.vis.model.util.Curvature;
 import edu.tum.cs.vis.model.util.Vertex;
 import edu.tum.cs.vis.model.util.algorithm.BestFitLine3D;
 import edu.tum.cs.vis.model.view.MeshReasoningView;
@@ -103,8 +105,8 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 
 	private final ArrayList<Point3f>	intersections	= new ArrayList<Point3f>();
 
-	public ConeAnnotation(Model model, boolean concav) {
-		super(model, concav ? new Color(0, 125, 125) : new Color(255, 255, 0));
+	public ConeAnnotation(HashMap<Vertex, Curvature> curvatures, Model model, boolean concav) {
+		super(curvatures, model, concav ? new Color(0, 125, 125) : new Color(255, 255, 0));
 		this.concav = concav;
 	}
 
@@ -124,7 +126,8 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 				norm.scale(-1 / c.getCurvatureMax());
 
 				g.fill(255, 0, 0);
-				g.stroke(255, 255, 255);
+				// g.stroke(255, 255, 255);
+				g.stroke(50, 50, 50);
 				g.strokeWeight(2);
 
 				g.line(v.x, v.y, v.z, v.x + norm.x, v.y + norm.y, v.z + norm.z);
@@ -158,7 +161,7 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 
 		g.noStroke();
 
-		g.fill(getDrawColor().getRed(), getDrawColor().getGreen(), getDrawColor().getBlue(), 120);
+		g.fill(getDrawColor().getRed(), getDrawColor().getGreen(), getDrawColor().getBlue(), 150);
 
 		g.pushMatrix();
 
@@ -202,9 +205,9 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 				continue;
 
 			// Get vector normal and set its length according to the curvature radius (= 1/ curv).
-			// So on a perfect cylinder the vectors end in the same point on each end.
+			// So on a perfect cylinder the vectors end in the same point.
 			Vector3f norm = (Vector3f) v.getNormalVector().clone();
-			norm.scale(-1 / v.getCurvature().getCurvatureMax());
+			norm.scale(-1 / curvatures.get(v).getCurvatureMax());
 
 			// Find the shortest intersection route
 			float minDist = Float.MAX_VALUE;
@@ -224,7 +227,7 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 					continue;
 
 				Vector3f norm2 = (Vector3f) v2.getNormalVector().clone();
-				norm2.scale(-1 / v2.getCurvature().getCurvatureMax());
+				norm2.scale(-1 / curvatures.get(v2).getCurvatureMax());
 
 				if (calculateShortestRoute(v, norm, v2, norm2, pa, pb)) {
 					// v and v2 have an intersection route. Check if it is the shortest possible for
@@ -262,7 +265,7 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 			for (Iterator<Vertex> it = vertices.keySet().iterator(); it.hasNext();) {
 				Vertex v = it.next();
 				Vector3f norm = (Vector3f) v.getNormalVector().clone();
-				norm.scale(-1 / v.getCurvature().getCurvatureMax());
+				norm.scale(-1 / curvatures.get(v).getCurvatureMax());
 				norm.add(v);
 				intersections.add(new Point3f(norm));
 			}
@@ -276,8 +279,8 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 		double radiusTop = 0;
 		double radiusBottomWeight = 0;
 		double radiusTopWeight = 0;
-		double distBottom = 0;
-		double distTop = 0;
+		double heightBottom = 0;
+		double heightTop = 0;
 
 		for (Iterator<Vertex> it = vertices.keySet().iterator(); it.hasNext();) {
 			Vertex v = it.next();
@@ -301,20 +304,20 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 				// v is on bottom of cone
 				radiusBottom += rad * weight;
 				radiusBottomWeight += weight;
-				distBottom += Math.abs(dot) * weight;
+				heightBottom += Math.abs(dot) * weight;
 			} else {
 				// v is on top of cone
 				radiusTop += rad * weight;
 				radiusTopWeight += weight;
-				distTop += Math.abs(dot) * weight;
+				heightTop += Math.abs(dot) * weight;
 			}
 		}
 
-		distBottom /= radiusBottomWeight;
-		distTop /= radiusTopWeight;
+		heightBottom /= radiusBottomWeight;
+		heightTop /= radiusTopWeight;
 
 		// Move centroid along direction vector to set it to the center of bottom and top
-		float diff = (float) (distTop - distBottom) / 2;
+		float diff = (float) (heightTop - heightBottom) / 2;
 		Vector3f tmp = new Vector3f(direction);
 		tmp.scale(diff);
 		centroid.add(tmp);
@@ -323,7 +326,7 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 		radiusSmall = (float) (radiusTop / radiusTopWeight);
 
 		// Set direction length to the height of cone
-		direction.scale((float) (distTop + distBottom) / 2);
+		direction.scale((float) (heightTop + heightBottom) / 2);
 	}
 
 	/**

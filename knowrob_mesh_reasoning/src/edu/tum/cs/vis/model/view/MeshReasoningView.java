@@ -252,7 +252,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 						g.line(v.x, v.y, v.z, v.x + n.x, v.y + n.y, v.z + n.z);
 					}
 					if (drawVertexCurvature) {
-						Curvature curv = v.getCurvature();
+						Curvature curv = c.getCurvature(v);
 
 						g.stroke(0, 72, 153);
 
@@ -476,7 +476,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		for (MeshCas c : casList) {
 			for (Vertex v : c.getModel().getVertices()) {
 				if (drawCurvatureColor)
-					v.color = v.getCurvature().getColor();
+					v.color = c.getCurvature(v).getColor();
 				else
 					v.color = null;
 			}

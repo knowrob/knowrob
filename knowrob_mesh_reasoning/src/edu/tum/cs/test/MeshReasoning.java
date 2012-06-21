@@ -62,12 +62,13 @@ public class MeshReasoning {
 		// ItemModel itemModel = new ItemModel("models/cup2.kmz");
 		// ItemModel itemModel = new ItemModel("models/sphere.dae");
 		// ItemModel itemModel = new ItemModel("models/two_spheres.dae");
-		ItemModel itemModel = new ItemModel("models/test.dae");
+		// ItemModel itemModel = new ItemModel("models/test.dae");
 
 		// ItemModel itemModel = new ItemModel("models/cylinders.dae");
 		// ItemModel itemModel = new ItemModel("models/CylinderCone.dae");
 		// ItemModel itemModel = new ItemModel("models/flatcylinder.dae");
 		// ItemModel itemModel = new ItemModel("models/cylinderpart.dae");
+		// ItemModel itemModel = new ItemModel("models/cone_part.dae");
 		// ItemModel itemModel = new ItemModel("models/pyramid.dae");
 		// ItemModel itemModel = new ItemModel("models/Skateboard.dae");
 		// ItemModel itemModel = new ItemModel("models/Table.dae");
@@ -84,9 +85,12 @@ public class MeshReasoning {
 		// ItemModel itemModel = new ItemModel("models/test2.dae");
 		// ItemModel itemModel = new ItemModel("models/hammer.dae");
 		// ItemModel itemModel = new ItemModel("models/spoon.dae");
+		ItemModel itemModel = new ItemModel("models/spoon21.dae");
+		// ItemModel itemModel = new ItemModel("models/spoon_hires.dae");
+		// ItemModel itemModel = new ItemModel("models/ketchup bottle.dae");
 
-		if (!itemModel.parseModel()) {
-			throw new RuntimeException("Couldn't parse model. Maybe path to model is wrong.");
+		if (itemModel.getParser() == null) {
+			throw new RuntimeException("Couldn't parse model. Maybe path of model file is wrong.");
 		}
 
 		Model model = itemModel.getParser().getModel();
@@ -98,9 +102,9 @@ public class MeshReasoning {
 		logger.debug("Calculating curvature ...");
 
 		model.normalize();
-		CurvatureCalculation.calculateCurvatures(model);
 
 		MeshCas cas = new MeshCas();
+		CurvatureCalculation.calculateCurvatures(cas.getCurvatures(), model);
 
 		/*Group g = new Group();
 		g.setMesh(new Mesh());

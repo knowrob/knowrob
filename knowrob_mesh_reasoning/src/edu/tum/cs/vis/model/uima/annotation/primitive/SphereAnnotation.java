@@ -8,6 +8,7 @@
 package edu.tum.cs.vis.model.uima.annotation.primitive;
 
 import java.awt.Color;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import javax.vecmath.Tuple3f;
@@ -16,6 +17,7 @@ import javax.vecmath.Vector3f;
 import processing.core.PGraphics;
 import edu.tum.cs.vis.model.Model;
 import edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation;
+import edu.tum.cs.vis.model.util.Curvature;
 import edu.tum.cs.vis.model.util.Vertex;
 
 /**
@@ -42,8 +44,8 @@ public class SphereAnnotation extends PrimitiveAnnotation {
 
 	private float					radius		= 0;
 
-	public SphereAnnotation(Model model, boolean concav) {
-		super(model, concav ? new Color(0, 255, 0) : new Color(255, 0, 0));
+	public SphereAnnotation(HashMap<Vertex, Curvature> curvatures, Model model, boolean concav) {
+		super(curvatures, model, concav ? new Color(0, 255, 0) : new Color(255, 0, 0));
 		this.concav = concav;
 	}
 
@@ -52,7 +54,7 @@ public class SphereAnnotation extends PrimitiveAnnotation {
 	 */
 	@Override
 	public void drawPrimitiveAnnotation(PGraphics g) {
-		g.fill(getDrawColor().getRed(), getDrawColor().getGreen(), getDrawColor().getBlue(), 50);
+		g.fill(getDrawColor().getRed(), getDrawColor().getGreen(), getDrawColor().getBlue(), 120);
 		g.translate(center.x, center.y, center.z);
 		g.sphere(radius);
 	}
