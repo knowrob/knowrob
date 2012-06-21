@@ -26,15 +26,16 @@ public class Model {
 	private Group						group;
 
 	private final ArrayList<Point3f>	vertices	= new ArrayList<Point3f>();
+
 	private final ArrayList<Triangle>	triangles	= new ArrayList<Triangle>();
 	private final ArrayList<Line>		lines		= new ArrayList<Line>();
 
 	/**
 	 * @param line
 	 */
-	public void addLine(Line line) {
+	private void addLine(Line line) {
 		for (int i = 0; i < line.getPosition().length; i++) {
-			line.getPosition()[i] = checkOrAddVertice(line.getPosition()[i]);
+			line.getPosition()[i] = checkOrAddVertex(line.getPosition()[i]);
 		}
 		lines.add(line);
 	}
@@ -42,18 +43,18 @@ public class Model {
 	/**
 	 * @param tri
 	 */
-	public void addTriangle(Triangle tri) {
+	private void addTriangle(Triangle tri) {
 		for (int i = 0; i < tri.getPosition().length; i++) {
-			tri.getPosition()[i] = checkOrAddVertice(tri.getPosition()[i]);
+			tri.getPosition()[i] = checkOrAddVertex(tri.getPosition()[i]);
 		}
 		triangles.add(tri);
 
 	}
 
-	private Point3f checkOrAddVertice(Point3f v) {
+	private Point3f checkOrAddVertex(Point3f v) {
 
 		for (Point3f p : vertices) {
-			if (p.equals(v))
+			if (p.x == v.x && p.y == v.y && p.z == v.z)
 				return p;
 		}
 		vertices.add(v);
@@ -98,11 +99,30 @@ public class Model {
 	}
 
 	/**
+	 * 
+	 */
+	public void modelChanged() {
+		vertices.clear();
+		triangles.clear();
+		lines.clear();
+		processGroup(group);
+	}
+
+	private void processGroup(Group g) {
+		for (Line l : g.getMesh().getLines())
+			addLine(l);
+		for (Triangle t : g.getMesh().getTriangles())
+			addTriangle(t);
+		for (Group c : g.getChildren())
+			processGroup(c);
+	}
+
+	/**
 	 * @param group
 	 *            the group to set
 	 */
 	public void setGroup(Group group) {
 		this.group = group;
+		modelChanged();
 	}
-
 }

@@ -142,9 +142,9 @@ public class Triangle extends DrawObject {
 		if (appearance.getImageReference() == null || overrideColor != null) {
 			// no texture only color
 			g.beginShape(PConstants.TRIANGLES);
-
-			for (int i = 0; i < position.length; i++)
+			for (int i = 0; i < position.length; i++) {
 				g.vertex(position[i].x, position[i].y, position[i].z);
+			}
 
 			g.endShape();
 

@@ -88,23 +88,6 @@ public class Group implements Serializable {
 	}
 
 	/**
-	 * @param line
-	 */
-	public void addLine(Line line) {
-		model.addLine(line);
-		mesh.getLines().add(line);
-	}
-
-	/**
-	 * @param tri
-	 */
-	public void addTriangle(Triangle tri) {
-		model.addTriangle(tri);
-		mesh.getTriangles().add(tri);
-
-	}
-
-	/**
 	 * Draw method to draw the model on the applet.
 	 * 
 	 * @param g

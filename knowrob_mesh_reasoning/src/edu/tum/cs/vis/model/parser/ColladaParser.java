@@ -353,7 +353,7 @@ public class ColladaParser extends ModelParser {
 
 			useTransformation(line, transformations);
 			// add it to the Collection
-			currGroup.addLine(line);
+			currGroup.getMesh().getLines().add(line);
 		}
 	}
 
@@ -455,7 +455,7 @@ public class ColladaParser extends ModelParser {
 			tri.updateNormalVector();
 
 			// add it to the Collection
-			currGroup.addTriangle(tri);
+			currGroup.getMesh().getTriangles().add(tri);
 		}
 
 	}

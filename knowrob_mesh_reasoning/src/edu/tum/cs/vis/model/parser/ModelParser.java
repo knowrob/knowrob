@@ -160,6 +160,7 @@ public abstract class ModelParser {
 		if (m == null) {
 			retVal = loadModel(filename);
 			modelBuffer.put(filename, model);
+			model.modelChanged();
 		} else
 			model = m;
 		return retVal;

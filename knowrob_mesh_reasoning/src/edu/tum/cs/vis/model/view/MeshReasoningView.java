@@ -27,8 +27,6 @@ import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.FlatSurfaceAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
-import edu.tum.cs.vis.model.util.Group;
-import edu.tum.cs.vis.model.util.Mesh;
 import edu.tum.cs.vis.model.util.Triangle;
 
 /**
@@ -45,39 +43,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	/**
 	 * 
 	 */
-	private static final long	serialVersionUID	= 984696039698156574L;
-
-	/**
-	 * Process the mesh of the group <code>g</code> with <code>processMesh</code> and all child
-	 * groups.
-	 * 
-	 * @param g
-	 *            group to process
-	 * @param cas
-	 *            CAS to add a new annotation if flat surface is found.
-	 */
-	private static void processGroup(ArrayList<Triangle> allTriangles, Group g, MeshCas cas) {
-		processMesh(allTriangles, g.getMesh(), cas);
-		for (Group gr : g.getChildren()) {
-			processGroup(allTriangles, gr, cas);
-		}
-	}
-
-	/**
-	 * Process all triangles in the given mesh <code>m</code> with <code>triangleBFS</code>
-	 * 
-	 * @param m
-	 *            mesh to process
-	 * @param cas
-	 *            CAS to add a new annotation if flat surface is found.
-	 */
-	private static void processMesh(ArrayList<Triangle> allTriangles, Mesh m, final MeshCas cas) {
-
-		if (m.getTriangles().size() == 0)
-			return;
-
-		allTriangles.addAll(m.getTriangles());
-	}
+	private static final long				serialVersionUID	= 984696039698156574L;
 
 	/**
 	 * Cam for manipulating the view
@@ -190,9 +156,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 			}
 		}
 
-		ArrayList<Triangle> allTriangles = new ArrayList<Triangle>();
-
-		processGroup(allTriangles, casList.get(0).getModel().getGroup(), casList.get(0));
+		ArrayList<Triangle> allTriangles = casList.get(0).getModel().getTriangles();
 
 		if (MeshReasoningView.test < 0)
 			MeshReasoningView.test = allTriangles.size() - 1;
