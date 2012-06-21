@@ -7,6 +7,8 @@
  ******************************************************************************/
 package edu.tum.cs.vis.model.util;
 
+import java.awt.Color;
+
 import javax.vecmath.Vector3f;
 
 import edu.tum.cs.vis.model.uima.annotation.primitive.PrimitiveType;
@@ -17,19 +19,64 @@ import edu.tum.cs.vis.model.uima.annotation.primitive.PrimitiveType;
  */
 public class Curvature {
 
+	/**
+	 * Convert hsv to rgb color space acording to:
+	 * https://en.wikipedia.org/wiki/HSL_and_HSV#From_HSV
+	 * 
+	 * @param h
+	 * @param s
+	 * @param v
+	 * @return
+	 */
+	private static Color hsv2srgb(float h, float s, float v) {
+		// From FvD
+		float H = h, S = s, V = v;
+		if (S <= 0.0f)
+			return new Color(V, V, V);
+		H = (float) (H % (2 * Math.PI));
+		if (H < 0.0f)
+			H += 2 * Math.PI;
+		// S and V is now between 0 and 1, H between 0 an 2*PI
+
+		float hi = (float) (H * (Math.PI / 3)); // Divide by 60 degree
+		int i = (int) Math.floor(hi);
+		float f = hi - i;
+		float p = V * (1.0f - S);
+		float q = V * (1.0f - (S * f));
+		float t = V * (1.0f - (S * (1.0f - f)));
+		switch (i) {
+			case 0:
+				return new Color(V, t, p);
+			case 1:
+				return new Color(q, V, p);
+			case 2:
+				return new Color(p, V, t);
+			case 3:
+				return new Color(p, q, V);
+			case 4:
+				return new Color(t, p, V);
+			default:
+				return new Color(V, p, q);
+		}
+	}
+
 	private Vector3f		principleDirectionMin	= new Vector3f();
 
 	private Vector3f		principleDirectionMax	= new Vector3f();
-
 	private float			curvatureMin			= 0;
+
 	private float			curvatureMax			= 0;
 
 	private float			curvatureMinMax			= 0;
 
 	private PrimitiveType	primitiveType;
-
 	private float			hue;
+
 	private float			saturation;
+
+	public Color getColor() {
+		return hsv2srgb(hue, saturation, 1);
+	}
 
 	/**
 	 * @return the curvatureMax

@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 import edu.tum.cs.vis.model.uima.analyzer.MeshAnalyzer;
 import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
+import edu.tum.cs.vis.model.view.control.DrawSettingsPanel;
 
 /**
  * Control panel for MeshReasoningView. Contains different status information and controls which
@@ -64,6 +65,8 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 	 * List model for analyzerList
 	 */
 	private final DefaultListModel			analyzerListModel;
+
+	private final DrawSettingsPanel			drawSettingsPanel;
 
 	/**
 	 * check box to enable or disable drawing of main mesh (base data)
@@ -125,9 +128,14 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 
 		bottomPnl.add(listScroller, BorderLayout.CENTER);
 
+		JPanel drawSettingsContainer = new JPanel(new BorderLayout());
+		drawSettingsPanel = new DrawSettingsPanel(cas, view);
+		drawSettingsContainer.add(drawSettingsPanel, BorderLayout.CENTER);
 		btnSave = new JButton("Save image");
 		btnSave.addActionListener(this);
-		bottomPnl.add(btnSave, BorderLayout.SOUTH);
+		drawSettingsContainer.add(btnSave, BorderLayout.SOUTH);
+
+		bottomPnl.add(drawSettingsContainer, BorderLayout.SOUTH);
 
 		this.add(bottomPnl, BorderLayout.SOUTH);
 

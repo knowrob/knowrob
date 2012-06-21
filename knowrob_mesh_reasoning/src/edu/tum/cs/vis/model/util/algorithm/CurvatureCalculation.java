@@ -7,7 +7,6 @@
  ******************************************************************************/
 package edu.tum.cs.vis.model.util.algorithm;
 
-import java.awt.Color;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,7 +46,7 @@ public class CurvatureCalculation {
 			m.getVertices().get(i).setCurvature(new Curvature());
 		}
 
-		// Set up an initial coordinate system per vertex
+		// Set up an initial coordinate system with min and max curvature as u and v per vertex
 		for (int i = 0; i < m.getTriangles().size(); i++) {
 			Triangle t = m.getTriangles().get(i);
 			for (int j = 0; j < 3; j++) {
@@ -114,7 +113,7 @@ public class CurvatureCalculation {
 		}
 	}
 
-	private static void calculateCurvatureForTriangle(Triangle tri) {
+	static void calculateCurvatureForTriangle(Triangle tri) {
 		// Edges
 		Vector3f e[] = new Vector3f[3];
 
@@ -204,7 +203,7 @@ public class CurvatureCalculation {
 		calculateVertexNormals(m);
 		calculateVoronoiArea(m);
 		calculateCurvature(m);
-		setCurvatureHueSaturation(m, false);
+		setCurvatureHueSaturation(m);
 	}
 
 	/**
@@ -253,17 +252,19 @@ public class CurvatureCalculation {
 
 	}
 
-	private static void calculateVertexNormalsForTriangle(final Triangle t) {
+	static void calculateVertexNormalsForTriangle(final Triangle t) {
 		Vertex p0 = t.getPosition()[0];
 		Vertex p1 = t.getPosition()[1];
 		Vertex p2 = t.getPosition()[2];
 
+		// get vectors from p0 to p1 and so on
 		Vector3f a = new Vector3f(p0);
 		a.sub(p1);
 		Vector3f b = new Vector3f(p1);
 		b.sub(p2);
 		Vector3f c = new Vector3f(p2);
 		c.sub(p0);
+		// length of these vectors
 		float l2a = a.lengthSquared(), l2b = b.lengthSquared(), l2c = c.lengthSquared();
 		if (l2a == 0 || l2b == 0 || l2c == 0)
 			return;
@@ -329,7 +330,7 @@ public class CurvatureCalculation {
 		ThreadPool.executeInPool(threads);
 	}
 
-	private static void calculateVoronoiAreaForTriangle(Triangle t) {
+	static void calculateVoronoiAreaForTriangle(Triangle t) {
 		// Edges
 		Vector3f e[] = new Vector3f[3];
 
@@ -422,47 +423,6 @@ public class CurvatureCalculation {
 		pdir[1].cross(new_norm, pdir[0]);
 	}
 
-	/**
-	 * Convert hsv to rgb color space acording to:
-	 * https://en.wikipedia.org/wiki/HSL_and_HSV#From_HSV
-	 * 
-	 * @param h
-	 * @param s
-	 * @param v
-	 * @return
-	 */
-	private static Color hsv2srgb(float h, float s, float v) {
-		// From FvD
-		float H = h, S = s, V = v;
-		if (S <= 0.0f)
-			return new Color(V, V, V);
-		H = (float) (H % (2 * Math.PI));
-		if (H < 0.0f)
-			H += 2 * Math.PI;
-		// S and V is now between 0 and 1, H between 0 an 2*PI
-
-		float hi = (float) (H * (Math.PI / 3)); // Divide by 60 degree
-		int i = (int) Math.floor(hi);
-		float f = hi - i;
-		float p = V * (1.0f - S);
-		float q = V * (1.0f - (S * f));
-		float t = V * (1.0f - (S * (1.0f - f)));
-		switch (i) {
-			case 0:
-				return new Color(V, t, p);
-			case 1:
-				return new Color(q, V, p);
-			case 2:
-				return new Color(p, V, t);
-			case 3:
-				return new Color(p, q, V);
-			case 4:
-				return new Color(t, p, V);
-			default:
-				return new Color(V, p, q);
-		}
-	}
-
 	// Compute bounding sphere of the vertices.
 	private static void need_bsphere(Model m) {
 		if (m.getVertices().size() == 0)
@@ -549,18 +509,9 @@ public class CurvatureCalculation {
 		new_v.sub(tmp);
 	}
 
-	private static void setCurvatureHueSaturation(Model m, boolean setColor) {
-		/*	float smoothsigma = smooth;
-			if (smoothsigma > 0.0f) {
-				smoothsigma *= feature_size();
-				diffuse_curv(mesh, smoothsigma);
-			}*/
-		float cscale = 10.0f * 10 * typical_scale(m);
+	private static void setCurvatureHueSaturation(Model m) {
+		float cscale = 100.0f * typical_scale(m);
 		cscale = cscale * cscale;
-
-		float min = Float.MAX_VALUE;
-		float max = Float.MIN_VALUE;
-
 		int nv = m.getVertices().size();
 		for (int i = 0; i < nv; i++) {
 			Curvature c = m.getVertices().get(i).getCurvature();
@@ -569,11 +520,6 @@ public class CurvatureCalculation {
 			float h = (float) (4.0f / 3.0f * Math
 					.abs(Math.atan2(H * H - K, H * H * Math.signum(H))));
 			float s = (float) ((2 / Math.PI) * Math.atan((2.0f * H * H - K) * cscale));
-			min = Math.min(h, min);
-			max = Math.max(h, max);
-			if (setColor) {
-				m.getVertices().get(i).color = hsv2srgb(h, s, 1.0f);
-			}
 			m.getVertices().get(i).getCurvature().setHue(h);
 			m.getVertices().get(i).getCurvature().setSaturation(s);
 		}

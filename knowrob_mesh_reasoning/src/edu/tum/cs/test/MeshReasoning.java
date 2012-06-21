@@ -80,6 +80,8 @@ public class MeshReasoning {
 		// ItemModel itemModel = new ItemModel("models/plane2.dae");
 		// ItemModel itemModel = new ItemModel("models/sheetmetal.dae");
 
+		// ItemModel itemModel = new ItemModel("models/test2.dae");
+
 		if (!itemModel.parseModel()) {
 			throw new RuntimeException("Couldn't parse model. Maybe path to model is wrong.");
 		}

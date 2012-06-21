@@ -63,7 +63,6 @@ public abstract class AnnotationPanel<T extends DrawableAnnotation> extends JPan
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		boolean useRand = false;
-		System.out.println("action");
 		if (e.getActionCommand() == "default_color")
 			useRand = false;
 		else if (e.getActionCommand() == "random_color")

@@ -82,6 +82,10 @@ public class Triangle extends DrawObject {
 	public boolean addNeighbor(Triangle neighbor) {
 		boolean add = false;
 		synchronized (this) {
+			if (neighbors.size() >= 3) // for better performance skip if triangle has already all
+										// neighbors set
+				return false;
+
 			if (neighbors.contains(neighbor))
 				return false;
 
@@ -132,28 +136,6 @@ public class Triangle extends DrawObject {
 		applyColor(g, overrideColor);
 		if (appearance == null || appearance.getImageReference() == null || overrideColor != null) {
 			// no texture only color
-
-			int red = 0;
-			int green = 0;
-			int blue = 0;
-
-			for (int i = 0; i < position.length; i++) {
-				if (position[i].color != null) {
-					red += position[i].color.getRed();
-					green += position[i].color.getGreen();
-					blue += position[i].color.getBlue();
-				}
-			}
-			int max = Math.max(red, Math.max(green, blue));
-			Color c = new Color(255, 255, 255);
-			if (max == red)
-				c = new Color(255, 0, 0);
-			else if (max == green)
-				c = new Color(0, 255, 0);
-			else
-				c = new Color(0, 0, 255);
-
-			// applyColor(g, c);
 			g.beginShape(PConstants.TRIANGLES);
 			for (int i = 0; i < position.length; i++) {
 
@@ -164,24 +146,6 @@ public class Triangle extends DrawObject {
 				g.vertex(position[i].x, position[i].y, position[i].z);
 			}
 			g.endShape();
-
-			/*for (int i = 0; i < position.length; i++) {
-				Curvature c = position[i].getCurvature();
-
-				Vector3f dirMax = new Vector3f(c.getPrincipleDirectionMax());
-				dirMax.scale(c.getCurvatureMax() * 0.0001f);
-
-				g.stroke(0, 0, 255);
-				g.line(position[i].x, position[i].y, position[i].z, position[i].x + dirMax.x,
-						position[i].y + dirMax.y, position[i].z + dirMax.z);
-
-				Vector3f dirMin = new Vector3f(c.getPrincipleDirectionMin());
-				dirMin.scale(c.getCurvatureMin() * 0.0001f);
-
-				g.stroke(255, 255, 0);
-				g.line(position[i].x, position[i].y, position[i].z, position[i].x + dirMin.x,
-						position[i].y + dirMin.y, position[i].z + dirMin.z);
-			}*/
 
 		} else {
 			// has texture
@@ -286,15 +250,14 @@ public class Triangle extends DrawObject {
 		return intersectsRay(rayStart, rayEnd, null);
 	}
 
-	// Copyright 2001, softSurfer (www.softsurfer.com)
-	// This code may be freely used and modified for any purpose
-	// providing that this copyright notice is included with it.
-	// SoftSurfer makes no warranty for this code, and cannot be held
-	// liable for any real or imagined damage resulting from its use.
-	// Users of this code must verify correctness for their application.
 	/**
 	 * Checks if this triangle intersects with the given ray (rayStart, rayEnd). Not only the
 	 * segment between rayStart and rayEnd is checked but the whole ray from -infinity to +infinity.
+	 * 
+	 * Copyright 2001, softSurfer (www.softsurfer.com) This code may be freely used and modified for
+	 * any purpose providing that this copyright notice is included with it. SoftSurfer makes no
+	 * warranty for this code, and cannot be held liable for any real or imagined damage resulting
+	 * from its use. Users of this code must verify correctness for their application.
 	 * 
 	 * @param p1
 	 *            start point of the ray

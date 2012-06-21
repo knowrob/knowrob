@@ -28,7 +28,9 @@ import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
+import edu.tum.cs.vis.model.util.Curvature;
 import edu.tum.cs.vis.model.util.Triangle;
+import edu.tum.cs.vis.model.util.Vertex;
 
 /**
  * Viewing applet for showing the results of the reasoning process.
@@ -88,9 +90,19 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	 */
 	PeasyCam								cam;
 	/**
-	 * Background color
+	 * Background color dark
 	 */
-	private final Color						bgcolor				= new Color(10, 10, 10);
+	private final Color						bgcolorDark			= new Color(10, 10, 10);
+	/**
+	 * Background color white
+	 */
+	private final Color						bgcolorWhite		= new Color(255, 255, 255);
+
+	private boolean							backgroundWhite		= false;
+
+	private boolean							drawVertexNormals	= false;
+	private boolean							drawVertexCurvature	= false;
+
 	/**
 	 * Start point of mouse click ray
 	 */
@@ -112,6 +124,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	private float							currentScale		= 40f;
 
 	public static int						testIdx				= 0;
+
 	/**
 	 * Path where to save image if user clicks on "save image". Will be evaluated in draw method
 	 */
@@ -139,7 +152,10 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	public void draw() {
 
 		scale(currentScale);
-		background(bgcolor.getRed(), bgcolor.getGreen(), bgcolor.getBlue());
+		if (backgroundWhite)
+			background(bgcolorWhite.getRed(), bgcolorWhite.getGreen(), bgcolorWhite.getBlue());
+		else
+			background(bgcolorDark.getRed(), bgcolorDark.getGreen(), bgcolorDark.getBlue());
 		// draw axis
 		noFill();
 		strokeWeight(1);
@@ -222,20 +238,42 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 			}
 		}
 
-		ArrayList<Triangle> allTriangles = casList.get(0).getModel().getTriangles();
+		if (drawVertexNormals || drawVertexCurvature) {
+			g.strokeWeight(2f);
+			for (MeshCas c : casList) {
+				for (Vertex v : c.getModel().getVertices()) {
+					if (drawVertexNormals) {
+						g.stroke(41, 120, 37);
+						Vector3f n = (Vector3f) v.getNormalVector().clone();
+						n.scale(0.1f);
+						g.line(v.x, v.y, v.z, v.x + n.x, v.y + n.y, v.z + n.z);
+					}
+					if (drawVertexCurvature) {
+						Curvature curv = v.getCurvature();
 
-		if (allTriangles.size() > 0)
+						g.stroke(0, 72, 153);
 
-			// CurvatureAnalyzer.triangleCurvature(allTriangles.get(MeshReasoningView.test),
-			// casList.get(0), g);
+						Vector3f max = (Vector3f) curv.getPrincipleDirectionMax().clone();
+						max.scale(curv.getCurvatureMax() / 20f);
+						g.line(v.x, v.y, v.z, v.x + max.x, v.y + max.y, v.z + max.z);
 
-			// Check if user wants to save current view
-			if (imageSavePath != null) {
-				save(imageSavePath);
-
-				Logger.getRootLogger().info("Image saved as: " + imageSavePath);
-				imageSavePath = null;
+						g.stroke(243, 146, 0);
+						Vector3f min = (Vector3f) curv.getPrincipleDirectionMin().clone();
+						min.scale(curv.getCurvatureMax() / 20f);
+						g.line(v.x, v.y, v.z, v.x + min.x, v.y + min.y, v.z + min.z);
+					}
+				}
+				// c.getGroup().draw(g, null);
 			}
+		}
+
+		// Check if user wants to save current view
+		if (imageSavePath != null) {
+			save(imageSavePath);
+
+			Logger.getRootLogger().info("Image saved as: " + imageSavePath);
+			imageSavePath = null;
+		}
 	}
 
 	/**
@@ -245,6 +283,27 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	 */
 	public ArrayList<MeshCas> getCasList() {
 		return casList;
+	}
+
+	/**
+	 * @return the backgroundWhite
+	 */
+	public boolean isBackgroundWhite() {
+		return backgroundWhite;
+	}
+
+	/**
+	 * @return the drawVertexCurvature
+	 */
+	public boolean isDrawVertexCurvature() {
+		return drawVertexCurvature;
+	}
+
+	/**
+	 * @return the drawVertexNormals
+	 */
+	public boolean isDrawVertexNormals() {
+		return drawVertexNormals;
 	}
 
 	@Override
@@ -376,6 +435,14 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	}
 
 	/**
+	 * @param backgroundWhite
+	 *            the backgroundWhite to set
+	 */
+	public void setBackgroundWhite(boolean backgroundWhite) {
+		this.backgroundWhite = backgroundWhite;
+	}
+
+	/**
 	 * Set list of all CAS objects (see UIMA Framework)
 	 * 
 	 * @param casList
@@ -391,6 +458,34 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	 */
 	public void setControl(MeshReasoningViewControl control) {
 		this.control = control;
+	}
+
+	public void setDrawCurvatureColor(boolean drawCurvatureColor) {
+
+		for (MeshCas c : casList) {
+			for (Vertex v : c.getModel().getVertices()) {
+				if (drawCurvatureColor)
+					v.color = v.getCurvature().getColor();
+				else
+					v.color = null;
+			}
+		}
+	}
+
+	/**
+	 * @param drawVertexCurvature
+	 *            the drawVertexCurvature to set
+	 */
+	public void setDrawVertexCurvature(boolean drawVertexCurvature) {
+		this.drawVertexCurvature = drawVertexCurvature;
+	}
+
+	/**
+	 * @param drawVertexNormals
+	 *            the drawVertexNormals to set
+	 */
+	public void setDrawVertexNormals(boolean drawVertexNormals) {
+		this.drawVertexNormals = drawVertexNormals;
 	}
 
 	@Override
