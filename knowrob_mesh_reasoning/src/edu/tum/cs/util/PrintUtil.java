@@ -1,10 +1,35 @@
+/*******************************************************************************
+ * Copyright (c) 2012 Stefan Profanter.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/gpl.html
+ * 
+ * Contributors:
+ *     Stefan Profanter - initial API and implementation, Year: 2012
+ ******************************************************************************/
 package edu.tum.cs.util;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Util functions for printing on screen.
+ * 
+ * 
+ * @author Stefan Profanter
+ * 
+ */
 public class PrintUtil {
-	public final static String prettyMillis(long millis) {
+	/**
+	 * Convert millisecond value to human readable string hh:mm:ss.xxx
+	 * 
+	 * @param mil
+	 *            Time in milliseconds
+	 * @return String in format hh:mm:dd.sss
+	 */
+	public final static String prettyMillis(long mil) {
 		long h, m, s;
+		long millis = mil;
 		h = TimeUnit.MILLISECONDS.toHours(millis);
 		millis -= TimeUnit.HOURS.toMillis(h);
 

@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2012 Stefan Profanter.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/gpl.html
+ * 
+ * Contributors:
+ *     Stefan Profanter - initial API and implementation, Year: 2012
+ ******************************************************************************/
 package edu.tum.cs.vis.model.uima.cas;
 
 import java.io.Serializable;
@@ -19,16 +29,16 @@ public class MeshCas extends JCas implements Serializable {
 	/**
 	 * Auto generated
 	 */
-	private static final long						serialVersionUID	= 4603166505444872760L;
+	private static final long	serialVersionUID	= 4603166505444872760L;
 	/**
 	 * Group which represents the mesh and its child groups
 	 */
-	private Group									group;
+	private Group				group;
 
-	private boolean									drawMesh			= true;
-
-	// Create the listener list
-	protected javax.swing.event.EventListenerList	listenerList		= new javax.swing.event.EventListenerList();
+	/**
+	 * Indicates if the original mesh should be drawn or not.
+	 */
+	private boolean				drawMesh			= true;
 
 	/**
 	 * adds a new annotation to the annotations list

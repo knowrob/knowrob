@@ -1,9 +1,17 @@
+/*******************************************************************************
+ * Copyright (c) 2012 Stefan Profanter.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/gpl.html
+ * 
+ * Contributors:
+ *     Stefan Profanter - initial API and implementation, Year: 2012
+ ******************************************************************************/
 package edu.tum.cs.vis.model.uima.analyzer;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.vecmath.Vector3d;
@@ -25,27 +33,15 @@ import edu.tum.cs.vis.model.util.Polygon;
  */
 public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 
-	private static Logger				logger				= Logger.getLogger(FlatSurfaceAnalyzer.class);
+	/**
+	 * Log4J Logger
+	 */
+	private static Logger	logger		= Logger.getLogger(FlatSurfaceAnalyzer.class);
 
 	/**
 	 * Allowed tolerance between surface normals considered as equal. Tolerance is in radiant.
 	 */
-	static final double					TOLERANCE			= 1.0 * Math.PI / 180;
-
-	private final List<Callable<Void>>	threads				= new LinkedList<Callable<Void>>();
-
-	private ArrayList<Polygon>			allPolygons;
-	private final AtomicInteger			polygonsElaborated	= new AtomicInteger(0);
-
-	@Override
-	public Logger getLogger() {
-		return logger;
-	}
-
-	@Override
-	public String getName() {
-		return "FlatSurface";
-	}
+	static final double		TOLERANCE	= 1.0 * Math.PI / 180;
 
 	/**
 	 * Do a BFS on the neighbors of the <code>start</code> polygon and find all neighbors with
@@ -57,8 +53,9 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 	 *            List of polynom which are already in a annotaion. So they form already a flat
 	 *            surface and don't need to be checked again.
 	 * @param cas
+	 *            Cas to add a found annotation
 	 */
-	void polygonBFS(Polygon start, LinkedList<Polygon> alreadyInAnnotation, MeshCas cas) {
+	static void polygonBFS(Polygon start, LinkedList<Polygon> alreadyInAnnotation, MeshCas cas) {
 		if (alreadyInAnnotation.contains(start))
 			return;
 
@@ -109,6 +106,26 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 		}
 		annotation.setFeatures();
 		cas.addAnnotation(annotation);
+	}
+
+	/**
+	 * First a list of all polygons in the groups is created and afterwards the analyzing starts
+	 */
+	private ArrayList<Polygon>	allPolygons;
+
+	/**
+	 * Number of polygons already elaborated/processed. Used for indicating current process
+	 */
+	private final AtomicInteger	polygonsElaborated	= new AtomicInteger(0);
+
+	@Override
+	public Logger getLogger() {
+		return logger;
+	}
+
+	@Override
+	public String getName() {
+		return "FlatSurface";
 	}
 
 	/**

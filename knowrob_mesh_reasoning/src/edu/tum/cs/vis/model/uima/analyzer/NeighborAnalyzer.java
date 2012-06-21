@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2012 Stefan Profanter.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/gpl.html
+ * 
+ * Contributors:
+ *     Stefan Profanter - initial API and implementation, Year: 2012
+ ******************************************************************************/
 package edu.tum.cs.vis.model.uima.analyzer;
 
 import java.util.ArrayList;
@@ -25,12 +35,25 @@ import edu.tum.cs.vis.model.util.Polygon;
  */
 public class NeighborAnalyzer extends MeshAnalyzer {
 
+	/**
+	 * Log4j logger
+	 */
 	private static Logger				logger				= Logger.getLogger(NeighborAnalyzer.class);
 
+	/**
+	 * First a list of all threads is created which will be executed afterwards with a thread pool
+	 */
 	private final List<Callable<Void>>	threads				= new LinkedList<Callable<Void>>();
 
+	/**
+	 * Number of currently processed polygons. Used for progress status.
+	 */
 	private final AtomicInteger			polygonsElaborated	= new AtomicInteger(0);
 
+	/**
+	 * When calling <code>process</code> all polygons of the group and its children are collected in
+	 * this list to process them afterwards.
+	 */
 	private ArrayList<Polygon>			allPolygons;
 
 	@Override
@@ -43,7 +66,14 @@ public class NeighborAnalyzer extends MeshAnalyzer {
 		return "Neighbor";
 	}
 
-	public void polygonsElaborated(int cnt) {
+	/**
+	 * Called from the worker threads to update current progress cnt will be added to
+	 * polygonsElaborated
+	 * 
+	 * @param cnt
+	 *            number of elaborated polygons.
+	 */
+	void polygonsElaborated(int cnt) {
 		polygonsElaborated.addAndGet(cnt);
 	}
 
@@ -98,7 +128,6 @@ public class NeighborAnalyzer extends MeshAnalyzer {
 		try {
 			pool.invokeAll(threads);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -111,15 +140,46 @@ public class NeighborAnalyzer extends MeshAnalyzer {
 	}
 }
 
+/**
+ * Worker thread for elaborating a part of the polygon list in a thread pool.
+ * 
+ * @author Stefan Profanter
+ * 
+ */
 class NeighborAnalyzerThread implements Callable<Void> {
 
+	/**
+	 * Index of first polygon in list to elaborate
+	 */
 	final int						start;
+	/**
+	 * All polygons in the list from start to < end will be elaborated
+	 */
 	final int						end;
+
+	/**
+	 * List of all polygons. <code>start</code> and <code>end</code> are the indices which indicate
+	 * the range to elaborate.
+	 */
 	final ArrayList<Polygon>		polygons;
 
-	private static Logger			logger	= Logger.getLogger(NeighborAnalyzerThread.class);
+	/**
+	 * The parent analyzer. Used to update progress.
+	 */
 	private final NeighborAnalyzer	analyzer;
 
+	/**
+	 * Default constructor.
+	 * 
+	 * @param start
+	 *            Start index in polygons. Where to start elaboration.
+	 * @param end
+	 *            End index in polygons. Where to end elaboration.
+	 * @param polygons
+	 *            List of all polygons.
+	 * @param analyzer
+	 *            parent analyzer used to update progress.
+	 */
 	public NeighborAnalyzerThread(int start, int end, ArrayList<Polygon> polygons,
 			NeighborAnalyzer analyzer) {
 		this.start = start;

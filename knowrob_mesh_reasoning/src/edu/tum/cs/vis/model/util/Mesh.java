@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2012 Stefan Profanter.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/gpl.html
+ * 
+ * Contributors:
+ *     Stefan Profanter - initial API and implementation, Year: 2012
+ ******************************************************************************/
 package edu.tum.cs.vis.model.util;
 
 import java.awt.Color;
@@ -21,7 +31,7 @@ import edu.tum.cs.util.FileUtil;
 /**
  * A Mesh contains list of Triangles and Lines which represent an Object.
  * 
- * @see Triangle
+ * @see Polygon
  * @see Line
  * 
  * @author Stefan Profanter
@@ -115,8 +125,8 @@ public class Mesh implements Serializable {
 	/**
 	 * Draw the polygons list to the applet
 	 * 
-	 * @param applet
-	 *            Applet to draw on
+	 * @param g
+	 *            Graphics to draw on
 	 * @param overrideColor
 	 *            override the draw color an texture. Draw whole object in the given color if !=
 	 *            null
@@ -206,11 +216,23 @@ public class Mesh implements Serializable {
 		return m;
 	}
 
-	public void getIntersectedPolygons(Point3f rayStart, Point3f rayEnd,
-			ArrayList<Polygon> intersectedPolygons, Point3f intersect) {
+	/**
+	 * Searches all polygons which intersect the given ray (rayStart, rayEnd) and adds them to
+	 * intersectedPolygons. Not only the segment between rayStart and rayEnd is checked but the
+	 * whole ray from -infinity to +infinity.
+	 * 
+	 * @param rayStart
+	 *            start point of the ray.
+	 * @param rayEnd
+	 *            end point of the ray.
+	 * @param intersectedPolygons
+	 *            list where to add intersecting polygons
+	 */
+	public void getIntersectedPolygons(final Point3f rayStart, final Point3f rayEnd,
+			final ArrayList<Polygon> intersectedPolygons) {
 
 		for (Polygon tri : polygons) {
-			if (tri.intersectsRay(rayStart, rayEnd, intersect))
+			if (tri.intersectsRay(rayStart, rayEnd))
 				intersectedPolygons.add(tri);
 		}
 

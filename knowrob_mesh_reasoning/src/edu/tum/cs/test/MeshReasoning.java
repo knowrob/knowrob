@@ -1,3 +1,10 @@
+/*******************************************************************************
+ * Copyright (c) 2012 Stefan Profanter. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the GNU Public License v3.0 which accompanies
+ * this distribution, and is available at http://www.gnu.org/licenses/gpl.html
+ * 
+ * Contributors: Stefan Profanter - initial API and implementation, Year: 2012
+ ******************************************************************************/
 package edu.tum.cs.test;
 
 import java.awt.BorderLayout;
@@ -25,6 +32,9 @@ import edu.tum.cs.vis.model.view.MeshReasoningViewControl;
  */
 public class MeshReasoning {
 
+	/**
+	 * Log4j logger
+	 */
 	private static Logger	logger	= Logger.getRootLogger();
 
 	/**
@@ -39,11 +49,11 @@ public class MeshReasoning {
 		logger.info("MeshReasoning started");
 
 		// ItemModel model = new ItemModel("/home/stefan/simple_dome.kmz");
-		ItemModel model = new ItemModel(
-				"/home/stefan/ros/knowrob/knowrob_cad_models/models/collada/hospital_bed.kmz");
+		// ItemModel model = new ItemModel(
+		// "/home/stefan/ros/knowrob/knowrob_cad_models/models/collada/hospital_bed.kmz");
 		// ItemModel model = new ItemModel("/home/stefan/Downloads/triangle.dae");
 		// ItemModel model = new ItemModel("/home/stefan/Downloads/saintpeter.kmz");
-		// ItemModel model = new ItemModel("/home/stefan/CoTeSys/cups/cup2.kmz");
+		ItemModel model = new ItemModel("/home/stefan/CoTeSys/cups/cup2.kmz");
 		// ItemModel model = new ItemModel("/home/stefan/Downloads/cube.kmz");
 		if (!model.parseModel()) {
 			throw new RuntimeException("Couldn't parse model. Maybe path to model is wrong.");
@@ -75,12 +85,14 @@ public class MeshReasoning {
 		frame.setSize(1324, 768);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setTitle("Mesh reasoning view");
+		frame.setLocationRelativeTo(null);
 
 		ArrayList<MeshAnalyzer> analyzer = new ArrayList<MeshAnalyzer>();
 
 		MeshReasoningView mrv = new MeshReasoningView();
+		MeshReasoningViewControl control = new MeshReasoningViewControl(cas, analyzer);
+		mrv.setControl(control);
 		mrv.init();
-		MeshReasoningViewControl control = new MeshReasoningViewControl(mrv, cas, analyzer);
 
 		mrv.getCasList().add(cas);
 
@@ -93,12 +105,10 @@ public class MeshReasoning {
 		FlatSurfaceAnalyzer fsa = new FlatSurfaceAnalyzer();
 		analyzer.add(na);
 		analyzer.add(fsa);
-		// control.addAnalyzer(na);
-		// control.addAnalyzer(fsa);
 
-		// na.process(cas);
+		na.process(cas);
 
-		// fsa.process(cas);
+		fsa.process(cas);
 
 	}
 }

@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2012 Stefan Profanter.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/gpl.html
+ * 
+ * Contributors:
+ *     Stefan Profanter - initial API and implementation, Year: 2012
+ ******************************************************************************/
 package edu.tum.cs.vis.model.uima.annotation;
 
 import java.awt.Color;
@@ -7,6 +17,7 @@ import javax.vecmath.Vector3d;
 import edu.tum.cs.vis.model.uima.analyzer.FlatSurfaceAnalyzer;
 import edu.tum.cs.vis.model.uima.feature.Area;
 import edu.tum.cs.vis.model.uima.feature.Dimension2D;
+import edu.tum.cs.vis.model.uima.feature.NormalVector;
 import edu.tum.cs.vis.model.util.Polygon;
 
 /**
@@ -19,23 +30,28 @@ import edu.tum.cs.vis.model.util.Polygon;
 public class FlatSurfaceAnnotation extends MeshAnnotation {
 
 	/**
+	 * auto generated
+	 */
+	private static final long	serialVersionUID	= 8767464136366533135L;
+
+	/**
 	 * Color for drawing this annotation
 	 */
 	// TODO change to static
-	private Color		annotationColor	= new Color(255, 0, 0, 128);
+	private Color				annotationColor		= new Color(255, 0, 0, 128);
 
 	/**
 	 * Total area of the flat surface
 	 */
-	private Area		area;
+	private Area				area;
 	/**
 	 * Dimension2D of the surface in x and y coordinates. So normal vector will be (0,0,1)
 	 */
-	private Dimension2D	dimension;
+	private Dimension2D			dimension;
 	/**
 	 * surface normal
 	 */
-	private Vector3d	normalVector;
+	private NormalVector		normalVector;
 
 	/**
 	 * Default constructor
@@ -78,10 +94,13 @@ public class FlatSurfaceAnnotation extends MeshAnnotation {
 		return normalVector;
 	}
 
+	/**
+	 * Updates the members area, dimension, normalVector
+	 */
 	public void setFeatures() {
 		if (mesh.getPolygons().size() == 0)
 			return;
-		normalVector = mesh.getPolygons().get(0).getNormalVector();
+		normalVector = new NormalVector(mesh.getPolygons().get(0).getNormalVector());
 
 		float ar = 0;
 
@@ -89,6 +108,8 @@ public class FlatSurfaceAnnotation extends MeshAnnotation {
 			ar += p.getArea();
 		area = new Area();
 		area.setSquareMM(ar);
+
+		dimension = new Dimension2D();
 
 		// TODO calculate dimension
 	}

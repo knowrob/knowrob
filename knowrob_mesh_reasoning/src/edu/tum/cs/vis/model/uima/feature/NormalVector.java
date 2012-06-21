@@ -8,22 +8,43 @@
  * Contributors:
  *     Stefan Profanter - initial API and implementation, Year: 2012
  ******************************************************************************/
-package edu.tum.cs.uima;
+package edu.tum.cs.vis.model.uima.feature;
+
+import javax.vecmath.Vector3d;
 
 /**
- * Dummy for UIMA Framework
+ * Represents a normal vector
  * 
  * @author Stefan Profanter
  * 
  */
-public abstract class AnalysisEngine {
+public class NormalVector extends Vector3d {
 
 	/**
-	 * Dummy for UIMA framework
-	 * 
-	 * @param aJCas
-	 *            CAS Object to analyze
+	 * Auto generated
 	 */
-	public abstract void process(JCas aJCas);
+	private static final long	serialVersionUID	= -3151983130243696661L;
+
+	/**
+	 * Default constructor
+	 */
+	public NormalVector() {
+		super();
+	}
+
+	/**
+	 * Constructor with direct initialization
+	 * 
+	 * @param normalVector
+	 *            value to initialize
+	 */
+	public NormalVector(Vector3d normalVector) {
+		super(normalVector);
+	}
+
+	@Override
+	public String toString() {
+		return String.format("(%.3f,%.3f,%.3f)", x, y, z);
+	}
 
 }

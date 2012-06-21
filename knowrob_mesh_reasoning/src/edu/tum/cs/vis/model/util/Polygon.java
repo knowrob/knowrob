@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2012 Stefan Profanter.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/gpl.html
+ * 
+ * Contributors:
+ *     Stefan Profanter - initial API and implementation, Year: 2012
+ ******************************************************************************/
 package edu.tum.cs.vis.model.util;
 
 import java.awt.Color;
@@ -23,7 +33,15 @@ import edu.tum.cs.vis.model.uima.analyzer.FlatSurfaceAnalyzer;
  */
 public class Polygon extends DrawObject {
 
-	private static Logger			logger			= Logger.getLogger(FlatSurfaceAnalyzer.class);
+	/**
+	 * auto generated
+	 */
+	private static final long		serialVersionUID	= -5164768039180386782L;
+
+	/**
+	 * log4j logger
+	 */
+	private static Logger			logger				= Logger.getLogger(FlatSurfaceAnalyzer.class);
 
 	/**
 	 * Texture-Points
@@ -33,7 +51,7 @@ public class Polygon extends DrawObject {
 	/**
 	 * Polygons may have normal vector
 	 */
-	protected Vector3d				normalVector	= null;
+	protected Vector3d				normalVector		= null;
 
 	/**
 	 * Centroid of polygon
@@ -45,7 +63,13 @@ public class Polygon extends DrawObject {
 	 */
 	protected ArrayList<Polygon>	neighbors;
 
-	public Polygon(int numberOfEdges) {
+	/**
+	 * Initializes a polygon with given number of edges (Triangle: 3)
+	 * 
+	 * @param numberOfEdges
+	 *            number of edges
+	 */
+	public Polygon(final int numberOfEdges) {
 		super(numberOfEdges);
 	}
 
@@ -83,8 +107,8 @@ public class Polygon extends DrawObject {
 	/**
 	 * Draw the polygons onto the applet.
 	 * 
-	 * @param applet
-	 *            Applet to draw on
+	 * @param g
+	 *            Graphics to draw on
 	 * @param overrideColor
 	 *            overrides the color to draw
 	 */
@@ -118,6 +142,11 @@ public class Polygon extends DrawObject {
 				normalVector.y+centroid.y, normalVector.z+centroid.z);*/
 	}
 
+	/**
+	 * returns the area of the polygon in 3d space. Unit is the same as you draw the polygon.
+	 * 
+	 * @return the area in drawing unit.
+	 */
 	public float getArea() {
 		if (position.length == 3) {
 
@@ -162,13 +191,39 @@ public class Polygon extends DrawObject {
 		return texPosition;
 	}
 
+	/**
+	 * Checks if this polygon intersects with the given ray (rayStart, rayEnd). Not only the segment
+	 * between rayStart and rayEnd is checked but the whole ray from -infinity to +infinity.
+	 * 
+	 * @param rayStart
+	 *            start point of the ray
+	 * @param rayEnd
+	 *            end point of the ray
+	 * @return true if polygon intersects ray
+	 */
+	public boolean intersectsRay(Point3f rayStart, Point3f rayEnd) {
+		return intersectsRay(rayStart, rayEnd, null);
+	}
+
 	// Copyright 2001, softSurfer (www.softsurfer.com)
 	// This code may be freely used and modified for any purpose
 	// providing that this copyright notice is included with it.
 	// SoftSurfer makes no warranty for this code, and cannot be held
 	// liable for any real or imagined damage resulting from its use.
 	// Users of this code must verify correctness for their application.
-	public boolean intersectsRay(Point3f rayStart, Point3f rayEnd, Point3f intersect) {
+	/**
+	 * Checks if this polygon intersects with the given ray (rayStart, rayEnd). Not only the segment
+	 * between rayStart and rayEnd is checked but the whole ray from -infinity to +infinity.
+	 * 
+	 * @param rayStart
+	 *            start point of the ray
+	 * @param rayEnd
+	 *            end point of the ray
+	 * @param intersectPoint
+	 *            will be set to the intersection point. Set to null to ignore.
+	 * @return true if polygon intersects ray
+	 */
+	public boolean intersectsRay(Point3f rayStart, Point3f rayEnd, Point3f intersectPoint) {
 
 		if (position.length != 3) {
 			System.out.println("intersectRay not implemented for not triangles!!");
@@ -202,8 +257,8 @@ public class Polygon extends DrawObject {
 		if (Math.abs(b) < 0.00000001) { // ray is parallel to triangle plane
 			if (a == 0) // ray lies in triangle plane
 				return false;
-			else
-				return false; // ray disjoint from plane
+
+			return false; // ray disjoint from plane
 		}
 
 		// get intersect point of ray with triangle plane
@@ -211,6 +266,11 @@ public class Polygon extends DrawObject {
 		if (r < 0.0) // ray goes away from triangle
 			return false; // => no intersect
 		// for a segment, also test if (r > 1.0) => no intersect
+
+		Point3f intersect = intersectPoint;
+
+		if (intersect == null)
+			intersect = new Point3f();
 
 		intersect.set(dir); // intersect point of ray and plane
 		intersect.scale((float) r);

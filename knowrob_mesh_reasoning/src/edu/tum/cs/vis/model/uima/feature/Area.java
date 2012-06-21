@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2012 Stefan Profanter.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/gpl.html
+ * 
+ * Contributors:
+ *     Stefan Profanter - initial API and implementation, Year: 2012
+ ******************************************************************************/
 package edu.tum.cs.vis.model.uima.feature;
 
 import edu.tum.cs.uima.Feature;
@@ -9,12 +19,15 @@ import edu.tum.cs.uima.Feature;
  * 
  */
 public class Area extends Feature {
-	private float	squareMM;
+	/**
+	 * area of this feature in square millimeters
+	 */
+	private double	squareMM;
 
 	/**
 	 * @return the squareMM
 	 */
-	public float getSquareMM() {
+	public double getSquareMM() {
 		return squareMM;
 	}
 
@@ -24,6 +37,11 @@ public class Area extends Feature {
 	 */
 	public void setSquareMM(float squareMM) {
 		this.squareMM = squareMM;
+	}
+
+	@Override
+	public String toString() {
+		return squareMM + "m²";
 	}
 
 }

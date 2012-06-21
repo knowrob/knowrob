@@ -1,3 +1,10 @@
+/*******************************************************************************
+ * Copyright (c) 2012 Stefan Profanter. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the GNU Public License v3.0 which accompanies
+ * this distribution, and is available at http://www.gnu.org/licenses/gpl.html
+ * 
+ * Contributors: Stefan Profanter - initial API and implementation, Year: 2012
+ ******************************************************************************/
 package edu.tum.cs.vis.model.view;
 
 import java.awt.Color;
@@ -9,6 +16,8 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import peasy.PeasyCam;
+import edu.tum.cs.uima.Annotation;
+import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.util.Polygon;
 
@@ -23,25 +32,44 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	/**
 	 * 
 	 */
-	private static final long			serialVersionUID	= 984696039698156574L;
+	private static final long				serialVersionUID	= 984696039698156574L;
 
 	/**
 	 * Cam for manipulating the view
 	 */
-	PeasyCam							cam;
+	PeasyCam								cam;
 
-	private final Color					bgcolor				= new Color(10, 10, 10);
+	/**
+	 * Background color
+	 */
+	private final Color						bgcolor				= new Color(10, 10, 10);
 
-	private Point3f						rayStart			= new Point3f();
-	private Point3f						rayEnd				= new Point3f(1, 1, 1);
-	private final Point3f				intersect			= new Point3f(1, 1, 1);
-
+	/**
+	 * Start point of mouse click ray
+	 */
+	private Point3f							rayStart			= new Point3f();
+	/**
+	 * End point of mouse click ray
+	 */
+	private Point3f							rayEnd				= new Point3f(1, 1, 1);
 	/**
 	 * List of all CASes which were manipulated with AnalysisEngines.
 	 */
-	private ArrayList<MeshCas>			casList				= new ArrayList<MeshCas>();
+	private ArrayList<MeshCas>				casList				= new ArrayList<MeshCas>();
 
-	private final ArrayList<Polygon>	selectedPolygons	= new ArrayList<Polygon>();
+	/**
+	 * List of selected polygons (polygons which intersect with mouse ray)
+	 */
+	private final ArrayList<Polygon>		selectedPolygons	= new ArrayList<Polygon>();
+	/**
+	 * List of selected annotations (annotations which contain one of selectedPolygons)
+	 */
+	private final ArrayList<MeshAnnotation>	selectedAnnotations	= new ArrayList<MeshAnnotation>();
+
+	/**
+	 * The controller for this view
+	 */
+	private MeshReasoningViewControl		control				= null;
 
 	@Override
 	public void draw() {
@@ -84,15 +112,17 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		// Must be called AFTER all scale, transform, rotate, ... calls
 		captureViewMatrix();
 
+		getSelectionGraphics().setDrawWithTransparency(selectedAnnotations.size() > 0);
 		for (MeshCas c : casList) {
-			// c.draw(g);
-			c.getGroup().draw(g, null);
+			c.draw(g);
+			// c.getGroup().draw(g, null);
 		}
+		getSelectionGraphics().setDrawWithTransparency(false);
 
-		synchronized (selectedPolygons) {
+		synchronized (selectedAnnotations) {
 
-			for (Polygon p : selectedPolygons) {
-				p.draw(g, new Color(255, 0, 0));
+			for (MeshAnnotation ma : selectedAnnotations) {
+				ma.getMesh().drawPolygons(g, new Color(255, 125, 0));
 			}
 		}
 	}
@@ -117,16 +147,73 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 			rayStart = getMouseRayStart();
 			rayEnd = getMouseRayEnd();
 
-			synchronized (selectedPolygons) {
-				selectedPolygons.clear();
-				for (MeshCas c : casList) {
-					c.getGroup().getIntersectedPolygons(rayEnd, rayStart, selectedPolygons,
-							intersect);
+			boolean found = false;
+			// Check if clicked on one of previous selected polygons
+			for (Polygon p : selectedPolygons) {
+				if (p.intersectsRay(rayEnd, rayStart, null)) {
+					selectedPolygons.clear();
+					selectedPolygons.add(p);
+					found = true;
+					break;
 				}
 			}
-			System.out.println("Tr: " + selectedPolygons.size());
+
+			if (!found) {
+				// It is new selection
+				selectedPolygons.clear();
+				for (MeshCas c : casList) {
+					c.getGroup().getIntersectedPolygons(rayEnd, rayStart, selectedPolygons);
+				}
+			}
+
+			// Check if one of selected polygons is in already selected annotation
+			ArrayList<Polygon> newSelected = new ArrayList<Polygon>();
+			for (Polygon p : selectedPolygons) {
+				synchronized (selectedAnnotations) {
+					for (MeshAnnotation ma : selectedAnnotations)
+						if (ma.meshContainsPolygon(p)) {
+							newSelected.add(p);
+						}
+				}
+			}
+			if (newSelected.size() > 0) {
+				// Currently selected was in one or more of the selected annotations, so select out
+				// of current annotations
+				selectedPolygons.clear();
+				selectedPolygons.addAll(newSelected);
+			}
+
+			selectedPolygonsChanged();
 		}
 
+	}
+
+	/**
+	 * Called to update list of selectedAnnotations after list of selectedPolygons has changed
+	 */
+	private void selectedPolygonsChanged() {
+		synchronized (selectedAnnotations) {
+			selectedAnnotations.clear();
+		}
+		for (MeshCas c : casList) {
+			for (Annotation a : c.getAnnotations()) {
+				if (!(a instanceof MeshAnnotation))
+					continue;
+				MeshAnnotation ma = (MeshAnnotation) a;
+				if (!ma.isDrawAnnotation())
+					continue; // Skip not visible annotations
+				if (selectedAnnotations.contains(ma))
+					continue;
+				for (Polygon p : selectedPolygons)
+					if (ma.meshContainsPolygon(p)) {
+						synchronized (selectedAnnotations) {
+							selectedAnnotations.add(ma);
+						}
+						break;
+					}
+			}
+		}
+		control.showSelectedAnnotation(selectedAnnotations);
 	}
 
 	/**
@@ -139,18 +226,26 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		this.casList = casList;
 	}
 
+	/**
+	 * @param control
+	 *            the control to set
+	 */
+	public void setControl(MeshReasoningViewControl control) {
+		this.control = control;
+	}
+
 	@Override
 	public void setup() {
-		size(1000, 1000, P3D);
+		size(1000, 1000, "edu.tum.cs.vis.model.view.PAppletSelectionGraphics");
 
-		frameRate(500);
+		frameRate(30);
 		cam = new PeasyCam(this, 0, 0, 0, 10);
 		cam.setMinimumDistance(0.01);
 		cam.setMaximumDistance(500);
 
 		cam.setRightDragHandler(cam.getPanDragHandler());
 
-		cam.setDistance(10);
+		cam.setDistance(50);
 
 		cam.rotateX((float) Math.PI / 2f);
 

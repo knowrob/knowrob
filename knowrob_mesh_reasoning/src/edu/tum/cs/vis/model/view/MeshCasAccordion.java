@@ -1,3 +1,10 @@
+/*******************************************************************************
+ * Copyright (c) 2012 Stefan Profanter. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the GNU Public License v3.0 which accompanies
+ * this distribution, and is available at http://www.gnu.org/licenses/gpl.html
+ * 
+ * Contributors: Stefan Profanter - initial API and implementation, Year: 2012
+ ******************************************************************************/
 package edu.tum.cs.vis.model.view;
 
 import java.awt.BorderLayout;
@@ -24,6 +31,12 @@ import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.view.control.AnnotationPanel;
 import edu.tum.cs.vis.model.view.control.FlatSurfaceAnnotationPanel;
 
+/**
+ * Accordion like component. Shows a list of buttons where you can expand the content.
+ * 
+ * @author Stefan Profanter
+ * 
+ */
 public class MeshCasAccordion extends JPanel implements ActionListener {
 	/**
 	 * Internal class that maintains information about individual Outlook bars; specifically it
@@ -33,8 +46,14 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 	 * maintained in the Outlook bar
 	 */
 	class BarInfo implements ActionListener {
+		/**
+		 * List of annotations for this button
+		 */
 		private ArrayList<MeshAnnotation>				annotations;
 
+		/**
+		 * Type of annotations in this
+		 */
 		private final Class<? extends MeshAnnotation>	annotationType;
 
 		/**
@@ -42,24 +61,32 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 		 */
 		private final JPanel							buttonPanel;
 
+		/**
+		 * Button for expanding panel
+		 */
 		private final JButton							button;
 
+		/**
+		 * Checkbox at left side of button
+		 */
 		private final JCheckBox							checkbox;
 
 		/**
 		 * The component that is the body of the Outlook bar
 		 */
-		private final AnnotationPanel					component;
+		@SuppressWarnings("rawtypes")
+		final AnnotationPanel							component;
 
 		/**
 		 * Creates a new BarInfo
 		 * 
-		 * @param item
-		 *            The name of the bar
+		 * @param annotationType
+		 *            Type of annotations which this bar holds
 		 * @param component
 		 *            The component that is the body of the Outlook Bar
 		 */
-		public BarInfo(Class<? extends MeshAnnotation> annotationType, AnnotationPanel component) {
+		public BarInfo(Class<? extends MeshAnnotation> annotationType,
+				@SuppressWarnings("rawtypes") AnnotationPanel component) {
 			this.component = component;
 			this.annotationType = annotationType;
 			annotations = new ArrayList<MeshAnnotation>();
@@ -84,6 +111,12 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 				m.setDrawAnnotation(checkbox.isSelected());
 		}
 
+		/**
+		 * Add annotation to the list of annotations.
+		 * 
+		 * @param a
+		 *            Annotation to add
+		 */
 		public void addAnnotation(MeshAnnotation a) {
 			if (a.getClass() != annotationType) {
 				System.out.println("Cannot add annotation (" + a.getClass()
@@ -121,6 +154,11 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 			return button;
 		}
 
+		/**
+		 * Getting panel which holds button and checkbox.
+		 * 
+		 * @return panel
+		 */
 		public JPanel getButtonPanel() {
 			return buttonPanel;
 		}
@@ -145,61 +183,72 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 	}
 
 	/**
+	 * auto generated
+	 */
+	private static final long	serialVersionUID	= -2608007314705667190L;
+
+	/**
+	 * Creates the control panel for given class
+	 * 
+	 * @param clazz
+	 *            AnnotationType for which to create panel
+	 * @return the control panel
+	 */
+	@SuppressWarnings("rawtypes")
+	static AnnotationPanel createPanelForAnnotation(Class<? extends MeshAnnotation> clazz) {
+		if (clazz == FlatSurfaceAnnotation.class)
+			return new FlatSurfaceAnnotationPanel();
+
+		System.out
+				.println("Update createPanelForAnnotation() function for creating AnnotationPanel for "
+						+ clazz);
+		return null;
+	}
+
+	/**
 	 * The top panel: contains the buttons displayed on the top of the JOutlookBar
 	 */
-	private final JPanel										topPanel			= new JPanel(
-																							new GridLayout(
-																									1,
-																									1));
+	private final JPanel								topPanel			= new JPanel(
+																					new GridLayout(
+																							1, 1));
 
 	/**
 	 * The bottom panel: contains the buttons displayed on the bottom of the JOutlookBar
 	 */
-	private final JPanel										bottomPanel			= new JPanel(
-																							new GridLayout(
-																									1,
-																									1));
+	private final JPanel								bottomPanel			= new JPanel(
+																					new GridLayout(
+																							1, 1));
 
 	/**
 	 * A LinkedHashMap of bars: we use a linked hash map to preserve the order of the bars
 	 */
-	private final Map<Class<? extends MeshAnnotation>, BarInfo>	bars				= new LinkedHashMap<Class<? extends MeshAnnotation>, BarInfo>();
+	final Map<Class<? extends MeshAnnotation>, BarInfo>	bars				= new LinkedHashMap<Class<? extends MeshAnnotation>, BarInfo>();
 
 	/**
 	 * The currently visible bar (zero-based index)
 	 */
-	private int													visibleBar			= 0;
+	private int											visibleBar			= 0;
 
 	/**
 	 * A place-holder for the currently visible component
 	 */
-	private JComponent											visibleComponent	= null;
-
-	private final MeshCas										cas;
+	private JComponent									visibleComponent	= null;
 
 	/**
 	 * Creates a new JOutlookBar; after which you should make repeated calls to addBar() for each
 	 * bar
+	 * 
+	 * @param cas
+	 *            Cas which can be controlled
 	 */
 	public MeshCasAccordion(final MeshCas cas) {
 		setLayout(new BorderLayout());
 		this.add(topPanel, BorderLayout.NORTH);
 		this.add(bottomPanel, BorderLayout.SOUTH);
-		this.cas = cas;
-
 		Timer tim = new Timer();
 		tim.scheduleAtFixedRate(new TimerTask() {
 
-			private AnnotationPanel createPanelForAnnotation(MeshAnnotation ma) {
-				if (ma instanceof FlatSurfaceAnnotation)
-					return new FlatSurfaceAnnotationPanel();
-
-				System.out
-						.println("Update createPanelForAnnotation() function for creating AnnotationPanel for "
-								+ ma.getClass());
-				return null;
-			}
-
+			@SuppressWarnings("unchecked")
 			@Override
 			public void run() {
 				synchronized (cas.getAnnotations()) {
@@ -211,11 +260,10 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 								bars.get(ma.getClass()).addAnnotation(ma);
 							} else {
 
-								AnnotationPanel pnl = createPanelForAnnotation(ma);
+								@SuppressWarnings("rawtypes")
+								AnnotationPanel pnl = createPanelForAnnotation(ma.getClass());
 
 								BarInfo bi = new BarInfo(ma.getClass(), pnl);
-								ArrayList<MeshAnnotation> arr = bi.getAnnotations();
-
 								pnl.setAnnotations(bi.getAnnotations());
 								bars.put(ma.getClass(), bi);
 							}
@@ -311,6 +359,42 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 
 		// Validate all of our components: cause this container to re-layout its subcomponents
 		validate();
+	}
+
+	/**
+	 * Opens the panel connected with given annotation and shows the features of this annotation. if
+	 * selectedAnnotation is null, feature infos will be reset.
+	 * 
+	 * @param selectedAnnotation
+	 *            annotation to show or null if none
+	 */
+	@SuppressWarnings("unchecked")
+	public void setSelectedAnnotation(final MeshAnnotation selectedAnnotation) {
+
+		BarInfo selBar = null;
+
+		for (Class<? extends MeshAnnotation> cl : bars.keySet()) {
+			BarInfo i = bars.get(cl);
+			if (selectedAnnotation != null && selectedAnnotation.getClass() == cl) {
+				i.component.setSelected(selectedAnnotation);
+				selBar = i;
+			} else
+				i.component.setSelected(null);
+		}
+
+		if (selBar != null) {
+
+			int idx = 0;
+
+			for (Iterator<Class<? extends MeshAnnotation>> itr = bars.keySet().iterator(); itr
+					.hasNext(); idx++) {
+				Class<? extends MeshAnnotation> clazz = itr.next();
+				if (bars.get(clazz) == selBar)
+					break;
+			}
+
+			setVisibleBar(idx);
+		}
 	}
 
 	/**

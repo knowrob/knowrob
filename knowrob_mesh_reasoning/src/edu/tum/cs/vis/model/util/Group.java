@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2012 Stefan Profanter.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/gpl.html
+ * 
+ * Contributors:
+ *     Stefan Profanter - initial API and implementation, Year: 2012
+ ******************************************************************************/
 package edu.tum.cs.vis.model.util;
 
 import java.awt.Color;
@@ -117,12 +127,24 @@ public class Group implements Serializable {
 		return children;
 	}
 
-	public void getIntersectedPolygons(Point3f rayStart, Point3f rayEnd,
-			ArrayList<Polygon> intersectedPolygons, Point3f intersect) {
-		mesh.getIntersectedPolygons(rayStart, rayEnd, intersectedPolygons, intersect);
+	/**
+	 * Searches all polygons which intersect the given ray (rayStart, rayEnd) and adds them to
+	 * intersectedPolygons. Not only the segment between rayStart and rayEnd is checked but the
+	 * whole ray from -infinity to +infinity.
+	 * 
+	 * @param rayStart
+	 *            start point of the ray.
+	 * @param rayEnd
+	 *            end point of the ray.
+	 * @param intersectedPolygons
+	 *            list where to add intersecting polygons
+	 */
+	public void getIntersectedPolygons(final Point3f rayStart, final Point3f rayEnd,
+			final ArrayList<Polygon> intersectedPolygons) {
+		mesh.getIntersectedPolygons(rayStart, rayEnd, intersectedPolygons);
 
 		for (Group g : children) {
-			g.getIntersectedPolygons(rayStart, rayEnd, intersectedPolygons, intersect);
+			g.getIntersectedPolygons(rayStart, rayEnd, intersectedPolygons);
 		}
 
 	}

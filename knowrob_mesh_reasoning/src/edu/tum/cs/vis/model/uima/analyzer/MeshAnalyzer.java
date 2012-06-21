@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2012 Stefan Profanter.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/gpl.html
+ * 
+ * Contributors:
+ *     Stefan Profanter - initial API and implementation, Year: 2012
+ ******************************************************************************/
 package edu.tum.cs.vis.model.uima.analyzer;
 
 import org.apache.log4j.Logger;
@@ -15,16 +25,41 @@ import edu.tum.cs.vis.model.uima.cas.MeshCas;
  */
 public abstract class MeshAnalyzer extends AnalysisEngine {
 
+	/**
+	 * Current progress in percent (from 0 to 100). If it is -1, AnalysisEngine hasn't started yet
+	 */
 	private float	progress			= -1;
 
+	/**
+	 * Value of System.currentTimeMillis() when analyzing started
+	 */
 	private long	processStartTime	= 0;
 
+	/**
+	 * Duration in milliseconds of last process call.
+	 */
 	private long	processDuration		= 0;
 
+	/**
+	 * Returns the log4j logger for this class
+	 * 
+	 * @return log4j logger
+	 */
 	public abstract Logger getLogger();
 
+	/**
+	 * Short name for the analyzer. Eg. "FlatSurface". Used for list on MeshReasoningViewControl.
+	 * 
+	 * @return the name of the analyzer.
+	 */
 	public abstract String getName();
 
+	/**
+	 * Returns a concatenation of <code>getName</code> and the current progress status (waiting,
+	 * current duration, or ended with duration)
+	 * 
+	 * @return String in format: getName() - [waiting|hh:mm:ss.xxx|ended hh:mm:ss.xxx]
+	 */
 	public String getNameAndProgress() {
 		String progr;
 		if (getProgress() < 0)
@@ -92,6 +127,10 @@ public abstract class MeshAnalyzer extends AnalysisEngine {
 		this.progress = progress;
 	}
 
+	/**
+	 * Called in <code>process</code> and <code>getProcess</code> to force class to update the
+	 * process status/progress.
+	 */
 	public abstract void updateProgress();
 
 }

@@ -22,30 +22,61 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 
 import edu.tum.cs.vis.model.uima.analyzer.MeshAnalyzer;
+import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 
+/**
+ * Control panel for MeshReasoningView. Contains different status information and controls which
+ * impact the visible parts of the model.
+ * 
+ * @author Stefan Profanter
+ * 
+ */
 public final class MeshReasoningViewControl extends JPanel implements ActionListener {
 
-	private final MeshReasoningView			view;
+	/**
+	 * auto generated
+	 */
+	private static final long				serialVersionUID	= -2013371551022209950L;
 
+	/**
+	 * list of all analyzers
+	 */
 	private final ArrayList<MeshAnalyzer>	analyzer;
+	/**
+	 * The accordion component which contains controls for each different annotation type
+	 */
 	private final MeshCasAccordion			accordion;
 
+	/**
+	 * List which shows the current progress of all analyzers
+	 */
 	private final JList						analyzerList;
+	/**
+	 * List model for analyzerList
+	 */
 	private final DefaultListModel			analyzerListModel;
 
+	/**
+	 * check box to enable or disable drawing of main mesh (base data)
+	 */
 	private final JCheckBox					cbxShowMesh;
+
+	/**
+	 * cas for which this control is
+	 */
 	private final MeshCas					cas;
 
 	/**
 	 * Default constructor
 	 * 
-	 * @param parent
-	 *            Applet for which this control panel is
+	 * @param cas
+	 *            cas for which the control is
+	 * @param analyzer
+	 *            list of analyzers used
+	 * 
 	 */
-	public MeshReasoningViewControl(MeshReasoningView parent, MeshCas cas,
-			ArrayList<MeshAnalyzer> analyzer) {
-		view = parent;
+	public MeshReasoningViewControl(MeshCas cas, ArrayList<MeshAnalyzer> analyzer) {
 		this.cas = cas;
 		setPreferredSize(new Dimension(300, 600));
 
@@ -101,7 +132,24 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 
 	}
 
-	private void updateAnalyzerList() {
+	/**
+	 * Shows the selected annotation in the accordion view if only one is selected. Otherwise the
+	 * selection will be cleared.
+	 * 
+	 * @param selectedAnnotations
+	 *            list of currently selected annotations
+	 */
+	public void showSelectedAnnotation(ArrayList<MeshAnnotation> selectedAnnotations) {
+		if (selectedAnnotations.size() == 1)
+			accordion.setSelectedAnnotation(selectedAnnotations.get(0));
+		else
+			accordion.setSelectedAnnotation(null);
+	}
+
+	/**
+	 * Updates the status in the analyzer list (the progress and current duration)
+	 */
+	void updateAnalyzerList() {
 		int i;
 		synchronized (analyzer) {
 			for (i = 0; i < analyzer.size(); i++) {

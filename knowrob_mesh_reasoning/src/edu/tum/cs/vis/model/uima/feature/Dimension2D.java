@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2012 Stefan Profanter.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0
+ * which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/gpl.html
+ * 
+ * Contributors:
+ *     Stefan Profanter - initial API and implementation, Year: 2012
+ ******************************************************************************/
 package edu.tum.cs.vis.model.uima.feature;
 
 import edu.tum.cs.uima.Feature;
@@ -9,20 +19,27 @@ import edu.tum.cs.uima.Feature;
  * 
  */
 public class Dimension2D extends Feature {
-	private int	width;
-	private int	height;
+	/**
+	 * Width of this feature in millimeters
+	 */
+	private double	width;
+
+	/**
+	 * height of this feature in millimeters
+	 */
+	private double	height;
 
 	/**
 	 * @return the height
 	 */
-	public int getHeight() {
+	public double getHeight() {
 		return height;
 	}
 
 	/**
 	 * @return the width
 	 */
-	public int getWidth() {
+	public double getWidth() {
 		return width;
 	}
 
@@ -30,7 +47,7 @@ public class Dimension2D extends Feature {
 	 * @param height
 	 *            the height to set
 	 */
-	public void setHeight(int height) {
+	public void setHeight(double height) {
 		this.height = height;
 	}
 
@@ -38,8 +55,13 @@ public class Dimension2D extends Feature {
 	 * @param width
 	 *            the width to set
 	 */
-	public void setWidth(int width) {
+	public void setWidth(double width) {
 		this.width = width;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("%.2fx%.2fmm", width, height);
 	}
 
 }
