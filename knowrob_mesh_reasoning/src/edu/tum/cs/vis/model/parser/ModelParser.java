@@ -1,12 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2012 Stefan Profanter.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Public License v3.0
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/gpl.html
+ * Copyright (c) 2012 Stefan Profanter. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the GNU Public License v3.0 which accompanies
+ * this distribution, and is available at http://www.gnu.org/licenses/gpl.html
  * 
- * Contributors:
- *     Stefan Profanter - initial API and implementation, Year: 2012
+ * Contributors: Stefan Profanter - initial API and implementation, Year: 2012
  ******************************************************************************/
 package edu.tum.cs.vis.model.parser;
 
@@ -15,7 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import processing.core.PApplet;
-import edu.tum.cs.vis.model.util.Group;
+import edu.tum.cs.vis.model.Model;
 
 /**
  * Base class for all ModelParsers. Used to parse models from file an draw them onto the Processing
@@ -44,7 +41,7 @@ public abstract class ModelParser {
 	 * will be stored in this HashMap. It it is loaded a second time, instead of parsing it again it
 	 * will be taken from this HashMap
 	 */
-	private static HashMap<String, Group>								modelBuffer			= new HashMap<String, Group>();
+	private static HashMap<String, Model>								modelBuffer			= new HashMap<String, Model>();
 
 	/**
 	 * Finds the appropriate parser for the given filename by comaring the file extension.
@@ -71,7 +68,7 @@ public abstract class ModelParser {
 	/**
 	 * Contains mesh of the model
 	 */
-	protected Group	group;
+	protected Model	model;
 
 	/**
 	 * Checks if the file extension is valid for this class
@@ -101,12 +98,12 @@ public abstract class ModelParser {
 	public abstract void draw(PApplet applet, Color colorOverride);
 
 	/**
-	 * Get the group containing the model (meshes)
+	 * Get the object containing the model (meshes)
 	 * 
-	 * @return the group member
+	 * @return the model member
 	 */
-	public Group getGroup() {
-		return group;
+	public Model getModel() {
+		return model;
 	}
 
 	/**
@@ -157,14 +154,14 @@ public abstract class ModelParser {
 	 * @return true if model parsed successfully. false otherwise
 	 */
 	public boolean parseModel(String filename) {
-		Group g = modelBuffer.get(filename);
+		Model m = modelBuffer.get(filename);
 		boolean retVal = true;
 
-		if (g == null) {
+		if (m == null) {
 			retVal = loadModel(filename);
-			modelBuffer.put(filename, group);
+			modelBuffer.put(filename, model);
 		} else
-			group = g;
+			model = m;
 		return retVal;
 	}
 

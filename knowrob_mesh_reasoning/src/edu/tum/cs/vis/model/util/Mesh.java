@@ -85,10 +85,6 @@ public class Mesh implements Serializable {
 	 */
 	private ArrayList<Line>		lines				= new ArrayList<Line>();
 
-	public void addTrianglesToList(ArrayList<Triangle> allTriangles) {
-		allTriangles.addAll(triangles);
-	}
-
 	/**
 	 * Draws the bounding box around the model with the current style
 	 * 
@@ -204,19 +200,6 @@ public class Mesh implements Serializable {
 			}
 		}
 		return maxY - minY;
-	}
-
-	/**
-	 * Returns a new empty mesh where textureInitialized and textureBasePath are set to the values
-	 * of this mesh.
-	 * 
-	 * @return a new mesh
-	 */
-	public Mesh getInitializedChildMesh() {
-		Mesh m = new Mesh();
-		m.textureBasePath = textureBasePath;
-		m.texturesInitialized = texturesInitialized;
-		return m;
 	}
 
 	/**

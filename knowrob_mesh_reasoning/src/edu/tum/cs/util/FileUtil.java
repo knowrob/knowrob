@@ -1,12 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2012 Stefan Profanter.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Public License v3.0
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/gpl.html
+ * Copyright (c) 2012 Stefan Profanter. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the GNU Public License v3.0 which accompanies
+ * this distribution, and is available at http://www.gnu.org/licenses/gpl.html
  * 
- * Contributors:
- *     Stefan Profanter - initial API and implementation, Year: 2012
+ * Contributors: Stefan Profanter - initial API and implementation, Year: 2012
  ******************************************************************************/
 package edu.tum.cs.util;
 
@@ -18,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.regex.Matcher;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -100,7 +98,7 @@ public class FileUtil {
 	public static boolean Unzip(String zipFile, String outputDirectory) {
 		String outDir = outputDirectory;
 		if (!outDir.endsWith("/") && !outDir.endsWith("\\"))
-			outDir += "/";
+			outDir += File.separator;
 
 		BufferedOutputStream dest = null;
 		BufferedInputStream is = null;
@@ -117,7 +115,17 @@ public class FileUtil {
 					continue;
 				}
 
-				String filename = outDir + entry.getName();
+				String name;
+
+				if (File.separator.equals("\\")) {
+					name = entry.getName()
+							.replaceAll("/", Matcher.quoteReplacement(File.separator));
+				} else {
+					name = entry.getName().replaceAll("\\",
+							Matcher.quoteReplacement(File.separator));
+				}
+
+				String filename = outDir + name;
 				String filePath = filename.substring(0, filename.lastIndexOf(File.separator));
 
 				// Create directory if not existing

@@ -192,7 +192,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 
 		ArrayList<Triangle> allTriangles = new ArrayList<Triangle>();
 
-		processGroup(allTriangles, casList.get(0).getGroup(), casList.get(0));
+		processGroup(allTriangles, casList.get(0).getModel().getGroup(), casList.get(0));
 
 		if (MeshReasoningView.test < 0)
 			MeshReasoningView.test = allTriangles.size() - 1;
@@ -276,7 +276,8 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 				// It is new selection
 				selectedTriangless.clear();
 				for (MeshCas c : casList) {
-					c.getGroup().getIntersectedTriangles(rayEnd, rayStart, selectedTriangless);
+					c.getModel().getGroup()
+							.getIntersectedTriangles(rayEnd, rayStart, selectedTriangless);
 				}
 			}
 

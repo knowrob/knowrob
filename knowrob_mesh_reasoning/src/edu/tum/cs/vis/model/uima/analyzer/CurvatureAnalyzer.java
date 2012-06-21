@@ -18,7 +18,6 @@ import javax.vecmath.Vector3d;
 import org.apache.log4j.Logger;
 
 import processing.core.PGraphics;
-import edu.tum.cs.vis.model.uima.annotation.CurvatureAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.util.Quaternion;
 import edu.tum.cs.vis.model.util.Triangle;
@@ -258,7 +257,7 @@ public class CurvatureAnalyzer extends MeshAnalyzer {
 
 		}
 
-		int maxIdx = 0;
+		/*int maxIdx = 0;
 		for (maxIdx = 0; normalCurvature[maxIdx] == null && maxIdx < NUMBER_OF_SEGMENTS; maxIdx++) {};
 		int minIdx = 0;
 		for (minIdx = 0; normalCurvature[minIdx] == null && minIdx < NUMBER_OF_SEGMENTS; minIdx++) {};
@@ -302,7 +301,7 @@ public class CurvatureAnalyzer extends MeshAnalyzer {
 					+ (float) normalCurvatureDirection[MeshReasoningView.testIdx].y, (float) cent.z
 					+ (float) normalCurvatureDirection[MeshReasoningView.testIdx].z);
 			// System.out.println("Curv: " + normalCurvature[MeshReasoningView.testIdx]);
-		}
+		}*/
 
 	}
 
@@ -337,9 +336,8 @@ public class CurvatureAnalyzer extends MeshAnalyzer {
 	 */
 	@Override
 	public void processStart(MeshCas cas) {
-		allTriangles = new ArrayList<Triangle>();
 
-		cas.getGroup().addTrianglesToList(allTriangles);
+		allTriangles = cas.getModel().getTriangles();
 
 		for (int i = 0; i < allTriangles.size(); i++) {
 			MeshReasoningView.test = i;

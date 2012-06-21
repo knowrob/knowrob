@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
 import edu.tum.cs.vis.model.ItemModel;
+import edu.tum.cs.vis.model.Model;
 import edu.tum.cs.vis.model.uima.analyzer.CurvatureAnalyzer;
 import edu.tum.cs.vis.model.uima.analyzer.MeshAnalyzer;
 import edu.tum.cs.vis.model.uima.analyzer.NeighborAnalyzer;
@@ -55,12 +56,20 @@ public class MeshReasoning {
 		// ItemModel model = new ItemModel("/home/stefan/Downloads/triangle.dae");
 		// ItemModel model = new ItemModel("/home/stefan/Downloads/saintpeter.kmz");
 
-		// ItemModel model = new ItemModel("/home/stefan/CoTeSys/cups/cup2.kmz");
-		ItemModel model = new ItemModel("/home/stefan/CoTeSys/cups/cup_red.kmz");
+		ItemModel itemModel = new ItemModel("models/cup2.kmz");
+		// ItemModel model = new ItemModel("/home/stefan/CoTeSys/cups/cup_red.kmz");
 		// ItemModel model = new ItemModel("/home/stefan/Downloads/cube.kmz");
-		if (!model.parseModel()) {
+
+		Model model = itemModel.getParser().getModel();
+
+		logger.debug("Parsing model ...");
+
+		if (!itemModel.parseModel()) {
 			throw new RuntimeException("Couldn't parse model. Maybe path to model is wrong.");
 		}
+
+		logger.debug("Model parsed. (Vertices: " + model.getVertices().size() + ", Lines: "
+				+ model.getLines().size() + ", Triangles: " + model.getTriangles().size());
 
 		MeshCas cas = new MeshCas();
 
@@ -79,7 +88,7 @@ public class MeshReasoning {
 		
 		g.getMesh().triangles.add(t);*/
 
-		cas.setGroup(model.getParser().getGroup());
+		cas.setModel(model);
 
 		// cas.setGroup(g);
 
@@ -112,16 +121,17 @@ public class MeshReasoning {
 		analyzer.add(na);
 		// analyzer.add(das);
 		// analyzer.add(fsna);
-		analyzer.add(ca);
-		//analyzer.add(pa);
+		// analyzer.add(ca);
+		// analyzer.add(pa);
 
 		Thread.yield();
 
 		na.process(cas);
 
 		// das.process(cas);
-		ca.process(cas);
-		pa.process(cas);
+
+		// ca.process(cas);
+		// pa.process(cas);
 
 		// fsa.process(cas);
 

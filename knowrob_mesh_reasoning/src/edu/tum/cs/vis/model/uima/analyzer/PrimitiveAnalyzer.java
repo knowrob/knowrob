@@ -68,7 +68,7 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 			}
 			synchronized (annotation) {
 				annotation.getMesh().setTextureBasePath(
-						cas.getGroup().getMesh().getTextureBasePath());
+						cas.getModel().getGroup().getMesh().getTextureBasePath());
 				annotation.getMesh().getTriangles().add(start);
 			}
 
@@ -225,9 +225,7 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 	 */
 	@Override
 	public void processStart(MeshCas cas) {
-		allTriangles = new ArrayList<Triangle>();
-
-		cas.getGroup().addTrianglesToList(allTriangles);
+		allTriangles = cas.getModel().getTriangles();
 
 		for (int i = 0; i < allTriangles.size(); i++) {
 			MeshReasoningView.test = i;

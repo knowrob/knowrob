@@ -63,10 +63,7 @@ public class NeighborAnalyzer extends MeshAnalyzer {
 	public void processStart(MeshCas cas) {
 
 		trianglesElaborated.set(0);
-		allTriangles = new ArrayList<Triangle>();
-		cas.getGroup().addTrianglesToList(allTriangles);
-
-		logger.debug("Number of triangles: " + allTriangles.size());
+		allTriangles = cas.getModel().getTriangles();
 
 		int startIdx = 0;
 		int interval = 100;

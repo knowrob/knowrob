@@ -16,6 +16,7 @@ import javax.vecmath.Vector3f;
 
 import processing.core.PApplet;
 import processing.core.PGraphics;
+import edu.tum.cs.vis.model.Model;
 
 /**
  * Represents a Mesh-Group with a Name. A group can multiple child groups so it will present a mesh
@@ -25,6 +26,8 @@ import processing.core.PGraphics;
  * 
  */
 public class Group implements Serializable {
+
+	private final Model			model;
 
 	/**
 	 * Auto generated
@@ -70,6 +73,10 @@ public class Group implements Serializable {
 	 */
 	private ArrayList<Group>	children			= new ArrayList<Group>();
 
+	public Group(Model parent) {
+		model = parent;
+	}
+
 	/**
 	 * Add a child to this group
 	 * 
@@ -80,11 +87,21 @@ public class Group implements Serializable {
 		children.add(g);
 	}
 
-	public void addTrianglesToList(ArrayList<Triangle> allTriangles) {
-		mesh.addTrianglesToList(allTriangles);
-		for (Group gr : children) {
-			gr.addTrianglesToList(allTriangles);
-		}
+	/**
+	 * @param line
+	 */
+	public void addLine(Line line) {
+		model.addLine(line);
+		mesh.getLines().add(line);
+	}
+
+	/**
+	 * @param tri
+	 */
+	public void addTriangle(Triangle tri) {
+		model.addTriangle(tri);
+		mesh.getTriangles().add(tri);
+
 	}
 
 	/**
@@ -220,6 +237,13 @@ public class Group implements Serializable {
 	 */
 	public Float getMinZ() {
 		return minZ;
+	}
+
+	/**
+	 * @return the model
+	 */
+	public Model getModel() {
+		return model;
 	}
 
 	/**
@@ -409,4 +433,5 @@ public class Group implements Serializable {
 			g.translate(translation);
 		}
 	}
+
 }

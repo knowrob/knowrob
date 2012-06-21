@@ -12,9 +12,9 @@ import java.io.Serializable;
 import processing.core.PGraphics;
 import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.uima.JCas;
+import edu.tum.cs.vis.model.Model;
 import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
-import edu.tum.cs.vis.model.util.Group;
 import edu.tum.cs.vis.model.util.Triangle;
 
 /**
@@ -32,7 +32,7 @@ public class MeshCas extends JCas implements Serializable {
 	/**
 	 * Group which represents the mesh and its child groups
 	 */
-	private Group				group;
+	private Model				model;
 
 	/**
 	 * Indicates if the original mesh should be drawn or not.
@@ -59,7 +59,7 @@ public class MeshCas extends JCas implements Serializable {
 	 */
 	public void draw(PGraphics g) {
 		if (drawMesh)
-			group.draw(g, null);
+			model.draw(g, null);
 		synchronized (annotations) {
 			for (Annotation a : annotations) {
 				if (!(a instanceof DrawableAnnotation))
@@ -93,10 +93,10 @@ public class MeshCas extends JCas implements Serializable {
 	}
 
 	/**
-	 * @return the group
+	 * @return the model
 	 */
-	public Group getGroup() {
-		return group;
+	public Model getModel() {
+		return model;
 	}
 
 	/**
@@ -115,11 +115,11 @@ public class MeshCas extends JCas implements Serializable {
 	}
 
 	/**
-	 * @param group
-	 *            the group to set
+	 * @param model
+	 *            the model to set
 	 */
-	public void setGroup(Group group) {
-		this.group = group;
+	public void setModel(Model model) {
+		this.model = model;
 	}
 
 }

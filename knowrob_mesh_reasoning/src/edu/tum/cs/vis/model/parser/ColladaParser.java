@@ -53,6 +53,7 @@ import com.dddviewr.collada.visualscene.VisualScene;
 
 import edu.tum.cs.util.FileUtil;
 import edu.tum.cs.util.ResourceRetriever;
+import edu.tum.cs.vis.model.Model;
 import edu.tum.cs.vis.model.util.Appearance;
 import edu.tum.cs.vis.model.util.DrawObject;
 import edu.tum.cs.vis.model.util.Group;
@@ -352,7 +353,7 @@ public class ColladaParser extends ModelParser {
 
 			useTransformation(line, transformations);
 			// add it to the Collection
-			currGroup.getMesh().getLines().add(line);
+			currGroup.addLine(line);
 		}
 	}
 
@@ -454,7 +455,7 @@ public class ColladaParser extends ModelParser {
 			tri.updateNormalVector();
 
 			// add it to the Collection
-			currGroup.getMesh().getTriangles().add(tri);
+			currGroup.addTriangle(tri);
 		}
 
 	}
@@ -511,7 +512,7 @@ public class ColladaParser extends ModelParser {
 
 	@Override
 	public void draw(PApplet applet, Color overrideColor) {
-		if (group == null)
+		if (model == null)
 			return;
 		applet.noStroke();
 
@@ -521,7 +522,7 @@ public class ColladaParser extends ModelParser {
 		else
 			applet.fill(127); // set a default color value
 
-		group.draw(applet.g, overrideColor);
+		model.draw(applet.g, overrideColor);
 	}
 
 	@Override
@@ -545,7 +546,7 @@ public class ColladaParser extends ModelParser {
 		if (extension.equalsIgnoreCase("kmz")) {
 			String tmpPath = ResourceRetriever.createTempDirectory();
 			if (!tmpPath.endsWith("/") && !tmpPath.endsWith("\\"))
-				tmpPath += "/";
+				tmpPath += File.separator;
 			FileUtil.Unzip(filename, tmpPath);
 
 			daeFile = getDaeLocation(tmpPath);
@@ -553,7 +554,7 @@ public class ColladaParser extends ModelParser {
 			textureBasePath = daeFile.substring(0, daeFile.lastIndexOf(File.separator));
 
 			if (!textureBasePath.endsWith("/") && !textureBasePath.endsWith("\\"))
-				textureBasePath += "/";
+				textureBasePath += File.separator;
 
 		} else if (extension.equalsIgnoreCase("dae")) {
 			textureBasePath = "";
@@ -576,7 +577,8 @@ public class ColladaParser extends ModelParser {
 			return false;
 		}
 
-		group = new Group();
+		model = new Model();
+		model.setGroup(new Group(model));
 
 		// collada.dump(System.out, 0);
 
@@ -585,17 +587,17 @@ public class ColladaParser extends ModelParser {
 				collada.getScene().getInstanceVisualScene().getUrl());
 
 		for (Node n : scene.getNodes()) {
-			parseNode(n, group, new ArrayList<BaseXform>(), collada);
+			parseNode(n, model.getGroup(), new ArrayList<BaseXform>(), collada);
 		}
 
-		group.initialize(textureBasePath);
+		model.getGroup().initialize(textureBasePath);
 
 		Unit unit = collada.getUnit();
 		if (unit != null && unit.getMeter() != 1.0) {
-			group.scale(unit.getMeter());
+			model.getGroup().scale(unit.getMeter());
 		}
 
-		group.mirrorX();
+		model.getGroup().mirrorX();
 
 		return true;
 	}
@@ -621,7 +623,7 @@ public class ColladaParser extends ModelParser {
 		// Parse all child nodes
 		if (node.getChildNodes() != null) {
 			for (Node child : node.getChildNodes()) {
-				Group g = new Group();
+				Group g = new Group(currGroup.getModel());
 				g.setName(child.getName());
 				currGroup.addChild(g);
 				parseNode(child, g, transformations, collada);

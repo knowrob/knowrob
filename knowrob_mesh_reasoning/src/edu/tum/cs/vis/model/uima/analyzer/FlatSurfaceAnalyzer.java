@@ -71,7 +71,7 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 			annotation = new FlatSurfaceAnnotation();
 			synchronized (annotation) {
 				annotation.getMesh().setTextureBasePath(
-						cas.getGroup().getMesh().getTextureBasePath());
+						cas.getModel().getGroup().getMesh().getTextureBasePath());
 				annotation.getMesh().getTriangles().add(start);
 			}
 
@@ -228,7 +228,7 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 
 		allTriangles = new ArrayList<Triangle>();
 
-		processGroup(cas.getGroup(), cas);
+		processGroup(cas.getModel().getGroup(), cas);
 
 		int startIdx = 0;
 		int interval = 100;
