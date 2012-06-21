@@ -20,8 +20,6 @@ import org.apache.log4j.Logger;
 import processing.core.PGraphics;
 import edu.tum.cs.vis.model.uima.annotation.CurvatureAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
-import edu.tum.cs.vis.model.util.Group;
-import edu.tum.cs.vis.model.util.Mesh;
 import edu.tum.cs.vis.model.util.Quaternion;
 import edu.tum.cs.vis.model.util.Triangle;
 import edu.tum.cs.vis.model.util.TriangleNeighbor;
@@ -178,40 +176,10 @@ public class CurvatureAnalyzer extends MeshAnalyzer {
 
 	}
 
-	/**
-	 * Process the mesh of the group <code>g</code> with <code>processMesh</code> and all child
-	 * groups.
-	 * 
-	 * @param g
-	 *            group to process
-	 * @param cas
-	 *            CAS to add a new annotation if flat surface is found.
-	 */
-	private static void processGroup(ArrayList<Triangle> allTriangles, Group g, MeshCas cas) {
-		processMesh(allTriangles, g.getMesh(), cas);
-		for (Group gr : g.getChildren()) {
-			processGroup(allTriangles, gr, cas);
-		}
-	}
-
-	/**
-	 * Process all triangles in the given mesh <code>m</code> with <code>triangleBFS</code>
-	 * 
-	 * @param m
-	 *            mesh to process
-	 * @param cas
-	 *            CAS to add a new annotation if flat surface is found.
-	 */
-	private static void processMesh(ArrayList<Triangle> allTriangles, Mesh m, final MeshCas cas) {
-
-		if (m.getTriangles().size() == 0)
-			return;
-
-		allTriangles.addAll(m.getTriangles());
-	}
-
 	public static void triangleCurvature(Triangle start, MeshCas cas, PGraphics g) {
 		double radius = Math.sqrt(start.getArea() * GEODESIC_RADIUS_FACTOR);
+		if (radius == 0.0)
+			return;
 		Point3d cent = start.getCentroid();
 		Vector3d norm = start.getNormalVector();
 
@@ -236,7 +204,9 @@ public class CurvatureAnalyzer extends MeshAnalyzer {
 
 			// Find an intersecting triangle. If radius was too large, it's getting smaller and
 			// smaller until an intersecting triangle is found.
-			while (normalCurvature[i] == null) {
+			int cnt = 0;
+			while (normalCurvature[i] == null && cnt < 20) {
+				cnt++;
 				// Point on tangential plane where perp points to, with current angle
 				Point3d circlePoint = new Point3d(cent.x + perp.x, cent.y + perp.y, cent.z + perp.z);
 				// Point to indicate direction where to search for intersection. Direction is the
@@ -255,6 +225,8 @@ public class CurvatureAnalyzer extends MeshAnalyzer {
 						intersectionTriangle.draw(g, new Color(255, 255, 0));
 				} else {
 					perp.scale(0.8); // reduce radius and try again
+					// logger.debug("scale radius " + i + " for " + start + "  " + perp.length()
+					// + " cnt:" + cnt + " rad:" + radius);
 				}
 			}
 			normalCurvatureDirection[i] = (Vector3d) perp.clone();
@@ -287,20 +259,26 @@ public class CurvatureAnalyzer extends MeshAnalyzer {
 		}
 
 		int maxIdx = 0;
+		for (maxIdx = 0; normalCurvature[maxIdx] == null && maxIdx < NUMBER_OF_SEGMENTS; maxIdx++) {};
+		int minIdx = 0;
+		for (minIdx = 0; normalCurvature[minIdx] == null && minIdx < NUMBER_OF_SEGMENTS; minIdx++) {};
+		if (maxIdx == NUMBER_OF_SEGMENTS || minIdx == NUMBER_OF_SEGMENTS)
+			return;
 
-		for (int i = 1; i < NUMBER_OF_SEGMENTS; i++) {
+		for (int i = maxIdx + 1; i < NUMBER_OF_SEGMENTS; i++) {
+			if (normalCurvature[i] == null)
+				continue;
 			if (normalCurvature[i] > normalCurvature[maxIdx])
 				maxIdx = i;
 		}
 
-		int minIdx = (maxIdx + NUMBER_OF_SEGMENTS / 4) % NUMBER_OF_SEGMENTS;
-		if (normalCurvature[(minIdx + NUMBER_OF_SEGMENTS / 2) % NUMBER_OF_SEGMENTS] < normalCurvature[minIdx])
-			minIdx = (minIdx + NUMBER_OF_SEGMENTS / 2) % NUMBER_OF_SEGMENTS;
-		int origMinIdx = minIdx;
-		if (normalCurvature[(origMinIdx + 1) % NUMBER_OF_SEGMENTS] < normalCurvature[minIdx])
-			minIdx = (minIdx + 1) % NUMBER_OF_SEGMENTS;
-		else if (normalCurvature[(origMinIdx - 1 + NUMBER_OF_SEGMENTS) % NUMBER_OF_SEGMENTS] < normalCurvature[minIdx])
-			minIdx = (minIdx + 1) % NUMBER_OF_SEGMENTS;
+		for (int i = minIdx + 1; i < NUMBER_OF_SEGMENTS; i++) {
+			if (normalCurvature[i] == null)
+				continue;
+			if (normalCurvature[i] < normalCurvature[minIdx])
+				minIdx = i;
+		}
+
 		// reset length to 1 and then multiply by curvature value
 		normalCurvatureDirection[maxIdx].normalize();
 		normalCurvatureDirection[maxIdx].scale(normalCurvature[maxIdx]);
@@ -326,107 +304,6 @@ public class CurvatureAnalyzer extends MeshAnalyzer {
 			// System.out.println("Curv: " + normalCurvature[MeshReasoningView.testIdx]);
 		}
 
-	}
-
-	public static void triangleCurvature1(Triangle start, MeshCas cas, PGraphics g) {
-		double radius = Math.sqrt(start.getArea() * GEODESIC_RADIUS_FACTOR);
-		Point3d cent = start.getCentroid();
-		Vector3d norm = start.getNormalVector();
-
-		// Get a perpendicular vector to the surface normal. Simply take the Vector from centroid to
-		// a corner point
-		Vector3d perp = new Vector3d(start.getPosition()[0]);
-		perp.sub(cent);
-		perp.normalize();
-
-		Double maxCurvature = Double.MIN_VALUE;
-		Vector3d maxCurvatureDirection = new Vector3d(start.getPosition()[0]);
-
-		Double minCurvature = Double.MAX_VALUE;
-		Vector3d minCurvatureDirection = new Vector3d(start.getPosition()[1]);
-
-		// List of already visited triangles for BFS
-		LinkedList<Triangle> visited = new LinkedList<Triangle>();
-		visited.add(start);
-
-		// FIFO queue for triangles to visit for BFS
-		LinkedList<ItemWithLevel> queue = new LinkedList<ItemWithLevel>();
-		if (start.getNeighbors() != null) {
-			// Add all neighbor triangles to the queue
-			for (TriangleNeighbor n : start.getNeighbors())
-				queue.add(new ItemWithLevel(n, 1));
-		}
-
-		while (!queue.isEmpty()) {
-			ItemWithLevel itm = queue.pop();
-			if (itm.level > 2)
-				continue;
-			TriangleNeighbor currNeighbor = itm.item;
-			Triangle currNeighborTriangle;
-			if (visited.contains(currNeighbor.getTriangle1()))
-				currNeighborTriangle = currNeighbor.getTriangle2();
-
-			else
-				currNeighborTriangle = currNeighbor.getTriangle1();
-			visited.add(currNeighborTriangle);
-
-			double tmpCurvature = getCurvatureValue(cent, norm, currNeighborTriangle.getCentroid(),
-					currNeighborTriangle.getNormalVector());
-
-			if (tmpCurvature > maxCurvature) {
-				maxCurvature = tmpCurvature;
-				maxCurvatureDirection = new Vector3d(currNeighborTriangle.getCentroid());
-				maxCurvatureDirection.sub(cent);
-			}
-			if (tmpCurvature < minCurvature) {
-				minCurvature = tmpCurvature;
-				minCurvatureDirection = new Vector3d(currNeighborTriangle.getCentroid());
-				minCurvatureDirection.sub(cent);
-			}
-
-			// Add all neighbors of current triangle to queue
-			synchronized (currNeighborTriangle.getNeighbors()) {
-				for (TriangleNeighbor a : currNeighborTriangle.getNeighbors()) {
-					Triangle newTriangle = a.getNeighbor(currNeighborTriangle);
-
-					if (visited.contains(newTriangle))
-						continue;
-					queue.add(new ItemWithLevel(a, itm.level + 1));
-				}
-
-			}
-		}
-
-		maxCurvatureDirection.normalize();
-		maxCurvatureDirection.scale(maxCurvature / 10);
-
-		minCurvatureDirection.normalize();
-		minCurvatureDirection.scale(minCurvature / 10);
-
-		if (g != null) {
-			start.draw(g, new Color(0, 255, 0, 125));
-
-			g.stroke(255, 0, 0);
-			g.line((float) cent.x - (float) maxCurvatureDirection.x, (float) cent.y
-					- (float) maxCurvatureDirection.y, (float) cent.z
-					- (float) maxCurvatureDirection.z, (float) cent.x
-					+ (float) maxCurvatureDirection.x, (float) cent.y
-					+ (float) maxCurvatureDirection.y, (float) cent.z
-					+ (float) maxCurvatureDirection.z);
-
-			g.stroke(0, 0, 255);
-
-			g.line((float) cent.x - (float) minCurvatureDirection.x, (float) cent.y
-					- (float) minCurvatureDirection.y, (float) cent.z
-					- (float) minCurvatureDirection.z, (float) cent.x
-					+ (float) minCurvatureDirection.x, (float) cent.y
-					+ (float) minCurvatureDirection.y, (float) cent.z
-					+ (float) minCurvatureDirection.z);
-		}
-
-		CurvatureAnnotation ann = new CurvatureAnnotation(start, minCurvatureDirection,
-				maxCurvatureDirection);
-		start.addAnnotation(ann);
 	}
 
 	/**
@@ -462,7 +339,7 @@ public class CurvatureAnalyzer extends MeshAnalyzer {
 	public void processStart(MeshCas cas) {
 		allTriangles = new ArrayList<Triangle>();
 
-		processGroup(allTriangles, cas.getGroup(), cas);
+		cas.getGroup().addTrianglesToList(allTriangles);
 
 		for (int i = 0; i < allTriangles.size(); i++) {
 			MeshReasoningView.test = i;

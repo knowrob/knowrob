@@ -16,8 +16,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.log4j.Logger;
 
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
-import edu.tum.cs.vis.model.util.Group;
-import edu.tum.cs.vis.model.util.Mesh;
 import edu.tum.cs.vis.model.util.Triangle;
 
 /**
@@ -61,41 +59,12 @@ public class NeighborAnalyzer extends MeshAnalyzer {
 		return "Neighbor";
 	}
 
-	/**
-	 * Process a group which contains a mesh.
-	 * 
-	 * @param g
-	 *            group to process
-	 */
-	private void processGroup(final Group g) {
-
-		processMesh(g.getMesh());
-
-		for (Group gr : g.getChildren()) {
-			processGroup(gr);
-		}
-	}
-
-	/**
-	 * Process a mesh which contains triangles and find the neighbors for each triangle.
-	 * 
-	 * @param m
-	 *            Mesh to process
-	 */
-	void processMesh(final Mesh m) {
-		if (m.getTriangles().size() == 0)
-			return;
-
-		allTriangles.addAll(m.getTriangles());
-
-	}
-
 	@Override
 	public void processStart(MeshCas cas) {
 
 		trianglesElaborated.set(0);
 		allTriangles = new ArrayList<Triangle>();
-		processGroup(cas.getGroup());
+		cas.getGroup().addTrianglesToList(allTriangles);
 
 		logger.debug("Number of triangles: " + allTriangles.size());
 

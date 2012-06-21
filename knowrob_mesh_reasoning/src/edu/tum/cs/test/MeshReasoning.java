@@ -20,6 +20,7 @@ import edu.tum.cs.vis.model.ItemModel;
 import edu.tum.cs.vis.model.uima.analyzer.CurvatureAnalyzer;
 import edu.tum.cs.vis.model.uima.analyzer.MeshAnalyzer;
 import edu.tum.cs.vis.model.uima.analyzer.NeighborAnalyzer;
+import edu.tum.cs.vis.model.uima.analyzer.PrimitiveAnalyzer;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.view.MeshReasoningView;
 import edu.tum.cs.vis.model.view.MeshReasoningViewControl;
@@ -54,8 +55,8 @@ public class MeshReasoning {
 		// ItemModel model = new ItemModel("/home/stefan/Downloads/triangle.dae");
 		// ItemModel model = new ItemModel("/home/stefan/Downloads/saintpeter.kmz");
 
-		ItemModel model = new ItemModel("/home/stefan/CoTeSys/cups/cup2.kmz");
-		// ItemModel model = new ItemModel("/home/stefan/CoTeSys/cups/cup_red.kmz");
+		// ItemModel model = new ItemModel("/home/stefan/CoTeSys/cups/cup2.kmz");
+		ItemModel model = new ItemModel("/home/stefan/CoTeSys/cups/cup_red.kmz");
 		// ItemModel model = new ItemModel("/home/stefan/Downloads/cube.kmz");
 		if (!model.parseModel()) {
 			throw new RuntimeException("Couldn't parse model. Maybe path to model is wrong.");
@@ -107,10 +108,12 @@ public class MeshReasoning {
 		// DihedralAngleSegmentationAnalyzer das = new DihedralAngleSegmentationAnalyzer();
 		CurvatureAnalyzer ca = new CurvatureAnalyzer();
 		// FlatSurfaceAnalyzer fsa = new FlatSurfaceAnalyzer();
+		PrimitiveAnalyzer pa = new PrimitiveAnalyzer();
 		analyzer.add(na);
 		// analyzer.add(das);
 		// analyzer.add(fsna);
 		analyzer.add(ca);
+		//analyzer.add(pa);
 
 		Thread.yield();
 
@@ -118,6 +121,7 @@ public class MeshReasoning {
 
 		// das.process(cas);
 		ca.process(cas);
+		pa.process(cas);
 
 		// fsa.process(cas);
 

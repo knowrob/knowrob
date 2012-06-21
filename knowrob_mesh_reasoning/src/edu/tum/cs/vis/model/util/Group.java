@@ -80,6 +80,13 @@ public class Group implements Serializable {
 		children.add(g);
 	}
 
+	public void addTrianglesToList(ArrayList<Triangle> allTriangles) {
+		mesh.addTrianglesToList(allTriangles);
+		for (Group gr : children) {
+			gr.addTrianglesToList(allTriangles);
+		}
+	}
+
 	/**
 	 * Draw method to draw the model on the applet.
 	 * 

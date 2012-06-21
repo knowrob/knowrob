@@ -85,6 +85,10 @@ public class Mesh implements Serializable {
 	 */
 	private ArrayList<Line>		lines				= new ArrayList<Line>();
 
+	public void addTrianglesToList(ArrayList<Triangle> allTriangles) {
+		allTriangles.addAll(triangles);
+	}
+
 	/**
 	 * Draws the bounding box around the model with the current style
 	 * 

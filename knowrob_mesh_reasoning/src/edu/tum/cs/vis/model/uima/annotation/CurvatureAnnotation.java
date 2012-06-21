@@ -45,15 +45,22 @@ public class CurvatureAnnotation extends DrawObjectAnnotation {
 	protected void drawAnnotation(PGraphics g) {
 		Point3d cent = ((Triangle) object).getCentroid();
 
+		Vector3d max = (Vector3d) kMax.clone();
+		max.normalize();
+		max.scale(0.005);
+		Vector3d min = (Vector3d) kMin.clone();
+		min.normalize();
+		min.scale(0.005);
+
 		g.stroke(0, 0, 255);
-		g.line((float) cent.x - (float) kMax.x, (float) cent.y - (float) kMax.y, (float) cent.z
-				- (float) kMax.z, (float) kMax.x + (float) cent.x, (float) kMax.y + (float) cent.y,
-				(float) kMax.z + (float) cent.z);
+		g.line((float) cent.x - (float) max.x, (float) cent.y - (float) max.y, (float) cent.z
+				- (float) max.z, (float) max.x + (float) cent.x, (float) max.y + (float) cent.y,
+				(float) max.z + (float) cent.z);
 
 		g.stroke(0, 255, 255);
-		g.line((float) cent.x - (float) kMin.x, (float) cent.y - (float) kMin.y, (float) cent.z
-				- (float) kMin.z, (float) kMin.x + (float) cent.x, (float) kMin.y + (float) cent.y,
-				(float) kMin.z + (float) cent.z);
+		g.line((float) cent.x - (float) min.x, (float) cent.y - (float) min.y, (float) cent.z
+				- (float) min.z, (float) min.x + (float) cent.x, (float) min.y + (float) cent.y,
+				(float) min.z + (float) cent.z);
 
 	}
 

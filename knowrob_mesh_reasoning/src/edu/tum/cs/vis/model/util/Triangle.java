@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 import processing.core.PConstants;
 import processing.core.PGraphics;
 import edu.tum.cs.vis.model.uima.analyzer.FlatSurfaceAnalyzer;
+import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
 
 /**
  * DrawObject which represents a triangle (object with 3 points).
@@ -160,11 +161,11 @@ public class Triangle extends DrawObject {
 
 		}
 
-		/*synchronized (annotations) {
+		synchronized (annotations) {
 
 			for (DrawableAnnotation a : annotations)
 				a.draw(g);
-		}*/
+		}
 		/*applet.stroke(255,0,0);
 			
 		applet.strokeWeight(5);

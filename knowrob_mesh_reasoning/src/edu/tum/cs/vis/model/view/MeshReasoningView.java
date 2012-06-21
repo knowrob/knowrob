@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 
 import peasy.PeasyCam;
 import edu.tum.cs.uima.Annotation;
+import edu.tum.cs.vis.model.uima.annotation.CurvatureAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.FlatSurfaceAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
@@ -258,6 +259,14 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 				if (p.intersectsRay(rayEnd, rayStart, null)) {
 					selectedTriangless.clear();
 					selectedTriangless.add(p);
+					CurvatureAnnotation annotation = null;
+					for (DrawableAnnotation a : p.getAnnotations())
+						if (a instanceof CurvatureAnnotation)
+							annotation = (CurvatureAnnotation) a;
+					if (annotation != null) {
+						System.out.println("Max: " + annotation.getkMax().length() + " Min:"
+								+ annotation.getkMin().length());
+					}
 					found = true;
 					break;
 				}

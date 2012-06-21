@@ -24,13 +24,17 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import edu.tum.cs.uima.Annotation;
-import edu.tum.cs.vis.model.uima.annotation.DihedralAngleSegmentationAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.FlatSurfaceAnnotation;
+import edu.tum.cs.vis.model.uima.annotation.primitive.ConeAnnotation;
+import edu.tum.cs.vis.model.uima.annotation.primitive.PlaneAnnotation;
+import edu.tum.cs.vis.model.uima.annotation.primitive.SphereAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.view.control.AnnotationPanel;
-import edu.tum.cs.vis.model.view.control.DihedralAngleSegmentationAnnotationPanel;
+import edu.tum.cs.vis.model.view.control.ConeAnnotationPanel;
 import edu.tum.cs.vis.model.view.control.FlatSurfaceAnnotationPanel;
+import edu.tum.cs.vis.model.view.control.PlaneAnnotationPanel;
+import edu.tum.cs.vis.model.view.control.SphereAnnotationPanel;
 
 /**
  * Accordion like component. Shows a list of buttons where you can expand the content.
@@ -174,8 +178,12 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 			MeshCas cas) {
 		if (clazz == FlatSurfaceAnnotation.class)
 			return new FlatSurfaceAnnotationPanel(cas);
-		else if (clazz == DihedralAngleSegmentationAnnotation.class)
-			return new DihedralAngleSegmentationAnnotationPanel(cas);
+		else if (clazz == ConeAnnotation.class)
+			return new ConeAnnotationPanel(cas);
+		else if (clazz == SphereAnnotation.class)
+			return new SphereAnnotationPanel(cas);
+		else if (clazz == PlaneAnnotation.class)
+			return new PlaneAnnotationPanel(cas);
 
 		System.err
 				.println("Update createPanelForAnnotation() in MeshCasAccordion.java for creating AnnotationPanel for "

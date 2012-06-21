@@ -13,13 +13,13 @@ import java.awt.Color;
  * @author Stefan Profanter
  * 
  */
-public class DihedralAngleSegmentationAnnotation extends MeshAnnotation {
+public abstract class PrimitiveAnnotation extends MeshAnnotation {
 
 	/**
 	 * @param annotationColor
 	 */
-	public DihedralAngleSegmentationAnnotation() {
-		super(new Color(0, 255, 0, 128));
+	public PrimitiveAnnotation(Color annotationColor) {
+		super(annotationColor);
 	}
 
 }
