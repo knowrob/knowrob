@@ -15,12 +15,12 @@ import javax.vecmath.Vector3f;
  */
 public class Curvature {
 
-	private Vector3f	principleDirectionMax	= new Vector3f();
-
 	private Vector3f	principleDirectionMin	= new Vector3f();
 
-	private float		curvatureMax			= 0;
+	private Vector3f	principleDirectionMax	= new Vector3f();
+
 	private float		curvatureMin			= 0;
+	private float		curvatureMax			= 0;
 
 	private float		curvatureMinMax			= 0;
 

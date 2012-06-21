@@ -10,6 +10,7 @@ package edu.tum.cs.vis.model;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -23,9 +24,11 @@ import org.apache.commons.math3.linear.DecompositionSolver;
 import org.apache.commons.math3.linear.LUDecomposition;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
+import org.apache.log4j.Logger;
 
 import processing.core.PGraphics;
 import edu.tum.cs.vis.model.util.Curvature;
+import edu.tum.cs.vis.model.util.DrawObject;
 import edu.tum.cs.vis.model.util.Group;
 import edu.tum.cs.vis.model.util.Line;
 import edu.tum.cs.vis.model.util.ThreadPool;
@@ -38,39 +41,91 @@ import edu.tum.cs.vis.model.util.Vertex;
  */
 public class Model {
 
-	static void calculateVertexNormalsForTriangle(Triangle t) {
-		Vertex p0 = t.getPosition()[0];
-		Vertex p1 = t.getPosition()[1];
-		Vertex p2 = t.getPosition()[2];
+	/**
+	 * Log4J Logger
+	 */
+	private static Logger	logger	= Logger.getLogger(Model.class);
 
-		Vector3f a = new Vector3f(p0);
-		a.sub(p1);
-		Vector3f b = new Vector3f(p1);
-		b.sub(p2);
-		Vector3f c = new Vector3f(p2);
-		c.sub(p0);
-		float l2a = a.lengthSquared(), l2b = b.lengthSquared(), l2c = c.lengthSquared();
-		if (l2a == 0 || l2b == 0 || l2c == 0)
+	static void calculateCurvatureForTriangle(Triangle tri) {
+		// Edges
+		Vector3f e[] = new Vector3f[3];
+
+		for (int j = 0; j < 3; j++) {
+			e[j] = new Vector3f(tri.getPosition()[(j + 2) % 3]);
+			e[j].sub(tri.getPosition()[(j + 1) % 3]);
+		}
+
+		// N-T-B coordinate system per face
+		Vector3f t = new Vector3f(e[0]);
+		t.normalize();
+		Vector3f n = new Vector3f();
+		n.cross(e[0], e[1]);
+		Vector3f b = new Vector3f();
+		b.cross(n, t);
+		b.normalize();
+
+		// Estimate curvature based on variation of normals
+		// along edges
+		float m[] = { 0, 0, 0 };
+		double w[][] = { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } };
+		for (int j = 0; j < 3; j++) {
+
+			float u = e[j].dot(t);
+			float v = e[j].dot(b);
+			w[0][0] += u * u;
+			w[0][1] += u * v;
+			// w[1][1] += v*v + u*u;
+			// w[1][2] += u*v;
+			w[2][2] += v * v;
+			Vector3f dn = new Vector3f(tri.getPosition()[(j + 2) % 3].getNormalVector());
+			dn.sub(tri.getPosition()[(j + 1) % 3].getNormalVector());
+			float dnu = dn.dot(t);
+			float dnv = dn.dot(b);
+			m[0] += dnu * u;
+			m[1] += dnu * v + dnv * u;
+			m[2] += dnv * v;
+		}
+		w[1][1] = w[0][0] + w[2][2];
+		w[1][2] = w[0][1];
+
+		RealMatrix coefficients = new Array2DRowRealMatrix(w, false);
+		DecompositionSolver solver = new LUDecomposition(coefficients).getSolver();
+		if (!solver.isNonSingular()) {
 			return;
-
-		Vector3f facenormal = t.getNormalVector();
-
-		Vector3f normalP0 = (Vector3f) facenormal.clone();
-		normalP0.scale(1.0f / (l2a * l2c));
-		synchronized (p0.getNormalVector()) {
-			p0.getNormalVector().add(normalP0);
 		}
 
-		Vector3f normalP1 = (Vector3f) facenormal.clone();
-		normalP1.scale(1.0f / (l2b * l2a));
-		synchronized (p1.getNormalVector()) {
-			p1.getNormalVector().add(normalP1);
-		}
+		RealVector constants = new ArrayRealVector(new double[] { m[0], m[1], m[2] }, false);
+		RealVector solution = solver.solve(constants);
 
-		Vector3f normalP2 = (Vector3f) facenormal.clone();
-		normalP2.scale(1.0f / (l2c * l2b));
-		synchronized (p2.getNormalVector()) {
-			p2.getNormalVector().add(normalP2);
+		m[0] = (float) solution.getEntry(0);
+		m[1] = (float) solution.getEntry(1);
+		m[2] = (float) solution.getEntry(2);
+
+		// Push it back out to the vertices
+		for (int j = 0; j < 3; j++) {
+			Vertex vj = tri.getPosition()[j];
+
+			float c1, c12, c2;
+			float ret[] = proj_curv(t, b, m[0], m[1], m[2], vj.getCurvature()
+					.getPrincipleDirectionMax(), vj.getCurvature().getPrincipleDirectionMin());
+			c1 = ret[0];
+			c12 = ret[1];
+			c2 = ret[2];
+
+			float wt;
+			if (j == 0)
+				wt = tri.getCornerarea().x / vj.getPointarea();
+			else if (j == 1)
+				wt = tri.getCornerarea().y / vj.getPointarea();
+			else
+				wt = tri.getCornerarea().z / vj.getPointarea();
+
+			synchronized (vj.getCurvature()) {
+				vj.getCurvature().setCurvatureMax(vj.getCurvature().getCurvatureMax() + wt * c1);
+				vj.getCurvature().setCurvatureMinMax(
+						vj.getCurvature().getCurvatureMinMax() + wt * c12);
+				vj.getCurvature().setCurvatureMin(vj.getCurvature().getCurvatureMin() + wt * c2);
+			}
 		}
 	}
 
@@ -125,6 +180,81 @@ public class Model {
 	}
 
 	/**
+	 * Given a curvature tensor, find principal directions and curvatures. Makes sure that pdir1 and
+	 * pdir2 are perpendicular to normal
+	 * 
+	 * returns pdir1
+	 */
+	static void diagonalize_curv(final Vector3f old_u, final Vector3f old_v, float ku, float kuv,
+			float kv, final Vector3f new_norm, Vector3f pdir[], float k[]) {
+		Vector3f r_old_u = new Vector3f(), r_old_v = new Vector3f();
+		rot_coord_sys(old_u, old_v, new_norm, r_old_u, r_old_v);
+
+		float c = 1, s = 0, tt = 0;
+		if (kuv != 0.0f) {
+			// Jacobi rotation to diagonalize
+			float h = 0.5f * (kv - ku) / kuv;
+			tt = (float) ((h < 0.0f) ? 1.0f / (h - Math.sqrt(1.0f + h * h)) : 1.0f / (h + Math
+					.sqrt(1.0f + h * h)));
+			c = (float) (1.0f / Math.sqrt(1.0f + tt * tt));
+			s = tt * c;
+		}
+
+		k[0] = ku - tt * kuv;
+		k[1] = kv + tt * kuv;
+
+		if (Math.abs(k[0]) >= Math.abs(k[1])) {
+			r_old_u.scale(c);
+			r_old_v.scale(s);
+			r_old_u.sub(r_old_v);
+			pdir[0] = r_old_u;
+		} else {
+			float kt = k[0];
+			k[0] = k[1];
+			k[1] = kt;
+
+			r_old_u.scale(s);
+			r_old_v.scale(c);
+			r_old_u.sub(r_old_v);
+			pdir[0] = r_old_u;
+		}
+		pdir[1] = new Vector3f();
+		pdir[1].cross(new_norm, pdir[0]);
+	}
+
+	/**
+	 * Reproject a curvature tensor from the basis spanned by old_u and old_v (which are assumed to
+	 * be unit-length and perpendicular) to the new_u, new_v basis. returns [new_ku, new_kuv,
+	 * new_kv]
+	 * 
+	 * @param old_u
+	 * @param old_v
+	 * @param old_ku
+	 * @param old_kuv
+	 * @param old_kv
+	 * @param new_u
+	 * @param new_v
+	 * @return
+	 */
+	private static float[] proj_curv(final Vector3f old_u, final Vector3f old_v, float old_ku,
+			float old_kuv, float old_kv, final Vector3f new_u, final Vector3f new_v) {
+		Vector3f r_new_u = new Vector3f(), r_new_v = new Vector3f();
+		Vector3f tmp = new Vector3f();
+		tmp.cross(old_u, old_v);
+		rot_coord_sys(new_u, new_v, tmp, r_new_u, r_new_v);
+
+		float u1 = r_new_u.dot(old_u);
+		float v1 = r_new_u.dot(old_v);
+		float u2 = r_new_v.dot(old_u);
+		float v2 = r_new_v.dot(old_v);
+		float ret[] = new float[3];
+		ret[0] = old_ku * u1 * u1 + old_kuv * (2.0f * u1 * v1) + old_kv * v1 * v1;
+		ret[1] = old_ku * u1 * u2 + old_kuv * (u1 * v2 + u2 * v1) + old_kv * v1 * v2;
+		ret[2] = old_ku * u2 * u2 + old_kuv * (2.0f * u2 * v2) + old_kv * v2 * v2;
+		return ret;
+	}
+
+	/**
 	 * Rotate a coordinate system to be perpendicular to the given normal
 	 */
 	static void rot_coord_sys(final Vector3f old_u, final Vector3f old_v, final Vector3f new_norm,
@@ -160,16 +290,35 @@ public class Model {
 
 	private Group					group;
 
-	private final ArrayList<Vertex>	vertices	= new ArrayList<Vertex>();
+	private final ArrayList<Vertex>	vertices		= new ArrayList<Vertex>();
 
-	final ArrayList<Triangle>		triangles	= new ArrayList<Triangle>();
+	final ArrayList<Triangle>		triangles		= new ArrayList<Triangle>();
 
-	private final ArrayList<Line>	lines		= new ArrayList<Line>();
+	private final ArrayList<Line>	lines			= new ArrayList<Line>();
+
+	private HashSet<Vertex>			verticesTmp		= null;
+	private HashSet<Triangle>		trianglesTmp	= null;
+	private HashSet<Line>			linesTmp		= null;
 
 	/**
 	 * @param line
 	 */
-	private void addLine(Line line) {
+	private Line addLine(Line line) {
+
+		if (!linesTmp.add(line)) {
+			for (Line l : linesTmp)
+				if (l.equals(line))
+					return l;
+		}
+		addVertices(line);
+		return line;
+	}
+
+	/**
+	 * @param line
+	 */
+	private void addLineDirect(Line line) {
+
 		for (int i = 0; i < line.getPosition().length; i++) {
 			line.getPosition()[i] = checkOrAddVertex(line.getPosition()[i]);
 		}
@@ -179,12 +328,35 @@ public class Model {
 	/**
 	 * @param tri
 	 */
-	private void addTriangle(Triangle tri) {
+	private Triangle addTriangle(Triangle tri) {
+		if (!trianglesTmp.add(tri)) {
+			for (Triangle t : trianglesTmp)
+				if (t.equals(tri))
+					return t;
+		}
+		addVertices(tri);
+		return tri;
+	}
+
+	/**
+	 * @param tri
+	 */
+	private void addTriangleDirect(Triangle tri) {
 		for (int i = 0; i < tri.getPosition().length; i++) {
 			tri.getPosition()[i] = checkOrAddVertex(tri.getPosition()[i]);
 		}
 		triangles.add(tri);
 
+	}
+
+	private void addVertices(DrawObject obj) {
+		for (int i = 0; i < obj.getPosition().length; i++) {
+			if (!verticesTmp.add(obj.getPosition()[i])) {
+				for (Vertex v : verticesTmp)
+					if (v.equals(obj.getPosition()[i]))
+						obj.getPosition()[i] = v;
+			}
+		}
 	}
 
 	private void calculateCurvature() {
@@ -198,112 +370,51 @@ public class Model {
 			Triangle t = triangles.get(i);
 			for (int j = 0; j < 3; j++) {
 				Vertex v = t.getPosition()[j];
-				v.getCurvature().setPrincipleDirectionMin(
+				v.getCurvature().setPrincipleDirectionMax(
 						new Vector3f(t.getPosition()[(j + 1) % 3]));
-				v.getCurvature().getPrincipleDirectionMin().sub(v);
+				v.getCurvature().getPrincipleDirectionMax().sub(v);
 			}
 		}
 		for (int i = 0; i < vertices.size(); i++) {
 
 			Vector3f tmp = new Vector3f();
-			tmp.cross(vertices.get(i).getCurvature().getPrincipleDirectionMin(), vertices.get(i)
+			tmp.cross(vertices.get(i).getCurvature().getPrincipleDirectionMax(), vertices.get(i)
 					.getNormalVector());
 			tmp.normalize();
-			vertices.get(i).getCurvature().setPrincipleDirectionMin(tmp);
+			vertices.get(i).getCurvature().setPrincipleDirectionMax(tmp);
 
 			tmp = new Vector3f();
 			tmp.cross(vertices.get(i).getNormalVector(), vertices.get(i).getCurvature()
-					.getPrincipleDirectionMin());
-			vertices.get(i).getCurvature().setPrincipleDirectionMax(tmp);
+					.getPrincipleDirectionMax());
+			vertices.get(i).getCurvature().setPrincipleDirectionMin(tmp);
 		}
 
 		// Compute curvature per-face
 
-		for (int i = 0; i < triangles.size(); i++) {
+		/*List<Callable<Void>> threads = new LinkedList<Callable<Void>>();
 
-			Triangle tri = triangles.get(i);
-			// Edges
-			Vector3f e[] = new Vector3f[3];
+		final int interval = 500;
 
-			for (int j = 0; j < 3; j++) {
-				e[j] = new Vector3f(tri.getPosition()[(j + 2) % 3]);
-				e[j].sub(tri.getPosition()[(j + 1) % 3]);
-			}
+		for (int start = 0; start < triangles.size(); start += interval) {
+			final int st = start;
+			threads.add(new Callable<Void>() {
 
-			// N-T-B coordinate system per face
-			Vector3f t = new Vector3f(e[0]);
-			t.normalize();
-			Vector3f n = new Vector3f();
-			n.cross(e[0], e[1]);
-			Vector3f b = new Vector3f();
-			b.cross(n, t);
-			b.normalize();
-
-			// Estimate curvature based on variation of normals
-			// along edges
-			float m[] = { 0, 0, 0 };
-			double w[][] = { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } };
-			for (int j = 0; j < 3; j++) {
-
-				float u = e[j].dot(t);
-				float v = e[j].dot(b);
-				w[0][0] += u * u;
-				w[0][1] += u * v;
-				// w[1][1] += v*v + u*u;
-				// w[1][2] += u*v;
-				w[2][2] += v * v;
-				Vector3f dn = new Vector3f(tri.getPosition()[(j + 2) % 3].getNormalVector());
-				dn.sub(tri.getPosition()[(j + 1) % 3].getNormalVector());
-				float dnu = dn.dot(t);
-				float dnv = dn.dot(b);
-				m[0] += dnu * u;
-				m[1] += dnu * v + dnv * u;
-				m[2] += dnv * v;
-			}
-			w[1][1] = w[0][0] + w[2][2];
-			w[1][2] = w[0][1];
-
-			RealMatrix coefficients = new Array2DRowRealMatrix(w, false);
-			DecompositionSolver solver = new LUDecomposition(coefficients).getSolver();
-			if (!solver.isNonSingular()) {
-				System.out.println("Singular matrix");
-				continue;
-			}
-
-			RealVector constants = new ArrayRealVector(new double[] { m[0], m[1], m[2] }, false);
-			RealVector solution = solver.solve(constants);
-
-			m[0] = (float) solution.getEntry(0);
-			m[1] = (float) solution.getEntry(1);
-			m[2] = (float) solution.getEntry(2);
-
-			// Push it back out to the vertices
-			for (int j = 0; j < 3; j++) {
-				Vertex vj = tri.getPosition()[j];
-
-				float c1, c12, c2;
-				float ret[] = proj_curv(t, b, m[0], m[1], m[2], vj.getCurvature()
-						.getPrincipleDirectionMin(), vj.getCurvature().getPrincipleDirectionMax());
-				c1 = ret[0];
-				c12 = ret[1];
-				c2 = ret[2];
-
-				float wt;
-				if (j == 0)
-					wt = tri.getCornerarea().x / vj.getPointarea();
-				else if (j == 1)
-					wt = tri.getCornerarea().y / vj.getPointarea();
-				else
-					wt = tri.getCornerarea().z / vj.getPointarea();
-
-				vj.getCurvature().setCurvatureMin(vj.getCurvature().getCurvatureMin() + wt * c1);
-				if (vj.getCurvature().getCurvatureMin() == Float.NaN) {
-					System.out.println("Nan");
+				@Override
+				public Void call() throws Exception {
+					int end = Math.min(st + interval, triangles.size());
+					for (int i = st; i < end; i++) {
+						calculateCurvatureForTriangle(triangles.get(i));
+					}
+					return null;
 				}
-				vj.getCurvature().setCurvatureMinMax(
-						vj.getCurvature().getCurvatureMinMax() + wt * c12);
-				vj.getCurvature().setCurvatureMax(vj.getCurvature().getCurvatureMax() + wt * c2);
-			}
+
+			});
+		};
+
+		ThreadPool.executeInPool(threads);*/
+
+		for (int i = 0; i < triangles.size(); i++) {
+			calculateCurvatureForTriangle(triangles.get(i));
 		}
 
 		// Compute principal directions and curvatures at each vertex
@@ -311,13 +422,13 @@ public class Model {
 			Curvature c = vertices.get(i).getCurvature();
 			Vector3f pdirRet[] = new Vector3f[2];
 			float kRet[] = new float[2];
-			diagonalize_curv(c.getPrincipleDirectionMin(), c.getPrincipleDirectionMax(),
-					c.getCurvatureMin(), c.getCurvatureMinMax(), c.getCurvatureMax(),
+			diagonalize_curv(c.getPrincipleDirectionMax(), c.getPrincipleDirectionMin(),
+					c.getCurvatureMax(), c.getCurvatureMinMax(), c.getCurvatureMin(),
 					vertices.get(i).getNormalVector(), pdirRet, kRet);
-			c.setPrincipleDirectionMin(pdirRet[0]);
-			c.setPrincipleDirectionMax(pdirRet[1]);
-			c.setCurvatureMin(kRet[0]);
-			c.setCurvatureMax(kRet[1]);
+			c.setPrincipleDirectionMax(pdirRet[0]);
+			c.setPrincipleDirectionMin(pdirRet[1]);
+			c.setCurvatureMax(kRet[0]);
+			c.setCurvatureMin(kRet[1]);
 		}
 	}
 
@@ -331,31 +442,71 @@ public class Model {
 	private void calculateVertexNormals() {
 		// Compute from faces
 
-		List<Callable<Void>> threads = new LinkedList<Callable<Void>>();
+		/*	List<Callable<Void>> threads = new LinkedList<Callable<Void>>();
 
-		final int interval = 500;
+			final int interval = 500;
 
-		for (int start = 0; start < triangles.size(); start += interval) {
-			final int st = start;
-			threads.add(new Callable<Void>() {
+			for (int start = 0; start < triangles.size(); start += interval) {
+				final int st = start;
+				threads.add(new Callable<Void>() {
 
-				@Override
-				public Void call() throws Exception {
-					int end = Math.min(st + interval, triangles.size());
-					for (int i = st; i < end; i++) {
-						calculateVertexNormalsForTriangle(triangles.get(i));
+					@Override
+					public Void call() throws Exception {
+						int end = Math.min(st + interval, triangles.size());
+						for (int i = st; i < end; i++) {
+							calculateVertexNormalsForTriangle(triangles.get(i));
+						}
+						return null;
 					}
-					return null;
-				}
 
-			});
+				});
+			};
+
+			ThreadPool.executeInPool(threads);*/
+
+		for (int i = 0; i < triangles.size(); i++) {
+			calculateVertexNormalsForTriangle(triangles.get(i));
 		};
-
-		ThreadPool.executeInPool(threads);
 
 		for (Vertex v : vertices)
 			v.getNormalVector().normalize();
 
+	}
+
+	void calculateVertexNormalsForTriangle(Triangle t) {
+		Vertex p0 = t.getPosition()[0];
+		Vertex p1 = t.getPosition()[1];
+		Vertex p2 = t.getPosition()[2];
+
+		Vector3f a = new Vector3f(p0);
+		a.sub(p1);
+		Vector3f b = new Vector3f(p1);
+		b.sub(p2);
+		Vector3f c = new Vector3f(p2);
+		c.sub(p0);
+		float l2a = a.lengthSquared(), l2b = b.lengthSquared(), l2c = c.lengthSquared();
+		if (l2a == 0 || l2b == 0 || l2c == 0)
+			return;
+
+		Vector3f facenormal = t.getNormalVector();
+
+		Vector3f normalP0 = (Vector3f) facenormal.clone();
+		normalP0.scale(1.0f / (l2a * l2c));
+		synchronized (p0.getNormalVector()) {
+			p0.getNormalVector().add(normalP0);
+		}
+
+		Vector3f normalP1 = (Vector3f) facenormal.clone();
+		normalP1.scale(1.0f / (l2b * l2a));
+		synchronized (p1.getNormalVector()) {
+			p1.getNormalVector().add(normalP1);
+		}
+
+		Vector3f normalP2 = (Vector3f) facenormal.clone();
+		normalP2.scale(1.0f / (l2c * l2b));
+		synchronized (p2.getNormalVector()) {
+			p2.getNormalVector().add(normalP2);
+		}
 	}
 
 	/**
@@ -374,11 +525,11 @@ public class Model {
 		for (Vertex v : vertices)
 			v.setPointarea(0);
 
-		for (int start = 0; start < triangles.size(); start++) {
+		/*for (int start = 0; start < triangles.size(); start++) {
 			calculateVoronoiAreaForTriangle(triangles.get(start));
-		};
+		};*/
 
-		/*for (int start = 0; start < triangles.size(); start += interval) {
+		for (int start = 0; start < triangles.size(); start += interval) {
 			final int st = start;
 			threads.add(new Callable<Void>() {
 
@@ -394,7 +545,7 @@ public class Model {
 			});
 		};
 
-		ThreadPool.executeInPool(threads);*/
+		ThreadPool.executeInPool(threads);
 	}
 
 	private Vertex checkOrAddVertex(Vertex v) {
@@ -414,62 +565,18 @@ public class Model {
 				diffuse_curv(mesh, smoothsigma);
 			}*/
 		float cscale = 10.0f * scale * typical_scale();
-		System.out.println("Using scale = " + cscale);
 		cscale = cscale * cscale;
 
 		int nv = vertices.size();
 		for (int i = 0; i < nv; i++) {
 			Curvature c = vertices.get(i).getCurvature();
-			float H = 0.5f * (c.getCurvatureMin() + c.getCurvatureMax());
-			float K = c.getCurvatureMin() * c.getCurvatureMax();
+			float H = 0.5f * (c.getCurvatureMax() + c.getCurvatureMin());
+			float K = c.getCurvatureMax() * c.getCurvatureMin();
 			float h = (float) (4.0f / 3.0f * Math
 					.abs(Math.atan2(H * H - K, H * H * Math.signum(H))));
 			float s = (float) ((2 / Math.PI) * Math.atan((2.0f * H * H - K) * cscale));
 			vertices.get(i).color = Color.getHSBColor(h, s, 1.0f);
 		}
-	}
-
-	/**
-	 * Given a curvature tensor, find principal directions and curvatures. Makes sure that pdir1 and
-	 * pdir2 are perpendicular to normal
-	 * 
-	 * returns pdir1
-	 */
-	void diagonalize_curv(final Vector3f old_u, final Vector3f old_v, float ku, float kuv,
-			float kv, final Vector3f new_norm, Vector3f pdir[], float k[]) {
-		Vector3f r_old_u = new Vector3f(), r_old_v = new Vector3f();
-		rot_coord_sys(old_u, old_v, new_norm, r_old_u, r_old_v);
-
-		float c = 1, s = 0, tt = 0;
-		if (kuv != 0.0f) {
-			// Jacobi rotation to diagonalize
-			float h = 0.5f * (kv - ku) / kuv;
-			tt = (float) ((h < 0.0f) ? 1.0f / (h - Math.sqrt(1.0f + h * h)) : 1.0f / (h + Math
-					.sqrt(1.0f + h * h)));
-			c = (float) (1.0f / Math.sqrt(1.0f + tt * tt));
-			s = tt * c;
-		}
-
-		k[0] = ku - tt * kuv;
-		k[1] = kv + tt * kuv;
-
-		if (Math.abs(k[0]) >= Math.abs(k[1])) {
-			r_old_u.scale(c);
-			r_old_v.scale(s);
-			r_old_u.sub(r_old_v);
-			pdir[0] = r_old_u;
-		} else {
-			float kt = k[0];
-			k[0] = k[1];
-			k[1] = kt;
-
-			r_old_u.scale(s);
-			r_old_v.scale(c);
-			r_old_u.sub(r_old_v);
-			pdir[0] = r_old_u;
-		}
-		pdir[1] = new Vector3f();
-		pdir[1].cross(new_norm, pdir[0]);
 	}
 
 	/**
@@ -554,7 +661,24 @@ public class Model {
 		vertices.clear();
 		triangles.clear();
 		lines.clear();
+
+		verticesTmp = new HashSet<Vertex>();
+		linesTmp = new HashSet<Line>();
+		trianglesTmp = new HashSet<Triangle>();
+
 		processGroup(group);
+
+		vertices.addAll(verticesTmp);
+		lines.addAll(linesTmp);
+		triangles.addAll(trianglesTmp);
+
+		verticesTmp = null;
+		linesTmp = null;
+		trianglesTmp = null;
+
+		if (vertices.size() == 0)
+			return;
+
 		calculateVertexNormals();
 		calculateVoronoiArea();
 		calculateCurvature();
@@ -562,44 +686,13 @@ public class Model {
 	}
 
 	private void processGroup(Group g) {
-		for (Line l : g.getMesh().getLines())
-			addLine(l);
-		for (Triangle t : g.getMesh().getTriangles())
-			addTriangle(t);
+		for (int i = 0; i < g.getMesh().getLines().size(); i++)
+			g.getMesh().getLines().set(i, addLine(g.getMesh().getLines().get(i)));
+		for (int i = 0; i < g.getMesh().getTriangles().size(); i++)
+			g.getMesh().getTriangles().set(i, addTriangle(g.getMesh().getTriangles().get(i)));
+
 		for (Group c : g.getChildren())
 			processGroup(c);
-	}
-
-	/**
-	 * Reproject a curvature tensor from the basis spanned by old_u and old_v (which are assumed to
-	 * be unit-length and perpendicular) to the new_u, new_v basis. returns [new_ku, new_kuv,
-	 * new_kv]
-	 * 
-	 * @param old_u
-	 * @param old_v
-	 * @param old_ku
-	 * @param old_kuv
-	 * @param old_kv
-	 * @param new_u
-	 * @param new_v
-	 * @return
-	 */
-	private float[] proj_curv(final Vector3f old_u, final Vector3f old_v, float old_ku,
-			float old_kuv, float old_kv, final Vector3f new_u, final Vector3f new_v) {
-		Vector3f r_new_u = new Vector3f(), r_new_v = new Vector3f();
-		Vector3f tmp = new Vector3f();
-		tmp.cross(old_u, old_v);
-		rot_coord_sys(new_u, new_v, tmp, r_new_u, r_new_v);
-
-		float u1 = r_new_u.dot(old_u);
-		float v1 = r_new_u.dot(old_v);
-		float u2 = r_new_v.dot(old_u);
-		float v2 = r_new_v.dot(old_v);
-		float ret[] = new float[3];
-		ret[0] = old_ku * u1 * u1 + old_kuv * (2.0f * u1 * v1) + old_kv * v1 * v1;
-		ret[1] = old_ku * u1 * u2 + old_kuv * (u1 * v2 + u2 * v1) + old_kv * v1 * v2;
-		ret[2] = old_ku * u2 * u2 + old_kuv * (2.0f * u2 * v2) + old_kv * v2 * v2;
-		return ret;
 	}
 
 	/**
@@ -631,22 +724,23 @@ public class Model {
 		for (int i = 0; i < nsamp; i++) {
 			int ind = (int) (Math.random() * nv);
 
-			samples[idx++] = Math.abs(vertices.get(ind).getCurvature().getCurvatureMin());
 			samples[idx++] = Math.abs(vertices.get(ind).getCurvature().getCurvatureMax());
+			samples[idx++] = Math.abs(vertices.get(ind).getCurvature().getCurvatureMin());
 		}
 
 		int which = (int) (frac * samples.length);
 		Arrays.sort(samples);
 
 		float f = 0;
-		if (samples[which] == 0.0f) {
+		if (samples[which] == 0.0f || Float.isNaN(samples[which])) {
 			// mesh->need_bsphere();
 			// f = mult * mesh->bsphere.r;
-			System.out.println("NOOOOOOOO Bsphere!!");
+			f = 10000;
+			logger.warn("Couldn't determine typical scale. Using fixed value: " + f
+					+ ". This should never happen.");
 		} else {
 			f = mult / samples[which];
 		}
-		System.out.println("Typical scale = " + f);
 		return f;
 	}
 }

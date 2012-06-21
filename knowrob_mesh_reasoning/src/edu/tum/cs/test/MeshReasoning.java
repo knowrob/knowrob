@@ -16,9 +16,9 @@ import javax.swing.JFrame;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
+import edu.tum.cs.util.PrintUtil;
 import edu.tum.cs.vis.model.ItemModel;
 import edu.tum.cs.vis.model.Model;
-import edu.tum.cs.vis.model.uima.analyzer.CurvatureAnalyzer;
 import edu.tum.cs.vis.model.uima.analyzer.MeshAnalyzer;
 import edu.tum.cs.vis.model.uima.analyzer.NeighborAnalyzer;
 import edu.tum.cs.vis.model.uima.analyzer.PrimitiveAnalyzer;
@@ -49,24 +49,27 @@ public class MeshReasoning {
 		DOMConfigurator.configureAndWatch("log4j.xml", 60 * 1000);
 
 		logger.info("MeshReasoning started. Parsing model ...");
+		long start = System.currentTimeMillis();
 
-		// ItemModel model = new ItemModel("/home/stefan/simple_dome.kmz");
-		// ItemModel model = new ItemModel(
-		// "/home/stefan/ros/knowrob/knowrob_cad_models/models/collada/hospital_bed.kmz");
-		// ItemModel model = new ItemModel("/home/stefan/Downloads/triangle.dae");
-		// ItemModel model = new ItemModel("/home/stefan/Downloads/saintpeter.kmz");
+		// ItemModel itemModel = new ItemModel("/home/stefan/simple_dome.kmz");
+		ItemModel itemModel = new ItemModel("models/hospital_bed.kmz");
+		// ItemModel itemModel = new ItemModel("models/Expedit_2X4.kmz");
+		// ItemModel itemModel = new ItemModel("/home/stefan/Downloads/triangle.dae");
+		// ItemModel itemModel = new ItemModel("/home/stefan/Downloads/saintpeter.kmz");
 
-		ItemModel itemModel = new ItemModel("models/cup2.kmz");
-		// ItemModel model = new ItemModel("/home/stefan/CoTeSys/cups/cup_red.kmz");
-		// ItemModel model = new ItemModel("/home/stefan/Downloads/cube.kmz");
+		// ItemModel itemModel = new ItemModel("models/cup2.kmz");
+		// ItemModel itemModel = new ItemModel("models/cup_red.kmz");
+		// ItemModel itemModel = new ItemModel("/home/stefan/Downloads/cube.kmz");
 
 		if (!itemModel.parseModel()) {
 			throw new RuntimeException("Couldn't parse model. Maybe path to model is wrong.");
 		}
 
 		Model model = itemModel.getParser().getModel();
-		logger.debug("Model parsed. (Vertices: " + model.getVertices().size() + ", Lines: "
-				+ model.getLines().size() + ", Triangles: " + model.getTriangles().size());
+		logger.debug("Model parsed. Took: "
+				+ PrintUtil.prettyMillis(System.currentTimeMillis() - start) + " (Vertices: "
+				+ model.getVertices().size() + ", Lines: " + model.getLines().size()
+				+ ", Triangles: " + model.getTriangles().size() + ")");
 		MeshCas cas = new MeshCas();
 
 		/*Group g = new Group();
@@ -110,23 +113,18 @@ public class MeshReasoning {
 		frame.setVisible(true);
 
 		NeighborAnalyzer na = new NeighborAnalyzer();
-		// DihedralAngleSegmentationAnalyzer das = new DihedralAngleSegmentationAnalyzer();
-		CurvatureAnalyzer ca = new CurvatureAnalyzer();
 		// FlatSurfaceAnalyzer fsa = new FlatSurfaceAnalyzer();
 		PrimitiveAnalyzer pa = new PrimitiveAnalyzer();
 		analyzer.add(na);
 		// analyzer.add(das);
 		// analyzer.add(fsna);
-		// analyzer.add(ca);
 		// analyzer.add(pa);
 
 		Thread.yield();
 
-		na.process(cas);
+		// na.process(cas);
 
 		// das.process(cas);
-
-		// ca.process(cas);
 		// pa.process(cas);
 
 		// fsa.process(cas);

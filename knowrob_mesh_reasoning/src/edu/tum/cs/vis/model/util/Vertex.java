@@ -35,6 +35,19 @@ public class Vertex extends Point3f {
 		super(x, y, z);
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (o == this) {
+			return true;
+		}
+		if (!(o instanceof Point3f)) {
+			return false;
+		}
+
+		Point3f p = (Point3f) o;
+		return (p.x == x && p.y == y && p.z == z);
+	}
+
 	/**
 	 * @return the curvature
 	 */
@@ -54,6 +67,12 @@ public class Vertex extends Point3f {
 	 */
 	public float getPointarea() {
 		return pointarea;
+	}
+
+	@Override
+	public int hashCode() {
+		return Float.valueOf(x).hashCode() ^ Float.valueOf(y).hashCode()
+				^ Float.valueOf(z).hashCode();
 	}
 
 	/**

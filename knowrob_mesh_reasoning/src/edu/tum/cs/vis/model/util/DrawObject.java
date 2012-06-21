@@ -118,6 +118,29 @@ public abstract class DrawObject implements Serializable {
 		}
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (o == this) {
+			return true;
+		}
+		if (!(o instanceof DrawObject)) {
+			return false;
+		}
+
+		DrawObject t = (DrawObject) o;
+		if (t.position.length != t.position.length)
+			return false;
+		int cnt = 0;
+		int maxCnt = position.length;
+		for (int k = 0; k < maxCnt; k++) {
+			for (int l = 0; l < maxCnt; l++) {
+				if (t.position[k].equals(position[l]))
+					cnt++;
+			}
+		}
+		return (cnt == maxCnt);
+	}
+
 	/**
 	 * @return the annotations
 	 */

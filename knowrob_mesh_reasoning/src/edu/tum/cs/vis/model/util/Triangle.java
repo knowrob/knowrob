@@ -144,8 +144,9 @@ public class Triangle extends DrawObject {
 			// no texture only color
 			g.beginShape(PConstants.TRIANGLES);
 			for (int i = 0; i < position.length; i++) {
-				g.fill(position[i].color.getRed(), position[i].color.getGreen(),
-						position[i].color.getBlue());
+				if (position[i].color != null)
+					g.fill(position[i].color.getRed(), position[i].color.getGreen(),
+							position[i].color.getBlue());
 				g.vertex(position[i].x, position[i].y, position[i].z);
 			}
 
@@ -154,19 +155,19 @@ public class Triangle extends DrawObject {
 			/*for (int i = 0; i < position.length; i++) {
 				Curvature c = position[i].getCurvature();
 
-				Vector3f dirMin = new Vector3f(c.getPrincipleDirectionMin());
-				dirMin.scale(c.getCurvatureMin() * 100000);
-
-				g.stroke(255, 0, 0);
-				g.line(position[i].x, position[i].y, position[i].z, position[i].x + dirMin.x,
-						position[i].y + dirMin.y, position[i].z + dirMin.z);
-
 				Vector3f dirMax = new Vector3f(c.getPrincipleDirectionMax());
-				dirMax.scale(c.getCurvatureMax() * 1000000);
+				dirMax.scale(c.getCurvatureMax() * 0.0001f);
 
-				g.stroke(255, 255, 0);
+				g.stroke(0, 0, 255);
 				g.line(position[i].x, position[i].y, position[i].z, position[i].x + dirMax.x,
 						position[i].y + dirMax.y, position[i].z + dirMax.z);
+
+				Vector3f dirMin = new Vector3f(c.getPrincipleDirectionMin());
+				dirMin.scale(c.getCurvatureMin() * 0.0001f);
+
+				g.stroke(255, 255, 0);
+				g.line(position[i].x, position[i].y, position[i].z, position[i].x + dirMin.x,
+						position[i].y + dirMin.y, position[i].z + dirMin.z);
 			}*/
 
 		} else {
@@ -255,6 +256,11 @@ public class Triangle extends DrawObject {
 	 */
 	public Point2f[] getTexPosition() {
 		return texPosition;
+	}
+
+	@Override
+	public int hashCode() {
+		return position[0].hashCode() ^ position[1].hashCode() ^ position[2].hashCode();
 	}
 
 	/**
