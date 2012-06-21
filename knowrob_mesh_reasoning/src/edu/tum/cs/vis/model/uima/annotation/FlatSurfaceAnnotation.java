@@ -50,7 +50,7 @@ public class FlatSurfaceAnnotation extends MeshAnnotation {
 	private final NormalVector						normalVector		= new NormalVector();
 
 	private final ArrayList<FlatSurfaceAnnotation>	neighbors			= new ArrayList<FlatSurfaceAnnotation>();
-	private final ArrayList<Triangle>				neighborPolygons	= new ArrayList<Triangle>();
+	private final ArrayList<Triangle>				neighborTriangles	= new ArrayList<Triangle>();
 
 	/**
 	 * Default constructor
@@ -66,8 +66,8 @@ public class FlatSurfaceAnnotation extends MeshAnnotation {
 		}
 	}
 
-	public synchronized void addNeighborPolygon(Triangle p) {
-		neighborPolygons.add(p);
+	public synchronized void addNeighborTriangles(Triangle p) {
+		neighborTriangles.add(p);
 	}
 
 	/**
@@ -89,10 +89,10 @@ public class FlatSurfaceAnnotation extends MeshAnnotation {
 	}
 
 	/**
-	 * @return the neighborPolygons
+	 * @return the neighborTriangles
 	 */
-	public ArrayList<Triangle> getNeighborPolygons() {
-		return neighborPolygons;
+	public ArrayList<Triangle> getNeighborTriangles() {
+		return neighborTriangles;
 	}
 
 	/**
@@ -112,7 +112,7 @@ public class FlatSurfaceAnnotation extends MeshAnnotation {
 	}
 
 	private boolean isNeighbor(FlatSurfaceAnnotation fsa) {
-		for (Triangle p : neighborPolygons) {
+		for (Triangle p : neighborTriangles) {
 			if (fsa.getMesh().getTriangles().contains(p))
 				return true;
 		}

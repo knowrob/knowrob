@@ -72,13 +72,13 @@ public class DihedralAngleSegmentationAnalyzer extends MeshAnalyzer {
 		if (start.getNeighbors() == null || start.getNeighbors().size() == 0)
 			return;
 
-		// List of already visited polygons for BFS
+		// List of already visited triangles for BFS
 		LinkedList<Triangle> visited = new LinkedList<Triangle>();
 		visited.add(start);
 
-		// FIFO queue for polygons to visit for BFS
+		// FIFO queue for triangles to visit for BFS
 		LinkedList<TriangleNeighbor> queue = new LinkedList<TriangleNeighbor>();
-		// Add all neighbor polygons to the queue
+		// Add all neighbor triangles to the queue
 		queue.addAll(start.getNeighbors());
 
 		double currentDihedral = Double.MAX_VALUE;
@@ -94,10 +94,10 @@ public class DihedralAngleSegmentationAnalyzer extends MeshAnalyzer {
 		while (!queue.isEmpty()) {
 			TriangleNeighbor currNeighbor = queue.pop();
 			Triangle neighbor;
-			if (visited.contains(currNeighbor.getPolygon1()))
-				neighbor = currNeighbor.getPolygon2();
+			if (visited.contains(currNeighbor.getTriangle1()))
+				neighbor = currNeighbor.getTriangle2();
 			else
-				neighbor = currNeighbor.getPolygon1();
+				neighbor = currNeighbor.getTriangle1();
 			visited.add(neighbor);
 
 			double radiant = currNeighbor.getDihedralAngle();
@@ -117,7 +117,7 @@ public class DihedralAngleSegmentationAnalyzer extends MeshAnalyzer {
 
 								cas.getAnnotations().remove(annotation);
 								synchronized (fsa.getMesh().getTriangles()) {
-									// Copy all polygons and neighbor polygons from current
+									// Copy all triangles and neighbor triangles from current
 									// annotation to found annotation
 									fsa.getMesh().getTriangles()
 											.addAll(annotation.getMesh().getTriangles());
@@ -128,8 +128,8 @@ public class DihedralAngleSegmentationAnalyzer extends MeshAnalyzer {
 										ArrayList<Triangle> triangles = ((DihedralAngleSegmentationAnnotation) ma)
 												.getMesh().getTriangles();
 										TriangleNeighbor next = it.next();
-										if (triangles.contains(next.getPolygon1())
-												|| triangles.contains(next.getPolygon2()))
+										if (triangles.contains(next.getTriangle1())
+												|| triangles.contains(next.getTriangle2()))
 											it.remove();
 									}
 								}
@@ -146,7 +146,7 @@ public class DihedralAngleSegmentationAnalyzer extends MeshAnalyzer {
 					}
 				}
 
-				// Add all neighbors of current polygon to queue
+				// Add all neighbors of current triangle to queue
 				for (TriangleNeighbor a : neighbor.getNeighbors()) {
 					Triangle newTriangle = a.getNeighbor(neighbor);
 					synchronized (annotation.getMesh()) {

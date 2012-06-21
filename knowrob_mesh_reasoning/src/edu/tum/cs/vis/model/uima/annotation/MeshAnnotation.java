@@ -36,7 +36,7 @@ public abstract class MeshAnnotation extends Annotation {
 	private final Color			randomAnnotationColor;
 
 	/**
-	 * Mesh which contains the referenced Polygons for which this annotation stands.
+	 * Mesh which contains the referenced Triangles for which this annotation stands.
 	 */
 	protected Mesh				mesh				= new Mesh();
 
@@ -72,7 +72,7 @@ public abstract class MeshAnnotation extends Annotation {
 	public void draw(PGraphics g) {
 		if (drawAnnotation) {
 			mesh.drawLines(g, getDrawColor());
-			mesh.drawPolygons(g, getDrawColor());
+			mesh.drawTriangles(g, getDrawColor());
 		}
 	}
 
@@ -111,13 +111,13 @@ public abstract class MeshAnnotation extends Annotation {
 	}
 
 	/**
-	 * Checks if this annotation includes the polygon <code>p</code>.
+	 * Checks if this annotation includes the triangle <code>p</code>.
 	 * 
 	 * @param p
-	 *            polygon to check for
-	 * @return true if annotation includes polygon
+	 *            triangle to check for
+	 * @return true if annotation includes triangle
 	 */
-	public boolean meshContainsPolygon(final Triangle p) {
+	public boolean meshContainsTriangle(final Triangle p) {
 		return mesh.getTriangles().contains(p);
 	}
 

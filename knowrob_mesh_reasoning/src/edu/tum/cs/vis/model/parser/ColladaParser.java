@@ -391,7 +391,7 @@ public class ColladaParser extends ModelParser {
 			}
 		}
 
-		// commons for the set of polygons
+		// commons for the set of triangles
 		float[][] vertPoints = SourceToFloat(vertexSource);
 
 		int stride = t.getInputs().size();
@@ -601,7 +601,7 @@ public class ColladaParser extends ModelParser {
 	}
 
 	/**
-	 * Parses a node from the collada structure and stores the polygons and lines information.
+	 * Parses a node from the collada structure and stores the triangles and lines information.
 	 * 
 	 * @param node
 	 *            Node to parse (may have other sub-Nodes => called recursively)

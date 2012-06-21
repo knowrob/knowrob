@@ -1,12 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2012 Stefan Profanter.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Public License v3.0
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/gpl.html
+ * Copyright (c) 2012 Stefan Profanter. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the GNU Public License v3.0 which accompanies
+ * this distribution, and is available at http://www.gnu.org/licenses/gpl.html
  * 
- * Contributors:
- *     Stefan Profanter - initial API and implementation, Year: 2012
+ * Contributors: Stefan Profanter - initial API and implementation, Year: 2012
  ******************************************************************************/
 package edu.tum.cs.vis.model.util;
 
@@ -108,7 +105,7 @@ public abstract class DrawObject implements Serializable {
 			}
 		} else {
 			// Has texture
-			// Use fallback if texture isn't drawn. So fill polygons with white color
+			// Use fallback if texture isn't drawn. So fill triangles with white color
 			g.fill(255, 255, 255, 0);
 		}
 	}
@@ -207,7 +204,7 @@ public abstract class DrawObject implements Serializable {
 	 */
 	public void updateNormalVector() {
 		/*
-		 * Overridden in polygon class, line doesn't have a normal vector
+		 * Overridden in triangles class, line doesn't have a normal vector
 		 */
 	}
 

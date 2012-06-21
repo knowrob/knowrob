@@ -41,15 +41,15 @@ public class NeighborAnalyzer extends MeshAnalyzer {
 	private final List<Callable<Void>>	threads				= new LinkedList<Callable<Void>>();
 
 	/**
-	 * Number of currently processed polygons. Used for progress status.
+	 * Number of currently processed triangles. Used for progress status.
 	 */
-	private final AtomicInteger			polygonsElaborated	= new AtomicInteger(0);
+	private final AtomicInteger			trianglesElaborated	= new AtomicInteger(0);
 
 	/**
-	 * When calling <code>process</code> all polygons of the group and its children are collected in
-	 * this list to process them afterwards.
+	 * When calling <code>process</code> all triangles of the group and its children are collected
+	 * in this list to process them afterwards.
 	 */
-	private ArrayList<Triangle>			allPolygons;
+	private ArrayList<Triangle>			allTriangles;
 
 	@Override
 	public Logger getLogger() {
@@ -59,17 +59,6 @@ public class NeighborAnalyzer extends MeshAnalyzer {
 	@Override
 	public String getName() {
 		return "Neighbor";
-	}
-
-	/**
-	 * Called from the worker threads to update current progress cnt will be added to
-	 * trianglesElaborated
-	 * 
-	 * @param cnt
-	 *            number of elaborated polygons.
-	 */
-	void polygonsElaborated(int cnt) {
-		polygonsElaborated.addAndGet(cnt);
 	}
 
 	/**
@@ -88,7 +77,7 @@ public class NeighborAnalyzer extends MeshAnalyzer {
 	}
 
 	/**
-	 * Process a mesh which contains polygons and find the neighbors for each triangle.
+	 * Process a mesh which contains triangles and find the neighbors for each triangle.
 	 * 
 	 * @param m
 	 *            Mesh to process
@@ -97,40 +86,51 @@ public class NeighborAnalyzer extends MeshAnalyzer {
 		if (m.getTriangles().size() == 0)
 			return;
 
-		allPolygons.addAll(m.getTriangles());
+		allTriangles.addAll(m.getTriangles());
 
 	}
 
 	@Override
 	public void processStart(MeshCas cas) {
 
-		polygonsElaborated.set(0);
-		allPolygons = new ArrayList<Triangle>();
+		trianglesElaborated.set(0);
+		allTriangles = new ArrayList<Triangle>();
 		processGroup(cas.getGroup());
 
-		logger.debug("Number of Polygons: " + allPolygons.size());
+		logger.debug("Number of triangles: " + allTriangles.size());
 
 		int startIdx = 0;
 		int interval = 100;
 
 		do {
 			threads.add(new NeighborAnalyzerThread(startIdx, Math.min(startIdx + interval,
-					allPolygons.size()), allPolygons, this));
+					allTriangles.size()), allTriangles, this));
 			startIdx += interval;
-		} while (startIdx < allPolygons.size());
+		} while (startIdx < allTriangles.size());
 
 		executeInPool(threads);
 	}
 
+	/**
+	 * Called from the worker threads to update current progress cnt will be added to
+	 * trianglesElaborated
+	 * 
+	 * @param cnt
+	 *            number of elaborated triangles.
+	 */
+	void trianglesElaborated(int cnt) {
+		trianglesElaborated.addAndGet(cnt);
+	}
+
 	@Override
 	public void updateProgress() {
-		if (allPolygons != null)
-			setProgress((float) polygonsElaborated.get() / (float) allPolygons.size() * 100.0f);
+		if (allTriangles != null)
+			setProgress((float) trianglesElaborated.get() / (float) allTriangles.size() * 100.0f);
 	}
 }
 
 /**
- * Worker thread for elaborating a part of the polygon list in a thread pool.
+ * Worker thread for elaborating a part of the triangle list in a thread pool.
  * 
  * @author Stefan Profanter
  * 
@@ -138,19 +138,19 @@ public class NeighborAnalyzer extends MeshAnalyzer {
 class NeighborAnalyzerThread implements Callable<Void> {
 
 	/**
-	 * Index of first polygon in list to elaborate
+	 * Index of first triangle in list to elaborate
 	 */
 	final int						start;
 	/**
-	 * All polygons in the list from start to < end will be elaborated
+	 * All triangle in the list from start to < end will be elaborated
 	 */
 	final int						end;
 
 	/**
-	 * List of all polygons. <code>start</code> and <code>end</code> are the indices which indicate
+	 * List of all triangles. <code>start</code> and <code>end</code> are the indices which indicate
 	 * the range to elaborate.
 	 */
-	final ArrayList<Triangle>		polygons;
+	final ArrayList<Triangle>		triangles;
 
 	/**
 	 * The parent analyzer. Used to update progress.
@@ -163,32 +163,32 @@ class NeighborAnalyzerThread implements Callable<Void> {
 	 * Default constructor.
 	 * 
 	 * @param start
-	 *            Start index in polygons. Where to start elaboration.
+	 *            Start index in triangles. Where to start elaboration.
 	 * @param end
-	 *            End index in polygons. Where to end elaboration.
-	 * @param polygons
-	 *            List of all polygons.
+	 *            End index in triangles. Where to end elaboration.
+	 * @param triangles
+	 *            List of all triangles.
 	 * @param analyzer
 	 *            parent analyzer used to update progress.
 	 */
-	public NeighborAnalyzerThread(int start, int end, ArrayList<Triangle> polygons,
+	public NeighborAnalyzerThread(int start, int end, ArrayList<Triangle> triangles,
 			NeighborAnalyzer analyzer) {
 		this.start = start;
 		this.end = end;
-		this.polygons = polygons;
+		this.triangles = triangles;
 		this.analyzer = analyzer;
 	}
 
 	@Override
 	public Void call() throws Exception {
 		for (int i = start; i < end; i++) {
-			Triangle tr = polygons.get(i);
-			for (int j = i + 1; j < polygons.size(); j++) {
-				Triangle n = polygons.get(j);
+			Triangle tr = triangles.get(i);
+			for (int j = i + 1; j < triangles.size(); j++) {
+				Triangle n = triangles.get(j);
 				n.addNeighbor(tr);
 			}
 		}
-		analyzer.polygonsElaborated(end - start);
+		analyzer.trianglesElaborated(end - start);
 		elab += (end - start);
 		return null;
 	}

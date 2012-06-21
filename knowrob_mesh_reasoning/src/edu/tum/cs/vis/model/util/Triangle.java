@@ -46,22 +46,22 @@ public class Triangle extends DrawObject {
 	protected Point2f						texPosition[];
 
 	/**
-	 * Polygons may have normal vector
+	 * Triangles may have normal vector
 	 */
 	protected Vector3d						normalVector		= null;
 
 	/**
-	 * Centroid of polygon
+	 * Centroid of triangle
 	 */
 	protected Point3d						centroid;
 
 	/**
-	 * List of all direct neighbor polygons
+	 * List of all direct neighbor triangles
 	 */
 	protected ArrayList<TriangleNeighbor>	neighbors;
 
 	/**
-	 * Initializes a polygon with given number of edges (Triangle: 3)
+	 * Initializes a triangle with given number of edges (Triangle: 3)
 	 * 
 	 * @param numberOfEdges
 	 *            number of edges
@@ -86,7 +86,7 @@ public class Triangle extends DrawObject {
 				neighbors = new ArrayList<TriangleNeighbor>();
 			else
 				for (TriangleNeighbor n : getNeighbors()) {
-					if (n.getPolygon1() == neighbor || n.getPolygon2() == neighbor)
+					if (n.getTriangle1() == neighbor || n.getTriangle2() == neighbor)
 						return false;
 				}
 
@@ -125,7 +125,7 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
-	 * Draw the polygons onto the applet.
+	 * Draw the triangles onto the applet.
 	 * 
 	 * @param g
 	 *            Graphics to draw on
@@ -163,7 +163,7 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
-	 * returns the area of the polygon in 3d space. Unit is the same as you draw the polygon.
+	 * returns the area of the triangle in 3d space. Unit is the same as you draw the triangle.
 	 * 
 	 * @return the area in drawing unit.
 	 */
@@ -195,9 +195,9 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
-	 * Get list of all direct neighbor polygons.
+	 * Get list of all direct neighbor triangles.
 	 * 
-	 * @return list of polygons
+	 * @return list of triangles
 	 * @see Triangle#isNeighbor
 	 */
 	public ArrayList<TriangleNeighbor> getNeighbors() {
@@ -219,14 +219,14 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
-	 * Checks if this polygon intersects with the given ray (rayStart, rayEnd). Not only the segment
-	 * between rayStart and rayEnd is checked but the whole ray from -infinity to +infinity.
+	 * Checks if this triangle intersects with the given ray (rayStart, rayEnd). Not only the
+	 * segment between rayStart and rayEnd is checked but the whole ray from -infinity to +infinity.
 	 * 
 	 * @param rayStart
 	 *            start point of the ray
 	 * @param rayEnd
 	 *            end point of the ray
-	 * @return true if polygon intersects ray
+	 * @return true if triangle intersects ray
 	 */
 	public boolean intersectsRay(Point3f rayStart, Point3f rayEnd) {
 		return intersectsRay(rayStart, rayEnd, null);
@@ -239,8 +239,8 @@ public class Triangle extends DrawObject {
 	// liable for any real or imagined damage resulting from its use.
 	// Users of this code must verify correctness for their application.
 	/**
-	 * Checks if this polygon intersects with the given ray (rayStart, rayEnd). Not only the segment
-	 * between rayStart and rayEnd is checked but the whole ray from -infinity to +infinity.
+	 * Checks if this triangle intersects with the given ray (rayStart, rayEnd). Not only the
+	 * segment between rayStart and rayEnd is checked but the whole ray from -infinity to +infinity.
 	 * 
 	 * @param rayStart
 	 *            start point of the ray
@@ -248,7 +248,7 @@ public class Triangle extends DrawObject {
 	 *            end point of the ray
 	 * @param intersectPoint
 	 *            will be set to the intersection point. Set to null to ignore.
-	 * @return true if polygon intersects ray
+	 * @return true if triangle intersects ray
 	 */
 	public boolean intersectsRay(Point3f rayStart, Point3f rayEnd, Point3f intersectPoint) {
 
@@ -332,7 +332,7 @@ public class Triangle extends DrawObject {
 	 * will be returned.
 	 * 
 	 * @param tr
-	 *            polygon to check if it is a neighbor
+	 *            triangle to check if it is a neighbor
 	 * @return true if <code>tr</code> is a neighbor
 	 */
 	public boolean isNeighbor(Triangle tr) {
@@ -352,10 +352,10 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
-	 * Set the list of direct neighbor polygons.
+	 * Set the list of direct neighbor triangles.
 	 * 
 	 * @param neighbors
-	 *            polygons list.
+	 *            triangles list.
 	 */
 	public void setNeighbors(ArrayList<TriangleNeighbor> neighbors) {
 		this.neighbors = neighbors;

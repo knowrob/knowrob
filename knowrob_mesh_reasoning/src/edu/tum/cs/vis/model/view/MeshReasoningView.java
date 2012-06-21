@@ -77,12 +77,12 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	private String							imageSavePath		= null;
 
 	/**
-	 * List of selected polygons (polygons which intersect with mouse ray)
+	 * List of selected triangles (triangles which intersect with mouse ray)
 	 */
-	private final ArrayList<Triangle>		selectedPolygons	= new ArrayList<Triangle>();
+	private final ArrayList<Triangle>		selectedTriangless	= new ArrayList<Triangle>();
 	/**
-	 * List of selected annotations (annotations which contain one of selectedPolygons)
-	 */
+	 * List of selected annotations (annotations which contain one of selectedTriangles)
+	 * */
 	private final ArrayList<MeshAnnotation>	selectedAnnotations	= new ArrayList<MeshAnnotation>();
 
 	/**
@@ -141,11 +141,11 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		synchronized (selectedAnnotations) {
 
 			for (MeshAnnotation ma : selectedAnnotations) {
-				ma.getMesh().drawPolygons(g, new Color(255, 125, 0));
+				ma.getMesh().drawTriangles(g, new Color(255, 125, 0));
 				if (ma instanceof FlatSurfaceAnnotation && selectedAnnotations.size() == 1) {
 					FlatSurfaceAnnotation f = (FlatSurfaceAnnotation) ma;
 					for (FlatSurfaceAnnotation fsa : f.getNeighbors())
-						fsa.getMesh().drawPolygons(g, new Color(0, 125, 255, 30));
+						fsa.getMesh().drawTriangles(g, new Color(0, 125, 255, 30));
 				}
 			}
 		}
@@ -190,11 +190,11 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 			rayEnd = getMouseRayEnd();
 
 			boolean found = false;
-			// Check if clicked on one of previous selected polygons
-			for (Triangle p : selectedPolygons) {
+			// Check if clicked on one of previous selected triangles
+			for (Triangle p : selectedTriangless) {
 				if (p.intersectsRay(rayEnd, rayStart, null)) {
-					selectedPolygons.clear();
-					selectedPolygons.add(p);
+					selectedTriangless.clear();
+					selectedTriangless.add(p);
 					found = true;
 					break;
 				}
@@ -202,18 +202,18 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 
 			if (!found) {
 				// It is new selection
-				selectedPolygons.clear();
+				selectedTriangless.clear();
 				for (MeshCas c : casList) {
-					c.getGroup().getIntersectedPolygons(rayEnd, rayStart, selectedPolygons);
+					c.getGroup().getIntersectedTriangles(rayEnd, rayStart, selectedTriangless);
 				}
 			}
 
-			// Check if one of selected polygons is in already selected annotation
+			// Check if one of selected triangles is in already selected annotation
 			ArrayList<Triangle> newSelected = new ArrayList<Triangle>();
-			for (Triangle p : selectedPolygons) {
+			for (Triangle p : selectedTriangless) {
 				synchronized (selectedAnnotations) {
 					for (MeshAnnotation ma : selectedAnnotations)
-						if (ma.meshContainsPolygon(p)) {
+						if (ma.meshContainsTriangle(p)) {
 							newSelected.add(p);
 						}
 				}
@@ -221,11 +221,11 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 			if (newSelected.size() > 0) {
 				// Currently selected was in one or more of the selected annotations, so select out
 				// of current annotations
-				selectedPolygons.clear();
-				selectedPolygons.addAll(newSelected);
+				selectedTriangless.clear();
+				selectedTriangless.addAll(newSelected);
 			}
 
-			selectedPolygonsChanged();
+			selectedTrianglesChanged();
 		}
 
 	}
@@ -259,9 +259,9 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	}
 
 	/**
-	 * Called to update list of selectedAnnotations after list of selectedPolygons has changed
+	 * Called to update list of selectedAnnotations after list of selectedTriangless has changed
 	 */
-	private void selectedPolygonsChanged() {
+	private void selectedTrianglesChanged() {
 		synchronized (selectedAnnotations) {
 			selectedAnnotations.clear();
 		}
@@ -274,8 +274,8 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 					continue; // Skip not visible annotations
 				if (selectedAnnotations.contains(ma))
 					continue;
-				for (Triangle p : selectedPolygons)
-					if (ma.meshContainsPolygon(p)) {
+				for (Triangle p : selectedTriangless)
+					if (ma.meshContainsTriangle(p)) {
 						synchronized (selectedAnnotations) {
 							selectedAnnotations.add(ma);
 						}

@@ -71,13 +71,13 @@ public class MeshCas extends JCas implements Serializable {
 	}
 
 	/**
-	 * Searches the annotation (type equals clazz) which contains the given polygon. If no
+	 * Searches the annotation (type equals clazz) which contains the given triangle. If no
 	 * annotation found, null be returned
 	 * 
 	 * @param clazz
 	 *            Type of the annotation to find
 	 * @param p
-	 *            annotation must contain this polygon
+	 *            annotation must contain this triangle
 	 * @return the found annotation or null
 	 */
 	public MeshAnnotation findAnnotation(Class<? extends MeshAnnotation> clazz, Triangle p) {

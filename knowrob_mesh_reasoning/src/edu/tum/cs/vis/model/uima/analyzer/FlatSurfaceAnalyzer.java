@@ -49,7 +49,7 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 	static final double					TOLERANCE	= 0.01 * Math.PI / 180;
 
 	/**
-	 * Do a BFS on the neighbors of the <code>start</code> polygon and find all neighbors with
+	 * Do a BFS on the neighbors of the <code>start</code> triangle and find all neighbors with
 	 * nearly the same surface normal.
 	 * 
 	 * @param start
@@ -60,7 +60,7 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 	 * @param cas
 	 *            Cas to add a found annotation
 	 */
-	static void polygonBFS(Triangle start, MeshCas cas) {
+	static void triangleBFS(Triangle start, MeshCas cas) {
 
 		FlatSurfaceAnnotation annotation;
 		synchronized (cas.getAnnotations()) {
@@ -78,25 +78,25 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 			cas.addAnnotation(annotation);
 		}
 
-		// List of already visited polygons for BFS
+		// List of already visited triangles for BFS
 		LinkedList<Triangle> visited = new LinkedList<Triangle>();
 		visited.add(start);
 
-		// FIFO queue for polygons to visit for BFS
+		// FIFO queue for triangles to visit for BFS
 		LinkedList<TriangleNeighbor> queue = new LinkedList<TriangleNeighbor>();
 		if (start.getNeighbors() != null) {
-			// Add all neighbor polygons to the queue
+			// Add all neighbor triangles to the queue
 			queue.addAll(start.getNeighbors());
 		}
 
 		while (!queue.isEmpty()) {
 			TriangleNeighbor currNeighbor = queue.pop();
 			Triangle neighbor;
-			if (visited.contains(currNeighbor.getPolygon1()))
-				neighbor = currNeighbor.getPolygon2();
+			if (visited.contains(currNeighbor.getTriangle1()))
+				neighbor = currNeighbor.getTriangle2();
 
 			else
-				neighbor = currNeighbor.getPolygon1();
+				neighbor = currNeighbor.getTriangle1();
 			visited.add(neighbor);
 
 			double radiant = currNeighbor.getDihedralAngle();
@@ -119,12 +119,12 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 
 								cas.getAnnotations().remove(annotation);
 								synchronized (fsa.getMesh().getTriangles()) {
-									// Copy all polygons and neighbor polygons from current
+									// Copy all triangles and neighbor triangles from current
 									// annotation to found annotation
 									fsa.getMesh().getTriangles()
 											.addAll(annotation.getMesh().getTriangles());
-									fsa.getNeighborPolygons().addAll(
-											annotation.getNeighborPolygons());
+									fsa.getNeighborTriangles().addAll(
+											annotation.getNeighborTriangles());
 
 									// Remove items from queue which are already in found annotation
 									for (Iterator<TriangleNeighbor> it = queue.iterator(); it
@@ -132,8 +132,8 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 										ArrayList<Triangle> triangles = ((FlatSurfaceAnnotation) ma)
 												.getMesh().getTriangles();
 										TriangleNeighbor next = it.next();
-										if (triangles.contains(next.getPolygon1())
-												|| triangles.contains(next.getPolygon2()))
+										if (triangles.contains(next.getTriangle1())
+												|| triangles.contains(next.getTriangle2()))
 											it.remove();
 									}
 								}
@@ -150,7 +150,7 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 					}
 				}
 
-				// Add all neighbors of current polygon to queue
+				// Add all neighbors of current triangle to queue
 				for (TriangleNeighbor a : neighbor.getNeighbors()) {
 					Triangle newTriangle = a.getNeighbor(neighbor);
 					synchronized (annotation.getMesh()) {
@@ -164,21 +164,21 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 					queue.add(a);
 				}
 			} else {
-				annotation.addNeighborPolygon(neighbor);
+				annotation.addNeighborTriangles(neighbor);
 			}
 		}
 		annotation.setFeatures();
 	}
 
 	/**
-	 * First a list of all polygons in the groups is created and afterwards the analyzing starts
+	 * First a list of all triangles in the groups is created and afterwards the analyzing starts
 	 */
-	private ArrayList<Triangle>	allPolygons;
+	private ArrayList<Triangle>	allTriangles;
 
 	/**
-	 * Number of polygons already elaborated/processed. Used for indicating current process
+	 * Number of triangles already elaborated/processed. Used for indicating current process
 	 */
-	final AtomicInteger			polygonsElaborated	= new AtomicInteger(0);
+	final AtomicInteger			trianglesElaborated	= new AtomicInteger(0);
 
 	@Override
 	public Logger getLogger() {
@@ -207,7 +207,7 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 	}
 
 	/**
-	 * Process all polygons in the given mesh <code>m</code> with <code>polygonBFS</code>
+	 * Process all triangles in the given mesh <code>m</code> with <code>triangleBFS</code>
 	 * 
 	 * @param m
 	 *            mesh to process
@@ -219,13 +219,13 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 		if (m.getTriangles().size() == 0)
 			return;
 
-		allPolygons.addAll(m.getTriangles());
+		allTriangles.addAll(m.getTriangles());
 	}
 
 	@Override
 	public void processStart(MeshCas cas) {
 
-		allPolygons = new ArrayList<Triangle>();
+		allTriangles = new ArrayList<Triangle>();
 
 		processGroup(cas.getGroup(), cas);
 
@@ -234,9 +234,9 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 
 		do {
 			threads.add(new FlatSurfaceAnalyzerThread(startIdx, Math.min(startIdx + interval,
-					allPolygons.size()), allPolygons, this, cas));
+					allTriangles.size()), allTriangles, this, cas));
 			startIdx += interval;
-		} while (startIdx < allPolygons.size());
+		} while (startIdx < allTriangles.size());
 
 		// executeInPool(threads);
 
@@ -249,13 +249,8 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 			}
 		updateProgress();
 
-		/*for (Triangle p : allPolygons) {
-			polygonBFS(p, cas);
-			trianglesElaborated.incrementAndGet();
-		}*/
-
-		// trianglesElaborated.set(allPolygons.size());
-		allPolygons = null;
+		// trianglesElaborated.set(allTriangles.size());
+		allTriangles = null;
 
 		logger.debug("Number of FlatSurfaceAnnotations: " + cas.getAnnotations().size());
 
@@ -263,14 +258,14 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 
 	@Override
 	public void updateProgress() {
-		if (allPolygons != null && allPolygons.size() > 0) {
-			setProgress((float) polygonsElaborated.get() / (float) allPolygons.size() * 100.0f);
+		if (allTriangles != null && allTriangles.size() > 0) {
+			setProgress((float) trianglesElaborated.get() / (float) allTriangles.size() * 100.0f);
 		}
 	}
 }
 
 /**
- * Worker thread for elaborating a part of the polygon list in a thread pool.
+ * Worker thread for elaborating a part of the triangle list in a thread pool.
  * 
  * @author Stefan Profanter
  * 
@@ -278,19 +273,19 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 class FlatSurfaceAnalyzerThread implements Callable<Void> {
 
 	/**
-	 * Index of first polygon in list to elaborate
+	 * Index of first triangle in list to elaborate
 	 */
 	final int							start;
 	/**
-	 * All polygons in the list from start to < end will be elaborated
+	 * All triangles in the list from start to < end will be elaborated
 	 */
 	final int							end;
 
 	/**
-	 * List of all polygons. <code>start</code> and <code>end</code> are the indices which indicate
+	 * List of all triangles. <code>start</code> and <code>end</code> are the indices which indicate
 	 * the range to elaborate.
 	 */
-	final ArrayList<Triangle>			polygons;
+	final ArrayList<Triangle>			triangles;
 
 	/**
 	 * The parent analyzer. Used to update progress.
@@ -306,21 +301,21 @@ class FlatSurfaceAnalyzerThread implements Callable<Void> {
 	 * Default constructor.
 	 * 
 	 * @param start
-	 *            Start index in polygons. Where to start elaboration.
+	 *            Start index in triangles. Where to start elaboration.
 	 * @param end
-	 *            End index in polygons. Where to end elaboration.
-	 * @param polygons
-	 *            List of all polygons.
+	 *            End index in triangles. Where to end elaboration.
+	 * @param triangles
+	 *            List of all triangles.
 	 * @param analyzer
 	 *            parent analyzer used to update progress.
 	 * @param cas
 	 *            the cas which is being analyzed
 	 */
-	public FlatSurfaceAnalyzerThread(int start, int end, ArrayList<Triangle> polygons,
+	public FlatSurfaceAnalyzerThread(int start, int end, ArrayList<Triangle> triangles,
 			FlatSurfaceAnalyzer analyzer, MeshCas cas) {
 		this.start = start;
 		this.end = end;
-		this.polygons = polygons;
+		this.triangles = triangles;
 		this.analyzer = analyzer;
 		this.cas = cas;
 	}
@@ -328,13 +323,13 @@ class FlatSurfaceAnalyzerThread implements Callable<Void> {
 	@Override
 	public Void call() throws Exception {
 		for (int i = start; i < end; i++) {
-			Triangle tr = polygons.get(i);
+			Triangle tr = triangles.get(i);
 
-			FlatSurfaceAnalyzer.polygonBFS(tr, cas);
+			FlatSurfaceAnalyzer.triangleBFS(tr, cas);
 
 		}
 
-		analyzer.polygonsElaborated.addAndGet(end - start);
+		analyzer.trianglesElaborated.addAndGet(end - start);
 
 		return null;
 	}

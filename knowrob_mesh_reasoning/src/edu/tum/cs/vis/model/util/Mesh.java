@@ -66,7 +66,7 @@ public class Mesh implements Serializable {
 	 */
 	protected Float				maxZ				= null;
 	/**
-	 * Is false until <code>setTextureImage</code> is called and the textures of all polygons are
+	 * Is false until <code>setTextureImage</code> is called and the textures of all triangles are
 	 * initialized.
 	 */
 	private boolean				texturesInitialized	= false;
@@ -76,9 +76,9 @@ public class Mesh implements Serializable {
 	 */
 	private String				textureBasePath;
 	/**
-	 * List of all polygons parsed from file
+	 * List of all triangles parsed from file
 	 */
-	private ArrayList<Triangle>	polygons			= new ArrayList<Triangle>();
+	private ArrayList<Triangle>	triangles			= new ArrayList<Triangle>();
 
 	/**
 	 * List of all lines parsed from file
@@ -92,7 +92,7 @@ public class Mesh implements Serializable {
 	 *            Applet to draw on
 	 */
 	public void drawBoundingBox(PApplet applet) {
-		if (polygons.size() == 0 && lines.size() == 0)
+		if (triangles.size() == 0 && lines.size() == 0)
 			return;
 		// Save current translation
 		applet.pushMatrix();
@@ -120,7 +120,7 @@ public class Mesh implements Serializable {
 	}
 
 	/**
-	 * Draw the polygons list to the applet
+	 * Draw the triangles list to the applet
 	 * 
 	 * @param g
 	 *            Graphics to draw on
@@ -128,11 +128,11 @@ public class Mesh implements Serializable {
 	 *            override the draw color an texture. Draw whole object in the given color if !=
 	 *            null
 	 */
-	public void drawPolygons(PGraphics g, Color overrideColor) {
+	public void drawTriangles(PGraphics g, Color overrideColor) {
 		if (!texturesInitialized)
 			setTextureImage();
-		synchronized (polygons) {
-			for (Triangle tri : polygons) {
+		synchronized (triangles) {
+			for (Triangle tri : triangles) {
 				tri.draw(g, overrideColor);
 			}
 		}
@@ -147,14 +147,14 @@ public class Mesh implements Serializable {
 	public float getDepth() {
 		if (minZ != null && maxZ != null)
 			return Math.abs(maxZ - minZ);
-		if (polygons.size() == 0) {
+		if (triangles.size() == 0) {
 			minZ = 0f;
 			maxZ = 0f;
 		} else {
 			minZ = Float.MAX_VALUE;
 			maxZ = Float.MIN_VALUE;
 
-			for (Triangle tri : polygons) {
+			for (Triangle tri : triangles) {
 				for (int v = 0; v < 3; v++) {
 					minZ = Math.min(tri.position[v].z, minZ);
 					maxZ = Math.max(tri.position[v].z, maxZ);
@@ -179,14 +179,14 @@ public class Mesh implements Serializable {
 	public float getHeight() {
 		if (minY != null && maxY != null)
 			return Math.abs(maxY - minY);
-		if (polygons.size() == 0) {
+		if (triangles.size() == 0) {
 			minY = 0f;
 			maxY = 0f;
 		} else {
 			minY = Float.MAX_VALUE;
 			maxY = Float.MIN_VALUE;
 
-			for (Triangle tri : polygons) {
+			for (Triangle tri : triangles) {
 				for (int v = 0; v < 3; v++) {
 					minY = Math.min(tri.position[v].y, minY);
 					maxY = Math.max(tri.position[v].y, maxY);
@@ -216,23 +216,23 @@ public class Mesh implements Serializable {
 	}
 
 	/**
-	 * Searches all polygons which intersect the given ray (rayStart, rayEnd) and adds them to
-	 * intersectedPolygons. Not only the segment between rayStart and rayEnd is checked but the
+	 * Searches all triangles which intersect the given ray (rayStart, rayEnd) and adds them to
+	 * intersectedTriangles. Not only the segment between rayStart and rayEnd is checked but the
 	 * whole ray from -infinity to +infinity.
 	 * 
 	 * @param rayStart
 	 *            start point of the ray.
 	 * @param rayEnd
 	 *            end point of the ray.
-	 * @param intersectedPolygons
-	 *            list where to add intersecting polygons
+	 * @param intersectedTriangles
+	 *            list where to add intersecting triangles
 	 */
-	public void getIntersectedPolygons(final Point3f rayStart, final Point3f rayEnd,
-			final ArrayList<Triangle> intersectedPolygons) {
+	public void getIntersectedTriangles(final Point3f rayStart, final Point3f rayEnd,
+			final ArrayList<Triangle> intersectedTriangles) {
 
-		for (Triangle tri : polygons) {
+		for (Triangle tri : triangles) {
 			if (tri.intersectsRay(rayStart, rayEnd))
-				intersectedPolygons.add(tri);
+				intersectedTriangles.add(tri);
 		}
 
 	}
@@ -305,19 +305,19 @@ public class Mesh implements Serializable {
 	}
 
 	/**
-	 * @return the polygons
-	 */
-	public ArrayList<Triangle> getTriangles() {
-		return polygons;
-	}
-
-	/**
 	 * Return base path for relative paths of texture images.
 	 * 
 	 * @return the base path
 	 */
 	public String getTextureBasePath() {
 		return textureBasePath;
+	}
+
+	/**
+	 * @return the triangles
+	 */
+	public ArrayList<Triangle> getTriangles() {
+		return triangles;
 	}
 
 	/**
@@ -329,14 +329,14 @@ public class Mesh implements Serializable {
 	public float getWidth() {
 		if (minX != null && maxX != null)
 			return Math.abs(maxX - minX);
-		if (polygons.size() == 0) {
+		if (triangles.size() == 0) {
 			minX = 0f;
 			maxX = 0f;
 		} else {
 			minX = Float.MAX_VALUE;
 			maxX = Float.MIN_VALUE;
 
-			for (Triangle tri : polygons) {
+			for (Triangle tri : triangles) {
 				for (int v = 0; v < 3; v++) {
 					minX = Math.min(tri.position[v].x, minX);
 					maxX = Math.max(tri.position[v].x, maxX);
@@ -361,7 +361,7 @@ public class Mesh implements Serializable {
 		float tmp = minX;
 		minX = maxX * (-1);
 		maxX = tmp;
-		for (Triangle tri : polygons) {
+		for (Triangle tri : triangles) {
 			for (int v = 0; v < 3; v++) {
 				tri.position[v].x *= (-1);
 			}
@@ -381,7 +381,7 @@ public class Mesh implements Serializable {
 	 *            The scale factor
 	 */
 	protected void scaleMesh(float factor) {
-		for (Triangle tri : polygons) {
+		for (Triangle tri : triangles) {
 
 			tri.scale(factor);
 		}
@@ -406,14 +406,6 @@ public class Mesh implements Serializable {
 	}
 
 	/**
-	 * @param polygons
-	 *            the polygons to set
-	 */
-	public void setPolygons(ArrayList<Triangle> polygons) {
-		this.polygons = polygons;
-	}
-
-	/**
 	 * Set base path for relative paths of texture images.
 	 * 
 	 * @param textureBasePath
@@ -431,7 +423,7 @@ public class Mesh implements Serializable {
 	private void setTextureImage() {
 		// load all Texture-Images only once (memory efficiency)
 		HashMap<String, PImage> pictures = new HashMap<String, PImage>();
-		for (Triangle tri : polygons) {
+		for (Triangle tri : triangles) {
 			if (tri.appearance.getImageFileName() == null)
 				continue;
 			String texfile = FileUtil.getAbsoluteFilePath(textureBasePath,
@@ -457,7 +449,7 @@ public class Mesh implements Serializable {
 
 		// Now remove offset of texture coordinates because there is a bug with P3D when texture
 		// should repeated
-		for (Triangle tri : polygons) {
+		for (Triangle tri : triangles) {
 
 			if (tri.appearance.getImageFileName() == null)
 				continue;
@@ -495,6 +487,14 @@ public class Mesh implements Serializable {
 	}
 
 	/**
+	 * @param triangles
+	 *            the triangles to set
+	 */
+	public void setTriangles(ArrayList<Triangle> triangles) {
+		this.triangles = triangles;
+	}
+
+	/**
 	 * Translate (move) the model by the given translation vector
 	 * 
 	 * @param translation
@@ -507,7 +507,7 @@ public class Mesh implements Serializable {
 		maxY += translation.y;
 		minZ += translation.z;
 		maxZ += translation.z;
-		for (Triangle tri : polygons) {
+		for (Triangle tri : triangles) {
 
 			tri.translate(translation.x, translation.y, translation.z);
 		}

@@ -14,9 +14,9 @@ public class TriangleNeighbor {
 	 * two surface normales.
 	 * 
 	 * @param p1
-	 *            polygon 1
+	 *            triangle 1
 	 * @param p2
-	 *            polygon 2
+	 *            triangle 2
 	 * @return the dihedral angle in radiant between 0 to PI
 	 */
 	private static double calcDihedralAngle(Triangle p1, Triangle p2) {
@@ -75,14 +75,14 @@ public class TriangleNeighbor {
 	/**
 	 * @return the p
 	 */
-	public Triangle getPolygon1() {
+	public Triangle getTriangle1() {
 		return p1;
 	}
 
 	/**
 	 * @return the p
 	 */
-	public Triangle getPolygon2() {
+	public Triangle getTriangle2() {
 		return p2;
 	}
 
