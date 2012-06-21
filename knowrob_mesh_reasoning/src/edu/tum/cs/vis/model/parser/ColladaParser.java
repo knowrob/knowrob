@@ -53,109 +53,100 @@ import edu.tum.cs.vis.model.util.Line;
 import edu.tum.cs.vis.model.util.Triangle;
 
 /**
- * Connection between dae4j library and processing applet.
- * Used to parse COLLADA (.dae) files and draw them on the processing applet.
- * Also .kmz files are supported. These are exctracted to tmp dir and the dae file init will be loaded.
+ * Connection between dae4j library and processing applet. Used to parse COLLADA (.dae) files and
+ * draw them on the processing applet. Also .kmz files are supported. These are exctracted to tmp
+ * dir and the dae file init will be loaded.
  * 
  * @author Stefan Profanter
- *
+ * 
  */
 public class ColladaParser extends ModelParser {
 
 	/**
-	 * Base path of the texture files. In the dae file are only relative paths. So we
-	 * need a base.
-	 * If kmz is parsed, this will be set automatically
-	 */
-	private String textureBasePath = "";
-	
-	/**
-	 * Convert a collada source item to the corresponding float array
+	 * Returns the instantiated Apperance by reading the material information from mat.
 	 * 
-	 * @param the collada source
-	 * @return float array with float[count][stride]
+	 * @param mat
+	 *            Collada Material which holds information about the appearance
+	 * @param collada
+	 *            Collada structure
+	 * @return Instance of Apperance set according to mat.
 	 */
-    private static float[][] SourceToFloat(Source s)
-    {
-    	float ret[][] = new float[s.getAccessor().getCount()][s.getAccessor().getStride()];
-    	for (int i = 0, k = 0; i<s.getAccessor().getCount(); i++)
-        {
-            for (int j = 0; j < s.getAccessor().getStride(); j++, k++)
-            ret[i][j] = s.getFloatArray().get(k);
-        }
-    	return ret;
-    }
-    
-	@Override
-	public void draw(PApplet applet, int overrideColor) {
-		if (group == null)
-			return;
-		applet.noStroke();
+	private static Appearance getAppearance(Material mat, Collada collada) {
+		Appearance appearance = new Appearance();
+		Effect effect = collada.findEffect(mat.getInstanceEffect().getUrl().substring(1));
+		if (effect.getEffectMaterial() instanceof Lambert) {
+			Lambert lambert = (Lambert) effect.getEffectMaterial();
+			EffectAttribute diffuse = lambert.getDiffuse();
+			String texturePath = null;
+			Color materialColor = new Color(0.5f, 0.5f, 0.5f, 1.0f);
+			if (diffuse.getTexture() != null) {
+				texturePath = collada.findImage(
+						effect.findNewParam(
+								effect.findNewParam(diffuse.getTexture().getTexture())
+										.getSampler2D().getSource()).getSurface().getInitFrom())
+						.getInitFrom();
+			} else {
+				float[] colors = diffuse.getData();
+				// System.out.println("Diffuse");
+				materialColor = new Color(colors[0], colors[1], colors[2], colors[3]);
+			}
 
-		if (overrideColor != 0)
-			applet.fill(overrideColor);
-		else
-			applet.fill(127); //set a default color value
+			if (texturePath != null) {
+				appearance.setImageFileName(texturePath);
+			} else {
+				// Fill will be set to null if it is a line, Line will be set to null if it is a
+				// Triangle
+				appearance.setColorFill(materialColor);
+				appearance.setColorLine(materialColor);
+			}
+		} else if (effect.getEffectMaterial() instanceof Blinn) {
+			// <emission> + <ambient>*al + <diffuse> + <specular>^<shininess>
+			Blinn blinn = (Blinn) effect.getEffectMaterial();
 
-		group.draw(applet, overrideColor);
+			String texturePath = null;
+			if (blinn.getDiffuse().getTexture() != null) {
+				texturePath = collada.findImage(
+						effect.findNewParam(
+								effect.findNewParam(blinn.getDiffuse().getTexture().getTexture())
+										.getSampler2D().getSource()).getSurface().getInitFrom())
+						.getInitFrom();
+				appearance.setImageFileName(texturePath);
+			} else {
+
+				float[] emission = blinn.getEmission().getData();
+				float[] ambient = blinn.getAmbient().getData();
+				float[] diffuse = blinn.getDiffuse().getData();
+				float[] specular = blinn.getSpecular().getData();
+				float[] shininess = blinn.getShininess().getData();
+				float[] result = new float[4];
+				for (int i = 0; i < 4; i++) {
+					result[i] = 0;
+					if (emission != null)
+						result[i] += emission[i];
+					if (ambient != null)
+						result[i] += ambient[i];
+					if (diffuse != null)
+						result[i] += diffuse[i];
+					if (specular != null && shininess != null)
+						result[i] += (float) Math.pow(specular[i], shininess[0]);
+				}
+				// Fill will be set to null if it is a line, Line will be set to null if it is a
+				// Triangle
+				appearance.setColorFill(new Color(result[0], result[1], result[2], Math.min(
+						result[3], 1f)));
+				appearance.setColorLine(appearance.getColorFill());
+			}
+
+		}
+		return appearance;
 	}
 
 	/**
-	 * Searches in the given nList nodes tree for the node represented by nodeNames and returns the inner value of this node.
-	 * @param nList the list of all nodes (returned by getElementsByTagName)
-	 * @param nodeNames A linked list with the structure to search. The first name is the name of the root, the next name
-	 * 			is the name of the child to search in the root and so on.
-	 * @return The inner value of the node or null if not found
-	 */
-	private static String getNodeValue(NodeList nList,
-			LinkedList<String> nodeNames) {
-		if (nodeNames.isEmpty() || nList == null) {
-			return null;
-		}
-		if (nodeNames.size() == 1) {
-			for (int temp = 0; temp < nList.getLength(); temp++) {
-				org.w3c.dom.Node nNode = nList.item(temp);
-				if (nNode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
-					Element element = (Element) nNode;
-					NodeList nlList = element
-.getElementsByTagName(nodeNames
-							.poll());
-					if (nlList == null)
-						return null;
-					nlList = nlList.item(0).getChildNodes();
-
-					org.w3c.dom.Node nValue = (org.w3c.dom.Node) nlList.item(0);
-					return nValue.getNodeValue();
-
-				}
-			}
-		} else
-		{
-			for (int temp = 0; temp < nList.getLength(); temp++) {
-
-				org.w3c.dom.Node nNode = nList.item(temp);
-
-				if (nNode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
-
-					Element element = (Element) nNode;
-
-					LinkedList<String> tmpNodeNames = new LinkedList<String>();
-					tmpNodeNames.addAll(nodeNames);
-					String val = getNodeValue(
-							element.getElementsByTagName(tmpNodeNames.poll()),
-							tmpNodeNames);
-					if (val != null)
-						return val;
-				}
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Tries to determine the location of the .dae file when a .kmz file was extracted.
-	 * The path to the .dae file is stored in the doc.kml file withing the zipped kmz.
-	 * @param tmpPath Path to the extracted .kmz file
+	 * Tries to determine the location of the .dae file when a .kmz file was extracted. The path to
+	 * the .dae file is stored in the doc.kml file withing the zipped kmz.
+	 * 
+	 * @param tmpPath
+	 *            Path to the extracted .kmz file
 	 * @return Absolute path to the .dae file or null if not found.
 	 */
 	private static String getDaeLocation(String tmpPath) {
@@ -165,20 +156,17 @@ public class ColladaParser extends ModelParser {
 		try {
 			dBuilder = dbFactory.newDocumentBuilder();
 		} catch (ParserConfigurationException e) {
-			System.err.println("Couldn't get .dae location from doc.kml: "
-					+ e.getMessage());
+			System.err.println("Couldn't get .dae location from doc.kml: " + e.getMessage());
 			return null;
 		}
 		Document doc;
 		try {
 			doc = dBuilder.parse(kmlFile);
 		} catch (SAXException e) {
-			System.err.println("Couldn't get .dae location from doc.kml: "
-					+ e.getMessage());
+			System.err.println("Couldn't get .dae location from doc.kml: " + e.getMessage());
 			return null;
 		} catch (IOException e) {
-			System.err.println("Couldn't get .dae location from doc.kml: "
-					+ e.getMessage());
+			System.err.println("Couldn't get .dae location from doc.kml: " + e.getMessage());
 			return null;
 		}
 		doc.getDocumentElement().normalize();
@@ -204,184 +192,110 @@ public class ColladaParser extends ModelParser {
 		return tmpPath + loc;
 	}
 
-	@Override
-	protected boolean loadModel(String filename) {
-		Collada collada = null;
-		textureBasePath = null;
-		String daeFile = null;
-		
-		if (!checkExtension(filename)) {
-			return false;
-		}
-		
-		filename = ResourceRetriever.retrieve(filename).getAbsolutePath();
-		
-		if ((new File(filename)).exists()==false)
-		{
-			System.err.println("ERROR: Can't load model. File not found: " + filename + "\n");
-			return false;
-		}
-		
-		
-		String extension = getExtension(filename);
-		if (extension.equalsIgnoreCase(
-				"kmz")) {
-			String tmpPath = ResourceRetriever.createTempDirectory();
-			if (!tmpPath.endsWith("/") && !tmpPath.endsWith("\\"))
-				tmpPath += "/";
-			FileUtil.Unzip(filename, tmpPath);
-
-			daeFile = getDaeLocation(tmpPath);
-
-			textureBasePath = daeFile.substring(0,
-					daeFile.lastIndexOf(File.separator));
-
-			if (!textureBasePath.endsWith("/")
-					&& !textureBasePath.endsWith("\\"))
-				textureBasePath += "/";
-
-		} else if (extension
-				.equalsIgnoreCase("dae")) {
-			textureBasePath = "";
-			daeFile = filename;
-		}
-		
-
-		try {
-			collada = Collada.readFile(daeFile);
-		} catch (FileNotFoundException e) {
-			System.err.println("File doesn't exists: " + daeFile);
-			e.printStackTrace();
-			return false;
-		} catch (SAXException e) {
-			System.err.println("XML-Exception in : " + daeFile);
-			e.printStackTrace();
-			return false;
-		} catch (IOException e) {
-			System.err.println("IO-Exception in : " + daeFile);
-			e.printStackTrace();
-			return false;
-		}
-		
-		group = new Group();
-				
-		//collada.dump(System.out, 0);
-		
-		// This is where everything begins
-		VisualScene scene = collada.getLibraryVisualScenes().getScene(
-				collada.getScene().getInstanceVisualScene().getUrl());
-
-		for (Node n : scene.getNodes()) {
-			parseNode(n,group, new ArrayList<BaseXform>(), collada);
-		}
-		
-		group.initialize(textureBasePath);
-
-		Unit unit = collada.getUnit();
-		if (unit != null && unit.getMeter() != 1.0) {
-			group.scale(unit.getMeter());
-		}
-		
-		group.mirrorX();
-		
-		
-		return true;
-	}
-
 	/**
-	 * Parses a node from the collada structure and stores the triangles and lines information.
-	 * @param node Node to parse (may have other sub-Nodes => called recursively)
-	 * @param transformations List of all parent transformations which should be applied to this and it's
-	 * 			subsequent nodes
-	 * @param collada the collada Structure
+	 * Searches in the given nList nodes tree for the node represented by nodeNames and returns the
+	 * inner value of this node.
+	 * 
+	 * @param nList
+	 *            the list of all nodes (returned by getElementsByTagName)
+	 * @param nodeNames
+	 *            A linked list with the structure to search. The first name is the name of the
+	 *            root, the next name is the name of the child to search in the root and so on.
+	 * @return The inner value of the node or null if not found
 	 */
-	private void parseNode(Node node, Group currGroup, ArrayList<BaseXform> transformations,
-			Collada collada) {
+	private static String getNodeValue(NodeList nList, LinkedList<String> nodeNames) {
+		if (nodeNames.isEmpty() || nList == null) {
+			return null;
+		}
+		if (nodeNames.size() == 1) {
+			for (int temp = 0; temp < nList.getLength(); temp++) {
+				org.w3c.dom.Node nNode = nList.item(temp);
+				if (nNode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+					Element element = (Element) nNode;
+					NodeList nlList = element.getElementsByTagName(nodeNames.poll());
+					if (nlList == null)
+						return null;
+					nlList = nlList.item(0).getChildNodes();
 
-		// Add transformations like a stack
-		if (node.getXforms() != null)
-			transformations.addAll(node.getXforms());
-		
-		//Parse all child nodes
-		if (node.getChildNodes() != null) {
-			for (Node child : node.getChildNodes())
-			{
-				Group g = new Group();
-				g.setName(child.getName());
-				currGroup.addChild(g);
-				parseNode(child,g, transformations, collada);
+					org.w3c.dom.Node nValue = nlList.item(0);
+					return nValue.getNodeValue();
+
+				}
+			}
+		} else {
+			for (int temp = 0; temp < nList.getLength(); temp++) {
+
+				org.w3c.dom.Node nNode = nList.item(temp);
+
+				if (nNode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+
+					Element element = (Element) nNode;
+
+					LinkedList<String> tmpNodeNames = new LinkedList<String>();
+					tmpNodeNames.addAll(nodeNames);
+					String val = getNodeValue(element.getElementsByTagName(tmpNodeNames.poll()),
+							tmpNodeNames);
+					if (val != null)
+						return val;
+				}
 			}
 		}
-
-		//Parse referencing nodes
-		InstanceNode instNode = node.getInstanceNode();
-		if (instNode != null) {
-			parseNode(collada.findNode(instNode.getUrl()),currGroup, transformations,
-					collada);
-		}
-		
-		//Parse referencing geometries and Material
-		List<InstanceGeometry> instGeoList = node.getInstanceGeometry();
-		
-		for (InstanceGeometry instGeo : instGeoList) {
-			HashMap<String, String> instanceMaterial = new HashMap<String, String>();
-			for (InstanceMaterial mat : instGeo.getInstanceMaterials()) {
-				instanceMaterial.put(mat.getSymbol(), mat.getTarget());
-			}
-			parseGeometry(collada.findGeometry(instGeo.getUrl()),currGroup,
-					instanceMaterial, transformations, collada);
-		}
-
-		// remove added transformations
-		if (node.getXforms() != null)
-			transformations.removeAll(node.getXforms());
+		return null;
 	}
 
 	/**
 	 * Parse a geometry object from the collada structure
-	 * @param g Geometry object to parse
-	 * @param instanceMaterial List of all known materials which may be referred by the geometry object
-	 * @param transformations List of all parent transformations which should be applied to this and it's
-	 * 			subsequent geometries
-	 * @param collada the collada Structure
+	 * 
+	 * @param g
+	 *            Geometry object to parse
+	 * @param instanceMaterial
+	 *            List of all known materials which may be referred by the geometry object
+	 * @param transformations
+	 *            List of all parent transformations which should be applied to this and it's
+	 *            subsequent geometries
+	 * @param collada
+	 *            the collada Structure
 	 */
-	private void parseGeometry(Geometry g, Group currGroup,
-			HashMap<String, String> instanceMaterial,
-			ArrayList<BaseXform> transformations, Collada collada) {
+	private static void parseGeometry(Geometry g, Group currGroup,
+			HashMap<String, String> instanceMaterial, ArrayList<BaseXform> transformations,
+			Collada collada) {
 		Mesh m = g.getMesh();
 		for (Primitives p : m.getPrimitives()) {
 			if (p instanceof Triangles) {
 				Triangles t = (Triangles) p;
-				parseGeometryTriangle(t, m,currGroup, instanceMaterial, transformations,
-						collada);
+				parseGeometryTriangle(t, m, currGroup, instanceMaterial, transformations, collada);
 			} else if (p instanceof Lines) {
 				Lines l = (Lines) p;
-				parseGeometryLine(l, m,currGroup, instanceMaterial, transformations,
-						collada);
+				parseGeometryLine(l, m, currGroup, instanceMaterial, transformations, collada);
 			}
 		}
 	}
 
 	/**
 	 * Parse a line from a geometry object from the collada structure.
-	 * @param l the line object to parse
-	 * @param m parent mesh for the line
-	 * @param instanceMaterial List of all known materials which may be referred by the geometry object
-	 * @param transformations List of all parent transformations which should be applied to this and it's
-	 * 			subsequent geometries
-	 * @param collada the collada Structure
+	 * 
+	 * @param l
+	 *            the line object to parse
+	 * @param m
+	 *            parent mesh for the line
+	 * @param instanceMaterial
+	 *            List of all known materials which may be referred by the geometry object
+	 * @param transformations
+	 *            List of all parent transformations which should be applied to this and it's
+	 *            subsequent geometries
+	 * @param collada
+	 *            the collada Structure
 	 */
-	private void parseGeometryLine(Lines l, Mesh m, Group currGroup,
-			HashMap<String, String> instanceMaterial,
-			ArrayList<BaseXform> transformations, Collada collada) {
+	private static void parseGeometryLine(Lines l, Mesh m, Group currGroup,
+			HashMap<String, String> instanceMaterial, ArrayList<BaseXform> transformations,
+			Collada collada) {
 		Material mat = null;
 		if (instanceMaterial.containsKey(l.getMaterial())) {
 			mat = collada.findMaterial(instanceMaterial.get(l.getMaterial()));
 
 		} else {
 			l.dump(System.err, 5);
-			throw new RuntimeException(
-					"No material given for Line (see above) ");
+			throw new RuntimeException("No material given for Line (see above) ");
 		}
 
 		Source vertexSource = null;
@@ -411,43 +325,48 @@ public class ColladaParser extends ModelParser {
 		}
 
 		Appearance appearance = getAppearance(mat, collada);
-		appearance.colourFill = null;
-
+		appearance.setColorFill(null);
 
 		// one single line from the line-set
 		for (int i = 0; i < indexes.length && i + 2 < indexes.length; i++) {
 			Line line = new Line();
-			line.appearance = appearance;
+			line.setAppearance(appearance);
 
 			for (int v = 0; v < 2; v++) {
 				// set the vertices for Point
-				line.position[v] = new Point3f(
-						vertPoints[indexes[i][vertexOffset]][0],
+				line.getPosition()[v] = new Point3f(vertPoints[indexes[i][vertexOffset]][0],
 						vertPoints[indexes[i][vertexOffset]][1],
 						vertPoints[indexes[i][vertexOffset]][2]);
 
 				i++;
 			}
+			line.updateNormalVector();
 			i -= 2;
 
 			useTransformation(line, transformations);
 			// add it to the Collection
-			currGroup.getMesh().lines.add(line);
+			currGroup.getMesh().getLines().add(line);
 		}
 	}
 
 	/**
 	 * Parse a triangle from a geometry object from the collada structure.
-	 * @param t the line object to parse
-	 * @param m parent mesh for the line
-	 * @param instanceMaterial List of all known materials which may be referred by the geometry object
-	 * @param transformations List of all parent transformations which should be applied to this and it's
-	 * 			subsequent geometries
-	 * @param collada the collada Structure
+	 * 
+	 * @param t
+	 *            the line object to parse
+	 * @param m
+	 *            parent mesh for the line
+	 * @param instanceMaterial
+	 *            List of all known materials which may be referred by the geometry object
+	 * @param transformations
+	 *            List of all parent transformations which should be applied to this and it's
+	 *            subsequent geometries
+	 * @param collada
+	 *            the collada Structure
 	 */
-	private void parseGeometryTriangle(Triangles t, Mesh m, Group currGroup,
-			HashMap<String, String> instanceMaterial,
-			ArrayList<BaseXform> transformations, Collada collada) {
+	private static void parseGeometryTriangle(Triangles t, Mesh m, Group currGroup,
+			HashMap<String, String> instanceMaterial, ArrayList<BaseXform> transformations,
+			Collada collada) {
 		Material mat = null;
 		if (instanceMaterial.containsKey(t.getMaterial())) {
 			mat = collada.findMaterial(instanceMaterial.get(t.getMaterial()));
@@ -455,8 +374,7 @@ public class ColladaParser extends ModelParser {
 		} else {
 
 			t.dump(System.err, 5);
-			throw new RuntimeException(
-					"No material given for Triangle (see above) ");
+			throw new RuntimeException("No material given for Triangle (see above) ");
 		}
 
 		Source vertexSource = null;
@@ -466,7 +384,7 @@ public class ColladaParser extends ModelParser {
 			}
 		}
 
-		// commons for the set of triangles
+		// commons for the set of polygons
 		float[][] vertPoints = SourceToFloat(vertexSource);
 
 		int stride = t.getInputs().size();
@@ -498,26 +416,25 @@ public class ColladaParser extends ModelParser {
 		}
 
 		Appearance appearance = getAppearance(mat, collada);
-		appearance.colourLine = null;
+		appearance.setColorLine(null);
 
 		// one single triangle from the triangle-set
 		for (int i = 0; i < indexes.length; i++) {
 			Triangle tri = new Triangle();
-			tri.appearance = appearance;
+			tri.setAppearance(appearance);
 
-			if (tri.appearance.imageFileName != null)
-				tri.texPosition = new Point2f[3];
+			if (tri.getAppearance().getImageFileName() != null)
+				tri.setTexPosition(new Point2f[3]);
 
 			for (int v = 0; v < 3; v++) {
 				// set the vertices for Point
-				tri.position[v] = new Point3f(
-						vertPoints[indexes[i][vertexOffset]][0],
+				tri.getPosition()[v] = new Point3f(vertPoints[indexes[i][vertexOffset]][0],
 						vertPoints[indexes[i][vertexOffset]][1],
 						vertPoints[indexes[i][vertexOffset]][2]);
 
 				// set texture position
-				if (tri.appearance.imageFileName != null) {
-					tri.texPosition[v] = new Point2f(
+				if (tri.getAppearance().getImageFileName() != null) {
+					tri.getTexPosition()[v] = new Point2f(
 							texturePoints[indexes[i][textureOffset]][0],
 							texturePoints[indexes[i][textureOffset]][1]);
 				}
@@ -527,20 +444,39 @@ public class ColladaParser extends ModelParser {
 			i--;
 
 			useTransformation(tri, transformations);
+			tri.updateNormalVector();
 
 			// add it to the Collection
-			currGroup.getMesh().triangles.add(tri);
+			currGroup.getMesh().getPolygons().add(tri);
 		}
 
 	}
 
 	/**
-	 * Applies the list of transformations in the correct order to the DrawObject (Line / Triangle)
-	 * @param obj Object to apply the transformation onto
-	 * @param transformations list of transformations to apply
+	 * Convert a collada source item to the corresponding float array
+	 * 
+	 * @param the
+	 *            collada source
+	 * @return float array with float[count][stride]
 	 */
-	private static void useTransformation(DrawObject obj,
-			ArrayList<BaseXform> transformations) {
+	private static float[][] SourceToFloat(Source s) {
+		float ret[][] = new float[s.getAccessor().getCount()][s.getAccessor().getStride()];
+		for (int i = 0, k = 0; i < s.getAccessor().getCount(); i++) {
+			for (int j = 0; j < s.getAccessor().getStride(); j++, k++)
+				ret[i][j] = s.getFloatArray().get(k);
+		}
+		return ret;
+	}
+
+	/**
+	 * Applies the list of transformations in the correct order to the DrawObject (Line / Triangle)
+	 * 
+	 * @param obj
+	 *            Object to apply the transformation onto
+	 * @param transformations
+	 *            list of transformations to apply
+	 */
+	private static void useTransformation(DrawObject obj, ArrayList<BaseXform> transformations) {
 		for (int idx = transformations.size() - 1; idx >= 0; idx--) {
 			BaseXform transform = transformations.get(idx);
 			if (transform instanceof Matrix) {
@@ -561,81 +497,150 @@ public class ColladaParser extends ModelParser {
 	}
 
 	/**
-	 * Returns the instantiated Apperance by reading the material information from mat.
-	 * @param mat Collada Material which holds information about the appearance
-	 * @param collada Collada structure
-	 * @return Instance of Apperance set according to mat.
+	 * Base path of the texture files. In the dae file are only relative paths. So we need a base.
+	 * If kmz is parsed, this will be set automatically
 	 */
-	private Appearance getAppearance(Material mat, Collada collada) {
-		Appearance appearance = new Appearance();
-		Effect effect = collada.findEffect(mat.getInstanceEffect().getUrl()
-				.substring(1));
-		if (effect.getEffectMaterial() instanceof Lambert) {
-			Lambert lambert = (Lambert) effect.getEffectMaterial();
-			EffectAttribute diffuse = lambert.getDiffuse();
-			String texturePath = null;
-			Color materialColor = new Color(0.5f, 0.5f, 0.5f, 1.0f);
-			if (diffuse.getTexture() != null) {
-				texturePath = collada.findImage(
-						effect.findNewParam(
-								effect.findNewParam(
-										diffuse.getTexture().getTexture())
-										.getSampler2D().getSource())
-								.getSurface().getInitFrom()).getInitFrom();
-			} else {
-				float[] colors = diffuse.getData();
-//				System.out.println("Diffuse");
-				materialColor = new Color(colors[0], colors[1], colors[2],
-						colors[3]);
-			}
+	private String	textureBasePath	= "";
 
-			if (texturePath != null) {
-				appearance.imageFileName = texturePath;
-			} else {
-				//Fill will be set to null if it is a line, Line will be set to null if it is a Triangle
-				appearance.colourFill = materialColor;
-				appearance.colourLine = materialColor;
-			}
-		} else if (effect.getEffectMaterial() instanceof Blinn) {
-			// <emission> + <ambient>*al + <diffuse> + <specular>^<shininess>
-			Blinn blinn = (Blinn) effect.getEffectMaterial();
+	@Override
+	public void draw(PApplet applet, Color overrideColor) {
+		if (group == null)
+			return;
+		applet.noStroke();
 
-			String texturePath = null;
-			if (blinn.getDiffuse().getTexture() != null) {
-				texturePath = collada.findImage(
-						effect.findNewParam(
-								effect.findNewParam(
-										blinn.getDiffuse().getTexture()
-												.getTexture()).getSampler2D()
-										.getSource()).getSurface()
-								.getInitFrom()).getInitFrom();
-				appearance.imageFileName = texturePath;
-			} else {
+		if (overrideColor != null)
+			applet.fill(overrideColor.getRed(), overrideColor.getGreen(), overrideColor.getBlue(),
+					overrideColor.getAlpha());
+		else
+			applet.fill(127); // set a default color value
 
-				float[] emission = blinn.getEmission().getData();
-				float[] ambient = blinn.getAmbient().getData();
-				float[] diffuse = blinn.getDiffuse().getData();
-				float[] specular = blinn.getSpecular().getData();
-				float[] shininess = blinn.getShininess().getData();
-				float[] result = new float[4];
-				for (int i = 0; i < 4; i++) {
-					result[i] = 0;
-					if (emission != null)
-						result[i] += emission[i];
-					if (ambient != null)
-						result[i] += ambient[i];
-					if (diffuse != null)
-						result[i] += diffuse[i];
-					if (specular != null && shininess != null)
-						result[i] += (float) Math
-								.pow(specular[i], shininess[0]);
-				}
-				//Fill will be set to null if it is a line, Line will be set to null if it is a Triangle
-				appearance.colourFill = new Color(result[0],result[1],result[2],Math.min(result[3],1f));
-				appearance.colourLine = appearance.colourFill;
-			}
+		group.draw(applet, overrideColor);
+	}
 
+	@Override
+	protected boolean loadModel(String file) {
+		Collada collada = null;
+		textureBasePath = null;
+		String daeFile = null;
+
+		if (!checkExtension(file)) {
+			return false;
 		}
-		return appearance;
+
+		String filename = ResourceRetriever.retrieve(file).getAbsolutePath();
+
+		if ((new File(filename)).exists() == false) {
+			System.err.println("ERROR: Can't load model. File not found: " + filename + "\n");
+			return false;
+		}
+
+		String extension = getExtension(filename);
+		if (extension.equalsIgnoreCase("kmz")) {
+			String tmpPath = ResourceRetriever.createTempDirectory();
+			if (!tmpPath.endsWith("/") && !tmpPath.endsWith("\\"))
+				tmpPath += "/";
+			FileUtil.Unzip(filename, tmpPath);
+
+			daeFile = getDaeLocation(tmpPath);
+
+			textureBasePath = daeFile.substring(0, daeFile.lastIndexOf(File.separator));
+
+			if (!textureBasePath.endsWith("/") && !textureBasePath.endsWith("\\"))
+				textureBasePath += "/";
+
+		} else if (extension.equalsIgnoreCase("dae")) {
+			textureBasePath = "";
+			daeFile = filename;
+		}
+
+		try {
+			collada = Collada.readFile(daeFile);
+		} catch (FileNotFoundException e) {
+			System.err.println("File doesn't exists: " + daeFile);
+			e.printStackTrace();
+			return false;
+		} catch (SAXException e) {
+			System.err.println("XML-Exception in : " + daeFile);
+			e.printStackTrace();
+			return false;
+		} catch (IOException e) {
+			System.err.println("IO-Exception in : " + daeFile);
+			e.printStackTrace();
+			return false;
+		}
+
+		group = new Group();
+
+		// collada.dump(System.out, 0);
+
+		// This is where everything begins
+		VisualScene scene = collada.getLibraryVisualScenes().getScene(
+				collada.getScene().getInstanceVisualScene().getUrl());
+
+		for (Node n : scene.getNodes()) {
+			parseNode(n, group, new ArrayList<BaseXform>(), collada);
+		}
+
+		group.initialize(textureBasePath);
+
+		Unit unit = collada.getUnit();
+		if (unit != null && unit.getMeter() != 1.0) {
+			group.scale(unit.getMeter());
+		}
+
+		group.mirrorX();
+
+		return true;
+	}
+
+	/**
+	 * Parses a node from the collada structure and stores the polygons and lines information.
+	 * 
+	 * @param node
+	 *            Node to parse (may have other sub-Nodes => called recursively)
+	 * @param transformations
+	 *            List of all parent transformations which should be applied to this and it's
+	 *            subsequent nodes
+	 * @param collada
+	 *            the collada Structure
+	 */
+	private void parseNode(Node node, Group currGroup, ArrayList<BaseXform> transformations,
+			Collada collada) {
+
+		// Add transformations like a stack
+		if (node.getXforms() != null)
+			transformations.addAll(node.getXforms());
+
+		// Parse all child nodes
+		if (node.getChildNodes() != null) {
+			for (Node child : node.getChildNodes()) {
+				Group g = new Group();
+				g.setName(child.getName());
+				currGroup.addChild(g);
+				parseNode(child, g, transformations, collada);
+			}
+		}
+
+		// Parse referencing nodes
+		InstanceNode instNode = node.getInstanceNode();
+		if (instNode != null) {
+			parseNode(collada.findNode(instNode.getUrl()), currGroup, transformations, collada);
+		}
+
+		// Parse referencing geometries and Material
+		List<InstanceGeometry> instGeoList = node.getInstanceGeometry();
+
+		for (InstanceGeometry instGeo : instGeoList) {
+			HashMap<String, String> instanceMaterial = new HashMap<String, String>();
+			for (InstanceMaterial mat : instGeo.getInstanceMaterials()) {
+				instanceMaterial.put(mat.getSymbol(), mat.getTarget());
+			}
+			parseGeometry(collada.findGeometry(instGeo.getUrl()), currGroup, instanceMaterial,
+					transformations, collada);
+		}
+
+		// remove added transformations
+		if (node.getXforms() != null)
+			transformations.removeAll(node.getXforms());
 	}
 }

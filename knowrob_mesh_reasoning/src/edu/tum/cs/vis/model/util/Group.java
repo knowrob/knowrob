@@ -1,79 +1,109 @@
 package edu.tum.cs.vis.model.util;
 
+import java.awt.Color;
 import java.util.ArrayList;
 
-import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 import processing.core.PApplet;
 
 /**
- * Represents a Mesh-Group with a Name.
- * A group can multiple child groups so it will present a mesh hierarchy.
+ * Represents a Mesh-Group with a Name. A group can multiple child groups so it will present a mesh
+ * hierarchy.
  * 
  * @author Stefan Profanter
- *
+ * 
  */
 public class Group {
-	
+
 	/**
-	 * Minimum position values of group
+	 * Minimum x-position of group
 	 */
-	protected Float minX = null;
-	protected Float maxX = null;
-	protected Float minY = null;
-	protected Float maxY = null;
-	protected Float minZ = null;
-	protected Float maxZ = null;
-	
+	protected Float				minX		= null;
 	/**
-	 * Holds the Mash for this group
+	 * Maximum x-position of group
 	 */
-	private Mesh mesh = new Mesh();
-	
+	protected Float				maxX		= null;
+	/**
+	 * Minimum x-position of group
+	 */
+	protected Float				minY		= null;
+	/**
+	 * Maximum x-position of group
+	 */
+	protected Float				maxY		= null;
+	/**
+	 * Minimum x-position of group
+	 */
+	protected Float				minZ		= null;
+	/**
+	 * Maximum x-position of group
+	 */
+	protected Float				maxZ		= null;
+
+	/**
+	 * Holds the Mesh for this group
+	 */
+	private Mesh				mesh		= new Mesh();
+
 	/**
 	 * Name of this group
 	 */
-	private String name;
-	
+	private String				name;
+
 	/**
 	 * Child groups
 	 */
-	private ArrayList<Group> children = new ArrayList<Group>();
+	private ArrayList<Group>	children	= new ArrayList<Group>();
 
 	/**
-	 * Get the mesh containing triangles and lines
-	 * @return the mesh
+	 * Add a child to this group
+	 * 
+	 * @param g
+	 *            group to add as a child of this
 	 */
-	public Mesh getMesh() {
-		return mesh;
+	public void addChild(Group g) {
+		children.add(g);
 	}
 
 	/**
-	 * Set the mesh containing triangles and lines
-	 * @param mesh the mesh
+	 * Draw method to draw the model on the applet.
+	 * 
+	 * @param applet
+	 *            The applet to draw on.
+	 * @param overrideColor
+	 *            override the draw color an texture. Draw whole object in the given color if !=
+	 *            null
 	 */
-	public void setMesh(Mesh mesh) {
-		this.mesh = mesh;
+	public void draw(PApplet applet, Color overrideColor) {
+		mesh.drawLines(applet, overrideColor);
+		mesh.drawPolygons(applet, overrideColor);
+		for (Group g : children) {
+			g.draw(applet, overrideColor);
+		}
 	}
 
 	/**
-	 * Get name of this group (normally parsed from model file)
-	 * @return the name
+	 * Draws the bounding box around the model with the current style
+	 * 
+	 * @param applet
+	 *            Applet to draw on
+	 * 
+	 * @param recursive
+	 *            Draw also Bounding-Box of children
 	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * Set name of this group (normally parsed from model file)
-	 * @return the name
-	 */
-	public void setName(String name) {
-		this.name = name;
+	public void drawBoundingBox(PApplet applet, boolean recursive) {
+		mesh.drawBoundingBox(applet);
+		if (recursive) {
+			for (Group g : children) {
+				g.drawBoundingBox(applet, recursive);
+			}
+		}
 	}
 
 	/**
 	 * Get all direct child groups
+	 * 
 	 * @return list with all child groups
 	 */
 	public ArrayList<Group> getChildren() {
@@ -81,43 +111,19 @@ public class Group {
 	}
 
 	/**
-	 * Set child groups of this group. Used to create a hierarchy
-	 * @param children list of children
-	 */
-	public void setChildren(ArrayList<Group> children) {
-		this.children = children;
-	}
-	
-	/**
-	 * Set minimum x coordinate of this group. No coordinate of all its children should be smaller than this value.
-	 * Used for drawing a bounding box.
-	 * @return minimum x
-	 */
-	public Float getMinX() {
-		return minX;
-	}
-
-	/**
-	 * Set maximum x coordinate of this group. No coordinate of all its children should be bigger than this value.
-	 * Used for drawing a bounding box.
+	 * Set maximum x coordinate of this group. No coordinate of all its children should be bigger
+	 * than this value. Used for drawing a bounding box.
+	 * 
 	 * @return maximum x
 	 */
 	public Float getMaxX() {
 		return maxX;
 	}
-	
-	/**
-	 * Set minimum y coordinate of this group. No coordinate of all its children should be smaller than this value.
-	 * Used for drawing a bounding box.
-	 * @return minimum y
-	 */
-	public Float getMinY() {
-		return minY;
-	}
 
 	/**
-	 * Set maximum y coordinate of this group. No coordinate of all its children should be bigger than this value.
-	 * Used for drawing a bounding box.
+	 * Set maximum y coordinate of this group. No coordinate of all its children should be bigger
+	 * than this value. Used for drawing a bounding box.
+	 * 
 	 * @return maximum y
 	 */
 	public Float getMaxY() {
@@ -125,8 +131,48 @@ public class Group {
 	}
 
 	/**
-	 * Set minimum z coordinate of this group. No coordinate of all its children should be smaller than this value.
-	 * Used for drawing a bounding box.
+	 * Set maximum z coordinate of this group. No coordinate of all its children should be bigger
+	 * than this value. Used for drawing a bounding box.
+	 * 
+	 * @return maximum z
+	 */
+	public Float getMaxZ() {
+		return maxZ;
+	}
+
+	/**
+	 * Get the mesh containing polygons and lines
+	 * 
+	 * @return the mesh
+	 */
+	public Mesh getMesh() {
+		return mesh;
+	}
+
+	/**
+	 * Set minimum x coordinate of this group. No coordinate of all its children should be smaller
+	 * than this value. Used for drawing a bounding box.
+	 * 
+	 * @return minimum x
+	 */
+	public Float getMinX() {
+		return minX;
+	}
+
+	/**
+	 * Set minimum y coordinate of this group. No coordinate of all its children should be smaller
+	 * than this value. Used for drawing a bounding box.
+	 * 
+	 * @return minimum y
+	 */
+	public Float getMinY() {
+		return minY;
+	}
+
+	/**
+	 * Set minimum z coordinate of this group. No coordinate of all its children should be smaller
+	 * than this value. Used for drawing a bounding box.
+	 * 
 	 * @return minimum z
 	 */
 	public Float getMinZ() {
@@ -134,198 +180,108 @@ public class Group {
 	}
 
 	/**
-	 * Set maximum z coordinate of this group. No coordinate of all its children should be bigger than this value.
-	 * Used for drawing a bounding box.
-	 * @return maximum z
-	 */
-	public Float getMaxZ() {
-		return maxZ;
-	}
-	
-	/**
-	 * Call this function only in the root group!
-	 * It will center the whole Group with its children to the Point (0,0,0)
-	 * which means the volumetric center will then be at point 0.
+	 * Get name of this group (normally parsed from model file)
 	 * 
+	 * @return the name
 	 */
-	public void initialize(String textureBasePath) {
-		initialize(textureBasePath, true);
+	public String getName() {
+		return name;
 	}
-	
-	/**
-	 * Call this function only in the root group!
-	 * It will center the whole Group with its children to the Point (0,0,0)
-	 * which means the volumetric center will then be at point 0.
-	 * 
-	 */
-	private void initialize(String textureBasePath,boolean isRoot) {
-		//Initialize min and max values of mesh
-		mesh.setTextureBasePath(textureBasePath);
-		mesh.getWidth();
-		mesh.getHeight();
-		mesh.getDepth();
-		for (Group g : children)
-		{
-			g.initialize(textureBasePath,false);
-		}
-		getTotalWidth();
-		getTotalHeight();
-		getTotalDepth();
-		if (isRoot)
-		{
-			Point3f translation = new Point3f((minX + (getTotalWidth() / 2))*(-1), (minY
-						+ (getTotalHeight() / 2))*(-1), (minZ + (getTotalDepth() / 2))*(-1));
-			this.translate(translation);
-		}
-	}
-	
-	/**
-	 * Translates (moves) the group and its children by the specified vector.
-	 * @param translation Translation vector
-	 */
-	private void translate(Point3f translation) {
-		minX += translation.x;
-		maxX += translation.x;
-		minY += translation.y;
-		maxY += translation.y;
-		minZ += translation.z;
-		maxZ += translation.z;
-		mesh.translate(translation);
-		for (Group g : children)
-		{
-			g.translate(translation);
-		}
-	}
-	
-	/**
-	 * Scales all coordinates by the given factor. Only used for initialization
-	 * 
-	 * @param factor
-	 *            The scale factor
-	 */
-	public void scale(float factor) {
-		mesh.scaleMesh(factor);
 
-		for (Group g : children)
-		{
-			g.scale(factor);
-		}
-		minX *= factor;
-		maxX *= factor;
-		minY *= factor;
-		maxY *= factor;
-		minZ *= factor;
-		maxZ *= factor;
-	}
-	
-	
 	/**
-	 * Returns the total height of the group by searching the biggest distance on the
-	 * y-axis between the vectors.
+	 * Returns the total depth of the group by searching the biggest distance on the z-axis between
+	 * the vectors.
+	 * 
+	 * @return float as depth of the group
+	 */
+	public float getTotalDepth() {
+		if (minZ == null || maxZ == null) {
+			minZ = mesh.getMinZ();
+			maxZ = mesh.getMaxZ();
+
+			for (Group g : children) {
+				minZ = Math.min(minZ, g.getMinZ());
+				maxZ = Math.max(maxZ, g.getMaxZ());
+
+			}
+		}
+		return maxZ - minZ;
+	}
+
+	/**
+	 * Returns the total height of the group by searching the biggest distance on the y-axis between
+	 * the vectors.
 	 * 
 	 * @return float as height of the group
 	 */
 	public float getTotalHeight() {
-		if (minY == null || maxY == null)
-		{
+		if (minY == null || maxY == null) {
 			minY = mesh.getMinY();
 			maxY = mesh.getMaxY();
-			
-			for (Group g : children)
-			{
+
+			for (Group g : children) {
 				minY = Math.min(minY, g.getMinY());
 				maxY = Math.max(maxY, g.getMaxY());
-				
+
 			}
 		}
 		return maxY - minY;
 	}
 
 	/**
-	 * Returns the total width of the group by searching the biggest distance on the
-	 * x-axis between the vectors.
+	 * Returns the total width of the group by searching the biggest distance on the x-axis between
+	 * the vectors.
 	 * 
 	 * @return float as width of the group
 	 */
 	public float getTotalWidth() {
-		if (minX == null || maxX == null)
-		{
+		if (minX == null || maxX == null) {
 			minX = mesh.getMinX();
 			maxX = mesh.getMaxX();
-			
-			for (Group g : children)
-			{
+
+			for (Group g : children) {
 				minX = Math.min(minX, g.getMinX());
 				maxX = Math.max(maxX, g.getMaxX());
-				
+
 			}
 		}
 		return maxX - minX;
 	}
 
 	/**
-	 * Returns the total depth of the group by searching the biggest distance on the
-	 * z-axis between the vectors.
+	 * Call this function only in the root group! It will center the whole Group with its children
+	 * to the Point (0,0,0) which means the volumetric center will then be at point 0.
 	 * 
-	 * @return float as depth of the group
-	 */
-	public float getTotalDepth() {
-		if (minZ == null || maxZ == null)
-		{
-			minZ = mesh.getMinZ();
-			maxZ = mesh.getMaxZ();
-			
-			for (Group g : children)
-			{
-				minZ = Math.min(minZ, g.getMinZ());
-				maxZ = Math.max(maxZ, g.getMaxZ());
-				
-			}
-		}
-		return maxZ - minZ;
-	}
-	
-	/**
-	 * Draw method to draw the model on the applet.
-	 * @param applet The applet to draw on.
-	 * @param colorOverride override the draw color an texture. Draw whole object in the given color if != 0
-	 */
-	public void draw(PApplet applet, int overrideColor) {
-		mesh.drawLines(applet, overrideColor);
-		mesh.drawTriangles(applet, overrideColor);
-		for (Group g : children)
-		{
-			g.draw(applet, overrideColor);			
-		}
-	}
-	
-	/**
-	 * Draws the bounding box around the model with the current style
+	 * @param textureBasePath
+	 *            Base path for relative file names
 	 * 
-	 * @param applet
-	 *            Applet to draw on
-	 *            
-	 * @param recursive
-	 * 			  Draw also Bounding-Box of children
 	 */
-	public void drawBoundingBox(PApplet applet, boolean recursive) {
-		mesh.drawBoundingBox(applet);
-		if (recursive)
-		{
-			for (Group g : children)
-			{
-				g.drawBoundingBox(applet, recursive);			
-			}
-		}
+	public void initialize(String textureBasePath) {
+		initialize(textureBasePath, true);
 	}
-	
+
 	/**
-	 * Add a child to this group
-	 * @param g group to add as a child of this
+	 * Call this function only in the root group! It will center the whole Group with its children
+	 * to the Point (0,0,0) which means the volumetric center will then be at point 0.
+	 * 
 	 */
-	public void addChild(Group g)
-	{
-		children.add(g);
+	private void initialize(String textureBasePath, boolean isRoot) {
+		// Initialize min and max values of mesh
+		mesh.setTextureBasePath(textureBasePath);
+		mesh.getWidth();
+		mesh.getHeight();
+		mesh.getDepth();
+		for (Group g : children) {
+			g.initialize(textureBasePath, false);
+		}
+		getTotalWidth();
+		getTotalHeight();
+		getTotalDepth();
+		if (isRoot) {
+			Vector3f translation = new Vector3f((minX + (getTotalWidth() / 2)) * (-1),
+					(minY + (getTotalHeight() / 2)) * (-1), (minZ + (getTotalDepth() / 2)) * (-1));
+			translate(translation);
+		}
 	}
 
 	/**
@@ -337,9 +293,77 @@ public class Group {
 		float tmp = minX;
 		minX = maxX * (-1);
 		maxX = tmp;
-		for (Group g : children)
-		{
-			g.mirrorX();			
-		}	
+		for (Group g : children) {
+			g.mirrorX();
+		}
+	}
+
+	/**
+	 * Scales all coordinates by the given factor. Only used for initialization
+	 * 
+	 * @param factor
+	 *            The scale factor
+	 */
+	public void scale(float factor) {
+		mesh.scaleMesh(factor);
+
+		for (Group g : children) {
+			g.scale(factor);
+		}
+		minX *= factor;
+		maxX *= factor;
+		minY *= factor;
+		maxY *= factor;
+		minZ *= factor;
+		maxZ *= factor;
+	}
+
+	/**
+	 * Set child groups of this group. Used to create a hierarchy
+	 * 
+	 * @param children
+	 *            list of children
+	 */
+	public void setChildren(ArrayList<Group> children) {
+		this.children = children;
+	}
+
+	/**
+	 * Set the mesh containing polygons and lines
+	 * 
+	 * @param mesh
+	 *            the mesh
+	 */
+	public void setMesh(Mesh mesh) {
+		this.mesh = mesh;
+	}
+
+	/**
+	 * Set name of this group (normally parsed from model file)
+	 * 
+	 * @param name
+	 *            to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * Translates (moves) the group and its children by the specified vector.
+	 * 
+	 * @param translation
+	 *            Translation vector
+	 */
+	private void translate(Vector3f translation) {
+		minX += translation.x;
+		maxX += translation.x;
+		minY += translation.y;
+		maxY += translation.y;
+		minZ += translation.z;
+		maxZ += translation.z;
+		mesh.translate(translation);
+		for (Group g : children) {
+			g.translate(translation);
+		}
 	}
 }

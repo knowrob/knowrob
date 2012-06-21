@@ -5,38 +5,110 @@ import java.awt.Color;
 import processing.core.PImage;
 
 /**
- * Appearance of triangle or line.
- * May contain texture or simply a color.
+ * Appearance of triangle or line. May contain texture or simply a color.
  * 
  * @author Stefan Profanter
- *
+ * 
  */
 public class Appearance {
 	/**
 	 * the Filename of the texture-Image
 	 */
-	public String imageFileName = null;
+	private String	imageFileName	= null;
 
 	/**
 	 * an Object reference of a loaded image. Default is null.
 	 */
-	public PImage imageReference = null;
+	private PImage	imageReference	= null;
 
 	/**
-	 * the color of the Triangle if the Triangle has no texture
-	 * Set to null if no fill needed
+	 * the color of the Triangle if the Triangle has no texture Set to null if no fill needed
 	 */
-	public Color colourFill = null;
-	
+	private Color	colorFill		= null;
+
 	/**
-	 * the color stroke for Triangle or Line
-	 * Set to null if no stroke needed
+	 * the color stroke for Triangle or Line Set to null if no stroke needed
 	 */
-	public Color colourLine = null;
+	private Color	colorLine		= null;
 
 	/**
 	 * Thickness of the stroke
 	 */
-	public int strokeWeight = 2;
+	private int		strokeWeight	= 2;
+
+	/**
+	 * @return the colorFill
+	 */
+	public Color getColorFill() {
+		return colorFill;
+	}
+
+	/**
+	 * @return the colorLine
+	 */
+	public Color getColorLine() {
+		return colorLine;
+	}
+
+	/**
+	 * @return the imageFileName
+	 */
+	public String getImageFileName() {
+		return imageFileName;
+	}
+
+	/**
+	 * @return the imageReference
+	 */
+	public PImage getImageReference() {
+		return imageReference;
+	}
+
+	/**
+	 * @return the strokeWeight
+	 */
+	public int getStrokeWeight() {
+		return strokeWeight;
+	}
+
+	/**
+	 * @param colorFill
+	 *            the colorFill to set
+	 */
+	public void setColorFill(Color colorFill) {
+		this.colorFill = colorFill;
+	}
+
+	/**
+	 * @param colorLine
+	 *            the colorLine to set
+	 */
+	public void setColorLine(Color colorLine) {
+		this.colorLine = colorLine;
+	}
+
+	/**
+	 * @param imageFileName
+	 *            the imageFileName to set
+	 */
+	public void setImageFileName(String imageFileName) {
+		this.imageFileName = imageFileName;
+	}
+
+	/**
+	 * @param imageReference
+	 *            the imageReference to set
+	 */
+	public void setImageReference(PImage imageReference) {
+		this.imageReference = imageReference;
+	}
+
+	/**
+	 * @param strokeWeight
+	 *            the strokeWeight to set
+	 */
+	public void setStrokeWeight(int strokeWeight) {
+		this.strokeWeight = strokeWeight;
+	}
 
 }

@@ -1,4 +1,5 @@
 package edu.tum.cs.util;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -10,30 +11,63 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+/**
+ * File Utils for reading text files and unzip.
+ * 
+ * @author Stefan Profanter
+ * 
+ */
 public class FileUtil {
 
-	public static String readTextFile(File file) throws FileNotFoundException, IOException {		
+	/**
+	 * Read a text file and return it as a String.
+	 * 
+	 * @param file
+	 *            File to read
+	 * @return the content of the file
+	 * @throws FileNotFoundException
+	 *             If file not found or invalid path
+	 * @throws IOException
+	 *             if there was an error reading the file
+	 */
+	public static String readTextFile(File file) throws FileNotFoundException, IOException {
 		FileReader fr = new FileReader(file);
-		char[] cbuf = new char[(int)file.length()];
+		char[] cbuf = new char[(int) file.length()];
 		fr.read(cbuf);
 		String content = new String(cbuf);
 		fr.close();
 		return content;
 	}
-	
+
+	/**
+	 * Read a text file and return it as a String.
+	 * 
+	 * @param filename
+	 *            Filename as String. File must exist otherwise a FileNotFound exception will be
+	 *            thrown.
+	 * @return the content of the file
+	 * @throws FileNotFoundException
+	 *             If file not found or invalid path
+	 * @throws IOException
+	 *             if there was an error reading the file
+	 */
 	public static String readTextFile(String filename) throws FileNotFoundException, IOException {
 		return readTextFile(new File(filename));
 	}
-	
+
 	/**
-	 * Unzip a zipped file (eg. kmz, zip) into given directory 
-	 * @param zipFile zipped file to unzip
-	 * @param outputDirectory destination directory for unzipped content
+	 * Unzip a zipped file (eg. kmz, zip) into given directory
+	 * 
+	 * @param zipFile
+	 *            zipped file to unzip
+	 * @param outputDirectory
+	 *            destination directory for unzipped content
 	 * @return true if successfully unzipped
 	 */
 	public static boolean Unzip(String zipFile, String outputDirectory) {
-		if (!outputDirectory.endsWith("/") && !outputDirectory.endsWith("\\"))
-			outputDirectory += "/";
+		String outDir = outputDirectory;
+		if (!outDir.endsWith("/") && !outDir.endsWith("\\"))
+			outDir += "/";
 
 		BufferedOutputStream dest = null;
 		BufferedInputStream is = null;
@@ -44,15 +78,14 @@ public class FileUtil {
 			zipfile = new ZipFile(zipFile);
 			Enumeration<? extends ZipEntry> e = zipfile.entries();
 			while (e.hasMoreElements()) {
-				entry = (ZipEntry) e.nextElement();
+				entry = e.nextElement();
 				if (entry.isDirectory()) {
-					(new File(outputDirectory + entry.getName())).mkdir();
+					(new File(outDir + entry.getName())).mkdir();
 					continue;
 				}
 
-				String filename = outputDirectory + entry.getName();
-				String filePath = filename.substring(0,
-						filename.lastIndexOf(File.separator));
+				String filename = outDir + entry.getName();
+				String filePath = filename.substring(0, filename.lastIndexOf(File.separator));
 
 				// Create directory if not existing
 				if (!(new File(filePath)).exists()) {
