@@ -19,7 +19,6 @@ import org.apache.log4j.Logger;
 
 import processing.core.PConstants;
 import processing.core.PGraphics;
-import edu.tum.cs.vis.model.uima.analyzer.FlatSurfaceAnalyzer;
 import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
 
 /**
@@ -38,7 +37,7 @@ public class Triangle extends DrawObject {
 	/**
 	 * log4j logger
 	 */
-	private static Logger			logger				= Logger.getLogger(FlatSurfaceAnalyzer.class);
+	private static Logger			logger				= Logger.getLogger(Triangle.class);
 
 	/**
 	 * Texture-Points

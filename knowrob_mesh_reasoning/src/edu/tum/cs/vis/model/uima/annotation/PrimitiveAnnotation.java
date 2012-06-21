@@ -50,6 +50,14 @@ public abstract class PrimitiveAnnotation extends MeshAnnotation {
 		return area;
 	}
 
+	/**
+	 * Returns the total area of the primitive (total surface of sphere, cylinder, plane). The
+	 * covered area (area of all triangles of annotation) is normally smaller than this area.
+	 * 
+	 * @return the total area of the primitive
+	 */
+	public abstract float getPrimitiveArea();
+
 	protected Vector3f getVertices(HashSet<Vertex> vertices) {
 		vertices.clear();
 		Vector3f centroid = new Vector3f();

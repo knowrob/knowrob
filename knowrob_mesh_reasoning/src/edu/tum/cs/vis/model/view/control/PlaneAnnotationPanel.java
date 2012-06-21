@@ -7,8 +7,14 @@
  ******************************************************************************/
 package edu.tum.cs.vis.model.view.control;
 
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import edu.tum.cs.vis.model.uima.annotation.primitive.PlaneAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
@@ -17,8 +23,18 @@ import edu.tum.cs.vis.model.uima.cas.MeshCas;
  * @author Stefan Profanter
  * 
  */
-public class PlaneAnnotationPanel extends AnnotationPanel<PlaneAnnotation> implements
-		ChangeListener {
+public class PlaneAnnotationPanel extends AnnotationPanel<PlaneAnnotation> {
+	/**
+	 * Area of selected annotation
+	 */
+	private final JTextField	txtAreaTot;
+
+	/**
+	 * Area coverage of selected annotation
+	 */
+	private final JTextField	txtAreaCov;
+	private final JTextField	txtShort;
+	private final JTextField	txtLong;
 
 	/**
 	 * @param annotationType
@@ -26,6 +42,59 @@ public class PlaneAnnotationPanel extends AnnotationPanel<PlaneAnnotation> imple
 	 */
 	public PlaneAnnotationPanel(MeshCas cas) {
 		super(PlaneAnnotation.class, cas);
+
+		setLayout(new BorderLayout());
+
+		GridBagConstraints c = new GridBagConstraints();
+		c.fill = GridBagConstraints.HORIZONTAL;
+
+		add(getColorPanel(), BorderLayout.NORTH);
+
+		JPanel pnlInfo = new JPanel(new GridBagLayout());
+
+		txtAreaTot = new JTextField();
+		c.gridx = 0;
+		c.gridy = 0;
+		c.weightx = 0.3;
+		pnlInfo.add(new JLabel("Area Total", SwingConstants.CENTER), c);
+		c.gridx = 1;
+		c.gridy = 0;
+		c.weightx = 1.0;
+		pnlInfo.add(txtAreaTot, c);
+
+		txtAreaCov = new JTextField();
+		c.gridx = 0;
+		c.gridy = 1;
+		c.weightx = 0.3;
+		pnlInfo.add(new JLabel("Area coverage", SwingConstants.CENTER), c);
+		c.gridx = 1;
+		c.gridy = 1;
+		c.weightx = 1.0;
+		pnlInfo.add(txtAreaCov, c);
+
+		txtShort = new JTextField();
+		c.gridx = 0;
+		c.gridy = 2;
+		c.weightx = 0.3;
+		pnlInfo.add(new JLabel("Short len:", SwingConstants.CENTER), c);
+		c.gridx = 1;
+		c.gridy = 2;
+		c.weightx = 1.0;
+		pnlInfo.add(txtShort, c);
+
+		txtLong = new JTextField();
+		c.gridx = 0;
+		c.gridy = 3;
+		c.weightx = 0.3;
+		pnlInfo.add(new JLabel("Long len:", SwingConstants.CENTER), c);
+		c.gridx = 1;
+		c.gridy = 3;
+		c.weightx = 1.0;
+		pnlInfo.add(txtLong, c);
+
+		add(pnlInfo, BorderLayout.CENTER);
+
+		setSelected(null);
 	}
 
 	/* (non-Javadoc)
@@ -33,25 +102,19 @@ public class PlaneAnnotationPanel extends AnnotationPanel<PlaneAnnotation> imple
 	 */
 	@Override
 	public void setSelected(PlaneAnnotation annotation) {
-		// TODO Auto-generated method stub
+		txtAreaTot.setEnabled(annotation != null);
+		txtAreaCov.setEnabled(annotation != null);
+		txtShort.setEnabled(annotation != null);
+		txtLong.setEnabled(annotation != null);
 
-	}
-
-	/* (non-Javadoc)
-	 * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
-	 */
-	@Override
-	public void stateChanged(ChangeEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.tum.cs.vis.model.view.control.AnnotationPanel#updateValues()
-	 */
-	@Override
-	public void updateValues() {
-		// TODO Auto-generated method stub
+		if (annotation != null) {
+			txtAreaTot.setText(String.valueOf(annotation.getPrimitiveArea()));
+			txtAreaCov.setText(String.valueOf(annotation.getArea() / annotation.getPrimitiveArea()
+					* 100f)
+					+ "%");
+			txtShort.setText(String.valueOf(annotation.getShortSide().length()));
+			txtLong.setText(String.valueOf(annotation.getLongSide().length()));
+		}
 
 	}
 

@@ -25,14 +25,12 @@ import javax.swing.SwingConstants;
 
 import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
-import edu.tum.cs.vis.model.uima.annotation.FlatSurfaceAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.primitive.ConeAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.primitive.PlaneAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.primitive.SphereAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.view.control.AnnotationPanel;
 import edu.tum.cs.vis.model.view.control.ConeAnnotationPanel;
-import edu.tum.cs.vis.model.view.control.FlatSurfaceAnnotationPanel;
 import edu.tum.cs.vis.model.view.control.PlaneAnnotationPanel;
 import edu.tum.cs.vis.model.view.control.SphereAnnotationPanel;
 
@@ -70,7 +68,7 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 		/**
 		 * Button for expanding panel
 		 */
-		private final JButton								button;
+		final JButton										button;
 
 		/**
 		 * Checkbox at left side of button
@@ -176,9 +174,7 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 	@SuppressWarnings("rawtypes")
 	static AnnotationPanel createPanelForAnnotation(Class<? extends DrawableAnnotation> clazz,
 			MeshCas cas) {
-		if (clazz == FlatSurfaceAnnotation.class)
-			return new FlatSurfaceAnnotationPanel(cas);
-		else if (clazz == ConeAnnotation.class)
+		if (clazz == ConeAnnotation.class)
 			return new ConeAnnotationPanel(cas);
 		else if (clazz == SphereAnnotation.class)
 			return new SphereAnnotationPanel(cas);
@@ -234,6 +230,8 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 		this.add(topPanel, BorderLayout.NORTH);
 		this.add(bottomPanel, BorderLayout.SOUTH);
 		Timer tim = new Timer();
+
+		final MeshCasAccordion acc = this;
 		tim.scheduleAtFixedRate(new TimerTask() {
 
 			@Override
@@ -251,6 +249,7 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 								AnnotationPanel pnl = createPanelForAnnotation(ma.getClass(), cas);
 
 								BarInfo bi = new BarInfo(ma.getClass(), pnl, cas);
+								bi.button.addActionListener(acc);
 								bars.put(ma.getClass(), bi);
 							}
 						}
@@ -365,8 +364,9 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 			if (selectedAnnotation != null && selectedAnnotation.getClass() == cl) {
 				i.component.setSelected(selectedAnnotation);
 				selBar = i;
-			} else
+			} else {
 				i.component.setSelected(null);
+			}
 		}
 
 		if (selBar != null) {
@@ -376,8 +376,9 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 			for (Iterator<Class<? extends DrawableAnnotation>> itr = bars.keySet().iterator(); itr
 					.hasNext(); idx++) {
 				Class<? extends DrawableAnnotation> clazz = itr.next();
-				if (bars.get(clazz) == selBar)
+				if (bars.get(clazz) == selBar) {
 					break;
+				}
 			}
 
 			setVisibleBar(idx);
@@ -392,7 +393,7 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 	 *            The zero-based index of the component to make visible
 	 */
 	public void setVisibleBar(int visibleBar) {
-		if (visibleBar > 0 && visibleBar < bars.size() - 1) {
+		if (visibleBar >= 0 && visibleBar < bars.size()) {
 			this.visibleBar = visibleBar;
 			render();
 		}

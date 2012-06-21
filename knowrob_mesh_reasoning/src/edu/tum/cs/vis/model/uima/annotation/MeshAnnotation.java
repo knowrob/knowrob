@@ -53,8 +53,8 @@ public abstract class MeshAnnotation extends DrawableAnnotation {
 	 */
 	public MeshAnnotation(final Color annotationColor) {
 		super();
-		randomAnnotationColor = new Color((float) Math.random(), (float) Math.random(),
-				(float) Math.random(), 0.5f);
+		randomAnnotationColor = new Color((int) (Math.random() * 255), (int) (Math.random() * 255),
+				(int) (Math.random() * 255));
 		this.annotationColor = annotationColor;
 	}
 

@@ -47,25 +47,30 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	 */
 	private static final long	serialVersionUID	= 984696039698156574L;
 
-	public static void drawCylinder(PGraphics g, int sides, float r1, float r2, float h) {
+	public static void drawCylinder(PGraphics g, int sides, float r1, float r2, float h,
+			boolean top, boolean bottom) {
 		float angle = (float) (2 * Math.PI / sides);
 		float halfHeight = h / 2;
-		// top
-		g.beginShape();
-		for (int i = 0; i < sides; i++) {
-			float x = (float) (Math.cos(i * angle) * r1);
-			float y = (float) (Math.sin(i * angle) * r1);
-			g.vertex(x, y, -halfHeight);
+		if (top) {
+			// top
+			g.beginShape();
+			for (int i = 0; i < sides; i++) {
+				float x = (float) (Math.cos(i * angle) * r1);
+				float y = (float) (Math.sin(i * angle) * r1);
+				g.vertex(x, y, -halfHeight);
+			}
+			g.endShape(PConstants.CLOSE);
 		}
-		g.endShape(PConstants.CLOSE);
-		// bottom
-		g.beginShape();
-		for (int i = 0; i < sides; i++) {
-			float x = (float) (Math.cos(i * angle) * r2);
-			float y = (float) (Math.sin(i * angle) * r2);
-			g.vertex(x, y, halfHeight);
+		if (bottom) {
+			// bottom
+			g.beginShape();
+			for (int i = 0; i < sides; i++) {
+				float x = (float) (Math.cos(i * angle) * r2);
+				float y = (float) (Math.sin(i * angle) * r2);
+				g.vertex(x, y, halfHeight);
+			}
+			g.endShape(PConstants.CLOSE);
 		}
-		g.endShape(PConstants.CLOSE);
 		// draw body
 		g.beginShape(PConstants.TRIANGLE_STRIP);
 		for (int i = 0; i < sides + 1; i++) {

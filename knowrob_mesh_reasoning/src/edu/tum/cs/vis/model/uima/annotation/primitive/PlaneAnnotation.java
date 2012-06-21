@@ -163,10 +163,34 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
+	 * @return the corner
+	 */
+	public Point3f[] getCorner() {
+
+		return corner;
+	}
+
+	/**
+	 * @return the longSide
+	 */
+	public Vector3f getLongSide() {
+		return longSide;
+	}
+
+	/**
 	 * @return the planeNormal
 	 */
 	public Vector3f getPlaneNormal() {
 		return planeNormal;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#getPrimitiveArea()
+	 */
+	@Override
+	public float getPrimitiveArea() {
+		// shortSide is half length of the rectangles short side. Same with long side.
+		return 4f * shortSide.length() * longSide.length();
 	}
 
 	private SimpleMatrix getRotationMatrix(double rot, Vector3f vec) {
@@ -189,6 +213,13 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 
 		return mat;
 
+	}
+
+	/**
+	 * @return the shortSide
+	 */
+	public Vector3f getShortSide() {
+		return shortSide;
 	}
 
 	private Point2f[] projectPlaneInto2D(HashMap<Vertex, Float> vertices, Vector3f v, Vector3f u) {
@@ -275,79 +306,6 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 			c1.get(longSide);
 		}
 
-		/*	float w, h, cx, cy;
-			w = corner2d[2].x - corner2d[0].x;
-			h = corner2d[2].y - corner2d[0].y;
-			cx = corner2d[0].x + w / 2;
-			cy = corner2d[0].y + h / 2;
-
-			Vector3f tmpU = (Vector3f) axisU.clone();
-			Vector3f tmpV = (Vector3f) axisV.clone();
-			tmpV.scale(axisURect.x);
-			tmpU.scale(axisURect.y);
-			tmpU.add(tmpV);
-			Vector3f newDirU = new Vector3f(tmpU);
-			tmpU = (Vector3f) axisU.clone();
-			tmpV = (Vector3f) axisV.clone();
-			tmpV.scale(axisVRect.x);
-			tmpU.scale(axisVRect.y);
-			tmpU.add(tmpV);
-			Vector3f newDirV = new Vector3f(tmpU);
-
-			tmpU = (Vector3f) axisU.clone();
-			tmpV = (Vector3f) axisV.clone();
-			tmpV.scale(cx);
-			tmpU.scale(cy);
-			tmpU.add(tmpV);
-			centroid.add(tmpU);
-
-			/*System.out.println("u: " + axisU);
-			Vector2f tmp = new Vector2f(axisU.x, axisU.y);
-			tmp.normalize();
-			System.out.println("dot: " + tmp + " " + axisURect);
-			double rot = Math.acos(tmp.dot(axisURect));
-			System.out.println("ang:" + rot * 180 / Math.PI);
-
-			SimpleMatrix rotMat = getRotationMatrix(rot, planeNormal);
-
-			SimpleMatrix matU = new SimpleMatrix(3, 1);
-			matU.setColumn(0, 0, axisU.x, axisU.y, axisU.z);
-			SimpleMatrix matV = new SimpleMatrix(3, 1);
-			matV.setColumn(0, 0, axisV.x, axisV.y, axisV.z);
-
-			SimpleMatrix newDirU = rotMat.mult(matU);
-			SimpleMatrix newDirV = rotMat.mult(matV);
-			/*SimpleMatrix newDirU = new SimpleMatrix(3, 1);
-			newDirU.setColumn(0, 0, axisURect.x, axisURect.y, axisU.z);
-			SimpleMatrix newDirV = new SimpleMatrix(3, 1);
-			newDirV.setColumn(0, 0, axisVRect.x, axisVRect.y, axisV.z);*/
-
-		/*if (w > h) {
-			shortSide.x = newDirV.x;
-			shortSide.y = newDirV.y;
-			shortSide.z = newDirV.z;
-			longSide.x = newDirU.x;
-			longSide.y = newDirU.y;
-			longSide.z = newDirU.z;
-
-			shortSide.normalize();
-			shortSide.scale(w / 2);
-			longSide.normalize();
-			longSide.scale(h / 2);
-		} else {
-			shortSide.x = newDirU.x;
-			shortSide.y = newDirU.y;
-			shortSide.z = newDirU.z;
-			longSide.x = newDirV.x;
-			longSide.y = newDirV.y;
-			longSide.z = newDirV.z;
-
-			shortSide.normalize();
-			shortSide.scale(w / 2);
-			longSide.normalize();
-			longSide.scale(h / 2);
-
-		}*/
-
 	}
+
 }

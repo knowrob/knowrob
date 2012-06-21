@@ -129,8 +129,4 @@ public abstract class AnnotationPanel<T extends DrawableAnnotation> extends JPan
 	 */
 	public abstract void setSelected(T annotation);
 
-	/**
-	 * Each time a new annotation is added to annotations list, this function will be called
-	 */
-	public abstract void updateValues();
 }

@@ -121,6 +121,55 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 	@Override
 	public void drawPrimitiveAnnotation(PGraphics g) {
 
+		/*for (Triangle t : mesh.getTriangles()) {
+			for (Vertex v : t.getPosition()) {
+				Curvature c = v.getCurvature();
+				Vector3f norm = (Vector3f) v.getNormalVector().clone();
+				norm.scale(-1 / c.getCurvatureMax());
+
+				g.fill(255, 0, 0);
+				g.stroke(255, 255, 255);
+				g.strokeWeight(2);
+
+				g.line(v.x, v.y, v.z, v.x + norm.x, v.y + norm.y, v.z + norm.z);
+
+				// g.stroke(255, 0, 0);
+				// g.line(v.x, v.y, v.z, v.x + c.getPrincipleDirectionMax().x,
+				// v.y + c.getPrincipleDirectionMax().y, v.z + c.getPrincipleDirectionMax().z);
+			}
+		}
+
+		g.strokeWeight(5);
+		g.stroke(0, 255, 0);
+
+		float min = Float.MAX_VALUE;
+		float max = Float.MIN_VALUE;
+
+		for (VectorWeight vw : intersections) {
+			min = Math.min(vw.w, min);
+			max = Math.max(vw.w, max);
+		}
+
+		float factor = 1f / (max - min);
+
+		for (VectorWeight v : intersections) {
+
+			// Color c = Color.getHSBColor((vw.w - min) * factor, 1, 1);
+			// g.stroke(c.getRed(), c.getGreen(), c.getBlue());
+			// g.strokeWeight(10 * factor * (vw.w - min) + 5);
+			g.point(v.v.x, v.v.y, v.v.z);
+		}
+
+		g.stroke(255, 255, 0);
+		g.strokeWeight(20);
+		g.point(centroid.x, centroid.y, centroid.z);
+
+		g.stroke(0, 255, 255);
+		g.strokeWeight(5);
+
+		g.line(centroid.x, centroid.y, centroid.z, centroid.x + direction.x, centroid.y
+				+ direction.y, centroid.z + direction.z);*/
+
 		g.noStroke();
 
 		g.fill(getDrawColor().getRed(), getDrawColor().getGreen(), getDrawColor().getBlue(), 120);
@@ -136,7 +185,7 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 		g.rotateY(ry);
 		g.rotateX(rx);
 
-		MeshReasoningView.drawCylinder(g, 30, radiusLarge, radiusSmall, dirLen * 2);
+		MeshReasoningView.drawCylinder(g, 30, radiusLarge, radiusSmall, dirLen * 2, false, false);
 		g.popMatrix();
 
 	}
@@ -239,11 +288,6 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 
 		}
 
-		// Now intersections are found. Find the best fitting line between through these points.
-		// Should be the generating line (line in the middle of cylinder).
-		getBestFittingLine(intersections, direction);
-		direction.normalize();
-
 		centroid.scale(0);
 		for (VectorWeight vw : intersections) {
 
@@ -252,6 +296,11 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 			centroid.z += vw.v.z;
 		}
 		centroid.scale(1f / intersections.size());
+
+		// Now intersections are found. Find the best fitting line between through these points.
+		// Should be the generating line (line in the middle of cylinder).
+		getBestFittingLine(intersections, direction);
+		direction.normalize();
 
 		double radiusBottom = 0;
 		double radiusTop = 0;
@@ -332,8 +381,8 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 
 		for (int i = 0; i < intersections.size(); i += increment) {
 			VectorWeight vw = intersections.get(i);
-			A.setRow(row++, 0, (vw.v.x - centroid.x) * vw.w, (vw.v.y - centroid.y) * vw.w,
-					(vw.v.z - centroid.z) * vw.w, vw.w);
+			A.setRow(row++, 0, (vw.v.x - centroid.x), (vw.v.y - centroid.y), (vw.v.z - centroid.z),
+					1);
 		}
 
 		if (numberOfPoints == 2) {
@@ -360,6 +409,16 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 	 */
 	public Vector3f getDirection() {
 		return direction;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#getPrimitiveArea()
+	 */
+	@Override
+	public float getPrimitiveArea() {
+		float r = radiusLarge - radiusSmall;
+		float h = direction.length() * 2;
+		return (float) (Math.PI * (radiusLarge + radiusSmall) * Math.sqrt(r * r + h * h));
 	}
 
 	/**

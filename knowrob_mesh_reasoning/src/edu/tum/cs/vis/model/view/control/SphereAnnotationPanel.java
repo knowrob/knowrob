@@ -7,8 +7,14 @@
  ******************************************************************************/
 package edu.tum.cs.vis.model.view.control;
 
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import edu.tum.cs.vis.model.uima.annotation.primitive.SphereAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
@@ -17,14 +23,71 @@ import edu.tum.cs.vis.model.uima.cas.MeshCas;
  * @author Stefan Profanter
  * 
  */
-public class SphereAnnotationPanel extends AnnotationPanel<SphereAnnotation> implements
-		ChangeListener {
+public class SphereAnnotationPanel extends AnnotationPanel<SphereAnnotation> {
+
+	/**
+	 * Area of selected annotation
+	 */
+	private final JTextField	txtAreaTot;
+
+	/**
+	 * Area coverage of selected annotation
+	 */
+	private final JTextField	txtAreaCov;
+	/**
+	 * dimension of selected annotation
+	 */
+	private final JTextField	txtRadius;
+
 	/**
 	 * @param annotationType
 	 * @param cas
 	 */
 	public SphereAnnotationPanel(MeshCas cas) {
 		super(SphereAnnotation.class, cas);
+
+		setLayout(new BorderLayout());
+
+		GridBagConstraints c = new GridBagConstraints();
+		c.fill = GridBagConstraints.HORIZONTAL;
+
+		add(getColorPanel(), BorderLayout.NORTH);
+
+		JPanel pnlInfo = new JPanel(new GridBagLayout());
+
+		txtAreaTot = new JTextField();
+		c.gridx = 0;
+		c.gridy = 0;
+		c.weightx = 0.3;
+		pnlInfo.add(new JLabel("Area Total", SwingConstants.CENTER), c);
+		c.gridx = 1;
+		c.gridy = 0;
+		c.weightx = 1.0;
+		pnlInfo.add(txtAreaTot, c);
+
+		txtAreaCov = new JTextField();
+		c.gridx = 0;
+		c.gridy = 1;
+		c.weightx = 0.3;
+		pnlInfo.add(new JLabel("Area coverage", SwingConstants.CENTER), c);
+		c.gridx = 1;
+		c.gridy = 1;
+		c.weightx = 1.0;
+		pnlInfo.add(txtAreaCov, c);
+
+		txtRadius = new JTextField();
+		c.gridx = 0;
+		c.gridy = 2;
+		c.weightx = 0.3;
+		pnlInfo.add(new JLabel("Radius", SwingConstants.CENTER), c);
+		c.gridx = 1;
+		c.gridy = 2;
+		c.weightx = 1.0;
+		pnlInfo.add(txtRadius, c);
+
+		add(pnlInfo, BorderLayout.CENTER);
+
+		setSelected(null);
 	}
 
 	/* (non-Javadoc)
@@ -32,25 +95,19 @@ public class SphereAnnotationPanel extends AnnotationPanel<SphereAnnotation> imp
 	 */
 	@Override
 	public void setSelected(SphereAnnotation annotation) {
-		// TODO Auto-generated method stub
+		txtAreaTot.setEnabled(annotation != null);
+		txtAreaCov.setEnabled(annotation != null);
+		txtRadius.setEnabled(annotation != null);
+
+		if (annotation != null) {
+			txtAreaTot.setText(String.valueOf(annotation.getPrimitiveArea()));
+			txtAreaCov.setText(String.valueOf(annotation.getArea() / annotation.getPrimitiveArea()
+					* 100f)
+					+ "%");
+			txtRadius.setText(String.valueOf(annotation.getRadius()));
+
+		}
 
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
-	 */
-	@Override
-	public void stateChanged(ChangeEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.tum.cs.vis.model.view.control.AnnotationPanel#updateValues()
-	 */
-	@Override
-	public void updateValues() {
-		// TODO Auto-generated method stub
-
-	}
 }

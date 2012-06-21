@@ -60,7 +60,7 @@ public class MeshReasoning {
 		// ItemModel itemModel = new ItemModel("models/cup2.kmz");
 		// ItemModel itemModel = new ItemModel("models/sphere.dae");
 		// ItemModel itemModel = new ItemModel("models/two_spheres.dae");
-		ItemModel itemModel = new ItemModel("models/test.dae");
+		// ItemModel itemModel = new ItemModel("models/test.dae");
 
 		// ItemModel itemModel = new ItemModel("models/cylinders.dae");
 		// ItemModel itemModel = new ItemModel("models/CylinderCone.dae");
@@ -71,7 +71,7 @@ public class MeshReasoning {
 		// ItemModel itemModel = new ItemModel("models/Table.dae");
 		// ItemModel itemModel = new ItemModel("models/Dome.dae");
 		// ItemModel itemModel = new ItemModel("models/cylinder.dae");
-		// ItemModel itemModel = new ItemModel("models/cup_red.kmz");
+		ItemModel itemModel = new ItemModel("models/cup_red.kmz");
 		// ItemModel itemModel = new ItemModel("models/boxcylinder.dae");
 		// ItemModel itemModel = new ItemModel("models/boxcone.dae");
 		// ItemModel itemModel = new ItemModel("models/cone.dae");

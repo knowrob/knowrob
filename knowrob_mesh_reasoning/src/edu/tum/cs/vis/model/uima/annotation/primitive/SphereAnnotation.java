@@ -139,6 +139,14 @@ public class SphereAnnotation extends PrimitiveAnnotation {
 				.sqrt(Math.pow(v.x - a, 2) + Math.pow(v.y - b, 2) + Math.pow(v.z - c, 2));
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#getPrimitiveArea()
+	 */
+	@Override
+	public float getPrimitiveArea() {
+		return (float) (4f * Math.PI * (radius * radius));
+	}
+
 	/**
 	 * @return the radius
 	 */
