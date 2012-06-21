@@ -11,11 +11,14 @@ import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.event.MouseInputListener;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
+
+import org.apache.log4j.Logger;
 
 import peasy.PeasyCam;
 import edu.tum.cs.uima.Annotation;
@@ -66,6 +69,11 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	 * current scale factor
 	 */
 	private int								currentScale		= 20;
+
+	/**
+	 * Path where to save image if user clicks on "save image". Will be evaluated in draw method
+	 */
+	private String							imageSavePath		= null;
 
 	/**
 	 * List of selected polygons (polygons which intersect with mouse ray)
@@ -134,6 +142,14 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 			for (MeshAnnotation ma : selectedAnnotations) {
 				ma.getMesh().drawPolygons(g, new Color(255, 125, 0));
 			}
+		}
+
+		// Check if user wants to save current view
+		if (imageSavePath != null) {
+			save(imageSavePath);
+
+			Logger.getRootLogger().info("Image saved as: " + imageSavePath);
+			imageSavePath = null;
 		}
 	}
 
@@ -205,6 +221,34 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 
 			selectedPolygonsChanged();
 		}
+
+	}
+
+	/**
+	 * Saves the current viewable context into a PNG image file with the given filename. If filename
+	 * doesn't end with '.png', it will be added.
+	 * 
+	 * @param filename
+	 *            Filename for the image to save
+	 */
+	public void saveImage(String filename) {
+		String path = filename;
+		if (!path.endsWith(".png"))
+			path += ".png";
+
+		if (!(new File(path).isAbsolute()))
+			path = new File(sketchPath + "/images", path).getAbsolutePath();
+
+		String basePath = path;
+		int num = 0;
+
+		while (new File(path).exists()) {
+			num++;
+			path = basePath.substring(0, basePath.lastIndexOf('.')) + "-" + num + ".png";
+
+		}
+
+		imageSavePath = path;
 
 	}
 

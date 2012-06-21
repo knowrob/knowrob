@@ -14,8 +14,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
@@ -63,9 +65,19 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 	private final JCheckBox					cbxShowMesh;
 
 	/**
+	 * Button to save current view into an image file
+	 */
+	private final JButton					btnSave;
+
+	/**
 	 * cas for which this control is
 	 */
 	private final MeshCas					cas;
+
+	/**
+	 * The view for which this control is
+	 */
+	private final MeshReasoningView			view;
 
 	/**
 	 * Default constructor
@@ -74,9 +86,13 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 	 *            cas for which the control is
 	 * @param analyzer
 	 *            list of analyzers used
+	 * @param view
+	 *            the parent MeshReasoningView
 	 * 
 	 */
-	public MeshReasoningViewControl(MeshCas cas, ArrayList<MeshAnalyzer> analyzer) {
+	public MeshReasoningViewControl(MeshCas cas, ArrayList<MeshAnalyzer> analyzer,
+			MeshReasoningView view) {
+		this.view = view;
 		this.cas = cas;
 		setPreferredSize(new Dimension(300, 600));
 
@@ -99,7 +115,15 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 		analyzerList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		analyzerList.setLayoutOrientation(JList.VERTICAL);
 
-		this.add(listScroller, BorderLayout.SOUTH);
+		JPanel bottomPnl = new JPanel(new BorderLayout());
+
+		bottomPnl.add(listScroller, BorderLayout.CENTER);
+
+		btnSave = new JButton("Save image");
+		btnSave.addActionListener(this);
+		bottomPnl.add(btnSave, BorderLayout.SOUTH);
+
+		this.add(bottomPnl, BorderLayout.SOUTH);
 
 		JPanel topPnl = new JPanel(new GridBagLayout());
 		cbxShowMesh = new JCheckBox("Show mesh");
@@ -129,6 +153,12 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == cbxShowMesh)
 			cas.setDrawMesh(cbxShowMesh.isSelected());
+		else if (e.getSource() == btnSave) {
+			String str = JOptionPane.showInputDialog(null, "Enter a filename ", "Filename",
+					JOptionPane.INFORMATION_MESSAGE);
+			if (str != null)
+				view.saveImage(str);
+		}
 
 	}
 

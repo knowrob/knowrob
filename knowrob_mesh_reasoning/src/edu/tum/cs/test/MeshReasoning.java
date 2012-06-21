@@ -92,7 +92,7 @@ public class MeshReasoning {
 		ArrayList<MeshAnalyzer> analyzer = new ArrayList<MeshAnalyzer>();
 
 		MeshReasoningView mrv = new MeshReasoningView();
-		MeshReasoningViewControl control = new MeshReasoningViewControl(cas, analyzer);
+		MeshReasoningViewControl control = new MeshReasoningViewControl(cas, analyzer, mrv);
 		mrv.setControl(control);
 		mrv.init();
 
