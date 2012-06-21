@@ -2,7 +2,7 @@ package edu.tum.cs.vis.model.uima.annotation;
 
 import java.awt.Color;
 
-import processing.core.PApplet;
+import processing.core.PGraphics;
 import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.vis.model.util.Mesh;
 
@@ -23,13 +23,13 @@ public abstract class MeshAnnotation extends Annotation {
 	/**
 	 * Draw the annotation with color from <code>getAnnotationColor()</code>
 	 * 
-	 * @param applet
+	 * @param g
 	 *            Applet to draw on
 	 */
-	public void draw(PApplet applet) {
+	public void draw(PGraphics g) {
 		if (drawAnnotation) {
-			mesh.drawLines(applet, getAnnotationColor());
-			mesh.drawPolygons(applet, getAnnotationColor());
+			mesh.drawLines(g, getAnnotationColor());
+			mesh.drawPolygons(g, getAnnotationColor());
 		}
 	}
 

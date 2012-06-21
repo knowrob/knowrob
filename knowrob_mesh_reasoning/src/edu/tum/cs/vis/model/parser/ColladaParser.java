@@ -50,7 +50,7 @@ import edu.tum.cs.vis.model.util.Appearance;
 import edu.tum.cs.vis.model.util.DrawObject;
 import edu.tum.cs.vis.model.util.Group;
 import edu.tum.cs.vis.model.util.Line;
-import edu.tum.cs.vis.model.util.Triangle;
+import edu.tum.cs.vis.model.util.Polygon;
 
 /**
  * Connection between dae4j library and processing applet. Used to parse COLLADA (.dae) files and
@@ -420,7 +420,7 @@ public class ColladaParser extends ModelParser {
 
 		// one single triangle from the triangle-set
 		for (int i = 0; i < indexes.length; i++) {
-			Triangle tri = new Triangle();
+			Polygon tri = new Polygon(3);
 			tri.setAppearance(appearance);
 
 			if (tri.getAppearance().getImageFileName() != null)
@@ -514,7 +514,7 @@ public class ColladaParser extends ModelParser {
 		else
 			applet.fill(127); // set a default color value
 
-		group.draw(applet, overrideColor);
+		group.draw(applet.g, overrideColor);
 	}
 
 	@Override

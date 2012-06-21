@@ -2,7 +2,7 @@ package edu.tum.cs.vis.model.uima.cas;
 
 import java.io.Serializable;
 
-import processing.core.PApplet;
+import processing.core.PGraphics;
 import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.uima.JCas;
 import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
@@ -45,18 +45,18 @@ public class MeshCas extends JCas implements Serializable {
 	/**
 	 * Draw the original mesh and all the meshes of the annotations.
 	 * 
-	 * @param applet
+	 * @param g
 	 *            Applet to draw on
 	 */
-	public void draw(PApplet applet) {
+	public void draw(PGraphics g) {
 		if (drawMesh)
-			group.draw(applet, null);
+			group.draw(g, null);
 		synchronized (annotations) {
 			for (Annotation a : annotations) {
 				if (!(a instanceof MeshAnnotation))
 					continue;
 				MeshAnnotation ma = (MeshAnnotation) a;
-				ma.draw(applet);
+				ma.draw(g);
 			}
 		}
 	}

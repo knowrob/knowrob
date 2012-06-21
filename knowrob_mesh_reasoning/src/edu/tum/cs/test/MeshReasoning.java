@@ -39,11 +39,12 @@ public class MeshReasoning {
 		logger.info("MeshReasoning started");
 
 		// ItemModel model = new ItemModel("/home/stefan/simple_dome.kmz");
-		// ItemModel model = new ItemModel(
-		// "/home/stefan/ros/knowrob/knowrob_cad_models/models/collada/hospital_bed.kmz");
-		// ItemModel model = new ItemModel("/home/stefan/Downloads/triangle.kmz");
+		ItemModel model = new ItemModel(
+				"/home/stefan/ros/knowrob/knowrob_cad_models/models/collada/hospital_bed.kmz");
+		// ItemModel model = new ItemModel("/home/stefan/Downloads/triangle.dae");
 		// ItemModel model = new ItemModel("/home/stefan/Downloads/saintpeter.kmz");
-		ItemModel model = new ItemModel("/home/stefan/CoTeSys/cups/cup2.kmz");
+		// ItemModel model = new ItemModel("/home/stefan/CoTeSys/cups/cup2.kmz");
+		// ItemModel model = new ItemModel("/home/stefan/Downloads/cube.kmz");
 		if (!model.parseModel()) {
 			throw new RuntimeException("Couldn't parse model. Maybe path to model is wrong.");
 		}
@@ -66,6 +67,7 @@ public class MeshReasoning {
 		g.getMesh().triangles.add(t);*/
 
 		cas.setGroup(model.getParser().getGroup());
+
 		// cas.setGroup(g);
 
 		JFrame frame = new JFrame();
@@ -94,9 +96,9 @@ public class MeshReasoning {
 		// control.addAnalyzer(na);
 		// control.addAnalyzer(fsa);
 
-		na.process(cas);
+		// na.process(cas);
 
-		fsa.process(cas);
+		// fsa.process(cas);
 
 	}
 }

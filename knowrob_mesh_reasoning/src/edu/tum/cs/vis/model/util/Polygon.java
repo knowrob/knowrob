@@ -11,8 +11,8 @@ import javax.vecmath.Vector3f;
 
 import org.apache.log4j.Logger;
 
-import processing.core.PApplet;
 import processing.core.PConstants;
+import processing.core.PGraphics;
 import edu.tum.cs.vis.model.uima.analyzer.FlatSurfaceAnalyzer;
 
 /**
@@ -44,6 +44,10 @@ public class Polygon extends DrawObject {
 	 * List of all direct neighbor polygons
 	 */
 	protected ArrayList<Polygon>	neighbors;
+
+	public Polygon(int numberOfEdges) {
+		super(numberOfEdges);
+	}
 
 	/**
 	 * Add a neighbor to the neighbors list. If list contains already neighbor this method doesn't
@@ -84,27 +88,27 @@ public class Polygon extends DrawObject {
 	 * @param overrideColor
 	 *            overrides the color to draw
 	 */
-	public void draw(PApplet applet, Color overrideColor) {
-		applyColor(applet, overrideColor);
+	public void draw(PGraphics g, Color overrideColor) {
+		applyColor(g, overrideColor);
 		if (appearance.getImageReference() == null || overrideColor != null) {
 			// no texture only color
-			applet.beginShape(PConstants.TRIANGLES);
+			g.beginShape(PConstants.TRIANGLES);
 
 			for (int i = 0; i < position.length; i++)
-				applet.vertex(position[i].x, position[i].y, position[i].z);
+				g.vertex(position[i].x, position[i].y, position[i].z);
 
-			applet.endShape();
+			g.endShape();
 
 		} else {
 			// has texture
-			applet.beginShape(PConstants.TRIANGLES);
-			applet.texture(appearance.getImageReference());
+			g.beginShape(PConstants.TRIANGLES);
+			g.texture(appearance.getImageReference());
 
 			for (int i = 0; i < position.length; i++)
-				applet.vertex(position[i].x, position[i].y, position[i].z, texPosition[i].x,
+				g.vertex(position[i].x, position[i].y, position[i].z, texPosition[i].x,
 						texPosition[i].y);
 
-			applet.endShape();
+			g.endShape();
 
 		}
 		/*applet.stroke(255,0,0);
@@ -156,6 +160,83 @@ public class Polygon extends DrawObject {
 	 */
 	public Point2f[] getTexPosition() {
 		return texPosition;
+	}
+
+	// Copyright 2001, softSurfer (www.softsurfer.com)
+	// This code may be freely used and modified for any purpose
+	// providing that this copyright notice is included with it.
+	// SoftSurfer makes no warranty for this code, and cannot be held
+	// liable for any real or imagined damage resulting from its use.
+	// Users of this code must verify correctness for their application.
+	public boolean intersectsRay(Point3f rayStart, Point3f rayEnd, Point3f intersect) {
+
+		if (position.length != 3) {
+			System.out.println("intersectRay not implemented for not triangles!!");
+			return false;
+		}
+
+		Vector3d u, v, n; // triangle vectors
+		Vector3d dir, w0, w; // ray vectors
+		double r, a, b; // params to calc ray-plane intersect
+
+		// get triangle edge vectors and plane normal
+		u = new Vector3d(position[1]);
+		u.sub(new Vector3d(position[0]));
+		v = new Vector3d(position[2]);
+		v.sub(new Vector3d(position[0]));
+
+		n = new Vector3d();
+		n.cross(u, v); // Normal vector
+		if (n.equals(new Vector3d(0, 0, 0))) // triangle is degenerate
+			return false; // do not deal with this case
+
+		dir = new Vector3d(rayEnd);// ray direction vector
+		dir.sub(new Vector3d(rayStart));
+
+		w0 = new Vector3d(rayStart);
+		w0.sub(new Vector3d(position[0]));
+
+		a = -n.dot(w0);
+		b = n.dot(dir);
+		// SMALL_NUM 0.00000001 // anything that avoids division overflow
+		if (Math.abs(b) < 0.00000001) { // ray is parallel to triangle plane
+			if (a == 0) // ray lies in triangle plane
+				return false;
+			else
+				return false; // ray disjoint from plane
+		}
+
+		// get intersect point of ray with triangle plane
+		r = a / b;
+		if (r < 0.0) // ray goes away from triangle
+			return false; // => no intersect
+		// for a segment, also test if (r > 1.0) => no intersect
+
+		intersect.set(dir); // intersect point of ray and plane
+		intersect.scale((float) r);
+		intersect.add(rayStart);
+
+		// is I inside T?
+		double uu, uv, vv, wu, wv, D;
+		uu = new Vector3d(u).dot(u);
+		uv = new Vector3d(u).dot(v);
+		vv = new Vector3d(v).dot(v);
+		w = new Vector3d(intersect);
+		w.sub(new Vector3d(position[0]));
+		wu = new Vector3d(w).dot(u);
+		wv = new Vector3d(w).dot(v);
+		D = uv * uv - uu * vv;
+
+		// get and test parametric coords
+		double s, t;
+		s = (uv * wv - vv * wu) / D;
+		if (s < 0.0 || s > 1.0) // I is outside T
+			return false;
+		t = (uv * wu - uu * wv) / D;
+		if (t < 0.0 || (s + t) > 1.0) // I is outside T
+			return false;
+
+		return true; // I is in T
 	}
 
 	/**

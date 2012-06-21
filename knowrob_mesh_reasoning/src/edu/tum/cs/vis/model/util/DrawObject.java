@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 import javax.vecmath.Point3f;
 
-import processing.core.PApplet;
+import processing.core.PGraphics;
 
 /**
  * Base class for all drawable model parts (Line / Triangle)
@@ -55,6 +55,10 @@ public abstract class DrawObject implements Serializable {
 	 */
 	protected Appearance	appearance;
 
+	public DrawObject(int numberOfEdges) {
+		position = new Point3f[numberOfEdges];
+	}
+
 	/**
 	 * Apply the color of appearance member to the PApplet. Called before drawing a DrawObject.
 	 * 
@@ -63,35 +67,33 @@ public abstract class DrawObject implements Serializable {
 	 * @param overrideColor
 	 *            If != null this color is taken instead of the color from appearance
 	 */
-	protected void applyColor(PApplet applet, Color overrideColor) {
+	protected void applyColor(PGraphics g, Color overrideColor) {
 		if (appearance.getColorLine() != null) {
 			if (overrideColor != null)
-				applet.stroke(overrideColor.getRed(), overrideColor.getGreen(),
-						overrideColor.getBlue(), overrideColor.getAlpha());
+				g.stroke(overrideColor.getRed(), overrideColor.getGreen(), overrideColor.getBlue(),
+						overrideColor.getAlpha());
 			else
-				applet.stroke(appearance.getColorLine().getRed(), appearance.getColorLine()
-						.getGreen(), appearance.getColorLine().getBlue(), appearance.getColorLine()
-						.getAlpha());
-			applet.strokeWeight(appearance.getStrokeWeight());
+				g.stroke(appearance.getColorLine().getRed(), appearance.getColorLine().getGreen(),
+						appearance.getColorLine().getBlue(), appearance.getColorLine().getAlpha());
+			g.strokeWeight(appearance.getStrokeWeight());
 		} else {
-			applet.noStroke();
+			g.noStroke();
 		}
 
 		if (overrideColor != null)
-			applet.fill(overrideColor.getRed(), overrideColor.getGreen(), overrideColor.getBlue(),
+			g.fill(overrideColor.getRed(), overrideColor.getGreen(), overrideColor.getBlue(),
 					overrideColor.getAlpha());
 		else if (appearance.getImageReference() == null) {
 			if (appearance.getColorFill() != null) {
-				applet.fill(appearance.getColorFill().getRed(), appearance.getColorFill()
-						.getGreen(), appearance.getColorFill().getBlue(), appearance.getColorFill()
-						.getAlpha());
+				g.fill(appearance.getColorFill().getRed(), appearance.getColorFill().getGreen(),
+						appearance.getColorFill().getBlue(), appearance.getColorFill().getAlpha());
 			} else {
-				applet.noFill();
+				g.noFill();
 			}
 		} else {
 			// Has texture
 			// Use fallback if texture isn't drawn. So fill polygons with white color
-			applet.fill(255, 255, 255, 0);
+			g.fill(255, 255, 255, 0);
 		}
 	}
 

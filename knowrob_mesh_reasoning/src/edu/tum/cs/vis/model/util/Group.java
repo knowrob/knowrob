@@ -4,9 +4,11 @@ import java.awt.Color;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import processing.core.PApplet;
+import processing.core.PGraphics;
 
 /**
  * Represents a Mesh-Group with a Name. A group can multiple child groups so it will present a mesh
@@ -74,17 +76,17 @@ public class Group implements Serializable {
 	/**
 	 * Draw method to draw the model on the applet.
 	 * 
-	 * @param applet
+	 * @param g
 	 *            The applet to draw on.
 	 * @param overrideColor
 	 *            override the draw color an texture. Draw whole object in the given color if !=
 	 *            null
 	 */
-	public void draw(PApplet applet, Color overrideColor) {
-		mesh.drawLines(applet, overrideColor);
-		mesh.drawPolygons(applet, overrideColor);
-		for (Group g : children) {
-			g.draw(applet, overrideColor);
+	public void draw(PGraphics g, Color overrideColor) {
+		mesh.drawLines(g, overrideColor);
+		mesh.drawPolygons(g, overrideColor);
+		for (Group gr : children) {
+			gr.draw(g, overrideColor);
 		}
 	}
 
@@ -113,6 +115,16 @@ public class Group implements Serializable {
 	 */
 	public ArrayList<Group> getChildren() {
 		return children;
+	}
+
+	public void getIntersectedPolygons(Point3f rayStart, Point3f rayEnd,
+			ArrayList<Polygon> intersectedPolygons, Point3f intersect) {
+		mesh.getIntersectedPolygons(rayStart, rayEnd, intersectedPolygons, intersect);
+
+		for (Group g : children) {
+			g.getIntersectedPolygons(rayStart, rayEnd, intersectedPolygons, intersect);
+		}
+
 	}
 
 	/**

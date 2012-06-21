@@ -10,9 +10,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
+import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import processing.core.PApplet;
+import processing.core.PGraphics;
 import processing.core.PImage;
 import edu.tum.cs.util.FileUtil;
 
@@ -97,16 +99,16 @@ public class Mesh implements Serializable {
 	/**
 	 * Draw the lines list to the applet
 	 * 
-	 * @param applet
+	 * @param g
 	 *            Applet to draw on
 	 * @param overrideColor
 	 *            override the draw color an texture. Draw whole object in the given color if !=
 	 *            null
 	 */
-	public void drawLines(PApplet applet, Color overrideColor) {
+	public void drawLines(PGraphics g, Color overrideColor) {
 		for (Line line : lines) {
 
-			line.draw(applet, overrideColor);
+			line.draw(g, overrideColor);
 		}
 	}
 
@@ -119,11 +121,11 @@ public class Mesh implements Serializable {
 	 *            override the draw color an texture. Draw whole object in the given color if !=
 	 *            null
 	 */
-	public void drawPolygons(PApplet applet, Color overrideColor) {
+	public void drawPolygons(PGraphics g, Color overrideColor) {
 		if (!texturesInitialized)
-			setTextureImage(applet);
+			setTextureImage();
 		for (Polygon tri : polygons) {
-			tri.draw(applet, overrideColor);
+			tri.draw(g, overrideColor);
 		}
 	}
 
@@ -202,6 +204,16 @@ public class Mesh implements Serializable {
 		m.textureBasePath = textureBasePath;
 		m.texturesInitialized = texturesInitialized;
 		return m;
+	}
+
+	public void getIntersectedPolygons(Point3f rayStart, Point3f rayEnd,
+			ArrayList<Polygon> intersectedPolygons, Point3f intersect) {
+
+		for (Polygon tri : polygons) {
+			if (tri.intersectsRay(rayStart, rayEnd, intersect))
+				intersectedPolygons.add(tri);
+		}
+
 	}
 
 	/**
@@ -395,7 +407,7 @@ public class Mesh implements Serializable {
 	 * picture.width textureProcessing y = picture.height - textureSketchup y * picture.height it
 	 * also creates an PImage to each Triangle (if it contains any Texture)
 	 */
-	private void setTextureImage(PApplet applet) {
+	private void setTextureImage() {
 		// load all Texture-Images only once (memory efficiency)
 		HashMap<String, PImage> pictures = new HashMap<String, PImage>();
 		for (Polygon tri : polygons) {
