@@ -1,5 +1,6 @@
 bin
 images
+*~
 
 /build
 /msg_gen
