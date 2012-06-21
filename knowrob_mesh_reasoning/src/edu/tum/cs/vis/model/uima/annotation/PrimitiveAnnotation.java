@@ -75,22 +75,28 @@ public abstract class PrimitiveAnnotation extends MeshAnnotation {
 		vertices.clear();
 		Vector3f centroid = new Vector3f();
 
-		for (Triangle t : mesh.getTriangles()) {
-			float area = t.getArea();
-			for (Vertex v : t.getPosition()) {
-				float newArea = area;
-				if (vertices.containsKey(v)) {
+		float totalArea = 0;
 
+		for (Triangle t : mesh.getTriangles()) {
+			float a = t.getArea();
+			for (Vertex v : t.getPosition()) {
+				float newArea = a / 3f;
+				if (vertices.containsKey(v)) {
 					newArea += vertices.get(v);
-				} else {
-					centroid.add(v);
 				}
+
+				// Calculate weighted centroid
+
 				vertices.put(v, newArea);
 			}
+			centroid.x += t.getCentroid().x * a;
+			centroid.y += t.getCentroid().y * a;
+			centroid.z += t.getCentroid().z * a;
+
+			totalArea += a;
 		}
 
-		int numberOfPoints = vertices.size();
-		centroid.scale(1f / numberOfPoints);
+		centroid.scale(1f / totalArea);
 
 		return centroid;
 

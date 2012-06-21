@@ -653,6 +653,10 @@ public class Model {
 		for (Vertex v : vertices) {
 			v.scale(factor);
 		}
+		for (Triangle t : triangles)
+			t.updateNormalVector();
+		for (Line l : lines)
+			l.updateNormalVector();
 		group.resetMinMaxValues();
 	}
 
@@ -684,7 +688,6 @@ public class Model {
 			vertices.get(i).getCurvature().setHue(h);
 			vertices.get(i).getCurvature().setSaturation(s);
 		}
-		System.out.println("Min:" + min + " Max:" + max);
 	}
 
 	/**

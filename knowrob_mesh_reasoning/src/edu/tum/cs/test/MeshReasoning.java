@@ -72,6 +72,9 @@ public class MeshReasoning {
 		// ItemModel itemModel = new ItemModel("models/Dome.dae");
 		// ItemModel itemModel = new ItemModel("models/cylinder.dae");
 		ItemModel itemModel = new ItemModel("models/cup_red.kmz");
+		// ItemModel itemModel = new ItemModel("models/boxcylinder.dae");
+		// ItemModel itemModel = new ItemModel("models/boxcone.dae");
+		// ItemModel itemModel = new ItemModel("models/cone.dae");
 
 		if (!itemModel.parseModel()) {
 			throw new RuntimeException("Couldn't parse model. Maybe path to model is wrong.");

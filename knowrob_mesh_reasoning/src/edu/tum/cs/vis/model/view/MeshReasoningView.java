@@ -192,8 +192,8 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 					n.draw(g, new Color(0, 0, 255));
 			} else {
 				for (Triangle t : selectedTriangles)
-					t.draw(g, selectedTriangles.size() > 1 ? new Color(255, 125, 0) : new Color(
-							255, 50, 0));
+					t.draw(g, selectedTriangles.size() > 1 ? new Color(255, 125, 0, 200)
+							: new Color(255, 50, 0, 100));
 			}
 		}
 
@@ -202,8 +202,8 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 			for (MeshAnnotation ma : selectedAnnotations) {
 				ma.getMesh().drawTriangles(
 						g,
-						selectedAnnotations.size() > 1 ? new Color(255, 125, 0) : new Color(255,
-								50, 0));
+						selectedAnnotations.size() > 1 ? new Color(255, 125, 0, 200) : new Color(
+								255, 50, 0, 200));
 			}
 		}
 
@@ -250,7 +250,12 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 			currentScale += 10;
 		} else if (c == '-') {
 			currentScale = Math.max(10, currentScale - 10);
-		}
+		}/* else if (c == 'm') {
+			test++;
+			} else if (c == 'n') {
+			test--;
+			}
+			System.out.println("Test: " + test);*/
 	}
 
 	@Override

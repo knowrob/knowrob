@@ -206,11 +206,7 @@ public class Triangle extends DrawObject {
 			for (DrawableAnnotation a : annotations)
 				a.draw(g);
 		}
-		/*applet.stroke(255,0,0);
-			
-		applet.strokeWeight(5);
-		applet.line(centroid.x, centroid.y, centroid.z, normalVector.x+centroid.x,
-				normalVector.y+centroid.y, normalVector.z+centroid.z);*/
+
 	}
 
 	/**
@@ -456,7 +452,7 @@ public class Triangle extends DrawObject {
 		for (int i = 0; i < position.length; i++) {
 			centroid.add(position[i]);
 		}
-		centroid.scale(1 / position.length);
+		centroid.scale(1f / position.length);
 
 		Vector3f a = new Vector3f(position[1]);
 		a.sub(position[0]);
