@@ -98,7 +98,7 @@ public class FlatSurfaceAnnotationPanel extends AnnotationPanel<FlatSurfaceAnnot
 		c.gridy = 0;
 		pnlSettings.add(minArea, c);
 
-		JLabel sliderLabelMax = new JLabel("Min. area", SwingConstants.CENTER);
+		JLabel sliderLabelMax = new JLabel("Max. area", SwingConstants.CENTER);
 		maxArea = new JSlider(SwingConstants.HORIZONTAL, 0, 1, 1);
 
 		maxArea.addChangeListener(this);

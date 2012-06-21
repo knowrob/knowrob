@@ -225,18 +225,20 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 			@Override
 			public void run() {
 				synchronized (cas.getAnnotations()) {
-					for (Annotation a : cas.getAnnotations()) {
-						if (a instanceof MeshAnnotation) {
-							MeshAnnotation ma = (MeshAnnotation) a;
+					synchronized (cas.getAnnotations()) {
+						for (Annotation a : cas.getAnnotations()) {
+							if (a instanceof MeshAnnotation) {
+								MeshAnnotation ma = (MeshAnnotation) a;
 
-							if (bars.containsKey(ma.getClass()))
-								continue;
+								if (bars.containsKey(ma.getClass()))
+									continue;
 
-							@SuppressWarnings("rawtypes")
-							AnnotationPanel pnl = createPanelForAnnotation(ma.getClass(), cas);
+								@SuppressWarnings("rawtypes")
+								AnnotationPanel pnl = createPanelForAnnotation(ma.getClass(), cas);
 
-							BarInfo bi = new BarInfo(ma.getClass(), pnl, cas);
-							bars.put(ma.getClass(), bi);
+								BarInfo bi = new BarInfo(ma.getClass(), pnl, cas);
+								bars.put(ma.getClass(), bi);
+							}
 						}
 					}
 

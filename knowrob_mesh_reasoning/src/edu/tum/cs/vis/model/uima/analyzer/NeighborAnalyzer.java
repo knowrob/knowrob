@@ -1,12 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2012 Stefan Profanter.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Public License v3.0
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/gpl.html
+ * Copyright (c) 2012 Stefan Profanter. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the GNU Public License v3.0 which accompanies
+ * this distribution, and is available at http://www.gnu.org/licenses/gpl.html
  * 
- * Contributors:
- *     Stefan Profanter - initial API and implementation, Year: 2012
+ * Contributors: Stefan Profanter - initial API and implementation, Year: 2012
  ******************************************************************************/
 package edu.tum.cs.vis.model.uima.analyzer;
 
@@ -14,8 +11,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
@@ -111,6 +106,8 @@ public class NeighborAnalyzer extends MeshAnalyzer {
 		allPolygons = new ArrayList<Polygon>();
 		processGroup(cas.getGroup());
 
+		logger.debug("Number of Polygons: " + allPolygons.size());
+
 		int startIdx = 0;
 		int interval = 100;
 
@@ -120,16 +117,7 @@ public class NeighborAnalyzer extends MeshAnalyzer {
 			startIdx += interval;
 		} while (startIdx < allPolygons.size());
 
-		int threadNum = Runtime.getRuntime().availableProcessors() * 25;
-
-		logger.debug("All Threads initialized. Starting Pool with " + threadNum + " threads ...");
-		ExecutorService pool = Executors.newFixedThreadPool(threadNum);
-
-		try {
-			pool.invokeAll(threads);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		executeInPool(threads);
 
 	}
 

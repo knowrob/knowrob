@@ -1,12 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2012 Stefan Profanter.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Public License v3.0
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/gpl.html
+ * Copyright (c) 2012 Stefan Profanter. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the GNU Public License v3.0 which accompanies
+ * this distribution, and is available at http://www.gnu.org/licenses/gpl.html
  * 
- * Contributors:
- *     Stefan Profanter - initial API and implementation, Year: 2012
+ * Contributors: Stefan Profanter - initial API and implementation, Year: 2012
  ******************************************************************************/
 package edu.tum.cs.vis.model.uima.cas;
 
@@ -17,6 +14,7 @@ import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.uima.JCas;
 import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.util.Group;
+import edu.tum.cs.vis.model.util.Polygon;
 
 /**
  * UIMA CAS for 3D meshes.
@@ -69,6 +67,27 @@ public class MeshCas extends JCas implements Serializable {
 				ma.draw(g);
 			}
 		}
+	}
+
+	/**
+	 * Searches the annotation (type equals clazz) which contains the given polygon. If no
+	 * annotation found, null be returned
+	 * 
+	 * @param clazz
+	 *            Type of the annotation to find
+	 * @param p
+	 *            annotation must contain this polygon
+	 * @return the found annotation or null
+	 */
+	public MeshAnnotation findAnnotation(Class<? extends MeshAnnotation> clazz, Polygon p) {
+		for (Annotation a : getAnnotations()) {
+			if (!(a instanceof MeshAnnotation))
+				continue;
+			MeshAnnotation ma = (MeshAnnotation) a;
+			if (ma.getClass() == clazz && ma.getMesh().getPolygons().contains(p))
+				return ma;
+		}
+		return null;
 	}
 
 	/**

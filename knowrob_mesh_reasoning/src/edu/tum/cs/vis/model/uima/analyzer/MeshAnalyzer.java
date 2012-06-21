@@ -1,14 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2012 Stefan Profanter.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Public License v3.0
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/gpl.html
+ * Copyright (c) 2012 Stefan Profanter. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the GNU Public License v3.0 which accompanies
+ * this distribution, and is available at http://www.gnu.org/licenses/gpl.html
  * 
- * Contributors:
- *     Stefan Profanter - initial API and implementation, Year: 2012
+ * Contributors: Stefan Profanter - initial API and implementation, Year: 2012
  ******************************************************************************/
 package edu.tum.cs.vis.model.uima.analyzer;
+
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
@@ -39,6 +41,27 @@ public abstract class MeshAnalyzer extends AnalysisEngine {
 	 * Duration in milliseconds of last process call.
 	 */
 	private long	processDuration		= 0;
+
+	/**
+	 * Executes the given Callable objects in a thread pool and returns when all threads have
+	 * finished and all callable objects have been executed.
+	 * 
+	 * @param threads
+	 *            list of callable objects
+	 */
+	protected void executeInPool(List<Callable<Void>> threads) {
+		int threadNum = Runtime.getRuntime().availableProcessors() * 25;
+
+		getLogger().debug(
+				"All Threads initialized. Starting Pool with " + threadNum + " threads ...");
+		ExecutorService pool = Executors.newFixedThreadPool(threadNum);
+
+		try {
+			pool.invokeAll(threads);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * Returns the log4j logger for this class

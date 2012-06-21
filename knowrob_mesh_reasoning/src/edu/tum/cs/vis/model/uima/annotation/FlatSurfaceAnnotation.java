@@ -1,12 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2012 Stefan Profanter.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Public License v3.0
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/gpl.html
+ * Copyright (c) 2012 Stefan Profanter. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the GNU Public License v3.0 which accompanies
+ * this distribution, and is available at http://www.gnu.org/licenses/gpl.html
  * 
- * Contributors:
- *     Stefan Profanter - initial API and implementation, Year: 2012
+ * Contributors: Stefan Profanter - initial API and implementation, Year: 2012
  ******************************************************************************/
 package edu.tum.cs.vis.model.uima.annotation;
 
@@ -43,15 +40,15 @@ public class FlatSurfaceAnnotation extends MeshAnnotation {
 	/**
 	 * Total area of the flat surface
 	 */
-	private Area				area;
+	private final Area			area				= new Area();					;
 	/**
 	 * Dimension2D of the surface in x and y coordinates. So normal vector will be (0,0,1)
 	 */
-	private Dimension2D			dimension;
+	private final Dimension2D	dimension			= new Dimension2D();
 	/**
 	 * surface normal
 	 */
-	private NormalVector		normalVector;
+	private final NormalVector	normalVector		= new NormalVector();
 
 	/**
 	 * Default constructor
@@ -100,16 +97,13 @@ public class FlatSurfaceAnnotation extends MeshAnnotation {
 	public void setFeatures() {
 		if (mesh.getPolygons().size() == 0)
 			return;
-		normalVector = new NormalVector(mesh.getPolygons().get(0).getNormalVector());
+		normalVector.set(mesh.getPolygons().get(0).getNormalVector());
 
 		float ar = 0;
 
 		for (Polygon p : mesh.getPolygons())
 			ar += p.getArea();
-		area = new Area();
 		area.setSquareMM(ar);
-
-		dimension = new Dimension2D();
 
 		// TODO calculate dimension
 	}
