@@ -17,7 +17,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.vecmath.Point2f;
-import javax.vecmath.Point3f;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -59,6 +58,7 @@ import edu.tum.cs.vis.model.util.DrawObject;
 import edu.tum.cs.vis.model.util.Group;
 import edu.tum.cs.vis.model.util.Line;
 import edu.tum.cs.vis.model.util.Triangle;
+import edu.tum.cs.vis.model.util.Vertex;
 
 /**
  * Connection between dae4j library and processing applet. Used to parse COLLADA (.dae) files and
@@ -342,7 +342,7 @@ public class ColladaParser extends ModelParser {
 
 			for (int v = 0; v < 2; v++) {
 				// set the vertices for Point
-				line.getPosition()[v] = new Point3f(vertPoints[indexes[i][vertexOffset]][0],
+				line.getPosition()[v] = new Vertex(vertPoints[indexes[i][vertexOffset]][0],
 						vertPoints[indexes[i][vertexOffset]][1],
 						vertPoints[indexes[i][vertexOffset]][2]);
 
@@ -436,7 +436,7 @@ public class ColladaParser extends ModelParser {
 
 			for (int v = 0; v < 3; v++) {
 				// set the vertices for Point
-				tri.getPosition()[v] = new Point3f(vertPoints[indexes[i][vertexOffset]][0],
+				tri.getPosition()[v] = new Vertex(vertPoints[indexes[i][vertexOffset]][0],
 						vertPoints[indexes[i][vertexOffset]][1],
 						vertPoints[indexes[i][vertexOffset]][2]);
 

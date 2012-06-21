@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
-import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import processing.core.PApplet;
@@ -214,7 +214,7 @@ public class Mesh implements Serializable {
 	 * @param intersectedTriangles
 	 *            list where to add intersecting triangles
 	 */
-	public void getIntersectedTriangles(final Point3d rayStart, final Point3d rayEnd,
+	public void getIntersectedTriangles(final Point3f rayStart, final Point3f rayEnd,
 			final ArrayList<Triangle> intersectedTriangles) {
 
 		for (Triangle tri : triangles) {

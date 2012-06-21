@@ -7,8 +7,8 @@
  ******************************************************************************/
 package edu.tum.cs.vis.model.uima.annotation;
 
-import javax.vecmath.Point3d;
-import javax.vecmath.Vector3d;
+import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 import processing.core.PGraphics;
 import edu.tum.cs.vis.model.util.Triangle;
@@ -25,14 +25,14 @@ public class CurvatureAnnotation extends DrawObjectAnnotation {
 	 * Direction and magnitude of maximum principal curvature at centroid of Triangle. kMax, kMin
 	 * and NormalVector form a othonormal basis: N = kMax x kMin.
 	 */
-	private final Vector3d	kMax;
+	private final Vector3f	kMax;
 	/**
 	 * Direction and magnitude of minimum principal curvature at centroid of Triangle. kMax, kMin
 	 * and NormalVector form a othonormal basis: N = kMax x kMin.
 	 */
-	private final Vector3d	kMin;
+	private final Vector3f	kMin;
 
-	public CurvatureAnnotation(Triangle t, Vector3d kMin, Vector3d kMax) {
+	public CurvatureAnnotation(Triangle t, Vector3f kMin, Vector3f kMax) {
 		object = t;
 		this.kMax = kMax;
 		this.kMin = kMin;
@@ -43,38 +43,36 @@ public class CurvatureAnnotation extends DrawObjectAnnotation {
 	 */
 	@Override
 	protected void drawAnnotation(PGraphics g) {
-		Point3d cent = ((Triangle) object).getCentroid();
+		Point3f cent = ((Triangle) object).getCentroid();
 
-		Vector3d max = (Vector3d) kMax.clone();
+		Vector3f max = (Vector3f) kMax.clone();
 		max.normalize();
-		max.scale(0.005);
-		Vector3d min = (Vector3d) kMin.clone();
+		max.scale(0.005f);
+		Vector3f min = (Vector3f) kMin.clone();
 		min.normalize();
-		min.scale(0.005);
+		min.scale(0.005f);
 
 		g.stroke(0, 0, 255);
-		g.line((float) cent.x - (float) max.x, (float) cent.y - (float) max.y, (float) cent.z
-				- (float) max.z, (float) max.x + (float) cent.x, (float) max.y + (float) cent.y,
-				(float) max.z + (float) cent.z);
+		g.line(cent.x - max.x, cent.y - max.y, cent.z - max.z, max.x + cent.x, max.y + cent.y,
+				max.z + cent.z);
 
 		g.stroke(0, 255, 255);
-		g.line((float) cent.x - (float) min.x, (float) cent.y - (float) min.y, (float) cent.z
-				- (float) min.z, (float) min.x + (float) cent.x, (float) min.y + (float) cent.y,
-				(float) min.z + (float) cent.z);
+		g.line(cent.x - min.x, cent.y - min.y, cent.z - min.z, min.x + cent.x, min.y + cent.y,
+				min.z + cent.z);
 
 	}
 
 	/**
 	 * @return the kMax
 	 */
-	public Vector3d getkMax() {
+	public Vector3f getkMax() {
 		return kMax;
 	}
 
 	/**
 	 * @return the kMin
 	 */
-	public Vector3d getkMin() {
+	public Vector3f getkMin() {
 		return kMin;
 	}
 

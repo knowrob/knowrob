@@ -7,7 +7,7 @@
  ******************************************************************************/
 package edu.tum.cs.vis.model.view;
 
-import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
 
 import processing.core.PApplet;
 import processing.core.PGraphics3D;
@@ -47,12 +47,12 @@ public class PAppletSelection extends PApplet {
 	/**
 	 * Start point of mouse ray
 	 */
-	private final Point3d		mouseRayStart			= new Point3d();
+	private final Point3f		mouseRayStart			= new Point3f();
 
 	/**
 	 * End point of mouse ray
 	 */
-	private final Point3d		mouseRayEnd				= new Point3d();
+	private final Point3f		mouseRayEnd				= new Point3f();
 
 	/**
 	 * previous projection matrix. used to compare if it has changed
@@ -120,14 +120,14 @@ public class PAppletSelection extends PApplet {
 	/**
 	 * @return the mouseRayEnd
 	 */
-	public Point3d getMouseRayEnd() {
+	public Point3f getMouseRayEnd() {
 		return mouseRayEnd;
 	}
 
 	/**
 	 * @return the mouseRayStart
 	 */
-	public Point3d getMouseRayStart() {
+	public Point3f getMouseRayStart() {
 		return mouseRayStart;
 	}
 
@@ -160,7 +160,7 @@ public class PAppletSelection extends PApplet {
 	 *            the resulting point for given coordinates.
 	 * @return true if unproject was successfull
 	 */
-	public boolean gluUnProject(float winx, float winy, float winz, Point3d result) {
+	public boolean gluUnProject(float winx, float winy, float winz, Point3f result) {
 
 		float[] in = new float[4];
 		float[] out = new float[4];

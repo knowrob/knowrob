@@ -12,8 +12,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
 import javax.vecmath.Vector3d;
+import javax.vecmath.Vector3f;
 
 import org.apache.log4j.Logger;
 
@@ -98,8 +99,8 @@ public class CurvatureAnalyzer extends MeshAnalyzer {
 		}
 	}
 
-	private static Triangle findIntersectionPoint(Point3d p1, Point3d p2, Triangle start,
-			Point3d intersectionPoint, int maxLevel) {
+	private static Triangle findIntersectionPoint(Point3f p1, Point3f p2, Triangle start,
+			Point3f intersectionPoint, int maxLevel) {
 		if (start.intersectsRay(p1, p2, intersectionPoint))
 			return start;
 
@@ -162,13 +163,13 @@ public class CurvatureAnalyzer extends MeshAnalyzer {
 	 * @param curvNorm
 	 * @return
 	 */
-	private static double getCurvatureValue(Point3d refPoint, Vector3d refNorm, Point3d curvPoint,
-			Vector3d curvNorm) {
+	private static float getCurvatureValue(Point3f refPoint, Vector3f refNorm, Point3f curvPoint,
+			Vector3f curvNorm) {
 
-		Vector3d dT = (Vector3d) refNorm.clone();
+		Vector3f dT = (Vector3f) refNorm.clone();
 		dT.sub(curvNorm);
 
-		Vector3d ds = new Vector3d(refPoint);
+		Vector3f ds = new Vector3f(refPoint);
 		ds.sub(curvPoint);
 
 		return dT.length() / ds.length();
@@ -176,19 +177,19 @@ public class CurvatureAnalyzer extends MeshAnalyzer {
 	}
 
 	public static void triangleCurvature(Triangle start, MeshCas cas, PGraphics g) {
-		double radius = Math.sqrt(start.getArea() * GEODESIC_RADIUS_FACTOR);
+		float radius = (float) Math.sqrt(start.getArea() * GEODESIC_RADIUS_FACTOR);
 		if (radius == 0.0)
 			return;
-		Point3d cent = start.getCentroid();
-		Vector3d norm = start.getNormalVector();
+		Point3f cent = start.getCentroid();
+		Vector3f norm = start.getNormalVector();
 
 		// Get a perpendicular vector to the surface normal. Simply take the Vector from centroid to
 		// a corner point
-		Vector3d perp = new Vector3d(start.getPosition()[0]);
+		Vector3f perp = new Vector3f(start.getPosition()[0]);
 		perp.sub(cent);
 		perp.normalize();
 
-		Double normalCurvature[] = new Double[NUMBER_OF_SEGMENTS];
+		Float normalCurvature[] = new Float[NUMBER_OF_SEGMENTS];
 		Vector3d normalCurvatureDirection[] = new Vector3d[NUMBER_OF_SEGMENTS];
 
 		Quaternion rotQuat = Quaternion.FromAxis(norm, SEGMENT_ANGLE);
@@ -207,13 +208,13 @@ public class CurvatureAnalyzer extends MeshAnalyzer {
 			while (normalCurvature[i] == null && cnt < 20) {
 				cnt++;
 				// Point on tangential plane where perp points to, with current angle
-				Point3d circlePoint = new Point3d(cent.x + perp.x, cent.y + perp.y, cent.z + perp.z);
+				Point3f circlePoint = new Point3f(cent.x + perp.x, cent.y + perp.y, cent.z + perp.z);
 				// Point to indicate direction where to search for intersection. Direction is the
 				// same as normal vector
-				Point3d directionPoint = new Point3d(circlePoint.x + norm.x,
+				Point3f directionPoint = new Point3f(circlePoint.x + norm.x,
 						circlePoint.y + norm.y, circlePoint.z + norm.z);
 
-				Point3d intersectionPoint = new Point3d();
+				Point3f intersectionPoint = new Point3f();
 
 				Triangle intersectionTriangle = findIntersectionPoint(directionPoint, circlePoint,
 						start, intersectionPoint, 6);
@@ -223,15 +224,15 @@ public class CurvatureAnalyzer extends MeshAnalyzer {
 					if (g != null)
 						intersectionTriangle.draw(g, new Color(255, 255, 0));
 				} else {
-					perp.scale(0.8); // reduce radius and try again
+					perp.scale(0.8f); // reduce radius and try again
 					// logger.debug("scale radius " + i + " for " + start + "  " + perp.length()
 					// + " cnt:" + cnt + " rad:" + radius);
 				}
 			}
 			normalCurvatureDirection[i] = (Vector3d) perp.clone();
 
-			Point3d circlePoint = new Point3d(cent.x + perp.x, cent.y + perp.y, cent.z + perp.z);
-			Point3d directionPoint = new Point3d(circlePoint.x + norm.x, circlePoint.y + norm.y,
+			Point3f circlePoint = new Point3f(cent.x + perp.x, cent.y + perp.y, cent.z + perp.z);
+			Point3f directionPoint = new Point3f(circlePoint.x + norm.x, circlePoint.y + norm.y,
 					circlePoint.z + norm.z);
 
 			if (g != null) {
@@ -240,15 +241,12 @@ public class CurvatureAnalyzer extends MeshAnalyzer {
 				g.strokeWeight(1);
 				g.stroke(255, 0, 0);
 
-				g.line((float) cent.x, (float) cent.y, (float) cent.z, (float) circlePoint.x,
-						(float) circlePoint.y, (float) circlePoint.z);
+				g.line(cent.x, cent.y, cent.z, circlePoint.x, circlePoint.y, circlePoint.z);
 
 				g.stroke(0, 0, 255);
 
 				g.noFill();
-				g.line((float) cent.x, (float) cent.y, (float) cent.z, (float) cent.x
-						+ (float) norm.x, (float) cent.y + (float) norm.y, (float) cent.z
-						+ (float) norm.z);
+				g.line(cent.x, cent.y, cent.z, cent.x + norm.x, cent.y + norm.y, cent.z + norm.z);
 
 				start.draw(g, new Color(0, 255, 0, 125));
 

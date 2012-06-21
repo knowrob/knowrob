@@ -7,11 +7,6 @@
  ******************************************************************************/
 package edu.tum.cs.vis.model.uima.analyzer;
 
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import org.apache.log4j.Logger;
 
 import edu.tum.cs.uima.AnalysisEngine;
@@ -41,28 +36,6 @@ public abstract class MeshAnalyzer extends AnalysisEngine {
 	 * Duration in milliseconds of last process call.
 	 */
 	private long	processDuration		= 0;
-
-	/**
-	 * Executes the given Callable objects in a thread pool and returns when all threads have
-	 * finished and all callable objects have been executed.
-	 * 
-	 * @param threads
-	 *            list of callable objects
-	 */
-	protected void executeInPool(List<Callable<Void>> threads) {
-		int threadNum = Runtime.getRuntime().availableProcessors() * 25;
-		getLogger().debug(
-				"All Threads initialized. Starting Pool with " + threadNum + " threads ...");
-		ExecutorService pool = Executors.newFixedThreadPool(threadNum);
-
-		try {
-			pool.invokeAll(threads);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
-		updateProgress();
-	}
 
 	/**
 	 * Returns the log4j logger for this class

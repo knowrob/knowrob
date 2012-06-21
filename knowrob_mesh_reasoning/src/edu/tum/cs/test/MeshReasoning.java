@@ -48,7 +48,7 @@ public class MeshReasoning {
 	public static void main(String[] args) {
 		DOMConfigurator.configureAndWatch("log4j.xml", 60 * 1000);
 
-		logger.info("MeshReasoning started");
+		logger.info("MeshReasoning started. Parsing model ...");
 
 		// ItemModel model = new ItemModel("/home/stefan/simple_dome.kmz");
 		// ItemModel model = new ItemModel(
@@ -60,17 +60,13 @@ public class MeshReasoning {
 		// ItemModel model = new ItemModel("/home/stefan/CoTeSys/cups/cup_red.kmz");
 		// ItemModel model = new ItemModel("/home/stefan/Downloads/cube.kmz");
 
-		Model model = itemModel.getParser().getModel();
-
-		logger.debug("Parsing model ...");
-
 		if (!itemModel.parseModel()) {
 			throw new RuntimeException("Couldn't parse model. Maybe path to model is wrong.");
 		}
 
+		Model model = itemModel.getParser().getModel();
 		logger.debug("Model parsed. (Vertices: " + model.getVertices().size() + ", Lines: "
 				+ model.getLines().size() + ", Triangles: " + model.getTriangles().size());
-
 		MeshCas cas = new MeshCas();
 
 		/*Group g = new Group();

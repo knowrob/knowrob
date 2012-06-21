@@ -10,7 +10,7 @@ package edu.tum.cs.vis.model.uima.analyzer;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.vecmath.Vector3d;
+import javax.vecmath.Vector3f;
 
 import org.apache.log4j.Logger;
 
@@ -176,10 +176,10 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 		if (annotation == null)
 			return null;
 
-		Vector3d max = annotation.getkMax();
-		Vector3d min = annotation.getkMin();
-		double kMax = max.length();
-		double kMin = min.length();
+		Vector3f max = annotation.getkMax();
+		Vector3f min = annotation.getkMin();
+		float kMax = max.length();
+		float kMin = min.length();
 
 		if (Math.abs(kMax - kMin) < EPSILON_SAME_CURVATURE) {
 			// it is either a plane or sphere

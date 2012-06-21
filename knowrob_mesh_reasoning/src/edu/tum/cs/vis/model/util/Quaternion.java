@@ -7,7 +7,6 @@
  ******************************************************************************/
 package edu.tum.cs.vis.model.util;
 
-import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 
 /**
@@ -24,17 +23,17 @@ public class Quaternion {
 
 	    q = \cos(\theta/2) + \vec{v}\sin(\theta/2) 
 	 */
-	public static Quaternion FromAxis(final Vector3d v, double angle) {
+	public static Quaternion FromAxis(final Vector3f v, double angle) {
 		Vector3f vn = new Vector3f(v);
 		vn.normalize();
 
-		double sinAngle = Math.sin(angle * 0.5f);
+		float sinAngle = (float) Math.sin(angle * 0.5f);
 		return new Quaternion(vn.x * sinAngle, vn.y * sinAngle, vn.z * sinAngle,
-				Math.cos(angle * 0.5f));
+				(float) Math.cos(angle * 0.5f));
 	}
 
 	// Multiplying a quaternion q with a vector v applies the q-rotation to v
-	public static Vector3d rotate(final Vector3d vec, final Quaternion rotQuat,
+	public static Vector3f rotate(final Vector3f vec, final Quaternion rotQuat,
 			final Quaternion rotQuatConjugate) {
 		Vector3f vn = new Vector3f(vec);
 		vn.normalize();
@@ -44,17 +43,17 @@ public class Quaternion {
 		resQuat = vecQuat.mult(rotQuatConjugate);
 		resQuat = rotQuat.mult(resQuat);
 
-		return (new Vector3d(resQuat.x, resQuat.y, resQuat.z));
+		return (new Vector3f(resQuat.x, resQuat.y, resQuat.z));
 	}
 
-	public double	w;
-	public double	x;
+	public float	w;
+	public float	x;
 
-	public double	y;
+	public float	y;
 
-	public double	z;
+	public float	z;
 
-	public Quaternion(double x, double y, double z, double w) {
+	public Quaternion(float x, float y, float z, float w) {
 		this.w = w;
 		this.z = z;
 		this.y = y;

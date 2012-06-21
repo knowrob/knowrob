@@ -11,7 +11,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 
 import javax.vecmath.Point2f;
-import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
@@ -49,12 +48,14 @@ public class Triangle extends DrawObject {
 	/**
 	 * Triangles may have normal vector
 	 */
-	protected Vector3d						normalVector		= null;
+	protected Vector3f						normalVector		= null;
+
+	protected Vector3f						cornerarea			= null;
 
 	/**
 	 * Centroid of triangle
 	 */
-	protected Point3d						centroid;
+	protected Point3f						centroid;
 
 	/**
 	 * List of all direct neighbor triangles
@@ -98,7 +99,7 @@ public class Triangle extends DrawObject {
 					break; // if 2 of 3 points aren't equal, it is no neighbor
 				Point3f p1 = position[i];
 				for (Point3f p2 : neighbor.position) {
-					if (p1.equals(p2)) {
+					if (p1 == p2) {
 						eqCnt++;
 						if (eqCnt == 2) {
 							add = true;
@@ -143,10 +144,30 @@ public class Triangle extends DrawObject {
 			// no texture only color
 			g.beginShape(PConstants.TRIANGLES);
 			for (int i = 0; i < position.length; i++) {
+				g.fill(position[i].color.getRed(), position[i].color.getGreen(),
+						position[i].color.getBlue());
 				g.vertex(position[i].x, position[i].y, position[i].z);
 			}
 
 			g.endShape();
+
+			/*for (int i = 0; i < position.length; i++) {
+				Curvature c = position[i].getCurvature();
+
+				Vector3f dirMin = new Vector3f(c.getPrincipleDirectionMin());
+				dirMin.scale(c.getCurvatureMin() * 100000);
+
+				g.stroke(255, 0, 0);
+				g.line(position[i].x, position[i].y, position[i].z, position[i].x + dirMin.x,
+						position[i].y + dirMin.y, position[i].z + dirMin.z);
+
+				Vector3f dirMax = new Vector3f(c.getPrincipleDirectionMax());
+				dirMax.scale(c.getCurvatureMax() * 1000000);
+
+				g.stroke(255, 255, 0);
+				g.line(position[i].x, position[i].y, position[i].z, position[i].x + dirMax.x,
+						position[i].y + dirMax.y, position[i].z + dirMax.z);
+			}*/
 
 		} else {
 			// has texture
@@ -201,8 +222,15 @@ public class Triangle extends DrawObject {
 	/**
 	 * @return the centroid
 	 */
-	public Point3d getCentroid() {
-		return new Point3d(centroid);
+	public Point3f getCentroid() {
+		return centroid;
+	}
+
+	/**
+	 * @return the cornerarea
+	 */
+	public Vector3f getCornerarea() {
+		return cornerarea;
 	}
 
 	/**
@@ -218,7 +246,7 @@ public class Triangle extends DrawObject {
 	/**
 	 * @return the normalVector
 	 */
-	public Vector3d getNormalVector() {
+	public Vector3f getNormalVector() {
 		return normalVector;
 	}
 
@@ -239,7 +267,7 @@ public class Triangle extends DrawObject {
 	 *            end point of the ray
 	 * @return true if triangle intersects ray
 	 */
-	public boolean intersectsRay(Point3d rayStart, Point3d rayEnd) {
+	public boolean intersectsRay(Point3f rayStart, Point3f rayEnd) {
 		return intersectsRay(rayStart, rayEnd, null);
 	}
 
@@ -261,7 +289,7 @@ public class Triangle extends DrawObject {
 	 *            will be set to the intersection point. Set to null to ignore.
 	 * @return true if triangle intersects ray
 	 */
-	public boolean intersectsRay(Point3d p1, Point3d p2, Point3d intersectionPoint) {
+	public boolean intersectsRay(Point3f p1, Point3f p2, Point3f intersectionPoint) {
 
 		if (position.length != 3) {
 			System.out.println("intersectRay not implemented for not triangles!!");
@@ -305,10 +333,10 @@ public class Triangle extends DrawObject {
 			return false; // => no intersect
 		// for a segment, also test if (r > 1.0) => no intersect
 
-		Point3d intersect = intersectionPoint;
+		Point3f intersect = intersectionPoint;
 
 		if (intersect == null)
-			intersect = new Point3d();
+			intersect = new Point3f();
 
 		intersect.set(dir); // intersect point of ray and plane
 		intersect.scale((float) r);
@@ -363,6 +391,14 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
+	 * @param cornerarea
+	 *            the cornerarea to set
+	 */
+	public void setCornerarea(Vector3f cornerarea) {
+		this.cornerarea = cornerarea;
+	}
+
+	/**
 	 * Set the list of direct neighbor triangles.
 	 * 
 	 * @param neighbors
@@ -374,25 +410,24 @@ public class Triangle extends DrawObject {
 
 	/**
 	 * @param normalVector
-	 *            the normalVector to set
+	 *            * the normalVector to set
 	 */
-	public void setNormalVector(Vector3d normalVector) {
+	public void setNormalVector(Vector3f normalVector) {
 		this.normalVector = normalVector;
 	}
 
 	/**
 	 * @param texPosition
-	 *            the texPosition to set
+	 *            * the texPosition to set
 	 */
 	public void setTexPosition(Point2f[] texPosition) {
 		this.texPosition = texPosition;
 	}
 
 	@Override
-	public void updateNormalVector() {
-		/* Uses Newell's method to calculate normal vector */
-		normalVector = new Vector3d(0, 0, 0);
-		centroid = new Point3d(0, 0, 0);
+	public void updateNormalVector() { /* Uses Newell's method to calculate normal vector */
+		normalVector = new Vector3f(0, 0, 0);
+		centroid = new Point3f(0, 0, 0);
 
 		for (int i = 0; i < position.length; i++) {
 			Vector3f current = new Vector3f(position[i].x, position[i].y, position[i].z);

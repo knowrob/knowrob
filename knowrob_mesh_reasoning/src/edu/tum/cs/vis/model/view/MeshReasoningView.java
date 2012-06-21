@@ -15,7 +15,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.event.MouseInputListener;
-import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.apache.log4j.Logger;
@@ -56,12 +56,12 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	/**
 	 * Start point of mouse click ray
 	 */
-	private Point3d							rayStart			= new Point3d();
+	private Point3f							rayStart			= new Point3f();
 
 	/**
 	 * End point of mouse click ray
 	 */
-	private Point3d							rayEnd				= new Point3d(1, 1, 1);
+	private Point3f							rayEnd				= new Point3f(1, 1, 1);
 
 	/**
 	 * List of all CASes which were manipulated with AnalysisEngines.

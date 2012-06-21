@@ -11,8 +11,6 @@ import java.awt.Color;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import javax.vecmath.Point3f;
-
 import processing.core.PGraphics;
 import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
 
@@ -57,7 +55,7 @@ public abstract class DrawObject implements Serializable {
 	/**
 	 * the position points of the object
 	 */
-	protected Point3f						position[];
+	protected Vertex						position[];
 
 	/**
 	 * Color or texture of the object
@@ -73,7 +71,7 @@ public abstract class DrawObject implements Serializable {
 	 *            number of edges. Line: 2, Triangle: 3
 	 */
 	public DrawObject(final int numberOfEdges) {
-		position = new Point3f[numberOfEdges];
+		position = new Vertex[numberOfEdges];
 	}
 
 	public void addAnnotation(DrawableAnnotation a) {
@@ -137,7 +135,7 @@ public abstract class DrawObject implements Serializable {
 	/**
 	 * @return the position
 	 */
-	public Point3f[] getPosition() {
+	public Vertex[] getPosition() {
 		return position;
 	}
 
@@ -178,7 +176,7 @@ public abstract class DrawObject implements Serializable {
 	 * @param position
 	 *            new position of this object.
 	 */
-	public void setPosition(Point3f[] position) {
+	public void setPosition(Vertex[] position) {
 		this.position = position;
 		updateNormalVector();
 	}
