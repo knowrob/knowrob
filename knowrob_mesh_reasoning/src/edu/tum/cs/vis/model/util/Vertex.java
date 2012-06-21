@@ -35,6 +35,10 @@ public class Vertex extends Point3f {
 		super(x, y, z);
 	}
 
+	public Vertex(Point3f p) {
+		super(p);
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (o == this) {

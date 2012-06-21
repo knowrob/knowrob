@@ -121,7 +121,10 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	/**
 	 * current scale factor
 	 */
-	private float							currentScale		= 40f;
+
+	private float							modelScale			= 1f;
+
+	private float							userScale			= 30f;
 
 	public static int						testIdx				= 0;
 
@@ -151,7 +154,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	@Override
 	public void draw() {
 
-		scale(currentScale);
+		scale(modelScale * userScale);
 		if (backgroundWhite)
 			background(bgcolorWhite.getRed(), bgcolorWhite.getGreen(), bgcolorWhite.getBlue());
 		else
@@ -285,6 +288,14 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		return casList;
 	}
 
+	public float[] getRotation() {
+		return cam.getRotations();
+	}
+
+	public float getScale() {
+		return modelScale;
+	}
+
 	/**
 	 * @return the backgroundWhite
 	 */
@@ -310,9 +321,9 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	public void keyTyped(KeyEvent e) {
 		char c = e.getKeyChar();
 		if (c == '+') {
-			currentScale += 10;
+			userScale += 10;
 		} else if (c == '-') {
-			currentScale = Math.max(10, currentScale - 10);
+			userScale = Math.max(10, userScale - 10);
 		}/* else if (c == 'm') {
 			test++;
 			} else if (c == 'n') {
@@ -486,6 +497,14 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	 */
 	public void setDrawVertexNormals(boolean drawVertexNormals) {
 		this.drawVertexNormals = drawVertexNormals;
+	}
+
+	public void setManualRotation(float pitch, float yaw, float roll) {
+		cam.setRotations(pitch, yaw, roll);
+	}
+
+	public void setScale(float modelScale) {
+		this.modelScale = modelScale;
 	}
 
 	@Override

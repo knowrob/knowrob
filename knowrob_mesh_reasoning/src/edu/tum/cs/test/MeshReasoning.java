@@ -19,6 +19,7 @@ import org.apache.log4j.xml.DOMConfigurator;
 import edu.tum.cs.util.PrintUtil;
 import edu.tum.cs.vis.model.ItemModel;
 import edu.tum.cs.vis.model.Model;
+import edu.tum.cs.vis.model.uima.analyzer.ContainerAnalyzer;
 import edu.tum.cs.vis.model.uima.analyzer.MeshAnalyzer;
 import edu.tum.cs.vis.model.uima.analyzer.NeighborAnalyzer;
 import edu.tum.cs.vis.model.uima.analyzer.PrimitiveAnalyzer;
@@ -58,10 +59,10 @@ public class MeshReasoning {
 		// ItemModel itemModel = new ItemModel("models/quader.dae");
 		// ItemModel itemModel = new ItemModel("models/open_box.kmz");
 
-		// ItemModel itemModel = new ItemModel("models/cup2.kmz");
+		ItemModel itemModel = new ItemModel("models/cup2.kmz");
 		// ItemModel itemModel = new ItemModel("models/sphere.dae");
 		// ItemModel itemModel = new ItemModel("models/two_spheres.dae");
-		ItemModel itemModel = new ItemModel("models/test.dae");
+		// ItemModel itemModel = new ItemModel("models/test.dae");
 
 		// ItemModel itemModel = new ItemModel("models/cylinders.dae");
 		// ItemModel itemModel = new ItemModel("models/CylinderCone.dae");
@@ -93,6 +94,16 @@ public class MeshReasoning {
 				+ ", Triangles: " + model.getTriangles().size() + ")");
 
 		logger.debug("Calculating curvature ...");
+
+		float x = model.getGroup().getMaxX() - model.getGroup().getMinX();
+		float y = model.getGroup().getMaxY() - model.getGroup().getMinY();
+		float z = model.getGroup().getMaxZ() - model.getGroup().getMinZ();
+
+		float max = Math.max(x, Math.max(y, z));
+
+		float scale = 1f / max;
+
+		// float scale = model.normalize();
 		model.normalize();
 		CurvatureCalculation.calculateCurvatures(model);
 
@@ -127,6 +138,7 @@ public class MeshReasoning {
 		ArrayList<MeshAnalyzer> analyzer = new ArrayList<MeshAnalyzer>();
 
 		MeshReasoningView mrv = new MeshReasoningView();
+		// mrv.setScale(scale);
 		MeshReasoningViewControl control = new MeshReasoningViewControl(cas, analyzer, mrv);
 		mrv.setControl(control);
 		mrv.init();
@@ -139,14 +151,17 @@ public class MeshReasoning {
 		frame.setVisible(true);
 
 		NeighborAnalyzer na = new NeighborAnalyzer();
-		PrimitiveAnalyzer pa = new PrimitiveAnalyzer();
 		analyzer.add(na);
+		PrimitiveAnalyzer pa = new PrimitiveAnalyzer();
 		analyzer.add(pa);
+		ContainerAnalyzer ca = new ContainerAnalyzer();
+		analyzer.add(ca);
 
 		Thread.yield();
 
 		na.process(cas);
 		pa.process(cas);
+		ca.process(cas);
 
 	}
 }

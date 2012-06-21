@@ -8,6 +8,7 @@
 package edu.tum.cs.vis.model.uima.cas;
 
 import java.io.Serializable;
+import java.util.HashSet;
 
 import processing.core.PGraphics;
 import edu.tum.cs.uima.Annotation;
@@ -91,6 +92,23 @@ public class MeshCas extends JCas implements Serializable {
 				return ma;
 		}
 		return null;
+	}
+
+	/**
+	 * Searches all annotations which are an instance of the given class.
+	 * 
+	 * @param clazz
+	 *            Type of the annotations to find
+	 * @return the found annotations or empty
+	 */
+	public HashSet<MeshAnnotation> findAnnotations(Class<? extends MeshAnnotation> clazz) {
+		HashSet<MeshAnnotation> an = new HashSet<MeshAnnotation>();
+		for (Annotation a : getAnnotations()) {
+			if (!(a instanceof MeshAnnotation))
+				continue;
+			an.add((MeshAnnotation) a);
+		}
+		return an;
 	}
 
 	/**

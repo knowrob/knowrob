@@ -8,6 +8,7 @@
 package edu.tum.cs.vis.model.uima.analyzer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -48,14 +49,13 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 	static void analyzeVertex(Vertex v) {
 
 		Curvature c = v.getCurvature();
-		PrimitiveType t = getPrimitiveType(v);
 		c.setPrimitiveType(getPrimitiveType(v));
 	}
 
 	private static PrimitiveType getPrimitiveType(Vertex v) {
 
 		Curvature c = v.getCurvature();
-		if (c.getSaturation() < 0.55)
+		if (c.getSaturation() < 0.45)
 			return PrimitiveType.PLANE;
 
 		float hue = c.getHue();
@@ -71,45 +71,8 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 			return PrimitiveType.CONE_CONCAV;
 	}
 
-	private static PrimitiveType getTrianglePrimitiveType(Triangle triangle) {
-		return getTrianglePrimitiveType(triangle, true);
-	}
-
-	private static PrimitiveType getTrianglePrimitiveType(Triangle triangle, boolean checkNeighbors) {
-		int planeCnt = 0;
-		int sphereConvexCnt = 0;
-		int sphereConcavCnt = 0;
-		int coneConvexCnt = 0;
-		int coneConcavCnt = 0;
-		for (Vertex v : triangle.getPosition())
-			if (v.getCurvature().getPrimitiveType() == PrimitiveType.PLANE)
-				planeCnt++;
-			else if (v.getCurvature().getPrimitiveType() == PrimitiveType.SPHERE_CONVEX)
-				sphereConvexCnt++;
-			else if (v.getCurvature().getPrimitiveType() == PrimitiveType.SPHERE_CONCAV)
-				sphereConcavCnt++;
-			else if (v.getCurvature().getPrimitiveType() == PrimitiveType.CONE_CONVEX)
-				coneConvexCnt++;
-			else if (v.getCurvature().getPrimitiveType() == PrimitiveType.CONE_CONCAV)
-				coneConcavCnt++;
-
-		if (checkNeighbors) {
-			for (Triangle t : triangle.getNeighbors()) {
-				PrimitiveType type = getTrianglePrimitiveType(t, false);
-
-				if (type == PrimitiveType.PLANE)
-					planeCnt++;
-				else if (type == PrimitiveType.SPHERE_CONVEX)
-					sphereConvexCnt++;
-				else if (type == PrimitiveType.SPHERE_CONCAV)
-					sphereConcavCnt++;
-				else if (type == PrimitiveType.CONE_CONVEX)
-					coneConvexCnt++;
-				else if (type == PrimitiveType.CONE_CONCAV)
-					coneConcavCnt++;
-			}
-		}
-
+	private static PrimitiveType getTypeForCounts(int planeCnt, int sphereConvexCnt,
+			int sphereConcavCnt, int coneConvexCnt, int coneConcavCnt) {
 		int max = Math.max(
 				planeCnt,
 				Math.max(sphereConvexCnt,
@@ -127,14 +90,37 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 			return PrimitiveType.CONE_CONCAV;
 	}
 
-	ArrayList<Vertex>	allVertices;
+	private static boolean isSamePlane(PrimitiveAnnotation a1, PrimitiveAnnotation a2) {
+		if (!(a1 instanceof PlaneAnnotation && a2 instanceof PlaneAnnotation))
+			return true;
+		return planeAngleWithinTolerance(((PlaneAnnotation) a1).getPlaneNormal(),
+				((PlaneAnnotation) a2).getPlaneNormal());
+	}
 
-	ArrayList<Triangle>	allTriangles;
+	private static boolean planeAngleWithinTolerance(Vector3f norm1, Vector3f norm2) {
+		double dot = norm1.dot(norm2);
+		if (dot > 1.0) // due to floating point arithmetic
+			dot = 1.0;
+
+		// Angle between 0 and 180 degree because angle of normal vector may be exactly 0 or 180
+		// degree for same plane
+		double angle = Math.acos(dot) + Math.PI * 2;
+		angle = angle % Math.PI;
+
+		return (angle <= PLANE_TOLERANCE || angle >= Math.PI - PLANE_TOLERANCE);
+	}
+
+	private final HashMap<Triangle, PrimitiveType>	trianglePrimitiveTypeMap	= new HashMap<Triangle, PrimitiveType>();
+
+	ArrayList<Vertex>								allVertices;
+
+	ArrayList<Triangle>								allTriangles;
 
 	/**
 	 * Number of triangles already elaborated/processed. Used for indicating current process
 	 */
-	final AtomicInteger	itemsElaborated	= new AtomicInteger(0);
+	final AtomicInteger								itemsElaborated				= new AtomicInteger(
+																						0);
 
 	protected void analyzeTriangle(MeshCas cas, Triangle triangle,
 			HashSet<Triangle> alreadyInAnnotation) {
@@ -221,24 +207,56 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 		return "Primitive";
 	}
 
-	private boolean isSamePlane(PrimitiveAnnotation a1, PrimitiveAnnotation a2) {
-		if (!(a1 instanceof PlaneAnnotation && a2 instanceof PlaneAnnotation))
-			return true;
-		return planeAngleWithinTolerance(((PlaneAnnotation) a1).getPlaneNormal(),
-				((PlaneAnnotation) a2).getPlaneNormal());
+	private PrimitiveType getTrianglePrimitiveType(Triangle triangle) {
+		return getTrianglePrimitiveType(triangle, true);
 	}
 
-	private boolean planeAngleWithinTolerance(Vector3f norm1, Vector3f norm2) {
-		double dot = norm1.dot(norm2);
-		if (dot > 1.0) // due to floating point arithmetic
-			dot = 1.0;
+	private PrimitiveType getTrianglePrimitiveType(Triangle triangle, boolean checkNeighbors) {
+		if (!checkNeighbors && trianglePrimitiveTypeMap.containsKey(triangle))
+			return trianglePrimitiveTypeMap.get(triangle);
 
-		// Angle between 0 and 180 degree because angle of normal vector may be exactly 0 or 180
-		// degree for same plane
-		double angle = Math.acos(dot) + Math.PI * 2;
-		angle = angle % Math.PI;
+		int planeCnt = 0;
+		int sphereConvexCnt = 0;
+		int sphereConcavCnt = 0;
+		int coneConvexCnt = 0;
+		int coneConcavCnt = 0;
+		for (Vertex v : triangle.getPosition())
+			if (v.getCurvature().getPrimitiveType() == PrimitiveType.PLANE)
+				planeCnt++;
+			else if (v.getCurvature().getPrimitiveType() == PrimitiveType.SPHERE_CONVEX)
+				sphereConvexCnt++;
+			else if (v.getCurvature().getPrimitiveType() == PrimitiveType.SPHERE_CONCAV)
+				sphereConcavCnt++;
+			else if (v.getCurvature().getPrimitiveType() == PrimitiveType.CONE_CONVEX)
+				coneConvexCnt++;
+			else if (v.getCurvature().getPrimitiveType() == PrimitiveType.CONE_CONCAV)
+				coneConcavCnt++;
 
-		return (angle <= PLANE_TOLERANCE || angle >= Math.PI - PLANE_TOLERANCE);
+		trianglePrimitiveTypeMap.put(
+				triangle,
+				getTypeForCounts(planeCnt, sphereConvexCnt, sphereConcavCnt, coneConvexCnt,
+						coneConcavCnt));
+
+		if (checkNeighbors) {
+			for (Triangle t : triangle.getNeighbors()) {
+				PrimitiveType type = getTrianglePrimitiveType(t, false);
+
+				if (type == PrimitiveType.PLANE)
+					planeCnt += 1;
+				else if (type == PrimitiveType.SPHERE_CONVEX)
+					sphereConvexCnt += 1;
+				else if (type == PrimitiveType.SPHERE_CONCAV)
+					sphereConcavCnt += 1;
+				else if (type == PrimitiveType.CONE_CONVEX)
+					coneConvexCnt += 1;
+				else if (type == PrimitiveType.CONE_CONCAV)
+					coneConcavCnt += 1;
+			}
+		}
+
+		return getTypeForCounts(planeCnt, sphereConvexCnt, sphereConcavCnt, coneConvexCnt,
+				coneConcavCnt);
+
 	}
 
 	/* (non-Javadoc)
@@ -333,6 +351,36 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 			}
 		}
 
+		// Combine neighboring annotations which were previously divided by smaller annotations and
+		// are now neighbors
+		for (Iterator<Annotation> it = cas.getAnnotations().iterator(); it.hasNext();) {
+			Annotation a = it.next();
+			if (a instanceof PrimitiveAnnotation) {
+				PrimitiveAnnotation pa = (PrimitiveAnnotation) a;
+
+				HashSet<MeshAnnotation> neighborAnnotations = new HashSet<MeshAnnotation>();
+				neighborAnnotations = pa.getNeighborAnnotations(cas, pa.getClass());
+				for (MeshAnnotation ma : neighborAnnotations) {
+					PrimitiveAnnotation a1 = (PrimitiveAnnotation) ma;
+					if (pa instanceof ConeAnnotation
+							&& ((ConeAnnotation) pa).isConcav() != ((ConeAnnotation) a1).isConcav()) {
+						continue;
+					} else if (pa instanceof SphereAnnotation
+							&& ((SphereAnnotation) pa).isConcav() != ((SphereAnnotation) a1)
+									.isConcav()) {
+						continue;
+					}
+					synchronized (cas.getAnnotations()) {
+						it.remove();
+					}
+
+					a1.getMesh().getTriangles().addAll(pa.getMesh().getTriangles());
+					a1.updateAnnotationArea();
+					break;
+				}
+			}
+		}
+
 		threads.add(new Callable<Void>() {
 
 			@Override
@@ -349,6 +397,7 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 		});
 
 		ThreadPool.executeInPool(threads);
+
 		itemsElaborated.incrementAndGet();
 
 	}

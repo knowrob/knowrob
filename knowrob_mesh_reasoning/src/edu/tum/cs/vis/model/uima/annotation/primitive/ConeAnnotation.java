@@ -99,6 +99,10 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 	private final boolean					concav;
 	private final Vector3f					centroid		= new Vector3f();
 
+	/**
+	 * Defines the generating axis of the cone. Points into the direction of radiusSmall. Length of
+	 * this vector is half of the height of the cone.
+	 */
 	private final Vector3f					direction		= new Vector3f();
 
 	private float							radiusLarge		= 0;
@@ -150,8 +154,6 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 			max = Math.max(vw.w, max);
 		}
 
-		float factor = 1f / (max - min);
-
 		for (VectorWeight v : intersections) {
 
 			// Color c = Color.getHSBColor((vw.w - min) * factor, 1, 1);
@@ -168,8 +170,8 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 		g.strokeWeight(5);
 
 		g.line(centroid.x, centroid.y, centroid.z, centroid.x + direction.x, centroid.y
-				+ direction.y, centroid.z + direction.z);*/
-
+				+ direction.y, centroid.z + direction.z);
+		*/
 		g.noStroke();
 
 		g.fill(getDrawColor().getRed(), getDrawColor().getGreen(), getDrawColor().getBlue(), 120);
@@ -300,8 +302,6 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 		// Now intersections are found. Find the best fitting line between through these points.
 		// Should be the generating line (line in the middle of cylinder).
 		getBestFittingLine(intersections, direction);
-		direction.normalize();
-
 		double radiusBottom = 0;
 		double radiusTop = 0;
 		double radiusBottomWeight = 0;
@@ -356,6 +356,12 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 		direction.scale((float) (distTop + distBottom) / 2);
 	}
 
+	/**
+	 * dir already normalized
+	 * 
+	 * @param points
+	 * @param dir
+	 */
 	private void getBestFittingLine(ArrayList<VectorWeight> points, Vector3f dir) {
 		// Try to best fit a line through the intersection points:
 
@@ -371,8 +377,8 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 		if (intersections.size() % maxRows > 0)
 			numberOfPoints++;
 
-		SimpleMatrix A = new SimpleMatrix(
-				numberOfPoints == 2 ? numberOfPoints + 1 : numberOfPoints, 4);
+		SimpleMatrix A = new SimpleMatrix(numberOfPoints == 2 ? numberOfPoints + 1
+				: numberOfPoints + 2, 4);
 
 		int row = 0;
 
@@ -392,9 +398,23 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 		@SuppressWarnings("rawtypes")
 		SimpleSVD svd = A.svd();
 
-		dir.x = (float) svd.getV().get(0, 1);
-		dir.y = (float) svd.getV().get(1, 1);
-		dir.z = (float) svd.getV().get(2, 1);
+		// Find column with biggest value (using biggest singular value not working correctly)
+		int idx = 0;
+		float max = 0;
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				if (Math.abs(svd.getV().get(j, i)) > max) {
+					max = (float) Math.abs(svd.getV().get(j, i));
+					idx = i;
+				}
+
+			}
+		}
+
+		dir.x = (float) svd.getV().get(0, idx);
+		dir.y = (float) svd.getV().get(1, idx);
+		dir.z = (float) svd.getV().get(2, idx);
+
 	}
 
 	/**

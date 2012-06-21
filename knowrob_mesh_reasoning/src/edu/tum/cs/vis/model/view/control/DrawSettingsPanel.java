@@ -11,7 +11,9 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
@@ -37,6 +39,7 @@ public class DrawSettingsPanel extends JPanel implements ActionListener {
 	private final JCheckBox			cbxDrawVertexNormals;
 	private final JCheckBox			cbxDrawVertexCurvature;
 	private final JCheckBox			cbxDrawCurvatureColor;
+	private final JButton			btnSetRotation;
 
 	public DrawSettingsPanel(MeshCas cas, MeshReasoningView view) {
 		this.view = view;
@@ -66,6 +69,10 @@ public class DrawSettingsPanel extends JPanel implements ActionListener {
 		cbxDrawCurvatureColor.setSelected(false);
 		this.add(cbxDrawCurvatureColor);
 
+		btnSetRotation = new JButton("Set View");
+		btnSetRotation.addActionListener(this);
+		this.add(btnSetRotation);
+
 	}
 
 	@Override
@@ -78,7 +85,36 @@ public class DrawSettingsPanel extends JPanel implements ActionListener {
 			view.setDrawVertexCurvature(cbxDrawVertexCurvature.isSelected());
 		else if (e.getSource() == cbxDrawCurvatureColor)
 			view.setDrawCurvatureColor(cbxDrawCurvatureColor.isSelected());
+		else if (e.getSource() == btnSetRotation) {
+			String current = Math.round(view.getRotation()[0] * 180f / Math.PI) + ","
+					+ Math.round(view.getRotation()[1] * 180f / Math.PI) + ","
+					+ Math.round(view.getRotation()[2] * 180f / Math.PI);
 
+			String s = (String) JOptionPane.showInputDialog(this,
+					"Enter the view parameters (in degree) in the format 'pitch,yaw,roll'",
+					"View parameters", JOptionPane.PLAIN_MESSAGE, null, null, current);
+
+			// If a string was returned, say so.
+			if ((s != null) && (s.length() > 0)) {
+				String parts[] = s.split(",");
+				if (parts.length != 3) {
+					JOptionPane.showMessageDialog(this, "Invalid format.", "Input error",
+							JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+
+				try {
+					int pitch = Integer.parseInt(parts[0]);
+					int yaw = Integer.parseInt(parts[1]);
+					int roll = Integer.parseInt(parts[2]);
+					view.setManualRotation((float) (pitch * Math.PI / 180f),
+							(float) (yaw * Math.PI / 180f), (float) (roll * Math.PI / 180f));
+				} catch (NumberFormatException ex) {
+					JOptionPane.showMessageDialog(this, "Invalid format.", "Input error",
+							JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+			}
+		}
 	}
-
 }

@@ -515,8 +515,8 @@ public class CurvatureCalculation {
 		int nv = m.getVertices().size();
 		for (int i = 0; i < nv; i++) {
 			Curvature c = m.getVertices().get(i).getCurvature();
-			float H = 0.5f * (c.getCurvatureMax() + c.getCurvatureMin());
-			float K = c.getCurvatureMax() * c.getCurvatureMin();
+			float H = 0.5f * (c.getCurvatureMax() + c.getCurvatureMin()); // mean curvature
+			float K = c.getCurvatureMax() * c.getCurvatureMin(); // gaussian curvature
 			float h = (float) (4.0f / 3.0f * Math
 					.abs(Math.atan2(H * H - K, H * H * Math.signum(H))));
 			float s = (float) ((2 / Math.PI) * Math.atan((2.0f * H * H - K) * cscale));

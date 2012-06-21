@@ -146,7 +146,7 @@ public class Model {
 
 	}
 
-	public void normalize() {
+	public float normalize() {
 		float x = group.getMaxX() - group.getMinX();
 		float y = group.getMaxY() - group.getMinY();
 		float z = group.getMaxZ() - group.getMinZ();
@@ -154,6 +154,7 @@ public class Model {
 		float max = Math.max(x, Math.max(y, z));
 
 		scale(1f / max);
+		return max;
 	}
 
 	/**

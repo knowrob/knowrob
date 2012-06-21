@@ -139,7 +139,7 @@ public class ConeAnnotationPanel extends AnnotationPanel<ConeAnnotation> {
 			txtRadius.setText(String.valueOf(annotation.getRadiusLarge()) + " -> "
 					+ String.valueOf(annotation.getRadiusSmall()));
 			txtDirectionVector.setText(annotation.getDirection().toString());
-			txtHeight.setText(String.valueOf(annotation.getDirection().length()));
+			txtHeight.setText(String.valueOf(annotation.getDirection().length() * 2));
 		}
 
 	}
