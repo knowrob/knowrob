@@ -5,14 +5,16 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 
 import javax.imageio.ImageIO;
 import javax.vecmath.Vector3f;
 
 import processing.core.PApplet;
 import processing.core.PImage;
+import edu.tum.cs.util.FileUtil;
 
 /**
  * A Mesh contains list of Triangles and Lines which represent an Object.
@@ -23,30 +25,12 @@ import processing.core.PImage;
  * @author Stefan Profanter
  * 
  */
-public class Mesh {
+public class Mesh implements Serializable {
 
 	/**
-	 * Convert a file path into a File object with an absolute path relative to a passed in root. If
-	 * path is absolute then a file object constructed from new File(path) is returned, otherwise a
-	 * file object is returned from new File(root, path) if root is not null, otherwise null is
-	 * returned.
-	 * 
-	 * @param root
-	 *            root file path
-	 * @param path
-	 *            relative file path
-	 * @return the absolute path to the file or null if root is null
+	 * auto generated
 	 */
-	public static String getAbsoluteFilePath(String root, String path) {
-		File file = new File(path);
-		if (file.isAbsolute())
-			return file.getAbsolutePath();
-
-		if (root == null)
-			return null;
-
-		return new File(new File(root), path).getAbsolutePath();
-	}
+	private static final long	serialVersionUID	= -2761386921853967131L;
 
 	/**
 	 * Minimum x-position of model
@@ -85,12 +69,12 @@ public class Mesh {
 	/**
 	 * List of all polygons parsed from file
 	 */
-	private LinkedList<Polygon>	polygons			= new LinkedList<Polygon>();
+	private ArrayList<Polygon>	polygons			= new ArrayList<Polygon>();
 
 	/**
 	 * List of all lines parsed from file
 	 */
-	private LinkedList<Line>	lines				= new LinkedList<Line>();
+	private ArrayList<Line>		lines				= new ArrayList<Line>();
 
 	/**
 	 * Draws the bounding box around the model with the current style
@@ -223,7 +207,7 @@ public class Mesh {
 	/**
 	 * @return the lines
 	 */
-	public LinkedList<Line> getLines() {
+	public ArrayList<Line> getLines() {
 		return lines;
 	}
 
@@ -290,7 +274,7 @@ public class Mesh {
 	/**
 	 * @return the polygons
 	 */
-	public LinkedList<Polygon> getPolygons() {
+	public ArrayList<Polygon> getPolygons() {
 		return polygons;
 	}
 
@@ -384,7 +368,7 @@ public class Mesh {
 	 * @param lines
 	 *            the lines to set
 	 */
-	public void setLines(LinkedList<Line> lines) {
+	public void setLines(ArrayList<Line> lines) {
 		this.lines = lines;
 	}
 
@@ -392,7 +376,7 @@ public class Mesh {
 	 * @param polygons
 	 *            the polygons to set
 	 */
-	public void setPolygons(LinkedList<Polygon> polygons) {
+	public void setPolygons(ArrayList<Polygon> polygons) {
 		this.polygons = polygons;
 	}
 
@@ -417,7 +401,8 @@ public class Mesh {
 		for (Polygon tri : polygons) {
 			if (tri.appearance.getImageFileName() == null)
 				continue;
-			String texfile = getAbsoluteFilePath(textureBasePath, tri.appearance.getImageFileName());
+			String texfile = FileUtil.getAbsoluteFilePath(textureBasePath,
+					tri.appearance.getImageFileName());
 			if (pictures.get(texfile) == null) {
 				BufferedImage bimg = null;
 				try {
@@ -444,7 +429,8 @@ public class Mesh {
 			if (tri.appearance.getImageFileName() == null)
 				continue;
 
-			String texfile = getAbsoluteFilePath(textureBasePath, tri.appearance.getImageFileName());
+			String texfile = FileUtil.getAbsoluteFilePath(textureBasePath,
+					tri.appearance.getImageFileName());
 			// PImage tex = applet.loadImage(texfile);
 			PImage tex = pictures.get(texfile);
 

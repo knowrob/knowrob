@@ -20,6 +20,29 @@ import java.util.zip.ZipFile;
 public class FileUtil {
 
 	/**
+	 * Convert a file path into a File object with an absolute path relative to a passed in root. If
+	 * path is absolute then a file object constructed from new File(path) is returned, otherwise a
+	 * file object is returned from new File(root, path) if root is not null, otherwise null is
+	 * returned.
+	 * 
+	 * @param root
+	 *            root file path
+	 * @param path
+	 *            relative file path
+	 * @return the absolute path to the file or null if root is null
+	 */
+	public static String getAbsoluteFilePath(String root, String path) {
+		File file = new File(path);
+		if (file.isAbsolute())
+			return file.getAbsolutePath();
+
+		if (root == null)
+			return null;
+
+		return new File(new File(root), path).getAbsolutePath();
+	}
+
+	/**
 	 * Read a text file and return it as a String.
 	 * 
 	 * @param file
@@ -111,5 +134,4 @@ public class FileUtil {
 		}
 		return true;
 	}
-
 }

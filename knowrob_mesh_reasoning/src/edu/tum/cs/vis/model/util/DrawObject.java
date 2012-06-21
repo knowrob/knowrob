@@ -1,6 +1,7 @@
 package edu.tum.cs.vis.model.util;
 
 import java.awt.Color;
+import java.io.Serializable;
 
 import javax.vecmath.Point3f;
 
@@ -12,7 +13,12 @@ import processing.core.PApplet;
  * @author Stefan Profanter
  * 
  */
-public abstract class DrawObject {
+public abstract class DrawObject implements Serializable {
+	/**
+	 * auto generated
+	 */
+	private static final long	serialVersionUID	= -1917773602783043823L;
+
 	/**
 	 * Multiplies the two given matrix. Must have correct size for multiplying.
 	 * 

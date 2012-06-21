@@ -9,7 +9,21 @@ import edu.tum.cs.uima.Feature;
  * 
  */
 public class Area extends Feature {
-	/*
-	 * Not yet implemented
+	private float	squareMM;
+
+	/**
+	 * @return the squareMM
 	 */
+	public float getSquareMM() {
+		return squareMM;
+	}
+
+	/**
+	 * @param squareMM
+	 *            the squareMM to set
+	 */
+	public void setSquareMM(float squareMM) {
+		this.squareMM = squareMM;
+	}
+
 }

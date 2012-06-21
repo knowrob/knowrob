@@ -1,6 +1,7 @@
 package edu.tum.cs.uima;
 
-import java.util.ArrayList;
+import java.io.Serializable;
+import java.util.LinkedList;
 
 /**
  * Dummy for UIMA Framework
@@ -8,18 +9,18 @@ import java.util.ArrayList;
  * @author Stefan Profanter
  * 
  */
-public abstract class JCas {
+public abstract class JCas implements Serializable {
 	/**
 	 * List of annotations for this CAS
 	 */
-	protected ArrayList<Annotation>	annotations	= new ArrayList<Annotation>();
+	protected LinkedList<Annotation>	annotations	= new LinkedList<Annotation>();
 
 	/**
 	 * Dummy for UIMA framework
 	 * 
 	 * @return list of annotations
 	 */
-	public ArrayList<Annotation> getAnnotations() {
+	public LinkedList<Annotation> getAnnotations() {
 		return annotations;
 	}
 
@@ -29,7 +30,7 @@ public abstract class JCas {
 	 * @param annotations
 	 *            value to set
 	 */
-	public void setAnnotations(ArrayList<Annotation> annotations) {
+	public void setAnnotations(LinkedList<Annotation> annotations) {
 		this.annotations = annotations;
 	}
 }

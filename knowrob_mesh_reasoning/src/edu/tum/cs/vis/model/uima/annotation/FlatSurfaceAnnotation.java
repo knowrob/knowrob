@@ -2,11 +2,12 @@ package edu.tum.cs.vis.model.uima.annotation;
 
 import java.awt.Color;
 
-import javax.vecmath.Vector3f;
+import javax.vecmath.Vector3d;
 
 import edu.tum.cs.vis.model.uima.analyzer.FlatSurfaceAnalyzer;
 import edu.tum.cs.vis.model.uima.feature.Area;
 import edu.tum.cs.vis.model.uima.feature.Dimension2D;
+import edu.tum.cs.vis.model.util.Polygon;
 
 /**
  * UIMA Annotation for a flat surface.
@@ -34,7 +35,7 @@ public class FlatSurfaceAnnotation extends MeshAnnotation {
 	/**
 	 * surface normal
 	 */
-	private Vector3f	normalVector;
+	private Vector3d	normalVector;
 
 	/**
 	 * Default constructor
@@ -73,8 +74,22 @@ public class FlatSurfaceAnnotation extends MeshAnnotation {
 	 * 
 	 * @return surface normal
 	 */
-	public Vector3f getNormalVector() {
+	public Vector3d getNormalVector() {
 		return normalVector;
 	}
 
+	public void setFeatures() {
+		if (mesh.getPolygons().size() == 0)
+			return;
+		normalVector = mesh.getPolygons().get(0).getNormalVector();
+
+		float ar = 0;
+
+		for (Polygon p : mesh.getPolygons())
+			ar += p.getArea();
+		area = new Area();
+		area.setSquareMM(ar);
+
+		// TODO calculate dimension
+	}
 }

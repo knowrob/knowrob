@@ -1,6 +1,7 @@
 package edu.tum.cs.vis.model.util;
 
 import java.awt.Color;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.vecmath.Vector3f;
@@ -14,37 +15,41 @@ import processing.core.PApplet;
  * @author Stefan Profanter
  * 
  */
-public class Group {
+public class Group implements Serializable {
 
 	/**
-	 * Minimum x-position of group
+	 * Auto generated
 	 */
-	protected Float				minX		= null;
-	/**
-	 * Maximum x-position of group
-	 */
-	protected Float				maxX		= null;
+	private static final long	serialVersionUID	= -3347910663268579041L;
 	/**
 	 * Minimum x-position of group
 	 */
-	protected Float				minY		= null;
+	protected Float				minX				= null;
 	/**
 	 * Maximum x-position of group
 	 */
-	protected Float				maxY		= null;
+	protected Float				maxX				= null;
 	/**
 	 * Minimum x-position of group
 	 */
-	protected Float				minZ		= null;
+	protected Float				minY				= null;
 	/**
 	 * Maximum x-position of group
 	 */
-	protected Float				maxZ		= null;
+	protected Float				maxY				= null;
+	/**
+	 * Minimum x-position of group
+	 */
+	protected Float				minZ				= null;
+	/**
+	 * Maximum x-position of group
+	 */
+	protected Float				maxZ				= null;
 
 	/**
 	 * Holds the Mesh for this group
 	 */
-	private Mesh				mesh		= new Mesh();
+	private Mesh				mesh				= new Mesh();
 
 	/**
 	 * Name of this group
@@ -54,7 +59,7 @@ public class Group {
 	/**
 	 * Child groups
 	 */
-	private ArrayList<Group>	children	= new ArrayList<Group>();
+	private ArrayList<Group>	children			= new ArrayList<Group>();
 
 	/**
 	 * Add a child to this group

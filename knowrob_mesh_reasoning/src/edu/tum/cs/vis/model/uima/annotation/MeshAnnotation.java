@@ -16,7 +16,9 @@ public abstract class MeshAnnotation extends Annotation {
 	/**
 	 * Mesh which contains the referenced Polygons for which this annotation stands.
 	 */
-	protected Mesh	mesh	= new Mesh();
+	protected Mesh		mesh			= new Mesh();
+
+	protected boolean	drawAnnotation	= true;
 
 	/**
 	 * Draw the annotation with color from <code>getAnnotationColor()</code>
@@ -25,8 +27,10 @@ public abstract class MeshAnnotation extends Annotation {
 	 *            Applet to draw on
 	 */
 	public void draw(PApplet applet) {
-		mesh.drawLines(applet, getAnnotationColor());
-		mesh.drawPolygons(applet, getAnnotationColor());
+		if (drawAnnotation) {
+			mesh.drawLines(applet, getAnnotationColor());
+			mesh.drawPolygons(applet, getAnnotationColor());
+		}
 	}
 
 	/**
@@ -42,6 +46,21 @@ public abstract class MeshAnnotation extends Annotation {
 	 */
 	public Mesh getMesh() {
 		return mesh;
+	}
+
+	/**
+	 * @return the drawAnnotation
+	 */
+	public boolean isDrawAnnotation() {
+		return drawAnnotation;
+	}
+
+	/**
+	 * @param drawAnnotation
+	 *            the drawAnnotation to set
+	 */
+	public void setDrawAnnotation(boolean drawAnnotation) {
+		this.drawAnnotation = drawAnnotation;
 	}
 
 	/**

@@ -1,6 +1,7 @@
 package edu.tum.cs.vis.model.util;
 
 import java.awt.Color;
+import java.io.Serializable;
 
 import processing.core.PImage;
 
@@ -10,31 +11,36 @@ import processing.core.PImage;
  * @author Stefan Profanter
  * 
  */
-public class Appearance {
+public class Appearance implements Serializable {
+	/**
+	 * auto generated
+	 */
+	private static final long	serialVersionUID	= 3878380145216484383L;
+
 	/**
 	 * the Filename of the texture-Image
 	 */
-	private String	imageFileName	= null;
+	private String				imageFileName		= null;
 
 	/**
 	 * an Object reference of a loaded image. Default is null.
 	 */
-	private PImage	imageReference	= null;
+	private PImage				imageReference		= null;
 
 	/**
 	 * the color of the Triangle if the Triangle has no texture Set to null if no fill needed
 	 */
-	private Color	colorFill		= null;
+	private Color				colorFill			= null;
 
 	/**
 	 * the color stroke for Triangle or Line Set to null if no stroke needed
 	 */
-	private Color	colorLine		= null;
+	private Color				colorLine			= null;
 
 	/**
 	 * Thickness of the stroke
 	 */
-	private int		strokeWeight	= 2;
+	private int					strokeWeight		= 2;
 
 	/**
 	 * @return the colorFill

@@ -1,7 +1,7 @@
 package edu.tum.cs.vis.model.util;
 
 import java.awt.Color;
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 import javax.vecmath.Point2f;
 import javax.vecmath.Point3d;
@@ -9,8 +9,11 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 
+import org.apache.log4j.Logger;
+
 import processing.core.PApplet;
 import processing.core.PConstants;
+import edu.tum.cs.vis.model.uima.analyzer.FlatSurfaceAnalyzer;
 
 /**
  * DrawObject which represents a polygon (object with more than 2 points, eg. Triangle).
@@ -19,6 +22,9 @@ import processing.core.PConstants;
  * 
  */
 public class Polygon extends DrawObject {
+
+	private static Logger			logger			= Logger.getLogger(FlatSurfaceAnalyzer.class);
+
 	/**
 	 * Texture-Points
 	 */
@@ -37,7 +43,7 @@ public class Polygon extends DrawObject {
 	/**
 	 * List of all direct neighbor polygons
 	 */
-	protected LinkedList<Polygon>	neighbors;
+	protected ArrayList<Polygon>	neighbors;
 
 	/**
 	 * Add a neighbor to the neighbors list. If list contains already neighbor this method doesn't
@@ -49,11 +55,25 @@ public class Polygon extends DrawObject {
 	 */
 	public void addNeighbor(Polygon neighbor) {
 		if (neighbors == null)
-			neighbors = new LinkedList<Polygon>();
+			neighbors = new ArrayList<Polygon>();
 		if (neighbors.contains(neighbor))
 			return;
-		neighbors.add(neighbor);
-		neighbor.addNeighbor(this);
+
+		boolean add = false;
+		for (Point3f p1 : position) {
+			for (Point3f p2 : neighbor.position) {
+				if (p1.equals(p2))
+					add = true;
+			}
+		}
+		if (add) {
+			synchronized (this) {
+				neighbors.add(neighbor);
+			}
+			synchronized (neighbor) {
+				neighbor.addNeighbor(this);
+			}
+		}
 	}
 
 	/**
@@ -94,13 +114,33 @@ public class Polygon extends DrawObject {
 				normalVector.y+centroid.y, normalVector.z+centroid.z);*/
 	}
 
+	public float getArea() {
+		if (position.length == 3) {
+
+			Point3f v = (Point3f) position[1].clone();
+			v.sub(position[0]);
+			Point3f w = (Point3f) position[2].clone();
+			w.sub(position[0]);
+
+			Vector3f v1 = new Vector3f(v);
+			Vector3f w1 = new Vector3f(w);
+
+			Vector3f cross = new Vector3f();
+			cross.cross(v1, w1);
+			return cross.length() / 2f;
+		}
+
+		logger.error("getArea not implemented for " + position.length + "-Polygon");
+		return 0;
+	}
+
 	/**
 	 * Get list of all direct neighbor polygons.
 	 * 
 	 * @return list of polygons
 	 * @see Polygon#isNeighbor
 	 */
-	public LinkedList<Polygon> getNeighbors() {
+	public ArrayList<Polygon> getNeighbors() {
 		return neighbors;
 	}
 
@@ -135,7 +175,6 @@ public class Polygon extends DrawObject {
 				if (p1.equals(p2))
 					return true;
 			}
-
 		}
 		return false;
 	}
@@ -146,7 +185,7 @@ public class Polygon extends DrawObject {
 	 * @param neighbors
 	 *            polygons list.
 	 */
-	public void setNeighbors(LinkedList<Polygon> neighbors) {
+	public void setNeighbors(ArrayList<Polygon> neighbors) {
 		this.neighbors = neighbors;
 	}
 
