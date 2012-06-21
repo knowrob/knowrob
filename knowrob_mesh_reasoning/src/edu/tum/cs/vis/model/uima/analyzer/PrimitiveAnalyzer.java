@@ -20,6 +20,7 @@ import javax.vecmath.Vector3f;
 import org.apache.log4j.Logger;
 
 import edu.tum.cs.uima.Annotation;
+import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.primitive.ConeAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.primitive.PlaneAnnotation;
@@ -223,8 +224,6 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 	private boolean isSamePlane(PrimitiveAnnotation a1, PrimitiveAnnotation a2) {
 		if (!(a1 instanceof PlaneAnnotation && a2 instanceof PlaneAnnotation))
 			return true;
-		a1.fit();
-		a2.fit();
 		return planeAngleWithinTolerance(((PlaneAnnotation) a1).getPlaneNormal(),
 				((PlaneAnnotation) a2).getPlaneNormal());
 	}
@@ -237,13 +236,7 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 		double angle = Math.acos(dot) + Math.PI * 2;
 		angle = angle % Math.PI;
 
-		boolean isEqual = (angle <= PLANE_TOLERANCE || angle >= Math.PI - PLANE_TOLERANCE);
-		if (!isEqual) {
-			System.out.println("Angle1: " + (Math.acos(dot) * 180f / Math.PI));
-			System.out.println("Angle2: " + (angle * 180f / Math.PI));
-			System.out.println("Eq: " + isEqual + " " + PLANE_TOLERANCE + " " + Math.abs(angle));
-		}
-		return isEqual;
+		return (angle <= PLANE_TOLERANCE || angle >= Math.PI - PLANE_TOLERANCE);
 	}
 
 	/* (non-Javadoc)
@@ -313,39 +306,19 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 					continue;
 				}
 
-				for (Triangle t : pa.getMesh().getTriangles()) {
+				HashSet<MeshAnnotation> neighborAnnotations = new HashSet<MeshAnnotation>();
+				neighborAnnotations = pa.getNeighborAnnotations(cas, PrimitiveAnnotation.class);
+				for (MeshAnnotation ma : neighborAnnotations) {
+					PrimitiveAnnotation a1 = (PrimitiveAnnotation) ma;
 
-					PrimitiveAnnotation a1 = null;
-					PrimitiveAnnotation a2 = null;
-
-					for (Triangle neig : t.getNeighbors()) {
-						if (pa.getMesh().getTriangles().contains(neig))
-							continue;
-
-						PrimitiveAnnotation ma = (PrimitiveAnnotation) cas.findAnnotation(
-								PrimitiveAnnotation.class, neig);
-						if (a1 == null)
-							a1 = ma;
-						else if (a2 == null)
-							a2 = ma;
-						else {
-							if (a1 == ma)
-								a2 = null;
-							else
-								a1 = a2;
-						}
-					}
-					if (a1 == null)
-						continue;
-
-					if (!isSamePlane(a1, a2))
+					if (!isSamePlane(a1, pa))
 						continue;
 
 					float percentage = pa.getArea() / a1.getArea();
 
 					// If annotation is smaller than 5% of the area of the surrounding annotation,
 					// combine both into one
-					if (percentage < 0.10f) {
+					if (percentage < 0.05f) {
 						synchronized (cas.getAnnotations()) {
 							it.remove();
 						}

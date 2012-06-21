@@ -8,8 +8,10 @@
 package edu.tum.cs.vis.model.uima.annotation;
 
 import java.awt.Color;
+import java.util.HashSet;
 
 import processing.core.PGraphics;
+import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.util.Mesh;
 import edu.tum.cs.vis.model.util.Triangle;
 
@@ -82,6 +84,42 @@ public abstract class MeshAnnotation extends DrawableAnnotation {
 	 */
 	public Mesh getMesh() {
 		return mesh;
+	}
+
+	public HashSet<MeshAnnotation> getNeighborAnnotations(MeshCas cas,
+			Class<? extends MeshAnnotation> clazz) {
+		HashSet<MeshAnnotation> annotations = new HashSet<MeshAnnotation>();
+		for (Triangle t : getMesh().getTriangles()) {
+			annotations.addAll(getNeighborAnnotationsForTriangle(cas, clazz, t));
+		}
+		return annotations;
+	}
+
+	public HashSet<MeshAnnotation> getNeighborAnnotationsForTriangle(MeshCas cas,
+			Class<? extends MeshAnnotation> clazz, Triangle t) {
+
+		HashSet<MeshAnnotation> annotations = new HashSet<MeshAnnotation>();
+		/* 
+		 * Triangle has max 3 neighbors
+		 * First iteration set a1 to annotation of neighbor 1, second set a2 to annotation of neighbor 2.
+		 * On third iteration 
+		 */
+
+		PrimitiveAnnotation a1 = null;
+		PrimitiveAnnotation a2 = null;
+
+		// Check all neighbors of the triangle which annotation they have
+		for (Triangle neig : t.getNeighbors()) {
+			// neighbor is in same annotation, skip
+			if (getMesh().getTriangles().contains(neig))
+				continue;
+
+			// Get annotation of triangle
+			MeshAnnotation ma = cas.findAnnotation(clazz, neig);
+			if (ma != null)
+				annotations.add(ma);
+		}
+		return annotations;
 	}
 
 	/**

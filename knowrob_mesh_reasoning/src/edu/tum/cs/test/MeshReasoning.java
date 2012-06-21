@@ -55,9 +55,9 @@ public class MeshReasoning {
 		// ItemModel itemModel = new ItemModel("models/hospital_bed.kmz");
 		// ItemModel itemModel = new ItemModel("models/Expedit_2X4.kmz");
 		// ItemModel itemModel = new ItemModel("models/quader.dae");
-		ItemModel itemModel = new ItemModel("models/open_box.kmz");
+		// ItemModel itemModel = new ItemModel("models/open_box.kmz");
 
-		// ItemModel itemModel = new ItemModel("models/cup2.kmz");
+		ItemModel itemModel = new ItemModel("models/cup2.kmz");
 		// ItemModel itemModel = new ItemModel("models/sphere.dae");
 		// ItemModel itemModel = new ItemModel("models/two_spheres.dae");
 		// ItemModel itemModel = new ItemModel("models/test.dae");
