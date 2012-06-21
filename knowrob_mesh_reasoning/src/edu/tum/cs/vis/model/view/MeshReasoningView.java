@@ -21,11 +21,13 @@ import javax.vecmath.Vector3f;
 import org.apache.log4j.Logger;
 
 import peasy.PeasyCam;
+import processing.core.PConstants;
+import processing.core.PGraphics;
 import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
-import edu.tum.cs.vis.model.uima.annotation.primitive.PlaneAnnotation;
-import edu.tum.cs.vis.model.uima.annotation.primitive.SphereAnnotation;
+import edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation;
+import edu.tum.cs.vis.model.uima.annotation.primitive.ConeAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.util.Triangle;
 
@@ -43,7 +45,39 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	/**
 	 * 
 	 */
-	private static final long				serialVersionUID	= 984696039698156574L;
+	private static final long	serialVersionUID	= 984696039698156574L;
+
+	public static void drawCylinder(PGraphics g, int sides, float r1, float r2, float h) {
+		float angle = (float) (2 * Math.PI / sides);
+		float halfHeight = h / 2;
+		// top
+		g.beginShape();
+		for (int i = 0; i < sides; i++) {
+			float x = (float) (Math.cos(i * angle) * r1);
+			float y = (float) (Math.sin(i * angle) * r1);
+			g.vertex(x, y, -halfHeight);
+		}
+		g.endShape(PConstants.CLOSE);
+		// bottom
+		g.beginShape();
+		for (int i = 0; i < sides; i++) {
+			float x = (float) (Math.cos(i * angle) * r2);
+			float y = (float) (Math.sin(i * angle) * r2);
+			g.vertex(x, y, halfHeight);
+		}
+		g.endShape(PConstants.CLOSE);
+		// draw body
+		g.beginShape(PConstants.TRIANGLE_STRIP);
+		for (int i = 0; i < sides + 1; i++) {
+			float x1 = (float) (Math.cos(i * angle) * r1);
+			float y1 = (float) (Math.sin(i * angle) * r1);
+			float x2 = (float) (Math.cos(i * angle) * r2);
+			float y2 = (float) (Math.sin(i * angle) * r2);
+			g.vertex(x1, y1, -halfHeight);
+			g.vertex(x2, y2, halfHeight);
+		}
+		g.endShape(PConstants.CLOSE);
+	}
 
 	/**
 	 * Cam for manipulating the view
@@ -94,6 +128,9 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	 */
 	private MeshReasoningViewControl		control				= null;
 
+	private static boolean					singleSelect		= false;							// TODO
+																									// remove
+
 	@Override
 	public void draw() {
 
@@ -106,9 +143,9 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		strokeWeight(1);
 		line(0, 0, 0, 1, 0, 0);
 		stroke(0, 125, 0);
-		line(0, 0, 0, 0, 0, 1);
-		stroke(0, 0, 125);
 		line(0, 0, 0, 0, 1, 0);
+		stroke(0, 0, 125);
+		line(0, 0, 0, 0, 0, 1);
 
 		/*strokeWeight(5);
 		stroke(255, 255, 0);
@@ -135,13 +172,30 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		// Must be called AFTER all scale, transform, rotate, ... calls
 		captureViewMatrix();
 
-		getSelectionGraphics().setDrawWithTransparency(selectedAnnotations.size() > 0);
+		getSelectionGraphics().setDrawWithTransparency(
+				selectedAnnotations.size() > 0 || (singleSelect && selectedTriangles.size() > 0)); // TODO
+																									// remove
+																									// last
+		// check
 
 		for (MeshCas c : casList) {
 			c.draw(g);
 			// c.getGroup().draw(g, null);
 		}
 		getSelectionGraphics().setDrawWithTransparency(false);
+
+		if (singleSelect) {
+			if (selectedTriangles.size() == 1) {
+				Triangle t = selectedTriangles.get(0);
+				t.draw(g, new Color(255, 50, 0));
+				for (Triangle n : t.getNeighbors())
+					n.draw(g, new Color(0, 0, 255));
+			} else {
+				for (Triangle t : selectedTriangles)
+					t.draw(g, selectedTriangles.size() > 1 ? new Color(255, 125, 0) : new Color(
+							255, 50, 0));
+			}
+		}
 
 		synchronized (selectedAnnotations) {
 
@@ -156,13 +210,10 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		if (selectedAnnotations.size() == 1) {
 			MeshAnnotation a = selectedAnnotations.get(0);
 
-			if (a instanceof PlaneAnnotation) {
-				PlaneAnnotation an = (PlaneAnnotation) a;
+			if (a instanceof PrimitiveAnnotation) {
+				PrimitiveAnnotation an = (PrimitiveAnnotation) a;
 
 				an.drawPrimitiveAnnotation(g);
-
-			} else if (a instanceof SphereAnnotation) {
-				((SphereAnnotation) a).drawPrimitiveAnnotation(g);
 
 			}
 		}
@@ -233,25 +284,27 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 				}
 			}
 
-			// Check if one of selected triangles is in already selected annotation
-			ArrayList<Triangle> newSelected = new ArrayList<Triangle>();
-			for (Triangle p : selectedTriangles) {
-				synchronized (selectedAnnotations) {
-					for (MeshAnnotation ma : selectedAnnotations)
-						if (ma.meshContainsTriangle(p)) {
-							newSelected.add(p);
-						}
+			if (!singleSelect) {
+				// Check if one of selected triangles is in already selected annotation
+				ArrayList<Triangle> newSelected = new ArrayList<Triangle>();
+				for (Triangle p : selectedTriangles) {
+					synchronized (selectedAnnotations) {
+						for (MeshAnnotation ma : selectedAnnotations)
+							if (ma.meshContainsTriangle(p)) {
+								newSelected.add(p);
+							}
+					}
 				}
-			}
-			if (newSelected.size() > 0) {
-				// Currently selected was in one or more of the selected annotations, so select
-				// out
-				// of current annotations
-				selectedTriangles.clear();
-				selectedTriangles.addAll(newSelected);
-			}
+				if (newSelected.size() > 0) {
+					// Currently selected was in one or more of the selected annotations, so select
+					// out
+					// of current annotations
+					selectedTriangles.clear();
+					selectedTriangles.addAll(newSelected);
+				}
 
-			selectedTrianglesChanged();
+				selectedTrianglesChanged();
+			}
 		}
 
 	}
@@ -309,6 +362,16 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 					}
 			}
 		}
+
+		if (selectedAnnotations.size() == 1) {
+			MeshAnnotation a = selectedAnnotations.get(0);
+
+			if (a instanceof ConeAnnotation) {
+				ConeAnnotation ca = (ConeAnnotation) a;
+				System.out.println("Large: " + ca.getRadiusLarge() + " " + ca.getRadiusSmall());
+			}
+		}
+
 		control.showSelectedAnnotation(selectedAnnotations);
 
 	}

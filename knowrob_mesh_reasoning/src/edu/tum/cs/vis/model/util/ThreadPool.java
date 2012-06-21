@@ -9,8 +9,10 @@ package edu.tum.cs.vis.model.util;
 
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * @author Stefan Profanter
@@ -32,7 +34,16 @@ public class ThreadPool {
 			init();
 
 		try {
-			pool.invokeAll(threads);
+			List<Future<Void>> futures = pool.invokeAll(threads);
+			for (Future<Void> f : futures) {
+				try {
+					f.get(); // If called thread threw an exception, get will throw an
+								// ExecutionException
+				} catch (ExecutionException ex) {
+					ex.getCause().printStackTrace(); // Print exceptions from called threads if
+														// there were any
+				}
+			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

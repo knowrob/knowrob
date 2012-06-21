@@ -57,9 +57,9 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 
 		if (hue < 35 * Math.PI / 180 || hue > 230 * Math.PI / 180)
 			return PrimitiveType.SPHERE_CONVEX;
-		else if (hue >= 35 * Math.PI / 180 && hue < 70 * Math.PI / 180)
+		else if (hue >= 35 * Math.PI / 180 && hue < 75 * Math.PI / 180)
 			return PrimitiveType.CONE_CONVEX;
-		else if (hue >= 70 * Math.PI / 180 && hue < 150 * Math.PI / 180)
+		else if (hue >= 75 * Math.PI / 180 && hue < 150 * Math.PI / 180)
 			return PrimitiveType.SPHERE_CONCAV;
 		else
 			// if (hue >= 150*Math.PI/180)

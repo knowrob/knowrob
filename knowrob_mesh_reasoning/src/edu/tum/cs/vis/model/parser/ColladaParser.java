@@ -550,7 +550,9 @@ public class ColladaParser extends ModelParser {
 				textureBasePath += File.separator;
 
 		} else if (extension.equalsIgnoreCase("dae")) {
-			textureBasePath = "";
+			String fullPath = new File(filename).getPath();
+			textureBasePath = fullPath.substring(0, fullPath.length()
+					- new File(filename).getName().length());
 			daeFile = filename;
 		}
 

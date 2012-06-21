@@ -45,7 +45,7 @@ public class SphereAnnotation extends PrimitiveAnnotation {
 	 */
 	@Override
 	public void drawPrimitiveAnnotation(PGraphics g) {
-		g.fill(getDrawColor().getRed(), getDrawColor().getGreen(), getDrawColor().getBlue());
+		g.fill(getDrawColor().getRed(), getDrawColor().getGreen(), getDrawColor().getBlue(), 50);
 		g.translate(center.x, center.y, center.z);
 		g.sphere(radius);
 	}

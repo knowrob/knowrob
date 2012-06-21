@@ -59,8 +59,13 @@ public class MeshReasoning {
 
 		// ItemModel itemModel = new ItemModel("models/cup2.kmz");
 		// ItemModel itemModel = new ItemModel("models/sphere.dae");
-		// ItemModel itemModel = new ItemModel("models/halfsphere.kmz");
+		// ItemModel itemModel = new ItemModel("models/two_spheres.dae");
 		// ItemModel itemModel = new ItemModel("models/test.dae");
+
+		// ItemModel itemModel = new ItemModel("models/cylinders.dae");
+		// ItemModel itemModel = new ItemModel("models/CylinderCone.dae");
+		// ItemModel itemModel = new ItemModel("models/flatcylinder.dae");
+		// ItemModel itemModel = new ItemModel("models/cylinderpart.dae");
 		// ItemModel itemModel = new ItemModel("models/pyramid.dae");
 		// ItemModel itemModel = new ItemModel("models/Skateboard.dae");
 		// ItemModel itemModel = new ItemModel("models/Table.dae");

@@ -404,7 +404,7 @@ public class Triangle extends DrawObject {
 		int cnt = 0;
 		for (Point3f p1 : position) {
 			for (Point3f p2 : tr.position) {
-				if (p1.equals(p2)) {
+				if (p1 == p2) {
 					cnt++;
 					if (cnt >= 2)
 						return true;
