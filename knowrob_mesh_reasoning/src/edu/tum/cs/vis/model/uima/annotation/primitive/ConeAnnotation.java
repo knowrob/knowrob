@@ -455,6 +455,13 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 		return radiusSmall;
 	}
 
+	public float getVolume() {
+
+		float h = direction.length() * 2;
+		return (float) ((h * Math.PI) / 3f * (Math.pow(radiusLarge, 2) + radiusLarge * radiusSmall + Math
+				.pow(radiusSmall, 2)));
+	}
+
 	/**
 	 * @return the concav
 	 */

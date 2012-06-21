@@ -24,6 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import edu.tum.cs.uima.Annotation;
+import edu.tum.cs.vis.model.uima.annotation.ContainerAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.primitive.ConeAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.primitive.PlaneAnnotation;
@@ -31,6 +32,7 @@ import edu.tum.cs.vis.model.uima.annotation.primitive.SphereAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.view.control.AnnotationPanel;
 import edu.tum.cs.vis.model.view.control.ConeAnnotationPanel;
+import edu.tum.cs.vis.model.view.control.ContainerAnnotationPanel;
 import edu.tum.cs.vis.model.view.control.PlaneAnnotationPanel;
 import edu.tum.cs.vis.model.view.control.SphereAnnotationPanel;
 
@@ -180,6 +182,8 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 			return new SphereAnnotationPanel(cas);
 		else if (clazz == PlaneAnnotation.class)
 			return new PlaneAnnotationPanel(cas);
+		else if (clazz == ContainerAnnotation.class)
+			return new ContainerAnnotationPanel(cas);
 
 		System.err
 				.println("Update createPanelForAnnotation() in MeshCasAccordion.java for creating AnnotationPanel for "
@@ -364,7 +368,7 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 			if (selectedAnnotation != null && selectedAnnotation.getClass() == cl) {
 				i.component.setSelected(selectedAnnotation);
 				selBar = i;
-			} else {
+			} else if (i.component != null) {
 				i.component.setSelected(null);
 			}
 		}

@@ -59,10 +59,10 @@ public class MeshReasoning {
 		// ItemModel itemModel = new ItemModel("models/quader.dae");
 		// ItemModel itemModel = new ItemModel("models/open_box.kmz");
 
-		ItemModel itemModel = new ItemModel("models/cup2.kmz");
+		// ItemModel itemModel = new ItemModel("models/cup2.kmz");
 		// ItemModel itemModel = new ItemModel("models/sphere.dae");
 		// ItemModel itemModel = new ItemModel("models/two_spheres.dae");
-		// ItemModel itemModel = new ItemModel("models/test.dae");
+		ItemModel itemModel = new ItemModel("models/test.dae");
 
 		// ItemModel itemModel = new ItemModel("models/cylinders.dae");
 		// ItemModel itemModel = new ItemModel("models/CylinderCone.dae");
