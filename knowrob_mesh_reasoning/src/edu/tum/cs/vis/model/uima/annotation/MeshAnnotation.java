@@ -59,11 +59,9 @@ public abstract class MeshAnnotation extends DrawableAnnotation {
 	}
 
 	@Override
-	public void drawAnnotation(PGraphics g) {
-		if (drawAnnotation) {
-			mesh.drawLines(g, getDrawColor());
-			mesh.drawTriangles(g, getDrawColor());
-		}
+	protected void drawAnnotation(PGraphics g) {
+		mesh.drawLines(g, getDrawColor());
+		mesh.drawTriangles(g, getDrawColor());
 	}
 
 	/**

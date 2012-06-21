@@ -665,6 +665,9 @@ public class Model {
 		float cscale = 10.0f * 10 * typical_scale();
 		cscale = cscale * cscale;
 
+		float min = Float.MAX_VALUE;
+		float max = Float.MIN_VALUE;
+
 		int nv = vertices.size();
 		for (int i = 0; i < nv; i++) {
 			Curvature c = vertices.get(i).getCurvature();
@@ -673,12 +676,15 @@ public class Model {
 			float h = (float) (4.0f / 3.0f * Math
 					.abs(Math.atan2(H * H - K, H * H * Math.signum(H))));
 			float s = (float) ((2 / Math.PI) * Math.atan((2.0f * H * H - K) * cscale));
+			min = Math.min(h, min);
+			max = Math.max(h, max);
 			if (setColor) {
 				vertices.get(i).color = hsv2srgb(h, s, 1.0f);
 			}
 			vertices.get(i).getCurvature().setHue(h);
 			vertices.get(i).getCurvature().setSaturation(s);
 		}
+		System.out.println("Min:" + min + " Max:" + max);
 	}
 
 	/**

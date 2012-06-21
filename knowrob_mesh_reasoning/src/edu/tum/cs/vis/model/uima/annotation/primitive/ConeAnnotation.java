@@ -9,6 +9,7 @@ package edu.tum.cs.vis.model.uima.annotation.primitive;
 
 import java.awt.Color;
 
+import processing.core.PGraphics;
 import edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation;
 
 /**
@@ -30,10 +31,19 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#fit()
+	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#drawAnnotation(processing.core.PGraphics)
 	 */
 	@Override
-	public void fit() {
+	public void drawPrimitiveAnnotation(PGraphics g) {
+		// TODO Auto-generated method stub
+
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#fitAnnotation()
+	 */
+	@Override
+	public void fitAnnotation() {
 		// TODO Auto-generated method stub
 
 	}

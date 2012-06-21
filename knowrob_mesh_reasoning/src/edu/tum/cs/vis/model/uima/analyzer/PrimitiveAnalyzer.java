@@ -9,6 +9,7 @@ package edu.tum.cs.vis.model.uima.analyzer;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -16,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 
+import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.primitive.ConeAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.primitive.PlaneAnnotation;
@@ -53,9 +55,9 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 
 		float hue = c.getHue();
 
-		if (hue < 30 * Math.PI / 180)
+		if (hue < 35 * Math.PI / 180 || hue > 230 * Math.PI / 180)
 			return PrimitiveType.SPHERE_CONVEX;
-		else if (hue >= 30 * Math.PI / 180 && hue < 70 * Math.PI / 180)
+		else if (hue >= 35 * Math.PI / 180 && hue < 70 * Math.PI / 180)
 			return PrimitiveType.CONE_CONVEX;
 		else if (hue >= 70 * Math.PI / 180 && hue < 150 * Math.PI / 180)
 			return PrimitiveType.SPHERE_CONCAV;
@@ -65,6 +67,10 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 	}
 
 	private static PrimitiveType getTrianglePrimitiveType(Triangle triangle) {
+		return getTrianglePrimitiveType(triangle, true);
+	}
+
+	private static PrimitiveType getTrianglePrimitiveType(Triangle triangle, boolean checkNeighbors) {
 		int planeCnt = 0;
 		int sphereConvexCnt = 0;
 		int sphereConcavCnt = 0;
@@ -81,6 +87,23 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 				coneConvexCnt++;
 			else if (v.getCurvature().getPrimitiveType() == PrimitiveType.CONE_CONCAV)
 				coneConcavCnt++;
+
+		if (checkNeighbors) {
+			for (Triangle t : triangle.getNeighbors()) {
+				PrimitiveType type = getTrianglePrimitiveType(t, false);
+
+				if (type == PrimitiveType.PLANE)
+					planeCnt++;
+				else if (type == PrimitiveType.SPHERE_CONVEX)
+					sphereConvexCnt++;
+				else if (type == PrimitiveType.SPHERE_CONCAV)
+					sphereConcavCnt++;
+				else if (type == PrimitiveType.CONE_CONVEX)
+					coneConvexCnt++;
+				else if (type == PrimitiveType.CONE_CONCAV)
+					coneConcavCnt++;
+			}
+		}
 
 		int max = Math.max(
 				planeCnt,
@@ -170,8 +193,6 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 			}
 		}
 
-		annotation.fit();
-
 	}
 
 	/* (non-Javadoc)
@@ -194,7 +215,7 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 	 * @see edu.tum.cs.vis.model.uima.analyzer.MeshAnalyzer#processStart(edu.tum.cs.vis.model.uima.cas.MeshCas)
 	 */
 	@Override
-	public void processStart(MeshCas cas) {
+	public void processStart(final MeshCas cas) {
 		allVertices = cas.getModel().getVertices();
 		allTriangles = cas.getModel().getTriangles();
 
@@ -243,6 +264,80 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 
 			ThreadPool.executeInPool(threads);*/
 		};
+
+		// Combine very small annotations with surrounding larger ones
+		for (Iterator<Annotation> it = cas.getAnnotations().iterator(); it.hasNext();) {
+			Annotation a = it.next();
+			if (a instanceof PrimitiveAnnotation) {
+				PrimitiveAnnotation pa = (PrimitiveAnnotation) a;
+
+				if (pa.getArea() == 0) {
+					synchronized (cas.getAnnotations()) {
+						it.remove();
+					}
+					continue;
+				}
+
+				for (Triangle t : pa.getMesh().getTriangles()) {
+
+					PrimitiveAnnotation a1 = null;
+					PrimitiveAnnotation a2 = null;
+
+					for (Triangle neig : t.getNeighbors()) {
+						if (pa.getMesh().getTriangles().contains(neig))
+							continue;
+
+						PrimitiveAnnotation ma = (PrimitiveAnnotation) cas.findAnnotation(
+								PrimitiveAnnotation.class, neig);
+						if (a1 == null)
+							a1 = ma;
+						else if (a2 == null)
+							a2 = ma;
+						else {
+							if (a1 == ma)
+								a2 = null;
+							else
+								a1 = a2;
+						}
+					}
+					if (a1 == null)
+						continue;
+
+					float percentage = pa.getArea() / a1.getArea();
+
+					// If annotation is smaller than 5% of the area of the surrounding annotation,
+					// combine both into one
+					if (percentage < 0.05f) {
+						synchronized (cas.getAnnotations()) {
+							it.remove();
+						}
+
+						a1.getMesh().getTriangles().addAll(pa.getMesh().getTriangles());
+						a1.updateAnnotationArea();
+						break;
+					}
+				}
+			}
+		}
+
+		threads.add(new Callable<Void>() {
+
+			@Override
+			public Void call() throws Exception {
+
+				for (Iterator<Annotation> it = cas.getAnnotations().iterator(); it.hasNext();) {
+					Annotation a = it.next();
+					if (a instanceof PrimitiveAnnotation) {
+						((PrimitiveAnnotation) a).fit();
+					}
+				}
+				return null;
+			}
+		});
+
+		ThreadPool.executeInPool(threads);
+		itemsElaborated.incrementAndGet();
+
 	}
 
 	/* (non-Javadoc)
@@ -251,8 +346,8 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 	@Override
 	public void updateProgress() {
 		if (allVertices != null && allVertices.size() > 0) {
-			setProgress(itemsElaborated.get() / (float) (allVertices.size() + allTriangles.size())
-					* 100.0f);
+			setProgress(itemsElaborated.get()
+					/ (float) (allVertices.size() + allTriangles.size() + 1) * 100.0f);
 		}
 
 	}

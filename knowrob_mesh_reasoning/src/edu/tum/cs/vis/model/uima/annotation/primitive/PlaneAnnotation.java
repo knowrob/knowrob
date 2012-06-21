@@ -16,8 +16,8 @@ import javax.vecmath.Vector3f;
 import org.ejml.simple.SimpleMatrix;
 import org.ejml.simple.SimpleSVD;
 
+import processing.core.PGraphics;
 import edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation;
-import edu.tum.cs.vis.model.util.Triangle;
 import edu.tum.cs.vis.model.util.Vertex;
 
 /**
@@ -33,7 +33,7 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 
 	private final Vector3f		planeNormal			= new Vector3f();
 
-	private final Vector3f		centroid			= new Vector3f();
+	private Vector3f			centroid			= new Vector3f();
 
 	/**
 	 * @param annotationColor
@@ -43,10 +43,24 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#fit()
+	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#drawAnnotation(processing.core.PGraphics)
 	 */
 	@Override
-	public void fit() {
+	public void drawPrimitiveAnnotation(PGraphics g) {
+		g.fill(255, 0, 0);
+		g.stroke(255, 255, 255);
+		g.strokeWeight(2);
+
+		g.line(centroid.x, centroid.y, centroid.z, centroid.x + planeNormal.x, centroid.y
+				+ planeNormal.y, centroid.z + planeNormal.z);
+
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#fitAnnotation()
+	 */
+	@Override
+	public void fitAnnotation() {
 		/*
 		 * Best fitting plane.
 		 * 
@@ -55,7 +69,7 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 		 * 
 		 * Centroid (average values): x0,y0,z0
 		 * 
-		 * To minimize: Sum [|a(xi-x0) + b(yi-y0) + c(zi-z0)|^2 / (a^2+b^2+c^2)]
+		 * To minimize: Sum [|a(xi-x0) + b(yi-y0) + c(zi-z0)|^2]
 		 * 
 		 * 
 		 *   v^T  = [a  b  c]
@@ -72,23 +86,9 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 		 */
 
 		HashMap<Vertex, Float> vertices = new HashMap<Vertex, Float>();
-
-		for (Triangle t : mesh.getTriangles()) {
-			float area = t.getArea();
-			for (Vertex v : t.getPosition()) {
-				float newArea = area;
-				if (vertices.containsKey(v)) {
-
-					newArea += vertices.get(v);
-				} else {
-					centroid.add(v);
-				}
-				vertices.put(v, newArea);
-			}
-		}
+		centroid = getVerticesWithWeight(vertices);
 
 		int numberOfPoints = vertices.size();
-		centroid.scale(1f / numberOfPoints);
 
 		SimpleMatrix A = new SimpleMatrix(
 				numberOfPoints == 3 ? numberOfPoints + 1 : numberOfPoints, 4);
@@ -98,7 +98,7 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 		// Weighted SVD according to
 		// http://www.mathworks.com/matlabcentral/newsreader/view_thread/262996
 		for (Entry<Vertex, Float> e : vertices.entrySet()) {
-			float weight = 1f;// (float) Math.sqrt(e.getValue());
+			float weight = (float) Math.sqrt(e.getValue());
 			Vertex v = e.getKey();
 
 			A.setRow(row++, 0, (v.x - centroid.x) * weight, (v.y - centroid.y) * weight,
@@ -108,11 +108,6 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 		if (numberOfPoints == 3) {
 			A.setRow(row++, 0, 0, 0, 0);
 		}
-
-		/*	A = new SimpleMatrix(new double[][] {
-					{ 3.96248312457049, 5.95010322325526, -0.840121194956109 },
-					{ 0.0763405741678369, 0.143654436390415, -3.40915417593013 },
-					{ 2.12810243823034, 3.00765890048225, -1.01526725361632 } });*/
 
 		@SuppressWarnings("rawtypes")
 		SimpleSVD svd = A.svd();

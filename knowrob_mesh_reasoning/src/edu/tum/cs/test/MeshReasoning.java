@@ -57,14 +57,16 @@ public class MeshReasoning {
 		// ItemModel itemModel = new ItemModel("models/quader.dae");
 		// ItemModel itemModel = new ItemModel("models/open_box.kmz");
 
-		ItemModel itemModel = new ItemModel("models/cup2.kmz");
+		// ItemModel itemModel = new ItemModel("models/cup2.kmz");
+		// ItemModel itemModel = new ItemModel("models/sphere.dae");
+		// ItemModel itemModel = new ItemModel("models/halfsphere.kmz");
 		// ItemModel itemModel = new ItemModel("models/test.dae");
 		// ItemModel itemModel = new ItemModel("models/pyramid.dae");
 		// ItemModel itemModel = new ItemModel("models/Skateboard.dae");
 		// ItemModel itemModel = new ItemModel("models/Table.dae");
 		// ItemModel itemModel = new ItemModel("models/Dome.dae");
 		// ItemModel itemModel = new ItemModel("models/cylinder.dae");
-		// ItemModel itemModel = new ItemModel("models/cup_red.kmz");
+		ItemModel itemModel = new ItemModel("models/cup_red.kmz");
 
 		if (!itemModel.parseModel()) {
 			throw new RuntimeException("Couldn't parse model. Maybe path to model is wrong.");

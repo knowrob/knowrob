@@ -22,10 +22,10 @@ import org.apache.log4j.Logger;
 
 import peasy.PeasyCam;
 import edu.tum.cs.uima.Annotation;
-import edu.tum.cs.vis.model.uima.annotation.CurvatureAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.primitive.PlaneAnnotation;
+import edu.tum.cs.vis.model.uima.annotation.primitive.SphereAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.util.Triangle;
 
@@ -72,8 +72,6 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	 * current scale factor
 	 */
 	private float							currentScale		= 40f;
-
-	public static int						test				= 1175;
 
 	public static int						testIdx				= 0;
 	/**
@@ -161,26 +159,16 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 			if (a instanceof PlaneAnnotation) {
 				PlaneAnnotation an = (PlaneAnnotation) a;
 
-				Triangle t = an.getMesh().getTriangles().get(0);
+				an.drawPrimitiveAnnotation(g);
 
-				g.fill(255, 0, 0);
-				g.stroke(255, 255, 255);
-				g.strokeWeight(2);
-
-				g.line(an.getCentroid().x, an.getCentroid().y, an.getCentroid().z,
-						an.getCentroid().x + an.getPlaneNormal().x,
-						an.getCentroid().y + an.getPlaneNormal().y,
-						an.getCentroid().z + an.getPlaneNormal().z);
+			} else if (a instanceof SphereAnnotation) {
+				((SphereAnnotation) a).drawPrimitiveAnnotation(g);
 
 			}
 		}
 
 		ArrayList<Triangle> allTriangles = casList.get(0).getModel().getTriangles();
 
-		if (MeshReasoningView.test < 0)
-			MeshReasoningView.test = allTriangles.size() - 1;
-		else if (MeshReasoningView.test >= allTriangles.size())
-			MeshReasoningView.test = 0;
 		if (allTriangles.size() > 0)
 
 			// CurvatureAnalyzer.triangleCurvature(allTriangles.get(MeshReasoningView.test),
@@ -211,18 +199,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 			currentScale += 10;
 		} else if (c == '-') {
 			currentScale = Math.max(10, currentScale - 10);
-		} else if (c == 'm') {
-			test++;
-		} else if (c == 'n') {
-			test--;
-		} else if ((c >= '0') && (c <= '9')) {
-			test = (c - '0') * 100;
-		} else if (c == 'k') {
-			testIdx++;
-		} else if (c == 'j') {
-			testIdx--;
 		}
-		System.out.println("test = " + test + " idx: " + testIdx);
 	}
 
 	@Override
@@ -242,14 +219,6 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 				if (p.intersectsRay(rayEnd, rayStart, null)) {
 					selectedTriangles.clear();
 					selectedTriangles.add(p);
-					CurvatureAnnotation annotation = null;
-					for (DrawableAnnotation a : p.getAnnotations())
-						if (a instanceof CurvatureAnnotation)
-							annotation = (CurvatureAnnotation) a;
-					if (annotation != null) {
-						System.out.println("Max: " + annotation.getkMax().length() + " Min:"
-								+ annotation.getkMin().length());
-					}
 					found = true;
 					break;
 				}

@@ -86,7 +86,8 @@ public class MeshCas extends JCas implements Serializable {
 			if (!(a instanceof MeshAnnotation))
 				continue;
 			MeshAnnotation ma = (MeshAnnotation) a;
-			if (ma.getClass() == clazz && ma.getMesh().getTriangles().contains(p))
+			if ((ma.getClass() == clazz || clazz.isInstance(ma))
+					&& ma.getMesh().getTriangles().contains(p))
 				return ma;
 		}
 		return null;
