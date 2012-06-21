@@ -43,7 +43,7 @@ foreach( _in ${inputs} )
 endforeach( _in )
 
 
-add_classpath(${knowrob_cad_models_PACKAGE_PATH}/bin)
-add_runtime_classpath(${knowrob_cad_models_PACKAGE_PATH}/bin)
+add_classpath(${knowrob_cad_parser_PACKAGE_PATH}/bin)
+add_runtime_classpath(${knowrob_cad_parser_PACKAGE_PATH}/bin)
 
 add_java_source_dir(${PROJECT_SOURCE_DIR}/src)
