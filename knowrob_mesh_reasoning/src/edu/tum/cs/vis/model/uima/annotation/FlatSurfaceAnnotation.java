@@ -15,7 +15,7 @@ import javax.vecmath.Vector3d;
 import edu.tum.cs.vis.model.uima.feature.Area;
 import edu.tum.cs.vis.model.uima.feature.Dimension2D;
 import edu.tum.cs.vis.model.uima.feature.NormalVector;
-import edu.tum.cs.vis.model.util.Polygon;
+import edu.tum.cs.vis.model.util.Triangle;
 
 /**
  * UIMA Annotation for a flat surface.
@@ -50,7 +50,7 @@ public class FlatSurfaceAnnotation extends MeshAnnotation {
 	private final NormalVector						normalVector		= new NormalVector();
 
 	private final ArrayList<FlatSurfaceAnnotation>	neighbors			= new ArrayList<FlatSurfaceAnnotation>();
-	private final ArrayList<Polygon>				neighborPolygons	= new ArrayList<Polygon>();
+	private final ArrayList<Triangle>				neighborPolygons	= new ArrayList<Triangle>();
 
 	/**
 	 * Default constructor
@@ -66,7 +66,7 @@ public class FlatSurfaceAnnotation extends MeshAnnotation {
 		}
 	}
 
-	public synchronized void addNeighborPolygon(Polygon p) {
+	public synchronized void addNeighborPolygon(Triangle p) {
 		neighborPolygons.add(p);
 	}
 
@@ -91,7 +91,7 @@ public class FlatSurfaceAnnotation extends MeshAnnotation {
 	/**
 	 * @return the neighborPolygons
 	 */
-	public ArrayList<Polygon> getNeighborPolygons() {
+	public ArrayList<Triangle> getNeighborPolygons() {
 		return neighborPolygons;
 	}
 
@@ -112,8 +112,8 @@ public class FlatSurfaceAnnotation extends MeshAnnotation {
 	}
 
 	private boolean isNeighbor(FlatSurfaceAnnotation fsa) {
-		for (Polygon p : neighborPolygons) {
-			if (fsa.getMesh().getPolygons().contains(p))
+		for (Triangle p : neighborPolygons) {
+			if (fsa.getMesh().getTriangles().contains(p))
 				return true;
 		}
 		return false;
@@ -123,13 +123,13 @@ public class FlatSurfaceAnnotation extends MeshAnnotation {
 	 * Updates the members area, dimension, normalVector
 	 */
 	public void setFeatures() {
-		if (mesh.getPolygons().size() == 0)
+		if (mesh.getTriangles().size() == 0)
 			return;
-		normalVector.set(mesh.getPolygons().get(0).getNormalVector());
+		normalVector.set(mesh.getTriangles().get(0).getNormalVector());
 
 		float ar = 0;
 
-		for (Polygon p : mesh.getPolygons())
+		for (Triangle p : mesh.getTriangles())
 			ar += p.getArea();
 		area.setSquareMM(ar);
 

@@ -1,12 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2012 Stefan Profanter.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Public License v3.0
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/gpl.html
+ * Copyright (c) 2012 Stefan Profanter. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the GNU Public License v3.0 which accompanies
+ * this distribution, and is available at http://www.gnu.org/licenses/gpl.html
  * 
- * Contributors:
- *     Stefan Profanter - initial API and implementation, Year: 2012
+ * Contributors: Stefan Profanter - initial API and implementation, Year: 2012
  ******************************************************************************/
 package edu.tum.cs.vis.model.parser;
 
@@ -60,7 +57,7 @@ import edu.tum.cs.vis.model.util.Appearance;
 import edu.tum.cs.vis.model.util.DrawObject;
 import edu.tum.cs.vis.model.util.Group;
 import edu.tum.cs.vis.model.util.Line;
-import edu.tum.cs.vis.model.util.Polygon;
+import edu.tum.cs.vis.model.util.Triangle;
 
 /**
  * Connection between dae4j library and processing applet. Used to parse COLLADA (.dae) files and
@@ -430,7 +427,7 @@ public class ColladaParser extends ModelParser {
 
 		// one single triangle from the triangle-set
 		for (int i = 0; i < indexes.length; i++) {
-			Polygon tri = new Polygon(3);
+			Triangle tri = new Triangle();
 			tri.setAppearance(appearance);
 
 			if (tri.getAppearance().getImageFileName() != null)
@@ -457,7 +454,7 @@ public class ColladaParser extends ModelParser {
 			tri.updateNormalVector();
 
 			// add it to the Collection
-			currGroup.getMesh().getPolygons().add(tri);
+			currGroup.getMesh().getTriangles().add(tri);
 		}
 
 	}

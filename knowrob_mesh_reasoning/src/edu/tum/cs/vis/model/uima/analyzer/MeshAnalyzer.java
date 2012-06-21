@@ -51,7 +51,6 @@ public abstract class MeshAnalyzer extends AnalysisEngine {
 	 */
 	protected void executeInPool(List<Callable<Void>> threads) {
 		int threadNum = Runtime.getRuntime().availableProcessors() * 25;
-
 		getLogger().debug(
 				"All Threads initialized. Starting Pool with " + threadNum + " threads ...");
 		ExecutorService pool = Executors.newFixedThreadPool(threadNum);

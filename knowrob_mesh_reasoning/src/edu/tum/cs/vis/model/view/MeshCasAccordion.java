@@ -24,10 +24,12 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import edu.tum.cs.uima.Annotation;
+import edu.tum.cs.vis.model.uima.annotation.DihedralAngleSegmentationAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.FlatSurfaceAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.view.control.AnnotationPanel;
+import edu.tum.cs.vis.model.view.control.DihedralAngleSegmentationAnnotationPanel;
 import edu.tum.cs.vis.model.view.control.FlatSurfaceAnnotationPanel;
 
 /**
@@ -172,9 +174,11 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 			MeshCas cas) {
 		if (clazz == FlatSurfaceAnnotation.class)
 			return new FlatSurfaceAnnotationPanel(cas);
+		else if (clazz == DihedralAngleSegmentationAnnotation.class)
+			return new DihedralAngleSegmentationAnnotationPanel(cas);
 
-		System.out
-				.println("Update createPanelForAnnotation() function for creating AnnotationPanel for "
+		System.err
+				.println("Update createPanelForAnnotation() in MeshCasAccordion.java for creating AnnotationPanel for "
 						+ clazz);
 		return null;
 	}

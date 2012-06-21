@@ -28,7 +28,7 @@ import edu.tum.cs.util.FileUtil;
 /**
  * A Mesh contains list of Triangles and Lines which represent an Object.
  * 
- * @see Polygon
+ * @see Triangle
  * @see Line
  * 
  * @author Stefan Profanter
@@ -78,7 +78,7 @@ public class Mesh implements Serializable {
 	/**
 	 * List of all polygons parsed from file
 	 */
-	private ArrayList<Polygon>	polygons			= new ArrayList<Polygon>();
+	private ArrayList<Triangle>	polygons			= new ArrayList<Triangle>();
 
 	/**
 	 * List of all lines parsed from file
@@ -132,7 +132,7 @@ public class Mesh implements Serializable {
 		if (!texturesInitialized)
 			setTextureImage();
 		synchronized (polygons) {
-			for (Polygon tri : polygons) {
+			for (Triangle tri : polygons) {
 				tri.draw(g, overrideColor);
 			}
 		}
@@ -154,7 +154,7 @@ public class Mesh implements Serializable {
 			minZ = Float.MAX_VALUE;
 			maxZ = Float.MIN_VALUE;
 
-			for (Polygon tri : polygons) {
+			for (Triangle tri : polygons) {
 				for (int v = 0; v < 3; v++) {
 					minZ = Math.min(tri.position[v].z, minZ);
 					maxZ = Math.max(tri.position[v].z, maxZ);
@@ -186,7 +186,7 @@ public class Mesh implements Serializable {
 			minY = Float.MAX_VALUE;
 			maxY = Float.MIN_VALUE;
 
-			for (Polygon tri : polygons) {
+			for (Triangle tri : polygons) {
 				for (int v = 0; v < 3; v++) {
 					minY = Math.min(tri.position[v].y, minY);
 					maxY = Math.max(tri.position[v].y, maxY);
@@ -228,9 +228,9 @@ public class Mesh implements Serializable {
 	 *            list where to add intersecting polygons
 	 */
 	public void getIntersectedPolygons(final Point3f rayStart, final Point3f rayEnd,
-			final ArrayList<Polygon> intersectedPolygons) {
+			final ArrayList<Triangle> intersectedPolygons) {
 
-		for (Polygon tri : polygons) {
+		for (Triangle tri : polygons) {
 			if (tri.intersectsRay(rayStart, rayEnd))
 				intersectedPolygons.add(tri);
 		}
@@ -307,7 +307,7 @@ public class Mesh implements Serializable {
 	/**
 	 * @return the polygons
 	 */
-	public ArrayList<Polygon> getPolygons() {
+	public ArrayList<Triangle> getTriangles() {
 		return polygons;
 	}
 
@@ -336,7 +336,7 @@ public class Mesh implements Serializable {
 			minX = Float.MAX_VALUE;
 			maxX = Float.MIN_VALUE;
 
-			for (Polygon tri : polygons) {
+			for (Triangle tri : polygons) {
 				for (int v = 0; v < 3; v++) {
 					minX = Math.min(tri.position[v].x, minX);
 					maxX = Math.max(tri.position[v].x, maxX);
@@ -361,7 +361,7 @@ public class Mesh implements Serializable {
 		float tmp = minX;
 		minX = maxX * (-1);
 		maxX = tmp;
-		for (Polygon tri : polygons) {
+		for (Triangle tri : polygons) {
 			for (int v = 0; v < 3; v++) {
 				tri.position[v].x *= (-1);
 			}
@@ -381,7 +381,7 @@ public class Mesh implements Serializable {
 	 *            The scale factor
 	 */
 	protected void scaleMesh(float factor) {
-		for (Polygon tri : polygons) {
+		for (Triangle tri : polygons) {
 
 			tri.scale(factor);
 		}
@@ -409,7 +409,7 @@ public class Mesh implements Serializable {
 	 * @param polygons
 	 *            the polygons to set
 	 */
-	public void setPolygons(ArrayList<Polygon> polygons) {
+	public void setPolygons(ArrayList<Triangle> polygons) {
 		this.polygons = polygons;
 	}
 
@@ -431,7 +431,7 @@ public class Mesh implements Serializable {
 	private void setTextureImage() {
 		// load all Texture-Images only once (memory efficiency)
 		HashMap<String, PImage> pictures = new HashMap<String, PImage>();
-		for (Polygon tri : polygons) {
+		for (Triangle tri : polygons) {
 			if (tri.appearance.getImageFileName() == null)
 				continue;
 			String texfile = FileUtil.getAbsoluteFilePath(textureBasePath,
@@ -457,7 +457,7 @@ public class Mesh implements Serializable {
 
 		// Now remove offset of texture coordinates because there is a bug with P3D when texture
 		// should repeated
-		for (Polygon tri : polygons) {
+		for (Triangle tri : polygons) {
 
 			if (tri.appearance.getImageFileName() == null)
 				continue;
@@ -507,7 +507,7 @@ public class Mesh implements Serializable {
 		maxY += translation.y;
 		minZ += translation.z;
 		maxZ += translation.z;
-		for (Polygon tri : polygons) {
+		for (Triangle tri : polygons) {
 
 			tri.translate(translation.x, translation.y, translation.z);
 		}

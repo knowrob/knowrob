@@ -1,12 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2012 Stefan Profanter.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Public License v3.0
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/gpl.html
+ * Copyright (c) 2012 Stefan Profanter. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the GNU Public License v3.0 which accompanies
+ * this distribution, and is available at http://www.gnu.org/licenses/gpl.html
  * 
- * Contributors:
- *     Stefan Profanter - initial API and implementation, Year: 2012
+ * Contributors: Stefan Profanter - initial API and implementation, Year: 2012
  ******************************************************************************/
 package edu.tum.cs.vis.model.util;
 
@@ -26,42 +23,42 @@ import processing.core.PGraphics;
 import edu.tum.cs.vis.model.uima.analyzer.FlatSurfaceAnalyzer;
 
 /**
- * DrawObject which represents a polygon (object with more than 2 points, eg. Triangle).
+ * DrawObject which represents a triangle (object with 3 points).
  * 
  * @author Stefan Profanter
  * 
  */
-public class Polygon extends DrawObject {
+public class Triangle extends DrawObject {
 
 	/**
 	 * auto generated
 	 */
-	private static final long		serialVersionUID	= -5164768039180386782L;
+	private static final long				serialVersionUID	= -5164768039180386782L;
 
 	/**
 	 * log4j logger
 	 */
-	private static Logger			logger				= Logger.getLogger(FlatSurfaceAnalyzer.class);
+	private static Logger					logger				= Logger.getLogger(FlatSurfaceAnalyzer.class);
 
 	/**
 	 * Texture-Points
 	 */
-	protected Point2f				texPosition[];
+	protected Point2f						texPosition[];
 
 	/**
 	 * Polygons may have normal vector
 	 */
-	protected Vector3d				normalVector		= null;
+	protected Vector3d						normalVector		= null;
 
 	/**
 	 * Centroid of polygon
 	 */
-	protected Point3d				centroid;
+	protected Point3d						centroid;
 
 	/**
 	 * List of all direct neighbor polygons
 	 */
-	protected ArrayList<Polygon>	neighbors;
+	protected ArrayList<TriangleNeighbor>	neighbors;
 
 	/**
 	 * Initializes a polygon with given number of edges (Triangle: 3)
@@ -69,8 +66,8 @@ public class Polygon extends DrawObject {
 	 * @param numberOfEdges
 	 *            number of edges
 	 */
-	public Polygon(final int numberOfEdges) {
-		super(numberOfEdges);
+	public Triangle() {
+		super(3);
 	}
 
 	/**
@@ -81,27 +78,50 @@ public class Polygon extends DrawObject {
 	 * @param neighbor
 	 *            neighbor to add.
 	 */
-	public void addNeighbor(Polygon neighbor) {
-		if (neighbors == null)
-			neighbors = new ArrayList<Polygon>();
-		if (neighbors.contains(neighbor))
-			return;
-
+	public boolean addNeighbor(Triangle neighbor) {
 		boolean add = false;
-		for (Point3f p1 : position) {
-			for (Point3f p2 : neighbor.position) {
-				if (p1.equals(p2))
-					add = true;
+		TriangleNeighbor newNeig = null;
+		synchronized (this) {
+			if (neighbors == null)
+				neighbors = new ArrayList<TriangleNeighbor>();
+			else
+				for (TriangleNeighbor n : getNeighbors()) {
+					if (n.getPolygon1() == neighbor || n.getPolygon2() == neighbor)
+						return false;
+				}
+
+			int eqCnt = 0;
+
+			for (int i = 0; i < 3; i++) {
+				if (i == 2 && eqCnt == 0)
+					break; // if 2 of 3 points aren't equal, it is no neighbor
+				Point3f p1 = position[i];
+				for (Point3f p2 : neighbor.position) {
+					if (p1.equals(p2)) {
+						eqCnt++;
+						if (eqCnt == 2) {
+							add = true;
+							break;
+						}
+					}
+
+				}
+			}
+
+			if (add) {
+				newNeig = new TriangleNeighbor(this, neighbor);
+				neighbors.add(newNeig);
 			}
 		}
 		if (add) {
-			synchronized (this) {
-				neighbors.add(neighbor);
-			}
 			synchronized (neighbor) {
-				neighbor.addNeighbor(this);
+				if (neighbor.neighbors == null)
+					neighbor.neighbors = new ArrayList<TriangleNeighbor>();
+				neighbor.neighbors.add(newNeig);
 			}
+			return true;
 		}
+		return false;
 	}
 
 	/**
@@ -163,17 +183,24 @@ public class Polygon extends DrawObject {
 			return cross.length() / 2f;
 		}
 
-		logger.error("getArea not implemented for " + position.length + "-Polygon");
+		logger.error("getArea not implemented for " + position.length + "-Triangle");
 		return 0;
+	}
+
+	/**
+	 * @return the centroid
+	 */
+	public Point3d getCentroid() {
+		return new Point3d(centroid);
 	}
 
 	/**
 	 * Get list of all direct neighbor polygons.
 	 * 
 	 * @return list of polygons
-	 * @see Polygon#isNeighbor
+	 * @see Triangle#isNeighbor
 	 */
-	public ArrayList<Polygon> getNeighbors() {
+	public ArrayList<TriangleNeighbor> getNeighbors() {
 		return neighbors;
 	}
 
@@ -308,13 +335,17 @@ public class Polygon extends DrawObject {
 	 *            polygon to check if it is a neighbor
 	 * @return true if <code>tr</code> is a neighbor
 	 */
-	public boolean isNeighbor(Polygon tr) {
+	public boolean isNeighbor(Triangle tr) {
 		if (neighbors != null && neighbors.contains(tr))
 			return true;
+		int cnt = 0;
 		for (Point3f p1 : position) {
 			for (Point3f p2 : tr.position) {
-				if (p1.equals(p2))
-					return true;
+				if (p1.equals(p2)) {
+					cnt++;
+					if (cnt >= 2)
+						return true;
+				}
 			}
 		}
 		return false;
@@ -326,7 +357,7 @@ public class Polygon extends DrawObject {
 	 * @param neighbors
 	 *            polygons list.
 	 */
-	public void setNeighbors(ArrayList<Polygon> neighbors) {
+	public void setNeighbors(ArrayList<TriangleNeighbor> neighbors) {
 		this.neighbors = neighbors;
 	}
 

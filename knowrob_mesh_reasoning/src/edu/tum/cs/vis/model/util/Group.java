@@ -140,7 +140,7 @@ public class Group implements Serializable {
 	 *            list where to add intersecting polygons
 	 */
 	public void getIntersectedPolygons(final Point3f rayStart, final Point3f rayEnd,
-			final ArrayList<Polygon> intersectedPolygons) {
+			final ArrayList<Triangle> intersectedPolygons) {
 		mesh.getIntersectedPolygons(rayStart, rayEnd, intersectedPolygons);
 
 		for (Group g : children) {

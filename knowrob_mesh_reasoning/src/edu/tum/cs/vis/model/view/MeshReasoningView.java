@@ -25,7 +25,7 @@ import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.vis.model.uima.annotation.FlatSurfaceAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
-import edu.tum.cs.vis.model.util.Polygon;
+import edu.tum.cs.vis.model.util.Triangle;
 
 /**
  * Viewing applet for showing the results of the reasoning process.
@@ -79,7 +79,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	/**
 	 * List of selected polygons (polygons which intersect with mouse ray)
 	 */
-	private final ArrayList<Polygon>		selectedPolygons	= new ArrayList<Polygon>();
+	private final ArrayList<Triangle>		selectedPolygons	= new ArrayList<Triangle>();
 	/**
 	 * List of selected annotations (annotations which contain one of selectedPolygons)
 	 */
@@ -191,7 +191,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 
 			boolean found = false;
 			// Check if clicked on one of previous selected polygons
-			for (Polygon p : selectedPolygons) {
+			for (Triangle p : selectedPolygons) {
 				if (p.intersectsRay(rayEnd, rayStart, null)) {
 					selectedPolygons.clear();
 					selectedPolygons.add(p);
@@ -209,8 +209,8 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 			}
 
 			// Check if one of selected polygons is in already selected annotation
-			ArrayList<Polygon> newSelected = new ArrayList<Polygon>();
-			for (Polygon p : selectedPolygons) {
+			ArrayList<Triangle> newSelected = new ArrayList<Triangle>();
+			for (Triangle p : selectedPolygons) {
 				synchronized (selectedAnnotations) {
 					for (MeshAnnotation ma : selectedAnnotations)
 						if (ma.meshContainsPolygon(p)) {
@@ -274,7 +274,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 					continue; // Skip not visible annotations
 				if (selectedAnnotations.contains(ma))
 					continue;
-				for (Polygon p : selectedPolygons)
+				for (Triangle p : selectedPolygons)
 					if (ma.meshContainsPolygon(p)) {
 						synchronized (selectedAnnotations) {
 							selectedAnnotations.add(ma);

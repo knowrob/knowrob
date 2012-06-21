@@ -62,6 +62,7 @@ public abstract class AnnotationPanel<T extends MeshAnnotation> extends JPanel i
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		boolean useRand = false;
+		System.out.println("action");
 		if (e.getActionCommand() == "default_color")
 			useRand = false;
 		else if (e.getActionCommand() == "random_color")
@@ -71,8 +72,10 @@ public abstract class AnnotationPanel<T extends MeshAnnotation> extends JPanel i
 
 		synchronized (cas.getAnnotations()) {
 			for (Annotation a : cas.getAnnotations()) {
-				if (a.getClass() != annotationType)
+				if (a.getClass() != annotationType) {
+					System.out.println(a.getClass());
 					continue;
+				}
 				MeshAnnotation ma = (MeshAnnotation) a;
 				ma.setUseRandomColor(useRand);
 			}

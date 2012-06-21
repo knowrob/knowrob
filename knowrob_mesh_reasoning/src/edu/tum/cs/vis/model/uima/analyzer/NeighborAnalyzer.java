@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.util.Group;
 import edu.tum.cs.vis.model.util.Mesh;
-import edu.tum.cs.vis.model.util.Polygon;
+import edu.tum.cs.vis.model.util.Triangle;
 
 /**
  * Analyzer for a mesh which sets direct neighbors of a triangle.
@@ -49,7 +49,7 @@ public class NeighborAnalyzer extends MeshAnalyzer {
 	 * When calling <code>process</code> all polygons of the group and its children are collected in
 	 * this list to process them afterwards.
 	 */
-	private ArrayList<Polygon>			allPolygons;
+	private ArrayList<Triangle>			allPolygons;
 
 	@Override
 	public Logger getLogger() {
@@ -63,7 +63,7 @@ public class NeighborAnalyzer extends MeshAnalyzer {
 
 	/**
 	 * Called from the worker threads to update current progress cnt will be added to
-	 * polygonsElaborated
+	 * trianglesElaborated
 	 * 
 	 * @param cnt
 	 *            number of elaborated polygons.
@@ -94,10 +94,10 @@ public class NeighborAnalyzer extends MeshAnalyzer {
 	 *            Mesh to process
 	 */
 	void processMesh(final Mesh m) {
-		if (m.getPolygons().size() == 0)
+		if (m.getTriangles().size() == 0)
 			return;
 
-		allPolygons.addAll(m.getPolygons());
+		allPolygons.addAll(m.getTriangles());
 
 	}
 
@@ -105,7 +105,7 @@ public class NeighborAnalyzer extends MeshAnalyzer {
 	public void processStart(MeshCas cas) {
 
 		polygonsElaborated.set(0);
-		allPolygons = new ArrayList<Polygon>();
+		allPolygons = new ArrayList<Triangle>();
 		processGroup(cas.getGroup());
 
 		logger.debug("Number of Polygons: " + allPolygons.size());
@@ -120,7 +120,6 @@ public class NeighborAnalyzer extends MeshAnalyzer {
 		} while (startIdx < allPolygons.size());
 
 		executeInPool(threads);
-
 	}
 
 	@Override
@@ -151,12 +150,14 @@ class NeighborAnalyzerThread implements Callable<Void> {
 	 * List of all polygons. <code>start</code> and <code>end</code> are the indices which indicate
 	 * the range to elaborate.
 	 */
-	final ArrayList<Polygon>		polygons;
+	final ArrayList<Triangle>		polygons;
 
 	/**
 	 * The parent analyzer. Used to update progress.
 	 */
 	private final NeighborAnalyzer	analyzer;
+
+	public static int				elab	= 0;
 
 	/**
 	 * Default constructor.
@@ -170,7 +171,7 @@ class NeighborAnalyzerThread implements Callable<Void> {
 	 * @param analyzer
 	 *            parent analyzer used to update progress.
 	 */
-	public NeighborAnalyzerThread(int start, int end, ArrayList<Polygon> polygons,
+	public NeighborAnalyzerThread(int start, int end, ArrayList<Triangle> polygons,
 			NeighborAnalyzer analyzer) {
 		this.start = start;
 		this.end = end;
@@ -181,13 +182,14 @@ class NeighborAnalyzerThread implements Callable<Void> {
 	@Override
 	public Void call() throws Exception {
 		for (int i = start; i < end; i++) {
-			Polygon tr = polygons.get(i);
+			Triangle tr = polygons.get(i);
 			for (int j = i + 1; j < polygons.size(); j++) {
-				Polygon n = polygons.get(j);
+				Triangle n = polygons.get(j);
 				n.addNeighbor(tr);
 			}
 		}
 		analyzer.polygonsElaborated(end - start);
+		elab += (end - start);
 		return null;
 	}
 

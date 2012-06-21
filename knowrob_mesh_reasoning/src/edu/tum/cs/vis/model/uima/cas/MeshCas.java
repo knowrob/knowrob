@@ -14,7 +14,7 @@ import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.uima.JCas;
 import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.util.Group;
-import edu.tum.cs.vis.model.util.Polygon;
+import edu.tum.cs.vis.model.util.Triangle;
 
 /**
  * UIMA CAS for 3D meshes.
@@ -65,6 +65,7 @@ public class MeshCas extends JCas implements Serializable {
 					continue;
 				MeshAnnotation ma = (MeshAnnotation) a;
 				ma.draw(g);
+
 			}
 		}
 	}
@@ -79,12 +80,12 @@ public class MeshCas extends JCas implements Serializable {
 	 *            annotation must contain this polygon
 	 * @return the found annotation or null
 	 */
-	public MeshAnnotation findAnnotation(Class<? extends MeshAnnotation> clazz, Polygon p) {
+	public MeshAnnotation findAnnotation(Class<? extends MeshAnnotation> clazz, Triangle p) {
 		for (Annotation a : getAnnotations()) {
 			if (!(a instanceof MeshAnnotation))
 				continue;
 			MeshAnnotation ma = (MeshAnnotation) a;
-			if (ma.getClass() == clazz && ma.getMesh().getPolygons().contains(p))
+			if (ma.getClass() == clazz && ma.getMesh().getTriangles().contains(p))
 				return ma;
 		}
 		return null;

@@ -12,7 +12,7 @@ import java.awt.Color;
 import processing.core.PGraphics;
 import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.vis.model.util.Mesh;
-import edu.tum.cs.vis.model.util.Polygon;
+import edu.tum.cs.vis.model.util.Triangle;
 
 /**
  * Base class for all mesh annotations.
@@ -117,8 +117,8 @@ public abstract class MeshAnnotation extends Annotation {
 	 *            polygon to check for
 	 * @return true if annotation includes polygon
 	 */
-	public boolean meshContainsPolygon(final Polygon p) {
-		return mesh.getPolygons().contains(p);
+	public boolean meshContainsPolygon(final Triangle p) {
+		return mesh.getTriangles().contains(p);
 	}
 
 	/**

@@ -61,7 +61,7 @@ public class FlatSurfaceNeighborAnalyzer extends MeshAnalyzer {
 
 	/**
 	 * Called from the worker threads to update current progress cnt will be added to
-	 * polygonsElaborated
+	 * trianglesElaborated
 	 * 
 	 * @param cnt
 	 *            number of elaborated polygons.
