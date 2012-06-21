@@ -11,14 +11,19 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import javax.vecmath.Point2f;
+import javax.vecmath.Point3f;
+import javax.vecmath.Vector2f;
 import javax.vecmath.Vector3f;
 
 import org.ejml.simple.SimpleMatrix;
 import org.ejml.simple.SimpleSVD;
 
+import processing.core.PConstants;
 import processing.core.PGraphics;
 import edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation;
 import edu.tum.cs.vis.model.util.Vertex;
+import edu.tum.cs.vis.model.util.algorithm.BestFitRectangle2D;
 
 /**
  * @author Stefan Profanter
@@ -35,6 +40,11 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 
 	private Vector3f			centroid			= new Vector3f();
 
+	private final Vector3f		shortSide			= new Vector3f();
+	private final Vector3f		longSide			= new Vector3f();
+
+	private final Point3f		corner[]			= new Point3f[4];
+
 	/**
 	 * @param annotationColor
 	 */
@@ -47,12 +57,30 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 	 */
 	@Override
 	public void drawPrimitiveAnnotation(PGraphics g) {
-		g.fill(255, 0, 0);
+		/*g.fill(255, 0, 0);
 		g.stroke(255, 255, 255);
 		g.strokeWeight(2);
 
 		g.line(centroid.x, centroid.y, centroid.z, centroid.x + planeNormal.x, centroid.y
 				+ planeNormal.y, centroid.z + planeNormal.z);
+
+		g.stroke(255, 255, 0);
+		g.line(centroid.x, centroid.y, centroid.z, centroid.x + shortSide.x, centroid.y
+				+ shortSide.y, centroid.z + shortSide.z);
+		g.stroke(255, 0, 255);
+		g.line(centroid.x, centroid.y, centroid.z, centroid.x + longSide.x,
+				centroid.y + longSide.y, centroid.z + longSide.z);*/
+
+		g.fill(getDrawColor().getRed(), getDrawColor().getGreen(), getDrawColor().getBlue(), 120);
+		g.noStroke();
+
+		g.beginShape(PConstants.QUADS);
+
+		for (int i = 0; i < 4; i++) {
+			g.vertex(corner[i].x, corner[i].y, corner[i].z);
+		}
+
+		g.endShape(PConstants.CLOSE);
 
 	}
 
@@ -123,6 +151,8 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 			planeNormal.get(mesh.getTriangles().get(0).getNormalVector());
 		} else
 			planeNormal.normalize();
+
+		updateFeatures(vertices);
 	}
 
 	/**
@@ -139,4 +169,185 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 		return planeNormal;
 	}
 
+	private SimpleMatrix getRotationMatrix(double rot, Vector3f vec) {
+		SimpleMatrix mat = new SimpleMatrix(3, 3);
+
+		double c = Math.cos(rot);
+		double s = Math.sin(rot);
+
+		mat.set(0, 0, c + Math.pow(vec.x, 2) * (1 - c));
+		mat.set(0, 1, vec.x * vec.y * (1 - c) - vec.z * s);
+		mat.set(0, 2, vec.x * vec.z * (1 - c) + vec.y * s);
+
+		mat.set(1, 0, vec.y * vec.x * (1 - c) + vec.z * s);
+		mat.set(1, 1, c + Math.pow(vec.y, 2) * (1 - c));
+		mat.set(1, 2, vec.y * vec.z * (1 - c) - vec.x * s);
+
+		mat.set(2, 0, vec.z * vec.x * (1 - c) - vec.y * s);
+		mat.set(2, 1, vec.z * vec.y * (1 - c) + vec.x * s);
+		mat.set(2, 2, c + Math.pow(vec.z, 2) * (1 - c));
+
+		return mat;
+
+	}
+
+	private Point2f[] projectPlaneInto2D(HashMap<Vertex, Float> vertices, Vector3f v, Vector3f u) {
+
+		// Get an additional vector besides the normal for creating an orthonormal basis
+		Vector3f rightVector = null;
+
+		if (Math.abs(planeNormal.x) > Math.abs(planeNormal.y))
+			rightVector = new Vector3f(0, 1, 0);
+		else
+
+			rightVector = new Vector3f(1, 0, 0);
+
+		// Once you have a normal and a "right," you can calculate an orthonormal basis:
+		v.cross(rightVector, planeNormal);
+		v.normalize();
+
+		u.cross(planeNormal, v);
+
+		Point2f[] points = new Point2f[vertices.size()];
+
+		// And once you have your orthonormal basis, you can simply classify each point by dot
+		// products:
+		int i = 0;
+
+		for (Entry<Vertex, Float> e : vertices.entrySet()) {
+			Vertex p3d = e.getKey();
+			Vector3f po = new Vector3f(p3d);
+			po.sub(centroid);
+			points[i++] = new Point2f(u.dot(po), v.dot(po));
+		}
+
+		return points;
+
+	}
+
+	private void updateFeatures(HashMap<Vertex, Float> vertices) {
+		// Find the 2D minimal bounding box
+
+		Vector3f axisU = new Vector3f();
+		Vector3f axisV = new Vector3f();
+
+		Point2f points[] = projectPlaneInto2D(vertices, axisU, axisV);
+
+		Vector2f axisURect = new Vector2f();
+		Vector2f axisVRect = new Vector2f();
+
+		Point2f corner2d[] = BestFitRectangle2D.getBestFitRectangle(points, axisURect, axisVRect);
+
+		for (int i = 0; i < 4; i++) {
+			Vector3f tmpU = (Vector3f) axisU.clone();
+			Vector3f tmpV = (Vector3f) axisV.clone();
+			tmpV.scale(corner2d[i].x);
+			tmpU.scale(corner2d[i].y);
+			tmpU.add(tmpV);
+			tmpU.add(centroid);
+			corner[i] = new Point3f(tmpU);
+		}
+
+		centroid.scale(0);
+
+		for (int i = 0; i < 4; i++) {
+			centroid.add(corner[i]);
+		}
+		centroid.scale(1f / 4);
+
+		Vector3f c1 = new Vector3f(corner[1]);
+		Vector3f c2 = new Vector3f(corner[2]);
+		Vector3f c3 = new Vector3f(corner[3]);
+		c1.sub(centroid);
+		c2.sub(centroid);
+		c3.sub(centroid);
+
+		c1.add(c2);
+		c1.scale(0.5f);
+		c3.add(c2);
+		c3.scale(0.5f);
+
+		if (c1.length() < c3.length()) {
+			c1.get(shortSide);
+			c3.get(longSide);
+		} else {
+			c3.get(shortSide);
+			c1.get(longSide);
+		}
+
+		/*	float w, h, cx, cy;
+			w = corner2d[2].x - corner2d[0].x;
+			h = corner2d[2].y - corner2d[0].y;
+			cx = corner2d[0].x + w / 2;
+			cy = corner2d[0].y + h / 2;
+
+			Vector3f tmpU = (Vector3f) axisU.clone();
+			Vector3f tmpV = (Vector3f) axisV.clone();
+			tmpV.scale(axisURect.x);
+			tmpU.scale(axisURect.y);
+			tmpU.add(tmpV);
+			Vector3f newDirU = new Vector3f(tmpU);
+			tmpU = (Vector3f) axisU.clone();
+			tmpV = (Vector3f) axisV.clone();
+			tmpV.scale(axisVRect.x);
+			tmpU.scale(axisVRect.y);
+			tmpU.add(tmpV);
+			Vector3f newDirV = new Vector3f(tmpU);
+
+			tmpU = (Vector3f) axisU.clone();
+			tmpV = (Vector3f) axisV.clone();
+			tmpV.scale(cx);
+			tmpU.scale(cy);
+			tmpU.add(tmpV);
+			centroid.add(tmpU);
+
+			/*System.out.println("u: " + axisU);
+			Vector2f tmp = new Vector2f(axisU.x, axisU.y);
+			tmp.normalize();
+			System.out.println("dot: " + tmp + " " + axisURect);
+			double rot = Math.acos(tmp.dot(axisURect));
+			System.out.println("ang:" + rot * 180 / Math.PI);
+
+			SimpleMatrix rotMat = getRotationMatrix(rot, planeNormal);
+
+			SimpleMatrix matU = new SimpleMatrix(3, 1);
+			matU.setColumn(0, 0, axisU.x, axisU.y, axisU.z);
+			SimpleMatrix matV = new SimpleMatrix(3, 1);
+			matV.setColumn(0, 0, axisV.x, axisV.y, axisV.z);
+
+			SimpleMatrix newDirU = rotMat.mult(matU);
+			SimpleMatrix newDirV = rotMat.mult(matV);
+			/*SimpleMatrix newDirU = new SimpleMatrix(3, 1);
+			newDirU.setColumn(0, 0, axisURect.x, axisURect.y, axisU.z);
+			SimpleMatrix newDirV = new SimpleMatrix(3, 1);
+			newDirV.setColumn(0, 0, axisVRect.x, axisVRect.y, axisV.z);*/
+
+		/*if (w > h) {
+			shortSide.x = newDirV.x;
+			shortSide.y = newDirV.y;
+			shortSide.z = newDirV.z;
+			longSide.x = newDirU.x;
+			longSide.y = newDirU.y;
+			longSide.z = newDirU.z;
+
+			shortSide.normalize();
+			shortSide.scale(w / 2);
+			longSide.normalize();
+			longSide.scale(h / 2);
+		} else {
+			shortSide.x = newDirU.x;
+			shortSide.y = newDirU.y;
+			shortSide.z = newDirU.z;
+			longSide.x = newDirV.x;
+			longSide.y = newDirV.y;
+			longSide.z = newDirV.z;
+
+			shortSide.normalize();
+			shortSide.scale(w / 2);
+			longSide.normalize();
+			longSide.scale(h / 2);
+
+		}*/
+
+	}
 }

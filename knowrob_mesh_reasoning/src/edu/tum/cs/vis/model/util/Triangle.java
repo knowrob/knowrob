@@ -60,7 +60,7 @@ public class Triangle extends DrawObject {
 	/**
 	 * List of all direct neighbor triangles
 	 */
-	protected ArrayList<Triangle>	neighbors;
+	protected ArrayList<Triangle>	neighbors			= new ArrayList<Triangle>(3);
 
 	/**
 	 * Initializes a triangle with given number of edges (Triangle: 3)
@@ -83,9 +83,7 @@ public class Triangle extends DrawObject {
 	public boolean addNeighbor(Triangle neighbor) {
 		boolean add = false;
 		synchronized (this) {
-			if (neighbors == null)
-				neighbors = new ArrayList<Triangle>(3);
-			else if (neighbors.contains(neighbor))
+			if (neighbors.contains(neighbor))
 				return false;
 
 			int eqCnt = 0;
@@ -114,8 +112,6 @@ public class Triangle extends DrawObject {
 		}
 		if (add) {
 			synchronized (neighbor) {
-				if (neighbor.neighbors == null)
-					neighbor.neighbors = new ArrayList<Triangle>(3);
 				synchronized (neighbor.neighbors) {
 					neighbor.neighbors.add(this);
 				}
