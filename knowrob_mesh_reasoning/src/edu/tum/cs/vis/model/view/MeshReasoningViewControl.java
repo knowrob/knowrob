@@ -170,9 +170,9 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 	 *            list of currently selected annotations
 	 */
 	public void showSelectedAnnotation(ArrayList<MeshAnnotation> selectedAnnotations) {
-		if (selectedAnnotations.size() == 1)
+		if (selectedAnnotations.size() == 1) {
 			accordion.setSelectedAnnotation(selectedAnnotations.get(0));
-		else
+		} else
 			accordion.setSelectedAnnotation(null);
 	}
 

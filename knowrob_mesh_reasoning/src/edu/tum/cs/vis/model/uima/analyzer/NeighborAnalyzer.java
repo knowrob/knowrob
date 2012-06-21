@@ -32,18 +32,18 @@ public class NeighborAnalyzer extends MeshAnalyzer {
 	/**
 	 * Log4j logger
 	 */
-	private static Logger		logger				= Logger.getLogger(NeighborAnalyzer.class);
+	private static Logger	logger				= Logger.getLogger(NeighborAnalyzer.class);
 
 	/**
 	 * Number of currently processed triangles. Used for progress status.
 	 */
-	private final AtomicInteger	trianglesElaborated	= new AtomicInteger(0);
+	final AtomicInteger		trianglesElaborated	= new AtomicInteger(0);
 
 	/**
 	 * When calling <code>process</code> all triangles of the group and its children are collected
 	 * in this list to process them afterwards.
 	 */
-	ArrayList<Triangle>			allTriangles;
+	ArrayList<Triangle>		allTriangles;
 
 	@Override
 	public Logger getLogger() {
@@ -79,7 +79,7 @@ public class NeighborAnalyzer extends MeshAnalyzer {
 							n.addNeighbor(tr);
 						}
 					}
-					trianglesElaborated(end - st);
+					trianglesElaborated.addAndGet(end - st);
 					return null;
 				}
 
@@ -88,17 +88,6 @@ public class NeighborAnalyzer extends MeshAnalyzer {
 
 		ThreadPool.executeInPool(threads);
 		updateProgress();
-	}
-
-	/**
-	 * Called from the worker threads to update current progress cnt will be added to
-	 * trianglesElaborated
-	 * 
-	 * @param cnt
-	 *            number of elaborated triangles.
-	 */
-	void trianglesElaborated(int cnt) {
-		trianglesElaborated.addAndGet(cnt);
 	}
 
 	@Override

@@ -11,7 +11,6 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 
 import edu.tum.cs.vis.model.util.Group;
 import edu.tum.cs.vis.model.util.Mesh;
@@ -42,8 +41,6 @@ public class CustomParser extends ModelParser {
 			model.setGroup(g);
 			Mesh m = new Mesh();
 			g.setMesh(m);
-
-			ArrayList<Vertex> vertices = new ArrayList<Vertex>();
 
 			boolean isTriangles = false;
 			// Read File Line By Line
@@ -84,7 +81,6 @@ public class CustomParser extends ModelParser {
 
 						if (!t.updateNormalVector()) // Triangle with size 0, skip
 							continue;
-						model.getTriangles().add(t);
 						m.getTriangles().add(t);
 					}
 				}

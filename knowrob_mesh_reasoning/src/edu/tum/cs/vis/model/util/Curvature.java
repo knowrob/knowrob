@@ -9,20 +9,27 @@ package edu.tum.cs.vis.model.util;
 
 import javax.vecmath.Vector3f;
 
+import edu.tum.cs.vis.model.uima.annotation.primitive.PrimitiveType;
+
 /**
  * @author Stefan Profanter
  * 
  */
 public class Curvature {
 
-	private Vector3f	principleDirectionMin	= new Vector3f();
+	private Vector3f		principleDirectionMin	= new Vector3f();
 
-	private Vector3f	principleDirectionMax	= new Vector3f();
+	private Vector3f		principleDirectionMax	= new Vector3f();
 
-	private float		curvatureMin			= 0;
-	private float		curvatureMax			= 0;
+	private float			curvatureMin			= 0;
+	private float			curvatureMax			= 0;
 
-	private float		curvatureMinMax			= 0;
+	private float			curvatureMinMax			= 0;
+
+	private PrimitiveType	primitiveType;
+
+	private float			hue;
+	private float			saturation;
 
 	/**
 	 * @return the curvatureMax
@@ -46,6 +53,20 @@ public class Curvature {
 	}
 
 	/**
+	 * @return the hue
+	 */
+	public float getHue() {
+		return hue;
+	}
+
+	/**
+	 * @return the primitiveType
+	 */
+	public PrimitiveType getPrimitiveType() {
+		return primitiveType;
+	}
+
+	/**
 	 * @return the principleDirectionMax
 	 */
 	public Vector3f getPrincipleDirectionMax() {
@@ -57,6 +78,13 @@ public class Curvature {
 	 */
 	public Vector3f getPrincipleDirectionMin() {
 		return principleDirectionMin;
+	}
+
+	/**
+	 * @return the saturation
+	 */
+	public float getSaturation() {
+		return saturation;
 	}
 
 	/**
@@ -84,6 +112,22 @@ public class Curvature {
 	}
 
 	/**
+	 * @param hue
+	 *            the hue to set
+	 */
+	public void setHue(float hue) {
+		this.hue = hue;
+	}
+
+	/**
+	 * @param primitiveType
+	 *            the primitiveType to set
+	 */
+	public void setPrimitiveType(PrimitiveType primitiveType) {
+		this.primitiveType = primitiveType;
+	}
+
+	/**
 	 * @param principleDirectionMax
 	 *            the principleDirectionMax to set
 	 */
@@ -97,6 +141,14 @@ public class Curvature {
 	 */
 	public void setPrincipleDirectionMin(Vector3f principleDirectionMin) {
 		this.principleDirectionMin = principleDirectionMin;
+	}
+
+	/**
+	 * @param saturation
+	 *            the saturation to set
+	 */
+	public void setSaturation(float saturation) {
+		this.saturation = saturation;
 	}
 
 }

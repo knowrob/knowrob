@@ -114,6 +114,8 @@ public class Triangle extends DrawObject {
 		}
 		if (add) {
 			synchronized (neighbor) {
+				if (neighbor.neighbors == null)
+					neighbor.neighbors = new ArrayList<Triangle>(3);
 				synchronized (neighbor.neighbors) {
 					neighbor.neighbors.add(this);
 				}

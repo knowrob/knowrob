@@ -236,7 +236,6 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 			try {
 				c.call();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		updateProgress();

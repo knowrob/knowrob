@@ -22,11 +22,20 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 	 */
 	private static final long	serialVersionUID	= -7420446109108464883L;
 
-	/**
-	 * @param annotationColor
+	private final boolean		concav;
+
+	public ConeAnnotation(boolean concav) {
+		super(concav ? new Color(0, 125, 125) : new Color(255, 255, 0));
+		this.concav = concav;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#fit()
 	 */
-	public ConeAnnotation() {
-		super(new Color(0, 0, 255));
+	@Override
+	public void fit() {
+		// TODO Auto-generated method stub
+
 	}
 
 }

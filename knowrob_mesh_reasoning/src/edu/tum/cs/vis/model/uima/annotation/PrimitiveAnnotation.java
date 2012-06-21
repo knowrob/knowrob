@@ -22,4 +22,6 @@ public abstract class PrimitiveAnnotation extends MeshAnnotation {
 		super(annotationColor);
 	}
 
+	public abstract void fit();
+
 }

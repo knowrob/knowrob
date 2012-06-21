@@ -100,4 +100,22 @@ public class Vertex extends Point3f {
 		this.pointarea = pointarea;
 	}
 
+	/**
+	 * Apply 4x4 transformation matrix to the vector
+	 * 
+	 * @param matrix
+	 *            the transformation matrix
+	 */
+	public void transform(float[][] matrix) {
+
+		float[] newPos = new float[4];
+		for (int row = 0; row < 4; row++) {
+			newPos[row] = x * matrix[row][0] + y * matrix[row][1] + z * matrix[row][2]
+					+ matrix[row][3];
+		}
+		x = newPos[0] / newPos[3];
+		y = newPos[1] / newPos[3];
+		z = newPos[2] / newPos[3];
+	}
+
 }

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
 
 import javax.vecmath.Point2f;
 import javax.xml.parsers.DocumentBuilder;
@@ -52,7 +53,6 @@ import edu.tum.cs.util.FileUtil;
 import edu.tum.cs.util.ResourceRetriever;
 import edu.tum.cs.vis.model.Model;
 import edu.tum.cs.vis.model.util.Appearance;
-import edu.tum.cs.vis.model.util.DrawObject;
 import edu.tum.cs.vis.model.util.Group;
 import edu.tum.cs.vis.model.util.Line;
 import edu.tum.cs.vis.model.util.Triangle;
@@ -195,7 +195,14 @@ public class ColladaParser extends ModelParser {
 			System.out.println("Couldn't get .dae location from doc.kml");
 			return null;
 		}
-		return tmpPath + loc;
+
+		String ret = tmpPath + loc;
+		if (File.separator.equals("\\")) {
+			ret = ret.replaceAll("/", Matcher.quoteReplacement(File.separator));
+		} else {
+			ret = ret.replaceAll("\\\\", Matcher.quoteReplacement(File.separator));
+		}
+		return ret;
 	}
 
 	/**
@@ -286,17 +293,19 @@ public class ColladaParser extends ModelParser {
 		Mesh m = g.getMesh();
 		ArrayList<Vertex> vertices = getVerticesOfMesh(m);
 
+		for (Vertex v : vertices) {
+			useTransformation(v, transformations);
+		}
+
 		currGroup.getModel().getVertices().addAll(vertices);
 
 		for (Primitives p : m.getPrimitives()) {
 			if (p instanceof Triangles) {
 				Triangles t = (Triangles) p;
-				parseGeometryTriangle(t, currGroup, instanceMaterial, transformations, collada,
-						vertices, m);
+				parseGeometryTriangle(t, currGroup, instanceMaterial, collada, vertices, m);
 			} else if (p instanceof Lines) {
 				Lines l = (Lines) p;
-				parseGeometryLine(l, currGroup, instanceMaterial, transformations, collada,
-						vertices);
+				parseGeometryLine(l, currGroup, instanceMaterial, collada, vertices);
 			}
 		}
 	}
@@ -317,8 +326,7 @@ public class ColladaParser extends ModelParser {
 	 *            the collada Structure
 	 */
 	private static void parseGeometryLine(Lines l, Group currGroup,
-			HashMap<String, String> instanceMaterial, ArrayList<BaseXform> transformations,
-			Collada collada, ArrayList<Vertex> vertices) {
+			HashMap<String, String> instanceMaterial, Collada collada, ArrayList<Vertex> vertices) {
 		Material mat = null;
 		if (instanceMaterial.containsKey(l.getMaterial())) {
 			mat = collada.findMaterial(instanceMaterial.get(l.getMaterial()));
@@ -362,7 +370,7 @@ public class ColladaParser extends ModelParser {
 			line.updateNormalVector();
 			i -= 2;
 
-			useTransformation(line, transformations);
+			// useTransformation(line, transformations);
 			// add it to the Collection
 			currGroup.getMesh().getLines().add(line);
 			currGroup.getModel().getLines().add(line);
@@ -385,8 +393,8 @@ public class ColladaParser extends ModelParser {
 	 *            the collada Structure
 	 */
 	private static void parseGeometryTriangle(Triangles t, Group currGroup,
-			HashMap<String, String> instanceMaterial, ArrayList<BaseXform> transformations,
-			Collada collada, ArrayList<Vertex> vertices, Mesh m) {
+			HashMap<String, String> instanceMaterial, Collada collada, ArrayList<Vertex> vertices,
+			Mesh m) {
 		Appearance appearance;
 		if (instanceMaterial.containsKey(t.getMaterial())) {
 			Material mat = collada.findMaterial(instanceMaterial.get(t.getMaterial()));
@@ -450,7 +458,6 @@ public class ColladaParser extends ModelParser {
 			}
 			i--;
 
-			useTransformation(tri, transformations);
 			if (!tri.updateNormalVector()) // Triangle with size 0, skip
 				continue;
 
@@ -478,14 +485,14 @@ public class ColladaParser extends ModelParser {
 	}
 
 	/**
-	 * Applies the list of transformations in the correct order to the DrawObject (Line / Triangle)
+	 * Applies the list of transformations in the correct order to the vertex
 	 * 
-	 * @param obj
-	 *            Object to apply the transformation onto
+	 * @param vertex
+	 *            vertex to apply the transformation onto
 	 * @param transformations
 	 *            list of transformations to apply
 	 */
-	private static void useTransformation(DrawObject obj, ArrayList<BaseXform> transformations) {
+	private static void useTransformation(Vertex vertex, ArrayList<BaseXform> transformations) {
 		for (int idx = transformations.size() - 1; idx >= 0; idx--) {
 			BaseXform transform = transformations.get(idx);
 			if (transform instanceof Matrix) {
@@ -497,7 +504,7 @@ public class ColladaParser extends ModelParser {
 						v++;
 					}
 				}
-				obj.transform(matrix);
+				vertex.transform(matrix);
 			} else {
 				System.out.println("Transformation not implemented: ");
 				transform.dump(System.out, 4);

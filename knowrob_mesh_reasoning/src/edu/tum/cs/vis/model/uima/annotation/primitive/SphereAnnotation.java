@@ -22,11 +22,20 @@ public class SphereAnnotation extends PrimitiveAnnotation {
 	 */
 	private static final long	serialVersionUID	= 4870579150170536881L;
 
-	/**
-	 * @param annotationColor
+	private final boolean		concav;
+
+	public SphereAnnotation(boolean concav) {
+		super(concav ? new Color(0, 255, 0) : new Color(255, 0, 0));
+		this.concav = concav;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#fit()
 	 */
-	public SphereAnnotation() {
-		super(new Color(255, 255, 0));
+	@Override
+	public void fit() {
+		// TODO Auto-generated method stub
+
 	}
 
 }

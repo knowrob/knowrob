@@ -24,8 +24,8 @@ import peasy.PeasyCam;
 import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.vis.model.uima.annotation.CurvatureAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
-import edu.tum.cs.vis.model.uima.annotation.FlatSurfaceAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
+import edu.tum.cs.vis.model.uima.annotation.primitive.PlaneAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.util.Triangle;
 
@@ -84,7 +84,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	/**
 	 * List of selected triangles (triangles which intersect with mouse ray)
 	 */
-	private final ArrayList<Triangle>		selectedTriangless	= new ArrayList<Triangle>();
+	private final ArrayList<Triangle>		selectedTriangles	= new ArrayList<Triangle>();
 
 	/**
 	 * List of selected annotations (annotations which contain one of selectedTriangles)
@@ -138,6 +138,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		captureViewMatrix();
 
 		getSelectionGraphics().setDrawWithTransparency(selectedAnnotations.size() > 0);
+
 		for (MeshCas c : casList) {
 			c.draw(g);
 			// c.getGroup().draw(g, null);
@@ -147,12 +148,30 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		synchronized (selectedAnnotations) {
 
 			for (MeshAnnotation ma : selectedAnnotations) {
-				ma.getMesh().drawTriangles(g, new Color(255, 125, 0));
-				if (ma instanceof FlatSurfaceAnnotation && selectedAnnotations.size() == 1) {
-					FlatSurfaceAnnotation f = (FlatSurfaceAnnotation) ma;
-					for (FlatSurfaceAnnotation fsa : f.getNeighbors())
-						fsa.getMesh().drawTriangles(g, new Color(0, 125, 255, 30));
-				}
+				ma.getMesh().drawTriangles(
+						g,
+						selectedAnnotations.size() > 1 ? new Color(255, 125, 0) : new Color(255,
+								50, 0));
+			}
+		}
+
+		if (selectedAnnotations.size() == 1) {
+			MeshAnnotation a = selectedAnnotations.get(0);
+
+			if (a instanceof PlaneAnnotation) {
+				PlaneAnnotation an = (PlaneAnnotation) a;
+
+				Triangle t = an.getMesh().getTriangles().get(0);
+
+				g.fill(255, 0, 0);
+				g.stroke(255, 255, 255);
+				g.strokeWeight(2);
+
+				g.line(an.getCentroid().x, an.getCentroid().y, an.getCentroid().z,
+						an.getCentroid().x + an.getPlaneNormal().x,
+						an.getCentroid().y + an.getPlaneNormal().y,
+						an.getCentroid().z + an.getPlaneNormal().z);
+
 			}
 		}
 
@@ -219,10 +238,10 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 
 			boolean found = false;
 			// Check if clicked on one of previous selected triangles
-			for (Triangle p : selectedTriangless) {
+			for (Triangle p : selectedTriangles) {
 				if (p.intersectsRay(rayEnd, rayStart, null)) {
-					selectedTriangless.clear();
-					selectedTriangless.add(p);
+					selectedTriangles.clear();
+					selectedTriangles.add(p);
 					CurvatureAnnotation annotation = null;
 					for (DrawableAnnotation a : p.getAnnotations())
 						if (a instanceof CurvatureAnnotation)
@@ -238,16 +257,16 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 
 			if (!found) {
 				// It is new selection
-				selectedTriangless.clear();
+				selectedTriangles.clear();
 				for (MeshCas c : casList) {
 					c.getModel().getGroup()
-							.getIntersectedTriangles(rayEnd, rayStart, selectedTriangless);
+							.getIntersectedTriangles(rayEnd, rayStart, selectedTriangles);
 				}
 			}
 
 			// Check if one of selected triangles is in already selected annotation
 			ArrayList<Triangle> newSelected = new ArrayList<Triangle>();
-			for (Triangle p : selectedTriangless) {
+			for (Triangle p : selectedTriangles) {
 				synchronized (selectedAnnotations) {
 					for (MeshAnnotation ma : selectedAnnotations)
 						if (ma.meshContainsTriangle(p)) {
@@ -256,10 +275,11 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 				}
 			}
 			if (newSelected.size() > 0) {
-				// Currently selected was in one or more of the selected annotations, so select out
+				// Currently selected was in one or more of the selected annotations, so select
+				// out
 				// of current annotations
-				selectedTriangless.clear();
-				selectedTriangless.addAll(newSelected);
+				selectedTriangles.clear();
+				selectedTriangles.addAll(newSelected);
 			}
 
 			selectedTrianglesChanged();
@@ -311,7 +331,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 					continue; // Skip not visible annotations
 				if (selectedAnnotations.contains(ma))
 					continue;
-				for (Triangle p : selectedTriangless)
+				for (Triangle p : selectedTriangles)
 					if (ma.meshContainsTriangle(p)) {
 						synchronized (selectedAnnotations) {
 							selectedAnnotations.add(ma);
@@ -321,6 +341,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 			}
 		}
 		control.showSelectedAnnotation(selectedAnnotations);
+
 	}
 
 	/**

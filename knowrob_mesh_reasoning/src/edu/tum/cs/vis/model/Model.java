@@ -10,7 +10,6 @@ package edu.tum.cs.vis.model;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -28,7 +27,6 @@ import org.apache.log4j.Logger;
 
 import processing.core.PGraphics;
 import edu.tum.cs.vis.model.util.Curvature;
-import edu.tum.cs.vis.model.util.DrawObject;
 import edu.tum.cs.vis.model.util.Group;
 import edu.tum.cs.vis.model.util.Line;
 import edu.tum.cs.vis.model.util.ThreadPool;
@@ -222,17 +220,28 @@ public class Model {
 		pdir[1].cross(new_norm, pdir[0]);
 	}
 
+	/**
+	 * Convert hsv to rgb color space acording to:
+	 * https://en.wikipedia.org/wiki/HSL_and_HSV#From_HSV
+	 * 
+	 * @param h
+	 * @param s
+	 * @param v
+	 * @return
+	 */
 	private static Color hsv2srgb(float h, float s, float v) {
 		// From FvD
 		float H = h, S = s, V = v;
 		if (S <= 0.0f)
 			return new Color(V, V, V);
-		H = H % 6.2831855f;
+		H = (float) (H % (2 * Math.PI));
 		if (H < 0.0f)
-			H += 6.2831855f;
-		H *= 6.0f / 6.2831855f;
-		int i = (int) Math.floor(H);
-		float f = H - i;
+			H += 2 * Math.PI;
+		// S and V is now between 0 and 1, H between 0 an 2*PI
+
+		float hi = (float) (H * (Math.PI / 3)); // Divide by 60 degree
+		int i = (int) Math.floor(hi);
+		float f = hi - i;
 		float p = V * (1.0f - S);
 		float q = V * (1.0f - (S * f));
 		float t = V * (1.0f - (S * (1.0f - f)));
@@ -327,74 +336,6 @@ public class Model {
 	final ArrayList<Triangle>		triangles		= new ArrayList<Triangle>();
 
 	private final ArrayList<Line>	lines			= new ArrayList<Line>();
-	private final HashSet<Vertex>	verticesTmp		= null;
-
-	private final HashSet<Triangle>	trianglesTmp	= null;
-
-	private final HashSet<Line>		linesTmp		= null;
-
-	/**
-	 * @param line
-	 */
-	private Line addLine(Line line) {
-
-		if (!linesTmp.add(line)) {
-			for (Line l : linesTmp)
-				if (l.equals(line))
-					return l;
-		}
-		// for (Vertex v : line.getPosition())
-		// vertices.add(v);
-		addVertices(line);
-		return line;
-	}
-
-	/**
-	 * @param line
-	 */
-	private void addLineDirect(Line line) {
-
-		for (int i = 0; i < line.getPosition().length; i++) {
-			line.getPosition()[i] = checkOrAddVertex(line.getPosition()[i]);
-		}
-		lines.add(line);
-	}
-
-	/**
-	 * @param tri
-	 */
-	private Triangle addTriangle(Triangle tri) {
-		if (!trianglesTmp.add(tri)) {
-			for (Triangle t : trianglesTmp)
-				if (t.equals(tri))
-					return t;
-		}
-		// for (Vertex v : tri.getPosition())
-		// vertices.add(v);
-		addVertices(tri);
-		return tri;
-	}
-
-	/**
-	 * @param tri
-	 */
-	private void addTriangleDirect(Triangle tri) {
-		for (int i = 0; i < tri.getPosition().length; i++) {
-			tri.getPosition()[i] = checkOrAddVertex(tri.getPosition()[i]);
-		}
-		triangles.add(tri);
-
-	}
-
-	private void addVertices(DrawObject obj) {
-		for (int i = 0; i < obj.getPosition().length; i++) {
-			if (!verticesTmp.add(obj.getPosition()[i])) {
-				for (Vertex v : verticesTmp)
-					if (v.equals(obj.getPosition()[i]))
-						obj.getPosition()[i] = v;
-			}
-		}
-	}
 
 	private void calculateCurvature() {
 
@@ -476,7 +417,7 @@ public class Model {
 		calculateVertexNormals();
 		calculateVoronoiArea();
 		calculateCurvature();
-		colorbycurv(10, 0);
+		setCurvatureHueSaturation(false);
 	}
 
 	/**
@@ -601,37 +542,6 @@ public class Model {
 		ThreadPool.executeInPool(threads);
 	}
 
-	private Vertex checkOrAddVertex(Vertex v) {
-
-		for (Vertex p : vertices) {
-			if (p.equals(v))
-				return p;
-		}
-		vertices.add(v);
-		return v;
-	}
-
-	void colorbycurv(float scale, float smooth) {
-		/*	float smoothsigma = smooth;
-			if (smoothsigma > 0.0f) {
-				smoothsigma *= feature_size();
-				diffuse_curv(mesh, smoothsigma);
-			}*/
-		float cscale = 10.0f * scale * typical_scale();
-		cscale = cscale * cscale;
-
-		int nv = vertices.size();
-		for (int i = 0; i < nv; i++) {
-			Curvature c = vertices.get(i).getCurvature();
-			float H = 0.5f * (c.getCurvatureMax() + c.getCurvatureMin());
-			float K = c.getCurvatureMax() * c.getCurvatureMin();
-			float h = (float) (4.0f / 3.0f * Math
-					.abs(Math.atan2(H * H - K, H * H * Math.signum(H))));
-			float s = (float) ((2 / Math.PI) * Math.atan((2.0f * H * H - K) * cscale));
-			vertices.get(i).color = hsv2srgb(h, s, 1.0f);
-		}
-	}
-
 	/**
 	 * @param g
 	 * @param overrideColor
@@ -732,17 +642,7 @@ public class Model {
 
 		float max = Math.max(x, Math.max(y, z));
 
-		scale(1 / max);
-	}
-
-	private void processGroup(Group g) {
-		for (int i = 0; i < g.getMesh().getLines().size(); i++)
-			g.getMesh().getLines().set(i, addLine(g.getMesh().getLines().get(i)));
-		for (int i = 0; i < g.getMesh().getTriangles().size(); i++)
-			g.getMesh().getTriangles().set(i, addTriangle(g.getMesh().getTriangles().get(i)));
-
-		for (Group c : g.getChildren())
-			processGroup(c);
+		scale(1f / max);
 	}
 
 	/**
@@ -754,6 +654,31 @@ public class Model {
 			v.scale(factor);
 		}
 		group.resetMinMaxValues();
+	}
+
+	void setCurvatureHueSaturation(boolean setColor) {
+		/*	float smoothsigma = smooth;
+			if (smoothsigma > 0.0f) {
+				smoothsigma *= feature_size();
+				diffuse_curv(mesh, smoothsigma);
+			}*/
+		float cscale = 10.0f * 10 * typical_scale();
+		cscale = cscale * cscale;
+
+		int nv = vertices.size();
+		for (int i = 0; i < nv; i++) {
+			Curvature c = vertices.get(i).getCurvature();
+			float H = 0.5f * (c.getCurvatureMax() + c.getCurvatureMin());
+			float K = c.getCurvatureMax() * c.getCurvatureMin();
+			float h = (float) (4.0f / 3.0f * Math
+					.abs(Math.atan2(H * H - K, H * H * Math.signum(H))));
+			float s = (float) ((2 / Math.PI) * Math.atan((2.0f * H * H - K) * cscale));
+			if (setColor) {
+				vertices.get(i).color = hsv2srgb(h, s, 1.0f);
+			}
+			vertices.get(i).getCurvature().setHue(h);
+			vertices.get(i).getCurvature().setSaturation(s);
+		}
 	}
 
 	/**
@@ -804,8 +729,7 @@ public class Model {
 			// mesh->need_bsphere();
 			// f = mult * mesh->bsphere.r;
 			f = 10;
-			logger.warn("Couldn't determine typical scale. Using fixed value: " + f
-					+ ". This should never happen.");
+			logger.warn("Couldn't determine typical scale. Using fixed value: " + f + ".");
 		} else {
 			f = mult / samples[which];
 		}

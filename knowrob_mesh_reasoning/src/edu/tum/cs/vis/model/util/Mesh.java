@@ -132,7 +132,7 @@ public class Mesh implements Serializable {
 			setTextureImage();
 		synchronized (triangles) {
 			for (Triangle tri : triangles) {
-				tri.draw(g, new Color(255, 255, 255, 125));// overrideColor);
+				tri.draw(g, overrideColor);
 			}
 		}
 	}

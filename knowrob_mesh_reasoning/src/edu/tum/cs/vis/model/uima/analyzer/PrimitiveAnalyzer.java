@@ -7,20 +7,24 @@
  ******************************************************************************/
 package edu.tum.cs.vis.model.uima.analyzer;
 
-import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 
+import edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation;
+import edu.tum.cs.vis.model.uima.annotation.primitive.ConeAnnotation;
+import edu.tum.cs.vis.model.uima.annotation.primitive.PlaneAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.primitive.PrimitiveType;
+import edu.tum.cs.vis.model.uima.annotation.primitive.SphereAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.util.Curvature;
 import edu.tum.cs.vis.model.util.ThreadPool;
+import edu.tum.cs.vis.model.util.Triangle;
 import edu.tum.cs.vis.model.util.Vertex;
 
 /**
@@ -32,70 +36,143 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 	/**
 	 * Log4J Logger
 	 */
-	private static Logger	logger					= Logger.getLogger(PrimitiveAnalyzer.class);
+	private static Logger	logger	= Logger.getLogger(PrimitiveAnalyzer.class);
 
-	private static float	EPSILON_SAME_CURVATURE	= 1f;
-	private static float	EPSILON_IS_PLANE		= 1.7f;
-	private static float	EPSILON_FLAT			= 6f;
-
-	static void analyzeVertex(Vertex v, CopyOnWriteArrayList<Vertex> planeVertices,
-			CopyOnWriteArrayList<Vertex> sphereVertices,
-			CopyOnWriteArrayList<Vertex> cylinderVertices) {
+	static void analyzeVertex(Vertex v) {
 
 		Curvature c = v.getCurvature();
-
-		// float diff = Math.abs(c.getCurvatureMax() - c.getCurvatureMin());
-		float diff = Math.abs((c.getCurvatureMax() + c.getCurvatureMin()) / 2);
-		System.out.println("diff: " + diff);
-		diff = 1 / diff;
-
 		PrimitiveType t = getPrimitiveType(v);
-		if (t == PrimitiveType.PLANE) {
-			planeVertices.add(v);
-			v.color = new Color(255, 0, 0);
-		} else if (t == PrimitiveType.SPHERE) {
-			sphereVertices.add(v);
-			v.color = new Color(0, 255, 0);
-		} else if (t == PrimitiveType.CONE) {
-			cylinderVertices.add(v);
-			v.color = new Color(0, 0, 255);
-		}
-		// v.color = Color.getHSBColor(diff, 1, 1.0f);
-
+		c.setPrimitiveType(getPrimitiveType(v));
 	}
 
 	private static PrimitiveType getPrimitiveType(Vertex v) {
+
 		Curvature c = v.getCurvature();
-		if (Math.abs(c.getCurvatureMin()) <= EPSILON_FLAT
-				|| Math.abs(c.getCurvatureMax()) <= EPSILON_FLAT) {
-			// Plane or cylinder
-			if (Math.abs((c.getCurvatureMax() + c.getCurvatureMin()) / 2) < EPSILON_IS_PLANE) {
-				return PrimitiveType.PLANE;
-			}
+		if (c.getSaturation() < 0.55)
+			return PrimitiveType.PLANE;
 
-			return PrimitiveType.CONE;
-		}
-		return PrimitiveType.SPHERE;
+		float hue = c.getHue();
 
-		/*	if (Math.abs(c.getCurvatureMax() - c.getCurvatureMin()) < EPSILON_SAME_CURVATURE) {
-				// it is either a plane or sphere
-				if (Math.abs((c.getCurvatureMax() + c.getCurvatureMin()) / 2) < EPSILON_IS_PLANE)
-					return PrimitiveType.PLANE;
+		if (hue < 30 * Math.PI / 180)
+			return PrimitiveType.SPHERE_CONVEX;
+		else if (hue >= 30 * Math.PI / 180 && hue < 70 * Math.PI / 180)
+			return PrimitiveType.CONE_CONVEX;
+		else if (hue >= 70 * Math.PI / 180 && hue < 150 * Math.PI / 180)
+			return PrimitiveType.SPHERE_CONCAV;
+		else
+			// if (hue >= 150*Math.PI/180)
+			return PrimitiveType.CONE_CONCAV;
+	}
 
-				return PrimitiveType.SPHERE;
-			}
+	private static PrimitiveType getTrianglePrimitiveType(Triangle triangle) {
+		int planeCnt = 0;
+		int sphereConvexCnt = 0;
+		int sphereConcavCnt = 0;
+		int coneConvexCnt = 0;
+		int coneConcavCnt = 0;
+		for (Vertex v : triangle.getPosition())
+			if (v.getCurvature().getPrimitiveType() == PrimitiveType.PLANE)
+				planeCnt++;
+			else if (v.getCurvature().getPrimitiveType() == PrimitiveType.SPHERE_CONVEX)
+				sphereConvexCnt++;
+			else if (v.getCurvature().getPrimitiveType() == PrimitiveType.SPHERE_CONCAV)
+				sphereConcavCnt++;
+			else if (v.getCurvature().getPrimitiveType() == PrimitiveType.CONE_CONVEX)
+				coneConvexCnt++;
+			else if (v.getCurvature().getPrimitiveType() == PrimitiveType.CONE_CONCAV)
+				coneConcavCnt++;
 
-			// It is a cylinder or cone
-			// A Cylinder is a special form of a cone.
-			return PrimitiveType.CONE;*/
+		int max = Math.max(
+				planeCnt,
+				Math.max(sphereConvexCnt,
+						Math.max(sphereConcavCnt, Math.max(coneConvexCnt, coneConcavCnt))));
+
+		if (max == planeCnt) {
+			return PrimitiveType.PLANE;
+		} else if (max == sphereConvexCnt) {
+			return PrimitiveType.SPHERE_CONVEX;
+		} else if (max == sphereConcavCnt) {
+			return PrimitiveType.SPHERE_CONCAV;
+		} else if (max == coneConvexCnt) {
+			return PrimitiveType.CONE_CONVEX;
+		} else
+			return PrimitiveType.CONE_CONCAV;
 	}
 
 	ArrayList<Vertex>	allVertices;
 
+	ArrayList<Triangle>	allTriangles;
+
 	/**
 	 * Number of triangles already elaborated/processed. Used for indicating current process
 	 */
-	final AtomicInteger	trianglesElaborated	= new AtomicInteger(0);
+	final AtomicInteger	itemsElaborated	= new AtomicInteger(0);
+
+	protected void analyzeTriangle(MeshCas cas, Triangle triangle,
+			HashSet<Triangle> alreadyInAnnotation) {
+		if (alreadyInAnnotation.contains(triangle))
+			return;
+
+		PrimitiveAnnotation annotation;
+		PrimitiveType type = getTrianglePrimitiveType(triangle);
+		if (type == PrimitiveType.PLANE)
+			annotation = new PlaneAnnotation();
+		else if (type == PrimitiveType.SPHERE_CONCAV || type == PrimitiveType.SPHERE_CONVEX)
+			annotation = new SphereAnnotation(type == PrimitiveType.SPHERE_CONCAV);
+		else
+			annotation = new ConeAnnotation(type == PrimitiveType.CONE_CONCAV);
+
+		annotation.getMesh().getTriangles().add(triangle);
+		alreadyInAnnotation.add(triangle);
+
+		synchronized (cas.getAnnotations()) {
+			cas.addAnnotation(annotation);
+		}
+
+		// List of already visited triangles for BFS
+		HashSet<Triangle> visited = new HashSet<Triangle>();
+		visited.add(triangle);
+
+		// FIFO queue for triangles to visit for BFS
+		LinkedList<Triangle> queue = new LinkedList<Triangle>();
+		if (triangle.getNeighbors() != null) {
+			// Add all neighbor triangles to the queue
+			queue.addAll(triangle.getNeighbors());
+		}
+
+		while (!queue.isEmpty()) {
+			Triangle currNeighbor = queue.pop();
+			visited.add(currNeighbor);
+			if (alreadyInAnnotation.contains(currNeighbor))
+				continue;
+
+			// First check if surface normal is exactly the same direction
+			boolean isEqual = (type == getTrianglePrimitiveType(currNeighbor));
+
+			if (isEqual) {
+				synchronized (annotation.getMesh().getTriangles()) {
+					annotation.getMesh().getTriangles().add(currNeighbor);
+				}
+				alreadyInAnnotation.add(currNeighbor);
+
+				// Add all neighbors of current triangle to queue
+				for (Triangle a : currNeighbor.getNeighbors()) {
+					synchronized (annotation.getMesh()) {
+						synchronized (annotation.getMesh().getTriangles()) {
+
+							if (visited.contains(a)
+									|| annotation.getMesh().getTriangles().contains(a))
+								continue;
+						}
+					}
+					queue.add(a);
+				}
+			}
+		}
+
+		annotation.fit();
+
+	}
 
 	/* (non-Javadoc)
 	 * @see edu.tum.cs.vis.model.uima.analyzer.MeshAnalyzer#getLogger()
@@ -119,10 +196,7 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 	@Override
 	public void processStart(MeshCas cas) {
 		allVertices = cas.getModel().getVertices();
-
-		final CopyOnWriteArrayList<Vertex> planeVertices = new CopyOnWriteArrayList<Vertex>();
-		final CopyOnWriteArrayList<Vertex> sphereVertices = new CopyOnWriteArrayList<Vertex>();
-		final CopyOnWriteArrayList<Vertex> cylinderVertices = new CopyOnWriteArrayList<Vertex>();
+		allTriangles = cas.getModel().getTriangles();
 
 		List<Callable<Void>> threads = new LinkedList<Callable<Void>>();
 
@@ -136,9 +210,8 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 				public Void call() throws Exception {
 					int end = Math.min(st + interval, allVertices.size());
 					for (int i = st; i < end; i++) {
-						analyzeVertex(allVertices.get(i), planeVertices, sphereVertices,
-								cylinderVertices);
-						trianglesElaborated.incrementAndGet();
+						analyzeVertex(allVertices.get(i));
+						itemsElaborated.incrementAndGet();
 					}
 					return null;
 				}
@@ -148,6 +221,28 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 
 		ThreadPool.executeInPool(threads);
 
+		final int intervalTri = 100;
+
+		HashSet<Triangle> alreadyInAnnotation = new HashSet<Triangle>();
+
+		for (int start = 0; start < allTriangles.size(); start += intervalTri) {
+			final int st = start;
+			/*threads.add(new Callable<Void>() {
+
+				@Override
+				public Void call() throws Exception {*/
+			int end = Math.min(st + intervalTri, allTriangles.size());
+			for (int i = st; i < end; i++) {
+				analyzeTriangle(cas, allTriangles.get(i), alreadyInAnnotation);
+				itemsElaborated.incrementAndGet();
+			}
+			/*return null;
+			}
+			});
+			};
+
+			ThreadPool.executeInPool(threads);*/
+		};
 	}
 
 	/* (non-Javadoc)
@@ -156,7 +251,8 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 	@Override
 	public void updateProgress() {
 		if (allVertices != null && allVertices.size() > 0) {
-			setProgress(trianglesElaborated.get() / (float) allVertices.size() * 100.0f);
+			setProgress(itemsElaborated.get() / (float) (allVertices.size() + allTriangles.size())
+					* 100.0f);
 		}
 
 	}

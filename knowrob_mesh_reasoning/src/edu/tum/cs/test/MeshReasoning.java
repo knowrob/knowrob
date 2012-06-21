@@ -57,14 +57,14 @@ public class MeshReasoning {
 		// ItemModel itemModel = new ItemModel("models/quader.dae");
 		// ItemModel itemModel = new ItemModel("models/open_box.kmz");
 
-		// ItemModel itemModel = new ItemModel("models/cup2.kmz");
+		ItemModel itemModel = new ItemModel("models/cup2.kmz");
+		// ItemModel itemModel = new ItemModel("models/test.dae");
+		// ItemModel itemModel = new ItemModel("models/pyramid.dae");
 		// ItemModel itemModel = new ItemModel("models/Skateboard.dae");
 		// ItemModel itemModel = new ItemModel("models/Table.dae");
 		// ItemModel itemModel = new ItemModel("models/Dome.dae");
-		ItemModel itemModel = new ItemModel("models/test.dae");
 		// ItemModel itemModel = new ItemModel("models/cylinder.dae");
 		// ItemModel itemModel = new ItemModel("models/cup_red.kmz");
-		// ItemModel itemModel = new ItemModel("/home/stefan/shade.mesh");
 
 		if (!itemModel.parseModel()) {
 			throw new RuntimeException("Couldn't parse model. Maybe path to model is wrong.");
@@ -123,23 +123,14 @@ public class MeshReasoning {
 		frame.setVisible(true);
 
 		NeighborAnalyzer na = new NeighborAnalyzer();
-		// FlatSurfaceAnalyzer fsa = new FlatSurfaceAnalyzer();
 		PrimitiveAnalyzer pa = new PrimitiveAnalyzer();
 		analyzer.add(na);
-		// analyzer.add(das);
-		// analyzer.add(fsna);
 		analyzer.add(pa);
 
 		Thread.yield();
 
-		// na.process(cas);
-
-		// das.process(cas);
-		// pa.process(cas);
-
-		// fsa.process(cas);
-
-		// fsna.process(cas);
+		na.process(cas);
+		pa.process(cas);
 
 	}
 }

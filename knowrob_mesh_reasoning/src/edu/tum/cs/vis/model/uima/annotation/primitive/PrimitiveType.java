@@ -12,6 +12,6 @@ package edu.tum.cs.vis.model.uima.annotation.primitive;
  * 
  */
 public enum PrimitiveType {
-	PLANE, SPHERE, CYLINDER, CONE
+	PLANE, SPHERE_CONVEX, SPHERE_CONCAV, CONE_CONVEX, CONE_CONCAV
 
 }
