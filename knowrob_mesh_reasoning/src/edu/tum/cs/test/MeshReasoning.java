@@ -17,9 +17,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
 import edu.tum.cs.vis.model.ItemModel;
-import edu.tum.cs.vis.model.uima.analyzer.DihedralAngleSegmentationAnalyzer;
-import edu.tum.cs.vis.model.uima.analyzer.FlatSurfaceAnalyzer;
-import edu.tum.cs.vis.model.uima.analyzer.FlatSurfaceNeighborAnalyzer;
+import edu.tum.cs.vis.model.uima.analyzer.CurvatureAnalyzer;
 import edu.tum.cs.vis.model.uima.analyzer.MeshAnalyzer;
 import edu.tum.cs.vis.model.uima.analyzer.NeighborAnalyzer;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
@@ -106,18 +104,20 @@ public class MeshReasoning {
 		frame.setVisible(true);
 
 		NeighborAnalyzer na = new NeighborAnalyzer();
-		DihedralAngleSegmentationAnalyzer das = new DihedralAngleSegmentationAnalyzer();
-		FlatSurfaceAnalyzer fsa = new FlatSurfaceAnalyzer();
-		FlatSurfaceNeighborAnalyzer fsna = new FlatSurfaceNeighborAnalyzer();
+		// DihedralAngleSegmentationAnalyzer das = new DihedralAngleSegmentationAnalyzer();
+		CurvatureAnalyzer ca = new CurvatureAnalyzer();
+		// FlatSurfaceAnalyzer fsa = new FlatSurfaceAnalyzer();
 		analyzer.add(na);
-		analyzer.add(das);
+		// analyzer.add(das);
 		// analyzer.add(fsna);
+		analyzer.add(ca);
 
 		Thread.yield();
 
 		na.process(cas);
 
-		das.process(cas);
+		// das.process(cas);
+		ca.process(cas);
 
 		// fsa.process(cas);
 

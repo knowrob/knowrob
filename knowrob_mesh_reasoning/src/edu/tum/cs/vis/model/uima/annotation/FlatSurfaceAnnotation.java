@@ -89,17 +89,17 @@ public class FlatSurfaceAnnotation extends MeshAnnotation {
 	}
 
 	/**
-	 * @return the neighborTriangles
-	 */
-	public ArrayList<Triangle> getNeighborTriangles() {
-		return neighborTriangles;
-	}
-
-	/**
 	 * @return the neighbors
 	 */
 	public ArrayList<FlatSurfaceAnnotation> getNeighbors() {
 		return neighbors;
+	}
+
+	/**
+	 * @return the neighborTriangles
+	 */
+	public ArrayList<Triangle> getNeighborTriangles() {
+		return neighborTriangles;
 	}
 
 	/**

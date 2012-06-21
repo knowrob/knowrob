@@ -9,10 +9,12 @@ package edu.tum.cs.vis.model.util;
 
 import java.awt.Color;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import javax.vecmath.Point3f;
 
 import processing.core.PGraphics;
+import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
 
 /**
  * Base class for all drawable model parts (Line / Triangle)
@@ -55,12 +57,14 @@ public abstract class DrawObject implements Serializable {
 	/**
 	 * the position points of the object
 	 */
-	protected Point3f		position[];
+	protected Point3f						position[];
 
 	/**
 	 * Color or texture of the object
 	 */
-	protected Appearance	appearance;
+	protected Appearance					appearance;
+
+	protected ArrayList<DrawableAnnotation>	annotations	= new ArrayList<DrawableAnnotation>();
 
 	/**
 	 * Constructor which initializes position array to <code>numberOfEdges</code> items.
@@ -70,6 +74,12 @@ public abstract class DrawObject implements Serializable {
 	 */
 	public DrawObject(final int numberOfEdges) {
 		position = new Point3f[numberOfEdges];
+	}
+
+	public void addAnnotation(DrawableAnnotation a) {
+		synchronized (annotations) {
+			annotations.add(a);
+		}
 	}
 
 	/**
@@ -111,6 +121,13 @@ public abstract class DrawObject implements Serializable {
 	}
 
 	/**
+	 * @return the annotations
+	 */
+	public ArrayList<DrawableAnnotation> getAnnotations() {
+		return annotations;
+	}
+
+	/**
 	 * @return the appearance
 	 */
 	public Appearance getAppearance() {
@@ -137,6 +154,14 @@ public abstract class DrawObject implements Serializable {
 			position[v].z *= factor;
 		}
 		updateNormalVector();
+	}
+
+	/**
+	 * @param annotations
+	 *            the annotations to set
+	 */
+	public void setAnnotations(ArrayList<DrawableAnnotation> annotations) {
+		this.annotations = annotations;
 	}
 
 	/**

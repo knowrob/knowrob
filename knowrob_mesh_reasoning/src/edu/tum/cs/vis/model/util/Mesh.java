@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
-import javax.vecmath.Point3f;
+import javax.vecmath.Point3d;
 import javax.vecmath.Vector3f;
 
 import processing.core.PApplet;
@@ -133,7 +133,7 @@ public class Mesh implements Serializable {
 			setTextureImage();
 		synchronized (triangles) {
 			for (Triangle tri : triangles) {
-				tri.draw(g, overrideColor);
+				tri.draw(g, new Color(255, 255, 255, 125));// overrideColor);
 			}
 		}
 	}
@@ -227,7 +227,7 @@ public class Mesh implements Serializable {
 	 * @param intersectedTriangles
 	 *            list where to add intersecting triangles
 	 */
-	public void getIntersectedTriangles(final Point3f rayStart, final Point3f rayEnd,
+	public void getIntersectedTriangles(final Point3d rayStart, final Point3d rayEnd,
 			final ArrayList<Triangle> intersectedTriangles) {
 
 		for (Triangle tri : triangles) {

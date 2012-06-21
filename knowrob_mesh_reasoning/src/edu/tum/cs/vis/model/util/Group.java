@@ -11,7 +11,7 @@ import java.awt.Color;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import javax.vecmath.Point3f;
+import javax.vecmath.Point3d;
 import javax.vecmath.Vector3f;
 
 import processing.core.PApplet;
@@ -136,7 +136,7 @@ public class Group implements Serializable {
 	 * @param intersectedTriangles
 	 *            list where to add intersecting triangles
 	 */
-	public void getIntersectedTriangles(final Point3f rayStart, final Point3f rayEnd,
+	public void getIntersectedTriangles(final Point3d rayStart, final Point3d rayEnd,
 			final ArrayList<Triangle> intersectedTriangles) {
 		mesh.getIntersectedTriangles(rayStart, rayEnd, intersectedTriangles);
 

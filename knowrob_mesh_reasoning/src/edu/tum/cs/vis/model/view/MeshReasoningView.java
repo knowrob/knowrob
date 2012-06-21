@@ -15,16 +15,19 @@ import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.event.MouseInputListener;
-import javax.vecmath.Point3f;
+import javax.vecmath.Point3d;
 import javax.vecmath.Vector3f;
 
 import org.apache.log4j.Logger;
 
 import peasy.PeasyCam;
 import edu.tum.cs.uima.Annotation;
+import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.FlatSurfaceAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
+import edu.tum.cs.vis.model.util.Group;
+import edu.tum.cs.vis.model.util.Mesh;
 import edu.tum.cs.vis.model.util.Triangle;
 
 /**
@@ -41,26 +44,58 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	/**
 	 * 
 	 */
-	private static final long				serialVersionUID	= 984696039698156574L;
+	private static final long	serialVersionUID	= 984696039698156574L;
+
+	/**
+	 * Process the mesh of the group <code>g</code> with <code>processMesh</code> and all child
+	 * groups.
+	 * 
+	 * @param g
+	 *            group to process
+	 * @param cas
+	 *            CAS to add a new annotation if flat surface is found.
+	 */
+	private static void processGroup(ArrayList<Triangle> allTriangles, Group g, MeshCas cas) {
+		processMesh(allTriangles, g.getMesh(), cas);
+		for (Group gr : g.getChildren()) {
+			processGroup(allTriangles, gr, cas);
+		}
+	}
+
+	/**
+	 * Process all triangles in the given mesh <code>m</code> with <code>triangleBFS</code>
+	 * 
+	 * @param m
+	 *            mesh to process
+	 * @param cas
+	 *            CAS to add a new annotation if flat surface is found.
+	 */
+	private static void processMesh(ArrayList<Triangle> allTriangles, Mesh m, final MeshCas cas) {
+
+		if (m.getTriangles().size() == 0)
+			return;
+
+		allTriangles.addAll(m.getTriangles());
+	}
 
 	/**
 	 * Cam for manipulating the view
 	 */
 	PeasyCam								cam;
-
 	/**
 	 * Background color
 	 */
 	private final Color						bgcolor				= new Color(10, 10, 10);
-
 	/**
 	 * Start point of mouse click ray
 	 */
-	private Point3f							rayStart			= new Point3f();
+	private Point3d							rayStart			= new Point3d();
+
 	/**
 	 * End point of mouse click ray
 	 */
-	private Point3f							rayEnd				= new Point3f(1, 1, 1);
+	private Point3d							rayEnd				= new Point3d(1, 1, 1);
+
 	/**
 	 * List of all CASes which were manipulated with AnalysisEngines.
 	 */
@@ -71,6 +106,9 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	 */
 	private int								currentScale		= 20;
 
+	public static int						test				= 1175;
+
+	public static int						testIdx				= 0;
 	/**
 	 * Path where to save image if user clicks on "save image". Will be evaluated in draw method
 	 */
@@ -80,6 +118,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	 * List of selected triangles (triangles which intersect with mouse ray)
 	 */
 	private final ArrayList<Triangle>		selectedTriangless	= new ArrayList<Triangle>();
+
 	/**
 	 * List of selected annotations (annotations which contain one of selectedTriangles)
 	 * */
@@ -150,13 +189,26 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 			}
 		}
 
-		// Check if user wants to save current view
-		if (imageSavePath != null) {
-			save(imageSavePath);
+		ArrayList<Triangle> allTriangles = new ArrayList<Triangle>();
 
-			Logger.getRootLogger().info("Image saved as: " + imageSavePath);
-			imageSavePath = null;
-		}
+		processGroup(allTriangles, casList.get(0).getGroup(), casList.get(0));
+
+		if (MeshReasoningView.test < 0)
+			MeshReasoningView.test = allTriangles.size() - 1;
+		else if (MeshReasoningView.test >= allTriangles.size())
+			MeshReasoningView.test = 0;
+		if (allTriangles.size() > 0)
+
+			// CurvatureAnalyzer.triangleCurvature(allTriangles.get(MeshReasoningView.test),
+			// casList.get(0), g);
+
+			// Check if user wants to save current view
+			if (imageSavePath != null) {
+				save(imageSavePath);
+
+				Logger.getRootLogger().info("Image saved as: " + imageSavePath);
+				imageSavePath = null;
+			}
 	}
 
 	/**
@@ -175,7 +227,18 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 			currentScale += 10;
 		} else if (c == '-') {
 			currentScale = Math.max(10, currentScale - 10);
+		} else if (c == 'm') {
+			test++;
+		} else if (c == 'n') {
+			test--;
+		} else if ((c >= '0') && (c <= '9')) {
+			test = (c - '0') * 100;
+		} else if (c == 'k') {
+			testIdx++;
+		} else if (c == 'j') {
+			testIdx--;
 		}
+		System.out.println("test = " + test + " idx: " + testIdx);
 	}
 
 	@Override
@@ -267,7 +330,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		}
 		for (MeshCas c : casList) {
 			for (Annotation a : c.getAnnotations()) {
-				if (!(a instanceof MeshAnnotation))
+				if (!(a instanceof DrawableAnnotation))
 					continue;
 				MeshAnnotation ma = (MeshAnnotation) a;
 				if (!ma.isDrawAnnotation())

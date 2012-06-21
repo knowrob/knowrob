@@ -10,14 +10,12 @@ package edu.tum.cs.vis.model.uima.analyzer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 
 import edu.tum.cs.vis.model.uima.annotation.DihedralAngleSegmentationAnnotation;
-import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
+import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.util.Group;
 import edu.tum.cs.vis.model.util.Mesh;
@@ -41,6 +39,38 @@ public class DihedralAngleSegmentationAnalyzer extends MeshAnalyzer {
 	static final double		MAX_ANGLE	= 45.0 * Math.PI / 180;
 
 	/**
+	 * Process the mesh of the group <code>g</code> with <code>processMesh</code> and all child
+	 * groups.
+	 * 
+	 * @param g
+	 *            group to process
+	 * @param cas
+	 *            CAS to add a new annotation if flat surface is found.
+	 */
+	private static void processGroup(ArrayList<Triangle> allTriangles, Group g, MeshCas cas) {
+		processMesh(allTriangles, g.getMesh(), cas);
+		for (Group gr : g.getChildren()) {
+			processGroup(allTriangles, gr, cas);
+		}
+	}
+
+	/**
+	 * Process all triangles in the given mesh <code>m</code> with <code>triangleBFS</code>
+	 * 
+	 * @param m
+	 *            mesh to process
+	 * @param cas
+	 *            CAS to add a new annotation if flat surface is found.
+	 */
+	private static void processMesh(ArrayList<Triangle> allTriangles, Mesh m, final MeshCas cas) {
+
+		if (m.getTriangles().size() == 0)
+			return;
+
+		allTriangles.addAll(m.getTriangles());
+	}
+
+	/**
 	 * Do a BFS on the neighbors of the <code>start</code> triangle and find all neighbors with
 	 * nearly the same surface normal.
 	 * 
@@ -52,7 +82,7 @@ public class DihedralAngleSegmentationAnalyzer extends MeshAnalyzer {
 	 * @param cas
 	 *            Cas to add a found annotation
 	 */
-	static void triangleBFS(Triangle start, MeshCas cas) {
+	private static void triangleBFS(Triangle start, MeshCas cas) {
 		DihedralAngleSegmentationAnnotation annotation;
 		synchronized (cas.getAnnotations()) {
 			if (cas.findAnnotation(DihedralAngleSegmentationAnnotation.class, start) != null)
@@ -104,7 +134,7 @@ public class DihedralAngleSegmentationAnalyzer extends MeshAnalyzer {
 
 			if (Math.abs(radiant - currentDihedral) <= TOLERANCE) {
 				synchronized (cas.getAnnotations()) {
-					MeshAnnotation ma = cas.findAnnotation(
+					DrawableAnnotation ma = cas.findAnnotation(
 							DihedralAngleSegmentationAnnotation.class, neighbor);
 					if (ma == annotation)
 						continue;
@@ -165,19 +195,14 @@ public class DihedralAngleSegmentationAnalyzer extends MeshAnalyzer {
 	}
 
 	/**
-	 * First a list of all threads is created which will be executed afterwards with a thread pool
-	 */
-	private final List<Callable<Void>>	threads				= new LinkedList<Callable<Void>>();
-
-	/**
 	 * First a list of all triangles in the groups is created and afterwards the analyzing starts
 	 */
-	private ArrayList<Triangle>			allTriangles;
+	private ArrayList<Triangle>	allTriangles;
 
 	/**
 	 * Number of triangles already elaborated/processed. Used for indicating current process
 	 */
-	final AtomicInteger					trianglesElaborated	= new AtomicInteger(0);
+	final AtomicInteger			trianglesElaborated	= new AtomicInteger(0);
 
 	/* (non-Javadoc)
 	 * @see edu.tum.cs.vis.model.uima.analyzer.MeshAnalyzer#getLogger()
@@ -193,38 +218,6 @@ public class DihedralAngleSegmentationAnalyzer extends MeshAnalyzer {
 	@Override
 	public String getName() {
 		return "DihedralAngleSeg.";
-	}
-
-	/**
-	 * Process the mesh of the group <code>g</code> with <code>processMesh</code> and all child
-	 * groups.
-	 * 
-	 * @param g
-	 *            group to process
-	 * @param cas
-	 *            CAS to add a new annotation if flat surface is found.
-	 */
-	private void processGroup(ArrayList<Triangle> allTriangles, Group g, MeshCas cas) {
-		processMesh(allTriangles, g.getMesh(), cas);
-		for (Group gr : g.getChildren()) {
-			processGroup(allTriangles, gr, cas);
-		}
-	}
-
-	/**
-	 * Process all triangles in the given mesh <code>m</code> with <code>triangleBFS</code>
-	 * 
-	 * @param m
-	 *            mesh to process
-	 * @param cas
-	 *            CAS to add a new annotation if flat surface is found.
-	 */
-	private void processMesh(ArrayList<Triangle> allTriangles, Mesh m, final MeshCas cas) {
-
-		if (m.getTriangles().size() == 0)
-			return;
-
-		allTriangles.addAll(m.getTriangles());
 	}
 
 	/* (non-Javadoc)

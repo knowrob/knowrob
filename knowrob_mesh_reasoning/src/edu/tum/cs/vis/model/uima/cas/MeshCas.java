@@ -12,6 +12,7 @@ import java.io.Serializable;
 import processing.core.PGraphics;
 import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.uima.JCas;
+import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.util.Group;
 import edu.tum.cs.vis.model.util.Triangle;
@@ -61,9 +62,9 @@ public class MeshCas extends JCas implements Serializable {
 			group.draw(g, null);
 		synchronized (annotations) {
 			for (Annotation a : annotations) {
-				if (!(a instanceof MeshAnnotation))
+				if (!(a instanceof DrawableAnnotation))
 					continue;
-				MeshAnnotation ma = (MeshAnnotation) a;
+				DrawableAnnotation ma = (DrawableAnnotation) a;
 				ma.draw(g);
 
 			}

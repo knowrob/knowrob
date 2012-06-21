@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
 import edu.tum.cs.uima.Annotation;
+import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 
@@ -28,23 +29,23 @@ import edu.tum.cs.vis.model.uima.cas.MeshCas;
  * @param <T>
  *            Annotation for which this panel is
  */
-public abstract class AnnotationPanel<T extends MeshAnnotation> extends JPanel implements
+public abstract class AnnotationPanel<T extends DrawableAnnotation> extends JPanel implements
 		ActionListener {
 
 	/**
 	 * Auto generated
 	 */
-	private static final long		serialVersionUID	= 878471632553390826L;
+	private static final long			serialVersionUID	= 878471632553390826L;
 
 	/**
 	 * CAS which holds list of annotations
 	 */
-	protected MeshCas				cas;
+	protected MeshCas					cas;
 
 	/**
 	 * Type of annotation for which this panel is
 	 */
-	Class<? extends MeshAnnotation>	annotationType;
+	Class<? extends DrawableAnnotation>	annotationType;
 
 	/**
 	 * Default constructor
@@ -54,7 +55,7 @@ public abstract class AnnotationPanel<T extends MeshAnnotation> extends JPanel i
 	 * @param cas
 	 *            CAS which holds all annotations
 	 */
-	public AnnotationPanel(Class<? extends MeshAnnotation> annotationType, MeshCas cas) {
+	public AnnotationPanel(Class<? extends DrawableAnnotation> annotationType, MeshCas cas) {
 		this.annotationType = annotationType;
 		this.cas = cas;
 	}
@@ -73,7 +74,6 @@ public abstract class AnnotationPanel<T extends MeshAnnotation> extends JPanel i
 		synchronized (cas.getAnnotations()) {
 			for (Annotation a : cas.getAnnotations()) {
 				if (a.getClass() != annotationType) {
-					System.out.println(a.getClass());
 					continue;
 				}
 				MeshAnnotation ma = (MeshAnnotation) a;

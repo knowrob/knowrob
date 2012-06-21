@@ -10,7 +10,6 @@ package edu.tum.cs.vis.model.uima.annotation;
 import java.awt.Color;
 
 import processing.core.PGraphics;
-import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.vis.model.util.Mesh;
 import edu.tum.cs.vis.model.util.Triangle;
 
@@ -20,7 +19,7 @@ import edu.tum.cs.vis.model.util.Triangle;
  * @author Stefan Profanter
  * 
  */
-public abstract class MeshAnnotation extends Annotation {
+public abstract class MeshAnnotation extends DrawableAnnotation {
 	/**
 	 * auto generated
 	 */
@@ -36,19 +35,14 @@ public abstract class MeshAnnotation extends Annotation {
 	private final Color			randomAnnotationColor;
 
 	/**
-	 * Mesh which contains the referenced Triangles for which this annotation stands.
-	 */
-	protected Mesh				mesh				= new Mesh();
-
-	/**
-	 * indicates if this annotation should be drawn or not
-	 */
-	protected boolean			drawAnnotation		= true;
-
-	/**
 	 * Use random color for drawing the annotation
 	 */
 	protected boolean			useRandomColor		= false;
+
+	/**
+	 * Mesh which contains the referenced Triangles for which this annotation stands.
+	 */
+	protected Mesh				mesh				= new Mesh();
 
 	/**
 	 * Default constructor. Sets the annotation color. Each type of annotation should have a
@@ -58,18 +52,14 @@ public abstract class MeshAnnotation extends Annotation {
 	 *            The annotation color for this type of annotation
 	 */
 	public MeshAnnotation(final Color annotationColor) {
+		super();
 		randomAnnotationColor = new Color((float) Math.random(), (float) Math.random(),
 				(float) Math.random(), 0.5f);
 		this.annotationColor = annotationColor;
 	}
 
-	/**
-	 * Draw the annotation with color from <code>getAnnotationColor()</code>
-	 * 
-	 * @param g
-	 *            Applet to draw on
-	 */
-	public void draw(PGraphics g) {
+	@Override
+	public void drawAnnotation(PGraphics g) {
 		if (drawAnnotation) {
 			mesh.drawLines(g, getDrawColor());
 			mesh.drawTriangles(g, getDrawColor());
@@ -97,13 +87,6 @@ public abstract class MeshAnnotation extends Annotation {
 	}
 
 	/**
-	 * @return the drawAnnotation
-	 */
-	public boolean isDrawAnnotation() {
-		return drawAnnotation;
-	}
-
-	/**
 	 * @return the useRandomColor
 	 */
 	public boolean isUseRandomColor() {
@@ -119,14 +102,6 @@ public abstract class MeshAnnotation extends Annotation {
 	 */
 	public boolean meshContainsTriangle(final Triangle p) {
 		return mesh.getTriangles().contains(p);
-	}
-
-	/**
-	 * @param drawAnnotation
-	 *            the drawAnnotation to set
-	 */
-	public void setDrawAnnotation(boolean drawAnnotation) {
-		this.drawAnnotation = drawAnnotation;
 	}
 
 	/**

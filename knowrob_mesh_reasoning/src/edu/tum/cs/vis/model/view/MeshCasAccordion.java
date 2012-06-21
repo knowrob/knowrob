@@ -25,8 +25,8 @@ import javax.swing.SwingConstants;
 
 import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.vis.model.uima.annotation.DihedralAngleSegmentationAnnotation;
+import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.FlatSurfaceAnnotation;
-import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.view.control.AnnotationPanel;
 import edu.tum.cs.vis.model.view.control.DihedralAngleSegmentationAnnotationPanel;
@@ -51,33 +51,33 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 		/**
 		 * Cas which holds list of annotations
 		 */
-		protected MeshCas								cas;
+		protected MeshCas									cas;
 
 		/**
 		 * Type of annotations in this
 		 */
-		private final Class<? extends MeshAnnotation>	annotationType;
+		private final Class<? extends DrawableAnnotation>	annotationType;
 
 		/**
 		 * The JButton that implements the Outlook bar itself
 		 */
-		private final JPanel							buttonPanel;
+		private final JPanel								buttonPanel;
 
 		/**
 		 * Button for expanding panel
 		 */
-		private final JButton							button;
+		private final JButton								button;
 
 		/**
 		 * Checkbox at left side of button
 		 */
-		private final JCheckBox							checkbox;
+		private final JCheckBox								checkbox;
 
 		/**
 		 * The component that is the body of the Outlook bar
 		 */
 		@SuppressWarnings("rawtypes")
-		final AnnotationPanel							component;
+		final AnnotationPanel								component;
 
 		/**
 		 * Creates a new BarInfo
@@ -89,7 +89,7 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 		 * @param cas
 		 *            Main CAS
 		 */
-		public BarInfo(Class<? extends MeshAnnotation> annotationType,
+		public BarInfo(Class<? extends DrawableAnnotation> annotationType,
 				@SuppressWarnings("rawtypes") AnnotationPanel component, MeshCas cas) {
 			this.component = component;
 			this.annotationType = annotationType;
@@ -113,9 +113,9 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 		public void actionPerformed(ActionEvent arg0) {
 			synchronized (cas.getAnnotations()) {
 				for (Annotation m : cas.getAnnotations()) {
-					if (m.getClass() != annotationType || !(m instanceof MeshAnnotation))
+					if (m.getClass() != annotationType || !(m instanceof DrawableAnnotation))
 						continue;
-					MeshAnnotation ma = (MeshAnnotation) m;
+					DrawableAnnotation ma = (DrawableAnnotation) m;
 					ma.setDrawAnnotation(checkbox.isSelected());
 				}
 			}
@@ -124,7 +124,7 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 		/**
 		 * @return the annotationType
 		 */
-		public Class<? extends MeshAnnotation> getAnnotationType() {
+		public Class<? extends DrawableAnnotation> getAnnotationType() {
 			return annotationType;
 		}
 
@@ -170,7 +170,7 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 	 * @return the control panel
 	 */
 	@SuppressWarnings("rawtypes")
-	static AnnotationPanel createPanelForAnnotation(Class<? extends MeshAnnotation> clazz,
+	static AnnotationPanel createPanelForAnnotation(Class<? extends DrawableAnnotation> clazz,
 			MeshCas cas) {
 		if (clazz == FlatSurfaceAnnotation.class)
 			return new FlatSurfaceAnnotationPanel(cas);
@@ -186,31 +186,33 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 	/**
 	 * The top panel: contains the buttons displayed on the top of the JOutlookBar
 	 */
-	private final JPanel								topPanel			= new JPanel(
-																					new GridLayout(
-																							1, 1));
+	private final JPanel									topPanel			= new JPanel(
+																						new GridLayout(
+																								1,
+																								1));
 
 	/**
 	 * The bottom panel: contains the buttons displayed on the bottom of the JOutlookBar
 	 */
-	private final JPanel								bottomPanel			= new JPanel(
-																					new GridLayout(
-																							1, 1));
+	private final JPanel									bottomPanel			= new JPanel(
+																						new GridLayout(
+																								1,
+																								1));
 
 	/**
 	 * A LinkedHashMap of bars: we use a linked hash map to preserve the order of the bars
 	 */
-	final Map<Class<? extends MeshAnnotation>, BarInfo>	bars				= new LinkedHashMap<Class<? extends MeshAnnotation>, BarInfo>();
+	final Map<Class<? extends DrawableAnnotation>, BarInfo>	bars				= new LinkedHashMap<Class<? extends DrawableAnnotation>, BarInfo>();
 
 	/**
 	 * The currently visible bar (zero-based index)
 	 */
-	private int											visibleBar			= 0;
+	private int												visibleBar			= 0;
 
 	/**
 	 * A place-holder for the currently visible component
 	 */
-	private JComponent									visibleComponent	= null;
+	private JComponent										visibleComponent	= null;
 
 	/**
 	 * Creates a new JOutlookBar; after which you should make repeated calls to addBar() for each
@@ -231,8 +233,8 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 				synchronized (cas.getAnnotations()) {
 					synchronized (cas.getAnnotations()) {
 						for (Annotation a : cas.getAnnotations()) {
-							if (a instanceof MeshAnnotation) {
-								MeshAnnotation ma = (MeshAnnotation) a;
+							if (a instanceof DrawableAnnotation) {
+								DrawableAnnotation ma = (DrawableAnnotation) a;
 
 								if (bars.containsKey(ma.getClass()))
 									continue;
@@ -260,8 +262,9 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		int currentBar = 0;
-		for (Iterator<Class<? extends MeshAnnotation>> i = bars.keySet().iterator(); i.hasNext();) {
-			Class<? extends MeshAnnotation> clazz = i.next();
+		for (Iterator<Class<? extends DrawableAnnotation>> i = bars.keySet().iterator(); i
+				.hasNext();) {
+			Class<? extends DrawableAnnotation> clazz = i.next();
 			BarInfo barInfo = bars.get(clazz);
 			if (barInfo.getButton() == e.getSource()) {
 				// Found the selected button
@@ -296,7 +299,7 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 		int bottomBars = totalBars - topBars;
 
 		// Get an iterator to walk through out bars with
-		Iterator<Class<? extends MeshAnnotation>> itr = bars.keySet().iterator();
+		Iterator<Class<? extends DrawableAnnotation>> itr = bars.keySet().iterator();
 
 		// Render the top bars: remove all components, reset the GridLayout to
 		// hold to correct number of bars, add the bars, and "validate" it to
@@ -306,7 +309,7 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 		topLayout.setRows(topBars);
 		BarInfo barInfo = null;
 		for (int i = 0; i < topBars; i++) {
-			Class<? extends MeshAnnotation> clazz = itr.next();
+			Class<? extends DrawableAnnotation> clazz = itr.next();
 			barInfo = bars.get(clazz);
 			topPanel.add(barInfo.getButtonPanel());
 		}
@@ -327,7 +330,7 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 		GridLayout bottomLayout = (GridLayout) bottomPanel.getLayout();
 		bottomLayout.setRows(bottomBars);
 		for (int i = 0; i < bottomBars; i++) {
-			Class<? extends MeshAnnotation> clazz = itr.next();
+			Class<? extends DrawableAnnotation> clazz = itr.next();
 			barInfo = bars.get(clazz);
 			bottomPanel.add(barInfo.getButtonPanel());
 		}
@@ -345,11 +348,11 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 	 *            annotation to show or null if none
 	 */
 	@SuppressWarnings("unchecked")
-	public void setSelectedAnnotation(final MeshAnnotation selectedAnnotation) {
+	public void setSelectedAnnotation(final DrawableAnnotation selectedAnnotation) {
 
 		BarInfo selBar = null;
 
-		for (Class<? extends MeshAnnotation> cl : bars.keySet()) {
+		for (Class<? extends DrawableAnnotation> cl : bars.keySet()) {
 			BarInfo i = bars.get(cl);
 			if (selectedAnnotation != null && selectedAnnotation.getClass() == cl) {
 				i.component.setSelected(selectedAnnotation);
@@ -362,9 +365,9 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 
 			int idx = 0;
 
-			for (Iterator<Class<? extends MeshAnnotation>> itr = bars.keySet().iterator(); itr
+			for (Iterator<Class<? extends DrawableAnnotation>> itr = bars.keySet().iterator(); itr
 					.hasNext(); idx++) {
-				Class<? extends MeshAnnotation> clazz = itr.next();
+				Class<? extends DrawableAnnotation> clazz = itr.next();
 				if (bars.get(clazz) == selBar)
 					break;
 			}

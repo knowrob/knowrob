@@ -16,8 +16,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 
+import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.FlatSurfaceAnnotation;
-import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.util.Group;
 import edu.tum.cs.vis.model.util.Mesh;
@@ -91,13 +91,13 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 
 		while (!queue.isEmpty()) {
 			TriangleNeighbor currNeighbor = queue.pop();
-			Triangle neighbor;
+			Triangle currNeighborTriangle;
 			if (visited.contains(currNeighbor.getTriangle1()))
-				neighbor = currNeighbor.getTriangle2();
+				currNeighborTriangle = currNeighbor.getTriangle2();
 
 			else
-				neighbor = currNeighbor.getTriangle1();
-			visited.add(neighbor);
+				currNeighborTriangle = currNeighbor.getTriangle1();
+			visited.add(currNeighborTriangle);
 
 			double radiant = currNeighbor.getDihedralAngle();
 
@@ -107,7 +107,8 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 
 			if (isEqual) {
 				synchronized (cas.getAnnotations()) {
-					MeshAnnotation ma = cas.findAnnotation(FlatSurfaceAnnotation.class, neighbor);
+					DrawableAnnotation ma = cas.findAnnotation(FlatSurfaceAnnotation.class,
+							currNeighborTriangle);
 					if (ma == annotation)
 						continue;
 					if (ma != null) {
@@ -145,14 +146,14 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 						}
 					} else {
 						synchronized (annotation.getMesh().getTriangles()) {
-							annotation.getMesh().getTriangles().add(neighbor);
+							annotation.getMesh().getTriangles().add(currNeighborTriangle);
 						}
 					}
 				}
 
 				// Add all neighbors of current triangle to queue
-				for (TriangleNeighbor a : neighbor.getNeighbors()) {
-					Triangle newTriangle = a.getNeighbor(neighbor);
+				for (TriangleNeighbor a : currNeighborTriangle.getNeighbors()) {
+					Triangle newTriangle = a.getNeighbor(currNeighborTriangle);
 					synchronized (annotation.getMesh()) {
 						synchronized (annotation.getMesh().getTriangles()) {
 
@@ -164,7 +165,7 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 					queue.add(a);
 				}
 			} else {
-				annotation.addNeighborTriangles(neighbor);
+				annotation.addNeighborTriangles(currNeighborTriangle);
 			}
 		}
 		annotation.setFeatures();

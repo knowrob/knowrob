@@ -110,14 +110,18 @@ public class Triangle extends DrawObject {
 
 			if (add) {
 				newNeig = new TriangleNeighbor(this, neighbor);
-				neighbors.add(newNeig);
+				synchronized (neighbors) {
+					neighbors.add(newNeig);
+				}
 			}
 		}
 		if (add) {
 			synchronized (neighbor) {
 				if (neighbor.neighbors == null)
 					neighbor.neighbors = new ArrayList<TriangleNeighbor>();
-				neighbor.neighbors.add(newNeig);
+				synchronized (neighbor.neighbors) {
+					neighbor.neighbors.add(newNeig);
+				}
 			}
 			return true;
 		}
@@ -155,6 +159,12 @@ public class Triangle extends DrawObject {
 			g.endShape();
 
 		}
+
+		/*synchronized (annotations) {
+
+			for (DrawableAnnotation a : annotations)
+				a.draw(g);
+		}*/
 		/*applet.stroke(255,0,0);
 			
 		applet.strokeWeight(5);
@@ -228,7 +238,7 @@ public class Triangle extends DrawObject {
 	 *            end point of the ray
 	 * @return true if triangle intersects ray
 	 */
-	public boolean intersectsRay(Point3f rayStart, Point3f rayEnd) {
+	public boolean intersectsRay(Point3d rayStart, Point3d rayEnd) {
 		return intersectsRay(rayStart, rayEnd, null);
 	}
 
@@ -242,15 +252,15 @@ public class Triangle extends DrawObject {
 	 * Checks if this triangle intersects with the given ray (rayStart, rayEnd). Not only the
 	 * segment between rayStart and rayEnd is checked but the whole ray from -infinity to +infinity.
 	 * 
-	 * @param rayStart
+	 * @param p1
 	 *            start point of the ray
-	 * @param rayEnd
+	 * @param p2
 	 *            end point of the ray
-	 * @param intersectPoint
+	 * @param intersectionPoint
 	 *            will be set to the intersection point. Set to null to ignore.
 	 * @return true if triangle intersects ray
 	 */
-	public boolean intersectsRay(Point3f rayStart, Point3f rayEnd, Point3f intersectPoint) {
+	public boolean intersectsRay(Point3d p1, Point3d p2, Point3d intersectionPoint) {
 
 		if (position.length != 3) {
 			System.out.println("intersectRay not implemented for not triangles!!");
@@ -272,10 +282,10 @@ public class Triangle extends DrawObject {
 		if (n.equals(new Vector3d(0, 0, 0))) // triangle is degenerate
 			return false; // do not deal with this case
 
-		dir = new Vector3d(rayEnd);// ray direction vector
-		dir.sub(new Vector3d(rayStart));
+		dir = new Vector3d(p2);// ray direction vector
+		dir.sub(new Vector3d(p1));
 
-		w0 = new Vector3d(rayStart);
+		w0 = new Vector3d(p1);
 		w0.sub(new Vector3d(position[0]));
 
 		a = -n.dot(w0);
@@ -294,14 +304,14 @@ public class Triangle extends DrawObject {
 			return false; // => no intersect
 		// for a segment, also test if (r > 1.0) => no intersect
 
-		Point3f intersect = intersectPoint;
+		Point3d intersect = intersectionPoint;
 
 		if (intersect == null)
-			intersect = new Point3f();
+			intersect = new Point3d();
 
 		intersect.set(dir); // intersect point of ray and plane
 		intersect.scale((float) r);
-		intersect.add(rayStart);
+		intersect.add(p1);
 
 		// is I inside T?
 		double uu, uv, vv, wu, wv, D;
