@@ -60,14 +60,13 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 
 		float hue = c.getHue();
 
-		if (hue < 35 * Math.PI / 180 || hue > 230 * Math.PI / 180)
+		if (hue < 35 * Math.PI / 180 || hue >= 230 * Math.PI / 180)
 			return PrimitiveType.SPHERE_CONVEX;
 		else if (hue >= 35 * Math.PI / 180 && hue < 75 * Math.PI / 180)
 			return PrimitiveType.CONE_CONVEX;
 		else if (hue >= 75 * Math.PI / 180 && hue < 150 * Math.PI / 180)
 			return PrimitiveType.SPHERE_CONCAV;
 		else
-			// if (hue >= 150*Math.PI/180)
 			return PrimitiveType.CONE_CONCAV;
 	}
 
@@ -130,11 +129,11 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 		PrimitiveAnnotation annotation;
 		PrimitiveType type = getTrianglePrimitiveType(triangle);
 		if (type == PrimitiveType.PLANE)
-			annotation = new PlaneAnnotation();
+			annotation = new PlaneAnnotation(cas.getModel());
 		else if (type == PrimitiveType.SPHERE_CONCAV || type == PrimitiveType.SPHERE_CONVEX)
-			annotation = new SphereAnnotation(type == PrimitiveType.SPHERE_CONCAV);
+			annotation = new SphereAnnotation(cas.getModel(), type == PrimitiveType.SPHERE_CONCAV);
 		else
-			annotation = new ConeAnnotation(type == PrimitiveType.CONE_CONCAV);
+			annotation = new ConeAnnotation(cas.getModel(), type == PrimitiveType.CONE_CONCAV);
 
 		annotation.getMesh().getTriangles().add(triangle);
 		alreadyInAnnotation.add(triangle);
@@ -290,28 +289,12 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 
 		ThreadPool.executeInPool(threads);
 
-		final int intervalTri = 100;
+		final HashSet<Triangle> alreadyInAnnotation = new HashSet<Triangle>();
 
-		HashSet<Triangle> alreadyInAnnotation = new HashSet<Triangle>();
-
-		for (int start = 0; start < allTriangles.size(); start += intervalTri) {
-			final int st = start;
-			/*threads.add(new Callable<Void>() {
-
-				@Override
-				public Void call() throws Exception {*/
-			int end = Math.min(st + intervalTri, allTriangles.size());
-			for (int i = st; i < end; i++) {
-				analyzeTriangle(cas, allTriangles.get(i), alreadyInAnnotation);
-				itemsElaborated.incrementAndGet();
-			}
-			/*return null;
-			}
-			});
-			};
-
-			ThreadPool.executeInPool(threads);*/
-		};
+		for (Triangle t : allTriangles) {
+			analyzeTriangle(cas, t, alreadyInAnnotation);
+			itemsElaborated.incrementAndGet();
+		}
 
 		// Combine very small annotations with surrounding larger ones
 		for (Iterator<Annotation> it = cas.getAnnotations().iterator(); it.hasNext();) {

@@ -23,8 +23,6 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 
-import org.apache.log4j.Logger;
-
 import edu.tum.cs.vis.model.uima.analyzer.MeshAnalyzer;
 import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
@@ -38,10 +36,6 @@ import edu.tum.cs.vis.model.view.control.DrawSettingsPanel;
  * 
  */
 public final class MeshReasoningViewControl extends JPanel implements ActionListener {
-	/**
-	 * Log4J Logger
-	 */
-	private static Logger					logger				= Logger.getLogger(MeshReasoningViewControl.class);
 
 	/**
 	 * auto generated

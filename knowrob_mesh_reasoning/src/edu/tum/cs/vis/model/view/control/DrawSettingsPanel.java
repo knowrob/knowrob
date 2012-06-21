@@ -26,8 +26,14 @@ import edu.tum.cs.vis.model.view.MeshReasoningView;
 public class DrawSettingsPanel extends JPanel implements ActionListener {
 
 	/**
+	 * 
+	 */
+	private static final long		serialVersionUID	= -1936392151575823886L;
+
+	/**
 	 * cas for which this control is
 	 */
+	@SuppressWarnings("unused")
 	private final MeshCas			cas;
 
 	/**

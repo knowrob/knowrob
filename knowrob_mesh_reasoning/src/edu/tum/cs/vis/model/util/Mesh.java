@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import javax.imageio.ImageIO;
 import javax.vecmath.Point3f;
@@ -382,27 +383,31 @@ public class Mesh implements Serializable {
 			return;
 		// load all Texture-Images only once (memory efficiency)
 		HashMap<String, PImage> pictures = new HashMap<String, PImage>();
+		HashSet<String> alreadyLoaded = new HashSet<String>();// if error reading file,
+																// pictures<path> is null. So avoid
+																// trying again
 		for (Triangle tri : triangles) {
 			if (tri.appearance.getImageFileName() == null)
 				continue;
 			String texfile = FileUtil.getAbsoluteFilePath(textureBasePath,
 					tri.appearance.getImageFileName());
-			if (pictures.get(texfile) == null) {
+			if (pictures.get(texfile) == null && !alreadyLoaded.contains(texfile)) {
+
+				alreadyLoaded.add(texfile);
 				BufferedImage bimg = null;
 				try {
 					bimg = ImageIO.read(new File(texfile));
+					// Convert BufferedImage to Image otherwise PImage constructor will fail!!
+
+					Image i = bimg.getScaledInstance(bimg.getWidth(), bimg.getHeight(), 0);
+
+					PImage pImg = new PImage(i);
+
+					pictures.put(texfile, pImg);
 				} catch (IOException e) {
 					System.err.println("Couldn't read file: " + texfile);
-					e.printStackTrace();
 				}
 
-				// Convert BufferedImage to Image otherwise PImage constructor will fail!!
-
-				Image i = bimg.getScaledInstance(bimg.getWidth(), bimg.getHeight(), 0);
-
-				PImage pImg = new PImage(i);
-
-				pictures.put(texfile, pImg);
 			}
 		}
 
@@ -417,6 +422,8 @@ public class Mesh implements Serializable {
 					tri.appearance.getImageFileName());
 			// PImage tex = applet.loadImage(texfile);
 			PImage tex = pictures.get(texfile);
+			if (tex == null)
+				continue;
 
 			double xMin = Double.MAX_VALUE;
 			double yMin = Double.MAX_VALUE;

@@ -47,6 +47,7 @@ public class ThreadPool {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		threads.clear();
 	}
 
 	public static void init() {

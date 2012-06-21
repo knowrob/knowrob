@@ -238,6 +238,7 @@ public abstract class DrawObject implements Serializable {
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("static-method")
 	public boolean updateNormalVector() {
 		/*
 		 * Overridden in triangles class, line doesn't have a normal vector

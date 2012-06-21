@@ -12,9 +12,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
-
-import org.apache.log4j.Logger;
 
 import processing.core.PGraphics;
 import edu.tum.cs.vis.model.util.BSphere;
@@ -29,11 +28,6 @@ import edu.tum.cs.vis.model.util.Vertex;
  */
 public class Model {
 
-	/**
-	 * Log4J Logger
-	 */
-	private static Logger			logger			= Logger.getLogger(Model.class);
-
 	private String					textureBasePath	= null;
 
 	private Group					group;
@@ -45,6 +39,8 @@ public class Model {
 	private final ArrayList<Line>	lines			= new ArrayList<Line>();
 
 	private BSphere					boundingSphere	= null;
+
+	private float					scale			= 1;
 
 	/**
 	 * @param g
@@ -114,6 +110,10 @@ public class Model {
 		return lines;
 	}
 
+	public float getScale() {
+		return scale;
+	}
+
 	/**
 	 * @return the textureBasePath
 	 */
@@ -126,6 +126,34 @@ public class Model {
 	 */
 	public ArrayList<Triangle> getTriangles() {
 		return triangles;
+	}
+
+	public float getUnscaled(float scaled) {
+		return scaled * 1f / scale;
+	}
+
+	/**
+	 * @param corner
+	 * @return
+	 */
+	public Tuple3f[] getUnscaled(Point3f[] corner) {
+		Tuple3f[] ret = new Point3f[corner.length];
+		for (int i = 0; i < corner.length; i++) {
+			ret[i] = getUnscaled(corner[i]);
+		}
+		return ret;
+	}
+
+	public Tuple3f getUnscaled(Tuple3f t) {
+		Tuple3f tr = new Point3f(t);
+		tr.scale(1f / scale);
+		return tr;
+	}
+
+	public Vector3f getUnscaled(Vector3f t) {
+		Vector3f tr = new Vector3f(t);
+		tr.scale(1f / scale);
+		return tr;
 	}
 
 	/**
@@ -154,6 +182,8 @@ public class Model {
 		float max = Math.max(x, Math.max(y, z));
 
 		scale(1f / max);
+
+		scale = 1f / max;
 		return max;
 	}
 

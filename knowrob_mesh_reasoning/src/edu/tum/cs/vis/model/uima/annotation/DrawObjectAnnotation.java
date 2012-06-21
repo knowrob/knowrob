@@ -16,7 +16,11 @@ import edu.tum.cs.vis.model.util.DrawObject;
  */
 public class DrawObjectAnnotation extends DrawableAnnotation {
 
-	protected DrawObject	object;
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= -1302487276536212663L;
+	protected DrawObject		object;
 
 	/* (non-Javadoc)
 	 * @see edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation#drawAnnotation(processing.core.PGraphics)

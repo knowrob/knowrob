@@ -13,14 +13,15 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
+import javax.vecmath.Point3f;
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
-import org.ejml.simple.SimpleMatrix;
-import org.ejml.simple.SimpleSVD;
-
 import processing.core.PGraphics;
+import edu.tum.cs.vis.model.Model;
 import edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation;
 import edu.tum.cs.vis.model.util.Vertex;
+import edu.tum.cs.vis.model.util.algorithm.BestFitLine3D;
 import edu.tum.cs.vis.model.view.MeshReasoningView;
 
 /**
@@ -28,16 +29,6 @@ import edu.tum.cs.vis.model.view.MeshReasoningView;
  * 
  */
 public class ConeAnnotation extends PrimitiveAnnotation {
-
-	class VectorWeight {
-		public Vector3f	v;
-		public float	w;
-
-		public VectorWeight(Vector3f v, float w) {
-			this.v = v;
-			this.w = w;
-		}
-	}
 
 	/**
 	 * 
@@ -96,23 +87,24 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 		return true;
 	}
 
-	private final boolean					concav;
-	private final Vector3f					centroid		= new Vector3f();
+	private final boolean				concav;
+
+	private final Point3f				centroid		= new Point3f();
 
 	/**
 	 * Defines the generating axis of the cone. Points into the direction of radiusSmall. Length of
 	 * this vector is half of the height of the cone.
 	 */
-	private final Vector3f					direction		= new Vector3f();
+	private final Vector3f				direction		= new Vector3f();
 
-	private float							radiusLarge		= 0;
+	private float						radiusLarge		= 0;
 
-	private float							radiusSmall		= 0;
+	private float						radiusSmall		= 0;
 
-	private final ArrayList<VectorWeight>	intersections	= new ArrayList<VectorWeight>();
+	private final ArrayList<Point3f>	intersections	= new ArrayList<Point3f>();
 
-	public ConeAnnotation(boolean concav) {
-		super(concav ? new Color(0, 125, 125) : new Color(255, 255, 0));
+	public ConeAnnotation(Model model, boolean concav) {
+		super(model, concav ? new Color(0, 125, 125) : new Color(255, 255, 0));
 		this.concav = concav;
 	}
 
@@ -146,20 +138,12 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 		g.strokeWeight(5);
 		g.stroke(0, 255, 0);
 
-		float min = Float.MAX_VALUE;
-		float max = Float.MIN_VALUE;
-
-		for (VectorWeight vw : intersections) {
-			min = Math.min(vw.w, min);
-			max = Math.max(vw.w, max);
-		}
-
-		for (VectorWeight v : intersections) {
+		for (Point3f p : intersections) {
 
 			// Color c = Color.getHSBColor((vw.w - min) * factor, 1, 1);
 			// g.stroke(c.getRed(), c.getGreen(), c.getBlue());
 			// g.strokeWeight(10 * factor * (vw.w - min) + 5);
-			g.point(v.v.x, v.v.y, v.v.z);
+			g.point(p.x, p.y, p.z);
 		}
 
 		g.stroke(255, 255, 0);
@@ -170,8 +154,8 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 		g.strokeWeight(5);
 
 		g.line(centroid.x, centroid.y, centroid.z, centroid.x + direction.x, centroid.y
-				+ direction.y, centroid.z + direction.z);
-		*/
+				+ direction.y, centroid.z + direction.z);*/
+
 		g.noStroke();
 
 		g.fill(getDrawColor().getRed(), getDrawColor().getGreen(), getDrawColor().getBlue(), 120);
@@ -217,8 +201,6 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 			if (alreadyAdded.contains(v))
 				continue;
 
-			float weight = vertices.get(v);
-
 			// Get vector normal and set its length according to the curvature radius (= 1/ curv).
 			// So on a perfect cylinder the vectors end in the same point on each end.
 			Vector3f norm = (Vector3f) v.getNormalVector().clone();
@@ -226,8 +208,8 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 
 			// Find the shortest intersection route
 			float minDist = Float.MAX_VALUE;
-			VectorWeight addCandidateA = null;
-			VectorWeight addCandidateB = null;
+			Point3f addCandidateA = null;
+			Point3f addCandidateB = null;
 			Vertex vAdded = null;
 
 			// float distNorm = norm.length();
@@ -252,12 +234,11 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 					if (tmp.lengthSquared() < minDist) {
 						minDist = tmp.lengthSquared();
 
-						float weight2 = vertices.get(v2);
 						// Get middle point of intersection route
 						pa.add(pb);
 						pa.scale(1f / 2f);
-						addCandidateA = new VectorWeight((Vector3f) pa.clone(), weight);
-						addCandidateB = new VectorWeight((Vector3f) pb.clone(), weight2);
+						addCandidateA = new Point3f(pa);
+						addCandidateB = new Point3f(pb);
 						vAdded = v2;
 					}
 				}
@@ -280,28 +261,17 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 
 			for (Iterator<Vertex> it = vertices.keySet().iterator(); it.hasNext();) {
 				Vertex v = it.next();
-				float weight = vertices.get(v);
-
 				Vector3f norm = (Vector3f) v.getNormalVector().clone();
 				norm.scale(-1 / v.getCurvature().getCurvatureMax());
 				norm.add(v);
-				intersections.add(new VectorWeight(norm, weight));
+				intersections.add(new Point3f(norm));
 			}
 
 		}
 
-		centroid.scale(0);
-		for (VectorWeight vw : intersections) {
-
-			centroid.x += vw.v.x;
-			centroid.y += vw.v.y;
-			centroid.z += vw.v.z;
-		}
-		centroid.scale(1f / intersections.size());
-
 		// Now intersections are found. Find the best fitting line between through these points.
 		// Should be the generating line (line in the middle of cylinder).
-		getBestFittingLine(intersections, direction);
+		BestFitLine3D.getBestFitLine(intersections, direction, centroid);
 		double radiusBottom = 0;
 		double radiusTop = 0;
 		double radiusBottomWeight = 0;
@@ -357,71 +327,17 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
-	 * dir already normalized
-	 * 
-	 * @param points
-	 * @param dir
+	 * @return the centroid
 	 */
-	private void getBestFittingLine(ArrayList<VectorWeight> points, Vector3f dir) {
-		// Try to best fit a line through the intersection points:
-
-		// Number of maximum rows for SVD. If value is too large SVD will throw a Out of Heap
-		// Exception
-		int maxRows = 1000;
-
-		// Calculate the increment value if number of intersections is larger than maxRows.
-		int increment = (intersections.size() / maxRows);
-		if (increment == 0)
-			increment = 1;
-		int numberOfPoints = intersections.size() / increment;
-		if (intersections.size() % maxRows > 0)
-			numberOfPoints++;
-
-		SimpleMatrix A = new SimpleMatrix(numberOfPoints == 2 ? numberOfPoints + 1
-				: numberOfPoints + 2, 4);
-
-		int row = 0;
-
-		// Weighted SVD according to
-		// http://www.mathworks.com/matlabcentral/newsreader/view_thread/262996
-
-		for (int i = 0; i < intersections.size(); i += increment) {
-			VectorWeight vw = intersections.get(i);
-			A.setRow(row++, 0, (vw.v.x - centroid.x), (vw.v.y - centroid.y), (vw.v.z - centroid.z),
-					1);
-		}
-
-		if (numberOfPoints == 2) {
-			A.setRow(row++, 0, 0, 0, 0);
-		}
-
-		@SuppressWarnings("rawtypes")
-		SimpleSVD svd = A.svd();
-
-		// Find column with biggest value (using biggest singular value not working correctly)
-		int idx = 0;
-		float max = 0;
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
-				if (Math.abs(svd.getV().get(j, i)) > max) {
-					max = (float) Math.abs(svd.getV().get(j, i));
-					idx = i;
-				}
-
-			}
-		}
-
-		dir.x = (float) svd.getV().get(0, idx);
-		dir.y = (float) svd.getV().get(1, idx);
-		dir.z = (float) svd.getV().get(2, idx);
-
+	public Point3f getCentroid() {
+		return centroid;
 	}
 
 	/**
 	 * @return the centroid
 	 */
-	public Vector3f getCentroid() {
-		return centroid;
+	public Tuple3f getCentroidUnscaled() {
+		return model.getUnscaled(centroid);
 	}
 
 	/**
@@ -429,6 +345,13 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 	 */
 	public Vector3f getDirection() {
 		return direction;
+	}
+
+	/**
+	 * @return the direction
+	 */
+	public Vector3f getDirectionUnscaled() {
+		return new Vector3f(model.getUnscaled(direction));
 	}
 
 	/* (non-Javadoc)
@@ -441,11 +364,23 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 		return (float) (Math.PI * (radiusLarge + radiusSmall) * Math.sqrt(r * r + h * h));
 	}
 
+	public float getPrimitiveAreaUnscaled() {
+
+		return model.getUnscaled(getPrimitiveArea());
+	}
+
 	/**
 	 * @return the radiusLarge
 	 */
 	public float getRadiusLarge() {
 		return radiusLarge;
+	}
+
+	/**
+	 * @return the radiusLarge
+	 */
+	public float getRadiusLargeUnscaled() {
+		return model.getUnscaled(radiusLarge);
 	}
 
 	/**
@@ -455,11 +390,23 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 		return radiusSmall;
 	}
 
+	/**
+	 * @return the radiusSmall
+	 */
+	public float getRadiusSmallUnscaled() {
+		return model.getUnscaled(radiusSmall);
+	}
+
 	public float getVolume() {
 
 		float h = direction.length() * 2;
 		return (float) ((h * Math.PI) / 3f * (Math.pow(radiusLarge, 2) + radiusLarge * radiusSmall + Math
 				.pow(radiusSmall, 2)));
+	}
+
+	public float getVolumeUnscaled() {
+
+		return model.getUnscaled(getVolume());
 	}
 
 	/**

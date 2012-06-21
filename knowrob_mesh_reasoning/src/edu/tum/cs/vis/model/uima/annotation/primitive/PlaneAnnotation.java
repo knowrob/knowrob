@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 
 import javax.vecmath.Point2f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector2f;
 import javax.vecmath.Vector3f;
 
@@ -21,6 +22,7 @@ import org.ejml.simple.SimpleSVD;
 
 import processing.core.PConstants;
 import processing.core.PGraphics;
+import edu.tum.cs.vis.model.Model;
 import edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation;
 import edu.tum.cs.vis.model.util.Vertex;
 import edu.tum.cs.vis.model.util.algorithm.BestFitRectangle2D;
@@ -39,8 +41,8 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 	private final Vector3f		planeNormal			= new Vector3f();
 
 	private Vector3f			centroid			= new Vector3f();
-
 	private final Vector3f		shortSide			= new Vector3f();
+
 	private final Vector3f		longSide			= new Vector3f();
 
 	private final Point3f		corner[]			= new Point3f[4];
@@ -48,8 +50,8 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 	/**
 	 * @param annotationColor
 	 */
-	public PlaneAnnotation() {
-		super(new Color(250, 200, 255));
+	public PlaneAnnotation(Model model) {
+		super(model, new Color(250, 200, 255));
 	}
 
 	/* (non-Javadoc)
@@ -140,10 +142,6 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 		@SuppressWarnings("rawtypes")
 		SimpleSVD svd = A.svd();
 
-		SimpleMatrix U = svd.getU();
-		SimpleMatrix W = svd.getW();
-		SimpleMatrix V = svd.getV();
-
 		planeNormal.x = (float) svd.getV().get(0, 3);
 		planeNormal.y = (float) svd.getV().get(1, 3);
 		planeNormal.z = (float) svd.getV().get(2, 3);
@@ -163,11 +161,26 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
+	 * @return the centroid
+	 */
+	public Tuple3f getCentroidUnscaled() {
+		return model.getUnscaled(centroid);
+	}
+
+	/**
 	 * @return the corner
 	 */
 	public Point3f[] getCorner() {
 
 		return corner;
+	}
+
+	/**
+	 * @return the corner
+	 */
+	public Tuple3f[] getCornerUnscaled() {
+
+		return model.getUnscaled(corner);
 	}
 
 	/**
@@ -178,10 +191,25 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
+	 * @return the longSide
+	 */
+	public Vector3f getLongSideUnscaled() {
+		System.out.println("long: " + longSide + " * " + (1f / model.getScale()));
+		return model.getUnscaled(longSide);
+	}
+
+	/**
 	 * @return the planeNormal
 	 */
 	public Vector3f getPlaneNormal() {
 		return planeNormal;
+	}
+
+	/**
+	 * @return the planeNormal
+	 */
+	public Tuple3f getPlaneNormalUnscaled() {
+		return model.getUnscaled(planeNormal);
 	}
 
 	/* (non-Javadoc)
@@ -193,26 +221,9 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 		return 4f * shortSide.length() * longSide.length();
 	}
 
-	private SimpleMatrix getRotationMatrix(double rot, Vector3f vec) {
-		SimpleMatrix mat = new SimpleMatrix(3, 3);
-
-		double c = Math.cos(rot);
-		double s = Math.sin(rot);
-
-		mat.set(0, 0, c + Math.pow(vec.x, 2) * (1 - c));
-		mat.set(0, 1, vec.x * vec.y * (1 - c) - vec.z * s);
-		mat.set(0, 2, vec.x * vec.z * (1 - c) + vec.y * s);
-
-		mat.set(1, 0, vec.y * vec.x * (1 - c) + vec.z * s);
-		mat.set(1, 1, c + Math.pow(vec.y, 2) * (1 - c));
-		mat.set(1, 2, vec.y * vec.z * (1 - c) - vec.x * s);
-
-		mat.set(2, 0, vec.z * vec.x * (1 - c) - vec.y * s);
-		mat.set(2, 1, vec.z * vec.y * (1 - c) + vec.x * s);
-		mat.set(2, 2, c + Math.pow(vec.z, 2) * (1 - c));
-
-		return mat;
-
+	public float getPrimitiveAreaUnscaled() {
+		// shortSide is half length of the rectangles short side. Same with long side.
+		return model.getUnscaled(getPrimitiveArea());
 	}
 
 	/**
@@ -220,6 +231,13 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 	 */
 	public Vector3f getShortSide() {
 		return shortSide;
+	}
+
+	/**
+	 * @return the shortSide
+	 */
+	public Vector3f getShortSideUnscaled() {
+		return model.getUnscaled(shortSide);
 	}
 
 	private Point2f[] projectPlaneInto2D(HashMap<Vertex, Float> vertices, Vector3f v, Vector3f u) {

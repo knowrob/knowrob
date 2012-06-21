@@ -36,16 +36,9 @@ public class ContainerAnalyzer extends MeshAnalyzer {
 	/**
 	 * Log4J Logger
 	 */
-	private static Logger	logger				= Logger.getLogger(PrimitiveAnalyzer.class);
+	private static Logger	logger	= Logger.getLogger(PrimitiveAnalyzer.class);
 
-	/**
-	 * Number of triangles already elaborated/processed. Used for indicating current process
-	 */
-	final AtomicInteger		itemsElaborated		= new AtomicInteger(0);
-
-	private int				maxItemsToElaborate	= 0;
-
-	void checkConcavAnnotationCone(MeshCas cas, ConeAnnotation an,
+	static void checkConcavAnnotationCone(MeshCas cas, ConeAnnotation an,
 			HashSet<MeshAnnotation> annotations) {
 
 		float areaOfCapSmall = (float) (Math.pow(an.getRadiusSmall(), 2) * Math.PI);
@@ -128,7 +121,7 @@ public class ContainerAnalyzer extends MeshAnalyzer {
 			}
 		}
 		if (hasBottomCap || hasTopCap) {
-			ContainerAnnotation ca = new ContainerAnnotation();
+			ContainerAnnotation ca = new ContainerAnnotation(cas.getModel());
 			ca.getMesh().getTriangles().addAll(an.getMesh().getTriangles());
 			ca.getMesh().getTriangles().addAll(capAnnotation.getMesh().getTriangles());
 
@@ -143,6 +136,13 @@ public class ContainerAnalyzer extends MeshAnalyzer {
 			cas.addAnnotation(ca);
 		}
 	}
+
+	/**
+	 * Number of triangles already elaborated/processed. Used for indicating current process
+	 */
+	final AtomicInteger	itemsElaborated		= new AtomicInteger(0);
+
+	private int			maxItemsToElaborate	= 0;
 
 	/* (non-Javadoc)
 	 * @see edu.tum.cs.vis.model.uima.analyzer.MeshAnalyzer#getLogger()

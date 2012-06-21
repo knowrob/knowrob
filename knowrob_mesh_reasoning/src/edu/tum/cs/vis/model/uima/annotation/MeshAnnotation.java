@@ -11,6 +11,7 @@ import java.awt.Color;
 import java.util.HashSet;
 
 import processing.core.PGraphics;
+import edu.tum.cs.vis.model.Model;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.util.Mesh;
 import edu.tum.cs.vis.model.util.Triangle;
@@ -46,6 +47,8 @@ public abstract class MeshAnnotation extends DrawableAnnotation {
 	 */
 	protected Mesh				mesh				= new Mesh();
 
+	protected Model				model;
+
 	/**
 	 * Default constructor. Sets the annotation color. Each type of annotation should have a
 	 * different color.
@@ -53,11 +56,12 @@ public abstract class MeshAnnotation extends DrawableAnnotation {
 	 * @param annotationColor
 	 *            The annotation color for this type of annotation
 	 */
-	public MeshAnnotation(final Color annotationColor) {
+	public MeshAnnotation(Model model, final Color annotationColor) {
 		super();
 		randomAnnotationColor = new Color((int) (Math.random() * 255), (int) (Math.random() * 255),
 				(int) (Math.random() * 255));
 		this.annotationColor = annotationColor;
+		this.model = model;
 	}
 
 	@Override
@@ -104,9 +108,6 @@ public abstract class MeshAnnotation extends DrawableAnnotation {
 		 * First iteration set a1 to annotation of neighbor 1, second set a2 to annotation of neighbor 2.
 		 * On third iteration 
 		 */
-
-		PrimitiveAnnotation a1 = null;
-		PrimitiveAnnotation a2 = null;
 
 		// Check all neighbors of the triangle which annotation they have
 		for (Triangle neig : t.getNeighbors()) {

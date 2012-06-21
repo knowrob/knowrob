@@ -22,15 +22,19 @@ import edu.tum.cs.vis.model.util.Triangle;
 public class CurvatureAnnotation extends DrawObjectAnnotation {
 
 	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 2364473036900558041L;
+	/**
 	 * Direction and magnitude of maximum principal curvature at centroid of Triangle. kMax, kMin
 	 * and NormalVector form a othonormal basis: N = kMax x kMin.
 	 */
-	private final Vector3f	kMax;
+	private final Vector3f		kMax;
 	/**
 	 * Direction and magnitude of minimum principal curvature at centroid of Triangle. kMax, kMin
 	 * and NormalVector form a othonormal basis: N = kMax x kMin.
 	 */
-	private final Vector3f	kMin;
+	private final Vector3f		kMin;
 
 	public CurvatureAnnotation(Triangle t, Vector3f kMin, Vector3f kMax) {
 		object = t;

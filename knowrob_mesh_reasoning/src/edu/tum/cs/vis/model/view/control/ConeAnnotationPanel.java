@@ -26,6 +26,11 @@ import edu.tum.cs.vis.model.uima.cas.MeshCas;
 public class ConeAnnotationPanel extends AnnotationPanel<ConeAnnotation> {
 
 	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= -4899042762344011422L;
+
+	/**
 	 * Area of selected annotation
 	 */
 	private final JTextField	txtAreaTot;
@@ -132,14 +137,14 @@ public class ConeAnnotationPanel extends AnnotationPanel<ConeAnnotation> {
 		txtHeight.setEnabled(annotation != null);
 
 		if (annotation != null) {
-			txtAreaTot.setText(String.valueOf(annotation.getPrimitiveArea()));
-			txtAreaCov.setText(String.valueOf(annotation.getArea() / annotation.getPrimitiveArea()
-					* 100f)
+			txtAreaTot.setText(String.valueOf(annotation.getPrimitiveAreaUnscaled()));
+			txtAreaCov.setText(String.valueOf(annotation.getAreaUnscaled()
+					/ annotation.getPrimitiveAreaUnscaled() * 100f)
 					+ "%");
-			txtRadius.setText(String.valueOf(annotation.getRadiusLarge()) + " -> "
-					+ String.valueOf(annotation.getRadiusSmall()));
-			txtDirectionVector.setText(annotation.getDirection().toString());
-			txtHeight.setText(String.valueOf(annotation.getDirection().length() * 2));
+			txtRadius.setText(String.valueOf(annotation.getRadiusLargeUnscaled()) + " -> "
+					+ String.valueOf(annotation.getRadiusSmallUnscaled()));
+			txtDirectionVector.setText(annotation.getDirectionUnscaled().toString());
+			txtHeight.setText(String.valueOf(annotation.getDirectionUnscaled().length() * 2));
 		}
 
 	}

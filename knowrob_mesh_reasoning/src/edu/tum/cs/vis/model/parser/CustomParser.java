@@ -58,14 +58,8 @@ public class CustomParser extends ModelParser {
 						float x = Float.valueOf(parts[0]);
 						float y = Float.valueOf(parts[1]);
 						float z = Float.valueOf(parts[2]);
-						float h = Float.valueOf(parts[3]);
-						float s = Float.valueOf(parts[4]);
 
-						Vertex v = new Vertex(x, y, z);
-
-						// v.color = hsv2srgb(h, s, 1.0f);// Color.getHSBColor(h, s, 1.0f);
-
-						model.getVertices().add(v);
+						model.getVertices().add(new Vertex(x, y, z));
 					} else {
 						if (parts.length != 3)
 							throw new RuntimeException("Triangle: invalid number of data: "

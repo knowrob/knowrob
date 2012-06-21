@@ -9,7 +9,10 @@ package edu.tum.cs.vis.model.uima.annotation;
 
 import java.awt.Color;
 
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
+
+import edu.tum.cs.vis.model.Model;
 
 /**
  * @author Stefan Profanter
@@ -29,8 +32,8 @@ public class ContainerAnnotation extends MeshAnnotation {
 	/**
 	 * @param annotationColor
 	 */
-	public ContainerAnnotation() {
-		super(new Color(27, 93, 27));
+	public ContainerAnnotation(Model model) {
+		super(model, new Color(27, 93, 27));
 		// TODO Auto-generated constructor stub
 	}
 
@@ -42,10 +45,24 @@ public class ContainerAnnotation extends MeshAnnotation {
 	}
 
 	/**
+	 * @return the direction
+	 */
+	public Tuple3f getDirectionUnscaled() {
+		return model.getUnscaled(direction);
+	}
+
+	/**
 	 * @return the volume
 	 */
 	public float getVolume() {
 		return volume;
+	}
+
+	/**
+	 * @return the volume
+	 */
+	public float getVolumeUnscaled() {
+		return model.getUnscaled(volume);
 	}
 
 	/**

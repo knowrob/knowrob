@@ -82,6 +82,8 @@ public class MeshReasoning {
 		// ItemModel itemModel = new ItemModel("models/sheetmetal.dae");
 
 		// ItemModel itemModel = new ItemModel("models/test2.dae");
+		// ItemModel itemModel = new ItemModel("models/hammer.dae");
+		// ItemModel itemModel = new ItemModel("models/spoon.dae");
 
 		if (!itemModel.parseModel()) {
 			throw new RuntimeException("Couldn't parse model. Maybe path to model is wrong.");
@@ -95,15 +97,6 @@ public class MeshReasoning {
 
 		logger.debug("Calculating curvature ...");
 
-		float x = model.getGroup().getMaxX() - model.getGroup().getMinX();
-		float y = model.getGroup().getMaxY() - model.getGroup().getMinY();
-		float z = model.getGroup().getMaxZ() - model.getGroup().getMinZ();
-
-		float max = Math.max(x, Math.max(y, z));
-
-		float scale = 1f / max;
-
-		// float scale = model.normalize();
 		model.normalize();
 		CurvatureCalculation.calculateCurvatures(model);
 
@@ -138,7 +131,6 @@ public class MeshReasoning {
 		ArrayList<MeshAnalyzer> analyzer = new ArrayList<MeshAnalyzer>();
 
 		MeshReasoningView mrv = new MeshReasoningView();
-		// mrv.setScale(scale);
 		MeshReasoningViewControl control = new MeshReasoningViewControl(cas, analyzer, mrv);
 		mrv.setControl(control);
 		mrv.init();

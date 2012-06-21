@@ -26,6 +26,11 @@ import edu.tum.cs.vis.model.uima.cas.MeshCas;
 public class SphereAnnotationPanel extends AnnotationPanel<SphereAnnotation> {
 
 	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= -7784059552068531420L;
+
+	/**
 	 * Area of selected annotation
 	 */
 	private final JTextField	txtAreaTot;
@@ -100,11 +105,11 @@ public class SphereAnnotationPanel extends AnnotationPanel<SphereAnnotation> {
 		txtRadius.setEnabled(annotation != null);
 
 		if (annotation != null) {
-			txtAreaTot.setText(String.valueOf(annotation.getPrimitiveArea()));
-			txtAreaCov.setText(String.valueOf(annotation.getArea() / annotation.getPrimitiveArea()
-					* 100f)
+			txtAreaTot.setText(String.valueOf(annotation.getPrimitiveAreaUnscaled()));
+			txtAreaCov.setText(String.valueOf(annotation.getAreaUnscaled()
+					/ annotation.getPrimitiveAreaUnscaled() * 100f)
 					+ "%");
-			txtRadius.setText(String.valueOf(annotation.getRadius()));
+			txtRadius.setText(String.valueOf(annotation.getRadiusUnscaled()));
 
 		}
 

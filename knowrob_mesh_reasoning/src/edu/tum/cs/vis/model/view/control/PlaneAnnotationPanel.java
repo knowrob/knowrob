@@ -25,6 +25,11 @@ import edu.tum.cs.vis.model.uima.cas.MeshCas;
  */
 public class PlaneAnnotationPanel extends AnnotationPanel<PlaneAnnotation> {
 	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= -5897835617138930308L;
+
+	/**
 	 * Area of selected annotation
 	 */
 	private final JTextField	txtAreaTot;
@@ -108,12 +113,12 @@ public class PlaneAnnotationPanel extends AnnotationPanel<PlaneAnnotation> {
 		txtLong.setEnabled(annotation != null);
 
 		if (annotation != null) {
-			txtAreaTot.setText(String.valueOf(annotation.getPrimitiveArea()));
-			txtAreaCov.setText(String.valueOf(annotation.getArea() / annotation.getPrimitiveArea()
-					* 100f)
+			txtAreaTot.setText(String.valueOf(annotation.getPrimitiveAreaUnscaled()));
+			txtAreaCov.setText(String.valueOf(annotation.getAreaUnscaled()
+					/ annotation.getPrimitiveAreaUnscaled() * 100f)
 					+ "%");
-			txtShort.setText(String.valueOf(annotation.getShortSide().length()));
-			txtLong.setText(String.valueOf(annotation.getLongSide().length()));
+			txtShort.setText(String.valueOf(annotation.getShortSideUnscaled().length()));
+			txtLong.setText(String.valueOf(annotation.getLongSideUnscaled().length()));
 		}
 
 	}

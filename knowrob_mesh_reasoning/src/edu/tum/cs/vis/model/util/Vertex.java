@@ -18,13 +18,18 @@ import javax.vecmath.Vector3f;
  */
 public class Vertex extends Point3f {
 
-	private Vector3f	normalVector	= new Vector3f();
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 4454667509075960402L;
 
-	private float		pointarea		= 0f;
+	private Vector3f			normalVector		= new Vector3f();
 
-	private Curvature	curvature;
+	private float				pointarea			= 0f;
 
-	public Color		color;
+	private Curvature			curvature;
+
+	public Color				color;
 
 	/**
 	 * @param f

@@ -10,9 +10,11 @@ package edu.tum.cs.vis.model.uima.annotation.primitive;
 import java.awt.Color;
 import java.util.HashSet;
 
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import processing.core.PGraphics;
+import edu.tum.cs.vis.model.Model;
 import edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation;
 import edu.tum.cs.vis.model.util.Vertex;
 
@@ -25,18 +27,23 @@ public class SphereAnnotation extends PrimitiveAnnotation {
 	/**
 	 * 
 	 */
-	private static final long		serialVersionUID	= 4870579150170536881L;
+	private static final long	serialVersionUID	= 4870579150170536881L;
+
+	private static float getLi(Vertex v, float a, float b, float c) {
+		return (float) Math
+				.sqrt(Math.pow(v.x - a, 2) + Math.pow(v.y - b, 2) + Math.pow(v.z - c, 2));
+	}
 
 	private final boolean			concav;
 
-	private final HashSet<Vertex>	vertices			= new HashSet<Vertex>();
+	private final HashSet<Vertex>	vertices	= new HashSet<Vertex>();
 
-	private final Vector3f			center				= new Vector3f();
+	private final Vector3f			center		= new Vector3f();
 
-	private float					radius				= 0;
+	private float					radius		= 0;
 
-	public SphereAnnotation(boolean concav) {
-		super(concav ? new Color(0, 255, 0) : new Color(255, 0, 0));
+	public SphereAnnotation(Model model, boolean concav) {
+		super(model, concav ? new Color(0, 255, 0) : new Color(255, 0, 0));
 		this.concav = concav;
 	}
 
@@ -102,6 +109,13 @@ public class SphereAnnotation extends PrimitiveAnnotation {
 		return center;
 	}
 
+	/**
+	 * @return the center
+	 */
+	public Tuple3f getCenterUnscaled() {
+		return model.getUnscaled(center);
+	}
+
 	private float getL(float a, float b, float c) {
 		float sum = 0;
 		for (Vertex v : vertices) {
@@ -134,17 +148,16 @@ public class SphereAnnotation extends PrimitiveAnnotation {
 		return sum / vertices.size();
 	}
 
-	private float getLi(Vertex v, float a, float b, float c) {
-		return (float) Math
-				.sqrt(Math.pow(v.x - a, 2) + Math.pow(v.y - b, 2) + Math.pow(v.z - c, 2));
-	}
-
 	/* (non-Javadoc)
 	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#getPrimitiveArea()
 	 */
 	@Override
 	public float getPrimitiveArea() {
 		return (float) (4f * Math.PI * (radius * radius));
+	}
+
+	public float getPrimitiveAreaUnscaled() {
+		return model.getUnscaled(getPrimitiveArea());
 	}
 
 	/**
@@ -154,13 +167,11 @@ public class SphereAnnotation extends PrimitiveAnnotation {
 		return radius;
 	}
 
-	private float getResiduum(float a, float b, float c) {
-		float sum = 0;
-		float r = getL(a, b, c);
-		for (Vertex v : vertices) {
-			sum += getLi(v, a, b, c) - r;
-		}
-		return Math.abs(sum / vertices.size());
+	/**
+	 * @return the radius
+	 */
+	public float getRadiusUnscaled() {
+		return model.getUnscaled(radius);
 	}
 
 	/**

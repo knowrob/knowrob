@@ -14,6 +14,7 @@ import java.util.HashSet;
 import javax.vecmath.Vector3f;
 
 import processing.core.PGraphics;
+import edu.tum.cs.vis.model.Model;
 import edu.tum.cs.vis.model.util.Triangle;
 import edu.tum.cs.vis.model.util.Vertex;
 
@@ -23,13 +24,17 @@ import edu.tum.cs.vis.model.util.Vertex;
  */
 public abstract class PrimitiveAnnotation extends MeshAnnotation {
 
-	private float	area	= 0;
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= -7298994988518239919L;
+	private float				area				= 0;
 
 	/**
 	 * @param annotationColor
 	 */
-	public PrimitiveAnnotation(Color annotationColor) {
-		super(annotationColor);
+	public PrimitiveAnnotation(Model model, Color annotationColor) {
+		super(model, annotationColor);
 	}
 
 	public abstract void drawPrimitiveAnnotation(PGraphics g);
@@ -48,6 +53,10 @@ public abstract class PrimitiveAnnotation extends MeshAnnotation {
 		if (area == 0)
 			updateAnnotationArea();
 		return area;
+	}
+
+	public float getAreaUnscaled() {
+		return model.getUnscaled(area);
 	}
 
 	/**

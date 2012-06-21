@@ -87,8 +87,8 @@ public class ContainerAnnotationPanel extends AnnotationPanel<ContainerAnnotatio
 		txtVolume.setEnabled(annotation != null);
 
 		if (annotation != null) {
-			txtDirection.setText(String.valueOf(annotation.getDirection()));
-			txtVolume.setText(String.valueOf(annotation.getVolume()));
+			txtDirection.setText(String.valueOf(annotation.getDirectionUnscaled()));
+			txtVolume.setText(String.valueOf(annotation.getVolumeUnscaled()));
 		}
 
 	}
