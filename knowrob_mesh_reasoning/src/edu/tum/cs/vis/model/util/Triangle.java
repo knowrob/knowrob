@@ -33,34 +33,34 @@ public class Triangle extends DrawObject {
 	/**
 	 * auto generated
 	 */
-	private static final long				serialVersionUID	= -5164768039180386782L;
+	private static final long		serialVersionUID	= -5164768039180386782L;
 
 	/**
 	 * log4j logger
 	 */
-	private static Logger					logger				= Logger.getLogger(FlatSurfaceAnalyzer.class);
+	private static Logger			logger				= Logger.getLogger(FlatSurfaceAnalyzer.class);
 
 	/**
 	 * Texture-Points
 	 */
-	protected Point2f						texPosition[];
+	protected Point2f				texPosition[];
 
 	/**
 	 * Triangles may have normal vector
 	 */
-	protected Vector3f						normalVector		= null;
+	protected Vector3f				normalVector		= null;
 
-	protected Vector3f						cornerarea			= null;
+	protected Vector3f				cornerarea			= null;
 
 	/**
 	 * Centroid of triangle
 	 */
-	protected Point3f						centroid;
+	protected Point3f				centroid;
 
 	/**
 	 * List of all direct neighbor triangles
 	 */
-	protected ArrayList<TriangleNeighbor>	neighbors;
+	protected ArrayList<Triangle>	neighbors;
 
 	/**
 	 * Initializes a triangle with given number of edges (Triangle: 3)
@@ -82,15 +82,11 @@ public class Triangle extends DrawObject {
 	 */
 	public boolean addNeighbor(Triangle neighbor) {
 		boolean add = false;
-		TriangleNeighbor newNeig = null;
 		synchronized (this) {
 			if (neighbors == null)
-				neighbors = new ArrayList<TriangleNeighbor>();
-			else
-				for (TriangleNeighbor n : getNeighbors()) {
-					if (n.getTriangle1() == neighbor || n.getTriangle2() == neighbor)
-						return false;
-				}
+				neighbors = new ArrayList<Triangle>(3);
+			else if (neighbors.contains(neighbor))
+				return false;
 
 			int eqCnt = 0;
 
@@ -111,18 +107,15 @@ public class Triangle extends DrawObject {
 			}
 
 			if (add) {
-				newNeig = new TriangleNeighbor(this, neighbor);
 				synchronized (neighbors) {
-					neighbors.add(newNeig);
+					neighbors.add(neighbor);
 				}
 			}
 		}
 		if (add) {
 			synchronized (neighbor) {
-				if (neighbor.neighbors == null)
-					neighbor.neighbors = new ArrayList<TriangleNeighbor>();
 				synchronized (neighbor.neighbors) {
-					neighbor.neighbors.add(newNeig);
+					neighbor.neighbors.add(this);
 				}
 			}
 			return true;
@@ -140,16 +133,39 @@ public class Triangle extends DrawObject {
 	 */
 	public void draw(PGraphics g, Color overrideColor) {
 		applyColor(g, overrideColor);
-		if (appearance.getImageReference() == null || overrideColor != null) {
+		if (appearance == null || appearance.getImageReference() == null || overrideColor != null) {
 			// no texture only color
+
+			int red = 0;
+			int green = 0;
+			int blue = 0;
+
+			for (int i = 0; i < position.length; i++) {
+				if (position[i].color != null) {
+					red += position[i].color.getRed();
+					green += position[i].color.getGreen();
+					blue += position[i].color.getBlue();
+				}
+			}
+			int max = Math.max(red, Math.max(green, blue));
+			Color c = new Color(255, 255, 255);
+			if (max == red)
+				c = new Color(255, 0, 0);
+			else if (max == green)
+				c = new Color(0, 255, 0);
+			else
+				c = new Color(0, 0, 255);
+
+			// applyColor(g, c);
 			g.beginShape(PConstants.TRIANGLES);
 			for (int i = 0; i < position.length; i++) {
+
 				if (position[i].color != null)
 					g.fill(position[i].color.getRed(), position[i].color.getGreen(),
 							position[i].color.getBlue());
+
 				g.vertex(position[i].x, position[i].y, position[i].z);
 			}
-
 			g.endShape();
 
 			/*for (int i = 0; i < position.length; i++) {
@@ -240,7 +256,7 @@ public class Triangle extends DrawObject {
 	 * @return list of triangles
 	 * @see Triangle#isNeighbor
 	 */
-	public ArrayList<TriangleNeighbor> getNeighbors() {
+	public ArrayList<Triangle> getNeighbors() {
 		return neighbors;
 	}
 
@@ -410,7 +426,7 @@ public class Triangle extends DrawObject {
 	 * @param neighbors
 	 *            triangles list.
 	 */
-	public void setNeighbors(ArrayList<TriangleNeighbor> neighbors) {
+	public void setNeighbors(ArrayList<Triangle> neighbors) {
 		this.neighbors = neighbors;
 	}
 
@@ -431,28 +447,27 @@ public class Triangle extends DrawObject {
 	}
 
 	@Override
-	public void updateNormalVector() { /* Uses Newell's method to calculate normal vector */
+	public boolean updateNormalVector() {
 		normalVector = new Vector3f(0, 0, 0);
 		centroid = new Point3f(0, 0, 0);
 
 		for (int i = 0; i < position.length; i++) {
-			Vector3f current = new Vector3f(position[i].x, position[i].y, position[i].z);
-			Vector3f next = new Vector3f(position[(i + 1) % position.length].x, position[(i + 1)
-					% position.length].y, position[(i + 1) % position.length].z);
+			centroid.add(position[i]);
+		}
+		centroid.scale(1 / position.length);
 
-			normalVector.x += (current.y - next.y) * (current.z + next.z);
-			normalVector.y += (current.z - next.z) * (current.x + next.x);
-			normalVector.z += (current.x - next.x) * (current.y + next.y);
+		Vector3f a = new Vector3f(position[1]);
+		a.sub(position[0]);
+		Vector3f b = new Vector3f(position[2]);
+		b.sub(position[0]);
 
-			centroid.x += position[i].x;
-			centroid.y += position[i].y;
-			centroid.z += position[i].z;
+		normalVector.cross(a, b);
+		if (normalVector.lengthSquared() == 0) {
+			normalVector = null;
+			return false;
 		}
 		normalVector.normalize();
-		centroid.x /= position.length;
-		centroid.y /= position.length;
-		centroid.z /= position.length;
-
+		return true;
 	}
 
 }

@@ -222,6 +222,36 @@ public class Model {
 		pdir[1].cross(new_norm, pdir[0]);
 	}
 
+	private static Color hsv2srgb(float h, float s, float v) {
+		// From FvD
+		float H = h, S = s, V = v;
+		if (S <= 0.0f)
+			return new Color(V, V, V);
+		H = H % 6.2831855f;
+		if (H < 0.0f)
+			H += 6.2831855f;
+		H *= 6.0f / 6.2831855f;
+		int i = (int) Math.floor(H);
+		float f = H - i;
+		float p = V * (1.0f - S);
+		float q = V * (1.0f - (S * f));
+		float t = V * (1.0f - (S * (1.0f - f)));
+		switch (i) {
+			case 0:
+				return new Color(V, t, p);
+			case 1:
+				return new Color(q, V, p);
+			case 2:
+				return new Color(p, V, t);
+			case 3:
+				return new Color(p, q, V);
+			case 4:
+				return new Color(t, p, V);
+			default:
+				return new Color(V, p, q);
+		}
+	}
+
 	/**
 	 * Reproject a curvature tensor from the basis spanned by old_u and old_v (which are assumed to
 	 * be unit-length and perpendicular) to the new_u, new_v basis. returns [new_ku, new_kuv,
@@ -288,6 +318,8 @@ public class Model {
 		new_v.sub(tmp);
 	}
 
+	private String					textureBasePath	= null;
+
 	private Group					group;
 
 	private final ArrayList<Vertex>	vertices		= new ArrayList<Vertex>();
@@ -295,10 +327,11 @@ public class Model {
 	final ArrayList<Triangle>		triangles		= new ArrayList<Triangle>();
 
 	private final ArrayList<Line>	lines			= new ArrayList<Line>();
+	private final HashSet<Vertex>	verticesTmp		= null;
 
-	private HashSet<Vertex>			verticesTmp		= null;
-	private HashSet<Triangle>		trianglesTmp	= null;
-	private HashSet<Line>			linesTmp		= null;
+	private final HashSet<Triangle>	trianglesTmp	= null;
+
+	private final HashSet<Line>		linesTmp		= null;
 
 	/**
 	 * @param line
@@ -310,6 +343,8 @@ public class Model {
 				if (l.equals(line))
 					return l;
 		}
+		// for (Vertex v : line.getPosition())
+		// vertices.add(v);
 		addVertices(line);
 		return line;
 	}
@@ -334,6 +369,8 @@ public class Model {
 				if (t.equals(tri))
 					return t;
 		}
+		// for (Vertex v : tri.getPosition())
+		// vertices.add(v);
 		addVertices(tri);
 		return tri;
 	}
@@ -391,7 +428,7 @@ public class Model {
 
 		// Compute curvature per-face
 
-		/*List<Callable<Void>> threads = new LinkedList<Callable<Void>>();
+		List<Callable<Void>> threads = new LinkedList<Callable<Void>>();
 
 		final int interval = 500;
 
@@ -411,11 +448,11 @@ public class Model {
 			});
 		};
 
-		ThreadPool.executeInPool(threads);*/
+		ThreadPool.executeInPool(threads);
 
-		for (int i = 0; i < triangles.size(); i++) {
+		/*for (int i = 0; i < triangles.size(); i++) {
 			calculateCurvatureForTriangle(triangles.get(i));
-		}
+		}*/
 
 		// Compute principal directions and curvatures at each vertex
 		for (int i = 0; i < vertices.size(); i++) {
@@ -432,6 +469,16 @@ public class Model {
 		}
 	}
 
+	public void calculateCurvatures() {
+
+		if (vertices.size() == 0)
+			return;
+		calculateVertexNormals();
+		calculateVoronoiArea();
+		calculateCurvature();
+		colorbycurv(10, 0);
+	}
+
 	/**
 	 * Ported from trimesh2 (Szymon Rusinkiewicz Princeton University)
 	 * 
@@ -442,31 +489,36 @@ public class Model {
 	private void calculateVertexNormals() {
 		// Compute from faces
 
-		/*	List<Callable<Void>> threads = new LinkedList<Callable<Void>>();
+		List<Callable<Void>> threads = new LinkedList<Callable<Void>>();
 
-			final int interval = 500;
+		final int interval = 500;
 
-			for (int start = 0; start < triangles.size(); start += interval) {
-				final int st = start;
-				threads.add(new Callable<Void>() {
+		for (int start = 0; start < triangles.size(); start += interval) {
+			final int st = start;
+			threads.add(new Callable<Void>() {
 
-					@Override
-					public Void call() throws Exception {
-						int end = Math.min(st + interval, triangles.size());
-						for (int i = st; i < end; i++) {
-							calculateVertexNormalsForTriangle(triangles.get(i));
-						}
-						return null;
+				@Override
+				public Void call() throws Exception {
+					int end = Math.min(st + interval, triangles.size());
+					for (int i = st; i < end; i++) {
+						calculateVertexNormalsForTriangle(triangles.get(i));
 					}
+					return null;
+				}
 
-				});
-			};
-
-			ThreadPool.executeInPool(threads);*/
-
-		for (int i = 0; i < triangles.size(); i++) {
-			calculateVertexNormalsForTriangle(triangles.get(i));
+			});
 		};
+
+		ThreadPool.executeInPool(threads);
+
+		/*for (int i = 0; i < triangles.size(); i++) {
+			Triangle t = triangles.get(i);
+			if (Float.isNaN(t.getNormalVector().x) || Float.isNaN(t.getNormalVector().y)
+					|| Float.isNaN(t.getNormalVector().z)) {
+				System.out.println("Nomr is nan");
+			}
+			calculateVertexNormalsForTriangle(triangles.get(i));
+		};*/
 
 		for (Vertex v : vertices)
 			v.getNormalVector().normalize();
@@ -488,7 +540,8 @@ public class Model {
 		if (l2a == 0 || l2b == 0 || l2c == 0)
 			return;
 
-		Vector3f facenormal = t.getNormalVector();
+		Vector3f facenormal = new Vector3f();
+		facenormal.cross(b, a);
 
 		Vector3f normalP0 = (Vector3f) facenormal.clone();
 		normalP0.scale(1.0f / (l2a * l2c));
@@ -575,7 +628,7 @@ public class Model {
 			float h = (float) (4.0f / 3.0f * Math
 					.abs(Math.atan2(H * H - K, H * H * Math.signum(H))));
 			float s = (float) ((2 / Math.PI) * Math.atan((2.0f * H * H - K) * cscale));
-			vertices.get(i).color = Color.getHSBColor(h, s, 1.0f);
+			vertices.get(i).color = hsv2srgb(h, s, 1.0f);
 		}
 	}
 
@@ -641,6 +694,13 @@ public class Model {
 	}
 
 	/**
+	 * @return the textureBasePath
+	 */
+	public String getTextureBasePath() {
+		return textureBasePath;
+	}
+
+	/**
 	 * @return the triangles
 	 */
 	public ArrayList<Triangle> getTriangles() {
@@ -657,32 +717,22 @@ public class Model {
 	/**
 	 * 
 	 */
-	public void modelChanged() {
-		vertices.clear();
-		triangles.clear();
-		lines.clear();
+	public void mirrorX() {
+		for (Vertex v : vertices) {
+			v.x *= (-1);
+		}
+		group.resetMinMaxValues();
 
-		verticesTmp = new HashSet<Vertex>();
-		linesTmp = new HashSet<Line>();
-		trianglesTmp = new HashSet<Triangle>();
+	}
 
-		processGroup(group);
+	public void normalize() {
+		float x = group.getMaxX() - group.getMinX();
+		float y = group.getMaxY() - group.getMinY();
+		float z = group.getMaxZ() - group.getMinZ();
 
-		vertices.addAll(verticesTmp);
-		lines.addAll(linesTmp);
-		triangles.addAll(trianglesTmp);
+		float max = Math.max(x, Math.max(y, z));
 
-		verticesTmp = null;
-		linesTmp = null;
-		trianglesTmp = null;
-
-		if (vertices.size() == 0)
-			return;
-
-		calculateVertexNormals();
-		calculateVoronoiArea();
-		calculateCurvature();
-		colorbycurv(1, 0);
+		scale(1 / max);
 	}
 
 	private void processGroup(Group g) {
@@ -696,12 +746,30 @@ public class Model {
 	}
 
 	/**
+	 * @param meter
+	 */
+	public void scale(float factor) {
+
+		for (Vertex v : vertices) {
+			v.scale(factor);
+		}
+		group.resetMinMaxValues();
+	}
+
+	/**
 	 * @param group
 	 *            the group to set
 	 */
 	public void setGroup(Group group) {
 		this.group = group;
-		modelChanged();
+	}
+
+	/**
+	 * @param textureBasePath
+	 *            the textureBasePath to set
+	 */
+	public void setTextureBasePath(String textureBasePath) {
+		this.textureBasePath = textureBasePath;
 	}
 
 	/**
@@ -735,7 +803,7 @@ public class Model {
 		if (samples[which] == 0.0f || Float.isNaN(samples[which])) {
 			// mesh->need_bsphere();
 			// f = mult * mesh->bsphere.r;
-			f = 10000;
+			f = 10;
 			logger.warn("Couldn't determine typical scale. Using fixed value: " + f
 					+ ". This should never happen.");
 		} else {

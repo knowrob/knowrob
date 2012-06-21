@@ -52,14 +52,19 @@ public class MeshReasoning {
 		long start = System.currentTimeMillis();
 
 		// ItemModel itemModel = new ItemModel("/home/stefan/simple_dome.kmz");
-		ItemModel itemModel = new ItemModel("models/hospital_bed.kmz");
+		// ItemModel itemModel = new ItemModel("models/hospital_bed.kmz");
 		// ItemModel itemModel = new ItemModel("models/Expedit_2X4.kmz");
-		// ItemModel itemModel = new ItemModel("/home/stefan/Downloads/triangle.dae");
-		// ItemModel itemModel = new ItemModel("/home/stefan/Downloads/saintpeter.kmz");
+		// ItemModel itemModel = new ItemModel("models/quader.dae");
+		// ItemModel itemModel = new ItemModel("models/open_box.kmz");
 
 		// ItemModel itemModel = new ItemModel("models/cup2.kmz");
+		// ItemModel itemModel = new ItemModel("models/Skateboard.dae");
+		// ItemModel itemModel = new ItemModel("models/Table.dae");
+		// ItemModel itemModel = new ItemModel("models/Dome.dae");
+		ItemModel itemModel = new ItemModel("models/test.dae");
+		// ItemModel itemModel = new ItemModel("models/cylinder.dae");
 		// ItemModel itemModel = new ItemModel("models/cup_red.kmz");
-		// ItemModel itemModel = new ItemModel("/home/stefan/Downloads/cube.kmz");
+		// ItemModel itemModel = new ItemModel("/home/stefan/shade.mesh");
 
 		if (!itemModel.parseModel()) {
 			throw new RuntimeException("Couldn't parse model. Maybe path to model is wrong.");
@@ -70,6 +75,11 @@ public class MeshReasoning {
 				+ PrintUtil.prettyMillis(System.currentTimeMillis() - start) + " (Vertices: "
 				+ model.getVertices().size() + ", Lines: " + model.getLines().size()
 				+ ", Triangles: " + model.getTriangles().size() + ")");
+
+		logger.debug("Calculating curvature ...");
+		model.normalize();
+		model.calculateCurvatures();
+
 		MeshCas cas = new MeshCas();
 
 		/*Group g = new Group();
@@ -118,7 +128,7 @@ public class MeshReasoning {
 		analyzer.add(na);
 		// analyzer.add(das);
 		// analyzer.add(fsna);
-		// analyzer.add(pa);
+		analyzer.add(pa);
 
 		Thread.yield();
 

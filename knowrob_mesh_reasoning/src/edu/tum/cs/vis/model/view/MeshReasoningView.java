@@ -71,7 +71,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	/**
 	 * current scale factor
 	 */
-	private int								currentScale		= 20;
+	private float							currentScale		= 40f;
 
 	public static int						test				= 1175;
 
@@ -106,11 +106,11 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		strokeWeight(1);
 		stroke(125, 0, 0);
 		strokeWeight(1);
-		line(0, 0, 0, width, 0, 0);
+		line(0, 0, 0, 1, 0, 0);
 		stroke(0, 125, 0);
-		line(0, 0, 0, 0, 0, width);
+		line(0, 0, 0, 0, 0, 1);
 		stroke(0, 0, 125);
-		line(0, 0, 0, 0, height, 0);
+		line(0, 0, 0, 0, 1, 0);
 
 		/*strokeWeight(5);
 		stroke(255, 255, 0);

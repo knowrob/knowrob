@@ -26,8 +26,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import processing.core.PApplet;
-
 import com.dddviewr.collada.Collada;
 import com.dddviewr.collada.Input;
 import com.dddviewr.collada.Source;
@@ -251,6 +249,24 @@ public class ColladaParser extends ModelParser {
 		return null;
 	}
 
+	private static ArrayList<Vertex> getVerticesOfMesh(Mesh m) {
+		Source vertexSource = null;
+		for (Input in : m.getVertices().getInputs()) {
+			if (in.getSemantic().compareTo("POSITION") == 0) {
+				vertexSource = m.getSource(in.getSource().substring(1));
+			}
+		}
+
+		float[][] vertPoints = SourceToFloat(vertexSource);
+
+		ArrayList<Vertex> vertices = new ArrayList<Vertex>();
+		for (int i = 0; i < vertPoints.length; i++) {
+			vertices.add(new Vertex(vertPoints[i][0], vertPoints[i][1], vertPoints[i][2]));
+		}
+
+		return vertices;
+	}
+
 	/**
 	 * Parse a geometry object from the collada structure
 	 * 
@@ -268,13 +284,19 @@ public class ColladaParser extends ModelParser {
 			HashMap<String, String> instanceMaterial, ArrayList<BaseXform> transformations,
 			Collada collada) {
 		Mesh m = g.getMesh();
+		ArrayList<Vertex> vertices = getVerticesOfMesh(m);
+
+		currGroup.getModel().getVertices().addAll(vertices);
+
 		for (Primitives p : m.getPrimitives()) {
 			if (p instanceof Triangles) {
 				Triangles t = (Triangles) p;
-				parseGeometryTriangle(t, m, currGroup, instanceMaterial, transformations, collada);
+				parseGeometryTriangle(t, currGroup, instanceMaterial, transformations, collada,
+						vertices, m);
 			} else if (p instanceof Lines) {
 				Lines l = (Lines) p;
-				parseGeometryLine(l, m, currGroup, instanceMaterial, transformations, collada);
+				parseGeometryLine(l, currGroup, instanceMaterial, transformations, collada,
+						vertices);
 			}
 		}
 	}
@@ -294,9 +316,9 @@ public class ColladaParser extends ModelParser {
 	 * @param collada
 	 *            the collada Structure
 	 */
-	private static void parseGeometryLine(Lines l, Mesh m, Group currGroup,
+	private static void parseGeometryLine(Lines l, Group currGroup,
 			HashMap<String, String> instanceMaterial, ArrayList<BaseXform> transformations,
-			Collada collada) {
+			Collada collada, ArrayList<Vertex> vertices) {
 		Material mat = null;
 		if (instanceMaterial.containsKey(l.getMaterial())) {
 			mat = collada.findMaterial(instanceMaterial.get(l.getMaterial()));
@@ -305,15 +327,6 @@ public class ColladaParser extends ModelParser {
 			l.dump(System.err, 5);
 			throw new RuntimeException("No material given for Line (see above) ");
 		}
-
-		Source vertexSource = null;
-		for (Input in : m.getVertices().getInputs()) {
-			if (in.getSemantic().compareTo("POSITION") == 0) {
-				vertexSource = m.getSource(in.getSource().substring(1));
-			}
-		}
-		// commons for the set of lines
-		float[][] vertPoints = SourceToFloat(vertexSource);
 
 		int stride = l.getInputs().size();
 		int count = l.getCount();
@@ -342,9 +355,7 @@ public class ColladaParser extends ModelParser {
 
 			for (int v = 0; v < 2; v++) {
 				// set the vertices for Point
-				line.getPosition()[v] = new Vertex(vertPoints[indexes[i][vertexOffset]][0],
-						vertPoints[indexes[i][vertexOffset]][1],
-						vertPoints[indexes[i][vertexOffset]][2]);
+				line.getPosition()[v] = vertices.get(indexes[i][vertexOffset]);
 
 				i++;
 			}
@@ -354,6 +365,7 @@ public class ColladaParser extends ModelParser {
 			useTransformation(line, transformations);
 			// add it to the Collection
 			currGroup.getMesh().getLines().add(line);
+			currGroup.getModel().getLines().add(line);
 		}
 	}
 
@@ -372,28 +384,20 @@ public class ColladaParser extends ModelParser {
 	 * @param collada
 	 *            the collada Structure
 	 */
-	private static void parseGeometryTriangle(Triangles t, Mesh m, Group currGroup,
+	private static void parseGeometryTriangle(Triangles t, Group currGroup,
 			HashMap<String, String> instanceMaterial, ArrayList<BaseXform> transformations,
-			Collada collada) {
-		Material mat = null;
+			Collada collada, ArrayList<Vertex> vertices, Mesh m) {
+		Appearance appearance;
 		if (instanceMaterial.containsKey(t.getMaterial())) {
-			mat = collada.findMaterial(instanceMaterial.get(t.getMaterial()));
+			Material mat = collada.findMaterial(instanceMaterial.get(t.getMaterial()));
+			appearance = getAppearance(mat, collada);
+			appearance.setColorLine(null);
 
 		} else {
-
-			t.dump(System.err, 5);
-			throw new RuntimeException("No material given for Triangle (see above) ");
+			// Triangle has no material defined.
+			appearance = new Appearance();
+			appearance.setColorFill(new Color(120, 120, 120));
 		}
-
-		Source vertexSource = null;
-		for (Input in : m.getVertices().getInputs()) {
-			if (in.getSemantic().compareTo("POSITION") == 0) {
-				vertexSource = m.getSource(in.getSource().substring(1));
-			}
-		}
-
-		// commons for the set of triangles
-		float[][] vertPoints = SourceToFloat(vertexSource);
 
 		int stride = t.getInputs().size();
 		int count = t.getCount();
@@ -423,9 +427,6 @@ public class ColladaParser extends ModelParser {
 			texturePoints = SourceToFloat(textureSource);
 		}
 
-		Appearance appearance = getAppearance(mat, collada);
-		appearance.setColorLine(null);
-
 		// one single triangle from the triangle-set
 		for (int i = 0; i < indexes.length; i++) {
 			Triangle tri = new Triangle();
@@ -436,9 +437,7 @@ public class ColladaParser extends ModelParser {
 
 			for (int v = 0; v < 3; v++) {
 				// set the vertices for Point
-				tri.getPosition()[v] = new Vertex(vertPoints[indexes[i][vertexOffset]][0],
-						vertPoints[indexes[i][vertexOffset]][1],
-						vertPoints[indexes[i][vertexOffset]][2]);
+				tri.getPosition()[v] = vertices.get(indexes[i][vertexOffset]);
 
 				// set texture position
 				if (tri.getAppearance().getImageFileName() != null) {
@@ -452,10 +451,12 @@ public class ColladaParser extends ModelParser {
 			i--;
 
 			useTransformation(tri, transformations);
-			tri.updateNormalVector();
+			if (!tri.updateNormalVector()) // Triangle with size 0, skip
+				continue;
 
 			// add it to the Collection
 			currGroup.getMesh().getTriangles().add(tri);
+			currGroup.getModel().getTriangles().add(tri);
 		}
 
 	}
@@ -509,21 +510,6 @@ public class ColladaParser extends ModelParser {
 	 * If kmz is parsed, this will be set automatically
 	 */
 	private String	textureBasePath	= "";
-
-	@Override
-	public void draw(PApplet applet, Color overrideColor) {
-		if (model == null)
-			return;
-		applet.noStroke();
-
-		if (overrideColor != null)
-			applet.fill(overrideColor.getRed(), overrideColor.getGreen(), overrideColor.getBlue(),
-					overrideColor.getAlpha());
-		else
-			applet.fill(127); // set a default color value
-
-		model.draw(applet.g, overrideColor);
-	}
 
 	@Override
 	protected boolean loadModel(String file) {
@@ -590,14 +576,14 @@ public class ColladaParser extends ModelParser {
 			parseNode(n, model.getGroup(), new ArrayList<BaseXform>(), collada);
 		}
 
-		model.getGroup().initialize(textureBasePath);
+		model.setTextureBasePath(textureBasePath);
 
 		Unit unit = collada.getUnit();
 		if (unit != null && unit.getMeter() != 1.0) {
-			model.getGroup().scale(unit.getMeter());
+			model.scale(unit.getMeter());
 		}
 
-		model.getGroup().mirrorX();
+		model.mirrorX();
 
 		return true;
 	}

@@ -22,7 +22,6 @@ import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.util.Group;
 import edu.tum.cs.vis.model.util.Mesh;
 import edu.tum.cs.vis.model.util.Triangle;
-import edu.tum.cs.vis.model.util.TriangleNeighbor;
 
 /**
  * Takes a MeshCas and searches all flat surfaces by comparing the surface normals. Flat means the
@@ -83,23 +82,17 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 		visited.add(start);
 
 		// FIFO queue for triangles to visit for BFS
-		LinkedList<TriangleNeighbor> queue = new LinkedList<TriangleNeighbor>();
+		LinkedList<Triangle> queue = new LinkedList<Triangle>();
 		if (start.getNeighbors() != null) {
 			// Add all neighbor triangles to the queue
 			queue.addAll(start.getNeighbors());
 		}
 
 		while (!queue.isEmpty()) {
-			TriangleNeighbor currNeighbor = queue.pop();
-			Triangle currNeighborTriangle;
-			if (visited.contains(currNeighbor.getTriangle1()))
-				currNeighborTriangle = currNeighbor.getTriangle2();
-
-			else
-				currNeighborTriangle = currNeighbor.getTriangle1();
+			Triangle currNeighborTriangle = queue.pop();
 			visited.add(currNeighborTriangle);
 
-			double radiant = currNeighbor.getDihedralAngle();
+			double radiant = 0;// currNeighbor.getDihedralAngle();
 
 			// First check if surface normal is exactly the same direction
 			boolean isEqual = (radiant < FlatSurfaceAnalyzer.TOLERANCE)
@@ -128,14 +121,13 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 											annotation.getNeighborTriangles());
 
 									// Remove items from queue which are already in found annotation
-									for (Iterator<TriangleNeighbor> it = queue.iterator(); it
-											.hasNext();) {
+									for (Iterator<Triangle> it = queue.iterator(); it.hasNext();) {
 										ArrayList<Triangle> triangles = ((FlatSurfaceAnnotation) ma)
 												.getMesh().getTriangles();
-										TriangleNeighbor next = it.next();
-										if (triangles.contains(next.getTriangle1())
+										Triangle next = it.next();
+										/*if (triangles.contains(next.getTriangle1())
 												|| triangles.contains(next.getTriangle2()))
-											it.remove();
+											it.remove();*/
 									}
 								}
 								synchronized (annotation) {
@@ -152,13 +144,12 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 				}
 
 				// Add all neighbors of current triangle to queue
-				for (TriangleNeighbor a : currNeighborTriangle.getNeighbors()) {
-					Triangle newTriangle = a.getNeighbor(currNeighborTriangle);
+				for (Triangle a : currNeighborTriangle.getNeighbors()) {
 					synchronized (annotation.getMesh()) {
 						synchronized (annotation.getMesh().getTriangles()) {
 
-							if (annotation.getMesh().getTriangles().contains(newTriangle)
-									|| visited.contains(newTriangle))
+							if (annotation.getMesh().getTriangles().contains(a)
+									|| visited.contains(a))
 								continue;
 						}
 					}

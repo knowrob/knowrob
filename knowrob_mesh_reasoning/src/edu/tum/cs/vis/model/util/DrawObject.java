@@ -89,6 +89,12 @@ public abstract class DrawObject implements Serializable {
 	 *            If != null this color is taken instead of the color from appearance
 	 */
 	protected void applyColor(PGraphics g, Color overrideColor) {
+		if (appearance == null) {
+
+			g.noStroke();
+			g.fill(200, 200, 200);
+			return;
+		}
 		if (appearance.getColorLine() != null) {
 			if (overrideColor != null)
 				g.stroke(overrideColor.getRed(), overrideColor.getGreen(), overrideColor.getBlue(),
@@ -174,7 +180,7 @@ public abstract class DrawObject implements Serializable {
 			position[v].y *= factor;
 			position[v].z *= factor;
 		}
-		updateNormalVector();
+		updateNormalVector(); // Recalculate centroid
 	}
 
 	/**
@@ -225,33 +231,18 @@ public abstract class DrawObject implements Serializable {
 	}
 
 	/**
-	 * Moves the triangle in the given direction.
-	 * 
-	 * @param x
-	 *            direction in x
-	 * @param y
-	 *            direction in y
-	 * @param z
-	 *            direction in z
-	 */
-	public void translate(float x, float y, float z) {
-		for (int v = 0; v < position.length; v++) {
-			position[v].x += x;
-			position[v].y += y;
-			position[v].z += z;
-		}
-	}
-
-	/**
 	 * Recalculates the normal vector and centroid. Called automatically when calling
 	 * <code>setPosition</code>. If you modify the position array directly, call this afterwards.
 	 * 
 	 * On Line this function has no effect.
+	 * 
+	 * @return
 	 */
-	public void updateNormalVector() {
+	public boolean updateNormalVector() {
 		/*
 		 * Overridden in triangles class, line doesn't have a normal vector
 		 */
+		return false;
 	}
 
 }

@@ -160,6 +160,8 @@ public class Group implements Serializable {
 	 * @return maximum x
 	 */
 	public Float getMaxX() {
+		if (maxX == null)
+			getTotalWidth();
 		return maxX;
 	}
 
@@ -170,6 +172,8 @@ public class Group implements Serializable {
 	 * @return maximum y
 	 */
 	public Float getMaxY() {
+		if (maxY == null)
+			getTotalHeight();
 		return maxY;
 	}
 
@@ -180,6 +184,8 @@ public class Group implements Serializable {
 	 * @return maximum z
 	 */
 	public Float getMaxZ() {
+		if (maxZ == null)
+			getTotalDepth();
 		return maxZ;
 	}
 
@@ -199,6 +205,8 @@ public class Group implements Serializable {
 	 * @return minimum x
 	 */
 	public Float getMinX() {
+		if (minX == null)
+			getTotalWidth();
 		return minX;
 	}
 
@@ -209,6 +217,8 @@ public class Group implements Serializable {
 	 * @return minimum y
 	 */
 	public Float getMinY() {
+		if (minY == null)
+			getTotalHeight();
 		return minY;
 	}
 
@@ -219,6 +229,8 @@ public class Group implements Serializable {
 	 * @return minimum z
 	 */
 	public Float getMinZ() {
+		if (minZ == null)
+			getTotalDepth();
 		return minZ;
 	}
 
@@ -330,42 +342,19 @@ public class Group implements Serializable {
 		if (isRoot) {
 			Vector3f translation = new Vector3f((minX + (getTotalWidth() / 2)) * (-1),
 					(minY + (getTotalHeight() / 2)) * (-1), (minZ + (getTotalDepth() / 2)) * (-1));
-			translate(translation);
+			for (Vertex v : model.getVertices())
+				v.add(translation);
 		}
 	}
 
-	/**
-	 * Mirrors whole group and children on the x coordinate.by setting each x to the inverse -x
-	 */
-	public void mirrorX() {
-		mesh.mirrorX();
-		minX *= (-1);
-		float tmp = minX;
-		minX = maxX * (-1);
-		maxX = tmp;
-		for (Group g : children) {
-			g.mirrorX();
-		}
-	}
+	public void resetMinMaxValues() {
+		mesh.resetMinMaxValues();
 
-	/**
-	 * Scales all coordinates by the given factor. Only used for initialization
-	 * 
-	 * @param factor
-	 *            The scale factor
-	 */
-	public void scale(float factor) {
-		mesh.scaleMesh(factor);
+		minX = maxX = minY = maxY = minZ = maxZ = null;
 
 		for (Group g : children) {
-			g.scale(factor);
+			g.resetMinMaxValues();
 		}
-		minX *= factor;
-		maxX *= factor;
-		minY *= factor;
-		maxY *= factor;
-		minZ *= factor;
-		maxZ *= factor;
 	}
 
 	/**
@@ -396,25 +385,6 @@ public class Group implements Serializable {
 	 */
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	/**
-	 * Translates (moves) the group and its children by the specified vector.
-	 * 
-	 * @param translation
-	 *            Translation vector
-	 */
-	private void translate(Vector3f translation) {
-		minX += translation.x;
-		maxX += translation.x;
-		minY += translation.y;
-		maxY += translation.y;
-		minZ += translation.z;
-		maxZ += translation.z;
-		mesh.translate(translation);
-		for (Group g : children) {
-			g.translate(translation);
-		}
 	}
 
 }

@@ -18,7 +18,6 @@ import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 import processing.core.PApplet;
 import processing.core.PGraphics;
@@ -238,6 +237,8 @@ public class Mesh implements Serializable {
 	 * @return maximum x
 	 */
 	public Float getMaxX() {
+		if (maxX == null)
+			getWidth();
 		return maxX;
 	}
 
@@ -248,6 +249,8 @@ public class Mesh implements Serializable {
 	 * @return maximum y
 	 */
 	public Float getMaxY() {
+		if (maxY == null)
+			getHeight();
 		return maxY;
 	}
 
@@ -258,6 +261,8 @@ public class Mesh implements Serializable {
 	 * @return maximum z
 	 */
 	public Float getMaxZ() {
+		if (maxZ == null)
+			getDepth();
 		return maxZ;
 	}
 
@@ -268,6 +273,8 @@ public class Mesh implements Serializable {
 	 * @return minimum x
 	 */
 	public Float getMinX() {
+		if (minX == null)
+			getWidth();
 		return minX;
 	}
 
@@ -278,6 +285,8 @@ public class Mesh implements Serializable {
 	 * @return minimum y
 	 */
 	public Float getMinY() {
+		if (minY == null)
+			getHeight();
 		return minY;
 	}
 
@@ -288,6 +297,8 @@ public class Mesh implements Serializable {
 	 * @return minimum z
 	 */
 	public Float getMinZ() {
+		if (minZ == null)
+			getDepth();
 		return minZ;
 	}
 
@@ -339,49 +350,8 @@ public class Mesh implements Serializable {
 		return maxX - minX;
 	}
 
-	/**
-	 * Mirrors whole group and children on the x coordinate.by setting each x to the inverse -x
-	 */
-	public void mirrorX() {
-
-		minX *= (-1);
-		float tmp = minX;
-		minX = maxX * (-1);
-		maxX = tmp;
-		for (Triangle tri : triangles) {
-			for (int v = 0; v < 3; v++) {
-				tri.position[v].x *= (-1);
-			}
-			tri.updateNormalVector();
-		}
-		for (Line line : lines) {
-			for (int v = 0; v < 2; v++) {
-				line.position[v].x *= (-1);
-			}
-		}
-	}
-
-	/**
-	 * Scales all coordinates by the given factor
-	 * 
-	 * @param factor
-	 *            The scale factor
-	 */
-	protected void scaleMesh(float factor) {
-		for (Triangle tri : triangles) {
-
-			tri.scale(factor);
-		}
-		for (Line line : lines) {
-
-			line.scale(factor);
-		}
-		minX *= factor;
-		maxX *= factor;
-		minY *= factor;
-		maxY *= factor;
-		minZ *= factor;
-		maxZ *= factor;
+	public void resetMinMaxValues() {
+		minX = maxX = minY = maxY = minZ = maxZ = null;
 	}
 
 	/**
@@ -408,6 +378,8 @@ public class Mesh implements Serializable {
 	 * also creates an PImage to each Triangle (if it contains any Texture)
 	 */
 	private void setTextureImage() {
+		if (textureBasePath == null)
+			return;
 		// load all Texture-Images only once (memory efficiency)
 		HashMap<String, PImage> pictures = new HashMap<String, PImage>();
 		for (Triangle tri : triangles) {
@@ -479,29 +451,6 @@ public class Mesh implements Serializable {
 	 */
 	public void setTriangles(ArrayList<Triangle> triangles) {
 		this.triangles = triangles;
-	}
-
-	/**
-	 * Translate (move) the model by the given translation vector
-	 * 
-	 * @param translation
-	 *            translation vector
-	 */
-	public void translate(Vector3f translation) {
-		minX += translation.x;
-		maxX += translation.x;
-		minY += translation.y;
-		maxY += translation.y;
-		minZ += translation.z;
-		maxZ += translation.z;
-		for (Triangle tri : triangles) {
-
-			tri.translate(translation.x, translation.y, translation.z);
-		}
-		for (Line line : lines) {
-
-			line.translate(translation.x, translation.y, translation.z);
-		}
 	}
 
 }

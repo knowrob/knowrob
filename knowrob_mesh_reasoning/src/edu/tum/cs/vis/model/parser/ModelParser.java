@@ -7,11 +7,9 @@
  ******************************************************************************/
 package edu.tum.cs.vis.model.parser;
 
-import java.awt.Color;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import processing.core.PApplet;
 import edu.tum.cs.vis.model.Model;
 
 /**
@@ -34,6 +32,7 @@ public abstract class ModelParser {
 		 */
 		extensionAssignment.put("dae", ColladaParser.class);
 		extensionAssignment.put("kmz", ColladaParser.class);
+		extensionAssignment.put("mesh", CustomParser.class);
 	}
 
 	/**
@@ -85,17 +84,6 @@ public abstract class ModelParser {
 		}
 		return true;
 	}
-
-	/**
-	 * Draw method to draw the model on the applet.
-	 * 
-	 * @param applet
-	 *            The applet to draw on.
-	 * @param colorOverride
-	 *            override the draw color and texture. Draw whole object in the given color if !=
-	 *            null
-	 */
-	public abstract void draw(PApplet applet, Color colorOverride);
 
 	/**
 	 * Get the object containing the model (meshes)
@@ -158,9 +146,10 @@ public abstract class ModelParser {
 		boolean retVal = true;
 
 		if (m == null) {
+			model = new Model();
 			retVal = loadModel(filename);
 			modelBuffer.put(filename, model);
-			model.modelChanged();
+			model.getGroup().initialize(model.getTextureBasePath());
 		} else
 			model = m;
 		return retVal;
