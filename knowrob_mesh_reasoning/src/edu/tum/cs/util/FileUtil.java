@@ -121,7 +121,7 @@ public class FileUtil {
 					name = entry.getName()
 							.replaceAll("/", Matcher.quoteReplacement(File.separator));
 				} else {
-					name = entry.getName().replaceAll("\\",
+					name = entry.getName().replaceAll("\\\\",
 							Matcher.quoteReplacement(File.separator));
 				}
 

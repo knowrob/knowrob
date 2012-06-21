@@ -17,6 +17,13 @@ import java.util.concurrent.Callable;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.ArrayRealVector;
+import org.apache.commons.math3.linear.DecompositionSolver;
+import org.apache.commons.math3.linear.LUDecomposition;
+import org.apache.commons.math3.linear.RealMatrix;
+import org.apache.commons.math3.linear.RealVector;
+
 import processing.core.PGraphics;
 import edu.tum.cs.vis.model.util.Curvature;
 import edu.tum.cs.vis.model.util.Group;
@@ -114,47 +121,6 @@ public class Model {
 		synchronized (t.getPosition()[2]) {
 			t.getPosition()[2]
 					.setPointarea(t.getPosition()[2].getPointarea() + t.getCornerarea().z);
-		}
-	}
-
-	// Perform LDL^T decomposition of a symmetric positive definite matrix.
-	// Like Cholesky, but no square roots. Overwrites lower triangle of matrix.
-	static boolean ldltdc(float A[][], float rdiag[], int N) {
-		float v[] = new float[N - 1];
-		for (int i = 0; i < N; i++) {
-			for (int k = 0; k < i; k++)
-				v[k] = A[i][k] * rdiag[k];
-			for (int j = i; j < N; j++) {
-				float sum = A[i][j];
-				for (int k = 0; k < i; k++)
-					sum -= v[k] * A[j][k];
-				if (i == j) {
-					if (sum <= 0)
-						return false;
-					rdiag[i] = 1 / sum;
-				} else {
-					A[j][i] = sum;
-				}
-			}
-		}
-
-		return true;
-	}
-
-	// Solve Ax=B after ldltdc
-	static void ldltsl(float A[][], float rdiag[], float B[], float x[], int N) {
-		int i;
-		for (i = 0; i < N; i++) {
-			float sum = B[i];
-			for (int k = 0; k < i; k++)
-				sum -= A[i][k] * x[k];
-			x[i] = sum * rdiag[i];
-		}
-		for (i = N - 1; i >= 0; i--) {
-			float sum = 0;
-			for (int k = i + 1; k < N; k++)
-				sum += A[k][i] * x[k];
-			x[i] -= sum * rdiag[i];
 		}
 	}
 
@@ -276,7 +242,7 @@ public class Model {
 			// Estimate curvature based on variation of normals
 			// along edges
 			float m[] = { 0, 0, 0 };
-			float w[][] = { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } };
+			double w[][] = { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } };
 			for (int j = 0; j < 3; j++) {
 
 				float u = e[j].dot(t);
@@ -286,8 +252,8 @@ public class Model {
 				// w[1][1] += v*v + u*u;
 				// w[1][2] += u*v;
 				w[2][2] += v * v;
-				Vector3f dn = new Vector3f(tri.getPosition()[(i + 2) % 3].getNormalVector());
-				dn.sub(tri.getPosition()[(i + 1) % 3].getNormalVector());
+				Vector3f dn = new Vector3f(tri.getPosition()[(j + 2) % 3].getNormalVector());
+				dn.sub(tri.getPosition()[(j + 1) % 3].getNormalVector());
 				float dnu = dn.dot(t);
 				float dnv = dn.dot(b);
 				m[0] += dnu * u;
@@ -297,13 +263,19 @@ public class Model {
 			w[1][1] = w[0][0] + w[2][2];
 			w[1][2] = w[0][1];
 
-			// Least squares solution
-			float diag[] = new float[3];
-			if (!ldltdc(w, diag, 3)) {
-				// dprintf("ldltdc failed!\n");
+			RealMatrix coefficients = new Array2DRowRealMatrix(w, false);
+			DecompositionSolver solver = new LUDecomposition(coefficients).getSolver();
+			if (!solver.isNonSingular()) {
+				System.out.println("Singular matrix");
 				continue;
 			}
-			ldltsl(w, diag, m, m, 3);
+
+			RealVector constants = new ArrayRealVector(new double[] { m[0], m[1], m[2] }, false);
+			RealVector solution = solver.solve(constants);
+
+			m[0] = (float) solution.getEntry(0);
+			m[1] = (float) solution.getEntry(1);
+			m[2] = (float) solution.getEntry(2);
 
 			// Push it back out to the vertices
 			for (int j = 0; j < 3; j++) {
