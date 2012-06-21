@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.vecmath.Vector3f;
+
 import org.apache.log4j.Logger;
 
 import edu.tum.cs.uima.Annotation;
@@ -38,7 +40,9 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 	/**
 	 * Log4J Logger
 	 */
-	private static Logger	logger	= Logger.getLogger(PrimitiveAnalyzer.class);
+	private static Logger	logger			= Logger.getLogger(PrimitiveAnalyzer.class);
+
+	private static double	PLANE_TOLERANCE	= 2f * Math.PI / 180f;
 
 	static void analyzeVertex(Vertex v) {
 
@@ -172,6 +176,11 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 			// First check if surface normal is exactly the same direction
 			boolean isEqual = (type == getTrianglePrimitiveType(currNeighbor));
 
+			if (isEqual && type == PrimitiveType.PLANE) {
+				isEqual = planeAngleWithinTolerance(triangle.getNormalVector(),
+						currNeighbor.getNormalVector());
+			}
+
 			if (isEqual) {
 				synchronized (annotation.getMesh().getTriangles()) {
 					annotation.getMesh().getTriangles().add(currNeighbor);
@@ -209,6 +218,32 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 	@Override
 	public String getName() {
 		return "Primitive";
+	}
+
+	private boolean isSamePlane(PrimitiveAnnotation a1, PrimitiveAnnotation a2) {
+		if (!(a1 instanceof PlaneAnnotation && a2 instanceof PlaneAnnotation))
+			return true;
+		a1.fit();
+		a2.fit();
+		return planeAngleWithinTolerance(((PlaneAnnotation) a1).getPlaneNormal(),
+				((PlaneAnnotation) a2).getPlaneNormal());
+	}
+
+	private boolean planeAngleWithinTolerance(Vector3f norm1, Vector3f norm2) {
+		double dot = norm1.dot(norm2);
+		if (dot > 1.0) // due to floating point arithmetic
+			dot = 1.0;
+
+		double angle = Math.acos(dot) + Math.PI * 2;
+		angle = angle % Math.PI;
+
+		boolean isEqual = (angle <= PLANE_TOLERANCE || angle >= Math.PI - PLANE_TOLERANCE);
+		if (!isEqual) {
+			System.out.println("Angle1: " + (Math.acos(dot) * 180f / Math.PI));
+			System.out.println("Angle2: " + (angle * 180f / Math.PI));
+			System.out.println("Eq: " + isEqual + " " + PLANE_TOLERANCE + " " + Math.abs(angle));
+		}
+		return isEqual;
 	}
 
 	/* (non-Javadoc)
@@ -303,11 +338,14 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 					if (a1 == null)
 						continue;
 
+					if (!isSamePlane(a1, a2))
+						continue;
+
 					float percentage = pa.getArea() / a1.getArea();
 
 					// If annotation is smaller than 5% of the area of the surrounding annotation,
 					// combine both into one
-					if (percentage < 0.05f) {
+					if (percentage < 0.10f) {
 						synchronized (cas.getAnnotations()) {
 							it.remove();
 						}
