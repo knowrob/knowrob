@@ -248,6 +248,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		cam.setDistance(50);
 
 		cam.rotateX((float) Math.PI / 2f);
+		cam.rotateZ((float) Math.PI);
 
 		captureViewMatrix();
 

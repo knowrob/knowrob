@@ -50,7 +50,7 @@ public class MeshReasoning {
 
 		// ItemModel model = new ItemModel("/home/stefan/simple_dome.kmz");
 		// ItemModel model = new ItemModel(
-		// "/home/stefan/ros/knowrob/knowrob_cad_models/models/collada/hospital_bed.kmz");
+		// / "/home/stefan/ros/knowrob/knowrob_cad_models/models/collada/hospital_bed.kmz");
 		// ItemModel model = new ItemModel("/home/stefan/Downloads/triangle.dae");
 		// ItemModel model = new ItemModel("/home/stefan/Downloads/saintpeter.kmz");
 		ItemModel model = new ItemModel("/home/stefan/CoTeSys/cups/cup2.kmz");
@@ -105,6 +105,8 @@ public class MeshReasoning {
 		FlatSurfaceAnalyzer fsa = new FlatSurfaceAnalyzer();
 		analyzer.add(na);
 		analyzer.add(fsa);
+
+		Thread.yield();
 
 		na.process(cas);
 

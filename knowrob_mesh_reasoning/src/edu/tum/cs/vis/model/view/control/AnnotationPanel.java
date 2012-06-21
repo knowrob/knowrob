@@ -7,11 +7,10 @@
  ******************************************************************************/
 package edu.tum.cs.vis.model.view.control;
 
-import java.util.ArrayList;
-
 import javax.swing.JPanel;
 
 import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
+import edu.tum.cs.vis.model.uima.cas.MeshCas;
 
 /**
  * Panel for MeshReasoningViewControl accordion. Shows different setting controls for an annotation.
@@ -26,25 +25,29 @@ public abstract class AnnotationPanel<T extends MeshAnnotation> extends JPanel {
 	/**
 	 * Auto generated
 	 */
-	private static final long	serialVersionUID	= 878471632553390826L;
-	/**
-	 * List of annotations connected with this panel
-	 */
-	protected ArrayList<T>		annotations;
+	private static final long		serialVersionUID	= 878471632553390826L;
 
 	/**
-	 * @return the annotations
+	 * CAS which holds list of annotations
 	 */
-	public ArrayList<T> getAnnotations() {
-		return annotations;
-	}
+	protected MeshCas				cas;
 
 	/**
-	 * @param annotations
-	 *            the annotations to set
+	 * Type of annotation for which this panel is
 	 */
-	public void setAnnotations(ArrayList<T> annotations) {
-		this.annotations = annotations;
+	Class<? extends MeshAnnotation>	annotationType;
+
+	/**
+	 * Default constructor
+	 * 
+	 * @param annotationType
+	 *            For which annotation types the panel is
+	 * @param cas
+	 *            CAS which holds all annotations
+	 */
+	public AnnotationPanel(Class<? extends MeshAnnotation> annotationType, MeshCas cas) {
+		this.annotationType = annotationType;
+		this.cas = cas;
 	}
 
 	/**

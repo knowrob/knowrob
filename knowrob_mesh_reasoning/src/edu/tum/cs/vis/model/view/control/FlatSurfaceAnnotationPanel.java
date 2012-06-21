@@ -20,7 +20,9 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.vis.model.uima.annotation.FlatSurfaceAnnotation;
+import edu.tum.cs.vis.model.uima.cas.MeshCas;
 
 /**
  * Control panel for FlatSurfaceAnnotation. Contains slider for minArea and maxArea.
@@ -69,8 +71,12 @@ public class FlatSurfaceAnnotationPanel extends AnnotationPanel<FlatSurfaceAnnot
 
 	/**
 	 * Default constructor. Sets panel content.
+	 * 
+	 * @param cas
+	 *            Main cas
 	 */
-	public FlatSurfaceAnnotationPanel() {
+	public FlatSurfaceAnnotationPanel(MeshCas cas) {
+		super(FlatSurfaceAnnotation.class, cas);
 		setLayout(new BorderLayout());
 
 		JPanel pnlSettings = new JPanel(new GridBagLayout());
@@ -173,10 +179,13 @@ public class FlatSurfaceAnnotationPanel extends AnnotationPanel<FlatSurfaceAnnot
 
 	@Override
 	public void stateChanged(ChangeEvent arg0) {
-		synchronized (annotations) {
-			for (FlatSurfaceAnnotation a : annotations) {
-				a.setDrawAnnotation(a.getArea().getSquareMM() * FACTOR <= maxArea.getValue()
-						&& a.getArea().getSquareMM() * FACTOR >= minArea.getValue());
+		synchronized (cas.getAnnotations()) {
+			for (Annotation a : cas.getAnnotations()) {
+				if (a.getClass() != annotationType)
+					continue;
+				FlatSurfaceAnnotation fa = (FlatSurfaceAnnotation) a;
+				fa.setDrawAnnotation(fa.getArea().getSquareMM() * FACTOR <= maxArea.getValue()
+						&& fa.getArea().getSquareMM() * FACTOR >= minArea.getValue());
 			}
 		}
 
@@ -185,16 +194,16 @@ public class FlatSurfaceAnnotationPanel extends AnnotationPanel<FlatSurfaceAnnot
 	@Override
 	public void updateValues() {
 
-		if (annotations == null)
-			return;
-
 		double min = Double.MAX_VALUE;
 		double max = Double.MIN_VALUE;
 
-		synchronized (annotations) {
-			for (FlatSurfaceAnnotation a : annotations) {
-				min = Math.min(a.getArea().getSquareMM(), min);
-				max = Math.max(a.getArea().getSquareMM(), max);
+		synchronized (cas.getAnnotations()) {
+			for (Annotation a : cas.getAnnotations()) {
+				if (a.getClass() != annotationType)
+					continue;
+				FlatSurfaceAnnotation fa = (FlatSurfaceAnnotation) a;
+				min = Math.min(fa.getArea().getSquareMM(), min);
+				max = Math.max(fa.getArea().getSquareMM(), max);
 			}
 		}
 
@@ -202,5 +211,6 @@ public class FlatSurfaceAnnotationPanel extends AnnotationPanel<FlatSurfaceAnnot
 		minArea.setMaximum((int) (max + 1) * FACTOR);
 		maxArea.setMinimum((int) min * FACTOR);
 		maxArea.setMaximum((int) (max + 1) * FACTOR);
+		maxArea.setValue((int) (max + 1) * FACTOR);
 	}
 }

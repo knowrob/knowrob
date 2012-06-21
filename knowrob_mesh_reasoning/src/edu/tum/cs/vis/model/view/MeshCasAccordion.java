@@ -11,7 +11,6 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -46,10 +45,11 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 	 * maintained in the Outlook bar
 	 */
 	class BarInfo implements ActionListener {
+
 		/**
-		 * List of annotations for this button
+		 * Cas which holds list of annotations
 		 */
-		private ArrayList<MeshAnnotation>				annotations;
+		protected MeshCas								cas;
 
 		/**
 		 * Type of annotations in this
@@ -84,12 +84,14 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 		 *            Type of annotations which this bar holds
 		 * @param component
 		 *            The component that is the body of the Outlook Bar
+		 * @param cas
+		 *            Main CAS
 		 */
 		public BarInfo(Class<? extends MeshAnnotation> annotationType,
-				@SuppressWarnings("rawtypes") AnnotationPanel component) {
+				@SuppressWarnings("rawtypes") AnnotationPanel component, MeshCas cas) {
 			this.component = component;
 			this.annotationType = annotationType;
-			annotations = new ArrayList<MeshAnnotation>();
+			this.cas = cas;
 			String name = annotationType.getName();
 			if (name.endsWith("Annotation"))
 				name = name.substring(0, name.lastIndexOf("Annotation"));
@@ -107,35 +109,14 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			for (MeshAnnotation m : annotations)
-				m.setDrawAnnotation(checkbox.isSelected());
-		}
-
-		/**
-		 * Add annotation to the list of annotations.
-		 * 
-		 * @param a
-		 *            Annotation to add
-		 */
-		public void addAnnotation(MeshAnnotation a) {
-			if (a.getClass() != annotationType) {
-				System.out.println("Cannot add annotation (" + a.getClass()
-						+ ") to accordion, because class isn't annotation type (" + annotationType
-						+ ").");
-				return;
+			synchronized (cas.getAnnotations()) {
+				for (Annotation m : cas.getAnnotations()) {
+					if (m.getClass() != annotationType || !(m instanceof MeshAnnotation))
+						continue;
+					MeshAnnotation ma = (MeshAnnotation) m;
+					ma.setDrawAnnotation(checkbox.isSelected());
+				}
 			}
-			synchronized (annotations) {
-				if (!annotations.contains(a))
-					annotations.add(a);
-			}
-			component.updateValues();
-		}
-
-		/**
-		 * @return the annotations
-		 */
-		public ArrayList<MeshAnnotation> getAnnotations() {
-			return annotations;
 		}
 
 		/**
@@ -172,14 +153,6 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 			return component;
 		}
 
-		/**
-		 * @param annotations
-		 *            the annotations to set
-		 */
-		public void setAnnotations(ArrayList<MeshAnnotation> annotations) {
-			this.annotations = annotations;
-		}
-
 	}
 
 	/**
@@ -195,9 +168,10 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 	 * @return the control panel
 	 */
 	@SuppressWarnings("rawtypes")
-	static AnnotationPanel createPanelForAnnotation(Class<? extends MeshAnnotation> clazz) {
+	static AnnotationPanel createPanelForAnnotation(Class<? extends MeshAnnotation> clazz,
+			MeshCas cas) {
 		if (clazz == FlatSurfaceAnnotation.class)
-			return new FlatSurfaceAnnotationPanel();
+			return new FlatSurfaceAnnotationPanel(cas);
 
 		System.out
 				.println("Update createPanelForAnnotation() function for creating AnnotationPanel for "
@@ -248,7 +222,6 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 		Timer tim = new Timer();
 		tim.scheduleAtFixedRate(new TimerTask() {
 
-			@SuppressWarnings("unchecked")
 			@Override
 			public void run() {
 				synchronized (cas.getAnnotations()) {
@@ -256,17 +229,14 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 						if (a instanceof MeshAnnotation) {
 							MeshAnnotation ma = (MeshAnnotation) a;
 
-							if (bars.containsKey(ma.getClass())) {
-								bars.get(ma.getClass()).addAnnotation(ma);
-							} else {
+							if (bars.containsKey(ma.getClass()))
+								continue;
 
-								@SuppressWarnings("rawtypes")
-								AnnotationPanel pnl = createPanelForAnnotation(ma.getClass());
+							@SuppressWarnings("rawtypes")
+							AnnotationPanel pnl = createPanelForAnnotation(ma.getClass(), cas);
 
-								BarInfo bi = new BarInfo(ma.getClass(), pnl);
-								pnl.setAnnotations(bi.getAnnotations());
-								bars.put(ma.getClass(), bi);
-							}
+							BarInfo bi = new BarInfo(ma.getClass(), pnl, cas);
+							bars.put(ma.getClass(), bi);
 						}
 					}
 
@@ -275,7 +245,7 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 				render();
 
 			}
-		}, 1000, 500);
+		}, 1000, 2000);
 	}
 
 	/**
