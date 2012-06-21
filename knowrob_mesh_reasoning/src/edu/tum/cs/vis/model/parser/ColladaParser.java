@@ -411,6 +411,7 @@ public class ColladaParser extends ModelParser {
 		}
 
 		Appearance appearance = getAppearance(mat, collada);
+		appearance.colourFill = null;
 
 
 		// one single line from the line-set
@@ -497,13 +498,14 @@ public class ColladaParser extends ModelParser {
 		}
 
 		Appearance appearance = getAppearance(mat, collada);
+		appearance.colourLine = null;
 
 		// one single triangle from the triangle-set
 		for (int i = 0; i < indexes.length; i++) {
 			Triangle tri = new Triangle();
 			tri.appearance = appearance;
 
-			if (tri.appearance.containsTexture)
+			if (tri.appearance.imageFileName != null)
 				tri.texPosition = new Point2f[3];
 
 			for (int v = 0; v < 3; v++) {
@@ -514,7 +516,7 @@ public class ColladaParser extends ModelParser {
 						vertPoints[indexes[i][vertexOffset]][2]);
 
 				// set texture position
-				if (tri.appearance.containsTexture) {
+				if (tri.appearance.imageFileName != null) {
 					tri.texPosition[v] = new Point2f(
 							texturePoints[indexes[i][textureOffset]][0],
 							texturePoints[indexes[i][textureOffset]][1]);
@@ -589,9 +591,10 @@ public class ColladaParser extends ModelParser {
 
 			if (texturePath != null) {
 				appearance.imageFileName = texturePath;
-				appearance.containsTexture = true;
 			} else {
-				appearance.colour = materialColor;
+				//Fill will be set to null if it is a line, Line will be set to null if it is a Triangle
+				appearance.colourFill = materialColor;
+				appearance.colourLine = materialColor;
 			}
 		} else if (effect.getEffectMaterial() instanceof Blinn) {
 			// <emission> + <ambient>*al + <diffuse> + <specular>^<shininess>
@@ -607,7 +610,6 @@ public class ColladaParser extends ModelParser {
 										.getSource()).getSurface()
 								.getInitFrom()).getInitFrom();
 				appearance.imageFileName = texturePath;
-				appearance.containsTexture = true;
 			} else {
 
 				float[] emission = blinn.getEmission().getData();
@@ -628,7 +630,9 @@ public class ColladaParser extends ModelParser {
 						result[i] += (float) Math
 								.pow(specular[i], shininess[0]);
 				}
-				appearance.colour = new Color(result[0],result[1],result[2],Math.min(result[3],1f));
+				//Fill will be set to null if it is a line, Line will be set to null if it is a Triangle
+				appearance.colourFill = new Color(result[0],result[1],result[2],Math.min(result[3],1f));
+				appearance.colourLine = appearance.colourFill;
 			}
 
 		}

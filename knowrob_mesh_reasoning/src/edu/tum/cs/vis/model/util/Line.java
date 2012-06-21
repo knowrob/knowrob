@@ -31,12 +31,7 @@ public class Line extends DrawObject {
 	 *            Applet to draw on
 	 */
 	public void draw(PApplet applet, int overrideColor) {
-		if (overrideColor != 0)
-			applet.stroke(overrideColor);
-		else
-			applet.stroke(appearance.colour.getRed(),
-				appearance.colour.getGreen(), appearance.colour.getBlue(), appearance.colour.getAlpha());
-		applet.strokeWeight(2);
+		setColor(applet, overrideColor);
 		applet.line(position[0].x, position[0].y, position[0].z, position[1].x,
 				position[1].y, position[1].z);
 	}

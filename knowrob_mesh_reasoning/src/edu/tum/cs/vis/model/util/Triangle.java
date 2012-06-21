@@ -20,11 +20,6 @@ public class Triangle extends DrawObject {
 	public Point2f texPosition[];
 
 	/**
-	 * Color or texture of triangle
-	 */
-	public Appearance appearance;
-     
-	/**
 	 * Default constructor
 	 */
 	public Triangle() {
@@ -34,20 +29,14 @@ public class Triangle extends DrawObject {
      /**
       * Draw the triangle onto the applet.
       * @param applet Applet to draw on
+      * @param overrideColor Gray value from 0 to 255. 0 = don't override
       */
      public void draw(PApplet applet, int overrideColor)
      {
-
- 		applet.noStroke();
-		if (!appearance.containsTexture || overrideColor != 0)
+   		setColor(applet, overrideColor);
+		if (appearance.imageReference==null || overrideColor != 0)
         {
-			if (overrideColor != 0)
-				applet.fill(overrideColor);
-			else
-				applet.fill(appearance.colour.getRed(),
-					appearance.colour.getGreen(),
-					appearance.colour.getBlue(),
-					appearance.colour.getAlpha());
+			//no texture only color
              applet.beginShape(PConstants.TRIANGLES);
 
              for (int i=0; i<3; i++)
@@ -57,9 +46,7 @@ public class Triangle extends DrawObject {
 
 		} else
 		{
-			 //Use fallback if texture isn't drawn. So fill triangles with white color
-			applet.fill(255,255,255,0);
-			 
+			//has texture
 			applet.beginShape(PConstants.TRIANGLES);
 			applet.texture(appearance.imageReference);
 			
