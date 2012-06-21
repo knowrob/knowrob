@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 
 import peasy.PeasyCam;
 import edu.tum.cs.uima.Annotation;
+import edu.tum.cs.vis.model.uima.annotation.FlatSurfaceAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.util.Polygon;
@@ -141,6 +142,11 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 
 			for (MeshAnnotation ma : selectedAnnotations) {
 				ma.getMesh().drawPolygons(g, new Color(255, 125, 0));
+				if (ma instanceof FlatSurfaceAnnotation && selectedAnnotations.size() == 1) {
+					FlatSurfaceAnnotation f = (FlatSurfaceAnnotation) ma;
+					for (FlatSurfaceAnnotation fsa : f.getNeighbors())
+						fsa.getMesh().drawPolygons(g, new Color(0, 125, 255, 30));
+				}
 			}
 		}
 

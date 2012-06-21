@@ -61,6 +61,8 @@ public abstract class MeshAnalyzer extends AnalysisEngine {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+
+		updateProgress();
 	}
 
 	/**
@@ -131,6 +133,7 @@ public abstract class MeshAnalyzer extends AnalysisEngine {
 		processStart(cas);
 		processDuration = System.currentTimeMillis() - processStartTime;
 
+		updateProgress();
 		getLogger().debug("Ended. Took: " + PrintUtil.prettyMillis(processDuration));
 	}
 

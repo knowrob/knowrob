@@ -18,6 +18,7 @@ import org.apache.log4j.xml.DOMConfigurator;
 
 import edu.tum.cs.vis.model.ItemModel;
 import edu.tum.cs.vis.model.uima.analyzer.FlatSurfaceAnalyzer;
+import edu.tum.cs.vis.model.uima.analyzer.FlatSurfaceNeighborAnalyzer;
 import edu.tum.cs.vis.model.uima.analyzer.MeshAnalyzer;
 import edu.tum.cs.vis.model.uima.analyzer.NeighborAnalyzer;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
@@ -49,13 +50,13 @@ public class MeshReasoning {
 		logger.info("MeshReasoning started");
 
 		// ItemModel model = new ItemModel("/home/stefan/simple_dome.kmz");
-		ItemModel model = new ItemModel(
-				"/home/stefan/ros/knowrob/knowrob_cad_models/models/collada/hospital_bed.kmz");
+		// ItemModel model = new ItemModel(
+		// "/home/stefan/ros/knowrob/knowrob_cad_models/models/collada/hospital_bed.kmz");
 		// ItemModel model = new ItemModel("/home/stefan/Downloads/triangle.dae");
 		// ItemModel model = new ItemModel("/home/stefan/Downloads/saintpeter.kmz");
 
-		// ItemModel model = new ItemModel("/home/stefan/CoTeSys/cups/cup2.kmz");
-		// ItemModel model = new ItemModel("/home/stefan/CoTeSys/cups/cup_round.kmz");
+		ItemModel model = new ItemModel("/home/stefan/CoTeSys/cups/cup2.kmz");
+		// ItemModel model = new ItemModel("/home/stefan/CoTeSys/cups/cup_red.kmz");
 		// ItemModel model = new ItemModel("/home/stefan/Downloads/cube.kmz");
 		if (!model.parseModel()) {
 			throw new RuntimeException("Couldn't parse model. Maybe path to model is wrong.");
@@ -105,14 +106,18 @@ public class MeshReasoning {
 
 		NeighborAnalyzer na = new NeighborAnalyzer();
 		FlatSurfaceAnalyzer fsa = new FlatSurfaceAnalyzer();
+		FlatSurfaceNeighborAnalyzer fsna = new FlatSurfaceNeighborAnalyzer();
 		analyzer.add(na);
 		analyzer.add(fsa);
+		analyzer.add(fsna);
 
 		Thread.yield();
 
 		na.process(cas);
 
 		fsa.process(cas);
+
+		fsna.process(cas);
 
 	}
 }

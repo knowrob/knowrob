@@ -8,6 +8,7 @@
 package edu.tum.cs.vis.model.uima.analyzer;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -33,35 +34,53 @@ import edu.tum.cs.vis.model.util.Polygon;
  */
 public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 
+	class PolygonNormalVectorCombination {
+		public Polygon	p;
+		public Vector3d	referenceVector;
+
+		/**
+		 * @param p2
+		 * @param normalVector
+		 */
+		public PolygonNormalVectorCombination(Polygon p2, Vector3d normalVector) {
+			p = p2;
+			referenceVector = normalVector;
+		}
+	}
+
 	/**
 	 * Log4J Logger
 	 */
-	private static Logger				logger				= Logger.getLogger(FlatSurfaceAnalyzer.class);
+	private static Logger							logger				= Logger.getLogger(FlatSurfaceAnalyzer.class);
 
 	/**
 	 * First a list of all threads is created which will be executed afterwards with a thread pool
 	 */
-	private final List<Callable<Void>>	threads				= new LinkedList<Callable<Void>>();
+	private final List<Callable<Void>>				threads				= new LinkedList<Callable<Void>>();
 
 	/**
 	 * Allowed tolerance between surface normals considered as equal. Tolerance is in radiant.
 	 */
-	static final double					TOLERANCE			= 1.0 * Math.PI / 180;
+	static final double								TOLERANCE			= 10 * Math.PI / 180;
 
 	/**
 	 * List of all polygons which were added already in an annotation. Used during process.
 	 */
-	final LinkedList<Polygon>			alreadyInAnnotation	= new LinkedList<Polygon>();
+	final LinkedList<Polygon>						alreadyInAnnotation	= new LinkedList<Polygon>();
 
 	/**
 	 * First a list of all polygons in the groups is created and afterwards the analyzing starts
 	 */
-	private ArrayList<Polygon>			allPolygons;
+	private ArrayList<Polygon>						allPolygons;
 
 	/**
 	 * Number of polygons already elaborated/processed. Used for indicating current process
 	 */
-	final AtomicInteger					polygonsElaborated	= new AtomicInteger(0);
+	final AtomicInteger								polygonsElaborated	= new AtomicInteger(0);
+
+	public static ArrayList<FlatSurfaceAnnotation>	testArr				= new ArrayList<FlatSurfaceAnnotation>();
+
+	private static int								test				= 0;
 
 	@Override
 	public Logger getLogger() {
@@ -86,6 +105,7 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 	 *            Cas to add a found annotation
 	 */
 	void polygonBFS(Polygon start, MeshCas cas) {
+
 		FlatSurfaceAnnotation annotation = new FlatSurfaceAnnotation();
 		synchronized (alreadyInAnnotation) {
 			if (alreadyInAnnotation.contains(start))
@@ -106,19 +126,21 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 
 		visited.add(start);
 
-		LinkedList<Polygon> queue = new LinkedList<Polygon>();
-		if (start.getNeighbors() != null)
-			queue.addAll(start.getNeighbors());
-
-		Vector3d inv = (Vector3d) start.getNormalVector().clone();
-		inv.scale(-1);
+		LinkedList<PolygonNormalVectorCombination> queue = new LinkedList<PolygonNormalVectorCombination>();
+		if (start.getNeighbors() != null) {
+			for (Polygon p : start.getNeighbors())
+				queue.add(new PolygonNormalVectorCombination(p, start.getNormalVector()));
+		}
 
 		while (!queue.isEmpty()) {
-			Polygon p = queue.pop();
-			visited.add(p);
+			PolygonNormalVectorCombination pnv = queue.pop();
+			visited.add(pnv.p);
 
-			// First check if sufrace normal is exactly the same direction
-			boolean isEqual = (p.getNormalVector().equals(start.getNormalVector()) || p
+			Vector3d inv = (Vector3d) pnv.referenceVector.clone();
+			inv.scale(-1);
+
+			// First check if surface normal is exactly the same direction
+			boolean isEqual = (pnv.p.getNormalVector().equals(pnv.referenceVector) || pnv.p
 					.getNormalVector().equals(inv));
 
 			// if not, use angle between normals
@@ -127,7 +149,7 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 				 * Calculate angle (range: 0 - PI) between the two surface normals. Because due to floating point arithmetic there may be
 				 * small errors which can be compensated by checking the angle
 				 */
-				double radiant = Math.acos(start.getNormalVector().dot(p.getNormalVector()));
+				double radiant = Math.acos(pnv.referenceVector.dot(pnv.p.getNormalVector()));
 				isEqual = (radiant < FlatSurfaceAnalyzer.TOLERANCE)
 						|| (Math.PI - radiant < FlatSurfaceAnalyzer.TOLERANCE);
 			}
@@ -135,12 +157,14 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 			synchronized (alreadyInAnnotation) {
 
 				if (isEqual) {
-					if (alreadyInAnnotation.contains(p)
-							&& !annotation.getMesh().getPolygons().contains(p)) {
+					if (alreadyInAnnotation.contains(pnv.p)
+							&& !annotation.getMesh().getPolygons().contains(pnv.p)) {
 						// Polygon has already been added by another thread into another annotation.
 						// So combine the two annotations into one.
 						synchronized (cas.getAnnotations()) {
-							MeshAnnotation ma = cas.findAnnotation(FlatSurfaceAnnotation.class, p);
+							MeshAnnotation ma = cas.findAnnotation(FlatSurfaceAnnotation.class,
+									pnv.p);
+
 							if (ma == null) {
 								// should never happen
 								logger.error("Polygon seems to be already in annotation, but no annotation found for it!");
@@ -148,24 +172,45 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 								cas.getAnnotations().remove(annotation);
 
 								synchronized (((FlatSurfaceAnnotation) ma).getMesh().getPolygons()) {
+									// Copy all polygons and neighbor polygons from current
+									// annotation to found annotation
 									((FlatSurfaceAnnotation) ma).getMesh().getPolygons()
 											.addAll(annotation.getMesh().getPolygons());
+									((FlatSurfaceAnnotation) ma).getNeighborPolygons().addAll(
+											annotation.getNeighborPolygons());
+
+									// Remove items from queue which
+									for (Iterator<PolygonNormalVectorCombination> it = queue
+											.iterator(); it.hasNext();) {
+										if (((FlatSurfaceAnnotation) ma).getMesh().getPolygons()
+												.contains(it.next().p))
+											it.remove();
+									}
 								}
 								annotation = (FlatSurfaceAnnotation) ma;
 							}
 						}
 					} else {
 						synchronized (annotation.getMesh().getPolygons()) {
-							annotation.getMesh().getPolygons().add(p);
-							alreadyInAnnotation.add(p);
+							annotation.getMesh().getPolygons().add(pnv.p);
+							alreadyInAnnotation.add(pnv.p);
 						}
 					}
-					for (Polygon a : p.getNeighbors()) {
-						if (annotation.getMesh().getPolygons().contains(a) || visited.contains(a)
-								|| queue.contains(a))
+					for (Polygon a : pnv.p.getNeighbors()) {
+						if (annotation.getMesh().getPolygons().contains(a) || visited.contains(a))
 							continue;
-						queue.add(a);
+						boolean found = false;
+						for (PolygonNormalVectorCombination pq : queue)
+							if (pq.p == a) {
+								found = true;
+								break;
+							}
+						if (found)
+							continue;
+						queue.add(new PolygonNormalVectorCombination(a, pnv.p.getNormalVector()));
 					}
+				} else {
+					annotation.addNeighborPolygon(pnv.p);
 				}
 			}
 
@@ -225,12 +270,24 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 			startIdx += interval;
 		} while (startIdx < allPolygons.size());
 
-		executeInPool(threads);
+		// executeInPool(threads);
+
+		for (Callable<Void> c : threads)
+			try {
+				c.call();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		updateProgress();
 
 		/*for (Polygon p : allPolygons) {
 			polygonBFS(p, cas);
 			polygonsElaborated.incrementAndGet();
 		}*/
+
+		// polygonsElaborated.set(allPolygons.size());
+		allPolygons = null;
 
 		logger.debug("Number of FlatSurfaceAnnotations: " + cas.getAnnotations().size());
 
@@ -238,8 +295,9 @@ public class FlatSurfaceAnalyzer extends MeshAnalyzer {
 
 	@Override
 	public void updateProgress() {
-		if (allPolygons != null)
+		if (allPolygons != null && allPolygons.size() > 0) {
 			setProgress((float) polygonsElaborated.get() / (float) allPolygons.size() * 100.0f);
+		}
 	}
 }
 
@@ -276,6 +334,8 @@ class FlatSurfaceAnalyzerThread implements Callable<Void> {
 	 */
 	private final MeshCas				cas;
 
+	public static int					cnt	= 0;
+
 	/**
 	 * Default constructor.
 	 * 
@@ -309,6 +369,7 @@ class FlatSurfaceAnalyzerThread implements Callable<Void> {
 		}
 
 		analyzer.polygonsElaborated.addAndGet(end - start);
+
 		return null;
 	}
 

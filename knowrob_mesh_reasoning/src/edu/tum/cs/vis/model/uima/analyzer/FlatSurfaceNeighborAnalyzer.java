@@ -15,25 +15,22 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 
+import edu.tum.cs.uima.Annotation;
+import edu.tum.cs.vis.model.uima.annotation.FlatSurfaceAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
-import edu.tum.cs.vis.model.util.Group;
-import edu.tum.cs.vis.model.util.Mesh;
-import edu.tum.cs.vis.model.util.Polygon;
 
 /**
- * Analyzer for a mesh which sets direct neighbors of a triangle.
- * 
- * The neighbor information is used in other Analyzer for better performance.
+ * Sets the neighbors of a flat surface annotation
  * 
  * @author Stefan Profanter
  * 
  */
-public class NeighborAnalyzer extends MeshAnalyzer {
+public class FlatSurfaceNeighborAnalyzer extends MeshAnalyzer {
 
 	/**
-	 * Log4j logger
+	 * Log4J Logger
 	 */
-	private static Logger				logger				= Logger.getLogger(NeighborAnalyzer.class);
+	private static Logger				logger				= Logger.getLogger(FlatSurfaceNeighborAnalyzer.class);
 
 	/**
 	 * First a list of all threads is created which will be executed afterwards with a thread pool
@@ -44,21 +41,22 @@ public class NeighborAnalyzer extends MeshAnalyzer {
 	 * Number of currently processed polygons. Used for progress status.
 	 */
 	private final AtomicInteger			polygonsElaborated	= new AtomicInteger(0);
+	ArrayList<FlatSurfaceAnnotation>	annotations			= new ArrayList<FlatSurfaceAnnotation>();
 
-	/**
-	 * When calling <code>process</code> all polygons of the group and its children are collected in
-	 * this list to process them afterwards.
+	/* (non-Javadoc)
+	 * @see edu.tum.cs.vis.model.uima.analyzer.MeshAnalyzer#getLogger()
 	 */
-	private ArrayList<Polygon>			allPolygons;
-
 	@Override
 	public Logger getLogger() {
 		return logger;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.tum.cs.vis.model.uima.analyzer.MeshAnalyzer#getName()
+	 */
 	@Override
 	public String getName() {
-		return "Neighbor";
+		return "FlatSurfaceNeighbor";
 	}
 
 	/**
@@ -72,62 +70,49 @@ public class NeighborAnalyzer extends MeshAnalyzer {
 		polygonsElaborated.addAndGet(cnt);
 	}
 
-	/**
-	 * Process a group which contains a mesh.
-	 * 
-	 * @param g
-	 *            group to process
+	/* (non-Javadoc)
+	 * @see edu.tum.cs.vis.model.uima.analyzer.MeshAnalyzer#processStart(edu.tum.cs.vis.model.uima.cas.MeshCas)
 	 */
-	private void processGroup(final Group g) {
-
-		processMesh(g.getMesh());
-
-		for (Group gr : g.getChildren()) {
-			processGroup(gr);
-		}
-	}
-
-	/**
-	 * Process a mesh which contains polygons and find the neighbors for each triangle.
-	 * 
-	 * @param m
-	 *            Mesh to process
-	 */
-	void processMesh(final Mesh m) {
-		if (m.getPolygons().size() == 0)
-			return;
-
-		allPolygons.addAll(m.getPolygons());
-
-	}
-
 	@Override
 	public void processStart(MeshCas cas) {
 
+		annotations.clear();
 		polygonsElaborated.set(0);
-		allPolygons = new ArrayList<Polygon>();
-		processGroup(cas.getGroup());
 
-		logger.debug("Number of Polygons: " + allPolygons.size());
+		for (Annotation a : cas.getAnnotations()) {
+			if (a instanceof FlatSurfaceAnnotation) {
+				FlatSurfaceAnnotation fsa = (FlatSurfaceAnnotation) a;
+				annotations.add(fsa);
+			}
+		}
 
 		int startIdx = 0;
 		int interval = 100;
 
 		do {
-			threads.add(new NeighborAnalyzerThread(startIdx, Math.min(startIdx + interval,
-					allPolygons.size()), allPolygons, this));
+			threads.add(new FlatSurfaceNeighborAnalyzerThread(startIdx, Math.min(startIdx
+					+ interval, annotations.size()), annotations, this, cas));
 			startIdx += interval;
-		} while (startIdx < allPolygons.size());
+		} while (startIdx < annotations.size());
 
 		executeInPool(threads);
 
+		for (FlatSurfaceAnnotation fsa : annotations)
+			fsa.getNeighborPolygons().clear();
+		annotations.clear();
+
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.tum.cs.vis.model.uima.analyzer.MeshAnalyzer#updateProgress()
+	 */
 	@Override
 	public void updateProgress() {
-		if (allPolygons != null)
-			setProgress((float) polygonsElaborated.get() / (float) allPolygons.size() * 100.0f);
+		if (annotations != null && annotations.size() > 0)
+			setProgress(polygonsElaborated.get() / (float) annotations.size() * 100.0f);
+
 	}
+
 }
 
 /**
@@ -136,27 +121,32 @@ public class NeighborAnalyzer extends MeshAnalyzer {
  * @author Stefan Profanter
  * 
  */
-class NeighborAnalyzerThread implements Callable<Void> {
+class FlatSurfaceNeighborAnalyzerThread implements Callable<Void> {
 
 	/**
 	 * Index of first polygon in list to elaborate
 	 */
-	final int						start;
+	final int									start;
 	/**
 	 * All polygons in the list from start to < end will be elaborated
 	 */
-	final int						end;
+	final int									end;
 
 	/**
 	 * List of all polygons. <code>start</code> and <code>end</code> are the indices which indicate
 	 * the range to elaborate.
 	 */
-	final ArrayList<Polygon>		polygons;
+	final ArrayList<FlatSurfaceAnnotation>		annotations;
 
 	/**
 	 * The parent analyzer. Used to update progress.
 	 */
-	private final NeighborAnalyzer	analyzer;
+	private final FlatSurfaceNeighborAnalyzer	analyzer;
+
+	/**
+	 * the cas which is being analyzed
+	 */
+	private final MeshCas						cas;
 
 	/**
 	 * Default constructor.
@@ -165,25 +155,30 @@ class NeighborAnalyzerThread implements Callable<Void> {
 	 *            Start index in polygons. Where to start elaboration.
 	 * @param end
 	 *            End index in polygons. Where to end elaboration.
-	 * @param polygons
-	 *            List of all polygons.
+	 * @param annotations
+	 *            List of all flat surface annotations.
 	 * @param analyzer
 	 *            parent analyzer used to update progress.
+	 * @param cas
+	 *            the cas which is being analyzed
 	 */
-	public NeighborAnalyzerThread(int start, int end, ArrayList<Polygon> polygons,
-			NeighborAnalyzer analyzer) {
+	public FlatSurfaceNeighborAnalyzerThread(int start, int end,
+			ArrayList<FlatSurfaceAnnotation> annotations, FlatSurfaceNeighborAnalyzer analyzer,
+			MeshCas cas) {
 		this.start = start;
 		this.end = end;
-		this.polygons = polygons;
+		this.annotations = annotations;
 		this.analyzer = analyzer;
+		this.cas = cas;
 	}
 
 	@Override
 	public Void call() throws Exception {
+
 		for (int i = start; i < end; i++) {
-			Polygon tr = polygons.get(i);
-			for (int j = i + 1; j < polygons.size(); j++) {
-				Polygon n = polygons.get(j);
+			FlatSurfaceAnnotation tr = annotations.get(i);
+			for (int j = i + 1; j < annotations.size(); j++) {
+				FlatSurfaceAnnotation n = annotations.get(j);
 				n.addNeighbor(tr);
 			}
 		}

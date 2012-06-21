@@ -8,10 +8,10 @@
 package edu.tum.cs.vis.model.uima.annotation;
 
 import java.awt.Color;
+import java.util.ArrayList;
 
 import javax.vecmath.Vector3d;
 
-import edu.tum.cs.vis.model.uima.analyzer.FlatSurfaceAnalyzer;
 import edu.tum.cs.vis.model.uima.feature.Area;
 import edu.tum.cs.vis.model.uima.feature.Dimension2D;
 import edu.tum.cs.vis.model.uima.feature.NormalVector;
@@ -24,32 +24,50 @@ import edu.tum.cs.vis.model.util.Polygon;
  * @see FlatSurfaceAnalyzer
  * 
  */
+/**
+ * @author Stefan Profanter
+ * 
+ */
 public class FlatSurfaceAnnotation extends MeshAnnotation {
 
 	/**
 	 * auto generated
 	 */
-	private static final long	serialVersionUID	= 8767464136366533135L;
+	private static final long						serialVersionUID	= 8767464136366533135L;
 
 	/**
 	 * Total area of the flat surface
 	 */
-	private final Area			area				= new Area();
+	private final Area								area				= new Area();
 
 	/**
 	 * Dimension2D of the surface in x and y coordinates. So normal vector will be (0,0,1)
 	 */
-	private final Dimension2D	dimension			= new Dimension2D();	;
+	private final Dimension2D						dimension			= new Dimension2D();
 	/**
 	 * surface normal
 	 */
-	private final NormalVector	normalVector		= new NormalVector();
+	private final NormalVector						normalVector		= new NormalVector();
+
+	private final ArrayList<FlatSurfaceAnnotation>	neighbors			= new ArrayList<FlatSurfaceAnnotation>();
+	private final ArrayList<Polygon>				neighborPolygons	= new ArrayList<Polygon>();
 
 	/**
 	 * Default constructor
 	 */
 	public FlatSurfaceAnnotation() {
-		super(new Color(255, 0, 0, 128));
+		super(new Color(255, 255, 255, 128));
+	}
+
+	public void addNeighbor(FlatSurfaceAnnotation fsa) {
+		if (!neighbors.contains(fsa) && isNeighbor(fsa)) {
+			neighbors.add(fsa);
+			fsa.neighbors.add(this);
+		}
+	}
+
+	public synchronized void addNeighborPolygon(Polygon p) {
+		neighborPolygons.add(p);
 	}
 
 	/**
@@ -71,12 +89,34 @@ public class FlatSurfaceAnnotation extends MeshAnnotation {
 	}
 
 	/**
+	 * @return the neighborPolygons
+	 */
+	public ArrayList<Polygon> getNeighborPolygons() {
+		return neighborPolygons;
+	}
+
+	/**
+	 * @return the neighbors
+	 */
+	public ArrayList<FlatSurfaceAnnotation> getNeighbors() {
+		return neighbors;
+	}
+
+	/**
 	 * Returns the surface normal
 	 * 
 	 * @return surface normal
 	 */
 	public Vector3d getNormalVector() {
 		return normalVector;
+	}
+
+	private boolean isNeighbor(FlatSurfaceAnnotation fsa) {
+		for (Polygon p : neighborPolygons) {
+			if (fsa.getMesh().getPolygons().contains(p))
+				return true;
+		}
+		return false;
 	}
 
 	/**
