@@ -1,3 +1,4 @@
 std_msgs/String barcode
+int64 knowrob
 ---
 std_msgs/String recieved
