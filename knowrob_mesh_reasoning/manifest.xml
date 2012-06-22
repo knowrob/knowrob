@@ -8,6 +8,8 @@
   <license>GPL</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/knowrob_mesh_reasoning</url>
+
+  <depend package="knowrob_common"/>
   <depend package="knowrob_cad_parser"/>
   <depend package="jpl"/>
   <depend package="rosjava_jni"/>

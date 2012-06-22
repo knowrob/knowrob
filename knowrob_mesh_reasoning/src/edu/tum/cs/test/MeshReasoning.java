@@ -85,7 +85,7 @@ public class MeshReasoning {
 		// ItemModel itemModel = new ItemModel("models/test2.dae");
 		// ItemModel itemModel = new ItemModel("models/hammer.dae");
 		// ItemModel itemModel = new ItemModel("models/spoon.dae");
-		ItemModel itemModel = new ItemModel("models/spoon21.dae");
+		ItemModel itemModel = new ItemModel("models/spoon2.dae");
 		// ItemModel itemModel = new ItemModel("models/spoon_hires.dae");
 		// ItemModel itemModel = new ItemModel("models/ketchup bottle.dae");
 
