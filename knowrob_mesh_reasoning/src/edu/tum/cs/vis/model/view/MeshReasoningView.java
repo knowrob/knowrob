@@ -148,9 +148,6 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	 */
 	private MeshReasoningViewControl		control				= null;
 
-	private static boolean					singleSelect		= false;							// TODO
-																									// remove
-
 	@Override
 	public void draw() {
 
@@ -195,30 +192,13 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		// Must be called AFTER all scale, transform, rotate, ... calls
 		captureViewMatrix();
 
-		getSelectionGraphics().setDrawWithTransparency(
-				selectedAnnotations.size() > 0 || (singleSelect && selectedTriangles.size() > 0)); // TODO
-																									// remove
-																									// last
-		// check
+		getSelectionGraphics().setDrawWithTransparency(selectedAnnotations.size() > 0);
 
 		for (MeshCas c : casList) {
 			c.draw(g);
 			// c.getGroup().draw(g, null);
 		}
 		getSelectionGraphics().setDrawWithTransparency(false);
-
-		if (singleSelect) {
-			if (selectedTriangles.size() == 1) {
-				Triangle t = selectedTriangles.get(0);
-				t.draw(g, new Color(255, 50, 0));
-				for (Triangle n : t.getNeighbors())
-					n.draw(g, new Color(0, 0, 255));
-			} else {
-				for (Triangle t : selectedTriangles)
-					t.draw(g, selectedTriangles.size() > 1 ? new Color(255, 125, 0, 200)
-							: new Color(255, 50, 0, 100));
-			}
-		}
 
 		synchronized (selectedAnnotations) {
 
@@ -286,6 +266,13 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	 */
 	public ArrayList<MeshCas> getCasList() {
 		return casList;
+	}
+
+	/**
+	 * @return the control
+	 */
+	public MeshReasoningViewControl getControl() {
+		return control;
 	}
 
 	public float[] getRotation() {
@@ -358,32 +345,32 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 				// It is new selection
 				selectedTriangles.clear();
 				for (MeshCas c : casList) {
+					if (c.getModel() == null)
+						continue;
 					c.getModel().getGroup()
 							.getIntersectedTriangles(rayEnd, rayStart, selectedTriangles);
 				}
 			}
 
-			if (!singleSelect) {
-				// Check if one of selected triangles is in already selected annotation
-				ArrayList<Triangle> newSelected = new ArrayList<Triangle>();
-				for (Triangle p : selectedTriangles) {
-					synchronized (selectedAnnotations) {
-						for (MeshAnnotation ma : selectedAnnotations)
-							if (ma.meshContainsTriangle(p)) {
-								newSelected.add(p);
-							}
-					}
+			// Check if one of selected triangles is in already selected annotation
+			ArrayList<Triangle> newSelected = new ArrayList<Triangle>();
+			for (Triangle p : selectedTriangles) {
+				synchronized (selectedAnnotations) {
+					for (MeshAnnotation ma : selectedAnnotations)
+						if (ma.meshContainsTriangle(p)) {
+							newSelected.add(p);
+						}
 				}
-				if (newSelected.size() > 0) {
-					// Currently selected was in one or more of the selected annotations, so select
-					// out
-					// of current annotations
-					selectedTriangles.clear();
-					selectedTriangles.addAll(newSelected);
-				}
-
-				selectedTrianglesChanged();
 			}
+			if (newSelected.size() > 0) {
+				// Currently selected was in one or more of the selected annotations, so select
+				// out
+				// of current annotations
+				selectedTriangles.clear();
+				selectedTriangles.addAll(newSelected);
+			}
+
+			selectedTrianglesChanged();
 		}
 
 	}

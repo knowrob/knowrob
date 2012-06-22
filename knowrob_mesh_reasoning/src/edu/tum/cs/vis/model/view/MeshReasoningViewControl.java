@@ -171,6 +171,20 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 	}
 
 	/**
+	 * @return the analyzer
+	 */
+	public ArrayList<MeshAnalyzer> getAnalyzer() {
+		return analyzer;
+	}
+
+	/**
+	 * @return the cas
+	 */
+	public MeshCas getCas() {
+		return cas;
+	}
+
+	/**
 	 * Shows the selected annotation in the accordion view if only one is selected. Otherwise the
 	 * selection will be cleared.
 	 * 

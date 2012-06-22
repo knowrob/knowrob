@@ -28,4 +28,8 @@ add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/dae4j.jar)
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/log4j-1.2.16.jar)
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/commons-net-3.0.1.jar)
 
+rosbuild_find_ros_package(jpl)
+add_classpath(${jpl_PACKAGE_PATH}/jpl/jpl.jar)
+add_runtime_classpath(${jpl_PACKAGE_PATH}/prolog/jpl.jar)
+
 add_java_source_dir(${PROJECT_SOURCE_DIR}/src)

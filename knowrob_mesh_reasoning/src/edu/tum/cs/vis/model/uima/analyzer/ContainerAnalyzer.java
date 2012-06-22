@@ -36,7 +36,7 @@ public class ContainerAnalyzer extends MeshAnalyzer {
 	/**
 	 * Log4J Logger
 	 */
-	private static Logger	logger	= Logger.getLogger(PrimitiveAnalyzer.class);
+	private static Logger	logger	= Logger.getLogger(ContainerAnalyzer.class);
 
 	static void checkConcavAnnotationCone(MeshCas cas, ConeAnnotation an,
 			HashSet<MeshAnnotation> annotations) {

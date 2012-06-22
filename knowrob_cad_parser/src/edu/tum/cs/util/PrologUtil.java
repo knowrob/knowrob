@@ -1,4 +1,4 @@
-package edu.tum.cs.vis.gui.applet;
+package edu.tum.cs.util;
 
 import java.util.HashMap;
 import java.util.Hashtable;

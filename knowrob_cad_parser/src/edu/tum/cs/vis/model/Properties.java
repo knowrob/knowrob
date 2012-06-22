@@ -3,7 +3,8 @@ package edu.tum.cs.vis.model;
 import java.util.HashMap;
 import java.util.Vector;
 
-import edu.tum.cs.vis.gui.applet.PrologUtil;
+import edu.tum.cs.util.PrologUtil;
+
 
 /**
  * Static class to obtain model properties such as path to model file,
@@ -15,14 +16,7 @@ import edu.tum.cs.vis.gui.applet.PrologUtil;
  */
 public class Properties {
 	
-	/**
-	 * Instantiate an ItemModel from prolog identifier of Instance or Class.
-	 * The path to the model will be gathered with prolog an this model will then 
-	 * be parsed.
-	 * @param identifier Class or Instance identifier
-	 * @return ItemModel instance if model parsed successfully. null otherwise.
-	 */
-	public static ItemModel getModelOfItem(String identifier) {
+	public static String getPropertyStringOfClassOrIndividual(String property, String identifier) {
 		try {
 			if (!identifier.startsWith("'") || !identifier.endsWith("'"))
 			{
@@ -30,10 +24,10 @@ public class Properties {
 			}
 			HashMap<String, Vector<Object>> nfo = PrologUtil
 					.executeQuery(
-							"rdf_has(" + identifier	+ ",knowrob:pathToCadModel,literal(type(_,P))) ; "
-									+ "owl_individual_of(" + identifier	+ ", Class), class_properties(Class, knowrob:pathToCadModel,literal(type(_,P))); "
-									+ "rdf_has(" + identifier	+ ",knowrob:pathToCadModel,literal(P)) ; "
-							+ "owl_individual_of(" + identifier	+ ", Class), class_properties(Class, knowrob:pathToCadModel,literal(P))",
+							"rdf_has(" + identifier	+ ","+property+",literal(type(_,P))) ; "
+									+ "owl_individual_of(" + identifier	+ ", Class), class_properties(Class, "+property+",literal(type(_,P))); "
+									+ "rdf_has(" + identifier	+ ","+property+",literal(P)) ; "
+							+ "owl_individual_of(" + identifier	+ ", Class), class_properties(Class, "+property+",literal(P))",
 							null);
 			
 			if (nfo.get("P") != null && nfo.get("P").size() > 0) {
@@ -45,15 +39,29 @@ public class Properties {
 				if (str.startsWith("'") && str.endsWith("'")) {
 					str = str.substring(1, str.length()-1);
 				}
-				return new ItemModel(str);
+				return str;
 				
 			} else return null;
 			
 		} catch (Exception e) {
-			System.err.println("Parsing of " + identifier  + " failed:");
+			System.err.println("Parsing property " + property + " of " + identifier  + " failed:");
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	/**
+	 * Instantiate an ItemModel from prolog identifier of Instance or Class.
+	 * The path to the model will be gathered with prolog an this model will then 
+	 * be parsed.
+	 * @param identifier Class or Instance identifier
+	 * @return ItemModel instance if model parsed successfully. null otherwise.
+	 */
+	public static ItemModel getModelOfItem(String identifier) {
+		String path = getPropertyStringOfClassOrIndividual("knowrob:pathToCadModel", identifier);
+		if (path == null)
+			return null;
+		return new ItemModel(path);
 	}
 	
 	/**

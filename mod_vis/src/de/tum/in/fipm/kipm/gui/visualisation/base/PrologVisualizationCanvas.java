@@ -19,7 +19,7 @@ import controlP5.Textlabel;
 import de.tum.in.fipm.kipm.gui.visualisation.applets.ActionVisApplet;
 import de.tum.in.fipm.kipm.gui.visualisation.applets.StandaloneKitchenVisApplet;
 import de.tum.in.fipm.kipm.gui.visualisation.applets.ImageViewerApplet;
-import edu.tum.cs.vis.gui.applet.PrologUtil;
+import edu.tum.cs.util.PrologUtil;
 
 import processing.core.*;
 import jpl.Query;

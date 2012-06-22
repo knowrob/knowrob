@@ -16,6 +16,7 @@ import java.util.Vector;
 import javax.vecmath.Vector2f;
 
 import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
+import edu.tum.cs.util.PrologUtil;
 import edu.tum.cs.vis.action.Action;
 import edu.tum.cs.vis.action.ActionSelectHistoryInfo;
 

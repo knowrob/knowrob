@@ -30,9 +30,9 @@ import de.tum.in.fipm.kipm.gui.visualisation.base.PrologVisualizationCanvas;
 import de.tum.in.fipm.kipm.gui.visualisation.items.*;
 import de.tum.in.fipm.kipm.util.datastructures.Point;
 
+import edu.tum.cs.util.PrologUtil;
 import edu.tum.cs.vis.AnimatedCanvas;
 import edu.tum.cs.vis.Canvas;
-import edu.tum.cs.vis.gui.applet.PrologUtil;
 import edu.tum.cs.vis.model.ItemModel;
 import edu.tum.cs.vis.model.Properties;
 

@@ -64,6 +64,8 @@ public class MeshCas extends JCas implements Serializable {
 	 *            Applet to draw on
 	 */
 	public void draw(PGraphics g) {
+		if (model == null)
+			return;
 		if (drawMesh)
 			model.draw(g, null);
 		synchronized (annotations) {

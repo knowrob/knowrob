@@ -27,6 +27,10 @@ foreach( _in ${inputs} )
   configure_file( ${_in} ${_out} )
 endforeach( _in )
 
+rosbuild_find_ros_package(jpl)
+add_classpath(${jpl_PACKAGE_PATH}/jpl/jpl.jar)
+add_runtime_classpath(${jpl_PACKAGE_PATH}/prolog/jpl.jar)
+
 
 rosbuild_find_ros_package(ias_knowledge_base)
 set( OWL_PATH_PREFIX ${ias_knowledge_base_PACKAGE_PATH} )

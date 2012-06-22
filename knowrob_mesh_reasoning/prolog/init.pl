@@ -15,7 +15,7 @@
 %% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %%
 
-
-%%:- register_ros_package(knowrob_mesh_reasoning).
-%%:- use_module(library('knowrob_mesh_reasoning')).
+:- register_ros_package(knowrob_common).
+:- register_ros_package(knowrob_mesh_reasoning).
+:- use_module(library('knowrob_mesh_reasoning')).
 
