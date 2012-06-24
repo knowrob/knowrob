@@ -11,6 +11,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.apache.log4j.Logger;
+
 import processing.core.PGraphics;
 import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.uima.JCas;
@@ -28,6 +30,11 @@ import edu.tum.cs.vis.model.util.Vertex;
  * 
  */
 public class MeshCas extends JCas implements Serializable {
+
+	/**
+	 * Log4J Logger
+	 */
+	private static Logger						logger				= Logger.getLogger(MeshCas.class);
 
 	/**
 	 * Auto generated
@@ -113,7 +120,9 @@ public class MeshCas extends JCas implements Serializable {
 		for (Annotation a : getAnnotations()) {
 			if (!(a instanceof MeshAnnotation))
 				continue;
-			an.add((MeshAnnotation) a);
+			MeshAnnotation ma = (MeshAnnotation) a;
+			if (ma.getClass() == clazz || clazz.isInstance(ma))
+				an.add((MeshAnnotation) a);
 		}
 		return an;
 	}

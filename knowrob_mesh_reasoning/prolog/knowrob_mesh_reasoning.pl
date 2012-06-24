@@ -27,8 +27,9 @@
     [
 	mesh_reasoning_init/1,
 	mesh_reasoning_init/2,
-	mesh_reasoning_identifier/3,
-	mesh_reasoning_path/3
+	mesh_reasoning_identifier/2,
+	mesh_reasoning_path/2,
+	mesh_reasoning_find_annotations/3
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -60,27 +61,37 @@ mesh_reasoning_init(MeshReasoning) :-
 mesh_reasoning_init(MeshReasoning) :-
     mesh_reasoning(MeshReasoning).
 
-%% mesh_reasoning_identifier(+Identifier,-Cas, +MeshReasoning) is det.
+%% mesh_reasoning_identifier(+Identifier, +MeshReasoning) is det.
 %
 % Do mesh reasoning on cad model with given identifier.
 %
 % @param Identifier 	   eg. "http://ias.cs.tum.edu/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
-% @param Cas	    	   reasoning result container
 % @param MeshReasoning     MeshReasoning object
 %
-mesh_reasoning_identifier(Identifier,Cas, MeshReasoning) :-
+mesh_reasoning_identifier(Identifier, MeshReasoning) :-
     ((var(MeshReasoning)) -> (mesh_reasoning(MeshReasoning));(true)),
-    jpl_call(MeshReasoning, 'analyzeByIdentifier', [Identifier], Cas).
+    jpl_call(MeshReasoning, 'analyzeByIdentifier', [Identifier], _).
 
 
-%% mesh_reasoning_path(+Path,-Cas, +MeshReasoning) is det.
+%% mesh_reasoning_path(+Path, +MeshReasoning) is det.
 %
 % Do mesh reasoning on cad model with given path (supported: local, package://, http://, ftp://).
 %
 % @param Path eg.   "/home/user/model.dae" or "http://example.com/model.kmz"
-% @param Cas	    reasoning result container
 % @param MeshReasoning     MeshReasoning object
 %
-mesh_reasoning_path(Path,Cas, MeshReasoning) :-
+mesh_reasoning_path(Path, MeshReasoning) :-
     ((var(MeshReasoning)) -> (mesh_reasoning(MeshReasoning));(true)),
-    jpl_call(MeshReasoning, 'analyzeByPath', [Path], Cas).
+    jpl_call(MeshReasoning, 'analyzeByPath', [Path], _).
+
+%% mesh_reasoning_find_annotations(+Cas,+Type, -AnnotationsList) is det.
+%
+% Get a list of all annotations with given type
+%
+% @param MeshReasoning		reasoning container
+% @param Type		String indicating annotation type (Plane,Sphere,Cone,Container)
+% @param AnnotationsList List with found annotations
+%
+mesh_reasoning_find_annotations(MeshReasoning,Type,AnnotationsList) :-
+    	((var(MeshReasoning)) -> (mesh_reasoning(MeshReasoning));(true)),
+	jpl_call(MeshReasoning, 'findAnnotations', [Type], AnnotationsList).

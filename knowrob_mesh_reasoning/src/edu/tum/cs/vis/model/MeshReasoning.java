@@ -10,6 +10,7 @@ package edu.tum.cs.vis.model;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import javax.swing.JFrame;
 
@@ -21,6 +22,11 @@ import edu.tum.cs.vis.model.uima.analyzer.ContainerAnalyzer;
 import edu.tum.cs.vis.model.uima.analyzer.MeshAnalyzer;
 import edu.tum.cs.vis.model.uima.analyzer.NeighborAnalyzer;
 import edu.tum.cs.vis.model.uima.analyzer.PrimitiveAnalyzer;
+import edu.tum.cs.vis.model.uima.annotation.ContainerAnnotation;
+import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
+import edu.tum.cs.vis.model.uima.annotation.primitive.ConeAnnotation;
+import edu.tum.cs.vis.model.uima.annotation.primitive.PlaneAnnotation;
+import edu.tum.cs.vis.model.uima.annotation.primitive.SphereAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.util.algorithm.CurvatureCalculation;
 import edu.tum.cs.vis.model.view.MeshReasoningView;
@@ -45,8 +51,10 @@ public class MeshReasoning {
 
 	private MeshReasoningView	mrv	= null;
 
+	private MeshCas				cas	= null;
+
 	public MeshReasoning(boolean withView) {
-		MeshCas cas = new MeshCas();
+		cas = new MeshCas();
 
 		if (withView) {
 			JFrame frame = new JFrame();
@@ -73,15 +81,14 @@ public class MeshReasoning {
 
 	}
 
-	public MeshCas analyzeByIdentifier(String prologIdentifier) {
+	public void analyzeByIdentifier(String prologIdentifier) {
 		String path = Properties.getPropertyStringOfClassOrIndividual("knowrob:pathToCadModel",
 				prologIdentifier);
 		if (path != null)
-			return analyzeByPath(path);
-		return null;
+			analyzeByPath(path);
 	}
 
-	public MeshCas analyzeByPath(String path) {
+	public void analyzeByPath(String path) {
 
 		logger.info("MeshReasoning started. Parsing model ...");
 		long start = System.currentTimeMillis();
@@ -90,7 +97,7 @@ public class MeshReasoning {
 
 		if (itemModel.getParser() == null) {
 			logger.error("Couldn't parse model. Maybe path of model file is wrong.");
-			return null;
+			return;
 		}
 
 		Model model = itemModel.getParser().getModel();
@@ -103,10 +110,8 @@ public class MeshReasoning {
 
 		model.normalize();
 
-		MeshCas cas;
 		ArrayList<MeshAnalyzer> analyzer;
 		if (mrv != null) {
-			cas = mrv.getControl().getCas();
 			analyzer = mrv.getControl().getAnalyzer();
 		} else {
 			cas = new MeshCas();
@@ -128,7 +133,26 @@ public class MeshReasoning {
 		pa.process(cas);
 		ca.process(cas);
 
-		return cas;
+	}
+
+	/**
+	 * Searches all annotations which are an instance of the given class name.
+	 * 
+	 * @param className
+	 *            Name of the class
+	 * @return the found annotations or empty
+	 */
+	public HashSet<MeshAnnotation> findAnnotations(String className) {
+		if (className.compareToIgnoreCase("Plane") == 0)
+			return cas.findAnnotations(PlaneAnnotation.class);
+		if (className.compareToIgnoreCase("Cone") == 0)
+			return cas.findAnnotations(ConeAnnotation.class);
+		if (className.compareToIgnoreCase("Sphere") == 0)
+			return cas.findAnnotations(SphereAnnotation.class);
+		if (className.compareToIgnoreCase("Container") == 0)
+			return cas.findAnnotations(ContainerAnnotation.class);
+		logger.warn("Annotation type " + className + " not recognized.");
+		return null;
 	}
 
 }
