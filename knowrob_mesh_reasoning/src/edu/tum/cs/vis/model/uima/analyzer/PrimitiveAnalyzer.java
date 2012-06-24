@@ -372,6 +372,8 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 			}
 		}
 
+		final ArrayList<PrimitiveAnnotation> annotationsToCombine = new ArrayList<PrimitiveAnnotation>();
+
 		threads.add(new Callable<Void>() {
 
 			@Override
@@ -380,7 +382,11 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 				for (Iterator<Annotation> it = cas.getAnnotations().iterator(); it.hasNext();) {
 					Annotation a = it.next();
 					if (a instanceof PrimitiveAnnotation) {
-						((PrimitiveAnnotation) a).fit();
+						if (!((PrimitiveAnnotation) a).fit()) {
+							synchronized (annotationsToCombine) {
+								annotationsToCombine.add((PrimitiveAnnotation) a);
+							}
+						}
 					}
 				}
 				return null;
@@ -388,6 +394,19 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 		});
 
 		ThreadPool.executeInPool(threads);
+
+		for (Iterator<PrimitiveAnnotation> it = annotationsToCombine.iterator(); it.hasNext();) {
+
+			PrimitiveAnnotation a = it.next();
+			PlaneAnnotation an = new PlaneAnnotation(cas.getCurvatures(), cas.getModel());
+			an.getMesh().getTriangles().addAll(a.getMesh().getTriangles());
+			an.updateAnnotationArea();
+			an.fit();
+			synchronized (cas.getAnnotations()) {
+				cas.getAnnotations().remove(a);
+				cas.addAnnotation(an);
+			}
+		}
 
 		itemsElaborated.incrementAndGet();
 

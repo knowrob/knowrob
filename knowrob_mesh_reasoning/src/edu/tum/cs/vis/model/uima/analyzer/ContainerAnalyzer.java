@@ -186,6 +186,10 @@ public class ContainerAnalyzer extends MeshAnalyzer {
 		}
 
 		ThreadPool.executeInPool(threads);
+		// increment, because if no containers, 1 indicates that
+		// it has finished
+		maxItemsToElaborate = 1;
+		itemsElaborated.incrementAndGet();
 
 	}
 

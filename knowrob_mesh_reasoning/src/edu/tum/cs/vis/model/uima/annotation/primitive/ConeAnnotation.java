@@ -180,7 +180,7 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 	}
 
 	@Override
-	public void fitAnnotation() {
+	public boolean fitAnnotation() {
 
 		LinkedHashMap<Vertex, Float> vertices = new LinkedHashMap<Vertex, Float>();
 		getVerticesWithWeight(vertices);
@@ -313,6 +313,13 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 			}
 		}
 
+		if (radiusBottomWeight == 0 || radiusTopWeight == 0) {
+			// Combine this annotation into neighbor annotation because if one of the weights are
+			// null, it is no cone
+
+			return false;
+		}
+
 		heightBottom /= radiusBottomWeight;
 		heightTop /= radiusTopWeight;
 
@@ -327,6 +334,8 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 
 		// Set direction length to the height of cone
 		direction.scale((float) (heightTop + heightBottom) / 2);
+
+		return true;
 	}
 
 	/**

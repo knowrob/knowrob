@@ -18,7 +18,7 @@
 	<classpathentry kind="lib" path="lib/dae4j.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.16.jar"/>
 	<classpathentry kind="lib" path="lib/vecmath.jar"/>
-	<classpathentry kind="lib" path="/knowrob_cad_parser/bin"/>
+	<classpathentry kind="lib" path="/knowrob_cad_parser/bin" sourcepath="/knowrob_cad_parser/src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/knowrob_cad_parser"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

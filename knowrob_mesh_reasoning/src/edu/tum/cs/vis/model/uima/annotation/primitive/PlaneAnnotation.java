@@ -126,7 +126,7 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#fitAnnotation()
 	 */
 	@Override
-	public void fitAnnotation() {
+	public boolean fitAnnotation() {
 		/*
 		 * Best fitting plane.
 		 * 
@@ -187,6 +187,7 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 			planeNormal.normalize();
 
 		updateFeatures(vertices);
+		return true;
 	}
 
 	/**
@@ -230,7 +231,6 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 	 * @return the longSide
 	 */
 	public Vector3f getLongSideUnscaled() {
-		System.out.println("long: " + longSide + " * " + (1f / model.getScale()));
 		return model.getUnscaled(longSide);
 	}
 

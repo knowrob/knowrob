@@ -102,6 +102,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 
 	private boolean							drawVertexNormals	= false;
 	private boolean							drawVertexCurvature	= false;
+	private boolean							drawVoronoiArea		= false;
 
 	/**
 	 * Start point of mouse click ray
@@ -221,15 +222,24 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 			}
 		}
 
-		if (drawVertexNormals || drawVertexCurvature) {
+		if (drawVertexNormals || drawVertexCurvature || drawVoronoiArea) {
 			g.strokeWeight(2f);
 			for (MeshCas c : casList) {
 				for (Vertex v : c.getModel().getVertices()) {
-					if (drawVertexNormals) {
+					if (drawVertexNormals || drawVoronoiArea) {
 						g.stroke(41, 120, 37);
 						Vector3f n = (Vector3f) v.getNormalVector().clone();
 						n.scale(0.1f);
 						g.line(v.x, v.y, v.z, v.x + n.x, v.y + n.y, v.z + n.z);
+						g.fill(35, 148, 143);
+						g.noStroke();
+						g.sphereDetail(20);
+						if (drawVoronoiArea) {
+							g.pushMatrix();
+							g.translate(v.x + n.x, v.y + n.y, v.z + n.z);
+							g.sphere(v.getPointarea());
+							g.popMatrix();
+						}
 					}
 					if (drawVertexCurvature) {
 						Curvature curv = c.getCurvature(v);
@@ -246,7 +256,6 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 						g.line(v.x, v.y, v.z, v.x + min.x, v.y + min.y, v.z + min.z);
 					}
 				}
-				// c.getGroup().draw(g, null);
 			}
 		}
 
@@ -302,6 +311,13 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	 */
 	public boolean isDrawVertexNormals() {
 		return drawVertexNormals;
+	}
+
+	/**
+	 * @return the drawVoronoiArea
+	 */
+	public boolean isDrawVoronoiArea() {
+		return drawVoronoiArea;
 	}
 
 	@Override
@@ -484,6 +500,14 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	 */
 	public void setDrawVertexNormals(boolean drawVertexNormals) {
 		this.drawVertexNormals = drawVertexNormals;
+	}
+
+	/**
+	 * @param drawVoronoiArea
+	 *            the drawVoronoiArea to set
+	 */
+	public void setDrawVoronoiArea(boolean drawVoronoiArea) {
+		this.drawVoronoiArea = drawVoronoiArea;
 	}
 
 	public void setManualRotation(float pitch, float yaw, float roll) {

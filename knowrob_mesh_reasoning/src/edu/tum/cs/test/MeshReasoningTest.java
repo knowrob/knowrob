@@ -31,10 +31,10 @@ public class MeshReasoningTest {
 		// String path = "models/quader.dae";
 		// String path = "models/open_box.kmz";
 
-		String path = "models/cup2.kmz";
+		// String path = "models/cup2.kmz";
 		// String path = "models/sphere.dae";
 		// String path = "models/two_spheres.dae";
-		// String path = "models/test.dae";
+		String path = "models/test.dae";
 
 		// String path = "models/cylinders.dae";
 		// String path = "models/CylinderCone.dae";

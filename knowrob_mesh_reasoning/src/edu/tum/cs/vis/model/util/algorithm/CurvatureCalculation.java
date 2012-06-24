@@ -93,10 +93,6 @@ public class CurvatureCalculation {
 
 		ThreadPool.executeInPool(threads);
 
-		/*for (int i = 0; i < m.getTriangles().size(); i++) {
-			calculateCurvatureForTriangle(m.getTriangles().get(i));
-		}*/
-
 		// Compute principal directions and curvatures at each vertex
 		for (int i = 0; i < m.getVertices().size(); i++) {
 			Curvature c = curvatures.get(m.getVertices().get(i));

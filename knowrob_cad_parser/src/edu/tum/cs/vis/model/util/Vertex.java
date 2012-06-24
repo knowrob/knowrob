@@ -54,7 +54,8 @@ public class Vertex extends Point3f {
 		}
 
 		Point3f p = (Point3f) o;
-		return (p.x == x && p.y == y && p.z == z);
+		Vertex v = (Vertex)o;
+		return (p.x == x && p.y == y && p.z == z && v.pointarea == pointarea && v.normalVector.equals(normalVector));
 	}
 
 	/**
@@ -81,7 +82,7 @@ public class Vertex extends Point3f {
 	@Override
 	public int hashCode() {
 		return Float.valueOf(x).hashCode() ^ Float.valueOf(y).hashCode()
-				^ Float.valueOf(z).hashCode();
+				^ Float.valueOf(z).hashCode() ^ Float.valueOf(pointarea).hashCode()^normalVector.hashCode();
 	}
 
 	/**

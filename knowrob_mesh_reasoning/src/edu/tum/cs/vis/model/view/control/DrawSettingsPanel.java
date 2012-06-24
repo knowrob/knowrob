@@ -45,6 +45,7 @@ public class DrawSettingsPanel extends JPanel implements ActionListener {
 	private final JCheckBox			cbxDrawVertexNormals;
 	private final JCheckBox			cbxDrawVertexCurvature;
 	private final JCheckBox			cbxDrawCurvatureColor;
+	private final JCheckBox			cbxDrawVoronoiArea;
 	private final JButton			btnSetRotation;
 
 	public DrawSettingsPanel(MeshCas cas, MeshReasoningView view) {
@@ -75,6 +76,11 @@ public class DrawSettingsPanel extends JPanel implements ActionListener {
 		cbxDrawCurvatureColor.setSelected(false);
 		this.add(cbxDrawCurvatureColor);
 
+		cbxDrawVoronoiArea = new JCheckBox("Voronoi Area");
+		cbxDrawVoronoiArea.addActionListener(this);
+		cbxDrawVoronoiArea.setSelected(false);
+		this.add(cbxDrawVoronoiArea);
+
 		btnSetRotation = new JButton("Set View");
 		btnSetRotation.addActionListener(this);
 		this.add(btnSetRotation);
@@ -91,6 +97,8 @@ public class DrawSettingsPanel extends JPanel implements ActionListener {
 			view.setDrawVertexCurvature(cbxDrawVertexCurvature.isSelected());
 		else if (e.getSource() == cbxDrawCurvatureColor)
 			view.setDrawCurvatureColor(cbxDrawCurvatureColor.isSelected());
+		else if (e.getSource() == cbxDrawVoronoiArea)
+			view.setDrawVoronoiArea(cbxDrawVoronoiArea.isSelected());
 		else if (e.getSource() == btnSetRotation) {
 			String current = Math.round(view.getRotation()[0] * 180f / Math.PI) + ","
 					+ Math.round(view.getRotation()[1] * 180f / Math.PI) + ","

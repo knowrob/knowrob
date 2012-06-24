@@ -54,6 +54,8 @@ public class SphereAnnotation extends PrimitiveAnnotation {
 	 */
 	@Override
 	public void drawPrimitiveAnnotation(PGraphics g) {
+
+		g.sphereDetail(40);
 		g.fill(getDrawColor().getRed(), getDrawColor().getGreen(), getDrawColor().getBlue(), 120);
 		g.translate(center.x, center.y, center.z);
 		g.sphere(radius);
@@ -63,7 +65,7 @@ public class SphereAnnotation extends PrimitiveAnnotation {
 	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#fitAnnotation()
 	 */
 	@Override
-	public void fitAnnotation() {
+	public boolean fitAnnotation() {
 		/*
 		 * Fitting sphere iteratively according to http://www.geometrictools.com/Documentation/LeastSquaresFitting.pdf
 		 */
@@ -101,6 +103,8 @@ public class SphereAnnotation extends PrimitiveAnnotation {
 		radius = getL(a, b, c);
 
 		// System.out.println("Center: " + center.toString() + " Radius: " + radius);
+
+		return true;
 
 	}
 

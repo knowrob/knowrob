@@ -96,6 +96,8 @@ public abstract class MeshAnnotation extends DrawableAnnotation {
 		for (Triangle t : getMesh().getTriangles()) {
 			annotations.addAll(getNeighborAnnotationsForTriangle(cas, clazz, t));
 		}
+		if (annotations.contains(this))
+			annotations.remove(this);
 		return annotations;
 	}
 

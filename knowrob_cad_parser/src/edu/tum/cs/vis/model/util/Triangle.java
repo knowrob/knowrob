@@ -231,11 +231,6 @@ public class Triangle extends DrawObject {
 		return texPosition;
 	}
 
-	@Override
-	public int hashCode() {
-		return position[0].hashCode() ^ position[1].hashCode() ^ position[2].hashCode();
-	}
-
 	/**
 	 * Checks if this triangle intersects with the given ray (rayStart, rayEnd). Not only the
 	 * segment between rayStart and rayEnd is checked but the whole ray from -infinity to +infinity.
@@ -307,8 +302,9 @@ public class Triangle extends DrawObject {
 
 		// get intersect point of ray with triangle plane
 		r = a / b;
-		if (r < 0.0) // ray goes away from triangle
-			return false; // => no intersect
+
+		//if (r < 0.0) // ray goes away from triangle
+		//	return false; // => no intersect
 		// for a segment, also test if (r > 1.0) => no intersect
 
 		Point3f intersect = intersectionPoint;
