@@ -10,6 +10,7 @@
   <url>http://ros.org/wiki/knowrob_mesh_reasoning</url>
 
   <depend package="knowrob_common"/>
+  <depend package="knowrob_objects"/>
   <depend package="knowrob_cad_parser"/>
   <depend package="jpl"/>
   <depend package="rosjava_jni"/>

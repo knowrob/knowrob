@@ -24,12 +24,6 @@ public class Vector3f extends javax.vecmath.Vector3f {
 		return Math.sqrt(xd*xd+yd*yd+zd*zd);
 	}
 	
-	public void subtract(Vector3f other) {
-		x -= other.x;
-		y -= other.y;
-		z -= other.z;		
-	}
-	
 	public void rotate(double theta, Vector3f axis) {
 	   Vector3f p = this;
 	   Vector3f q = new Vector3f(0.0f,0.0f,0.0f);

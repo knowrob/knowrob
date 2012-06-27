@@ -271,9 +271,9 @@ public class Trajectory implements Drawable, DrawableAnimated {
 						dirSimilar = true;
 					else {
 						Vector3f dir1 = new Vector3f(p.v);
-						dir1.subtract(points.get(i-1).v);
+						dir1.sub(points.get(i-1).v);
 						Vector3f dir2 = new Vector3f(p2.v);
-						dir2.subtract(points.get(min_distance_point_idx-1).v);
+						dir2.sub(points.get(min_distance_point_idx-1).v);
 						double angle = dir1.angle(dir2);
 						//System.out.println("angle = " + angle * 180/Math.PI);
 						dirSimilar = angle < Math.PI*direction_threshold/180;
@@ -348,9 +348,9 @@ public class Trajectory implements Drawable, DrawableAnimated {
 								Point p1Post1 = points.get(points.indexOf(p1)+l);
 								Point p2Post1 = points.get(points.indexOf(p2)+l);
 								Vector3f dir11 = new Vector3f(p1Post1.v);
-								dir11.subtract(p1.v);
+								dir11.sub(p1.v);
 								Vector3f dir21 = new Vector3f(p2Post1.v);
-								dir21.subtract(p2.v);
+								dir21.sub(p2.v);
 								double angle11 = dir11.angle(dir21);
 								if (angle11 < dirthresh*Math.PI/180 && p1Post1.v.distance(p2Post1.v) < thresh){
 									// actual merge
@@ -371,9 +371,9 @@ public class Trajectory implements Drawable, DrawableAnimated {
 								Point p1Post1 = points.get(points.indexOf(p1)-l);
 								Point p2Post1 = points.get(points.indexOf(p2)-l);
 								Vector3f dir11 = new Vector3f(p1Post1.v);
-								dir11.subtract(p1.v);
+								dir11.sub(p1.v);
 								Vector3f dir21 = new Vector3f(p2Post1.v);
-								dir21.subtract(p2.v);
+								dir21.sub(p2.v);
 								double angle11 = dir11.angle(dir21);
 								if (angle11 < dirthresh*Math.PI/180 && p1Post1.v.distance(p2Post1.v) < thresh){
 								// actual merge
@@ -418,7 +418,7 @@ public class Trajectory implements Drawable, DrawableAnimated {
 			for(int j = i+2; j < points.size(); j++){
 				Point pEnd = points.get(j);
 				Vector3f dir = new Vector3f(pEnd.v);
-				dir.subtract(p.v);
+				dir.sub(p.v);
 				double dist = 0.0;
 				line.clear();
 				for(int k = i+1; k < j; k++){
@@ -565,9 +565,9 @@ public class Trajectory implements Drawable, DrawableAnimated {
 						// look only for real successor not merged points
 						if(p1.v.distance(succP1.v) != 0 && p2.v.distance(succP2.v) != 0){
 							Vector3f dir1 = new Vector3f(p1.v);
-							dir1.subtract(succP1.v);
+							dir1.sub(succP1.v);
 							Vector3f dir2 = new Vector3f(p2.v);
-							dir2.subtract(succP2.v);
+							dir2.sub(succP2.v);
 							double angle = dir1.angle(dir2);
 							// check for distance and angle threshold
 							if (succP1.v.distance(succP2.v) > threshDist && angle >= threshAngle){
@@ -643,9 +643,9 @@ public class Trajectory implements Drawable, DrawableAnimated {
 						// look only for real predecessor not merged points
 						if(p1.v.distance(preP1.v) != 0 && p2.v.distance(preP2.v) != 0){
 							Vector3f dir1 = new Vector3f(p1.v);
-							dir1.subtract(preP1.v);
+							dir1.sub(preP1.v);
 							Vector3f dir2 = new Vector3f(p2.v);
-							dir2.subtract(preP2.v);
+							dir2.sub(preP2.v);
 							double angle = dir1.angle(dir2);
 							// check for distance and angle threshold
 							if (preP1.v.distance(preP2.v) > threshDist && angle >= threshAngle){

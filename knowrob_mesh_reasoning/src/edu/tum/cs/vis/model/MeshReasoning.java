@@ -17,6 +17,7 @@ import javax.swing.JFrame;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
+import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.util.PrintUtil;
 import edu.tum.cs.vis.model.uima.analyzer.ContainerAnalyzer;
 import edu.tum.cs.vis.model.uima.analyzer.MeshAnalyzer;
@@ -135,24 +136,40 @@ public class MeshReasoning {
 
 	}
 
-	/**
-	 * Searches all annotations which are an instance of the given class name.
-	 * 
-	 * @param className
-	 *            Name of the class
-	 * @return the found annotations or empty
-	 */
-	public HashSet<MeshAnnotation> findAnnotations(String className) {
-		if (className.compareToIgnoreCase("Plane") == 0)
-			return cas.findAnnotations(PlaneAnnotation.class);
-		if (className.compareToIgnoreCase("Cone") == 0)
-			return cas.findAnnotations(ConeAnnotation.class);
-		if (className.compareToIgnoreCase("Sphere") == 0)
-			return cas.findAnnotations(SphereAnnotation.class);
-		if (className.compareToIgnoreCase("Container") == 0)
-			return cas.findAnnotations(ContainerAnnotation.class);
-		logger.warn("Annotation type " + className + " not recognized.");
-		return null;
+	public HashSet<ConeAnnotation> findAnnotationsCone() {
+		return cas.findAnnotations(ConeAnnotation.class);
+	}
+
+	public HashSet<ContainerAnnotation> findAnnotationsContainer() {
+		return cas.findAnnotations(ContainerAnnotation.class);
+	}
+
+	public HashSet<PlaneAnnotation> findAnnotationsPlane() {
+		return cas.findAnnotations(PlaneAnnotation.class);
+	}
+
+	public HashSet<SphereAnnotation> findAnnotationsSphere() {
+		return cas.findAnnotations(SphereAnnotation.class);
+	}
+
+	public ArrayList<String> getAnnotationTypes() {
+		HashSet<String> types = new HashSet<String>();
+		for (Annotation a : cas.getAnnotations()) {
+			if (!(a instanceof MeshAnnotation))
+				continue;
+			@SuppressWarnings("rawtypes")
+			MeshAnnotation ma = (MeshAnnotation) a;
+			String cl = ma.getClass().getSimpleName();
+			if (cl.length() < 1)
+				continue;
+			int pos = cl.indexOf("Annotation");
+			if (pos > 0)
+				cl = cl.substring(0, pos);
+			types.add(cl);
+		}
+		ArrayList<String> ret = new ArrayList<String>();
+		ret.addAll(types);
+		return ret;
 	}
 
 }

@@ -222,6 +222,18 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 			}
 		}
 
+		/*	for (MeshCas c : casList) {
+				g.stroke(41, 120, 37);
+				if (c.getModel() != null)
+					for (Triangle t : c.getModel().getTriangles()) {
+						Vector3f n = (Vector3f) t.getNormalVector().clone();
+						n.scale(-0.1f);
+						g.line(t.getCentroid().x, t.getCentroid().y, t.getCentroid().z,
+								t.getCentroid().x + n.x, t.getCentroid().y + n.y, t.getCentroid().z
+										+ n.z);
+					}
+			}
+		*/
 		if (drawVertexNormals || drawVertexCurvature || drawVoronoiArea) {
 			g.strokeWeight(2f);
 			for (MeshCas c : casList) {

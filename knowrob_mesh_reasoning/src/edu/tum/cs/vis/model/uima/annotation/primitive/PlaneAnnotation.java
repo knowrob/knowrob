@@ -25,6 +25,7 @@ import processing.core.PGraphics;
 import edu.tum.cs.vis.model.Model;
 import edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation;
 import edu.tum.cs.vis.model.util.Curvature;
+import edu.tum.cs.vis.model.util.Triangle;
 import edu.tum.cs.vis.model.util.Vertex;
 import edu.tum.cs.vis.model.util.algorithm.BestFitRectangle2D;
 
@@ -87,7 +88,7 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 	 * @param annotationColor
 	 */
 	public PlaneAnnotation(HashMap<Vertex, Curvature> curvatures, Model model) {
-		super(curvatures, model, new Color(250, 200, 255));
+		super(PlaneAnnotation.class, curvatures, model, new Color(250, 200, 255));
 	}
 
 	/* (non-Javadoc)
@@ -186,6 +187,18 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 		} else
 			planeNormal.normalize();
 
+		// Check if plane normal is in the right direction by comparing it with average on all
+		// triangle normals
+		Vector3f trianglesNormal = new Vector3f();
+		for (Triangle t : mesh.getTriangles()) {
+			trianglesNormal.add(t.getNormalVector());
+		}
+		trianglesNormal.scale(1f / mesh.getTriangles().size());
+		trianglesNormal.sub(planeNormal);
+		if (trianglesNormal.lengthSquared() < 1) // if normals are in opposite direction, inverse
+													// planeNormal
+			planeNormal.scale(-1f);
+
 		updateFeatures(vertices);
 		return true;
 	}
@@ -239,13 +252,6 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 	 */
 	public Vector3f getPlaneNormal() {
 		return planeNormal;
-	}
-
-	/**
-	 * @return the planeNormal
-	 */
-	public Tuple3f getPlaneNormalUnscaled() {
-		return model.getUnscaled(planeNormal);
 	}
 
 	/* (non-Javadoc)

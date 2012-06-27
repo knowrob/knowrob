@@ -33,8 +33,7 @@ public class ContainerAnnotation extends MeshAnnotation {
 	 * @param annotationColor
 	 */
 	public ContainerAnnotation(Model model) {
-		super(model, new Color(27, 93, 27));
-		// TODO Auto-generated constructor stub
+		super(ContainerAnnotation.class, model, new Color(27, 93, 27));
 	}
 
 	/**

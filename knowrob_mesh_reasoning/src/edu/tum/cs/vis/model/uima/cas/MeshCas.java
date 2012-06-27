@@ -96,14 +96,15 @@ public class MeshCas extends JCas implements Serializable {
 	 *            annotation must contain this triangle
 	 * @return the found annotation or null
 	 */
-	public MeshAnnotation findAnnotation(Class<? extends MeshAnnotation> clazz, Triangle p) {
+	@SuppressWarnings("unchecked")
+	public <T extends MeshAnnotation> T findAnnotation(Class<T> clazz, Triangle p) {
 		for (Annotation a : getAnnotations()) {
 			if (!(a instanceof MeshAnnotation))
 				continue;
 			MeshAnnotation ma = (MeshAnnotation) a;
 			if ((ma.getClass() == clazz || clazz.isInstance(ma))
 					&& ma.getMesh().getTriangles().contains(p))
-				return ma;
+				return (T) ma;
 		}
 		return null;
 	}
@@ -115,14 +116,16 @@ public class MeshCas extends JCas implements Serializable {
 	 *            Type of the annotations to find
 	 * @return the found annotations or empty
 	 */
-	public HashSet<MeshAnnotation> findAnnotations(Class<? extends MeshAnnotation> clazz) {
-		HashSet<MeshAnnotation> an = new HashSet<MeshAnnotation>();
+	@SuppressWarnings("unchecked")
+	public <T extends MeshAnnotation> HashSet<T> findAnnotations(Class<T> clazz) {
+		HashSet<T> an = new HashSet<T>();
 		for (Annotation a : getAnnotations()) {
 			if (!(a instanceof MeshAnnotation))
 				continue;
 			MeshAnnotation ma = (MeshAnnotation) a;
-			if (ma.getClass() == clazz || clazz.isInstance(ma))
-				an.add((MeshAnnotation) a);
+			if (ma.getClass() == clazz || clazz.isInstance(ma)) {
+				an.add((T) a);
+			}
 		}
 		return an;
 	}

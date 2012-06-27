@@ -22,7 +22,10 @@ import edu.tum.cs.vis.model.util.Triangle;
  * @author Stefan Profanter
  * 
  */
-public abstract class MeshAnnotation extends DrawableAnnotation {
+public abstract class MeshAnnotation<S extends MeshAnnotation> extends DrawableAnnotation {
+
+	private final Class<S>		clazz;
+
 	/**
 	 * auto generated
 	 */
@@ -56,8 +59,9 @@ public abstract class MeshAnnotation extends DrawableAnnotation {
 	 * @param annotationColor
 	 *            The annotation color for this type of annotation
 	 */
-	public MeshAnnotation(Model model, final Color annotationColor) {
+	public MeshAnnotation(Class<S> clazz, Model model, final Color annotationColor) {
 		super();
+		this.clazz = clazz;
 		randomAnnotationColor = new Color((int) (Math.random() * 255), (int) (Math.random() * 255),
 				(int) (Math.random() * 255));
 		this.annotationColor = annotationColor;
@@ -90,21 +94,25 @@ public abstract class MeshAnnotation extends DrawableAnnotation {
 		return mesh;
 	}
 
-	public HashSet<MeshAnnotation> getNeighborAnnotations(MeshCas cas,
-			Class<? extends MeshAnnotation> clazz) {
-		HashSet<MeshAnnotation> annotations = new HashSet<MeshAnnotation>();
+	public HashSet<S> getNeighborAnnotations(MeshCas cas) {
+		return getNeighborAnnotations(cas, clazz);
+	}
+
+	public <T extends MeshAnnotation> HashSet<T> getNeighborAnnotations(MeshCas cas,
+			Class<T> parClazz) {
+		HashSet<T> annotations = new HashSet<T>();
 		for (Triangle t : getMesh().getTriangles()) {
-			annotations.addAll(getNeighborAnnotationsForTriangle(cas, clazz, t));
+			annotations.addAll(getNeighborAnnotationsForTriangle(cas, parClazz, t));
 		}
 		if (annotations.contains(this))
 			annotations.remove(this);
 		return annotations;
 	}
 
-	public HashSet<MeshAnnotation> getNeighborAnnotationsForTriangle(MeshCas cas,
-			Class<? extends MeshAnnotation> clazz, Triangle t) {
+	public <T extends MeshAnnotation> HashSet<T> getNeighborAnnotationsForTriangle(MeshCas cas,
+			Class<T> parClazz, Triangle t) {
 
-		HashSet<MeshAnnotation> annotations = new HashSet<MeshAnnotation>();
+		HashSet<T> annotations = new HashSet<T>();
 		/* 
 		 * Triangle has max 3 neighbors
 		 * First iteration set a1 to annotation of neighbor 1, second set a2 to annotation of neighbor 2.
@@ -118,7 +126,7 @@ public abstract class MeshAnnotation extends DrawableAnnotation {
 				continue;
 
 			// Get annotation of triangle
-			MeshAnnotation ma = cas.findAnnotation(clazz, neig);
+			T ma = cas.findAnnotation(parClazz, neig);
 			if (ma != null)
 				annotations.add(ma);
 		}

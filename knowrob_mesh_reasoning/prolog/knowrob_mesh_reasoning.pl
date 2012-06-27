@@ -25,16 +25,18 @@
 
 :- module(knowrob_mesh_reasoning,
     [
-	mesh_reasoning_init/1,
-	mesh_reasoning_init/2,
-	mesh_reasoning_identifier/2,
+	mesh_reasoning/2,
 	mesh_reasoning_path/2,
-	mesh_reasoning_find_annotations/3
+	mesh_element_types/2,
+	mesh_find_annotations/3,
+	mesh_is_supporting_plane/1,
+	mesh_is_supporting_plane/2
     ]).
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs_computable')).
+:- use_module(library('knowrob_objects')).
 :- use_module(library('jpl')).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -48,32 +50,24 @@
 % Create mesh reasoning object. WithCanvas indicates if you want to show canvas window.
 % WithCanvas defaults to true if not indicated
 %
-:- assert(mesh_reasoning(fail)).
 mesh_reasoning_init(MeshReasoning, WithCanvas) :-
-    mesh_reasoning(fail),
-    jpl_call('edu.tum.cs.vis.model.MeshReasoning', 'initMeshReasoning', [WithCanvas], MeshReasoning),
-    retract(mesh_reasoning(fail)),
-    assert(mesh_reasoning(MeshReasoning)),!.
+    jpl_call('edu.tum.cs.vis.model.MeshReasoning', 'initMeshReasoning', [WithCanvas], MeshReasoning).
 mesh_reasoning_init(MeshReasoning) :-
-    jpl_call('edu.tum.cs.vis.model.MeshReasoning', 'initMeshReasoning', [@(true)], MeshReasoning),
-    retract(mesh_reasoning(fail)),
-    assert(mesh_reasoning(MeshReasoning)),!.
-mesh_reasoning_init(MeshReasoning) :-
-    mesh_reasoning(MeshReasoning).
+	mesh_reasoning_init(MeshReasoning, @(false)).
 
-%% mesh_reasoning_identifier(+Identifier, +MeshReasoning) is det.
+%% mesh_reasoning(+Identifier, -MeshReasoning) is det.
 %
 % Do mesh reasoning on cad model with given identifier.
 %
-% @param Identifier 	   eg. "http://ias.cs.tum.edu/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
+% @param Identifier 	   eg. "http://ias.cs.tum.edu/kb/ias_semantic_map.owl#F360-Containers-revised-walls" or "knowrob:'Spoon'"
 % @param MeshReasoning     MeshReasoning object
 %
-mesh_reasoning_identifier(Identifier, MeshReasoning) :-
-    ((var(MeshReasoning)) -> (mesh_reasoning(MeshReasoning));(true)),
+mesh_reasoning(Identifier, MeshReasoning) :-
+	mesh_reasoning_init(MeshReasoning),
     jpl_call(MeshReasoning, 'analyzeByIdentifier', [Identifier], _).
 
 
-%% mesh_reasoning_path(+Path, +MeshReasoning) is det.
+%% mesh_reasoning_path(+Path, -MeshReasoning) is det.
 %
 % Do mesh reasoning on cad model with given path (supported: local, package://, http://, ftp://).
 %
@@ -81,10 +75,28 @@ mesh_reasoning_identifier(Identifier, MeshReasoning) :-
 % @param MeshReasoning     MeshReasoning object
 %
 mesh_reasoning_path(Path, MeshReasoning) :-
-    ((var(MeshReasoning)) -> (mesh_reasoning(MeshReasoning));(true)),
+	mesh_reasoning_init(MeshReasoning),
     jpl_call(MeshReasoning, 'analyzeByPath', [Path], _).
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Annotations
+%
 
-%% mesh_reasoning_find_annotations(+Cas,+Type, -AnnotationsList) is det.
+%% mesh_element_types(+MeshReasoning,-TypeList) is det
+%
+% Get list of all found annotation types for current model in MeshReasoning
+%
+% @param MeshReasoning		reasoning container
+% @param TypeList			List with annotation types eg: ['Plane','Sphere','Cone','Container']. Values can be directly used in mesh_find_annotations as Type
+%
+mesh_element_types(MeshReasoning, TypeList) :-
+	jpl_call(MeshReasoning, 'getAnnotationTypes', [], TypeListFlat),
+    jpl_call(TypeListFlat, toArray, [], TypeListArr),
+	jpl_array_to_list(TypeListArr, TypeList).
+	
+
+%% mesh_find_annotations(+MeshReasoning,+Type, -AnnotationsList) is det.
 %
 % Get a list of all annotations with given type
 %
@@ -92,6 +104,30 @@ mesh_reasoning_path(Path, MeshReasoning) :-
 % @param Type		String indicating annotation type (Plane,Sphere,Cone,Container)
 % @param AnnotationsList List with found annotations
 %
-mesh_reasoning_find_annotations(MeshReasoning,Type,AnnotationsList) :-
-    	((var(MeshReasoning)) -> (mesh_reasoning(MeshReasoning));(true)),
-	jpl_call(MeshReasoning, 'findAnnotations', [Type], AnnotationsList).
+mesh_find_annotations(MeshReasoning,Type,AnnotationsList) :-
+	concat('findAnnotations', Type, Method),
+	jpl_call(MeshReasoning, Method, [], AnnotationsList).
+	
+%% mesh_is_supporting_plane(+PlaneAnnotation) is det.
+%% mesh_is_supporting_plane(+PlaneAnnotation, +Identifier) is det.
+%
+% Check if plane annotation surface normal is upwards.
+% Means checking if abs(acos(n.z)) < 10 degree = PI/18 rad 
+%
+% @param PlaneAnnotation	A Java Reference Object for a plane annotation
+% @param Identifier			If Identifier is instantiated the current pose of the object is also considered when checking if normal is upwards
+%
+mesh_is_supporting_plane(PlaneAnnotation, Identifier) :-
+	jpl_call(PlaneAnnotation,'getPlaneNormal',[],Norm),
+	jpl_get(Norm,'z',NormZ),
+	(nonvar(Identifier) -> 
+		% we only need M22 because '(rot) * (0,0,NormZ,0) = (_, _, NewNormZ, _)' for calculating angle
+		current_object_pose(Identifier,[_, _, _, _, _, _, _, _, _, _, M22, _, _, _, _, _]),
+		NormZ is M22 * NormZ,
+		true
+	; 
+		true
+	),
+	abs(acos(NormZ)) < pi / 18.
+mesh_is_supporting_plane(PlaneAnnotation) :-
+	mesh_is_supporting_plane(PlaneAnnotation,_).

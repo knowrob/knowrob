@@ -45,7 +45,8 @@ public class SphereAnnotation extends PrimitiveAnnotation {
 	private float					radius		= 0;
 
 	public SphereAnnotation(HashMap<Vertex, Curvature> curvatures, Model model, boolean concav) {
-		super(curvatures, model, concav ? new Color(0, 255, 0) : new Color(255, 0, 0));
+		super(SphereAnnotation.class, curvatures, model, concav ? new Color(0, 255, 0) : new Color(
+				255, 0, 0));
 		this.concav = concav;
 	}
 

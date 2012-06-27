@@ -30,7 +30,7 @@ public class Cylinder implements Drawable {
 		c.noStroke();		
 		c.translate(v1.x, v1.y, v1.z);
 		Vector3f dir = new Vector3f(v2);
-		dir.subtract(v1);
+		dir.sub(v1);
 		Vector3f cp = new Vector3f();
 		Vector3f yAxis = new Vector3f(0,1,0);
 		cp.cross(dir, yAxis);

@@ -39,7 +39,7 @@ public class ContainerAnalyzer extends MeshAnalyzer {
 	private static Logger	logger	= Logger.getLogger(ContainerAnalyzer.class);
 
 	static void checkConcavAnnotationCone(MeshCas cas, ConeAnnotation an,
-			HashSet<MeshAnnotation> annotations) {
+			HashSet<PrimitiveAnnotation> annotations) {
 
 		float areaOfCapSmall = (float) (Math.pow(an.getRadiusSmall(), 2) * Math.PI);
 		float areaOfCapLarge = (float) (Math.pow(an.getRadiusLarge(), 2) * Math.PI);
@@ -167,7 +167,8 @@ public class ContainerAnalyzer extends MeshAnalyzer {
 	public void processStart(final MeshCas cas) {
 		List<Callable<Void>> threads = new LinkedList<Callable<Void>>();
 
-		final HashSet<MeshAnnotation> annotations = cas.findAnnotations(PrimitiveAnnotation.class);
+		final HashSet<PrimitiveAnnotation> annotations = cas
+				.findAnnotations(PrimitiveAnnotation.class);
 
 		for (final MeshAnnotation a : annotations) {
 			if (a instanceof ConeAnnotation && ((ConeAnnotation) a).isConcav()) {

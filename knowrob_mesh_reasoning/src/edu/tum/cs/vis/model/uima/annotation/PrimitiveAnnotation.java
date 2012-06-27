@@ -36,9 +36,9 @@ public abstract class PrimitiveAnnotation extends MeshAnnotation {
 	/**
 	 * @param annotationColor
 	 */
-	public PrimitiveAnnotation(HashMap<Vertex, Curvature> curvatures, Model model,
-			Color annotationColor) {
-		super(model, annotationColor);
+	public PrimitiveAnnotation(Class<? extends MeshAnnotation> clazz,
+			HashMap<Vertex, Curvature> curvatures, Model model, Color annotationColor) {
+		super(clazz, model, annotationColor);
 		this.curvatures = curvatures;
 	}
 

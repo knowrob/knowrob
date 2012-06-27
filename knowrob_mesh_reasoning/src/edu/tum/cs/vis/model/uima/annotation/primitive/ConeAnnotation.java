@@ -21,6 +21,7 @@ import javax.vecmath.Vector3f;
 import processing.core.PGraphics;
 import edu.tum.cs.vis.model.Model;
 import edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation;
+import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.util.Curvature;
 import edu.tum.cs.vis.model.util.Vertex;
 import edu.tum.cs.vis.model.util.algorithm.BestFitLine3D;
@@ -106,7 +107,8 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 	private final ArrayList<Point3f>	intersections	= new ArrayList<Point3f>();
 
 	public ConeAnnotation(HashMap<Vertex, Curvature> curvatures, Model model, boolean concav) {
-		super(curvatures, model, concav ? new Color(0, 125, 125) : new Color(255, 255, 0));
+		super(ConeAnnotation.class, curvatures, model, concav ? new Color(0, 125, 125) : new Color(
+				255, 255, 0));
 		this.concav = concav;
 	}
 
@@ -364,6 +366,14 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 	 */
 	public Vector3f getDirectionUnscaled() {
 		return new Vector3f(model.getUnscaled(direction));
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.tum.cs.vis.model.uima.annotation.MeshAnnotation#getNeighborAnnotations(edu.tum.cs.vis.model.uima.cas.MeshCas)
+	 */
+	@Override
+	public HashSet<ConeAnnotation> getNeighborAnnotations(MeshCas cas) {
+		return getNeighborAnnotations(cas, ConeAnnotation.class);
 	}
 
 	/* (non-Javadoc)

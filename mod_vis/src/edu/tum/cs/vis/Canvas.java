@@ -174,7 +174,7 @@ public class Canvas extends PApplet implements MouseListener, MouseMotionListene
 			up.add(eyeTarget);
 			this.drawLine(eyeTarget, up, 0xff0000ff);
 			Vector3f dir = new Vector3f(eyeTarget);
-			dir.subtract(eye);
+			dir.sub(eye);
 			Vector3f third = new Vector3f();
 			third.cross(dir, up);
 			third.normalize();

@@ -21,7 +21,6 @@ import javax.vecmath.Vector3f;
 import org.apache.log4j.Logger;
 
 import edu.tum.cs.uima.Annotation;
-import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.primitive.ConeAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.primitive.PlaneAnnotation;
@@ -317,10 +316,9 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 					continue;
 				}
 
-				HashSet<MeshAnnotation> neighborAnnotations = new HashSet<MeshAnnotation>();
-				neighborAnnotations = pa.getNeighborAnnotations(cas, PrimitiveAnnotation.class);
-				for (MeshAnnotation ma : neighborAnnotations) {
-					PrimitiveAnnotation a1 = (PrimitiveAnnotation) ma;
+				HashSet<PrimitiveAnnotation> neighborAnnotations = pa.getNeighborAnnotations(cas,
+						PrimitiveAnnotation.class);
+				for (PrimitiveAnnotation a1 : neighborAnnotations) {
 
 					if (!isSamePlane(a1, pa))
 						continue;
@@ -349,10 +347,11 @@ public class PrimitiveAnalyzer extends MeshAnalyzer {
 			if (a instanceof PrimitiveAnnotation) {
 				PrimitiveAnnotation pa = (PrimitiveAnnotation) a;
 
-				HashSet<MeshAnnotation> neighborAnnotations = new HashSet<MeshAnnotation>();
-				neighborAnnotations = pa.getNeighborAnnotations(cas, pa.getClass());
-				for (MeshAnnotation ma : neighborAnnotations) {
-					PrimitiveAnnotation a1 = (PrimitiveAnnotation) ma;
+				HashSet<PrimitiveAnnotation> neighborAnnotations = pa.getNeighborAnnotations(cas,
+						PrimitiveAnnotation.class);
+				for (PrimitiveAnnotation a1 : neighborAnnotations) {
+					if (a1.getClass() != pa.getClass())
+						continue;
 					if (pa instanceof ConeAnnotation
 							&& ((ConeAnnotation) pa).isConcav() != ((ConeAnnotation) a1).isConcav()) {
 						continue;

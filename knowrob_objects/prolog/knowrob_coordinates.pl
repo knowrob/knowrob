@@ -23,7 +23,8 @@
     [
       transform_relative_to/3,
       pose_into_relative_coord/3,
-      pose_into_global_coord/3
+      pose_into_global_coord/3,
+      angle_between_vector_normalized/3
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -242,6 +243,22 @@ vector3d_to_list(Vector, List) :-
     jpl_get(Matrix, z, Z),
 
     List = [X, Y, Z].
+    
+list_to_vector3f(List, Vector) :-
+    nonvar(List), var(Vector),
+    jpl_new('javax.vecmath.Vector3f', List, Vector).
 
+%% angle_between_vector_normalized(+Vector1, +Vector2, -Angle) is det.
+%
+% calculates angle between two normalized vectors in radiants
+%
+% @param Vector1	normalized vector 1
+% @param Vector1	normalized vector 2
+% @param Angle		Angle between the vectors in radiants
+%
+angle_between_vector_normalized(Vector1, Vector2, Angle) :-
+	vector3d_to_list(Vector1,[X1,Y1,Z1]),
+	vector3d_to_list(Vector2,[X2,Y2,Z2]),
+	Angle is acos(X1 * X2 + Y1 * Y2 + Z1 * Z2).
 
 

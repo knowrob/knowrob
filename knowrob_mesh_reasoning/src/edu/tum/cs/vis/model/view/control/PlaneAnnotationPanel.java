@@ -40,6 +40,7 @@ public class PlaneAnnotationPanel extends AnnotationPanel<PlaneAnnotation> {
 	private final JTextField	txtAreaCov;
 	private final JTextField	txtShort;
 	private final JTextField	txtLong;
+	private final JTextField	txtNormal;
 
 	/**
 	 * @param annotationType
@@ -97,6 +98,16 @@ public class PlaneAnnotationPanel extends AnnotationPanel<PlaneAnnotation> {
 		c.weightx = 1.0;
 		pnlInfo.add(txtLong, c);
 
+		txtNormal = new JTextField();
+		c.gridx = 0;
+		c.gridy = 4;
+		c.weightx = 0.3;
+		pnlInfo.add(new JLabel("Normal:", SwingConstants.CENTER), c);
+		c.gridx = 1;
+		c.gridy = 4;
+		c.weightx = 1.0;
+		pnlInfo.add(txtNormal, c);
+
 		add(pnlInfo, BorderLayout.CENTER);
 
 		setSelected(null);
@@ -111,6 +122,7 @@ public class PlaneAnnotationPanel extends AnnotationPanel<PlaneAnnotation> {
 		txtAreaCov.setEnabled(annotation != null);
 		txtShort.setEnabled(annotation != null);
 		txtLong.setEnabled(annotation != null);
+		txtNormal.setEnabled(annotation != null);
 
 		if (annotation != null) {
 			txtAreaTot.setText(String.valueOf(annotation.getPrimitiveAreaUnscaled()));
@@ -119,6 +131,7 @@ public class PlaneAnnotationPanel extends AnnotationPanel<PlaneAnnotation> {
 					+ "%");
 			txtShort.setText(String.valueOf(annotation.getShortSideUnscaled().length()));
 			txtLong.setText(String.valueOf(annotation.getLongSideUnscaled().length()));
+			txtNormal.setText(String.valueOf(annotation.getPlaneNormal()));
 		}
 
 	}

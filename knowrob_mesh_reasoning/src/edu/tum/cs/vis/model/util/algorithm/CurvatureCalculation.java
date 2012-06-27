@@ -551,7 +551,7 @@ public class CurvatureCalculation {
 		if (samples[which] == 0.0f || Float.isNaN(samples[which])) {
 			need_bsphere(m);
 			f = mult * m.getBoundingSphere().getR();
-			logger.warn("Couldn't determine typical scale. Using bsphere value: " + f + ".");
+			// logger.warn("Couldn't determine typical scale. Using bsphere value: " + f + ".");
 		} else {
 			f = mult / samples[which];
 		}
