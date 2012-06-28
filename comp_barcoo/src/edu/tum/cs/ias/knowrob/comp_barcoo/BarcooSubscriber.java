@@ -20,7 +20,7 @@ public class BarcooSubscriber{
 		ros.init("BarcooService");				
 		NodeHandle n = ros.createNodeHandle();
 		barcooImporter = new BarcooImporter(barcooOWLPath, mappingPath);
-		knowrobLoader = new BarcooKnowrobLoader(n);
+		knowrobLoader = new BarcooKnowrobLoader(n,"knowrobTopic");
 		
 		ServiceServer.Callback<send_barcode.Request,send_barcode.Response> scb = new ServiceServer.Callback<send_barcode.Request,send_barcode.Response>() 
 		{

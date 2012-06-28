@@ -50,4 +50,5 @@ add_classpath(${rosjava_jni_PACKAGE_PATH}/bin)
 rospack_add_java_executable(bin/barcoo_importer   edu.tum.cs.ias.knowrob.comp_barcoo.BarcooImporter)
 rospack_add_java_executable(bin/barcoo_subscriber edu.tum.cs.ias.knowrob.comp_barcoo.BarcooSubscriber)
 
+
 add_java_source_dir(${PROJECT_SOURCE_DIR}/src)

@@ -19,8 +19,9 @@ public class BarcooKnowrobLoader {
 	private static int objectCount = 0;
 	Publisher<ros.pkg.vision_msgs.msg.cop_answer> pub;
 	
-	public BarcooKnowrobLoader(NodeHandle n) throws Exception
+	public BarcooKnowrobLoader(NodeHandle n, String topic) throws Exception
 	{
+		this.topic = topic;
 		ros.pkg.vision_msgs.msg.cop_answer msgType = new ros.pkg.vision_msgs.msg.cop_answer();
 		map = new HashMap<String, Integer>();				
 		pub = n.advertise(topic, msgType, 1);				
@@ -53,13 +54,13 @@ public class BarcooKnowrobLoader {
 		msg.error = "";
 		aposteriori_position position = new aposteriori_position();
 		
-		position.objectId = 0;
+		position.objectId = id;
 		position.probability = 1;
 		position.position = 0;
 		
 		cop_descriptor descriptor = new cop_descriptor();
 		
-		descriptor.object_id = objectCount;
+		descriptor.object_id = 0;
 		descriptor.sem_class = "http://www.barcoo.com/barcoo.owl#" + barcode;
 		descriptor.type = "BarcooFinder";
 		descriptor.quality = 0;
@@ -70,5 +71,6 @@ public class BarcooKnowrobLoader {
 		pub.publish(msg);
 		
 		return barcode + "_k"+ id;
-	}	
+	}
+	
 }

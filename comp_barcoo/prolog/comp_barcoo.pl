@@ -22,7 +22,7 @@
 @license GPL
 */
 
-:- module(comp_germandeli,
+:- module(comp_barcoo,
     [
     ]).
 
@@ -39,8 +39,8 @@
 
 %% odufinder_listener(-Listener)
 odufinder_listener(Listener) :-
-    jpl_new('edu.tum.cs.ias.knowrob.comp_barcoo.BarcooROSClient', ['json_prolog'], Listener),
-    jpl_call(Listener, 'startCopObjDetectionsListener', ['/odu_finder/TemplateName'], _).
+    jpl_new('edu.tum.cs.ias.knowrob.comp_barcoo.BarcooROSclient', ['json_prolog'], Listener),
+    jpl_call(Listener, 'startCopObjDetectionsListener', ['/knowrobTopic'], _).
 
 %% cop_create_model_instance(+ModelType, +ObjectType) is det.
 %
@@ -79,8 +79,9 @@ cop_create_perception_instance(ModelTypes, Perception) :-
 cop_create_object_instance(ObjTypes, CopID, Obj) :-
 
   member(ObjType, ObjTypes),
-  string_to_atom(ObjType, TypeAtom),
-%   atom_concat('http://www.barcoo.com/barcoo.owl#', LocalTypeAtom, TypeAtom),
+  string_to_atom(ObjType, TypeAtom1),
+%   atom_concat('http://www.barcoo.com/barcoo.owl#', LocalTypeAtom, TypeAtom1),
+    atom_concat(TypeAtom1,'_k',TypeAtom),
   atom_concat(TypeAtom, CopID, Obj),
 
   (rdf_has(Obj, rdf:type, TypeAtom),!;
@@ -89,6 +90,4 @@ cop_create_object_instance(ObjTypes, CopID, Obj) :-
   string_to_atom(CopID, CopIDAtom),
   term_to_atom(CopIDTerm, CopIDAtom),
   rdf_assert(Obj, knowrob:copID, literal(type(xsd:int, CopIDTerm))).
-
-
 

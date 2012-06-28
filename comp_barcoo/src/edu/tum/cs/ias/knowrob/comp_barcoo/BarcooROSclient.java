@@ -107,6 +107,7 @@ public class BarcooROSclient {
     	
     	public CopObjListenerThread(String t) {
 			topic=t;
+			System.out.println("topic = " + topic);
 		}
     	
     	public void run() {
@@ -152,7 +153,7 @@ public static class UpdateKnowRobObjectsThread implements Runnable {
         					
         					//long   m_id    = model.object_id;
         					//double m_qual  = model.quality;
-        					m_types_classes.put(model.type, copToKnowrob(model.sem_class));       					
+        					m_types_classes.put(model.type, model.sem_class);       					
         					
         				}
 
@@ -164,8 +165,8 @@ public static class UpdateKnowRobObjectsThread implements Runnable {
         	    		
         	    		
         				// create object information
-        	    		System.err.println("comp_cop:cop_create_object_instance("+objectArrayToPlList(m_types_classes.values().toArray())+", "+p_id+", Obj)");
-        				solutions = executeQuery("comp_cop:cop_create_object_instance("+objectArrayToPlList(m_types_classes.values().toArray())+", "+p_id+", Obj)");
+        	    		System.err.println("comp_barcoo:cop_create_object_instance("+objectArrayToPlList(m_types_classes.values().toArray())+", "+p_id+", Obj)");
+        				solutions = executeQuery("comp_barcoo:cop_create_object_instance("+objectArrayToPlList(m_types_classes.values().toArray())+", "+p_id+", Obj)");
         				if(solutions.get("Obj").size()>1) {throw new Exception("ERROR: More than one Object instance created:"+objectArrayToPlList(solutions.get("Obj").toArray()));}
         				String obj = solutions.get("Obj").get(0).toString();
 
@@ -271,8 +272,8 @@ public static class CopModelDBListenerThread implements Runnable {
         				for(cop_descriptor model : pose.models) {
 
         					// create VisualPerception instance
-            				System.out.println("comp_cop:cop_create_model_instance('"+model.type+"', "+copToKnowrob(model.sem_class)+")");
-            				executeQuery("comp_cop:cop_create_model_instance('"+model.type+"', "+copToKnowrob(model.sem_class)+")");
+            				System.out.println("comp_cop:cop_create_model_instance('"+model.type+"', "+model.sem_class+")");
+            				executeQuery("comp_cop:cop_create_model_instance('"+model.type+"', "+model.sem_class+")");
             					
         				}
 
@@ -324,7 +325,7 @@ public static class CopModelDBListenerThread implements Runnable {
 	/**
 	 * 
 	 * Translate a CoP identifier into the corresponding KnowRob string. Uses the
-	 * mapping defined in comp_cop.pl
+	 * mapping defined in comp_barcoo.pl
 	 * 
 	 * @param copIdentifier The name of something in CoP
 	 * @return              The name of the same thing in KnowRob
