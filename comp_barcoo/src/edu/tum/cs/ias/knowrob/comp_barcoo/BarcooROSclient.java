@@ -107,7 +107,6 @@ public class BarcooROSclient {
     	
     	public CopObjListenerThread(String t) {
 			topic=t;
-			System.out.println("topic = " + topic);
 		}
     	
     	public void run() {
@@ -158,15 +157,15 @@ public static class UpdateKnowRobObjectsThread implements Runnable {
         				}
 
         				// create VisualPerception instance
-        				System.err.println("comp_cop:cop_create_perception_instance("+objectArrayToPlList(m_types_classes.keySet().toArray())+", Perception)");
+        				//System.err.println("comp_cop:cop_create_perception_instance("+objectArrayToPlList(m_types_classes.keySet().toArray())+", Perception)");
         				solutions = executeQuery("comp_cop:cop_create_perception_instance("+objectArrayToPlList(m_types_classes.keySet().toArray())+", Perception)");
         				if(solutions.get("Perception").size()>1) {throw new Exception("ERROR: More than one Perception instance created.");}
         	    		String perception = solutions.get("Perception").get(0).toString();
         	    		
         	    		
         				// create object information
-        	    		System.err.println("comp_barcoo:cop_create_object_instance("+objectArrayToPlList(m_types_classes.values().toArray())+", "+p_id+", Obj)");
-        				solutions = executeQuery("comp_barcoo:cop_create_object_instance("+objectArrayToPlList(m_types_classes.values().toArray())+", "+p_id+", Obj)");
+        	    	    System.err.println("comp_barcoo:cop_create_object_instance("+objectArrayToPlList(m_types_classes.values().toArray())+", '-"+p_id+ "', Obj)");
+        				solutions = executeQuery("comp_barcoo:cop_create_object_instance("+objectArrayToPlList(m_types_classes.values().toArray()) + ", '-"+p_id+ "', Obj)");
         				if(solutions.get("Obj").size()>1) {throw new Exception("ERROR: More than one Object instance created:"+objectArrayToPlList(solutions.get("Obj").toArray()));}
         				String obj = solutions.get("Obj").get(0).toString();
 

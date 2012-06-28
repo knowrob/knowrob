@@ -79,9 +79,8 @@ cop_create_perception_instance(ModelTypes, Perception) :-
 cop_create_object_instance(ObjTypes, CopID, Obj) :-
 
   member(ObjType, ObjTypes),
-  string_to_atom(ObjType, TypeAtom1),
-%   atom_concat('http://www.barcoo.com/barcoo.owl#', LocalTypeAtom, TypeAtom1),
-    atom_concat(TypeAtom1,'_k',TypeAtom),
+  string_to_atom(ObjType, TypeAtom),
+%   atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', LocalTypeAtom, TypeAtom),
   atom_concat(TypeAtom, CopID, Obj),
 
   (rdf_has(Obj, rdf:type, TypeAtom),!;
@@ -89,5 +88,5 @@ cop_create_object_instance(ObjTypes, CopID, Obj) :-
 
   string_to_atom(CopID, CopIDAtom),
   term_to_atom(CopIDTerm, CopIDAtom),
-  rdf_assert(Obj, knowrob:copID, literal(type(xsd:int, CopIDTerm))).
+  rdf_assert(Obj, knowrob:copID, literal(type(xsd:string, CopIDTerm))).
 

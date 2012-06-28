@@ -35,3 +35,4 @@
 :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/barcoo_manual.owl', false, false, true).
 :- rdf_db:rdf_register_ns(barcoo, 'http://www.barcoo.com/barcoo.owl#', [keep(true)]).
 
+:- comp_barcoo:odufinder_listener(Listener).
