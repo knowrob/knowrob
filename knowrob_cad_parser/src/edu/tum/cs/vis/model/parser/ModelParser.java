@@ -7,10 +7,18 @@
  ******************************************************************************/
 package edu.tum.cs.vis.model.parser;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import javax.media.j3d.GeometryArray;
+
+import com.sun.j3d.utils.geometry.GeometryInfo;
+import com.sun.j3d.utils.geometry.Triangulator;
+
+import edu.tum.cs.util.ResourceRetriever;
 import edu.tum.cs.vis.model.Model;
+import edu.tum.cs.vis.model.util.Vertex;
 
 /**
  * Base class for all ModelParsers. Used to parse models from file an draw them onto the Processing
@@ -33,6 +41,7 @@ public abstract class ModelParser {
 		extensionAssignment.put("dae", ColladaParser.class);
 		extensionAssignment.put("kmz", ColladaParser.class);
 		extensionAssignment.put("mesh", CustomParser.class);
+		extensionAssignment.put("ply", PlyParser.class);
 	}
 
 	/**
@@ -147,7 +156,19 @@ public abstract class ModelParser {
 
 		if (m == null) {
 			model = new Model();
-			retVal = loadModel(filename);
+			// get / download file and determine local file path
+			String file = ResourceRetriever.retrieve(filename).getAbsolutePath();
+
+			if (!checkExtension(file)) {
+				return false;
+			}
+
+			if ((new File(file)).exists() == false) {
+				System.err.println("ERROR: Can't load model. File not found: " + filename + "\n");
+				return false;
+			}
+
+			retVal = loadModel(file);
 			if (!retVal)
 				return false;
 			modelBuffer.put(filename, model);
@@ -155,6 +176,26 @@ public abstract class ModelParser {
 		} else
 			model = m;
 		return retVal;
+	}
+	
+	public static int[] polygonTriangulation(Vertex vertices[]) {
+		float coord[] = new float[vertices.length*3];
+		for (int i=0; i<vertices.length; i++) {
+			coord[i*3] = vertices[i].x;
+			coord[i*3+1] = vertices[i].y;
+			coord[i*3+2] = vertices[i].z;
+		}
+		
+		GeometryInfo gi = new GeometryInfo( GeometryInfo.POLYGON_ARRAY );
+		gi.setCoordinates(coord);
+		
+		
+		
+		int[] stripCounts = {coord.length / 3};
+		gi.setStripCounts(stripCounts);
+		gi.convertToIndexedTriangles();
+		
+		return gi.getCoordinateIndices();
 	}
 
 }

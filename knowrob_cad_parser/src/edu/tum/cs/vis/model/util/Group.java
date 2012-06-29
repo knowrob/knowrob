@@ -121,6 +121,15 @@ public class Group implements Serializable {
 			}
 		}
 	}
+	
+	public void addTriangle(Triangle t) {
+		synchronized (mesh.getTriangles()) {
+			mesh.getTriangles().add(t);
+		}
+		synchronized (model.getTriangles()) {
+			model.getTriangles().add(t);
+		}
+	}
 
 	/**
 	 * Get all direct child groups

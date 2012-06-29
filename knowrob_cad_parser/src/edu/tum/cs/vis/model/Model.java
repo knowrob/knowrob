@@ -196,9 +196,9 @@ public class Model {
 			v.scale(factor);
 		}
 		for (Triangle t : triangles)
-			t.updateNormalVector();
+			t.updateCentroid();
 		for (Line l : lines)
-			l.updateNormalVector();
+			l.updateCentroid();
 		group.resetMinMaxValues();
 	}
 

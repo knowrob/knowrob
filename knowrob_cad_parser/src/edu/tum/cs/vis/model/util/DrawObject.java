@@ -92,7 +92,11 @@ public abstract class DrawObject implements Serializable {
 		if (appearance == null) {
 
 			g.noStroke();
-			g.fill(200, 200, 200);
+			if (overrideColor != null)
+				g.fill(overrideColor.getRed(), overrideColor.getGreen(), overrideColor.getBlue(),
+						overrideColor.getAlpha());
+			else
+				g.fill(200, 200, 200);
 			return;
 		}
 		if (appearance.getColorLine() != null) {
@@ -181,7 +185,7 @@ public abstract class DrawObject implements Serializable {
 			position[v].y *= factor;
 			position[v].z *= factor;
 		}
-		updateNormalVector(); // Recalculate centroid
+		updateCentroid(); // Recalculate centroid
 	}
 
 	//TODO check
@@ -209,7 +213,7 @@ public abstract class DrawObject implements Serializable {
 	 */
 	public void setPosition(Vertex[] position) {
 		this.position = position;
-		updateNormalVector();
+		updateCentroid();
 	}
 
 	/**
@@ -229,23 +233,20 @@ public abstract class DrawObject implements Serializable {
 			position[v].y = newPos[1] / newPos[3];
 			position[v].z = newPos[2] / newPos[3];
 		}
-		updateNormalVector();
+		updateCentroid();
 	}
 
 	/**
-	 * Recalculates the normal vector and centroid. Called automatically when calling
+	 * Recalculates the and centroid. Called automatically when calling
 	 * <code>setPosition</code>. If you modify the position array directly, call this afterwards.
 	 * 
-	 * On Line this function has no effect.
-	 * 
-	 * @return
 	 */
 	@SuppressWarnings("static-method")
-	public boolean updateNormalVector() {
+	public void updateCentroid() {
 		/*
-		 * Overridden in triangles class, line doesn't have a normal vector
+		 * Overridden in triangles class
 		 */
-		return false;
 	}
+
 
 }

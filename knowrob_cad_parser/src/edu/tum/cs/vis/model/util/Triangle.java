@@ -99,7 +99,10 @@ public class Triangle extends DrawObject {
 						eqCnt++;
 						if (eqCnt == 2) {
 							add = true;
-							break;
+						}
+						if (eqCnt == 3) {
+							//if triangle has same position but is backface
+							add = false;
 						}
 					}
 
@@ -133,39 +136,42 @@ public class Triangle extends DrawObject {
 	 */
 	public void draw(PGraphics g, Color overrideColor) {
 		applyColor(g, overrideColor);
+		g.beginShape(PConstants.TRIANGLES);
 		if (appearance == null || appearance.getImageReference() == null || overrideColor != null) {
 			// no texture only color
-			g.beginShape(PConstants.TRIANGLES);
+
 			for (int i = 0; i < position.length; i++) {
 
-				if (position[i].color != null)
+				if (position[i].overrideColor != null) {
+					g.fill(position[i].overrideColor.getRed(), position[i].overrideColor.getGreen(),
+							position[i].overrideColor.getBlue());
+				}
+				else if (overrideColor == null && position[i].color != null) {
 					g.fill(position[i].color.getRed(), position[i].color.getGreen(),
 							position[i].color.getBlue());
+				}
+					
 
+				if (position[i].getNormalVector() != null)
+					g.normal(position[i].getNormalVector().x, position[i].getNormalVector().y, position[i].getNormalVector().z);
 				g.vertex(position[i].x, position[i].y, position[i].z);
 			}
-			g.endShape();
 
 		} else {
 			// has texture
-			g.beginShape(PConstants.TRIANGLES);
 			g.texture(appearance.getImageReference());
 
 			for (int i = 0; i < position.length; i++)
+			{
+				if (position[i].getNormalVector() != null)
+					g.normal(position[i].getNormalVector().x, position[i].getNormalVector().y, position[i].getNormalVector().z);
 				g.vertex(position[i].x, position[i].y, position[i].z, texPosition[i].x,
 						texPosition[i].y);
+			}
 
-			g.endShape();
 
 		}
-
-		//TODO check
-		/*synchronized (annotations) {
-
-			for (DrawableAnnotation a : annotations)
-				a.draw(g);
-		}*/
-
+		g.endShape();
 	}
 
 	/**
@@ -243,6 +249,43 @@ public class Triangle extends DrawObject {
 	 */
 	public boolean intersectsRay(Point3f rayStart, Point3f rayEnd) {
 		return intersectsRay(rayStart, rayEnd, null);
+	}
+	
+	public boolean calculateNormalVector() {
+		//Calculate normal vector for triangle
+		Vector3f avgVertexNorm = new Vector3f();
+		for (int i=0; i<3; i++) {
+			if (position[i].getNormalVector() == null) {
+				avgVertexNorm = null;
+				break;
+			}
+			avgVertexNorm.add(position[i].getNormalVector());
+		}
+		if (avgVertexNorm != null) {
+			avgVertexNorm.scale(1f/3f);
+		} 
+		
+		Vector3f a = new Vector3f(position[0]);
+		a.sub(position[1]);
+		Vector3f b = new Vector3f(position[1]);
+		b.sub(position[2]);
+		
+		/*Vector3f a = new Vector3f(position[1]);
+		a.sub(position[0]);
+		Vector3f b = new Vector3f(position[2]);
+		b.sub(position[0]);*/
+		Vector3f norm = new Vector3f();
+		norm.cross(a, b);
+		if (norm.lengthSquared() == 0) {
+			return false;
+		}
+		norm.normalize();
+		
+		if (avgVertexNorm != null && avgVertexNorm.dot(norm) < 0)
+			norm.scale(-1f);
+				
+		this.normalVector = norm;
+		return true;
 	}
 
 	/**
@@ -399,27 +442,13 @@ public class Triangle extends DrawObject {
 	}
 
 	@Override
-	public boolean updateNormalVector() {
-		normalVector = new Vector3f(0, 0, 0);
+	public void updateCentroid() {
 		centroid = new Point3f(0, 0, 0);
 
 		for (int i = 0; i < position.length; i++) {
 			centroid.add(position[i]);
 		}
 		centroid.scale(1f / position.length);
-
-		Vector3f a = new Vector3f(position[1]);
-		a.sub(position[0]);
-		Vector3f b = new Vector3f(position[2]);
-		b.sub(position[0]);
-
-		normalVector.cross(a, b);
-		if (normalVector.lengthSquared() == 0) {
-			normalVector = null;
-			return false;
-		}
-		normalVector.normalize();
-		return true;
 	}
 
 }

@@ -30,6 +30,7 @@ public class Vertex extends Point3f {
 	//private Curvature			curvature;
 
 	public Color				color;
+	public Color				overrideColor = null;
 
 	/**
 	 * @param f

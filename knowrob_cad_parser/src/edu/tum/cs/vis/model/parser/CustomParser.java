@@ -73,8 +73,7 @@ public class CustomParser extends ModelParser {
 						t.getPosition()[1] = model.getVertices().get(p2);
 						t.getPosition()[2] = model.getVertices().get(p3);
 
-						if (!t.updateNormalVector()) // Triangle with size 0, skip
-							continue;
+						t.updateCentroid();
 						m.getTriangles().add(t);
 					}
 				}
