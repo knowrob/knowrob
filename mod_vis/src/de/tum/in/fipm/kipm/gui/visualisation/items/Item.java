@@ -78,6 +78,16 @@ public abstract class Item extends ItemBase {
 				c.fill(colorOverride.getRed(), colorOverride.getGreen(), colorOverride.getBlue(), colorOverride.getAlpha());
 			else
 				c.fill(color);
+			
+			// draw object-local coordinate systems:
+//			c.pushMatrix();
+//				c.strokeWeight(1.5f);
+//				c.stroke(255, 0, 0);      c.line(0, 0, 0,   1, 0, 0);
+//				c.stroke(0, 255, 0);      c.line(0, 0, 0,   0, 1, 0); 
+//				c.stroke(0, 0, 255);      c.line(0, 0, 0,   0, 0, 1);
+//				c.stroke(0, 0, 0);
+//			c.popMatrix();C
+			
 			drawIt(c);
 			
 		c.popMatrix();

@@ -231,7 +231,9 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			// draw all Items
 			for(int i=0;i<allItems.size();i++) {
 				//hint(ENABLE_DEPTH_TEST);
-				allItems.get(i).draw(this, currentFrame);	
+				
+				allItems.get(i).draw(this, currentFrame);
+				
 			}
 
 			popMatrix();
@@ -1078,6 +1080,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			HashMap<String, Vector<Object>> box = PrologUtil.executeQuery(
 					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
 							"( rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'ConstructionArtifact');" +
+							"  rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'Box-Container');" +
 							"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'FurniturePiece'))" , null);
 
 			if( box.get("OBJECTCLASS") != null && box.get("OBJECTCLASS").size() > 0) {
