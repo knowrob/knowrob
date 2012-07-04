@@ -163,7 +163,8 @@ class_of_object(Class, Object) :-
 %
 % get all locations defined in the environment through in-ContGeneric relations
 all_locations(Locations) :-
-    findall(L, owl_has(_, knowrob:'in-ContGeneric', L), Ls),
+    findall(L, rdfs_individual_of(L, knowrob:'ContainerArtifact'), Ls),
+%     findall(L, rdf_triple(knowrob:'in-ContGeneric', _, L), Ls),
 	list_to_set(Ls, Locations).  
 	
 	
@@ -171,7 +172,8 @@ all_locations(Locations) :-
 %
 % get all objects at a location
 objects_at_location(Location, Objects) :-
-    findall(O, owl_has(O, knowrob:'in-ContGeneric', Location), Objects). 
+    findall(O, rdf_triple(knowrob:'in-ContGeneric', O, Location), ObjectsD),
+    list_to_set(ObjectsD, Objects).
 	  
 	  
 %% avg_similarity_object_location(:SimFct:predicate, +Class:rdf_class, +List:list, -Average:float).
