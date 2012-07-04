@@ -135,12 +135,13 @@ on_Physical(Top, Bottom) :-
 %%%     =<( (BY - 0.5*BW), TY ), >=( (BY + 0.5*BW), TY ),
 %%%     Top \= Bottom.
 holds(on_Physical(Top, Bottom),T) :-
+
     % get object center for Top
     object_detection(Top, T, VPT),
     rdf_triple(knowrob:eventOccursAt, VPT,    TopMatrix),
     rdf_triple(knowrob:m03, TopMatrix, TCxx),strip_literal_type(TCxx, TCx),atom_to_term(TCx,TX,_),
     rdf_triple(knowrob:m13, TopMatrix, TCyy),strip_literal_type(TCyy, TCy),atom_to_term(TCy,TY,_),
-%     rdf_triple(knowrob:m23, TopMatrix, TCzz),strip_literal_type(TCzz, TCz),atom_to_term(TCz,TZ,_),
+    rdf_triple(knowrob:m23, TopMatrix, TCzz),strip_literal_type(TCzz, TCz),atom_to_term(TCz,TZ,_),
 
 %     rdf_triple(knowrob:heightOfObject, Top, literal(type(_,Th))),atom_to_term(Th,TH,_),
 
@@ -148,15 +149,15 @@ holds(on_Physical(Top, Bottom),T) :-
     objectAtPoint2D(TX,TY,Bottom),
 
     % get height of objects at center point
-%     object_detection(Bottom, T, VPB),
-%     rdf_triple(knowrob:eventOccursAt, VPB, BottomMatrix),
-%     rdf_triple(knowrob:m23, BottomMatrix, BCzz), strip_literal_type(BCzz, BCz),atom_to_term(BCz,BZ,_),
+    object_detection(Bottom, T, VPB),
+    rdf_triple(knowrob:eventOccursAt, VPB, BottomMatrix),
+    rdf_triple(knowrob:m23, BottomMatrix, BCzz), strip_literal_type(BCzz, BCz),atom_to_term(BCz,BZ,_),
 %     rdf_triple(knowrob:heightOfObject, Bottom, literal(type(_,Bh))),atom_to_term(Bh,BH,_),
 
 %     print('bottom height:'), print(BH),
 
     % the criterion is if the difference between them is less than epsilon=5cm
-%     =<( abs((BZ + 0.5*BH) - (TZ - 0.5*TH)), 0.05),
+    <( BZ, TZ),
     Top \= Bottom.
 
 
@@ -478,7 +479,36 @@ in_ContGeneric(InnerObj, OuterObj) :-
 % @param OuterObj Identifier of the outer Object
 % @param T TimePoint or Event for which the relations is supposed to hold
 %
+
+
+% MT: tried to use matrix transformation library to perform easier computation of 'inside'
+% using bounding box. Problem; does not work as long as not both objects are bound
+% 
+% holds(in_ContGeneric(InnerObj, OuterObj), T) :-
+% 
+% 
+% % TODO: take time into account
+% 
+%     nonvar(InnerObj), nonvar(OuterObj),
+%     transform_relative_to(InnerObj, OuterObj, [_,_,_,IrelOX,_,_,_,IrelOY,_,_,_,IrelOZ,_,_,_,_]),
+% 
+%     % read the dimensions of the outer entity
+%     rdf_triple(knowrob:widthOfObject, OuterObj, LOW),strip_literal_type(LOW,Ow),atom_to_term(Ow,OW,_),
+%     rdf_triple(knowrob:heightOfObject,OuterObj, LOH),strip_literal_type(LOH,Oh),atom_to_term(Oh,OH,_),
+%     rdf_triple(knowrob:depthOfObject, OuterObj, LOD),strip_literal_type(LOD,Od),atom_to_term(Od,OD,_),
+% 
+% 
+%     % is InnerInOuterCoordList inside bounding box of outer object?
+%     
+%     >=( OD, IrelOX),
+%     >=( OW, IrelOY),
+%     >=( OH, IrelOZ),
+% 
+%     InnerObj \= OuterObj.
+
 holds(in_ContGeneric(InnerObj, OuterObj), T) :-
+
+    (var(InnerObj); var(OuterObj)),
 
     object_detection(InnerObj, T, VPI),
     object_detection(OuterObj, T, VPO),
@@ -542,6 +572,10 @@ objectAtPoint2D(Point2D, Obj) :-
     rdf_triple(knowrob:xCoord, Point2D, PCxx), strip_literal_type(PCxx, PCx), atom_to_term(PCx,PX,_),
     rdf_triple(knowrob:yCoord, Point2D, PCyy), strip_literal_type(PCyy, PCy), atom_to_term(PCy,PY,_),
     objectAtPoint2D(PX,PY,Obj).
+
+% 
+% FIXME: THIS IS BROKEN FOR ALL NON-STANDARD ROTATIONS if the upper left matrix is partly zero
+% 
 
 objectAtPoint2D(PX,PY,Obj) :-
 
