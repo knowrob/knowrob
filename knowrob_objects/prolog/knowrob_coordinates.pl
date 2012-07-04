@@ -110,12 +110,12 @@ pose4d_into_relative_coord(GlobalPose4d, ReferencePose4d, RelativePose4d) :-
     jpl_call(InvPoseRef4d, 'invert', [ReferencePose4d], _),
 
     jpl_new('javax.vecmath.Matrix4d', [], RelativePose4d),
-    jpl_call(RelativePose4d, 'mul', [GlobalPose4d, InvPoseRef4d], _),!.
+    jpl_call(RelativePose4d, 'mul', [InvPoseRef4d, GlobalPose4d], _),!. % MT 040711: swapped order inv, global
 
 
 
 % tf-version: transform into reference object's frame
-pose4d_into_relative_coord(RelativePose4d, ReferencePose4d, GlobalPose4d) :-
+pose4d_into_relative_coord(GlobalPose4d, ReferencePose4d, RelativePose4d) :-
 
     rdf_has(RelativePose4d,  knowrob:tfFrame, SourceTfFrame),
     rdf_has(ReferencePose4d, knowrob:tfFrame, ReferenceTfFrame),
