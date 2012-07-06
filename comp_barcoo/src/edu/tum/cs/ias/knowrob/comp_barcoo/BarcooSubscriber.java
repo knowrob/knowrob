@@ -13,13 +13,13 @@ public class BarcooSubscriber{
 	private BarcooImporter barcooImporter;
 	private BarcooKnowrobLoader knowrobLoader;
 	
-	public BarcooSubscriber(final String barcooOWLPath,final String mappingPath) throws Exception
+	public BarcooSubscriber(final String barcooOWLPath) throws Exception
 	{		
 		
 		final Ros ros = Ros.getInstance();		
 		ros.init("BarcooService");				
 		NodeHandle n = ros.createNodeHandle();
-		barcooImporter = new BarcooImporter(barcooOWLPath, mappingPath);
+		barcooImporter = new BarcooImporter(barcooOWLPath);
 		knowrobLoader = new BarcooKnowrobLoader(n,"knowrobTopic");
 		
 		ServiceServer.Callback<send_barcode.Request,send_barcode.Response> scb = new ServiceServer.Callback<send_barcode.Request,send_barcode.Response>() 
@@ -58,11 +58,14 @@ public class BarcooSubscriber{
 	{		
 		try
 		{
-			//System.out.println("arg0 = barcoo owl path");
-			//System.out.println("arg1 = barcoo mapping path");
+			if(args == null || args.length != 1 || args[0].equalsIgnoreCase("help"))
+			{
+				System.out.println("arg0 = barcoo owl path");				
+				System.exit(0);
+			}			
 			System.out.println("PLEASE WAIT.\n PROGRAM LOADING...");
 			
-			BarcooSubscriber subscriber = new BarcooSubscriber(args[0],args[1]);
+			BarcooSubscriber subscriber = new BarcooSubscriber(args[0]);
 		}
 		catch(Exception ex)
 		{

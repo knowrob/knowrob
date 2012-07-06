@@ -37,42 +37,42 @@
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Alcohol -->
+    <!-- http://www.barcoo.com/barcoo.owl#ALCOHOL -->
 
-    <owl:Class rdf:about="&barcoo;Alcohol">
-        <rdfs:subClassOf rdf:resource="&barcoo;Drink"/>
+    <owl:Class rdf:about="&barcoo;ALCOHOL">
+        <rdfs:subClassOf rdf:resource="&barcoo;DRINK"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#AlcoholFree -->
+    <!-- http://www.barcoo.com/barcoo.owl#ALCOHOLFREE -->
 
-    <owl:Class rdf:about="&barcoo;AlcoholFree">
-        <rdfs:subClassOf rdf:resource="&barcoo;Beer"/>
+    <owl:Class rdf:about="&barcoo;ALCOHOLFREE">
+        <rdfs:subClassOf rdf:resource="&barcoo;BEER"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Art -->
+    <!-- http://www.barcoo.com/barcoo.owl#ART -->
 
-    <owl:Class rdf:about="&barcoo;Art">
-        <rdfs:subClassOf rdf:resource="&barcoo;Stationery"/>
+    <owl:Class rdf:about="&barcoo;ART">
+        <rdfs:subClassOf rdf:resource="&barcoo;STATIONERY"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Baby -->
+    <!-- http://www.barcoo.com/barcoo.owl#BABY -->
 
-    <owl:Class rdf:about="&barcoo;Baby">
-        <rdfs:subClassOf rdf:resource="&barcoo;ToysBaby"/>
+    <owl:Class rdf:about="&barcoo;BABY">
+        <rdfs:subClassOf rdf:resource="&barcoo;TOYS_BABY"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#BakingSupplies -->
+    <!-- http://www.barcoo.com/barcoo.owl#BAKING_SUPPLIES -->
 
-    <owl:Class rdf:about="&barcoo;BakingSupplies">
-        <rdfs:subClassOf rdf:resource="&barcoo;CookingBakingSupplies"/>
+    <owl:Class rdf:about="&barcoo;BAKING_SUPPLIES">
+        <rdfs:subClassOf rdf:resource="&barcoo;COOKING_BAKING_SUPPLIES"/>
     </owl:Class>
     
 
@@ -85,210 +85,210 @@
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#BeanGrains -->
+    <!-- http://www.barcoo.com/barcoo.owl#BEANS_GRAINS -->
 
-    <owl:Class rdf:about="&barcoo;BeanGrains">
-        <rdfs:subClassOf rdf:resource="&barcoo;CookingBakingSupplies"/>
+    <owl:Class rdf:about="&barcoo;BEANS_GRAINS">
+        <rdfs:subClassOf rdf:resource="&barcoo;COOKING_BAKING_SUPPLIES"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Beer -->
+    <!-- http://www.barcoo.com/barcoo.owl#BEER -->
 
-    <owl:Class rdf:about="&barcoo;Beer">
-        <rdfs:subClassOf rdf:resource="&barcoo;Alcohol"/>
+    <owl:Class rdf:about="&barcoo;BEER">
+        <rdfs:subClassOf rdf:resource="&barcoo;ALCOHOL"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#BluRayPlayer -->
+    <!-- http://www.barcoo.com/barcoo.owl#BLU_RAY_PLAYER -->
 
-    <owl:Class rdf:about="&barcoo;BluRayPlayer">
+    <owl:Class rdf:about="&barcoo;BLU_RAY_PLAYER">
         <rdfs:subClassOf rdf:resource="&barcoo;TV"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#BlueRay -->
+    <!-- http://www.barcoo.com/barcoo.owl#BLUE_RAY -->
 
-    <owl:Class rdf:about="&barcoo;BlueRay">
-        <rdfs:subClassOf rdf:resource="&barcoo;Video"/>
+    <owl:Class rdf:about="&barcoo;BLUE_RAY">
+        <rdfs:subClassOf rdf:resource="&barcoo;VIDEO"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#BodyCare -->
+    <!-- http://www.barcoo.com/barcoo.owl#BODY_CARE -->
 
-    <owl:Class rdf:about="&barcoo;BodyCare">
-        <rdfs:subClassOf rdf:resource="&barcoo;DrugStore"/>
+    <owl:Class rdf:about="&barcoo;BODY_CARE">
+        <rdfs:subClassOf rdf:resource="&barcoo;DRUGSTORE"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Book -->
+    <!-- http://www.barcoo.com/barcoo.owl#BOOK -->
 
-    <owl:Class rdf:about="&barcoo;Book">
-        <rdfs:subClassOf rdf:resource="&barcoo;Media"/>
+    <owl:Class rdf:about="&barcoo;BOOK">
+        <rdfs:subClassOf rdf:resource="&barcoo;MEDIA"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Bread -->
+    <!-- http://www.barcoo.com/barcoo.owl#BREAD -->
 
-    <owl:Class rdf:about="&barcoo;Bread">
-        <rdfs:subClassOf rdf:resource="&barcoo;Food"/>
+    <owl:Class rdf:about="&barcoo;BREAD">
+        <rdfs:subClassOf rdf:resource="&barcoo;FOOD"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#BreakfastCereals -->
+    <!-- http://www.barcoo.com/barcoo.owl#BREAKFAST_CEREALS -->
 
-    <owl:Class rdf:about="&barcoo;BreakfastCereals">
-        <rdfs:subClassOf rdf:resource="&barcoo;Food"/>
+    <owl:Class rdf:about="&barcoo;BREAKFAST_CEREALS">
+        <rdfs:subClassOf rdf:resource="&barcoo;FOOD"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#CameraPhoto -->
+    <!-- http://www.barcoo.com/barcoo.owl#CAMERA_PHOTO -->
 
-    <owl:Class rdf:about="&barcoo;CameraPhoto">
-        <rdfs:subClassOf rdf:resource="&barcoo;Electronics"/>
+    <owl:Class rdf:about="&barcoo;CAMERA_PHOTO">
+        <rdfs:subClassOf rdf:resource="&barcoo;ELECTRONICS"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Car -->
+    <!-- http://www.barcoo.com/barcoo.owl#CAR -->
 
-    <owl:Class rdf:about="&barcoo;Car">
+    <owl:Class rdf:about="&barcoo;CAR">
         <rdfs:subClassOf rdf:resource="&barcoo;BarcooObject"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Cheese -->
+    <!-- http://www.barcoo.com/barcoo.owl#CHEESE -->
 
-    <owl:Class rdf:about="&barcoo;Cheese">
-        <rdfs:subClassOf rdf:resource="&barcoo;Dairy"/>
+    <owl:Class rdf:about="&barcoo;CHEESE">
+        <rdfs:subClassOf rdf:resource="&barcoo;DAIRY"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Chocolate -->
+    <!-- http://www.barcoo.com/barcoo.owl#CHOCOLATE -->
 
-    <owl:Class rdf:about="&barcoo;Chocolate">
-        <rdfs:subClassOf rdf:resource="&barcoo;Sweets"/>
+    <owl:Class rdf:about="&barcoo;CHOCOLATE">
+        <rdfs:subClassOf rdf:resource="&barcoo;SWEETS"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Cleaning -->
+    <!-- http://www.barcoo.com/barcoo.owl#CLEANING -->
 
-    <owl:Class rdf:about="&barcoo;Cleaning">
-        <rdfs:subClassOf rdf:resource="&barcoo;DrugStore"/>
+    <owl:Class rdf:about="&barcoo;CLEANING">
+        <rdfs:subClassOf rdf:resource="&barcoo;DRUGSTORE"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Clothing -->
+    <!-- http://www.barcoo.com/barcoo.owl#CLOTHING -->
 
-    <owl:Class rdf:about="&barcoo;Clothing">
-        <rdfs:subClassOf rdf:resource="&barcoo;Fashion"/>
+    <owl:Class rdf:about="&barcoo;CLOTHING">
+        <rdfs:subClassOf rdf:resource="&barcoo;FASHION"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Coffee -->
+    <!-- http://www.barcoo.com/barcoo.owl#COFFEE -->
 
-    <owl:Class rdf:about="&barcoo;Coffee">
-        <rdfs:subClassOf rdf:resource="&barcoo;Drink"/>
+    <owl:Class rdf:about="&barcoo;COFFEE">
+        <rdfs:subClassOf rdf:resource="&barcoo;DRINK"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#CoffeeMaschines -->
+    <!-- http://www.barcoo.com/barcoo.owl#COFFEEMaschines -->
 
-    <owl:Class rdf:about="&barcoo;CoffeeMaschines">
-        <rdfs:subClassOf rdf:resource="&barcoo;Cooling"/>
+    <owl:Class rdf:about="&barcoo;COFFEEMaschines">
+        <rdfs:subClassOf rdf:resource="&barcoo;COOLING"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#CoffeePadMaschines -->
+    <!-- http://www.barcoo.com/barcoo.owl#COFFEEPadMaschines -->
 
-    <owl:Class rdf:about="&barcoo;CoffeePadMaschines">
-        <rdfs:subClassOf rdf:resource="&barcoo;CoffeeMaschines"/>
+    <owl:Class rdf:about="&barcoo;COFFEEPadMaschines">
+        <rdfs:subClassOf rdf:resource="&barcoo;COFFEEMaschines"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#CoffeePads -->
+    <!-- http://www.barcoo.com/barcoo.owl#COFFEE_PADS -->
 
-    <owl:Class rdf:about="&barcoo;CoffeePads">
-        <rdfs:subClassOf rdf:resource="&barcoo;Coffee"/>
+    <owl:Class rdf:about="&barcoo;COFFEE_PADS">
+        <rdfs:subClassOf rdf:resource="&barcoo;COFFEE"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Computer -->
+    <!-- http://www.barcoo.com/barcoo.owl#COMPUTER -->
 
-    <owl:Class rdf:about="&barcoo;Computer">
-        <rdfs:subClassOf rdf:resource="&barcoo;Electronics"/>
+    <owl:Class rdf:about="&barcoo;COMPUTER">
+        <rdfs:subClassOf rdf:resource="&barcoo;ELECTRONICS"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#ComputerAccessories -->
+    <!-- http://www.barcoo.com/barcoo.owl#COMPUTERAccessories -->
 
-    <owl:Class rdf:about="&barcoo;ComputerAccessories">
-        <rdfs:subClassOf rdf:resource="&barcoo;Electronics"/>
+    <owl:Class rdf:about="&barcoo;COMPUTERAccessories">
+        <rdfs:subClassOf rdf:resource="&barcoo;ELECTRONICS"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Contraception -->
+    <!-- http://www.barcoo.com/barcoo.owl#CONTRACEPTION -->
 
-    <owl:Class rdf:about="&barcoo;Contraception">
-        <rdfs:subClassOf rdf:resource="&barcoo;DrugStore"/>
+    <owl:Class rdf:about="&barcoo;CONTRACEPTION">
+        <rdfs:subClassOf rdf:resource="&barcoo;DRUGSTORE"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Cookies -->
+    <!-- http://www.barcoo.com/barcoo.owl#COOKIES -->
 
-    <owl:Class rdf:about="&barcoo;Cookies">
-        <rdfs:subClassOf rdf:resource="&barcoo;Sweets"/>
+    <owl:Class rdf:about="&barcoo;COOKIES">
+        <rdfs:subClassOf rdf:resource="&barcoo;SWEETS"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#CookingBakingSupplies -->
+    <!-- http://www.barcoo.com/barcoo.owl#COOKING_BAKING_SUPPLIES -->
 
-    <owl:Class rdf:about="&barcoo;CookingBakingSupplies">
-        <rdfs:subClassOf rdf:resource="&barcoo;Food"/>
+    <owl:Class rdf:about="&barcoo;COOKING_BAKING_SUPPLIES">
+        <rdfs:subClassOf rdf:resource="&barcoo;FOOD"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#CookingOil -->
+    <!-- http://www.barcoo.com/barcoo.owl#COOKING_OIL -->
 
-    <owl:Class rdf:about="&barcoo;CookingOil">
-        <rdfs:subClassOf rdf:resource="&barcoo;CookingBakingSupplies"/>
+    <owl:Class rdf:about="&barcoo;COOKING_OIL">
+        <rdfs:subClassOf rdf:resource="&barcoo;COOKING_BAKING_SUPPLIES"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Cooling -->
+    <!-- http://www.barcoo.com/barcoo.owl#COOLING -->
 
-    <owl:Class rdf:about="&barcoo;Cooling">
-        <rdfs:subClassOf rdf:resource="&barcoo;HouseholdAppliances"/>
+    <owl:Class rdf:about="&barcoo;COOLING">
+        <rdfs:subClassOf rdf:resource="&barcoo;HOUSEHOLD_APPLIANCES"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Cosmetics -->
+    <!-- http://www.barcoo.com/barcoo.owl#COSMETICS -->
 
-    <owl:Class rdf:about="&barcoo;Cosmetics">
-        <rdfs:subClassOf rdf:resource="&barcoo;DrugStore"/>
+    <owl:Class rdf:about="&barcoo;COSMETICS">
+        <rdfs:subClassOf rdf:resource="&barcoo;DRUGSTORE"/>
     </owl:Class>
     
 
@@ -296,351 +296,351 @@
     <!-- http://www.barcoo.com/barcoo.owl#DVD -->
 
     <owl:Class rdf:about="&barcoo;DVD">
-        <rdfs:subClassOf rdf:resource="&barcoo;Video"/>
+        <rdfs:subClassOf rdf:resource="&barcoo;VIDEO"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#DVDHDRecorder -->
+    <!-- http://www.barcoo.com/barcoo.owl#DVD_HD_RECORDER -->
 
-    <owl:Class rdf:about="&barcoo;DVDHDRecorder">
+    <owl:Class rdf:about="&barcoo;DVD_HD_RECORDER">
         <rdfs:subClassOf rdf:resource="&barcoo;TV"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#DVDWriter -->
+    <!-- http://www.barcoo.com/barcoo.owl#DVD_WRITER -->
 
-    <owl:Class rdf:about="&barcoo;DVDWriter">
-        <rdfs:subClassOf rdf:resource="&barcoo;ComputerAccessories"/>
+    <owl:Class rdf:about="&barcoo;DVD_WRITER">
+        <rdfs:subClassOf rdf:resource="&barcoo;COMPUTERAccessories"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Dairy -->
+    <!-- http://www.barcoo.com/barcoo.owl#DAIRY -->
 
-    <owl:Class rdf:about="&barcoo;Dairy">
-        <rdfs:subClassOf rdf:resource="&barcoo;Food"/>
+    <owl:Class rdf:about="&barcoo;DAIRY">
+        <rdfs:subClassOf rdf:resource="&barcoo;FOOD"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Dandruff -->
+    <!-- http://www.barcoo.com/barcoo.owl#DANDRUFF -->
 
-    <owl:Class rdf:about="&barcoo;Dandruff">
-        <rdfs:subClassOf rdf:resource="&barcoo;Shampoo"/>
+    <owl:Class rdf:about="&barcoo;DANDRUFF">
+        <rdfs:subClassOf rdf:resource="&barcoo;SHAMPOO"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Desktop -->
+    <!-- http://www.barcoo.com/barcoo.owl#DESKTOP -->
 
-    <owl:Class rdf:about="&barcoo;Desktop">
-        <rdfs:subClassOf rdf:resource="&barcoo;Electronics"/>
+    <owl:Class rdf:about="&barcoo;DESKTOP">
+        <rdfs:subClassOf rdf:resource="&barcoo;ELECTRONICS"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#DigitalCamcorder -->
+    <!-- http://www.barcoo.com/barcoo.owl#DIGITAL_CAMCORDER -->
 
-    <owl:Class rdf:about="&barcoo;DigitalCamcorder">
-        <rdfs:subClassOf rdf:resource="&barcoo;CameraPhoto"/>
+    <owl:Class rdf:about="&barcoo;DIGITAL_CAMCORDER">
+        <rdfs:subClassOf rdf:resource="&barcoo;CAMERA_PHOTO"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#DigitalCamcorderHD -->
+    <!-- http://www.barcoo.com/barcoo.owl#DIGITAL_CAMCORDER_HD -->
 
-    <owl:Class rdf:about="&barcoo;DigitalCamcorderHD">
-        <rdfs:subClassOf rdf:resource="&barcoo;DigitalCamcorder"/>
+    <owl:Class rdf:about="&barcoo;DIGITAL_CAMCORDER_HD">
+        <rdfs:subClassOf rdf:resource="&barcoo;DIGITAL_CAMCORDER"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#DigitalCamera -->
+    <!-- http://www.barcoo.com/barcoo.owl#DIGITAL_CAMERA -->
 
-    <owl:Class rdf:about="&barcoo;DigitalCamera">
-        <rdfs:subClassOf rdf:resource="&barcoo;CameraPhoto"/>
+    <owl:Class rdf:about="&barcoo;DIGITAL_CAMERA">
+        <rdfs:subClassOf rdf:resource="&barcoo;CAMERA_PHOTO"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#DigitalSlr -->
+    <!-- http://www.barcoo.com/barcoo.owl#DIGITAL_SLR -->
 
-    <owl:Class rdf:about="&barcoo;DigitalSlr">
-        <rdfs:subClassOf rdf:resource="&barcoo;DigitalCamera"/>
+    <owl:Class rdf:about="&barcoo;DIGITAL_SLR">
+        <rdfs:subClassOf rdf:resource="&barcoo;DIGITAL_CAMERA"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Dishwasher -->
+    <!-- http://www.barcoo.com/barcoo.owl#DISHWASHER -->
 
-    <owl:Class rdf:about="&barcoo;Dishwasher">
-        <rdfs:subClassOf rdf:resource="&barcoo;Cooling"/>
+    <owl:Class rdf:about="&barcoo;DISHWASHER">
+        <rdfs:subClassOf rdf:resource="&barcoo;COOLING"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Diy -->
+    <!-- http://www.barcoo.com/barcoo.owl#DIY -->
 
-    <owl:Class rdf:about="&barcoo;Diy">
-        <rdfs:subClassOf rdf:resource="&barcoo;Living"/>
+    <owl:Class rdf:about="&barcoo;DIY">
+        <rdfs:subClassOf rdf:resource="&barcoo;LIVING"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Drink -->
+    <!-- http://www.barcoo.com/barcoo.owl#DRINK -->
 
-    <owl:Class rdf:about="&barcoo;Drink">
+    <owl:Class rdf:about="&barcoo;DRINK">
         <rdfs:subClassOf rdf:resource="&barcoo;BarcooObject"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#DrugStore -->
+    <!-- http://www.barcoo.com/barcoo.owl#DRUGSTORE -->
 
-    <owl:Class rdf:about="&barcoo;DrugStore">
+    <owl:Class rdf:about="&barcoo;DRUGSTORE">
         <rdfs:subClassOf rdf:resource="&barcoo;BarcooObject"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Dryer -->
+    <!-- http://www.barcoo.com/barcoo.owl#DRYER -->
 
-    <owl:Class rdf:about="&barcoo;Dryer">
-        <rdfs:subClassOf rdf:resource="&barcoo;Cooling"/>
+    <owl:Class rdf:about="&barcoo;DRYER">
+        <rdfs:subClassOf rdf:resource="&barcoo;COOLING"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Eggs -->
+    <!-- http://www.barcoo.com/barcoo.owl#EGGS -->
 
-    <owl:Class rdf:about="&barcoo;Eggs">
-        <rdfs:subClassOf rdf:resource="&barcoo;Dairy"/>
+    <owl:Class rdf:about="&barcoo;EGGS">
+        <rdfs:subClassOf rdf:resource="&barcoo;DAIRY"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Electronics -->
+    <!-- http://www.barcoo.com/barcoo.owl#ELECTRONICS -->
 
-    <owl:Class rdf:about="&barcoo;Electronics">
+    <owl:Class rdf:about="&barcoo;ELECTRONICS">
         <rdfs:subClassOf rdf:resource="&barcoo;BarcooObject"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#EnergySavingLamp -->
+    <!-- http://www.barcoo.com/barcoo.owl#ENERGY_SAVING_LAMP -->
 
-    <owl:Class rdf:about="&barcoo;EnergySavingLamp">
-        <rdfs:subClassOf rdf:resource="&barcoo;Cooling"/>
+    <owl:Class rdf:about="&barcoo;ENERGY_SAVING_LAMP">
+        <rdfs:subClassOf rdf:resource="&barcoo;COOLING"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#ExternalHD -->
+    <!-- http://www.barcoo.com/barcoo.owl#EXTERNAL_HD -->
 
-    <owl:Class rdf:about="&barcoo;ExternalHD">
-        <rdfs:subClassOf rdf:resource="&barcoo;ComputerAccessories"/>
+    <owl:Class rdf:about="&barcoo;EXTERNAL_HD">
+        <rdfs:subClassOf rdf:resource="&barcoo;COMPUTERAccessories"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Fashion -->
+    <!-- http://www.barcoo.com/barcoo.owl#FASHION -->
 
-    <owl:Class rdf:about="&barcoo;Fashion">
+    <owl:Class rdf:about="&barcoo;FASHION">
         <rdfs:subClassOf rdf:resource="&barcoo;BarcooObject"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Fish -->
+    <!-- http://www.barcoo.com/barcoo.owl#FISH -->
 
-    <owl:Class rdf:about="&barcoo;Fish">
-        <rdfs:subClassOf rdf:resource="&barcoo;Meat"/>
+    <owl:Class rdf:about="&barcoo;FISH">
+        <rdfs:subClassOf rdf:resource="&barcoo;MEAT"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#FlatScreen -->
+    <!-- http://www.barcoo.com/barcoo.owl#FLAT_SCREEN -->
 
-    <owl:Class rdf:about="&barcoo;FlatScreen">
-        <rdfs:subClassOf rdf:resource="&barcoo;ComputerAccessories"/>
+    <owl:Class rdf:about="&barcoo;FLAT_SCREEN">
+        <rdfs:subClassOf rdf:resource="&barcoo;COMPUTERAccessories"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#FlatScreen19 -->
+    <!-- http://www.barcoo.com/barcoo.owl#FLAT_SCREEN_19 -->
 
-    <owl:Class rdf:about="&barcoo;FlatScreen19">
-        <rdfs:subClassOf rdf:resource="&barcoo;FlatScreen"/>
+    <owl:Class rdf:about="&barcoo;FLAT_SCREEN_19">
+        <rdfs:subClassOf rdf:resource="&barcoo;FLAT_SCREEN"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#FlatScreen20 -->
+    <!-- http://www.barcoo.com/barcoo.owl#FLAT_SCREEN20 -->
 
-    <owl:Class rdf:about="&barcoo;FlatScreen20">
-        <rdfs:subClassOf rdf:resource="&barcoo;FlatScreen"/>
+    <owl:Class rdf:about="&barcoo;FLAT_SCREEN20">
+        <rdfs:subClassOf rdf:resource="&barcoo;FLAT_SCREEN"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#FlatScreen21Plus -->
+    <!-- http://www.barcoo.com/barcoo.owl#FLAT_SCREEN21Plus -->
 
-    <owl:Class rdf:about="&barcoo;FlatScreen21Plus">
-        <rdfs:subClassOf rdf:resource="&barcoo;FlatScreen"/>
+    <owl:Class rdf:about="&barcoo;FLAT_SCREEN21Plus">
+        <rdfs:subClassOf rdf:resource="&barcoo;FLAT_SCREEN"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Food -->
+    <!-- http://www.barcoo.com/barcoo.owl#FOOD -->
 
-    <owl:Class rdf:about="&barcoo;Food">
+    <owl:Class rdf:about="&barcoo;FOOD">
         <rdfs:subClassOf rdf:resource="&barcoo;BarcooObject"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#FotoPrinter -->
+    <!-- http://www.barcoo.com/barcoo.owl#FOTO_PRINTER -->
 
-    <owl:Class rdf:about="&barcoo;FotoPrinter">
-        <rdfs:subClassOf rdf:resource="&barcoo;Printer"/>
+    <owl:Class rdf:about="&barcoo;FOTO_PRINTER">
+        <rdfs:subClassOf rdf:resource="&barcoo;PRINTER"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Freezer -->
+    <!-- http://www.barcoo.com/barcoo.owl#FREEZER -->
 
-    <owl:Class rdf:about="&barcoo;Freezer">
-        <rdfs:subClassOf rdf:resource="&barcoo;Cooling"/>
+    <owl:Class rdf:about="&barcoo;FREEZER">
+        <rdfs:subClassOf rdf:resource="&barcoo;COOLING"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Fridge -->
+    <!-- http://www.barcoo.com/barcoo.owl#FRIDGE -->
 
-    <owl:Class rdf:about="&barcoo;Fridge">
-        <rdfs:subClassOf rdf:resource="&barcoo;Cooling"/>
+    <owl:Class rdf:about="&barcoo;FRIDGE">
+        <rdfs:subClassOf rdf:resource="&barcoo;COOLING"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Fruit -->
+    <!-- http://www.barcoo.com/barcoo.owl#FRUITS -->
 
-    <owl:Class rdf:about="&barcoo;Fruit">
-        <rdfs:subClassOf rdf:resource="&barcoo;Food"/>
+    <owl:Class rdf:about="&barcoo;FRUITS">
+        <rdfs:subClassOf rdf:resource="&barcoo;FOOD"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Furniture -->
+    <!-- http://www.barcoo.com/barcoo.owl#FURNITURE -->
 
-    <owl:Class rdf:about="&barcoo;Furniture">
-        <rdfs:subClassOf rdf:resource="&barcoo;Living"/>
+    <owl:Class rdf:about="&barcoo;FURNITURE">
+        <rdfs:subClassOf rdf:resource="&barcoo;LIVING"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#GameConsole -->
+    <!-- http://www.barcoo.com/barcoo.owl#GAME_CONSOLE -->
 
-    <owl:Class rdf:about="&barcoo;GameConsole">
-        <rdfs:subClassOf rdf:resource="&barcoo;Electronics"/>
+    <owl:Class rdf:about="&barcoo;GAME_CONSOLE">
+        <rdfs:subClassOf rdf:resource="&barcoo;ELECTRONICS"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#GamesDigital -->
+    <!-- http://www.barcoo.com/barcoo.owl#GAMES_DIGITAL -->
 
-    <owl:Class rdf:about="&barcoo;GamesDigital">
-        <rdfs:subClassOf rdf:resource="&barcoo;Media"/>
+    <owl:Class rdf:about="&barcoo;GAMES_DIGITAL">
+        <rdfs:subClassOf rdf:resource="&barcoo;MEDIA"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#GamesPc -->
+    <!-- http://www.barcoo.com/barcoo.owl#GAMES_PC -->
 
-    <owl:Class rdf:about="&barcoo;GamesPc">
-        <rdfs:subClassOf rdf:resource="&barcoo;GamesDigital"/>
+    <owl:Class rdf:about="&barcoo;GAMES_PC">
+        <rdfs:subClassOf rdf:resource="&barcoo;GAMES_DIGITAL"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#GamesPlaystation -->
+    <!-- http://www.barcoo.com/barcoo.owl#GAMES_PLAYSTATION -->
 
-    <owl:Class rdf:about="&barcoo;GamesPlaystation">
-        <rdfs:subClassOf rdf:resource="&barcoo;GamesDigital"/>
+    <owl:Class rdf:about="&barcoo;GAMES_PLAYSTATION">
+        <rdfs:subClassOf rdf:resource="&barcoo;GAMES_DIGITAL"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#GamesWii -->
+    <!-- http://www.barcoo.com/barcoo.owl#GAMES_WII -->
 
-    <owl:Class rdf:about="&barcoo;GamesWii">
-        <rdfs:subClassOf rdf:resource="&barcoo;GamesDigital"/>
+    <owl:Class rdf:about="&barcoo;GAMES_WII">
+        <rdfs:subClassOf rdf:resource="&barcoo;GAMES_DIGITAL"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#GamesXbox -->
+    <!-- http://www.barcoo.com/barcoo.owl#GAMES_XBOX -->
 
-    <owl:Class rdf:about="&barcoo;GamesXbox">
-        <rdfs:subClassOf rdf:resource="&barcoo;GamesDigital"/>
+    <owl:Class rdf:about="&barcoo;GAMES_XBOX">
+        <rdfs:subClassOf rdf:resource="&barcoo;GAMES_DIGITAL"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#GraphicPcie -->
+    <!-- http://www.barcoo.com/barcoo.owl#GRAPHIC_PCIE -->
 
-    <owl:Class rdf:about="&barcoo;GraphicPcie">
-        <rdfs:subClassOf rdf:resource="&barcoo;ComputerAccessories"/>
+    <owl:Class rdf:about="&barcoo;GRAPHIC_PCIE">
+        <rdfs:subClassOf rdf:resource="&barcoo;COMPUTERAccessories"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#HairCair -->
+    <!-- http://www.barcoo.com/barcoo.owl#HAIR_CAIR -->
 
-    <owl:Class rdf:about="&barcoo;HairCair">
-        <rdfs:subClassOf rdf:resource="&barcoo;DrugStore"/>
+    <owl:Class rdf:about="&barcoo;HAIR_CAIR">
+        <rdfs:subClassOf rdf:resource="&barcoo;DRUGSTORE"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Health -->
+    <!-- http://www.barcoo.com/barcoo.owl#HEALTH -->
 
-    <owl:Class rdf:about="&barcoo;Health">
-        <rdfs:subClassOf rdf:resource="&barcoo;DrugStore"/>
+    <owl:Class rdf:about="&barcoo;HEALTH">
+        <rdfs:subClassOf rdf:resource="&barcoo;DRUGSTORE"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#HouseholdAppliances -->
+    <!-- http://www.barcoo.com/barcoo.owl#HOUSEHOLD_APPLIANCES -->
 
-    <owl:Class rdf:about="&barcoo;HouseholdAppliances">
-        <rdfs:subClassOf rdf:resource="&barcoo;Electronics"/>
+    <owl:Class rdf:about="&barcoo;HOUSEHOLD_APPLIANCES">
+        <rdfs:subClassOf rdf:resource="&barcoo;ELECTRONICS"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#IceCream -->
+    <!-- http://www.barcoo.com/barcoo.owl#ICE_CREAM -->
 
-    <owl:Class rdf:about="&barcoo;IceCream">
-        <rdfs:subClassOf rdf:resource="&barcoo;Sweets"/>
+    <owl:Class rdf:about="&barcoo;ICE_CREAM">
+        <rdfs:subClassOf rdf:resource="&barcoo;SWEETS"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Inkjet -->
+    <!-- http://www.barcoo.com/barcoo.owl#INKJET -->
 
-    <owl:Class rdf:about="&barcoo;Inkjet">
-        <rdfs:subClassOf rdf:resource="&barcoo;Printer"/>
+    <owl:Class rdf:about="&barcoo;INKJET">
+        <rdfs:subClassOf rdf:resource="&barcoo;PRINTER"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Juice -->
+    <!-- http://www.barcoo.com/barcoo.owl#JUICE -->
 
-    <owl:Class rdf:about="&barcoo;Juice">
-        <rdfs:subClassOf rdf:resource="&barcoo;Drink"/>
+    <owl:Class rdf:about="&barcoo;JUICE">
+        <rdfs:subClassOf rdf:resource="&barcoo;DRINK"/>
     </owl:Class>
     
 
@@ -653,282 +653,282 @@
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#LaserPrinter -->
+    <!-- http://www.barcoo.com/barcoo.owl#LASER_PRINTER -->
 
-    <owl:Class rdf:about="&barcoo;LaserPrinter">
-        <rdfs:subClassOf rdf:resource="&barcoo;Printer"/>
+    <owl:Class rdf:about="&barcoo;LASER_PRINTER">
+        <rdfs:subClassOf rdf:resource="&barcoo;PRINTER"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#LaserPrinterBW -->
+    <!-- http://www.barcoo.com/barcoo.owl#LASER_PRINTER_BW -->
 
-    <owl:Class rdf:about="&barcoo;LaserPrinterBW">
-        <rdfs:subClassOf rdf:resource="&barcoo;LaserPrinter"/>
+    <owl:Class rdf:about="&barcoo;LASER_PRINTER_BW">
+        <rdfs:subClassOf rdf:resource="&barcoo;LASER_PRINTER"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#LaserPrinterColor -->
+    <!-- http://www.barcoo.com/barcoo.owl#LASER_PRINTERColor -->
 
-    <owl:Class rdf:about="&barcoo;LaserPrinterColor">
-        <rdfs:subClassOf rdf:resource="&barcoo;LaserPrinter"/>
+    <owl:Class rdf:about="&barcoo;LASER_PRINTERColor">
+        <rdfs:subClassOf rdf:resource="&barcoo;LASER_PRINTER"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Liquor -->
+    <!-- http://www.barcoo.com/barcoo.owl#LIQUOR -->
 
-    <owl:Class rdf:about="&barcoo;Liquor">
-        <rdfs:subClassOf rdf:resource="&barcoo;Alcohol"/>
+    <owl:Class rdf:about="&barcoo;LIQUOR">
+        <rdfs:subClassOf rdf:resource="&barcoo;ALCOHOL"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Living -->
+    <!-- http://www.barcoo.com/barcoo.owl#LIVING -->
 
-    <owl:Class rdf:about="&barcoo;Living">
+    <owl:Class rdf:about="&barcoo;LIVING">
         <rdfs:subClassOf rdf:resource="&barcoo;BarcooObject"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#MP3Hifi -->
+    <!-- http://www.barcoo.com/barcoo.owl#MP3_HIFI -->
 
-    <owl:Class rdf:about="&barcoo;MP3Hifi">
-        <rdfs:subClassOf rdf:resource="&barcoo;Electronics"/>
+    <owl:Class rdf:about="&barcoo;MP3_HIFI">
+        <rdfs:subClassOf rdf:resource="&barcoo;ELECTRONICS"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Magazine -->
+    <!-- http://www.barcoo.com/barcoo.owl#MAGAZINE -->
 
-    <owl:Class rdf:about="&barcoo;Magazine">
-        <rdfs:subClassOf rdf:resource="&barcoo;Media"/>
+    <owl:Class rdf:about="&barcoo;MAGAZINE">
+        <rdfs:subClassOf rdf:resource="&barcoo;MEDIA"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#MagazineTv -->
+    <!-- http://www.barcoo.com/barcoo.owl#MAGAZINETv -->
 
-    <owl:Class rdf:about="&barcoo;MagazineTv">
-        <rdfs:subClassOf rdf:resource="&barcoo;Magazine"/>
+    <owl:Class rdf:about="&barcoo;MAGAZINETv">
+        <rdfs:subClassOf rdf:resource="&barcoo;MAGAZINE"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Meat -->
+    <!-- http://www.barcoo.com/barcoo.owl#MEAT -->
 
-    <owl:Class rdf:about="&barcoo;Meat">
-        <rdfs:subClassOf rdf:resource="&barcoo;Food"/>
+    <owl:Class rdf:about="&barcoo;MEAT">
+        <rdfs:subClassOf rdf:resource="&barcoo;FOOD"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Media -->
+    <!-- http://www.barcoo.com/barcoo.owl#MEDIA -->
 
-    <owl:Class rdf:about="&barcoo;Media">
-        <rdfs:subClassOf rdf:resource="&barcoo;Living"/>
+    <owl:Class rdf:about="&barcoo;MEDIA">
+        <rdfs:subClassOf rdf:resource="&barcoo;LIVING"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Milk -->
+    <!-- http://www.barcoo.com/barcoo.owl#MILK -->
 
-    <owl:Class rdf:about="&barcoo;Milk">
-        <rdfs:subClassOf rdf:resource="&barcoo;Drink"/>
+    <owl:Class rdf:about="&barcoo;MILK">
+        <rdfs:subClassOf rdf:resource="&barcoo;DRINK"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#MobilePhone -->
+    <!-- http://www.barcoo.com/barcoo.owl#MOBILE_PHONE -->
 
-    <owl:Class rdf:about="&barcoo;MobilePhone">
-        <rdfs:subClassOf rdf:resource="&barcoo;Electronics"/>
+    <owl:Class rdf:about="&barcoo;MOBILE_PHONE">
+        <rdfs:subClassOf rdf:resource="&barcoo;ELECTRONICS"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Mp3Player -->
+    <!-- http://www.barcoo.com/barcoo.owl#MP3_PLAYER -->
 
-    <owl:Class rdf:about="&barcoo;Mp3Player">
-        <rdfs:subClassOf rdf:resource="&barcoo;MP3Hifi"/>
+    <owl:Class rdf:about="&barcoo;MP3_PLAYER">
+        <rdfs:subClassOf rdf:resource="&barcoo;MP3_HIFI"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Mp3VideoPlayer -->
+    <!-- http://www.barcoo.com/barcoo.owl#MP3_VIDEO_PLAYER -->
 
-    <owl:Class rdf:about="&barcoo;Mp3VideoPlayer">
-        <rdfs:subClassOf rdf:resource="&barcoo;MP3Hifi"/>
+    <owl:Class rdf:about="&barcoo;MP3_VIDEO_PLAYER">
+        <rdfs:subClassOf rdf:resource="&barcoo;MP3_HIFI"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#MultifunctionalDevice -->
+    <!-- http://www.barcoo.com/barcoo.owl#MULTIFUNCTIONAL_DEVICE -->
 
-    <owl:Class rdf:about="&barcoo;MultifunctionalDevice">
-        <rdfs:subClassOf rdf:resource="&barcoo;ComputerAccessories"/>
+    <owl:Class rdf:about="&barcoo;MULTIFUNCTIONAL_DEVICE">
+        <rdfs:subClassOf rdf:resource="&barcoo;COMPUTERAccessories"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Music -->
+    <!-- http://www.barcoo.com/barcoo.owl#MUSIC -->
 
-    <owl:Class rdf:about="&barcoo;Music">
-        <rdfs:subClassOf rdf:resource="&barcoo;Media"/>
+    <owl:Class rdf:about="&barcoo;MUSIC">
+        <rdfs:subClassOf rdf:resource="&barcoo;MEDIA"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Nas -->
+    <!-- http://www.barcoo.com/barcoo.owl#NAS -->
 
-    <owl:Class rdf:about="&barcoo;Nas">
-        <rdfs:subClassOf rdf:resource="&barcoo;ComputerAccessories"/>
+    <owl:Class rdf:about="&barcoo;NAS">
+        <rdfs:subClassOf rdf:resource="&barcoo;COMPUTERAccessories"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#NavigationSystem -->
+    <!-- http://www.barcoo.com/barcoo.owl#NAVIGATION_SYSTEM -->
 
-    <owl:Class rdf:about="&barcoo;NavigationSystem">
-        <rdfs:subClassOf rdf:resource="&barcoo;Electronics"/>
+    <owl:Class rdf:about="&barcoo;NAVIGATION_SYSTEM">
+        <rdfs:subClassOf rdf:resource="&barcoo;ELECTRONICS"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Netbook -->
+    <!-- http://www.barcoo.com/barcoo.owl#NETBOOK -->
 
-    <owl:Class rdf:about="&barcoo;Netbook">
-        <rdfs:subClassOf rdf:resource="&barcoo;Notebook"/>
+    <owl:Class rdf:about="&barcoo;NETBOOK">
+        <rdfs:subClassOf rdf:resource="&barcoo;NOTEBOOK"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#NonFood -->
+    <!-- http://www.barcoo.com/barcoo.owl#NON_FOOD -->
 
-    <owl:Class rdf:about="&barcoo;NonFood">
+    <owl:Class rdf:about="&barcoo;NON_FOOD">
         <rdfs:subClassOf rdf:resource="&barcoo;BarcooObject"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Notebook -->
+    <!-- http://www.barcoo.com/barcoo.owl#NOTEBOOK -->
 
-    <owl:Class rdf:about="&barcoo;Notebook">
-        <rdfs:subClassOf rdf:resource="&barcoo;Electronics"/>
+    <owl:Class rdf:about="&barcoo;NOTEBOOK">
+        <rdfs:subClassOf rdf:resource="&barcoo;ELECTRONICS"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Notebook_13 -->
+    <!-- http://www.barcoo.com/barcoo.owl#NOTEBOOK_13 -->
 
-    <owl:Class rdf:about="&barcoo;Notebook_13">
-        <rdfs:subClassOf rdf:resource="&barcoo;Notebook"/>
+    <owl:Class rdf:about="&barcoo;NOTEBOOK_13">
+        <rdfs:subClassOf rdf:resource="&barcoo;NOTEBOOK"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Notebook_14 -->
+    <!-- http://www.barcoo.com/barcoo.owl#NOTEBOOK_14 -->
 
-    <owl:Class rdf:about="&barcoo;Notebook_14">
-        <rdfs:subClassOf rdf:resource="&barcoo;Notebook"/>
+    <owl:Class rdf:about="&barcoo;NOTEBOOK_14">
+        <rdfs:subClassOf rdf:resource="&barcoo;NOTEBOOK"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Notebook_15 -->
+    <!-- http://www.barcoo.com/barcoo.owl#NOTEBOOK_15 -->
 
-    <owl:Class rdf:about="&barcoo;Notebook_15">
-        <rdfs:subClassOf rdf:resource="&barcoo;Notebook"/>
+    <owl:Class rdf:about="&barcoo;NOTEBOOK_15">
+        <rdfs:subClassOf rdf:resource="&barcoo;NOTEBOOK"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Notebook_16plus -->
+    <!-- http://www.barcoo.com/barcoo.owl#NOTEBOOK_16plus -->
 
-    <owl:Class rdf:about="&barcoo;Notebook_16plus">
-        <rdfs:subClassOf rdf:resource="&barcoo;Notebook"/>
+    <owl:Class rdf:about="&barcoo;NOTEBOOK_16plus">
+        <rdfs:subClassOf rdf:resource="&barcoo;NOTEBOOK"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#NutChocolate -->
+    <!-- http://www.barcoo.com/barcoo.owl#NUT_CHOCOLATE -->
 
-    <owl:Class rdf:about="&barcoo;NutChocolate">
-        <rdfs:subClassOf rdf:resource="&barcoo;Chocolate"/>
+    <owl:Class rdf:about="&barcoo;NUT_CHOCOLATE">
+        <rdfs:subClassOf rdf:resource="&barcoo;CHOCOLATE"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Pasta -->
+    <!-- http://www.barcoo.com/barcoo.owl#PASTA -->
 
-    <owl:Class rdf:about="&barcoo;Pasta">
-        <rdfs:subClassOf rdf:resource="&barcoo;CookingBakingSupplies"/>
+    <owl:Class rdf:about="&barcoo;PASTA">
+        <rdfs:subClassOf rdf:resource="&barcoo;COOKING_BAKING_SUPPLIES"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Perfume -->
+    <!-- http://www.barcoo.com/barcoo.owl#PERFUME -->
 
-    <owl:Class rdf:about="&barcoo;Perfume">
-        <rdfs:subClassOf rdf:resource="&barcoo;DrugStore"/>
+    <owl:Class rdf:about="&barcoo;PERFUME">
+        <rdfs:subClassOf rdf:resource="&barcoo;DRUGSTORE"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Pet -->
+    <!-- http://www.barcoo.com/barcoo.owl#PET -->
 
-    <owl:Class rdf:about="&barcoo;Pet">
-        <rdfs:subClassOf rdf:resource="&barcoo;Living"/>
+    <owl:Class rdf:about="&barcoo;PET">
+        <rdfs:subClassOf rdf:resource="&barcoo;LIVING"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Pizza -->
+    <!-- http://www.barcoo.com/barcoo.owl#PIZZA -->
 
-    <owl:Class rdf:about="&barcoo;Pizza">
-        <rdfs:subClassOf rdf:resource="&barcoo;PreparedFood"/>
+    <owl:Class rdf:about="&barcoo;PIZZA">
+        <rdfs:subClassOf rdf:resource="&barcoo;PREPARED_FOOD"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#PreparedFood -->
+    <!-- http://www.barcoo.com/barcoo.owl#PREPARED_FOOD -->
 
-    <owl:Class rdf:about="&barcoo;PreparedFood">
-        <rdfs:subClassOf rdf:resource="&barcoo;Food"/>
+    <owl:Class rdf:about="&barcoo;PREPARED_FOOD">
+        <rdfs:subClassOf rdf:resource="&barcoo;FOOD"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Printer -->
+    <!-- http://www.barcoo.com/barcoo.owl#PRINTER -->
 
-    <owl:Class rdf:about="&barcoo;Printer">
-        <rdfs:subClassOf rdf:resource="&barcoo;ComputerAccessories"/>
+    <owl:Class rdf:about="&barcoo;PRINTER">
+        <rdfs:subClassOf rdf:resource="&barcoo;COMPUTERAccessories"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#PrinterCartridge -->
+    <!-- http://www.barcoo.com/barcoo.owl#PRINTER_CARTRIDGE -->
 
-    <owl:Class rdf:about="&barcoo;PrinterCartridge">
-        <rdfs:subClassOf rdf:resource="&barcoo;Printer"/>
+    <owl:Class rdf:about="&barcoo;PRINTER_CARTRIDGE">
+        <rdfs:subClassOf rdf:resource="&barcoo;PRINTER"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Sausages -->
+    <!-- http://www.barcoo.com/barcoo.owl#SAUSAGES -->
 
-    <owl:Class rdf:about="&barcoo;Sausages">
-        <rdfs:subClassOf rdf:resource="&barcoo;Meat"/>
+    <owl:Class rdf:about="&barcoo;SAUSAGES">
+        <rdfs:subClassOf rdf:resource="&barcoo;MEAT"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Scanner -->
+    <!-- http://www.barcoo.com/barcoo.owl#SCANNER -->
 
-    <owl:Class rdf:about="&barcoo;Scanner">
-        <rdfs:subClassOf rdf:resource="&barcoo;ComputerAccessories"/>
+    <owl:Class rdf:about="&barcoo;SCANNER">
+        <rdfs:subClassOf rdf:resource="&barcoo;COMPUTERAccessories"/>
     </owl:Class>
     
 
@@ -941,106 +941,106 @@
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Shampoo -->
+    <!-- http://www.barcoo.com/barcoo.owl#SHAMPOO -->
 
-    <owl:Class rdf:about="&barcoo;Shampoo">
-        <rdfs:subClassOf rdf:resource="&barcoo;HairCair"/>
+    <owl:Class rdf:about="&barcoo;SHAMPOO">
+        <rdfs:subClassOf rdf:resource="&barcoo;HAIR_CAIR"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Shave -->
+    <!-- http://www.barcoo.com/barcoo.owl#SHAVE -->
 
-    <owl:Class rdf:about="&barcoo;Shave">
-        <rdfs:subClassOf rdf:resource="&barcoo;DrugStore"/>
+    <owl:Class rdf:about="&barcoo;SHAVE">
+        <rdfs:subClassOf rdf:resource="&barcoo;DRUGSTORE"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Shoes -->
+    <!-- http://www.barcoo.com/barcoo.owl#SHOES -->
 
-    <owl:Class rdf:about="&barcoo;Shoes">
-        <rdfs:subClassOf rdf:resource="&barcoo;Fashion"/>
+    <owl:Class rdf:about="&barcoo;SHOES">
+        <rdfs:subClassOf rdf:resource="&barcoo;FASHION"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#SmartPhone -->
+    <!-- http://www.barcoo.com/barcoo.owl#SMART_PHONE -->
 
-    <owl:Class rdf:about="&barcoo;SmartPhone">
-        <rdfs:subClassOf rdf:resource="&barcoo;MobilePhone"/>
+    <owl:Class rdf:about="&barcoo;SMART_PHONE">
+        <rdfs:subClassOf rdf:resource="&barcoo;MOBILE_PHONE"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Snacks -->
+    <!-- http://www.barcoo.com/barcoo.owl#SNACKS -->
 
-    <owl:Class rdf:about="&barcoo;Snacks">
-        <rdfs:subClassOf rdf:resource="&barcoo;PreparedFood"/>
+    <owl:Class rdf:about="&barcoo;SNACKS">
+        <rdfs:subClassOf rdf:resource="&barcoo;PREPARED_FOOD"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#SoftCheese -->
+    <!-- http://www.barcoo.com/barcoo.owl#SOFT_CHEESE -->
 
-    <owl:Class rdf:about="&barcoo;SoftCheese">
-        <rdfs:subClassOf rdf:resource="&barcoo;Cheese"/>
+    <owl:Class rdf:about="&barcoo;SOFT_CHEESE">
+        <rdfs:subClassOf rdf:resource="&barcoo;CHEESE"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#SoftDrink -->
+    <!-- http://www.barcoo.com/barcoo.owl#SOFT_DRINK -->
 
-    <owl:Class rdf:about="&barcoo;SoftDrink">
-        <rdfs:subClassOf rdf:resource="&barcoo;Drink"/>
+    <owl:Class rdf:about="&barcoo;SOFT_DRINK">
+        <rdfs:subClassOf rdf:resource="&barcoo;DRINK"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#SparklingWine -->
+    <!-- http://www.barcoo.com/barcoo.owl#SPARKLING_WINE -->
 
-    <owl:Class rdf:about="&barcoo;SparklingWine">
-        <rdfs:subClassOf rdf:resource="&barcoo;Alcohol"/>
+    <owl:Class rdf:about="&barcoo;SPARKLING_WINE">
+        <rdfs:subClassOf rdf:resource="&barcoo;ALCOHOL"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Spices -->
+    <!-- http://www.barcoo.com/barcoo.owl#SPICES -->
 
-    <owl:Class rdf:about="&barcoo;Spices">
-        <rdfs:subClassOf rdf:resource="&barcoo;CookingBakingSupplies"/>
+    <owl:Class rdf:about="&barcoo;SPICES">
+        <rdfs:subClassOf rdf:resource="&barcoo;COOKING_BAKING_SUPPLIES"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Spread -->
+    <!-- http://www.barcoo.com/barcoo.owl#SPREAD -->
 
-    <owl:Class rdf:about="&barcoo;Spread">
-        <rdfs:subClassOf rdf:resource="&barcoo;Food"/>
+    <owl:Class rdf:about="&barcoo;SPREAD">
+        <rdfs:subClassOf rdf:resource="&barcoo;FOOD"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Stationery -->
+    <!-- http://www.barcoo.com/barcoo.owl#STATIONERY -->
 
-    <owl:Class rdf:about="&barcoo;Stationery">
-        <rdfs:subClassOf rdf:resource="&barcoo;Living"/>
+    <owl:Class rdf:about="&barcoo;STATIONERY">
+        <rdfs:subClassOf rdf:resource="&barcoo;LIVING"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Stove -->
+    <!-- http://www.barcoo.com/barcoo.owl#STOVE -->
 
-    <owl:Class rdf:about="&barcoo;Stove">
-        <rdfs:subClassOf rdf:resource="&barcoo;Cooling"/>
+    <owl:Class rdf:about="&barcoo;STOVE">
+        <rdfs:subClassOf rdf:resource="&barcoo;COOLING"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Sweets -->
+    <!-- http://www.barcoo.com/barcoo.owl#SWEETS -->
 
-    <owl:Class rdf:about="&barcoo;Sweets">
-        <rdfs:subClassOf rdf:resource="&barcoo;Food"/>
+    <owl:Class rdf:about="&barcoo;SWEETS">
+        <rdfs:subClassOf rdf:resource="&barcoo;FOOD"/>
     </owl:Class>
     
 
@@ -1048,171 +1048,170 @@
     <!-- http://www.barcoo.com/barcoo.owl#TV -->
 
     <owl:Class rdf:about="&barcoo;TV">
-        <rdfs:subClassOf rdf:resource="&barcoo;Electronics"/>
+        <rdfs:subClassOf rdf:resource="&barcoo;ELECTRONICS"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Tea -->
+    <!-- http://www.barcoo.com/barcoo.owl#TEA -->
 
-    <owl:Class rdf:about="&barcoo;Tea">
-        <rdfs:subClassOf rdf:resource="&barcoo;Drink"/>
+    <owl:Class rdf:about="&barcoo;TEA">
+        <rdfs:subClassOf rdf:resource="&barcoo;DRINK"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#TinnedFood -->
+    <!-- http://www.barcoo.com/barcoo.owl#TINNED_FOOD -->
 
-    <owl:Class rdf:about="&barcoo;TinnedFood">
-        <rdfs:subClassOf rdf:resource="&barcoo;PreparedFood"/>
+    <owl:Class rdf:about="&barcoo;TINNED_FOOD">
+        <rdfs:subClassOf rdf:resource="&barcoo;PREPARED_FOOD"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Tobacco -->
+    <!-- http://www.barcoo.com/barcoo.owl#TOBACCO -->
 
-    <owl:Class rdf:about="&barcoo;Tobacco">
-        <rdfs:subClassOf rdf:resource="&barcoo;NonFood"/>
+    <owl:Class rdf:about="&barcoo;TOBACCO">
+        <rdfs:subClassOf rdf:resource="&barcoo;NON_FOOD"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Toys -->
+    <!-- http://www.barcoo.com/barcoo.owl#TOYS -->
 
-    <owl:Class rdf:about="&barcoo;Toys">
-        <rdfs:subClassOf rdf:resource="&barcoo;ToysBaby"/>
+    <owl:Class rdf:about="&barcoo;TOYS">
+        <rdfs:subClassOf rdf:resource="&barcoo;TOYS_BABY"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#ToysBaby -->
+    <!-- http://www.barcoo.com/barcoo.owl#TOYS_BABY -->
 
-    <owl:Class rdf:about="&barcoo;ToysBaby">
+    <owl:Class rdf:about="&barcoo;TOYS_BABY">
         <rdfs:subClassOf rdf:resource="&barcoo;BarcooObject"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#UsbStorage -->
+    <!-- http://www.barcoo.com/barcoo.owl#USB_STORAGE -->
 
-    <owl:Class rdf:about="&barcoo;UsbStorage">
-        <rdfs:subClassOf rdf:resource="&barcoo;ComputerAccessories"/>
+    <owl:Class rdf:about="&barcoo;USB_STORAGE">
+        <rdfs:subClassOf rdf:resource="&barcoo;COMPUTERAccessories"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Vegetables -->
+    <!-- http://www.barcoo.com/barcoo.owl#VEGETABLES -->
 
-    <owl:Class rdf:about="&barcoo;Vegetables">
-        <rdfs:subClassOf rdf:resource="&barcoo;Food"/>
+    <owl:Class rdf:about="&barcoo;VEGETABLES">
+        <rdfs:subClassOf rdf:resource="&barcoo;FOOD"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Video -->
+    <!-- http://www.barcoo.com/barcoo.owl#VIDEO -->
 
-    <owl:Class rdf:about="&barcoo;Video">
-        <rdfs:subClassOf rdf:resource="&barcoo;Media"/>
+    <owl:Class rdf:about="&barcoo;VIDEO">
+        <rdfs:subClassOf rdf:resource="&barcoo;MEDIA"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#WashingMachine -->
+    <!-- http://www.barcoo.com/barcoo.owl#WASHING_MACHINE -->
 
-    <owl:Class rdf:about="&barcoo;WashingMachine">
-        <rdfs:subClassOf rdf:resource="&barcoo;Cooling"/>
+    <owl:Class rdf:about="&barcoo;WASHING_MACHINE">
+        <rdfs:subClassOf rdf:resource="&barcoo;COOLING"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#WashingPowder -->
+    <!-- http://www.barcoo.com/barcoo.owl#WASHING_POWDER -->
 
-    <owl:Class rdf:about="&barcoo;WashingPowder">
-        <rdfs:subClassOf rdf:resource="&barcoo;Cleaning"/>
+    <owl:Class rdf:about="&barcoo;WASHING_POWDER">
+        <rdfs:subClassOf rdf:resource="&barcoo;CLEANING"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Water -->
+    <!-- http://www.barcoo.com/barcoo.owl#WATER -->
 
-    <owl:Class rdf:about="&barcoo;Water">
-        <rdfs:subClassOf rdf:resource="&barcoo;Drink"/>
+    <owl:Class rdf:about="&barcoo;WATER">
+        <rdfs:subClassOf rdf:resource="&barcoo;DRINK"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#WeissBeer -->
+    <!-- http://www.barcoo.com/barcoo.owl#WEISS_BEER -->
 
-    <owl:Class rdf:about="&barcoo;WeissBeer">
-        <rdfs:subClassOf rdf:resource="&barcoo;Beer"/>
+    <owl:Class rdf:about="&barcoo;WEISS_BEER">
+        <rdfs:subClassOf rdf:resource="&barcoo;BEER"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#WifiRouter -->
+    <!-- http://www.barcoo.com/barcoo.owl#WIFI_ROUTER -->
 
-    <owl:Class rdf:about="&barcoo;WifiRouter">
-        <rdfs:subClassOf rdf:resource="&barcoo;ComputerAccessories"/>
+    <owl:Class rdf:about="&barcoo;WIFI_ROUTER">
+        <rdfs:subClassOf rdf:resource="&barcoo;COMPUTERAccessories"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Wine -->
+    <!-- http://www.barcoo.com/barcoo.owl#WINE -->
 
-    <owl:Class rdf:about="&barcoo;Wine">
-        <rdfs:subClassOf rdf:resource="&barcoo;Alcohol"/>
+    <owl:Class rdf:about="&barcoo;WINE">
+        <rdfs:subClassOf rdf:resource="&barcoo;ALCOHOL"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#WineRed -->
+    <!-- http://www.barcoo.com/barcoo.owl#WINERed -->
 
-    <owl:Class rdf:about="&barcoo;WineRed">
-        <rdfs:subClassOf rdf:resource="&barcoo;Wine"/>
+    <owl:Class rdf:about="&barcoo;WINERed">
+        <rdfs:subClassOf rdf:resource="&barcoo;WINE"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#WineRose -->
+    <!-- http://www.barcoo.com/barcoo.owl#WINE_ROSE -->
 
-    <owl:Class rdf:about="&barcoo;WineRose">
-        <rdfs:subClassOf rdf:resource="&barcoo;Wine"/>
+    <owl:Class rdf:about="&barcoo;WINE_ROSE">
+        <rdfs:subClassOf rdf:resource="&barcoo;WINE"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#WineWhite -->
+    <!-- http://www.barcoo.com/barcoo.owl#WINE_WHITE -->
 
-    <owl:Class rdf:about="&barcoo;WineWhite">
-        <rdfs:subClassOf rdf:resource="&barcoo;Wine"/>
+    <owl:Class rdf:about="&barcoo;WINE_WHITE">
+        <rdfs:subClassOf rdf:resource="&barcoo;WINE"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#WomanHygiene -->
+    <!-- http://www.barcoo.com/barcoo.owl#WOMEN_HYGIENE -->
 
-    <owl:Class rdf:about="&barcoo;WomanHygiene">
-        <rdfs:subClassOf rdf:resource="&barcoo;DrugStore"/>
+    <owl:Class rdf:about="&barcoo;WOMEN_HYGIENE">
+        <rdfs:subClassOf rdf:resource="&barcoo;DRUGSTORE"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#Yoghurt -->
+    <!-- http://www.barcoo.com/barcoo.owl#YOGHURT -->
 
-    <owl:Class rdf:about="&barcoo;Yoghurt">
-        <rdfs:subClassOf rdf:resource="&barcoo;Dairy"/>
+    <owl:Class rdf:about="&barcoo;YOGHURT">
+        <rdfs:subClassOf rdf:resource="&barcoo;DAIRY"/>
     </owl:Class>
     
 
 
-    <!-- http://www.barcoo.com/barcoo.owl#fridgeFreezerCombination -->
+    <!-- http://www.barcoo.com/barcoo.owl#FRIDGE_FREEZER_COMBINATION -->
 
-    <owl:Class rdf:about="&barcoo;fridgeFreezerCombination">
-        <rdfs:subClassOf rdf:resource="&barcoo;Fridge"/>
+    <owl:Class rdf:about="&barcoo;FRIDGE_FREEZER_COMBINATION">
+        <rdfs:subClassOf rdf:resource="&barcoo;FRIDGE"/>
     </owl:Class>
 </rdf:RDF>
 
 
 
 <!-- Generated by the OWL API (version 3.2.3.1824) http://owlapi.sourceforge.net -->
-

@@ -51,11 +51,10 @@ public class BarcooImporter {
 	private OWLDataFactory factory;
 	private Document doc;
 	private HashMap<String, OWLDataProperty> data_properties; 
-	private MyNode treeNode;
-	private HashMap<String, String> classMapping;
+	private MyNode treeNode;	
 	private OWLReasoner reasoner;
 	
-	public BarcooImporter(String barcooPath, String barcooMapping)
+	public BarcooImporter(String barcooPath)
 	{
 		try
 		{
@@ -76,21 +75,6 @@ public class BarcooImporter {
 			manager.addIRIMapper(mapper);
 			factory = manager.getOWLDataFactory();
 			data_properties = new HashMap<String, OWLDataProperty>();
-			
-			//Load class mapping from disk
-			classMapping = new HashMap<String, String>();
-			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(barcooMapping)));
-			String line;
-			StringTokenizer stringTokenizer = null;
-			while((line = br.readLine()) != null)
-			{				
-				stringTokenizer = new StringTokenizer(line,"\t");
-				String key = stringTokenizer.nextToken();
-				String value = stringTokenizer.nextToken();
-				classMapping.put(key, value);
-				
-			}
-			//Class mapping loaded
 			
 			OWLReasonerFactory reasonerFactory = new Reasoner.ReasonerFactory();
 			ConsoleProgressMonitor progressMonitor = new ConsoleProgressMonitor();
@@ -357,7 +341,7 @@ public class BarcooImporter {
 		//Clean String
 		parentRaw = categoryCleaning(parentRaw);
 		
-		return classMapping.get(parentRaw);
+		return parentRaw;
 	}
 	
 	
@@ -580,8 +564,7 @@ public class BarcooImporter {
 			
 			//create individual at this point
 			int number = getNextIndividual(barcode,myClass);
-			//The following function creates the ontology, creates the axiom and save the changes
-			//System.out.println("Individual name: "+barcode + "_" + number);
+			//The following function creates the ontology, creates the axiom and save the changes			
 			createIndividual(barcode + "_" + number, myClass);
 		}
 		catch(Exception ex)
@@ -591,16 +574,16 @@ public class BarcooImporter {
 	}
 	public static void main(String[] args) //5413987056260
 	{		
-		if(args == null || args[0] == null || args[1] == null || args[2] == null)
+		if(args == null || args.length < 2)
 		{
 			System.out.println("First argument should be the PATH of BARCOO.OWL.IN");
 			System.out.println("Second argument should be the PATH of barcodes list file");
-			System.out.println("Third argument should be the PATH of barcoo mapping file");
+			
 			System.exit(1);
 		}
 		
 		
-		BarcooImporter b = new BarcooImporter(args[0],args[2]);
+		BarcooImporter b = new BarcooImporter(args[0]);
 		
 		BufferedReader br = null;
 		try
@@ -610,15 +593,13 @@ public class BarcooImporter {
 			BufferedWriter bw = null;
 			
 			String barcode = null;
-			URL url;
-			boolean done = false;
+			URL url;			
 			while((barcode = br.readLine()) != null)
 			{
 				try
-				{
-					if(barcode.equalsIgnoreCase("5400269227876") || done)
+				{					
 					{
-						done = true;
+						
 						barcooFile = new File( barcode + ".xml");
 						bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(barcooFile)));
 						barcooFile.createNewFile();
