@@ -106,9 +106,7 @@ public class SphereAnnotationPanel extends AnnotationPanel<SphereAnnotation> {
 
 		if (annotation != null) {
 			txtAreaTot.setText(String.valueOf(annotation.getPrimitiveAreaUnscaled()));
-			txtAreaCov.setText(String.valueOf(annotation.getAreaUnscaled()
-					/ annotation.getPrimitiveAreaUnscaled() * 100f)
-					+ "%");
+			txtAreaCov.setText(String.valueOf(annotation.getAreaCoverage() * 100f) + "%");
 			txtRadius.setText(String.valueOf(annotation.getRadiusUnscaled()));
 
 		}

@@ -92,6 +92,8 @@ public class ColladaParser extends ModelParser {
 								effect.findNewParam(diffuse.getTexture().getTexture())
 										.getSampler2D().getSource()).getSurface().getInitFrom())
 						.getInitFrom();
+				if (texturePath.startsWith("./images/"))
+					texturePath = "." + texturePath;
 			} else {
 				float[] colors = diffuse.getData();
 				// System.out.println("Diffuse");
@@ -117,6 +119,8 @@ public class ColladaParser extends ModelParser {
 								effect.findNewParam(blinn.getDiffuse().getTexture().getTexture())
 										.getSampler2D().getSource()).getSurface().getInitFrom())
 						.getInitFrom();
+				if (texturePath.startsWith("./images/"))
+					texturePath = "." + texturePath;
 				appearance.setImageFileName(texturePath);
 			} else {
 
@@ -264,7 +268,7 @@ public class ColladaParser extends ModelParser {
 				vertexSource = m.getSource(in.getSource().substring(1));
 			}
 		}
-		
+
 		if (vertexSource == null) {
 			return null;
 		}
@@ -296,15 +300,10 @@ public class ColladaParser extends ModelParser {
 			HashMap<String, String> instanceMaterial, ArrayList<BaseXform> transformations,
 			Collada collada) {
 		Mesh m = g.getMesh();
-		ArrayList<Vertex> vertices = getVerticesOfMesh(m, m.getVertices().getInputs(),"POSITION");
-		ArrayList<Vertex> normals = getVerticesOfMesh(m, m.getVertices().getInputs(),"NORMAL");
+		ArrayList<Vertex> vertices = getVerticesOfMesh(m, m.getVertices().getInputs(), "POSITION");
+		ArrayList<Vertex> normals = getVerticesOfMesh(m, m.getVertices().getInputs(), "NORMAL");
 
-		if (normals != null)
-			System.out.println("Norm ok");
-		else
-			System.out.println("norm err");
-		
-		for (int i=0; i<vertices.size(); i++) {
+		for (int i = 0; i < vertices.size(); i++) {
 			Vertex v = vertices.get(i);
 			useTransformation(v, transformations, true);
 			if (normals != null) {
@@ -313,7 +312,6 @@ public class ColladaParser extends ModelParser {
 				v.setNormalVector(new Vector3f(n.x, n.y, n.z));
 			}
 		}
-		
 
 		currGroup.getModel().getVertices().addAll(vertices);
 
@@ -456,7 +454,7 @@ public class ColladaParser extends ModelParser {
 			// Triangle has texture
 			texturePoints = SourceToFloat(textureSource);
 		}
-		
+
 		float[][] normalCoordinates = null; // dummy init
 		if (normalSource != null) {
 			// Triangle has texture
@@ -470,12 +468,12 @@ public class ColladaParser extends ModelParser {
 
 			if (tri.getAppearance().getImageFileName() != null)
 				tri.setTexPosition(new Point2f[3]);
-			//calculate triangle normal
+			// calculate triangle normal
 
 			for (int v = 0; v < 3; v++) {
 				// set the vertices for Point
 				Vertex vert = vertices.get(indexes[i][vertexOffset]);
-				
+
 				tri.getPosition()[v] = vert;
 
 				// set texture position
@@ -484,10 +482,9 @@ public class ColladaParser extends ModelParser {
 							texturePoints[indexes[i][textureOffset]][0],
 							texturePoints[indexes[i][textureOffset]][1]);
 				}
-				
+
 				if (normalCoordinates != null) {
-					Vector3f norm = new Vector3f(
-							normalCoordinates[indexes[i][normalOffset]][0],
+					Vector3f norm = new Vector3f(normalCoordinates[indexes[i][normalOffset]][0],
 							normalCoordinates[indexes[i][normalOffset]][1],
 							normalCoordinates[indexes[i][normalOffset]][2]);
 					vert.setNormalVector(norm);
@@ -496,7 +493,7 @@ public class ColladaParser extends ModelParser {
 				i++;
 			}
 			i--;
-			
+
 			if (!tri.calculateNormalVector()) {
 				continue;
 			}
@@ -532,7 +529,8 @@ public class ColladaParser extends ModelParser {
 	 * @param transformations
 	 *            list of transformations to apply
 	 */
-	private static void useTransformation(Vertex vertex, ArrayList<BaseXform> transformations, boolean withTranslate) {
+	private static void useTransformation(Vertex vertex, ArrayList<BaseXform> transformations,
+			boolean withTranslate) {
 		for (int idx = transformations.size() - 1; idx >= 0; idx--) {
 			BaseXform transform = transformations.get(idx);
 			if (transform instanceof Matrix) {
@@ -541,12 +539,13 @@ public class ColladaParser extends ModelParser {
 				int v = 0;
 				for (int ma_y = 0; ma_y < cnt; ma_y++) {
 					for (int ma_x = 0; ma_x < cnt; ma_x++) {
-						if (!withTranslate && (ma_y>2 || ma_x > 2) && ma_y !=ma_x)
-							//only use rotation matrix (eg for rotating and not translating normal vector)
+						if (!withTranslate && (ma_y > 2 || ma_x > 2) && ma_y != ma_x)
+							// only use rotation matrix (eg for rotating and not translating normal
+							// vector)
 							matrix[ma_y][ma_x] = 0;
 						else
 							matrix[ma_y][ma_x] = ((Matrix) transform).getData()[v];
-							
+
 						v++;
 					}
 				}
@@ -570,7 +569,7 @@ public class ColladaParser extends ModelParser {
 		textureBasePath = null;
 		String daeFile = null;
 
-		//Extract kmz if needed and determin location of .dae file
+		// Extract kmz if needed and determin location of .dae file
 		String extension = getExtension(filename);
 		if (extension.equalsIgnoreCase("kmz")) {
 			String tmpPath = ResourceRetriever.createTempDirectory();
@@ -592,7 +591,7 @@ public class ColladaParser extends ModelParser {
 			daeFile = filename;
 		}
 
-		//Parse dae with collada xml parser
+		// Parse dae with collada xml parser
 		try {
 			collada = Collada.readFile(daeFile);
 		} catch (FileNotFoundException e) {
@@ -612,7 +611,7 @@ public class ColladaParser extends ModelParser {
 		model = new Model();
 		model.setGroup(new Group(model));
 
-		//collada.dump(System.out, 0);
+		// collada.dump(System.out, 0);
 
 		// library_visual_scenes is where everything begins
 		VisualScene scene = collada.getLibraryVisualScenes().getScene(

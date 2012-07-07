@@ -138,9 +138,7 @@ public class ConeAnnotationPanel extends AnnotationPanel<ConeAnnotation> {
 
 		if (annotation != null) {
 			txtAreaTot.setText(String.valueOf(annotation.getPrimitiveAreaUnscaled()));
-			txtAreaCov.setText(String.valueOf(annotation.getAreaUnscaled()
-					/ annotation.getPrimitiveAreaUnscaled() * 100f)
-					+ "%");
+			txtAreaCov.setText(String.valueOf(annotation.getAreaCoverage() * 100f) + "%");
 			txtRadius.setText(String.valueOf(annotation.getRadiusLargeUnscaled()) + " -> "
 					+ String.valueOf(annotation.getRadiusSmallUnscaled()));
 			txtDirectionVector.setText(annotation.getDirectionUnscaled().toString());

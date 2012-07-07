@@ -204,7 +204,7 @@ public class PlyParser extends ModelParser {
 		
 		
 		for (ValueLine l : vertexElement.lines) {
-			if (l.values.size() != 3) {
+			if (l.values.size() < 3) {
 				System.err.println("ERROR: invalid vertex coordinate count: " + l.values.size() +" for vertex index " + model.getVertices().size());
 				model = null;
 				return false;
@@ -251,6 +251,8 @@ public class PlyParser extends ModelParser {
 				}
 			}
 		}
+		
+		elements = null;
 
 		return true;
 	}

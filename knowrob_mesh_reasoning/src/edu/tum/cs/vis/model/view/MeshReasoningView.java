@@ -12,7 +12,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import javax.swing.event.MouseInputListener;
 import javax.vecmath.Point3f;
@@ -29,7 +33,7 @@ import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.util.Curvature;
-import edu.tum.cs.vis.model.util.Triangle;
+import edu.tum.cs.vis.model.util.IntersectedTriangle;
 import edu.tum.cs.vis.model.util.Vertex;
 
 /**
@@ -88,66 +92,80 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	/**
 	 * Cam for manipulating the view
 	 */
-	PeasyCam								cam;
+	PeasyCam										cam;
 	/**
 	 * Background color dark
 	 */
-	private final Color						bgcolorDark			= new Color(10, 10, 10);
+	private final Color								bgcolorDark			= new Color(10, 10, 10);
+
 	/**
 	 * Background color white
 	 */
-	private final Color						bgcolorWhite		= new Color(255, 255, 255);
+	private final Color								bgcolorWhite		= new Color(255, 255, 255);
 
-	private boolean							backgroundWhite		= false;
+	private boolean									backgroundWhite		= true;
+	private boolean									drawVertexNormals	= false;
+	private boolean									drawVertexCurvature	= false;
 
-	private boolean							drawVertexNormals	= false;
-	private boolean							drawVertexCurvature	= false;
-	private boolean							drawVoronoiArea		= false;
+	private boolean									drawVoronoiArea		= false;
+
+	private boolean									selectNearestOnly	= true;
+	private boolean									drawBoundingBox		= false;
 
 	/**
 	 * Start point of mouse click ray
 	 */
-	private Point3f							rayStart			= new Point3f();
+	private Point3f									rayStart			= new Point3f();
 
 	/**
 	 * End point of mouse click ray
 	 */
-	private Point3f							rayEnd				= new Point3f(1, 1, 1);
+	private Point3f									rayEnd				= new Point3f(1, 1, 1);
 
 	/**
 	 * List of all CASes which were manipulated with AnalysisEngines.
 	 */
-	private ArrayList<MeshCas>				casList				= new ArrayList<MeshCas>();
+	private ArrayList<MeshCas>						casList				= new ArrayList<MeshCas>();
 
 	/**
 	 * current scale factor
 	 */
 
-	private float							modelScale			= 1f;
+	private float									modelScale			= 1f;
 
-	private float							userScale			= 30f;
+	private float									userScale			= 30f;
 
-	public static int						testIdx				= 0;
+	public static int								testIdx				= 0;
 
 	/**
 	 * Path where to save image if user clicks on "save image". Will be evaluated in draw method
 	 */
-	private String							imageSavePath		= null;
+	private String									imageSavePath		= null;
 
 	/**
 	 * List of selected triangles (triangles which intersect with mouse ray)
 	 */
-	private final ArrayList<Triangle>		selectedTriangles	= new ArrayList<Triangle>();
+	private final ArrayList<IntersectedTriangle>	selectedTriangles	= new ArrayList<IntersectedTriangle>();
 
 	/**
 	 * List of selected annotations (annotations which contain one of selectedTriangles)
 	 * */
-	private final ArrayList<MeshAnnotation>	selectedAnnotations	= new ArrayList<MeshAnnotation>();
+	private final HashSet<MeshAnnotation>			selectedAnnotations	= new HashSet<MeshAnnotation>();
 
 	/**
 	 * The controller for this view
 	 */
-	private MeshReasoningViewControl		control				= null;
+	private MeshReasoningViewControl				control				= null;
+
+	public void addSelectedAnnotation(MeshAnnotation a) {
+		selectedAnnotations.add(a);
+		control.showSelectedAnnotation(selectedAnnotations);
+	};
+
+	public void clearSelectedAnnotations() {
+		selectedAnnotations.clear();
+		control.showSelectedAnnotation(selectedAnnotations);
+	}
 
 	@Override
 	public void draw() {
@@ -197,8 +215,14 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 
 		for (MeshCas c : casList) {
 			c.draw(g);
-			// c.getGroup().draw(g, null);
+			if (drawBoundingBox) {
+				g.noFill();
+				g.stroke(255, 125, 0);
+				c.getModel().getGroup().drawBoundingBox(g, true);
+			}
+
 		}
+
 		getSelectionGraphics().setDrawWithTransparency(false);
 
 		synchronized (selectedAnnotations) {
@@ -212,7 +236,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		}
 
 		if (selectedAnnotations.size() == 1) {
-			MeshAnnotation a = selectedAnnotations.get(0);
+			MeshAnnotation a = selectedAnnotations.iterator().next();
 
 			if (a instanceof PrimitiveAnnotation) {
 				PrimitiveAnnotation an = (PrimitiveAnnotation) a;
@@ -241,7 +265,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 					if (drawVertexNormals || drawVoronoiArea) {
 						g.stroke(41, 120, 37);
 						Vector3f n = (Vector3f) v.getNormalVector().clone();
-						n.scale(0.1f);
+						n.scale(0.05f);
 						g.line(v.x, v.y, v.z, v.x + n.x, v.y + n.y, v.z + n.z);
 						g.fill(35, 148, 143);
 						g.noStroke();
@@ -274,6 +298,19 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		// Check if user wants to save current view
 		if (imageSavePath != null) {
 			save(imageSavePath);
+			FileWriter outFile;
+			try {
+				outFile = new FileWriter(imageSavePath + ".txt");
+				PrintWriter out = new PrintWriter(outFile);
+				String current = Math.round(getRotation()[0] * 180f / Math.PI) + ","
+						+ Math.round(getRotation()[1] * 180f / Math.PI) + ","
+						+ Math.round(getRotation()[2] * 180f / Math.PI);
+				out.println("View angles: " + current);
+
+				out.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 
 			Logger.getRootLogger().info("Image saved as: " + imageSavePath);
 			imageSavePath = null;
@@ -312,6 +349,13 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	}
 
 	/**
+	 * @return the drawBoundingBox
+	 */
+	public boolean isDrawBoundingBox() {
+		return drawBoundingBox;
+	}
+
+	/**
 	 * @return the drawVertexCurvature
 	 */
 	public boolean isDrawVertexCurvature() {
@@ -332,13 +376,24 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		return drawVoronoiArea;
 	}
 
+	/**
+	 * @return the selectNearestOnly
+	 */
+	public boolean isSelectNearestOnly() {
+		return selectNearestOnly;
+	}
+
 	@Override
 	public void keyTyped(KeyEvent e) {
 		char c = e.getKeyChar();
 		if (c == '+') {
-			userScale += 10;
+			userScale *= 1.5;
 		} else if (c == '-') {
-			userScale = Math.max(10, userScale - 10);
+			userScale = userScale / 1.5f;
+		} else if (c == ',') {
+			cam.setDistance(cam.getDistance() * 0.8, 250);
+		} else if (c == '.') {
+			cam.setDistance(cam.getDistance() * 1.2, 250);
 		}/* else if (c == 'm') {
 			test++;
 			} else if (c == 'n') {
@@ -360,9 +415,11 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 
 			boolean found = false;
 			// Check if clicked on one of previous selected triangles
-			for (Triangle p : selectedTriangles) {
-				if (p.intersectsRay(rayEnd, rayStart, null)) {
+			for (IntersectedTriangle p : selectedTriangles) {
+				Point3f newIntersect = new Point3f();
+				if (p.t.intersectsRay(rayEnd, rayStart, newIntersect)) {
 					selectedTriangles.clear();
+					p.intersection = newIntersect;
 					selectedTriangles.add(p);
 					found = true;
 					break;
@@ -381,11 +438,11 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 			}
 
 			// Check if one of selected triangles is in already selected annotation
-			ArrayList<Triangle> newSelected = new ArrayList<Triangle>();
-			for (Triangle p : selectedTriangles) {
+			ArrayList<IntersectedTriangle> newSelected = new ArrayList<IntersectedTriangle>();
+			for (IntersectedTriangle p : selectedTriangles) {
 				synchronized (selectedAnnotations) {
 					for (MeshAnnotation ma : selectedAnnotations)
-						if (ma.meshContainsTriangle(p)) {
+						if (ma.meshContainsTriangle(p.t)) {
 							newSelected.add(p);
 						}
 				}
@@ -396,6 +453,22 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 				// of current annotations
 				selectedTriangles.clear();
 				selectedTriangles.addAll(newSelected);
+			}
+
+			if (selectNearestOnly && selectedTriangles.size() > 1) {
+				IntersectedTriangle nearest = null;
+				float nearestDist = Float.MAX_VALUE;
+				for (IntersectedTriangle p : selectedTriangles) {
+					Vector3f camPos = new Vector3f(cam.getPosition());
+					camPos.sub(p.intersection);
+					float dist = camPos.lengthSquared();
+					if (dist < nearestDist) {
+						nearestDist = dist;
+						nearest = p;
+					}
+				}
+				selectedTriangles.clear();
+				selectedTriangles.add(nearest);
 			}
 
 			selectedTrianglesChanged();
@@ -445,10 +518,8 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 				MeshAnnotation ma = (MeshAnnotation) a;
 				if (!ma.isDrawAnnotation())
 					continue; // Skip not visible annotations
-				if (selectedAnnotations.contains(ma))
-					continue;
-				for (Triangle p : selectedTriangles)
-					if (ma.meshContainsTriangle(p)) {
+				for (IntersectedTriangle p : selectedTriangles)
+					if (ma.meshContainsTriangle(p.t)) {
 						synchronized (selectedAnnotations) {
 							selectedAnnotations.add(ma);
 						}
@@ -486,14 +557,22 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		this.control = control;
 	}
 
+	/**
+	 * @param drawBoundingBox
+	 *            the drawBoundingBox to set
+	 */
+	public void setDrawBoundingBox(boolean drawBoundingBox) {
+		this.drawBoundingBox = drawBoundingBox;
+	}
+
 	public void setDrawCurvatureColor(boolean drawCurvatureColor) {
 
 		for (MeshCas c : casList) {
 			for (Vertex v : c.getModel().getVertices()) {
 				if (drawCurvatureColor)
-					v.color = c.getCurvature(v).getColor();
+					v.overrideColor = c.getCurvature(v).getColor();
 				else
-					v.color = null;
+					v.overrideColor = null;
 			}
 		}
 	}
@@ -530,11 +609,19 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		this.modelScale = modelScale;
 	}
 
+	/**
+	 * @param selectNearestOnly
+	 *            the selectNearestOnly to set
+	 */
+	public void setSelectNearestOnly(boolean selectNearestOnly) {
+		this.selectNearestOnly = selectNearestOnly;
+	}
+
 	@Override
 	public void setup() {
 		size(1000, 1000, "edu.tum.cs.vis.model.view.PAppletSelectionGraphics");
 
-		frameRate(30);
+		frameRate(10);
 		cam = new PeasyCam(this, 0, 0, 0, 10);
 		cam.setMinimumDistance(0.01);
 		cam.setMaximumDistance(500);

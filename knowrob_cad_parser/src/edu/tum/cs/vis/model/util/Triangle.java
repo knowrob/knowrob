@@ -95,15 +95,17 @@ public class Triangle extends DrawObject {
 					break; // if 2 of 3 points aren't equal, it is no neighbor
 				Point3f p1 = position[i];
 				for (Point3f p2 : neighbor.position) {
+					// if (p1.x == p2.x && p1.y==p2.y && p1.z==p2.z) {
 					if (p1 == p2) {
 						eqCnt++;
 						if (eqCnt == 2) {
 							add = true;
 						}
 						if (eqCnt == 3) {
-							//if triangle has same position but is backface
+							// if triangle has same position but is backface
 							add = false;
 						}
+						break;
 					}
 
 				}
@@ -137,23 +139,24 @@ public class Triangle extends DrawObject {
 	public void draw(PGraphics g, Color overrideColor) {
 		applyColor(g, overrideColor);
 		g.beginShape(PConstants.TRIANGLES);
-		if (appearance == null || appearance.getImageReference() == null || overrideColor != null) {
+		if (appearance == null || appearance.getImageReference() == null || overrideColor != null
+				|| position[0].getNormalVector() != null) {
 			// no texture only color
 
 			for (int i = 0; i < position.length; i++) {
 
 				if (position[i].overrideColor != null) {
-					g.fill(position[i].overrideColor.getRed(), position[i].overrideColor.getGreen(),
+					g.fill(position[i].overrideColor.getRed(),
+							position[i].overrideColor.getGreen(),
 							position[i].overrideColor.getBlue());
-				}
-				else if (overrideColor == null && position[i].color != null) {
+				} else if (overrideColor == null && position[i].color != null) {
 					g.fill(position[i].color.getRed(), position[i].color.getGreen(),
 							position[i].color.getBlue());
 				}
-					
 
 				if (position[i].getNormalVector() != null)
-					g.normal(position[i].getNormalVector().x, position[i].getNormalVector().y, position[i].getNormalVector().z);
+					g.normal(position[i].getNormalVector().x, position[i].getNormalVector().y,
+							position[i].getNormalVector().z);
 				g.vertex(position[i].x, position[i].y, position[i].z);
 			}
 
@@ -161,14 +164,16 @@ public class Triangle extends DrawObject {
 			// has texture
 			g.texture(appearance.getImageReference());
 
-			for (int i = 0; i < position.length; i++)
-			{
-				if (position[i].getNormalVector() != null)
-					g.normal(position[i].getNormalVector().x, position[i].getNormalVector().y, position[i].getNormalVector().z);
+			for (int i = 0; i < position.length; i++) {
+
+				// if (position[i].getNormalVector() != null)
+				// g.normal(position[i].getNormalVector().x, position[i].getNormalVector().y,
+				// position[i].getNormalVector().z);
+
 				g.vertex(position[i].x, position[i].y, position[i].z, texPosition[i].x,
 						texPosition[i].y);
-			}
 
+			}
 
 		}
 		g.endShape();
@@ -250,11 +255,11 @@ public class Triangle extends DrawObject {
 	public boolean intersectsRay(Point3f rayStart, Point3f rayEnd) {
 		return intersectsRay(rayStart, rayEnd, null);
 	}
-	
+
 	public boolean calculateNormalVector() {
-		//Calculate normal vector for triangle
+		// Calculate normal vector for triangle
 		Vector3f avgVertexNorm = new Vector3f();
-		for (int i=0; i<3; i++) {
+		for (int i = 0; i < 3; i++) {
 			if (position[i].getNormalVector() == null) {
 				avgVertexNorm = null;
 				break;
@@ -262,14 +267,14 @@ public class Triangle extends DrawObject {
 			avgVertexNorm.add(position[i].getNormalVector());
 		}
 		if (avgVertexNorm != null) {
-			avgVertexNorm.scale(1f/3f);
-		} 
-		
+			avgVertexNorm.scale(1f / 3f);
+		}
+
 		Vector3f a = new Vector3f(position[0]);
 		a.sub(position[1]);
 		Vector3f b = new Vector3f(position[1]);
 		b.sub(position[2]);
-		
+
 		/*Vector3f a = new Vector3f(position[1]);
 		a.sub(position[0]);
 		Vector3f b = new Vector3f(position[2]);
@@ -280,10 +285,10 @@ public class Triangle extends DrawObject {
 			return false;
 		}
 		norm.normalize();
-		
+
 		if (avgVertexNorm != null && avgVertexNorm.dot(norm) < 0)
 			norm.scale(-1f);
-				
+
 		this.normalVector = norm;
 		return true;
 	}
@@ -346,8 +351,8 @@ public class Triangle extends DrawObject {
 		// get intersect point of ray with triangle plane
 		r = a / b;
 
-		//if (r < 0.0) // ray goes away from triangle
-		//	return false; // => no intersect
+		// if (r < 0.0) // ray goes away from triangle
+		// return false; // => no intersect
 		// for a segment, also test if (r > 1.0) => no intersect
 
 		Point3f intersect = intersectionPoint;

@@ -10,6 +10,7 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -23,7 +24,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 
-import edu.tum.cs.vis.model.uima.analyzer.MeshAnalyzer;
+import edu.tum.cs.vis.model.uima.analyser.MeshAnalyser;
 import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.view.control.DrawSettingsPanel;
@@ -40,25 +41,25 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 	/**
 	 * auto generated
 	 */
-	private static final long				serialVersionUID	= -2013371551022209950L;
+	private static final long				serialVersionUID		= -2013371551022209950L;
 
 	/**
-	 * list of all analyzers
+	 * list of all analysers
 	 */
-	private final ArrayList<MeshAnalyzer>	analyzer;
+	private final ArrayList<MeshAnalyser>	analyser;
 	/**
 	 * The accordion component which contains controls for each different annotation type
 	 */
 	private final MeshCasAccordion			accordion;
 
 	/**
-	 * List which shows the current progress of all analyzers
+	 * List which shows the current progress of all analysers
 	 */
-	private final JList						analyzerList;
+	private final JList						analyserList;
 	/**
-	 * List model for analyzerList
+	 * List model for analyserList
 	 */
-	private final DefaultListModel			analyzerListModel;
+	private final DefaultListModel			analyserListModel;
 
 	private final DrawSettingsPanel			drawSettingsPanel;
 
@@ -82,41 +83,43 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 	 */
 	private final MeshReasoningView			view;
 
+	private String							defaultImageFilename	= null;
+
 	/**
 	 * Default constructor
 	 * 
 	 * @param cas
 	 *            cas for which the control is
-	 * @param analyzer
-	 *            list of analyzers used
+	 * @param analyser
+	 *            list of analysers used
 	 * @param view
 	 *            the parent MeshReasoningView
 	 * 
 	 */
-	public MeshReasoningViewControl(MeshCas cas, ArrayList<MeshAnalyzer> analyzer,
+	public MeshReasoningViewControl(MeshCas cas, ArrayList<MeshAnalyser> analyser,
 			MeshReasoningView view) {
 		this.view = view;
 		this.cas = cas;
 		setPreferredSize(new Dimension(300, 600));
 
 		setLayout(new BorderLayout());
-		this.analyzer = analyzer;
+		this.analyser = analyser;
 
 		accordion = new MeshCasAccordion(cas);
-		analyzerListModel = new DefaultListModel();
+		analyserListModel = new DefaultListModel();
 
-		analyzerList = new JList(analyzerListModel);
-		updateAnalyzerList();
+		analyserList = new JList(analyserListModel);
+		updateAnalyserList();
 
 		JScrollPane scrollAccordion = new JScrollPane(accordion,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		this.add(scrollAccordion, BorderLayout.CENTER);
 
-		JScrollPane listScroller = new JScrollPane(analyzerList);
+		JScrollPane listScroller = new JScrollPane(analyserList);
 		listScroller.setPreferredSize(new Dimension(250, 100));
-		analyzerList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		analyzerList.setLayoutOrientation(JList.VERTICAL);
+		analyserList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		analyserList.setLayoutOrientation(JList.VERTICAL);
 
 		JPanel bottomPnl = new JPanel(new BorderLayout());
 
@@ -150,7 +153,7 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 
 			@Override
 			public void run() {
-				updateAnalyzerList();
+				updateAnalyserList();
 
 			}
 		}, 1000, 500);
@@ -162,8 +165,8 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 		if (e.getSource() == cbxShowMesh)
 			cas.setDrawMesh(cbxShowMesh.isSelected());
 		else if (e.getSource() == btnSave) {
-			String str = JOptionPane.showInputDialog(null, "Enter a filename ", "Filename",
-					JOptionPane.INFORMATION_MESSAGE);
+			String str = (String) JOptionPane.showInputDialog(null, "Enter a filename ",
+					"Filename", JOptionPane.INFORMATION_MESSAGE, null, null, defaultImageFilename);
 			if (str != null)
 				view.saveImage(str);
 		}
@@ -171,10 +174,10 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 	}
 
 	/**
-	 * @return the analyzer
+	 * @return the analyser
 	 */
-	public ArrayList<MeshAnalyzer> getAnalyzer() {
-		return analyzer;
+	public ArrayList<MeshAnalyser> getAnalyser() {
+		return analyser;
 	}
 
 	/**
@@ -184,6 +187,10 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 		return cas;
 	}
 
+	public void setDefaultImageFilename(String s) {
+		defaultImageFilename = s;
+	}
+
 	/**
 	 * Shows the selected annotation in the accordion view if only one is selected. Otherwise the
 	 * selection will be cleared.
@@ -191,27 +198,27 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 	 * @param selectedAnnotations
 	 *            list of currently selected annotations
 	 */
-	public void showSelectedAnnotation(ArrayList<MeshAnnotation> selectedAnnotations) {
+	public void showSelectedAnnotation(HashSet<MeshAnnotation> selectedAnnotations) {
 		if (selectedAnnotations.size() == 1) {
-			accordion.setSelectedAnnotation(selectedAnnotations.get(0));
+			accordion.setSelectedAnnotation(selectedAnnotations.iterator().next());
 		} else
 			accordion.setSelectedAnnotation(null);
 	}
 
 	/**
-	 * Updates the status in the analyzer list (the progress and current duration)
+	 * Updates the status in the analyser list (the progress and current duration)
 	 */
-	void updateAnalyzerList() {
+	void updateAnalyserList() {
 		int i;
-		synchronized (analyzer) {
-			for (i = 0; i < analyzer.size(); i++) {
-				if (analyzerListModel.getSize() <= i)
-					analyzerListModel.addElement(analyzer.get(i).getNameAndProgress());
+		synchronized (analyser) {
+			for (i = 0; i < analyser.size(); i++) {
+				if (analyserListModel.getSize() <= i)
+					analyserListModel.addElement(analyser.get(i).getNameAndProgress());
 				else
-					analyzerListModel.setElementAt(analyzer.get(i).getNameAndProgress(), i);
+					analyserListModel.setElementAt(analyser.get(i).getNameAndProgress(), i);
 			}
-			for (i = analyzer.size(); i < analyzerListModel.getSize(); i++)
-				analyzerListModel.remove(analyzer.size());
+			for (i = analyser.size(); i < analyserListModel.getSize(); i++)
+				analyserListModel.remove(analyser.size());
 		}
 	}
 

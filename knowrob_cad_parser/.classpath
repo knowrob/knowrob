@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="lib/dae4j.jar" sourcepath="/home/stefan/CoTeSys/dae4j-code/dae4j/src"/>
+	<classpathentry kind="lib" path="lib/dae4j.jar" sourcepath="D:/Dropbox/BachelorThesis/Code/dae4j/dae4j/src"/>
 	<classpathentry kind="lib" path="lib/vecmath.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/processing/core.jar"/>
 	<classpathentry kind="lib" path="lib/processing/PeasyCam.jar"/>
 	<classpathentry kind="lib" path="lib/commons-net-3.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.16.jar"/>
-	<classpathentry kind="lib" path="/usr/share/java/jpl.jar"/>
 	<classpathentry kind="lib" path="lib/j3dcore.jar"/>
 	<classpathentry kind="lib" path="lib/j3dutils.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/pl/lib/jpl.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

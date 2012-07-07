@@ -126,9 +126,7 @@ public class PlaneAnnotationPanel extends AnnotationPanel<PlaneAnnotation> {
 
 		if (annotation != null) {
 			txtAreaTot.setText(String.valueOf(annotation.getPrimitiveAreaUnscaled()));
-			txtAreaCov.setText(String.valueOf(annotation.getAreaUnscaled()
-					/ annotation.getPrimitiveAreaUnscaled() * 100f)
-					+ "%");
+			txtAreaCov.setText(String.valueOf(annotation.getAreaCoverage() * 100f) + "%");
 			txtShort.setText(String.valueOf(annotation.getShortSideUnscaled().length()));
 			txtLong.setText(String.valueOf(annotation.getLongSideUnscaled().length()));
 			txtNormal.setText(String.valueOf(annotation.getPlaneNormal()));

@@ -225,5 +225,33 @@ public class Model {
 	public void setTextureBasePath(String textureBasePath) {
 		this.textureBasePath = textureBasePath;
 	}
+	
+	public void removeDoubleSidedTriangles() {
+		for (int i=0; i<triangles.size(); i++) {
+			Triangle t1 = triangles.get(i);
+			for (int j=i+1; j<triangles.size(); j++) {
+				Triangle t2 = triangles.get(j);
+				int eqCnt = 0;
+				for (int k=0; k<3; k++) {
+					Point3f p1 = t1.getPosition()[k];
+					for (Point3f p2 : t2.getPosition()) {
+						if (p1.x == p2.x && p1.y==p2.y && p1.z==p2.z) {
+							eqCnt++;
+							break;
+						}
+					}
+					if (eqCnt != k+1) {
+						break;
+					}
+				}
+				if (eqCnt == 3) {
+					triangles.remove(j);
+					this.group.removeTriangle(t2);
+					j--;
+				}
+			}
+			
+		}
+	}
 
 }

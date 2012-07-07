@@ -52,7 +52,7 @@ public abstract class ModelParser {
 	private static HashMap<String, Model>								modelBuffer			= new HashMap<String, Model>();
 
 	/**
-	 * Finds the appropriate parser for the given filename by comaring the file extension.
+	 * Finds the appropriate parser for the given filename by comparing the file extension.
 	 * 
 	 * @param filename
 	 *            Filename to find parser for

@@ -11,6 +11,7 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -83,6 +84,8 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 		@SuppressWarnings("rawtypes")
 		final AnnotationPanel								component;
 
+		public int											annotationCount	= 0;
+
 		/**
 		 * Creates a new BarInfo
 		 * 
@@ -94,16 +97,14 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 		 *            Main CAS
 		 */
 		public BarInfo(Class<? extends DrawableAnnotation> annotationType,
-				@SuppressWarnings("rawtypes") AnnotationPanel component, MeshCas cas) {
+				@SuppressWarnings("rawtypes") AnnotationPanel component, MeshCas cas,
+				int annotationCount) {
 			this.component = component;
 			this.annotationType = annotationType;
 			this.cas = cas;
-			String name = annotationType.getName();
-			if (name.endsWith("Annotation"))
-				name = name.substring(0, name.lastIndexOf("Annotation"));
-			if (name.lastIndexOf('.') > 0)
-				name = name.substring(name.lastIndexOf('.') + 1);
-			button = new JButton(name);
+
+			button = new JButton();
+			updateButtonLabel(annotationCount);
 			button.setHorizontalAlignment(SwingConstants.LEFT);
 			buttonPanel = new JPanel(new BorderLayout());
 			checkbox = new JCheckBox("");
@@ -157,6 +158,17 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 		 */
 		public JComponent getComponent() {
 			return component;
+		}
+
+		public void updateButtonLabel(int annotationCount) {
+			this.annotationCount = annotationCount;
+			String name = annotationType.getName();
+			if (name.endsWith("Annotation"))
+				name = name.substring(0, name.lastIndexOf("Annotation"));
+			if (name.lastIndexOf('.') > 0)
+				name = name.substring(name.lastIndexOf('.') + 1);
+			name += " (" + annotationCount + ")";
+			button.setText(name);
 		}
 
 	}
@@ -242,19 +254,29 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 			public void run() {
 				synchronized (cas.getAnnotations()) {
 					synchronized (cas.getAnnotations()) {
+						HashMap<Class<? extends DrawableAnnotation>, Integer> types = new HashMap<Class<? extends DrawableAnnotation>, Integer>();
 						for (Annotation a : cas.getAnnotations()) {
 							if (a instanceof DrawableAnnotation) {
 								DrawableAnnotation ma = (DrawableAnnotation) a;
+								if (types.containsKey(ma.getClass())) {
+									types.put(ma.getClass(), types.get(ma.getClass()) + 1);
+								} else {
+									types.put(ma.getClass(), 1);
+								}
+							}
+						}
 
-								if (bars.containsKey(ma.getClass()))
-									continue;
-
+						for (Class<? extends DrawableAnnotation> c : types.keySet()) {
+							BarInfo bar = bars.get(c);
+							if (bar != null) {
+								bar.updateButtonLabel(types.get(c));
+							} else {
 								@SuppressWarnings("rawtypes")
-								AnnotationPanel pnl = createPanelForAnnotation(ma.getClass(), cas);
+								AnnotationPanel pnl = createPanelForAnnotation(c, cas);
 
-								BarInfo bi = new BarInfo(ma.getClass(), pnl, cas);
+								BarInfo bi = new BarInfo(c, pnl, cas, types.get(c));
 								bi.button.addActionListener(acc);
-								bars.put(ma.getClass(), bi);
+								bars.put(c, bi);
 							}
 						}
 					}

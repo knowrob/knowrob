@@ -29,8 +29,13 @@
 	mesh_reasoning_path/2,
 	mesh_element_types/2,
 	mesh_find_annotations/3,
+	mesh_find_supporting_planes/2,
 	mesh_is_supporting_plane/1,
-	mesh_is_supporting_plane/2
+	mesh_is_supporting_plane/2,
+	mesh_reasoning_highlight/2,
+	mesh_reasoning_clear_highlight/1,
+	mesh_find_handle/2,
+	listsplit/3
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -53,7 +58,7 @@
 mesh_reasoning_init(MeshReasoning, WithCanvas) :-
     jpl_call('edu.tum.cs.vis.model.MeshReasoning', 'initMeshReasoning', [WithCanvas], MeshReasoning).
 mesh_reasoning_init(MeshReasoning) :-
-	mesh_reasoning_init(MeshReasoning, @(false)).
+	mesh_reasoning_init(MeshReasoning, @(true)).
 
 %% mesh_reasoning(+Identifier, -MeshReasoning) is det.
 %
@@ -64,7 +69,7 @@ mesh_reasoning_init(MeshReasoning) :-
 %
 mesh_reasoning(Identifier, MeshReasoning) :-
 	mesh_reasoning_init(MeshReasoning),
-    jpl_call(MeshReasoning, 'analyzeByIdentifier', [Identifier], _).
+    jpl_call(MeshReasoning, 'analyseByIdentifier', [Identifier], _).
 
 
 %% mesh_reasoning_path(+Path, -MeshReasoning) is det.
@@ -76,12 +81,37 @@ mesh_reasoning(Identifier, MeshReasoning) :-
 %
 mesh_reasoning_path(Path, MeshReasoning) :-
 	mesh_reasoning_init(MeshReasoning),
-    jpl_call(MeshReasoning, 'analyzeByPath', [Path], _).
+    jpl_call(MeshReasoning, 'analyseByPath', [Path], _).
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Annotations
 %
+
+%% mesh_reasoning_highlight(+MeshReasoning,+[AnnotationHead|AnnotationTail]) is det
+%% mesh_reasoning_highlight(+MeshReasoning,+[]) is det
+%% mesh_reasoning_highlight(+MeshReasoning,+Annotation) is det
+%
+% Highlight/select the specified annotation in GUI
+%
+% @param MeshReasoning		reasoning container
+% @param Annotation			annotation to highlight
+mesh_reasoning_highlight(_,[]).
+mesh_reasoning_highlight(MeshReasoning,[AnnotationHead|AnnotationTail]) :-
+	mesh_reasoning_highlight(MeshReasoning, AnnotationHead),
+	mesh_reasoning_highlight(MeshReasoning, AnnotationTail).
+mesh_reasoning_highlight(MeshReasoning, Annotation) :-
+	jpl_call(MeshReasoning, 'highlightAnnotation', [Annotation], _).
+	
+%% mesh_reasoning_clear_hightlight(+MeshReasoning) is det
+%
+% Clear all annotation highlights in GUI
+%
+% @param MeshReasoning		reasoning container
+%
+mesh_reasoning_clear_highlight(MeshReasoning) :-
+	jpl_call(MeshReasoning, 'clearHightlight', [], _).
+	
 
 %% mesh_element_types(+MeshReasoning,-TypeList) is det
 %
@@ -94,7 +124,7 @@ mesh_element_types(MeshReasoning, TypeList) :-
 	jpl_call(MeshReasoning, 'getAnnotationTypes', [], TypeListFlat),
     jpl_call(TypeListFlat, toArray, [], TypeListArr),
 	jpl_array_to_list(TypeListArr, TypeList).
-	
+
 
 %% mesh_find_annotations(+MeshReasoning,+Type, -AnnotationsList) is det.
 %
@@ -108,6 +138,19 @@ mesh_find_annotations(MeshReasoning,Type,AnnotationsList) :-
 	concat('findAnnotations', Type, Method),
 	jpl_call(MeshReasoning, Method, [], AnnotationsList).
 	
+	
+%% mesh_find_supporting_planes(+MeshReasoning, -PlaneList) is det.
+%
+% Get list of all supporting planes
+%
+% @param MeshReasoning		reasoning container
+% @param PlaneList			returning list which contains all supporting planes
+%
+mesh_find_supporting_planes(MeshReasoning, PlaneList) :-
+	mesh_find_annotations(MeshReasoning,'Plane',AnnSet),
+	findall(P,(jpl_set_element(AnnSet,P),mesh_is_supporting_plane(P)),PlaneList).
+
+
 %% mesh_is_supporting_plane(+PlaneAnnotation) is det.
 %% mesh_is_supporting_plane(+PlaneAnnotation, +Identifier) is det.
 %
@@ -121,9 +164,11 @@ mesh_is_supporting_plane(PlaneAnnotation, Identifier) :-
 	jpl_call(PlaneAnnotation,'getPlaneNormal',[],Norm),
 	jpl_get(Norm,'z',NormZ),
 	(nonvar(Identifier) -> 
-		% we only need M22 because '(rot) * (0,0,NormZ,0) = (_, _, NewNormZ, _)' for calculating angle
-		current_object_pose(Identifier,[_, _, _, _, _, _, _, _, _, _, M22, _, _, _, _, _]),
-		NormZ is M22 * NormZ,
+		% we only need M20,M21,M22 because '(rot) * (NormX,NormY,NormZ,0) = (_, _, NewNormZ, _)' for calculating angle
+		jpl_get(Norm,'x',NormX),
+		jpl_get(Norm,'y',NormY),
+		current_object_pose(Identifier,[_, _, _, _, _, _, _, _, M20, M21, M22, _, _, _, _, _]),
+		NormZ is M20 * NormX+M21 * NormY+M22 * NormZ,
 		true
 	; 
 		true
@@ -131,3 +176,29 @@ mesh_is_supporting_plane(PlaneAnnotation, Identifier) :-
 	abs(acos(NormZ)) < pi / 18.
 mesh_is_supporting_plane(PlaneAnnotation) :-
 	mesh_is_supporting_plane(PlaneAnnotation,_).
+
+mesh_handle_comparator(Comp, W1, W2) :-
+	jpl_call(W1,'getAreaCoverage',[],Cov1),
+	jpl_call(W2,'getAreaCoverage',[],Cov2),
+	(	Cov1 < 0.6 , Cov2 >= 0.6 -> Comp = '>'
+	;	Cov1 >= 0.6, Cov2 < 0.6 -> Comp = '<'
+	;	jpl_call(W1,'getHeightUnscaled',[],H1),
+		jpl_call(W2,'getHeightUnscaled',[],H2),
+		(   H1 < H2 -> Comp = '>'
+		;   H1 >= H2 -> Comp = '<')
+	).
+	
+listsplit([H|T], H, T).
+	
+%% mesh_find_handle(+MeshReasoning, -HandleAnnotations) is det.
+%
+% Returns a list which contains annotations sorted by its probability that they are the object handle.
+% Sorting is archeived by calling mesh_handle_comparator which compares two annotations by its probability.
+%
+% @param MeshReasoning			reasoning container
+% @param HandleAnnotations		the resulting sorted annotation list
+%
+mesh_find_handle(MeshReasoning, HandleAnnotations) :-
+	mesh_find_annotations(MeshReasoning,'Cone',AnnSet),
+	findall(P,jpl_set_element(AnnSet,P),AnnList),
+	predsort(mesh_handle_comparator, AnnList, HandleAnnotations).

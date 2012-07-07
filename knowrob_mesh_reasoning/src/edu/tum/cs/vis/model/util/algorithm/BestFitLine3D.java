@@ -20,13 +20,19 @@ import org.ejml.simple.SimpleSVD;
  * 
  */
 public class BestFitLine3D {
+
+	public static void getBestFitLine(ArrayList<Point3f> points, Vector3f dir, Point3f center) {
+		getBestFitLine(points, dir, null, center);;
+	}
+
 	/**
 	 * dir already normalized
 	 * 
 	 * @param points
 	 * @param dir
 	 */
-	public static void getBestFitLine(ArrayList<Point3f> points, Vector3f dir, Point3f center) {
+	public static void getBestFitLine(ArrayList<Point3f> points, Vector3f dir, Vector3f dirPerp,
+			Point3f center) {
 		// Try to best fit a line through the intersection points:
 
 		// Number of maximum rows for SVD. If value is too large SVD will throw a Out of Heap
@@ -38,11 +44,11 @@ public class BestFitLine3D {
 		if (increment == 0)
 			increment = 1;
 		int numberOfPoints = points.size() / increment;
-		if (points.size() % maxRows > 0)
+		if (points.size() % maxRows > 0 && increment != 1)
 			numberOfPoints++;
 
-		SimpleMatrix A = new SimpleMatrix(numberOfPoints == 2 ? numberOfPoints + 1
-				: numberOfPoints + 2, 3);
+		SimpleMatrix A = new SimpleMatrix(
+				numberOfPoints == 2 ? numberOfPoints + 1 : numberOfPoints, 3);
 
 		int row = 0;
 
@@ -67,6 +73,11 @@ public class BestFitLine3D {
 		@SuppressWarnings("rawtypes")
 		SimpleSVD svd = A.svd();
 
+		if (dirPerp != null) {
+			dirPerp.x = (float) svd.getV().get(0, 2);
+			dirPerp.y = (float) svd.getV().get(1, 2);
+			dirPerp.z = (float) svd.getV().get(2, 2);
+		}
 		// Take the column with biggest singular value (it is the first one).
 		dir.x = (float) svd.getV().get(0, 0);
 		dir.y = (float) svd.getV().get(1, 0);

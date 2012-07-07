@@ -127,7 +127,7 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#fitAnnotation()
 	 */
 	@Override
-	public boolean fitAnnotation() {
+	public void fitAnnotation() {
 		/*
 		 * Best fitting plane.
 		 * 
@@ -194,13 +194,12 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 			trianglesNormal.add(t.getNormalVector());
 		}
 		trianglesNormal.scale(1f / mesh.getTriangles().size());
-		trianglesNormal.sub(planeNormal);
-		if (trianglesNormal.lengthSquared() < 1) // if normals are in opposite direction, inverse
+		// trianglesNormal.sub(planeNormal);
+		if (trianglesNormal.dot(planeNormal) < 0) // if normals are in opposite direction, inverse
 													// planeNormal
 			planeNormal.scale(-1f);
 
 		updateFeatures(vertices);
-		return true;
 	}
 
 	/**

@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import processing.core.PApplet;
 import processing.core.PGraphics;
 import edu.tum.cs.vis.model.Model;
 
@@ -104,6 +103,17 @@ public class Group implements Serializable {
 		}
 	}
 
+	public boolean removeTriangle(Triangle t) {
+		if (mesh.getTriangles().remove(t))
+			return true;
+		for (Group gr : children) {
+			boolean ret = gr.removeTriangle(t);
+			if (ret)
+				return ret;
+		}
+		return false;
+	}
+
 	/**
 	 * Draws the bounding box around the model with the current style
 	 * 
@@ -113,15 +123,15 @@ public class Group implements Serializable {
 	 * @param recursive
 	 *            Draw also Bounding-Box of children
 	 */
-	public void drawBoundingBox(PApplet applet, boolean recursive) {
-		mesh.drawBoundingBox(applet);
+	public void drawBoundingBox(PGraphics gr, boolean recursive) {
+		mesh.drawBoundingBox(gr);
 		if (recursive) {
 			for (Group g : children) {
-				g.drawBoundingBox(applet, recursive);
+				g.drawBoundingBox(gr, recursive);
 			}
 		}
 	}
-	
+
 	public void addTriangle(Triangle t) {
 		synchronized (mesh.getTriangles()) {
 			mesh.getTriangles().add(t);
@@ -153,7 +163,7 @@ public class Group implements Serializable {
 	 *            list where to add intersecting triangles
 	 */
 	public void getIntersectedTriangles(final Point3f rayStart, final Point3f rayEnd,
-			final ArrayList<Triangle> intersectedTriangles) {
+			final ArrayList<IntersectedTriangle> intersectedTriangles) {
 		mesh.getIntersectedTriangles(rayStart, rayEnd, intersectedTriangles);
 
 		for (Group g : children) {

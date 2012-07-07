@@ -20,7 +20,6 @@ import java.util.HashSet;
 import javax.imageio.ImageIO;
 import javax.vecmath.Point3f;
 
-import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PImage;
 import edu.tum.cs.util.FileUtil;
@@ -91,16 +90,17 @@ public class Mesh implements Serializable {
 	 * @param applet
 	 *            Applet to draw on
 	 */
-	public void drawBoundingBox(PApplet applet) {
+	public void drawBoundingBox(PGraphics g) {
 		if (triangles.size() == 0 && lines.size() == 0)
 			return;
 		// Save current translation
-		applet.pushMatrix();
-		applet.translate(maxX - getWidth() / 2f, maxY - getHeight() / 2f, maxZ - getDepth() / 2f);
-		applet.box(getWidth(), getHeight(), getDepth());
+		g.pushMatrix();
+		g.translate(getMaxX() - getWidth() / 2f, getMaxY() - getHeight() / 2f, getMaxZ()
+				- getDepth() / 2f);
+		g.box(getWidth(), getHeight(), getDepth());
 
 		// Restore last translation
-		applet.popMatrix();
+		g.popMatrix();
 	}
 
 	/**
@@ -215,11 +215,12 @@ public class Mesh implements Serializable {
 	 *            list where to add intersecting triangles
 	 */
 	public void getIntersectedTriangles(final Point3f rayStart, final Point3f rayEnd,
-			final ArrayList<Triangle> intersectedTriangles) {
+			final ArrayList<IntersectedTriangle> intersectedTriangles) {
 
 		for (Triangle tri : triangles) {
-			if (tri.intersectsRay(rayStart, rayEnd))
-				intersectedTriangles.add(tri);
+			Point3f intersect = new Point3f();
+			if (tri.intersectsRay(rayStart, rayEnd, intersect))
+				intersectedTriangles.add(new IntersectedTriangle(tri, intersect));
 		}
 
 	}

@@ -9,6 +9,7 @@ package edu.tum.cs.vis.model.util.algorithm;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -21,7 +22,6 @@ import org.apache.commons.math3.linear.DecompositionSolver;
 import org.apache.commons.math3.linear.LUDecomposition;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
-import org.apache.log4j.Logger;
 
 import edu.tum.cs.vis.model.Model;
 import edu.tum.cs.vis.model.util.BSphere;
@@ -35,11 +35,6 @@ import edu.tum.cs.vis.model.util.Vertex;
  * 
  */
 public class CurvatureCalculation {
-
-	/**
-	 * Log4J Logger
-	 */
-	private static Logger	logger	= Logger.getLogger(CurvatureCalculation.class);
 
 	private static void calculateCurvature(final HashMap<Vertex, Curvature> curvatures,
 			final Model m) {
@@ -55,18 +50,25 @@ public class CurvatureCalculation {
 				c.getPrincipleDirectionMax().sub(v);
 			}
 		}
-		for (int i = 0; i < m.getVertices().size(); i++) {
+		for (Iterator<Vertex> it = m.getVertices().iterator(); it.hasNext();) {
+			Vertex v = it.next();
+
+			Curvature c = curvatures.get(v);
+			if (c == null) {
+				// vertex isn't referenced in any triangle
+				it.remove();
+				continue;
+			}
 
 			Vector3f tmp = new Vector3f();
-			tmp.cross(curvatures.get(m.getVertices().get(i)).getPrincipleDirectionMax(), m
-					.getVertices().get(i).getNormalVector());
+			tmp.cross(c.getPrincipleDirectionMax(), v.getNormalVector());
 			tmp.normalize();
-			curvatures.get(m.getVertices().get(i)).setPrincipleDirectionMax(tmp);
+			c.setPrincipleDirectionMax(tmp);
 
 			tmp = new Vector3f();
-			tmp.cross(m.getVertices().get(i).getNormalVector(),
-					curvatures.get(m.getVertices().get(i)).getPrincipleDirectionMax());
-			curvatures.get(m.getVertices().get(i)).setPrincipleDirectionMin(tmp);
+			tmp.cross(v.getNormalVector(), c.getPrincipleDirectionMax());
+			c.setPrincipleDirectionMin(tmp);
+
 		}
 
 		// Compute curvature per-face
@@ -98,6 +100,7 @@ public class CurvatureCalculation {
 			Curvature c = curvatures.get(m.getVertices().get(i));
 			Vector3f pdirRet[] = new Vector3f[2];
 			float kRet[] = new float[2];
+
 			diagonalize_curv(c.getPrincipleDirectionMax(), c.getPrincipleDirectionMin(),
 					c.getCurvatureMax(), c.getCurvatureMinMax(), c.getCurvatureMin(), m
 							.getVertices().get(i).getNormalVector(), pdirRet, kRet);
@@ -174,7 +177,9 @@ public class CurvatureCalculation {
 			c12 = ret[1];
 			c2 = ret[2];
 
-			float wt;
+			Curvature c = curvatures.get(vj);
+
+			double wt;
 			if (j == 0)
 				wt = tri.getCornerarea().x / vj.getPointarea();
 			else if (j == 1)
@@ -182,20 +187,46 @@ public class CurvatureCalculation {
 			else
 				wt = tri.getCornerarea().z / vj.getPointarea();
 
-			Curvature c = curvatures.get(vj);
 			synchronized (c) {
-				c.setCurvatureMax(c.getCurvatureMax() + wt * c1);
-				c.setCurvatureMinMax(c.getCurvatureMinMax() + wt * c12);
-				c.setCurvatureMin(c.getCurvatureMin() + wt * c2);
+				c.setCurvatureMax((float) (c.getCurvatureMax() + wt * c1));
+				c.setCurvatureMinMax((float) (c.getCurvatureMinMax() + wt * c12));
+				c.setCurvatureMin((float) (c.getCurvatureMin() + wt * c2));
 			}
 		}
 	}
 
-	public static void calculateCurvatures(HashMap<Vertex, Curvature> curvatures, final Model m) {
+	public static void calculateCurvatures(HashMap<Vertex, Curvature> curvatures, final Model m,
+			boolean inverseCurvature) {
 
 		if (m.getVertices().size() == 0)
 			return;
-		calculateVertexNormals(m);
+
+		/*float vertices[] = new float[m.getVertices().size() * 3];
+		for (int i = 0; i < m.getVertices().size(); i++) {
+			vertices[i * 3] = m.getVertices().get(i).x;
+			vertices[i * 3 + 1] = m.getVertices().get(i).y;
+			vertices[i * 3 + 2] = m.getVertices().get(i).z;
+		}
+		GeometryInfo geometryInfo = new GeometryInfo(GeometryInfo.TRIANGLE_ARRAY);
+		geometryInfo.setCoordinates(vertices);
+		int indices[] = new int[m.getTriangles().size() * 3];
+		for (int i = 0; i < m.getTriangles().size(); i++) {
+			for (int j = 0; j < 3; j++) {
+				indices[i * 3 + j] = m.getVertices().indexOf(
+						m.getTriangles().get(i).getPosition()[j]);
+			}
+		}
+		geometryInfo.setCoordinateIndices(indices);
+
+		NormalGenerator normalGenerator = new NormalGenerator();
+		normalGenerator.generateNormals(geometryInfo);
+
+		for (int i = 0; i < m.getVertices().size(); i++) {
+			m.getVertices().get(i)
+					.setNormalVector(geometryInfo.getNormals()[geometryInfo.getNormalIndices()[i]]);
+		}*/
+
+		calculateVertexNormals(m, inverseCurvature);
 		calculateVoronoiArea(m);
 		calculateCurvature(curvatures, m);
 		setCurvatureHueSaturation(curvatures, m);
@@ -208,12 +239,17 @@ public class CurvatureCalculation {
 	 * "Weights for Computing Vertex Normals from Facet Normals," Journal of Graphics Tools, Vol. 4,
 	 * No. 2, 1999.
 	 */
-	private static void calculateVertexNormals(final Model m) {
+	private static void calculateVertexNormals(final Model m, boolean inverseCurvature) {
 		// Compute from faces
 
 		List<Callable<Void>> threads = new LinkedList<Callable<Void>>();
 
 		final int interval = 500;
+
+		// Reset normal vectors, because vertex normals from collada aren't correct
+		for (Vertex v : m.getVertices()) {
+			v.getNormalVector().x = v.getNormalVector().y = v.getNormalVector().z = 0;
+		}
 
 		for (int start = 0; start < m.getTriangles().size(); start += interval) {
 			final int st = start;
@@ -242,8 +278,11 @@ public class CurvatureCalculation {
 			calculateVertexNormalsForTriangle(m.getTriangles().get(i));
 		};*/
 
-		for (Vertex v : m.getVertices())
+		for (Vertex v : m.getVertices()) {
 			v.getNormalVector().normalize();
+			if (inverseCurvature)
+				v.getNormalVector().scale(-1f);
+		}
 
 	}
 
@@ -265,7 +304,7 @@ public class CurvatureCalculation {
 			return;
 
 		Vector3f facenormal = new Vector3f();
-		facenormal.cross(b, a);
+		facenormal.cross(b, a); // unsaled normal
 
 		Vector3f normalP0 = (Vector3f) facenormal.clone();
 		normalP0.scale(1.0f / (l2a * l2c));
@@ -342,25 +381,42 @@ public class CurvatureCalculation {
 		float ew[] = { l2[0] * (l2[1] + l2[2] - l2[0]), l2[1] * (l2[2] + l2[0] - l2[1]),
 				l2[2] * (l2[0] + l2[1] - l2[2]) };
 		t.setCornerarea(new Vector3f());
+		boolean ok = false;
 		if (ew[0] <= 0.0f) {
-			t.getCornerarea().y = -0.25f * l2[2] * area / (e[0].dot(e[2]));
-			t.getCornerarea().z = -0.25f * l2[1] * area / (e[0].dot(e[1]));
-			t.getCornerarea().x = area - t.getCornerarea().y - t.getCornerarea().z;
+			float d1 = e[0].dot(e[2]);
+			float d2 = e[0].dot(e[1]);
+			if (d1 != 0 && d2 != 0) {
+				t.getCornerarea().y = -0.25f * l2[2] * area / d1;
+				t.getCornerarea().z = -0.25f * l2[1] * area / d2;
+				t.getCornerarea().x = area - t.getCornerarea().y - t.getCornerarea().z;
+				ok = true;
+			}
 		} else if (ew[1] <= 0.0f) {
-			t.getCornerarea().z = -0.25f * l2[0] * area / (e[1].dot(e[0]));
-			t.getCornerarea().x = -0.25f * l2[2] * area / (e[1].dot(e[2]));
-			t.getCornerarea().y = area - t.getCornerarea().z - t.getCornerarea().x;
+			float d1 = e[1].dot(e[0]);
+			float d2 = e[1].dot(e[2]);
+			if (d1 != 0 && d2 != 0) {
+				t.getCornerarea().z = -0.25f * l2[0] * area / d1;
+				t.getCornerarea().x = -0.25f * l2[2] * area / d2;
+				t.getCornerarea().y = area - t.getCornerarea().z - t.getCornerarea().x;
+				ok = true;
+			}
 		} else if (ew[2] <= 0.0f) {
-			t.getCornerarea().x = -0.25f * l2[1] * area / (e[2].dot(e[1]));
-			t.getCornerarea().y = -0.25f * l2[0] * area / (e[2].dot(e[0]));
-			t.getCornerarea().z = area - t.getCornerarea().x - t.getCornerarea().y;
-		} else {
+
+			float d1 = e[2].dot(e[1]);
+			float d2 = e[2].dot(e[0]);
+			if (d1 != 0 && d2 != 0) {
+				t.getCornerarea().x = -0.25f * l2[1] * area / d1;
+				t.getCornerarea().y = -0.25f * l2[0] * area / d2;
+				t.getCornerarea().z = area - t.getCornerarea().x - t.getCornerarea().y;
+				ok = true;
+			}
+		}
+		if (!ok) {
 			float ewscale = 0.5f * area / (ew[0] + ew[1] + ew[2]);
 			t.getCornerarea().x = ewscale * (ew[1] + ew[2]);
 			t.getCornerarea().y = ewscale * (ew[2] + ew[0]);
 			t.getCornerarea().z = ewscale * (ew[0] + ew[1]);
 		}
-
 		synchronized (t.getPosition()[0]) {
 			t.getPosition()[0]
 					.setPointarea(t.getPosition()[0].getPointarea() + t.getCornerarea().x);

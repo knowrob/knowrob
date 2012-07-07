@@ -63,15 +63,15 @@ public class Curvature {
 	private Vector3f		principleDirectionMin	= new Vector3f();
 
 	private Vector3f		principleDirectionMax	= new Vector3f();
-	private float			curvatureMin			= 0;
 
+	private float			curvatureMin			= 0;
 	private float			curvatureMax			= 0;
 
 	private float			curvatureMinMax			= 0;
 
 	private PrimitiveType	primitiveType;
-	private float			hue;
 
+	private float			hue;
 	private float			saturation;
 
 	public Color getColor() {
@@ -196,6 +196,18 @@ public class Curvature {
 	 */
 	public void setSaturation(float saturation) {
 		this.saturation = saturation;
+	}
+
+	@Override
+	public String toString() {
+		String ret = "";
+		ret += "min: " + curvatureMin;
+		ret += "\nmax: " + curvatureMax;
+		ret += "\nminmax: " + curvatureMinMax;
+		ret += "\ndirMin: " + principleDirectionMin.toString();
+		ret += "\ndirMax: " + principleDirectionMax.toString();
+		ret += "\nprimitiveType: " + primitiveType;
+		return ret;
 	}
 
 }

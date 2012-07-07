@@ -44,12 +44,12 @@ public abstract class PrimitiveAnnotation extends MeshAnnotation {
 
 	public abstract void drawPrimitiveAnnotation(PGraphics g);
 
-	public boolean fit() {
+	public void fit() {
 		updateAnnotationArea();
-		return fitAnnotation();
+		fitAnnotation();
 	}
 
-	protected abstract boolean fitAnnotation();
+	protected abstract void fitAnnotation();
 
 	/**
 	 * @return the area
@@ -58,6 +58,10 @@ public abstract class PrimitiveAnnotation extends MeshAnnotation {
 		if (area == 0)
 			updateAnnotationArea();
 		return area;
+	}
+
+	public float getAreaCoverage() {
+		return getArea() / getPrimitiveArea();
 	}
 
 	public float getAreaUnscaled() {

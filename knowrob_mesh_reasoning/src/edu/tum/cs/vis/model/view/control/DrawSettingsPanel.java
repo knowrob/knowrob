@@ -47,6 +47,8 @@ public class DrawSettingsPanel extends JPanel implements ActionListener {
 	private final JCheckBox			cbxDrawCurvatureColor;
 	private final JCheckBox			cbxDrawVoronoiArea;
 	private final JButton			btnSetRotation;
+	private final JCheckBox			cbxSelectNearestOnly;
+	private final JCheckBox			cbxDrawBoundingBox;
 
 	public DrawSettingsPanel(MeshCas cas, MeshReasoningView view) {
 		this.view = view;
@@ -58,7 +60,7 @@ public class DrawSettingsPanel extends JPanel implements ActionListener {
 
 		cbxWhiteBackground = new JCheckBox("White Background");
 		cbxWhiteBackground.addActionListener(this);
-		cbxWhiteBackground.setSelected(false);
+		cbxWhiteBackground.setSelected(view.isBackgroundWhite());
 		this.add(cbxWhiteBackground);
 
 		cbxDrawVertexNormals = new JCheckBox("Vertex normals");
@@ -85,6 +87,16 @@ public class DrawSettingsPanel extends JPanel implements ActionListener {
 		btnSetRotation.addActionListener(this);
 		this.add(btnSetRotation);
 
+		cbxSelectNearestOnly = new JCheckBox("Select nearest");
+		cbxSelectNearestOnly.addActionListener(this);
+		cbxSelectNearestOnly.setSelected(view.isSelectNearestOnly());
+		this.add(cbxSelectNearestOnly);
+
+		cbxDrawBoundingBox = new JCheckBox("Bounding box");
+		cbxDrawBoundingBox.addActionListener(this);
+		cbxDrawBoundingBox.setSelected(view.isDrawBoundingBox());
+		this.add(cbxDrawBoundingBox);
+
 	}
 
 	@Override
@@ -99,6 +111,8 @@ public class DrawSettingsPanel extends JPanel implements ActionListener {
 			view.setDrawCurvatureColor(cbxDrawCurvatureColor.isSelected());
 		else if (e.getSource() == cbxDrawVoronoiArea)
 			view.setDrawVoronoiArea(cbxDrawVoronoiArea.isSelected());
+		else if (e.getSource() == cbxDrawBoundingBox)
+			view.setDrawBoundingBox(cbxDrawBoundingBox.isSelected());
 		else if (e.getSource() == btnSetRotation) {
 			String current = Math.round(view.getRotation()[0] * 180f / Math.PI) + ","
 					+ Math.round(view.getRotation()[1] * 180f / Math.PI) + ","
@@ -129,6 +143,7 @@ public class DrawSettingsPanel extends JPanel implements ActionListener {
 					return;
 				}
 			}
-		}
+		} else if (e.getSource() == cbxSelectNearestOnly)
+			view.setSelectNearestOnly(cbxSelectNearestOnly.isSelected());
 	}
 }

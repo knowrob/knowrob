@@ -128,7 +128,7 @@ public class GrahamScan {
 		// Graham scan; note that points[N-1] is extreme point different from points[0]
 		for (int i = k2; i < N; i++) {
 			Point2f top = hull.pop();
-			while (ccw(hull.peek(), top, points[i]) <= 0) {
+			while (hull.size() > 0 && ccw(hull.peek(), top, points[i]) <= 0) {
 				top = hull.pop();
 			}
 			hull.push(top);

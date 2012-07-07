@@ -19,10 +19,10 @@ import org.apache.log4j.xml.DOMConfigurator;
 
 import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.util.PrintUtil;
-import edu.tum.cs.vis.model.uima.analyzer.ContainerAnalyzer;
-import edu.tum.cs.vis.model.uima.analyzer.MeshAnalyzer;
-import edu.tum.cs.vis.model.uima.analyzer.NeighborAnalyzer;
-import edu.tum.cs.vis.model.uima.analyzer.PrimitiveAnalyzer;
+import edu.tum.cs.vis.model.uima.analyser.ContainerAnalyser;
+import edu.tum.cs.vis.model.uima.analyser.MeshAnalyser;
+import edu.tum.cs.vis.model.uima.analyser.NeighborAnalyser;
+import edu.tum.cs.vis.model.uima.analyser.PrimitiveAnalyser;
 import edu.tum.cs.vis.model.uima.annotation.ContainerAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.primitive.ConeAnnotation;
@@ -50,25 +50,29 @@ public class MeshReasoning {
 		return new MeshReasoning(withView);
 	}
 
-	private MeshReasoningView	mrv	= null;
+	private MeshReasoningView			mrv	= null;
 
-	private MeshCas				cas	= null;
+	private MeshCas						cas	= null;
+
+	public JFrame						frame;
+
+	private MeshReasoningViewControl	control;
 
 	public MeshReasoning(boolean withView) {
 		cas = new MeshCas();
 
 		if (withView) {
-			JFrame frame = new JFrame();
+			frame = new JFrame();
 			frame.setMinimumSize(new Dimension(800, 600));
 			frame.setSize(1324, 768);
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			frame.setTitle("Mesh reasoning view");
 			frame.setLocationRelativeTo(null);
 
-			ArrayList<MeshAnalyzer> analyzer = new ArrayList<MeshAnalyzer>();
+			ArrayList<MeshAnalyser> analyser = new ArrayList<MeshAnalyser>();
 
 			mrv = new MeshReasoningView();
-			MeshReasoningViewControl control = new MeshReasoningViewControl(cas, analyzer, mrv);
+			control = new MeshReasoningViewControl(cas, analyser, mrv);
 			mrv.setControl(control);
 			mrv.init();
 
@@ -82,16 +86,17 @@ public class MeshReasoning {
 
 	}
 
-	public void analyzeByIdentifier(String prologIdentifier) {
+	public void analyseByIdentifier(String prologIdentifier) {
 		String path = Properties.getPropertyStringOfClassOrIndividual("knowrob:pathToCadModel",
 				prologIdentifier);
 		if (path != null)
-			analyzeByPath(path);
+			analyseByPath(path);
 	}
 
-	public void analyzeByPath(String path) {
+	public void analyseByPath(String path) {
 
 		logger.info("MeshReasoning started. Parsing model ...");
+		logger.debug("Path: " + path);
 		long start = System.currentTimeMillis();
 
 		ItemModel itemModel = new ItemModel(path);
@@ -102,6 +107,8 @@ public class MeshReasoning {
 		}
 
 		Model model = itemModel.getParser().getModel();
+		// if (path.endsWith("ply"))
+		model.removeDoubleSidedTriangles(); // in ply files there may be double sided triangles
 		logger.debug("Model parsed. Took: "
 				+ PrintUtil.prettyMillis(System.currentTimeMillis() - start) + " (Vertices: "
 				+ model.getVertices().size() + ", Lines: " + model.getLines().size()
@@ -111,22 +118,22 @@ public class MeshReasoning {
 
 		model.normalize();
 
-		ArrayList<MeshAnalyzer> analyzer;
+		ArrayList<MeshAnalyser> analyser;
 		if (mrv != null) {
-			analyzer = mrv.getControl().getAnalyzer();
+			analyser = mrv.getControl().getAnalyser();
 		} else {
 			cas = new MeshCas();
-			analyzer = new ArrayList<MeshAnalyzer>();
+			analyser = new ArrayList<MeshAnalyser>();
 		}
 		cas.setModel(model);
-		CurvatureCalculation.calculateCurvatures(cas.getCurvatures(), model);
+		CurvatureCalculation.calculateCurvatures(cas.getCurvatures(), model, path.endsWith("ply"));
 
-		NeighborAnalyzer na = new NeighborAnalyzer();
-		analyzer.add(na);
-		PrimitiveAnalyzer pa = new PrimitiveAnalyzer();
-		analyzer.add(pa);
-		ContainerAnalyzer ca = new ContainerAnalyzer();
-		analyzer.add(ca);
+		NeighborAnalyser na = new NeighborAnalyser();
+		analyser.add(na);
+		PrimitiveAnalyser pa = new PrimitiveAnalyser();
+		analyser.add(pa);
+		ContainerAnalyser ca = new ContainerAnalyser();
+		analyser.add(ca);
 
 		Thread.yield();
 
@@ -134,6 +141,10 @@ public class MeshReasoning {
 		pa.process(cas);
 		ca.process(cas);
 
+	}
+
+	public void clearHightlight() {
+		mrv.clearSelectedAnnotations();
 	}
 
 	public HashSet<ConeAnnotation> findAnnotationsCone() {
@@ -170,6 +181,21 @@ public class MeshReasoning {
 		ArrayList<String> ret = new ArrayList<String>();
 		ret.addAll(types);
 		return ret;
+	}
+
+	public void highlightAnnotation(MeshAnnotation a) {
+		if (mrv == null)
+			return;
+		mrv.addSelectedAnnotation(a);
+	}
+
+	public void setDefaultImageFilename(String s) {
+		if (control != null)
+			control.setDefaultImageFilename(s);
+	}
+
+	public void setFrameTitle(String title) {
+		frame.setTitle(title);
 	}
 
 }
