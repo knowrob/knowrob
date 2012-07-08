@@ -35,6 +35,7 @@
 	mesh_reasoning_highlight/2,
 	mesh_reasoning_clear_highlight/1,
 	mesh_find_handle/2,
+	mesh_find_handle/4,
 	listsplit/3
     ]).
 
@@ -180,8 +181,22 @@ mesh_is_supporting_plane(PlaneAnnotation) :-
 mesh_handle_comparator(Comp, W1, W2) :-
 	jpl_call(W1,'getAreaCoverage',[],Cov1),
 	jpl_call(W2,'getAreaCoverage',[],Cov2),
+	jpl_call(W1,'getRadiusAvgUnscaled',[],Rad1),
+	jpl_call(W2,'getRadiusAvgUnscaled',[],Rad2),
+	( nonvar(MeshHandleCompareMinRadius) -> Rad1Ok = (Rad1 < MeshHandleCompareMinRadius , Rad1 > MeshHandleCompareMaxRadius)
+	; Rad1Ok = false
+	),
+	( nonvar(MeshHandleCompareMinRadius) -> Rad2Ok = (Rad2 < MeshHandleCompareMinRadius , Rad2 > MeshHandleCompareMaxRadius)
+	; Rad2Ok = false
+	),
+	(nonvar(MeshHandleCompareMinRadius) -> write('minrad defined\n') ; write('minrad NOT\n')),
+	write('rad1:'),write(Rad1Ok),
+	write('\nrad2:'),write(Rad2Ok),
+	write('\n'),
 	(	Cov1 < 0.6 , Cov2 >= 0.6 -> Comp = '>'
 	;	Cov1 >= 0.6, Cov2 < 0.6 -> Comp = '<'
+	;	not(Rad1Ok), Rad2Ok -> Comp = '>'
+	;	Rad1Ok, not(Rad2Ok) -> Comp = '<'
 	;	jpl_call(W1,'getHeightUnscaled',[],H1),
 		jpl_call(W2,'getHeightUnscaled',[],H2),
 		(   H1 < H2 -> Comp = '>'
@@ -191,14 +206,21 @@ mesh_handle_comparator(Comp, W1, W2) :-
 listsplit([H|T], H, T).
 	
 %% mesh_find_handle(+MeshReasoning, -HandleAnnotations) is det.
+%% mesh_find_handle(+MeshReasoning, -HandleAnnotations, +MinRadius, +MaxRadius) is det.
 %
 % Returns a list which contains annotations sorted by its probability that they are the object handle.
 % Sorting is archeived by calling mesh_handle_comparator which compares two annotations by its probability.
 %
 % @param MeshReasoning			reasoning container
 % @param HandleAnnotations		the resulting sorted annotation list
+% @param MinRadius				minimum radius which the handle should have
+% @param MaxRadius				maximum radius which the handle should have
 %
 mesh_find_handle(MeshReasoning, HandleAnnotations) :-
 	mesh_find_annotations(MeshReasoning,'Cone',AnnSet),
 	findall(P,jpl_set_element(AnnSet,P),AnnList),
 	predsort(mesh_handle_comparator, AnnList, HandleAnnotations).
+mesh_find_handle(MeshReasoning, HandleAnnotations, MinRadius, MaxRadius) :-
+	MeshHandleCompareMinRadius = MinRadius,
+	MeshHandleCompareMaxRadius = MaxRadius,
+	mesh_find_handle(MeshReasoning, HandleAnnotations).

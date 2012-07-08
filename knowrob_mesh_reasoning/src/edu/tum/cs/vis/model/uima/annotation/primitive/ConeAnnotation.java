@@ -461,6 +461,17 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 		return model.getUnscaled(getPrimitiveArea());
 	}
 
+	public float getRadiusAvg() {
+		return (radiusLarge + radiusSmall) / 2f;
+	}
+
+	/**
+	 * @return the radiusLarge
+	 */
+	public float getRadiusAvgUnscaled() {
+		return model.getUnscaled(getRadiusAvg());
+	}
+
 	/**
 	 * @return the radiusLarge
 	 */

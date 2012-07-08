@@ -10,6 +10,6 @@
 	<classpathentry kind="lib" path="lib/log4j-1.2.16.jar"/>
 	<classpathentry kind="lib" path="lib/j3dcore.jar"/>
 	<classpathentry kind="lib" path="lib/j3dutils.jar"/>
-	<classpathentry kind="lib" path="C:/Program Files/pl/lib/jpl.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/jpl.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

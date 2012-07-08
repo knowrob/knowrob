@@ -103,7 +103,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	 */
 	private final Color								bgcolorWhite		= new Color(255, 255, 255);
 
-	private boolean									backgroundWhite		= true;
+	private boolean									backgroundWhite		= false;
 	private boolean									drawVertexNormals	= false;
 	private boolean									drawVertexCurvature	= false;
 
