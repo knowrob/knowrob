@@ -76,6 +76,8 @@ public abstract class PrimitiveAnnotation extends MeshAnnotation {
 	 */
 	public abstract float getPrimitiveArea();
 
+	public abstract float getPrimitiveAreaUnscaled();
+
 	protected Vector3f getVertices(HashSet<Vertex> vertices) {
 		vertices.clear();
 		Vector3f centroid = new Vector3f();

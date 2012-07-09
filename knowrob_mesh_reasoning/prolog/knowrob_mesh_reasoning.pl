@@ -43,7 +43,9 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs_computable')).
 :- use_module(library('knowrob_objects')).
+:- use_module(library('knowrob_coordinates')).
 :- use_module(library('jpl')).
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -224,3 +226,119 @@ mesh_find_handle(MeshReasoning, HandleAnnotations, MinRadius, MaxRadius) :-
 	MeshHandleCompareMinRadius = MinRadius,
 	MeshHandleCompareMaxRadius = MaxRadius,
 	mesh_find_handle(MeshReasoning, HandleAnnotations).
+
+
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% Read information about annotation properties
+% 
+
+annotation_area(PrimitiveAnnotation, Area) :-
+  jpl_datum_to_type(PrimitiveAnnotation, 
+      class([edu,tum,cs,vis,model,uima,annotation],['PrimitiveAnnotation'])),
+  jpl_call(PrimitiveAnnotation,'getPrimitiveAreaUnscaled',[],Area).
+
+annotation_area_coverage(PrimitiveAnnotation, AreaCoverage) :-
+  jpl_datum_to_type(PrimitiveAnnotation, 
+      class([edu,tum,cs,vis,model,uima,annotation],['PrimitiveAnnotation'])),
+  jpl_call(PrimitiveAnnotation,'getAreaCoverage',[],AreaCoverage).
+
+
+% % % % % % % % % % % % % % % % % % % % % % % 
+% CONES
+
+annotation_cone_radius_avg(ConeAnnotation, RadiusAvg) :-
+  jpl_datum_to_type(ConeAnnotation, 
+      class([edu,tum,cs,vis,model,uima,annotation,primitive],['ConeAnnotation'])),
+  jpl_call(ConeAnnotation,'getRadiusAvgUnscaled',[],RadiusAvg).
+
+annotation_cone_radius_max(ConeAnnotation, RadiusMax) :-
+  jpl_datum_to_type(ConeAnnotation, 
+      class([edu,tum,cs,vis,model,uima,annotation,primitive],['ConeAnnotation'])),
+  jpl_call(ConeAnnotation,'getRadiusLargeUnscaled',[],RadiusMax).
+
+annotation_cone_radius_avg(ConeAnnotation, RadiusMin) :-
+  jpl_datum_to_type(ConeAnnotation, 
+      class([edu,tum,cs,vis,model,uima,annotation,primitive],['ConeAnnotation'])),
+  jpl_call(ConeAnnotation,'getRadiusSmallUnscaled',[],RadiusMin).
+
+annotation_cone_volume(ConeAnnotation, Volume) :-
+  jpl_datum_to_type(ConeAnnotation, 
+      class([edu,tum,cs,vis,model,uima,annotation,primitive],['ConeAnnotation'])),
+  jpl_call(ConeAnnotation,'getVolumeUnscaled',[],Volume).
+
+annotation_cone_height(ConeAnnotation, Height) :-
+  jpl_datum_to_type(ConeAnnotation, 
+      class([edu,tum,cs,vis,model,uima,annotation,primitive],['ConeAnnotation'])),
+  jpl_call(ConeAnnotation,'getHeightUnscaled',[],Height).
+
+annotation_cone_direction(ConeAnnotation, Direction) :-
+  jpl_datum_to_type(ConeAnnotation, 
+      class([edu,tum,cs,vis,model,uima,annotation,primitive],['ConeAnnotation'])),
+  jpl_call(ConeAnnotation,'getDirectionUnscaled',[],DirVec),
+  vector3d_to_list(DirVec, Direction).
+
+
+
+
+% % % % % % % % % % % % % % % % % % % % % % % 
+% SPHERES
+
+annotation_sphere_radius(SphereAnnotation, RadiusAvg) :-
+  jpl_datum_to_type(SphereAnnotation, 
+      class([edu,tum,cs,vis,model,uima,annotation,primitive],['SphereAnnotation'])),
+  jpl_call(SphereAnnotation,'getRadiusUnscaled',[],RadiusAvg).
+
+annotation_sphere_is_concave(SphereAnnotation, Concave) :-
+  jpl_datum_to_type(SphereAnnotation, 
+      class([edu,tum,cs,vis,model,uima,annotation,primitive],['SphereAnnotation'])),
+  jpl_call(SphereAnnotation,'isConcav',[],Concave).
+
+
+
+
+% % % % % % % % % % % % % % % % % % % % % % % 
+% Planes
+
+annotation_plane_radius(PlaneAnnotation, PlaneNormal) :-
+  jpl_datum_to_type(PlaneAnnotation, 
+      class([edu,tum,cs,vis,model,uima,annotation,primitive],['PlaneAnnotation'])),
+  jpl_call(PlaneAnnotation,'getPlaneNormal',[],NormalVec),
+  vector3d_to_list(NormalVec, PlaneNormal).
+
+annotation_plane_radius(PlaneAnnotation, LongSide) :-
+  jpl_datum_to_type(PlaneAnnotation, 
+      class([edu,tum,cs,vis,model,uima,annotation,primitive],['PlaneAnnotation'])),
+  jpl_call(PlaneAnnotation,'getLongSideUnscaled',[],LongSideVec),
+  vector3d_to_list(LongSideVec, LongSide).
+
+annotation_plane_radius(PlaneAnnotation, ShortSide) :-
+  jpl_datum_to_type(PlaneAnnotation, 
+      class([edu,tum,cs,vis,model,uima,annotation,primitive],['PlaneAnnotation'])),
+  jpl_call(PlaneAnnotation,'getShortSide',[],ShortSideVec),
+  vector3d_to_list(ShortSideVec, ShortSide).
+
+
+
+% % % % % % % % % % % % % % % % % % % % % % % 
+% Containers
+
+annotation_container_direction(ContainerAnnotation, OpeningDirection) :-
+  jpl_datum_to_type(ContainerAnnotation, 
+      class([edu,tum,cs,vis,model,uima,annotation],['ContainerAnnotation'])),
+  jpl_call(ContainerAnnotation,'getDirectionUnscaled',[],DirVec),
+  vector3d_to_list(DirVec, OpeningDirection).
+
+
+annotation_container_volume(ContainerAnnotation, Volume) :-
+  jpl_datum_to_type(ContainerAnnotation, 
+      class([edu,tum,cs,vis,model,uima,annotation],['ContainerAnnotation'])),
+  jpl_call(ContainerAnnotation,'getVolumeUnscaled',[],Volume).
+
+
+
+
+
+
+
+
