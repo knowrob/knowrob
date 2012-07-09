@@ -262,6 +262,10 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 		return 4f * shortSide.length() * longSide.length();
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#getPrimitiveAreaUnscaled()
+	 */
+	@Override
 	public float getPrimitiveAreaUnscaled() {
 		// shortSide is half length of the rectangles short side. Same with long side.
 		return model.getUnscaled(getPrimitiveArea());

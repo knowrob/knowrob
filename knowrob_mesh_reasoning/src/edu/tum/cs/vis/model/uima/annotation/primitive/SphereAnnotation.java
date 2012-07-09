@@ -163,6 +163,10 @@ public class SphereAnnotation extends PrimitiveAnnotation {
 		return (float) (4f * Math.PI * (radius * radius));
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#getPrimitiveAreaUnscaled()
+	 */
+	@Override
 	public float getPrimitiveAreaUnscaled() {
 		return model.getUnscaled(getPrimitiveArea());
 	}

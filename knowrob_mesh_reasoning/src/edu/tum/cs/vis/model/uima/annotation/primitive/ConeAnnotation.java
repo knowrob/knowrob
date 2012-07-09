@@ -456,6 +456,10 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 		return (float) (Math.PI * (radiusLarge + radiusSmall) * Math.sqrt(r * r + h * h));
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#getPrimitiveAreaUnscaled()
+	 */
+	@Override
 	public float getPrimitiveAreaUnscaled() {
 
 		return model.getUnscaled(getPrimitiveArea());
