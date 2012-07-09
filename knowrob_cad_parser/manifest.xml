@@ -9,11 +9,12 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/knowrob_cad_parser</url>
 
+  <depend package="knowrob_common"/>
   <depend package="jpl"/>
   <depend package="rosjava_jni"/>
 
   <export>
-    <java classpath="${prefix}/bin:${prefix}/lib/vecmath.jar:${prefix}/lib/dae4j.jar${prefix}/lib/processing/core.jar:${prefix}/lib/processing/PeasyCam.jar:${prefix}/lib/processing/log4j-1.2.16.jar"/>
+    <java classpath="${prefix}/bin:${prefix}/lib/vecmath.jar:${prefix}/lib/j3dcore.jar:${prefix}/lib/j3dutils.jar:${prefix}/lib/dae4j.jar${prefix}/lib/processing/core.jar:${prefix}/lib/processing/PeasyCam.jar:${prefix}/lib/processing/log4j-1.2.16.jar"/>
     <rosdoc config="rosdoc.yaml" />
   </export>
 

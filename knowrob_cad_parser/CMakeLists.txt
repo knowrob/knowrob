@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.4.6)
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 
 rosbuild_init()
+rosbuild_include(rosprolog utils)
 
 #set the default path for built executables to the "bin" directory
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
@@ -27,6 +28,12 @@ add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/processing/PeasyCam.jar)
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/dae4j.jar)
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/log4j-1.2.16.jar)
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/commons-net-3.0.1.jar)
+
+file(GLOB inputs prolog/*.in)
+foreach( _in ${inputs} )
+  string(REPLACE ".in" "" _out ${_in})
+  configure_file( ${_in} ${_out} )
+endforeach( _in )
 
 rosbuild_find_ros_package(jpl)
 add_classpath(${jpl_PACKAGE_PATH}/jpl/jpl.jar)

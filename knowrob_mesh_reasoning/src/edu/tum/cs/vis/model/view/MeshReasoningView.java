@@ -158,12 +158,16 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	private MeshReasoningViewControl				control				= null;
 
 	public void addSelectedAnnotation(MeshAnnotation a) {
-		selectedAnnotations.add(a);
+		synchronized (selectedAnnotations) {
+			selectedAnnotations.add(a);
+		}
 		control.showSelectedAnnotation(selectedAnnotations);
 	};
 
 	public void clearSelectedAnnotations() {
-		selectedAnnotations.clear();
+		synchronized (selectedAnnotations) {
+			selectedAnnotations.clear();
+		}
 		control.showSelectedAnnotation(selectedAnnotations);
 	}
 
@@ -233,19 +237,19 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 						selectedAnnotations.size() > 1 ? new Color(255, 125, 0, 200) : new Color(
 								255, 50, 0, 200));
 			}
-		}
 
-		if (selectedAnnotations.size() == 1) {
-			MeshAnnotation a = selectedAnnotations.iterator().next();
+			if (selectedAnnotations.size() == 1) {
+				MeshAnnotation a = selectedAnnotations.iterator().next();
 
-			if (a instanceof PrimitiveAnnotation) {
-				PrimitiveAnnotation an = (PrimitiveAnnotation) a;
+				if (a instanceof PrimitiveAnnotation) {
+					PrimitiveAnnotation an = (PrimitiveAnnotation) a;
 
-				an.drawPrimitiveAnnotation(g);
+					an.drawPrimitiveAnnotation(g);
 
+				}
 			}
-		}
 
+		}
 		/*	for (MeshCas c : casList) {
 				g.stroke(41, 120, 37);
 				if (c.getModel() != null)

@@ -86,13 +86,6 @@ public class MeshReasoning {
 
 	}
 
-	public void analyseByIdentifier(String prologIdentifier) {
-		String path = Properties.getPropertyStringOfClassOrIndividual("knowrob:pathToCadModel",
-				prologIdentifier);
-		if (path != null)
-			analyseByPath(path);
-	}
-
 	public void analyseByPath(String path) {
 
 		logger.info("MeshReasoning started. Parsing model ...");

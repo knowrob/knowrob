@@ -43,9 +43,7 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs_computable')).
 :- use_module(library('knowrob_objects')).
-:- use_module(library('knowrob_coordinates')).
 :- use_module(library('jpl')).
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -71,8 +69,8 @@ mesh_reasoning_init(MeshReasoning) :-
 % @param MeshReasoning     MeshReasoning object
 %
 mesh_reasoning(Identifier, MeshReasoning) :-
-	mesh_reasoning_init(MeshReasoning),
-    jpl_call(MeshReasoning, 'analyseByIdentifier', [Identifier], _).
+	get_model_path(Identifier,Path),
+	mesh_reasoning_path(Path, MeshReasoning).
 
 
 %% mesh_reasoning_path(+Path, -MeshReasoning) is det.
@@ -180,21 +178,31 @@ mesh_is_supporting_plane(PlaneAnnotation, Identifier) :-
 mesh_is_supporting_plane(PlaneAnnotation) :-
 	mesh_is_supporting_plane(PlaneAnnotation,_).
 
+:- dynamic
+        mesh_min_radius/1, 
+        mesh_max_radius/1.
+
 mesh_handle_comparator(Comp, W1, W2) :-
 	jpl_call(W1,'getAreaCoverage',[],Cov1),
 	jpl_call(W2,'getAreaCoverage',[],Cov2),
 	jpl_call(W1,'getRadiusAvgUnscaled',[],Rad1),
 	jpl_call(W2,'getRadiusAvgUnscaled',[],Rad2),
-	( nonvar(MeshHandleCompareMinRadius) -> Rad1Ok = (Rad1 < MeshHandleCompareMinRadius , Rad1 > MeshHandleCompareMaxRadius)
-	; Rad1Ok = false
+	( mesh_min_radius(MinRadius),mesh_max_radius(MaxRadius) -> 
+		(
+			(Rad1 > MinRadius , Rad1 < MaxRadius) -> 
+			Rad1Ok = true
+			; Rad1Ok = false
+		)
+		; Rad1Ok = false
 	),
-	( nonvar(MeshHandleCompareMinRadius) -> Rad2Ok = (Rad2 < MeshHandleCompareMinRadius , Rad2 > MeshHandleCompareMaxRadius)
-	; Rad2Ok = false
+	( mesh_min_radius(MinRadius),mesh_max_radius(MaxRadius) -> 
+		(
+			(Rad2 > MinRadius , Rad2 < MaxRadius) -> 
+			Rad2Ok = true
+			; Rad2Ok = false
+		)
+		; Rad2Ok = false
 	),
-	(nonvar(MeshHandleCompareMinRadius) -> write('minrad defined\n') ; write('minrad NOT\n')),
-	write('rad1:'),write(Rad1Ok),
-	write('\nrad2:'),write(Rad2Ok),
-	write('\n'),
 	(	Cov1 < 0.6 , Cov2 >= 0.6 -> Comp = '>'
 	;	Cov1 >= 0.6, Cov2 < 0.6 -> Comp = '<'
 	;	not(Rad1Ok), Rad2Ok -> Comp = '>'
@@ -223,122 +231,8 @@ mesh_find_handle(MeshReasoning, HandleAnnotations) :-
 	findall(P,jpl_set_element(AnnSet,P),AnnList),
 	predsort(mesh_handle_comparator, AnnList, HandleAnnotations).
 mesh_find_handle(MeshReasoning, HandleAnnotations, MinRadius, MaxRadius) :-
-	MeshHandleCompareMinRadius = MinRadius,
-	MeshHandleCompareMaxRadius = MaxRadius,
-	mesh_find_handle(MeshReasoning, HandleAnnotations).
-
-
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% Read information about annotation properties
-% 
-
-annotation_area(PrimitiveAnnotation, Area) :-
-  jpl_datum_to_type(PrimitiveAnnotation, 
-      class([edu,tum,cs,vis,model,uima,annotation],['PrimitiveAnnotation'])),
-  jpl_call(PrimitiveAnnotation,'getPrimitiveAreaUnscaled',[],Area).
-
-annotation_area_coverage(PrimitiveAnnotation, AreaCoverage) :-
-  jpl_datum_to_type(PrimitiveAnnotation, 
-      class([edu,tum,cs,vis,model,uima,annotation],['PrimitiveAnnotation'])),
-  jpl_call(PrimitiveAnnotation,'getAreaCoverage',[],AreaCoverage).
-
-
-% % % % % % % % % % % % % % % % % % % % % % % 
-% CONES
-
-annotation_cone_radius_avg(ConeAnnotation, RadiusAvg) :-
-  jpl_datum_to_type(ConeAnnotation, 
-      class([edu,tum,cs,vis,model,uima,annotation,primitive],['ConeAnnotation'])),
-  jpl_call(ConeAnnotation,'getRadiusAvgUnscaled',[],RadiusAvg).
-
-annotation_cone_radius_max(ConeAnnotation, RadiusMax) :-
-  jpl_datum_to_type(ConeAnnotation, 
-      class([edu,tum,cs,vis,model,uima,annotation,primitive],['ConeAnnotation'])),
-  jpl_call(ConeAnnotation,'getRadiusLargeUnscaled',[],RadiusMax).
-
-annotation_cone_radius_avg(ConeAnnotation, RadiusMin) :-
-  jpl_datum_to_type(ConeAnnotation, 
-      class([edu,tum,cs,vis,model,uima,annotation,primitive],['ConeAnnotation'])),
-  jpl_call(ConeAnnotation,'getRadiusSmallUnscaled',[],RadiusMin).
-
-annotation_cone_volume(ConeAnnotation, Volume) :-
-  jpl_datum_to_type(ConeAnnotation, 
-      class([edu,tum,cs,vis,model,uima,annotation,primitive],['ConeAnnotation'])),
-  jpl_call(ConeAnnotation,'getVolumeUnscaled',[],Volume).
-
-annotation_cone_height(ConeAnnotation, Height) :-
-  jpl_datum_to_type(ConeAnnotation, 
-      class([edu,tum,cs,vis,model,uima,annotation,primitive],['ConeAnnotation'])),
-  jpl_call(ConeAnnotation,'getHeightUnscaled',[],Height).
-
-annotation_cone_direction(ConeAnnotation, Direction) :-
-  jpl_datum_to_type(ConeAnnotation, 
-      class([edu,tum,cs,vis,model,uima,annotation,primitive],['ConeAnnotation'])),
-  jpl_call(ConeAnnotation,'getDirectionUnscaled',[],DirVec),
-  vector3d_to_list(DirVec, Direction).
-
-
-
-
-% % % % % % % % % % % % % % % % % % % % % % % 
-% SPHERES
-
-annotation_sphere_radius(SphereAnnotation, RadiusAvg) :-
-  jpl_datum_to_type(SphereAnnotation, 
-      class([edu,tum,cs,vis,model,uima,annotation,primitive],['SphereAnnotation'])),
-  jpl_call(SphereAnnotation,'getRadiusUnscaled',[],RadiusAvg).
-
-annotation_sphere_is_concave(SphereAnnotation, Concave) :-
-  jpl_datum_to_type(SphereAnnotation, 
-      class([edu,tum,cs,vis,model,uima,annotation,primitive],['SphereAnnotation'])),
-  jpl_call(SphereAnnotation,'isConcav',[],Concave).
-
-
-
-
-% % % % % % % % % % % % % % % % % % % % % % % 
-% Planes
-
-annotation_plane_radius(PlaneAnnotation, PlaneNormal) :-
-  jpl_datum_to_type(PlaneAnnotation, 
-      class([edu,tum,cs,vis,model,uima,annotation,primitive],['PlaneAnnotation'])),
-  jpl_call(PlaneAnnotation,'getPlaneNormal',[],NormalVec),
-  vector3d_to_list(NormalVec, PlaneNormal).
-
-annotation_plane_radius(PlaneAnnotation, LongSide) :-
-  jpl_datum_to_type(PlaneAnnotation, 
-      class([edu,tum,cs,vis,model,uima,annotation,primitive],['PlaneAnnotation'])),
-  jpl_call(PlaneAnnotation,'getLongSideUnscaled',[],LongSideVec),
-  vector3d_to_list(LongSideVec, LongSide).
-
-annotation_plane_radius(PlaneAnnotation, ShortSide) :-
-  jpl_datum_to_type(PlaneAnnotation, 
-      class([edu,tum,cs,vis,model,uima,annotation,primitive],['PlaneAnnotation'])),
-  jpl_call(PlaneAnnotation,'getShortSide',[],ShortSideVec),
-  vector3d_to_list(ShortSideVec, ShortSide).
-
-
-
-% % % % % % % % % % % % % % % % % % % % % % % 
-% Containers
-
-annotation_container_direction(ContainerAnnotation, OpeningDirection) :-
-  jpl_datum_to_type(ContainerAnnotation, 
-      class([edu,tum,cs,vis,model,uima,annotation],['ContainerAnnotation'])),
-  jpl_call(ContainerAnnotation,'getDirectionUnscaled',[],DirVec),
-  vector3d_to_list(DirVec, OpeningDirection).
-
-
-annotation_container_volume(ContainerAnnotation, Volume) :-
-  jpl_datum_to_type(ContainerAnnotation, 
-      class([edu,tum,cs,vis,model,uima,annotation],['ContainerAnnotation'])),
-  jpl_call(ContainerAnnotation,'getVolumeUnscaled',[],Volume).
-
-
-
-
-
-
-
-
+    assert(mesh_min_radius(MinRadius)),
+    assert(mesh_max_radius(MaxRadius)),
+	mesh_find_handle(MeshReasoning, HandleAnnotations),
+	retractall(mesh_min_radius(_)),
+	retractall(mesh_max_radius(_)).

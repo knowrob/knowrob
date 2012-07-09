@@ -24,8 +24,6 @@ import java.net.URLConnection;
 
 import org.apache.commons.net.ftp.FTPClient;
 
-import sun.security.provider.MD5;
-
 /**
  * Retrieves a file from given url to a temporary path and returns this path. Supported protocol
  * types: http, ftp, package
