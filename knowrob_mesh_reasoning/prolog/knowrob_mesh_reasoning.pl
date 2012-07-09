@@ -36,7 +36,8 @@
 	mesh_reasoning_clear_highlight/1,
 	mesh_find_handle/2,
 	mesh_find_handle/4,
-	listsplit/3
+	listsplit/3,
+	jpl_set_to_list/2
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -97,10 +98,10 @@ mesh_reasoning_path(Path, MeshReasoning) :-
 %
 % @param MeshReasoning		reasoning container
 % @param Annotation			annotation to highlight
-mesh_reasoning_highlight(_,[]).
 mesh_reasoning_highlight(MeshReasoning,[AnnotationHead|AnnotationTail]) :-
-	mesh_reasoning_highlight(MeshReasoning, AnnotationHead),
-	mesh_reasoning_highlight(MeshReasoning, AnnotationTail).
+	mesh_reasoning_highlight(MeshReasoning, AnnotationHead),!,
+	mesh_reasoning_highlight(MeshReasoning, AnnotationTail),!.
+mesh_reasoning_highlight(_,[]).
 mesh_reasoning_highlight(MeshReasoning, Annotation) :-
 	jpl_call(MeshReasoning, 'highlightAnnotation', [Annotation], _).
 	
@@ -214,6 +215,16 @@ mesh_handle_comparator(Comp, W1, W2) :-
 	).
 	
 listsplit([H|T], H, T).
+
+%% jpl_set_to_list(+Set,-List) is det.
+%
+%  Extracts all elements from a JPL set to a prolog list by calling jpl_set_element
+%
+% @param Set	The jpl set
+% @param List	returning list
+%
+jpl_set_to_list(Set,List) :-
+	findall(P,jpl_set_element(Set,P),List).
 	
 %% mesh_find_handle(+MeshReasoning, -HandleAnnotations) is det.
 %% mesh_find_handle(+MeshReasoning, -HandleAnnotations, +MinRadius, +MaxRadius) is det.
