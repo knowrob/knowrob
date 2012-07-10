@@ -186,6 +186,23 @@ public class SphereAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
+	 * @return the volume of the sphere
+	 */
+	public float getVolume() {
+
+		return (float) ((4 / 3 * Math.PI) * radius * radius * radius);
+	}
+
+	/**
+	 * @return the unscaledvolume of the sphere
+	 */
+	public float getVolumeUnscaled() {
+
+		float r = getRadiusUnscaled();
+		return (float) ((4 / 3 * Math.PI) * r * r * r);
+	}
+
+	/**
 	 * @return the concav
 	 */
 	public boolean isConcav() {
