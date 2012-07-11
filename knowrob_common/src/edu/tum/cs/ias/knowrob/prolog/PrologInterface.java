@@ -167,4 +167,32 @@ public class PrologInterface {
            else return iri;
      }
     
+    
+    /**
+     * Remove the literal(type('...', )) wrapper around literals coming from
+     * Prolog
+     * 
+     * @param typedValue Value that potentially has a literal() spec around it
+     * @return cleaned value
+     */
+    public static String stripLiteralType(String typedValue) {
+
+    	if(!typedValue.startsWith("literal("))
+    		return typedValue;
+    	
+    	// remove literal(type( and closing parentheses
+    	typedValue = typedValue.substring(13, typedValue.length()-2);
+    	
+    	String cleanValue = typedValue.split(",")[1];
+    	
+    	if(cleanValue.startsWith(" "))
+    		cleanValue = cleanValue.substring(1);
+    	
+    	return removeSingleQuotes(cleanValue);
+    	
+    	
+    }
 }
+
+
+
