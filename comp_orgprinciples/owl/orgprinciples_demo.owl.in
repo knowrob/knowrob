@@ -26,8 +26,8 @@
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#">
     <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/orgprinciples_demo.owl">
-        <owl:imports rdf:resource="&semantic_map_path;ccrl2_semantic_map.owl#"/>
-        <owl:imports rdf:resource="&germandeli_path;germandeli.owl#"/>
+<!--         <owl:imports rdf:resource="&semantic_map_path;ccrl2_semantic_map.owl#"/> -->
+<!--         <owl:imports rdf:resource="&germandeli_path;germandeli.owl#"/> -->
     </owl:Ontology>
     
 
