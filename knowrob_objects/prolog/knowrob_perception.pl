@@ -44,6 +44,8 @@
 :- rdf_db:rdf_register_ns(xsd, 'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
 
 
+:-  rdf_meta
+    create_object_perception(r,+,+,+,-).
 
 %% create_object_perception(+ObjClass, +ObjPose, +PerceptionTypes, -ObjInst)
 %
