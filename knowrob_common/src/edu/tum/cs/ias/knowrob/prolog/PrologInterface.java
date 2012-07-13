@@ -58,7 +58,7 @@ public class PrologInterface {
     		Query q = new Query( "expand_goal(("+query+"),_9), call(_9)" );
 
     		if(!q.hasSolution())
-    			return new HashMap<String, Vector<String>>();
+    			return null;
     		
     		
     		solutions = q.allSolutions();
