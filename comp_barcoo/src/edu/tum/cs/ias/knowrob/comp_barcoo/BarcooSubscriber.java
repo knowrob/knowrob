@@ -60,7 +60,7 @@ public class BarcooSubscriber{
 		{
 			if(args == null || args.length != 1 || args[0].equalsIgnoreCase("help"))
 			{
-				System.out.println("arg0 = barcoo owl path");				
+				System.out.println("Usage: barcoo_subscriber <barcoo_ontology_file>.owl");				
 				System.exit(0);
 			}			
 			System.out.println("PLEASE WAIT.\n PROGRAM LOADING...");

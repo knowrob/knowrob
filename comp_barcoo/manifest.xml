@@ -14,6 +14,7 @@
   <depend package="jpl"/>
   <depend package="comp_cop" />
   <depend package="jpl"/>
+  <depend package="shopping_demo"/>
 
   <export>
     <java classpath="${prefix}/bin"/>

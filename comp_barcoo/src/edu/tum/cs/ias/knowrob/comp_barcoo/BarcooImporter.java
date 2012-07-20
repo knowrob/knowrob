@@ -305,8 +305,6 @@ public class BarcooImporter {
 				while(iterator.hasNext())
 				{
 					 OWLDataProperty o = (OWLDataProperty) iterator.next();
-					 
-					 
 				}
 			}
 			else
