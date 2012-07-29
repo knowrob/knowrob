@@ -14,6 +14,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
@@ -444,6 +446,32 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 	@Override
 	public HashSet<ConeAnnotation> getNeighborAnnotations(MeshCas cas) {
 		return getNeighborAnnotations(cas, ConeAnnotation.class);
+	}
+
+	/**
+	 * 
+	 * @return 4x4 pose matrix of the plane relative to the object centroid
+	 */
+	public Matrix4f getPoseMatrix() {
+
+		Matrix3f or = new Matrix3f();
+
+		Vector3f x1 = new Vector3f();
+		x1.normalize(direction);
+
+		Vector3f z1 = new Vector3f(direction.y, direction.x, direction.z);
+		z1.normalize();
+
+		Vector3f y1 = new Vector3f();
+		y1.cross(z1, x1);
+
+		or.setColumn(0, x1);
+		or.setColumn(1, y1);
+		or.setColumn(2, z1);
+		or.normalize();
+
+		Matrix4f res = new Matrix4f(or, new Vector3f(centroid), 1.0f);
+		return res;
 	}
 
 	/* (non-Javadoc)

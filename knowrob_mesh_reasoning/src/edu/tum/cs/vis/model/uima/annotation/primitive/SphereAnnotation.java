@@ -11,6 +11,8 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
@@ -153,6 +155,22 @@ public class SphereAnnotation extends PrimitiveAnnotation {
 			sum += (c - v.z) / getLi(v, a, b, c);
 		}
 		return sum / vertices.size();
+	}
+
+	/**
+	 * Since a sphere is rotationally symmetric, the orientation does not make much sense (is chosen
+	 * to be unit orientation here), but for compatibility reasons, this method is nevertheless
+	 * implemented.
+	 * 
+	 * @return 4x4 pose matrix of the plane relative to the object centroid
+	 */
+	public Matrix4f getPoseMatrix() {
+
+		Matrix3f or = new Matrix3f();
+		or.setIdentity();
+		Matrix4f res = new Matrix4f(or, center, 1.0f);
+
+		return res;
 	}
 
 	/* (non-Javadoc)

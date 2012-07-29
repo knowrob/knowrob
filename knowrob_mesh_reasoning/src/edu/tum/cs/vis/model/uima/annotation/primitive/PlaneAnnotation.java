@@ -278,8 +278,6 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 		or.normalize();
 
 		Matrix4f res = new Matrix4f(or, centroid, 1.0f);
-
-		System.err.println(res.toString());
 		return res;
 	}
 
