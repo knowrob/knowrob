@@ -11,6 +11,8 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Point2f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
@@ -196,7 +198,7 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 		trianglesNormal.scale(1f / mesh.getTriangles().size());
 		// trianglesNormal.sub(planeNormal);
 		if (trianglesNormal.dot(planeNormal) < 0) // if normals are in opposite direction, inverse
-													// planeNormal
+			// planeNormal
 			planeNormal.scale(-1f);
 
 		updateFeatures(vertices);
@@ -251,6 +253,34 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 	 */
 	public Vector3f getPlaneNormal() {
 		return planeNormal;
+	}
+
+	/**
+	 * 
+	 * @return 4x4 pose matrix of the plane relative to the object centroid
+	 */
+	public Matrix4f getPoseMatrix() {
+
+		Matrix3f or = new Matrix3f();
+
+		Vector3f x1 = new Vector3f();
+		x1.normalize(longSide);
+
+		Vector3f z1 = new Vector3f();
+		z1.normalize(planeNormal);
+
+		Vector3f y1 = new Vector3f();
+		y1.cross(z1, x1);
+
+		or.setColumn(0, x1);
+		or.setColumn(1, y1);
+		or.setColumn(2, z1);
+		or.normalize();
+
+		Matrix4f res = new Matrix4f(or, centroid, 1.0f);
+
+		System.err.println(res.toString());
+		return res;
 	}
 
 	/* (non-Javadoc)
