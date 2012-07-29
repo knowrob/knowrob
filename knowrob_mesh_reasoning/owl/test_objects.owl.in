@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY local_path 'file://@OWL_PATH_PREFIX@/owl/'>
+    <!ENTITY kb "http://ias.cs.tum.edu/kb/" >
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
+    <!ENTITY ias_map "http://ias.cs.tum.edu/kb/ias_hospital_room.owl#" >
+]>
+
+<rdf:RDF xmlns="&ias_map;#"
+     xml:base="&ias_map;"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="&xsd;"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:knowrob="&knowrob;">
+    <owl:Ontology rdf:about="&ias_map;">
+      <owl:imports rdf:resource="&local_path;knowrob.owl"/>
+    </owl:Ontology>
+
+
+
+ <owl:NamedIndividual rdf:about="&ias_map;SemanticEnvironmentMap7635">
+   <rdf:type rdf:resource="&knowrob;SemanticEnvironmentMap"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <!-- http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350 -->
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#TimePoint"/>
+ </owl:NamedIndividual>
+ 
+ 
+ 
+ 
+ <!-- http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet -->
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3D"/>
+   <knowrob:m00 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m00>
+   <knowrob:m01 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m01>
+   <knowrob:m02 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-1.0</knowrob:m02>
+   <knowrob:m03 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-1.38</knowrob:m03>
+   
+   <knowrob:m10 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</knowrob:m10>
+   <knowrob:m11 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m11>
+   <knowrob:m12 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m12>
+   <knowrob:m13 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-2.08</knowrob:m13>
+   
+   <knowrob:m20 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m20>
+   <knowrob:m21 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-1.0</knowrob:m21>
+   <knowrob:m22 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m22>
+   <knowrob:m23 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.4</knowrob:m23>
+   
+   <knowrob:m30 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m30>
+   <knowrob:m31 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m31>
+   <knowrob:m32 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</knowrob:m32>
+   <knowrob:m33 rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</knowrob:m33>
+ </owl:NamedIndividual>
+ 
+ 
+ 
+ 
+ 
+ 
+ <!-- http://ias.cs.tum.edu/kb/knowrob.owl#SemanticMapPerception16 -->
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#SemanticMapPerception16">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SemanticMapPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#cabinet1"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <!-- http://ias.cs.tum.edu/kb/knowrob.owl#cabinet1 -->
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#cabinet1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cupboard"/>
+   <knowrob:describedInMap rdf:resource="&ias_map;SemanticEnvironmentMap7635"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/Expedit/Expedit_2X4.kmz</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ 
+ 
+ 
+ 
+ 
+ </rdf:RDF>
+ 
+ 
+ 

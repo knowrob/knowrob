@@ -37,14 +37,59 @@
       mesh_find_handle/2,
       mesh_find_handle/4,
       listsplit/3,
-      jpl_set_to_list/2
+      jpl_set_to_list/2,
+      comp_physical_parts/2,
+      annotation_area/2,
+      annotation_area_coverage/2,
+      annotation_pose_list/2,
+      annotation_cone_radius_avg/2,
+      annotation_cone_radius_max/2,
+      annotation_cone_radius_min/2,
+      annotation_cone_volume/2,
+      annotation_cone_height/2,
+      annotation_cone_direction/2,
+      annotation_sphere_radius/2,
+      annotation_sphere_is_concave/2,
+      annotation_sphere_volume/2,
+      annotation_plane_normal/2,
+      annotation_plane_longside/2,
+      annotation_plane_shortside/2,
+      annotation_container_direction/2,
+      annotation_container_volume/2
     ]).
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs_computable')).
 :- use_module(library('knowrob_objects')).
+:- use_module(library('knowrob_coordinates')).
 :- use_module(library('jpl')).
+
+
+:- rdf_meta comp_physical_parts(r,r),
+            mesh_annotator_handle(r,?),
+            mesh_annotation_handle(r,?),
+            mesh_reasoning(r,-),
+            comp_physical_parts(r,r),
+            annotation_area(r,?),
+            annotation_area_coverage(r,?),
+            annotation_pose_list(r,?),
+            annotation_cone_radius_avg(r,?),
+            annotation_cone_radius_max(r,?),
+            annotation_cone_radius_min(r,?),
+            annotation_cone_volume(r,?),
+            annotation_cone_height(r,?),
+            annotation_cone_direction(r,?),
+            annotation_sphere_radius(r,?),
+            annotation_sphere_is_concave(r,?),
+            annotation_sphere_volume(r,?),
+            annotation_plane_normal(r,?),
+            annotation_plane_longside(r,?),
+            annotation_plane_shortside(r,?),
+            annotation_container_direction(r,?),
+            annotation_container_volume(r,?).
+
+
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % Main
@@ -138,7 +183,8 @@ mesh_element_types(MeshReasoning, TypeList) :-
 %
 mesh_find_annotations(MeshReasoning,Type,AnnotationsList) :-
 	concat('findAnnotations', Type, Method),
-	jpl_call(MeshReasoning, Method, [], AnnotationsList).
+	jpl_call(MeshReasoning, Method, [], AnnotationsSet),
+  jpl_set_to_list(AnnotationsSet, AnnotationsList).
 	
 	
 %% mesh_find_supporting_planes(+MeshReasoning, -PlaneList) is det.
@@ -149,8 +195,8 @@ mesh_find_annotations(MeshReasoning,Type,AnnotationsList) :-
 % @param PlaneList			returning list which contains all supporting planes
 %
 mesh_find_supporting_planes(MeshReasoning, PlaneList) :-
-	mesh_find_annotations(MeshReasoning,'Plane',AnnSet),
-	findall(P,(jpl_set_element(AnnSet,P),mesh_is_supporting_plane(P)),PlaneList).
+	mesh_find_annotations(MeshReasoning,'Plane',AnnList),
+	findall(P,(member(P, AnnList),mesh_is_supporting_plane(P)),PlaneList).
 
 
 %% mesh_is_supporting_plane(+PlaneAnnotation) is det.
@@ -238,8 +284,7 @@ jpl_set_to_list(Set,List) :-
 % @param MaxRadius				maximum radius which the handle should have
 %
 mesh_find_handle(MeshReasoning, HandleAnnotations) :-
-  mesh_find_annotations(MeshReasoning,'Cone',AnnSet),
-  findall(P,jpl_set_element(AnnSet,P),AnnList),
+  mesh_find_annotations(MeshReasoning,'Cone',AnnList),
   predsort(mesh_handle_comparator, AnnList, HandleAnnotations).
 
 mesh_find_handle(MeshReasoning, HandleAnnotations, MinRadius, MaxRadius) :-
@@ -253,17 +298,83 @@ mesh_find_handle(MeshReasoning, HandleAnnotations, MinRadius, MaxRadius) :-
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% Read information about annotation properties
+% 
+% Computable definitions
 % 
 
-annotation_area(PrimitiveAnnotation, Area) :-
+%
+% check if mesh annotator has already been initialized for this instance
+% if not, initialize and assert for this object
+% 
+
+:- dynamic 
+   mesh_annotator_handle/2,
+   mesh_annotation_handle/2.
+
+mesh_annotator(Obj, MeshAnnotator) :-
+  ((mesh_annotator_handle(Obj, MeshAnnotator),!) ;
+   (get_model_path(Obj, Path),
+    mesh_reasoning_init(MeshAnnotator, @(false)),
+    jpl_call(MeshAnnotator, 'analyseByPath', [Path], _),
+    assert(mesh_annotator_handle(Obj, MeshAnnotator)))).
+
+
+
+comp_physical_parts(Obj, PartInst) :-
+
+  % locates mesh for the object
+  % determines object components
+  % assert java reference to mesh reasoning object
+  mesh_annotator(Obj, MeshAnnotator),
+  mesh_element_types(MeshAnnotator, ContainedTypes),
+  member(Type, ContainedTypes),
+
+  mesh_find_annotations(MeshAnnotator,Type,AnnotationsList),
+  member(Annotation, AnnotationsList),
+
+  % TODO: check if component already exists; otherwise:
+
+  annotation_pose_list(Annotation, PoseList),
+  annotation_to_knowrob_class(Type, KnowRobClass),
+  create_object_perception(KnowRobClass, PoseList, ['MeshSegmentation'], PartInst),
+
+  % assert sub-parts
+  rdf_assert(Obj, knowrob:properPhysicalParts, PartInst),
+
+  % assert Java annotation ID for each plane/sphere/... in order to retrieve their properties
+  assert(mesh_annotation_handle(PartInst, Annotation)).
+
+
+annotation_to_knowrob_class('Cone', 'Cone').
+annotation_to_knowrob_class('Sphere', 'Sphere').
+annotation_to_knowrob_class('Plane', 'FlatPhysicalSurface').
+annotation_to_knowrob_class('Container', 'ContainerArtifact').
+
+
+annotation_pose_list(PrimitiveAnnotation, PoseList) :-
   jpl_datum_to_type(PrimitiveAnnotation, 
-      class([edu,tum,cs,vis,model,uima,annotation],['PrimitiveAnnotation'])),
+      class([edu,tum,cs,vis,model,uima,annotation,primitive],[_])),
+  jpl_call(PrimitiveAnnotation,'getPoseMatrix',[],PoseMatrix),
+  knowrob_coordinates:matrix4d_to_list(PoseMatrix, PoseList).
+
+
+
+
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% Computables for reading information about annotation properties
+% 
+
+annotation_area(PartInst, Area) :-
+  mesh_annotation_handle(PartInst, PrimitiveAnnotation),
+  jpl_datum_to_type(PrimitiveAnnotation, 
+      class([edu,tum,cs,vis,model,uima,annotation,primitive],[_])),
   jpl_call(PrimitiveAnnotation,'getPrimitiveAreaUnscaled',[],Area).
 
-annotation_area_coverage(PrimitiveAnnotation, AreaCoverage) :-
+annotation_area_coverage(PartInst, AreaCoverage) :-
+  mesh_annotation_handle(PartInst, PrimitiveAnnotation),
   jpl_datum_to_type(PrimitiveAnnotation, 
-      class([edu,tum,cs,vis,model,uima,annotation],['PrimitiveAnnotation'])),
+      class([edu,tum,cs,vis,model,uima,annotation,primitive],[_])),
   jpl_call(PrimitiveAnnotation,'getAreaCoverage',[],AreaCoverage).
 
 
@@ -272,36 +383,42 @@ annotation_area_coverage(PrimitiveAnnotation, AreaCoverage) :-
 % % % % % % % % % % % % % % % % % % % % % % % 
 % CONES
 
-annotation_cone_radius_avg(ConeAnnotation, RadiusAvg) :-
+annotation_cone_radius_avg(PartInst, RadiusAvg) :-
+  mesh_annotation_handle(PartInst, ConeAnnotation),
   jpl_datum_to_type(ConeAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation,primitive],['ConeAnnotation'])),
   jpl_call(ConeAnnotation,'getRadiusAvgUnscaled',[],RadiusAvg).
 
-annotation_cone_radius_max(ConeAnnotation, RadiusMax) :-
+annotation_cone_radius_max(PartInst, RadiusMax) :-
+  mesh_annotation_handle(PartInst, ConeAnnotation),
   jpl_datum_to_type(ConeAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation,primitive],['ConeAnnotation'])),
   jpl_call(ConeAnnotation,'getRadiusLargeUnscaled',[],RadiusMax).
 
-annotation_cone_radius_avg(ConeAnnotation, RadiusMin) :-
+annotation_cone_radius_min(PartInst, RadiusMin) :-
+  mesh_annotation_handle(PartInst, ConeAnnotation),
   jpl_datum_to_type(ConeAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation,primitive],['ConeAnnotation'])),
   jpl_call(ConeAnnotation,'getRadiusSmallUnscaled',[],RadiusMin).
 
-annotation_cone_volume(ConeAnnotation, Volume) :-
+annotation_cone_volume(PartInst, Volume) :-
+  mesh_annotation_handle(PartInst, ConeAnnotation),
   jpl_datum_to_type(ConeAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation,primitive],['ConeAnnotation'])),
   jpl_call(ConeAnnotation,'getVolumeUnscaled',[],Volume).
 
-annotation_cone_height(ConeAnnotation, Height) :-
+annotation_cone_height(PartInst, Height) :-
+  mesh_annotation_handle(PartInst, ConeAnnotation),
   jpl_datum_to_type(ConeAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation,primitive],['ConeAnnotation'])),
   jpl_call(ConeAnnotation,'getHeightUnscaled',[],Height).
 
-annotation_cone_direction(ConeAnnotation, Direction) :-
+annotation_cone_direction(PartInst, Direction) :-
+  mesh_annotation_handle(PartInst, ConeAnnotation),
   jpl_datum_to_type(ConeAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation,primitive],['ConeAnnotation'])),
   jpl_call(ConeAnnotation,'getDirectionUnscaled',[],DirVec),
-  vector3d_to_list(DirVec, Direction).
+  knowrob_coordinates:vector3d_to_list(DirVec, Direction).
 
 
 
@@ -309,17 +426,20 @@ annotation_cone_direction(ConeAnnotation, Direction) :-
 % % % % % % % % % % % % % % % % % % % % % % % 
 % SPHERES
 
-annotation_sphere_radius(SphereAnnotation, RadiusAvg) :-
+annotation_sphere_radius(PartInst, RadiusAvg) :-
+  mesh_annotation_handle(PartInst, SphereAnnotation),
   jpl_datum_to_type(SphereAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation,primitive],['SphereAnnotation'])),
   jpl_call(SphereAnnotation,'getRadiusUnscaled',[],RadiusAvg).
 
-annotation_sphere_is_concave(SphereAnnotation, Concave) :-
+annotation_sphere_is_concave(PartInst, Concave) :-
+  mesh_annotation_handle(PartInst, SphereAnnotation),
   jpl_datum_to_type(SphereAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation,primitive],['SphereAnnotation'])),
   jpl_call(SphereAnnotation,'isConcav',[],Concave).
 
-annotation_sphere_volume(SphereAnnotation, Volume) :-
+annotation_sphere_volume(PartInst, Volume) :-
+  mesh_annotation_handle(PartInst, SphereAnnotation),
   jpl_datum_to_type(SphereAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation,primitive],['SphereAnnotation'])),
   jpl_call(SphereAnnotation,'getVolumeUnscaled',[],Volume).
@@ -330,23 +450,26 @@ annotation_sphere_volume(SphereAnnotation, Volume) :-
 % % % % % % % % % % % % % % % % % % % % % % % 
 % Planes
 
-annotation_plane_radius(PlaneAnnotation, PlaneNormal) :-
+annotation_plane_normal(PartInst, PlaneNormal) :-
+  mesh_annotation_handle(PartInst, PlaneAnnotation),
   jpl_datum_to_type(PlaneAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation,primitive],['PlaneAnnotation'])),
   jpl_call(PlaneAnnotation,'getPlaneNormal',[],NormalVec),
-  vector3d_to_list(NormalVec, PlaneNormal).
+  knowrob_coordinates:vector3d_to_list(NormalVec, PlaneNormal).
 
-annotation_plane_radius(PlaneAnnotation, LongSide) :-
+annotation_plane_longside(PartInst, LongSide) :-
+  mesh_annotation_handle(PartInst, PlaneAnnotation),
   jpl_datum_to_type(PlaneAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation,primitive],['PlaneAnnotation'])),
   jpl_call(PlaneAnnotation,'getLongSideUnscaled',[],LongSideVec),
-  vector3d_to_list(LongSideVec, LongSide).
+  knowrob_coordinates:vector3d_to_list(LongSideVec, LongSide).
 
-annotation_plane_radius(PlaneAnnotation, ShortSide) :-
+annotation_plane_shortside(PartInst, ShortSide) :-
+  mesh_annotation_handle(PartInst, PlaneAnnotation),
   jpl_datum_to_type(PlaneAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation,primitive],['PlaneAnnotation'])),
   jpl_call(PlaneAnnotation,'getShortSide',[],ShortSideVec),
-  vector3d_to_list(ShortSideVec, ShortSide).
+  knowrob_coordinates:vector3d_to_list(ShortSideVec, ShortSide).
 
 
 
@@ -354,63 +477,16 @@ annotation_plane_radius(PlaneAnnotation, ShortSide) :-
 % % % % % % % % % % % % % % % % % % % % % % % 
 % Containers
 
-annotation_container_direction(ContainerAnnotation, OpeningDirection) :-
+annotation_container_direction(PartInst, OpeningDirection) :-
+  mesh_annotation_handle(PartInst, ContainerAnnotation),
   jpl_datum_to_type(ContainerAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation],['ContainerAnnotation'])),
   jpl_call(ContainerAnnotation,'getDirectionUnscaled',[],DirVec),
-  vector3d_to_list(DirVec, OpeningDirection).
+  knowrob_coordinates:vector3d_to_list(DirVec, OpeningDirection).
 
-annotation_container_volume(ContainerAnnotation, Volume) :-
+annotation_container_volume(PartInst, Volume) :-
+  mesh_annotation_handle(PartInst, ContainerAnnotation),
   jpl_datum_to_type(ContainerAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation],['ContainerAnnotation'])),
   jpl_call(ContainerAnnotation,'getVolumeUnscaled',[],Volume).
 
-
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% 
-% Computable definitions
-% 
-
-
-% TODO: 
-% create sub-properties of properPhysicalParts like properPhysicalPartsPlanes
-% in order to have well-defined types for the outputs
-
-%
-% check if mesh annotator has already been initialized for this instance
-% if not, initialize and assert for this object
-% 
-mesh_annotator(Obj, MeshAnnotator) :-
-  ((rdf_has(Obj, knowrob:meshReasoningAnnotator, MeshAnnotator),!) ;
-   (mesh_reasoning(Obj, MeshAnnotator),
-    rdf_assert(Obj, knowrob:meshReasoningAnnotator, MeshAnnotator))).
-
-
-comp_physical_parts_sphere(Obj, Part) :-
-  comp_physical_parts_cad(Obj, 'Sphere', Part).
-
-comp_physical_parts_cone(Obj, Part) :-
-  comp_physical_parts_cad(Obj, 'Cone', Part).
-
-comp_physical_parts_plane(Obj, Part) :-
-  comp_physical_parts_cad(Obj, 'Plane', Part).
-
-comp_physical_parts_container(Obj, Part) :-
-  comp_physical_parts_cad(Obj, 'Container', Part).
-
-comp_physical_parts_cad(Obj, Type, Part) :-
-  mesh_annotator(Obj, MeshAnnotator),
-  mesh_element_types(MeshAnnotator, ContainedTypes),
-  member(Type, ContainedTypes),
-  mesh_find_annotations(MeshAnnotator,Type,AnnotationsList),
-  member(Part, AnnotationsList).
-  % TODO: assert sub-parts?
-  % TODO: assert Java annotation ID for each plane/sphere/... in order to retrieve their properties?
-
-
-
-
-% mesh_element_types(MeshAnnotator, TypeList)
-% mesh_find_supporting_planes(MeshAnnotator, PlaneList)
-% mesh_find_handle
