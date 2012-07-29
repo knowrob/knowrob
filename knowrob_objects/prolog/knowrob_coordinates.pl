@@ -238,9 +238,9 @@ vector3d_to_list(Vector, List) :-
 
     var(List), nonvar(Vector),
 
-    jpl_get(Matrix, x, X),
-    jpl_get(Matrix, y, Y),
-    jpl_get(Matrix, z, Z),
+    jpl_get(Vector, x, X),
+    jpl_get(Vector, y, Y),
+    jpl_get(Vector, z, Z),
 
     List = [X, Y, Z].
     
