@@ -1,0 +1,16 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% dependencies
+
+:- register_ros_package(mod_vis).
+:- register_ros_package(ias_semantic_map).
+:- register_ros_package(mod_localization).
+
+:- use_module(library('comp_localization')).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% parse OWL files, register name spaces
+
+:- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/localization.owl', false, false, true).
+:- rdf_db:rdf_register_ns(localization, 'http://ias.cs.tum.edu/kb/localization.owl#', [keep(true)]).
+
