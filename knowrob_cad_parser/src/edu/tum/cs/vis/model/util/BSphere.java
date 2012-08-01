@@ -10,19 +10,37 @@ package edu.tum.cs.vis.model.util;
 import javax.vecmath.Vector3f;
 
 /**
+ * Class which represents a bounding sphere by center and radius.
+ * 
  * @author Stefan Profanter
  * 
  */
 public class BSphere {
+	/**
+	 * radius
+	 */
 	private final float		r;
+	/**
+	 * center
+	 */
 	private final Vector3f	center;
 
+	/**
+	 * Create new bounding sphere with radius <tt>r</tt> and center <tt>center</tt>
+	 * 
+	 * @param r
+	 *            radius of bounding sphere
+	 * @param center
+	 *            center of bounding sphere
+	 */
 	public BSphere(float r, Vector3f center) {
 		this.r = r;
 		this.center = center;
 	}
 
 	/**
+	 * Get center of bounding sphere
+	 * 
 	 * @return the center
 	 */
 	public Vector3f getCenter() {
@@ -30,7 +48,9 @@ public class BSphere {
 	}
 
 	/**
-	 * @return the r
+	 * Get radius of bounding sphere.
+	 * 
+	 * @return the radius
 	 */
 	public float getR() {
 		return r;

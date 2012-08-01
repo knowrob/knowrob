@@ -53,15 +53,12 @@ public abstract class DrawObject implements Serializable {
 	/**
 	 * the position points of the object
 	 */
-	protected Vertex						position[];
+	protected Vertex		position[];
 
 	/**
 	 * Color or texture of the object
 	 */
-	protected Appearance					appearance;
-
-	//TODO check
-	//protected ArrayList<DrawableAnnotation>	annotations	= new ArrayList<DrawableAnnotation>();
+	protected Appearance	appearance;
 
 	/**
 	 * Constructor which initializes position array to <code>numberOfEdges</code> items.
@@ -72,13 +69,6 @@ public abstract class DrawObject implements Serializable {
 	public DrawObject(final int numberOfEdges) {
 		position = new Vertex[numberOfEdges];
 	}
-
-	//TODO check
-	/*public void addAnnotation(DrawableAnnotation a) {
-		synchronized (annotations) {
-			annotations.add(a);
-		}
-	}*/
 
 	/**
 	 * Apply the color of appearance member to the PApplet. Called before drawing a DrawObject.
@@ -151,14 +141,6 @@ public abstract class DrawObject implements Serializable {
 		return (cnt == maxCnt);
 	}
 
-	//TODO check
-	/**
-	 * @return the annotations
-	 */
-	/*public ArrayList<DrawableAnnotation> getAnnotations() {
-		return annotations;
-	}*/
-
 	/**
 	 * @return the appearance
 	 */
@@ -187,15 +169,6 @@ public abstract class DrawObject implements Serializable {
 		}
 		updateCentroid(); // Recalculate centroid
 	}
-
-	//TODO check
-	/**
-	 * @param annotations
-	 *            the annotations to set
-	 */
-	/*public void setAnnotations(ArrayList<DrawableAnnotation> annotations) {
-		this.annotations = annotations;
-	}*/
 
 	/**
 	 * @param appearance
@@ -237,8 +210,8 @@ public abstract class DrawObject implements Serializable {
 	}
 
 	/**
-	 * Recalculates the and centroid. Called automatically when calling
-	 * <code>setPosition</code>. If you modify the position array directly, call this afterwards.
+	 * Recalculates the and centroid. Called automatically when calling <code>setPosition</code>. If
+	 * you modify the position array directly, call this afterwards.
 	 * 
 	 */
 	@SuppressWarnings("static-method")
@@ -247,6 +220,5 @@ public abstract class DrawObject implements Serializable {
 		 * Overridden in triangles class
 		 */
 	}
-
 
 }

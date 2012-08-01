@@ -87,8 +87,8 @@ public class Mesh implements Serializable {
 	/**
 	 * Draws the bounding box around the model with the current style
 	 * 
-	 * @param applet
-	 *            Applet to draw on
+	 * @param g
+	 *            Graphics context
 	 */
 	public void drawBoundingBox(PGraphics g) {
 		if (triangles.size() == 0 && lines.size() == 0)
@@ -226,6 +226,8 @@ public class Mesh implements Serializable {
 	}
 
 	/**
+	 * Get all lines of this mesh
+	 * 
 	 * @return the lines
 	 */
 	public ArrayList<Line> getLines() {
@@ -314,6 +316,8 @@ public class Mesh implements Serializable {
 	}
 
 	/**
+	 * Get all triangles of this mesh
+	 * 
 	 * @return the triangles
 	 */
 	public ArrayList<Triangle> getTriangles() {
@@ -352,11 +356,17 @@ public class Mesh implements Serializable {
 		return maxX - minX;
 	}
 
+	/**
+	 * Set minX,maxX, minY,maxY, minZ, maxZ to null to force recalculation when they are accessed
+	 * next time
+	 */
 	public void resetMinMaxValues() {
 		minX = maxX = minY = maxY = minZ = maxZ = null;
 	}
 
 	/**
+	 * Set lines array of this mesh.
+	 * 
 	 * @param lines
 	 *            the lines to set
 	 */
@@ -454,6 +464,8 @@ public class Mesh implements Serializable {
 	}
 
 	/**
+	 * Set triangles array of this mesh
+	 * 
 	 * @param triangles
 	 *            the triangles to set
 	 */

@@ -18,6 +18,23 @@ import edu.tum.cs.vis.model.util.Triangle;
 import edu.tum.cs.vis.model.util.Vertex;
 
 /**
+ * 
+ * Parser for simple file format, where first all vertices are listed and after <tt>#</tt> 3 values
+ * per line for each triangle indicating the vertex index.
+ * 
+ * Example:
+ * 
+ * <pre>
+ * 0.5	0.4	0.5
+ * 0.4	0.3	1.3
+ * ....
+ * #
+ * 0	3	4
+ * 0	1	2
+ * 1	2	4
+ * ....
+ * </pre>
+ * 
  * @author Stefan Profanter
  * 
  */

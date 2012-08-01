@@ -261,6 +261,17 @@ public class ColladaParser extends ModelParser {
 		return null;
 	}
 
+	/**
+	 * Get all vertices of mesh object <tt>m</tt> in an array.
+	 * 
+	 * @param m
+	 *            the mesh object
+	 * @param inputs
+	 *            list of all vertices
+	 * @param type
+	 *            type of vertices
+	 * @return list of all vertices which match given constraints.
+	 */
 	private static ArrayList<Vertex> getVerticesOfMesh(Mesh m, List<Input> inputs, String type) {
 		Source vertexSource = null;
 		for (Input in : inputs) {

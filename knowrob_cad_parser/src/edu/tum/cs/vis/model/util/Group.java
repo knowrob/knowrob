@@ -26,6 +26,9 @@ import edu.tum.cs.vis.model.Model;
  */
 public class Group implements Serializable {
 
+	/**
+	 * parent model of this group
+	 */
 	private final Model			model;
 
 	/**
@@ -72,6 +75,12 @@ public class Group implements Serializable {
 	 */
 	private ArrayList<Group>	children			= new ArrayList<Group>();
 
+	/**
+	 * Constructor for group.
+	 * 
+	 * @param parent
+	 *            Parent model of this group.
+	 */
 	public Group(Model parent) {
 		model = parent;
 	}
@@ -103,6 +112,13 @@ public class Group implements Serializable {
 		}
 	}
 
+	/**
+	 * Remove triangle from group or child group.
+	 * 
+	 * @param t
+	 *            triangle to remove.
+	 * @return true if triangle is found and removed.
+	 */
 	public boolean removeTriangle(Triangle t) {
 		if (mesh.getTriangles().remove(t))
 			return true;
@@ -117,8 +133,8 @@ public class Group implements Serializable {
 	/**
 	 * Draws the bounding box around the model with the current style
 	 * 
-	 * @param applet
-	 *            Applet to draw on
+	 * @param gr
+	 *            graphics context
 	 * 
 	 * @param recursive
 	 *            Draw also Bounding-Box of children
@@ -132,6 +148,12 @@ public class Group implements Serializable {
 		}
 	}
 
+	/**
+	 * Add triangle to the mesh of this group and also to parent model.
+	 * 
+	 * @param t
+	 *            triangle to add.
+	 */
 	public void addTriangle(Triangle t) {
 		synchronized (mesh.getTriangles()) {
 			mesh.getTriangles().add(t);
@@ -254,6 +276,8 @@ public class Group implements Serializable {
 	}
 
 	/**
+	 * Get parent model.
+	 * 
 	 * @return the model
 	 */
 	public Model getModel() {
@@ -366,6 +390,10 @@ public class Group implements Serializable {
 		}
 	}
 
+	/**
+	 * Set minX,maxX, minY,maxY, minZ, maxZ to null to force recalculation when they are accessed
+	 * next time
+	 */
 	public void resetMinMaxValues() {
 		mesh.resetMinMaxValues();
 

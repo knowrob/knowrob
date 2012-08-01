@@ -13,6 +13,10 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 /**
+ * A vertex (corner point) of a triangle or line. Vertex may have normal vector and voronoi area
+ * assigned.
+ * 
+ * 
  * @author Stefan Profanter
  * 
  */
@@ -23,24 +27,46 @@ public class Vertex extends Point3f {
 	 */
 	private static final long	serialVersionUID	= 4454667509075960402L;
 
+	/**
+	 * normal vector of vertex
+	 */
 	private Vector3f			normalVector		= new Vector3f();
 
+	/**
+	 * voronoi area of vertex
+	 */
 	private float				pointarea			= 0f;
 
-	//private Curvature			curvature;
-
+	/**
+	 * Color of vertex. May be used to color vertex instead of triangle.
+	 */
 	public Color				color;
-	public Color				overrideColor = null;
 
 	/**
-	 * @param f
-	 * @param g
-	 * @param h
+	 * Overrides color of triangle with this color.
+	 */
+	public Color				overrideColor		= null;
+
+	/**
+	 * Constructor for vertex
+	 * 
+	 * @param x
+	 *            x coordinate
+	 * @param y
+	 *            y coordinate
+	 * @param z
+	 *            z coordinate
 	 */
 	public Vertex(float x, float y, float z) {
 		super(x, y, z);
 	}
 
+	/**
+	 * Constructor for vertex
+	 * 
+	 * @param p
+	 *            coordinates for new vertex
+	 */
 	public Vertex(Point3f p) {
 		super(p);
 	}
@@ -55,18 +81,14 @@ public class Vertex extends Point3f {
 		}
 
 		Point3f p = (Point3f) o;
-		Vertex v = (Vertex)o;
-		return (p.x == x && p.y == y && p.z == z && v.pointarea == pointarea && v.normalVector.equals(normalVector));
+		Vertex v = (Vertex) o;
+		return (p.x == x && p.y == y && p.z == z && v.pointarea == pointarea && v.normalVector
+				.equals(normalVector));
 	}
 
 	/**
-	 * @return the curvature
-	 */
-	/*public Curvature getCurvature() {
-		return curvature;
-	}*/
-
-	/**
+	 * Get normal vector of vertex
+	 * 
 	 * @return the normalVector
 	 */
 	public Vector3f getNormalVector() {
@@ -74,6 +96,8 @@ public class Vertex extends Point3f {
 	}
 
 	/**
+	 * Get voronoi area of vertex
+	 * 
 	 * @return the pointarea
 	 */
 	public float getPointarea() {
@@ -83,18 +107,13 @@ public class Vertex extends Point3f {
 	@Override
 	public int hashCode() {
 		return Float.valueOf(x).hashCode() ^ Float.valueOf(y).hashCode()
-				^ Float.valueOf(z).hashCode() ^ Double.valueOf(pointarea).hashCode()^normalVector.hashCode();
+				^ Float.valueOf(z).hashCode() ^ Double.valueOf(pointarea).hashCode()
+				^ normalVector.hashCode();
 	}
 
 	/**
-	 * @param curvature
-	 *            the curvature to set
-	 */
-	/*public void setCurvature(Curvature curvature) {
-		this.curvature = curvature;
-	}*/
-
-	/**
+	 * set normal vector of vertex
+	 * 
 	 * @param normalVector
 	 *            the normalVector to set
 	 */
@@ -103,6 +122,8 @@ public class Vertex extends Point3f {
 	}
 
 	/**
+	 * set Voronoi area of vertex
+	 * 
 	 * @param pointarea
 	 *            the pointarea to set
 	 */

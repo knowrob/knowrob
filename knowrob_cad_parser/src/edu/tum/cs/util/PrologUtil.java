@@ -22,7 +22,7 @@ public class PrologUtil {
 	 *	TODO Merge with knowrob_common PrologInterface
 	 */
 	@SuppressWarnings("rawtypes")
-	public static HashMap<String, Vector<Object>> executeQuery(String query, String plFile) {
+	public static HashMap<String, Vector<Object>> executeQuery(String query) {
 		
 		HashMap<String, Vector<Object>> result = new HashMap< String, Vector<Object> >();
 		Hashtable[] solutions;
@@ -66,21 +66,4 @@ public class PrologUtil {
 		// Generate the final QueryResult and return
 		return result;
 	}
-
-	
-	/**
-	 * initializes prolog
-	 */
-	/*protected static void initProlog() {
-		try {
-			Vector<String> args= new Vector<String>(Arrays.asList(Prolog.get_default_init_args()));
-			args.add( "-G256M" );
-			args.add( "-q" );
-			args.add( "-nosignals" );
-			Prolog.set_default_init_args( args.toArray( new String[0] ) );
-		
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	}*/
 }

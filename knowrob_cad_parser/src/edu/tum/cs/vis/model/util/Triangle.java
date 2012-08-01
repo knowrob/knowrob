@@ -48,6 +48,9 @@ public class Triangle extends DrawObject {
 	 */
 	protected Vector3f				normalVector		= null;
 
+	/**
+	 * Voronoi area of triangle
+	 */
 	protected Vector3f				cornerarea			= null;
 
 	/**
@@ -63,8 +66,6 @@ public class Triangle extends DrawObject {
 	/**
 	 * Initializes a triangle with given number of edges (Triangle: 3)
 	 * 
-	 * @param numberOfEdges
-	 *            number of edges
 	 */
 	public Triangle() {
 		super(3);
@@ -77,6 +78,8 @@ public class Triangle extends DrawObject {
 	 * 
 	 * @param neighbor
 	 *            neighbor to add.
+	 * @return true if <tt>neighbor</tt> is really a neighbor of this triangle and it was
+	 *         successfully added.
 	 */
 	public boolean addNeighbor(Triangle neighbor) {
 		boolean add = false;
@@ -166,10 +169,6 @@ public class Triangle extends DrawObject {
 
 			for (int i = 0; i < position.length; i++) {
 
-				// if (position[i].getNormalVector() != null)
-				// g.normal(position[i].getNormalVector().x, position[i].getNormalVector().y,
-				// position[i].getNormalVector().z);
-
 				g.vertex(position[i].x, position[i].y, position[i].z, texPosition[i].x,
 						texPosition[i].y);
 
@@ -205,6 +204,8 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
+	 * Get centroid of triangle
+	 * 
 	 * @return the centroid
 	 */
 	public Point3f getCentroid() {
@@ -212,6 +213,8 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
+	 * Get voronoi area of triangle
+	 * 
 	 * @return the cornerarea
 	 */
 	public Vector3f getCornerarea() {
@@ -229,6 +232,8 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
+	 * get normal vector of triangle
+	 * 
 	 * @return the normalVector
 	 */
 	public Vector3f getNormalVector() {
@@ -236,6 +241,8 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
+	 * Get position array for texture
+	 * 
 	 * @return the texPosition
 	 */
 	public Point2f[] getTexPosition() {
@@ -256,6 +263,11 @@ public class Triangle extends DrawObject {
 		return intersectsRay(rayStart, rayEnd, null);
 	}
 
+	/**
+	 * Calculate and set normal vector for triangle
+	 * 
+	 * @return true if vector successfully calculated
+	 */
 	public boolean calculateNormalVector() {
 		// Calculate normal vector for triangle
 		Vector3f avgVertexNorm = new Vector3f();
@@ -431,14 +443,18 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
+	 * Set normal vector of triangle
+	 * 
 	 * @param normalVector
-	 *            * the normalVector to set
+	 *            the normalVector to set
 	 */
 	public void setNormalVector(Vector3f normalVector) {
 		this.normalVector = normalVector;
 	}
 
 	/**
+	 * set texture position array for texture of triangle
+	 * 
 	 * @param texPosition
 	 *            * the texPosition to set
 	 */

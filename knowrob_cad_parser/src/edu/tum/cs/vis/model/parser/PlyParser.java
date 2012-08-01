@@ -1,3 +1,10 @@
+/*******************************************************************************
+ * Copyright (c) 2012 Stefan Profanter. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the GNU Public License v3.0 which accompanies
+ * this distribution, and is available at http://www.gnu.org/licenses/gpl.html
+ * 
+ * Contributors: Stefan Profanter - initial API and implementation, Year: 2012
+ ******************************************************************************/
 package edu.tum.cs.vis.model.parser;
 
 import java.awt.Color;
@@ -14,46 +21,142 @@ import edu.tum.cs.vis.model.util.Mesh;
 import edu.tum.cs.vis.model.util.Triangle;
 import edu.tum.cs.vis.model.util.Vertex;
 
+/**
+ * Parser for .ply (Polygon File Format) files. Supports binary and ASCII files.
+ * 
+ * @author Stefan Profanter
+ * 
+ */
 public class PlyParser extends ModelParser {
 
+	/**
+	 * File format of ply file
+	 * 
+	 * @author Stefan Profanter
+	 * 
+	 */
 	private enum FileFormat {
-		ASCII, LITTLE_ENDIAN, BIG_ENDIAN
+		/**
+		 * ASCII file format
+		 */
+		ASCII,
+		/**
+		 * Binary: little endian
+		 */
+		LITTLE_ENDIAN,
+		/**
+		 * Binary: big endian
+		 */
+		BIG_ENDIAN
 	};
 
+	/**
+	 * Byte buffer used for binary parsing.
+	 */
 	private ByteBuffer	byteBuffer;
 
+	/**
+	 * File format of current file
+	 */
 	private FileFormat	fileFormat;
 
+	/**
+	 * Property of ply file (placed in header).
+	 * 
+	 * @author Stefan Profanter
+	 * 
+	 */
 	private class Property {
+		/**
+		 * Creates a new property with given name.
+		 * 
+		 * @param name
+		 *            Name of property
+		 * 
+		 */
 		public Property(String name) {
 			this.name = name;
 		}
 
-		String	type1	= null; // type for single property or type of list count
-		String	type2	= null; // if property is a list of values, this is the type of values
+		/**
+		 * Type of property or <tt>list</tt>. type for single property or type of list count.
+		 */
+		String	type1	= null; //
+		/**
+		 * if property is a list of values, this is the type of values
+		 */
+		String	type2	= null;
+		/**
+		 * name of property
+		 */
 		String	name;
 	}
 
+	/**
+	 * Represents a line with numbers. Used for ASCII and binary.
+	 * 
+	 * @author Stefan Profanter
+	 * 
+	 */
 	private class ValueLine {
+		/**
+		 * Values for the line
+		 */
 		ArrayList<Number>	values	= new ArrayList<Number>();
 	}
 
+	/**
+	 * An element of ply file. May be for example a vertex or face.
+	 * 
+	 * @author Stefan Profanter
+	 * 
+	 */
 	private class Element {
+		/**
+		 * Constructor for element.
+		 * 
+		 * @param n
+		 *            Name of element
+		 * @param cnt
+		 *            count of sub elements.
+		 */
 		public Element(String n, int cnt) {
 			this.name = n;
 			this.cnt = cnt;
 		}
 
+		/**
+		 * Name of element
+		 */
 		String					name;
+		/**
+		 * count of sub elements
+		 */
 		int						cnt;
+		/**
+		 * List of properties for element
+		 */
 		ArrayList<Property>		properties	= new ArrayList<Property>();
+		/**
+		 * List of value lines for element
+		 */
 		ArrayList<ValueLine>	lines		= new ArrayList<ValueLine>();
 	};
 
-	ArrayList<Element>	elements		= new ArrayList<Element>();
+	/**
+	 * List of all elements of ply file
+	 */
+	private ArrayList<Element>	elements		= new ArrayList<Element>();
 
-	private int			currentElement	= 0;
-	
+	/**
+	 * Index of current element which is getting parsed.
+	 */
+	private int					currentElement	= 0;
+
+	/**
+	 * Dump ply file. Used for debugging purposes.
+	 */
+	@SuppressWarnings("unused")
 	private void dump() {
 		for (Element e : elements) {
 			System.out.println(e.name);
@@ -127,11 +230,10 @@ public class PlyParser extends ModelParser {
 			}
 		}
 
-		//dump();
-		
+		// dump();
+
 		byteBuffer = null;
-		
-		
+
 		Element vertexElement = null;
 		Element faceElement = null;
 		for (Element e : elements) {
@@ -144,12 +246,12 @@ public class PlyParser extends ModelParser {
 			if (vertexElement != null && faceElement != null)
 				break;
 		}
-		
+
 		if (vertexElement == null) {
 			System.err.println("ERROR: .ply file doesn't contain vertex definition.");
 			return false;
 		}
-		
+
 		if (faceElement == null) {
 			System.err.println("ERROR: .ply file doesn't contain face definition.");
 			return false;
@@ -162,67 +264,63 @@ public class PlyParser extends ModelParser {
 		g.setMesh(m);
 
 		model.setTextureBasePath(null);
-		
-		int coordIdx[] = new int[]{-1,-1,-1};
-		int colorIdx[] = new int[]{-1,-1,-1};
+
+		int coordIdx[] = new int[] { -1, -1, -1 };
+		int colorIdx[] = new int[] { -1, -1, -1 };
 		int idxOk = 0;
 		int colorOk = 0;
-		for (int i=0; i<vertexElement.properties.size(); i++){
+		for (int i = 0; i < vertexElement.properties.size(); i++) {
 			Property p = vertexElement.properties.get(i);
 			if (p.name.equals("x")) {
 				coordIdx[0] = i;
 				idxOk++;
-			}
-			else if (p.name.equals("y")) {
+			} else if (p.name.equals("y")) {
 				coordIdx[1] = i;
 				idxOk++;
-			}
-			else if (p.name.equals("z")) {
+			} else if (p.name.equals("z")) {
 				coordIdx[2] = i;
 				idxOk++;
-			}
-			else if (p.name.equals("red")) {
+			} else if (p.name.equals("red")) {
 				colorIdx[0] = i;
 				colorOk++;
-			}
-			else  if (p.name.equals("green")) {
+			} else if (p.name.equals("green")) {
 				colorIdx[1] = i;
 				colorOk++;
-			}
-			else  if (p.name.equals("nlue")) {
+			} else if (p.name.equals("nlue")) {
 				colorIdx[2] = i;
 				colorOk++;
-			}				
+			}
 		}
-		
+
 		if (idxOk != 3) {
 			System.err.println("ERROR: x,y,z not properly defined for vertices in header.");
 			model = null;
 			return false;
 		}
-		
-		
-		
+
 		for (ValueLine l : vertexElement.lines) {
 			if (l.values.size() < 3) {
-				System.err.println("ERROR: invalid vertex coordinate count: " + l.values.size() +" for vertex index " + model.getVertices().size());
+				System.err.println("ERROR: invalid vertex coordinate count: " + l.values.size()
+						+ " for vertex index " + model.getVertices().size());
 				model = null;
 				return false;
 			}
-			Vertex v = new Vertex(l.values.get(coordIdx[0]).floatValue(),l.values.get(coordIdx[1]).floatValue(),l.values.get(coordIdx[2]).floatValue());
-			if (colorOk==3) {
-				v.color = new Color(l.values.get(colorIdx[0]).intValue(),l.values.get(colorIdx[1]).intValue(),l.values.get(colorIdx[2]).intValue());
+			Vertex v = new Vertex(l.values.get(coordIdx[0]).floatValue(), l.values.get(coordIdx[1])
+					.floatValue(), l.values.get(coordIdx[2]).floatValue());
+			if (colorOk == 3) {
+				v.color = new Color(l.values.get(colorIdx[0]).intValue(), l.values.get(colorIdx[1])
+						.intValue(), l.values.get(colorIdx[2]).intValue());
 			}
 			model.getVertices().add(v);
 		}
-	
+
 		for (ValueLine l : faceElement.lines) {
 			if (l.values.size() < 3) {
 				System.err.println("WARN: Skipping face with less than 3 points");
 			} else if (l.values.size() == 3) {
 				Triangle t = new Triangle();
 				Vertex[] vert = new Vertex[3];
-				for (int i=0; i<3; i++) {
+				for (int i = 0; i < 3; i++) {
 					vert[i] = model.getVertices().get(l.values.get(i).intValue());
 				}
 				t.setPosition(vert);
@@ -233,15 +331,15 @@ public class PlyParser extends ModelParser {
 			} else {
 
 				Vertex[] polyVert = new Vertex[l.values.size()];
-				for (int i=0; i<l.values.size(); i++) {
+				for (int i = 0; i < l.values.size(); i++) {
 					polyVert[i] = model.getVertices().get(l.values.get(i).intValue());
 				}
 				int triangleIndices[] = polygonTriangulation(polyVert);
-				for (int i=0; i<triangleIndices.length/3; i++) {
+				for (int i = 0; i < triangleIndices.length / 3; i++) {
 					Triangle t = new Triangle();
 					Vertex[] vert = new Vertex[3];
-					for (int j=0; j<3; j++) {
-						vert[j] = polyVert[triangleIndices[i*3+j]];
+					for (int j = 0; j < 3; j++) {
+						vert[j] = polyVert[triangleIndices[i * 3 + j]];
 					}
 					t.setPosition(vert);
 					if (!t.calculateNormalVector()) {
@@ -251,12 +349,20 @@ public class PlyParser extends ModelParser {
 				}
 			}
 		}
-		
+
 		elements = null;
 
 		return true;
 	}
 
+	/**
+	 * Process header line.
+	 * 
+	 * @param parts
+	 *            Parts of line separated by spaces
+	 * @return true if successfully parsed.
+	 * 
+	 */
 	private boolean processLine(String parts[]) {
 		if (parts.length < 2)
 			return true;
@@ -289,6 +395,13 @@ public class PlyParser extends ModelParser {
 		return true;
 	}
 
+	/**
+	 * Process ASCII line of data.
+	 * 
+	 * @param parts
+	 *            Parts of line separated by spaces
+	 * @return true if successfully parsed.
+	 */
 	private boolean processDataLine(String parts[]) {
 		int offset = 0;
 		int cnt = 1;
@@ -311,6 +424,15 @@ public class PlyParser extends ModelParser {
 		return true;
 	}
 
+	/**
+	 * Get next bytes of byteBuffer where <tt>type</tt> indicates which number type is expected
+	 * (char, short, long, ...) and therefore how much bytes to read.
+	 * 
+	 * @param type
+	 *            Type of expected value.
+	 * @return parsed value
+	 * 
+	 */
 	private Number parseType(String type) {
 		if (type.equals("char")) {
 			return new Integer(byteBuffer.get());
@@ -340,6 +462,12 @@ public class PlyParser extends ModelParser {
 		}
 	}
 
+	/**
+	 * Parse current binary buffer by converting bytes into numbers and storing them in internal
+	 * structure.
+	 * 
+	 * @return true if successfully parsed.
+	 */
 	private boolean processDataBuffer() {
 
 		for (int el = 0; el < elements.size(); el++) {

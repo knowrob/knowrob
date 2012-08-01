@@ -11,10 +11,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import javax.media.j3d.GeometryArray;
-
 import com.sun.j3d.utils.geometry.GeometryInfo;
-import com.sun.j3d.utils.geometry.Triangulator;
 
 import edu.tum.cs.util.ResourceRetriever;
 import edu.tum.cs.vis.model.Model;
@@ -177,24 +174,30 @@ public abstract class ModelParser {
 			model = m;
 		return retVal;
 	}
-	
+
+	/**
+	 * Split polygon into triangles. Build in GeometryInfo class is used. New vertex indices are
+	 * then returned.
+	 * 
+	 * @param vertices
+	 *            list of all vertices for polygon
+	 * @return list of vertex indices for triangles
+	 */
 	public static int[] polygonTriangulation(Vertex vertices[]) {
-		float coord[] = new float[vertices.length*3];
-		for (int i=0; i<vertices.length; i++) {
-			coord[i*3] = vertices[i].x;
-			coord[i*3+1] = vertices[i].y;
-			coord[i*3+2] = vertices[i].z;
+		float coord[] = new float[vertices.length * 3];
+		for (int i = 0; i < vertices.length; i++) {
+			coord[i * 3] = vertices[i].x;
+			coord[i * 3 + 1] = vertices[i].y;
+			coord[i * 3 + 2] = vertices[i].z;
 		}
-		
-		GeometryInfo gi = new GeometryInfo( GeometryInfo.POLYGON_ARRAY );
+
+		GeometryInfo gi = new GeometryInfo(GeometryInfo.POLYGON_ARRAY);
 		gi.setCoordinates(coord);
-		
-		
-		
-		int[] stripCounts = {coord.length / 3};
+
+		int[] stripCounts = { coord.length / 3 };
 		gi.setStripCounts(stripCounts);
 		gi.convertToIndexedTriangles();
-		
+
 		return gi.getCoordinateIndices();
 	}
 

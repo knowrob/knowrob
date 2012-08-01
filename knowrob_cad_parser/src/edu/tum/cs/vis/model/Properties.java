@@ -29,7 +29,7 @@ public class Properties {
 				identifier = "'" + identifier + "'";
 			}
 			HashMap<String, Vector<Object>> nfo = PrologUtil.executeQuery("get_model_path("
-					+ identifier + ",P)", null);
+					+ identifier + ",P)");
 
 			if (nfo.get("P") != null && nfo.get("P").size() > 0) {
 				String str = nfo.get("P").get(0).toString();
