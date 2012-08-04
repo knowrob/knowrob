@@ -51,7 +51,7 @@ public class BarcooSubscriber{
         
         ros.logInfo("Ready to receive barcode and create new individuals"); 
         System.out.println("LOADING COMPLETED.");
-		n.spin();		
+		n.spin();	
 	}	
 	
 	public static void main(String[] args)
