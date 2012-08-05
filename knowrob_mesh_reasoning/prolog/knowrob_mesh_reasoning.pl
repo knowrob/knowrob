@@ -421,7 +421,14 @@ annotation_cone_direction(PartInst, Direction) :-
   jpl_datum_to_type(ConeAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation,primitive],['ConeAnnotation'])),
   jpl_call(ConeAnnotation,'getDirection',[],DirVec),
-  knowrob_coordinates:vector3d_to_list(DirVec, Direction).
+  knowrob_coordinates:vector3d_to_list(DirVec, VecList),
+
+  VecList = [VX, VY, VZ],
+
+  rdf_instance_from_class(knowrob:'Vector', Direction),
+  rdf_assert(Direction, knowrob:vectorX, literal(type('http://www.w3.org/2001/XMLSchema#float', VX))),
+  rdf_assert(Direction, knowrob:vectorY, literal(type('http://www.w3.org/2001/XMLSchema#float', VY))),
+  rdf_assert(Direction, knowrob:vectorZ, literal(type('http://www.w3.org/2001/XMLSchema#float', VZ))).
 
 
 
@@ -507,8 +514,14 @@ annotation_container_direction(PartInst, OpeningDirection) :-
   mesh_annotation_handle(PartInst, ContainerAnnotation),
   jpl_datum_to_type(ContainerAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation],['ContainerAnnotation'])),
-  jpl_call(ContainerAnnotation,'getDirection',[],DirVec),
-  knowrob_coordinates:vector3d_to_list(DirVec, OpeningDirection).
+  jpl_call(ContainerAnnotation,'getDirection',[], VecList),
+
+  VecList = [VX, VY, VZ],
+
+  rdf_instance_from_class(knowrob:'Vector', OpeningDirection),
+  rdf_assert(OpeningDirection, knowrob:vectorX, literal(type('http://www.w3.org/2001/XMLSchema#float', VX))),
+  rdf_assert(OpeningDirection, knowrob:vectorY, literal(type('http://www.w3.org/2001/XMLSchema#float', VY))),
+  rdf_assert(OpeningDirection, knowrob:vectorZ, literal(type('http://www.w3.org/2001/XMLSchema#float', VZ))).
 
 annotation_container_volume(PartInst, Volume) :-
   mesh_annotation_handle(PartInst, ContainerAnnotation),
