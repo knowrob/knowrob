@@ -322,6 +322,9 @@ mesh_annotator(Obj, MeshAnnotator) :-
 
 comp_physical_parts(Obj, PartInst) :-
 
+  % avoid re-creation of object parts
+  (\+ mesh_annotator_handle(Obj,_)),
+
   % locates mesh for the object
   % determines object components
   % assert java reference to mesh reasoning object
@@ -369,7 +372,7 @@ annotation_area(PartInst, Area) :-
   mesh_annotation_handle(PartInst, PrimitiveAnnotation),
   jpl_datum_to_type(PrimitiveAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation,primitive],[_])),
-  jpl_call(PrimitiveAnnotation,'getPrimitiveAreaUnscaled',[],Area).
+  jpl_call(PrimitiveAnnotation,'getPrimitiveArea',[],Area).
 
 annotation_area_coverage(PartInst, AreaCoverage) :-
   mesh_annotation_handle(PartInst, PrimitiveAnnotation),
@@ -387,37 +390,37 @@ annotation_cone_radius_avg(PartInst, RadiusAvg) :-
   mesh_annotation_handle(PartInst, ConeAnnotation),
   jpl_datum_to_type(ConeAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation,primitive],['ConeAnnotation'])),
-  jpl_call(ConeAnnotation,'getRadiusAvgUnscaled',[],RadiusAvg).
+  jpl_call(ConeAnnotation,'getRadiusAvg',[],RadiusAvg).
 
 annotation_cone_radius_max(PartInst, RadiusMax) :-
   mesh_annotation_handle(PartInst, ConeAnnotation),
   jpl_datum_to_type(ConeAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation,primitive],['ConeAnnotation'])),
-  jpl_call(ConeAnnotation,'getRadiusLargeUnscaled',[],RadiusMax).
+  jpl_call(ConeAnnotation,'getRadiusLarge',[],RadiusMax).
 
 annotation_cone_radius_min(PartInst, RadiusMin) :-
   mesh_annotation_handle(PartInst, ConeAnnotation),
   jpl_datum_to_type(ConeAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation,primitive],['ConeAnnotation'])),
-  jpl_call(ConeAnnotation,'getRadiusSmallUnscaled',[],RadiusMin).
+  jpl_call(ConeAnnotation,'getRadiusSmall',[],RadiusMin).
 
 annotation_cone_volume(PartInst, Volume) :-
   mesh_annotation_handle(PartInst, ConeAnnotation),
   jpl_datum_to_type(ConeAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation,primitive],['ConeAnnotation'])),
-  jpl_call(ConeAnnotation,'getVolumeUnscaled',[],Volume).
+  jpl_call(ConeAnnotation,'getVolume',[],Volume).
 
 annotation_cone_height(PartInst, Height) :-
   mesh_annotation_handle(PartInst, ConeAnnotation),
   jpl_datum_to_type(ConeAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation,primitive],['ConeAnnotation'])),
-  jpl_call(ConeAnnotation,'getHeightUnscaled',[],Height).
+  jpl_call(ConeAnnotation,'getHeight',[],Height).
 
 annotation_cone_direction(PartInst, Direction) :-
   mesh_annotation_handle(PartInst, ConeAnnotation),
   jpl_datum_to_type(ConeAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation,primitive],['ConeAnnotation'])),
-  jpl_call(ConeAnnotation,'getDirectionUnscaled',[],DirVec),
+  jpl_call(ConeAnnotation,'getDirection',[],DirVec),
   knowrob_coordinates:vector3d_to_list(DirVec, Direction).
 
 
@@ -430,7 +433,7 @@ annotation_sphere_radius(PartInst, RadiusAvg) :-
   mesh_annotation_handle(PartInst, SphereAnnotation),
   jpl_datum_to_type(SphereAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation,primitive],['SphereAnnotation'])),
-  jpl_call(SphereAnnotation,'getRadiusUnscaled',[],RadiusAvg).
+  jpl_call(SphereAnnotation,'getRadius',[],RadiusAvg).
 
 annotation_sphere_is_concave(PartInst, Concave) :-
   mesh_annotation_handle(PartInst, SphereAnnotation),
@@ -442,7 +445,7 @@ annotation_sphere_volume(PartInst, Volume) :-
   mesh_annotation_handle(PartInst, SphereAnnotation),
   jpl_datum_to_type(SphereAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation,primitive],['SphereAnnotation'])),
-  jpl_call(SphereAnnotation,'getVolumeUnscaled',[],Volume).
+  jpl_call(SphereAnnotation,'getVolume',[],Volume).
 
 
 
@@ -461,7 +464,7 @@ annotation_plane_longside(PartInst, LongSide) :-
   mesh_annotation_handle(PartInst, PlaneAnnotation),
   jpl_datum_to_type(PlaneAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation,primitive],['PlaneAnnotation'])),
-  jpl_call(PlaneAnnotation,'getLongSideUnscaled',[],LongSideVec),
+  jpl_call(PlaneAnnotation,'getLongSide',[],LongSideVec),
   knowrob_coordinates:vector3d_to_list(LongSideVec, LongSide).
 
 annotation_plane_shortside(PartInst, ShortSide) :-
@@ -481,12 +484,12 @@ annotation_container_direction(PartInst, OpeningDirection) :-
   mesh_annotation_handle(PartInst, ContainerAnnotation),
   jpl_datum_to_type(ContainerAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation],['ContainerAnnotation'])),
-  jpl_call(ContainerAnnotation,'getDirectionUnscaled',[],DirVec),
+  jpl_call(ContainerAnnotation,'getDirection',[],DirVec),
   knowrob_coordinates:vector3d_to_list(DirVec, OpeningDirection).
 
 annotation_container_volume(PartInst, Volume) :-
   mesh_annotation_handle(PartInst, ContainerAnnotation),
   jpl_datum_to_type(ContainerAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation],['ContainerAnnotation'])),
-  jpl_call(ContainerAnnotation,'getVolumeUnscaled',[],Volume).
+  jpl_call(ContainerAnnotation,'getVolume',[],Volume).
 
