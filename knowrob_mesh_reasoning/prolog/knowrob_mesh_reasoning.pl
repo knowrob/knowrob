@@ -335,7 +335,7 @@ comp_physical_parts(Obj, PartInst) :-
   mesh_find_annotations(MeshAnnotator,Type,AnnotationsList),
   member(Annotation, AnnotationsList),
 
-  % TODO: check if component already exists; otherwise:
+  % TODO: transform into global coordinates!!
 
   annotation_pose_list(Annotation, PoseList),
   annotation_to_knowrob_class(Type, KnowRobClass),
@@ -453,26 +453,49 @@ annotation_sphere_volume(PartInst, Volume) :-
 % % % % % % % % % % % % % % % % % % % % % % % 
 % Planes
 
-annotation_plane_normal(PartInst, PlaneNormal) :-
+annotation_plane_normal(PartInst, NormalVec) :-
   mesh_annotation_handle(PartInst, PlaneAnnotation),
   jpl_datum_to_type(PlaneAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation,primitive],['PlaneAnnotation'])),
-  jpl_call(PlaneAnnotation,'getPlaneNormal',[],NormalVec),
-  knowrob_coordinates:vector3d_to_list(NormalVec, PlaneNormal).
+  jpl_call(PlaneAnnotation,'getPlaneNormal',[],NormalVec3d),
+  knowrob_coordinates:vector3d_to_list(NormalVec3d, VecList),
+
+  VecList = [VX, VY, VZ],
+
+  rdf_instance_from_class(knowrob:'Vector', NormalVec),
+  rdf_assert(NormalVec, knowrob:vectorX, literal(type('http://www.w3.org/2001/XMLSchema#float', VX))),
+  rdf_assert(NormalVec, knowrob:vectorY, literal(type('http://www.w3.org/2001/XMLSchema#float', VY))),
+  rdf_assert(NormalVec, knowrob:vectorZ, literal(type('http://www.w3.org/2001/XMLSchema#float', VZ))).
+
 
 annotation_plane_longside(PartInst, LongSide) :-
   mesh_annotation_handle(PartInst, PlaneAnnotation),
   jpl_datum_to_type(PlaneAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation,primitive],['PlaneAnnotation'])),
   jpl_call(PlaneAnnotation,'getLongSide',[],LongSideVec),
-  knowrob_coordinates:vector3d_to_list(LongSideVec, LongSide).
+  knowrob_coordinates:vector3d_to_list(LongSideVec, VecList),
+
+  VecList = [VX, VY, VZ],
+
+  rdf_instance_from_class(knowrob:'Vector', LongSide),
+  rdf_assert(LongSide, knowrob:vectorX, literal(type('http://www.w3.org/2001/XMLSchema#float', VX))),
+  rdf_assert(LongSide, knowrob:vectorY, literal(type('http://www.w3.org/2001/XMLSchema#float', VY))),
+  rdf_assert(LongSide, knowrob:vectorZ, literal(type('http://www.w3.org/2001/XMLSchema#float', VZ))).
+
 
 annotation_plane_shortside(PartInst, ShortSide) :-
   mesh_annotation_handle(PartInst, PlaneAnnotation),
   jpl_datum_to_type(PlaneAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation,primitive],['PlaneAnnotation'])),
   jpl_call(PlaneAnnotation,'getShortSide',[],ShortSideVec),
-  knowrob_coordinates:vector3d_to_list(ShortSideVec, ShortSide).
+  knowrob_coordinates:vector3d_to_list(ShortSideVec, VecList),
+
+  VecList = [VX, VY, VZ],
+
+  rdf_instance_from_class(knowrob:'Vector', ShortSide),
+  rdf_assert(ShortSide, knowrob:vectorX, literal(type('http://www.w3.org/2001/XMLSchema#float', VX))),
+  rdf_assert(ShortSide, knowrob:vectorY, literal(type('http://www.w3.org/2001/XMLSchema#float', VY))),
+  rdf_assert(ShortSide, knowrob:vectorZ, literal(type('http://www.w3.org/2001/XMLSchema#float', VZ))).
 
 
 

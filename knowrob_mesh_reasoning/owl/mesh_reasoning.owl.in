@@ -24,6 +24,7 @@
   </owl:Ontology>
   
   
+  
   <computable:PrologProperty rdf:about="#computeProperPhysicalParts">
     <computable:command rdf:datatype="&xsd;string">comp_physical_parts</computable:command>
     <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
@@ -41,133 +42,120 @@
     <computable:target rdf:resource="&knowrob;areaOfObject"/>
   </computable:PrologProperty>
   
-  <!-- TODO -->
-  <!--  <computable:PrologProperty rdf:about="#computeAnnotationAreaCoverage">
-  <computable:command rdf:datatype="&xsd;string">annotation_area_coverage</computable:command>
+  <computable:PrologProperty rdf:about="#computeAnnotationAreaCoverage">
+    <computable:command rdf:datatype="&xsd;string">annotation_area_coverage</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="&knowrob;areaCoverage"/> 
+  </computable:PrologProperty>
+  
+  
+  
+  <computable:PrologProperty rdf:about="#computeConeAvgRadius">
+    <computable:command rdf:datatype="&xsd;string">annotation_cone_radius_avg</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="&knowrob;radius"/>
+  </computable:PrologProperty>
+  
+  <computable:PrologProperty rdf:about="#computeConeMaxRadius">
+    <computable:command rdf:datatype="&xsd;string">annotation_cone_radius_max</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="&knowrob;maxRadius"/>
+  </computable:PrologProperty>
+  
+  <computable:PrologProperty rdf:about="#computeConeMinRadius">
+    <computable:command rdf:datatype="&xsd;string">annotation_cone_radius_min</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="&knowrob;minRadius"/>
+  </computable:PrologProperty>
+  
+  <computable:PrologProperty rdf:about="#computeConeVolume">
+    <computable:command rdf:datatype="&xsd;string">annotation_cone_volume</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="&knowrob;volumeOfObject"/>
+  </computable:PrologProperty>
+  
+  <computable:PrologProperty rdf:about="#computeConeHeight">
+    <computable:command rdf:datatype="&xsd;string">annotation_cone_height</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="&knowrob;lengthOfObject"/>
+  </computable:PrologProperty>
+  
+  <computable:PrologProperty rdf:about="#computeConeDirection">
+    <computable:command rdf:datatype="&xsd;string">annotation_cone_direction</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="&knowrob;longitudinalDirection"/>
+  </computable:PrologProperty>
+  
+  
+  
+  <computable:PrologProperty rdf:about="#computeSphereRadius">
+    <computable:command rdf:datatype="&xsd;string">annotation_sphere_radius</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="&knowrob;radius"/>
+  </computable:PrologProperty>
+  
+  <!--  TODO: how to integrate this with computables? computable class?  -->
+  <!--  <computable:PrologProperty rdf:about="#computeSphereConcave">
+  <computable:command rdf:datatype="&xsd;string">annotation_sphere_is_concave</computable:command>
   <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
   <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-  <computable:target rdf:resource="&knowrob;inCenterOf"/> 
+  <computable:target rdf:resource="&knowrob;inCenterOf"/>
 </computable:PrologProperty>-->
 
-<!--  this should not be a computable, the result is a pose list instead of a matrix...
-  <computable:PrologProperty rdf:about="#computeAnnotationPose">
-    <computable:command rdf:datatype="&xsd;string">annotation_pose_list</computable:command>
-    <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
-    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-    <computable:target rdf:resource="&knowrob;orientation"/>
-  </computable:PrologProperty>-->
-  
-  
-  
-  
-    <computable:PrologProperty rdf:about="#computeConeAvgRadius">
-      <computable:command rdf:datatype="&xsd;string">annotation_cone_radius_avg</computable:command>
-      <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
-      <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-      <computable:target rdf:resource="&knowrob;radius"/>
-    </computable:PrologProperty>
-    
-    <computable:PrologProperty rdf:about="#computeConeMaxRadius">
-      <computable:command rdf:datatype="&xsd;string">annotation_cone_radius_max</computable:command>
-      <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
-      <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-      <computable:target rdf:resource="&knowrob;maxRadius"/>
-    </computable:PrologProperty>
-    
-    <computable:PrologProperty rdf:about="#computeConeMinRadius">
-      <computable:command rdf:datatype="&xsd;string">annotation_cone_radius_min</computable:command>
-      <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
-      <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-      <computable:target rdf:resource="&knowrob;minRadius"/>
-    </computable:PrologProperty>
-    
-    <computable:PrologProperty rdf:about="#computeConeVolume">
-      <computable:command rdf:datatype="&xsd;string">annotation_cone_volume</computable:command>
-      <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
-      <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-      <computable:target rdf:resource="&knowrob;volumeOfObject"/>
-    </computable:PrologProperty>
-    
-    <computable:PrologProperty rdf:about="#computeConeHeight">
-      <computable:command rdf:datatype="&xsd;string">annotation_cone_height</computable:command>
-      <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
-      <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-      <computable:target rdf:resource="&knowrob;lengthOfObject"/>
-    </computable:PrologProperty>
-    
-    <computable:PrologProperty rdf:about="#computeConeDirection">
-      <computable:command rdf:datatype="&xsd;string">annotation_cone_direction</computable:command>
-      <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
-      <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-      <computable:target rdf:resource="&knowrob;longitudinalDirection"/>
-    </computable:PrologProperty>
-    
-    
-    
-    <computable:PrologProperty rdf:about="#computeSphereRadius">
-      <computable:command rdf:datatype="&xsd;string">annotation_sphere_radius</computable:command>
-      <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
-      <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-      <computable:target rdf:resource="&knowrob;radius"/>
-    </computable:PrologProperty>
-    
-    <!--  TODO: how to integrate this with computables? computable class?  -->
-    <!--  <computable:PrologProperty rdf:about="#computeSphereConcave">
-    <computable:command rdf:datatype="&xsd;string">annotation_sphere_is_concave</computable:command>
-    <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
-    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-    <computable:target rdf:resource="&knowrob;inCenterOf"/>
-  </computable:PrologProperty>-->
-  
-    <computable:PrologProperty rdf:about="#computeSphereVolume">
-      <computable:command rdf:datatype="&xsd;string">annotation_sphere_volume</computable:command>
-      <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
-      <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-      <computable:target rdf:resource="&knowrob;volumeOfObject"/>
-    </computable:PrologProperty>
-    
-    
-    
-    <computable:PrologProperty rdf:about="#computePlaneNormal">
-      <computable:command rdf:datatype="&xsd;string">annotation_plane_normal</computable:command>
-      <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
-      <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-      <computable:target rdf:resource="&knowrob;normalDirection"/>
-    </computable:PrologProperty>
-    
-    
-    <!-- TODO -->
-    <!--  <computable:PrologProperty rdf:about="#computePlaneLongside">
-    <computable:command rdf:datatype="&xsd;string">annotation_plane_longside</computable:command>
-    <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
-    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-    <computable:target rdf:resource="&knowrob;inCenterOf"/>
-  </computable:PrologProperty>-->
-  
-  
-    <!-- TODO -->
-    <!--  <computable:PrologProperty rdf:about="#computePlaneShortside">
-    <computable:command rdf:datatype="&xsd;string">annotation_plane_shortside</computable:command>
-    <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
-    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-    <computable:target rdf:resource="&knowrob;inCenterOf"/> 
-  </computable:PrologProperty>-->
-  
-  
-  
-    <computable:PrologProperty rdf:about="#computeContainerDirection">
-      <computable:command rdf:datatype="&xsd;string">annotation_container_direction</computable:command>
-      <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
-      <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-      <computable:target rdf:resource="&knowrob;longitudinalDirection"/>
-    </computable:PrologProperty>
-    
-    <computable:PrologProperty rdf:about="#computeContainerVolume">
-      <computable:command rdf:datatype="&xsd;string">annotation_container_volume</computable:command>
-      <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
-      <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-      <computable:target rdf:resource="&knowrob;volumeOfObject"/>
-    </computable:PrologProperty>
+ <computable:PrologProperty rdf:about="#computeSphereVolume">
+   <computable:command rdf:datatype="&xsd;string">annotation_sphere_volume</computable:command>
+   <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+   <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+   <computable:target rdf:resource="&knowrob;volumeOfObject"/>
+ </computable:PrologProperty>
+ 
+ 
+ 
+ <computable:PrologProperty rdf:about="#computePlaneNormal">
+   <computable:command rdf:datatype="&xsd;string">annotation_plane_normal</computable:command>
+   <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+   <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+   <computable:target rdf:resource="&knowrob;normalDirection"/>
+ </computable:PrologProperty>
+ 
+ <computable:PrologProperty rdf:about="#computePlaneLongside">
+   <computable:command rdf:datatype="&xsd;string">annotation_plane_longside</computable:command>
+   <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+   <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+   <computable:target rdf:resource="&knowrob;objectLongSide"/>
+ </computable:PrologProperty>
+ 
+ <computable:PrologProperty rdf:about="#computePlaneShortside">
+   <computable:command rdf:datatype="&xsd;string">annotation_plane_shortside</computable:command>
+   <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+   <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+   <computable:target rdf:resource="&knowrob;objectShortSide"/> 
+ </computable:PrologProperty>
+ 
+ 
+ 
+ <computable:PrologProperty rdf:about="#computeContainerDirection">
+   <computable:command rdf:datatype="&xsd;string">annotation_container_direction</computable:command>
+   <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+   <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+   <computable:target rdf:resource="&knowrob;longitudinalDirection"/>
+ </computable:PrologProperty>
+ 
+ <computable:PrologProperty rdf:about="#computeContainerVolume">
+   <computable:command rdf:datatype="&xsd;string">annotation_container_volume</computable:command>
+   <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+   <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+   <computable:target rdf:resource="&knowrob;volumeOfObject"/>
+ </computable:PrologProperty>
+ 
     
 </rdf:RDF>
   
