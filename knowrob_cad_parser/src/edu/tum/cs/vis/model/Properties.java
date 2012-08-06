@@ -30,7 +30,7 @@ public class Properties {
 			}
 			HashMap<String, Vector<String>> nfo = PrologInterface.executeQuery("get_model_path("+ identifier + ",P)");
 
-			if (nfo.get("P") != null && nfo.get("P").size() > 0) {
+			if (nfo!=null && nfo.get("P") != null && nfo.get("P").size() > 0) {
 				String str = nfo.get("P").get(0);
 
 				if (str == null)

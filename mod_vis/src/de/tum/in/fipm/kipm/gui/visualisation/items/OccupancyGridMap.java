@@ -42,48 +42,49 @@ public class OccupancyGridMap extends Item {
 				.executeQuery(
 						"rdf_has("+identifier+",'http://www.roboearth.org/kb/roboearth.owl#linkToMapFile',literal(Map)),rdf_has("+identifier+",'http://www.roboearth.org/kb/roboearth.owl#linkToImageFile',literal(Img))");
 		
-		if (nfo.get("Map") != null && nfo.get("Map").size() > 0) {
-			map = PrologInterface.removeSingleQuotes(nfo.get("Map").get(0));
-		}
-		if (nfo.get("Img") != null && nfo.get("Img").size() > 0) {
-			img = PrologInterface.removeSingleQuotes(nfo.get("Img").get(0));
-		}
-		
-		//Parse Yaml
-		
-		if (!parseYaml(ResourceRetriever.retrieve(map)))
-		{
-			System.err.println("Couldn't parse YAML file for " + identifier);
-			return;
-		}
-		
-		//Init image
-		File imgFile = ResourceRetriever.retrieve(img);
-		
-		BufferedImage bimg = null;
-		try {
-			bimg = ImageIO.read(imgFile);
-		} catch (IOException e) {
-			System.err.println("Couldn't read file: " + imgFile.getAbsolutePath());
-			e.printStackTrace();
-		}	
-		
-		try
-		{
-			if (ymlNegate)
-			{
-				RescaleOp op = new RescaleOp(-1.0f, 255f, null);
-				bimg = op.filter(bimg, null);
+		if(nfo!=null) {
+			if (nfo.get("Map") != null && nfo.get("Map").size() > 0) {
+				map = PrologInterface.removeSingleQuotes(nfo.get("Map").get(0));
+			}
+			if (nfo.get("Img") != null && nfo.get("Img").size() > 0) {
+				img = PrologInterface.removeSingleQuotes(nfo.get("Img").get(0));
 			}
 
-			// Convert BufferedImage to Image otherwise PImage constructor will fail!!
-			Image i = bimg.getScaledInstance(bimg.getWidth(), bimg.getHeight(),0);
-			mapImg = new PImage(i);
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("Couln't initialize image for: " + identifier);
+			//Parse Yaml
+
+			if (!parseYaml(ResourceRetriever.retrieve(map)))
+			{
+				System.err.println("Couldn't parse YAML file for " + identifier);
+				return;
+			}
+
+			//Init image
+			File imgFile = ResourceRetriever.retrieve(img);
+
+			BufferedImage bimg = null;
+			try {
+				bimg = ImageIO.read(imgFile);
+			} catch (IOException e) {
+				System.err.println("Couldn't read file: " + imgFile.getAbsolutePath());
+				e.printStackTrace();
+			}	
+
+			try
+			{
+				if (ymlNegate)
+				{
+					RescaleOp op = new RescaleOp(-1.0f, 255f, null);
+					bimg = op.filter(bimg, null);
+				}
+
+				// Convert BufferedImage to Image otherwise PImage constructor will fail!!
+				Image i = bimg.getScaledInstance(bimg.getWidth(), bimg.getHeight(),0);
+				mapImg = new PImage(i);
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.err.println("Couln't initialize image for: " + identifier);
+			}
 		}
-		
 	}
 	
 	private boolean parseYaml(File file)

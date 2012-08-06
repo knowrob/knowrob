@@ -347,51 +347,58 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 		    ArrayList<String[]> bindings = new ArrayList<String[]>();
 		    HashMap<String, Vector<String>> qres = PrologInterface.executeQuery("findall([P|O], (rdf_has("+entity+", P, O)), Cs)");
 		    
-			for(String k : qres.keySet()) {
-			  	
-				Vector<String> res = qres.get(k);
-			  	
-			  	for(String o : res) {
-			
-			  		String[] list = o.split("'\\.'", 2);
-			  		if(list.length<2) continue;
-			  		String rest = list[1];
-			  		
-			  		bindings.addAll(dottedPairsToArrayList(rest));
-			  	}
-			}
+		    if(qres!=null) {
+		    	for(String k : qres.keySet()) {
+
+		    		Vector<String> res = qres.get(k);
+
+		    		for(String o : res) {
+
+		    			String[] list = o.split("'\\.'", 2);
+		    			if(list.length<2) continue;
+		    			String rest = list[1];
+
+		    			bindings.addAll(dottedPairsToArrayList(rest));
+		    		}
+		    	}
+		    }
 			return bindings;
 		}
 		
 		public void actionsInActivity() {
 			HashMap<String, Vector<String>> qres = PrologInterface.executeQuery("rdf_has(Plan, rdfs:label, literal(type('http://www.w3.org/2001/XMLSchema#string', 'set a table'))), " +
 					                                            "comp_ehow:matching_actions(Plan, Act)");
-		    Vector<String> act = qres.get("Act");
+			if(qres!=null) {
+				Vector<String> act = qres.get("Act");
 
-		    if(act != null) {
+				if(act != null) {
 
-		    	//System.out.println(tmp.toString());
-		    	this.AVObject.setActionsInActivity(act.toArray());
-		    }
+					//System.out.println(tmp.toString());
+					this.AVObject.setActionsInActivity(act.toArray());
+				}
+			}
 		}
 		
 		private void displayInformationForEntity(String entity) {
 			
 			HashMap<String, Vector<String>> qres = PrologInterface.executeQuery("rdf_has("+entity+", P, O)");
-		    Vector<String> P = qres.get("P");
-		    Vector<String> O = qres.get("O");
-		    String info = "";
-		    if(P != null && O != null)
-		    	for(int i=0;i<P.size() && i<O.size();i++) {
-		    		info += printKey(P.get(i)) + ": " + printValue(O.get(i)) + "\n";
-		    	}
 			
-			if(controlP5.controller("CurrentAction")!=null)
-				((Textfield) controlP5.controller("CurrentAction")).setValue(printKey(entity));
-			if(controlP5.getGroup("CurrentAttributes")!=null)
-				((Textarea) controlP5.getGroup("CurrentAttributes")).setText(info);
-			
-			System.out.println(info);
+			if(qres!=null) {
+				Vector<String> P = qres.get("P");
+				Vector<String> O = qres.get("O");
+				String info = "";
+				if(P != null && O != null)
+					for(int i=0;i<P.size() && i<O.size();i++) {
+						info += printKey(P.get(i)) + ": " + printValue(O.get(i)) + "\n";
+					}
+
+				if(controlP5.controller("CurrentAction")!=null)
+					((Textfield) controlP5.controller("CurrentAction")).setValue(printKey(entity));
+				if(controlP5.getGroup("CurrentAttributes")!=null)
+					((Textarea) controlP5.getGroup("CurrentAttributes")).setText(info);
+
+				System.out.println(info);
+			}
 
 		}
 

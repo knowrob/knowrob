@@ -22,7 +22,7 @@ public class PrologInterface {
     public static void initJPLProlog(String initPackage) {
         try {
             Vector<String> args= new Vector<String>(Arrays.asList(jpl.fli.Prolog.get_default_init_args()));
-            args.add( "-G256M" );
+//            args.add( "-G256M" );
             //args.add( "-q" );
             args.add( "-nosignals" );
             

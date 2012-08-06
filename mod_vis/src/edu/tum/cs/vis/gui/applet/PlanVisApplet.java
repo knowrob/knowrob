@@ -126,12 +126,14 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 	 * @return The main action initialized by the identifier
 	 */
 	private Action loadPrologPlanRecursive(String identifier)
-	{		
+	{	
+		
 		//Get the action name
 		String name = "";
 		try
 		{
 			HashMap<String, Vector<String>> qLabel = PrologInterface.executeQuery("rdf_has('"+identifier+"',rdfs:label,L),util:strip_literal_type(L,Label)");
+			
 			name = qLabel.get("Label").get(0);
 			if (name.startsWith("'") && name.endsWith("'"))
 			{
@@ -153,22 +155,25 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		try
 		{
 			HashMap<String, Vector<String>> qProp = PrologInterface.executeQuery("class_properties('"+identifier+"', Key, V), util:strip_literal_type(V,Val)");
-		    Vector<String> key = qProp.get("Key");
-		    Vector<String> val = qProp.get("Val");
-		    
-		    //Make sure each property is added only once, it may be that some properties are present two or more times
-		    HashSet<String> alreadyAdded = new HashSet<String>();
-		    if(key != null && val != null)
-		    	for(int i=0;i<key.size() && i<val.size();i++) {
-		    		if (alreadyAdded.contains(key.get(i)+val.get(i)))
-		    			continue;
-		    		alreadyAdded.add(key.get(i)+val.get(i));
-		    		String k = PrologInterface.valueFromIRI(key.get(i));
-		    		String v = PrologInterface.valueFromIRI(PrologInterface.removeSingleQuotes(val.get(i)));
 
-		    		if (k.compareToIgnoreCase("subAction") != 0)
-		    			ret.setProperty(k, v);
-		    	}
+			if(qProp != null) {
+				Vector<String> key = qProp.get("Key");
+				Vector<String> val = qProp.get("Val");
+
+				//Make sure each property is added only once, it may be that some properties are present two or more times
+				HashSet<String> alreadyAdded = new HashSet<String>();
+				if(key != null && val != null)
+					for(int i=0;i<key.size() && i<val.size();i++) {
+						if (alreadyAdded.contains(key.get(i)+val.get(i)))
+							continue;
+						alreadyAdded.add(key.get(i)+val.get(i));
+						String k = PrologInterface.valueFromIRI(key.get(i));
+						String v = PrologInterface.valueFromIRI(PrologInterface.removeSingleQuotes(val.get(i)));
+
+						if (k.compareToIgnoreCase("subAction") != 0)
+							ret.setProperty(k, v);
+					}
+			}
 		} catch (Exception e)
 		{
 			e.printStackTrace();
@@ -177,24 +182,28 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		//get subactions
 		try {
 			HashMap<String, Vector<String>> qSub = PrologInterface.executeQuery("plan_subevents('"+identifier+"',List)");
-			Vector<String> list = qSub.get("List");
-			
-			//Add each action only once
-			HashSet<String> alreadyAdded = new HashSet<String>();
-			
-			if(list != null) {
-				for (Iterator<String> i = list.iterator(); i.hasNext();)
-				{
-					String o = i.next(); //Is array of strings
-					
-					for (String sArr[] : PrologInterface.dottedPairsToArrayList(o))
+
+			if(qSub!=null) {
+
+				Vector<String> list = qSub.get("List");
+
+				//Add each action only once
+				HashSet<String> alreadyAdded = new HashSet<String>();
+
+				if(list != null) {
+					for (Iterator<String> i = list.iterator(); i.hasNext();)
 					{
-						for (String s : sArr)
+						String o = i.next(); //Is array of strings
+
+						for (String sArr[] : PrologInterface.dottedPairsToArrayList(o))
 						{
-							if (alreadyAdded.contains(s))
-								continue;
-							alreadyAdded.add(s);
-							ret.addSequence(loadPrologPlanRecursive(PrologInterface.removeSingleQuotes(s)));
+							for (String s : sArr)
+							{
+								if (alreadyAdded.contains(s))
+									continue;
+								alreadyAdded.add(s);
+								ret.addSequence(loadPrologPlanRecursive(PrologInterface.removeSingleQuotes(s)));
+							}
 						}
 					}
 				}
