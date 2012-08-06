@@ -6,8 +6,8 @@ rosbuild_init()
 #######################################
 # reset local paths in Prolog files
 
-rosbuild_find_ros_package(mod_localization)
-set( LOCAL_PACKAGE_PATH ${mod_localization_PACKAGE_PATH} )
+rosbuild_find_ros_package(mod_self_info)
+set( LOCAL_PACKAGE_PATH ${mod_self_info_PACKAGE_PATH} )
 
 rosbuild_find_ros_package(ias_knowledge_base)
 set( OWL_PATH_PREFIX ${ias_knowledge_base_PACKAGE_PATH} )
@@ -38,6 +38,8 @@ set(JAVA_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/bin)
 rosbuild_find_ros_package(rosjava_jni)
 add_classpath(${rosjava_jni_PACKAGE_PATH}/bin)
 
-rospack_add_java_executable(ROSClient edu.tum.cs.ias.knowrob.mod_localization.ROSClient)
+rospack_add_java_executable(ROSClient_localization edu.tum.cs.ias.knowrob.mod_self_info.ROSClient_localization)
+
+rospack_add_java_executable(ROSClient_battery_state edu.tum.cs.ias.knowrob.mod_self_info.ROSClient_battery_state)
 
 add_java_source_dir(${PROJECT_SOURCE_DIR}/src)

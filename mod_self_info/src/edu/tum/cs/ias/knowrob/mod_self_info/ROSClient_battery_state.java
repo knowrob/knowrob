@@ -1,4 +1,4 @@
-package edu.tum.cs.ias.knowrob.mod_battery_state;
+package edu.tum.cs.ias.knowrob.mod_self_info;
 
 import ros.*;
 import ros.communication.*;
@@ -6,7 +6,7 @@ import ros.pkg.geometry_msgs.msg.Point;
 import ros.pkg.geometry_msgs.msg.Quaternion;
 import ros.pkg.pr2_msgs.msg.*;
 
-public class ROSClient {
+public class ROSClient_battery_state {
 
         static Boolean rosInitialized = false;
         static Ros ros;
@@ -21,7 +21,7 @@ public class ROSClient {
          *
          * @param node_name A unique node name
          */
-        public ROSClient(String node_name) 
+        public ROSClient_battery_state(String node_name) 
 	{
                 initRos(node_name);
         }
@@ -97,7 +97,7 @@ public class ROSClient {
         public static void main(String[] args) 
         {
 
-                ROSClient d = new ROSClient("knowrob_battery_state_test_123");
+                ROSClient_battery_state d = new ROSClient_battery_state("knowrob_battery_state_test_123");
 		int i =1;
 		while (i == 1)
 		{

@@ -1,10 +1,10 @@
-package edu.tum.cs.ias.knowrob.mod_localization;
+package edu.tum.cs.ias.knowrob.mod_self_info;
 
 import ros.*;
 import ros.communication.*;
 import ros.pkg.geometry_msgs.msg.*;
 
-public class ROSClient {
+public class ROSClient_localization {
 
         static Boolean rosInitialized = false;
         static Ros ros;
@@ -19,7 +19,7 @@ public class ROSClient {
          *
          * @param node_name A unique node name
          */
-        public ROSClient(String node_name) 
+        public ROSClient_localization(String node_name) 
 	{
                 initRos(node_name);
         }
@@ -168,7 +168,7 @@ public class ROSClient {
          */
         public static void main(String[] args) 
 	{
-		ROSClient d = new ROSClient("knowrob_localization_test_123");
+		ROSClient_localization d = new ROSClient_localization("knowrob_localization_test_123");
 
                 double[] res = d.getLocationByPooling();
 
