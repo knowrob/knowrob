@@ -21,7 +21,7 @@
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#">
     <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/knowrob_cad_models.owl">
-        <owl:imports rdf:resource="&local_path;/knowrob.owl"/>
+        <owl:imports rdf:resource="&local_path;knowrob.owl"/>
     </owl:Ontology>
 
 
@@ -107,7 +107,7 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;pathToCadModel"/>
-                <owl:hasValue>package://knowrob_cad_models/models/collada/coke.kmz</owl:hasValue>
+                <owl:hasValue rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/coke.kmz</owl:hasValue>
             </owl:Restriction>
         </rdfs:subClassOf>
     </rdf:Description>
@@ -120,7 +120,7 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;pathToCadModel"/>
-                <owl:hasValue>package://knowrob_cad_models/models/collada/Expedit/Expedit_2X4.kmz</owl:hasValue>
+                <owl:hasValue rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/Expedit/Expedit_2X4.kmz</owl:hasValue>
             </owl:Restriction>
         </rdfs:subClassOf>
     </rdf:Description>
@@ -129,7 +129,7 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;pathToCadModel"/>
-                <owl:hasValue>package://knowrob_cad_models/models/collada/hospital_bed.kmz</owl:hasValue>
+                <owl:hasValue rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/hospital_bed.kmz</owl:hasValue>
             </owl:Restriction>
         </rdfs:subClassOf>
     </rdf:Description>

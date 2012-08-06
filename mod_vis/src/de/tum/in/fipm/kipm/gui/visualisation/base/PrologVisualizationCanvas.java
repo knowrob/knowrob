@@ -19,7 +19,7 @@ import controlP5.Textlabel;
 import de.tum.in.fipm.kipm.gui.visualisation.applets.ActionVisApplet;
 import de.tum.in.fipm.kipm.gui.visualisation.applets.StandaloneKitchenVisApplet;
 import de.tum.in.fipm.kipm.gui.visualisation.applets.ImageViewerApplet;
-import edu.tum.cs.util.PrologUtil;
+import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
 
 import processing.core.*;
 import jpl.Query;
@@ -345,15 +345,15 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 			
 			// read list of attributes from Prolog
 		    ArrayList<String[]> bindings = new ArrayList<String[]>();
-		    HashMap<String, Vector<Object>> qres = PrologUtil.executeQuery("findall([P|O], (rdf_has("+entity+", P, O)), Cs)", "/home/tenorth/work/owl/gram_ias.pl");
+		    HashMap<String, Vector<String>> qres = PrologInterface.executeQuery("findall([P|O], (rdf_has("+entity+", P, O)), Cs)");
 		    
 			for(String k : qres.keySet()) {
 			  	
-				Vector<Object> res = qres.get(k);
+				Vector<String> res = qres.get(k);
 			  	
-			  	for(Object o : res) {
+			  	for(String o : res) {
 			
-			  		String[] list = o.toString().split("'\\.'", 2);
+			  		String[] list = o.split("'\\.'", 2);
 			  		if(list.length<2) continue;
 			  		String rest = list[1];
 			  		
@@ -364,9 +364,9 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 		}
 		
 		public void actionsInActivity() {
-			HashMap<String, Vector<Object>> qres = PrologUtil.executeQuery("rdf_has(Plan, rdfs:label, literal(type('http://www.w3.org/2001/XMLSchema#string', 'set a table'))), " +
-					                                            "comp_ehow:matching_actions(Plan, Act)", null);
-		    Vector<Object> act = qres.get("Act");
+			HashMap<String, Vector<String>> qres = PrologInterface.executeQuery("rdf_has(Plan, rdfs:label, literal(type('http://www.w3.org/2001/XMLSchema#string', 'set a table'))), " +
+					                                            "comp_ehow:matching_actions(Plan, Act)");
+		    Vector<String> act = qres.get("Act");
 
 		    if(act != null) {
 
@@ -377,13 +377,13 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 		
 		private void displayInformationForEntity(String entity) {
 			
-			HashMap<String, Vector<Object>> qres = PrologUtil.executeQuery("rdf_has("+entity+", P, O)", null);
-		    Vector<Object> P = qres.get("P");
-		    Vector<Object> O = qres.get("O");
+			HashMap<String, Vector<String>> qres = PrologInterface.executeQuery("rdf_has("+entity+", P, O)");
+		    Vector<String> P = qres.get("P");
+		    Vector<String> O = qres.get("O");
 		    String info = "";
 		    if(P != null && O != null)
 		    	for(int i=0;i<P.size() && i<O.size();i++) {
-		    		info += printKey(P.get(i).toString()) + ": " + printValue(O.get(i).toString()) + "\n";
+		    		info += printKey(P.get(i)) + ": " + printValue(O.get(i)) + "\n";
 		    	}
 			
 			if(controlP5.controller("CurrentAction")!=null)

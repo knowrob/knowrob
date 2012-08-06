@@ -16,7 +16,6 @@ import java.util.Vector;
 import javax.vecmath.Vector2f;
 
 import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
-import edu.tum.cs.util.PrologUtil;
 import edu.tum.cs.vis.action.Action;
 import edu.tum.cs.vis.action.ActionSelectHistoryInfo;
 
@@ -132,8 +131,8 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		String name = "";
 		try
 		{
-			HashMap<String, Vector<Object>> qLabel = PrologUtil.executeQuery("rdf_has('"+identifier+"',rdfs:label,L),util:strip_literal_type(L,Label)", null);
-			name = qLabel.get("Label").get(0).toString();
+			HashMap<String, Vector<String>> qLabel = PrologInterface.executeQuery("rdf_has('"+identifier+"',rdfs:label,L),util:strip_literal_type(L,Label)");
+			name = qLabel.get("Label").get(0);
 			if (name.startsWith("'") && name.endsWith("'"))
 			{
 				name = name.substring(1,name.length()-1);
@@ -153,19 +152,19 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		//get properties
 		try
 		{
-			HashMap<String, Vector<Object>> qProp = PrologUtil.executeQuery("class_properties('"+identifier+"', Key, V), util:strip_literal_type(V,Val)", null);
-		    Vector<Object> key = qProp.get("Key");
-		    Vector<Object> val = qProp.get("Val");
+			HashMap<String, Vector<String>> qProp = PrologInterface.executeQuery("class_properties('"+identifier+"', Key, V), util:strip_literal_type(V,Val)");
+		    Vector<String> key = qProp.get("Key");
+		    Vector<String> val = qProp.get("Val");
 		    
 		    //Make sure each property is added only once, it may be that some properties are present two or more times
 		    HashSet<String> alreadyAdded = new HashSet<String>();
 		    if(key != null && val != null)
 		    	for(int i=0;i<key.size() && i<val.size();i++) {
-		    		if (alreadyAdded.contains(key.get(i).toString()+val.get(i).toString()))
+		    		if (alreadyAdded.contains(key.get(i)+val.get(i)))
 		    			continue;
-		    		alreadyAdded.add(key.get(i).toString()+val.get(i).toString());
-		    		String k = PrologInterface.valueFromIRI(key.get(i).toString());
-		    		String v = PrologInterface.valueFromIRI(PrologInterface.removeSingleQuotes(val.get(i).toString()));
+		    		alreadyAdded.add(key.get(i)+val.get(i));
+		    		String k = PrologInterface.valueFromIRI(key.get(i));
+		    		String v = PrologInterface.valueFromIRI(PrologInterface.removeSingleQuotes(val.get(i)));
 
 		    		if (k.compareToIgnoreCase("subAction") != 0)
 		    			ret.setProperty(k, v);
@@ -177,18 +176,18 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 
 		//get subactions
 		try {
-			HashMap<String, Vector<Object>> qSub = PrologUtil.executeQuery("plan_subevents('"+identifier+"',List)", null);
-			Vector<Object> list = qSub.get("List");
+			HashMap<String, Vector<String>> qSub = PrologInterface.executeQuery("plan_subevents('"+identifier+"',List)");
+			Vector<String> list = qSub.get("List");
 			
 			//Add each action only once
 			HashSet<String> alreadyAdded = new HashSet<String>();
 			
 			if(list != null) {
-				for (Iterator<Object> i = list.iterator(); i.hasNext();)
+				for (Iterator<String> i = list.iterator(); i.hasNext();)
 				{
-					Object o = i.next(); //Is array of strings
+					String o = i.next(); //Is array of strings
 					
-					for (String sArr[] : PrologInterface.dottedPairsToArrayList(o.toString()))
+					for (String sArr[] : PrologInterface.dottedPairsToArrayList(o))
 					{
 						for (String s : sArr)
 						{

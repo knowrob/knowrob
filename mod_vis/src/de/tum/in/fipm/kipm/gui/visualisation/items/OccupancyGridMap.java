@@ -20,7 +20,6 @@ import org.yaml.snakeyaml.Yaml;
 import processing.core.PImage;
 
 import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
-import edu.tum.cs.util.PrologUtil;
 import edu.tum.cs.util.ResourceRetriever;
 import edu.tum.cs.vis.Canvas;
 
@@ -39,16 +38,15 @@ public class OccupancyGridMap extends Item {
 	{
 		super(null,null);
 		
-		HashMap<String, Vector<Object>> nfo = PrologUtil
+		HashMap<String, Vector<String>> nfo = PrologInterface
 				.executeQuery(
-						"rdf_has("+identifier+",'http://www.roboearth.org/kb/roboearth.owl#linkToMapFile',literal(Map)),rdf_has("+identifier+",'http://www.roboearth.org/kb/roboearth.owl#linkToImageFile',literal(Img))",
-						null);
+						"rdf_has("+identifier+",'http://www.roboearth.org/kb/roboearth.owl#linkToMapFile',literal(Map)),rdf_has("+identifier+",'http://www.roboearth.org/kb/roboearth.owl#linkToImageFile',literal(Img))");
 		
 		if (nfo.get("Map") != null && nfo.get("Map").size() > 0) {
-			map = PrologInterface.removeSingleQuotes(nfo.get("Map").get(0).toString());
+			map = PrologInterface.removeSingleQuotes(nfo.get("Map").get(0));
 		}
 		if (nfo.get("Img") != null && nfo.get("Img").size() > 0) {
-			img = PrologInterface.removeSingleQuotes(nfo.get("Img").get(0).toString());
+			img = PrologInterface.removeSingleQuotes(nfo.get("Img").get(0));
 		}
 		
 		//Parse Yaml

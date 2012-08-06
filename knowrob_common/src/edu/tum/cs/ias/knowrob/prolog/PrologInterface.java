@@ -47,7 +47,8 @@ public class PrologInterface {
 	 * @param query A query string in common SWI Prolog syntax
 	 * @return A HashMap<VariableName, ResultsVector>
 	 */
-	@SuppressWarnings("rawtypes")
+    
+	@SuppressWarnings("unchecked")
 	public static HashMap<String, Vector<String>> executeQuery(String query) {
 		
 		HashMap<String, Vector<String>> result = new HashMap< String, Vector<String> >();
