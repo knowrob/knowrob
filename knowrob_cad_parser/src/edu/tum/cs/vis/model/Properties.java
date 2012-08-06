@@ -3,7 +3,7 @@ package edu.tum.cs.vis.model;
 import java.util.HashMap;
 import java.util.Vector;
 
-import edu.tum.cs.util.PrologUtil;
+import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
 
 /**
  * Static class to obtain model properties such as path to model file, width, height, depth.
@@ -28,11 +28,10 @@ public class Properties {
 			if (!identifier.startsWith("'") || !identifier.endsWith("'")) {
 				identifier = "'" + identifier + "'";
 			}
-			HashMap<String, Vector<Object>> nfo = PrologUtil.executeQuery("get_model_path("
-					+ identifier + ",P)");
+			HashMap<String, Vector<String>> nfo = PrologInterface.executeQuery("get_model_path("+ identifier + ",P)");
 
 			if (nfo.get("P") != null && nfo.get("P").size() > 0) {
-				String str = nfo.get("P").get(0).toString();
+				String str = nfo.get("P").get(0);
 
 				if (str == null)
 					return null;
