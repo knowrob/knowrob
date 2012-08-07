@@ -75,6 +75,7 @@ public abstract class AnnotationPanel<T extends DrawableAnnotation> extends JPan
 				if (a.getClass() != annotationType) {
 					continue;
 				}
+				@SuppressWarnings("rawtypes")
 				MeshAnnotation ma = (MeshAnnotation) a;
 				ma.setUseRandomColor(useRand);
 			}

@@ -21,11 +21,27 @@ import javax.vecmath.Vector2f;
 import org.ejml.simple.SimpleMatrix;
 
 /**
+ * Best fit a rectangle into 2D points.
+ * 
  * @author Stefan Profanter
  * 
+ * @see <a
+ *      href="http://www.profanter.me/pub/BachelorThesis/Thesis.pdf">http://www.profanter.me/pub/BachelorThesis/Thesis.pdf</a>
+ *      chapter 3.3.3.1
  */
 public class BestFitRectangle2D {
 
+	/**
+	 * Get best fit rectangle for given points in 2D their orthonormal basis.
+	 * 
+	 * @param points
+	 *            points to fit rectangle into
+	 * @param U
+	 *            orthonormal basis for points
+	 * @param V
+	 *            orthonormal basis for points
+	 * @return array with 4 points representing the rectangle corners
+	 */
 	public static Point2f[] getBestFitRectangle(Point2f points[], Vector2f U, Vector2f V) {
 		GrahamScan graham = new GrahamScan(points);
 		ArrayList<Point2f> CH = graham.hull();

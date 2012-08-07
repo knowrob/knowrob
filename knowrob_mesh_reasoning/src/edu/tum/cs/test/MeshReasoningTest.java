@@ -18,10 +18,10 @@ import edu.tum.cs.vis.model.MeshReasoning;
 public class MeshReasoningTest {
 
 	/**
-	 * Main Method loading the mesh, drawing it and starting the analyser
+	 * Main Method loading the mesh, drawing it and starting the analyzer
 	 * 
 	 * @param args
-	 *            command line arguments
+	 *            command line arguments not used
 	 */
 	public static void main(String[] args) {
 

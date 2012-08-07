@@ -11,6 +11,8 @@ import processing.core.PGraphics;
 import edu.tum.cs.uima.Annotation;
 
 /**
+ * Base class for a drawable annotation.
+ * 
  * @author Stefan Profanter
  * 
  */
@@ -21,7 +23,7 @@ public abstract class DrawableAnnotation extends Annotation {
 	private static final long	serialVersionUID	= 1222063742441634463L;
 
 	/**
-	 * indicates if this annotation should be drawn or not
+	 * indicates whether this annotation should be drawn or not
 	 */
 	protected boolean			drawAnnotation		= true;
 
@@ -36,9 +38,17 @@ public abstract class DrawableAnnotation extends Annotation {
 			drawAnnotation(g);
 	}
 
+	/**
+	 * Draw this annotation on given graphics context.
+	 * 
+	 * @param g
+	 *            graphics context to draw on
+	 */
 	protected abstract void drawAnnotation(PGraphics g);
 
 	/**
+	 * true if this annotation should be drawn (is visible).
+	 * 
 	 * @return the drawAnnotation
 	 */
 	public boolean isDrawAnnotation() {
@@ -46,6 +56,8 @@ public abstract class DrawableAnnotation extends Annotation {
 	}
 
 	/**
+	 * Set to true, if this annotation should be drawn (is visible).
+	 * 
 	 * @param drawAnnotation
 	 *            the drawAnnotation to set
 	 */

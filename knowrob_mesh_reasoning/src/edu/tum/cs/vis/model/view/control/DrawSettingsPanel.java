@@ -20,13 +20,15 @@ import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.view.MeshReasoningView;
 
 /**
+ * Control panel for draw settings
+ * 
  * @author Stefan Profanter
  * 
  */
 public class DrawSettingsPanel extends JPanel implements ActionListener {
 
 	/**
-	 * 
+	 * auto generated
 	 */
 	private static final long		serialVersionUID	= -1936392151575823886L;
 
@@ -41,15 +43,47 @@ public class DrawSettingsPanel extends JPanel implements ActionListener {
 	 */
 	private final MeshReasoningView	view;
 
+	/**
+	 * use white background
+	 */
 	private final JCheckBox			cbxWhiteBackground;
+	/**
+	 * draw vertex normals
+	 */
 	private final JCheckBox			cbxDrawVertexNormals;
+	/**
+	 * draw vertex curvature
+	 */
 	private final JCheckBox			cbxDrawVertexCurvature;
+	/**
+	 * color model by curvature
+	 */
 	private final JCheckBox			cbxDrawCurvatureColor;
+	/**
+	 * draw voronoi area
+	 */
 	private final JCheckBox			cbxDrawVoronoiArea;
+	/**
+	 * button to set rotation of camera manually
+	 */
 	private final JButton			btnSetRotation;
+	/**
+	 * select only nearest triangle or all triangles intersecting mouse ray
+	 */
 	private final JCheckBox			cbxSelectNearestOnly;
+	/**
+	 * draw bounding box for each group
+	 */
 	private final JCheckBox			cbxDrawBoundingBox;
 
+	/**
+	 * Creates a new draw settings panel
+	 * 
+	 * @param cas
+	 *            main mesh cas
+	 * @param view
+	 *            parent mesh reasoning view
+	 */
 	public DrawSettingsPanel(MeshCas cas, MeshReasoningView view) {
 		this.view = view;
 		this.cas = cas;

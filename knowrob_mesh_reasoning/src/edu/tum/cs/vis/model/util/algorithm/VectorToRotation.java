@@ -12,11 +12,22 @@ import javax.vecmath.Vector3f;
 import org.ejml.simple.SimpleMatrix;
 
 /**
+ * Converts vector and rotation angle to rotation matrix.
+ * 
  * @author Stefan Profanter
  * 
  */
 public class VectorToRotation {
 
+	/**
+	 * Converts vector and rotation angle to rotation matrix.
+	 * 
+	 * @param rot
+	 *            rotation angle in radiant
+	 * @param vec
+	 *            rotation vector
+	 * @return rotation matrix
+	 */
 	public static SimpleMatrix getRotationMatrix(double rot, Vector3f vec) {
 		SimpleMatrix mat = new SimpleMatrix(3, 3);
 

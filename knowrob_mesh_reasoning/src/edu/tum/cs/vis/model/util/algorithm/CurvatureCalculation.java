@@ -31,11 +31,24 @@ import edu.tum.cs.vis.model.util.Triangle;
 import edu.tum.cs.vis.model.util.Vertex;
 
 /**
+ * 
+ * Methods to calculate curvature for vertices.
+ * 
+ * Ported from trimesh2 (Szymon Rusinkiewicz Princeton University)
+ * 
  * @author Stefan Profanter
  * 
  */
 public class CurvatureCalculation {
 
+	/**
+	 * Calculate curvature for each vertex of model
+	 * 
+	 * @param curvatures
+	 *            resulting vertex curvature mapping
+	 * @param m
+	 *            model to calculate curvature for
+	 */
 	private static void calculateCurvature(final HashMap<Vertex, Curvature> curvatures,
 			final Model m) {
 
@@ -111,6 +124,14 @@ public class CurvatureCalculation {
 		}
 	}
 
+	/**
+	 * Calculate curvature for vertices of triangle
+	 * 
+	 * @param curvatures
+	 *            vertex curvature mapping
+	 * @param tri
+	 *            triangle to calculate curvature for
+	 */
 	static void calculateCurvatureForTriangle(HashMap<Vertex, Curvature> curvatures, Triangle tri) {
 		// Edges
 		Vector3f e[] = new Vector3f[3];
@@ -195,36 +216,21 @@ public class CurvatureCalculation {
 		}
 	}
 
+	/**
+	 * Calculate curvature for each vertex of model
+	 * 
+	 * @param curvatures
+	 *            resulting vertex curvature mapping
+	 * @param m
+	 *            model to calculate curvature for
+	 * @param inverseCurvature
+	 *            Invert curvature by inverting vertex normals
+	 */
 	public static void calculateCurvatures(HashMap<Vertex, Curvature> curvatures, final Model m,
 			boolean inverseCurvature) {
 
 		if (m.getVertices().size() == 0)
 			return;
-
-		/*float vertices[] = new float[m.getVertices().size() * 3];
-		for (int i = 0; i < m.getVertices().size(); i++) {
-			vertices[i * 3] = m.getVertices().get(i).x;
-			vertices[i * 3 + 1] = m.getVertices().get(i).y;
-			vertices[i * 3 + 2] = m.getVertices().get(i).z;
-		}
-		GeometryInfo geometryInfo = new GeometryInfo(GeometryInfo.TRIANGLE_ARRAY);
-		geometryInfo.setCoordinates(vertices);
-		int indices[] = new int[m.getTriangles().size() * 3];
-		for (int i = 0; i < m.getTriangles().size(); i++) {
-			for (int j = 0; j < 3; j++) {
-				indices[i * 3 + j] = m.getVertices().indexOf(
-						m.getTriangles().get(i).getPosition()[j]);
-			}
-		}
-		geometryInfo.setCoordinateIndices(indices);
-
-		NormalGenerator normalGenerator = new NormalGenerator();
-		normalGenerator.generateNormals(geometryInfo);
-
-		for (int i = 0; i < m.getVertices().size(); i++) {
-			m.getVertices().get(i)
-					.setNormalVector(geometryInfo.getNormals()[geometryInfo.getNormalIndices()[i]]);
-		}*/
 
 		calculateVertexNormals(m, inverseCurvature);
 		calculateVoronoiArea(m);
@@ -238,6 +244,11 @@ public class CurvatureCalculation {
 	 * uses average of per-face normals, weighted according to: Max, N.
 	 * "Weights for Computing Vertex Normals from Facet Normals," Journal of Graphics Tools, Vol. 4,
 	 * No. 2, 1999.
+	 * 
+	 * @param m
+	 *            model to calculate curvature for
+	 * @param inverseCurvature
+	 *            Invert curvature by inverting vertex normals
 	 */
 	private static void calculateVertexNormals(final Model m, boolean inverseCurvature) {
 		// Compute from faces
@@ -269,15 +280,6 @@ public class CurvatureCalculation {
 
 		ThreadPool.executeInPool(threads);
 
-		/*for (int i = 0; i < m.getTriangles().size(); i++) {
-			Triangle t = m.getTriangles().get(i);
-			if (Float.isNaN(t.getNormalVector().x) || Float.isNaN(t.getNormalVector().y)
-					|| Float.isNaN(t.getNormalVector().z)) {
-				System.out.println("Nomr is nan");
-			}
-			calculateVertexNormalsForTriangle(m.getTriangles().get(i));
-		};*/
-
 		for (Vertex v : m.getVertices()) {
 			v.getNormalVector().normalize();
 			if (inverseCurvature)
@@ -286,6 +288,12 @@ public class CurvatureCalculation {
 
 	}
 
+	/**
+	 * Calculate vertex normals for each vertex of triangle.
+	 * 
+	 * @param t
+	 *            Triangle
+	 */
 	static void calculateVertexNormalsForTriangle(final Triangle t) {
 		Vertex p0 = t.getPosition()[0];
 		Vertex p1 = t.getPosition()[1];
@@ -330,6 +338,9 @@ public class CurvatureCalculation {
 	 * 
 	 * Compute the area "belonging" to each vertex or each corner of a triangle (defined as Voronoi
 	 * area restricted to the 1-ring of a vertex, or to the triangle).
+	 * 
+	 * @param m
+	 *            Model to calculate voronoi area for
 	 */
 	private static void calculateVoronoiArea(final Model m) {
 		// Compute from faces
@@ -364,6 +375,12 @@ public class CurvatureCalculation {
 		ThreadPool.executeInPool(threads);
 	}
 
+	/**
+	 * Calculate voronoi area for triangle and its vertices
+	 * 
+	 * @param t
+	 *            triangle
+	 */
 	static void calculateVoronoiAreaForTriangle(Triangle t) {
 		// Edges
 		Vector3f e[] = new Vector3f[3];
@@ -474,7 +491,12 @@ public class CurvatureCalculation {
 		pdir[1].cross(new_norm, pdir[0]);
 	}
 
-	// Compute bounding sphere of the vertices.
+	/**
+	 * Compute bounding sphere of the vertices.
+	 * 
+	 * @param m
+	 *            model with vertices
+	 */
 	private static void need_bsphere(Model m) {
 		if (m.getVertices().size() == 0)
 			return;
@@ -506,7 +528,7 @@ public class CurvatureCalculation {
 	 * @param old_kv
 	 * @param new_u
 	 * @param new_v
-	 * @return
+	 * @return [new_ku, new_kuv, new_kv]
 	 */
 	private static float[] proj_curv(final Vector3f old_u, final Vector3f old_v, float old_ku,
 			float old_kuv, float old_kv, final Vector3f new_u, final Vector3f new_v) {
@@ -560,6 +582,14 @@ public class CurvatureCalculation {
 		new_v.sub(tmp);
 	}
 
+	/**
+	 * Calculate hue and saturation for curvature properties.
+	 * 
+	 * @param curvatures
+	 *            maps curvatures to vertices
+	 * @param m
+	 *            model needed to calculate hue saturation scale
+	 */
 	private static void setCurvatureHueSaturation(HashMap<Vertex, Curvature> curvatures, Model m) {
 		float cscale = 100.0f * typical_scale(curvatures, m);
 		cscale = cscale * cscale;

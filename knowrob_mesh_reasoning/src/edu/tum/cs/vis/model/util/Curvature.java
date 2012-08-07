@@ -14,6 +14,8 @@ import javax.vecmath.Vector3f;
 import edu.tum.cs.vis.model.uima.annotation.primitive.PrimitiveType;
 
 /**
+ * Class which represents a curvature property for vertex or triangle.
+ * 
  * @author Stefan Profanter
  * 
  */
@@ -24,9 +26,12 @@ public class Curvature {
 	 * https://en.wikipedia.org/wiki/HSL_and_HSV#From_HSV
 	 * 
 	 * @param h
+	 *            hue
 	 * @param s
+	 *            saturation
 	 * @param v
-	 * @return
+	 *            value
+	 * @return Color represented by HSV
 	 */
 	private static Color hsv2srgb(float h, float s, float v) {
 		// From FvD
@@ -60,25 +65,57 @@ public class Curvature {
 		}
 	}
 
+	/**
+	 * minimum principle direction
+	 */
 	private Vector3f		principleDirectionMin	= new Vector3f();
 
+	/**
+	 * maximum principle direction
+	 */
 	private Vector3f		principleDirectionMax	= new Vector3f();
 
+	/**
+	 * minimum curvature magnitude
+	 */
 	private float			curvatureMin			= 0;
+
+	/**
+	 * maximum curvature magnitude
+	 */
 	private float			curvatureMax			= 0;
 
+	/**
+	 * value between minimum and maximum curvature needed for curvature calculation
+	 */
 	private float			curvatureMinMax			= 0;
 
+	/**
+	 * resulting primitive type for curvature properties
+	 */
 	private PrimitiveType	primitiveType;
 
+	/**
+	 * resulting hue for curvature properties
+	 */
 	private float			hue;
+	/**
+	 * resulting saturation for curvature properties
+	 */
 	private float			saturation;
 
+	/**
+	 * get color for coloring model by curvature.
+	 * 
+	 * @return color by curvature
+	 */
 	public Color getColor() {
 		return hsv2srgb(hue, saturation, 1);
 	}
 
 	/**
+	 * get maximum curvature magnitude
+	 * 
 	 * @return the curvatureMax
 	 */
 	public float getCurvatureMax() {
@@ -86,6 +123,8 @@ public class Curvature {
 	}
 
 	/**
+	 * get minimum curvature magnitude
+	 * 
 	 * @return the curvatureMin
 	 */
 	public float getCurvatureMin() {
@@ -93,6 +132,8 @@ public class Curvature {
 	}
 
 	/**
+	 * get minMax curvature magnitude needed for curvature calculation
+	 * 
 	 * @return the curvatureMinMax
 	 */
 	public float getCurvatureMinMax() {
@@ -100,6 +141,8 @@ public class Curvature {
 	}
 
 	/**
+	 * Get hue for curvature values used for coloring model by curvature
+	 * 
 	 * @return the hue
 	 */
 	public float getHue() {
@@ -107,6 +150,8 @@ public class Curvature {
 	}
 
 	/**
+	 * Get primitive type which represents these curvature properties
+	 * 
 	 * @return the primitiveType
 	 */
 	public PrimitiveType getPrimitiveType() {
@@ -114,6 +159,8 @@ public class Curvature {
 	}
 
 	/**
+	 * Get principle direction of max curvature
+	 * 
 	 * @return the principleDirectionMax
 	 */
 	public Vector3f getPrincipleDirectionMax() {
@@ -121,6 +168,9 @@ public class Curvature {
 	}
 
 	/**
+	 * 
+	 * Get principle direction of min curvature
+	 * 
 	 * @return the principleDirectionMin
 	 */
 	public Vector3f getPrincipleDirectionMin() {
@@ -128,6 +178,8 @@ public class Curvature {
 	}
 
 	/**
+	 * Get saturation for curvature values used for coloring model by curvature
+	 * 
 	 * @return the saturation
 	 */
 	public float getSaturation() {
@@ -135,6 +187,8 @@ public class Curvature {
 	}
 
 	/**
+	 * Set maximum curvature magnitude
+	 * 
 	 * @param curvatureMax
 	 *            the curvatureMax to set
 	 */
@@ -143,6 +197,8 @@ public class Curvature {
 	}
 
 	/**
+	 * Set minimum curvature magnitude
+	 * 
 	 * @param curvatureMin
 	 *            the curvatureMin to set
 	 */
@@ -151,6 +207,8 @@ public class Curvature {
 	}
 
 	/**
+	 * Set min max curvature magnitude
+	 * 
 	 * @param curvatureMinMax
 	 *            the curvatureMinMax to set
 	 */
@@ -159,6 +217,8 @@ public class Curvature {
 	}
 
 	/**
+	 * set hue used for coloring model by curvature
+	 * 
 	 * @param hue
 	 *            the hue to set
 	 */
@@ -167,6 +227,8 @@ public class Curvature {
 	}
 
 	/**
+	 * set primitive type which represents these curvature properties
+	 * 
 	 * @param primitiveType
 	 *            the primitiveType to set
 	 */
@@ -175,6 +237,8 @@ public class Curvature {
 	}
 
 	/**
+	 * Set max principle direction
+	 * 
 	 * @param principleDirectionMax
 	 *            the principleDirectionMax to set
 	 */
@@ -183,6 +247,8 @@ public class Curvature {
 	}
 
 	/**
+	 * Set min principle direction
+	 * 
 	 * @param principleDirectionMin
 	 *            the principleDirectionMin to set
 	 */
@@ -191,6 +257,8 @@ public class Curvature {
 	}
 
 	/**
+	 * Set hue used for coloring model by curvature
+	 * 
 	 * @param saturation
 	 *            the saturation to set
 	 */

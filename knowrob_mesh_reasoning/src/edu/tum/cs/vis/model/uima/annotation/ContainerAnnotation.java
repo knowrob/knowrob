@@ -15,28 +15,45 @@ import javax.vecmath.Vector3f;
 import edu.tum.cs.vis.model.Model;
 
 /**
+ * Mesh annotation for container. A container is like a vessel where a bottom cap and walls are
+ * found.
+ * 
+ * 
  * @author Stefan Profanter
  * 
  */
-public class ContainerAnnotation extends MeshAnnotation {
+public class ContainerAnnotation extends MeshAnnotation<ContainerAnnotation> {
 
 	/**
-	 * 
+	 * auto generated
 	 */
 	private static final long	serialVersionUID	= 7483463728879308919L;
 
+	/**
+	 * Direction of container. Shows along generating line into direction, where the container is
+	 * open. Length of this vector is exactly containers height.
+	 */
 	private Vector3f			direction;
 
+	/**
+	 * total volume of container
+	 */
 	private float				volume;
 
 	/**
-	 * @param annotationColor
+	 * Constructor for a container
+	 * 
+	 * @param model
+	 *            parent model for annotation
 	 */
 	public ContainerAnnotation(Model model) {
 		super(ContainerAnnotation.class, model, new Color(27, 93, 27));
 	}
 
 	/**
+	 * Direction of container. Shows along generating line into direction, where the container is
+	 * open. Length of this vector is exactly containers height.
+	 * 
 	 * @return the direction
 	 */
 	public Vector3f getDirection() {
@@ -44,13 +61,18 @@ public class ContainerAnnotation extends MeshAnnotation {
 	}
 
 	/**
-	 * @return the direction
+	 * Direction of container. Shows along generating line into direction, where the container is
+	 * open. Length of this vector is exactly containers height as unscaled value.
+	 * 
+	 * @return the direction unscaled
 	 */
 	public Tuple3f getDirectionUnscaled() {
 		return model.getUnscaled(direction);
 	}
 
 	/**
+	 * Volume of container
+	 * 
 	 * @return the volume
 	 */
 	public float getVolume() {
@@ -58,6 +80,8 @@ public class ContainerAnnotation extends MeshAnnotation {
 	}
 
 	/**
+	 * Volume of container as unscaled value.
+	 * 
 	 * @return the volume
 	 */
 	public float getVolumeUnscaled() {
@@ -65,6 +89,9 @@ public class ContainerAnnotation extends MeshAnnotation {
 	}
 
 	/**
+	 * Set direction of container. Length should be height of the container and vector should point
+	 * into opening direction.
+	 * 
 	 * @param direction
 	 *            the direction to set
 	 */
@@ -73,6 +100,8 @@ public class ContainerAnnotation extends MeshAnnotation {
 	}
 
 	/**
+	 * Set volume of container
+	 * 
 	 * @param volume
 	 *            the volume to set
 	 */

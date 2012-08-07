@@ -20,12 +20,14 @@ import edu.tum.cs.vis.model.uima.annotation.primitive.PlaneAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 
 /**
+ * Control panel for plane annotation
+ * 
  * @author Stefan Profanter
  * 
  */
 public class PlaneAnnotationPanel extends AnnotationPanel<PlaneAnnotation> {
 	/**
-	 * 
+	 * auto generated
 	 */
 	private static final long	serialVersionUID	= -5897835617138930308L;
 
@@ -38,13 +40,25 @@ public class PlaneAnnotationPanel extends AnnotationPanel<PlaneAnnotation> {
 	 * Area coverage of selected annotation
 	 */
 	private final JTextField	txtAreaCov;
+	/**
+	 * Plane short vector of selected annotation
+	 */
 	private final JTextField	txtShort;
+	/**
+	 * Plane long vector of selected annotation
+	 */
 	private final JTextField	txtLong;
+
+	/**
+	 * Plane normal vector of selected annotation
+	 */
 	private final JTextField	txtNormal;
 
 	/**
-	 * @param annotationType
+	 * Creates new plane annotation panel
+	 * 
 	 * @param cas
+	 *            main mesh CAS
 	 */
 	public PlaneAnnotationPanel(MeshCas cas) {
 		super(PlaneAnnotation.class, cas);

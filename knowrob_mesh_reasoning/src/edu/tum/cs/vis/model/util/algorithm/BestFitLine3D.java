@@ -16,20 +16,41 @@ import org.ejml.simple.SimpleMatrix;
 import org.ejml.simple.SimpleSVD;
 
 /**
+ * Best fits a line to given points in 3D.
+ * 
  * @author Stefan Profanter
  * 
  */
 public class BestFitLine3D {
 
+	/**
+	 * Best fits a line to given points <tt>points</tt>. New line is represented by <tt>center</tt>
+	 * and <tt>direction</tt>
+	 * 
+	 * @param points
+	 *            List of points to fit line
+	 * @param dir
+	 *            normalized direction of best fit line
+	 * @param center
+	 *            center of best fit line
+	 */
 	public static void getBestFitLine(ArrayList<Point3f> points, Vector3f dir, Point3f center) {
 		getBestFitLine(points, dir, null, center);;
 	}
 
 	/**
-	 * dir already normalized
+	 * Best fits a line to given points <tt>points</tt>. New line is represented by <tt>center</tt>
+	 * and <tt>direction</tt>. Additionally you get perpendicular direction vector for perpendicular
+	 * line.
 	 * 
 	 * @param points
+	 *            List of points to fit line
 	 * @param dir
+	 *            normalized direction of best fit line
+	 * @param dirPerp
+	 *            normalized perpendicular direction to best fit line *
+	 * @param center
+	 *            center of best fit line
 	 */
 	public static void getBestFitLine(ArrayList<Point3f> points, Vector3f dir, Vector3f dirPerp,
 			Point3f center) {

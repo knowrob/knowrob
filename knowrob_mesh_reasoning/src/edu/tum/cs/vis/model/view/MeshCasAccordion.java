@@ -84,8 +84,6 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 		@SuppressWarnings("rawtypes")
 		final AnnotationPanel								component;
 
-		public int											annotationCount	= 0;
-
 		/**
 		 * Creates a new BarInfo
 		 * 
@@ -95,6 +93,8 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 		 *            The component that is the body of the Outlook Bar
 		 * @param cas
 		 *            Main CAS
+		 * @param annotationCount
+		 *            Count of annotations for this annotation type
 		 */
 		public BarInfo(Class<? extends DrawableAnnotation> annotationType,
 				@SuppressWarnings("rawtypes") AnnotationPanel component, MeshCas cas,
@@ -160,8 +160,13 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 			return component;
 		}
 
+		/**
+		 * update button label with new annotation count value
+		 * 
+		 * @param annotationCount
+		 *            new value for annotation count
+		 */
 		public void updateButtonLabel(int annotationCount) {
-			this.annotationCount = annotationCount;
 			String name = annotationType.getName();
 			if (name.endsWith("Annotation"))
 				name = name.substring(0, name.lastIndexOf("Annotation"));

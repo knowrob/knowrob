@@ -10,7 +10,6 @@ package edu.tum.cs.test;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.util.ArrayList;
 
 import javax.swing.WindowConstants;
 
@@ -18,22 +17,29 @@ import edu.tum.cs.vis.model.MeshReasoning;
 import edu.tum.cs.vis.model.parser.ModelParser;
 
 /**
+ * Class for simple batch loading of CAD models and showing mesh reasoning view. Load all models of
+ * a specified folder.
+ * 
  * @author Stefan Profanter
  * 
  */
 public class MeshReasoningBatchTest {
 
-	public static ArrayList<String>	files				= new ArrayList<String>();
-
-	public static int				currentWindowCount	= 0;
-
-	public static Object			monitor				= new Object();
-
-	public static int				skip				= 0;
-	public static int				currSkip			= 0;
+	/**
+	 * Currently shown mesh reasoning views to show only maximum 3 windows per time
+	 */
+	public static int		currentWindowCount	= 0;
 
 	/**
+	 * Monitor for multi threaded window opening
+	 */
+	public static Object	monitor				= new Object();
+
+	/**
+	 * Main entry point
+	 * 
 	 * @param args
+	 *            not used
 	 */
 	public static void main(String[] args) {
 		String folder = "models/batch/bowl/";
@@ -52,6 +58,13 @@ public class MeshReasoningBatchTest {
 		System.exit(0);
 	}
 
+	/**
+	 * Parse and show specified file
+	 * 
+	 * @param f
+	 *            File object to load
+	 * 
+	 */
 	public static void processFile(File f) {
 		if (ModelParser.findParser(f.getAbsolutePath()) == null)
 			return;
@@ -92,6 +105,14 @@ public class MeshReasoningBatchTest {
 
 	}
 
+	/**
+	 * Traverse recursively the given directory or process file if <tt>fileObject<tt> is a file.
+	 * 
+	 * @param fileObject
+	 *            Directory or file object
+	 * 
+	 * 
+	 */
 	public static void recursiveTraversal(File fileObject) {
 		if (fileObject.isDirectory()) {
 			File allFiles[] = fileObject.listFiles();
@@ -102,7 +123,5 @@ public class MeshReasoningBatchTest {
 			processFile(fileObject);
 		}
 	}
-
-	ArrayList<Thread>	threads	= new ArrayList<Thread>();
 
 }

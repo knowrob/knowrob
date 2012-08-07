@@ -33,6 +33,11 @@ import edu.tum.cs.vis.model.util.Triangle;
 import edu.tum.cs.vis.model.util.Vertex;
 
 /**
+ * 
+ * Mesh analyzer to assign each triangle the corresponding primitive type according to its curvature
+ * properties.
+ * 
+ * 
  * @author Stefan Profanter
  * 
  */
@@ -43,14 +48,35 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 	 */
 	private static Logger	logger			= Logger.getLogger(PrimitiveAnalyser.class);
 
+	/**
+	 * Tolerance in radiant between two surface normals of triangles to connect them as a single
+	 * plane
+	 */
 	private static double	PLANE_TOLERANCE	= 2f * Math.PI / 180f;
 
+	/**
+	 * Set primitive type of vertex
+	 * 
+	 * @param curvatures
+	 *            list of all curvature values for vertices
+	 * @param v
+	 *            vertex to analyze
+	 */
 	static void analyseVertex(HashMap<Vertex, Curvature> curvatures, Vertex v) {
 
 		Curvature c = curvatures.get(v);
 		c.setPrimitiveType(getPrimitiveType(curvatures, v));
 	}
 
+	/**
+	 * Detect primitive type for vertex by checking curvature properties.
+	 * 
+	 * @param curvatures
+	 *            list of curvatures for vertices
+	 * @param v
+	 *            vertex to analyze
+	 * @return primitive type of vertex
+	 */
 	private static PrimitiveType getPrimitiveType(HashMap<Vertex, Curvature> curvatures, Vertex v) {
 
 		Curvature c = curvatures.get(v);
@@ -65,30 +91,56 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 			return PrimitiveType.CONE_CONVEX;
 		else if (hue >= 75 * Math.PI / 180 && hue < 150 * Math.PI / 180
 				|| hue >= 230 * Math.PI / 180)
-			return PrimitiveType.SPHERE_CONCAV;
+			return PrimitiveType.SPHERE_CONCAVE;
 		else
-			return PrimitiveType.CONE_CONCAV;
+			return PrimitiveType.CONE_CONCAVE;
 	}
 
+	/**
+	 * Get primitive type for given property counts. The biggest number indicates the primitive type
+	 * 
+	 * @param planeCnt
+	 *            number of plane vertices for triangle
+	 * @param sphereConvexCnt
+	 *            number of convex sphere vertices for triangle
+	 * @param sphereConcaveCnt
+	 *            number of concave sphere vertices for triangle
+	 * @param coneConvexCnt
+	 *            number of convex cone vertices for triangle
+	 * @param coneConcaveCnt
+	 *            number of concave cone vertices for triangle
+	 * @return primitive type indicated by biggest number value
+	 */
 	private static PrimitiveType getTypeForCounts(int planeCnt, int sphereConvexCnt,
-			int sphereConcavCnt, int coneConvexCnt, int coneConcavCnt) {
+			int sphereConcaveCnt, int coneConvexCnt, int coneConcaveCnt) {
 		int max = Math.max(
 				planeCnt,
 				Math.max(sphereConvexCnt,
-						Math.max(sphereConcavCnt, Math.max(coneConvexCnt, coneConcavCnt))));
+						Math.max(sphereConcaveCnt, Math.max(coneConvexCnt, coneConcaveCnt))));
 
 		if (max == planeCnt) {
 			return PrimitiveType.PLANE;
 		} else if (max == sphereConvexCnt) {
 			return PrimitiveType.SPHERE_CONVEX;
-		} else if (max == sphereConcavCnt) {
-			return PrimitiveType.SPHERE_CONCAV;
+		} else if (max == sphereConcaveCnt) {
+			return PrimitiveType.SPHERE_CONCAVE;
 		} else if (max == coneConvexCnt) {
 			return PrimitiveType.CONE_CONVEX;
 		} else
-			return PrimitiveType.CONE_CONCAV;
+			return PrimitiveType.CONE_CONCAVE;
 	}
 
+	/**
+	 * Check if two plane annotations represent the same plane by comparing surface normal angle
+	 * between annotations
+	 * 
+	 * @param a1
+	 *            plane 1
+	 * @param a2
+	 *            plane 2
+	 * @return true if plane annotations should be combined into one
+	 */
+	@SuppressWarnings("rawtypes")
 	private static boolean isSamePlane(PrimitiveAnnotation a1, PrimitiveAnnotation a2) {
 		if (!(a1 instanceof PlaneAnnotation && a2 instanceof PlaneAnnotation))
 			return true;
@@ -96,6 +148,15 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 				((PlaneAnnotation) a2).getPlaneNormal());
 	}
 
+	/**
+	 * Check if angle between the given surface normals is within <tt>PLANE_TOLERANCE</tt>.
+	 * 
+	 * @param norm1
+	 *            surface normal 1
+	 * @param norm2
+	 *            surface normal 2
+	 * @return true if angle is within tolerance
+	 */
 	private static boolean planeAngleWithinTolerance(Vector3f norm1, Vector3f norm2) {
 		double dot = norm1.dot(norm2);
 		if (dot > 1.0) // due to floating point arithmetic
@@ -109,33 +170,53 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 		return (angle <= PLANE_TOLERANCE || angle >= Math.PI - PLANE_TOLERANCE);
 	}
 
+	/**
+	 * Map which maps a primitive type to a triangle
+	 */
 	private final HashMap<Triangle, PrimitiveType>	trianglePrimitiveTypeMap	= new HashMap<Triangle, PrimitiveType>();
 
+	/**
+	 * list of all vertices of cad model
+	 */
 	ArrayList<Vertex>								allVertices;
 
+	/**
+	 * list of all triangles of cad model
+	 */
 	ArrayList<Triangle>								allTriangles;
 
 	/**
-	 * Number of triangles already elaborated/processed. Used for indicating current process
+	 * Number of triangles already elaborated/processed. Used for indicating current progress
 	 */
 	final AtomicInteger								itemsElaborated				= new AtomicInteger(
 																						0);
 
+	/**
+	 * Analyse triangle for its primitive type
+	 * 
+	 * @param cas
+	 *            main cas
+	 * @param triangle
+	 *            triangle to analyze
+	 * @param alreadyInAnnotation
+	 *            set of already analyzed triangles
+	 */
 	protected void analyseTriangle(MeshCas cas, Triangle triangle,
 			HashSet<Triangle> alreadyInAnnotation) {
 		if (alreadyInAnnotation.contains(triangle))
 			return;
 
+		@SuppressWarnings("rawtypes")
 		PrimitiveAnnotation annotation;
 		PrimitiveType type = getTrianglePrimitiveType(cas.getCurvatures(), triangle);
 		if (type == PrimitiveType.PLANE)
 			annotation = new PlaneAnnotation(cas.getCurvatures(), cas.getModel());
-		else if (type == PrimitiveType.SPHERE_CONCAV || type == PrimitiveType.SPHERE_CONVEX)
+		else if (type == PrimitiveType.SPHERE_CONCAVE || type == PrimitiveType.SPHERE_CONVEX)
 			annotation = new SphereAnnotation(cas.getCurvatures(), cas.getModel(),
-					type == PrimitiveType.SPHERE_CONCAV);
+					type == PrimitiveType.SPHERE_CONCAVE);
 		else
 			annotation = new ConeAnnotation(cas.getCurvatures(), cas.getModel(),
-					type == PrimitiveType.CONE_CONCAV);
+					type == PrimitiveType.CONE_CONCAVE);
 
 		annotation.getMesh().getTriangles().add(triangle);
 		alreadyInAnnotation.add(triangle);
@@ -208,16 +289,39 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 		return "Primitive";
 	}
 
+	/**
+	 * Get primitive type of triangle
+	 * 
+	 * @param curvatures
+	 *            curvature property for each vertex
+	 * @param triangle
+	 *            triangle to analyze
+	 * @return primitive type for triangle
+	 */
 	private PrimitiveType getTrianglePrimitiveType(HashMap<Vertex, Curvature> curvatures,
 			Triangle triangle) {
 		return getTrianglePrimitiveType(curvatures, triangle, true);
 	}
 
+	/**
+	 * Get primitive type of triangle by optionally averaging over neighboring triangles. First
+	 * determines primitive type of triangle and then checks if neighboring triangles are of the
+	 * same type. If triangle is totally different then type of neighboring triangles is returned.
+	 * 
+	 * @param curvatures
+	 *            curvature property for each vertex
+	 * @param triangle
+	 *            triangle to analyze
+	 * @param checkNeighbors
+	 *            set to true if smoothing by neighbor triangles should be enabled
+	 * @return primitive type for triangle
+	 */
 	private PrimitiveType getTrianglePrimitiveType(HashMap<Vertex, Curvature> curvatures,
 			Triangle triangle, boolean checkNeighbors) {
 		if (!checkNeighbors && trianglePrimitiveTypeMap.containsKey(triangle))
 			return trianglePrimitiveTypeMap.get(triangle);
 
+		// determine type of triangle
 		int planeCnt = 0;
 		int sphereConvexCnt = 0;
 		int sphereConcavCnt = 0;
@@ -230,11 +334,11 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 				planeCnt++;
 			else if (c.getPrimitiveType() == PrimitiveType.SPHERE_CONVEX)
 				sphereConvexCnt++;
-			else if (c.getPrimitiveType() == PrimitiveType.SPHERE_CONCAV)
+			else if (c.getPrimitiveType() == PrimitiveType.SPHERE_CONCAVE)
 				sphereConcavCnt++;
 			else if (c.getPrimitiveType() == PrimitiveType.CONE_CONVEX)
 				coneConvexCnt++;
-			else if (c.getPrimitiveType() == PrimitiveType.CONE_CONCAV)
+			else if (c.getPrimitiveType() == PrimitiveType.CONE_CONCAVE)
 				coneConcavCnt++;
 		}
 
@@ -244,6 +348,7 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 						coneConcavCnt));
 
 		if (checkNeighbors) {
+			// smooth type by neighbors
 			for (Triangle t : triangle.getNeighbors()) {
 				PrimitiveType type = getTrianglePrimitiveType(curvatures, t, false);
 
@@ -251,11 +356,11 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 					planeCnt += 1;
 				else if (type == PrimitiveType.SPHERE_CONVEX)
 					sphereConvexCnt += 1;
-				else if (type == PrimitiveType.SPHERE_CONCAV)
+				else if (type == PrimitiveType.SPHERE_CONCAVE)
 					sphereConcavCnt += 1;
 				else if (type == PrimitiveType.CONE_CONVEX)
 					coneConvexCnt += 1;
-				else if (type == PrimitiveType.CONE_CONCAV)
+				else if (type == PrimitiveType.CONE_CONCAVE)
 					coneConcavCnt += 1;
 			}
 		}
@@ -268,11 +373,13 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 	/* (non-Javadoc)
 	 * @see edu.tum.cs.vis.model.uima.analyser.MeshAnalyser#processStart(edu.tum.cs.vis.model.uima.cas.MeshCas)
 	 */
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void processStart(final MeshCas cas) {
 		allVertices = cas.getModel().getVertices();
 		allTriangles = cas.getModel().getTriangles();
 
+		// set primitive type for all vertices
 		List<Callable<Void>> threads = new LinkedList<Callable<Void>>();
 
 		final int interval = 500;
@@ -296,6 +403,7 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 
 		ThreadPool.executeInPool(threads);
 
+		// set primitive type for all triangles
 		final HashSet<Triangle> alreadyInAnnotation = new HashSet<Triangle>();
 
 		for (Triangle t : allTriangles) {
@@ -316,6 +424,7 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 					continue;
 				}
 
+				@SuppressWarnings("unchecked")
 				HashSet<PrimitiveAnnotation> neighborAnnotations = pa.getNeighborAnnotations(cas,
 						PrimitiveAnnotation.class);
 				if (neighborAnnotations.size() > 0 && a instanceof ConeAnnotation
@@ -364,17 +473,18 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 			if (a instanceof PrimitiveAnnotation) {
 				PrimitiveAnnotation pa = (PrimitiveAnnotation) a;
 
+				@SuppressWarnings("unchecked")
 				HashSet<PrimitiveAnnotation> neighborAnnotations = pa.getNeighborAnnotations(cas,
 						PrimitiveAnnotation.class);
 				for (PrimitiveAnnotation a1 : neighborAnnotations) {
 					if (a1.getClass() != pa.getClass())
 						continue;
 					if (pa instanceof ConeAnnotation
-							&& ((ConeAnnotation) pa).isConcav() != ((ConeAnnotation) a1).isConcav()) {
+							&& ((ConeAnnotation) pa).isConcave() != ((ConeAnnotation) a1).isConcave()) {
 						continue;
 					} else if (pa instanceof SphereAnnotation
-							&& ((SphereAnnotation) pa).isConcav() != ((SphereAnnotation) a1)
-									.isConcav()) {
+							&& ((SphereAnnotation) pa).isConcave() != ((SphereAnnotation) a1)
+									.isConcave()) {
 						continue;
 					}
 					synchronized (cas.getAnnotations()) {

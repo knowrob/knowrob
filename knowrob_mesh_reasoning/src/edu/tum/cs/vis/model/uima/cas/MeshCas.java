@@ -34,6 +34,7 @@ public class MeshCas extends JCas implements Serializable {
 	/**
 	 * Log4J Logger
 	 */
+	@SuppressWarnings("unused")
 	private static Logger						logger				= Logger.getLogger(MeshCas.class);
 
 	/**
@@ -50,6 +51,9 @@ public class MeshCas extends JCas implements Serializable {
 	 */
 	private boolean								drawMesh			= true;
 
+	/**
+	 * Maps curvature property to each vertex of mesh
+	 */
 	private final HashMap<Vertex, Curvature>	curvatures			= new HashMap<Vertex, Curvature>();
 
 	/**
@@ -96,7 +100,7 @@ public class MeshCas extends JCas implements Serializable {
 	 *            annotation must contain this triangle
 	 * @return the found annotation or null
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public <T extends MeshAnnotation> T findAnnotation(Class<T> clazz, Triangle p) {
 		for (Annotation a : getAnnotations()) {
 			if (!(a instanceof MeshAnnotation))
@@ -116,7 +120,7 @@ public class MeshCas extends JCas implements Serializable {
 	 *            Type of the annotations to find
 	 * @return the found annotations or empty
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public <T extends MeshAnnotation> HashSet<T> findAnnotations(Class<T> clazz) {
 		HashSet<T> an = new HashSet<T>();
 		for (Annotation a : getAnnotations()) {
@@ -130,15 +134,29 @@ public class MeshCas extends JCas implements Serializable {
 		return an;
 	}
 
+	/**
+	 * Get curvature property for vertex <tt>v</tt>
+	 * 
+	 * @param v
+	 *            Vertex for which curvature is needed
+	 * @return curvature properties or null if none defined
+	 */
 	public Curvature getCurvature(Vertex v) {
 		return curvatures.get(v);
 	}
 
+	/**
+	 * Get vertex curvature mapping.
+	 * 
+	 * @return map for vertex to curvature
+	 */
 	public HashMap<Vertex, Curvature> getCurvatures() {
 		return curvatures;
 	}
 
 	/**
+	 * Get parent model of mesh
+	 * 
 	 * @return the model
 	 */
 	public Model getModel() {
@@ -146,17 +164,29 @@ public class MeshCas extends JCas implements Serializable {
 	}
 
 	/**
+	 * Should mesh be drawn or not
+	 * 
 	 * @return the drawMesh
 	 */
 	public boolean isDrawMesh() {
 		return drawMesh;
 	}
 
+	/**
+	 * Set curvature property for given vertex. Overwrites existing one for vertex.
+	 * 
+	 * @param v
+	 *            Vertex to which the curvature property should be assigned
+	 * @param c
+	 *            curvature property
+	 */
 	public void setCurvature(Vertex v, Curvature c) {
 		curvatures.put(v, c);
 	}
 
 	/**
+	 * Should mesh be drawn (be visible) or not
+	 * 
 	 * @param drawMesh
 	 *            the drawMesh to set
 	 */
@@ -165,6 +195,8 @@ public class MeshCas extends JCas implements Serializable {
 	}
 
 	/**
+	 * Set parent model of mesh.
+	 * 
 	 * @param model
 	 *            the model to set
 	 */

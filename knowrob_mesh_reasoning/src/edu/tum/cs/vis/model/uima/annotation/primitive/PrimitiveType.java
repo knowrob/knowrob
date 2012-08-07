@@ -8,10 +8,32 @@
 package edu.tum.cs.vis.model.uima.annotation.primitive;
 
 /**
+ * Enum representing primitive types for vertices and triangles according to its curvature
+ * properties.
+ * 
  * @author Stefan Profanter
  * 
  */
 public enum PrimitiveType {
-	PLANE, SPHERE_CONVEX, SPHERE_CONCAV, CONE_CONVEX, CONE_CONCAV
+	/**
+	 * Flat face
+	 */
+	PLANE,
+	/**
+	 * convex sphere
+	 */
+	SPHERE_CONVEX,
+	/**
+	 * concave sphere
+	 */
+	SPHERE_CONCAVE,
+	/**
+	 * convex cone
+	 */
+	CONE_CONVEX,
+	/**
+	 * concave cone
+	 */
+	CONE_CONCAVE
 
 }

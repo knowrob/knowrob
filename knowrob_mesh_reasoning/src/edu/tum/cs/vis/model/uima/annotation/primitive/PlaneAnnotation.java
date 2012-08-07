@@ -35,13 +35,28 @@ import edu.tum.cs.vis.model.util.algorithm.BestFitRectangle2D;
  * @author Stefan Profanter
  * 
  */
-public class PlaneAnnotation extends PrimitiveAnnotation {
+public class PlaneAnnotation extends PrimitiveAnnotation<PlaneAnnotation> {
 
 	/**
-	 * 
+	 * auto generated
 	 */
 	private static final long	serialVersionUID	= 7758656289829843165L;
 
+	/**
+	 * Projects 3d points into 2d coordinate system perpendicular to <tt>normalVector</tt>.
+	 * 
+	 * @param vertices
+	 *            Vertices in 3D to reproject
+	 * @param normalVector
+	 *            Normal vector of resulting 2D coordinate system
+	 * @param centroid
+	 *            centroid of all vertices
+	 * @param v
+	 *            resulting v axis of 2D coordinate system
+	 * @param u
+	 *            resulting u axis of 2D coordinate system
+	 * @return list of 2D Points where each vertex is projected into u-v orthonormal basis
+	 */
 	private static Point2f[] projectPointsInto2D(HashMap<Vertex, Float> vertices,
 			Vector3f normalVector, Vector3f centroid, Vector3f v, Vector3f u) {
 
@@ -77,17 +92,38 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 
 	}
 
+	/**
+	 * surface normal of plane
+	 */
 	private final Vector3f	planeNormal	= new Vector3f();
+
+	/**
+	 * centroid of plane
+	 */
 	private Vector3f		centroid	= new Vector3f();
 
+	/**
+	 * length and direction of plane short side
+	 */
 	private final Vector3f	shortSide	= new Vector3f();
 
+	/**
+	 * length and direction of plane long side
+	 */
 	private final Vector3f	longSide	= new Vector3f();
 
+	/**
+	 * the 4 corners of plane
+	 */
 	private final Point3f	corner[]	= new Point3f[4];
 
 	/**
-	 * @param annotationColor
+	 * Creates a new plane annotation.
+	 * 
+	 * @param curvatures
+	 *            Map of curvatures for vertices
+	 * @param model
+	 *            parent model
 	 */
 	public PlaneAnnotation(HashMap<Vertex, Curvature> curvatures, Model model) {
 		super(PlaneAnnotation.class, curvatures, model, new Color(250, 200, 255));
@@ -205,6 +241,8 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
+	 * Get centroid of plane
+	 * 
 	 * @return the centroid
 	 */
 	public Vector3f getCentroid() {
@@ -212,6 +250,8 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
+	 * Get centroid of plane at unscaled position
+	 * 
 	 * @return the centroid
 	 */
 	public Tuple3f getCentroidUnscaled() {
@@ -219,6 +259,8 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
+	 * Get plane corners
+	 * 
 	 * @return the corner
 	 */
 	public Point3f[] getCorner() {
@@ -227,6 +269,8 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
+	 * Get unsaled plane corners
+	 * 
 	 * @return the corner
 	 */
 	public Tuple3f[] getCornerUnscaled() {
@@ -235,6 +279,8 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
+	 * Get vector (length, direction) of long side.
+	 * 
 	 * @return the longSide
 	 */
 	public Vector3f getLongSide() {
@@ -242,6 +288,8 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
+	 * Get unscaled vector (length, direction) of long side.
+	 * 
 	 * @return the longSide
 	 */
 	public Vector3f getLongSideUnscaled() {
@@ -249,6 +297,8 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
+	 * Get plane normal
+	 * 
 	 * @return the planeNormal
 	 */
 	public Vector3f getPlaneNormal() {
@@ -256,6 +306,7 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
+	 * Get pose matrix for plane.
 	 * 
 	 * @return 4x4 pose matrix of the plane relative to the object centroid
 	 */
@@ -300,6 +351,8 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
+	 * Get vector (length, direction) of short side.
+	 * 
 	 * @return the shortSide
 	 */
 	public Vector3f getShortSide() {
@@ -307,12 +360,20 @@ public class PlaneAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
+	 * Get unscaled vector (length, direction) of long side.
+	 * 
 	 * @return the shortSide
 	 */
 	public Vector3f getShortSideUnscaled() {
 		return model.getUnscaled(shortSide);
 	}
 
+	/**
+	 * Recalculate short and long side vectors and corner positions for given vertices.
+	 * 
+	 * @param vertices
+	 *            Vertices of 3D plane
+	 */
 	private void updateFeatures(HashMap<Vertex, Float> vertices) {
 		// Find the 2D minimal bounding box
 

@@ -17,22 +17,32 @@ import java.util.Stack;
 
 import javax.vecmath.Point2f;
 
-/*************************************************************************
- * 
+/**
  * Create points from standard input and compute the convex hull using Graham scan algorithm.
  * 
  * May be floating-point issues if x- and y-coordinates are not integers.
  * 
  * Source: http://algs4.cs.princeton.edu/99hull/
  * 
- *************************************************************************/
-
+ * @author Stefan Profanter
+ * 
+ */
 public class GrahamScan {
-	/** compare other points relative to polar angle (between 0 and 2pi) they make with this Point */
+	/**
+	 * compare other points relative to polar angle (between 0 and 2pi) they make with this Point
+	 **/
 	private class PolarOrder implements Comparator<Point2f> {
-
+		/**
+		 * reference point
+		 */
 		private final Point2f	refPoint;
 
+		/**
+		 * default constructor
+		 * 
+		 * @param refPoint
+		 *            ref point data
+		 */
 		public PolarOrder(Point2f refPoint) {
 			this.refPoint = refPoint;
 		}
@@ -65,6 +75,9 @@ public class GrahamScan {
 	/** compare other points relative to polar angle (between 0 and 2pi) they make with this Point */
 	private class YOrder implements Comparator<Point2f> {
 
+		/**
+		 * Default constructor
+		 */
 		public YOrder() {}
 
 		@Override
@@ -77,8 +90,17 @@ public class GrahamScan {
 		}
 	}
 
-	// is a->b->c a counter-clockwise turn?
-	// -1 if clockwise, +1 if counter-clockwise, 0 if collinear
+	/**
+	 * is a->b->c a counter-clockwise turn?
+	 * 
+	 * @param a
+	 *            point a
+	 * @param b
+	 *            point b
+	 * @param c
+	 *            point c
+	 * @return -1 if clockwise, +1 if counter-clockwise, 0 if collinear
+	 **/
 	public static int ccw(Point2f a, Point2f b, Point2f c) {
 		double area2 = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
 		if (area2 < 0)
@@ -89,8 +111,17 @@ public class GrahamScan {
 			return 0;
 	}
 
+	/**
+	 * resulting convex hull
+	 */
 	private final Stack<Point2f>	hull	= new Stack<Point2f>();
 
+	/**
+	 * Main graham scan algorithm
+	 * 
+	 * @param pts
+	 *            base points for graham scan
+	 */
 	public GrahamScan(Point2f[] pts) {
 
 		// defensive copy
@@ -138,7 +169,11 @@ public class GrahamScan {
 		assert isConvex();
 	}
 
-	// return extreme points on convex hull in counterclockwise order as an Iterable
+	/**
+	 * return extreme points on convex hull in counterclockwise order as an Iterable
+	 * 
+	 * @return extreme points
+	 */
 	public ArrayList<Point2f> hull() {
 		ArrayList<Point2f> s = new ArrayList<Point2f>();
 		for (Point2f p : hull)
@@ -146,7 +181,11 @@ public class GrahamScan {
 		return s;
 	}
 
-	// check that boundary of hull is strictly convex
+	/**
+	 * check that boundary of hull is strictly convex
+	 * 
+	 * @return true if hull has more than 2 points
+	 */
 	private boolean isConvex() {
 		int N = hull.size();
 		if (N <= 2)

@@ -28,6 +28,10 @@ import edu.tum.cs.vis.model.util.ThreadPool;
 import edu.tum.cs.vis.model.util.Triangle;
 
 /**
+ * Mesh analyzer for detecting containers based on previously found primitive annotations. Uses
+ * already found primitive annotations to detect containers and then create new container
+ * annotations on mesh reasoning object.
+ * 
  * @author Stefan Profanter
  * 
  */
@@ -38,22 +42,35 @@ public class ContainerAnalyser extends MeshAnalyser {
 	 */
 	private static Logger	logger	= Logger.getLogger(ContainerAnalyser.class);
 
-	static void checkConcavAnnotationCone(MeshCas cas, ConeAnnotation an,
-			HashSet<PrimitiveAnnotation> annotations) {
+	/**
+	 * Check if given cone annotation represents a container by checking if cone annotation has
+	 * either a bottom cap or top cap
+	 * 
+	 * @param cas
+	 *            main mesh cas
+	 * @param an
+	 *            concave cone annotation to check if it is a container annotation
+	 * @param annotations
+	 *            list of all primitive annotations of object
+	 */
+	static void checkConcaveAnnotationCone(MeshCas cas, ConeAnnotation an,
+			@SuppressWarnings("rawtypes") HashSet<PrimitiveAnnotation> annotations) {
 
+		// expected areas of top and bottom cap
 		float areaOfCapSmall = (float) (Math.pow(an.getRadiusSmall(), 2) * Math.PI);
 		float areaOfCapLarge = (float) (Math.pow(an.getRadiusLarge(), 2) * Math.PI);
 		float heightHalf = an.getDirection().length();
 
-		Point3f p1 = new Point3f(an.getCentroid());
-		p1.add(an.getDirection());
+		// get two points to create a ray aligned to cone direction
+		Point3f topCapCenter = new Point3f(an.getCentroid());
+		topCapCenter.add(an.getDirection());
 
-		Point3f p2 = new Point3f(an.getCentroid());
-		// p2.sub(d);
+		Point3f centroid = new Point3f(an.getCentroid());
 
 		boolean hasTopCap = false;
 		boolean hasBottomCap = false;
 
+		// previous propAbs value
 		float prevPropAbs = Float.MAX_VALUE;
 
 		PlaneAnnotation capAnnotation = null;
@@ -64,8 +81,9 @@ public class ContainerAnalyser extends MeshAnalyser {
 
 				Point3f intersect = new Point3f();
 				boolean isIntersect = false;
+				// Get triangle which intersects ray between centroid and topCapCenter
 				for (Triangle t : pa.getMesh().getTriangles()) {
-					if (t.intersectsRay(p1, p2, intersect)) {
+					if (t.intersectsRay(topCapCenter, centroid, intersect)) {
 						isIntersect = true;
 						break;
 					}
@@ -83,20 +101,19 @@ public class ContainerAnalyser extends MeshAnalyser {
 
 				float propAbs = Math.abs(1f - proportion);
 
-				// System.out.println("abs: " + propAbs + " prev: " + prevPropAbs);
-
 				if (propAbs > 0.3 || propAbs > prevPropAbs)
 					continue; // plane isn't at the top or bottom of the cylinder or is not as near
 								// as previous found
 
 				if (midToIntersect.dot(an.getDirection()) > 0) {
-					// use top
+					// is top
 					if (pa.getArea() / areaOfCapSmall > 0.7) {
 						hasTopCap = true;
 						capAnnotation = pa;
 						prevPropAbs = propAbs;
 					}
 				} else {
+					// is bottom
 					if (pa.getArea() / areaOfCapLarge > 0.7) {
 						hasBottomCap = true;
 						capAnnotation = pa;
@@ -109,6 +126,7 @@ public class ContainerAnalyser extends MeshAnalyser {
 			}
 		}
 		if (hasBottomCap || hasTopCap) {
+			// it is container, so create annotation
 			ContainerAnnotation ca = new ContainerAnnotation(cas.getModel());
 			ca.getMesh().getTriangles().addAll(an.getMesh().getTriangles());
 			ca.getMesh().getTriangles().addAll(capAnnotation.getMesh().getTriangles());
@@ -126,10 +144,13 @@ public class ContainerAnalyser extends MeshAnalyser {
 	}
 
 	/**
-	 * Number of triangles already elaborated/processed. Used for indicating current process
+	 * Number of triangles already elaborated/processed. Used for indicating current progress
 	 */
 	final AtomicInteger	itemsElaborated		= new AtomicInteger(0);
 
+	/**
+	 * maximum items to elaborate. Used for indicating current progress
+	 */
 	private int			maxItemsToElaborate	= 0;
 
 	/* (non-Javadoc)
@@ -155,23 +176,26 @@ public class ContainerAnalyser extends MeshAnalyser {
 	public void processStart(final MeshCas cas) {
 		List<Callable<Void>> threads = new LinkedList<Callable<Void>>();
 
+		@SuppressWarnings("rawtypes")
 		final HashSet<PrimitiveAnnotation> annotations = cas
 				.findAnnotations(PrimitiveAnnotation.class);
 
-		for (final MeshAnnotation a : annotations) {
-			if (a instanceof ConeAnnotation && ((ConeAnnotation) a).isConcav()) {
+		for (@SuppressWarnings("rawtypes")
+		final MeshAnnotation a : annotations) {
+			if (a instanceof ConeAnnotation && ((ConeAnnotation) a).isConcave()) {
 				maxItemsToElaborate++;
 				threads.add(new Callable<Void>() {
 
 					@Override
 					public Void call() throws Exception {
-						checkConcavAnnotationCone(cas, (ConeAnnotation) a, annotations);
+						checkConcaveAnnotationCone(cas, (ConeAnnotation) a, annotations);
 
 						itemsElaborated.incrementAndGet();
 						return null;
 					}
 				});
-			} // TODO Add container finding for half-spheres or rounded boxes or simple boxes
+			}
+			// TODO Add container finding for half-spheres or rounded boxes or simple boxes
 		}
 
 		ThreadPool.executeInPool(threads);

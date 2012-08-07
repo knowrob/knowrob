@@ -20,13 +20,15 @@ import edu.tum.cs.vis.model.uima.annotation.primitive.ConeAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 
 /**
+ * Control panel for cone annotation.
+ * 
  * @author Stefan Profanter
  * 
  */
 public class ConeAnnotationPanel extends AnnotationPanel<ConeAnnotation> {
 
 	/**
-	 * 
+	 * auto generated
 	 */
 	private static final long	serialVersionUID	= -4899042762344011422L;
 
@@ -54,8 +56,10 @@ public class ConeAnnotationPanel extends AnnotationPanel<ConeAnnotation> {
 	private final JTextField	txtHeight;
 
 	/**
-	 * @param annotationType
+	 * Creates new cone annotation panel
+	 * 
 	 * @param cas
+	 *            main mesh cas
 	 */
 	public ConeAnnotationPanel(MeshCas cas) {
 		super(ConeAnnotation.class, cas);

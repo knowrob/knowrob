@@ -20,13 +20,15 @@ import edu.tum.cs.vis.model.uima.annotation.primitive.SphereAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 
 /**
+ * Control panel for sphere annotation.
+ * 
  * @author Stefan Profanter
  * 
  */
 public class SphereAnnotationPanel extends AnnotationPanel<SphereAnnotation> {
 
 	/**
-	 * 
+	 * auto generated
 	 */
 	private static final long	serialVersionUID	= -7784059552068531420L;
 
@@ -45,8 +47,10 @@ public class SphereAnnotationPanel extends AnnotationPanel<SphereAnnotation> {
 	private final JTextField	txtRadius;
 
 	/**
-	 * @param annotationType
+	 * Creates new sphere control panel
+	 * 
 	 * @param cas
+	 *            main mesh CAS
 	 */
 	public SphereAnnotationPanel(MeshCas cas) {
 		super(SphereAnnotation.class, cas);

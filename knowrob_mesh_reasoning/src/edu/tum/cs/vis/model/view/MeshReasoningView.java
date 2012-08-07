@@ -48,10 +48,28 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		KeyListener {
 
 	/**
-	 * 
+	 * auto generated
 	 */
 	private static final long	serialVersionUID	= 984696039698156574L;
 
+	/**
+	 * Draw a cone or cylinder with given properties on graphics context
+	 * 
+	 * @param g
+	 *            graphics context
+	 * @param sides
+	 *            number of sides to use (indicates the level of detail to draw cone)
+	 * @param r1
+	 *            bottom radius
+	 * @param r2
+	 *            top radius
+	 * @param h
+	 *            height
+	 * @param top
+	 *            draw top cap
+	 * @param bottom
+	 *            draw bottom cap
+	 */
 	public static void drawCylinder(PGraphics g, int sides, float r1, float r2, float h,
 			boolean top, boolean bottom) {
 		float angle = (float) (2 * Math.PI / sides);
@@ -103,13 +121,30 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	 */
 	private final Color								bgcolorWhite		= new Color(255, 255, 255);
 
+	/**
+	 * Should background be white
+	 */
 	private boolean									backgroundWhite		= false;
+	/**
+	 * draw normals for each vertex?
+	 */
 	private boolean									drawVertexNormals	= false;
+	/**
+	 * draw curvature properties for each vertex?
+	 */
 	private boolean									drawVertexCurvature	= false;
 
+	/**
+	 * draw voronoi area for each vertex?
+	 */
 	private boolean									drawVoronoiArea		= false;
-
+	/**
+	 * Select only nearest triangle or all intersecting with mouse ray?
+	 */
 	private boolean									selectNearestOnly	= true;
+	/**
+	 * draw bounding box for each group?
+	 */
 	private boolean									drawBoundingBox		= false;
 
 	/**
@@ -130,12 +165,12 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	/**
 	 * current scale factor
 	 */
-
 	private float									modelScale			= 1f;
 
+	/**
+	 * User can manually scale model by pressing '+' or '-'
+	 */
 	private float									userScale			= 30f;
-
-	public static int								testIdx				= 0;
 
 	/**
 	 * Path where to save image if user clicks on "save image". Will be evaluated in draw method
@@ -150,6 +185,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	/**
 	 * List of selected annotations (annotations which contain one of selectedTriangles)
 	 * */
+	@SuppressWarnings("rawtypes")
 	private final HashSet<MeshAnnotation>			selectedAnnotations	= new HashSet<MeshAnnotation>();
 
 	/**
@@ -157,13 +193,22 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	 */
 	private MeshReasoningViewControl				control				= null;
 
-	public void addSelectedAnnotation(MeshAnnotation a) {
+	/**
+	 * Add annotation to selected annotations
+	 * 
+	 * @param a
+	 *            annotation to add
+	 */
+	public void addSelectedAnnotation(@SuppressWarnings("rawtypes") MeshAnnotation a) {
 		synchronized (selectedAnnotations) {
 			selectedAnnotations.add(a);
 		}
 		control.showSelectedAnnotation(selectedAnnotations);
 	};
 
+	/**
+	 * Remove / unselect all selected annotations
+	 */
 	public void clearSelectedAnnotations() {
 		synchronized (selectedAnnotations) {
 			selectedAnnotations.clear();
@@ -190,23 +235,6 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		stroke(0, 0, 125);
 		line(0, 0, 0, 0, 0, 1);
 
-		/*strokeWeight(5);
-		stroke(255, 255, 0);
-
-		synchronized (rayStart) {
-			line(rayStart.x, rayStart.y, rayStart.z, rayEnd.x, rayEnd.y, rayEnd.z);
-		}
-		pushMatrix();
-
-		translate(intersect.x, intersect.y, intersect.z);
-		noStroke();
-		scale(0.1f);
-		fill(0, 0, 255);
-		sphere(1);
-		popMatrix();
-
-		fill(127);*/
-
 		Vector3f camPos = new Vector3f(cam.getPosition());
 
 		lights();
@@ -231,7 +259,8 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 
 		synchronized (selectedAnnotations) {
 
-			for (MeshAnnotation ma : selectedAnnotations) {
+			for (@SuppressWarnings("rawtypes")
+			MeshAnnotation ma : selectedAnnotations) {
 				ma.getMesh().drawTriangles(
 						g,
 						selectedAnnotations.size() > 1 ? new Color(255, 125, 0, 200) : new Color(
@@ -239,9 +268,11 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 			}
 
 			if (selectedAnnotations.size() == 1) {
+				@SuppressWarnings("rawtypes")
 				MeshAnnotation a = selectedAnnotations.iterator().next();
 
 				if (a instanceof PrimitiveAnnotation) {
+					@SuppressWarnings("rawtypes")
 					PrimitiveAnnotation an = (PrimitiveAnnotation) a;
 
 					an.drawPrimitiveAnnotation(g);
@@ -250,18 +281,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 			}
 
 		}
-		/*	for (MeshCas c : casList) {
-				g.stroke(41, 120, 37);
-				if (c.getModel() != null)
-					for (Triangle t : c.getModel().getTriangles()) {
-						Vector3f n = (Vector3f) t.getNormalVector().clone();
-						n.scale(-0.1f);
-						g.line(t.getCentroid().x, t.getCentroid().y, t.getCentroid().z,
-								t.getCentroid().x + n.x, t.getCentroid().y + n.y, t.getCentroid().z
-										+ n.z);
-					}
-			}
-		*/
+
 		if (drawVertexNormals || drawVertexCurvature || drawVoronoiArea) {
 			g.strokeWeight(2f);
 			for (MeshCas c : casList) {
@@ -337,15 +357,27 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		return control;
 	}
 
+	/**
+	 * get current cam rotation
+	 * 
+	 * @return rotation for each axis
+	 */
 	public float[] getRotation() {
 		return cam.getRotations();
 	}
 
+	/**
+	 * get current model scale
+	 * 
+	 * @return model scale
+	 */
 	public float getScale() {
 		return modelScale;
 	}
 
 	/**
+	 * Should background be drawn white?
+	 * 
 	 * @return the backgroundWhite
 	 */
 	public boolean isBackgroundWhite() {
@@ -353,6 +385,8 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	}
 
 	/**
+	 * Should bounding box be drawn for each group?
+	 * 
 	 * @return the drawBoundingBox
 	 */
 	public boolean isDrawBoundingBox() {
@@ -360,6 +394,8 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	}
 
 	/**
+	 * Should curvature properties for each vertex be drawn?
+	 * 
 	 * @return the drawVertexCurvature
 	 */
 	public boolean isDrawVertexCurvature() {
@@ -367,6 +403,8 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	}
 
 	/**
+	 * Should vertex normals be drawn
+	 * 
 	 * @return the drawVertexNormals
 	 */
 	public boolean isDrawVertexNormals() {
@@ -374,6 +412,8 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	}
 
 	/**
+	 * Should voronoi area be drawn?
+	 * 
 	 * @return the drawVoronoiArea
 	 */
 	public boolean isDrawVoronoiArea() {
@@ -381,6 +421,8 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	}
 
 	/**
+	 * Should only the nearest triangle or all triangles intersecting mouse ray be selected?
+	 * 
 	 * @return the selectNearestOnly
 	 */
 	public boolean isSelectNearestOnly() {
@@ -445,7 +487,8 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 			ArrayList<IntersectedTriangle> newSelected = new ArrayList<IntersectedTriangle>();
 			for (IntersectedTriangle p : selectedTriangles) {
 				synchronized (selectedAnnotations) {
-					for (MeshAnnotation ma : selectedAnnotations)
+					for (@SuppressWarnings("rawtypes")
+					MeshAnnotation ma : selectedAnnotations)
 						if (ma.meshContainsTriangle(p.t)) {
 							newSelected.add(p);
 						}
@@ -519,6 +562,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 			for (Annotation a : c.getAnnotations()) {
 				if (!(a instanceof DrawableAnnotation))
 					continue;
+				@SuppressWarnings("rawtypes")
 				MeshAnnotation ma = (MeshAnnotation) a;
 				if (!ma.isDrawAnnotation())
 					continue; // Skip not visible annotations
@@ -536,6 +580,8 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	}
 
 	/**
+	 * Set to true if background should be white
+	 * 
 	 * @param backgroundWhite
 	 *            the backgroundWhite to set
 	 */
@@ -554,6 +600,8 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	}
 
 	/**
+	 * Sets control panel for this view
+	 * 
 	 * @param control
 	 *            the control to set
 	 */
@@ -562,6 +610,8 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	}
 
 	/**
+	 * Should bounding box be drawn for each group?
+	 * 
 	 * @param drawBoundingBox
 	 *            the drawBoundingBox to set
 	 */
@@ -569,6 +619,12 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		this.drawBoundingBox = drawBoundingBox;
 	}
 
+	/**
+	 * Should model colored by curvature?
+	 * 
+	 * @param drawCurvatureColor
+	 *            true if color by curvature
+	 */
 	public void setDrawCurvatureColor(boolean drawCurvatureColor) {
 
 		for (MeshCas c : casList) {
@@ -582,6 +638,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	}
 
 	/**
+	 * 
 	 * @param drawVertexCurvature
 	 *            the drawVertexCurvature to set
 	 */
@@ -605,10 +662,26 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		this.drawVoronoiArea = drawVoronoiArea;
 	}
 
+	/**
+	 * Set manual rotation of camera
+	 * 
+	 * @param pitch
+	 *            rotation around x
+	 * @param yaw
+	 *            rotation around y
+	 * @param roll
+	 *            rotation around z
+	 */
 	public void setManualRotation(float pitch, float yaw, float roll) {
 		cam.setRotations(pitch, yaw, roll);
 	}
 
+	/**
+	 * Set model scale to scale model manually
+	 * 
+	 * @param modelScale
+	 *            new scale factor
+	 */
 	public void setScale(float modelScale) {
 		this.modelScale = modelScale;
 	}

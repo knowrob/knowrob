@@ -446,7 +446,7 @@ annotation_sphere_is_concave(PartInst, Concave) :-
   mesh_annotation_handle(PartInst, SphereAnnotation),
   jpl_datum_to_type(SphereAnnotation, 
       class([edu,tum,cs,vis,model,uima,annotation,primitive],['SphereAnnotation'])),
-  jpl_call(SphereAnnotation,'isConcav',[],Concave).
+  jpl_call(SphereAnnotation,'isConcave',[],Concave).
 
 annotation_sphere_volume(PartInst, Volume) :-
   mesh_annotation_handle(PartInst, SphereAnnotation),

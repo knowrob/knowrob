@@ -20,39 +20,78 @@ import edu.tum.cs.vis.model.util.Triangle;
 import edu.tum.cs.vis.model.util.Vertex;
 
 /**
+ * Mesh annotation for primitive types such as cone, cylinder, plane.
+ * 
  * @author Stefan Profanter
+ * @param <S>
+ *            Type of primitive annotation
  * 
  */
-public abstract class PrimitiveAnnotation extends MeshAnnotation {
+@SuppressWarnings("rawtypes")
+public abstract class PrimitiveAnnotation<S extends PrimitiveAnnotation> extends MeshAnnotation<S> {
 
 	/**
-	 * 
+	 * auto generated
 	 */
 	private static final long				serialVersionUID	= -7298994988518239919L;
+
+	/**
+	 * total area of annotation
+	 */
 	private float							area				= 0;
 
+	/**
+	 * Holds curvature properties for each vertex
+	 */
 	protected HashMap<Vertex, Curvature>	curvatures			= new HashMap<Vertex, Curvature>();
 
 	/**
+	 * Creates a new primitive annotation.
+	 * 
+	 * @param clazz
+	 *            type of primitive annotation
+	 * @param curvatures
+	 *            curvature mapping for vertices
+	 * @param model
+	 *            main model
 	 * @param annotationColor
+	 *            predefined color of primitive annotation
 	 */
-	public PrimitiveAnnotation(Class<? extends MeshAnnotation> clazz,
-			HashMap<Vertex, Curvature> curvatures, Model model, Color annotationColor) {
+	public PrimitiveAnnotation(Class<S> clazz, HashMap<Vertex, Curvature> curvatures, Model model,
+			Color annotationColor) {
 		super(clazz, model, annotationColor);
 		this.curvatures = curvatures;
 	}
 
+	/**
+	 * Draws primitive annotation on given graphics context. Drawin primitive annotation means:
+	 * drawing a sphere for sphere annotation or a cone for cone annotation, ...
+	 * 
+	 * @param g
+	 *            graphics context
+	 */
 	public abstract void drawPrimitiveAnnotation(PGraphics g);
 
+	/**
+	 * Try to best fit parameters for primitive annotation into triangle mesh and update area of
+	 * annotation.
+	 */
 	public void fit() {
 		updateAnnotationArea();
 		fitAnnotation();
 	}
 
+	/**
+	 * Try to best fit parameters for primitive annotation into triangle mesh.
+	 */
 	protected abstract void fitAnnotation();
 
 	/**
+	 * Get area of primitive annotation by summing area of all triangles.
+	 * 
 	 * @return the area
+	 * 
+	 * @see PrimitiveAnnotation#getPrimitiveArea()
 	 */
 	public float getArea() {
 		if (area == 0)
@@ -60,10 +99,22 @@ public abstract class PrimitiveAnnotation extends MeshAnnotation {
 		return area;
 	}
 
+	/**
+	 * Get value between > 0 for area coverage which indicates how good primitive annotation is fit
+	 * into mesh. 1 indicates perfect fit, because area of triangles is exactly the same as area of
+	 * primitive annotation.
+	 * 
+	 * @return value > 0
+	 */
 	public float getAreaCoverage() {
 		return getArea() / getPrimitiveArea();
 	}
 
+	/**
+	 * Get total area of triangles unscaled.
+	 * 
+	 * @return sum of area of all triangles.
+	 */
 	public float getAreaUnscaled() {
 		return model.getUnscaled(area);
 	}
@@ -76,8 +127,23 @@ public abstract class PrimitiveAnnotation extends MeshAnnotation {
 	 */
 	public abstract float getPrimitiveArea();
 
+	/**
+	 * Returns the total area (unscaled) of the primitive (total surface of sphere, cylinder,
+	 * plane). The covered area (area of all triangles of annotation) is normally smaller than this
+	 * area.
+	 * 
+	 * @return the total area of the primitive
+	 */
 	public abstract float getPrimitiveAreaUnscaled();
 
+	/**
+	 * Add all vertices of mesh to <tt>vertices</tt> and additionally calculate centroid of all
+	 * vertices.
+	 * 
+	 * @param vertices
+	 *            Empty set to add vertices of mesh.
+	 * @return centroid of all vertices
+	 */
 	protected Vector3f getVertices(HashSet<Vertex> vertices) {
 		vertices.clear();
 		Vector3f centroid = new Vector3f();
@@ -99,6 +165,14 @@ public abstract class PrimitiveAnnotation extends MeshAnnotation {
 
 	}
 
+	/**
+	 * Add all vertices of mesh to <tt>vertices</tt> and add weight (voronoi area) for each vertex
+	 * to set. Additionally calculate weighted centroid of all vertices.
+	 * 
+	 * @param vertices
+	 *            Empty set to add vertices of mesh.
+	 * @return weighted centroid of all vertices
+	 */
 	protected Vector3f getVerticesWithWeight(HashMap<Vertex, Float> vertices) {
 		vertices.clear();
 		Vector3f centroid = new Vector3f();
@@ -131,7 +205,7 @@ public abstract class PrimitiveAnnotation extends MeshAnnotation {
 	}
 
 	/**
-	 * 
+	 * Recalculate area which is the sum of area of all triangles
 	 */
 	public void updateAnnotationArea() {
 		area = 0;

@@ -20,13 +20,15 @@ import edu.tum.cs.vis.model.uima.annotation.ContainerAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 
 /**
+ * Control panel for container annotation
+ * 
  * @author Stefan Profanter
  * 
  */
 public class ContainerAnnotationPanel extends AnnotationPanel<ContainerAnnotation> {
 
 	/**
-	 * 
+	 * auto generated
 	 */
 	private static final long	serialVersionUID	= 14768465886755070L;
 
@@ -35,11 +37,16 @@ public class ContainerAnnotationPanel extends AnnotationPanel<ContainerAnnotatio
 	 */
 	private final JTextField	txtDirection;
 
+	/**
+	 * Volume of selected annotation
+	 */
 	private final JTextField	txtVolume;
 
 	/**
-	 * @param annotationType
+	 * Creates new container annotation panel
+	 * 
 	 * @param cas
+	 *            main mesh cas
 	 */
 	public ContainerAnnotationPanel(MeshCas cas) {
 		super(ContainerAnnotation.class, cas);

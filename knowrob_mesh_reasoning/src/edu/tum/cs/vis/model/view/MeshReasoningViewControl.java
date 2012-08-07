@@ -61,6 +61,9 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 	 */
 	private final DefaultListModel			analyserListModel;
 
+	/**
+	 * Panel which contains controls which influence drawing of model
+	 */
 	private final DrawSettingsPanel			drawSettingsPanel;
 
 	/**
@@ -83,6 +86,9 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 	 */
 	private final MeshReasoningView			view;
 
+	/**
+	 * default filename to save image (screenshot)
+	 */
 	private String							defaultImageFilename	= null;
 
 	/**
@@ -187,6 +193,12 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 		return cas;
 	}
 
+	/**
+	 * Sets default image file name to save image (screenshot)
+	 * 
+	 * @param s
+	 *            new file name
+	 */
 	public void setDefaultImageFilename(String s) {
 		defaultImageFilename = s;
 	}
@@ -198,7 +210,8 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 	 * @param selectedAnnotations
 	 *            list of currently selected annotations
 	 */
-	public void showSelectedAnnotation(HashSet<MeshAnnotation> selectedAnnotations) {
+	public void showSelectedAnnotation(
+			@SuppressWarnings("rawtypes") HashSet<MeshAnnotation> selectedAnnotations) {
 		if (selectedAnnotations.size() == 1) {
 			accordion.setSelectedAnnotation(selectedAnnotations.iterator().next());
 		} else

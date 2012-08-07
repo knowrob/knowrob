@@ -7,31 +7,31 @@
  ******************************************************************************/
 package edu.tum.cs.vis.model.uima.annotation;
 
-import processing.core.PGraphics;
 import edu.tum.cs.vis.model.util.DrawObject;
 
 /**
+ * Annotation on a single DrawObject (Triangle, Line).
+ * 
  * @author Stefan Profanter
  * 
+ * @see DrawObject
+ * 
  */
-public class DrawObjectAnnotation extends DrawableAnnotation {
+public abstract class DrawObjectAnnotation extends DrawableAnnotation {
 
 	/**
-	 * 
+	 * auto generated
 	 */
 	private static final long	serialVersionUID	= -1302487276536212663L;
-	protected DrawObject		object;
-
-	/* (non-Javadoc)
-	 * @see edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation#drawAnnotation(processing.core.PGraphics)
-	 */
-	@Override
-	protected void drawAnnotation(PGraphics g) {
-		// TODO Auto-generated method stub
-
-	}
 
 	/**
+	 * Object for which this annotation is
+	 */
+	protected DrawObject		object;
+
+	/**
+	 * Get object for which this annotation is.
+	 * 
 	 * @return the object
 	 */
 	public DrawObject getObject() {
@@ -39,6 +39,8 @@ public class DrawObjectAnnotation extends DrawableAnnotation {
 	}
 
 	/**
+	 * Set object for which this annotation is.
+	 * 
 	 * @param object
 	 *            the object to set
 	 */

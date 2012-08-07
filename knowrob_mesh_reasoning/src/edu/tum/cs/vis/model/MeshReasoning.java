@@ -19,6 +19,7 @@ import org.apache.log4j.xml.DOMConfigurator;
 
 import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.util.PrintUtil;
+import edu.tum.cs.util.ResourceRetriever;
 import edu.tum.cs.vis.model.uima.analyser.ContainerAnalyser;
 import edu.tum.cs.vis.model.uima.analyser.MeshAnalyser;
 import edu.tum.cs.vis.model.uima.analyser.NeighborAnalyser;
@@ -34,6 +35,9 @@ import edu.tum.cs.vis.model.view.MeshReasoningView;
 import edu.tum.cs.vis.model.view.MeshReasoningViewControl;
 
 /**
+ * Main mesh reasoning class for parsing and analyzing CAD models. Provide methods for starting mesh
+ * reasoning with and without GUI.
+ * 
  * @author Stefan Profanter
  * 
  */
@@ -44,20 +48,48 @@ public class MeshReasoning {
 	 */
 	private static Logger	logger	= Logger.getRootLogger();
 
+	/**
+	 * Main initialization method for creating mesh reasoning object. Constructs mesh reasoning
+	 * object and initializes log4j logger.
+	 * 
+	 * @param withView
+	 *            Also create GUI to visualize mesh reasoning
+	 * @return new mesh reasoning object
+	 */
 	public static MeshReasoning initMeshReasoning(boolean withView) {
 
 		DOMConfigurator.configureAndWatch("log4j.xml", 60 * 1000);
 		return new MeshReasoning(withView);
 	}
 
+	/**
+	 * View for this mesh reasoning object
+	 */
 	private MeshReasoningView			mrv	= null;
 
+	/**
+	 * Mesh reasoning container
+	 */
 	private MeshCas						cas	= null;
 
+	/**
+	 * Main frame container for mesh reasoning view
+	 */
 	public JFrame						frame;
 
+	/**
+	 * View control for mesh reasoning view
+	 */
 	private MeshReasoningViewControl	control;
 
+	/**
+	 * Constructor for mesh reasoning object. Initializes object and creates mesh reasoning view if
+	 * indicated.
+	 * 
+	 * @param withView
+	 *            set to true if mesh reasoning view should be created and shown
+	 * 
+	 */
 	public MeshReasoning(boolean withView) {
 		cas = new MeshCas();
 
@@ -86,12 +118,22 @@ public class MeshReasoning {
 
 	}
 
+	/**
+	 * Start mesh reasoning on specified file path
+	 * 
+	 * @param path
+	 *            path to CAD model. Can be physical file path or http://, ftp:// or even package://
+	 *            which indicates a ros package
+	 * 
+	 * @see ResourceRetriever
+	 */
 	public void analyseByPath(String path) {
 
 		logger.info("MeshReasoning started. Parsing model ...");
 		logger.debug("Path: " + path);
 		long start = System.currentTimeMillis();
 
+		// Load and parse model
 		ItemModel itemModel = new ItemModel(path);
 
 		if (itemModel.getParser() == null) {
@@ -100,7 +142,6 @@ public class MeshReasoning {
 		}
 
 		Model model = itemModel.getParser().getModel();
-		// if (path.endsWith("ply"))
 		model.removeDoubleSidedTriangles(); // in ply files there may be double sided triangles
 		logger.debug("Model parsed. Took: "
 				+ PrintUtil.prettyMillis(System.currentTimeMillis() - start) + " (Vertices: "
@@ -109,8 +150,10 @@ public class MeshReasoning {
 
 		logger.debug("Calculating curvature ...");
 
+		// normalize model for further reasoning
 		model.normalize();
 
+		// list of current running analyzers used in mesh reasoning view
 		ArrayList<MeshAnalyser> analyser;
 		if (mrv != null) {
 			analyser = mrv.getControl().getAnalyser();
@@ -120,6 +163,8 @@ public class MeshReasoning {
 		}
 		cas.setModel(model);
 		CurvatureCalculation.calculateCurvatures(cas.getCurvatures(), model, path.endsWith("ply"));
+
+		// Create analyzers and start them
 
 		NeighborAnalyser na = new NeighborAnalyser();
 		analyser.add(na);
@@ -136,26 +181,55 @@ public class MeshReasoning {
 
 	}
 
+	/**
+	 * Clear all highlighted annotations in mesh reasoning view
+	 */
 	public void clearHightlight() {
-		mrv.clearSelectedAnnotations();
+		if (mrv != null)
+			mrv.clearSelectedAnnotations();
 	}
 
+	/**
+	 * Get all cone annotations
+	 * 
+	 * @return Set of cone annotations in model
+	 */
 	public HashSet<ConeAnnotation> findAnnotationsCone() {
 		return cas.findAnnotations(ConeAnnotation.class);
 	}
 
+	/**
+	 * Get all container annotations
+	 * 
+	 * @return Set of container annotations in model
+	 */
 	public HashSet<ContainerAnnotation> findAnnotationsContainer() {
 		return cas.findAnnotations(ContainerAnnotation.class);
 	}
 
+	/**
+	 * Get all plane annotations
+	 * 
+	 * @return Set of plane annotations in model
+	 */
 	public HashSet<PlaneAnnotation> findAnnotationsPlane() {
 		return cas.findAnnotations(PlaneAnnotation.class);
 	}
 
+	/**
+	 * Get all sphere annotations
+	 * 
+	 * @return Set of sphere annotations in model
+	 */
 	public HashSet<SphereAnnotation> findAnnotationsSphere() {
 		return cas.findAnnotations(SphereAnnotation.class);
 	}
 
+	/**
+	 * Get list of all found annotation types in mesh object
+	 * 
+	 * @return List of annotation names such as Sphere, Cone, Plane, ...
+	 */
 	public ArrayList<String> getAnnotationTypes() {
 		HashSet<String> types = new HashSet<String>();
 		for (Annotation a : cas.getAnnotations()) {
@@ -176,17 +250,35 @@ public class MeshReasoning {
 		return ret;
 	}
 
-	public void highlightAnnotation(MeshAnnotation a) {
+	/**
+	 * Highlight specified annotation in mesh reasoning view
+	 * 
+	 * @param a
+	 *            Annotation to highlight
+	 */
+	public void highlightAnnotation(@SuppressWarnings("rawtypes") MeshAnnotation a) {
 		if (mrv == null)
 			return;
 		mrv.addSelectedAnnotation(a);
 	}
 
+	/**
+	 * Default image file name for saving current mesh reasoning view as a png image.
+	 * 
+	 * @param s
+	 *            default file name
+	 */
 	public void setDefaultImageFilename(String s) {
 		if (control != null)
 			control.setDefaultImageFilename(s);
 	}
 
+	/**
+	 * Set title of main frame
+	 * 
+	 * @param title
+	 *            new title
+	 */
 	public void setFrameTitle(String title) {
 		frame.setTitle(title);
 	}

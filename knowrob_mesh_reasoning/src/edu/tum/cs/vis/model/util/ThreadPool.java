@@ -15,10 +15,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
+ * Simple Thread execution pool to execute multiple callable objects at same time.
+ * 
  * @author Stefan Profanter
  * 
  */
 public class ThreadPool {
+	/**
+	 * Main pool
+	 */
 	public static ExecutorService	pool;
 
 	/**
@@ -50,6 +55,9 @@ public class ThreadPool {
 		threads.clear();
 	}
 
+	/**
+	 * Initializes ExecutorService to use maximum ProcessorCount*25 threads at same time
+	 */
 	public static void init() {
 		int threadNum = Runtime.getRuntime().availableProcessors() * 25;
 		pool = Executors.newFixedThreadPool(threadNum);

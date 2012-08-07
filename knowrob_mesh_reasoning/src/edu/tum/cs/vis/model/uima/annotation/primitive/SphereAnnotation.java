@@ -23,33 +23,68 @@ import edu.tum.cs.vis.model.util.Curvature;
 import edu.tum.cs.vis.model.util.Vertex;
 
 /**
+ * Primitive annotation for concave or convex sphere.
+ * 
  * @author Stefan Profanter
  * 
  */
-public class SphereAnnotation extends PrimitiveAnnotation {
+public class SphereAnnotation extends PrimitiveAnnotation<SphereAnnotation> {
 
 	/**
-	 * 
+	 * auto generated
 	 */
 	private static final long	serialVersionUID	= 4870579150170536881L;
 
+	/**
+	 * For additional explanation see: <a
+	 * href="http://www.profanter.me/pub/BachelorThesis/Thesis.pdf"
+	 * >http://www.profanter.me/pub/BachelorThesis/Thesis.pdf</a>, chapter "3.3.3.2 Fit sphere"
+	 * 
+	 * @param v
+	 * @param a
+	 * @param b
+	 * @param c
+	 * @return
+	 */
 	private static float getLi(Vertex v, float a, float b, float c) {
 		return (float) Math
 				.sqrt(Math.pow(v.x - a, 2) + Math.pow(v.y - b, 2) + Math.pow(v.z - c, 2));
 	}
 
-	private final boolean			concav;
+	/**
+	 * is sphere concave or convex
+	 */
+	private final boolean			concave;
 
+	/**
+	 * list of all vertices representing the sphere in mesh
+	 */
 	private final HashSet<Vertex>	vertices	= new HashSet<Vertex>();
 
+	/**
+	 * center of sphere
+	 */
 	private final Vector3f			center		= new Vector3f();
 
+	/**
+	 * radius of sphere
+	 */
 	private float					radius		= 0;
 
-	public SphereAnnotation(HashMap<Vertex, Curvature> curvatures, Model model, boolean concav) {
-		super(SphereAnnotation.class, curvatures, model, concav ? new Color(0, 255, 0) : new Color(
-				255, 0, 0));
-		this.concav = concav;
+	/**
+	 * Creates a new sphere annotation
+	 * 
+	 * @param curvatures
+	 *            Map of curvatures for vertices
+	 * @param model
+	 *            parent model
+	 * @param concave
+	 *            is sphere concave or convex
+	 */
+	public SphereAnnotation(HashMap<Vertex, Curvature> curvatures, Model model, boolean concave) {
+		super(SphereAnnotation.class, curvatures, model, concave ? new Color(0, 255, 0)
+				: new Color(255, 0, 0));
+		this.concave = concave;
 	}
 
 	/* (non-Javadoc)
@@ -112,6 +147,8 @@ public class SphereAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
+	 * Get sphere center
+	 * 
 	 * @return the center
 	 */
 	public Vector3f getCenter() {
@@ -119,12 +156,24 @@ public class SphereAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
+	 * Get sphere center unscaled
+	 * 
 	 * @return the center
 	 */
 	public Tuple3f getCenterUnscaled() {
 		return model.getUnscaled(center);
 	}
 
+	/**
+	 * For additional explanation see: <a
+	 * href="http://www.profanter.me/pub/BachelorThesis/Thesis.pdf"
+	 * >http://www.profanter.me/pub/BachelorThesis/Thesis.pdf</a>, chapter "3.3.3.2 Fit sphere"
+	 * 
+	 * @param a
+	 * @param b
+	 * @param c
+	 * @return
+	 */
 	private float getL(float a, float b, float c) {
 		float sum = 0;
 		for (Vertex v : vertices) {
@@ -133,6 +182,16 @@ public class SphereAnnotation extends PrimitiveAnnotation {
 		return sum / vertices.size();
 	}
 
+	/**
+	 * For additional explanation see: <a
+	 * href="http://www.profanter.me/pub/BachelorThesis/Thesis.pdf"
+	 * >http://www.profanter.me/pub/BachelorThesis/Thesis.pdf</a>, chapter "3.3.3.2 Fit sphere"
+	 * 
+	 * @param a
+	 * @param b
+	 * @param c
+	 * @return
+	 */
 	private float getLa(float a, float b, float c) {
 		float sum = 0;
 		for (Vertex v : vertices) {
@@ -141,6 +200,16 @@ public class SphereAnnotation extends PrimitiveAnnotation {
 		return sum / vertices.size();
 	}
 
+	/**
+	 * For additional explanation see: <a
+	 * href="http://www.profanter.me/pub/BachelorThesis/Thesis.pdf"
+	 * >http://www.profanter.me/pub/BachelorThesis/Thesis.pdf</a>, chapter "3.3.3.2 Fit sphere"
+	 * 
+	 * @param a
+	 * @param b
+	 * @param c
+	 * @return
+	 */
 	private float getLb(float a, float b, float c) {
 		float sum = 0;
 		for (Vertex v : vertices) {
@@ -149,6 +218,16 @@ public class SphereAnnotation extends PrimitiveAnnotation {
 		return sum / vertices.size();
 	}
 
+	/**
+	 * For additional explanation see: <a
+	 * href="http://www.profanter.me/pub/BachelorThesis/Thesis.pdf"
+	 * >http://www.profanter.me/pub/BachelorThesis/Thesis.pdf</a>, chapter "3.3.3.2 Fit sphere"
+	 * 
+	 * @param a
+	 * @param b
+	 * @param c
+	 * @return
+	 */
 	private float getLc(float a, float b, float c) {
 		float sum = 0;
 		for (Vertex v : vertices) {
@@ -190,6 +269,8 @@ public class SphereAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
+	 * get radius of sphere
+	 * 
 	 * @return the radius
 	 */
 	public float getRadius() {
@@ -197,6 +278,8 @@ public class SphereAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
+	 * get unscaled radius of sphere
+	 * 
 	 * @return the radius
 	 */
 	public float getRadiusUnscaled() {
@@ -204,6 +287,8 @@ public class SphereAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
+	 * Get sphere volume
+	 * 
 	 * @return the volume of the sphere
 	 */
 	public float getVolume() {
@@ -212,7 +297,9 @@ public class SphereAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
-	 * @return the unscaledvolume of the sphere
+	 * Get unscaled sphere volume
+	 * 
+	 * @return the unscaled volume of the sphere
 	 */
 	public float getVolumeUnscaled() {
 
@@ -221,10 +308,12 @@ public class SphereAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
-	 * @return the concav
+	 * Is sphere concave or convex?
+	 * 
+	 * @return true if concave
 	 */
-	public boolean isConcav() {
-		return concav;
+	public boolean isConcave() {
+		return concave;
 	}
 
 }

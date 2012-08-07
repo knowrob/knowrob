@@ -20,9 +20,9 @@ import edu.tum.cs.vis.model.util.ThreadPool;
 import edu.tum.cs.vis.model.util.Triangle;
 
 /**
- * Analyser for a mesh which sets direct neighbors of a triangle.
+ * Analyzer for a mesh which sets direct neighbors of a triangle.
  * 
- * The neighbor information is used in other Analyser for better performance.
+ * The neighbor information is used in other analyzers for better performance.
  * 
  * @author Stefan Profanter
  * 
@@ -76,6 +76,7 @@ public class NeighborAnalyser extends MeshAnalyser {
 						Triangle tr = allTriangles.get(i);
 						for (int j = i + 1; j < allTriangles.size(); j++) {
 							Triangle n = allTriangles.get(j);
+							// check and add triangle as neighbor
 							n.addNeighbor(tr);
 						}
 					}

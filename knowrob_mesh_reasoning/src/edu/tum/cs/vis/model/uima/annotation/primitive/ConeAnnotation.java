@@ -30,13 +30,15 @@ import edu.tum.cs.vis.model.util.algorithm.BestFitLine3D;
 import edu.tum.cs.vis.model.view.MeshReasoningView;
 
 /**
+ * Annotation for primitive type: Cone (convex and concave)
+ * 
  * @author Stefan Profanter
  * 
  */
-public class ConeAnnotation extends PrimitiveAnnotation {
+public class ConeAnnotation extends PrimitiveAnnotation<ConeAnnotation> {
 
 	/**
-	 * 
+	 * auto generated
 	 */
 	private static final long	serialVersionUID	= -7420446109108464883L;
 
@@ -93,8 +95,14 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 		return true;
 	}
 
-	private final boolean				concav;
+	/**
+	 * indicates if cone is concave or convex
+	 */
+	private final boolean				concave;
 
+	/**
+	 * Centroid of cone
+	 */
 	private final Point3f				centroid		= new Point3f();
 
 	/**
@@ -103,21 +111,38 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 	 */
 	private final Vector3f				direction		= new Vector3f();
 
+	/**
+	 * radius at bottom of cone
+	 */
 	private float						radiusLarge		= 0;
 
+	/**
+	 * radius at top of cone
+	 */
 	private float						radiusSmall		= 0;
 
+	/**
+	 * list of all found intersection points needed for fitting cone into mesh
+	 */
 	private final ArrayList<Point3f>	intersections	= new ArrayList<Point3f>();
 
-	public ConeAnnotation(HashMap<Vertex, Curvature> curvatures, Model model, boolean concav) {
-		super(ConeAnnotation.class, curvatures, model, concav ? new Color(0, 125, 125) : new Color(
-				255, 255, 0));
-		this.concav = concav;
+	/**
+	 * Create new cone annotation.
+	 * 
+	 * @param curvatures
+	 *            Map of curvatures for vertices
+	 * @param model
+	 *            parent model
+	 * @param concave
+	 *            ist cone concave or convex
+	 * 
+	 */
+	public ConeAnnotation(HashMap<Vertex, Curvature> curvatures, Model model, boolean concave) {
+		super(ConeAnnotation.class, curvatures, model, concave ? new Color(0, 125, 125)
+				: new Color(255, 255, 0));
+		this.concave = concave;
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#fitAnnotation()
-	 */
 	/* (non-Javadoc)
 	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#drawAnnotation(processing.core.PGraphics)
 	 */
@@ -184,6 +209,9 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#fitAnnotation()
+	 */
 	@Override
 	public void fitAnnotation() {
 
@@ -376,9 +404,6 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 			}
 			varLarge /= currRadTop - 1f;
 
-			// System.out.println("Varianz " + i + ": " + varSmall + " " + varLarge + " = "
-			// + (varSmall + varLarge));
-
 			// Move centroid along direction vector to set it to the center of bottom and top
 			float diff = (float) (heightTop[i] - heightBottom[i]) / 2;
 			Vector3f tmp = new Vector3f(dirs[i]);
@@ -409,6 +434,8 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
+	 * Get centroid of cone
+	 * 
 	 * @return the centroid
 	 */
 	public Point3f getCentroid() {
@@ -416,6 +443,8 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
+	 * get centroid of cone at unscaled position
+	 * 
 	 * @return the centroid
 	 */
 	public Tuple3f getCentroidUnscaled() {
@@ -423,6 +452,9 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
+	 * get direction of cone. Direction is aligned with generating line and shows from centroid to
+	 * small radius cap. Length of direction is half height of the cone (center to one end).
+	 * 
 	 * @return the direction
 	 */
 	public Vector3f getDirection() {
@@ -430,12 +462,22 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
+	 * 
+	 * get direction (unscaled) of cone. Direction is aligned with generating line and shows from
+	 * centroid to small radius cap. Length of direction is half height of the cone (center to one
+	 * end).
+	 * 
 	 * @return the direction
 	 */
 	public Vector3f getDirectionUnscaled() {
 		return new Vector3f(model.getUnscaled(direction));
 	}
 
+	/**
+	 * Get total unscaled height of cone from bottom cap to top cap which is 2*directionUnscaled.
+	 * 
+	 * @return unscaled height
+	 */
 	public float getHeightUnscaled() {
 		return getDirectionUnscaled().length() * 2;
 	}
@@ -449,6 +491,7 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
+	 * Get pose matrix for cone.
 	 * 
 	 * @return 4x4 pose matrix of the plane relative to the object centroid
 	 */
@@ -493,18 +536,27 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 		return model.getUnscaled(getPrimitiveArea());
 	}
 
+	/**
+	 * Get average radius of cone which is the average between small and large radius
+	 * 
+	 * @return the average radius
+	 */
 	public float getRadiusAvg() {
 		return (radiusLarge + radiusSmall) / 2f;
 	}
 
 	/**
-	 * @return the radiusLarge
+	 * Get average radius (unscaled) of cone which is the average between small and large radius
+	 * 
+	 * @return average radius unscaled
 	 */
 	public float getRadiusAvgUnscaled() {
 		return model.getUnscaled(getRadiusAvg());
 	}
 
 	/**
+	 * Get large radius, which is at the bottom of cone.
+	 * 
 	 * @return the radiusLarge
 	 */
 	public float getRadiusLarge() {
@@ -512,6 +564,8 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
+	 * Get large radius (unscaled), which is at the bottom of cone.
+	 * 
 	 * @return the radiusLarge
 	 */
 	public float getRadiusLargeUnscaled() {
@@ -519,6 +573,8 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
+	 * Get small radius, which is at the bottom of cone.
+	 * 
 	 * @return the radiusSmall
 	 */
 	public float getRadiusSmall() {
@@ -526,12 +582,19 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 	}
 
 	/**
+	 * Get small radius (unscaled), which is at the bottom of cone.
+	 * 
 	 * @return the radiusSmall
 	 */
 	public float getRadiusSmallUnscaled() {
 		return model.getUnscaled(radiusSmall);
 	}
 
+	/**
+	 * Get volume of cone.
+	 * 
+	 * @return the volume
+	 */
 	public float getVolume() {
 
 		float h = direction.length() * 2;
@@ -539,16 +602,23 @@ public class ConeAnnotation extends PrimitiveAnnotation {
 				.pow(radiusSmall, 2)));
 	}
 
+	/**
+	 * Get unscaled volume of cone.
+	 * 
+	 * @return the volume unscaled.
+	 */
 	public float getVolumeUnscaled() {
 
 		return model.getUnscaled(getVolume());
 	}
 
 	/**
-	 * @return the concav
+	 * Is cone concave or convex?
+	 * 
+	 * @return the concave
 	 */
-	public boolean isConcav() {
-		return concav;
+	public boolean isConcave() {
+		return concave;
 	}
 
 }

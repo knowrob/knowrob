@@ -17,13 +17,20 @@ import edu.tum.cs.vis.model.util.Mesh;
 import edu.tum.cs.vis.model.util.Triangle;
 
 /**
- * Base class for all mesh annotations.
+ * Base class for all mesh annotations. A mesh annotation is an annotation over multiple triangles
+ * or lines.
  * 
  * @author Stefan Profanter
+ * @param <S>
+ *            Type of mesh annotation
  * 
  */
+@SuppressWarnings("rawtypes")
 public abstract class MeshAnnotation<S extends MeshAnnotation> extends DrawableAnnotation {
 
+	/**
+	 * Class of derived annotation.
+	 */
 	private final Class<S>		clazz;
 
 	/**
@@ -50,18 +57,27 @@ public abstract class MeshAnnotation<S extends MeshAnnotation> extends DrawableA
 	 */
 	protected Mesh				mesh				= new Mesh();
 
+	/**
+	 * Parent model of this annotation
+	 */
 	protected Model				model;
 
 	/**
 	 * Default constructor. Sets the annotation color. Each type of annotation should have a
 	 * different color.
 	 * 
+	 * 
+	 * @param clazz2
+	 *            Class of derived annotation.
+	 * @param model
+	 *            parent model for this annotation
+	 * 
 	 * @param annotationColor
 	 *            The annotation color for this type of annotation
 	 */
-	public MeshAnnotation(Class<S> clazz, Model model, final Color annotationColor) {
+	public MeshAnnotation(Class<S> clazz2, Model model, final Color annotationColor) {
 		super();
-		this.clazz = clazz;
+		this.clazz = clazz2;
 		randomAnnotationColor = new Color((int) (Math.random() * 255), (int) (Math.random() * 255),
 				(int) (Math.random() * 255));
 		this.annotationColor = annotationColor;
@@ -88,16 +104,36 @@ public abstract class MeshAnnotation<S extends MeshAnnotation> extends DrawableA
 	}
 
 	/**
+	 * Get mesh of annotation
+	 * 
 	 * @return the mesh
 	 */
 	public Mesh getMesh() {
 		return mesh;
 	}
 
+	/**
+	 * Get all annotations of same type as this which are direct neighbors of this annotation by
+	 * getting all annotations where direct neighbor triangles are a member of.
+	 * 
+	 * @param cas
+	 *            main mesh cas
+	 * @return Set of found annotations which are the same type of this annotation
+	 */
 	public HashSet<S> getNeighborAnnotations(MeshCas cas) {
 		return getNeighborAnnotations(cas, clazz);
 	}
 
+	/**
+	 * Get all annotations of given type which are direct neighbors of this annotation by getting
+	 * all annotations where direct neighbor triangles are a member of.
+	 * 
+	 * @param cas
+	 *            main cas
+	 * @param parClazz
+	 *            type of annotations you want
+	 * @return Set of all direct neighbor annotations of given type
+	 */
 	public <T extends MeshAnnotation> HashSet<T> getNeighborAnnotations(MeshCas cas,
 			Class<T> parClazz) {
 		HashSet<T> annotations = new HashSet<T>();
@@ -109,6 +145,18 @@ public abstract class MeshAnnotation<S extends MeshAnnotation> extends DrawableA
 		return annotations;
 	}
 
+	/**
+	 * Get all annotations of given type which are direct neighbors of given triangle by getting all
+	 * annotations where direct neighbor triangles are a member of.
+	 * 
+	 * @param cas
+	 *            main cas
+	 * @param parClazz
+	 *            type of annotations you want
+	 * @param t
+	 *            Get annotations of all direct neighbors of this triangle.
+	 * @return Set of found annotations
+	 */
 	public <T extends MeshAnnotation> HashSet<T> getNeighborAnnotationsForTriangle(MeshCas cas,
 			Class<T> parClazz, Triangle t) {
 
@@ -134,6 +182,8 @@ public abstract class MeshAnnotation<S extends MeshAnnotation> extends DrawableA
 	}
 
 	/**
+	 * Indicates if random color is used to draw this annotation
+	 * 
 	 * @return the useRandomColor
 	 */
 	public boolean isUseRandomColor() {
@@ -152,6 +202,8 @@ public abstract class MeshAnnotation<S extends MeshAnnotation> extends DrawableA
 	}
 
 	/**
+	 * Base mesh of this annotation.
+	 * 
 	 * @param mesh
 	 *            the mesh to set
 	 */
@@ -160,6 +212,8 @@ public abstract class MeshAnnotation<S extends MeshAnnotation> extends DrawableA
 	}
 
 	/**
+	 * Set to true if random color should be used to draw annotation instead of predefined one.
+	 * 
 	 * @param useRandomColor
 	 *            the useRandomColor to set
 	 */
