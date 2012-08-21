@@ -214,11 +214,10 @@ public abstract class DrawObject implements Serializable {
 	 * you modify the position array directly, call this afterwards.
 	 * 
 	 */
-	@SuppressWarnings("static-method")
 	public void updateCentroid() {
-		/*
-		 * Overridden in triangles class
-		 */
+	/*
+	 * Overridden in triangles class
+	 */
 	}
 
 }
