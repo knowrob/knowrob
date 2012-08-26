@@ -49,7 +49,7 @@ get_model_path(Identifier,Path) :-
 
   % Identifier is an instance, no xsd:type specified (included for compatibility reasons)
   rdf_has(Identifier,knowrob:pathToCadModel,literal(Path)) ; 
-  owl_individual_of(Identifier, Class), class_properties(Class, knowrob:pathToCadModel,literal(Path))) ;
+  owl_individual_of(Identifier, Class), class_properties(Class, knowrob:pathToCadModel,literal(Path))),! ;
 
   % Identifier is a class
   class_properties(Identifier, knowrob:pathToCadModel,literal(type(_,Path))),!.
