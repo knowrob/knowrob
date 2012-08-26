@@ -71,7 +71,7 @@
  
  <!-- http://ias.cs.tum.edu/kb/knowrob.owl#SemanticMapPerception16 -->
  
- <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#SemanticMapPerception16">
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#SemanticMapPerception1">
    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SemanticMapPerception"/>
    <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
    <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
@@ -90,8 +90,775 @@
  
  
  
+
+ 
+
+
+
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#bowl1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bowl-Mixing"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/cooking-vessels/bowl.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#bowl1"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#bowl2">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bowl-Mixing"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/cooking-vessels/pie-tin.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception2">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#bowl2"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#bowl3">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bowl-Mixing"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/bowl.kmz</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception3">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#bowl3"/>
+ </owl:NamedIndividual>
+ 
+ 
+ 
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#cakepan1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CakePan"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/cooking-vessels/muffin-pan.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception4">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#cakepan1"/>
+ </owl:NamedIndividual>
+
+
+
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#pan1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Skillet"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/cooking-vessels/pan.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception5">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#pan1"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#pan2">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Skillet"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/cooking-vessels/pan3.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception6">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#pan2"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#pan3">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Skillet"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/cooking-vessels/pan6.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception7">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#pan3"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#pan4">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Skillet"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/cooking-vessels/pan7.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception8">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#pan4"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#pan5">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Skillet"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/cooking-vessels/pan8.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception9">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#pan5"/>
+ </owl:NamedIndividual>
+ 
+ 
+ 
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#pot1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#StoveTopCookingPot"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/cooking-vessels/pot.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception10">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#pot1"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#pot2">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#StoveTopCookingPot"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/cooking-vessels/pot1.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception11">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#pot2"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#pot3">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#StoveTopCookingPot12"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/cooking-vessels/pot3.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#pot3"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#pot4">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#StoveTopCookingPot"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/cooking-vessels/saucepan2.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception13">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#pot4"/>
+ </owl:NamedIndividual>
+ 
+ 
+
+
+
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#hammer1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hammer"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/hand-tools/hammer2.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception14">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#hammer1"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#hammer2">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Hammer"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/hammer.kmz</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception15">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#hammer2"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#putty1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Putty"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/hand-tools/putty.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception16">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#putty1"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#wrench1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Wrench"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/hand-tools/wrench.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception17">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#wrench1"/>
+ </owl:NamedIndividual>
+ 
+ 
+
+
+
+
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#fork1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Fork-SilverwarePiece"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/kitchen-tools/fork1.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception18">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#fork1"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#fork2">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Fork-SilverwarePiece"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/kitchen-tools/fork2.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception19">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#fork2"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#fork3">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Fork-SilverwarePiece"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/kitchen-tools/fork3.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception20">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#fork3"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#fork4">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Fork-SilverwarePiece"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/kitchen-tools/fork4.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception21">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#fork4"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#fork5">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Fork-SilverwarePiece"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/kitchen-tools/fork5.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception22">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#fork5"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#fork6">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Fork-SilverwarePiece"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/kitchen-tools/fork6.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception23">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#fork6"/>
+ </owl:NamedIndividual>
+ 
+ 
+ 
+ 
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#knife1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CarvingKnife"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/kitchen-tools/knife1.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception24">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#knife1"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#knife2">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CarvingKnife"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/kitchen-tools/knife3.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception25">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#knife2"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#knife3">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CarvingKnife"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/kitchen-tools/knife2.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception26">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#knife3"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#knife4">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CarvingKnife"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/kitchen-tools/knife4.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception27">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#knife4"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#knife5">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CarvingKnife"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/kitchen-tools/knife5.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception28">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#knife5"/>
+ </owl:NamedIndividual>
+ 
+ 
+ 
+ 
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#spoon1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SoupSpoon"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/kitchen-tools/spoon2.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception29">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#spoon1"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#spoon2">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SoupSpoon"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/spoon.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception30">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#spoon2"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#spoon3">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SoupSpoon"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/spoon.kmz</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception31">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#spoon3"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#spoon4">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SoupSpoon"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/spoon_hires.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception32">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#spoon4"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#spoon5">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SoupSpoon"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/kitchen-tools/spoon1.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception33">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#spoon5"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#spoon6">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SoupSpoon"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/kitchen-tools/spoon4.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception34">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#spoon6"/>
+ </owl:NamedIndividual>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#spatula1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Spatula"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/kitchen-tools/spatula1.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception35">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#spatula1"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#spatula2">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Spatula"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/kitchen-tools/spatula2.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception36">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#spatula2"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#spatula3">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Spatula"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/kitchen-tools/spatula3.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception37">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#spatula3"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#spatula4">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Spatula"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/kitchen-tools/spatula4.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception38">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#spatula4"/>
+ </owl:NamedIndividual>
+ 
+ 
+ 
+ 
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#cup1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cup"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/cup2.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception39">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#cup1"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#cup2">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cup"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/cup2.kmz</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception40">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#cup2"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#cup3">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cup"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/cup_red.kmz</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception41">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#cup3"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#cup4">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cup"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/cup_round.kmz</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception42">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#cup4"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#cup5">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cup"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/cup1.kmz</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception43">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#cup5"/>
+ </owl:NamedIndividual>
+ 
+ 
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#applejuice1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#TetraPak"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/applejuice.kmz</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception44">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#applejuice1"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#coke1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#DrinkingBottle"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/coke.kmz</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception45">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#coke1"/>
+ </owl:NamedIndividual>
+ 
+ 
+ 
+ 
+ 
+
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#bed1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bed-PieceOfFurniture"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/Bed.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception46">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#bed1"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#bed2">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bed-PieceOfFurniture"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/hospital_bed.kmz</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception47">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#bed2"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#table1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#EatingTable"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/Table.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception48">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#table1"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#chair1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/wooden-chair.kmz</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception49">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#chair1"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#flowers1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#FlowerArrangement"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/flowers.kmz</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception50">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#flowers1"/>
+ </owl:NamedIndividual>
+ 
+ 
+ 
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#magazine1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#MagazineCopy"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/instyle-magazine.kmz</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception51">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#magazine1"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#magazine2">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#MagazineCopy"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/time-magazine.kmz</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception52">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#magazine2"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#book1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#BookCopy"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/bauhaus-book.kmz</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception53">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#book1"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#book2">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#BookCopy"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/book3.kmz</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception54">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#book2"/>
+ </owl:NamedIndividual>
+ 
+ 
+ 
+ 
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#ketchup1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Ketchup"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/ketchup bottle.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception55">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ketchup1"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#yoghurt1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Yoghurt"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/yoghurt.kmz</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception56">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#yoghurt1"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#cookies1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cookie"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/cookies.kmz</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception57">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#cookies1"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#skateboard1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Skateboard"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/Skateboard.dae</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception58">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#skateboard1"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#screw1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Screw"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/skrew.kmz</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception59">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#screw1"/>
+ </owl:NamedIndividual>
+ 
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#telephone1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Telephone"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/telephone.kmz</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception60">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#telephone1"/>
+ </owl:NamedIndividual>
+
  
  </rdf:RDF>
- 
- 
  
