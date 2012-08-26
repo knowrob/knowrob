@@ -33,6 +33,12 @@
   </computable:PrologProperty>
   
   
+  <computable:PrologClass rdf:about="#computeHandle">
+    <computable:command rdf:datatype="&xsd;string">annotation_handle</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="&knowrob;Handle"/> 
+  </computable:PrologClass>
   
   
   <computable:PrologProperty rdf:about="#computeAnnotationArea">
@@ -102,13 +108,12 @@
     <computable:target rdf:resource="&knowrob;radius"/>
   </computable:PrologProperty>
   
-  <!--  TODO: how to integrate this with computables? computable class?  -->
-  <!--  <computable:PrologProperty rdf:about="#computeSphereConcave">
-  <computable:command rdf:datatype="&xsd;string">annotation_sphere_is_concave</computable:command>
-  <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
-  <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-  <computable:target rdf:resource="&knowrob;inCenterOf"/>
-</computable:PrologProperty>-->
+  <computable:PrologClass rdf:about="#computeSphereConcave">
+    <computable:command rdf:datatype="&xsd;string">annotation_sphere_is_concave</computable:command>
+    <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+    <computable:target rdf:resource="&knowrob;ConcaveTangibleObject"/>
+  </computable:PrologClass>
 
  <computable:PrologProperty rdf:about="#computeSphereVolume">
    <computable:command rdf:datatype="&xsd;string">annotation_sphere_volume</computable:command>
@@ -140,6 +145,12 @@
    <computable:target rdf:resource="&knowrob;objectShortSide"/> 
  </computable:PrologProperty>
  
+ <computable:PrologClass rdf:about="#computeSupportingPlane">
+   <computable:command rdf:datatype="&xsd;string">annotation_supporting_plane</computable:command>
+   <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+   <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+   <computable:target rdf:resource="&knowrob;SupportingPlane"/> 
+ </computable:PrologClass>
  
  
  <computable:PrologProperty rdf:about="#computeContainerDirection">
@@ -155,7 +166,6 @@
    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
    <computable:target rdf:resource="&knowrob;volumeOfObject"/>
  </computable:PrologProperty>
- 
     
 </rdf:RDF>
   
