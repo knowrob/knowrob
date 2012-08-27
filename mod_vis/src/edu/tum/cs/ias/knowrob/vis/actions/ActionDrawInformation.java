@@ -29,28 +29,39 @@ public class ActionDrawInformation {
 	 * Text line height
 	 */
 	public final static float LINE_HEIGHT = 1.5f;
-	
 	/**
 	 * Padding between sections of the action.
 	 * E.g. between properties and subsequence box 
 	 */
 	public final static float INNER_CONTENT_PADDING = 10f;
-	
 	/**
 	 * Padding between main box border and content
 	 */
 	public final static float MAIN_BOX_PADDING = 15f;
-	
 	/**
 	 * Padding around a single sequence box in the subsequence box
 	 */
 	public final static float SEQUENCE_BOX_PADDING = 10f;
-	
 	/**
 	 * total height of the expand box under a subsequence box
 	 */
 	public final static float EXPAND_BOX_HEIGHT = 18f;
-		
+	
+	
+	/**
+	 * Default line/border width
+	 */
+	private final static float defaultStroke = 1f;
+	/**
+	 * line/border width of current action 
+	 */
+	private final static float currentStroke = 1.5f;
+	
+	
+	
+	
+	
+	
 	/**
 	 * Default border color for boxes
 	 */
@@ -67,7 +78,6 @@ public class ActionDrawInformation {
 	 * Default text color
 	 */
 	private final static Color textColor = new Color(240,240,240);
-	
 	/**
 	 * border color for boxes when hovering
 	 */
@@ -84,7 +94,6 @@ public class ActionDrawInformation {
 	 * text color when hovering
 	 */
 	private final static Color hoverTextColor = new Color(255,255,255);
-	
 	/**
 	 * Border color of arrow between sequence boxes
 	 */
@@ -93,8 +102,6 @@ public class ActionDrawInformation {
 	 * Background color of arrow between sequence boxes
 	 */
 	private final static Color arrowBackgroundColor = new Color(51,105,192,230);
-	
-
 	/**
 	 * Border color of arrow for expanding box
 	 */
@@ -111,16 +118,20 @@ public class ActionDrawInformation {
 	 * Background color of arrow expanding box
 	 */
 	private final static Color hoverArrowExpandBackgroundColor = new Color(190,141,141,230);
-	
 	/**
 	 * Border color of parents of highlighted action
 	 */
 	private final static Color highlightBorderColor = new Color(103,134,85);
-	
 	/**
 	 * Border color of hightlighted action
 	 */
 	private final static Color highlightBrightBorderColor = new Color(167,217,137);
+	
+	
+	
+	
+	
+	
 	
 	/**
 	 * Type of highlight.
@@ -133,21 +144,15 @@ public class ActionDrawInformation {
 		CHILD_HIGHLIGHTED, 	//Use highlight color
 		THIS_HIGHLIGHTED	//Use bright highlight color
 	}
-	
 	/**
 	 * Highlight state of current action
 	 */
 	private HighlightType highlight = HighlightType.NOT_HIGHTLIGHTED;
 	
-	/**
-	 * Default line/border width
-	 */
-	private final static float defaultStroke = 1f;
-	/**
-	 * line/border width of current action 
-	 */
-	private final static float currentStroke = 1.5f;
 	
+	
+	
+
 	/**
 	 * Used for intern calculation such as if mouse is hovering.
 	 * Indicates if drawSimpleBox or drawExtendedBox was used to draw this action.
@@ -259,6 +264,8 @@ public class ActionDrawInformation {
 	 */
 	private Rectangle boundingBoxExtended = new Rectangle(0,0,0,0);
 	private Rectangle boundingBoxSimple = new Rectangle(0,0,0,0);
+	
+	
 	
 	/**
 	 * Constructor
@@ -590,7 +597,7 @@ public class ActionDrawInformation {
 	}
 	
 	/**
-	 * Draw the cild boxes of this action. These are located under the extended action box
+	 * Draw the child boxes of this action. These are located under the extended action box
 	 * @param applet Applet to draw on
 	 * @param position start position where to begin to draw
 	 * @return ArrayList of Vector2f with the points at the center bottom for drawing connection arrows
@@ -854,7 +861,7 @@ public class ActionDrawInformation {
 	 * @param x x coordinate of mouse
 	 * @param y y coordinate of mouse
 	 * @param foundInParent set to true if aleady a matching box was found, so only setHover(false) is needed to call 
-	 * @return the Action (it's draw info) over which the mouse is hovering or null if none.
+	 * @return the Action (its draw info) over which the mouse is hovering or null if none.
 	 */
 	private ActionDrawInformation checkHover(float x, float y, ActionDrawInformation found)
 	{
@@ -1179,5 +1186,18 @@ public class ActionDrawInformation {
 			}
 		}
 		return false;
+	}
+
+	
+	
+	public Vector2f getOutboundConnectorPos() {
+		
+		// TODO: replace with better computation, taking extended status into account
+		return new Vector2f(position.x + this.getSimpleBoxDimension().x/2, position.y + this.getSimpleBoxDimension().y);
+	}
+
+	public Vector2f getInboundConnectorPos() {
+		// TODO: replace with better computation, taking extended status into account
+		return new Vector2f(position.x + this.getSimpleBoxDimension().x/2, position.y);
 	}
 }

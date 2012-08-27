@@ -89,7 +89,7 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 	@Override
 	public void setup()
 	{
-		size(1600, 400, P2D);
+		size(1600, 600, P2D);
 		if (this.frame != null)
 		{
 		    this.frame.setTitle("Action plans visualisation");
@@ -108,7 +108,8 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 	
 	@Override
 	public void draw() {
-		background(10, 10, 10);
+
+		background(40);
 		
 		textFont(dejavuFont);
 	    textMode(SCREEN);
@@ -225,6 +226,138 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		Action a = loadPrologPlanRecursive(identifier);
 		if (a!= null)
 			setMainAction(a);
+	}	
+	
+	
+
+	/**
+	 * Load a plan with the given prolog identifier and all it's subactions.
+	 * Display the results as a state machine structure
+	 * 
+	 * TODO: integrate with the other method for reading plans
+	 * 
+	 * @param identifier Something like 'http://www.roboearth.org/kb/serve_drink.owl#ServeADrink'
+	 * @return The main action initialized by the identifier
+	 */
+	private Action loadPrologPlanRecursiveFsm(String identifier)
+	{	
+		
+		//Get the action name
+		String name = "";
+		try
+		{
+			HashMap<String, Vector<String>> qLabel = PrologInterface.executeQuery("rdf_has('"+identifier+"',rdfs:label,L),util:strip_literal_type(L,Label)");
+			
+			name = qLabel.get("Label").get(0);
+			if (name.startsWith("'") && name.endsWith("'"))
+			{
+				name = name.substring(1,name.length()-1);
+			}
+		} catch (Exception e)
+		{
+			if (identifier.indexOf('#') >=0)
+			{
+				name = identifier.substring(identifier.lastIndexOf('#')+1);
+			} else {
+				name = identifier;
+			}
+		}
+
+		Action ret = new Action(name, identifier);
+		
+		//get properties
+		try
+		{
+			HashMap<String, Vector<String>> qProp = PrologInterface.executeQuery("class_properties('"+identifier+"', Key, V), util:strip_literal_type(V,Val)");
+
+			if(qProp != null) {
+				Vector<String> key = qProp.get("Key");
+				Vector<String> val = qProp.get("Val");
+
+				//Make sure each property is added only once, it may be that some properties are present two or more times
+				HashSet<String> alreadyAdded = new HashSet<String>();
+				if(key != null && val != null)
+					for(int i=0;i<key.size() && i<val.size();i++) {
+						if (alreadyAdded.contains(key.get(i)+val.get(i)))
+							continue;
+						alreadyAdded.add(key.get(i)+val.get(i));
+						String k = PrologInterface.valueFromIRI(key.get(i));
+						String v = PrologInterface.valueFromIRI(PrologInterface.removeSingleQuotes(val.get(i)));
+
+						if (k.compareToIgnoreCase("subAction") != 0)
+							ret.setProperty(k, v);
+					}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}		
+
+
+//		
+//		//get subactions
+//		try {
+//			HashMap<String, Vector<String>> qSub = PrologInterface.executeQuery("plan_subevents('"+identifier+"',List)");
+//
+//			
+//			
+//			
+//			if(qSub!=null) {
+//
+//				Vector<String> list = qSub.get("List");
+//
+//				//Add each action only once
+//				HashSet<String> alreadyAdded = new HashSet<String>();
+//
+//				if(list != null) {
+//					for (Iterator<String> i = list.iterator(); i.hasNext();)
+//					{
+//						String o = i.next(); //Is array of strings
+//
+//						for (String sArr[] : PrologInterface.dottedPairsToArrayList(o))
+//						{
+//							for (String s : sArr)
+//							{
+//								if (alreadyAdded.contains(s))
+//									continue;
+//								alreadyAdded.add(s);
+//								ret.addSequence(loadPrologPlanRecursiveFsm(PrologInterface.removeSingleQuotes(s)));
+//							}
+//						}
+//					}
+//				}
+//			}
+//		} catch (Exception e)
+//		{
+//			e.printStackTrace();
+//		}		
+		
+		return ret;
+	}
+	
+	
+	/**
+	 * Load a plan by starting with the given identifier and load all it's referenced actions recursively.
+	 * Display the results as a state machine structure
+	 * 
+	 * TODO: integrate with the other method for reading plans
+	 * 
+	 * @param identifier Something like 'http://www.roboearth.org/kb/serve_drink.owl#ServeADrink'
+	 */
+	public void loadPrologPlanFsm(String identifier)
+	{
+
+		// read start action
+		HashMap<String, Vector<String>> qStart = PrologInterface.executeQuery("class_properties('"+identifier+"', knowrob:taskStartState, Start)");
+		
+		if(qStart!=null && qStart.get("Start").size()>0) {
+
+			Action a = loadPrologPlanRecursiveFsm(qStart.get("Start").firstElement());
+			
+			if (a!= null)
+				setMainAction(a);
+		}
+		
 	}
 	
 	/**
@@ -373,9 +506,11 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 	 */
 	private void drawHistory()
 	{
-		for (int i= clickHistory.size()-1; i>=0; i--)
-		{
-			clickHistory.get(i).Draw(this);
+		if(clickHistory.size()>=1) {
+			for (int i= clickHistory.size()-1; i>=0; i--)
+			{
+				clickHistory.get(i).Draw(this);
+			}
 		}
 	}
 	

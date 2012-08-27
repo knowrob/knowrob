@@ -204,7 +204,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 			scale(10);
 
-			background(20, 20, 20);
+			background(40);
 
 			pushMatrix();
 

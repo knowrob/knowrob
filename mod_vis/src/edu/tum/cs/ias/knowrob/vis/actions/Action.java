@@ -348,7 +348,10 @@ public class Action {
 	 */
 	public boolean isExpanded()
 	{
-		return (parentOfSequence.expandedSequence == this);
+		if(parentOfSequence!=null)
+			return (parentOfSequence.expandedSequence == this);
+		else 
+			return false;
 	}
 	
 	/**
