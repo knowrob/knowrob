@@ -36,7 +36,8 @@ import edu.tum.cs.vis.Canvas;
 import edu.tum.cs.vis.model.ItemModel;
 import edu.tum.cs.vis.model.Properties;
 
-
+import ros.*;
+import ros.communication.*;
 
 public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseListener, MouseMotionListener {
 
@@ -62,7 +63,9 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	private ArrayList<int[]> colors = new ArrayList<int[]>(12);
 	private PrologVisualizationCanvas prologVisCanvas = null;
 	public MenuHuman menu_human = new MenuHuman();
-
+	//private Publisher<ros.pkg.std_msgs.msg.String> clickPub = null;
+	//private NodeHandle rosNode = null;
+	//private Ros ros = null;
 
 	////////////////////////////////////////////////////////////////////////////////
 	// COLOR STUFF / CLICK STUFF
@@ -99,7 +102,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	public boolean isInitialized = false;
 	private boolean playingForward = true;
 	boolean record = false;
-
+	
 
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////
@@ -166,11 +169,20 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 			prologVisCanvas.validate();
 			prologVisCanvas.setSize(1270, 620);
 		}
-
-
+		
+		// Generate a Publisher for the RDF Identifier that
+		// currently was clicked.
+		try {
+			ros = Ros.getInstance();
+			ros.init("mod_vis");
+			rosNode = ros.createNodeHandle();
+			clickPub = rosNode.advertise("/mod_vis/mod_vis_clicked", new ros.pkg.std_msgs.msg.String(), 100);
+		}
+		catch(RosException e) {
+			e.printStackTrace();
+			ros.logError("Could not advertise /mod_vis_clicked topic.");
+		}
 	}
-
-
 
 
 	//////////////////////////////////////////////////////////////////////////////////////////////
@@ -1271,6 +1283,9 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		displayMessage(clickedOn+"");
 		if(clickedOn != null) {
 			prologVisCanvas.displayInfoFor(clickedOn);
+			ros.pkg.std_msgs.msg.String m = new ros.pkg.std_msgs.msg.String();
+			m.data = clickedOn;
+			clickPub.publish(m);
 		}
 		delay(100);
 		redraw();
