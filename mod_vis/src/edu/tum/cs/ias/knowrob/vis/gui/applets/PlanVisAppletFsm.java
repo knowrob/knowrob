@@ -2,6 +2,8 @@ package edu.tum.cs.ias.knowrob.vis.gui.applets;
 
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -33,7 +35,7 @@ import processing.core.PFont;
  * @author Stefan Profanter, Moritz Tenorth
  * @see edu.tum.cs.ias.knowrob.vis.actions.Action
  */
-public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMotionListener,MouseWheelListener {
+public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener {
 
 	private static final long serialVersionUID = 7695328948788620463L;
 
@@ -46,6 +48,20 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	 * Currently selected action
 	 */
 	private Action currAction;
+	
+	/**
+	 * Currently dragged action
+	 */
+	private Action draggedAction;
+
+	/**
+	 * Buffer storing the action from which a new transition is being 
+	 * created (user clicked on its outbound connector)
+	 */
+	private Action newTransitionFromAction;
+	
+	private Vector2f newTransitionToLocation = new Vector2f();
+	
 	
 	/**
 	 * Actions in this task
@@ -93,6 +109,9 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	 * Used in MouseDragging for calculating the dragging distance 
 	 */
 	private Vector2f draggingStart = new Vector2f(0,0);
+
+	private ActionTransition activeTransition;
+
 	
 	/**
 	 * Constructor
@@ -141,6 +160,10 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	    
 	    
 	    drawHistory();
+	    
+	    if(this.newTransitionFromAction!=null) {
+	    	arrowFromTo(this, newTransitionFromAction.getDrawInfo().getOutboundConnectorPos(), newTransitionToLocation, 5, -1);
+	    }
 	    
 	}
 	
@@ -303,6 +326,22 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	 */
 	public static void arrowFromTo(PApplet applet, Vector2f from, Vector2f to, float lineWidth, float blockLength)
 	{
+		
+		Vector<Vector2f> vertices = getArrowVertices(applet, from, to, lineWidth, blockLength);
+		
+		applet.beginShape();
+
+		for(Vector2f p : vertices)
+			applet.vertex(p.x,p.y);
+				
+		applet.endShape(CLOSE);
+		
+	}
+	
+	public static Vector<Vector2f> getArrowVertices(PApplet applet, Vector2f from, Vector2f to, float lineWidth, float blockLength) {
+		
+		Vector<Vector2f> vertices = new Vector<Vector2f>();
+		
 		Vector2f norm = new Vector2f(to.x - from.x, to.y-from.y);
 		float len = norm.length();
 		norm.normalize();
@@ -348,21 +387,12 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 		p5.add(transl);
 		p5.add(from);
 		
+		vertices.add(p1);	vertices.add(p2);	vertices.add(p3);	vertices.add(to);
+		vertices.add(p5);	vertices.add(p6);	vertices.add(p7);
 		
-		applet.beginShape();
-
-		applet.vertex(p1.x,p1.y);
-		applet.vertex(p2.x,p2.y);
-		applet.vertex(p3.x,p3.y);
-		applet.vertex(to.x,to.y); //front tip
-		applet.vertex(p5.x,p5.y);
-		applet.vertex(p6.x,p6.y);
-		applet.vertex(p7.x,p7.y);
-				
-		applet.endShape(CLOSE);
-		
-		
+		return vertices;
 	}
+	
 	
 	/**
 	 * Draw an arrow pointing right at given position. 
@@ -472,9 +502,8 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 			// increase y-coordinate for the next level
 			currentPosition.y += maxHeight + 2*ActionDrawInformation.MAIN_BOX_PADDING;
 		}
-		
-		
 	}
+	
 	
 	private void drawTransitions() {
 
@@ -487,6 +516,13 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	
 	@Override
 	public void mouseMoved(MouseEvent e) {
+		
+		if(newTransitionFromAction!=null) {
+			newTransitionToLocation.x = e.getX();
+			newTransitionToLocation.y = e.getY();
+			redraw();
+		}
+		
 		if (getHistoryHover(e.getX(), e.getY())>=0)
 		{
 			setCursor(handCursor);
@@ -498,24 +534,35 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 			setCursor(normalCursor);
 			return;
 		}
-       if (currAction.getDrawInfo().updateHover(e.getX(), e.getY()))
-    	   setCursor(handCursor);
-       else
-    	   setCursor(normalCursor);
+		for(Action a : actions) {
+			
+			if (a.getDrawInfo().updateHover(e.getX(), e.getY()))
+				setCursor(handCursor);
+			else
+				setCursor(normalCursor);
+		}
     }
 
 	@Override
     public void mouseDragged(MouseEvent e) {
-		if (draggingStart != null)
-		{
-			drawOffset.x = Math.min(0, drawOffset.x+ e.getX() - draggingStart.x);
-			drawOffset.y = Math.min(0,drawOffset.y + e.getY() - draggingStart.y);
+
+		
+		if (draggingStart != null) {
 			
-//			float viewOffsetX = Math.min(0, this.getWidth()-(currAction.getDrawInfo().getBoundingBox().width+100));
-//			float viewOffsetY = Math.min(0, this.getHeight()-(currAction.getDrawInfo().getBoundingBox().height+130));
-	
-//			drawOffset.x = Math.max(viewOffsetX,drawOffset.x);
-//			drawOffset.y = Math.max(viewOffsetY,drawOffset.y);
+			// check if we clicked on an action -> move only that action box
+			if(draggedAction!=null) {
+
+				draggedAction.getDrawInfo().positionOffset.x += e.getX() - draggingStart.x;
+				draggedAction.getDrawInfo().positionOffset.y += e.getY() - draggingStart.y;
+
+				draggingStart.x = e.getX();
+				draggingStart.y = e.getY();
+				return;
+			}
+
+			// no action wanted the drag event, so let's move the whole canvas:
+			drawOffset.x = drawOffset.x+ e.getX() - draggingStart.x;
+			drawOffset.y = drawOffset.y + e.getY() - draggingStart.y;
 
 			draggingStart.x = e.getX();
 			draggingStart.y = e.getY();
@@ -524,10 +571,24 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	
 	@Override
 	public void mousePressed(MouseEvent e) {
-		if (e.getButton() == 3)
-		{
+		
+		if (e.getButton() == MouseEvent.BUTTON1) {
+
+			// check if we clicked on an action -> move only that action box
+			for(Action a : actions) {
+				if(a.getDrawInfo().checkClick(e.getX(), e.getY())!=null) {
+					draggedAction = a;
+
+					draggingStart = new Vector2f(e.getX(),e.getY());
+					setCursor(moveCursor);
+				}
+			}
+			
+		} else if (e.getButton() == MouseEvent.BUTTON3) {
+			
 			draggingStart = new Vector2f(e.getX(),e.getY());
 			setCursor(moveCursor);
+			
 		} else {
 			setCursor(normalCursor);
 		}
@@ -536,28 +597,63 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	@Override
     public void mouseReleased(MouseEvent e) {
 		setCursor(normalCursor);
-    }
-
-	@Override
-    public void mouseEntered(MouseEvent e) {
-    }
-
-	@Override
-    public void mouseExited(MouseEvent e) {
+		draggingStart = null;
+		draggedAction = null;
     }
 
 	@Override
     public void mouseClicked(MouseEvent e) {
+		
+		
 		long diff = System.currentTimeMillis()-lastClickTime;
 		lastClickTime = System.currentTimeMillis();
+		
 		if (diff < 10) //double fired event
 			return;
-		if (e.getButton() == MouseEvent.BUTTON1 && currAction != null)
-		{
+		
+		
+		
+		if (e.getButton() == MouseEvent.BUTTON1 && currAction != null) {
+
+			// Check if clicked on outbound connector
+			for(Action a : actions) {
+				
+				Action clicked_on = a.getDrawInfo().checkPosOverOutboundConnector(e.getX(), e.getY());
+				if (clicked_on!= null) {
+					
+					newTransitionFromAction = clicked_on;
+					newTransitionToLocation.x = e.getX();
+					newTransitionToLocation.y = e.getY();
+					return;
+				}
+			}
+			
+			// Check if clicked on inbound connector in connection mode
+			if(newTransitionFromAction!=null) {
+				for(Action a : actions) {
+						
+					//Action clicked_on = a.getDrawInfo().checkPosOverInboundConnector(e.getX(), e.getY());
+
+					if (a.getDrawInfo().checkHover(e.getX(), e.getY(), null)!= null) {
+						
+						transitions.add(new ActionTransition(newTransitionFromAction, a, "OK"));
+						redraw();
+						
+						newTransitionFromAction = null;
+						newTransitionToLocation = new Vector2f();
+						return;
+					}
+				}
+			}
+			
+			// reset connection mode if clicked elsewhere
+			newTransitionFromAction = null;
+			newTransitionToLocation = new Vector2f();
+			
+			
 			//Check if clicked on history element
 			int idx = getHistoryHover(e.getX(), e.getY());
-			if (idx >= 0)
-			{
+			if (idx >= 0) {
 				currAction = clickHistory.get(idx).getAction();
 				for (int i=clickHistory.size()-1; i>idx; i--)
 				{
@@ -567,42 +663,101 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 				return;
 			}
 			
+			
 			//Check if clicked on an expand button
-			Action a = currAction.getDrawInfo().checkClickExpand(e.getX(), e.getY());
-			if (a!= null)
-			{
-				a.toggleExpand();
-				currAction.getDrawInfo().notifyModified();
-				return;
+			for(Action a : actions) {
+				
+				Action clicked_on = a.getDrawInfo().checkClickExpand(e.getX(), e.getY());
+				if (clicked_on!= null) {
+					
+					clicked_on.toggleExpand();
+					currAction.getDrawInfo().notifyModified();
+					return;
+				}
 			}
 			
-			//Check if clicked on an action
-			a = currAction.getDrawInfo().checkClick(e.getX(), e.getY());
-			if (a!= null && a != currAction)
-			{
-				currAction = a;
-				if (clickHistory.size()>1 && clickHistory.get(clickHistory.size()-2).getAction()==a)
-					clickHistory.remove(clickHistory.size()-1);
-				else
-					clickHistory.add(new ActionSelectHistoryInfo(currAction));
-				updateHistoryPosition();
+			
+			//Check if clicked on a transition arrow
+			for(ActionTransition t : transitions) {
+				
+				boolean inside = t.checkPosInArrow(new Vector2f(e.getX(), e.getY()), this);
+				
+				if (inside) {
+
+					// deactivate transition with second click
+					if(t.isActive()) {
+						t.setActive(false);
+						activeTransition = null;
+					}
+
+					// reset previously active transition, set to t 
+					t.setActive(true);
+					
+					if(activeTransition!=null)
+						activeTransition.setActive(false);
+					
+					activeTransition = t;
+					
+					return;
+				}
 			}
 			
+//		
+// TODO: expand the action?
+//
+//			//Check if clicked on an action
+//			for(Action a : actions) {
+//
+//				Action clicked_on  = a.getDrawInfo().checkClick(e.getX(), e.getY());
+//				if (clicked_on!= null && clicked_on != currAction)
+//				{
+//					currAction = clicked_on;
+//					if (clickHistory.size()>1 && clickHistory.get(clickHistory.size()-2).getAction()==a)
+//						clickHistory.remove(clickHistory.size()-1);
+//					else
+//						clickHistory.add(new ActionSelectHistoryInfo(currAction));
+//					updateHistoryPosition();
+//				}
+//			}
 			
 		}
     }
+	
+
+	@Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+	@Override
+    public void mouseExited(MouseEvent e) {
+    }
+
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-			int totalScrollAmount = 0;
-			if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL)
-			{
-				totalScrollAmount = e.getUnitsToScroll() * e.getScrollAmount();
-			} else {
-				totalScrollAmount = e.getWheelRotation() * 30;
-			}
-			draggingStart.y += totalScrollAmount;
+//			int totalScrollAmount = 0;
+//			if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL)
+//			{
+//				totalScrollAmount = e.getUnitsToScroll() * e.getScrollAmount();
+//			} else {
+//				totalScrollAmount = e.getWheelRotation() * 30;
+//			}
+//			draggingStart.y += totalScrollAmount;
 	}
+	
+	
+	
+	public void keyPressed(KeyEvent e) {
+		
+		if(e.getKeyCode() == KeyEvent.VK_DELETE) {
+			if(activeTransition!=null) {
+				transitions.remove(activeTransition);
+				this.activeTransition = null;
+			}
+		}
+		
+	}
+	
 	
 	/**
 	 * Get index of history object under current mouse position.

@@ -47,6 +47,10 @@ public class ActionDrawInformation {
 	 */
 	public final static float EXPAND_BOX_HEIGHT = 18f;
 	
+	/**
+	 * Dimensions of the box-connectors
+	 */
+	public final static Vector2f CONNECTOR_DIM = new Vector2f(50f, 7f);
 	
 	/**
 	 * Default line/border width
@@ -253,11 +257,16 @@ public class ActionDrawInformation {
 	 * Set to true if this action has additional subsequences which can be expanded.
 	 */
 	private boolean hasExpandButton = false;
-	
+
 	/**
 	 * current position to draw the main box of the action
 	 */
-	private Vector2f position;
+	public Vector2f position;
+	
+	/**
+	 * offset relative to the current position to draw the main box of the action
+	 */
+	public Vector2f positionOffset;
 	
 	/**
 	 * Position and dimension of Expanded and Simple box
@@ -274,6 +283,7 @@ public class ActionDrawInformation {
 	public ActionDrawInformation(Action parent)
 	{
 		action = parent;
+		positionOffset = new Vector2f();
 	}
 	
 	/**
@@ -537,7 +547,7 @@ public class ActionDrawInformation {
 		this.position = new Vector2f(position);
 		boundingBoxSimple.x = (int)position.x;
 		boundingBoxSimple.y = (int)position.y;
-		Vector2f tmpPos = new Vector2f(position);
+		Vector2f tmpPos = new Vector2f(position.x + positionOffset.x, position.y + positionOffset.y);
 		recalculateDimensions(applet);
 		
 		if (highlight == HighlightType.NOT_HIGHTLIGHTED)
@@ -570,6 +580,16 @@ public class ActionDrawInformation {
 		tmpPos.y += getNameBoxHeight()+INNER_CONTENT_PADDING;
 		
 		drawProperties(applet, tmpPos);
+		
+		// draw inbound and outbound connectors
+		applet.fill(backgroundBrightColor.getRed(), backgroundBrightColor.getGreen(), backgroundBrightColor.getBlue(), backgroundBrightColor.getAlpha());
+		applet.stroke(currentBorderColor.getRed(), currentBorderColor.getGreen(), currentBorderColor.getBlue(), currentBorderColor.getAlpha());
+		applet.rect(getInboundConnectorPos().x-CONNECTOR_DIM.x/2, getInboundConnectorPos().y-CONNECTOR_DIM.y, CONNECTOR_DIM.x, CONNECTOR_DIM.y);
+		
+		// draw inbound and outbound connectors
+		applet.fill(backgroundBrightColor.getRed(), backgroundBrightColor.getGreen(), backgroundBrightColor.getBlue(), backgroundBrightColor.getAlpha());
+		applet.stroke(currentBorderColor.getRed(), currentBorderColor.getGreen(), currentBorderColor.getBlue(), currentBorderColor.getAlpha());
+		applet.rect(getOutboundConnectorPos().x-CONNECTOR_DIM.x/2, getOutboundConnectorPos().y, CONNECTOR_DIM.x, CONNECTOR_DIM.y);
 	}
 	
 	/**
@@ -634,7 +654,7 @@ public class ActionDrawInformation {
 		applet.stroke(arrowBorderColor.getRed(), arrowBorderColor.getGreen(), arrowBorderColor.getBlue(), arrowBorderColor.getAlpha());
 	    applet.fill(arrowBackgroundColor.getRed(), arrowBackgroundColor.getGreen(), arrowBackgroundColor.getBlue(), arrowBackgroundColor.getAlpha());
 
-	    Vector2f connPointParent = new Vector2f(position);
+	    Vector2f connPointParent = new Vector2f(position.x + positionOffset.x, position.y + positionOffset.y);
 	    connPointParent.x+=boxOffsetLeft;
 	    Vector2f connPointChildren = new Vector2f(connPointParent);
 	    connPointChildren.y += getExtendedBoxDimension().y-5;
@@ -863,7 +883,7 @@ public class ActionDrawInformation {
 	 * @param foundInParent set to true if aleady a matching box was found, so only setHover(false) is needed to call 
 	 * @return the Action (its draw info) over which the mouse is hovering or null if none.
 	 */
-	private ActionDrawInformation checkHover(float x, float y, ActionDrawInformation found)
+	public ActionDrawInformation checkHover(float x, float y, ActionDrawInformation found)
 	{
 
 		if (position == null)
@@ -916,14 +936,20 @@ public class ActionDrawInformation {
 			setHover(false);
 			return found; //will be null
 			
+		} else if(checkPosOverInboundConnector(x, y)!=null) {
+			setHover(true);
+			return this;		
 			
+		} else if(checkPosOverOutboundConnector(x, y)!=null) {
+			setHover(true);
+			return this;
 			
 		} else {
 			//Check hovering if drawn as simple box
 			Vector2f dim = getSimpleBoxDimension();
 			float boxX,boxY,boxW,boxH;
-			boxX = position.x;
-			boxY = position.y;
+			boxX = position.x + positionOffset.x;
+			boxY = position.y + positionOffset.y;
 			boxW = dim.x;
 			boxH = dim.y;
 			if (x>boxX && x<boxX+boxW && y>boxY && y<boxY+boxH)
@@ -940,12 +966,12 @@ public class ActionDrawInformation {
 	
 	/**
 	 * Check if mouse position x|y is over an expand arrow
-	 * @param x x coordinate of mouse
-	 * @param y y coordinate of mouse
+	 * @param mouse_x x coordinate of mouse
+	 * @param mouse_y y coordinate of mouse
 	 * @param sequenceExpandHeight set to 0 for direct call. Only used for recursing
 	 * @return the parent Action (it's draw info) over which's expand arrow the mouse is hovering or null if none.
 	 */
-	private ActionDrawInformation checkHoverExpand(float x, float y, boolean hasExpandButton, float sequenceBoxHeight, boolean parentExpanded)
+	private ActionDrawInformation checkHoverExpand(float mouse_x, float mouse_y, boolean hasExpandButton, float sequenceBoxHeight, boolean parentExpanded)
 	{
 
 		if (position == null)
@@ -964,7 +990,7 @@ public class ActionDrawInformation {
 					inf.setHoverExpand(false);
 				else
 				{
-					ActionDrawInformation d = inf.checkHoverExpand(x, y,this.hasExpandButton,this.maxSubsequenceHeight, a.isExpanded());
+					ActionDrawInformation d = inf.checkHoverExpand(mouse_x, mouse_y,this.hasExpandButton,this.maxSubsequenceHeight, a.isExpanded());
 					if (d!=null)
 						found = d;
 				}
@@ -975,11 +1001,11 @@ public class ActionDrawInformation {
 			//Check hovering if drawn as simple box
 			Vector2f dim = getSimpleBoxDimension();
 			float boxX,boxY,boxW,boxH;
-			boxX = position.x;
-			boxY = position.y+sequenceBoxHeight;
+			boxX = position.x + positionOffset.x;
+			boxY = position.y + positionOffset.y +sequenceBoxHeight;
 			boxW = dim.x;
 			boxH = EXPAND_BOX_HEIGHT;
-			if (action.getSequenceCount() > 0 && x>boxX && x<boxX+boxW && y>boxY && y<boxY+boxH)
+			if (action.getSequenceCount() > 0 && mouse_x>boxX && mouse_x<boxX+boxW && mouse_y>boxY && mouse_y<boxY+boxH)
 			{
 				setHoverExpand(true);
 				return this;
@@ -992,6 +1018,52 @@ public class ActionDrawInformation {
 		return found;
 		
 	}
+	
+	
+	/**
+	 * Check if mouse position is inside inbound connector
+	 * 
+	 * @param mouse_x x coordinate of mouse
+	 * @param mouse_y y coordinate of mouse
+	 * @return This action (if connector was clicked on), or null if none.
+	 */
+	public Action checkPosOverInboundConnector(float mouse_x, float mouse_y) {
+		
+		float boxX = getInboundConnectorPos().x-CONNECTOR_DIM.x/2;
+		float boxY = getInboundConnectorPos().y-CONNECTOR_DIM.y;
+		float boxW = CONNECTOR_DIM.x;
+		float boxH = CONNECTOR_DIM.y;
+		
+		if (mouse_x>boxX && mouse_x<boxX+boxW && 
+			mouse_y>boxY && mouse_y<boxY+boxH) {
+			return this.action;
+		} 
+		return null;
+	}
+	
+	
+	/**
+	 * Check if mouse position is inside outbound connector
+	 * 
+	 * @param mouse_x x coordinate of mouse
+	 * @param mouse_y y coordinate of mouse
+	 * @return This action (if connector was clicked on), or null if none.
+	 */
+	public Action checkPosOverOutboundConnector(float mouse_x, float mouse_y) {
+		
+		float boxX = getOutboundConnectorPos().x-CONNECTOR_DIM.x/2;
+		float boxY = getOutboundConnectorPos().y;
+		float boxW = CONNECTOR_DIM.x;
+		float boxH = CONNECTOR_DIM.y;
+		
+		if (mouse_x>boxX && mouse_x<boxX+boxW && 
+			mouse_y>boxY && mouse_y<boxY+boxH) {
+			
+			return this.action;
+		} 
+		return null;
+	}
+	
 	
 	/**
 	 * Update color of action for current mouse position.
@@ -1193,11 +1265,11 @@ public class ActionDrawInformation {
 	public Vector2f getOutboundConnectorPos() {
 		
 		// TODO: replace with better computation, taking extended status into account
-		return new Vector2f(position.x + this.getSimpleBoxDimension().x/2, position.y + this.getSimpleBoxDimension().y);
+		return new Vector2f(position.x + positionOffset.x + this.getSimpleBoxDimension().x/2, position.y + positionOffset.y + this.getSimpleBoxDimension().y);
 	}
 
 	public Vector2f getInboundConnectorPos() {
 		// TODO: replace with better computation, taking extended status into account
-		return new Vector2f(position.x + this.getSimpleBoxDimension().x/2, position.y);
+		return new Vector2f(position.x + positionOffset.x + this.getSimpleBoxDimension().x/2, position.y + positionOffset.y);
 	}
 }

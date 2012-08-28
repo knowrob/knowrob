@@ -35,6 +35,7 @@ public class PlanVisTest {
 		f.addMouseListener(applet);
 		f.addMouseMotionListener(applet);
 		f.addMouseWheelListener(applet);
+		f.addKeyListener(applet);
 		
 		
 		Action greet = new Action("Greeting a person");
@@ -43,7 +44,6 @@ public class PlanVisTest {
 		
 		Action approach = new Action("Approach the person");
 		approach.setProperty("type", "ApproachingAPerson");
-//		greet.addChildAction(approach);
 		applet.addAction(approach);
 		applet.addTransition(new ActionTransition(greet, approach, "OK"));
 
@@ -51,57 +51,49 @@ public class PlanVisTest {
 			detect.setProperty("type", "PersonDetection");
 			detect.setProperty("minNumber", "1");
 			approach.addSequence(detect);
-//			applet.addAction(detect);
 			
 			Action localize = new Action("Localize person");
 			localize.setProperty("type", "PersonLocalization");
 			localize.setProperty("outputs", "person-pose1");
 			approach.addSequence(localize);
-//			applet.addAction(localize);
 			
 			Action navigate = new Action("Navigate to person");
 			navigate.setProperty("type", "Navigation");
 			navigate.setProperty("toLocation", "person-pose1");
 			approach.addSequence(navigate);
-//			applet.addAction(navigate);
-			
+
+
 		Action identify = new Action("Identify the person");
 		identify.setProperty("type", "PersonIdentification");
-//		approach.addChildAction(identify);
 		applet.addAction(identify);
 		applet.addTransition(new ActionTransition(approach, identify, "OK"));
 		
 		Action check_known = new Action("Check if Person known");
 		check_known.setProperty("type", "CheckIfKnown");
-//		identify.addChildAction(check_known);
 		applet.addAction(check_known);
 		applet.addTransition(new ActionTransition(identify, check_known, "OK"));
 		
 		Action talk_to = new Action("Say hello");
 		talk_to.setProperty("type", "SpeechSynthesis");
 		talk_to.setProperty("spokenText", "Hello, NAME!");
-//		check_known.addChildAction(talk_to);
 		applet.addAction(talk_to);
 		applet.addTransition(new ActionTransition(check_known, talk_to, "OK"));
 		
 		Action talk_to2 = new Action("Say hello2");
 		talk_to2.setProperty("type", "SpeechSynthesis");
 		talk_to2.setProperty("spokenText", "Hello, NAME!");
-//		check_known.addChildAction(talk_to);
 		applet.addAction(talk_to2);
 		applet.addTransition(new ActionTransition(talk_to, talk_to2, "OK"));
 
 		Action ask_name = new Action("Ask for the name");
 		ask_name.setProperty("type", "SpeechSynthesis");
 		ask_name.setProperty("spokenText", "Hello, what is your name?");
-//		check_known.addChildAction(ask_name);
 		applet.addAction(ask_name);
 		applet.addTransition(new ActionTransition(check_known, ask_name, "COMPLETED_TIMEOUT"));
 		
 		Action ask_name2 = new Action("Ask for the name2");
 		ask_name2.setProperty("type", "SpeechSynthesis");
 		ask_name2.setProperty("spokenText", "Hello, what is your name?");
-//		check_known.addChildAction(ask_name);
 		applet.addAction(ask_name2);
 		applet.addTransition(new ActionTransition(ask_name, ask_name2, "OK"));
 		applet.addTransition(new ActionTransition(ask_name2, check_known, "ERROR"));

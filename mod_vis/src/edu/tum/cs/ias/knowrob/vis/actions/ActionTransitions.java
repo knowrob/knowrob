@@ -22,7 +22,7 @@ public class ActionTransitions implements Iterable<ActionTransition> {
 	}
 	
 	
-	public boolean add(ActionTransition t) {
+	public synchronized boolean add(ActionTransition t) {
 		
 		if(!transitions.contains(t))
 			transitions.add(t);
@@ -30,17 +30,17 @@ public class ActionTransitions implements Iterable<ActionTransition> {
 		return true;
 	}
 	
-	public void remove(ActionTransition t) {
+	public synchronized void remove(ActionTransition t) {
 		transitions.remove(t);
 	}
 
 	
-	public void removeAll(Collection<ActionTransition> ts) {
+	public synchronized void removeAll(Collection<ActionTransition> ts) {
 		transitions.remove(ts);
 	}
 	
 	
-	public Set<ActionTransition> getTransitionsFrom(Action a) {
+	public synchronized Set<ActionTransition> getTransitionsFrom(Action a) {
 		
 		Set<ActionTransition> res = new HashSet<ActionTransition>();
 		
@@ -53,7 +53,7 @@ public class ActionTransitions implements Iterable<ActionTransition> {
 	}
 	
 	
-	public Set<ActionTransition> getTransitionsTo(Action a) {
+	public synchronized Set<ActionTransition> getTransitionsTo(Action a) {
 		
 		Set<ActionTransition> res = new HashSet<ActionTransition>();
 		
@@ -66,7 +66,7 @@ public class ActionTransitions implements Iterable<ActionTransition> {
 	}
 	
 	
-	public int getTreeLevel(Action a) {
+	public synchronized int getTreeLevel(Action a) {
 
 		int level = -1;
 		if(startAction != null) {
@@ -76,7 +76,7 @@ public class ActionTransitions implements Iterable<ActionTransition> {
 	}
 	
 	
-	private int getTreeLevelRecursive(Action a, int level, Set<Action> visited) {
+	private synchronized int getTreeLevelRecursive(Action a, int level, Set<Action> visited) {
 		
 		if(a.equals(startAction)) {
 			return level;
@@ -101,7 +101,7 @@ public class ActionTransitions implements Iterable<ActionTransition> {
 	}
 	
 	
-	public Map<Integer, Vector<Action>> getTreeLevels() {
+	public synchronized Map<Integer, Vector<Action>> getTreeLevels() {
 		
 		HashMap<Integer, Vector<Action>> levels = new HashMap<Integer, Vector<Action>>();
 		for(ActionTransition t : transitions) {
@@ -123,7 +123,7 @@ public class ActionTransitions implements Iterable<ActionTransition> {
 	 * compute the maximum width of the actions to be drawn in order to compute the horizontally centered alignment
 	 * @return
 	 */
-	public Map<Integer, Float> getLevelWidths() {
+	public synchronized Map<Integer, Float> getLevelWidths() {
 		
 		Map<Integer, Float> levelWidths = new HashMap<Integer, Float>();
 		Map<Integer, Vector<Action>> levels = getTreeLevels();
@@ -151,13 +151,8 @@ public class ActionTransitions implements Iterable<ActionTransition> {
 		this.startAction = startAction;
 	}
 
-
-	public List<ActionTransition> getTransitions() {
-		return this.transitions;
-	}
-
 	@Override
-	public Iterator<ActionTransition> iterator() {
+	public synchronized Iterator<ActionTransition> iterator() {
 		return transitions.iterator();
 	}
 }
