@@ -2,6 +2,7 @@ package edu.tum.cs.ias.knowrob.vis.gui.applets;
 
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Frame;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -20,12 +21,16 @@ import java.util.Vector;
 
 import javax.vecmath.Vector2f;
 
+import controlP5.ControlEvent;
+import controlP5.ControlP5;
+
 import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
 import edu.tum.cs.ias.knowrob.vis.actions.Action;
 import edu.tum.cs.ias.knowrob.vis.actions.ActionDrawInformation;
 import edu.tum.cs.ias.knowrob.vis.actions.ActionSelectHistoryInfo;
 import edu.tum.cs.ias.knowrob.vis.actions.ActionTransition;
 import edu.tum.cs.ias.knowrob.vis.actions.ActionTransitions;
+import edu.tum.cs.ias.knowrob.vis.gui.applets.EditActionPropertiesApplet.OWLClassSelect;
 
 import processing.core.PApplet;
 import processing.core.PFont;
@@ -35,7 +40,7 @@ import processing.core.PFont;
  * @author Stefan Profanter, Moritz Tenorth
  * @see edu.tum.cs.ias.knowrob.vis.actions.Action
  */
-public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener {
+public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, iAddActionCallback {
 
 	private static final long serialVersionUID = 7695328948788620463L;
 
@@ -113,6 +118,9 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	private ActionTransition activeTransition;
 
 	
+	public ControlP5 controlP5;
+	
+	
 	/**
 	 * Constructor
 	 */
@@ -142,6 +150,11 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	    hint(ENABLE_ACCURATE_TEXTURES);
 	    ellipseMode(RADIUS);
 	    frameRate(25);
+	    
+	    initControlP5();
+	    
+	    drawActionsTreeLayout();
+	    
 	}
 	
 	@Override
@@ -165,6 +178,7 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	    	arrowFromTo(this, newTransitionFromAction.getDrawInfo().getOutboundConnectorPos(), newTransitionToLocation, 5, -1);
 	    }
 	    
+	    controlP5.draw();
 	}
 	
 	/**
@@ -468,39 +482,74 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	/**
 	 * Draw the current selected action
 	 */
-	private void drawActions() {
+	private void drawActionsTreeLayout() {
 
 		Vector2f currentPosition = new Vector2f(50+drawOffset.x,80+drawOffset.y);
 		Map<Integer, Vector<Action>> levels = transitions.getTreeLevels();
 		Map<Integer, Float> levelWidths = transitions.getLevelWidths();
 		
-		// compute horizontal center as half of the maximum level width
-		float center_x = currentPosition.x + Collections.max(levelWidths.values())/2;
+		if(levels.size()>0) {
+			
+			// compute horizontal center as half of the maximum level width
+			float center_x = currentPosition.x + Collections.max(levelWidths.values())/2;
+
+			for(int level : levels.keySet()) {
+
+				// left corner of the first action is maxWidth - curWidth
+				currentPosition.x = center_x - levelWidths.get(level)/2;
+
+
+				float maxHeight = 0.0f;
+				for(Action a : levels.get(level)) {
+
+					if(a.isExpanded()) {
+						a.getDrawInfo().drawSimpleBox(this, currentPosition, 10, true);
+					} else {
+						a.getDrawInfo().drawSimpleBox(this, currentPosition, 10, false);
+					}
+
+					// increase x-position after each action on this level
+					currentPosition.x += a.getDrawInfo().getSimpleBoxDimension().x + ActionDrawInformation.SEQUENCE_BOX_PADDING;
+
+					// remember max. action height per level to know where to start the next one
+					maxHeight = Math.max(maxHeight, a.getDrawInfo().getSimpleBoxDimension().y);
+				}
+
+				// increase y-coordinate for the next level
+				currentPosition.y += maxHeight + 2*ActionDrawInformation.MAIN_BOX_PADDING;
+			}
+		}
 		
-		for(int level : levels.keySet()) {
+		
+		// draw all actions that are currently not connected in the upper left corner
+		currentPosition = new Vector2f(50+drawOffset.x,80+drawOffset.y);
+		
+		for(Action a : actions) {
 			
-			// left corner of the first action is maxWidth - curWidth
-			currentPosition.x = center_x - levelWidths.get(level)/2;
-			
-			
-			float maxHeight = 0.0f;
-			for(Action a : levels.get(level)) {
-				
+			if( transitions.getTransitionsFrom(a).isEmpty() &&
+				transitions.getTransitionsTo(a).isEmpty()) {
+
 				if(a.isExpanded()) {
 					a.getDrawInfo().drawSimpleBox(this, currentPosition, 10, true);
 				} else {
 					a.getDrawInfo().drawSimpleBox(this, currentPosition, 10, false);
 				}
 				
-				// increase x-position after each action on this level
-				currentPosition.x += a.getDrawInfo().getSimpleBoxDimension().x + ActionDrawInformation.SEQUENCE_BOX_PADDING;
-				
-				// remember max. action height per level to know where to start the next one
-				maxHeight = Math.max(maxHeight, a.getDrawInfo().getSimpleBoxDimension().y);
 			}
-			
-			// increase y-coordinate for the next level
-			currentPosition.y += maxHeight + 2*ActionDrawInformation.MAIN_BOX_PADDING;
+		}
+	}
+	
+	
+	private void drawActions() {
+
+		// draw  actions wherever they have been drawn before (don't re-arrange layout)
+		for(Action a : actions) {
+
+			if(a.isExpanded()) {
+				a.getDrawInfo().drawSimpleBox(this, a.getDrawInfo().position, 10, true);
+			} else {
+				a.getDrawInfo().drawSimpleBox(this, a.getDrawInfo().position, 10, false);
+			}
 		}
 	}
 	
@@ -513,6 +562,20 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 		}
 	}
 
+	
+
+	private void initControlP5() {
+		
+	    controlP5 = new ControlP5(this);
+		controlP5.setColorForeground(color(180))
+		.setColorCaptionLabel(color(240))
+		.setColorBackground(color(80))
+		.setColorActive(color(200));
+		
+	    controlP5.addButton("add action", 1, 700, 20, 80, 20);
+	}
+	
+	
 	
 	@Override
 	public void mouseMoved(MouseEvent e) {
@@ -541,6 +604,10 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 			else
 				setCursor(normalCursor);
 		}
+
+		// only send left-button events to contolP5
+		if(controlP5!=null && e.getButton() == MouseEvent.BUTTON1)
+			controlP5.controlWindow.mouseEvent(e);
     }
 
 	@Override
@@ -567,6 +634,11 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 			draggingStart.x = e.getX();
 			draggingStart.y = e.getY();
 		}
+		
+
+		// only send left-button events to contolP5
+		if(controlP5!=null && e.getButton() == MouseEvent.BUTTON1)
+			controlP5.controlWindow.mouseEvent(e);
     }
 	
 	@Override
@@ -584,6 +656,10 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 				}
 			}
 			
+			// only send left-button events to contolP5
+			if(controlP5!=null && e.getButton() == MouseEvent.BUTTON1)
+				controlP5.controlWindow.mouseEvent(e);
+			
 		} else if (e.getButton() == MouseEvent.BUTTON3) {
 			
 			draggingStart = new Vector2f(e.getX(),e.getY());
@@ -592,6 +668,7 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 		} else {
 			setCursor(normalCursor);
 		}
+
     }
 
 	@Override
@@ -599,6 +676,11 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 		setCursor(normalCursor);
 		draggingStart = null;
 		draggedAction = null;
+
+
+		// only send left-button events to contolP5
+		if(controlP5!=null && e.getButton() == MouseEvent.BUTTON1)
+			controlP5.controlWindow.mouseEvent(e);
     }
 
 	@Override
@@ -610,7 +692,6 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 		
 		if (diff < 10) //double fired event
 			return;
-		
 		
 		
 		if (e.getButton() == MouseEvent.BUTTON1 && currAction != null) {
@@ -721,15 +802,26 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 //			}
 			
 		}
+		
+
+		// only send left-button events to contolP5
+		if(controlP5!=null && e.getButton() == MouseEvent.BUTTON1)
+			controlP5.controlWindow.mouseEvent(e);
     }
 	
 
 	@Override
     public void mouseEntered(MouseEvent e) {
+		
+		if(controlP5!=null)
+			controlP5.controlWindow.mouseEvent(e);
     }
 
 	@Override
     public void mouseExited(MouseEvent e) {
+
+		if(controlP5!=null)
+			controlP5.controlWindow.mouseEvent(e);
     }
 
 
@@ -743,6 +835,7 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 //				totalScrollAmount = e.getWheelRotation() * 30;
 //			}
 //			draggingStart.y += totalScrollAmount;
+		controlP5.controlWindow.mouseEvent(e);
 	}
 	
 	
@@ -757,6 +850,19 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 		}
 		
 	}
+	
+	public void controlEvent(ControlEvent ev) {
+
+		if(ev.isController()) {
+
+			// open action creation dialog	
+			if(ev.getController().getName().equals("add action")) {
+				ActionEditorWindow f = new ActionEditorWindow();
+				f.setAddActionCallback(this); 
+			}
+		}
+	}
+	
 	
 	
 	/**
@@ -825,9 +931,32 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	
 	public void addAction(Action a) {
 		this.actions.add(a);
+		a.getDrawInfo().position = new Vector2f(50+drawOffset.x,80+drawOffset.y);
 	}
 	
 	public void addTransition(ActionTransition t) {
 		this.transitions.add(t);
 	}
+	
+	
+	
+	public class ActionEditorWindow extends Frame {
+
+		private static final long serialVersionUID = 543157068719461737L;
+		public EditActionPropertiesApplet app;
+
+		public ActionEditorWindow() {
+	        setBounds(100,100,800,600);
+	        app = new EditActionPropertiesApplet();
+	        app.frame = this;
+	        add(app);
+	        app.init();
+			this.setVisible(true);
+	    }
+
+		public void setAddActionCallback(iAddActionCallback cb) {
+			app.setAddActionCallback(cb); 
+		}
+	}
+	
 }

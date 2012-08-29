@@ -18,7 +18,7 @@ public class ActionTransitions implements Iterable<ActionTransition> {
 	Action startAction = null;
 
 	public ActionTransitions() {
-		this.transitions = new ArrayList<ActionTransition>();
+		this.transitions = Collections.synchronizedList(new ArrayList<ActionTransition>());
 	}
 	
 	

@@ -91,7 +91,10 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 	 */
 	private OWLClass searchResult = null;
 
-	
+	/**
+	 * Callback to be notified once class has been selected
+	 */
+	private IClassSelectionCallback cb;
 	
 	
 	/**
@@ -112,12 +115,13 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 		textFont(dejavuFont);
 
 		frameRate(10);
-		PrologInterface.initJPLProlog("ias_knowledge_base");
+//		PrologInterface.initJPLProlog("ias_knowledge_base");
 		
 		id2class = new HashMap<Float, OWLClass>();
 		owl_classes = new ArrayList<OWLClass>();
 		
 		
+		// TODO make base class configurable
 		readSubClassesFromOWL("knowrob:'PurposefulAction'", null);
 		
 		
@@ -219,7 +223,14 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 		}
 		
 		if(ev.getController().getName().equals("class list")) {
-			System.out.println("Selected class " + id2class.get(Float.valueOf(ev.getValue())).getIRI());
+			
+			if(this.cb!=null) {
+				cb.owlClassSelected(id2class.get(Float.valueOf(ev.getValue())).getIRI());
+				this.frame.setVisible(false);
+				
+			} else {
+				System.out.println("Selected class " + id2class.get(Float.valueOf(ev.getValue())).getIRI());
+			}
 		}
 	}
 
@@ -283,7 +294,9 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 		}
 	}
 
-	
+	public void setClassSelectedCallback(IClassSelectionCallback cb) {
+		this.cb = cb;		
+	}
 
 
 	
@@ -434,9 +447,9 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 
 				OWLClass sub;
 				if(label.equals("''"))
-					sub = new OWLClass(iri, PrologInterface.valueFromIRI(iri));
+					sub = new OWLClass(PrologInterface.removeSingleQuotes(iri), PrologInterface.valueFromIRI(iri));
 				else
-					sub = new OWLClass(iri, PrologInterface.removeSingleQuotes(label));
+					sub = new OWLClass(PrologInterface.removeSingleQuotes(iri), PrologInterface.removeSingleQuotes(label));
 
 				// either add to the specified super-class or to the general list of top-level classes
 				if(sup!=null) {
@@ -543,6 +556,7 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 	public static void main(String args[]) {
 		PApplet.main(new String[] { "edu.tum.cs.ias.knowrob.vis.gui.applets.OwlClassSelectorApplet" });
 	}
+
 
 
 }

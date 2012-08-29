@@ -544,7 +544,7 @@ public class ActionDrawInformation {
 	public void drawSimpleBox(PApplet applet,Vector2f position, float minHeight, boolean drawExpandBox)
 	{
 		this.drawnAsSimple = true;
-		this.position = new Vector2f(position);
+//		this.position = new Vector2f(position);
 		boundingBoxSimple.x = (int)position.x;
 		boundingBoxSimple.y = (int)position.y;
 		Vector2f tmpPos = new Vector2f(position.x + positionOffset.x, position.y + positionOffset.y);
