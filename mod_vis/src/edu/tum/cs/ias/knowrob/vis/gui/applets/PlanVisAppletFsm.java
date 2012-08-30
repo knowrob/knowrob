@@ -109,7 +109,7 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	/**
 	 * Draw offset. Used when image moved/dragged.
 	 */
-	private Vector2f drawOffset = new Vector2f(0,0);
+	private Vector2f globalPosOffset = new Vector2f(0,0);
 	/**
 	 * Used in MouseDragging for calculating the dragging distance 
 	 */
@@ -119,6 +119,8 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 
 	
 	public ControlP5 controlP5;
+
+	private static boolean prolog_initialized = false;
 	
 	
 	/**
@@ -165,19 +167,17 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 		textFont(dejavuFont);
 	    textMode(SCREEN);
 	    	    
-
-	    // hacky solution to draw the action boxes on top of the arrows...
 	    drawActions();
 	    drawTransitions();
 	    drawActions();
-	    
-	    
+
 	    drawHistory();
-	    
+
 	    if(this.newTransitionFromAction!=null) {
 	    	arrowFromTo(this, newTransitionFromAction.getDrawInfo().getOutboundConnectorPos(), newTransitionToLocation, 5, -1);
 	    }
-	    
+
+
 	    controlP5.draw();
 	}
 	
@@ -484,7 +484,7 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	 */
 	private void drawActionsTreeLayout() {
 
-		Vector2f currentPosition = new Vector2f(50+drawOffset.x,80+drawOffset.y);
+		Vector2f currentPosition = new Vector2f(50+globalPosOffset.x,80+globalPosOffset.y);
 		Map<Integer, Vector<Action>> levels = transitions.getTreeLevels();
 		Map<Integer, Float> levelWidths = transitions.getLevelWidths();
 		
@@ -503,9 +503,9 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 				for(Action a : levels.get(level)) {
 
 					if(a.isExpanded()) {
-						a.getDrawInfo().drawSimpleBox(this, currentPosition, 10, true);
+						a.getDrawInfo().drawSimpleBox(this, currentPosition, globalPosOffset, 10, true);
 					} else {
-						a.getDrawInfo().drawSimpleBox(this, currentPosition, 10, false);
+						a.getDrawInfo().drawSimpleBox(this, currentPosition, globalPosOffset, 10, false);
 					}
 
 					// increase x-position after each action on this level
@@ -522,7 +522,7 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 		
 		
 		// draw all actions that are currently not connected in the upper left corner
-		currentPosition = new Vector2f(50+drawOffset.x,80+drawOffset.y);
+		currentPosition = new Vector2f(50+globalPosOffset.x,80+globalPosOffset.y);
 		
 		for(Action a : actions) {
 			
@@ -530,9 +530,9 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 				transitions.getTransitionsTo(a).isEmpty()) {
 
 				if(a.isExpanded()) {
-					a.getDrawInfo().drawSimpleBox(this, currentPosition, 10, true);
+					a.getDrawInfo().drawSimpleBox(this, currentPosition, globalPosOffset, 10, true);
 				} else {
-					a.getDrawInfo().drawSimpleBox(this, currentPosition, 10, false);
+					a.getDrawInfo().drawSimpleBox(this, currentPosition, globalPosOffset, 10, false);
 				}
 				
 			}
@@ -546,9 +546,9 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 		for(Action a : actions) {
 
 			if(a.isExpanded()) {
-				a.getDrawInfo().drawSimpleBox(this, a.getDrawInfo().position, 10, true);
+				a.getDrawInfo().drawSimpleBox(this, a.getDrawInfo().position, globalPosOffset, 10, true);
 			} else {
-				a.getDrawInfo().drawSimpleBox(this, a.getDrawInfo().position, 10, false);
+				a.getDrawInfo().drawSimpleBox(this, a.getDrawInfo().position, globalPosOffset, 10, false);
 			}
 		}
 	}
@@ -606,7 +606,7 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 		}
 
 		// only send left-button events to contolP5
-		if(controlP5!=null && e.getButton() == MouseEvent.BUTTON1)
+		if(controlP5!=null)
 			controlP5.controlWindow.mouseEvent(e);
     }
 
@@ -619,8 +619,8 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 			// check if we clicked on an action -> move only that action box
 			if(draggedAction!=null) {
 
-				draggedAction.getDrawInfo().positionOffset.x += e.getX() - draggingStart.x;
-				draggedAction.getDrawInfo().positionOffset.y += e.getY() - draggingStart.y;
+				draggedAction.getDrawInfo().localPosOffset.x += e.getX() - draggingStart.x;
+				draggedAction.getDrawInfo().localPosOffset.y += e.getY() - draggingStart.y;
 
 				draggingStart.x = e.getX();
 				draggingStart.y = e.getY();
@@ -628,8 +628,8 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 			}
 
 			// no action wanted the drag event, so let's move the whole canvas:
-			drawOffset.x = drawOffset.x+ e.getX() - draggingStart.x;
-			drawOffset.y = drawOffset.y + e.getY() - draggingStart.y;
+			globalPosOffset.x += e.getX() - draggingStart.x;
+			globalPosOffset.y += e.getY() - draggingStart.y;
 
 			draggingStart.x = e.getX();
 			draggingStart.y = e.getY();
@@ -669,6 +669,9 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 			setCursor(normalCursor);
 		}
 
+		// only send left-button events to contolP5
+		if(controlP5!=null && e.getButton() == MouseEvent.BUTTON1)
+			controlP5.controlWindow.mouseEvent(e);
     }
 
 	@Override
@@ -682,7 +685,7 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 		if(controlP5!=null && e.getButton() == MouseEvent.BUTTON1)
 			controlP5.controlWindow.mouseEvent(e);
     }
-
+	
 	@Override
     public void mouseClicked(MouseEvent e) {
 		
@@ -692,10 +695,16 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 		
 		if (diff < 10) //double fired event
 			return;
+
+		
+		// only send left-button events to contolP5
+		if(controlP5!=null && e.getButton() == MouseEvent.BUTTON1)
+			controlP5.controlWindow.mouseEvent(e);
 		
 		
 		if (e.getButton() == MouseEvent.BUTTON1 && currAction != null) {
 
+			
 			// Check if clicked on outbound connector
 			for(Action a : actions) {
 				
@@ -783,30 +792,32 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 				}
 			}
 			
-//		
-// TODO: expand the action?
-//
-//			//Check if clicked on an action
-//			for(Action a : actions) {
-//
-//				Action clicked_on  = a.getDrawInfo().checkClick(e.getX(), e.getY());
-//				if (clicked_on!= null && clicked_on != currAction)
-//				{
-//					currAction = clicked_on;
-//					if (clickHistory.size()>1 && clickHistory.get(clickHistory.size()-2).getAction()==a)
-//						clickHistory.remove(clickHistory.size()-1);
-//					else
-//						clickHistory.add(new ActionSelectHistoryInfo(currAction));
-//					updateHistoryPosition();
-//				}
-//			}
+			//Check if clicked on an action
+			for(Action a : actions) {
+
+				Action clicked_on  = a.getDrawInfo().checkClick(e.getX(), e.getY());
+				if (clicked_on!= null && clicked_on != currAction)
+				{
+					currAction = clicked_on;
+					
+					// open action editor
+					ActionEditorWindow f = new ActionEditorWindow();
+								
+					f.setAddActionCallback(this);
+					
+					while(!f.applet.isInitialized()) {
+						try {Thread.sleep(100);
+						} catch (InterruptedException e1) {e1.printStackTrace(); }
+					}
+					f.applet.setIdentifier(a.getIdentifier());
+					f.applet.setActionClass(a.getProperties().get("type").get(0));
+					f.applet.setActionProperties(a.getProperties());
+					f.applet.setEditing(true);
+					// TODO: store superclass in action data structure -> make Action extend OWLClass?
+				}
+			}
 			
 		}
-		
-
-		// only send left-button events to contolP5
-		if(controlP5!=null && e.getButton() == MouseEvent.BUTTON1)
-			controlP5.controlWindow.mouseEvent(e);
     }
 	
 
@@ -857,6 +868,9 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 
 			// open action creation dialog	
 			if(ev.getController().getName().equals("add action")) {
+				
+				System.out.println("add action event");
+				
 				ActionEditorWindow f = new ActionEditorWindow();
 				f.setAddActionCallback(this); 
 			}
@@ -931,7 +945,18 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	
 	public void addAction(Action a) {
 		this.actions.add(a);
-		a.getDrawInfo().position = new Vector2f(50+drawOffset.x,80+drawOffset.y);
+		a.getDrawInfo().position = new Vector2f(50+globalPosOffset.x,80+globalPosOffset.y);
+	}
+	
+	
+	public void updateAction(Action a) {
+		
+		for(Action old : actions) {
+			if(old.getIdentifier().equals(a.getIdentifier())) {
+				old.setName(a.getName());
+				old.setProperties(a.getProperties());
+			}
+		}
 	}
 	
 	public void addTransition(ActionTransition t) {
@@ -940,22 +965,31 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	
 	
 	
+	/**
+	 * Wrapper class around an action editor applet in a new window
+	 *  
+	 * @author Moritz Tenorth, tenorth@cs.tum.edu
+	 */
 	public class ActionEditorWindow extends Frame {
 
 		private static final long serialVersionUID = 543157068719461737L;
-		public EditActionPropertiesApplet app;
-
+		public EditActionPropertiesApplet applet;
+		
 		public ActionEditorWindow() {
-	        setBounds(100,100,800,600);
-	        app = new EditActionPropertiesApplet();
-	        app.frame = this;
-	        add(app);
-	        app.init();
+			
+			if(!prolog_initialized)
+				PrologInterface.initJPLProlog("ias_knowledge_base");
+			
+	        setBounds(100,100,500,500);
+	        applet = new EditActionPropertiesApplet();
+	        applet.frame = this;
+	        add(applet);
+	        applet.init();
 			this.setVisible(true);
 	    }
 
 		public void setAddActionCallback(iAddActionCallback cb) {
-			app.setAddActionCallback(cb); 
+			applet.setAddActionCallback(cb); 
 		}
 	}
 	

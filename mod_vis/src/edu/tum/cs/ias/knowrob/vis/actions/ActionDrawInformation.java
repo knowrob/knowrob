@@ -262,11 +262,18 @@ public class ActionDrawInformation {
 	 * current position to draw the main box of the action
 	 */
 	public Vector2f position;
-	
+
 	/**
-	 * offset relative to the current position to draw the main box of the action
+	 * action-specific position offset (action has been dragged selectively)
 	 */
-	public Vector2f positionOffset;
+	public Vector2f localPosOffset;
+
+	/**
+	 * global position offset (canvas has been dragged)
+	 */
+	public Vector2f globalPosOffset;
+	
+	
 	
 	/**
 	 * Position and dimension of Expanded and Simple box
@@ -283,7 +290,8 @@ public class ActionDrawInformation {
 	public ActionDrawInformation(Action parent)
 	{
 		action = parent;
-		positionOffset = new Vector2f();
+		localPosOffset = new Vector2f();
+		globalPosOffset = new Vector2f();
 	}
 	
 	/**
@@ -530,9 +538,9 @@ public class ActionDrawInformation {
 	 * @param position Position where to draw the box
 	 * @param minHeight minimum height of the box.
 	 */
-	public void drawSimpleBox(PApplet applet,Vector2f position, float minHeight)
+	public void drawSimpleBox(PApplet applet,Vector2f position, Vector2f drawOffset, float minHeight)
 	{
-		drawSimpleBox(applet, position, minHeight,false);
+		drawSimpleBox(applet, position, drawOffset, minHeight,false);
 	}
 	
 	/**
@@ -541,13 +549,14 @@ public class ActionDrawInformation {
 	 * @param position Position where to draw the box
 	 * @param minHeight minimum height of the box.
 	 */
-	public void drawSimpleBox(PApplet applet,Vector2f position, float minHeight, boolean drawExpandBox)
+	public void drawSimpleBox(PApplet applet, Vector2f position, Vector2f drawOffset, float minHeight, boolean drawExpandBox)
 	{
 		this.drawnAsSimple = true;
-//		this.position = new Vector2f(position);
+		this.position = new Vector2f(position);
+		this.globalPosOffset = drawOffset;
 		boundingBoxSimple.x = (int)position.x;
 		boundingBoxSimple.y = (int)position.y;
-		Vector2f tmpPos = new Vector2f(position.x + positionOffset.x, position.y + positionOffset.y);
+		Vector2f tmpPos = new Vector2f(position.x + localPosOffset.x + drawOffset.x, position.y + localPosOffset.y + drawOffset.y);
 		recalculateDimensions(applet);
 		
 		if (highlight == HighlightType.NOT_HIGHTLIGHTED)
@@ -559,7 +568,7 @@ public class ActionDrawInformation {
 			applet.strokeWeight(currentStroke);
 			applet.stroke(highlightBrightBorderColor.getRed(), highlightBrightBorderColor.getGreen(), highlightBrightBorderColor.getBlue(), highlightBrightBorderColor.getAlpha());
 		}
-		drawBorderAndTitle(applet, tmpPos,new Vector2f(getSimpleBoxDimension().x,Math.max(minHeight, getSimpleBoxDimension().y)));
+		drawBorderAndTitle(applet, tmpPos, new Vector2f(getSimpleBoxDimension().x,Math.max(minHeight, getSimpleBoxDimension().y)));
 		applet.strokeWeight(defaultStroke);
 		
 		if (drawExpandBox)
@@ -598,7 +607,7 @@ public class ActionDrawInformation {
 	 * @param position start position where to begin to draw
 	 * @return ArrayList of Vector2f with the points at the center bottom for drawing connection arrows
 	 */
-	private ArrayList<Vector2f> drawParentBoxes(PApplet applet, Vector2f position)
+	private ArrayList<Vector2f> drawParentBoxes(PApplet applet, Vector2f position, Vector2f drawOffset)
 	{
 		Vector2f tmpPos = new Vector2f(position);
 		ArrayList<Vector2f> retPoints = new ArrayList<Vector2f>();
@@ -607,7 +616,7 @@ public class ActionDrawInformation {
 		{
 			ActionDrawInformation inf = i.next().getDrawInfo();
 			
-			inf.drawSimpleBox(applet, tmpPos, parentsMaxHeight);
+			inf.drawSimpleBox(applet, tmpPos, drawOffset, parentsMaxHeight);
 		
 		    retPoints.add(new Vector2f(tmpPos.x + inf.getSimpleBoxDimension().x/2f, tmpPos.y+parentsMaxHeight-5));
 	
@@ -622,7 +631,7 @@ public class ActionDrawInformation {
 	 * @param position start position where to begin to draw
 	 * @return ArrayList of Vector2f with the points at the center bottom for drawing connection arrows
 	 */
-	private ArrayList<Vector2f> drawChildrenBoxes(PApplet applet, Vector2f position)
+	private ArrayList<Vector2f> drawChildrenBoxes(PApplet applet, Vector2f position, Vector2f drawOffset)
 	{
 		Vector2f tmpPos = new Vector2f(position);
 		ArrayList<Vector2f> retPoints = new ArrayList<Vector2f>();
@@ -631,7 +640,7 @@ public class ActionDrawInformation {
 		{
 			ActionDrawInformation inf = i.next().getDrawInfo();
 			
-			inf.drawSimpleBox(applet, tmpPos, childrenMaxHeight);
+			inf.drawSimpleBox(applet, tmpPos, drawOffset, childrenMaxHeight);
 			
 		    retPoints.add(new Vector2f(tmpPos.x + inf.getSimpleBoxDimension().x/2f, tmpPos.y+5));
 			
@@ -654,7 +663,7 @@ public class ActionDrawInformation {
 		applet.stroke(arrowBorderColor.getRed(), arrowBorderColor.getGreen(), arrowBorderColor.getBlue(), arrowBorderColor.getAlpha());
 	    applet.fill(arrowBackgroundColor.getRed(), arrowBackgroundColor.getGreen(), arrowBackgroundColor.getBlue(), arrowBackgroundColor.getAlpha());
 
-	    Vector2f connPointParent = new Vector2f(position.x + positionOffset.x, position.y + positionOffset.y);
+	    Vector2f connPointParent = new Vector2f(position.x + localPosOffset.x + globalPosOffset.x, position.y + localPosOffset.y + globalPosOffset.x);
 	    connPointParent.x+=boxOffsetLeft;
 	    Vector2f connPointChildren = new Vector2f(connPointParent);
 	    connPointChildren.y += getExtendedBoxDimension().y-5;
@@ -682,7 +691,7 @@ public class ActionDrawInformation {
 	 * @param applet Applet to draw on
 	 * @param position Start position (upper left corner)
 	 */
-	private void drawSequence(PApplet applet, Vector2f position, boolean isExpandedBox)
+	private void drawSequence(PApplet applet, Vector2f position, Vector2f drawOffset, boolean isExpandedBox)
 	{
 		//Draw outer box of sequence list
 		if (!action.getSequenceIterator().hasNext())
@@ -715,7 +724,7 @@ public class ActionDrawInformation {
 			Action a = i.next();
 			ActionDrawInformation inf = a.getDrawInfo();
 			
-			inf.drawSimpleBox(applet, tmpPos, maxSubsequenceHeight,a.getSequenceCount()>0);
+			inf.drawSimpleBox(applet, tmpPos, drawOffset, maxSubsequenceHeight,a.getSequenceCount()>0);
 			if (a == expSeq)
 			{
 				expandedParentCorner1 = new Vector2f(tmpPos.x,tmpPos.y+maxSubsequenceHeight);
@@ -754,7 +763,7 @@ public class ActionDrawInformation {
 			//applet.line(expandedParentCorner1.x, expandedParentCorner1.y, startPos.x, startPos.y);
 			//applet.line(expandedParentCorner2.x, expandedParentCorner2.y, startPos.x+subDim.x, startPos.y);
 			
-			expSeq.getDrawInfo().drawSequence(applet, startPos, true);
+			expSeq.getDrawInfo().drawSequence(applet, startPos, drawOffset, true);
 		}
 	}
 	
@@ -764,7 +773,7 @@ public class ActionDrawInformation {
 	 * @param position Upper left corner where to begin to draw. If the action has parent action(s) it will be the position of
 	 * the first parent box. If none parent actions are present, this will be the upper left corner of the extended box.
 	 */
-	public void drawExtendedBox(PApplet applet, Vector2f position)
+	public void drawExtendedBox(PApplet applet, Vector2f position, Vector2f drawOffset)
 	{
 		this.drawnAsSimple = false;
 		recalculateDimensions(applet);
@@ -775,7 +784,7 @@ public class ActionDrawInformation {
 		Vector2f extendedDim = getExtendedBoxDimension();
 		
 		//Draw parents
-		ArrayList<Vector2f> parentPoints = drawParentBoxes(applet, new Vector2f(position.x + parentStartX,position.y));
+		ArrayList<Vector2f> parentPoints = drawParentBoxes(applet, new Vector2f(position.x + parentStartX,position.y), drawOffset);
 		
 		position.y += parentsMaxHeight+MAIN_BOX_PADDING;
 
@@ -796,7 +805,7 @@ public class ActionDrawInformation {
 		position.y += INNER_CONTENT_PADDING;
 		
 		//Subsequences
-		drawSequence(applet, position, false);
+		drawSequence(applet, position, drawOffset, false);
 		
 		position.y += sequenceBoxDimension.y;
 		position.x -= MAIN_BOX_PADDING;
@@ -804,7 +813,7 @@ public class ActionDrawInformation {
 		
 		position.y += MAIN_BOX_PADDING*2;
 		//Children
-		ArrayList<Vector2f> childPoints = drawChildrenBoxes(applet, new Vector2f(position.x + childStartX,position.y));
+		ArrayList<Vector2f> childPoints = drawChildrenBoxes(applet, new Vector2f(position.x + childStartX,position.y),  drawOffset);
 		
 		drawArrows(applet, parentPoints, childPoints);
 	}
@@ -948,8 +957,8 @@ public class ActionDrawInformation {
 			//Check hovering if drawn as simple box
 			Vector2f dim = getSimpleBoxDimension();
 			float boxX,boxY,boxW,boxH;
-			boxX = position.x + positionOffset.x;
-			boxY = position.y + positionOffset.y;
+			boxX = position.x + localPosOffset.x + globalPosOffset.x;
+			boxY = position.y + localPosOffset.y + globalPosOffset.y;
 			boxW = dim.x;
 			boxH = dim.y;
 			if (x>boxX && x<boxX+boxW && y>boxY && y<boxY+boxH)
@@ -1001,8 +1010,8 @@ public class ActionDrawInformation {
 			//Check hovering if drawn as simple box
 			Vector2f dim = getSimpleBoxDimension();
 			float boxX,boxY,boxW,boxH;
-			boxX = position.x + positionOffset.x;
-			boxY = position.y + positionOffset.y +sequenceBoxHeight;
+			boxX = position.x + localPosOffset.x + globalPosOffset.x;
+			boxY = position.y + localPosOffset.y + globalPosOffset.y +sequenceBoxHeight;
 			boxW = dim.x;
 			boxH = EXPAND_BOX_HEIGHT;
 			if (action.getSequenceCount() > 0 && mouse_x>boxX && mouse_x<boxX+boxW && mouse_y>boxY && mouse_y<boxY+boxH)
@@ -1265,11 +1274,11 @@ public class ActionDrawInformation {
 	public Vector2f getOutboundConnectorPos() {
 		
 		// TODO: replace with better computation, taking extended status into account
-		return new Vector2f(position.x + positionOffset.x + this.getSimpleBoxDimension().x/2, position.y + positionOffset.y + this.getSimpleBoxDimension().y);
+		return new Vector2f(position.x + localPosOffset.x + globalPosOffset.x + this.getSimpleBoxDimension().x/2, position.y + localPosOffset.y + globalPosOffset.y + this.getSimpleBoxDimension().y);
 	}
 
 	public Vector2f getInboundConnectorPos() {
 		// TODO: replace with better computation, taking extended status into account
-		return new Vector2f(position.x + positionOffset.x + this.getSimpleBoxDimension().x/2, position.y + positionOffset.y);
+		return new Vector2f(position.x + localPosOffset.x + globalPosOffset.x + this.getSimpleBoxDimension().x/2, position.y + localPosOffset.y + globalPosOffset.y);
 	}
 }

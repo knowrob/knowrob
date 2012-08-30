@@ -69,12 +69,7 @@ public class Action {
 	 * @param name Name/Title of the action
 	 */
 	public Action(String name) {
-		this.properties = new LinkedHashMap<String, List<String>>();
-		this.parentActions = new LinkedList<Action>();
-		this.childActions = new LinkedList<Action>();
-		this.sequence = new LinkedList<Action>();
-		this.name = name;
-		this.drawInfo = new ActionDrawInformation(this);
+		this(name, name);
 	}
 	
 	/**
@@ -108,6 +103,10 @@ public class Action {
 	public void setProperties(LinkedHashMap<String, List<String>> properties) {
 		this.properties = properties;
 		drawInfo.notifyModified();
+	}
+	
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	/**

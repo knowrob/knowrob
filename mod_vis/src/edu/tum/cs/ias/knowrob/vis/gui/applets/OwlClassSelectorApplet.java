@@ -467,7 +467,7 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 	
 
 	/**
-	 * Wrapper class for a hierarchical OWL class structure
+	 * Wrapper class around a hierarchical OWL class structure
 	 *  
 	 * @author Moritz Tenorth, tenorth@cs.tum.edu
 	 *

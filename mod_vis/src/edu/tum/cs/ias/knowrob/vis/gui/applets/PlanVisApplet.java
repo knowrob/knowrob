@@ -522,7 +522,7 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		if (currAction == null)
 			return;
 		
-		currAction.getDrawInfo().drawExtendedBox(this, new Vector2f(50+drawOffset.x,80+drawOffset.y));
+		currAction.getDrawInfo().drawExtendedBox(this, new Vector2f(50+drawOffset.x,80+drawOffset.y), drawOffset);
 	}
 	
 	@Override
