@@ -12,6 +12,8 @@ import jpl.*;
 
 public class PrologInterface {
     
+	private static boolean initialized = false;
+	
     /**
      *  Initialize a local Prolog engine with the ROS package given
      *  as argument
@@ -20,23 +22,29 @@ public class PrologInterface {
      *  
      */
     public static void initJPLProlog(String initPackage) {
-        try {
-            Vector<String> args= new Vector<String>(Arrays.asList(jpl.fli.Prolog.get_default_init_args()));
-//            args.add( "-G256M" );
-            //args.add( "-q" );
-            args.add( "-nosignals" );
-            
-            String rosprolog = RosUtilities.rospackFind("rosprolog");
-            System.err.println(rosprolog+"/prolog/init.pl");
-            jpl.fli.Prolog.set_default_init_args( args.toArray( new String[0] ) );
+    	
+    	if(!initialized) {
 
-            // load the appropriate startup file for this context
-            new jpl.Query("ensure_loaded('"+rosprolog+"/prolog/init.pl"+"')").oneSolution();
-            new jpl.Query("register_ros_package('"+initPackage+"')").oneSolution();
+    		try {
+    			Vector<String> args= new Vector<String>(Arrays.asList(jpl.fli.Prolog.get_default_init_args()));
+    			//            args.add( "-G256M" );
+    			//args.add( "-q" );
+    			args.add( "-nosignals" );
 
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
+    			String rosprolog = RosUtilities.rospackFind("rosprolog");
+    			System.err.println(rosprolog+"/prolog/init.pl");
+    			jpl.fli.Prolog.set_default_init_args( args.toArray( new String[0] ) );
+
+    			// load the appropriate startup file for this context
+    			new jpl.Query("ensure_loaded('"+rosprolog+"/prolog/init.pl"+"')").oneSolution();
+    			new jpl.Query("register_ros_package('"+initPackage+"')").oneSolution();
+
+    			initialized = true;
+    			
+    		} catch(Exception e) {
+    			e.printStackTrace();
+    		}
+    	}
     }
     
     
@@ -168,6 +176,40 @@ public class PrologInterface {
            else return iri;
      }
     
+    /**
+     * Splits an IRI to extract the base IRI part before the 
+     * hash sign '#'
+     * 
+     * @param iri IRI of the form http://...#value
+     * @return The IRI base
+     */
+	public static String prefixFromIRI(String iri) {
+		
+        String[] ks = iri.split("#");
+        if(ks.length>1) {
+            String res = ks[0].replaceAll("'", "");
+            return res;
+        }
+        else return iri;
+	}
+	
+    /**
+     * Splits an IRI to extract the filename after 
+     * the last slash
+     * 
+     * @param iri IRI of the form http://.../file.name
+     * @return The filename file.name
+     */
+	public static String fileNameFromIRI(String iri) {
+		
+        String[] ks = iri.split("/");
+        if(ks.length>1) {
+            String res = ks[ks.length-1].replaceAll("'", "");
+            return res;
+        }
+        else return iri;
+	}
+	
     
     /**
      * Remove the literal(type('...', )) wrapper around literals coming from
@@ -193,6 +235,7 @@ public class PrologInterface {
     	
     	
     }
+
 }
 
 
