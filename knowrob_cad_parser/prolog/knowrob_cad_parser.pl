@@ -25,28 +25,32 @@
 :- module(knowrob_cad_parser,
     [
 		get_model_path/2
-    ]).	
+    ]).
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs_computable')).
 :- use_module(library('jpl')).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% Main
-%
 
+:- rdf_meta get_model_path(r,?).
 
 %% get_model_path(+Identifier,-Path) is det.
 %
 % searches for knowrob:pathToCadModel property
 %
-% @param Identifer	Object identifier
-% @param Path		Found path
+% @param Identifer  Object instance or class identifier
+% @param Path       Found path
 get_model_path(Identifier,Path) :-
-	(rdf_has(Identifier,knowrob:pathToCadModel,literal(type(_,Path))) ; 
-	owl_individual_of(Identifier, Class), class_properties(Class, knowrob:pathToCadModel,literal(type(_,Path)));
-	rdf_has(Identifier,knowrob:pathToCadModel,literal(Path)) ; 
-	owl_individual_of(Identifier, Class), class_properties(Class, knowrob:pathToCadModel,literal(Path))),!.
-	
+
+  % Identifier is an instance, specification includes xsd:type
+  (rdf_has(Identifier,knowrob:pathToCadModel,literal(type(_,Path))) ; 
+  owl_individual_of(Identifier, Class), class_properties(Class, knowrob:pathToCadModel,literal(type(_,Path)));
+
+  % Identifier is an instance, no xsd:type specified (included for compatibility reasons)
+  rdf_has(Identifier,knowrob:pathToCadModel,literal(Path)) ; 
+  owl_individual_of(Identifier, Class), class_properties(Class, knowrob:pathToCadModel,literal(Path))),! ;
+
+  % Identifier is a class
+  class_properties(Identifier, knowrob:pathToCadModel,literal(type(_,Path))),!.
+
