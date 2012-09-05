@@ -103,7 +103,7 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 	    textFont(dejavuFont);
 	    hint(ENABLE_ACCURATE_TEXTURES);
 	    ellipseMode(RADIUS);
-	    frameRate(25);
+	    frameRate(20);
 	}
 	
 	@Override

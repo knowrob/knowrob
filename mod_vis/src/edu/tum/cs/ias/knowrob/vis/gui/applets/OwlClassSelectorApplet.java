@@ -135,7 +135,7 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 	@Override
 	public void draw() {
 
-		background(40);
+		background(50);
 		controlP5.draw();
 	}
 

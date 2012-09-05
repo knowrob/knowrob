@@ -30,7 +30,6 @@ import edu.tum.cs.ias.knowrob.vis.actions.ActionDrawInformation;
 import edu.tum.cs.ias.knowrob.vis.actions.ActionSelectHistoryInfo;
 import edu.tum.cs.ias.knowrob.vis.actions.ActionTransition;
 import edu.tum.cs.ias.knowrob.vis.actions.ActionTransitions;
-import edu.tum.cs.ias.knowrob.vis.gui.applets.EditActionPropertiesApplet.OWLClassSelect;
 
 import processing.core.PApplet;
 import processing.core.PFont;
@@ -120,8 +119,6 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	
 	public ControlP5 controlP5;
 
-	private static boolean prolog_initialized = false;
-	
 	
 	/**
 	 * Constructor
@@ -976,8 +973,6 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 		public EditActionPropertiesApplet applet;
 		
 		public ActionEditorWindow() {
-			
-			if(!prolog_initialized)
 				PrologInterface.initJPLProlog("ias_knowledge_base");
 			
 	        setBounds(100,100,500,500);

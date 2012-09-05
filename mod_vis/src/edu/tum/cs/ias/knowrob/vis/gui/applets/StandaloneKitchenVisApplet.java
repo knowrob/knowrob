@@ -131,7 +131,7 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		cam.setDistance(75.6322);
 		cam.lookAt(10.443167, -4.4923606, -3.8713489);
 		
-
+		frameRate(25);
 		buffer = new EmptyCanvas(700,600,PGraphics3D.P3D);
 
 		verdana = createFont("Verdana", 11);

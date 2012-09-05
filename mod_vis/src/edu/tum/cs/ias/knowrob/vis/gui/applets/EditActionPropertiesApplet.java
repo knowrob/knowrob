@@ -121,7 +121,7 @@ public class EditActionPropertiesApplet  extends PApplet implements MouseListene
 		textFont(dejavuFont);
 		
 		frameRate(20);	
-		background(40);
+		background(50);
 				
 		initControlP5();
 	}
@@ -152,7 +152,6 @@ public class EditActionPropertiesApplet  extends PApplet implements MouseListene
 	 * @param id  IRI of the current action 
 	 */
 	public void setIdentifier(String id) {
-		// TODO: do not set GUI element values directly
 		((Textfield) this.controlP5.getController("identifier")).setValue(id);
 	}
 	
@@ -162,7 +161,6 @@ public class EditActionPropertiesApplet  extends PApplet implements MouseListene
 	 * @return id  IRI of the current action 
 	 */
 	public String getIdentifier() {
-		// TODO: do not set GUI element values directly
 		return ((Textfield) this.controlP5.getController("identifier")).getStringValue();
 	}
 	
@@ -172,9 +170,7 @@ public class EditActionPropertiesApplet  extends PApplet implements MouseListene
 	 * @param cl IRI of the super-class
 	 */
 	public void setActionClass(String cl) {
-		// TODO: do not set GUI element values directly
-		Textfield t = ((Textfield) this.controlP5.getController("class")).setValue(cl);
-		
+		((Textfield) this.controlP5.getController("class")).setValue(cl);
 	}
 	
 	/**
@@ -183,7 +179,6 @@ public class EditActionPropertiesApplet  extends PApplet implements MouseListene
 	 * @return cl IRI of the super-class
 	 */
 	public String getActionClass() {
-		// TODO: do not set GUI element values directly
 		return ((Textfield) this.controlP5.getController("class")).getStringValue();
 	}
 	
