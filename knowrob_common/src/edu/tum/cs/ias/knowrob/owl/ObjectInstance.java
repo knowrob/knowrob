@@ -54,7 +54,8 @@ public class ObjectInstance extends OWLIndividual {
 		
 		this(ind.getIRI(), ind.getLabel());
 		this.types.addAll(ind.getTypes());
-		this.properties.putAll(ind.getProperties());
+		this.data_props.putAll(ind.getDataProperties());
+		this.obj_props.putAll(ind.getObjProperties());
 	}
 	
 	

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import edu.tum.cs.ias.knowrob.owl.OWLThing;
 import edu.tum.cs.ias.knowrob.utils.ros.RosUtilities;
 import jpl.*;
 
@@ -154,6 +155,7 @@ public class PrologInterface {
      * 
      * @param str String with or without single quotes at the beginning and end
      * @return String with single quotes at the beginning and end
+     * 
      */
     public static String addSingleQuotes(String str) {
         return "'"+removeSingleQuotes(str)+"'";
@@ -166,6 +168,7 @@ public class PrologInterface {
      * 
      * @param iri IRI of the form http://...#value
      * @return The identifier value
+     * @deprecated use {@link OWLThing} valueFromIRI instead
      */
     public static String valueFromIRI(String iri) {
         String[] ks = iri.split("#");
@@ -182,6 +185,7 @@ public class PrologInterface {
      * 
      * @param iri IRI of the form http://...#value
      * @return The IRI base
+     * @deprecated use {@link OWLThing} prefixFromIRI instead
      */
 	public static String prefixFromIRI(String iri) {
 		
@@ -199,6 +203,7 @@ public class PrologInterface {
      * 
      * @param iri IRI of the form http://.../file.name
      * @return The filename file.name
+     * @deprecated use {@link OWLThing} fileNameFromIRI instead
      */
 	public static String fileNameFromIRI(String iri) {
 		

@@ -60,6 +60,24 @@ public class OWLThing implements Comparable<OWLThing> {
 
 	}
 	
+	
+	/**
+	 * Search the IRI map for IRIs that end with the given short
+	 * name, return the object or null if not found
+	 * 
+	 * @param iri
+	 * @param label
+	 * @return
+	 */
+	public static OWLThing getOWLThingByShortname(String shortname) {
+		
+		for(String iri : identifiers.keySet()) {
+			if(iri.endsWith(shortname)) {
+				return identifiers.get(iri);
+			}
+		}
+		return null;
+	}
 
 	
 	

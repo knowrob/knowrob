@@ -14,11 +14,16 @@ public class OWLIndividual extends OWLThing {
 	 * List of strings representing the object types (OWL classes)
 	 */
 	protected Vector<OWLClass> types;
+
+	/**
+	 * Map of data properties that are defined for this individual to their respective values.
+	 */
+	protected Map<String, Vector<String>> data_props;
 	
 	/**
-	 * Map of properties that are defined for this individual to their respective values.
+	 * Map of object properties that are defined for this individual to their respective values.
 	 */
-	protected Map<String, Vector<String>> properties;
+	protected Map<String, Vector<String>> obj_props;
 	
 
 
@@ -33,7 +38,8 @@ public class OWLIndividual extends OWLThing {
 		
 		super(iri, label);
 		this.types = new Vector<OWLClass>();
-		properties = Collections.synchronizedMap(new HashMap<String, Vector<String>>());
+		data_props = Collections.synchronizedMap(new HashMap<String, Vector<String>>());
+		obj_props = Collections.synchronizedMap(new HashMap<String, Vector<String>>());
 	}
 
 
@@ -138,56 +144,116 @@ public class OWLIndividual extends OWLThing {
 		}
 		return false;
 	}
-	
+
 	/**
-	 * Get the properties defined for this individual.
+	 * Get the data properties defined for this individual.
 	 * 
 	 * @return Map from property identifiers to a Vector with their values.
 	 */
-	public Map<String, Vector<String>> getProperties() {
-		return properties;
+	public Map<String, Vector<String>> getDataProperties() {
+		return data_props;
 	}
 	
 	/**
-	 * Get the values for a specific property.
+	 * Get the object properties defined for this individual.
 	 * 
-	 * @return Vector of strings referring to the property values
+	 * @return Map from property identifiers to a Vector with their values.
 	 */
-	public Vector<String> getProperty(String prop) {
-		return properties.get(prop);
+	public Map<String, Vector<String>> getObjProperties() {
+		return obj_props;
 	}
 	
 	/**
-	 * Set the internal properties map to the given one (after resetting it first).
+	 * Set the internal data properties map to the given one (after resetting it first).
 	 * 
-	 * @param properties New map of properties to be used.
+	 * @param properties New map of data properties to be used.
 	 */
-	public void setProperties(Map<String, Vector<String>> properties) {
-		this.properties.clear();
-		this.properties.putAll(properties);
+	public void setDataProperties(Map<String, Vector<String>> properties) {
+		this.data_props.clear();
+		this.data_props.putAll(properties);
 	}
 	
+	/**
+	 * Set the internal object properties map to the given one (after resetting it first).
+	 * 
+	 * @param properties New map of object properties to be used.
+	 */
+	public void setObjProperties(Map<String, Vector<String>> properties) {
+		this.obj_props.clear();
+		this.obj_props.putAll(properties);
+	}
+
 	
 	/**
-	 * Check whether a property is defined for this individual.
+	 * Check whether a data property is defined for this individual.
 	 * 
 	 * @param property Identifier of the property to be checked.
 	 * @return true if this property exists
 	 */
-	public boolean hasProperty(String property) {
-		if(properties.containsKey(property))
+	public boolean hasDataProperty(String property) {
+		if(data_props.containsKey(property))
 			return true;
 		else return false;
 	}
 	
 	/**
-	 * Get a {@link Vector} of all values defined for a property.
+	 * Check whether an object property is defined for this individual.
+	 * 
+	 * @param property Identifier of the property to be checked.
+	 * @return true if this property exists
+	 */
+	public boolean hasObjProperty(String property) {
+		if(obj_props.containsKey(property))
+			return true;
+		else return false;
+	}
+
+	/**
+	 * Get a {@link Vector} of all values defined for a data property.
 	 *  
 	 * @param property Identifier of the property to be retrieved.
 	 * @return Vector with the defined values.
 	 */
-	public Vector<String> getPropValues(String property) {
-		return properties.get(property);
+	public Vector<String> getDataPropValues(String property) {
+		return data_props.get(property);
+	}
+	
+	/**
+	 * Get a {@link Vector} of all values defined for an object property.
+	 *  
+	 * @param property Identifier of the property to be retrieved.
+	 * @return Vector with the defined values.
+	 */
+	public Vector<String> getObjPropValues(String property) {
+		return obj_props.get(property);
+	}
+	
+	/**
+	 * Add a data property-value pair to the properties map.
+	 * 
+	 * @param property
+	 * @param value
+	 */
+	public void addDataPropValue(String property, String value) {
+		
+		if(!data_props.containsKey(property))
+			data_props.put(property, new Vector<String>());
+		
+		data_props.get(property).add(value);
+	}
+	
+	/**
+	 * Add an object property-value pair to the properties map.
+	 * 
+	 * @param property
+	 * @param value
+	 */
+	public void addObjPropValue(String property, String value) {
+		
+		if(!obj_props.containsKey(property))
+			obj_props.put(property, new Vector<String>());
+		
+		obj_props.get(property).add(value);
 	}
 	
 }
