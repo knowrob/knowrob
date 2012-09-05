@@ -417,21 +417,23 @@ public class OWLImportExport {
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 			OWLDataFactory factory = manager.getOWLDataFactory();
 			DefaultPrefixManager pm = OWLImportExport.PREFIX_MANAGER;
+			OWLClass semanticMapPerception = factory.getOWLClass("knowrob:SemanticMapPerception", pm);
+			OWLClass rotationmatrix3d = factory.getOWLClass("knowrob:RotationMatrix3D", pm);
+			OWLClass timepoint = factory.getOWLClass("knowrob:TimePoint", pm);
 			
 			ont = OWLFileUtils.loadOntologyFromFile(filename);
 			
 			if(ont!=null) {
 
 				// iterate over objects, add to objects hashmap 
-				for(OWLNamedIndividual instance : ont.getIndividualsInSignature()) {
+				for(OWLNamedIndividual inst : ont.getIndividualsInSignature()) {
 										
-					Set<OWLClassExpression> types = instance.getTypes(ont);
-					OWLClass semanticMapPerception = factory.getOWLClass("knowrob:SemanticMapPerception", pm);
+					Set<OWLClassExpression> types = inst.getTypes(ont);
 					
 					if(types.contains(semanticMapPerception)) {
 						
 						Map<OWLObjectPropertyExpression, Set<OWLIndividual>> perc_props = 
-							instance.getObjectPropertyValues(ont);
+							inst.getObjectPropertyValues(ont);
 						
 						OWLObjectProperty objectActedOn = factory.getOWLObjectProperty("knowrob:objectActedOn", pm);
 						OWLObjectProperty eventOccursAt = factory.getOWLObjectProperty("knowrob:eventOccursAt", pm);
@@ -463,13 +465,7 @@ public class OWLImportExport {
 								}
 
 								
-
-
-								if(cur.hasType("SemanticEnvironmentMap"))
-									continue; // TODO: do not ignore the map itself, at least read all values and store them internally
-
-
-								// iterate over all properties and read them to the internal representation
+								// iterate over all data properties and read them to the internal representation
 								Map<OWLDataPropertyExpression, Set<OWLLiteral>> data_props = 
 										obj.getDataPropertyValues(ont);
 								
@@ -480,6 +476,7 @@ public class OWLImportExport {
 								}
 								
 								
+								// iterate over all object properties and read them to the internal representation
 								Map<OWLObjectPropertyExpression, Set<OWLIndividual>> obj_props = 
 										obj.getObjectPropertyValues(ont);
 
@@ -575,16 +572,64 @@ public class OWLImportExport {
 				}
 				
 				
-				// link objects to their physical parts
-				for(OWLNamedIndividual instances : ont.getIndividualsInSignature()) {
+				// add objects that have not been perceived (e.g. street, building)
+				for(OWLNamedIndividual inst : ont.getIndividualsInSignature()) {
+					
+					String iri = inst.toStringID();
+					
+					if(objects.containsKey(iri))
+						continue;
+					
+					// skip those types we have already  
+					if( inst.getTypes(ont).contains(semanticMapPerception) ||
+						inst.getTypes(ont).contains(rotationmatrix3d) ||
+						inst.getTypes(ont).contains(timepoint))
+						continue;
 
-					Set<OWLClassExpression> types = instances.getTypes(ont);
-					OWLClass semanticMapPerception = factory.getOWLClass("knowrob:SemanticMapPerception", pm);
+					
+					// create map object
+					ObjectInstance cur = ObjectInstance.getObjectInstance(iri);
+
+					
+					// get types
+					for(OWLClassExpression c: inst.getTypes(ont)) {
+						cur.addType(edu.tum.cs.ias.knowrob.owl.OWLClass.getOWLClass(c.asOWLClass().toStringID()));
+					}
+					
+					// iterate over all data properties and read them to the internal representation
+					Map<OWLDataPropertyExpression, Set<OWLLiteral>> data_props = 
+						inst.getDataPropertyValues(ont);
+
+					for(OWLDataPropertyExpression prop : data_props.keySet()) {
+						for(OWLLiteral d : data_props.get(prop)) {
+							cur.addDataPropValue(prop.asOWLDataProperty().toStringID(), d.getLiteral());
+						}
+					}
+
+					// iterate over all object properties and read them to the internal representation
+					Map<OWLObjectPropertyExpression, Set<OWLIndividual>> obj_props = 
+						inst.getObjectPropertyValues(ont);
+
+					for(OWLObjectPropertyExpression prop: obj_props.keySet()) {
+						for(OWLIndividual d : obj_props.get(prop)) {
+							cur.addObjPropValue(prop.asOWLObjectProperty().toStringID(), d.toStringID());
+						}
+					}
+					objects.put(cur.getIRI(), cur);
+				}
+			
+				
+				
+				
+				// link objects to their physical parts
+				for(OWLNamedIndividual inst : ont.getIndividualsInSignature()) {
+
+					Set<OWLClassExpression> types = inst.getTypes(ont);
 
 					if(types.contains(semanticMapPerception)) {
 
 						Map<OWLObjectPropertyExpression, Set<OWLIndividual>> perc_props = 
-							instances.getObjectPropertyValues(ont);
+							inst.getObjectPropertyValues(ont);
 
 						OWLObjectProperty objectActedOn = factory.getOWLObjectProperty("knowrob:objectActedOn", pm);
 
@@ -611,15 +656,14 @@ public class OWLImportExport {
 				}
 				
 				// read parent and child
-				for(OWLNamedIndividual instances : ont.getIndividualsInSignature()) {
+				for(OWLNamedIndividual inst : ont.getIndividualsInSignature()) {
 
-					Set<OWLClassExpression> types = instances.getTypes(ont);
-					OWLClass semanticMapPerception = factory.getOWLClass("knowrob:SemanticMapPerception", pm);
+					Set<OWLClassExpression> types = inst.getTypes(ont);
 
 					if(types.contains(semanticMapPerception)) {
 
 						Map<OWLObjectPropertyExpression, Set<OWLIndividual>> perc_props = 
-							instances.getObjectPropertyValues(ont);
+							inst.getObjectPropertyValues(ont);
 
 						OWLObjectProperty objectActedOn = factory.getOWLObjectProperty("knowrob:objectActedOn", pm);
 
