@@ -40,7 +40,7 @@ import processing.core.PFont;
  * @author Stefan Profanter, Moritz Tenorth
  * @see edu.tum.cs.ias.knowrob.vis.actions.Action
  */
-public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, iAddActionCallback {
+public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, IAddActionCallback {
 
 	private static final long serialVersionUID = 7695328948788620463L;
 
@@ -702,7 +702,7 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 		long diff = System.currentTimeMillis()-lastClickTime;
 		lastClickTime = System.currentTimeMillis();
 		
-		if (diff < 10) //double fired event
+		if (diff < 70) //double fired event
 			return;
 
 		
@@ -805,25 +805,32 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 
 					if (inside) {
 
-						// deactivate transition with second click
-						if(t.isActive()) {
-							t.setActive(false);
-							activeTransition = null;
+						if(e.getClickCount()==2) {
+							
+							new TransitionPropertiesEditor(this, t);
+							
+						} else {
+
+							// deactivate transition with second click
+							if(t.isActive()) {
+								t.setActive(false);
+								activeTransition = null;
+							}
+
+							// reset action selection
+							clearHighlight();
+							currAction=null;
+
+							// reset previously active transition, set to t 
+							t.setActive(true);
+
+							if(activeTransition!=null)
+								activeTransition.setActive(false);
+
+							activeTransition = t;
+
+							return;
 						}
-
-						// reset action selection
-						clearHighlight();
-						currAction=null;
-
-						// reset previously active transition, set to t 
-						t.setActive(true);
-
-						if(activeTransition!=null)
-							activeTransition.setActive(false);
-
-						activeTransition = t;
-
-						return;
 					}
 				}
 			}
@@ -1062,20 +1069,20 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	public class ActionEditorWindow extends Frame {
 
 		private static final long serialVersionUID = 543157068719461737L;
-		public EditActionPropertiesApplet applet;
+		public ActionPropertiesEditor applet;
 		
 		public ActionEditorWindow() {
 				PrologInterface.initJPLProlog("ias_knowledge_base");
 			
 	        setBounds(100,100,500,500);
-	        applet = new EditActionPropertiesApplet();
+	        applet = new ActionPropertiesEditor();
 	        applet.frame = this;
 	        add(applet);
 	        applet.init();
 			this.setVisible(true);
 	    }
 
-		public void setAddActionCallback(iAddActionCallback cb) {
+		public void setAddActionCallback(IAddActionCallback cb) {
 			applet.setAddActionCallback(cb); 
 		}
 	}

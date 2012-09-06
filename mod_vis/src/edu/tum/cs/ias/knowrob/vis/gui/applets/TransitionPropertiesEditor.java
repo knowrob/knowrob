@@ -35,7 +35,6 @@ public class TransitionPropertiesEditor {
 	String recipe_owl_file = "";
 
 	public PlanVisAppletFsm app;
-	private GreyTheme theme;
 
 	private Map<Integer, ListBoxItem> id2button;
 	ListBoxItem cur = null;
@@ -54,7 +53,7 @@ public class TransitionPropertiesEditor {
 		transition = t;
 		
 		controlP5 = new ControlP5(app);
-		theme = new GreyTheme(app, controlP5);
+		GreyTheme.applyStyle(controlP5);
 		
 		controlWindow = controlP5.addControlWindow("controlP5window",200,200,350,150)
 								 .setBackground(app.color(50))
@@ -64,13 +63,13 @@ public class TransitionPropertiesEditor {
 		controlP5.addTextlabel("from action", "From action: " + transition.getFrom().getName(), 20, 30 );
 		controlP5.addTextlabel("to action",   "To action: " + transition.getFrom().getName(),   20, 65 );
 		
-		Button b = theme.applyStyle(controlP5.addButton("apply", 23, 220, 30, 80, 20)).moveTo(controlWindow);
+		Button b = GreyTheme.applyStyle(controlP5.addButton("apply", 23, 220, 30, 80, 20)).moveTo(controlWindow);
 		
 		
 		props = controlP5.addListBox("Transition type", 10, 30, 200, 125);
 		props.setBarHeight(15).setItemHeight(15);
 		props.setColorValue(app.color(120,40,40));
-		theme.applyStyle(props, 15).moveTo(controlWindow);
+		GreyTheme.applyStyle(props, 15).moveTo(controlWindow);
 
 		id2button = new HashMap<Integer, ListBoxItem>();
 		int props_idx = 0;

@@ -15,6 +15,9 @@ public class ActionTransition {
 	Vector2f fromPosition;
 	Vector2f toPosition;
 	
+	public static enum TransitionType {OK, ERROR, ABORT, OUT_OF_RESOURCES, TIMEOUT};
+	
+	
 	/** 
 	 * flag if this transition is 'active', meaning that user 
 	 * has clicked on it and it's currently being edited
@@ -73,22 +76,58 @@ public class ActionTransition {
 				app.fill(app.color(80, 120, 80));
 			}
 
+		} else if(this.transitionType.endsWith("CONDITION_TRUE")) {
+			if(active) {
+				app.stroke(app.color(20, 140, 140));  // light blue?
+				app.fill(app.color(80, 180, 190));
+			} else {
+				app.stroke(app.color(60, 100, 100));
+				app.fill(app.color(80, 120, 130));
+			}
+
+		} else if(this.transitionType.endsWith("CONDITION_FALSE")) {
+			if(active) {
+				app.stroke(app.color(10, 120, 120));  // dark blue
+				app.fill(app.color(40, 140, 150));
+			} else {
+				app.stroke(app.color(30, 60, 60));
+				app.fill(app.color(40, 90, 100));
+			}
+
 		} else if(this.transitionType.endsWith("ERROR")) {
 			if(active) {
-				app.stroke(app.color(140, 20, 20));
+				app.stroke(app.color(130, 30, 30)); // dark red
+				app.fill(app.color(140, 70, 70));
+			} else {
+				app.stroke(app.color(90, 30, 30));
+				app.fill(app.color(100, 50, 50));
+			}
+
+		} else if(this.transitionType.endsWith("OUT_OF_RESOURCES")) {
+			if(active) {
+				app.stroke(app.color(140, 20, 20)); // light red
 				app.fill(app.color(180, 80, 80));
 			} else {
 				app.stroke(app.color(100, 60, 60));
 				app.fill(app.color(120, 80, 80));
 			}
 
+		} else if(this.transitionType.endsWith("ABORT")) {
+			if(active) {
+				app.stroke(app.color(140, 20, 140));  // purple
+				app.fill(app.color(190, 80, 180));
+			} else {
+				app.stroke(app.color(100, 60, 100));
+				app.fill(app.color(130, 80, 120));
+			}
+
 		} else if(this.transitionType.endsWith("TIMEOUT")) {
 			if(active) {
-				app.stroke(app.color(140, 140, 20));
-				app.fill(app.color(190, 180, 80));
+				app.stroke(app.color(160, 140, 20));  // orange
+				app.fill(app.color(220, 180, 80));
 			} else {
-				app.stroke(app.color(100, 100, 60));
-				app.fill(app.color(130, 120, 80));
+				app.stroke(app.color(120, 100, 60));
+				app.fill(app.color(160, 120, 80));
 			}
 
 		} else {
@@ -100,6 +139,7 @@ public class ActionTransition {
 				app.fill(app.color(100));
 			}
 		}
+		
 		
 		this.fromPosition = this.from.getDrawInfo().getOutboundConnectorPos();
 		this.toPosition   = new Vector2f(to.getDrawInfo().getInboundConnectorPos().x,

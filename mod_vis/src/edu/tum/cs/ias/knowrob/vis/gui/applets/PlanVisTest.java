@@ -89,7 +89,7 @@ public class PlanVisTest {
 		ask_name.setProperty("type", "SpeechSynthesis");
 		ask_name.setProperty("spokenText", "Hello, what is your name?");
 		applet.addAction(ask_name);
-		applet.addTransition(new ActionTransition(check_known, ask_name, "COMPLETED_TIMEOUT"));
+		applet.addTransition(new ActionTransition(check_known, ask_name, "TIMEOUT"));
 		
 		Action ask_name2 = new Action("Ask for the name2");
 		ask_name2.setProperty("type", "SpeechSynthesis");

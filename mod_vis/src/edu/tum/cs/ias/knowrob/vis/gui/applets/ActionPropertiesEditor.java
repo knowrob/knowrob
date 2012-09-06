@@ -17,13 +17,14 @@ import controlP5.ListBox;
 import controlP5.ListBoxItem;
 import controlP5.Textfield;
 import edu.tum.cs.ias.knowrob.vis.actions.Action;
+import edu.tum.cs.ias.knowrob.vis.gui.themes.GreyTheme;
 
 
 import processing.core.PApplet;
 import processing.core.PFont;
 
 
-public class EditActionPropertiesApplet  extends PApplet implements MouseListener, MouseMotionListener, IClassSelectionCallback {
+public class ActionPropertiesEditor  extends PApplet implements MouseListener, MouseMotionListener, IClassSelectionCallback {
 
 	private static final long serialVersionUID = 7695328948788620463L;
 
@@ -42,7 +43,7 @@ public class EditActionPropertiesApplet  extends PApplet implements MouseListene
 	/**
 	 * Reference to an iAddActionCallback; usually the parent that started this editor
 	 */
-	private iAddActionCallback callback;
+	private IAddActionCallback callback;
 	
 
 	/**
@@ -241,7 +242,7 @@ public class EditActionPropertiesApplet  extends PApplet implements MouseListene
 		if(actionpropId2item.size()>0)
 			idx = Collections.max(actionpropId2item.keySet()) + 1;
 		
-		ListBoxItem item = actionpropId2item.put(idx, applyStyle(action_props.addItem(name, idx)));
+		ListBoxItem item = actionpropId2item.put(idx, action_props.addItem(name, idx));
 		setCurrentActionPropItem(item);
 		
 		// adjust height of the action properties ListBox and position of the submit button
@@ -433,7 +434,7 @@ public class EditActionPropertiesApplet  extends PApplet implements MouseListene
 	 * 
 	 * @param cb Set 
 	 */
-	public void setAddActionCallback(iAddActionCallback cb) {
+	public void setAddActionCallback(IAddActionCallback cb) {
 		this.callback = cb;
 	}
 	
@@ -474,6 +475,7 @@ public class EditActionPropertiesApplet  extends PApplet implements MouseListene
 	private void initControlP5() {
 
 		controlP5 = new ControlP5(this);
+		GreyTheme.applyStyle(controlP5);
 		
 		controlP5.setColorForeground(color(180))
 		.setColorCaptionLabel(color(240))
@@ -500,18 +502,18 @@ public class EditActionPropertiesApplet  extends PApplet implements MouseListene
 		props = controlP5.addListBox("Properties", 10, 30, 200, 75);
 		props.setBarHeight(15).setItemHeight(15);
 		props.setColorValue(color(120,40,40));
-		applyStyle(props).moveTo(new_prop);
+		GreyTheme.applyStyle(props, 15).moveTo(new_prop);
 
 		int props_idx = 0;
 		propId2item = new HashMap<Integer, ListBoxItem>();
 		
-		propId2item.put(props_idx, applyStyle(props.addItem("objectActedOn", props_idx)).setText("objectActedOn"));
+		propId2item.put(props_idx, props.addItem("objectActedOn", props_idx));
 		props_idx++;
-		propId2item.put(props_idx, applyStyle(props.addItem("toLocation",    props_idx++)).setText("toLocation"));
+		propId2item.put(props_idx, props.addItem("toLocation",    props_idx++));
 		props_idx++;
-		propId2item.put(props_idx, applyStyle(props.addItem("fromLocation",  props_idx++)).setText("fromLocation"));
+		propId2item.put(props_idx, props.addItem("fromLocation",  props_idx++));
 		props_idx++;
-		propId2item.put(props_idx, applyStyle(props.addItem("bodyPartUsed",  props_idx++)).setText("bodyPartsUsed"));
+		propId2item.put(props_idx, props.addItem("bodyPartUsed",  props_idx++));
 		props_idx++;
 		
 		// TODO: create mapping from displayed names to IRIs for properties and (possibly) values
@@ -525,7 +527,7 @@ public class EditActionPropertiesApplet  extends PApplet implements MouseListene
 		
 		
 		action_props = controlP5.addListBox("Action properties", 20, 260, 400, listBoxHeight).setBarHeight(15).setItemHeight(20);
-		applyStyle(action_props);
+		GreyTheme.applyStyle(action_props, 20);
 		
 		
 		actionpropId2item = new HashMap<Integer, ListBoxItem>();
@@ -535,32 +537,6 @@ public class EditActionPropertiesApplet  extends PApplet implements MouseListene
 		
 	}
 	
-
-	/**
-	 * Apply the default styling to a ListBoxItem
-	 * 
-	 * @param b The item to be styled
-	 * @return the same button instance with updated properties
-	 */
-	private ListBoxItem applyStyle(ListBoxItem b) {
-		b.setColorBackground(color(80));
-		return b;
-	}
-	/**
-	 * Apply the default styling to a ListBox
-	 * 
-	 * @param b The list to be styled
-	 * @return the same list instance with updated properties
-	 */
-	private ListBox applyStyle(ListBox lb) {
-		
-		lb.setColorBackground(color(120));
-		lb.getCaptionLabel().getStyle().marginTop = 3;
-		lb.getValueLabel().getStyle().marginTop = 3; 
-		
-		return lb;
-	}
-
 	
 
 	// // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // 
@@ -570,7 +546,7 @@ public class EditActionPropertiesApplet  extends PApplet implements MouseListene
 	
 	
 	public static void main(String args[]) {
-		PApplet.main(new String[] { "edu.tum.cs.ias.knowrob.vis.gui.applets.EditActionPropertiesApplet" });
+		PApplet.main(new String[] { "edu.tum.cs.ias.knowrob.vis.gui.applets.ActionPropertiesEditor" });
 	}
 
 

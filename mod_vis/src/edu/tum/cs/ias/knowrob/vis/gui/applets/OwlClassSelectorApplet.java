@@ -21,6 +21,7 @@ import controlP5.MultiList;
 import controlP5.MultiListButton;
 import edu.tum.cs.ias.knowrob.owl.OWLThing;
 import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
+import edu.tum.cs.ias.knowrob.vis.gui.themes.GreyTheme;
 
 
 import processing.core.PApplet;
@@ -49,16 +50,6 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 	MultiList class_listbox ;
 	
 	/**
-	 * Font for drawing text
-	 */
-	private PFont dejavuFont;
-
-	/** 
-	 * Font for ControlP5
-	 */
-	private ControlFont cfont;
-	
-	/**
 	 * Position where mouse dragging started
 	 */
 	private Vector2f draggingStart;
@@ -73,8 +64,6 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 	 */
 	private static final Cursor moveCursor = new Cursor(Cursor.MOVE_CURSOR);
 
-
-	
 	
 	
 	/**
@@ -112,8 +101,7 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 			this.frame.setBackground(new Color(10, 10, 10));
 		}
 
-		dejavuFont = createFont("DejaVu Sans",12);
-		textFont(dejavuFont);
+
 
 		frameRate(10);
 //		PrologInterface.initJPLProlog("ias_knowledge_base");
@@ -313,12 +301,10 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 	private void initControlP5() {
 
 		controlP5 = new ControlP5(this);
+		GreyTheme.applyStyle(controlP5);
 		
-		cfont = new ControlFont(dejavuFont);
 		controlP5.addTextfield("search", 20, 20, 200, 20).setAutoClear(false).setFocus(true);
-		
-		class_listbox = applyStyle(controlP5.addMultiList("class list", 20, 60, 80, 17));
-
+		class_listbox = GreyTheme.applyStyle(controlP5.addMultiList("class list", 20, 60, 80, 17));
 
 		float textwidth = textWidth("CheckingWhetherConditionObtains");
 		class_listbox.setWidth((int)textwidth + 10);
@@ -370,7 +356,7 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 	 */
 	private void configureButton(MultiListButton b, int level, OWLClass act) {
 		
-		applyStyle(b);
+		GreyTheme.applyStyle(b);
 		b.setCaptionLabel(act.getLabel());
 		
 		if(level>=3)
@@ -382,40 +368,6 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 		id2class.put(b.getValue(), act);
 	}
 
-
-	/**
-	 * Apply the default styling to a MultiListButton
-	 * 
-	 * @param b The button to be styled
-	 * @return the same button instance with updated properties
-	 */
-	private MultiListButton applyStyle(MultiListButton b) {
-		b.getCaptionLabel().toUpperCase(false).setFont(cfont);
-		b.setHeight(20);
-		return b;
-	}
-
-	
-	/**
-	 * Apply the default styling to a MultiList
-	 * 
-	 * @param b The list to be styled
-	 * @return the same list instance with updated properties
-	 */
-	private MultiList applyStyle(MultiList lb) {
-
-		controlP5.setColorForeground(color(180))
-		.setColorCaptionLabel(color(240))
-		.setColorBackground(color(80))
-		.setColorActive(color(200));
-
-		lb.setHeight(20);
-		lb.getCaptionLabel().setFont(cfont);
-		
-		return lb;
-	}
-
-	
 	
 	
 	
