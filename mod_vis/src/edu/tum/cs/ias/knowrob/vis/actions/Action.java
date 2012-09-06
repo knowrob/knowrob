@@ -1,41 +1,23 @@
 package edu.tum.cs.ias.knowrob.vis.actions;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
-/**
- * A action for a plan.
- * An action can have dependencies (parents) which have to be executed before.
- * An action may also have child actions which can be executed after this action.
- * 
- * Each action may also be decomposed into subsequences which are actions.
- * @author Stefan Profanter
- *
- */
-public class Action {
+
+import edu.tum.cs.ias.knowrob.owl.OWLClass;
+import edu.tum.cs.ias.knowrob.owl.ObjectInstance;
+
+
+public class Action extends OWLClass{
 
 	/**
-	 * Properties of this action
-	 * A key may have multiple values. So the type of value is an array of strings
+	 * Sequence of sub-actions of this action
 	 */
-	private LinkedHashMap<String, List<String>> properties;
-	
-	/**
-	 * Parent actions in hierarchy
-	 */
-	private LinkedList<Action> parentActions;
-	/**
-	 * Child actions in hierarchy
-	 */
-	private LinkedList<Action> childActions;
-	
-	/**
-	 * Subsequence of this action
-	 */
-	private LinkedList<Action> sequence;
+	private LinkedList<Action> sub_actions;
 	
 	/**
 	 * Parent action if this action is in a subsequence
@@ -47,16 +29,6 @@ public class Action {
 	 */
 	private Action expandedSequence = null;
 
-	/**
-	 * Name of the action
-	 */
-	private String name;
-	
-
-	/**
-	 * Identifier of the action (from prolog)
-	 */
-	private String identifier;
 
 	/**
 	 * Holds information for drawing this action.
@@ -64,289 +36,207 @@ public class Action {
 	 */
 	private ActionDrawInformation drawInfo;
 	
-	/**
-	 * Constructor for initializing an action
-	 * @param name Name/Title of the action
-	 */
-	public Action(String name) {
-		this(name, name);
-	}
 	
-	/**
-	 * Constructor for initializing an action
-	 * @param name Name/Title of the action
-	 */
-	public Action(String name, String identifier) {
-		this.properties = new LinkedHashMap<String, List<String>>();
-		this.parentActions = new LinkedList<Action>();
-		this.childActions = new LinkedList<Action>();
-		this.sequence = new LinkedList<Action>();
-		this.name = name;
-		this.drawInfo = new ActionDrawInformation(this);
-		this.identifier = identifier;
-	}
 	
-	/**
-	 * Get list of properties.
-	 * Value is an array of strings because a property may have multiple values
-	 * @return list of action properties
-	 */
-	public LinkedHashMap<String, List<String>> getProperties() {
-		return properties;
-	}
 
 	/**
-	 * Overwrite current list of properties
-	 * Value is an array of strings because a property may have multiple values
-	 * @param properties new properties list
+	 * Constructor. Set the IRI and optionally a label. If none is given, 
+	 * it is initialized with the IRI's short name.
+	 * 
+	 * @param iri Identifier of this thing.
 	 */
-	public void setProperties(LinkedHashMap<String, List<String>> properties) {
-		this.properties = properties;
-		drawInfo.notifyModified();
+	protected Action(String iri, String label) {
+		
+		super(iri, label);
+		this.drawInfo = new ActionDrawInformation(this);
+		this.sub_actions = new LinkedList<Action>();
+
+	}
+
+
+	/**
+	 * Copy constructor: create Action from more generic {@link OWLClass}
+	 * 
+	 * @param ind {@link OWLClass} to be copied into this {@link ObjectInstance}
+	 */
+	protected Action(OWLClass ind) {
+		
+		this(ind.getIRI(), ind.getLabel());
+		
+		// copy properties
+		some_values_from.putAll(ind.getSomeValuesFrom());
+		all_values_from.putAll(ind.getAllValuesFrom());
+		has_value.putAll(ind.getHasValue());
 	}
 	
-	public void setName(String name) {
-		this.name = name;
+	
+	/**
+	 * Action factory. Return existing instance, if available, and create new
+	 * Action instance if necessary. Avoids duplicate instances with the same 
+	 * IRI.
+	 * 
+	 * @param iri Identifier of this thing.
+	 * @param label Optional natural-language label.
+	 * @return Instance of an {@link Action} with the specified IRI
+	 */
+	public static Action getAction(String iri, String label) {
+
+		// return exact match if available
+		if(identifiers.containsKey(iri) && identifiers.get(iri) instanceof Action) {
+			return (Action) identifiers.get(iri);			
+		}
+		
+		// create ObjectInstance from higher-level objects if the existing object for this IRI has a more abstract type
+		Action res = new Action(OWLClass.getOWLClass(iri, label));
+		identifiers.put(iri, res);
+		return res;
 	}
 	
 	/**
-	 * Get property with specified key
+	 * Action factory. Return existing instance, if available, and create new
+	 * Action instance if necessary. Avoids duplicate instances with the same 
+	 * IRI.
+	 * 
+	 * @param iri Identifier of this thing.
+	 * @return Instance of an {@link Action} with the specified IRI
+	 */
+	public static Action getAction(String iri) {
+		return getAction(iri, null); 
+	}
+
+
+	
+	
+	/**
+	 * Get map of all defined action properties. Convenience method combining values
+	 * defined as some_values_from and has_value restrictions.
+	 * 
+	 * The calue is an array of strings because a property may have multiple values.
+	 * 
+	 * @return list of action properties
+	 */
+	public Map<String, Vector<String>> getProperties() {
+		
+		Map<String, Vector<String>> res = new LinkedHashMap<String, Vector<String>>();
+		
+		res.putAll(some_values_from);
+		res.putAll(has_value);
+		
+		// also add superclasses
+		if(getSuperClasses()!=null && getSuperClasses().size() > 0) {
+			res.put("type", new Vector<String>());
+			for(OWLClass cl : getSuperClasses()) {
+				res.get("type").add(cl.getIRI());
+			}
+		}
+		
+		return res;
+	}
+	
+	/**
+	 * Get property with specified key. Convenience method combining values
+	 * defined as some_values_from and has_value restrictions.
+	 * 
 	 * @param key Key of property
 	 * @return Value of property or null if not found
 	 */
-	public List<String> getProperty(String key)
-	{
-		return properties.get(key);
-	}
-	
-	/**
-	 * Set or overwrite property with specified key
-	 * @param key key to set
-	 * @param value value to set
-	 */
-	public void setProperty(String key, String value)
-	{
-	    List<String> list = properties.get(key);
-	    if(list == null){
-	        list = new ArrayList<String>();
-	        properties.put(key, list);
-	    }
-	    list.add(value);
-
-		drawInfo.notifyModified();
-	}
-
-	/**
-	 * Get iterator for parent actions.
-	 * To add or remove a parent action use dedicated methods
-	 * @return Iterator for parent actions
-	 */
-	public Iterator<Action> getParentActionsIterator() {
-		return parentActions.iterator();
-	}
-
-	/**
-	 * Add a parent action to this action.
-	 * This action will be added automatically to the parentAction's child list
-	 * @param parentAction Action to add
-	 */
-	public void addParentAction(Action parentAction) {
-		this.parentActions.add(parentAction);
-		if (parentAction.childActions.contains(this) == false)
-		{
-			parentAction.childActions.add(this);
-			parentAction.drawInfo.notifyModified();
-		}
-		drawInfo.notifyModified();
-	}
-	
-	/**
-	 * Add a list of parent actions to this action.
-	 * This action will be added automatically to the each parentAction's child list
-	 * @param parentAction Actions to be added
-	 */
-	public void addParentActions(LinkedList<Action> parentActions) {
-		this.parentActions.addAll(parentActions);
-		for (Action parent : parentActions)
-		{
-			if (parent.childActions.contains(this) == false)
-			{
-				parent.childActions.add(this);
-				parent.drawInfo.notifyModified();
+	public List<String> getProperty(String key) {
+		
+		if(some_values_from.containsKey(key)){
+			return some_values_from.get(key);	
+		} else if(has_value.containsKey(key)) {
+			return has_value.get(key);
+		} else if (key.equals("type")){
+			
+			Vector<String> res = new Vector<String>();
+			for(OWLClass cl : superclasses) {
+				res.add(cl.getLabel());
 			}
+			return res;
+		} else {
+			return null;
 		}
-		drawInfo.notifyModified();
+		
 	}
 	
-	/**
-	 * Remove specified action from parents list.
-	 * This action will be automatically removed from parentAction's child list
-	 * @param parentAction action to remove
-	 */
-	public void removeParentAction(Action parentAction)
-	{
-		this.parentActions.remove(parentAction);
-		parentAction.childActions.remove(this);
-		drawInfo.notifyModified();
-		parentAction.drawInfo.notifyModified();
-	}
 
-	/**
-	 * Get iterator for child actions.
-	 * To add or remove a child action use dedicated methods
-	 * @return Iterator for child actions
-	 */
-	public Iterator<Action> getChildActionsIterator() {
-		return childActions.iterator();
-	}
-	
-	/**
-	 * Add a child action to this action.
-	 * This action will be added automatically to the childAction's parent list
-	 * @param childAction Action to add
-	 */
-	public void addChildAction(Action childAction) {
-		this.childActions.add(childAction);
-		if (childAction.parentActions.contains(this) == false)
-		{
-			childAction.parentActions.add(this);
-			childAction.drawInfo.notifyModified();
-		}
-		drawInfo.notifyModified();
-	}
-
-	/**
-	 * Add a list of child actions to this action.
-	 * This action will be added automatically to each childAction's parent list
-	 * @param childActions Action list to add
-	 */
-	public void addChildActions(LinkedList<Action> childActions) {
-		this.childActions.addAll(childActions);
-		for (Action child : childActions)
-		{
-			if (child.parentActions.contains(this) == false)
-			{
-				child.parentActions.add(this);
-				child.drawInfo.notifyModified();
-			}
-		}
-		drawInfo.notifyModified();
-	}
-	
-	/**
-	 * Remove specified action from child list.
-	 * This action will be automatically removed from childAction's parent list
-	 * @param childAction action to remove
-	 */
-	public void removeChildAction(Action childAction)
-	{
-		this.childActions.remove(childAction);
-		childAction.parentActions.remove(this);
-		childAction.drawInfo.notifyModified();
-		drawInfo.notifyModified();
-	}
-
-	/**
-	 * Get iterator for action subsequences.
-	 * To add or remove a sequence use dedicated methods.
-	 * @return Iterator for sequences list
-	 */
-	public Iterator<Action> getSequenceIterator() {
-		return sequence.iterator();
-	}
-
-	/**
-	 * Returns the number of subsequences for this action
-	 * @return length of sequence iterator
-	 */
-	public int getSequenceCount()
-	{
-		return sequence.size();
-	}
-	
-	/**
-	 * Add an action to the sequence list as a subsequence for this action.
-	 * @param sequence action to add
-	 */
-	public void addSequence(Action sequence) {
-		this.sequence.add(sequence);
-		sequence.parentOfSequence = this;
-		drawInfo.notifyModified();
-	}
-	
-	/**
-	 * Add multiple actions to the sequence list as subsequences for this action.
-	 * @param sequences List of actions to add to sequence list
-	 */
-	public void addSequence(LinkedList<Action> sequences) {
-		this.sequence.addAll(sequences);
-		for (Action s : sequences)
-		{
-			s.parentOfSequence = this;
-		}
-		drawInfo.notifyModified();
-	}
-	
-	/**
-	 * Remove action from subsequence list
-	 * @param sequence sequence to remove
-	 */
-	public void removeSequence(Action sequence)
-	{
-		this.sequence.remove(sequence);
-		drawInfo.notifyModified();
-	}
-	
-	/**
-	 * Return name of action
-	 * @return name
-	 */
-	public String getName()
-	{
-		return name;
-	}
-	
-	/**
-	 * Return identifier of the action	
-	 * @return identifier
-	 */
-	public String getIdentifier() {
-		return identifier;
-	}
 
 	/**
 	 * Get information for drawing the action
 	 * @return object containing draw information
 	 */
-	public ActionDrawInformation getDrawInfo()
-	{
+	public ActionDrawInformation getDrawInfo() {
 		return drawInfo;
 	}
 	
+
+	
+
 	/**
-	 * Return number of parent actions
-	 * @return number of parent actions
+	 * Get iterator for sub-actions.
+	 * Use the provided dedicated methods to add or remove a sub-action.
+	 * 
+	 * @return Iterator for sub-actions list
 	 */
-	public int getParentsCount()
-	{
-		return parentActions.size();
+	public Iterator<Action> getSubActionsIterator() {
+		return sub_actions.iterator();
+	}
+
+	/**
+	 * Returns the number of sub-actions for this action
+	 * 
+	 * @return length of sub-actions iterator
+	 */
+	public int getSubActionsCount() {
+		return sub_actions.size();
 	}
 	
 	/**
-	 * Return number of child actions
-	 * @return number of child actions
+	 * Add an action to the sub-actions listfor this action.
+	 * 
+	 * @param sub_action action to add
 	 */
-	public int getChildrenCount()
-	{
-		return childActions.size();
+	public void addSubAction(Action sub_action) {
+		this.sub_actions.add(sub_action);
+		sub_action.parentOfSequence = this;
+		drawInfo.notifyModified();
 	}
+	
+	/**
+	 * Add multiple actions to the sub-actions list for this action.
+	 * 
+	 * @param sub_actions List of actions to add to sequence list
+	 */
+	public void addSubActions(LinkedList<Action> sub_actions) {
+		
+		this.sub_actions.addAll(sub_actions);
+		
+		for (Action s : sub_actions) {
+			s.parentOfSequence = this;
+		}
+		
+		drawInfo.notifyModified();
+	}
+	
+
+	/**
+	 * Remove action from sub-actions list
+	 * 
+	 * @param sub-action sub-action to remove
+	 */
+	public void removeSubAction(Action sub_action) {
+		this.sub_actions.remove(sub_action);
+		drawInfo.notifyModified();
+	}
+	
+	
+	
 	
 	/**
 	 * Returns true if the sequence is expanded.
 	 * @return true if expanded
 	 */
-	public boolean isExpanded()
-	{
+	public boolean isExpanded() {
 		if(parentOfSequence!=null)
 			return (parentOfSequence.expandedSequence == this);
 		else 
@@ -357,8 +247,7 @@ public class Action {
 	 * Get the currently expanded subsequence
 	 * @return Action which is currently expanded
 	 */
-	public Action getExpandedSequence()
-	{
+	public Action getExpandedSequence() {
 		return expandedSequence;
 	}
 	
@@ -366,9 +255,8 @@ public class Action {
 	 * Expand the given action in this actions subsequence
 	 * @param sequence Subcation to expand
 	 */
-	public void setExpandedSequence(Action sequence)
-	{
-		if (this.sequence.contains(sequence))
+	public void setExpandedSequence(Action sequence) {
+		if (this.sub_actions.contains(sequence))
 		{
 			this.expandedSequence = sequence;
 			if (parentOfSequence != null)

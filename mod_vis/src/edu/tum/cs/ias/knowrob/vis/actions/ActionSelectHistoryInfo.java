@@ -179,7 +179,7 @@ public class ActionSelectHistoryInfo {
 		applet.endShape(PConstants.CLOSE);
 		
 		applet.fill(currentTextColor.getRed(), currentTextColor.getGreen(), currentTextColor.getBlue(), currentTextColor.getAlpha());
-		applet.text(action.getName(),pos.x + PADDING_LEFT_RIGHT*1.5f,pos.y + action.getDrawInfo().getTextHeight()*2f);
+		applet.text(action.getLabel(),pos.x + PADDING_LEFT_RIGHT*1.5f,pos.y + action.getDrawInfo().getTextHeight()*2f);
 
 	}
 	

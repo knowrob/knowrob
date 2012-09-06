@@ -216,26 +216,26 @@ public class ActionDrawInformation {
 	 */
 	private float textHeight;
 	
-	/**
-	 * Maximum box height over all parent actions of this action.
-	 * Used to draw all parents with same height
-	 */
-	private float parentsMaxHeight;
-	/**
-	 * Maximum box height over all child actions of this action.
-	 * Used to draw all parents with same height
-	 */
-	private float childrenMaxHeight;
-	
-	/**
-	 * X position of parent boxes
-	 */
-	private float parentStartX;
-	
-	/**
-	 * X position of child boxes
-	 */
-	private float childStartX;
+//	/**
+//	 * Maximum box height over all parent actions of this action.
+//	 * Used to draw all parents with same height
+//	 */
+//	private float parentsMaxHeight;
+//	/**
+//	 * Maximum box height over all child actions of this action.
+//	 * Used to draw all parents with same height
+//	 */
+//	private float childrenMaxHeight;
+//	
+//	/**
+//	 * X position of parent boxes
+//	 */
+//	private float parentStartX;
+//	
+//	/**
+//	 * X position of child boxes
+//	 */
+//	private float childStartX;
 	
 	/**
 	 * If parent or child boxes are wider than the extended box, the extended box must be shifted a bit to the right.
@@ -401,12 +401,16 @@ public class ActionDrawInformation {
 		
 		//Text dimension
 		textHeight = applet.textAscent();
-		nameWidth = applet.textWidth(action.getName());
+		nameWidth = applet.textWidth(action.getLabel());
 		
 		//Properties of the action
 		maxKeyWidth = 0;
 		maxValueWidth = 0;
 		propertiesHeight = 0;
+		
+		// add one line to properties for type: info
+		propertiesHeight += textHeight* LINE_HEIGHT;
+		
 		Collection<String> keys = action.getProperties().keySet();
 		for (Iterator<String> it = keys.iterator(); it.hasNext(); )
 		{
@@ -425,10 +429,10 @@ public class ActionDrawInformation {
 		sequenceBoxDimension.x = SEQUENCE_BOX_PADDING;
 		sequenceBoxDimension.y = 0;
 		hasExpandButton = false;
-		for (Iterator<Action> i = action.getSequenceIterator(); i.hasNext();)
+		for (Iterator<Action> i = action.getSubActionsIterator(); i.hasNext();)
 		{
 			Action a = i.next();
-			if (a.getSequenceCount() > 0)
+			if (a.getSubActionsCount() > 0)
 				hasExpandButton = true;
 			ActionDrawInformation inf = a.getDrawInfo();
 			
@@ -442,43 +446,43 @@ public class ActionDrawInformation {
 			sequenceBoxDimension.y += EXPAND_BOX_HEIGHT;
 		checkAndAddSizeOfExpandedSequence(applet,sequenceBoxDimension,action);
 		
-		//Calculation for parent boxes
-		parentsMaxHeight = 0;
-		float parentsWidth = 0;
-		for (Iterator<Action> i = action.getParentActionsIterator(); i.hasNext(); )
-		{
-			ActionDrawInformation inf = i.next().getDrawInfo();
-			
-			inf.recalculateDimensions(applet);
-			
-			parentsMaxHeight = Math.max(parentsMaxHeight, inf.getSimpleBoxDimension().y);
-			parentsWidth += inf.getSimpleBoxDimension().x+MAIN_BOX_PADDING;
-		}
-		parentsWidth = Math.max(0, parentsWidth-MAIN_BOX_PADDING);
+//		//Calculation for parent boxes
+//		parentsMaxHeight = 0;
+//		float parentsWidth = 0;
+//		for (Iterator<Action> i = action.getParentActionsIterator(); i.hasNext(); )
+//		{
+//			ActionDrawInformation inf = i.next().getDrawInfo();
+//			
+//			inf.recalculateDimensions(applet);
+//			
+//			parentsMaxHeight = Math.max(parentsMaxHeight, inf.getSimpleBoxDimension().y);
+//			parentsWidth += inf.getSimpleBoxDimension().x+MAIN_BOX_PADDING;
+//		}
+//		parentsWidth = Math.max(0, parentsWidth-MAIN_BOX_PADDING);
+//		
+//		totalWidth = Math.max(totalWidth, parentsWidth);
+//		totalHeight += parentsMaxHeight+MAIN_BOX_PADDING;
 		
-		totalWidth = Math.max(totalWidth, parentsWidth);
-		totalHeight += parentsMaxHeight+MAIN_BOX_PADDING;
+//		//Calculation for child boxes
+//		childrenMaxHeight = 0;
+//		float childrenWidth = 0;
+//		for (Iterator<Action> i = action.getChildActionsIterator(); i.hasNext(); )
+//		{
+//			ActionDrawInformation inf = i.next().getDrawInfo();
+//			
+//			inf.recalculateDimensions(applet);
+//			
+//			childrenMaxHeight = Math.max(childrenMaxHeight, inf.getSimpleBoxDimension().y);
+//			childrenWidth += inf.getSimpleBoxDimension().x+MAIN_BOX_PADDING;
+//		}
+//		childrenWidth = Math.max(0, childrenWidth-MAIN_BOX_PADDING);
+//		totalWidth = Math.max(totalWidth, childrenWidth);
+//		totalHeight += childrenMaxHeight+MAIN_BOX_PADDING;
 		
-		//Calculation for child boxes
-		childrenMaxHeight = 0;
-		float childrenWidth = 0;
-		for (Iterator<Action> i = action.getChildActionsIterator(); i.hasNext(); )
-		{
-			ActionDrawInformation inf = i.next().getDrawInfo();
-			
-			inf.recalculateDimensions(applet);
-			
-			childrenMaxHeight = Math.max(childrenMaxHeight, inf.getSimpleBoxDimension().y);
-			childrenWidth += inf.getSimpleBoxDimension().x+MAIN_BOX_PADDING;
-		}
-		childrenWidth = Math.max(0, childrenWidth-MAIN_BOX_PADDING);
-		totalWidth = Math.max(totalWidth, childrenWidth);
-		totalHeight += childrenMaxHeight+MAIN_BOX_PADDING;
+//		this.boxOffsetLeft = Math.max(0, Math.max((parentsWidth-getExtendedBoxDimension().x)/2f,(childrenWidth-getExtendedBoxDimension().x)/2f));
 		
-		this.boxOffsetLeft = Math.max(0, Math.max((parentsWidth-getExtendedBoxDimension().x)/2f,(childrenWidth-getExtendedBoxDimension().x)/2f));
-		
-		this.parentStartX = Math.max(0, getExtendedBoxDimension().x/2f-parentsWidth/2f);
-		this.childStartX = Math.max(0, getExtendedBoxDimension().x/2f-childrenWidth/2f);
+//		this.parentStartX = Math.max(0, getExtendedBoxDimension().x/2f-parentsWidth/2f);
+//		this.childStartX = Math.max(0, getExtendedBoxDimension().x/2f-childrenWidth/2f);
 		
 		totalWidth = Math.max(totalWidth, getExtendedBoxDimension().x);
 		totalHeight += getExtendedBoxDimension().y;
@@ -507,7 +511,7 @@ public class ActionDrawInformation {
 		applet.fill(currentBackgroundBrightColor.getRed(), currentBackgroundBrightColor.getGreen(), currentBackgroundBrightColor.getBlue(), currentBackgroundBrightColor.getAlpha());
 		applet.rect(position.x,position.y,dimension.x, getNameBoxHeight());
 		applet.fill(currentTextColor.getRed(), currentTextColor.getGreen(), currentTextColor.getBlue(), currentTextColor.getAlpha());
-		applet.text(action.getName(),position.x + MAIN_BOX_PADDING,position.y + textHeight*2f);
+		applet.text(action.getLabel(),position.x + MAIN_BOX_PADDING,position.y + textHeight*2f);
 	}
 	
 	/**
@@ -518,6 +522,7 @@ public class ActionDrawInformation {
 	private void drawProperties(PApplet applet, Vector2f position)
 	{
 		applet.fill(currentTextColor.getRed(), currentTextColor.getGreen(), currentTextColor.getBlue(), currentTextColor.getAlpha());
+		
 		Collection<String> keys = action.getProperties().keySet();
 		for (Iterator<String> it = keys.iterator(); it.hasNext(); )
 		{
@@ -601,90 +606,90 @@ public class ActionDrawInformation {
 		applet.rect(getOutboundConnectorPos().x-CONNECTOR_DIM.x/2, getOutboundConnectorPos().y, CONNECTOR_DIM.x, CONNECTOR_DIM.y);
 	}
 	
-	/**
-	 * Draw the parent boxes of this action. These are located over the action box
-	 * @param applet Applet to draw on
-	 * @param position start position where to begin to draw
-	 * @return ArrayList of Vector2f with the points at the center bottom for drawing connection arrows
-	 */
-	private ArrayList<Vector2f> drawParentBoxes(PApplet applet, Vector2f position, Vector2f drawOffset)
-	{
-		Vector2f tmpPos = new Vector2f(position);
-		ArrayList<Vector2f> retPoints = new ArrayList<Vector2f>();
-		
-		for (Iterator<Action> i = action.getParentActionsIterator(); i.hasNext(); )
-		{
-			ActionDrawInformation inf = i.next().getDrawInfo();
-			
-			inf.drawSimpleBox(applet, tmpPos, drawOffset, parentsMaxHeight);
-		
-		    retPoints.add(new Vector2f(tmpPos.x + inf.getSimpleBoxDimension().x/2f, tmpPos.y+parentsMaxHeight-5));
+//	/**
+//	 * Draw the parent boxes of this action. These are located over the action box
+//	 * @param applet Applet to draw on
+//	 * @param position start position where to begin to draw
+//	 * @return ArrayList of Vector2f with the points at the center bottom for drawing connection arrows
+//	 */
+//	private ArrayList<Vector2f> drawParentBoxes(PApplet applet, Vector2f position, Vector2f drawOffset)
+//	{
+//		Vector2f tmpPos = new Vector2f(position);
+//		ArrayList<Vector2f> retPoints = new ArrayList<Vector2f>();
+//		
+//		for (Iterator<Action> i = action.getParentActionsIterator(); i.hasNext(); )
+//		{
+//			ActionDrawInformation inf = i.next().getDrawInfo();
+//			
+//			inf.drawSimpleBox(applet, tmpPos, drawOffset, parentsMaxHeight);
+//		
+//		    retPoints.add(new Vector2f(tmpPos.x + inf.getSimpleBoxDimension().x/2f, tmpPos.y+parentsMaxHeight-5));
+//	
+//			tmpPos.x += inf.getSimpleBoxDimension().x + MAIN_BOX_PADDING;
+//		}
+//		return retPoints;
+//	}
 	
-			tmpPos.x += inf.getSimpleBoxDimension().x + MAIN_BOX_PADDING;
-		}
-		return retPoints;
-	}
-	
-	/**
-	 * Draw the child boxes of this action. These are located under the extended action box
-	 * @param applet Applet to draw on
-	 * @param position start position where to begin to draw
-	 * @return ArrayList of Vector2f with the points at the center bottom for drawing connection arrows
-	 */
-	private ArrayList<Vector2f> drawChildrenBoxes(PApplet applet, Vector2f position, Vector2f drawOffset)
-	{
-		Vector2f tmpPos = new Vector2f(position);
-		ArrayList<Vector2f> retPoints = new ArrayList<Vector2f>();
-		
-		for (Iterator<Action> i = action.getChildActionsIterator(); i.hasNext(); )
-		{
-			ActionDrawInformation inf = i.next().getDrawInfo();
-			
-			inf.drawSimpleBox(applet, tmpPos, drawOffset, childrenMaxHeight);
-			
-		    retPoints.add(new Vector2f(tmpPos.x + inf.getSimpleBoxDimension().x/2f, tmpPos.y+5));
-			
-			tmpPos.x += inf.getSimpleBoxDimension().x + MAIN_BOX_PADDING;
-		}
-		return retPoints;
-	}
-	
-	/**
-	 * Connect each point of parentPoints with the current action box. Do the same with child points.
-	 * The target points will be calculated by this function with a homogeneous distribution over the
-	 * whole with of the current action box.
-	 * 
-	 * @param applet Applet to draw on
-	 * @param parentPoints Connection points of parent actions
-	 * @param childPoints Connection points of child actions
-	 */
-	private void drawArrows(PApplet applet, ArrayList<Vector2f> parentPoints, ArrayList<Vector2f> childPoints)
-	{
-		applet.stroke(arrowBorderColor.getRed(), arrowBorderColor.getGreen(), arrowBorderColor.getBlue(), arrowBorderColor.getAlpha());
-	    applet.fill(arrowBackgroundColor.getRed(), arrowBackgroundColor.getGreen(), arrowBackgroundColor.getBlue(), arrowBackgroundColor.getAlpha());
-
-	    Vector2f connPointParent = new Vector2f(position.x + localPosOffset.x + globalPosOffset.x, position.y + localPosOffset.y + globalPosOffset.x);
-	    connPointParent.x+=boxOffsetLeft;
-	    Vector2f connPointChildren = new Vector2f(connPointParent);
-	    connPointChildren.y += getExtendedBoxDimension().y-5;
-	    connPointParent.y += 5;
-	    
-	    float diffParent = getExtendedBoxDimension().x / (parentPoints.size()+1);
-	    
-	    for (int i=0; i<parentPoints.size(); i++)
-	    {
-	    	connPointParent.x += diffParent;
-	    	PlanVisApplet.arrowFromTo(applet, parentPoints.get(i), connPointParent, 5,-1);
-	    }
-	    
-	    float diffChild = getExtendedBoxDimension().x / (childPoints.size()+1);
-	    
-	    for (int i=0; i<childPoints.size(); i++)
-	    {
-	    	connPointChildren.x += diffChild;
-	    	PlanVisApplet.arrowFromTo(applet, connPointChildren,childPoints.get(i), 5,-1);
-	    }	    
-	}
+//	/**
+//	 * Draw the child boxes of this action. These are located under the extended action box
+//	 * @param applet Applet to draw on
+//	 * @param position start position where to begin to draw
+//	 * @return ArrayList of Vector2f with the points at the center bottom for drawing connection arrows
+//	 */
+//	private ArrayList<Vector2f> drawChildrenBoxes(PApplet applet, Vector2f position, Vector2f drawOffset)
+//	{
+//		Vector2f tmpPos = new Vector2f(position);
+//		ArrayList<Vector2f> retPoints = new ArrayList<Vector2f>();
+//		
+//		for (Iterator<Action> i = action.getChildActionsIterator(); i.hasNext(); )
+//		{
+//			ActionDrawInformation inf = i.next().getDrawInfo();
+//			
+//			inf.drawSimpleBox(applet, tmpPos, drawOffset, childrenMaxHeight);
+//			
+//		    retPoints.add(new Vector2f(tmpPos.x + inf.getSimpleBoxDimension().x/2f, tmpPos.y+5));
+//			
+//			tmpPos.x += inf.getSimpleBoxDimension().x + MAIN_BOX_PADDING;
+//		}
+//		return retPoints;
+//	}
+//	
+//	/**
+//	 * Connect each point of parentPoints with the current action box. Do the same with child points.
+//	 * The target points will be calculated by this function with a homogeneous distribution over the
+//	 * whole with of the current action box.
+//	 * 
+//	 * @param applet Applet to draw on
+//	 * @param parentPoints Connection points of parent actions
+//	 * @param childPoints Connection points of child actions
+//	 */
+//	private void drawArrows(PApplet applet, ArrayList<Vector2f> parentPoints, ArrayList<Vector2f> childPoints)
+//	{
+//		applet.stroke(arrowBorderColor.getRed(), arrowBorderColor.getGreen(), arrowBorderColor.getBlue(), arrowBorderColor.getAlpha());
+//	    applet.fill(arrowBackgroundColor.getRed(), arrowBackgroundColor.getGreen(), arrowBackgroundColor.getBlue(), arrowBackgroundColor.getAlpha());
+//
+//	    Vector2f connPointParent = new Vector2f(position.x + localPosOffset.x + globalPosOffset.x, position.y + localPosOffset.y + globalPosOffset.x);
+//	    connPointParent.x+=boxOffsetLeft;
+//	    Vector2f connPointChildren = new Vector2f(connPointParent);
+//	    connPointChildren.y += getExtendedBoxDimension().y-5;
+//	    connPointParent.y += 5;
+//	    
+//	    float diffParent = getExtendedBoxDimension().x / (parentPoints.size()+1);
+//	    
+//	    for (int i=0; i<parentPoints.size(); i++)
+//	    {
+//	    	connPointParent.x += diffParent;
+//	    	PlanVisApplet.arrowFromTo(applet, parentPoints.get(i), connPointParent, 5,-1);
+//	    }
+//	    
+//	    float diffChild = getExtendedBoxDimension().x / (childPoints.size()+1);
+//	    
+//	    for (int i=0; i<childPoints.size(); i++)
+//	    {
+//	    	connPointChildren.x += diffChild;
+//	    	PlanVisApplet.arrowFromTo(applet, connPointChildren,childPoints.get(i), 5,-1);
+//	    }	    
+//	}
 
 	/**
 	 * Draw the subsequence boxes of current action.
@@ -694,7 +699,7 @@ public class ActionDrawInformation {
 	private void drawSequence(PApplet applet, Vector2f position, Vector2f drawOffset, boolean isExpandedBox)
 	{
 		//Draw outer box of sequence list
-		if (!action.getSequenceIterator().hasNext())
+		if (!action.getSubActionsIterator().hasNext())
 			return;
 		
 		applet.stroke(currentBorderColor.getRed(), currentBorderColor.getGreen(), currentBorderColor.getBlue(), currentBorderColor.getAlpha());
@@ -719,12 +724,12 @@ public class ActionDrawInformation {
 		
 		
 		//Draw inner boxes
-		for (Iterator<Action> i = action.getSequenceIterator(); i.hasNext();)
+		for (Iterator<Action> i = action.getSubActionsIterator(); i.hasNext();)
 		{
 			Action a = i.next();
 			ActionDrawInformation inf = a.getDrawInfo();
 			
-			inf.drawSimpleBox(applet, tmpPos, drawOffset, maxSubsequenceHeight,a.getSequenceCount()>0);
+			inf.drawSimpleBox(applet, tmpPos, drawOffset, maxSubsequenceHeight,a.getSubActionsCount()>0);
 			if (a == expSeq)
 			{
 				expandedParentCorner1 = new Vector2f(tmpPos.x,tmpPos.y+maxSubsequenceHeight);
@@ -784,9 +789,9 @@ public class ActionDrawInformation {
 		Vector2f extendedDim = getExtendedBoxDimension();
 		
 		//Draw parents
-		ArrayList<Vector2f> parentPoints = drawParentBoxes(applet, new Vector2f(position.x + parentStartX,position.y), drawOffset);
-		
-		position.y += parentsMaxHeight+MAIN_BOX_PADDING;
+//		ArrayList<Vector2f> parentPoints = drawParentBoxes(applet, new Vector2f(position.x + parentStartX,position.y), drawOffset);
+//		
+//		position.y += parentsMaxHeight+MAIN_BOX_PADDING;
 
 		//Border & title
 		this.position = new Vector2f(position);
@@ -813,9 +818,9 @@ public class ActionDrawInformation {
 		
 		position.y += MAIN_BOX_PADDING*2;
 		//Children
-		ArrayList<Vector2f> childPoints = drawChildrenBoxes(applet, new Vector2f(position.x + childStartX,position.y),  drawOffset);
+//		ArrayList<Vector2f> childPoints = drawChildrenBoxes(applet, new Vector2f(position.x + childStartX,position.y),  drawOffset);
 		
-		drawArrows(applet, parentPoints, childPoints);
+//		drawArrows(applet, parentPoints, childPoints);
 	}
 	
 	/**
@@ -872,7 +877,7 @@ public class ActionDrawInformation {
 		if (currAction ==null)
 			return null;
 		//over sequences?
-		for (Iterator<Action> i = currAction.getSequenceIterator(); i.hasNext();)
+		for (Iterator<Action> i = currAction.getSubActionsIterator(); i.hasNext();)
 		{
 			ActionDrawInformation inf = i.next().getDrawInfo();
 			
@@ -906,7 +911,7 @@ public class ActionDrawInformation {
 		{
 
 			//over sequences?
-			for (Iterator<Action> i = action.getSequenceIterator(); i.hasNext();)
+			for (Iterator<Action> i = action.getSubActionsIterator(); i.hasNext();)
 			{
 				ActionDrawInformation inf = i.next().getDrawInfo();
 				
@@ -917,29 +922,29 @@ public class ActionDrawInformation {
 						found = inf;
 			}
 			
-			//over parent?
-			for (Iterator<Action> i = action.getParentActionsIterator(); i.hasNext(); )
-			{
-				ActionDrawInformation inf = i.next().getDrawInfo();
-				
-				if (found != null)
-					inf.setHover(false);
-				else
-					if (inf.checkHover(x, y,found)!=null)
-						found = inf;
-			}
-			
-			//over child
-			for (Iterator<Action> i = action.getChildActionsIterator(); i.hasNext(); )
-			{
-				ActionDrawInformation inf = i.next().getDrawInfo();
-				
-				if (found != null)
-					inf.setHover(false);
-				else
-					if (inf.checkHover(x, y,found)!=null)
-						found = inf;
-			}
+//			//over parent?
+//			for (Iterator<Action> i = action.getParentActionsIterator(); i.hasNext(); )
+//			{
+//				ActionDrawInformation inf = i.next().getDrawInfo();
+//				
+//				if (found != null)
+//					inf.setHover(false);
+//				else
+//					if (inf.checkHover(x, y,found)!=null)
+//						found = inf;
+//			}
+//			
+//			//over child
+//			for (Iterator<Action> i = action.getChildActionsIterator(); i.hasNext(); )
+//			{
+//				ActionDrawInformation inf = i.next().getDrawInfo();
+//				
+//				if (found != null)
+//					inf.setHover(false);
+//				else
+//					if (inf.checkHover(x, y,found)!=null)
+//						found = inf;
+//			}
 			
 			//not hovering, so set correct colors
 			setHover(false);
@@ -990,7 +995,7 @@ public class ActionDrawInformation {
 		//over sequences?
 		if (parentExpanded)
 		{
-			for (Iterator<Action> i = action.getSequenceIterator(); i.hasNext();)
+			for (Iterator<Action> i = action.getSubActionsIterator(); i.hasNext();)
 			{
 				Action a = i.next();
 				ActionDrawInformation inf = a.getDrawInfo();
@@ -1014,7 +1019,7 @@ public class ActionDrawInformation {
 			boxY = position.y + localPosOffset.y + globalPosOffset.y +sequenceBoxHeight;
 			boxW = dim.x;
 			boxH = EXPAND_BOX_HEIGHT;
-			if (action.getSequenceCount() > 0 && mouse_x>boxX && mouse_x<boxX+boxW && mouse_y>boxY && mouse_y<boxY+boxH)
+			if (action.getSubActionsCount() > 0 && mouse_x>boxX && mouse_x<boxX+boxW && mouse_y>boxY && mouse_y<boxY+boxH)
 			{
 				setHoverExpand(true);
 				return this;
@@ -1178,7 +1183,7 @@ public class ActionDrawInformation {
 			this.highlight = HighlightType.NOT_HIGHTLIGHTED;
 			return;
 		}
-		for (Iterator<Action> i = action.getSequenceIterator(); i.hasNext();)
+		for (Iterator<Action> i = action.getSubActionsIterator(); i.hasNext();)
 		{
 			Action a = i.next();
 			ActionDrawInformation inf = a.getDrawInfo();
@@ -1201,19 +1206,19 @@ public class ActionDrawInformation {
 	 */
 	public boolean highlightSubsequence(String identifier, boolean expand)
 	{
-		if (this.action.getIdentifier().compareTo(identifier)==0)
+		if (this.action.getIRI().compareTo(identifier)==0)
 		{
 			setHightlight(HighlightType.THIS_HIGHLIGHTED);
 			notifyModified();
 			return true;
 		}
 		//Check sequence of this action
-		for (Iterator<Action> i = action.getSequenceIterator(); i.hasNext();)
+		for (Iterator<Action> i = action.getSubActionsIterator(); i.hasNext();)
 		{
 			Action a = i.next();
 			ActionDrawInformation inf = a.getDrawInfo();
 			
-			if (a.getIdentifier().compareTo(identifier)==0)
+			if (a.getIRI().compareTo(identifier)==0)
 			{
 				inf.setHightlight(HighlightType.THIS_HIGHLIGHTED);
 				setHightlight(HighlightType.CHILD_HIGHLIGHTED);
@@ -1247,7 +1252,7 @@ public class ActionDrawInformation {
 			return true;
 		}
 		//Check sequence of this action
-		for (Iterator<Action> i = action.getSequenceIterator(); i.hasNext();)
+		for (Iterator<Action> i = action.getSubActionsIterator(); i.hasNext();)
 		{
 			Action a = i.next();
 			ActionDrawInformation inf = a.getDrawInfo();

@@ -6,8 +6,8 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import controlP5.Button;
 import controlP5.ControlEvent;
@@ -16,6 +16,7 @@ import controlP5.ControlP5;
 import controlP5.ListBox;
 import controlP5.ListBoxItem;
 import controlP5.Textfield;
+import edu.tum.cs.ias.knowrob.owl.OWLClass;
 import edu.tum.cs.ias.knowrob.vis.actions.Action;
 import edu.tum.cs.ias.knowrob.vis.gui.themes.GreyTheme;
 
@@ -170,6 +171,7 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 	 *  
 	 * @param cl IRI of the super-class
 	 */
+	// TODO: extend to the case of multiple super-classes
 	public void setActionClass(String cl) {
 		((Textfield) this.controlP5.getController("class")).setValue(cl);
 	}
@@ -190,7 +192,7 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 	 * 
 	 * @param props Mapping from the property identifier to a list of values
 	 */
-	public void setActionProperties(Map<String, List<String>> props) {
+	public void setActionProperties(Map<String, Vector<String>> props) {
 		
 		action_props.clear();
 		addActionProperties(props);
@@ -203,7 +205,7 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 	 * 
 	 * @param props Mapping from the property identifier to a list of values
 	 */
-	public void addActionProperties(Map<String, List<String>> props) {
+	public void addActionProperties(Map<String, Vector<String>> props) {
 		
 		for(String prop : props.keySet()) {
 			for(String val : props.get(prop)) {
@@ -363,18 +365,18 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 			// submit action to parent object
 			if(ev.getController().getName().equals("submit")) {
 				
-				String id = ((Textfield) controlP5.getController("identifier")).getText();
-				Action act = new Action(id, id);
+				String id = ((Textfield) controlP5.getController("identifier")).getText(); // TODO: add label field to the action editor forms
+				Action act = Action.getAction(id, null);
 
 				for(ListBoxItem i : actionpropId2item.values()) {
 					
 					if(i!=null) {
 						String[] prop_val = i.getName().split(" -- ", 2);
-						act.setProperty(prop_val[0], prop_val[1]);
+						act.addHasValue(prop_val[0], prop_val[1]); // TODO: somehow distinguish between someValuesfrom and hasValue
 					}			
 				}
 				
-				act.setProperty("type", ((Textfield) controlP5.getController("class")).getText());
+				act.addSuperClass(OWLClass.getOWLClass(((Textfield) controlP5.getController("class")).getText()));
 				
 				
 				if(editing)

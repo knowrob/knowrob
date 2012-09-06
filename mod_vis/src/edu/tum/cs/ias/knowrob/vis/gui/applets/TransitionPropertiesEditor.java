@@ -60,8 +60,8 @@ public class TransitionPropertiesEditor {
 								 .setUpdateMode(ControlWindow.NORMAL)
 								 .setTitle("Edit state transitions");
 
-		controlP5.addTextlabel("from action", "From action: " + transition.getFrom().getName(), 20, 30 );
-		controlP5.addTextlabel("to action",   "To action: " + transition.getFrom().getName(),   20, 65 );
+		controlP5.addTextlabel("from action", "From action: " + transition.getFrom().getLabel(), 20, 30 );
+		controlP5.addTextlabel("to action",   "To action: " + transition.getFrom().getLabel(),   20, 65 );
 		
 		Button b = GreyTheme.applyStyle(controlP5.addButton("apply", 23, 220, 30, 80, 20)).moveTo(controlWindow);
 		

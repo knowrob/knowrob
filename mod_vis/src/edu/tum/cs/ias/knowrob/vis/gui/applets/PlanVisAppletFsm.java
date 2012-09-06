@@ -184,39 +184,39 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	
 	/**
 	 * Load a plan with the given prolog identifier and all it's subactions.
-	 * @param identifier Something like 'http://www.roboearth.org/kb/serve_drink.owl#ServeADrink'
+	 * @param iri Something like 'http://www.roboearth.org/kb/serve_drink.owl#ServeADrink'
 	 * @return The main action initialized by the identifier
 	 */
-	private Action loadPrologPlanRecursive(String identifier)
+	private Action loadPrologPlanRecursive(String iri)
 	{	
 		
 		//Get the action name
-		String name = "";
+		String label = "";
 		try
 		{
-			HashMap<String, Vector<String>> qLabel = PrologInterface.executeQuery("rdf_has('"+identifier+"',rdfs:label,L),util:strip_literal_type(L,Label)");
+			HashMap<String, Vector<String>> qLabel = PrologInterface.executeQuery("rdf_has('"+iri+"',rdfs:label,L),util:strip_literal_type(L,Label)");
 			
-			name = qLabel.get("Label").get(0);
-			if (name.startsWith("'") && name.endsWith("'"))
+			label = qLabel.get("Label").get(0);
+			if (label.startsWith("'") && label.endsWith("'"))
 			{
-				name = name.substring(1,name.length()-1);
+				label = label.substring(1,label.length()-1);
 			}
 		} catch (Exception e)
 		{
-			if (identifier.indexOf('#') >=0)
+			if (iri.indexOf('#') >=0)
 			{
-				name = identifier.substring(identifier.lastIndexOf('#')+1);
+				label = iri.substring(iri.lastIndexOf('#')+1);
 			} else {
-				name = identifier;
+				label = iri;
 			}
 		}
 
-		Action ret = new Action(name, identifier);
+		Action ret = Action.getAction(iri, label);
 		
 		//get properties
 		try
 		{
-			HashMap<String, Vector<String>> qProp = PrologInterface.executeQuery("class_properties('"+identifier+"', Key, V), util:strip_literal_type(V,Val)");
+			HashMap<String, Vector<String>> qProp = PrologInterface.executeQuery("class_properties('"+iri+"', Key, V), util:strip_literal_type(V,Val)");
 
 			if(qProp != null) {
 				Vector<String> key = qProp.get("Key");
@@ -232,8 +232,9 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 						String k = OWLThing.getShortNameOfIRI(key.get(i));
 						String v = OWLThing.getShortNameOfIRI(OWLThing.removeSingleQuotes(val.get(i)));
 
-						if (k.compareToIgnoreCase("subAction") != 0)
-							ret.setProperty(k, v);
+						if (k.compareToIgnoreCase("subAction") != 0) {
+							ret.addHasValue(k, v); // TODO: we should distinguish between different kinds of restrictions here
+						}
 					}
 			}
 		} catch (Exception e)
@@ -243,7 +244,7 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 
 		//get subactions
 		try {
-			HashMap<String, Vector<String>> qSub = PrologInterface.executeQuery("plan_subevents('"+identifier+"',List)");
+			HashMap<String, Vector<String>> qSub = PrologInterface.executeQuery("plan_subevents('"+iri+"',List)");
 
 			if(qSub!=null) {
 
@@ -266,7 +267,7 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 								if (alreadyAdded.contains(s))
 									continue;
 								alreadyAdded.add(s);
-								ret.addSequence(loadPrologPlanRecursive(PrologInterface.removeSingleQuotes(s)));
+								ret.addSubAction(loadPrologPlanRecursive(PrologInterface.removeSingleQuotes(s)));
 							}
 						}
 					}
@@ -859,11 +860,13 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 								try {Thread.sleep(100);
 								} catch (InterruptedException e1) {e1.printStackTrace(); }
 							}
-							f.applet.setIdentifier(a.getIdentifier());
+							
+							// init action editor
+							f.applet.setIdentifier(a.getIRI());
 							f.applet.setActionClass(a.getProperties().get("type").get(0));
 							f.applet.setActionProperties(a.getProperties());
 							f.applet.setEditing(true);
-							// TODO: store superclass in action data structure -> make Action extend OWLClass?
+							// TODO: store superclass in action data structure
 							return;
 
 						} else {
@@ -943,9 +946,7 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 
 					transitions.removeAll(to_be_removed);
 
-					synchronized(actions) {
-						actions.remove(currAction);
-					}
+					actions.remove(currAction);
 					this.currAction = null;
 				}
 			}
@@ -1036,9 +1037,7 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	
 	public void addAction(Action a) {
 		
-		synchronized(actions) {
-			this.actions.add(a);
-		}
+		this.actions.add(a);
 		a.getDrawInfo().position = new Vector2f(50+globalPosOffset.x,80+globalPosOffset.y);
 	}
 	
@@ -1047,9 +1046,11 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 		
 		synchronized(actions) {
 			for(Action old : actions) {
-				if(old.getIdentifier().equals(a.getIdentifier())) {
-					old.setName(a.getName());
-					old.setProperties(a.getProperties());
+				if(old.getIRI().equals(a.getIRI())) {
+					old.setLabel(a.getLabel());
+					old.setSomeValuesFrom(a.getSomeValuesFrom());
+					old.setAllValuesFrom(a.getAllValuesFrom());
+					old.setHasValue(a.getHasValue());
 				}
 			}
 		}
