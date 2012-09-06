@@ -122,14 +122,9 @@ public class OWLThing implements Comparable<OWLThing> {
 	 * @return Prefix of the IRI
 	 */
 	public String getIRIPrefix(){
-		
-        String[] elem = iri.split("#");
-        if(elem.length>1) {
-            String res = elem[0].replaceAll("'", "");
-            return res;
-        }
-        else return iri;
+		return getPrefixOfIRI(iri);
 	}
+
 
 
 	/**
@@ -139,13 +134,7 @@ public class OWLThing implements Comparable<OWLThing> {
 	 * @return Short name of the {@link OWLThing}
 	 */
 	public String getShortName(){ // name after hash sign
-		
-        String[] elem = iri.split("#");
-        if(elem.length>1) {
-            String res = elem[1].replaceAll("'", "");
-            return res;
-        }
-        else return iri;
+		return getShortNameOfIRI(iri);
 	}
 	
 	
@@ -156,20 +145,7 @@ public class OWLThing implements Comparable<OWLThing> {
 	 * @return Filename part of the IRI
 	 */
 	public String getIRIFilename(){ // after last '/', before hash
-		
-        String[] elem = iri.split("/");
-        if(elem.length>1) {
-        	
-            String after_slash = elem[elem.length-1].replaceAll("'", "");
-            String[] elem2 = after_slash.split("#");
-            
-            if(elem2.length>1) {
-                String res = elem2[0];
-                return res;
-            }
-            else return after_slash;
-        }
-        else return iri;
+		return getFilenameOfIRI(iri);
 	}
 	
 
@@ -256,5 +232,33 @@ public class OWLThing implements Comparable<OWLThing> {
     	}
     	else return iri;
     }
+	
+
+	public static String getPrefixOfIRI(String iri) {
+		
+        String[] elem = iri.split("#");
+        if(elem.length>1) {
+            String res = elem[0].replaceAll("'", "");
+            return res;
+        }
+        else return iri;
+	}
+
+	public static String getFilenameOfIRI(String iri) {
+		
+        String[] elem = iri.split("/");
+        if(elem.length>1) {
+        	
+            String after_slash = elem[elem.length-1].replaceAll("'", "");
+            String[] elem2 = after_slash.split("#");
+            
+            if(elem2.length>1) {
+                String res = elem2[0];
+                return res;
+            }
+            else return after_slash;
+        }
+        else return iri;
+	}
 	
 }

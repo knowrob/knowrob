@@ -1,5 +1,8 @@
 package edu.tum.cs.ias.knowrob.owl;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Vector;
 
 public class OWLClass extends OWLThing {
@@ -8,13 +11,31 @@ public class OWLClass extends OWLThing {
 	/**
 	 * Vector of subclasses
 	 */
-	Vector<OWLClass> subclasses;
+	protected Vector<OWLClass> subclasses;
 	
 	/**
 	 * Reference to the parent / superclass
 	 */
-	Vector<OWLClass> parents;
+	protected Vector<OWLClass> superclasses;
 
+
+	/**
+	 * Map of existential restrictions (someValuesFrom)
+	 */
+	protected Map<String, Vector<String>> some_values_from;
+
+	/**
+	 * Map of universal restrictions (allValuesFrom)
+	 */
+	protected Map<String, Vector<String>> all_values_from;
+
+	/**
+	 * Map of value restrictions (hasValue)
+	 */
+	protected Map<String, Vector<String>> has_value;
+	
+	
+	
 	
 	/**
 	 * Constructor. Set the IRI and optionally a label. If none is given, 
@@ -26,8 +47,12 @@ public class OWLClass extends OWLThing {
 	protected OWLClass(String iri, String label) {
 		
 		super(iri, label);
-		this.parents = new Vector<OWLClass>();
+		this.superclasses = new Vector<OWLClass>();
 		this.subclasses = new Vector<OWLClass>();
+		
+		some_values_from = Collections.synchronizedMap(new LinkedHashMap<String, Vector<String>>());
+		all_values_from = Collections.synchronizedMap(new LinkedHashMap<String, Vector<String>>());
+		has_value = Collections.synchronizedMap(new LinkedHashMap<String, Vector<String>>());
 	}
 
 
@@ -52,6 +77,11 @@ public class OWLClass extends OWLThing {
 	 */
 	public static OWLClass getOWLClass(String iri, String label) {
 
+		// return exact match if available
+		if(identifiers.containsKey(iri) && identifiers.get(iri) instanceof OWLClass) {
+			return (OWLClass) identifiers.get(iri);			
+		}
+		
 		OWLClass res = new OWLClass(OWLThing.getOWLThing(iri, label));
 		identifiers.put(iri, res);
 		return res;
@@ -88,9 +118,7 @@ public class OWLClass extends OWLThing {
 	 * @param sub Subclass
 	 */
 	public void addSubclass(OWLClass sub) {
-
 		subclasses.add(sub);
-		sub.addParentClass(this);
 	}
 	
 	
@@ -104,14 +132,15 @@ public class OWLClass extends OWLThing {
 	}
 	
 	
+	
 	/**
-	 * Set the parent classes of this class
+	 * Set the superclasses of this class
 	 * 
 	 * @param p Parent class
 	 */
-	public void setParentClasses(Vector<OWLClass> p) {
-		this.parents.clear();
-		this.parents.addAll(p);
+	public void setSuperClasses(Vector<OWLClass> p) {
+		this.superclasses.clear();
+		this.superclasses.addAll(p);
 	}
 	
 	/**
@@ -119,17 +148,130 @@ public class OWLClass extends OWLThing {
 	 * 
 	 * @param p Superclass
 	 */
-	public void addParentClass(OWLClass p) {
-		p.addSubclass(this);
+	public void addSuperClass(OWLClass p) {
+		superclasses.add(p);
 	}
 	
 	
 	/**
-	 * Get the parent classes of this class
+	 * Get the superclasses of this class
 	 * @return
 	 */
-	public Vector<OWLClass> getParents() {
-		return parents;
+	public Vector<OWLClass> getSuperClasses() {
+		return superclasses;
 	}
-
+	
+	
+	
+	
+	/**
+	 * Set the someValuesFrom restrictions
+	 * 
+	 * @param someValuesFrom Map with the defined restrictions
+	 */
+	public void setSomeValuesFrom(Map<String, Vector<String>> someValuesFrom) {
+		this.some_values_from.clear();
+		this.some_values_from.putAll(someValuesFrom);
+	}
+	
+	
+	/**
+	 * Add a someValuesFrom  definition
+	 * 
+	 * @param prop Property to be used in restriction
+	 * @param classdef Class definition for restriction
+	 */
+	public void addSomeValuesFrom(String prop, String classdef) {
+		
+		if(!some_values_from.containsKey(prop)) {
+			some_values_from.put(prop, new Vector<String>());
+		}
+		some_values_from.get(prop).add(classdef);
+	}
+	
+	
+	/**
+	 * Get the someValuesFrom definitions of this class
+	 * @return someValuesFrom definitions
+	 */
+	public Map<String, Vector<String>> getSomeValuesFrom() {
+		return some_values_from;
+	}
+	
+	
+	
+	
+	/**
+	 * Set the allValuesFrom restrictions
+	 * 
+	 * @param allValuesFrom Map with the defined restrictions
+	 */
+	public void setAllValuesFrom(Map<String, Vector<String>> allValuesFrom) {
+		this.all_values_from.clear();
+		this.all_values_from.putAll(allValuesFrom);
+	}
+	
+	
+	/**
+	 * Add a allValuesFrom  definition
+	 * 
+	 * @param prop Property to be used in restriction
+	 * @param classdef Class definition for restriction
+	 */
+	public void addAllValuesFrom(String prop, String classdef) {
+		
+		if(!all_values_from.containsKey(prop)) {
+			all_values_from.put(prop, new Vector<String>());
+		}
+		all_values_from.get(prop).add(classdef);
+	}
+	
+	
+	/**
+	 * Get the allValuesFrom definitions of this class
+	 * 
+	 * @return allValuesFrom definitions
+	 */
+	public Map<String, Vector<String>> getAllValuesFrom() {
+		return all_values_from;
+	}
+	
+	
+	
+	
+	/**
+	 * Set the hasValue restrictions
+	 * 
+	 * @param hasValue Map with the defined restrictions
+	 */
+	public void setHasValue(Map<String, Vector<String>> hasValue) {
+		this.has_value.clear();
+		this.has_value.putAll(hasValue);
+	}
+	
+	
+	/**
+	 * Add a hasValue  definition
+	 * 
+	 * @param prop Property to be used in restriction
+	 * @param value Individuals or values to be used for the restriction
+	 */
+	public void addHasValue(String prop, String value) {
+		
+		if(!has_value.containsKey(prop)) {
+			has_value.put(prop, new Vector<String>());
+		}
+		has_value.get(prop).add(value);
+	}
+	
+	
+	/**
+	 * Get the hasValue definitions of this class
+	 * @return hasValue definitions
+	 */
+	public Map<String, Vector<String>> getHasValue() {
+		return has_value;
+	}
+	
+	
 }
