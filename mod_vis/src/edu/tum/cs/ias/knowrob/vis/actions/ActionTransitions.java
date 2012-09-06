@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import processing.core.PApplet;
+
 
 public class ActionTransitions implements Iterable<ActionTransition> {
 
@@ -36,7 +38,7 @@ public class ActionTransitions implements Iterable<ActionTransition> {
 
 	
 	public synchronized void removeAll(Collection<ActionTransition> ts) {
-		transitions.remove(ts);
+		transitions.removeAll(ts);
 	}
 	
 	
@@ -141,6 +143,7 @@ public class ActionTransitions implements Iterable<ActionTransition> {
 		return levelWidths;
 	}
 	
+
 	
 	public Action getStartAction() {
 		return startAction;

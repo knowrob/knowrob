@@ -19,6 +19,7 @@ import controlP5.ControlP5;
 import controlP5.Controller;
 import controlP5.MultiList;
 import controlP5.MultiListButton;
+import edu.tum.cs.ias.knowrob.owl.OWLThing;
 import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
 
 
@@ -447,7 +448,7 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 
 				OWLClass sub;
 				if(label.equals("''"))
-					sub = new OWLClass(PrologInterface.removeSingleQuotes(iri), PrologInterface.valueFromIRI(iri));
+					sub = new OWLClass(PrologInterface.removeSingleQuotes(iri), OWLThing.getShortNameOfIRI(iri));
 				else
 					sub = new OWLClass(PrologInterface.removeSingleQuotes(iri), PrologInterface.removeSingleQuotes(label));
 

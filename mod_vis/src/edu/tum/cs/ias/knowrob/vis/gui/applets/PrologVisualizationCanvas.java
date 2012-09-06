@@ -389,8 +389,8 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 						info += printKey(P.get(i)) + ": " + printValue(O.get(i)) + "\n";
 					}
 
-				if(controlP5.controller("CurrentAction")!=null)
-					((Textfield) controlP5.controller("CurrentAction")).setValue(printKey(entity));
+				if(controlP5.getController("CurrentAction")!=null)
+					((Textfield) controlP5.getController("CurrentAction")).setValue(printKey(entity));
 				if(controlP5.getGroup("CurrentAttributes")!=null)
 					((Textarea) controlP5.getGroup("CurrentAttributes")).setText(info);
 
@@ -467,7 +467,7 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 	  
 		public void controlEvent(ControlEvent e) {
 				
-				if(e.controller().id()==101 && e.value()==2.0)
+				if(e.getController().getId()==101 && e.getValue()==2.0)
 					actionsInActivity();
 				
 		}

@@ -236,7 +236,7 @@ public class ActionVisApplet extends PApplet implements MouseListener, MouseMoti
 	  }
 	  
 	  // select color based on controlWindow.colorType	
-	  if(prologVisCanvas != null && (prologVisCanvas.controlP5.controller("color_radio")!=null) && ((RadioButton) prologVisCanvas.controlP5.getGroup("color_radio")).value()==0) {
+	  if(prologVisCanvas != null && (prologVisCanvas.controlP5.getController("color_radio")!=null) && ((RadioButton) prologVisCanvas.controlP5.getGroup("color_radio")).getValue()==0) {
 		  
 		  // action type
 		  String[] act = item.getTypes();
@@ -245,7 +245,7 @@ public class ActionVisApplet extends PApplet implements MouseListener, MouseMoti
 		  if(idx<0 || idx>this.colors.size()) {System.out.println("Missing color for " + act[0]); return 0;}
 		  return this.colors.get(idx);
 	  
-	  } else if(prologVisCanvas != null && (prologVisCanvas.controlP5.controller("color_radio")!=null) && ((RadioButton) prologVisCanvas.controlP5.getGroup("color_radio")).value()==1) {
+	  } else if(prologVisCanvas != null && (prologVisCanvas.controlP5.getController("color_radio")!=null) && ((RadioButton) prologVisCanvas.controlP5.getGroup("color_radio")).getValue()==1) {
 		  
 		  // object type		  
 		  String obj = item.getObjecttype();
@@ -256,7 +256,7 @@ public class ActionVisApplet extends PApplet implements MouseListener, MouseMoti
 		  
 		  return this.colors.get(idx);
 		  
-	  } else if(prologVisCanvas != null && (prologVisCanvas.controlP5.controller("color_radio")!=null) && ((RadioButton) prologVisCanvas.controlP5.getGroup("color_radio")).value()==2) {
+	  } else if(prologVisCanvas != null && (prologVisCanvas.controlP5.getController("color_radio")!=null) && ((RadioButton) prologVisCanvas.controlP5.getGroup("color_radio")).getValue()==2) {
 		  
 		  // missing in activity -> return red until activities are implemented
 		  if(item.isInActivity()) {
@@ -484,11 +484,11 @@ public class ActionVisApplet extends PApplet implements MouseListener, MouseMoti
     
     
     public 	void controlEvent(ControlEvent theEvent) {
-        if(prologVisCanvas != null && theEvent.isGroup() && theEvent.group().id()==100) {
+        if(prologVisCanvas != null && theEvent.isGroup() && theEvent.getGroup().getId()==100) {
         	// act_radio
-        	this.maxLevel =(int)prologVisCanvas.controlP5.getGroup("act_radio").value();
+        	this.maxLevel =(int)prologVisCanvas.controlP5.getGroup("act_radio").getValue();
 
-        } else if(theEvent.isGroup() && theEvent.group().id()==101) {
+        } else if(theEvent.isGroup() && theEvent.getGroup().getId()==101) {
            	// act_color
         }
         redraw();

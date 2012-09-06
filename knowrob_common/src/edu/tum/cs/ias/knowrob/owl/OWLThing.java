@@ -239,5 +239,22 @@ public class OWLThing implements Comparable<OWLThing> {
     public static String addSingleQuotes(String str) {
         return "'"+removeSingleQuotes(str)+"'";
     }
+    
+
+	/**
+	 * Get the short name of the provided IRI, i.e. the part of the IRI after the 
+	 * hash sign ('#')
+	 * 
+	 * @return Short name of the IRI
+	 */
+    public static String getShortNameOfIRI(String iri) {
+
+    	String[] elem = iri.split("#");
+    	if(elem.length>1) {
+    		String res = elem[1].replaceAll("'", "");
+    		return res;
+    	}
+    	else return iri;
+    }
 	
 }

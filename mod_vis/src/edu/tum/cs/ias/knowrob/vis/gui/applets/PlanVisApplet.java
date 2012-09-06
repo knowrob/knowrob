@@ -15,6 +15,7 @@ import java.util.Vector;
 
 import javax.vecmath.Vector2f;
 
+import edu.tum.cs.ias.knowrob.owl.OWLThing;
 import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
 import edu.tum.cs.ias.knowrob.vis.actions.Action;
 import edu.tum.cs.ias.knowrob.vis.actions.ActionSelectHistoryInfo;
@@ -168,8 +169,8 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 						if (alreadyAdded.contains(key.get(i)+val.get(i)))
 							continue;
 						alreadyAdded.add(key.get(i)+val.get(i));
-						String k = PrologInterface.valueFromIRI(key.get(i));
-						String v = PrologInterface.valueFromIRI(PrologInterface.removeSingleQuotes(val.get(i)));
+						String k = OWLThing.getShortNameOfIRI(key.get(i));
+						String v = OWLThing.getShortNameOfIRI(OWLThing.removeSingleQuotes(val.get(i)));
 
 						if (k.compareToIgnoreCase("subAction") != 0)
 							ret.setProperty(k, v);
@@ -281,8 +282,8 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 						if (alreadyAdded.contains(key.get(i)+val.get(i)))
 							continue;
 						alreadyAdded.add(key.get(i)+val.get(i));
-						String k = PrologInterface.valueFromIRI(key.get(i));
-						String v = PrologInterface.valueFromIRI(PrologInterface.removeSingleQuotes(val.get(i)));
+						String k = OWLThing.getShortNameOfIRI(key.get(i));
+						String v = OWLThing.getShortNameOfIRI(OWLThing.removeSingleQuotes(val.get(i)));
 
 						if (k.compareToIgnoreCase("subAction") != 0)
 							ret.setProperty(k, v);
