@@ -19,3 +19,10 @@
 :- register_ros_package(knowrob_cad_models).
 :- use_module(library('knowrob_cad_models')).
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% parse OWL files, register name spaces
+
+:- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/knowrob_cad_models.owl', false, false, true).
+:- rdf_db:rdf_register_ns(cad, 'http://ias.cs.tum.edu/kb/knowrob_cad_models.owl#', [keep(true)]).
+

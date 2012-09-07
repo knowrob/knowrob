@@ -2,7 +2,7 @@
 
 
 <!DOCTYPE rdf:RDF [
-    <!ENTITY local_path 'file://@OWL_PATH_PREFIX@/owl/'>
+<!ENTITY local_path 'file://@OWL_PATH_PREFIX@/owl/'>
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
     <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
@@ -124,6 +124,31 @@
             </owl:Restriction>
         </rdfs:subClassOf>
     </rdf:Description>
+    
+    <rdf:Description rdf:about="http://www.roboearth.org/kb/roboearth.owl#IkeaExpedit2x4">
+      <rdfs:subClassOf>
+        <owl:Restriction>
+          <owl:onProperty rdf:resource="&knowrob;pathToCadModel"/>
+          <owl:hasValue rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/Expedit/Expedit_2X4.kmz</owl:hasValue>
+        </owl:Restriction>
+      </rdfs:subClassOf>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.roboearth.org/kb/roboearth.owl#IkeaExpeditDoor1">
+      <rdfs:subClassOf>
+        <owl:Restriction>
+          <owl:onProperty rdf:resource="&knowrob;pathToCadModel"/>
+          <owl:hasValue rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/Expedit/Door.kmz</owl:hasValue>
+        </owl:Restriction>
+      </rdfs:subClassOf>
+    </rdf:Description>
+    <rdf:Description rdf:about="&knowrob;IkeaExpeditDoor1">
+      <rdfs:subClassOf>
+        <owl:Restriction>
+          <owl:onProperty rdf:resource="&knowrob;pathToCadModel"/>
+          <owl:hasValue rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/Expedit/Door.kmz</owl:hasValue>
+        </owl:Restriction>
+      </rdfs:subClassOf>
+    </rdf:Description>
 
     <rdf:Description rdf:about="&knowrob;Bed-PieceOfFurniture">
         <rdfs:subClassOf>
@@ -133,7 +158,82 @@
             </owl:Restriction>
         </rdfs:subClassOf>
     </rdf:Description>
-
+    
+    <rdf:Description rdf:about="&knowrob;Bed-PieceOfFurniture">
+      <rdfs:subClassOf>
+        <owl:Restriction>
+          <owl:onProperty rdf:resource="&knowrob;pathToCadModel"/>
+          <owl:hasValue rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/hospital_bed.kmz</owl:hasValue>
+        </owl:Restriction>
+      </rdfs:subClassOf>
+    </rdf:Description>
+    
+    
+    
+    <rdf:Description rdf:about="&knowrob;Tea-Beverage">
+      <rdfs:subClassOf>
+        <owl:Restriction>
+          <owl:onProperty rdf:resource="&knowrob;pathToCadModel"/>
+          <owl:hasValue rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/food-drinks/green-tea.kmz</owl:hasValue>
+        </owl:Restriction>
+      </rdfs:subClassOf>
+    </rdf:Description>
+    
+    <rdf:Description rdf:about="&knowrob;Sushi">
+      <rdfs:subClassOf>
+        <owl:Restriction>
+          <owl:onProperty rdf:resource="&knowrob;pathToCadModel"/>
+          <owl:hasValue rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/food-drinks/bento.kmz</owl:hasValue>
+        </owl:Restriction>
+      </rdfs:subClassOf>
+    </rdf:Description>
+    
+    <rdf:Description rdf:about="&knowrob;ShelfInABuilding">
+      <rdfs:subClassOf>
+        <owl:Restriction>
+          <owl:onProperty rdf:resource="&knowrob;pathToCadModel"/>
+          <owl:hasValue rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/furniture/supermarket-shelf.kmz</owl:hasValue>
+        </owl:Restriction>
+      </rdfs:subClassOf>
+    </rdf:Description>
+    
+    
+    
+    <rdf:Description rdf:about="&knowrob;Computer">
+      <rdfs:subClassOf>
+        <owl:Restriction>
+          <owl:onProperty rdf:resource="&knowrob;pathToCadModel"/>
+          <owl:hasValue rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/electric-devices/desktop-computer.kmz</owl:hasValue>
+        </owl:Restriction>
+      </rdfs:subClassOf>
+    </rdf:Description>
+    
+    <rdf:Description rdf:about="&knowrob;CashRegister">
+      <rdfs:subClassOf>
+        <owl:Restriction>
+          <owl:onProperty rdf:resource="&knowrob;pathToCadModel"/>
+          <owl:hasValue rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/electric-devices/cash-register.kmz</owl:hasValue>
+        </owl:Restriction>
+      </rdfs:subClassOf>
+    </rdf:Description>
+    
+    <rdf:Description rdf:about="&knowrob;Desk">
+      <rdfs:subClassOf>
+        <owl:Restriction>
+          <owl:onProperty rdf:resource="&knowrob;pathToCadModel"/>
+          <owl:hasValue rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/furniture/desk.kmz</owl:hasValue>
+        </owl:Restriction>
+      </rdfs:subClassOf>
+    </rdf:Description>
+    
+    <rdf:Description rdf:about="&knowrob;Whiteboard">
+      <rdfs:subClassOf>
+        <owl:Restriction>
+          <owl:onProperty rdf:resource="&knowrob;pathToCadModel"/>
+          <owl:hasValue rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/furniture/whiteboard.kmz</owl:hasValue>
+        </owl:Restriction>
+      </rdfs:subClassOf>
+    </rdf:Description>
 
 </rdf:RDF>
 
