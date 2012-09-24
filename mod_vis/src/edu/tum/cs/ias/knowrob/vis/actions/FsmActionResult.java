@@ -57,6 +57,9 @@ public enum FsmActionResult {
     	}
 	}
     
+    public static String toOWLIdentifier(FsmActionResult r) {
+    	return "http://www.roboearth.org/kb/unr_actions.owl#" + r.toString();
+    }
 
 }
 

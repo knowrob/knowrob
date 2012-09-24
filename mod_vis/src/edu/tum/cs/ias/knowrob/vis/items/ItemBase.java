@@ -7,7 +7,7 @@ import javax.vecmath.Matrix4d;
 import edu.tum.cs.ias.knowrob.vis.Canvas;
 import edu.tum.cs.ias.knowrob.vis.Drawable;
 import edu.tum.cs.ias.knowrob.vis.DrawableAnimated;
-import edu.tum.cs.ias.knowrob.vis.gui.applets.StandaloneKitchenVisApplet;
+import edu.tum.cs.ias.knowrob.vis.applets.StandaloneKitchenVisApplet;
 
 /**
  * Abstract base class for items (animated or not) that have a default color and may have

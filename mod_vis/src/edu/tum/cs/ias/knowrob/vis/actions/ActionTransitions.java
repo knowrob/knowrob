@@ -11,8 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import processing.core.PApplet;
-
 
 public class ActionTransitions implements Iterable<ActionTransition> {
 
@@ -31,6 +29,15 @@ public class ActionTransitions implements Iterable<ActionTransition> {
 		
 		return true;
 	}
+	
+	public synchronized boolean addAll(Collection<ActionTransition> ts) {
+		return transitions.addAll(ts);
+	}
+	
+	public synchronized boolean addAll(ActionTransitions ts) {
+		return transitions.addAll(ts.transitions);
+	}
+	
 	
 	public synchronized void remove(ActionTransition t) {
 		transitions.remove(t);

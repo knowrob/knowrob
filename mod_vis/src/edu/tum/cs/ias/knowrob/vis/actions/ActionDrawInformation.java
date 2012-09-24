@@ -5,10 +5,12 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.vecmath.Vector2f;
 
-import edu.tum.cs.ias.knowrob.vis.gui.applets.PlanVisApplet;
+import edu.tum.cs.ias.knowrob.owl.OWLThing;
+import edu.tum.cs.ias.knowrob.vis.applets.PlanVisApplet;
 
 import processing.core.PApplet;
 
@@ -415,10 +417,10 @@ public class ActionDrawInformation {
 		for (Iterator<String> it = keys.iterator(); it.hasNext(); )
 		{
 			String key = it.next();
-			maxKeyWidth = Math.max(maxKeyWidth, applet.textWidth(key+":  "));
+			maxKeyWidth = Math.max(maxKeyWidth, applet.textWidth( OWLThing.getShortNameOfIRI(key)+":  "));
 			for (String value : action.getProperty(key))
 			{
-				maxValueWidth = Math.max(maxValueWidth, applet.textWidth(value));
+				maxValueWidth = Math.max(maxValueWidth, applet.textWidth( OWLThing.getShortNameOfIRI(value)));
 				propertiesHeight += textHeight* LINE_HEIGHT;
 			}
 		}
@@ -429,17 +431,20 @@ public class ActionDrawInformation {
 		sequenceBoxDimension.x = SEQUENCE_BOX_PADDING;
 		sequenceBoxDimension.y = 0;
 		hasExpandButton = false;
-		for (Iterator<Action> i = action.getSubActionsIterator(); i.hasNext();)
-		{
-			Action a = i.next();
-			if (a.getSubActionsCount() > 0)
-				hasExpandButton = true;
-			ActionDrawInformation inf = a.getDrawInfo();
-			
-			inf.recalculateDimensions(applet);
-			
-			sequenceBoxDimension.x += inf.getSimpleBoxDimension().x + SEQUENCE_BOX_PADDING;
-			sequenceBoxDimension.y = Math.max(sequenceBoxDimension.y, inf.getSimpleBoxDimension().y + 2*SEQUENCE_BOX_PADDING);
+		
+		List<Action> sub = action.getSubActions();
+		synchronized(sub) {
+			for (Action a : sub) {
+
+				if (a.getSubActionsCount() > 0)
+					hasExpandButton = true;
+				ActionDrawInformation inf = a.getDrawInfo();
+
+				inf.recalculateDimensions(applet);
+
+				sequenceBoxDimension.x += inf.getSimpleBoxDimension().x + SEQUENCE_BOX_PADDING;
+				sequenceBoxDimension.y = Math.max(sequenceBoxDimension.y, inf.getSimpleBoxDimension().y + 2*SEQUENCE_BOX_PADDING);
+			}
 		}
 		maxSubsequenceHeight = sequenceBoxDimension.y- 2*SEQUENCE_BOX_PADDING;
 		if (hasExpandButton)
@@ -529,8 +534,8 @@ public class ActionDrawInformation {
 			String key = it.next();
 			for (String value : action.getProperty(key))
 			{
-				applet.text(key + ":",position.x,position.y+textHeight);
-				applet.text(value,position.x + maxKeyWidth, position.y+textHeight);
+				applet.text( OWLThing.getShortNameOfIRI(key) + ":",position.x,position.y+textHeight);
+				applet.text( OWLThing.getShortNameOfIRI(value),position.x + maxKeyWidth, position.y+textHeight);
 	
 				position.y += textHeight * LINE_HEIGHT;
 			}
@@ -696,79 +701,85 @@ public class ActionDrawInformation {
 	 * @param applet Applet to draw on
 	 * @param position Start position (upper left corner)
 	 */
-	private void drawSequence(PApplet applet, Vector2f position, Vector2f drawOffset, boolean isExpandedBox)
-	{
-		//Draw outer box of sequence list
-		if (!action.getSubActionsIterator().hasNext())
+	private void drawSequence(PApplet applet, Vector2f position, Vector2f drawOffset, boolean isExpandedBox) {
+		
+		
+		List<Action> sub = action.getSubActions();
+		
+		if (sub.isEmpty())
 			return;
 		
-		applet.stroke(currentBorderColor.getRed(), currentBorderColor.getGreen(), currentBorderColor.getBlue(), currentBorderColor.getAlpha());
-	    if (isExpandedBox)
-	    	applet.fill(currentBackgroundColor.getRed(), currentBackgroundColor.getGreen(), currentBackgroundColor.getBlue(), currentBackgroundColor.getAlpha());
-	    else
-	    	applet.fill(currentBackgroundBrightColor.getRed(), currentBackgroundBrightColor.getGreen(), currentBackgroundBrightColor.getBlue(), currentBackgroundBrightColor.getAlpha());
-		applet.rect(position.x, position.y, sequenceBoxDimension.x, sequenceBoxDimension.y);
-		
-		//Calculate start pos of inner boxes
-		Vector2f tmpPos = new Vector2f(position);
-		tmpPos.y += SEQUENCE_BOX_PADDING;
-		tmpPos.x += SEQUENCE_BOX_PADDING;
-		
-		//Store the positions of each box to connect them afterwards
-		ArrayList<Float> pos = new ArrayList<Float>();
+		synchronized(sub) {
 
-		Vector2f expandedParentCorner1 = null;
-		Vector2f expandedParentCorner2 = null;
-
-		Action expSeq = action.getExpandedSequence();
-		
-		
-		//Draw inner boxes
-		for (Iterator<Action> i = action.getSubActionsIterator(); i.hasNext();)
-		{
-			Action a = i.next();
-			ActionDrawInformation inf = a.getDrawInfo();
+			//Draw outer box of sequence list
+			applet.stroke(currentBorderColor.getRed(), currentBorderColor.getGreen(), currentBorderColor.getBlue(), currentBorderColor.getAlpha());
 			
-			inf.drawSimpleBox(applet, tmpPos, drawOffset, maxSubsequenceHeight,a.getSubActionsCount()>0);
-			if (a == expSeq)
-			{
-				expandedParentCorner1 = new Vector2f(tmpPos.x,tmpPos.y+maxSubsequenceHeight);
-				expandedParentCorner2 = new Vector2f(tmpPos.x+inf.getSimpleBoxDimension().x,tmpPos.y+maxSubsequenceHeight);
+			if (isExpandedBox)
+				applet.fill(currentBackgroundColor.getRed(), currentBackgroundColor.getGreen(), currentBackgroundColor.getBlue(), currentBackgroundColor.getAlpha());
+			else
+				applet.fill(currentBackgroundBrightColor.getRed(), currentBackgroundBrightColor.getGreen(), currentBackgroundBrightColor.getBlue(), currentBackgroundBrightColor.getAlpha());
+			
+			applet.rect(position.x, position.y, sequenceBoxDimension.x, sequenceBoxDimension.y);
+
+			//Calculate start pos of inner boxes
+			Vector2f tmpPos = new Vector2f(position);
+			tmpPos.y += SEQUENCE_BOX_PADDING;
+			tmpPos.x += SEQUENCE_BOX_PADDING;
+
+			//Store the positions of each box to connect them afterwards
+			ArrayList<Float> pos = new ArrayList<Float>();
+
+			Vector2f expandedParentCorner1 = null;
+			Vector2f expandedParentCorner2 = null;
+
+			Action expSeq = action.getExpandedSequence();
+
+
+			//Draw inner boxes
+			for (Action a : sub) {
+				
+				ActionDrawInformation inf = a.getDrawInfo();
+
+				inf.drawSimpleBox(applet, tmpPos, drawOffset, maxSubsequenceHeight,a.getSubActionsCount()>0);
+				if (a == expSeq) {
+					expandedParentCorner1 = new Vector2f(tmpPos.x,tmpPos.y+maxSubsequenceHeight);
+					expandedParentCorner2 = new Vector2f(tmpPos.x+inf.getSimpleBoxDimension().x,tmpPos.y+maxSubsequenceHeight);
+				}
+
+				tmpPos.x += inf.getSimpleBoxDimension().x + SEQUENCE_BOX_PADDING;
+				pos.add(tmpPos.x);
 			}
-			
-			tmpPos.x += inf.getSimpleBoxDimension().x + SEQUENCE_BOX_PADDING;
-			pos.add(tmpPos.x);
-		}
-		
-		//Draw connection arrows for each sequence box
-		for (int i=0; i<pos.size()-1; i++)
-		{
-			applet.stroke(arrowBorderColor.getRed(), arrowBorderColor.getGreen(), arrowBorderColor.getBlue(), arrowBorderColor.getAlpha());
-		    applet.fill(arrowBackgroundColor.getRed(), arrowBackgroundColor.getGreen(), arrowBackgroundColor.getBlue(), arrowBackgroundColor.getAlpha());
-			PlanVisApplet.arrow(applet,pos.get(i)-SEQUENCE_BOX_PADDING - 5,tmpPos.y+getNameBoxHeight()/2-10,20,SEQUENCE_BOX_PADDING+11);
-		}
-		
-		//Draw expanded subsequences if any
-		Vector2f startPos = new Vector2f(position);
-		startPos.y +=SEQUENCE_BOX_PADDING + maxSubsequenceHeight + EXPAND_BOX_HEIGHT;
-		
-		if (expSeq != null && expandedParentCorner1 != null && expandedParentCorner2 != null)
-		{
-			Vector2f subDim = expSeq.getDrawInfo().sequenceBoxDimension;
-			startPos.x = (expandedParentCorner2.x+expandedParentCorner1.x)/2f;
-			startPos.x -= subDim.x/2f;
-			
-			startPos.x = Math.max(startPos.x, position.x+SEQUENCE_BOX_PADDING);
-			
-			startPos.x -= Math.max(0, (startPos.x +subDim.x) - (position.x+sequenceBoxDimension.x-SEQUENCE_BOX_PADDING));
-			
-			
-			//applet.stroke(currentBorderColor.getRed(), currentBorderColor.getGreen(), currentBorderColor.getBlue(), currentBorderColor.getAlpha());
-	    	//applet.fill(currentBackgroundColor.getRed(), currentBackgroundColor.getGreen(), currentBackgroundColor.getBlue(), currentBackgroundColor.getAlpha());
-			//applet.line(expandedParentCorner1.x, expandedParentCorner1.y, startPos.x, startPos.y);
-			//applet.line(expandedParentCorner2.x, expandedParentCorner2.y, startPos.x+subDim.x, startPos.y);
-			
-			expSeq.getDrawInfo().drawSequence(applet, startPos, drawOffset, true);
+
+			//Draw connection arrows for each sequence box
+			for (int i=0; i<pos.size()-1; i++) {
+				
+				applet.stroke(arrowBorderColor.getRed(), arrowBorderColor.getGreen(), arrowBorderColor.getBlue(), arrowBorderColor.getAlpha());
+				applet.fill(arrowBackgroundColor.getRed(), arrowBackgroundColor.getGreen(), arrowBackgroundColor.getBlue(), arrowBackgroundColor.getAlpha());
+				PlanVisApplet.arrow(applet,pos.get(i)-SEQUENCE_BOX_PADDING - 5,tmpPos.y+getNameBoxHeight()/2-10,20,SEQUENCE_BOX_PADDING+11);
+			}
+
+			//Draw expanded subsequences if any
+			Vector2f startPos = new Vector2f(position);
+			startPos.y +=SEQUENCE_BOX_PADDING + maxSubsequenceHeight + EXPAND_BOX_HEIGHT;
+
+			if (expSeq != null && expandedParentCorner1 != null && expandedParentCorner2 != null) {
+				
+				Vector2f subDim = expSeq.getDrawInfo().sequenceBoxDimension;
+				startPos.x = (expandedParentCorner2.x+expandedParentCorner1.x)/2f;
+				startPos.x -= subDim.x/2f;
+
+				startPos.x = Math.max(startPos.x, position.x+SEQUENCE_BOX_PADDING);
+
+				startPos.x -= Math.max(0, (startPos.x +subDim.x) - (position.x+sequenceBoxDimension.x-SEQUENCE_BOX_PADDING));
+
+
+				//applet.stroke(currentBorderColor.getRed(), currentBorderColor.getGreen(), currentBorderColor.getBlue(), currentBorderColor.getAlpha());
+				//applet.fill(currentBackgroundColor.getRed(), currentBackgroundColor.getGreen(), currentBackgroundColor.getBlue(), currentBackgroundColor.getAlpha());
+				//applet.line(expandedParentCorner1.x, expandedParentCorner1.y, startPos.x, startPos.y);
+				//applet.line(expandedParentCorner2.x, expandedParentCorner2.y, startPos.x+subDim.x, startPos.y);
+
+				expSeq.getDrawInfo().drawSequence(applet, startPos, drawOffset, true);
+			}
 		}
 	}
 	
@@ -872,22 +883,29 @@ public class ActionDrawInformation {
 	 * @param found set to an action if already one action found and the others only need to be resetted.
 	 * @return the action where the coordinate is on
 	 */
-	private ActionDrawInformation checkHoverExtendedSequence(float x, float y, Action currAction, ActionDrawInformation found)
-	{
-		if (currAction ==null)
+	private ActionDrawInformation checkHoverExtendedSequence(float x, float y, Action currAction, ActionDrawInformation found) {
+		
+		if (currAction == null)
 			return null;
+		
 		//over sequences?
-		for (Iterator<Action> i = currAction.getSubActionsIterator(); i.hasNext();)
-		{
-			ActionDrawInformation inf = i.next().getDrawInfo();
-			
-			if (found != null)
-				inf.setHover(false);
-			else {
-				found = inf.checkHover(x, y,found);	
+		
+		List<Action> sub = action.getSubActions();
+		
+		synchronized(sub) {
+
+			for (Action a : sub) {
+				
+				ActionDrawInformation inf = a.getDrawInfo();
+
+				if (found != null)
+					inf.setHover(false);
+				else {
+					found = inf.checkHover(x, y,found);	
+				}
 			}
+			return found;
 		}
-		return found;
 	}
 	
 	/**
@@ -911,15 +929,20 @@ public class ActionDrawInformation {
 		{
 
 			//over sequences?
-			for (Iterator<Action> i = action.getSubActionsIterator(); i.hasNext();)
-			{
-				ActionDrawInformation inf = i.next().getDrawInfo();
-				
-				if (found != null)
-					inf.setHover(false);
-				else
-					if (inf.checkHover(x, y,found)!=null)
-						found = inf;
+			List<Action> sub = action.getSubActions();
+			
+			synchronized(sub) {
+
+				for (Action a : sub) {
+					
+					ActionDrawInformation inf = a.getDrawInfo();
+
+					if (found != null)
+						inf.setHover(false);
+					else
+						if (inf.checkHover(x, y,found)!=null)
+							found = inf;
+				}
 			}
 			
 //			//over parent?
@@ -985,28 +1008,30 @@ public class ActionDrawInformation {
 	 * @param sequenceExpandHeight set to 0 for direct call. Only used for recursing
 	 * @return the parent Action (it's draw info) over which's expand arrow the mouse is hovering or null if none.
 	 */
-	private ActionDrawInformation checkHoverExpand(float mouse_x, float mouse_y, boolean hasExpandButton, float sequenceBoxHeight, boolean parentExpanded)
-	{
+	private ActionDrawInformation checkHoverExpand(float mouse_x, float mouse_y, boolean hasExpandButton, float sequenceBoxHeight, boolean parentExpanded) {
 
 		if (position == null)
 			return null;
+		
 		ActionDrawInformation found = null;
 			
 		//over sequences?
-		if (parentExpanded)
-		{
-			for (Iterator<Action> i = action.getSubActionsIterator(); i.hasNext();)
-			{
-				Action a = i.next();
-				ActionDrawInformation inf = a.getDrawInfo();
-				
-				if (found != null)
-					inf.setHoverExpand(false);
-				else
-				{
-					ActionDrawInformation d = inf.checkHoverExpand(mouse_x, mouse_y,this.hasExpandButton,this.maxSubsequenceHeight, a.isExpanded());
-					if (d!=null)
-						found = d;
+		if (parentExpanded)	{
+			
+			List<Action> sub = action.getSubActions();
+			
+			synchronized(sub) {
+				for (Action a : sub) {
+					
+					ActionDrawInformation inf = a.getDrawInfo();
+
+					if (found != null)
+						inf.setHoverExpand(false);
+					else {
+						ActionDrawInformation d = inf.checkHoverExpand(mouse_x, mouse_y,this.hasExpandButton,this.maxSubsequenceHeight, a.isExpanded());
+						if (d!=null)
+							found = d;
+					}
 				}
 			}
 		}
@@ -1183,16 +1208,20 @@ public class ActionDrawInformation {
 			this.highlight = HighlightType.NOT_HIGHTLIGHTED;
 			return;
 		}
-		for (Iterator<Action> i = action.getSubActionsIterator(); i.hasNext();)
-		{
-			Action a = i.next();
-			ActionDrawInformation inf = a.getDrawInfo();
-			
-			if (inf.highlight == HighlightType.CHILD_HIGHLIGHTED || inf.highlight == HighlightType.THIS_HIGHLIGHTED)
-			{
-				inf.clearHightlight();
-				this.highlight = HighlightType.NOT_HIGHTLIGHTED;
-				return;
+		
+		List<Action> sub = action.getSubActions();
+		
+		synchronized(sub) {
+			for (Action a : sub) {
+
+				ActionDrawInformation inf = a.getDrawInfo();
+
+				if (inf.highlight == HighlightType.CHILD_HIGHLIGHTED || inf.highlight == HighlightType.THIS_HIGHLIGHTED)
+				{
+					inf.clearHightlight();
+					this.highlight = HighlightType.NOT_HIGHTLIGHTED;
+					return;
+				}
 			}
 		}
 	}
@@ -1206,32 +1235,34 @@ public class ActionDrawInformation {
 	 */
 	public boolean highlightSubsequence(String identifier, boolean expand)
 	{
-		if (this.action.getIRI().compareTo(identifier)==0)
-		{
+		if (this.action.getIRI().compareTo(identifier)==0) {
 			setHightlight(HighlightType.THIS_HIGHLIGHTED);
 			notifyModified();
 			return true;
 		}
+		
 		//Check sequence of this action
-		for (Iterator<Action> i = action.getSubActionsIterator(); i.hasNext();)
-		{
-			Action a = i.next();
-			ActionDrawInformation inf = a.getDrawInfo();
-			
-			if (a.getIRI().compareTo(identifier)==0)
-			{
-				inf.setHightlight(HighlightType.THIS_HIGHLIGHTED);
-				setHightlight(HighlightType.CHILD_HIGHLIGHTED);
-				notifyModified();
-				return true;
-			} else if (inf.highlightSubsequence(identifier, expand))
-			{
-				inf.setHightlight(HighlightType.CHILD_HIGHLIGHTED);
-				setHightlight(HighlightType.CHILD_HIGHLIGHTED);
-				if (expand)
-					action.setExpandedSequence(a);
-				notifyModified();
-				return true;
+		List<Action> sub = action.getSubActions();
+		
+		synchronized(sub) {
+			for (Action a : sub) {
+
+				ActionDrawInformation inf = a.getDrawInfo();
+
+				if (a.getIRI().compareTo(identifier)==0) {
+					inf.setHightlight(HighlightType.THIS_HIGHLIGHTED);
+					setHightlight(HighlightType.CHILD_HIGHLIGHTED);
+					notifyModified();
+					return true;
+					
+				} else if (inf.highlightSubsequence(identifier, expand)) {
+					inf.setHightlight(HighlightType.CHILD_HIGHLIGHTED);
+					setHightlight(HighlightType.CHILD_HIGHLIGHTED);
+					if (expand)
+						action.setExpandedSequence(a);
+					notifyModified();
+					return true;
+				}
 			}
 		}
 		return false;
@@ -1246,29 +1277,32 @@ public class ActionDrawInformation {
 	 */
 	public boolean highlightSubsequence(Action seq, boolean expand)
 	{
-		if (this.action == seq)
-		{
+		if (this.action == seq) {
 			setHightlight(HighlightType.THIS_HIGHLIGHTED);
 			return true;
 		}
+		
 		//Check sequence of this action
-		for (Iterator<Action> i = action.getSubActionsIterator(); i.hasNext();)
-		{
-			Action a = i.next();
-			ActionDrawInformation inf = a.getDrawInfo();
-			
-			if (a == seq)
-			{
-				inf.setHightlight(HighlightType.THIS_HIGHLIGHTED);
-				setHightlight(HighlightType.CHILD_HIGHLIGHTED);
-				return true;
-			} else if (inf.highlightSubsequence(seq, expand))
-			{
-				inf.setHightlight(HighlightType.CHILD_HIGHLIGHTED);
-				setHightlight(HighlightType.CHILD_HIGHLIGHTED);
-				if (expand)
-					action.setExpandedSequence(a);
-				return true;
+		List<Action> sub = action.getSubActions();
+		
+		synchronized(sub) {
+			for (Action a : sub) {
+
+				ActionDrawInformation inf = a.getDrawInfo();
+
+				if (a == seq)
+				{
+					inf.setHightlight(HighlightType.THIS_HIGHLIGHTED);
+					setHightlight(HighlightType.CHILD_HIGHLIGHTED);
+					return true;
+				} else if (inf.highlightSubsequence(seq, expand))
+				{
+					inf.setHightlight(HighlightType.CHILD_HIGHLIGHTED);
+					setHightlight(HighlightType.CHILD_HIGHLIGHTED);
+					if (expand)
+						action.setExpandedSequence(a);
+					return true;
+				}
 			}
 		}
 		return false;
