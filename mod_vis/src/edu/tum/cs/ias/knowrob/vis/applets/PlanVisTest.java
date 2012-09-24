@@ -2,17 +2,14 @@ package edu.tum.cs.ias.knowrob.vis.applets;
 
 import javax.swing.JFrame;
 
-import edu.tum.cs.ias.knowrob.owl.OWLClass;
 import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
-import edu.tum.cs.ias.knowrob.vis.actions.Action;
-import edu.tum.cs.ias.knowrob.vis.actions.ActionTransition;
 import edu.tum.cs.ias.knowrob.vis.applets.PlanVisAppletFsm;
 
 /**
  * This is a test class for testing PlanVis functionality.
  * Used during development.
  * 
- * @author Stefan Profanter
+ * @author Moritz Tenorth, Stefan Profanter
  *
  */
 public class PlanVisTest {
