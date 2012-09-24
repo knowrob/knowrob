@@ -589,7 +589,6 @@ public class OWLImportExport {
 					
 					// create map object
 					ObjectInstance cur = ObjectInstance.getObjectInstance(iri);
-
 					
 					// get types
 					for(OWLClassExpression c: inst.getTypes(ont)) {

@@ -1,5 +1,7 @@
 package edu.tum.cs.ias.knowrob.owl;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -88,6 +90,24 @@ public class OWLIndividual extends OWLThing {
 	}
 	
 	
+	
+	/**
+	 * OWLIndividual factory. Create new individual for class cl, creating a new 
+	 * unique identifier. Adds cl to the types of the created individual.
+	 * 
+	 * @param cl OWL class of this thing.
+	 * @return Instance of an {@link OWLIndividual} of the specified class
+	 */
+	public static OWLIndividual getOWLIndividualOfClass(String cl) {
+		String new_iri = cl + new SimpleDateFormat("yyyyMMddHHmmss").
+		format(Calendar.getInstance().getTime());
+		
+		OWLIndividual res = getOWLIndividual(new_iri, null);
+		res.addType(OWLClass.getOWLClass(cl));
+		
+		return res;
+	}
+
 	
 
 	/**
