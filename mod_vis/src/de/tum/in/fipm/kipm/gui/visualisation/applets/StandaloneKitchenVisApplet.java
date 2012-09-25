@@ -63,9 +63,9 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 	private ArrayList<int[]> colors = new ArrayList<int[]>(12);
 	private PrologVisualizationCanvas prologVisCanvas = null;
 	public MenuHuman menu_human = new MenuHuman();
-	//private Publisher<ros.pkg.std_msgs.msg.String> clickPub = null;
-	//private NodeHandle rosNode = null;
-	//private Ros ros = null;
+	private Publisher<ros.pkg.std_msgs.msg.String> clickPub = null;
+	private NodeHandle rosNode = null;
+	private Ros ros = null;
 
 	////////////////////////////////////////////////////////////////////////////////
 	// COLOR STUFF / CLICK STUFF
@@ -174,7 +174,9 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 		// currently was clicked.
 		try {
 			ros = Ros.getInstance();
-			ros.init("mod_vis");
+			if(!ros.isInitialized()) {
+				ros.init("mod_vis");
+			}
 			rosNode = ros.createNodeHandle();
 			clickPub = rosNode.advertise("/mod_vis/mod_vis_clicked", new ros.pkg.std_msgs.msg.String(), 100);
 		}
