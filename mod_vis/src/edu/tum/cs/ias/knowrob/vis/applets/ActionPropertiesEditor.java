@@ -2,6 +2,7 @@ package edu.tum.cs.ias.knowrob.vis.applets;
 
 import java.awt.Color;
 import java.awt.Frame;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.Collections;
@@ -100,6 +101,14 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 	 */
 	private boolean editing = false;
 
+	private Textfield identifier;
+
+	private Textfield cls;
+
+	private Textfield value;
+
+	private boolean propsIsActive;
+	
 	
 	
 
@@ -401,7 +410,7 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 			
 
 			// open class selection dialog	
-			if(ev.getController().getName().equals("select class")) {
+			if(ev.getController().getName().equals("class") || ev.getController().getName().equals("select class")) {
 				OWLClassSelect f = new OWLClassSelect();
 				f.setClassSelectedCallback(this); 
 			}
@@ -488,6 +497,61 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 	}
 
 	
+	public void keyPressed(KeyEvent e) {
+		
+		// iterate through form fields with TAB
+		if(e.getKeyCode() == KeyEvent.VK_TAB) {
+			
+			if(identifier.isActive()) {
+				identifier.setFocus(false);
+				if(e.isShiftDown())
+					value.setFocus(true);
+				else 
+					cls.setFocus(true);
+				return;
+				
+			} else if(cls.isActive()) {
+				cls.setFocus(false);
+				props.setValue(0);
+				if(e.isShiftDown())
+					identifier.setFocus(true);
+				else 
+					propsIsActive = true;
+				return;
+				
+				
+			} else if(propsIsActive) {
+				propsIsActive = false;
+				if(e.isShiftDown())
+					cls.setFocus(true);
+				else 
+					value.setFocus(true);
+				return;
+				
+			} else if(value.isActive()) {
+				value.setFocus(false);
+				if(e.isShiftDown())
+					propsIsActive = true;
+				else 
+					identifier.setFocus(true);
+				return;
+			}
+			
+		} else if(e.getKeyCode() == KeyEvent.VK_DOWN && propsIsActive) {
+			if(props.getValue() < props.getListBoxItems().length-1)
+				props.setValue(props.getValue()+1);
+			
+		} else if(e.getKeyCode() == KeyEvent.VK_UP && propsIsActive) {
+			if(props.getValue() > 0)
+				props.setValue(props.getValue()-1);
+			
+		} else {
+			controlP5.keyHandler.keyEvent(e, controlP5.controlWindow, true);
+		}
+	}
+	
+	
+	
 
 	// // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // 
 	// 
@@ -559,9 +623,9 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 		.setColorBackground(color(80))
 		.setColorActive(color(200));
 		
-		controlP5.addTextfield("identifier", 20, 20, 300, 20).setAutoClear(false).setFocus(true);
+		identifier = controlP5.addTextfield("identifier", 20, 20, 300, 20).setAutoClear(false).setFocus(true);
 				
-		controlP5.addTextfield("class", 20, 60, 300, 20).setAutoClear(false);
+		cls = controlP5.addTextfield("class", 20, 60, 300, 20).setAutoClear(false);
 		controlP5.addButton("select class", 1, 330, 60, 35, 20).setCaptionLabel("select");
 
 		submit = controlP5.addButton("submit", 1, 355, 275, 65, 20).setCaptionLabel("add to task");
@@ -596,7 +660,7 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 			}
 		}
 		
-		controlP5.addTextfield("value", 230, 15, 160, 20).setAutoClear(true).moveTo(new_prop);
+		value = controlP5.addTextfield("value", 230, 15, 160, 20).setAutoClear(true).moveTo(new_prop);
 
 		controlP5.addButton("add property", 2, 230, 55, 33, 20).moveTo(new_prop).setCaptionLabel(" add");
 		controlP5.addButton("remove property", 2, 280, 55, 50, 20).moveTo(new_prop).setCaptionLabel(" remove");

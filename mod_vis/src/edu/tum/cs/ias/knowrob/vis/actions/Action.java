@@ -12,7 +12,6 @@ import java.util.Vector;
 
 
 import edu.tum.cs.ias.knowrob.owl.OWLClass;
-import edu.tum.cs.ias.knowrob.owl.OWLThing;
 import edu.tum.cs.ias.knowrob.owl.ObjectInstance;
 import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
 
@@ -278,10 +277,13 @@ public class Action extends OWLClass {
 	public ActionTransitions getTransitionsRecursive() {
 		
 		ActionTransitions res = new ActionTransitions();
+		
 		res.addAll(transitions);
 		
-		for(Action sub : getSubActions()) {
-			res.addAll(sub.getTransitionsRecursive());
+		synchronized (sub_actions) {
+			for(Action sub : sub_actions) {
+				res.addAll(sub.getTransitionsRecursive());
+			}
 		}
 		res.startAction = transitions.startAction;
 		return res;
@@ -338,85 +340,18 @@ public class Action extends OWLClass {
 	 */
 	public void readFromProlog() {	
 		
+		if(isReadFromProlog())
+			return;
 		
-		// Read the action's label if an rdfs:label is set (assuming IRI has been set during initialization) 
-		try {
-			HashMap<String, Vector<String>> qLabel = PrologInterface.executeQuery("rdf_has('"+iri+"',rdfs:label,L),util:strip_literal_type(L,Label)");
-			
-			if(qLabel.get("Label")!=null && qLabel.get("Label").size()>0) {
-				this.label = OWLThing.removeSingleQuotes(qLabel.get("Label").get(0));
-			}			
-		} catch (Exception e) { } // fail silently if no label is set
+		// read generic OWLClass properties 
+		super.readFromProlog();
 
-
-		// Read superclasses of action 
-		HashMap<String, Vector<String>> qSuper = PrologInterface.executeQuery("owl_direct_subclass_of('" + iri + "', Super)");
-
-		if(qSuper != null) {
-
-			for(String sup : qSuper.get("Super")) {
-
-				if (sup.contains("__Description"))
-					continue;
-
-				superclasses.add(OWLClass.getOWLClass(OWLThing.removeSingleQuotes(sup)));
-			}
-		}
 		
-
-		// Read action properties
-		try {
-			
-			HashMap<String, Vector<String>> qProp = 
-				PrologInterface.executeQuery("((class_properties_some('"+iri+"', Prop, V), Type='some'); " +
-						  "(class_properties_all('"+iri+"', Prop, V), Type='all'); " +
-						  "(class_properties_value('"+iri+"', Prop, V), Type='value')), " +
-				   		  "util:strip_literal_type(V,Val)");
-			
-			if(qProp != null) {
-				
-				Vector<String> prop = qProp.get("Prop");
-				Vector<String> val  = qProp.get("Val");
-				Vector<String> type = qProp.get("Type");
-
-				
-				// Make sure each property is added only once 
-				// (properties may be present two or more times in the result set)
-				
-				HashSet<String> alreadyAdded = new HashSet<String>();
-				if(prop != null && val != null)
-					
-					for(int i=0;i<prop.size() && i<val.size();i++) {
-						
-						if (alreadyAdded.contains(prop.get(i)+val.get(i)))
-							continue;
-						
-						alreadyAdded.add(prop.get(i)+val.get(i));
-						String p = OWLThing.removeSingleQuotes(prop.get(i));
-						String v = OWLThing.removeSingleQuotes(val.get(i));
-
-						if((p.compareToIgnoreCase("subAction") != 0) && (p.compareToIgnoreCase("stateTransition") != 0)) {
-							
-							if(type.contains("some")) {
-								this.addSomeValuesFrom(p, v);
-								
-							} else if(type.contains("all")) {
-								this.addAllValuesFrom(p, v);
-								
-							} else if(type.contains("value")) {
-								this.addHasValue(p, v);
-							}
-							
-							
-							if(p.endsWith("taskStartState")) {
-								transitions.setStartAction(Action.getAction(v));
-							}
-						}
-					}
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
+		// post-process action-specific properties
+		
+		// set start state
+		if(has_value.containsKey("http://ias.cs.tum.edu/kb/knowrob.owl#taskStartState")) {
+			transitions.setStartAction(Action.getAction(has_value.get("http://ias.cs.tum.edu/kb/knowrob.owl#taskStartState").firstElement()));
 		}
 
 		// Read sub-actions of the current action
@@ -479,5 +414,7 @@ public class Action extends OWLClass {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		this.setReadFromProlog(true);
 	}
 }

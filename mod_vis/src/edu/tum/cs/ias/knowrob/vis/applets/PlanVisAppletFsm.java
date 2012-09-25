@@ -10,6 +10,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -18,6 +19,7 @@ import javax.vecmath.Vector2f;
 import controlP5.ControlEvent;
 import controlP5.ControlP5;
 
+import edu.tum.cs.ias.knowrob.owl.OWLClass;
 import edu.tum.cs.ias.knowrob.owl.OWLIndividual;
 import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
 import edu.tum.cs.ias.knowrob.vis.actions.Action;
@@ -174,8 +176,23 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	 * 
 	 * @param identifier Something like 'http://www.roboearth.org/kb/serve_drink.owl#ServeADrink'
 	 */
-	public void loadPrologPlan(String identifier)
-	{
+	public void loadPrologPlan(String identifier) {
+		
+		// test equality 
+		
+		Action test_a = Action.getAction("http://ias.cs.tum.edu/kb/knowrob.owl#testAction");
+		test_a.addSuperClass(OWLClass.getOWLClass("http://ias.cs.tum.edu/kb/knowrob.owl#Action"));
+		
+		
+		OWLClass test_b = OWLClass.getOWLClass("http://ias.cs.tum.edu/kb/knowrob.owl#testAction");
+		test_b.addSuperClass(OWLClass.getOWLClass("http://ias.cs.tum.edu/kb/knowrob.owl#ActionOnObject"));
+		test_b.addSuperClass(Action.getAction("http://ias.cs.tum.edu/kb/knowrob.owl#Action"));
+		
+		
+		
+		System.out.println(test_b.getSuperClasses());
+		
+		
 		Action a = Action.getAction(identifier);
 		a.readFromProlog();
 		
@@ -408,10 +425,12 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	}
 	
 	
+	// draw  actions wherever they have been drawn before (don't re-arrange layout)
 	private void drawActions() {
 
-		// draw  actions wherever they have been drawn before (don't re-arrange layout)
-			for(Action a : currTask.getSubActions()) {
+		List<Action> subactions = currTask.getSubActions();
+		synchronized(subactions) {
+			for(Action a : subactions) {
 
 				if(a.isExpanded()) {
 					a.getDrawInfo().drawSimpleBox(this, a.getDrawInfo().position, globalPosOffset, 10, true);
@@ -419,6 +438,7 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 					a.getDrawInfo().drawSimpleBox(this, a.getDrawInfo().position, globalPosOffset, 10, false);
 				}
 			}
+		}
 	}
 
 	

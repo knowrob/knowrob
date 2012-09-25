@@ -528,12 +528,10 @@ public class ActionDrawInformation {
 	{
 		applet.fill(currentTextColor.getRed(), currentTextColor.getGreen(), currentTextColor.getBlue(), currentTextColor.getAlpha());
 		
-		Collection<String> keys = action.getProperties().keySet();
-		for (Iterator<String> it = keys.iterator(); it.hasNext(); )
-		{
-			String key = it.next();
-			for (String value : action.getProperty(key))
-			{
+		for (String key : action.getProperties().keySet() ) {
+			
+			for (String value : action.getProperty(key)) {
+				
 				applet.text( OWLThing.getShortNameOfIRI(key) + ":",position.x,position.y+textHeight);
 				applet.text( OWLThing.getShortNameOfIRI(value),position.x + maxKeyWidth, position.y+textHeight);
 	

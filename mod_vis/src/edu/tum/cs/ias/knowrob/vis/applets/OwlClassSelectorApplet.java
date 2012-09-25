@@ -7,29 +7,22 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.vecmath.Vector2f;
 
 import controlP5.ControlEvent;
-import controlP5.ControlFont;
 import controlP5.ControlP5;
 import controlP5.Controller;
 import controlP5.MultiList;
 import controlP5.MultiListButton;
 import controlP5.Textfield;
-import edu.tum.cs.ias.knowrob.owl.OWLThing;
-import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
-import edu.tum.cs.ias.knowrob.vis.actions.ActionTransition;
-import edu.tum.cs.ias.knowrob.vis.actions.ActionTransitions;
+import edu.tum.cs.ias.knowrob.owl.OWLClass;
 import edu.tum.cs.ias.knowrob.vis.themes.GreyTheme;
 
-
 import processing.core.PApplet;
-import processing.core.PFont;
 
 
 /**
@@ -74,11 +67,16 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 	 * Hierarchical list of OWL classes
 	 */
 	private ArrayList<OWLClass> owl_classes;
-	
+
 	/**
 	 * Mapping from a numeric ID to an OWLClass (needed to assign click events)
 	 */
 	private Map<Float, OWLClass> id2class;
+	
+	/**
+	 * Mapping from the class IRI to a MultiListButton
+	 */
+	private Map<String, MultiListButton> act2button;
 	
 	/**
 	 * Buffer for the result of searching for a class using the text field
@@ -92,7 +90,7 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 
 
 	private Textfield search;
-	
+
 	
 	/**
 	 * Initialize the applet elements
@@ -110,13 +108,16 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 
 		frameRate(10);
 		
-		id2class = new HashMap<Float, OWLClass>();
+		id2class = new LinkedHashMap<Float, OWLClass>();
 		owl_classes = new ArrayList<OWLClass>();
+		act2button = new LinkedHashMap<String, MultiListButton>();
 		
 		
 		// TODO make base class configurable
-		readSubClassesFromOWL("knowrob:'PurposefulAction'", null);
 		
+		OWLClass base = OWLClass.getOWLClass("http://ias.cs.tum.edu/kb/knowrob.owl#PurposefulAction");
+		base.readFromProlog();
+		owl_classes.addAll(base.getSubclasses());
 		
 		initControlP5();
 	}
@@ -153,21 +154,21 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 		
 		for(OWLClass a : owl_classes) {
 			
-			if(a.iri.toLowerCase().contains(stringValue.toLowerCase())) {
+			if(a.getIRI().toLowerCase().contains(stringValue.toLowerCase())) {
 				
 				showSearchResult(a);
 				return a;
 				
-			} else if(a.label.toLowerCase().contains(stringValue.toLowerCase())) {
+			} else if(a.getLabel().toLowerCase().contains(stringValue.toLowerCase())) {
 
 				showSearchResult(a);
 				class_listbox.update();
 				
 				return a;
 				
-			} else if(a.subclasses.size()>0){
+			} else if(a.getSubclasses().size()>0){
 				
-				OWLClass found = searchOWLClass(stringValue, a.subclasses);
+				OWLClass found = searchOWLClass(stringValue, a.getSubclasses());
 				
 				if(found!=null) {
 					return found;
@@ -183,18 +184,21 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 		
 		// reset highlight
 		if(searchResult!=null)
-			searchResult.getListButton().setColorBackground(80);
+			act2button.get(searchResult.getIRI()).setColorBackground(80);
 		
 		// try to open the right tab
 		OWLClass tmp = a;
-		while(tmp.getParent()!=null) {
-			tmp.getParent().getListButton().open();
-			tmp = tmp.getParent();
+		while((tmp.getSuperClasses() != null) && 
+			 (!tmp.getSuperClasses().isEmpty()) &&
+			 (act2button.get(tmp.getSuperClasses().firstElement().getIRI()) !=null)) {
+			
+			act2button.get(tmp.getSuperClasses().firstElement().getIRI()).open();
+			tmp = tmp.getSuperClasses().firstElement();
 		}
 		
 		
 		// highlight the result
-		a.getListButton().setColorBackground(color(180));
+		act2button.get(a.getIRI()).setColorBackground(color(180));
 		searchResult = a;
 		class_listbox.update();
 	}
@@ -243,7 +247,6 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 		} else {
 			controlP5.keyHandler.keyEvent(e, controlP5.controlWindow, true);
 		}
-		
 	}
 	
 	@Override
@@ -362,7 +365,7 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 			} 
 
 			if(act.getSubclasses().size()>0)
-				idx = createListButtons(act.subclasses, b, idx, level+1);
+				idx = createListButtons(act.getSubclasses(), b, idx, level+1);
 		}
 		return idx;
 	}
@@ -384,9 +387,7 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 		if(level>=3)
 			b.getCaptionLabel().setColor(color(10));
 		
-		act.setListButton(b);
-		act.setColorBackground(color(80 + 30 * level));
-		
+		act2button.put(act.getIRI(), b);
 		id2class.put(b.getValue(), act);
 	}
 
@@ -400,133 +401,7 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 
 
 
-	/**
-	 * Recursively read all sub-classes of an OWL class into the owl_classes datastructure.
-	 * 
-	 * @param cls String with the OWL class name
-	 * @param sup Super class of the current class (if null, the created class will be added 
-	 *            to the owl_classes member variable.
-	 */
-	public void readSubClassesFromOWL(String cls, OWLClass sup) {
-		
-		HashMap<String, Vector<String>> subclasses = PrologInterface.executeQuery(
-				"owl_direct_subclass_of(Sub, " + cls + "), " +
-				"(rdf_has(Sub, rdfs:label, literal(type(xsd:string, Label))) -> true; Label='', true)");
-
-		if(subclasses!=null && subclasses.get("Sub") != null && subclasses.get("Label") != null) {
-			for(int i=0;i<subclasses.get("Sub").size();i++) {
-
-				String iri = subclasses.get("Sub").get(i);
-				String label = subclasses.get("Label").get(i);
-
-
-				OWLClass sub;
-				if(label.equals("''"))
-					sub = new OWLClass(PrologInterface.removeSingleQuotes(iri), OWLThing.getShortNameOfIRI(iri));
-				else
-					sub = new OWLClass(PrologInterface.removeSingleQuotes(iri), PrologInterface.removeSingleQuotes(label));
-
-				// either add to the specified super-class or to the general list of top-level classes
-				if(sup!=null) {
-					sup.addSubclass(sub);
-				} else {
-					owl_classes.add(sub);
-				}
-
-				// iterate deeper
-				readSubClassesFromOWL(iri, sub);
-			}
-		}
-	}
 	
-	
-
-	/**
-	 * Wrapper class around a hierarchical OWL class structure
-	 *  
-	 * @author Moritz Tenorth, tenorth@cs.tum.edu
-	 *
-	 */
-	public class OWLClass implements Comparable<OWLClass> {
-		
-		String iri;
-		String label;
-		List<OWLClass> subclasses;
-		
-		MultiListButton button;
-		OWLClass parent;
-		int bgcolor;
-		
-		public OWLClass(String iri, String label) {
-			
-			this.iri = iri;
-			this.label = label;
-			this.subclasses = new ArrayList<OWLClass>();
-		}
-
-		public String getIRI() {
-			return iri;
-		}
-
-		public void setIri(String iri) {
-			this.iri = iri;
-		}
-
-		public String getLabel() {
-			return label;
-		}
-
-		public void setLabel(String label) {
-			this.label = label;
-		}
-		
-		public List<OWLClass> getSubclasses() {
-			return subclasses;
-		}
-		
-		public void addSubclass(OWLClass sub) {
-
-			subclasses.add(sub);
-			sub.setParent(this);
-		}
-		
-		public void removeSubclass(OWLClass sub) {
-			subclasses.remove(sub);
-		}
-		
-		public void setListButton(MultiListButton b) {
-			button = b;
-		}
-		
-		public MultiListButton getListButton() {
-			return button;
-		}
-		
-		public void setParent(OWLClass p) {
-			parent = p;
-		}
-		
-		public OWLClass getParent() {
-			return parent;
-		}
-		
-		public void setColorBackground(int color) {
-			if(button!=null)
-				button.setColorBackground(color);
-			
-			bgcolor = color;
-		}
-		
-		public int getColorBackground() {
-			return bgcolor;
-		}
-
-		@Override
-		public int compareTo(OWLClass o) {
-			return this.iri.compareTo(o.getIRI());
-		}
-		
-	}
 
 	public static void main(String args[]) {
 		PApplet.main(new String[] { "edu.tum.cs.ias.knowrob.vis.applets.OwlClassSelectorApplet" });
