@@ -781,23 +781,19 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 			synchronized(trans) {
 				
 				if(activeTransition!=null) {
-					trans.remove(activeTransition);
+					activeTransition.getFrom().removeTransition(activeTransition);
 					this.activeTransition = null;
 				}
 
 				if(selectedAction!=null) {
 
-					List<ActionTransition> to_be_removed = new ArrayList<ActionTransition>();
-
 					for(ActionTransition t : trans) {
 						if(t.getFrom().equals(selectedAction) || 
-								t.getTo().equals(selectedAction)) {
+						   t.getTo().equals(selectedAction)) {
 
-							to_be_removed.add(t);
+							t.getFrom().removeTransition(t);
 						} 
 					}
-
-					trans.removeAll(to_be_removed);
 
 					currTask.removeSubAction(selectedAction);
 					this.selectedAction = null;

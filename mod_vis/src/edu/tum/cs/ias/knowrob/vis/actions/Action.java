@@ -472,7 +472,7 @@ public class Action extends OWLClass {
 
 					ActionTransition trans = ActionTransition.getActionTransition(t);
 					trans.readFromProlog();
-					this.addTransition(trans);
+					trans.getFrom().addTransition(trans);
 				}
 			}
 			

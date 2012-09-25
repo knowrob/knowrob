@@ -139,11 +139,11 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 		background(40);
 		
 		if(initialized) {
-			synchronized (props) {
-				synchronized(action_props) {
+//			synchronized (props) {
+//				synchronized(action_props) {
 					controlP5.draw();
-				}
-			}
+//				}
+//			}
 		}
 	}
 

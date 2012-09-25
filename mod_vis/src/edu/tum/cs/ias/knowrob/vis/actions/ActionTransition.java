@@ -105,7 +105,7 @@ public class ActionTransition extends OWLIndividual {
 		ActionTransition res = getActionTransition(iri, null);
 		res.setFrom(from);
 		res.setTo(to);
-		res.setType(type);
+		res.setCause(type);
 		return res;
 	}
 	
