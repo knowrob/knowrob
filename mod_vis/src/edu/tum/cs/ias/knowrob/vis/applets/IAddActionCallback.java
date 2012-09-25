@@ -6,6 +6,4 @@ public interface IAddActionCallback {
 
 	public void addAction(Action a);
 
-	public void updateAction(Action act);
-	
 }

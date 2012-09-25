@@ -67,11 +67,6 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	
 	private Vector2f newTransitionToLocation = new Vector2f();
 	
-	
-	/**
-	 * Actions in this task
-	 */
-//	private List<Action> actions;
 
 	
 	/**
@@ -123,7 +118,6 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	public PlanVisAppletFsm()
 	{
 		this.redraw();
-//		this.actions = Collections.synchronizedList(new ArrayList<Action>());
 	}
 	
 	@Override
@@ -204,8 +198,6 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 		currTask = action;
 		clickHistory.add(new ActionSelectHistoryInfo(currTask));
 		updateHistoryPosition();
-		
-		//currTask.getTransitions().setStartAction(action);
 		
 		this.redraw();
 	}
@@ -402,7 +394,6 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 		
 		// draw all actions that are currently not connected in the upper left corner
 		currentPosition = new Vector2f(50+globalPosOffset.x,80+globalPosOffset.y);
-//		synchronized(actions) {
 			for(Action a : currTask.getSubActions()) {
 
 				if( currTask.getTransitionsRecursive().getTransitionsFrom(a).isEmpty() &&
@@ -416,14 +407,12 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 
 				}
 			}
-//		}
 	}
 	
 	
 	private void drawActions() {
 
 		// draw  actions wherever they have been drawn before (don't re-arrange layout)
-//		synchronized(actions) {
 			for(Action a : currTask.getSubActions()) {
 
 				if(a.isExpanded()) {
@@ -432,7 +421,6 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 					a.getDrawInfo().drawSimpleBox(this, a.getDrawInfo().position, globalPosOffset, 10, false);
 				}
 			}
-//		}
 	}
 
 	
@@ -475,7 +463,6 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 			setCursor(handCursor);
 			return;
 		}
-//		synchronized(actions) {
 			for(Action a : currTask.getSubActions()) {
 
 				if (a.getDrawInfo().updateHover(e.getX(), e.getY()))
@@ -483,7 +470,6 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 				else
 					setCursor(normalCursor);
 			}
-//		}
 		
 		if (selectedAction ==null)
 		{
@@ -533,7 +519,6 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 		if (e.getButton() == MouseEvent.BUTTON1) {
 
 			// check if we clicked on an action -> move only that action box
-//			synchronized(actions) {
 				for(Action a : currTask.getSubActions()) {
 					if(a.getDrawInfo().checkClick(e.getX(), e.getY())!=null) {
 						draggedAction = a;
@@ -542,7 +527,6 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 						setCursor(moveCursor);
 					}
 				}
-//			}
 			
 			// only send left-button events to contolP5
 			if(controlP5!=null && e.getButton() == MouseEvent.BUTTON1)
@@ -574,6 +558,8 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 			controlP5.controlWindow.mouseEvent(e);
     }
 	
+	
+	
 	@Override
     public void mouseClicked(MouseEvent e) {
 		
@@ -581,8 +567,9 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 		long diff = System.currentTimeMillis()-lastClickTime;
 		lastClickTime = System.currentTimeMillis();
 		
-		if (diff < 70) //double fired event
+		if (diff < 150) { // double-fired event 
 			return;
+		}
 
 		
 		// only send left-button events to contolP5
@@ -592,13 +579,36 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 		
 		if (e.getButton() == MouseEvent.BUTTON1) {
 
-			
 			// Check if clicked on outbound connector
-//			synchronized(actions) {
+			for(Action a : currTask.getSubActions()) {
+
+				Action clicked_on = a.getDrawInfo().checkPosOverOutboundConnector(e.getX(), e.getY());
+				if (clicked_on!= null) {
+
+					// clicked nowhere special, reset highlight
+					clearHighlight();
+					selectedAction=null;
+					if(activeTransition!=null)
+						activeTransition.setActive(false);
+					activeTransition = null;
+
+					newTransitionFromAction = clicked_on;
+					newTransitionToLocation.x = e.getX();
+					newTransitionToLocation.y = e.getY();
+					return;
+				}
+			}
+
+			// Check if clicked on action or inbound connector in connection mode
+			if(newTransitionFromAction!=null) {
+
 				for(Action a : currTask.getSubActions()) {
 
-					Action clicked_on = a.getDrawInfo().checkPosOverOutboundConnector(e.getX(), e.getY());
-					if (clicked_on!= null) {
+					if (a.getDrawInfo().checkHover(e.getX(), e.getY(), null)!= null) {
+
+						OWLIndividual t_ind = OWLIndividual.getOWLIndividualOfClass("http://ias.cs.tum.edu/kb/knowrob.owl#Transition");
+						currTask.addTransition(ActionTransition.getActionTransition(t_ind.getIRI(), newTransitionFromAction, a, "OK"));
+						redraw();
 
 						// clicked nowhere special, reset highlight
 						clearHighlight();
@@ -607,74 +617,64 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 							activeTransition.setActive(false);
 						activeTransition = null;
 
-						newTransitionFromAction = clicked_on;
-						newTransitionToLocation.x = e.getX();
-						newTransitionToLocation.y = e.getY();
+						newTransitionFromAction = null;
+						newTransitionToLocation = new Vector2f();
 						return;
 					}
 				}
-//			}
-			
-			// Check if clicked on inbound connector in connection mode
-			if(newTransitionFromAction!=null) {
-
-//				synchronized(actions) {
-					for(Action a : currTask.getSubActions()) {
-
-						//Action clicked_on = a.getDrawInfo().checkPosOverInboundConnector(e.getX(), e.getY());
-
-						if (a.getDrawInfo().checkHover(e.getX(), e.getY(), null)!= null) {
-
-							OWLIndividual t_ind = OWLIndividual.getOWLIndividualOfClass("http://ias.cs.tum.edu/kb/knowrob.owl#Transition");
-							currTask.addTransition(ActionTransition.getActionTransition(t_ind.getIRI(), newTransitionFromAction, a, "OK"));
-							redraw();
-
-							// clicked nowhere special, reset highlight
-							clearHighlight();
-							selectedAction=null;
-							if(activeTransition!=null)
-								activeTransition.setActive(false);
-							activeTransition = null;
-							
-							newTransitionFromAction = null;
-							newTransitionToLocation = new Vector2f();
-							return;
-						}
-					}
-//				}
 			}
 			
+
 			// reset connection mode if clicked elsewhere
 			newTransitionFromAction = null;
 			newTransitionToLocation = new Vector2f();
-			
-// TODO: adapt to multi-action case and reactivate			
-//			//Check if clicked on history element
-//			int idx = getHistoryHover(e.getX(), e.getY());
-//			if (idx >= 0) {
-//				selectedAction = clickHistory.get(idx).getAction();
-//				for (int i=clickHistory.size()-1; i>idx; i--)
-//				{
-//					clickHistory.remove(i);
-//				}
-//				updateHistoryPosition();
-//				return;
-//			}
-//			
-			
-// TODO: adapt to multi-action case and reactivate			
-//			//Check if clicked on an expand button
-//			for(Action a : actions) {
-//				
-//				Action clicked_on = a.getDrawInfo().checkClickExpand(e.getX(), e.getY());
-//				if (clicked_on!= null) {
-//					
-//					clicked_on.toggleExpand();
-//					selectedAction.getDrawInfo().notifyModified();
-//					return;
-//				}
-//			}
-			
+
+
+			// check if (double)clicked on action
+			for(Action a : currTask.getSubActions()) {
+
+				Action clicked_on  = a.getDrawInfo().checkClick(e.getX(), e.getY());
+
+				if (clicked_on!= null) {
+
+					clearHighlight();
+					if(activeTransition!=null)
+						activeTransition.setActive(false);
+					activeTransition = null;
+
+					// edit action if double-clicked
+					if(e.getClickCount()==2) {
+
+						// open action editor
+						ActionEditorWindow f = new ActionEditorWindow();
+						f.setAddActionCallback(this);
+
+						while(!f.applet.isInitialized()) {
+							try {Thread.sleep(10);
+							} catch (InterruptedException e1) {e1.printStackTrace(); }
+						}
+
+						// init action editor
+						f.applet.setIdentifier(a.getIRI());
+						f.applet.setEditing(true);
+						f.applet.setActionClass(a.getSuperClasses().firstElement().getIRI());
+						f.applet.setActionProperties(a.getProperties());
+						
+						// update click time if init took longer
+						lastClickTime = System.currentTimeMillis();
+					
+						return;
+
+					} else {
+
+						// activate action after single click
+						selectedAction = clicked_on;
+						highlightAction(selectedAction, false);
+
+						return;
+					}
+				}
+			}
 			
 			// activate transition arrow after click
 			ActionTransitions trans = currTask.getTransitionsRecursive();
@@ -687,6 +687,9 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 
 						if(e.getClickCount()==2) {
 							
+
+							//debug
+							System.out.println("double click on transition");
 							new TransitionPropertiesEditor(this, t);
 							
 						} else {
@@ -708,64 +711,50 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 								activeTransition.setActive(false);
 
 							activeTransition = t;
-
 							return;
 						}
 					}
 				}
 			}
 			
-//			synchronized(actions) {
-				for(Action a : currTask.getSubActions()) {
-
-					Action clicked_on  = a.getDrawInfo().checkClick(e.getX(), e.getY());
-
-					if (clicked_on!= null && clicked_on != selectedAction) {
-
-						clearHighlight();
-						if(activeTransition!=null)
-							activeTransition.setActive(false);
-						activeTransition = null;
-
-						// edit action if double-clicked
-						if(e.getClickCount()==2) {
-
-							// open action editor
-							ActionEditorWindow f = new ActionEditorWindow();
-
-							f.setAddActionCallback(this);
-
-							while(!f.applet.isInitialized()) {
-								try {Thread.sleep(100);
-								} catch (InterruptedException e1) {e1.printStackTrace(); }
-							}
-							
-							// init action editor
-							f.applet.setIdentifier(a.getIRI());
-							f.applet.setActionClass(a.getSuperClasses().firstElement().getIRI());
-							f.applet.setActionProperties(a.getProperties());
-							f.applet.setEditing(true);
-							return;
-
-						} else {
-
-							// activate action after single click
-							selectedAction = clicked_on;
-							highlightAction(selectedAction, false);
-
-							return;
-						}
-					}
-				}
-//			}
-				
 			// clicked nowhere special, reset highlight
 			clearHighlight();
 			selectedAction=null;
+			
 			if(activeTransition!=null)
 				activeTransition.setActive(false);
+			
 			activeTransition = null;
 		}
+		
+		
+		
+		// TODO: adapt to multi-action case and reactivate			
+//					//Check if clicked on history element
+//					int idx = getHistoryHover(e.getX(), e.getY());
+//					if (idx >= 0) {
+//						selectedAction = clickHistory.get(idx).getAction();
+//						for (int i=clickHistory.size()-1; i>idx; i--)
+//						{
+//							clickHistory.remove(i);
+//						}
+//						updateHistoryPosition();
+//						return;
+//					}
+//					
+					
+		// TODO: adapt to multi-action case and reactivate			
+//					//Check if clicked on an expand button
+//					for(Action a : actions) {
+//						
+//						Action clicked_on = a.getDrawInfo().checkClickExpand(e.getX(), e.getY());
+//						if (clicked_on!= null) {
+//							
+//							clicked_on.toggleExpand();
+//							selectedAction.getDrawInfo().notifyModified();
+//							return;
+//						}
+//					}
     }
 	
 
@@ -783,21 +772,6 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 			controlP5.controlWindow.mouseEvent(e);
     }
 
-
-//	@Override
-//	public void mouseWheelMoved(MouseWheelEvent e) {
-////			int totalScrollAmount = 0;
-////			if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL)
-////			{
-////				totalScrollAmount = e.getUnitsToScroll() * e.getScrollAmount();
-////			} else {
-////				totalScrollAmount = e.getWheelRotation() * 30;
-////			}
-////			draggingStart.y += totalScrollAmount;
-//		controlP5.controlWindow.mouseEvent(e);
-//	}
-//	
-//	
 	
 	public void keyPressed(KeyEvent e) {
 		
@@ -915,26 +889,13 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 
 	
 	public void addAction(Action a) {
-		
-		currTask.addSubAction(a);
+
 		a.getDrawInfo().position = new Vector2f(50+globalPosOffset.x,80+globalPosOffset.y);
+		currTask.addSubAction(a);
+
 	}
 	
-	
-	public void updateAction(Action a) {
-		
-//		synchronized(actions) {
-			for(Action old : currTask.getSubActionsRecursive()) {
-				if(old.getIRI().equals(a.getIRI())) {
-					old.setLabel(a.getLabel());
-					old.setSomeValuesFrom(a.getSomeValuesFrom());
-					old.setAllValuesFrom(a.getAllValuesFrom());
-					old.setHasValue(a.getHasValue());
-				}
-			}
-//		}
-	}
-	
+
 	
 	
 	/**

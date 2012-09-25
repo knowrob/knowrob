@@ -17,6 +17,7 @@ import controlP5.ListBox;
 import controlP5.ListBoxItem;
 import controlP5.Textfield;
 import edu.tum.cs.ias.knowrob.owl.OWLClass;
+import edu.tum.cs.ias.knowrob.owl.OWLThing;
 import edu.tum.cs.ias.knowrob.vis.actions.Action;
 import edu.tum.cs.ias.knowrob.vis.themes.GreyTheme;
 
@@ -136,9 +137,15 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 	public void draw() {
 
 		background(40);
-		controlP5.draw();
+		
+		if(initialized) {
+			synchronized (props) {
+				synchronized(action_props) {
+					controlP5.draw();
+				}
+			}
+		}
 	}
-
 
 
 
@@ -193,8 +200,10 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 	 * @param props Mapping from the property identifier to a list of values
 	 */
 	public void setActionProperties(Map<String, Vector<String>> props) {
-		
-		action_props.clear();
+
+		synchronized (action_props) {
+			action_props.clear();
+		}
 		addActionProperties(props);
 	}
 	
@@ -203,13 +212,13 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 	 * Read all values from the props Map to the action_props list in addition
 	 * to the existing ones
 	 * 
-	 * @param props Mapping from the property identifier to a list of values
+	 * @param new_props Mapping from the property identifier to a list of values
 	 */
-	public void addActionProperties(Map<String, Vector<String>> props) {
+	public void addActionProperties(Map<String, Vector<String>> new_props) {
 		
-		for(String prop : props.keySet()) {
-			for(String val : props.get(prop)) {
-				
+		for(String prop : new_props.keySet()) {
+			for(String val : new_props.get(prop)) {
+
 				if(prop.endsWith("type")) {
 					this.setActionClass(val);
 				} else {
@@ -226,10 +235,29 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 	 * @param prop String denoting the property to be added
 	 * @param val  String denoting the value to be assigned to the property
 	 */
-	public void addActionPropItem(String prop, String val) {
-		addActionPropItem(prop + " -- " + val);
-	}
+	public void addActionPropItem(String prop, String val) {  
 		
+		String prop_short = OWLThing.getShortNameOfIRI(prop);
+		
+		// find largest index (not necessarily consecutive)
+		int props_idx = props.getListBoxItems().length + 1;
+		for(String[] item : props.getListBoxItems()) {
+			if(Integer.valueOf(item[2]) > props_idx)
+				props_idx = Integer.valueOf(item[3]);
+		}
+		props_idx++;
+		
+		// add property to properties list if not there yet so that mapping shortname->IRI works
+		if(getIRIForPropShortName(prop_short) == null) {
+			synchronized (props) {
+				propId2item.put(props_idx, props.addItem(prop, props_idx).setText(OWLThing.getShortNameOfIRI(prop)));
+			}
+		}
+
+		addActionPropItem(prop_short + " -- " + val);
+						
+	}
+
 	
 	/**
 	 * Add a new item to the action_props {@link ListBox}.
@@ -244,14 +272,18 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 		if(actionpropId2item.size()>0)
 			idx = Collections.max(actionpropId2item.keySet()) + 1;
 		
-		ListBoxItem item = actionpropId2item.put(idx, action_props.addItem(name, idx));
-		setCurrentActionPropItem(item);
+		synchronized (action_props) {
+			ListBoxItem item = actionpropId2item.put(idx, action_props.addItem(name, idx));
+			setCurrentActionPropItem(item);
+		}
 		
 		// adjust height of the action properties ListBox and position of the submit button
 		if(submit.getPosition().y < this.height-50) {
 			
 			listBoxHeight += 20;
-			action_props.setHeight(listBoxHeight);
+			synchronized (action_props) {
+				action_props.setHeight(listBoxHeight);
+			}
 			submit.setPosition(submit.getPosition().x, submit.getPosition().y + 20);
 		}
 	}
@@ -266,14 +298,34 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 		
 		if(item!=null) {
 			
-			action_props.removeItem(item.getName());
-			currentActionProp = null;
-			actionpropId2item.remove(item.getValue());
+			// remove from action class
+			String id = ((Textfield) controlP5.getController("identifier")).getText();
+			Action act = Action.getAction(id, null);
 			
-			// adapt layout
-			listBoxHeight += 20;
-			action_props.setHeight(listBoxHeight);
-			submit.setPosition(submit.getPosition().x, submit.getPosition().y - 20);
+			String[] prop_val = item.getName().split(" -- ", 2);
+			String prop = getIRIForPropShortName(prop_val[0]);
+			String val = prop_val[1];
+
+			if(act.getHasValue().containsKey(prop)) {
+				act.getHasValue().get(prop).remove(val);
+			}
+			if(act.getSomeValuesFrom().containsKey(prop)) {
+				act.getSomeValuesFrom().get(prop).remove(val);
+			}
+			act.getDrawInfo().notifyModified();
+			
+			synchronized (action_props) {
+				
+				// update gui
+				action_props.removeItem(item.getName());
+				currentActionProp = null;
+				actionpropId2item.remove(item.getValue());
+
+				// adapt layout
+				listBoxHeight += 20;
+				action_props.setHeight(listBoxHeight);
+				submit.setPosition(submit.getPosition().x, submit.getPosition().y - 20);
+			}
 		}
 	}
 
@@ -317,7 +369,19 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 		return initialized;
 	}
 	
-	
+	private String getIRIForPropShortName(String shortname) {
+		
+		// getListBoxItems returns String[]{name, value}
+		synchronized (props) {
+			for(String[] i : props.getListBoxItems()) {
+				if(i[0].endsWith(shortname)) {
+					return i[0];
+				}
+			}
+		}
+		return null;
+	}
+
 
 	// // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // 
 	// 
@@ -342,7 +406,20 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 
 			// add action property
 			if(ev.getController().getName().equals("add property") || ev.getController().getName().equals("value")) {
-				addActionPropItem(propId2item.get((int)props.getValue()).getName(), ((Textfield) controlP5.getController("value")).getText());
+				
+				
+				synchronized (props) {
+					
+					addActionPropItem(propId2item.get((int)props.getValue()).getName(), ((Textfield) controlP5.getController("value")).getText());
+					
+					// add to action class
+					Action act = Action.getAction(((Textfield) controlP5.getController("identifier")).getText(), null);
+					act.addHasValue(propId2item.get((int)props.getValue()).getName(), ((Textfield) controlP5.getController("value")).getText());
+					act.getDrawInfo().notifyModified();
+
+					// TODO: somehow distinguish between someValuesfrom and hasValue -> create OWLProperty type and use hasValue for DataProperties?
+
+				}
 				
 				// reset text field and properties box
 				((Textfield) controlP5.getController("value")).setText("");
@@ -368,21 +445,14 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 				String id = ((Textfield) controlP5.getController("identifier")).getText(); // TODO: add label field to the action editor forms
 				Action act = Action.getAction(id, null);
 
-				for(ListBoxItem i : actionpropId2item.values()) {
-					
-					if(i!=null) {
-						String[] prop_val = i.getName().split(" -- ", 2);
-						act.addHasValue(prop_val[0], prop_val[1]); // TODO: somehow distinguish between someValuesfrom and hasValue
-					}			
-				}
+				OWLClass sup = OWLClass.getOWLClass(((Textfield) controlP5.getController("class")).getText());
+				act.getSuperClasses().clear();
+				act.addSuperClass(sup);
 				
-				act.addSuperClass(OWLClass.getOWLClass(((Textfield) controlP5.getController("class")).getText()));
-				
-				
-				if(editing)
-					this.callback.updateAction(act);
-				else 
+				if(!editing)
 					this.callback.addAction(act);
+				
+				// Note: updates are automatically propagated since actions are implemented as singletons
 				
 				this.frame.setVisible(false);
 			}
@@ -421,6 +491,8 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 	//  Callback methods
 	// 
 	
+
+
 	/**
 	 * Implementation of the {@link IClassSelectionCallback} interface; accept
 	 * OWL classes selected by external components.
@@ -500,7 +572,6 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 		new_prop.setBackgroundColor(color(50));
 		
 		
-		// TODO read properties from KnowRob
 		props = controlP5.addListBox("Properties", 10, 30, 200, 75);
 		props.setBarHeight(15).setItemHeight(15);
 		props.setColorValue(color(120,40,40));
@@ -508,30 +579,28 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 
 		int props_idx = 0;
 		propId2item = new HashMap<Integer, ListBoxItem>();
-		
-		propId2item.put(props_idx, props.addItem("objectActedOn", props_idx));
-		props_idx++;
-		propId2item.put(props_idx, props.addItem("toLocation",    props_idx++));
-		props_idx++;
-		propId2item.put(props_idx, props.addItem("fromLocation",  props_idx++));
-		props_idx++;
-		propId2item.put(props_idx, props.addItem("bodyPartUsed",  props_idx++));
-		props_idx++;
-		
-		// TODO: create mapping from displayed names to IRIs for properties and (possibly) values
-		
-		
+
+		// TODO read properties from KnowRob
+		String[] properties = new String[]{"http://ias.cs.tum.edu/kb/knowrob.owl#objectActedOn",
+				"http://ias.cs.tum.edu/kb/knowrob.owl#toLocation",
+				"http://ias.cs.tum.edu/kb/knowrob.owl#fromLocation",
+		"http://ias.cs.tum.edu/kb/knowrob.owl#bodyPartUsed"};
+
+		synchronized (props) {
+			for(String property : properties) {
+				propId2item.put(props_idx, props.addItem(property, props_idx).setText(OWLThing.getShortNameOfIRI(property)));
+				props_idx++;
+			}
+		}
 		
 		controlP5.addTextfield("value", 230, 15, 160, 20).setAutoClear(true).moveTo(new_prop);
 
 		controlP5.addButton("add property", 2, 230, 55, 33, 20).moveTo(new_prop).setCaptionLabel(" add");
 		controlP5.addButton("remove property", 2, 280, 55, 50, 20).moveTo(new_prop).setCaptionLabel(" remove");
 		
-		
 		action_props = controlP5.addListBox("Action properties", 20, 260, 400, listBoxHeight).setBarHeight(15).setItemHeight(20);
 		GreyTheme.applyStyle(action_props, 20);
-		
-		
+
 		actionpropId2item = new HashMap<Integer, ListBoxItem>();
 		setCurrentActionPropItem(null);
 		

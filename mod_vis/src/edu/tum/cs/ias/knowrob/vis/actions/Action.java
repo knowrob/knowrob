@@ -348,7 +348,22 @@ public class Action extends OWLClass {
 			}			
 		} catch (Exception e) { } // fail silently if no label is set
 
+
+		// Read superclasses of action 
+		HashMap<String, Vector<String>> qSuper = PrologInterface.executeQuery("owl_direct_subclass_of('" + iri + "', Super)");
+
+		if(qSuper != null) {
+
+			for(String sup : qSuper.get("Super")) {
+
+				if (sup.contains("__Description"))
+					continue;
+
+				superclasses.add(OWLClass.getOWLClass(OWLThing.removeSingleQuotes(sup)));
+			}
+		}
 		
+
 		// Read action properties
 		try {
 			
@@ -380,7 +395,6 @@ public class Action extends OWLClass {
 						String p = OWLThing.removeSingleQuotes(prop.get(i));
 						String v = OWLThing.removeSingleQuotes(val.get(i));
 
-						
 						if((p.compareToIgnoreCase("subAction") != 0) && (p.compareToIgnoreCase("stateTransition") != 0)) {
 							
 							if(type.contains("some")) {
