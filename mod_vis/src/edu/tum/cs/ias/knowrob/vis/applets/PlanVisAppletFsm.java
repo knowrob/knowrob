@@ -10,7 +10,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -137,7 +136,7 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	    textFont(dejavuFont);
 	    hint(ENABLE_ACCURATE_TEXTURES);
 	    ellipseMode(RADIUS);
-	    frameRate(25);
+	    frameRate(15);
 	    
 	    initControlP5();
 	    
@@ -165,7 +164,6 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	    if(this.newTransitionFromAction!=null) {
 	    	arrowFromTo(this, newTransitionFromAction.getDrawInfo().getOutboundConnectorPos(), newTransitionToLocation, 5, -1);
 	    }
-
 
 	    controlP5.draw();
 	}
@@ -451,35 +449,33 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		
+
 		if(newTransitionFromAction!=null) {
 			newTransitionToLocation.x = e.getX();
 			newTransitionToLocation.y = e.getY();
 			redraw();
 		}
-		
-		if (getHistoryHover(e.getX(), e.getY())>=0)
-		{
+
+		if (getHistoryHover(e.getX(), e.getY())>=0) {
 			setCursor(handCursor);
 			return;
 		}
-			for(Action a : currTask.getSubActions()) {
-
-				if (a.getDrawInfo().updateHover(e.getX(), e.getY()))
-					setCursor(handCursor);
-				else
-					setCursor(normalCursor);
-			}
 		
-		if (selectedAction ==null)
-		{
+		for(Action a : currTask.getSubActions()) {
+
+			if (a.getDrawInfo().updateHover(e.getX(), e.getY()))
+				setCursor(handCursor);
+			else
+				setCursor(normalCursor);
+		}
+
+		if(controlP5!=null)
+			controlP5.controlWindow.mouseEvent(e);
+
+		if (selectedAction==null) {
 			setCursor(normalCursor);
 			return;
 		}
-
-		// only send left-button events to contolP5
-		if(controlP5!=null)
-			controlP5.controlWindow.mouseEvent(e);
     }
 
 	@Override
@@ -809,9 +805,7 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 
 			// open action creation dialog	
 			if(ev.getController().getName().equals("add action")) {
-				
-				System.out.println("add action event");
-				
+								
 				ActionEditorWindow f = new ActionEditorWindow();
 				f.setAddActionCallback(this); 
 			}

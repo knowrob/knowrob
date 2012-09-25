@@ -123,7 +123,7 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 		dejavuFont = createFont("DejaVu Sans",12);
 		textFont(dejavuFont);
 		
-		frameRate(20);	
+		frameRate(15);	
 		background(50);
 				
 		initControlP5();
@@ -131,7 +131,7 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 
 
 	/**
-	 * Draw the content of the 
+	 * Draw the content of the applet
 	 */
 	@Override
 	public void draw() {
@@ -139,11 +139,7 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 		background(40);
 		
 		if(initialized) {
-//			synchronized (props) {
-//				synchronized(action_props) {
-					controlP5.draw();
-//				}
-//			}
+			controlP5.draw();
 		}
 	}
 
@@ -389,6 +385,7 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 	}
 
 
+	
 	// // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // 
 	// 
 	//  Event handling

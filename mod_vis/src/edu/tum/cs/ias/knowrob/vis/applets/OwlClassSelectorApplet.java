@@ -2,6 +2,7 @@ package edu.tum.cs.ias.knowrob.vis.applets;
 
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -19,8 +20,11 @@ import controlP5.ControlP5;
 import controlP5.Controller;
 import controlP5.MultiList;
 import controlP5.MultiListButton;
+import controlP5.Textfield;
 import edu.tum.cs.ias.knowrob.owl.OWLThing;
 import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
+import edu.tum.cs.ias.knowrob.vis.actions.ActionTransition;
+import edu.tum.cs.ias.knowrob.vis.actions.ActionTransitions;
 import edu.tum.cs.ias.knowrob.vis.themes.GreyTheme;
 
 
@@ -85,6 +89,9 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 	 * Callback to be notified once class has been selected
 	 */
 	private IClassSelectionCallback cb;
+
+
+	private Textfield search;
 	
 	
 	/**
@@ -101,10 +108,7 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 			this.frame.setBackground(new Color(10, 10, 10));
 		}
 
-
-
 		frameRate(10);
-//		PrologInterface.initJPLProlog("ias_knowledge_base");
 		
 		id2class = new HashMap<Float, OWLClass>();
 		owl_classes = new ArrayList<OWLClass>();
@@ -206,8 +210,15 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 
 	public void controlEvent(ControlEvent ev) {
 		
+		// submit selection with ENTER if selection has been made, search otherwise
 		if(ev.getController().getName().equals("search")) {
-			searchOWLClass(ev.getStringValue(), owl_classes);
+
+			if(searchResult!=null) {
+				cb.owlClassSelected(searchResult.getIRI());
+				this.frame.setVisible(false);
+			} else {
+				searchOWLClass(ev.getStringValue(), owl_classes);
+			}
 			return;
 		}
 		
@@ -222,7 +233,18 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 			}
 		}
 	}
-
+	
+	public void keyPressed(KeyEvent e) {
+		
+		// search in class structure with TAB
+		if(e.getKeyCode() == KeyEvent.VK_TAB) {
+			searchOWLClass(((Textfield) search).getText(), owl_classes);
+			return;
+		} else {
+			controlP5.keyHandler.keyEvent(e, controlP5.controlWindow, true);
+		}
+		
+	}
 	
 	@Override
 	public void mouseDragged(MouseEvent e) {
@@ -303,7 +325,7 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 		controlP5 = new ControlP5(this);
 		GreyTheme.applyStyle(controlP5);
 		
-		controlP5.addTextfield("search", 20, 20, 200, 20).setAutoClear(false).setFocus(true);
+		search = controlP5.addTextfield("search", 20, 20, 200, 20).setAutoClear(false).setFocus(true);
 		class_listbox = GreyTheme.applyStyle(controlP5.addMultiList("class list", 20, 60, 80, 17));
 
 		float textwidth = textWidth("CheckingWhetherConditionObtains");

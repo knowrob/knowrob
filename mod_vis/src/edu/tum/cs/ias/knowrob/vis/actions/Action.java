@@ -294,7 +294,7 @@ public class Action extends OWLClass {
 	public boolean isExpanded() {
 		if(parentOfSequence!=null)
 			return (parentOfSequence.expandedSequence == this);
-		else 
+		else
 			return false;
 	}
 	
