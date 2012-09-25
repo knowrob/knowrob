@@ -1,18 +1,25 @@
 package edu.tum.cs.ias.knowrob.owl;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import org.semanticweb.owlapi.util.OWLClassLiteralCollector;
+
+import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
+
+
 public class OWLClass extends OWLThing {
 
-	
+
 	/**
 	 * Vector of subclasses
 	 */
 	protected Vector<OWLClass> subclasses;
-	
+
 	/**
 	 * Reference to the parent / superclass
 	 */
@@ -33,10 +40,10 @@ public class OWLClass extends OWLThing {
 	 * Map of value restrictions (hasValue)
 	 */
 	protected Map<String, Vector<String>> has_value;
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * Constructor. Set the IRI and optionally a label. If none is given, 
 	 * it is initialized with the IRI's short name.
@@ -45,11 +52,11 @@ public class OWLClass extends OWLThing {
 	 * @param label Optional natural-language label.
 	 */
 	protected OWLClass(String iri, String label) {
-		
+
 		super(iri, label);
 		this.superclasses = new Vector<OWLClass>();
 		this.subclasses = new Vector<OWLClass>();
-		
+
 		some_values_from = Collections.synchronizedMap(new LinkedHashMap<String, Vector<String>>());
 		all_values_from = Collections.synchronizedMap(new LinkedHashMap<String, Vector<String>>());
 		has_value = Collections.synchronizedMap(new LinkedHashMap<String, Vector<String>>());
@@ -64,8 +71,8 @@ public class OWLClass extends OWLThing {
 	protected OWLClass(OWLThing ind) {
 		this(ind.getIRI(), ind.getLabel());
 	}
-	
-	
+
+
 	/**
 	 * OWLClass factory. Return existing instance, if available, and create new
 	 * OWLClass instance if necessary. Avoids duplicate instances with the same 
@@ -81,12 +88,12 @@ public class OWLClass extends OWLThing {
 		if(identifiers.containsKey(iri) && identifiers.get(iri) instanceof OWLClass) {
 			return (OWLClass) identifiers.get(iri);			
 		}
-		
+
 		OWLClass res = new OWLClass(OWLThing.getOWLThing(iri, label));
 		identifiers.put(iri, res);
 		return res;
 	}
-	
+
 	/**
 	 * OWLClass factory. Return existing instance, if available, and create new
 	 * OWLClass instance if necessary. Avoids duplicate instances with the same 
@@ -98,10 +105,10 @@ public class OWLClass extends OWLThing {
 	public static OWLClass getOWLClass(String iri) {
 		return getOWLClass(iri, null); 
 	}
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * Get all subclasses defined for this OWL class.
 	 * 
@@ -110,8 +117,8 @@ public class OWLClass extends OWLThing {
 	public Vector<OWLClass> getSubclasses() {
 		return subclasses;
 	}
-	
-	
+
+
 	/**
 	 * Add a subclass definition. Complementary to addParentClass.
 	 * 
@@ -120,8 +127,8 @@ public class OWLClass extends OWLThing {
 	public void addSubclass(OWLClass sub) {
 		subclasses.add(sub);
 	}
-	
-	
+
+
 	/**
 	 * Remove a subclass from this class
 	 * 
@@ -130,9 +137,9 @@ public class OWLClass extends OWLThing {
 	public void removeSubclass(OWLClass sub) {
 		subclasses.remove(sub);
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Set the superclasses of this class
 	 * 
@@ -142,17 +149,19 @@ public class OWLClass extends OWLThing {
 		this.superclasses.clear();
 		this.superclasses.addAll(p);
 	}
-	
+
 	/**
 	 * Add a superclass definition. Complementary to addSubclass.
 	 * 
 	 * @param p Superclass
 	 */
 	public void addSuperClass(OWLClass p) {
-		superclasses.add(p);
+		
+		if(!superclasses.contains(p))
+			superclasses.add(p);
 	}
-	
-	
+
+
 	/**
 	 * Get the superclasses of this class
 	 * @return
@@ -160,10 +169,10 @@ public class OWLClass extends OWLThing {
 	public Vector<OWLClass> getSuperClasses() {
 		return superclasses;
 	}
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * Set the someValuesFrom restrictions
 	 * 
@@ -172,8 +181,8 @@ public class OWLClass extends OWLThing {
 	public void setSomeValuesFrom(Map<String, Vector<String>> someValuesFrom) {
 		this.some_values_from.putAll(someValuesFrom);
 	}
-	
-	
+
+
 	/**
 	 * Add a someValuesFrom  definition
 	 * 
@@ -181,14 +190,14 @@ public class OWLClass extends OWLThing {
 	 * @param classdef Class definition for restriction
 	 */
 	public void addSomeValuesFrom(String prop, String classdef) {
-		
+
 		if(!some_values_from.containsKey(prop)) {
 			some_values_from.put(prop, new Vector<String>());
 		}
 		some_values_from.get(prop).add(classdef);
 	}
-	
-	
+
+
 	/**
 	 * Get the someValuesFrom definitions of this class
 	 * @return someValuesFrom definitions
@@ -196,10 +205,10 @@ public class OWLClass extends OWLThing {
 	public Map<String, Vector<String>> getSomeValuesFrom() {
 		return some_values_from;
 	}
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * Set the allValuesFrom restrictions
 	 * 
@@ -208,8 +217,8 @@ public class OWLClass extends OWLThing {
 	public void setAllValuesFrom(Map<String, Vector<String>> allValuesFrom) {
 		this.all_values_from.putAll(allValuesFrom);
 	}
-	
-	
+
+
 	/**
 	 * Add a allValuesFrom  definition
 	 * 
@@ -217,14 +226,14 @@ public class OWLClass extends OWLThing {
 	 * @param classdef Class definition for restriction
 	 */
 	public void addAllValuesFrom(String prop, String classdef) {
-		
+
 		if(!all_values_from.containsKey(prop)) {
 			all_values_from.put(prop, new Vector<String>());
 		}
 		all_values_from.get(prop).add(classdef);
 	}
-	
-	
+
+
 	/**
 	 * Get the allValuesFrom definitions of this class
 	 * 
@@ -233,10 +242,10 @@ public class OWLClass extends OWLThing {
 	public Map<String, Vector<String>> getAllValuesFrom() {
 		return all_values_from;
 	}
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * Set the hasValue restrictions
 	 * 
@@ -245,8 +254,8 @@ public class OWLClass extends OWLThing {
 	public void setHasValue(Map<String, Vector<String>> hasValue) {
 		this.has_value.putAll(hasValue);
 	}
-	
-	
+
+
 	/**
 	 * Add a hasValue  definition
 	 * 
@@ -254,14 +263,14 @@ public class OWLClass extends OWLThing {
 	 * @param value Individuals or values to be used for the restriction
 	 */
 	public void addHasValue(String prop, String value) {
-		
+
 		if(!has_value.containsKey(prop)) {
 			has_value.put(prop, new Vector<String>());
 		}
 		has_value.get(prop).add(value);
 	}
-	
-	
+
+
 	/**
 	 * Get the hasValue definitions of this class
 	 * @return hasValue definitions
@@ -269,6 +278,112 @@ public class OWLClass extends OWLThing {
 	public Map<String, Vector<String>> getHasValue() {
 		return has_value;
 	}
-	
-	
+
+
+
+	/**
+	 * Recursively read all properties of an OWL class into its internal data structures.
+	 */
+	public void readFromProlog() {
+
+		if(isReadFromProlog())
+			return;
+		
+		// Read the action's label if an rdfs:label is set (assuming IRI has been set during initialization) 
+		try {
+			HashMap<String, Vector<String>> qLabel = PrologInterface.executeQuery("rdf_has('"+iri+"',rdfs:label,L),util:strip_literal_type(L,Label)");
+
+			if(qLabel.get("Label")!=null && qLabel.get("Label").size()>0) {
+				this.label = OWLThing.removeSingleQuotes(qLabel.get("Label").get(0));
+			}			
+		} catch (Exception e) { } // fail silently if no label is set
+
+
+		// Read superclasses 
+		HashMap<String, Vector<String>> qSuper = PrologInterface.executeQuery("owl_direct_subclass_of('" + iri + "', Super)");
+
+		if(qSuper != null) {
+
+			for(String sup : qSuper.get("Super")) {
+
+				if (sup.contains("__Description"))
+					continue;
+
+				OWLClass superclass = OWLClass.getOWLClass(OWLThing.removeSingleQuotes(sup));
+				
+				if(!superclasses.contains(superclass))
+					superclasses.add(superclass);
+			}
+		}
+
+		// Recursively read subclasses 
+		HashMap<String, Vector<String>> subclasses = PrologInterface.executeQuery(
+				"owl_direct_subclass_of(Sub, '" + iri + "')");
+
+		if(subclasses!=null && subclasses.get("Sub") != null) {
+
+			this.subclasses.clear();
+
+			for(String sub_iri : subclasses.get("Sub")) {
+
+				OWLClass sub = OWLClass.getOWLClass(OWLThing.removeSingleQuotes(sub_iri));
+				sub.readFromProlog();
+
+				this.addSubclass(sub);
+				sub.addSuperClass(this);
+			}
+		}
+
+		// Read class properties
+		try {
+
+			HashMap<String, Vector<String>> qProp = 
+				PrologInterface.executeQuery("((class_properties_some('"+iri+"', Prop, V), Type='some'); " +
+						"(class_properties_all('"+iri+"', Prop, V), Type='all'); " +
+						"(class_properties_value('"+iri+"', Prop, V), Type='value')), " +
+				"util:strip_literal_type(V,Val)");
+
+			if(qProp != null) {
+
+				Vector<String> prop = qProp.get("Prop");
+				Vector<String> val  = qProp.get("Val");
+				Vector<String> type = qProp.get("Type");
+
+
+				// Make sure each property is added only once 
+				// (properties may be present two or more times in the result set)
+
+				HashSet<String> alreadyAdded = new HashSet<String>();
+				if(prop != null && val != null)
+
+					for(int i=0;i<prop.size() && i<val.size();i++) {
+
+						if (alreadyAdded.contains(prop.get(i)+val.get(i)))
+							continue;
+
+						alreadyAdded.add(prop.get(i)+val.get(i));
+						String p = OWLThing.removeSingleQuotes(prop.get(i));
+						String v = OWLThing.removeSingleQuotes(val.get(i));
+
+						if(type.get(i).contains("some")) {
+							this.addSomeValuesFrom(p, v);
+
+						} else if(type.get(i).contains("all")) {
+							this.addAllValuesFrom(p, v);
+
+						} else if(type.get(i).contains("value")) {
+							this.addHasValue(p, v);
+						}
+					}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+
+		this.setReadFromProlog(true);
+	}
+
+
 }
