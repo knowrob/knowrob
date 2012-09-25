@@ -131,10 +131,7 @@ public class Action extends OWLClass {
 	public Map<String, Vector<String>> getProperties() {
 		
 		Map<String, Vector<String>> res = new LinkedHashMap<String, Vector<String>>();
-		
-		res.putAll(some_values_from);
-		res.putAll(has_value);
-		
+
 		// also add superclasses
 		if(getSuperClasses()!=null && getSuperClasses().size() > 0) {
 			res.put("type", new Vector<String>());
@@ -142,6 +139,9 @@ public class Action extends OWLClass {
 				res.get("type").add(cl.getIRI());
 			}
 		}
+		
+		res.putAll(some_values_from);
+		res.putAll(has_value);
 		
 		return res;
 	}
@@ -156,7 +156,7 @@ public class Action extends OWLClass {
 	public List<String> getProperty(String key) {
 		
 		if(some_values_from.containsKey(key)){
-			return some_values_from.get(key);	
+			return some_values_from.get(key);
 		} else if(has_value.containsKey(key)) {
 			return has_value.get(key);
 		} else if (key.equals("type")){

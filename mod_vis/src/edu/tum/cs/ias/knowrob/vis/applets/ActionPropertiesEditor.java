@@ -308,9 +308,15 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 
 			if(act.getHasValue().containsKey(prop)) {
 				act.getHasValue().get(prop).remove(val);
+				
+				if(act.getHasValue().get(prop).isEmpty())
+					act.getHasValue().remove(prop);
 			}
 			if(act.getSomeValuesFrom().containsKey(prop)) {
 				act.getSomeValuesFrom().get(prop).remove(val);
+
+				if(act.getSomeValuesFrom().get(prop).isEmpty())
+					act.getSomeValuesFrom().remove(prop);
 			}
 			act.getDrawInfo().notifyModified();
 			
