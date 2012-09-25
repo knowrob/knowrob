@@ -10,9 +10,26 @@ public class OWLThing implements Comparable<OWLThing> {
 	 */
 	protected static Hashtable<String, OWLThing> identifiers = new Hashtable<String, OWLThing>();
 	
-	
+	/**
+	 * Unique identifier of this Thing
+	 */
 	protected String iri;
+	
+	/**
+	 * Natural-language label
+	 */
 	protected String label;
+	
+	/**
+	 * Flag indicating if the properties of this Thing have been read from Prolog 
+	 */
+	protected boolean readFromProlog = false;
+
+
+	/**
+	 * Flag indicating if local modifications need to be synchronized with Prolog
+	 */
+	protected boolean saveToProlog = false;
 	
 	
 	
@@ -168,11 +185,14 @@ public class OWLThing implements Comparable<OWLThing> {
 	 * @param b {@link OWLThing} to compare to
 	 * @return true if the IRIs are equal
 	 */
-	public boolean equals(OWLThing b) {
-		if(this.iri.equals(b.getIRI()))
-			return true;
-		else
-			return false;
+	public boolean equals(Object b) {
+		if (b instanceof OWLThing) {
+			if(this.iri.equals(((OWLThing) b).getIRI()))
+				return true;
+			else
+				return false;
+		}
+		return false;
 	}
 	
 	/**
@@ -259,6 +279,26 @@ public class OWLThing implements Comparable<OWLThing> {
             else return after_slash;
         }
         else return iri;
+	}
+	
+	
+	public boolean isReadFromProlog() {
+		return readFromProlog;
+	}
+
+
+	public void setReadFromProlog(boolean readFromProlog) {
+		this.readFromProlog = readFromProlog;
+	}
+
+
+	public boolean isSaveToProlog() {
+		return saveToProlog;
+	}
+
+
+	public void setSaveToProlog(boolean saveToProlog) {
+		this.saveToProlog = saveToProlog;
 	}
 	
 }
