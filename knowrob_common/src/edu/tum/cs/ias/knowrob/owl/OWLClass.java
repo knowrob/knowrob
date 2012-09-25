@@ -170,7 +170,6 @@ public class OWLClass extends OWLThing {
 	 * @param someValuesFrom Map with the defined restrictions
 	 */
 	public void setSomeValuesFrom(Map<String, Vector<String>> someValuesFrom) {
-		this.some_values_from.clear();
 		this.some_values_from.putAll(someValuesFrom);
 	}
 	
@@ -207,7 +206,6 @@ public class OWLClass extends OWLThing {
 	 * @param allValuesFrom Map with the defined restrictions
 	 */
 	public void setAllValuesFrom(Map<String, Vector<String>> allValuesFrom) {
-		this.all_values_from.clear();
 		this.all_values_from.putAll(allValuesFrom);
 	}
 	
@@ -245,7 +243,6 @@ public class OWLClass extends OWLThing {
 	 * @param hasValue Map with the defined restrictions
 	 */
 	public void setHasValue(Map<String, Vector<String>> hasValue) {
-		this.has_value.clear();
 		this.has_value.putAll(hasValue);
 	}
 	
