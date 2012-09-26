@@ -113,13 +113,6 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 		act2button = new LinkedHashMap<String, MultiListButton>();
 		
 		
-		// TODO make base class configurable
-		
-		OWLClass base = OWLClass.getOWLClass("http://ias.cs.tum.edu/kb/knowrob.owl#PurposefulAction");
-		base.readFromProlog();
-		owl_classes.addAll(base.getSubclasses());
-		
-		initControlP5();
 	}
 
 
@@ -130,10 +123,25 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 	public void draw() {
 
 		background(50);
-		controlP5.draw();
+
+		if(controlP5!=null) {
+			synchronized(controlP5) {
+				controlP5.draw();
+			}
+		}
 	}
 
 
+
+	public void setBaseClass(String base) {
+				
+		OWLClass basecl = OWLClass.getOWLClass(base);
+		basecl.readFromProlog();
+		owl_classes.addAll(basecl.getSubclasses());
+		
+		initControlP5();
+		
+	}
 
 	
 	// // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // 
@@ -328,13 +336,17 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 		controlP5 = new ControlP5(this);
 		GreyTheme.applyStyle(controlP5);
 		
-		search = controlP5.addTextfield("search", 20, 20, 200, 20).setAutoClear(false).setFocus(true);
-		class_listbox = GreyTheme.applyStyle(controlP5.addMultiList("class list", 20, 60, 80, 17));
 
-		float textwidth = textWidth("CheckingWhetherConditionObtains");
-		class_listbox.setWidth((int)textwidth + 10);
-		
-		createListButtons(owl_classes, class_listbox, 0, 0);
+		synchronized(controlP5) {
+			
+			search = controlP5.addTextfield("search", 20, 20, 200, 20).setAutoClear(false).setFocus(true);
+			class_listbox = GreyTheme.applyStyle(controlP5.addMultiList("class list", 20, 60, 80, 17));
+	
+			float textwidth = textWidth("CheckingWhetherConditionObtains");
+			class_listbox.setWidth((int)textwidth + 10);
+			
+			createListButtons(owl_classes, class_listbox, 0, 0);
+		}
 	}
 	
 	
@@ -406,6 +418,7 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 	public static void main(String args[]) {
 		PApplet.main(new String[] { "edu.tum.cs.ias.knowrob.vis.applets.OwlClassSelectorApplet" });
 	}
+
 
 
 

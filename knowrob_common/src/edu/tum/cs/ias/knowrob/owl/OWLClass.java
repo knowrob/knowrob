@@ -7,8 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Vector;
 
-import org.semanticweb.owlapi.util.OWLClassLiteralCollector;
-
 import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
 
 

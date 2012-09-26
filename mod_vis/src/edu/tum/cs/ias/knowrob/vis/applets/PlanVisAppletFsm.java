@@ -19,7 +19,6 @@ import javax.vecmath.Vector2f;
 import controlP5.ControlEvent;
 import controlP5.ControlP5;
 
-import edu.tum.cs.ias.knowrob.owl.OWLClass;
 import edu.tum.cs.ias.knowrob.owl.OWLIndividual;
 import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
 import edu.tum.cs.ias.knowrob.vis.actions.Action;
@@ -177,22 +176,7 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	 * @param identifier Something like 'http://www.roboearth.org/kb/serve_drink.owl#ServeADrink'
 	 */
 	public void loadPrologPlan(String identifier) {
-		
-		// test equality 
-		
-		Action test_a = Action.getAction("http://ias.cs.tum.edu/kb/knowrob.owl#testAction");
-		test_a.addSuperClass(OWLClass.getOWLClass("http://ias.cs.tum.edu/kb/knowrob.owl#Action"));
-		
-		
-		OWLClass test_b = OWLClass.getOWLClass("http://ias.cs.tum.edu/kb/knowrob.owl#testAction");
-		test_b.addSuperClass(OWLClass.getOWLClass("http://ias.cs.tum.edu/kb/knowrob.owl#ActionOnObject"));
-		test_b.addSuperClass(Action.getAction("http://ias.cs.tum.edu/kb/knowrob.owl#Action"));
-		
-		
-		
-		System.out.println(test_b.getSuperClasses());
-		
-		
+				
 		Action a = Action.getAction(identifier);
 		a.readFromProlog();
 		
@@ -623,7 +607,7 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 					if (a.getDrawInfo().checkHover(e.getX(), e.getY(), null)!= null) {
 
 						OWLIndividual t_ind = OWLIndividual.getOWLIndividualOfClass("http://ias.cs.tum.edu/kb/knowrob.owl#Transition");
-						currTask.addTransition(ActionTransition.getActionTransition(t_ind.getIRI(), newTransitionFromAction, a, "OK"));
+						newTransitionFromAction.addTransition(ActionTransition.getActionTransition(t_ind.getIRI(), newTransitionFromAction, a, "OK"));
 						redraw();
 
 						// clicked nowhere special, reset highlight

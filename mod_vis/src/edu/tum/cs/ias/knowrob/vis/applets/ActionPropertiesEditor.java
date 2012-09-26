@@ -411,7 +411,7 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 
 			// open class selection dialog	
 			if(ev.getController().getName().equals("class") || ev.getController().getName().equals("select class")) {
-				OWLClassSelect f = new OWLClassSelect();
+				OWLClassSelect f = new OWLClassSelect("http://ias.cs.tum.edu/kb/knowrob.owl#PurposefulAction");
 				f.setClassSelectedCallback(this); 
 			}
 
@@ -588,12 +588,13 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 	public class OWLClassSelect extends Frame {
 		private static final long serialVersionUID = -7174804883131977878L;
 
-		public OWLClassSelect() {
+		public OWLClassSelect(String baseclass) {
 	        setBounds(100,100,800,600);
 	        class_selector = new OwlClassSelectorApplet();
 	        class_selector.frame = this;
 	        add(class_selector);
 	        class_selector.init();
+	        class_selector.setBaseClass(baseclass);
 			this.setVisible(true);
 	    }
 
