@@ -230,17 +230,18 @@ read_map_info(Map, MapInfosSorted) :-
 read_action_info(Action, ActionInfosSorted) :-
 
   % recursively read all sub-actions of the action
-  findall(SubEvent, plan_subevents_recursive(Action, SubEvent), SubEvents),
+  findall(SubAction, plan_subevents_recursive(Action, SubAction), SubActions),
+  append([Action], SubActions, Actions),
 
   % read all properties for each of them
-  findall(Value, (member(Act, SubEvents), class_properties(Act, _, Value)), ActionProperties),
+  findall(Value, (member(Act, Actions), class_properties(Act, _, Value)), ActionProperties),
 
   % read everything related to these things by an ObjectProperty
   findall(PropVal, (member(ActProp, ActionProperties),
                     owl_has(ActProp, P, PropVal),
                     rdfs_individual_of(P, 'http://www.w3.org/2002/07/owl#ObjectProperty')), ActionPropProperties),
 
-  append([SubEvents, ActionProperties, ActionPropProperties], ActionInfos),
+  append([Actions, ActionProperties, ActionPropProperties], ActionInfos),
   flatten(ActionInfos, ActionInfosFlat),
   sort(ActionInfosFlat, ActionInfosSorted).
 
