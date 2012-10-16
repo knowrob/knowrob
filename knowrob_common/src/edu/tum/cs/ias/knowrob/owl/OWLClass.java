@@ -406,6 +406,69 @@ public class OWLClass extends OWLThing {
 		// write label
 		PrologInterface.executeQuery("rdf_assert('" + iri + "', rdfs:label, literal(type('http://www.w3.org/2001/XMLSchema#string','"+label+"')))"); 
 
+		
+		// Read class properties and check for removed ones
+		HashMap<String, Vector<String>> qProp = 
+			PrologInterface.executeQuery("((class_properties_some('"+iri+"', Prop, V), Type='some'); " +
+					"(class_properties_all('"+iri+"', Prop, V), Type='all'); " +
+					"(class_properties_value('"+iri+"', Prop, V), Type='value')), " +
+			"util:strip_literal_type(V,Val)");
+
+		if(qProp != null) {
+
+			Vector<String> prop = qProp.get("Prop");
+			Vector<String> val  = qProp.get("Val");
+			Vector<String> type = qProp.get("Type");
+
+			if(prop != null && val != null) {
+				
+				for(int i=0;i<prop.size() && i<val.size();i++) {
+
+					String p = OWLThing.removeSingleQuotes(prop.get(i));
+					String v = OWLThing.removeSingleQuotes(val.get(i));
+
+					if(type.get(i).contains("some")) {
+
+						if((!some_values_from.containsKey(p)) || (!some_values_from.get(p).contains(v))) {
+
+							// remove p,v pair
+							PrologInterface.executeQuery("findall(R, (rdfs_subclass_of('"+iri+"', R), " +
+									"rdf_has(R, 'http://www.w3.org/2002/07/owl#onProperty','"+p+"'), " +
+									"rdf_has(R, 'http://www.w3.org/2002/07/owl#someValuesFrom', '"+v+"')), Rs), " +
+									"member(Restr, Rs), rdf_retractall(Restr, _, _), " +
+									"rdf_retractall(_, 'http://www.w3.org/2000/01/rdf-schema#subClassOf', Restr)");
+						}
+
+					} else if(type.get(i).contains("all")) {
+
+						if((!all_values_from.containsKey(p)) || (!all_values_from.get(p).contains(v))) {
+
+							// remove p,v pair
+							PrologInterface.executeQuery("findall(R, (rdfs_subclass_of('"+iri+"', R), " +
+									"rdf_has(R, 'http://www.w3.org/2002/07/owl#onProperty','"+p+"'), " +
+									"rdf_has(R, 'http://www.w3.org/2002/07/owl#allValuesFrom', '"+v+"')), Rs), " +
+									"member(Restr, Rs), rdf_retractall(Restr, _, _), " +
+									"rdf_retractall(_, 'http://www.w3.org/2000/01/rdf-schema#subClassOf', Restr)");
+						}
+
+					} else if(type.get(i).contains("value")) {
+
+						if((!has_value.containsKey(p)) || (!has_value.get(p).contains(v))) {
+
+							// remove p,v pair
+							PrologInterface.executeQuery("findall(R, (rdfs_subclass_of('"+iri+"', R), " +
+									"rdf_has(R, 'http://www.w3.org/2002/07/owl#onProperty','"+p+"'), " +
+									"rdf_has(R, 'http://www.w3.org/2002/07/owl#hasValue', '"+v+"')), Rs), " +
+									"member(Restr, Rs), rdf_retractall(Restr, _, _), " +
+									"rdf_retractall(_, 'http://www.w3.org/2000/01/rdf-schema#subClassOf', Restr)");
+						}
+					}
+				}
+			}
+		}
+		
+		
+		
 		// write class properties by creating appropriate restrictions
 		for(String prop : has_value.keySet()) {
 			for(String value : has_value.get(prop)) {

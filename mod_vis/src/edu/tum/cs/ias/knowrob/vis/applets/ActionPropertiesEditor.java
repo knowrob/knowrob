@@ -312,7 +312,7 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 			String val = prop_val[1];
 
 			if(act.getHasValue().containsKey(prop)) {
-				act.getHasValue().get(prop).remove(val);
+				act.getHasValue().get(prop).remove(val);  // TODO: we should directly propagate the change to Prolog here...
 				
 				if(act.getHasValue().get(prop).isEmpty())
 					act.getHasValue().remove(prop);
