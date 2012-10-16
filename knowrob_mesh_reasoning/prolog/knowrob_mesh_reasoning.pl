@@ -91,8 +91,35 @@
             annotation_plane_longside(r,?),
             annotation_plane_shortside(r,?),
             annotation_container_direction(r,?),
-            annotation_container_volume(r,?).
+            annotation_container_volume(r,?),
+            object_main_cone(r,r),
+            object_main_axis(r,?).
 
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% predicates for paper eval:
+
+object_main_cone(Inst, MainCone) :-
+
+  % read all cone annotations
+  findall(P, (rdf_has(Inst, knowrob:properPhysicalParts, P), 
+              owl_individual_of(P, knowrob:'Cone')), Parts), 
+
+  % read volume for each of them
+  findall(V-P, (member(P, Parts), 
+                rdf_triple(knowrob:volumeOfObject, P, Vlit), 
+                strip_literal_type(Vlit, V)), PartVol), 
+
+  % sort list by volume and pick last element (largest volume)
+  keysort(PartVol, PartVolSorted), 
+  last(PartVolSorted, _-MainCone).
+
+object_main_axis(Obj, [X,Y,Z]) :-
+  object_main_cone(Obj, C),
+  rdf_triple(knowrob:longitudinalDirection, C, Dir),
+  rdf_has(Dir, knowrob:vectorX, literal(type(xsd:'float',X))), 
+  rdf_has(Dir, knowrob:vectorY, literal(type(xsd:'float',Y))),
+  rdf_has(Dir, knowrob:vectorZ, literal(type(xsd:'float',Z))).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -318,7 +345,7 @@ mesh_find_handle(MeshAnnotator, HandleAnnotations, MinRadius, MaxRadius) :-
 mesh_annotator_for_obj(Obj, MeshAnnotator) :-
   ((mesh_annotator_java_obj(Obj, MeshAnnotator),!) ;
    (get_model_path(Obj, Path),
-    mesh_annotator_init(MeshAnnotator, @(true)),
+    mesh_annotator_init(MeshAnnotator, @(false)),
     jpl_call(MeshAnnotator, 'analyseByPath', [Path], _),
     assert(mesh_annotator_java_obj(Obj, MeshAnnotator)))).
 
@@ -340,10 +367,12 @@ comp_physical_parts(Obj, PartInst) :-
   member(Annotation, AnnotationsList),
 
   % TODO: transform into global coordinates!!
-
-  annotation_pose_list(Annotation, PoseList),
   annotation_to_knowrob_class(Type, KnowRobClass),
-  create_object_perception(KnowRobClass, PoseList, ['MeshSegmentation'], PartInst),
+
+  % TODO workaround: container does not have a pose yet
+  (annotation_pose_list(Annotation, PoseList) -> (
+   create_object_perception(KnowRobClass, PoseList, ['MeshSegmentation'], PartInst)) ; 
+   rdf_instance_from_class(KnowRobClass, PartInst)),
 
   % assert sub-parts
   rdf_assert(Obj, knowrob:properPhysicalParts, PartInst),
@@ -528,14 +557,16 @@ annotation_supporting_plane(PartInst, SuppPlaneClass) :-
 annotation_handle(PartInst, HandleClass) :-
 
   var(PartInst),
-  owl_subclass_of(HandleClass, 'http://ias.cs.tum.edu/kb/knowrob.owl#Handle'),
+  once(owl_subclass_of(HandleClass, 'http://ias.cs.tum.edu/kb/knowrob.owl#Handle')),
 
   % find mesh annotator stored for the parent object of this part
-  (owl_has(Obj, knowrob:properPhysicalParts, PartInst),
-   mesh_annotator_java_obj(Obj, MeshAnnotator)),
+  once((owl_has(Obj, knowrob:properPhysicalParts, PartInst),
+   mesh_annotator_java_obj(Obj, MeshAnnotator))),
 
+  % this will likely return many candidates if we only sort, but do not filter candidates
   mesh_find_handle(MeshAnnotator, HandleAnnotations),
-  member(PartInst, HandleAnnotations). % this will likely return true if we only sort, but do not filter candidates
+  member(HandleAnn, HandleAnnotations),
+  mesh_annotation_java_obj(PartInst, HandleAnn). % TODO: find respective cone instance and assing class
 
 
 
