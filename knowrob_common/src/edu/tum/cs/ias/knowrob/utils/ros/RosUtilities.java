@@ -20,17 +20,29 @@ public class RosUtilities {
     public static String rospackFind(String pkg) {
 
         String path = null;
-        try
-        {
+        try {
+        	
+       	
             Process p = Runtime.getRuntime().exec("rospack find " + pkg);
-            p.waitFor();
-            BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            
+            if(p.waitFor()==127) {
+            //	throw new RuntimeException("External program 'rospack' not found");
+            }
 
-            if ((path = br.readLine()) != null){
+            BufferedReader out = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            BufferedReader err = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+
+            if ((path = out.readLine()) != null){
                 ;//System.out.println("Package: " + pkg + ", Path: " + path);                    
-            } 
-            else
+            } else {
+            	
+            	// print error output
+            	String l = null;
+            	while ( (l = err.readLine()) != null)
+                    System.out.println(l);
+            	
                 ;//System.out.println("Package: " + pkg + ", Error: package not found!");
+            }
         }
         catch (Exception e)
         {
