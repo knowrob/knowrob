@@ -14,6 +14,7 @@ import java.util.Vector;
 import edu.tum.cs.ias.knowrob.owl.OWLClass;
 import edu.tum.cs.ias.knowrob.owl.ObjectInstance;
 import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
+import edu.tum.cs.ias.knowrob.prolog.PrologQueryUtils;
 
 
 public class Action extends OWLClass {
@@ -27,8 +28,6 @@ public class Action extends OWLClass {
 	 * Transitions from this action
 	 */
 	private ActionTransitions transitions;
-	
-	
 	
 	/**
 	 * Parent action if this action is in a subsequence
@@ -218,7 +217,10 @@ public class Action extends OWLClass {
 	 * @param sub_action action to add
 	 */
 	public void addSubAction(Action sub_action) {
-		this.sub_actions.add(sub_action);
+		
+		synchronized(sub_actions) {
+			this.sub_actions.add(sub_action);
+		}
 		sub_action.parentOfSequence = this;
 		drawInfo.notifyModified();
 	}
@@ -230,7 +232,9 @@ public class Action extends OWLClass {
 	 */
 	public void addSubActions(LinkedList<Action> sub_actions) {
 		
-		this.sub_actions.addAll(sub_actions);
+		synchronized(sub_actions) {
+			this.sub_actions.addAll(sub_actions);
+		}
 		
 		for (Action s : sub_actions) {
 			s.parentOfSequence = this;
@@ -346,6 +350,9 @@ public class Action extends OWLClass {
 		// read generic OWLClass properties 
 		super.readFromProlog();
 
+		// remove subAction and stateTransition properties from the generic property maps
+		some_values_from.remove("http://ias.cs.tum.edu/kb/knowrob.owl#subAction");
+		has_value.remove("http://ias.cs.tum.edu/kb/knowrob.owl#stateTransition");
 		
 		// post-process action-specific properties
 		
@@ -415,6 +422,45 @@ public class Action extends OWLClass {
 			e.printStackTrace();
 		}
 
+		// set flag that this action has been read
 		this.setReadFromProlog(true);
+	}
+	
+		
+
+	/**
+	 * Recursively write all properties of this action and all its sub-actions to Prolog.
+	 */
+	public void writeToProlog() {
+
+		if(this.needsSaveToProlog()) {
+			
+			// write all OWLClass-generic information to Prolog
+			// (also sets flag that this action has been written)
+			super.writeToProlog();
+
+			// remove old transitions
+			PrologQueryUtils.clearActionStateTransitions(iri);
+
+			// write transitions defined for sub-actions of this action
+			for(Action sub : sub_actions) {
+				for(ActionTransition t : sub.getTransitions()) {
+
+					// write transitions as restrictions on this class
+					String trans = PrologQueryUtils.createStateTransition(t.from.getIRI(), t.to.getIRI(), t.getCause());
+					PrologQueryUtils.createRestriction(iri, "http://ias.cs.tum.edu/kb/knowrob.owl#stateTransition", trans, "http://www.w3.org/2002/07/owl#hasValue", "knowrob_java");
+				}
+			}
+			
+			this.setSaveToProlog(false);
+		}
+		
+		// iterate over sub-actions to see if they need to be written
+		for(Action sub : sub_actions) {
+			sub.writeToProlog();
+
+			// assert subAction relation
+			PrologQueryUtils.createRestriction(iri, "http://ias.cs.tum.edu/kb/knowrob.owl#subAction", sub.getIRI(), "http://www.w3.org/2002/07/owl#someValuesFrom", "knowrob_java");
+		}
 	}
 }

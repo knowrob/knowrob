@@ -11,11 +11,9 @@ import javax.swing.JFrame;
 
 import controlP5.ControlP5;
 import controlP5.ControlWindow;
-import controlP5.RadioButton;
 import controlP5.Textarea;
 import controlP5.Textfield;
 import controlP5.ControlEvent;
-import controlP5.Textlabel;
 import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
 
 import processing.core.*;
@@ -424,47 +422,50 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 			  }
 		}
 	  	
-	  private void initControlP5() {
-	  	
-	  	controlP5 = new ControlP5(KVObject);
-	      controlWindow = controlP5.addControlWindow("controlP5window",660,230,400,350);
-	      controlWindow.setBackground(color(40));
-	      controlWindow.setUpdateMode(ControlWindow.NORMAL);
-	      controlWindow.frameRate(5);
-
-	      Textlabel act_label = controlP5.addTextlabel("act_label","Abstraction Level",80,40);
-//	      act_label.setColorValueLabel(0xffffffff);
-	      act_label.setFont(3);
-	      act_label.moveTo(controlWindow);
-	      
-	      RadioButton act_radio = controlP5.addRadioButton("act_radio", 80, 60);
-	      act_radio.addItem("activity",3);
-	      act_radio.addItem("2",2);
-	      act_radio.addItem("1",1);
-	      act_radio.addItem("0",0);
-	      act_radio.moveTo(controlWindow);
-	      act_radio.setId(100);
-	      
-	      Textlabel color_label = controlP5.addTextlabel("color_label","Colors",220,40);
-//	      color_label.setColorValueLabel(0xffffffff);
-	      color_label.setFont(3);
-	      color_label.moveTo(controlWindow);
-	      
-	      RadioButton color_radio = controlP5.addRadioButton("color_radio",220,60);
-	      color_radio.addItem("by action type",0);
-	      color_radio.addItem("by object",1);
-	      color_radio.addItem("missing in activity",2);
-	      color_radio.moveTo(controlWindow);
-	      color_radio.setId(101);
-	      
-	      controlP5.addTextfield("CurrentAction",80,120,200,20).moveTo(controlWindow);
-	      Textarea text = controlP5.addTextarea("CurrentAttributes","", 80,160,200,130);
-	      text.setColorBackground(0xFF000000);
-	      text.moveTo(controlWindow);
-	      
-	      controlWindow.hide();
-	      
-	  }
+//	  	
+// initialize control window for showing action/object properties (currently unused)
+//	  	
+//	  private void initControlP5() {
+//	  	
+//	  	controlP5 = new ControlP5(KVObject);
+//	      controlWindow = controlP5.addControlWindow("controlP5window",660,230,400,350);
+//	      controlWindow.setBackground(color(40));
+//	      controlWindow.setUpdateMode(ControlWindow.NORMAL);
+//	      controlWindow.frameRate(5);
+//
+//	      Textlabel act_label = controlP5.addTextlabel("act_label","Abstraction Level",80,40);
+////	      act_label.setColorValueLabel(0xffffffff);
+//	      act_label.setFont(3);
+//	      act_label.moveTo(controlWindow);
+//	      
+//	      RadioButton act_radio = controlP5.addRadioButton("act_radio", 80, 60);
+//	      act_radio.addItem("activity",3);
+//	      act_radio.addItem("2",2);
+//	      act_radio.addItem("1",1);
+//	      act_radio.addItem("0",0);
+//	      act_radio.moveTo(controlWindow);
+//	      act_radio.setId(100);
+//	      
+//	      Textlabel color_label = controlP5.addTextlabel("color_label","Colors",220,40);
+////	      color_label.setColorValueLabel(0xffffffff);
+//	      color_label.setFont(3);
+//	      color_label.moveTo(controlWindow);
+//	      
+//	      RadioButton color_radio = controlP5.addRadioButton("color_radio",220,60);
+//	      color_radio.addItem("by action type",0);
+//	      color_radio.addItem("by object",1);
+//	      color_radio.addItem("missing in activity",2);
+//	      color_radio.moveTo(controlWindow);
+//	      color_radio.setId(101);
+//	      
+//	      controlP5.addTextfield("CurrentAction",80,120,200,20).moveTo(controlWindow);
+//	      Textarea text = controlP5.addTextarea("CurrentAttributes","", 80,160,200,130);
+//	      text.setColorBackground(0xFF000000);
+//	      text.moveTo(controlWindow);
+//	      
+//	      controlWindow.hide();
+//	      
+//	  }
 	  
 		public void controlEvent(ControlEvent e) {
 				

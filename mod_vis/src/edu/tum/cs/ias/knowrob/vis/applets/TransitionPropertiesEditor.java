@@ -24,8 +24,6 @@ import edu.tum.cs.ias.knowrob.vis.themes.GreyTheme;
  */
 public class TransitionPropertiesEditor {
 
-	private static final long serialVersionUID = 7695328948788620463L;
-
 	public ControlP5 controlP5;
 	ControlWindow controlWindow;
 	DialogListener dialogListener;

@@ -1,6 +1,5 @@
 package edu.tum.cs.ias.knowrob.vis.themes;
 
-import processing.core.PApplet;
 import processing.core.PFont;
 import controlP5.Button;
 import controlP5.ControlFont;

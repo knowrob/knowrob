@@ -292,7 +292,7 @@ public class OWLThing implements Comparable<OWLThing> {
 	}
 
 
-	public boolean isSaveToProlog() {
+	public boolean needsSaveToProlog() {
 		return saveToProlog;
 	}
 

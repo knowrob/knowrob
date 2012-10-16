@@ -23,10 +23,15 @@ public class PlanVisTest {
 		
 		PlanVisAppletFsm applet = new PlanVisAppletFsm();
 		PrologInterface.initJPLProlog("re_unr_interface");
+//		PFont dejavuFont = applet.createFont("DejaVu Sans",13);
+//	    applet.textFont(dejavuFont); // FIXME: problem with textFont, font seems OK, but the method throws a NullPointerException
 		applet.loadPrologPlan("http://www.roboearth.org/kb/test-recipe-greeting-sm.owl#UnrGreetingTest");
 		
 		applet.init();
 		applet.frame = f;
+
+	    applet.drawActionsTreeLayout();
+		applet.redraw();
 		
 		f.add(applet);
 		f.setTitle("PlanVis");

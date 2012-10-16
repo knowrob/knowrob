@@ -33,7 +33,6 @@ public class PrologInterface {
     			args.add( "-nosignals" );
 
     			String rosprolog = RosUtilities.rospackFind("rosprolog");
-    			System.err.println(rosprolog+"/prolog/init.pl");
     			jpl.fli.Prolog.set_default_init_args( args.toArray( new String[0] ) );
 
     			// load the appropriate startup file for this context
@@ -57,10 +56,10 @@ public class PrologInterface {
 	 * @return A HashMap<VariableName, ResultsVector>
 	 */
     
-	@SuppressWarnings("unchecked")
 	public static HashMap<String, Vector<String>> executeQuery(String query) {
 		
 		HashMap<String, Vector<String>> result = new HashMap< String, Vector<String> >();
+		@SuppressWarnings("rawtypes")
 		Hashtable[] solutions;
 
 		synchronized(jpl.Query.class) {
@@ -72,13 +71,18 @@ public class PrologInterface {
     		
     		
     		solutions = q.allSolutions();
+    		
+    		if(solutions == null || solutions.length==0) // case: success, but no variable bindings
+    			return result;
+    		
     		for (Object key: solutions[0].keySet()) {
     			result.put(key.toString(), new Vector<String>());
     		}
     		
     		// Build the result
     		for (int i=0; i<solutions.length; i++) {
-    			Hashtable solution = solutions[i];
+    			@SuppressWarnings("rawtypes")
+				Hashtable solution = solutions[i];
     			for (Object key: solution.keySet()) {
     				String keyStr = key.toString();
     				if (!result.containsKey( keyStr )) {

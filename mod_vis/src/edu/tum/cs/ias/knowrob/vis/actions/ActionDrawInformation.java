@@ -294,6 +294,7 @@ public class ActionDrawInformation {
 		action = parent;
 		localPosOffset = new Vector2f();
 		globalPosOffset = new Vector2f();
+		position = new Vector2f();
 	}
 	
 	/**

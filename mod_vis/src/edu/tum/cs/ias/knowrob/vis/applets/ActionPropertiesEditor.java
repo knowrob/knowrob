@@ -427,6 +427,7 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 					// add to action class
 					Action act = Action.getAction(((Textfield) controlP5.getController("identifier")).getText(), null);
 					act.addHasValue(propId2item.get((int)props.getValue()).getName(), ((Textfield) controlP5.getController("value")).getText());
+					act.setSaveToProlog(true);
 					act.getDrawInfo().notifyModified();
 
 					// TODO: somehow distinguish between someValuesfrom and hasValue -> create OWLProperty type and use hasValue for DataProperties?
@@ -456,6 +457,7 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 				
 				String id = ((Textfield) controlP5.getController("identifier")).getText(); // TODO: add label field to the action editor forms
 				Action act = Action.getAction(id, null);
+				act.setSaveToProlog(true);
 
 				OWLClass sup = OWLClass.getOWLClass(((Textfield) controlP5.getController("class")).getText());
 				act.getSuperClasses().clear();

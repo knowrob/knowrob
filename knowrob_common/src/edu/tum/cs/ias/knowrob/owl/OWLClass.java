@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
+import edu.tum.cs.ias.knowrob.prolog.PrologQueryUtils;
 
 
 public class OWLClass extends OWLThing {
@@ -379,9 +380,60 @@ public class OWLClass extends OWLThing {
 			e.printStackTrace();
 		}
 
-
+		// set flag that this class has been read
 		this.setReadFromProlog(true);
 	}
 
 
+	/**
+	 * Write all properties of this class to Prolog.
+	 */
+	public void writeToProlog() {
+
+
+		// check whether classes need to be written to avoid infinite loops
+		if(!this.needsSaveToProlog()) {
+			return;
+		}
+		
+		
+		// set flag that this class has been written 
+		// (in the beginning of this method to avoid problems with infinite 
+		// recursion due to recursive relations)
+		this.setSaveToProlog(false);
+		
+		
+		// write label
+		PrologInterface.executeQuery("rdf_assert('" + iri + "', rdfs:label, literal(type('http://www.w3.org/2001/XMLSchema#string','"+label+"')))"); 
+
+		// write class properties by creating appropriate restrictions
+		for(String prop : has_value.keySet()) {
+			for(String value : has_value.get(prop)) {
+				PrologQueryUtils.createRestriction(iri,prop, value, "http://www.w3.org/2002/07/owl#hasValue", "knowrob_java");
+			}
+		}
+		
+		for(String prop : some_values_from.keySet()) {
+			for(String value : some_values_from.get(prop)) {
+				PrologQueryUtils.createRestriction(iri, prop, value, "http://www.w3.org/2002/07/owl#someValuesFrom", "knowrob_java");
+			}
+		}
+		
+		for(String prop : all_values_from.keySet()) {
+			for(String value : all_values_from.get(prop)) {
+				PrologQueryUtils.createRestriction(iri, prop, value, "http://www.w3.org/2002/07/owl#allValuesFrom", "knowrob_java");
+			}
+		}
+		
+		// write superclass statement
+		for(OWLClass sup : superclasses) {
+			PrologQueryUtils.assertSubClassOf(iri, sup.getIRI());
+		}
+		
+		// write subclasses (by triggering their output method)
+		for(OWLClass sub : subclasses) {
+			sub.writeToProlog();
+		}
+		
+	}
 }
