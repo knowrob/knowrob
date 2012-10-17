@@ -19,15 +19,17 @@ import javax.vecmath.Vector2f;
 
 import controlP5.ControlEvent;
 import controlP5.ControlP5;
+import controlP5.Textfield;
 
 import edu.tum.cs.ias.knowrob.owl.OWLIndividual;
+import edu.tum.cs.ias.knowrob.owl.OWLThing;
 import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
-import edu.tum.cs.ias.knowrob.prolog.PrologQueryUtils;
 import edu.tum.cs.ias.knowrob.vis.actions.Action;
 import edu.tum.cs.ias.knowrob.vis.actions.ActionDrawInformation;
 import edu.tum.cs.ias.knowrob.vis.actions.ActionSelectHistoryInfo;
 import edu.tum.cs.ias.knowrob.vis.actions.ActionTransition;
 import edu.tum.cs.ias.knowrob.vis.actions.ActionTransitions;
+import edu.tum.cs.ias.knowrob.vis.themes.GreyTheme;
 
 import processing.core.PApplet;
 import processing.core.PFont;
@@ -112,12 +114,21 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 
 	
 	public ControlP5 controlP5;
+	
+	private Textfield base_iri = null;
+	private Textfield new_recipe_shortname = null;
+	private Textfield new_recipe_label = null;
+	private Textfield start_action;
+	private Textfield end_action;
 
+	private boolean select_start = false;
+	private boolean select_end = false;
+	
 	
 	@Override
 	public void setup()
 	{
-		size(1600, 600, P2D);
+		size(1200, 600, P2D);
 		
 		addMouseMotionListener(this);
 		addMouseListener(this);
@@ -177,6 +188,18 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 		if (a!= null)
 			setTask(a);
 		
+		// set base URL text field
+		base_iri.setText(a.getIRIPrefix());
+		
+		Vector<String> start = a.getHasValue().get("http://ias.cs.tum.edu/kb/knowrob.owl#taskStartState");
+		if(start!=null && !start.isEmpty()) {
+			start_action.setText(OWLThing.getShortNameOfIRI(start.firstElement()));
+		}
+		
+		Vector<String> end = a.getHasValue().get("http://ias.cs.tum.edu/kb/knowrob.owl#taskEndState");
+		if(end!=null && !end.isEmpty()) {
+			end_action.setText(OWLThing.getShortNameOfIRI(end.firstElement()));
+		}
 	}
 	
 	
@@ -443,14 +466,36 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 		this.frame = findFrame();
 		
 	    controlP5 = new ControlP5(this);
-		controlP5.setColorForeground(color(180))
-		.setColorCaptionLabel(color(240))
-		.setColorBackground(color(80))
-		.setColorActive(color(200));
+	    GreyTheme.applyStyle(controlP5);
+
+
+		GreyTheme.applyStyle(controlP5.addGroup("recipe properties", 900, 20, 230).setBackgroundHeight(200));
+
+		base_iri = GreyTheme.applyStyle(controlP5.addTextfield("base iri", 10, 10, 210, 20).setGroup("recipe properties"));
+		base_iri.setText("http://www.roboearth.org/kb/roboearth.owl#");
+
+		start_action = GreyTheme.applyStyle(controlP5.addTextfield("start action", 10, 55, 160, 20).setGroup("recipe properties"));
+		GreyTheme.applyStyle(controlP5.addButton("select start", 1f, 180, 55, 40, 20).setGroup("recipe properties")).getCaptionLabel().set("select");
 		
-	    controlP5.addButton("add action", 1, 700, 20, 80, 20);
-	    
-	    controlP5.addButton("save to file", 1, 700, 45, 80, 20);
+		end_action = GreyTheme.applyStyle(controlP5.addTextfield("end action", 10, 100, 160, 20).setGroup("recipe properties"));
+		GreyTheme.applyStyle(controlP5.addButton("select end", 2f, 180, 100, 40, 20).setGroup("recipe properties")).getCaptionLabel().set("select");
+		
+		GreyTheme.applyStyle(controlP5.addButton("add new action to recipe", 3f, 10, 160, 125, 20).setGroup("recipe properties"));
+
+
+		
+		
+		GreyTheme.applyStyle(controlP5.addGroup("create new recipe", 900, 250, 230).setBackgroundHeight(120));
+		
+		new_recipe_shortname = GreyTheme.applyStyle(controlP5.addTextfield("shortname", 10, 10, 210, 20).setGroup("create new recipe"));
+		new_recipe_shortname.setText("UniqueIdentifierForRecipe");
+		
+		new_recipe_label = GreyTheme.applyStyle(controlP5.addTextfield("label", 10, 55, 210, 20).setGroup("create new recipe"));
+		new_recipe_label.setText("natural-language label");
+		
+		GreyTheme.applyStyle(controlP5.addButton("create", 46f, 185, 90, 35, 20).setGroup("create new recipe"));
+		
+		
 	}
 	
 	
@@ -610,12 +655,14 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 				}
 			}
 
-			// Check if clicked on action or inbound connector in connection mode
-			if(newTransitionFromAction!=null) {
 
-				for(Action a : currTask.getSubActions()) {
 
-					if (a.getDrawInfo().checkHover(e.getX(), e.getY(), null)!= null) {
+			// Check if clicked on action in different modes
+			for(Action a : currTask.getSubActions()) {
+				if (a.getDrawInfo().checkHover(e.getX(), e.getY(), null)!= null) {
+					
+					// Check if in connection mode
+					if(newTransitionFromAction!=null) {
 
 						OWLIndividual t_ind = OWLIndividual.getOWLIndividualOfClass("http://ias.cs.tum.edu/kb/knowrob.owl#Transition");
 						newTransitionFromAction.addTransition(ActionTransition.getActionTransition(t_ind.getIRI(), newTransitionFromAction, a, "OK"));
@@ -631,6 +678,14 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 						newTransitionFromAction = null;
 						newTransitionToLocation = new Vector2f();
 						return;
+						
+					} else if(select_start) {
+						start_action.setText(a.getShortName());
+						select_start = false;
+						
+					} else if(select_end) {
+						end_action.setText(a.getShortName());
+						select_end = false;						
 					}
 				}
 			}
@@ -659,6 +714,7 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 						// open action editor
 						ActionEditorWindow f = new ActionEditorWindow();
 						f.setAddActionCallback(this);
+						f.setBaseIRI(base_iri.getText());
 
 						while(!f.applet.isInitialized()) {
 							try {Thread.sleep(10);
@@ -786,54 +842,82 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	
 	public void keyPressed(KeyEvent e) {
 		
+		
 		if(e.getKeyCode() == KeyEvent.VK_DELETE) {
-			
-			ActionTransitions trans = currTask.getTransitionsRecursive();
-			synchronized(trans) {
-				
-				if(activeTransition!=null) {
-					activeTransition.getFrom().removeTransition(activeTransition);
-					this.activeTransition = null;
-					currTask.setSaveToProlog(true);
-				}
 
-				if(selectedAction!=null) {
+			if(currTask!=null) {
+				ActionTransitions trans = currTask.getTransitionsRecursive();
+				synchronized(trans) {
 
-					currTask.removeSubAction(selectedAction);
-					
-					for(ActionTransition t : trans) {
-						if(t.getFrom().equals(selectedAction) || 
-						   t.getTo().equals(selectedAction)) {
-
-							t.getFrom().removeTransition(t);
-						} 
+					if(activeTransition!=null) {
+						activeTransition.getFrom().removeTransition(activeTransition);
+						this.activeTransition = null;
+						currTask.setSaveToProlog(true);
 					}
 
-					this.selectedAction = null;
-					currTask.setSaveToProlog(true);
+					if(selectedAction!=null) {
+
+						currTask.removeSubAction(selectedAction);
+
+						for(ActionTransition t : trans) {
+							if(t.getFrom().equals(selectedAction) || 
+									t.getTo().equals(selectedAction)) {
+
+								t.getFrom().removeTransition(t);
+							} 
+						}
+
+						this.selectedAction = null;
+						currTask.setSaveToProlog(true);
+					}
 				}
 			}
 		}
+
+		if(controlP5!=null)
+			controlP5.keyHandler.keyEvent(e, controlP5.controlWindow, true);
 		
 	}
 	
+	
+	/**
+	 * Handle control events from controlP5
+	 * 
+	 * @param ev The ControlEvent generated by controlP5
+	 */
 	public void controlEvent(ControlEvent ev) {
 
 		if(ev.isController()) {
 
 			// open action creation dialog	
-			if(ev.getController().getName().equals("add action")) {
+			if(ev.getController().getName().equals("add new action to recipe")) {
 								
 				ActionEditorWindow f = new ActionEditorWindow();
 				f.setAddActionCallback(this); 
 				
-			} else if(ev.getController().getName().equals("save to file")) {
+			} else if(ev.getController().getName().equals("create")) {
 
-				currTask.setSaveToProlog(true);
-				this.currTask.writeToProlog();
-				PrologQueryUtils.writeActionToOWLFile(currTask.getIRI(), "action-out.owl");
+				// create new recipe
+				Action new_action = Action.getAction(base_iri.getText() + new_recipe_shortname.getText(), 
+													 new_recipe_label.getText());
+				new_action.addSuperClass(Action.getOWLClass("http://ias.cs.tum.edu/kb/knowrob.owl#PurposefulAction"));
+				this.setTask(new_action);
+				
+			} else if(ev.getController().getName().equals("select start")) {
+				select_start = true;
+			} else if(ev.getController().getName().equals("select end")) {
+				select_end  = true;
 			}
 		}
+	}
+	
+	
+	/**
+	 * Synchronize all changes that have been made with the underlying Prolog engine
+	 */
+	public void syncWithProlog() {
+		currTask.setSaveToProlog(true);
+		this.currTask.writeToProlog();
 	}
 	
 	
@@ -942,6 +1026,10 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 
 		public void setAddActionCallback(IAddActionCallback cb) {
 			applet.setAddActionCallback(cb); 
+		}
+		
+		public void setBaseIRI(String base_iri) {
+			applet.setBaseIRI(base_iri); 
 		}
 	}
 	

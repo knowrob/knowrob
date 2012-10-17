@@ -108,6 +108,8 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 	private Textfield value;
 
 	private boolean propsIsActive;
+
+	private String base_iri;
 	
 	
 	
@@ -425,7 +427,14 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 					addActionPropItem(propId2item.get((int)props.getValue()).getName(), ((Textfield) controlP5.getController("value")).getText());
 					
 					// add to action class
-					Action act = Action.getAction(((Textfield) controlP5.getController("identifier")).getText(), null);
+					String id = ((Textfield) controlP5.getController("identifier")).getText();
+					
+					// add default namespace if none is given
+					if(!id.contains("#")) {
+						id = base_iri + id;
+					}
+					
+					Action act = Action.getAction(id, null);
 					act.addHasValue(propId2item.get((int)props.getValue()).getName(), ((Textfield) controlP5.getController("value")).getText());
 					act.setSaveToProlog(true);
 					act.getDrawInfo().notifyModified();
@@ -456,6 +465,11 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 			if(ev.getController().getName().equals("submit")) {
 				
 				String id = ((Textfield) controlP5.getController("identifier")).getText(); // TODO: add label field to the action editor forms
+
+				// add default namespace if none is given
+				if(!id.contains("#")) {
+					id = base_iri + id;
+				}
 				Action act = Action.getAction(id, null);
 				act.setSaveToProlog(true);
 
@@ -580,7 +594,15 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 	public void setAddActionCallback(IAddActionCallback cb) {
 		this.callback = cb;
 	}
-	
+
+	/**
+	 * 
+	 * @param base_iri
+	 */
+	public void setBaseIRI(String base_iri) {
+		this.base_iri = base_iri;		
+	}
+
 	
 	/**
 	 * Wrapper class around an OWL class selector applet in a new window
@@ -621,10 +643,7 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 		controlP5 = new ControlP5(this);
 		GreyTheme.applyStyle(controlP5);
 		
-		controlP5.setColorForeground(color(180))
-		.setColorCaptionLabel(color(240))
-		.setColorBackground(color(80))
-		.setColorActive(color(200));
+		GreyTheme.applyStyle(controlP5);
 		
 		identifier = controlP5.addTextfield("identifier", 20, 20, 300, 20).setAutoClear(false).setFocus(true);
 				
@@ -634,12 +653,8 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 		submit = controlP5.addButton("submit", 1, 355, 275, 65, 20).setCaptionLabel("add to task");
 		
 		
-		ControlGroup<?> new_prop = controlP5.addGroup("Add properties", 20, 120, 400);
-		new_prop.setBarHeight(15);
-		new_prop.getCaptionLabel().getStyle().marginTop = 3;
-		new_prop.getValueLabel().getStyle().marginTop = 3; 
+		ControlGroup<?> new_prop = GreyTheme.applyStyle(controlP5.addGroup("Add properties", 20, 120, 400)); 
 		new_prop.setBackgroundHeight(105);
-		new_prop.setBackgroundColor(color(50));
 		
 		
 		props = controlP5.addListBox("Properties", 10, 30, 200, 75);

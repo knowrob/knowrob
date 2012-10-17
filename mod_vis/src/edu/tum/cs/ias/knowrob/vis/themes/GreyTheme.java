@@ -68,6 +68,9 @@ public class GreyTheme {
 	}
 
 	public static Group applyStyle(Group g) {
+		g.setBackgroundColor(color(50));
+		g.setBarHeight(15);
+		g.getCaptionLabel().getStyle().marginTop=3;
 		return g;
 	}
 
