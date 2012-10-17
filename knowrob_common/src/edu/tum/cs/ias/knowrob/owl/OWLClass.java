@@ -429,10 +429,16 @@ public class OWLClass extends OWLThing {
 
 					if(type.get(i).contains("some")) {
 
-						if((!some_values_from.containsKey(p)) || (!some_values_from.get(p).contains(v))) {
+						if((!some_values_from.containsKey(p)) || (!some_values_from.get(p).contains(v))) { // TODO: too greedy!, removes all subActions
 
 							// remove p,v pair
 							PrologInterface.executeQuery("findall(R, (rdfs_subclass_of('"+iri+"', R), " +
+									"rdf_has(R, 'http://www.w3.org/2002/07/owl#onProperty','"+p+"'), " +
+									"rdf_has(R, 'http://www.w3.org/2002/07/owl#someValuesFrom', '"+v+"')), Rs), " +
+									"member(Restr, Rs), rdf_retractall(Restr, _, _), " +
+									"rdf_retractall(_, 'http://www.w3.org/2000/01/rdf-schema#subClassOf', Restr)");
+							
+							System.out.println("findall(R, (rdfs_subclass_of('"+iri+"', R), " +
 									"rdf_has(R, 'http://www.w3.org/2002/07/owl#onProperty','"+p+"'), " +
 									"rdf_has(R, 'http://www.w3.org/2002/07/owl#someValuesFrom', '"+v+"')), Rs), " +
 									"member(Restr, Rs), rdf_retractall(Restr, _, _), " +
@@ -456,9 +462,10 @@ public class OWLClass extends OWLThing {
 						if((!has_value.containsKey(p)) || (!has_value.get(p).contains(v))) {
 
 							// remove p,v pair
-							PrologInterface.executeQuery("findall(R, (rdfs_subclass_of('"+iri+"', R), " +
+							PrologInterface.executeQuery("findall(R, (rdfs_subclass_of('"+iri+"', R), " + 
 									"rdf_has(R, 'http://www.w3.org/2002/07/owl#onProperty','"+p+"'), " +
-									"rdf_has(R, 'http://www.w3.org/2002/07/owl#hasValue', '"+v+"')), Rs), " +
+									"( rdf_has(R, 'http://www.w3.org/2002/07/owl#hasValue', literal(type(_,'"+v+"'))); " +
+									"  rdf_has(R, 'http://www.w3.org/2002/07/owl#hasValue', '"+v+"'))), Rs), " +
 									"member(Restr, Rs), rdf_retractall(Restr, _, _), " +
 									"rdf_retractall(_, 'http://www.w3.org/2000/01/rdf-schema#subClassOf', Restr)");
 						}

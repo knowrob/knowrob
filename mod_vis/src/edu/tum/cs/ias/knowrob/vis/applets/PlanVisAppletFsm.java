@@ -799,6 +799,8 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 
 				if(selectedAction!=null) {
 
+					currTask.removeSubAction(selectedAction);
+					
 					for(ActionTransition t : trans) {
 						if(t.getFrom().equals(selectedAction) || 
 						   t.getTo().equals(selectedAction)) {
@@ -807,7 +809,6 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 						} 
 					}
 
-					currTask.removeSubAction(selectedAction);
 					this.selectedAction = null;
 					currTask.setSaveToProlog(true);
 				}

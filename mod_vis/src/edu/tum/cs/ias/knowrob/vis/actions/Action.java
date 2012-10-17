@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 
@@ -253,9 +254,50 @@ public class Action extends OWLClass {
 		
 		// either remove on this level or iterate deeper until action is found
 		if(sub_actions.contains(sub_action)) {
+			
 			sub_actions.remove(sub_action);
 			
-		} else {
+			// adapt task start state and end state if the respective action has been deleted
+			if(has_value.containsKey("http://ias.cs.tum.edu/kb/knowrob.owl#taskStartState") &&
+			   has_value.get("http://ias.cs.tum.edu/kb/knowrob.owl#taskStartState").contains(sub_action.getIRI())) {
+				
+				// remove old start state definition
+				has_value.get("http://ias.cs.tum.edu/kb/knowrob.owl#taskStartState").remove(sub_action.getIRI());
+				
+				if(sub_action.getTransitions()!=null && 
+						sub_action.getTransitions().getTransitionsFrom(sub_action)!=null) {
+					
+					Set<ActionTransition> trans = sub_action.getTransitions().getTransitionsFrom(sub_action);
+					
+					// add the first to-action of the transitions from the deleted action as new start state
+					for(ActionTransition t : trans) {
+						has_value.get("http://ias.cs.tum.edu/kb/knowrob.owl#taskStartState").add(t.to.getIRI());
+						break;
+					}
+				}
+			}
+			
+			if(has_value.containsKey("http://ias.cs.tum.edu/kb/knowrob.owl#taskEndState") &&
+			   has_value.get("http://ias.cs.tum.edu/kb/knowrob.owl#taskEndState").contains(sub_action.getIRI())) {
+
+				// remove old start state definition
+				has_value.get("http://ias.cs.tum.edu/kb/knowrob.owl#taskEndState").remove(sub_action.getIRI());
+				
+				// create new end state definitions
+				if(getTransitionsRecursive()!=null && 
+						getTransitionsRecursive().getTransitionsTo(sub_action)!=null) {
+					
+					Set<ActionTransition> trans = getTransitionsRecursive().getTransitionsTo(sub_action);
+					
+					// add all from-actions of the transitions from the deleted action as new end states
+					for(ActionTransition t : trans) {
+						has_value.get("http://ias.cs.tum.edu/kb/knowrob.owl#taskEndState").add(t.from.getIRI());
+					}
+				}
+			}
+			
+		} else { // iterate deeper if a sub-action of a sub-action has been deleted
+			
 			for(Action sub : sub_actions) {
 				sub.removeSubAction(sub_action);
 			}
