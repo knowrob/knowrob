@@ -184,6 +184,7 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 				
 		Action a = Action.getAction(identifier);
 		a.readFromProlog();
+		a.getDrawInfo().recalculateDimensions(this);
 		
 		if (a!= null)
 			setTask(a);

@@ -394,7 +394,7 @@ public class ActionDrawInformation {
 	 * @param applet Applet used to draw the action. Only used for text calculation.
 	 * 	Because width of text is dependent on current text setting
 	 */
-	private void recalculateDimensions(PApplet applet)
+	public void recalculateDimensions(PApplet applet)
 	{
 		if (!needsRecalculation)
 			return;
