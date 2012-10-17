@@ -58,6 +58,7 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	 */
 	private Action currTask = null;
 	
+
 	/**
 	 * Currently dragged action
 	 */
@@ -681,11 +682,23 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 						return;
 						
 					} else if(select_start) {
+						
 						start_action.setText(a.getShortName());
+						
+						if(currTask.getHasValue().containsKey("http://ias.cs.tum.edu/kb/knowrob.owl#taskStartState"))
+							currTask.getHasValue().get("http://ias.cs.tum.edu/kb/knowrob.owl#taskStartState").clear();
+						
+						currTask.addHasValue("http://ias.cs.tum.edu/kb/knowrob.owl#taskStartState", a.getIRI());
 						select_start = false;
 						
 					} else if(select_end) {
+						
 						end_action.setText(a.getShortName());
+						
+						if(currTask.getHasValue().containsKey("http://ias.cs.tum.edu/kb/knowrob.owl#taskEndState"))
+							currTask.getHasValue().get("http://ias.cs.tum.edu/kb/knowrob.owl#taskEndState").clear();
+						
+						currTask.addHasValue("http://ias.cs.tum.edu/kb/knowrob.owl#taskEndState", a.getIRI());
 						select_end = false;						
 					}
 				}
@@ -895,6 +908,8 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 								
 				ActionEditorWindow f = new ActionEditorWindow();
 				f.setAddActionCallback(this); 
+				f.setBaseIRI(base_iri.getText());
+				
 				
 			} else if(ev.getController().getName().equals("create")) {
 
@@ -902,7 +917,9 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 				Action new_action = Action.getAction(base_iri.getText() + new_recipe_shortname.getText(), 
 													 new_recipe_label.getText());
 				new_action.addSuperClass(Action.getOWLClass("http://ias.cs.tum.edu/kb/knowrob.owl#PurposefulAction"));
+				new_action.getDrawInfo().recalculateDimensions(this);
 				this.setTask(new_action);
+				
 				
 			} else if(ev.getController().getName().equals("select start")) {
 				select_start = true;
@@ -1003,7 +1020,12 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 		return (Frame) f;
 	}
 	
-	
+	public Action getCurrTask() {
+		return currTask;
+	}
+
+
+
 	/**
 	 * Wrapper class around an action editor applet in a new window
 	 *  
