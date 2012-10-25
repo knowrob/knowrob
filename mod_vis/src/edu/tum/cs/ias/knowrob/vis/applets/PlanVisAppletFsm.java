@@ -192,7 +192,7 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 			setTask(a);
 		
 		// set base URL text field
-		base_iri.setText(a.getIRIPrefix());
+		base_iri.setText(a.getIRIPrefix()+"#");
 		
 		Vector<String> start = a.getHasValue().get("http://ias.cs.tum.edu/kb/knowrob.owl#taskStartState");
 		if(start!=null && !start.isEmpty()) {
