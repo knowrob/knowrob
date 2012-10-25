@@ -26,6 +26,7 @@ import edu.tum.cs.ias.knowrob.owl.OWLThing;
 import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
 import edu.tum.cs.ias.knowrob.vis.actions.Action;
 import edu.tum.cs.ias.knowrob.vis.actions.ActionDrawInformation;
+import edu.tum.cs.ias.knowrob.vis.actions.ActionDrawInformation.HighlightType;
 import edu.tum.cs.ias.knowrob.vis.actions.ActionSelectHistoryInfo;
 import edu.tum.cs.ias.knowrob.vis.actions.ActionTransition;
 import edu.tum.cs.ias.knowrob.vis.actions.ActionTransitions;
@@ -234,7 +235,7 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 
 		for(Vector2f p : vertices)
 			applet.vertex(p.x,p.y);
-				
+		
 		applet.endShape(CLOSE);
 		
 	}
@@ -448,10 +449,12 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	public synchronized void drawTransitions(PApplet app) {
 
 		ActionTransitions trans = currTask.getTransitionsRecursive();
-		synchronized(trans) {
-			// draw transition arrows
-			for(ActionTransition t : trans) {
-				t.drawConnection(app);
+		if(trans!=null) {
+			synchronized(trans) {
+				// draw transition arrows
+				for(ActionTransition t : trans) {
+					t.drawConnection(app);
+				}
 			}
 		}
 	}
@@ -971,12 +974,12 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	 * @param expand Expand all the parents of <code>a</code> so that <code>a</code> is visible
 	 * @return true if action found and highlighted
 	 */
-	public boolean highlightAction(Action a, boolean expand)
-	{
+	public boolean highlightAction(Action a, boolean expand) {
+		
 		if (selectedAction == null)
 			return false;
-		selectedAction.getDrawInfo().clearHightlight();
-		return selectedAction.getDrawInfo().highlightSubsequence(a,expand);
+		
+		return highlightAction(a.getIRI(), expand);
 	}
 	
 	/**
@@ -985,12 +988,22 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	 * @param expand Expand all the parents of <code>identifier</code> so that <code>identifier</code> is visible
 	 * @return true if action found and highlighted
 	 */
-	public boolean highlightAction(String identifier, boolean expand)
-	{
-		if (selectedAction == null)
+	public boolean highlightAction(String identifier, boolean expand) {
+		
+		if (currTask == null)
 			return false;
-		selectedAction.getDrawInfo().clearHightlight();
-		return selectedAction.getDrawInfo().highlightSubsequence(identifier,expand);
+		
+		// find action with this identifier
+		for(Action a : currTask.getSubActionsRecursive()) {
+			a.getDrawInfo().clearHightlight();
+			if(a.getIRI().equals(identifier)) {
+				a.getDrawInfo().setHightlight(HighlightType.THIS_HIGHLIGHTED);
+				return true;
+			}
+		}
+		return false;
+//		selectedAction.getDrawInfo().clearHightlight();
+//		return selectedAction.getDrawInfo().highlightSubsequence(identifier,expand);
 	}
 	
 	/**

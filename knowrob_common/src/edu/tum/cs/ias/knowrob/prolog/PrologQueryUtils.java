@@ -242,7 +242,7 @@ public class PrologQueryUtils {
 				PrologInterface.executeQuery("rdf_has('" + pointInst + "', knowrob:xCoord, X), " +
 						"rdf_has('" + pointInst + "', knowrob:yCoord, Y)");
 
-			if(obj_pose.get("X").size()>0 && obj_pose.get("X").size()>0) {
+			if(obj_pose!=null && obj_pose.get("X").size()>0 && obj_pose.get("X").size()>0) {
 
 				res.add(Float.valueOf(PrologInterface.stripLiteralType(obj_pose.get("X").get(0))));   // x coord
 				res.add(Float.valueOf(PrologInterface.stripLiteralType(obj_pose.get("Y").get(0))));   // y coord
@@ -273,7 +273,7 @@ public class PrologQueryUtils {
 						"rdf_has('" + pointInst + "', knowrob:yCoord, Y)," +
 						"rdf_has('" + pointInst + "', knowrob:orientationAZ, AZ)");
 
-			if(obj_pose.get("X").size()>0 && obj_pose.get("X").size()>0 && obj_pose.get("AZ").size()>0) {
+			if(obj_pose!=null && obj_pose.get("X").size()>0 && obj_pose.get("X").size()>0 && obj_pose.get("AZ").size()>0) {
 
 				res.add(Float.valueOf(PrologInterface.stripLiteralType(obj_pose.get("X").get(0))));   // x coord
 				res.add(Float.valueOf(PrologInterface.stripLiteralType(obj_pose.get("Y").get(0))));   // y coord

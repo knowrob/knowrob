@@ -16,6 +16,7 @@ import org.semanticweb.owlapi.util.DefaultPrefixManager;
 import org.semanticweb.owlapi.reasoner.*;
 import org.semanticweb.owlapi.reasoner.structural.*;
 
+import edu.tum.cs.ias.knowrob.owl.OWLThing;
 import edu.tum.cs.ias.knowrob.owl.ObjectInstance;
 import edu.tum.cs.ias.knowrob.owl.JointInstance;
 import edu.tum.cs.ias.knowrob.utils.ros.RosUtilities;
@@ -564,7 +565,7 @@ public class OWLImportExport {
 
 									}
 								}
-								objects.put(cur.getIRI(), cur);
+								objects.put(cur.getShortName(), cur);
 
 							}
 						}
@@ -577,7 +578,7 @@ public class OWLImportExport {
 					
 					String iri = inst.toStringID();
 					
-					if(objects.containsKey(iri))
+					if(objects.containsKey(OWLThing.getShortNameOfIRI(iri)))
 						continue;
 					
 					// skip those types we have already  
@@ -614,7 +615,7 @@ public class OWLImportExport {
 							cur.addObjPropValue(prop.asOWLObjectProperty().toStringID(), d.toStringID());
 						}
 					}
-					objects.put(cur.getIRI(), cur);
+					objects.put(cur.getShortName(), cur);
 				}
 			
 				
@@ -644,9 +645,9 @@ public class OWLImportExport {
 							OWLObjectProperty parts = factory.getOWLObjectProperty("knowrob:properPhysicalParts", pm);
 							if(obj_props.containsKey(parts)) {
 								for(OWLIndividual p : obj_props.get(parts)) {
-									ObjectInstance part = objects.get(p.toStringID());
+									ObjectInstance part = objects.get(OWLThing.getShortNameOfIRI(p.toStringID()));
 									if(part!=null) {
-										objects.get(obj.toStringID()).addPhysicalPart(part);
+										objects.get(OWLThing.getShortNameOfIRI(obj.toStringID())).addPhysicalPart(part);
 									}
 								}
 							}
@@ -678,11 +679,11 @@ public class OWLImportExport {
 							
 							if(obj_props.containsKey(connectedTo)) {
 								
-								ObjectInstance cur = objects.get(obj.toStringID());
+								ObjectInstance cur = objects.get(OWLThing.getShortNameOfIRI(obj.toStringID()));
 								
 								for(OWLIndividual rel : obj_props.get(connectedTo)) {
 									
-									ObjectInstance connectedObj = objects.get(rel);
+									ObjectInstance connectedObj = objects.get(OWLThing.getShortNameOfIRI(rel.toStringID()));
 									
 									if(connectedObj!=null) {
 										

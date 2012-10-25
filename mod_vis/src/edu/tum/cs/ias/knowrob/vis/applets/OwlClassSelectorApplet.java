@@ -7,9 +7,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.vecmath.Vector2f;
 
@@ -66,7 +68,7 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 	/**
 	 * Hierarchical list of OWL classes
 	 */
-	private ArrayList<OWLClass> owl_classes;
+	private List<OWLClass> owl_classes;
 
 	/**
 	 * Mapping from a numeric ID to an OWLClass (needed to assign click events)
@@ -134,11 +136,13 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 
 
 	public void setBaseClass(String base) {
-				
+		
+		owl_classes = Collections.synchronizedList(new ArrayList<OWLClass>());
+
 		OWLClass basecl = OWLClass.getOWLClass(base);
 		basecl.readFromProlog();
 		owl_classes.addAll(basecl.getSubclasses());
-		
+
 		initControlP5();
 		
 	}
@@ -206,7 +210,8 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 		
 		
 		// highlight the result
-		act2button.get(a.getIRI()).setColorBackground(color(180));
+		if(act2button!=null)
+			act2button.get(a.getIRI()).setColorBackground(color(180));
 		searchResult = a;
 		class_listbox.update();
 	}
@@ -236,7 +241,7 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 		
 		if(ev.getController().getName().equals("class list")) {
 			
-			if(this.cb!=null) {
+			if(this.cb!=null && id2class!=null) {
 				cb.owlClassSelected(id2class.get(Float.valueOf(ev.getValue())).getIRI());
 				this.frame.setVisible(false);
 				
@@ -399,7 +404,14 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 		if(level>=3)
 			b.getCaptionLabel().setColor(color(10));
 		
+		if(act2button==null)
+			act2button = new LinkedHashMap<String, MultiListButton>();
+		
 		act2button.put(act.getIRI(), b);
+		
+		if(id2class==null)
+			id2class = new LinkedHashMap<Float, OWLClass>();
+		
 		id2class.put(b.getValue(), act);
 	}
 

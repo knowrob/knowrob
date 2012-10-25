@@ -145,7 +145,7 @@ public class ActionDrawInformation {
 	 * @author Stefan Profanter
 	 *
 	 */
-	private static enum HighlightType {
+	public static enum HighlightType {
 		NOT_HIGHTLIGHTED, 	//Use default color
 		CHILD_HIGHLIGHTED, 	//Use highlight color
 		THIS_HIGHLIGHTED	//Use bright highlight color
