@@ -476,13 +476,14 @@ public class Action extends OWLClass {
 	public void writeToProlog() {
 
 		if(this.needsSaveToProlog()) {
+
+			// remove old transitions 
+			// IMPORTANT: this order because otherwise state transitions are not found since the superclass removes all of them
+			PrologQueryUtils.clearActionStateTransitions(iri);
 			
 			// write all OWLClass-generic information to Prolog
 			// (also sets flag that this action has been written)
 			super.writeToProlog();
-
-			// remove old transitions
-			PrologQueryUtils.clearActionStateTransitions(iri);
 
 			// write transitions defined for sub-actions of this action
 			for(Action sub : sub_actions) {

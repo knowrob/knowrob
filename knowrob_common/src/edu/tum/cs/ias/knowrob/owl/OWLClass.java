@@ -1,5 +1,7 @@
 package edu.tum.cs.ias.knowrob.owl;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -368,6 +370,12 @@ public class OWLClass extends OWLThing {
 						if(v.startsWith("file:")) {
 							String[] vs = v.split("/");
 							v = vs[vs.length-1];
+							
+							try {
+								v = URLDecoder.decode(v, "UTF-8");
+							} catch (UnsupportedEncodingException e) {
+								e.printStackTrace();
+							}
 						}
 						
 						if(type.get(i).contains("some")) {
