@@ -226,13 +226,12 @@ public class CurvatureCalculation {
 	 * @param inverseCurvature
 	 *            Invert curvature by inverting vertex normals
 	 */
-	public static void calculateCurvatures(HashMap<Vertex, Curvature> curvatures, final Model m,
-			boolean inverseCurvature) {
+	public static void calculateCurvatures(HashMap<Vertex, Curvature> curvatures, final Model m) {
 
 		if (m.getVertices().size() == 0)
 			return;
 
-		calculateVertexNormals(m, inverseCurvature);
+		calculateVertexNormals(m);
 		calculateVoronoiArea(m);
 		calculateCurvature(curvatures, m);
 		setCurvatureHueSaturation(curvatures, m);
@@ -250,7 +249,7 @@ public class CurvatureCalculation {
 	 * @param inverseCurvature
 	 *            Invert curvature by inverting vertex normals
 	 */
-	private static void calculateVertexNormals(final Model m, boolean inverseCurvature) {
+	private static void calculateVertexNormals(final Model m) {
 		// Compute from faces
 
 		List<Callable<Void>> threads = new LinkedList<Callable<Void>>();
@@ -280,10 +279,53 @@ public class CurvatureCalculation {
 
 		ThreadPool.executeInPool(threads);
 
+		// Normalize all vectors.
+		// Additionally search the vectors which have max x, max y and max z coordinates (needed for
+		// vertex winding check / inverted normals check)
+
+		Vertex extrema[] = new Vertex[6];
+
 		for (Vertex v : m.getVertices()) {
 			v.getNormalVector().normalize();
-			if (inverseCurvature)
-				v.getNormalVector().scale(-1f);
+			float coord[] = new float[3];
+			v.get(coord);
+			// Set all max values
+			for (int i = 0; i < 3; i++) {
+				float extCoord[] = new float[3];
+				if (extrema[i] != null)
+					extrema[i].get(extCoord);
+				if (extrema[i] == null || extCoord[i] < coord[i])
+					extrema[i] = v;
+			}
+			// Set all min values
+			for (int i = 0; i < 3; i++) {
+				float extCoord[] = new float[3];
+				if (extrema[i + 3] != null)
+					extrema[i + 3].get(extCoord);
+				if (extrema[i + 3] == null || extCoord[i] > coord[i])
+					extrema[i + 3] = v;
+			}
+		}
+
+		int vote = 0;
+		// Now the vertex normal of maxX must point in approximately the same direction as the
+		// vector from (0,0,0) to the vertex. If the angle between the vertex normal and the
+		// direction is smaller than 90° vote for inversion.
+		for (int i = 0; i < 6; i++) {
+			float coord[] = { 0, 0, 0 };
+			coord[i % 3] = 1;
+			double angle = Math.acos(extrema[i].getNormalVector().dot((new Vector3f(coord))));
+			if (angle > Math.PI / 2)
+				vote++;
+			else
+				vote--;
+		}
+
+		if (vote > 0) {
+			// They voted for inverting
+			for (Vertex v : m.getVertices()) {
+				v.getNormalVector().scale(-1);
+			}
 		}
 
 	}
@@ -301,18 +343,18 @@ public class CurvatureCalculation {
 
 		// get vectors from p0 to p1 and so on
 		Vector3f a = new Vector3f(p0);
-		a.sub(p1);
+		a.sub(p2);
 		Vector3f b = new Vector3f(p1);
-		b.sub(p2);
+		b.sub(p0);
 		Vector3f c = new Vector3f(p2);
-		c.sub(p0);
+		c.sub(p1);
 		// length of these vectors
 		float l2a = a.lengthSquared(), l2b = b.lengthSquared(), l2c = c.lengthSquared();
 		if (l2a == 0 || l2b == 0 || l2c == 0)
 			return;
 
 		Vector3f facenormal = new Vector3f();
-		facenormal.cross(b, a); // unsaled normal
+		facenormal.cross(a, b); // unscaled normal
 
 		Vector3f normalP0 = (Vector3f) facenormal.clone();
 		normalP0.scale(1.0f / (l2a * l2c));

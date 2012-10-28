@@ -162,7 +162,7 @@ public class MeshReasoning {
 			analyser = new ArrayList<MeshAnalyser>();
 		}
 		cas.setModel(model);
-		CurvatureCalculation.calculateCurvatures(cas.getCurvatures(), model, path.endsWith("ply"));
+		CurvatureCalculation.calculateCurvatures(cas.getCurvatures(), model);
 
 		// Create analyzers and start them
 

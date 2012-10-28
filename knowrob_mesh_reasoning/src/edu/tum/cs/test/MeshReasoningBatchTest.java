@@ -11,7 +11,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 
-import javax.swing.JOptionPane;
 import javax.swing.WindowConstants;
 
 import edu.tum.cs.vis.model.MeshReasoning;
@@ -36,7 +35,7 @@ public class MeshReasoningBatchTest {
 	 */
 	public static Object	monitor				= new Object();
 
-	static String			subfolder			= "tool";
+	static String			subfolder			= "vessel";
 
 	/**
 	 * Main entry point
@@ -94,7 +93,7 @@ public class MeshReasoningBatchTest {
 			@Override
 			public void windowClosing(WindowEvent e) {
 
-				File f = new File(path);
+				/*File f = new File(path);
 				String input = (String) JOptionPane.showInputDialog(mr.frame, "New File name",
 						"Filename", JOptionPane.PLAIN_MESSAGE, null, null, filename);
 				if (input == null) {
@@ -105,7 +104,7 @@ public class MeshReasoningBatchTest {
 					nf.mkdirs();
 					nf = new File("models/batch_ok/" + subfolder + "/" + input);
 					f.renameTo(nf);
-				}
+				}*/
 				currentWindowCount--;
 				synchronized (monitor) {
 					monitor.notifyAll();
