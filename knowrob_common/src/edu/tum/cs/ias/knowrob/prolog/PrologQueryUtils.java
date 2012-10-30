@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
 
+import edu.tum.cs.ias.knowrob.owl.OWLThing;
+
 
 
 /**
@@ -16,14 +18,6 @@ import java.util.Vector;
  * deal with Prolog statements. 
  * 
  * @author Moritz Tenorth, tenorth@atr.jp
- *
- */
-/**
- * @author tenorth
- *
- */
-/**
- * @author tenorth
  *
  */
 /**
@@ -202,20 +196,51 @@ public class PrologQueryUtils {
 	
 	
 	/**
-	 * Read list of prior actions performed in the task
+	 * Read prior actions performed in the task
 	 * 
 	 * @param currentActInst OWL identifier of an action instance such as 'http://ias.cs.tum.edu/kb/knowrob.owl#Pick123'
 	 * @return Vector of OWL identifiers of the previous actions in the current task
 	 */
-	public static Vector<String> readPreviousActionsInTask(String currentActInst) {
+	public static Vector<String> readPrevActionInTask(String currentActInst) {
 
 		currentActInst = PrologInterface.removeSingleQuotes(currentActInst);
 		
-		HashMap<String, Vector<String>> values = 
-			PrologInterface.executeQuery("owl_has('" + currentActInst + "', knowrob:previousAction, Prev)");
+		HashMap<String, Vector<String>> values =
+			PrologInterface.executeQuery("rdf_reachable(Prev, 'http://ias.cs.tum.edu/kb/knowrob.owl#nextAction', '" + currentActInst + "')");
 		
 		if(values!=null && values.get("Prev").size()>0) {
 			return values.get("Prev");
+		}
+		return null;
+	}
+	
+	
+	/**
+	 * Read output 'prop' of an earlier action 'actionClass' performed in the task
+	 * 
+	 * @param currentActInst OWL identifier of an action instance such as 'http://ias.cs.tum.edu/kb/knowrob.owl#Pick123'
+	 * @param prevActionClass Type of the previous action whose output is to be read
+	 * @param prop Property of that action whose value is to be read
+	 * @return Value of prop for an instance of actionClass
+	 */
+	public static String readOutputOfPrevAction(String currentActInst, String prevActionClass, String prop) {
+
+		prevActionClass = PrologInterface.removeSingleQuotes(prevActionClass);
+		prop = OWLThing.getShortNameOfIRI(PrologInterface.removeSingleQuotes(prop));
+		Vector<String> prev_acts = readPrevActionInTask(currentActInst);
+		prevActionClass = OWLThing.getOWLThingByShortname(prevActionClass).getIRI();
+		
+		for(String prev_act : prev_acts) {
+			
+			HashMap<String, Vector<String>> values =
+				PrologInterface.executeQuery(
+						"owl_individual_of('" + PrologInterface.removeSingleQuotes(prev_act) + "', '" + prevActionClass + "'), " +
+						"rdf_has('" + PrologInterface.removeSingleQuotes(prev_act) + "', 'http://ias.cs.tum.edu/kb/knowrob.owl#" + prop + "' , Val)");
+//			"rdf_has(prev_act, 'http://ias.cs.tum.edu/kb/knowrob.owl#" + prop + "' , Val)");
+			
+			if(values!=null && values.get("Val").size()>0) {
+				return PrologInterface.stripLiteralType(values.get("Val").firstElement());
+			}
 		}
 		return null;
 	}
@@ -235,12 +260,12 @@ public class PrologQueryUtils {
 
 		pointInst = PrologInterface.removeSingleQuotes(pointInst);
 		
-		if(PrologInterface.executeQuery("owl_individual_of('" + pointInst + "', knowrob:'Point2D')") != null) {
+		if(PrologInterface.executeQuery("owl_individual_of('" + pointInst + "', 'http://ias.cs.tum.edu/kb/knowrob.owl#Point2D')") != null) {
 
 			Vector<Float> res = new Vector<Float>();
 			HashMap<String, Vector<String>> obj_pose = 
-				PrologInterface.executeQuery("rdf_has('" + pointInst + "', knowrob:xCoord, X), " +
-						"rdf_has('" + pointInst + "', knowrob:yCoord, Y)");
+				PrologInterface.executeQuery("rdf_has('" + pointInst + "', 'http://ias.cs.tum.edu/kb/knowrob.owl#xCoord', X), " +
+						"rdf_has('" + pointInst + "', 'http://ias.cs.tum.edu/kb/knowrob.owl#yCoord', Y)");
 
 			if(obj_pose!=null && obj_pose.get("X").size()>0 && obj_pose.get("X").size()>0) {
 
@@ -265,13 +290,13 @@ public class PrologQueryUtils {
 
 		pointInst = PrologInterface.removeSingleQuotes(pointInst);
 		
-		if(PrologInterface.executeQuery("owl_individual_of('" + pointInst + "', knowrob:'Point2D')") != null) {
+		if(PrologInterface.executeQuery("owl_individual_of('" + pointInst + "', 'http://ias.cs.tum.edu/kb/knowrob.owl#Point2D')") != null) {
 
 			Vector<Float> res = new Vector<Float>();
 			HashMap<String, Vector<String>> obj_pose = 
-				PrologInterface.executeQuery("rdf_has('" + pointInst + "', knowrob:xCoord, X), " +
-						"rdf_has('" + pointInst + "', knowrob:yCoord, Y)," +
-						"rdf_has('" + pointInst + "', knowrob:orientationAZ, AZ)");
+				PrologInterface.executeQuery("rdf_has('" + pointInst + "', 'http://ias.cs.tum.edu/kb/knowrob.owl#xCoord', X), " +
+						"rdf_has('" + pointInst + "', 'http://ias.cs.tum.edu/kb/knowrob.owl#yCoord', Y)," +
+						"rdf_has('" + pointInst + "', 'http://ias.cs.tum.edu/kb/knowrob.owl#orientationAZ', AZ)");
 
 			if(obj_pose!=null && obj_pose.get("X").size()>0 && obj_pose.get("X").size()>0 && obj_pose.get("AZ").size()>0) {
 
@@ -300,7 +325,7 @@ public class PrologQueryUtils {
 
 		objInst = PrologInterface.removeSingleQuotes(objInst);
 		
-		if(PrologInterface.executeQuery("owl_individual_of('" + objInst + "', knowrob:'EnduringThing-Localized')") != null) {
+		if(PrologInterface.executeQuery("owl_individual_of('" + objInst + "', 'http://ias.cs.tum.edu/kb/knowrob.owl#EnduringThing-Localized')") != null) {
 
 			Vector<Float> res = new Vector<Float>();
 			HashMap<String, Vector<String>> obj_pose = 
@@ -335,7 +360,7 @@ public class PrologQueryUtils {
 
 		objClass = PrologInterface.removeSingleQuotes(objClass);
 		
-		if(PrologInterface.executeQuery("owl_subclass_of('" + objClass + "', knowrob:'EnduringThing-Localized')") != null) {
+		if(PrologInterface.executeQuery("owl_subclass_of('" + objClass + "', 'http://ias.cs.tum.edu/kb/knowrob.owl#EnduringThing-Localized')") != null) {
 
 			Vector<Float> res = new Vector<Float>();
 			
@@ -400,7 +425,7 @@ public class PrologQueryUtils {
 		
 		HashMap<String, Vector<String>> st_time = 
 			PrologInterface.executeQuery("get_timepoint(NOW), " +
-										 "rdf_assert(" + inst + ", knowrob:startTime, NOW)");
+										 "rdf_assert(" + inst + ", 'http://ias.cs.tum.edu/kb/knowrob.owl#startTime', NOW)");
 
 		if(st_time !=null && st_time.get("NOW").size() > 0) {
 			return inst;
@@ -419,7 +444,7 @@ public class PrologQueryUtils {
 		actionInst = PrologInterface.removeSingleQuotes(actionInst);
 		
 		PrologInterface.executeQuery("get_timepoint(NOW), " +
-				"rdf_assert('" + actionInst + "', knowrob:endTime, NOW)");
+				"rdf_assert('" + actionInst + "', 'http://ias.cs.tum.edu/kb/knowrob.owl#endTime', NOW)");
 	}
 	
 	
@@ -439,20 +464,19 @@ public class PrologQueryUtils {
 		// (which should be the end of the sequence)
 		
 		HashMap<String, Vector<String>> prev_action = PrologInterface.executeQuery(
-				"rdf_has('" + recipeInst + "', knowrob:subAction, SUB)," +
-				" not(rdf_has(SUB, knowrob:nextAction, _))");
+				"rdf_has('" + recipeInst + "', 'http://ias.cs.tum.edu/kb/knowrob.owl#subAction', SUB)," +
+				" not(rdf_has(SUB, 'http://ias.cs.tum.edu/kb/knowrob.owl#nextAction', _))");
 
 		// if there is any, assert the current action as nextAction (now being the end of the sequence)
 		if(prev_action !=null && prev_action.get("SUB").size() > 0) {
-			assertObjectPropertyForInst(prev_action.get("SUB").get(0), "knowrob:nextAction", actionInst);
+			assertObjectPropertyForInst(prev_action.get("SUB").get(0), "'http://ias.cs.tum.edu/kb/knowrob.owl#nextAction'", actionInst);
 		}
 
 		// set actionInst as subAction of recipeInst
-		assertObjectPropertyForInst(recipeInst, "knowrob:subAction", actionInst);
+		assertObjectPropertyForInst(recipeInst, "'http://ias.cs.tum.edu/kb/knowrob.owl#subAction'", actionInst);
 	}
 
-	
-	
+
 	/**
 	 * Assert a set of properties for an instance (given as HashMap propName--Vector<values>)
 	 * 
@@ -754,22 +778,22 @@ public class PrologQueryUtils {
 		streetNumber = PrologInterface.removeSingleQuotes(streetNumber);
 		streetName = PrologInterface.removeSingleQuotes(streetName);
 
-		String q = 	"owl_individual_of(Map, knowrob:'SemanticEnvironmentMap')," +
-					"owl_has(R, knowrob:describedInMap, Map)," +
-					"owl_has(R, knowrob:roomNumber, literal(type(_,'"+roomNumber+"')))";
+		String q = 	"owl_individual_of(Map, 'http://ias.cs.tum.edu/kb/knowrob.owl#SemanticEnvironmentMap')," +
+					"owl_has(R, 'http://ias.cs.tum.edu/kb/knowrob.owl#describedInMap', Map)," +
+					"owl_has(R, 'http://ias.cs.tum.edu/kb/knowrob.owl#roomNumber', literal(type(_,'"+roomNumber+"')))";
 				
 		if(floorNumber!=null && !floorNumber.isEmpty()) {
-			q+= ",owl_has(S1, knowrob:properPhysicalParts, R)," +
-				"rdf_has(R, knowrob:floorNumber, literal(type(_, '"+floorNumber+"')))";
+			q+= ",owl_has(S1, 'http://ias.cs.tum.edu/kb/knowrob.owl#properPhysicalParts', R)," +
+				 "rdf_has(R,  'http://ias.cs.tum.edu/kb/knowrob.owl#floorNumber', literal(type(_, '"+floorNumber+"')))";
 		}
 		
 		if(streetNumber!=null && !streetNumber.isEmpty()) {
-			q+= ",owl_has(S1, knowrob:properPhysicalParts, R)," +
-				"rdf_has(R, knowrob:streetNumber, literal(type(_, '"+streetNumber+"')))";
+			q+= ",owl_has(S1, 'http://ias.cs.tum.edu/kb/knowrob.owl#properPhysicalParts', R)," +
+				"rdf_has(R, 'http://ias.cs.tum.edu/kb/knowrob.owl#streetNumber', literal(type(_, '"+streetNumber+"')))";
 		}
 		
 		if(streetName!=null && !streetName.isEmpty()) {
-			q+= ",owl_has(S1, knowrob:properPhysicalParts, R)," +
+			q+= ",owl_has(S1, 'http://ias.cs.tum.edu/kb/knowrob.owl#properPhysicalParts', R)," +
 				"rdf_has(S2, rdfs:label, literal(like('*"+streetName+"*'), _))";
 		}
 		

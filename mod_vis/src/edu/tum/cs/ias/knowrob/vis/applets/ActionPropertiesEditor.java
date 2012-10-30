@@ -669,6 +669,7 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 		String[] properties = new String[]{"http://ias.cs.tum.edu/kb/knowrob.owl#objectActedOn",
 				"http://ias.cs.tum.edu/kb/knowrob.owl#reactionType",
 				"http://ias.cs.tum.edu/kb/knowrob.owl#spokenText",
+				"http://ias.cs.tum.edu/kb/knowrob.owl#queryText",
 				"http://ias.cs.tum.edu/kb/knowrob.owl#toLocation",
 				"http://ias.cs.tum.edu/kb/knowrob.owl#fromLocation",
 				"http://ias.cs.tum.edu/kb/knowrob.owl#bodyPartUsed"};
