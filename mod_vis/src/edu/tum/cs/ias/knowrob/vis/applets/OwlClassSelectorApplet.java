@@ -111,7 +111,6 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 		frameRate(10);
 		
 		id2class = new LinkedHashMap<Float, OWLClass>();
-		owl_classes = new ArrayList<OWLClass>();
 		act2button = new LinkedHashMap<String, MultiListButton>();
 		
 		
@@ -164,29 +163,32 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 	 */
 	private OWLClass searchOWLClass(String stringValue, List<OWLClass> owl_classes) {
 		
-		for(OWLClass a : owl_classes) {
-			
-			if(a.getIRI().toLowerCase().contains(stringValue.toLowerCase())) {
+		synchronized (owl_classes) {
+			for(OWLClass a : owl_classes) {
 				
-				showSearchResult(a);
-				return a;
-				
-			} else if(a.getLabel().toLowerCase().contains(stringValue.toLowerCase())) {
+				if(a.getIRI().toLowerCase().contains(stringValue.toLowerCase())) {
+					
+					showSearchResult(a);
+					return a;
+					
+				} else if(a.getLabel().toLowerCase().contains(stringValue.toLowerCase())) {
 
-				showSearchResult(a);
-				class_listbox.update();
-				
-				return a;
-				
-			} else if(a.getSubclasses().size()>0){
-				
-				OWLClass found = searchOWLClass(stringValue, a.getSubclasses());
-				
-				if(found!=null) {
-					return found;
+					showSearchResult(a);
+					class_listbox.update();
+					
+					return a;
+					
+				} else if(a.getSubclasses().size()>0){
+					
+					OWLClass found = searchOWLClass(stringValue, a.getSubclasses());
+					
+					if(found!=null) {
+						return found;
+					}
 				}
 			}
 		}
+
 		return null;
 	}
 
@@ -195,7 +197,7 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 	private void showSearchResult(OWLClass a) {
 		
 		// reset highlight
-		if(searchResult!=null)
+		if(searchResult!=null && act2button.get(searchResult.getIRI())!=null)
 			act2button.get(searchResult.getIRI()).setColorBackground(80);
 		
 		// try to open the right tab
@@ -210,7 +212,7 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 		
 		
 		// highlight the result
-		if(act2button!=null)
+		if(act2button!=null && act2button.get(a.getIRI())!=null)
 			act2button.get(a.getIRI()).setColorBackground(color(180));
 		searchResult = a;
 		class_listbox.update();
@@ -366,23 +368,24 @@ public class OwlClassSelectorApplet  extends PApplet implements MouseListener, M
 	private int createListButtons(List<OWLClass> owl_classes, Controller<?> parent, int start_idx, int level) {
 
 		int idx = start_idx;
+		synchronized(owl_classes) {
+			for(OWLClass act : owl_classes) {
 
-		for(OWLClass act : owl_classes) {
+				MultiListButton b = null;
+				if (parent instanceof MultiList) {
 
-			MultiListButton b = null;
-			if (parent instanceof MultiList) {
-				
-				b = ((MultiList)parent).add(idx + "_" + act.getIRI(), idx++);
-				configureButton(b, level, act);
+					b = ((MultiList)parent).add(idx + "_" + act.getIRI(), idx++);
+					configureButton(b, level, act);
 
-			} else if (parent instanceof MultiListButton) {
-				
-				b = ((MultiListButton)parent).add(idx + "_" + act.getIRI(), idx++);
-				configureButton(b, level, act);
-			} 
+				} else if (parent instanceof MultiListButton) {
 
-			if(act.getSubclasses().size()>0)
-				idx = createListButtons(act.getSubclasses(), b, idx, level+1);
+					b = ((MultiListButton)parent).add(idx + "_" + act.getIRI(), idx++);
+					configureButton(b, level, act);
+				} 
+
+				if(act.getSubclasses().size()>0)
+					idx = createListButtons(act.getSubclasses(), b, idx, level+1);
+			}
 		}
 		return idx;
 	}
