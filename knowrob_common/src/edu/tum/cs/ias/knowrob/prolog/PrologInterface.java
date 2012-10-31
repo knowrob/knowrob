@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
+
+import com.google.common.base.Joiner;
 
 import edu.tum.cs.ias.knowrob.owl.OWLThing;
 import edu.tum.cs.ias.knowrob.utils.ros.RosUtilities;
@@ -232,10 +235,15 @@ public class PrologInterface {
     	if(!typedValue.startsWith("literal("))
     		return typedValue;
     	
-    	// remove literal(type( and closing parentheses
     	typedValue = typedValue.substring(13, typedValue.length()-2);
+//    	String cleanValue = typedValue.split(",")[1];
+
+    	// remove literal(type( and closing parentheses
+//    	typedValue = typedValue.substring(13, typedValue.length()-2);
     	
-    	String cleanValue = typedValue.split(",")[1];
+    	String[] parts = typedValue.split(",");
+    	String[] clean = Arrays.copyOfRange(parts, 1, parts.length);
+    	String cleanValue = Joiner.on(",").join(clean);
     	
     	if(cleanValue.startsWith(" "))
     		cleanValue = cleanValue.substring(1);
