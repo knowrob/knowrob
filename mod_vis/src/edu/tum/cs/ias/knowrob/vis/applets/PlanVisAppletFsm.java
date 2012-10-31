@@ -976,7 +976,7 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	 */
 	public boolean highlightAction(Action a, boolean expand) {
 		
-		if (selectedAction == null)
+		if (currTask == null)
 			return false;
 		
 		return highlightAction(a.getIRI(), expand);
@@ -997,6 +997,7 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 		for(Action a : currTask.getSubActionsRecursive()) {
 			a.getDrawInfo().clearHightlight();
 			if(a.getIRI().equals(identifier)) {
+				clearHighlight();
 				a.getDrawInfo().setHightlight(HighlightType.THIS_HIGHLIGHTED);
 				return true;
 			}
