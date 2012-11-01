@@ -499,6 +499,27 @@
     <!-- http://www.w3.org/2002/07/owl#Thing -->
 
     <owl:Class rdf:about="&owl;Thing"/>
+    
+    
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#VisualSLAMCapability -->
+
+    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#VisualSLAMCapability">
+        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#PerceptionCapability"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;Camera"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
+                <owl:someValuesFrom rdf:resource="&srdl2-comp;VisualSlamMappingComponent"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
 </rdf:RDF>
 
 
