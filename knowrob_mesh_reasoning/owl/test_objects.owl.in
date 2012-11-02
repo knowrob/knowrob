@@ -838,13 +838,24 @@
  
  <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#screw1">
    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Screw"/>
-   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/skrew.kmz</knowrob:pathToCadModel>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/industrial-parts/screw-M3.kmz</knowrob:pathToCadModel>
  </owl:NamedIndividual>
  <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception59">
    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
    <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
    <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
    <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#screw1"/>
+ </owl:NamedIndividual>
+ 
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#nut1">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ScrewNut"/>
+   <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/industrial-parts/screw-nut.kmz</knowrob:pathToCadModel>
+ </owl:NamedIndividual>
+ <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception59">
+   <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VisualPerception"/>
+   <knowrob:startTime rdf:resource="http://ias.cs.tum.edu/kb/ias_semantic_map.owl#timepoint_1341195350"/>
+   <knowrob:eventOccursAt rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RotationMatrix3Dcabinet"/>
+   <knowrob:objectActedOn rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#nut1"/>
  </owl:NamedIndividual>
  
  

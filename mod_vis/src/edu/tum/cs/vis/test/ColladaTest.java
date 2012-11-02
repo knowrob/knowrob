@@ -109,7 +109,7 @@ public class ColladaTest extends PApplet {
 		camDir.normalize();
 		camDir.scale(30);
 
-		//Rotate left and up by 45°
+		//Rotate left and up by 45 deg
 		//Vector3f keyLight = new Vector3f(camDir.x*(float)Math.cos(Math.PI/4f)-camDir.z*(float)Math.sin(Math.PI/4f),camDir.y,camDir.x*(float)Math.sin(Math.PI/4f)+camDir.z*(float)Math.cos(Math.PI/4f));
 		//keyLight = new Vector3f(keyLight.x,keyLight.y*(float)Math.cos(Math.PI/4f)-keyLight.z*(float)Math.sin(Math.PI/4f),keyLight.y*(float)Math.sin(Math.PI/4f)+keyLight.z*(float)Math.cos(Math.PI/4f));
 		//keyLight.add(camLook);

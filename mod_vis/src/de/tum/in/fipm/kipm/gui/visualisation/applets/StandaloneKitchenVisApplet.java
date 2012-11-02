@@ -164,7 +164,6 @@ public class StandaloneKitchenVisApplet extends AnimatedCanvas implements MouseL
 
 		//drawBackground();
 		draw();
-		isInitialized = true;
 		if(prologVisCanvas != null) {
 			prologVisCanvas.validate();
 			prologVisCanvas.setSize(1270, 620);

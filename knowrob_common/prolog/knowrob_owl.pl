@@ -112,6 +112,8 @@ rdf_instance_from_class(Class, SourceRef, Instance) :-
 %
 create_restr(Class, Prop, Value, RestrType, SourceRef, Restr) :-
 
+  \+ (class_properties(Class, Prop, Value)),
+
   rdf_node(Restr),
 %   rdf_assert(Restr, rdf:'type', owl:'Restriction', SourceRef),
 
