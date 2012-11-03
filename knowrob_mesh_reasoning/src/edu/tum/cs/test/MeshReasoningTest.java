@@ -25,7 +25,8 @@ public class MeshReasoningTest {
 	 */
 	public static void main(String[] args) {
 
-		String path = "models/3cone.kmz";
+		String path = "models/batch/furniture/plate with holes.kmz";
+		// String path = "models/cup2.kmz";
 
 		MeshReasoning mr = MeshReasoning.initMeshReasoning(true);
 

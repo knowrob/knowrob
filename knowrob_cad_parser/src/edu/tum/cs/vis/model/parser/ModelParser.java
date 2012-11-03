@@ -161,7 +161,7 @@ public abstract class ModelParser {
 			}
 
 			if ((new File(file)).exists() == false) {
-				System.err.println("ERROR: Can't load model. File not found: " + filename + "\n");
+				System.err.println("ERROR: Can't load model. File not found: " + file + "\n");
 				return false;
 			}
 

@@ -91,28 +91,7 @@ public class Triangle extends DrawObject {
 			if (neighbors.contains(neighbor))
 				return false;
 
-			int eqCnt = 0;
-
-			for (int i = 0; i < 3; i++) {
-				if (i == 2 && eqCnt == 0)
-					break; // if 2 of 3 points aren't equal, it is no neighbor
-				Point3f p1 = position[i];
-				for (Point3f p2 : neighbor.position) {
-					// if (p1.x == p2.x && p1.y==p2.y && p1.z==p2.z) {
-					if (p1 == p2) {
-						eqCnt++;
-						if (eqCnt == 2) {
-							add = true;
-						}
-						if (eqCnt == 3) {
-							// if triangle has same position but is backface
-							add = false;
-						}
-						break;
-					}
-
-				}
-			}
+			add = isDirectNeighbor(neighbor);
 
 			if (add) {
 				synchronized (neighbors) {
@@ -129,6 +108,26 @@ public class Triangle extends DrawObject {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Removes the given triangle from the neighbor relation of this triangle. This triangle is also
+	 * removed from <tt>n</tt>'s neighbor list.
+	 * 
+	 * @param n
+	 *            neighbor to remove
+	 */
+	public void removeNeighbor(Triangle n) {
+		if (neighbors != null) {
+			synchronized (neighbors) {
+				neighbors.remove(n);
+			}
+		}
+		if (n.neighbors != null) {
+			synchronized (n.neighbors) {
+				n.neighbors.remove(this);
+			}
+		}
 	}
 
 	/**
@@ -229,6 +228,21 @@ public class Triangle extends DrawObject {
 	 */
 	public ArrayList<Triangle> getNeighbors() {
 		return neighbors;
+	}
+
+	/**
+	 * Calculates the angle between surface normal of this triangle and the given one. Angle is
+	 * between 0 and PI (180°).
+	 * 
+	 * @param t
+	 *            counterpart triangle
+	 * @return angle in radiant between 0 and PI
+	 */
+	public double getDihedralAngle(Triangle t) {
+		double dot = this.getNormalVector().dot(t.getNormalVector());
+		dot = Math.max(-1, dot);
+		dot = Math.min(1, dot);
+		return Math.acos(dot);
 	}
 
 	/**
@@ -400,28 +414,74 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
-	 * Checks if <code>tr</code> is in the list of neighbors. If not the points of <code>this</code>
-	 * and <code>tr</code> are compared. If one of them is equal to each other <code>true</code>
-	 * will be returned.
+	 * Checks if <code>tr</code> is a direct neighbor which means that at least 2 vertices of both
+	 * triangles must be at the same coordinate.
 	 * 
 	 * @param tr
 	 *            triangle to check if it is a neighbor
 	 * @return true if <code>tr</code> is a neighbor
 	 */
-	public boolean isNeighbor(Triangle tr) {
-		if (neighbors != null && neighbors.contains(tr))
-			return true;
-		int cnt = 0;
-		for (Point3f p1 : position) {
+	public boolean isDirectNeighbor(Triangle tr) {
+
+		int eqCnt = 0;
+		boolean isNeighbor = false;
+
+		for (int i = 0; i < 3; i++) {
+			if (i == 2 && eqCnt == 0)
+				break; // if 2 of 3 points aren't equal, it is no neighbor
+			Point3f p1 = position[i];
 			for (Point3f p2 : tr.position) {
+				// if (p1.x == p2.x && p1.y == p2.y && p1.z == p2.z) {
 				if (p1 == p2) {
-					cnt++;
-					if (cnt >= 2)
-						return true;
+					eqCnt++;
+					if (eqCnt == 2) {
+						isNeighbor = true;
+					}
+					if (eqCnt == 3) {
+						// if triangle has same position but is backface
+						isNeighbor = false;
+					}
+					break;
 				}
+
 			}
 		}
-		return false;
+		return isNeighbor;
+	}
+
+	/**
+	 * Checks if <code>tr</code> is an adjacent neighbor which means that at least 2 vertices of
+	 * both triangles must be not only the same coordinates but also the same object.
+	 * 
+	 * @param tr
+	 *            triangle to check if it is a neighbor
+	 * @return true if <code>tr</code> is a neighbor
+	 */
+	public boolean isAdjacentNeighbor(Triangle tr) {
+
+		int eqCnt = 0;
+		boolean isNeighbor = false;
+
+		for (int i = 0; i < 3; i++) {
+			if (i == 2 && eqCnt == 0)
+				break; // if 2 of 3 points aren't equal, it is no neighbor
+			Point3f p1 = position[i];
+			for (Point3f p2 : tr.position) {
+				if (p1 == p2) {
+					eqCnt++;
+					if (eqCnt == 2) {
+						isNeighbor = true;
+					}
+					if (eqCnt == 3) {
+						// if triangle has same position but is backface
+						isNeighbor = false;
+					}
+					break;
+				}
+
+			}
+		}
+		return isNeighbor;
 	}
 
 	/**

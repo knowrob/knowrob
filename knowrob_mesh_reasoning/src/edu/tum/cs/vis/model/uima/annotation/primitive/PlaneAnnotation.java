@@ -154,6 +154,8 @@ public class PlaneAnnotation extends PrimitiveAnnotation<PlaneAnnotation> {
 		g.beginShape(PConstants.QUADS);
 
 		for (int i = 0; i < 4; i++) {
+			if (corner[i] == null)
+				continue;
 			g.vertex(corner[i].x, corner[i].y, corner[i].z);
 		}
 

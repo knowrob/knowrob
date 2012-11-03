@@ -8,10 +8,13 @@
 package edu.tum.cs.vis.model.util.algorithm;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 import javax.vecmath.Vector3f;
@@ -231,6 +234,7 @@ public class CurvatureCalculation {
 		if (m.getVertices().size() == 0)
 			return;
 
+		checkVertexSharing(m);
 		calculateVertexNormals(m);
 		calculateVoronoiArea(m);
 		calculateCurvature(curvatures, m);
@@ -315,7 +319,7 @@ public class CurvatureCalculation {
 			float coord[] = { 0, 0, 0 };
 			coord[i % 3] = 1;
 			double angle = Math.acos(extrema[i].getNormalVector().dot((new Vector3f(coord))));
-			if (angle > Math.PI / 2)
+			if (angle <= Math.PI / 2)
 				vote++;
 			else
 				vote--;
@@ -487,6 +491,100 @@ public class CurvatureCalculation {
 		synchronized (t.getPosition()[2]) {
 			t.getPosition()[2]
 					.setPointarea(t.getPosition()[2].getPointarea() + t.getCornerarea().z);
+		}
+	}
+
+	/**
+	 * Check for each vertex if it should be shared with neighbor triangles or not.
+	 * 
+	 * @param m
+	 *            model to check
+	 */
+	private static void checkVertexSharing(final Model m) {
+
+		final Set<Triangle> checkedTriangles = Collections.synchronizedSet(new HashSet<Triangle>());
+
+		for (Triangle t : m.getTriangles())
+			checkVertexSharingForTriangle(m, t, checkedTriangles);
+	}
+
+	/**
+	 * Check for all vertices between given triangle and its neighbors if the vertex should be
+	 * shared or not according to the dihedral angle.
+	 * 
+	 * @param t
+	 *            Triangle to check
+	 * @param checkedTriangles
+	 *            already checked triangles
+	 */
+	static void checkVertexSharingForTriangle(final Model m, final Triangle t,
+			final Set<Triangle> checkedTriangles) {
+		synchronized (t) {
+			if (checkedTriangles.contains(t))
+				return;
+			HashSet<Triangle> neighborsToRemove = new HashSet<Triangle>();
+			synchronized (t.getNeighbors()) {
+				for (Triangle n : t.getNeighbors()) {
+					synchronized (n) {
+						if (checkedTriangles.contains(n))
+							continue;
+
+						double angle = t.getDihedralAngle(n);
+
+						// Share vertices if angle is < 30 degree
+						boolean share = (angle < 30 / 180.0 * Math.PI);
+
+						for (Vertex vt : t.getPosition()) {
+							for (int i = 0; i < n.getPosition().length; i++) {
+								Vertex vn = n.getPosition()[i];
+								if (share && vn != vt && vt.sameCoordinates(vn)) {
+									// merge vertices
+									n.getPosition()[i] = vt;
+									int cnt = 0;
+									for (Triangle tmpTri : t.getNeighbors()) {
+										for (Vertex tmpVer : tmpTri.getPosition())
+											if (tmpVer == vn) {
+												cnt++;
+												break;
+											}
+									}
+									if (cnt == 0) {
+										for (Triangle tmpTri : n.getNeighbors()) {
+											if (tmpTri == t)
+												continue;
+											for (Vertex tmpVer : tmpTri.getPosition())
+												if (tmpVer == vn) {
+													cnt++;
+													break;
+												}
+										}
+									}
+									if (cnt == 0) {
+										synchronized (m.getVertices()) {
+											m.getVertices().remove(vn);
+										}
+									}
+								} else if (!share && vn == vt) {
+									// split vertices
+									Vertex clone = (Vertex) vt.clone();
+									synchronized (m.getVertices()) {
+										m.getVertices().add(clone);
+									}
+									n.getPosition()[i] = clone;
+									if (!t.isAdjacentNeighbor(n)) {
+										neighborsToRemove.add(n);
+									}
+								}
+							}
+						}
+					}
+				}
+
+			}
+			for (Triangle n : neighborsToRemove) {
+				// t.removeNeighbor(n);
+			}
+			checkedTriangles.add(t);
 		}
 	}
 
