@@ -1333,6 +1333,14 @@
                             
                             
                             
+                            <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#VisualSlamMappingComponent -->
+                            
+                            <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#VisualSlamMappingComponent">
+                              <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#PerceptionComponent"/>
+                            </owl:Class>
+                            
+                            
+                            
                             <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#WheeledBase -->
                             
                             <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#WheeledBase">
