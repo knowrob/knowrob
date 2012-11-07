@@ -33,496 +33,553 @@
     </owl:Ontology>
 
 
-
-    <!--
+    
+    
+    <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Annotation properties
     //
     ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-
-
-
-    <!--
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Datatypes
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-
-
-
-    <!--
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Object Properties
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#dependsOnCapability -->
-
-    <owl:ObjectProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#dependsOnCapability">
-        <rdfs:range rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability"/>
-        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability"/>
-        <rdfs:subPropertyOf rdf:resource="&srdl2;dependsOn"/>
-    </owl:ObjectProperty>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#hasCapability -->
-
-    <owl:ObjectProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#hasCapability">
-        <rdfs:domain rdf:resource="&knowrob;Robot"/>
-        <rdfs:range rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability"/>
-    </owl:ObjectProperty>
-
-
-
-    <!--
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Classes
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#TemporalThing -->
-
-    <owl:Class rdf:about="&knowrob;TemporalThing"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ArmCollisionCheckCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ArmCollisionCheckCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionCheckCapability"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-comp;CollisionMap"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ArmMotionCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ArmMotionCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#BodyMotionCapability"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-comp;ArmMotionController"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-comp;ArmComponent"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#BaseCollisionCheckCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#BaseCollisionCheckCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionCheckCapability"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-comp;EnvironmentMap"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#BaseMotionCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#BaseMotionCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#BodyMotionCapability"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-comp;MobileBase"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#BodyMotionCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#BodyMotionCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability"/>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability">
-        <rdfs:subClassOf rdf:resource="&knowrob;TemporalThing"/>
-        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
-        <rdfs:comment>Taxonomy based capability representation</rdfs:comment>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingABottleCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingABottleCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingAContainer"/>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingAContainer -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingAContainer">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability"/>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingAContainerCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingAContainerCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability"/>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingADoorCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingADoorCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingAContainer"/>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingADrawerCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingADrawerCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingAContainer"/>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionCheckCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionCheckCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ComputationalCapability"/>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionFreeArmMotionCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionFreeArmMotionCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ArmMotionCapability"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#dependsOnCapability"/>
-                <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ArmCollisionCheckCapability"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionFreeNavigationCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionFreeNavigationCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#NavigationCapability"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#dependsOnCapability"/>
-                <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#BaseCollisionCheckCapability"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ComputationalCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ComputationalCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability"/>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#CuttingAPieceOfFoodCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CuttingAPieceOfFoodCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CuttingSomethingCapability"/>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#CuttingSomethingCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CuttingSomethingCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability"/>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#GraspingCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#GraspingCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability"/>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#GripperMotionCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#GripperMotionCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#BodyMotionCapability"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-comp;ManipulationEntity"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#HeadMotionCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#HeadMotionCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#BodyMotionCapability"/>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#LocalizationCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#LocalizationCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-comp;LocalizationComponent"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#NavigationCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#NavigationCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-comp;NavigationComponent"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#dependsOnCapability"/>
-                <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#LocalizationCapability"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#dependsOnCapability"/>
-                <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectRecognitionCapability"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#dependsOnCapability"/>
-                <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ArmMotionCapability"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#dependsOnCapability"/>
-                <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#GripperMotionCapability"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectRecognitionCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectRecognitionCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#PerceptionCapability"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;ObjectRecognitionModel"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-comp;ObjectRecognitionComponent"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningABottleCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningABottleCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningAContainer"/>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningAContainer -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningAContainer">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability"/>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningADoorCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningADoorCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningAContainer"/>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningADrawerCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningADrawerCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningAContainer"/>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#PerceptionCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#PerceptionCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability"/>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#PickingUpAnObjectCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#PickingUpAnObjectCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability"/>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#PouringSomethingCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#PouringSomethingCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability"/>
-        <rdfs:comment>Capability to pour a liquid from one container (e.g. cup, bowl) into another</rdfs:comment>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#PuttingDownAnObjectCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#PuttingDownAnObjectCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability"/>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#gripper_action -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#gripper_action">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#GripperMotionCapability"/>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#move_arm -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#move_arm">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionFreeArmMotionCapability"/>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#move_base -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#move_base">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionFreeNavigationCapability"/>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#point_head_action -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#point_head_action">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#HeadMotionCapability"/>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2.owl#MovingBase -->
-
-    <owl:Class rdf:about="&srdl2;MovingBase"/>
-
-
-
-    <!-- http://www.w3.org/2002/07/owl#Thing -->
-
-    <owl:Class rdf:about="&owl;Thing"/>
-    
-    
-
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#VisualSLAMCapability -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#VisualSLAMCapability">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#PerceptionCapability"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;Camera"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-comp;VisualSlamMappingComponent"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-</rdf:RDF>
-
-
-
-<!-- Generated by the OWL API (version 3.2.2.1789) http://owlapi.sourceforge.net -->
-
+      -->
+      
+        <owl:AnnotationProperty rdf:about="&rdfs;comment"/>
+        
+        
+        
+        <!-- 
+        ///////////////////////////////////////////////////////////////////////////////////////
+        //
+        // Object Properties
+        //
+        ///////////////////////////////////////////////////////////////////////////////////////
+          -->
+          
+          
+          
+          
+            <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#dependsOnCapability -->
+            
+            <owl:ObjectProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#dependsOnCapability">
+              <rdfs:range rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability"/>
+              <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability"/>
+              <rdfs:subPropertyOf rdf:resource="&srdl2;dependsOn"/>
+            </owl:ObjectProperty>
+            
+            
+            
+            <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#hasCapability -->
+            
+            <owl:ObjectProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#hasCapability">
+              <rdfs:domain rdf:resource="&knowrob;Robot"/>
+              <rdfs:range rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability"/>
+            </owl:ObjectProperty>
+            
+            
+            
+            <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#dependsOnComponent -->
+            
+            <owl:ObjectProperty rdf:about="&srdl2-comp;dependsOnComponent"/>
+            
+            
+            
+            <!-- http://ias.cs.tum.edu/kb/srdl2.owl#dependsOn -->
+            
+            <owl:ObjectProperty rdf:about="&srdl2;dependsOn"/>
+            
+            
+            
+            <!-- 
+            ///////////////////////////////////////////////////////////////////////////////////////
+            //
+            // Classes
+            //
+            ///////////////////////////////////////////////////////////////////////////////////////
+              -->
+              
+              
+              
+              
+                <!-- http://ias.cs.tum.edu/kb/knowrob.owl#ObjectRecognitionModel -->
+                
+                <owl:Class rdf:about="&knowrob;ObjectRecognitionModel"/>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Robot -->
+                
+                <owl:Class rdf:about="&knowrob;Robot"/>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/knowrob.owl#TemporalThing -->
+                
+                <owl:Class rdf:about="&knowrob;TemporalThing"/>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ArmCollisionCheckCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ArmCollisionCheckCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionCheckCapability"/>
+                  <rdfs:subClassOf>
+                    <owl:Restriction>
+                      <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
+                      <owl:someValuesFrom rdf:resource="&srdl2-comp;CollisionMap"/>
+                    </owl:Restriction>
+                  </rdfs:subClassOf>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ArmMotionCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ArmMotionCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#BodyMotionCapability"/>
+                  <rdfs:subClassOf>
+                    <owl:Restriction>
+                      <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
+                      <owl:someValuesFrom rdf:resource="&srdl2-comp;ArmComponent"/>
+                    </owl:Restriction>
+                  </rdfs:subClassOf>
+                  <rdfs:subClassOf>
+                    <owl:Restriction>
+                      <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
+                      <owl:someValuesFrom rdf:resource="&srdl2-comp;ArmMotionController"/>
+                    </owl:Restriction>
+                  </rdfs:subClassOf>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#BaseCollisionCheckCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#BaseCollisionCheckCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionCheckCapability"/>
+                  <rdfs:subClassOf>
+                    <owl:Restriction>
+                      <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
+                      <owl:someValuesFrom rdf:resource="&srdl2-comp;EnvironmentMap"/>
+                    </owl:Restriction>
+                  </rdfs:subClassOf>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#BaseMotionCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#BaseMotionCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#BodyMotionCapability"/>
+                  <rdfs:subClassOf>
+                    <owl:Restriction>
+                      <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
+                      <owl:someValuesFrom rdf:resource="&srdl2-comp;MobileBase"/>
+                    </owl:Restriction>
+                  </rdfs:subClassOf>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#BodyMotionCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#BodyMotionCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability"/>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability">
+                  <rdfs:subClassOf rdf:resource="&knowrob;TemporalThing"/>
+                  <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+                  <rdfs:comment>Taxonomy based capability representation</rdfs:comment>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingABottleCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingABottleCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingAContainer"/>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingAContainer -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingAContainer">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability"/>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingAContainerCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingAContainerCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability"/>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingADoorCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingADoorCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingAContainer"/>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingADrawerCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingADrawerCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ClosingAContainer"/>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionCheckCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionCheckCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ComputationalCapability"/>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionFreeArmMotionCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionFreeArmMotionCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ArmMotionCapability"/>
+                  <rdfs:subClassOf>
+                    <owl:Restriction>
+                      <owl:onProperty rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#dependsOnCapability"/>
+                      <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ArmCollisionCheckCapability"/>
+                    </owl:Restriction>
+                  </rdfs:subClassOf>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionFreeNavigationCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionFreeNavigationCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#NavigationCapability"/>
+                  <rdfs:subClassOf>
+                    <owl:Restriction>
+                      <owl:onProperty rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#dependsOnCapability"/>
+                      <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#BaseCollisionCheckCapability"/>
+                    </owl:Restriction>
+                  </rdfs:subClassOf>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ComputationalCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ComputationalCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability"/>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#CuttingAPieceOfFoodCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CuttingAPieceOfFoodCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CuttingSomethingCapability"/>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#CuttingSomethingCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CuttingSomethingCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability"/>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#EnvironmentExplorationCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#EnvironmentExplorationCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#NavigationCapability"/>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#GraspingCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#GraspingCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability"/>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#GripperMotionCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#GripperMotionCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#BodyMotionCapability"/>
+                  <rdfs:subClassOf>
+                    <owl:Restriction>
+                      <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
+                      <owl:someValuesFrom rdf:resource="&srdl2-comp;ManipulationEntity"/>
+                    </owl:Restriction>
+                  </rdfs:subClassOf>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#HeadMotionCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#HeadMotionCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#BodyMotionCapability"/>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#LocalizationCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#LocalizationCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability"/>
+                  <rdfs:subClassOf>
+                    <owl:Restriction>
+                      <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
+                      <owl:someValuesFrom rdf:resource="&srdl2-comp;LocalizationComponent"/>
+                    </owl:Restriction>
+                  </rdfs:subClassOf>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#NavigationCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#NavigationCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability"/>
+                  <rdfs:subClassOf>
+                    <owl:Restriction>
+                      <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
+                      <owl:someValuesFrom rdf:resource="&srdl2-comp;NavigationComponent"/>
+                    </owl:Restriction>
+                  </rdfs:subClassOf>
+                  <rdfs:subClassOf>
+                    <owl:Restriction>
+                      <owl:onProperty rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#dependsOnCapability"/>
+                      <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#LocalizationCapability"/>
+                    </owl:Restriction>
+                  </rdfs:subClassOf>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability"/>
+                  <rdfs:subClassOf>
+                    <owl:Restriction>
+                      <owl:onProperty rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#dependsOnCapability"/>
+                      <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ArmMotionCapability"/>
+                    </owl:Restriction>
+                  </rdfs:subClassOf>
+                  <rdfs:subClassOf>
+                    <owl:Restriction>
+                      <owl:onProperty rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#dependsOnCapability"/>
+                      <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectRecognitionCapability"/>
+                    </owl:Restriction>
+                  </rdfs:subClassOf>
+                  <rdfs:subClassOf>
+                    <owl:Restriction>
+                      <owl:onProperty rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#dependsOnCapability"/>
+                      <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#GripperMotionCapability"/>
+                    </owl:Restriction>
+                  </rdfs:subClassOf>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectRecognitionCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectRecognitionCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#PerceptionCapability"/>
+                  <rdfs:subClassOf>
+                    <owl:Restriction>
+                      <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
+                      <owl:someValuesFrom rdf:resource="&knowrob;ObjectRecognitionModel"/>
+                    </owl:Restriction>
+                  </rdfs:subClassOf>
+                  <rdfs:subClassOf>
+                    <owl:Restriction>
+                      <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
+                      <owl:someValuesFrom rdf:resource="&srdl2-comp;ObjectRecognitionComponent"/>
+                    </owl:Restriction>
+                  </rdfs:subClassOf>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningABottleCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningABottleCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningAContainer"/>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningAContainer -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningAContainer">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability"/>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningADoorCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningADoorCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningAContainer"/>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningADrawerCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningADrawerCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#OpeningAContainer"/>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#PerceptionCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#PerceptionCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#Capability"/>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#PickingUpAnObjectCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#PickingUpAnObjectCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability"/>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#PouringSomethingCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#PouringSomethingCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability"/>
+                  <rdfs:comment>Capability to pour a liquid from one container (e.g. cup, bowl) into another</rdfs:comment>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#PuttingDownAnObjectCapability -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#PuttingDownAnObjectCapability">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ObjectManipulationCapability"/>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#gripper_action -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#gripper_action">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#GripperMotionCapability"/>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#move_arm -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#move_arm">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionFreeArmMotionCapability"/>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#move_base -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#move_base">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#CollisionFreeNavigationCapability"/>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#point_head_action -->
+                
+                <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl#point_head_action">
+                  <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#HeadMotionCapability"/>
+                </owl:Class>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#ArmComponent -->
+                
+                <owl:Class rdf:about="&srdl2-comp;ArmComponent"/>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#ArmMotionController -->
+                
+                <owl:Class rdf:about="&srdl2-comp;ArmMotionController"/>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#CollisionMap -->
+                
+                <owl:Class rdf:about="&srdl2-comp;CollisionMap"/>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#EnvironmentMap -->
+                
+                <owl:Class rdf:about="&srdl2-comp;EnvironmentMap"/>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#LocalizationComponent -->
+                
+                <owl:Class rdf:about="&srdl2-comp;LocalizationComponent"/>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#ManipulationEntity -->
+                
+                <owl:Class rdf:about="&srdl2-comp;ManipulationEntity"/>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#MobileBase -->
+                
+                <owl:Class rdf:about="&srdl2-comp;MobileBase"/>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#NavigationComponent -->
+                
+                <owl:Class rdf:about="&srdl2-comp;NavigationComponent"/>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#ObjectRecognitionComponent -->
+                
+                <owl:Class rdf:about="&srdl2-comp;ObjectRecognitionComponent"/>
+                
+                
+                
+                <!-- http://ias.cs.tum.edu/kb/srdl2.owl#MovingBase -->
+                
+                <owl:Class rdf:about="&srdl2;MovingBase"/>
+                
+                
+                
+                <!-- http://www.w3.org/2002/07/owl#Thing -->
+                
+                <owl:Class rdf:about="&owl;Thing"/>
+              </rdf:RDF>
+              
+              
+              
+              <!-- Generated by the OWL API (version 3.1.0.20069) http://owlapi.sourceforge.net -->
+              
+              
