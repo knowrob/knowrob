@@ -15,10 +15,13 @@
 %% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %%
 
+:- register_ros_package(knowrob_common).
 
 :- register_ros_package(knowrob_cad_models).
 :- use_module(library('knowrob_cad_models')).
 
+% use_module(library('knowrob_cad_models/knowrob_owl')).
+% :- use_module(library('knowrob_common/knowrob_owl')).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % parse OWL files, register name spaces
