@@ -235,10 +235,8 @@ public class PrologInterface {
     		return typedValue;
     	
     	typedValue = typedValue.substring(13, typedValue.length()-2);
-//    	String cleanValue = typedValue.split(",")[1];
 
     	// remove literal(type( and closing parentheses
-//    	typedValue = typedValue.substring(13, typedValue.length()-2);
     	
     	String[] parts = typedValue.split(",");
     	String[] clean = Arrays.copyOfRange(parts, 1, parts.length);
@@ -248,10 +246,31 @@ public class PrologInterface {
     		cleanValue = cleanValue.substring(1);
     	
     	return removeSingleQuotes(cleanValue);
-    	
-    	
     }
 
+    
+    /**
+     * Retrieve the datatype / unit of measure from the literal(...) spec 
+     * 
+     * @param typedValue Value that potentially has a literal() spec around it
+     * @return IRI of the datatype or null if it cannot be determined
+     */
+    public static String getLiteralType(String typedValue) {
+
+    	if(!typedValue.startsWith("literal("))
+    		return null;
+    	
+    	typedValue = typedValue.substring(13, typedValue.length()-2);
+
+    	String[] parts = typedValue.split(",");
+    	String cleanValue = parts[0];
+    	
+    	if(cleanValue.startsWith(" "))
+    		cleanValue = cleanValue.substring(1);
+    	
+    	return removeSingleQuotes(cleanValue);
+    }
+    
 }
 
 
