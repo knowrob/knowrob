@@ -16,8 +16,9 @@ import jpl.*;
 public class PrologInterface {
     
 	private static boolean initialized = false;
-	
-    /**
+
+
+	/**
      *  Initialize a local Prolog engine with the ROS package given
      *  as argument
      *  
@@ -271,7 +272,26 @@ public class PrologInterface {
     	return removeSingleQuotes(cleanValue);
     }
     
+	
+    /**
+     * Check if Prolog engine has been initialized.
+     * 
+     * @return true if initialized
+     */
+    public static boolean isInitialized() {
+		return initialized;
+	}
+
+
+    /**
+     * Set initialization status of the Prolog engine, for example if it has
+     * been initialized using external methods.
+     * 
+     * @param initialized true if initialized
+     */
+	public static void setInitialized(boolean initialized) {
+		PrologInterface.initialized = initialized;
+	}
+    
 }
-
-
 

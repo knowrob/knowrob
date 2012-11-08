@@ -643,7 +643,6 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 		controlP5 = new ControlP5(this);
 		GreyTheme.applyStyle(controlP5);
 		
-		GreyTheme.applyStyle(controlP5);
 		
 		identifier = controlP5.addTextfield("identifier", 20, 20, 300, 20).setAutoClear(false).setFocus(true);
 				
