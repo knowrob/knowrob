@@ -30,13 +30,8 @@
       cad_model_zdim/2
     ]).
 
-:- register_ros_package(knowrob_common).
-use_module(library('knowrob_cad_models/knowrob_owl')).
-% :- use_module(library('knowrob_common/knowrob_owl')).
-
-
 % deactivating computables for dimensions
-% :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/knowrob_cad_models.owl', false, false, true).
+% :- owl_parser:owl_parse('/home/tenorth/work/ros/knowrob-vis/knowrob_cad_models/owl/knowrob_cad_models.owl', false, false, true).
 
 :- rdf_meta cad_model_xdim(r,t),
             cad_model_ydim(r,t),

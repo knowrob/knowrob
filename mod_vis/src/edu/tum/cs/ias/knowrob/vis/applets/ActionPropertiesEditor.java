@@ -671,6 +671,7 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 				"http://ias.cs.tum.edu/kb/knowrob.owl#queryText",
 				"http://ias.cs.tum.edu/kb/knowrob.owl#toLocation",
 				"http://ias.cs.tum.edu/kb/knowrob.owl#fromLocation",
+				"http://ias.cs.tum.edu/kb/knowrob.owl#operatorType",
 				"http://ias.cs.tum.edu/kb/knowrob.owl#bodyPartUsed"};
 
 		synchronized (props) {
