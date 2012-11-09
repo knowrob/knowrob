@@ -27,3 +27,4 @@ add_classpath(${rosjava_jni_PACKAGE_PATH}/bin)
 add_jar_dir(lib)
 
 add_java_source_dir(${PROJECT_SOURCE_DIR}/src)
+

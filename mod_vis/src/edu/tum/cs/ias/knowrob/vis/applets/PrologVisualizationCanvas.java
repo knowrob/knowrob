@@ -31,7 +31,7 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 	
 	// components
 	protected ActionVisApplet AVObject;
-	protected StandaloneKitchenVisApplet KVObject;
+	protected SemanticMapVisApplet KVObject;
 	public ControlP5 controlP5;
 	protected ControlWindow controlWindow;
 	//public ImageViewerApplet iviewer;
@@ -53,7 +53,7 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 		AVObject.setPrologVisCanvas(this);
 		
 
-		KVObject = new StandaloneKitchenVisApplet();
+		KVObject = new SemanticMapVisApplet();
 		KVObject.init();
 		KVObject.setSize(720, 600);
 		KVObject.setMapObjClickListener(this);
@@ -175,7 +175,7 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
   			addObject(identifier);
   			
   			// draw in yellow
-  			KVObject.highlightItem(addSingleQuotes(identifier), true, StandaloneKitchenVisApplet.convertColor(255, 221, 0, 255));
+  			KVObject.highlightItem(addSingleQuotes(identifier), true, SemanticMapVisApplet.convertColor(255, 221, 0, 255));
 
   		}
     	KVObject.redraw();
@@ -511,7 +511,7 @@ public class PrologVisualizationCanvas extends PApplet implements MouseListener,
 	  }
 	  
 
-		public StandaloneKitchenVisApplet getKitchenVisApplet() {
+		public SemanticMapVisApplet getKitchenVisApplet() {
 			return this.KVObject;
 		}
 	

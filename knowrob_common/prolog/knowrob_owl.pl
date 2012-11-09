@@ -22,6 +22,9 @@
 :- module(knowrob_owl,
     [
       class_properties/3,
+      class_properties_some/3,
+      class_properties_all/3,
+      class_properties_value/3,
       create_restr/6,
       rdf_instance_from_class/2,
       rdf_instance_from_class/3,
@@ -35,6 +38,9 @@
 :- use_module(library('semweb/rdfs_computable')).
 
 :- rdf_meta class_properties(r,r,t),
+            class_properties_some(r,r,t),
+            class_properties_all(r,r,t),
+            class_properties_value(r,r,t),
             rdf_instance_from_class(r,r),
             rdf_instance_from_class(r,r,r),
             get_timepoint(r),
@@ -106,6 +112,8 @@ rdf_instance_from_class(Class, SourceRef, Instance) :-
 %
 create_restr(Class, Prop, Value, RestrType, SourceRef, Restr) :-
 
+  \+ (class_properties(Class, Prop, Value)),
+
   rdf_node(Restr),
 %   rdf_assert(Restr, rdf:'type', owl:'Restriction', SourceRef),
 
@@ -129,6 +137,8 @@ get_timepoint(T) :-
   get_time(Ts),
   atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#timepoint_', Ts, T),
   rdf_assert(T, rdf:type, knowrob:'TimePoint').
+
+
 
 %% get_timepoint(+Diff, -T) is det.
 %
@@ -157,41 +167,94 @@ get_timepoint(Diff, Time) :-
 
 
 
-%% class_properties(?Class, ?Prop, ?Values) is nondet.
+%% class_properties(?Class, ?Prop, ?Val) is nondet.
+%
+% Collect all property values of someValuesFrom- and hasValue-restrictions of a class
+%
+% @param Class Class whose restrictions are being considered
+% @param Prop  Property whose restrictions in Class are being considered
+% @param Val   Values that appear in a restriction of a superclass of Class on Property
+%
+class_properties(Class, Prop, Val) :-
+  (class_properties_some(Class, Prop, Val);
+   class_properties_value(Class, Prop, Val)).
+
+
+
+
+%% class_properties_some(?Class, ?Prop, ?Val) is nondet.
 %
 % Collect all property values of someValuesFrom-restrictions of a class
 %
-% @param Class   Class whose restrictions are being considered
-% @param Prop    Property whose restrictions in Class are being considered
-% @param Values  List of all classes that appear in a restriction of a superclass of Class along Property
+% @param Class Class whose restrictions are being considered
+% @param Prop  Property whose restrictions in Class are being considered
+% @param Val   Values that appear in a restriction of a superclass of Class on Property
+%
+class_properties_some(Class, Prop, Val) :-         % read directly asserted properties
+  class_properties_1_some(Class, Prop, Val).
 
-class_properties(Class, Prop, Val) :-         % read directly asserted properties
-  class_properties_1(Class, Prop, Val).
-
-class_properties(Class, Prop, Val) :-         % also consider properties of superclasses
+class_properties_some(Class, Prop, Val) :-         % also consider properties of superclasses
   owl_subclass_of(Class, Super), Class\=Super,
-  class_properties_1(Super, Prop, Val).
+  class_properties_1_some(Super, Prop, Val).
 
-% read restrictions defined for Class for Prop or a sub-property of Prop
-%
-% TODO: Do we need this alternative? results in double results, and super-classes
-% should already be handled by the second alternative of class_properties
-%
-% class_properties_1(Class, Prop, Val) :-
-%   owl_direct_subclass_of(Class, Sup),
-%   owl_direct_subclass_of(Sup, Sup2),
-%   ( (nonvar(Prop)) -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
-%   owl_restriction(Sup2,restriction(SubProp, some_values_from(Val))).
 
-class_properties_1(Class, Prop, Val) :-
+class_properties_1_some(Class, Prop, Val) :-       % read all values for some_values_from restrictions
 
   ( (nonvar(Class)) -> (owl_direct_subclass_of(Class, Sup)) ; (Sup     = Class)),
   ( (nonvar(Prop))  -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
 
-  ( owl_restriction(Sup,restriction(SubProp, some_values_from(Val))) ;
-    owl_restriction(Sup,restriction(SubProp, has_value(Val))) ).
+  owl_restriction(Sup,restriction(SubProp, some_values_from(Val))).
 
 
 
+
+%% class_properties_some(?Class, ?Prop, ?Val) is nondet.
+%
+% Collect all property values of someValuesFrom-restrictions of a class
+%
+% @param Class Class whose restrictions are being considered
+% @param Prop  Property whose restrictions in Class are being considered
+% @param Val   Values that appear in a restriction of a superclass of Class on Property
+%
+class_properties_all(Class, Prop, Val) :-         % read directly asserted properties
+  class_properties_1_all(Class, Prop, Val).
+
+class_properties_all(Class, Prop, Val) :-         % also consider properties of superclasses
+  owl_subclass_of(Class, Super), Class\=Super,
+  class_properties_1_all(Super, Prop, Val).
+
+
+class_properties_1_all(Class, Prop, Val) :-       % read all values for all_values_from restrictions
+
+  ( (nonvar(Class)) -> (owl_direct_subclass_of(Class, Sup)) ; (Sup     = Class)),
+  ( (nonvar(Prop))  -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
+
+  owl_restriction(Sup,restriction(SubProp, all_values_from(Val))) .
+
+
+
+
+%% class_properties_some(?Class, ?Prop, ?Val) is nondet.
+%
+% Collect all property values of someValuesFrom-restrictions of a class
+%
+% @param Class Class whose restrictions are being considered
+% @param Prop  Property whose restrictions in Class are being considered
+% @param Val   Values that appear in a restriction of a superclass of Class on Property
+%
+class_properties_value(Class, Prop, Val) :-         % read directly asserted properties
+  class_properties_1_value(Class, Prop, Val).
+
+class_properties_value(Class, Prop, Val) :-         % also consider properties of superclasses
+  owl_subclass_of(Class, Super), Class\=Super,
+  class_properties_1_value(Super, Prop, Val).
+
+
+class_properties_1_value(Class, Prop, Val) :-       % read all values for has_value restrictions
+
+  ( (nonvar(Class)) -> (owl_direct_subclass_of(Class, Sup)) ; (Sup     = Class)),
+  ( (nonvar(Prop))  -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
+
+  owl_restriction(Sup,restriction(SubProp, has_value(Val))) .
 
 

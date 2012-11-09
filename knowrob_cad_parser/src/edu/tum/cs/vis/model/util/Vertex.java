@@ -72,6 +72,17 @@ public class Vertex extends Point3f {
 	}
 
 	@Override
+	public Object clone() {
+		Vertex v = new Vertex(this);
+		v.normalVector = (Vector3f) normalVector.clone();
+		v.color = color == null ? null : new Color(color.getRed(), color.getGreen(),
+				color.getBlue(), color.getAlpha());
+		v.overrideColor = overrideColor == null ? null : new Color(overrideColor.getRed(),
+				overrideColor.getGreen(), overrideColor.getBlue(), overrideColor.getAlpha());
+		return v;
+	}
+
+	@Override
 	public boolean equals(Object o) {
 		if (o == this) {
 			return true;
@@ -82,8 +93,19 @@ public class Vertex extends Point3f {
 
 		Point3f p = (Point3f) o;
 		Vertex v = (Vertex) o;
-		return (p.x == x && p.y == y && p.z == z && v.pointarea == pointarea && v.normalVector
+		return (sameCoordinates(p) && v.pointarea == pointarea && v.normalVector
 				.equals(normalVector));
+	}
+
+	/**
+	 * Check if p has same coordinates as this vertex.
+	 * 
+	 * @param p
+	 *            point
+	 * @return true if x,y,z are equal
+	 */
+	public boolean sameCoordinates(Point3f p) {
+		return (p.x == x && p.y == y && p.z == z);
 	}
 
 	/**

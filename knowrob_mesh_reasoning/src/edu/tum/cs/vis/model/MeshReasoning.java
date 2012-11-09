@@ -148,8 +148,6 @@ public class MeshReasoning {
 				+ model.getVertices().size() + ", Lines: " + model.getLines().size()
 				+ ", Triangles: " + model.getTriangles().size() + ")");
 
-		logger.debug("Calculating curvature ...");
-
 		// normalize model for further reasoning
 		model.normalize();
 
@@ -162,20 +160,26 @@ public class MeshReasoning {
 			analyser = new ArrayList<MeshAnalyser>();
 		}
 		cas.setModel(model);
-		CurvatureCalculation.calculateCurvatures(cas.getCurvatures(), model, path.endsWith("ply"));
 
 		// Create analyzers and start them
 
 		NeighborAnalyser na = new NeighborAnalyser();
 		analyser.add(na);
+		Thread.yield();
+		na.process(cas);
+
+		logger.debug("Calculating curvature ...");
+		long curvatureStartTime = System.currentTimeMillis();
+		CurvatureCalculation.calculateCurvatures(cas.getCurvatures(), model);
+		long curvatureDuration = System.currentTimeMillis() - curvatureStartTime;
+		logger.debug("Ended. Took: " + PrintUtil.prettyMillis(curvatureDuration));
+
 		PrimitiveAnalyser pa = new PrimitiveAnalyser();
 		analyser.add(pa);
 		ContainerAnalyser ca = new ContainerAnalyser();
 		analyser.add(ca);
 
 		Thread.yield();
-
-		na.process(cas);
 		pa.process(cas);
 		ca.process(cas);
 

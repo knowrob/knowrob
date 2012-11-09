@@ -16,11 +16,16 @@ rosbuild_find_ros_package(knowrob_cad_models)
 set( LOCAL_PACKAGE_PATH ${knowrob_cad_models_PACKAGE_PATH} )
 fix_ros_destination_path(LOCAL_PACKAGE_PATH)
 
+rosbuild_find_ros_package(ias_knowledge_base)
+set( OWL_PATH_PREFIX ${ias_knowledge_base_PACKAGE_PATH} )
+fix_ros_destination_path(OWL_PATH_PREFIX)
+
 file(GLOB inputs prolog/*.in)
 foreach( _in ${inputs} )
   string(REPLACE ".in" "" _out ${_in})
   configure_file( ${_in} ${_out} )
 endforeach( _in )
+
 file(GLOB inputs owl/*.in)
 foreach( _in ${inputs} )
   string(REPLACE ".in" "" _out ${_in})
@@ -32,6 +37,3 @@ add_classpath(${jpl_PACKAGE_PATH}/jpl/jpl.jar)
 add_runtime_classpath(${jpl_PACKAGE_PATH}/prolog/jpl.jar)
 
 
-rosbuild_find_ros_package(ias_knowledge_base)
-set( OWL_PATH_PREFIX ${ias_knowledge_base_PACKAGE_PATH} )
-fix_ros_destination_path(OWL_PATH_PREFIX)

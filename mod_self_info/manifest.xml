@@ -11,8 +11,6 @@
   <depend package="mod_vis"/>
   <depend package="json_prolog"/>
   <depend package="rosjava_jni"/>
-  <depend package="ias_semantic_map"/>
-  <depend package="tabletop_object_detector"/>
   <depend package="pr2_msgs"/>
 
 

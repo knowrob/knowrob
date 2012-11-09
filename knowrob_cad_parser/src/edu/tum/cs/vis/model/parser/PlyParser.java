@@ -11,6 +11,8 @@ import java.awt.Color;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.BufferOverflowException;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -213,7 +215,19 @@ public class PlyParser extends ModelParser {
 						byteBuffer.put(b);
 					}
 					byteBuffer.position(0);
-					processDataBuffer();
+					try {
+						processDataBuffer();
+
+					} catch (BufferUnderflowException e) {
+						System.err.println("Couldn't parse model. " + e.toString() + " "
+								+ e.getMessage());
+						return false;
+					} catch (BufferOverflowException e) {
+						System.err.println("Couldn't parse model. " + e.toString() + " "
+								+ e.getMessage());
+						return false;
+					}
+
 				}
 			}
 		} catch (FileNotFoundException e) {
@@ -232,122 +246,134 @@ public class PlyParser extends ModelParser {
 
 		// dump();
 
-		byteBuffer = null;
+		try {
 
-		Element vertexElement = null;
-		Element faceElement = null;
-		for (Element e : elements) {
-			if (e.name.compareTo("vertex") == 0) {
-				vertexElement = e;
+			byteBuffer = null;
+
+			Element vertexElement = null;
+			Element faceElement = null;
+			for (Element e : elements) {
+				if (e.name.compareTo("vertex") == 0) {
+					vertexElement = e;
+				}
+				if (e.name.compareTo("face") == 0) {
+					faceElement = e;
+				}
+				if (vertexElement != null && faceElement != null)
+					break;
 			}
-			if (e.name.compareTo("face") == 0) {
-				faceElement = e;
+
+			if (vertexElement == null) {
+				System.err.println("ERROR: .ply file doesn't contain vertex definition.");
+				return false;
 			}
-			if (vertexElement != null && faceElement != null)
-				break;
-		}
 
-		if (vertexElement == null) {
-			System.err.println("ERROR: .ply file doesn't contain vertex definition.");
-			return false;
-		}
-
-		if (faceElement == null) {
-			System.err.println("ERROR: .ply file doesn't contain face definition.");
-			return false;
-		}
-
-		model = new Model();
-		Group g = new Group(model);
-		model.setGroup(g);
-		Mesh m = new Mesh();
-		g.setMesh(m);
-
-		model.setTextureBasePath(null);
-
-		int coordIdx[] = new int[] { -1, -1, -1 };
-		int colorIdx[] = new int[] { -1, -1, -1 };
-		int idxOk = 0;
-		int colorOk = 0;
-		for (int i = 0; i < vertexElement.properties.size(); i++) {
-			Property p = vertexElement.properties.get(i);
-			if (p.name.equals("x")) {
-				coordIdx[0] = i;
-				idxOk++;
-			} else if (p.name.equals("y")) {
-				coordIdx[1] = i;
-				idxOk++;
-			} else if (p.name.equals("z")) {
-				coordIdx[2] = i;
-				idxOk++;
-			} else if (p.name.equals("red")) {
-				colorIdx[0] = i;
-				colorOk++;
-			} else if (p.name.equals("green")) {
-				colorIdx[1] = i;
-				colorOk++;
-			} else if (p.name.equals("nlue")) {
-				colorIdx[2] = i;
-				colorOk++;
+			if (faceElement == null) {
+				System.err.println("ERROR: .ply file doesn't contain face definition.");
+				return false;
 			}
-		}
 
-		if (idxOk != 3) {
-			System.err.println("ERROR: x,y,z not properly defined for vertices in header.");
-			model = null;
-			return false;
-		}
+			model = new Model();
+			Group g = new Group(model);
+			model.setGroup(g);
+			Mesh m = new Mesh();
+			g.setMesh(m);
 
-		for (ValueLine l : vertexElement.lines) {
-			if (l.values.size() < 3) {
-				System.err.println("ERROR: invalid vertex coordinate count: " + l.values.size()
-						+ " for vertex index " + model.getVertices().size());
+			model.setTextureBasePath(null);
+
+			int coordIdx[] = new int[] { -1, -1, -1 };
+			int colorIdx[] = new int[] { -1, -1, -1 };
+			int idxOk = 0;
+			int colorOk = 0;
+			for (int i = 0; i < vertexElement.properties.size(); i++) {
+				Property p = vertexElement.properties.get(i);
+				if (p.name.equals("x")) {
+					coordIdx[0] = i;
+					idxOk++;
+				} else if (p.name.equals("y")) {
+					coordIdx[1] = i;
+					idxOk++;
+				} else if (p.name.equals("z")) {
+					coordIdx[2] = i;
+					idxOk++;
+				} else if (p.name.equals("red")) {
+					colorIdx[0] = i;
+					colorOk++;
+				} else if (p.name.equals("green")) {
+					colorIdx[1] = i;
+					colorOk++;
+				} else if (p.name.equals("nlue")) {
+					colorIdx[2] = i;
+					colorOk++;
+				}
+			}
+
+			if (idxOk != 3) {
+				System.err.println("ERROR: x,y,z not properly defined for vertices in header.");
 				model = null;
 				return false;
 			}
-			Vertex v = new Vertex(l.values.get(coordIdx[0]).floatValue(), l.values.get(coordIdx[1])
-					.floatValue(), l.values.get(coordIdx[2]).floatValue());
-			if (colorOk == 3) {
-				v.color = new Color(l.values.get(colorIdx[0]).intValue(), l.values.get(colorIdx[1])
-						.intValue(), l.values.get(colorIdx[2]).intValue());
+
+			for (ValueLine l : vertexElement.lines) {
+				if (l.values.size() < 3) {
+					System.err.println("ERROR: invalid vertex coordinate count: " + l.values.size()
+							+ " for vertex index " + model.getVertices().size());
+					model = null;
+					return false;
+				}
+				Vertex v = new Vertex(l.values.get(coordIdx[0]).floatValue(), l.values.get(
+						coordIdx[1]).floatValue(), l.values.get(coordIdx[2]).floatValue());
+				if (colorOk == 3) {
+					v.color = new Color(l.values.get(colorIdx[0]).intValue(), l.values.get(
+							colorIdx[1]).intValue(), l.values.get(colorIdx[2]).intValue());
+				}
+				model.getVertices().add(v);
 			}
-			model.getVertices().add(v);
-		}
 
-		for (ValueLine l : faceElement.lines) {
-			if (l.values.size() < 3) {
-				System.err.println("WARN: Skipping face with less than 3 points");
-			} else if (l.values.size() == 3) {
-				Triangle t = new Triangle();
-				Vertex[] vert = new Vertex[3];
-				for (int i = 0; i < 3; i++) {
-					vert[i] = model.getVertices().get(l.values.get(i).intValue());
-				}
-				t.setPosition(vert);
-				if (!t.calculateNormalVector()) {
-					continue;
-				}
-				g.addTriangle(t);
-			} else {
-
-				Vertex[] polyVert = new Vertex[l.values.size()];
-				for (int i = 0; i < l.values.size(); i++) {
-					polyVert[i] = model.getVertices().get(l.values.get(i).intValue());
-				}
-				int triangleIndices[] = polygonTriangulation(polyVert);
-				for (int i = 0; i < triangleIndices.length / 3; i++) {
+			for (ValueLine l : faceElement.lines) {
+				if (l.values.size() < 3) {
+					System.err.println("WARN: Skipping face with less than 3 points");
+				} else if (l.values.size() == 3) {
 					Triangle t = new Triangle();
 					Vertex[] vert = new Vertex[3];
-					for (int j = 0; j < 3; j++) {
-						vert[j] = polyVert[triangleIndices[i * 3 + j]];
+					for (int i = 0; i < 3; i++) {
+						vert[i] = model.getVertices().get(l.values.get(i).intValue());
 					}
 					t.setPosition(vert);
 					if (!t.calculateNormalVector()) {
 						continue;
 					}
 					g.addTriangle(t);
+				} else {
+
+					Vertex[] polyVert = new Vertex[l.values.size()];
+					for (int i = 0; i < l.values.size(); i++) {
+						polyVert[i] = model.getVertices().get(l.values.get(i).intValue());
+					}
+					int triangleIndices[] = polygonTriangulation(polyVert);
+					for (int i = 0; i < triangleIndices.length / 3; i++) {
+						Triangle t = new Triangle();
+						Vertex[] vert = new Vertex[3];
+						for (int j = 0; j < 3; j++) {
+							vert[j] = polyVert[triangleIndices[i * 3 + j]];
+						}
+						t.setPosition(vert);
+						if (!t.calculateNormalVector()) {
+							continue;
+						}
+						g.addTriangle(t);
+					}
 				}
 			}
+		} catch (IndexOutOfBoundsException e) {
+			System.err.println("Couldn't parse model. " + e.toString() + " " + e.getMessage());
+			return false;
+		} catch (BufferUnderflowException e) {
+			System.err.println("Couldn't parse model. " + e.toString() + " " + e.getMessage());
+			return false;
+		} catch (BufferOverflowException e) {
+			System.err.println("Couldn't parse model. " + e.toString() + " " + e.getMessage());
+			return false;
 		}
 
 		elements = null;

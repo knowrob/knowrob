@@ -35,6 +35,8 @@ public class MeshReasoningBatchTest {
 	 */
 	public static Object	monitor				= new Object();
 
+	static String			subfolder			= "furniture";
+
 	/**
 	 * Main entry point
 	 * 
@@ -42,7 +44,7 @@ public class MeshReasoningBatchTest {
 	 *            not used
 	 */
 	public static void main(String[] args) {
-		String folder = "models/batch/bowl/";
+		String folder = "models/batch/" + subfolder + "/";
 		File dir = new File(folder);
 		recursiveTraversal(dir);
 
@@ -69,8 +71,8 @@ public class MeshReasoningBatchTest {
 		if (ModelParser.findParser(f.getAbsolutePath()) == null)
 			return;
 
-		String path = f.getAbsolutePath();
-		String filename = path.substring(path.lastIndexOf(File.separatorChar) + 1);
+		final String path = f.getAbsolutePath();
+		final String filename = path.substring(path.lastIndexOf(File.separatorChar) + 1);
 
 		while (currentWindowCount > 1) {
 			synchronized (monitor) {
@@ -90,6 +92,19 @@ public class MeshReasoningBatchTest {
 		mr.frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
+
+				/*File f = new File(path);
+				String input = (String) JOptionPane.showInputDialog(mr.frame, "New File name",
+						"Filename", JOptionPane.PLAIN_MESSAGE, null, null, filename);
+				if (input == null) {
+
+					f.delete();
+				} else {
+					File nf = new File("models/batch_ok/" + subfolder + "/");
+					nf.mkdirs();
+					nf = new File("models/batch_ok/" + subfolder + "/" + input);
+					f.renameTo(nf);
+				}*/
 				currentWindowCount--;
 				synchronized (monitor) {
 					monitor.notifyAll();
