@@ -10,6 +10,7 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 set(JAVA_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/bin)
 
+rosbuild_find_ros_package(knowrob_common)
 
 # set local package path of knowrob_cad_models in owl and prolog files
 rosbuild_find_ros_package(knowrob_cad_parser)
@@ -17,17 +18,18 @@ set( LOCAL_PACKAGE_PATH ${knowrob_cad_parser_PACKAGE_PATH} )
 
 
 add_classpath(${PROJECT_SOURCE_DIR}/lib/processing/core.jar)
-add_classpath(${PROJECT_SOURCE_DIR}/lib/vecmath.jar)
 add_classpath(${PROJECT_SOURCE_DIR}/lib/processing/PeasyCam.jar)
 add_classpath(${PROJECT_SOURCE_DIR}/lib/dae4j.jar)
 add_classpath(${PROJECT_SOURCE_DIR}/lib/log4j-1.2.16.jar)
 add_classpath(${PROJECT_SOURCE_DIR}/lib/commons-net-3.0.1.jar)
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/processing/core.jar)
-add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/vecmath.jar)
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/processing/PeasyCam.jar)
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/dae4j.jar)
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/log4j-1.2.16.jar)
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/commons-net-3.0.1.jar)
+
+add_classpath(${knowrob_common_PACKAGE_PATH}/lib/vecmath.jar)
+add_runtime_classpath(${knowrob_common_PACKAGE_PATH}/lib/vecmath.jar)
 
 file(GLOB inputs prolog/*.in)
 foreach( _in ${inputs} )
