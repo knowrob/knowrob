@@ -820,7 +820,7 @@ public class ActionDrawInformation {
 		position.y += INNER_CONTENT_PADDING;
 		
 		//Subsequences
-		drawSequence(applet, position, drawOffset, false);
+		drawSequence(applet, position, new Vector2f(), false);
 		
 		position.y += sequenceBoxDimension.y;
 		position.x -= MAIN_BOX_PADDING;

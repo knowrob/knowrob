@@ -466,7 +466,7 @@ planvis_create(PlanVis) :-
     planvis(fail),
     jpl_new('javax.swing.JFrame', [], Frame),
     jpl_call(Frame, 'resize', [1600, 400], _),
-    jpl_new('edu.tum.cs.ias.knowrob.vis.gui.applets.PlanVisApplet', [], PlanVis),
+    jpl_new('edu.tum.cs.ias.knowrob.vis.applets.PlanVisApplet', [], PlanVis),
     jpl_call(PlanVis, 'init', [], _),
     jpl_call(Frame, 'add', [PlanVis], _),
     jpl_call(Frame, 'setVisible', [@(true)], _),
