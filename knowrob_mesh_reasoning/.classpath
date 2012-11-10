@@ -12,15 +12,16 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/Mesh Reasoning/lib/ejml-0.19-doc.zip!/ejml-javadoc"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/processing/core.jar"/>
-	<classpathentry kind="lib" path="lib/processing/PeasyCam.jar"/>
-	<classpathentry kind="lib" path="lib/commons-net-3.0.1.jar"/>
-	<classpathentry kind="lib" path="lib/dae4j.jar" sourcepath="D:/Dropbox/BachelorThesis/Code/dae4j/dae4j/src"/>
-	<classpathentry kind="lib" path="lib/log4j-1.2.16.jar"/>
-	<classpathentry kind="lib" path="lib/vecmath.jar"/>
+	<classpathentry kind="lib" path="/knowrob_cad_parser/lib/processing/PeasyCam.jar"/>
+	<classpathentry kind="lib" path="/knowrob_common/lib/vecmath.jar"/>
 	<classpathentry kind="lib" path="/knowrob_cad_parser/bin" sourcepath="/knowrob_cad_parser/src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/knowrob_cad_parser"/>
 	<classpathentry kind="lib" path="/knowrob_cad_parser/lib/j3dcore.jar"/>
 	<classpathentry kind="lib" path="/knowrob_cad_parser/lib/j3dutils.jar"/>
+	<classpathentry kind="lib" path="lib/ejml-0.19-doc.zip"/>
+	<classpathentry kind="lib" path="/knowrob_cad_parser/lib/dae4j.jar"/>
+	<classpathentry kind="lib" path="/knowrob_cad_parser/lib/log4j-1.2.16.jar"/>
+	<classpathentry kind="lib" path="/knowrob_cad_parser/lib/processing/core.jar"/>
+	<classpathentry kind="lib" path="/knowrob_common/lib/commons-net-3.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

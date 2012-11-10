@@ -50,8 +50,8 @@ import com.dddviewr.collada.visualscene.InstanceNode;
 import com.dddviewr.collada.visualscene.Matrix;
 import com.dddviewr.collada.visualscene.VisualScene;
 
-import edu.tum.cs.util.FileUtil;
-import edu.tum.cs.util.ResourceRetriever;
+import edu.tum.cs.ias.knowrob.utils.FileUtil;
+import edu.tum.cs.ias.knowrob.utils.ResourceRetriever;
 import edu.tum.cs.vis.model.Model;
 import edu.tum.cs.vis.model.util.Appearance;
 import edu.tum.cs.vis.model.util.Group;

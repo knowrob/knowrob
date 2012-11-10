@@ -22,7 +22,7 @@ import javax.vecmath.Point3f;
 
 import processing.core.PGraphics;
 import processing.core.PImage;
-import edu.tum.cs.util.FileUtil;
+import edu.tum.cs.ias.knowrob.utils.FileUtil;
 
 /**
  * A Mesh contains list of Triangles and Lines which represent an Object.

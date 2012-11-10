@@ -19,7 +19,6 @@ import org.apache.log4j.xml.DOMConfigurator;
 
 import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.util.PrintUtil;
-import edu.tum.cs.util.ResourceRetriever;
 import edu.tum.cs.vis.model.uima.analyser.ContainerAnalyser;
 import edu.tum.cs.vis.model.uima.analyser.MeshAnalyser;
 import edu.tum.cs.vis.model.uima.analyser.NeighborAnalyser;
