@@ -13,7 +13,7 @@ import ros.pkg.mod_vis.srv.CommVisSetLeftImg;
 import ros.pkg.mod_vis.srv.CommVisSetRightImg;
 import ros.pkg.mod_vis.srv.CommVisSetReqText;
 import ros.pkg.mod_vis.srv.CommVisSetResText;
-import edu.tum.cs.util.ResourceRetriever;
+import edu.tum.cs.ias.knowrob.utils.ResourceRetriever;
 
 public class CommunicationVisApplet extends PApplet {
 

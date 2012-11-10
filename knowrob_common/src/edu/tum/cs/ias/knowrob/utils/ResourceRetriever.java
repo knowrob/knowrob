@@ -8,7 +8,7 @@
  * Contributors:
  *     Stefan Profanter - initial API and implementation, Year: 2012
  ******************************************************************************/
-package edu.tum.cs.util;
+package edu.tum.cs.ias.knowrob.utils;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;

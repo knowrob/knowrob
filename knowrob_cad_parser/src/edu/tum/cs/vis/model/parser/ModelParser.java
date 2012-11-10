@@ -13,7 +13,7 @@ import java.util.Iterator;
 
 import com.sun.j3d.utils.geometry.GeometryInfo;
 
-import edu.tum.cs.util.ResourceRetriever;
+import edu.tum.cs.ias.knowrob.utils.ResourceRetriever;
 import edu.tum.cs.vis.model.Model;
 import edu.tum.cs.vis.model.util.Vertex;
 

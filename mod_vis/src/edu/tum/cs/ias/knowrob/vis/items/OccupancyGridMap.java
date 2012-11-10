@@ -20,8 +20,8 @@ import org.yaml.snakeyaml.Yaml;
 import processing.core.PImage;
 
 import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
+import edu.tum.cs.ias.knowrob.utils.ResourceRetriever;
 import edu.tum.cs.ias.knowrob.vis.Canvas;
-import edu.tum.cs.util.ResourceRetriever;
 
 public class OccupancyGridMap extends Item {
 

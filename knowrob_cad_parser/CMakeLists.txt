@@ -21,15 +21,17 @@ add_classpath(${PROJECT_SOURCE_DIR}/lib/processing/core.jar)
 add_classpath(${PROJECT_SOURCE_DIR}/lib/processing/PeasyCam.jar)
 add_classpath(${PROJECT_SOURCE_DIR}/lib/dae4j.jar)
 add_classpath(${PROJECT_SOURCE_DIR}/lib/log4j-1.2.16.jar)
-add_classpath(${PROJECT_SOURCE_DIR}/lib/commons-net-3.0.1.jar)
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/processing/core.jar)
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/processing/PeasyCam.jar)
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/dae4j.jar)
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/log4j-1.2.16.jar)
-add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/commons-net-3.0.1.jar)
 
 add_classpath(${knowrob_common_PACKAGE_PATH}/lib/vecmath.jar)
 add_runtime_classpath(${knowrob_common_PACKAGE_PATH}/lib/vecmath.jar)
+add_classpath(${knowrob_common_PACKAGE_PATH}/lib/commons-net-3.0.1.jar)
+add_runtime_classpath(${knowrob_common_PACKAGE_PATH}/lib/commons-net-3.0.1.jar)
+
+
 
 file(GLOB inputs prolog/*.in)
 foreach( _in ${inputs} )
