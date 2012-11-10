@@ -519,6 +519,13 @@ Example: hand that is made of several links and joints</rdfs:comment>
     </owl:Class>
 
 
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#EnvironmentExplorationController -->
+
+    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#EnvironmentExplorationController">
+        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#BaseMotionController"/>
+        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#NavigationComponent"/>
+    </owl:Class>
+
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#EnvironmentMap -->
 
