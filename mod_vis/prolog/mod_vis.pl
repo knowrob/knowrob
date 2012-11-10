@@ -101,7 +101,7 @@ visualisation_canvas(Canvas) :-
     v_canvas(fail),
     jpl_new('javax.swing.JFrame', [], Frame),
     jpl_call(Frame, 'resize', [800, 630], _),
-    jpl_new('edu.tum.cs.ias.knowrob.vis.gui.applets.PrologVisualizationCanvas', [], Canvas),
+    jpl_new('edu.tum.cs.ias.knowrob.vis.applets.PrologVisualizationCanvas', [], Canvas),
     jpl_call(Canvas, 'init', [], _),
     jpl_call(Canvas, 'drawBackground', [], _),
     jpl_call(Frame, 'add', [Canvas], _),
