@@ -11,6 +11,7 @@
   <depend package="rosjava_jni"/>
   <depend package="jpl"/>
   <depend package="semweb"/>
+  <depend package="rosprolog"/>
 
   <export>
 <!--     <java classpath="${prefix}/bin:${prefix}/lib/guava-r09.jar:${prefix}/lib/vecmath.jar"/> -->
