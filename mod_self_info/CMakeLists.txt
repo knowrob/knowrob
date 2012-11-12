@@ -8,12 +8,15 @@ rosbuild_init()
 
 rosbuild_find_ros_package(mod_self_info)
 set( LOCAL_PACKAGE_PATH ${mod_self_info_PACKAGE_PATH} )
+fix_ros_destination_path(mod_self_info_PACKAGE_PATH)
 
 rosbuild_find_ros_package(ias_knowledge_base)
 set( OWL_PATH_PREFIX ${ias_knowledge_base_PACKAGE_PATH} )
+fix_ros_destination_path(ias_knowledge_base_PACKAGE_PATH)
 
 rosbuild_find_ros_package(ias_semantic_map)
 set( IAS_MAP_PATH_PREFIX ${ias_semantic_map_PACKAGE_PATH} )
+fix_ros_destination_path(ias_semantic_map_PACKAGE_PATH)
 
 
 file(GLOB inputs prolog/*.in)

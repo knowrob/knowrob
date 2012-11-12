@@ -1,24 +1,19 @@
 cmake_minimum_required(VERSION 2.4.6)
 include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 
-# Set the build type.  Options are:
-#  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
-#  Debug          : w/ debug symbols, w/o optimization
-#  Release        : w/o debug symbols, w/ optimization
-#  RelWithDebInfo : w/ debug symbols, w/ optimization
-#  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-#set(ROS_BUILD_TYPE RelWithDebInfo)
-
 rosbuild_init()
 
 rosbuild_find_ros_package(ias_knowledge_base)
 set( OWL_PATH_PREFIX ${ias_knowledge_base_PACKAGE_PATH} )
+fix_ros_destination_path(ias_knowledge_base_PACKAGE_PATH)
 
 rosbuild_find_ros_package(ias_semantic_map)
 set( OWL_PATH_PREFIX_SEM ${ias_semantic_map_PACKAGE_PATH} )
+fix_ros_destination_path(ias_semantic_map_PACKAGE_PATH)
 
 rosbuild_find_ros_package(semweb)
 set( OWL_PATH_PREFIX_SEMWEB ${semweb_PACKAGE_PATH} )
+fix_ros_destination_path(semweb_PACKAGE_PATH)
 
 file(GLOB inputs owl/*.in)
 foreach( _in ${inputs} )
@@ -30,6 +25,7 @@ endforeach( _in )
 # replace path to local OWL files
 rosbuild_find_ros_package(comp_eye_traj)
 set( LOCAL_PACKAGE_PATH ${comp_eye_traj_PACKAGE_PATH} )
+fix_ros_destination_path(comp_eye_traj_PACKAGE_PATH)
 
 file(GLOB inputs prolog/*.in)
 foreach( _in ${inputs} )

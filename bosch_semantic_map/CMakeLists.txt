@@ -34,6 +34,7 @@ rosbuild_find_ros_package(bosch_semantic_map)
 set( LOCAL_PACKAGE_PATH ${bosch_semantic_map_PACKAGE_PATH} )
 rosbuild_find_ros_package(ias_knowledge_base)
 set( IAS_KNOWLEDGE_BASE_PATH ${ias_knowledge_base_PACKAGE_PATH} )
+fix_ros_destination_path(IAS_KNOWLEDGE_BASE_PATH)
 
 file(GLOB inputs owl/*.in)
 foreach( _in ${inputs} )

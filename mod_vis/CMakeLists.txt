@@ -9,19 +9,10 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 set(JAVA_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/bin)
 
-
-# replace image path in communication vis applet
 rosbuild_find_ros_package(mod_vis)
-set( LOCAL_PACKAGE_PATH ${mod_vis_PACKAGE_PATH} )
 rosbuild_find_ros_package(knowrob_cad_models)
 rosbuild_find_ros_package(knowrob_cad_parser)
 rosbuild_find_ros_package(knowrob_common)
-
-file(GLOB inputs src/de/tum/in/fipm/kipm/gui/visualisation/applets/*.in)
-foreach( _in ${inputs} )
-  string(REPLACE ".in" "" _out ${_in})
-  configure_file( ${_in} ${_out} )
-endforeach( _in )
 
 add_classpath(${PROJECT_SOURCE_DIR}/lib/processing/core.jar)
 add_classpath(${PROJECT_SOURCE_DIR}/lib/processing/PeasyCam.jar)
@@ -48,4 +39,4 @@ add_runtime_classpath(${jpl_PACKAGE_PATH}/prolog/jpl.jar)
 
 add_java_source_dir(${PROJECT_SOURCE_DIR}/src)
 
-rospack_add_java_executable(communication_vis de.tum.in.fipm.kipm.gui.visualisation.applets.CommunicationVisApplet)
+rospack_add_java_executable(communication_vis edu.tum.cs.ias.knowrob.vis.applets.CommunicationVisApplet)

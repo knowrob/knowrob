@@ -31,14 +31,6 @@ add_runtime_classpath(${knowrob_common_PACKAGE_PATH}/lib/vecmath.jar)
 add_classpath(${knowrob_common_PACKAGE_PATH}/lib/commons-net-3.0.1.jar)
 add_runtime_classpath(${knowrob_common_PACKAGE_PATH}/lib/commons-net-3.0.1.jar)
 
-
-
-file(GLOB inputs prolog/*.in)
-foreach( _in ${inputs} )
-  string(REPLACE ".in" "" _out ${_in})
-  configure_file( ${_in} ${_out} )
-endforeach( _in )
-
 rosbuild_find_ros_package(jpl)
 add_classpath(${jpl_PACKAGE_PATH}/jpl/jpl.jar)
 add_runtime_classpath(${jpl_PACKAGE_PATH}/prolog/jpl.jar)
