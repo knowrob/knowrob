@@ -270,7 +270,7 @@ read_objclass_info(ObjClass, ObjClassInfosSorted) :-
 
   % read all properties for each of them
   findall(ObjPr, (member(ObjCl,ObjClassDefsSorted),
-                  class_properties_nosup_1(ObjCl, P, ObjPr),
+                  class_properties_nosup(ObjCl, P, ObjPr),
                   not(rdfs_subproperty_of(P, owl:subClassOf))), ObjProperties),
 
   % read everything related to these things by an ObjectProperty

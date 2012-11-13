@@ -451,12 +451,6 @@ public class OWLClass extends OWLThing {
 									"rdf_has(R, 'http://www.w3.org/2002/07/owl#someValuesFrom', '"+v+"')), Rs), " +
 									"member(Restr, Rs), rdf_retractall(Restr, _, _), " +
 									"rdf_retractall(_, 'http://www.w3.org/2000/01/rdf-schema#subClassOf', Restr)");
-							
-							System.out.println("findall(R, (rdfs_subclass_of('"+iri+"', R), " +
-									"rdf_has(R, 'http://www.w3.org/2002/07/owl#onProperty','"+p+"'), " +
-									"rdf_has(R, 'http://www.w3.org/2002/07/owl#someValuesFrom', '"+v+"')), Rs), " +
-									"member(Restr, Rs), rdf_retractall(Restr, _, _), " +
-									"rdf_retractall(_, 'http://www.w3.org/2000/01/rdf-schema#subClassOf', Restr)");
 						}
 
 					} else if(type.get(i).contains("all")) {

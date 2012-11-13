@@ -104,10 +104,7 @@
     comp_m20(r, r),    comp_m21(r, r),    comp_m22(r, r),    comp_m23(r, r),    comp_m23(r, r),    comp_m25(r, r),
     comp_m30(r, r),    comp_m31(r, r),    comp_m32(r, r),    comp_m33(r, r),    comp_m34(r, r),    comp_m35(r, r),
     comp_m40(r, r),    comp_m41(r, r),    comp_m42(r, r),    comp_m43(r, r),    comp_m44(r, r),    comp_m45(r, r),
-    comp_m50(r, r),    comp_m51(r, r),    comp_m52(r, r),    comp_m53(r, r),    comp_m54(r, r),    comp_m55(r, r),
-    class_properties_nosup(r,r,r),
-    class_properties_transitive_nosup(r,r,r),
-    class_properties_transitive_nosup_1(r,r,r).
+    comp_m50(r, r),    comp_m51(r, r),    comp_m52(r, r),    comp_m53(r, r),    comp_m54(r, r),    comp_m55(r, r).
 
 
 :- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
@@ -211,7 +208,7 @@ instantiate_at_position(ObjClassDef, PoseList, ObjInst) :-
 
     % read object properties
     findall([Cinst, P, Oinst], (class_to_pose(C, _),
-                     owl_export:class_properties_nosup(C, P, O),
+                     class_properties_nosup(C, P, O),
                      owl_individual_of(P, owl:'ObjectProperty'),
                      \+ rdfs_subproperty_of(P, knowrob:parts),
                      \+ rdfs_subproperty_of(P, knowrob:orientation),
@@ -322,7 +319,7 @@ update_instance_from_class_def(ObjClassDef, ObjInst) :-
 
 find_missing_objprops(Inst, P, Oinst) :-
     class_to_inst(C, Inst),
-    owl_export:class_properties_nosup(C, P, O),
+    class_properties_nosup(C, P, O),
     owl_individual_of(P, owl:'ObjectProperty'),
     P\='http://ias.cs.tum.edu/kb/knowrob.owl#spatiallyRelated',
     (rdfs_individual_of(Inst, C) ; (rdfs_individual_of(Inst, Csup), owl_direct_subclass_of(C, Csup))),
@@ -331,7 +328,7 @@ find_missing_objprops(Inst, P, Oinst) :-
 
 find_missing_dataprops(Inst, P, O) :-
     class_to_inst(C, Inst),
-    owl_export:class_properties_nosup(C, P, O),
+    class_properties_nosup(C, P, O),
     owl_individual_of(P, owl:'DatatypeProperty'),
     (rdfs_individual_of(Inst, C) ; (rdfs_individual_of(Inst, Csup), owl_direct_subclass_of(C, Csup))),
     \+rdf_has(Inst, P, O).
@@ -347,10 +344,10 @@ find_missing_dataprops(Inst, P, O) :-
 %
 update_physical_part_from_class_def(ObjClassDef, ObjInst, PartInst) :-
 
-    findall(P, owl_export:class_properties_nosup(ObjClassDef, knowrob:properPhysicalParts, P), Ps),
+    findall(P, class_properties_nosup(ObjClassDef, knowrob:properPhysicalParts, P), Ps),
     member(Part, Ps),
 
-    findall(Pp, owl_export:class_properties_nosup(Part, knowrob:orientation, Pp), Pps),
+    findall(Pp, class_properties_nosup(Part, knowrob:orientation, Pp), Pps),
     member(PartPose, Pps),
 
     % transform into global coordinates if relativeTo relation is given
@@ -467,40 +464,6 @@ tboxify_object_inst(ObjInst, ClassName, ReferenceObj, ReferenceObjCl, SourceRef)
                                                                 % use referenceobj here?? -> error with relat
 
   retractall(tboxified).
-
-
-
-% forked class_properties to get rid of export of super-classes
-
-class_properties_nosup(Class, Prop, Val) :-         % read directly asserted properties
-  class_properties_nosup_1(Class, Prop, Val).
-
-% class_properties_nosup(Class, Prop, Val) :-         % do not consider properties of superclasses
-%   owl_subclass_of(Class, Super), Class\=Super,
-%   class_properties_nosup_1(Super, Prop, Val).
-
-class_properties_nosup_1(Class, Prop, Val) :-
-  owl_direct_subclass_of(Class, Sup),
-  ( (nonvar(Prop)) -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
-
-  ( owl_restriction(Sup,restriction(SubProp, some_values_from(Val))) ;
-    owl_restriction(Sup,restriction(SubProp, has_value(Val))) ).
-
-
-class_properties_transitive_nosup(Class, Prop, SubComp) :-
-    class_properties_nosup(Class, Prop, SubComp).
-class_properties_transitive_nosup(Class, Prop, SubComp) :-
-    class_properties_nosup(Class, Prop, Sub),
-    owl_individual_of(Prop, owl:'TransitiveProperty'),
-    Sub \= Class,
-    class_properties_transitive_nosup(Sub, Prop, SubComp).
-
-
-
-
-
-
-
 
 
 

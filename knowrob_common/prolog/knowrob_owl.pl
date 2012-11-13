@@ -25,6 +25,8 @@
       class_properties_some/3,
       class_properties_all/3,
       class_properties_value/3,
+      class_properties_nosup/3,
+      class_properties_transitive_nosup/3,
       create_restr/6,
       rdf_instance_from_class/2,
       rdf_instance_from_class/3,
@@ -41,6 +43,9 @@
             class_properties_some(r,r,t),
             class_properties_all(r,r,t),
             class_properties_value(r,r,t),
+            class_properties_nosup(r,r,r),
+            class_properties_transitive_nosup(r,r,r),
+            class_properties_transitive_nosup_1(r,r,r),
             rdf_instance_from_class(r,r),
             rdf_instance_from_class(r,r,r),
             get_timepoint(r),
@@ -257,4 +262,30 @@ class_properties_1_value(Class, Prop, Val) :-       % read all values for has_va
 
   owl_restriction(Sup,restriction(SubProp, has_value(Val))) .
 
+
+
+% forked class_properties to get rid of export of super-classes
+
+class_properties_nosup(Class, Prop, Val) :-         % read directly asserted properties
+  class_properties_nosup_1(Class, Prop, Val).
+
+% class_properties_nosup(Class, Prop, Val) :-         % do not consider properties of superclasses
+%   owl_subclass_of(Class, Super), Class\=Super,
+%   class_properties_nosup_1(Super, Prop, Val).
+
+class_properties_nosup_1(Class, Prop, Val) :-
+  owl_direct_subclass_of(Class, Sup),
+  ( (nonvar(Prop)) -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
+
+  ( owl_restriction(Sup,restriction(SubProp, some_values_from(Val))) ;
+    owl_restriction(Sup,restriction(SubProp, has_value(Val))) ).
+
+
+class_properties_transitive_nosup(Class, Prop, SubComp) :-
+    class_properties_nosup(Class, Prop, SubComp).
+class_properties_transitive_nosup(Class, Prop, SubComp) :-
+    class_properties_nosup(Class, Prop, Sub),
+    owl_individual_of(Prop, owl:'TransitiveProperty'),
+    Sub \= Class,
+    class_properties_transitive_nosup(Sub, Prop, SubComp).
 
