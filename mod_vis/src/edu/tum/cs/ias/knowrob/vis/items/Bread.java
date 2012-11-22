@@ -24,7 +24,7 @@ public class Bread extends Item {
 	@Override
 	public void drawIt(Canvas c) {
 
-		c.box(20f, 8f, 8f);
+		c.box(0.02f, 0.08f, 0.08f);
 		
 	}
 }

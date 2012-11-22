@@ -999,6 +999,7 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 			if(a.getIRI().equals(identifier)) {
 				clearHighlight();
 				a.getDrawInfo().setHightlight(HighlightType.THIS_HIGHLIGHTED);
+				selectedAction=a;
 				return true;
 			}
 		}
@@ -1012,9 +1013,12 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	 */
 	public void clearHighlight()
 	{
-		if (selectedAction == null)
+		if (currTask == null)
 			return;
-		selectedAction.getDrawInfo().clearHightlight();
+
+		for(Action a : currTask.getSubActionsRecursive()) {
+			a.getDrawInfo().clearHightlight();
+		}
 	}
 
 	

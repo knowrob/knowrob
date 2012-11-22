@@ -556,7 +556,7 @@ public class ActionPropertiesEditor  extends PApplet implements MouseListener, M
 		} else if(e.getKeyCode() == KeyEvent.VK_DOWN && propsIsActive) {
 			if(props.getValue() < props.getListBoxItems().length-1)
 				props.setValue(props.getValue()+1);
-			
+
 		} else if(e.getKeyCode() == KeyEvent.VK_UP && propsIsActive) {
 			if(props.getValue() > 0)
 				props.setValue(props.getValue()-1);

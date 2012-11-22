@@ -236,8 +236,8 @@ public class SemanticMapVisApplet extends AnimatedCanvas implements MouseListene
 			// draw all Items
 			for(int i=0;i<allItems.size();i++) {
 				//hint(ENABLE_DEPTH_TEST);
-				
-				allItems.get(i).draw(this, currentFrame);
+				ItemBase it = allItems.get(i); 
+				it.draw(this, currentFrame);
 				
 			}
 
@@ -249,7 +249,8 @@ public class SemanticMapVisApplet extends AnimatedCanvas implements MouseListene
 				record = false;
 			}
 
-		}catch(ArrayIndexOutOfBoundsException e) {
+		} catch(ArrayIndexOutOfBoundsException e) {
+			
 			System.out.println("Some Drawing error occured... ");
 			resetMatrix();
 			record = false;
@@ -409,7 +410,7 @@ public class SemanticMapVisApplet extends AnimatedCanvas implements MouseListene
 
 	public void removeObject(String identifier) {
 
-		ItemBase item = animatedItemsRef.get(identifier);
+		ItemBase item = animatedItemsRef.get(PrologInterface.addSingleQuotes(identifier));
 		if(item == null) {
 			return;
 		}
@@ -889,6 +890,9 @@ public class SemanticMapVisApplet extends AnimatedCanvas implements MouseListene
 
 	private ItemBase getItem(String identifier) {
 
+		// make sure identifier is surrounded with single quotes:
+		identifier = PrologInterface.addSingleQuotes(PrologInterface.removeSingleQuotes(identifier));
+		
 		// get type
 		HashMap<String, Vector<String>> tpe = PrologInterface.executeQuery(
 				"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," + 
@@ -907,6 +911,7 @@ public class SemanticMapVisApplet extends AnimatedCanvas implements MouseListene
 		// ignore list (not displayable):
 		if(type.equals("'http://ias.cs.tum.edu/kb/knowrob.owl#SemanticEnvironmentMap'")
 				|| type.equals("'http://ias.cs.tum.edu/kb/knowrob.owl#Door'")
+				|| type.equals("'http://ias.cs.tum.edu/kb/knowrob.owl#Vector'")
 				|| type.equals("'http://ias.cs.tum.edu/kb/knowrob.owl#WallOfAConstruction'")
 				) {
 			return null;
@@ -1073,21 +1078,21 @@ public class SemanticMapVisApplet extends AnimatedCanvas implements MouseListene
 
 			
 			
-			HashMap<String, Vector<String>> place = PrologInterface.executeQuery(
-					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
-							"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'Place')");
-
-			if(place !=null && place.get("OBJECTCLASS") != null && place.get("OBJECTCLASS").size() > 0) {
-
-				it = new Pose(new Matrix4d(pose), new Vector3d(0.35f,0.35f,0.0f));
-
-				int col = grayValues[(++grayLevelCounter) % grayValues.length];      
-				it.defaultColor = convertColor(col, col, col, 255);
-				it.setColor(it.defaultColor);
-				it.name = identifier;
-
-				return it;
-			}
+//			HashMap<String, Vector<String>> place = PrologInterface.executeQuery(
+//					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
+//							"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'Place')");
+//
+//			if(place !=null && place.get("OBJECTCLASS") != null && place.get("OBJECTCLASS").size() > 0) {
+//
+//				it = new Pose(new Matrix4d(pose), new Vector3d(0.35f,0.35f,0.0f));
+//
+//				int col = grayValues[(++grayLevelCounter) % grayValues.length];      
+//				it.defaultColor = convertColor(col, col, col, 255);
+//				it.setColor(it.defaultColor);
+//				it.name = identifier;
+//
+//				return it;
+//			}
 
 			
 			// check if it is some kind of box (e.g. Bed)
@@ -1108,8 +1113,23 @@ public class SemanticMapVisApplet extends AnimatedCanvas implements MouseListene
 
 				return it;
 			}
+			
+			// check if it is a Door
+			HashMap<String, Vector<String>> door = PrologInterface.executeQuery(
+					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
+							"( rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'ConstructionArtifact');" +
+							"  rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'Box-Container');" +
+							"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'FurniturePiece'))");
 
+			if(door !=null && door.get("OBJECTCLASS") != null && door.get("OBJECTCLASS").size() > 0) {
 
+				it = new Door(pose, dim);
+				it.defaultColor = convertColor(255, 175, 0, 255);
+				it.setColor(it.defaultColor);
+				it.name = identifier;
+
+				return it;
+			}
 
 		}
 		displayMessage("could not find how to add Item "+identifier+"\nType was: "+type);
@@ -1186,6 +1206,7 @@ public class SemanticMapVisApplet extends AnimatedCanvas implements MouseListene
 		}
 	}
 
+	
 
 
 	//////////////////////////////////////////////////////////////////////////////////////////////

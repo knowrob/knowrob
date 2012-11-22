@@ -225,7 +225,7 @@ public class ActionTransition extends OWLIndividual {
 	public void drawConnection(PApplet app) {
 		
 		// default: grey
-		if(this.getType() != null) {
+		if(this.caused_by != null) {
 			
 			if(this.caused_by.endsWith("OK")) {
 

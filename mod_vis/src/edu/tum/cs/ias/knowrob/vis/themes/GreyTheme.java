@@ -36,6 +36,11 @@ public class GreyTheme {
 	public static ControlFont cfont = null;
 	
 	
+	public static int colorBackground = color(80);
+	public static int colorForeground = color(180);
+	public static int colorActive = color(200);
+	public static int colorGroupBackground = color(50);
+	
 	
 	public static ControlP5 applyStyle(ControlP5 controlP5) {
 
@@ -126,7 +131,6 @@ public class GreyTheme {
 		return lb;
 	}
 
-	
 	
 	
 	// utility methods
