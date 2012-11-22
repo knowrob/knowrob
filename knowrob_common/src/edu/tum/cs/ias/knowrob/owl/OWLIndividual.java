@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
+import edu.tum.cs.ias.knowrob.prolog.PrologQueryUtils;
+
 
 public class OWLIndividual extends OWLThing {
 	
@@ -276,4 +279,60 @@ public class OWLIndividual extends OWLThing {
 		obj_props.get(property).add(value);
 	}
 	
+	
+
+	public void writeToProlog() {
+		
+		// check whether instance need to be written to avoid infinite loops
+		if(!this.needsSaveToProlog()) {
+			return;
+		}
+
+		// set flag that this class has been written 
+		// (in the beginning of this method to avoid problems with infinite 
+		// recursion due to recursive relations)
+		this.setSaveToProlog(false);
+
+
+		// check for deleted types
+		for(String t : PrologQueryUtils.readTypesOfInstance(iri)) {
+			
+			OWLClass cl = OWLClass.getOWLClass(OWLThing.removeSingleQuotes(t));
+			if(!types.contains(cl)) {
+				PrologInterface.executeQuery("rdf_retractall('" + iri + "', rdf:type, '" + cl.getIRI() + "')");
+			}
+		}
+
+		// set instance types
+		for(OWLClass t : types) {
+			if(PrologInterface.executeQuery("rdf_has('" + iri + "', rdf:type, '" + t.getIRI() + "')") == null)
+				PrologInterface.executeQuery("rdf_assert('" + iri + "', rdf:type, '" + t.getIRI() + "')");
+		}
+		
+		
+		// write object properties
+		for(String p : obj_props.keySet()) {
+			
+			PrologInterface.executeQuery("rdf_retractall('" + iri + "', '"+p+"', _)");
+		
+			for(String v : obj_props.get(p)) {
+				PrologQueryUtils.assertObjectPropertyForInst(iri, p, v);
+			}
+		}
+		
+		// write data properties
+		for(String p : data_props.keySet()) {
+
+			PrologInterface.executeQuery("rdf_retractall('" + iri + "', '"+p+"', _)");
+
+			for(String v : data_props.get(p)) {				
+				String type = "http://www.w3.org/2001/XMLSchema#string";
+				try {
+					Float.valueOf(v);
+					type = "http://www.w3.org/2001/XMLSchema#float";
+				} catch(NumberFormatException e) {}
+				PrologQueryUtils.assertDataPropertyForInst(iri, p, v, type);
+			}
+		}
+	}
 }

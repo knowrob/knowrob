@@ -146,12 +146,28 @@ public class OWLImportExport {
 					manager.addAxiom(ontology, factory.getOWLObjectPropertyAssertionAxiom(describedInMap, obj_inst, idToInst.get(namespace + map_id)));
 				}
 				
+				// write dimensions
+				if(map_obj.getDimensions()!=null) {
+
+					OWLDataProperty width = factory.getOWLDataProperty("knowrob:depthOfObject",  pm);
+					if(width!=null)
+						manager.addAxiom(ontology, factory.getOWLDataPropertyAssertionAxiom(width, obj_inst, map_obj.getDimensions().x));
+					
+					OWLDataProperty depth = factory.getOWLDataProperty("knowrob:widthOfObject",  pm);
+					if(depth!=null)
+						manager.addAxiom(ontology, factory.getOWLDataPropertyAssertionAxiom(depth, obj_inst, map_obj.getDimensions().y));
+					
+					OWLDataProperty height = factory.getOWLDataProperty("knowrob:heightOfObject",  pm);
+					if(height!=null)
+						manager.addAxiom(ontology, factory.getOWLDataPropertyAssertionAxiom(height, obj_inst, map_obj.getDimensions().z));
+					
+				}
 				
 
 				// write all normal properties contained in the properties hashmap	
 				for(String prop : map_obj.getObjProperties().keySet()) {
 					for(String val : map_obj.getObjPropValues(prop)) {
-
+						
 						OWLObjectProperty prop_short_name = factory.getOWLObjectProperty("knowrob:" + prop.split("#")[1],  pm);
 						if(prop_short_name!=null && val!=null) {
 							OWLIndividual value = idToInst.get(val);
@@ -273,6 +289,13 @@ public class OWLImportExport {
 		for(String prop : map_obj.getDataProperties().keySet()) {
 			for(String val : map_obj.getDataPropValues(prop)) {
 
+
+				if( prop.endsWith("depthOfObject") || 
+					prop.endsWith("widthOfObject") || 
+					prop.endsWith("heightOfObject") )
+					continue;
+				
+				
 				OWLDataProperty property = factory.getOWLDataProperty("knowrob:" + prop.split("#")[1],  pm);
 				if(property!=null)
 					manager.addAxiom(ontology, factory.getOWLDataPropertyAssertionAxiom(property, obj_inst, val));

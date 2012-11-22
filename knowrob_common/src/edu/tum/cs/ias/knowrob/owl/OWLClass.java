@@ -372,7 +372,7 @@ public class OWLClass extends OWLThing {
 							v = vs[vs.length-1];
 							
 							try {
-								v = URLDecoder.decode(v, "UTF-8");
+								v = URLDecoder.decode(URLDecoder.decode(v, "UTF-8"), "UTF-8");
 							} catch (UnsupportedEncodingException e) {
 								e.printStackTrace();
 							}

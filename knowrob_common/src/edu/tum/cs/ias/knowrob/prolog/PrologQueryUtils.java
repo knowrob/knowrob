@@ -173,6 +173,18 @@ public class PrologQueryUtils {
 		return values;
 	}
 	
+	public static Vector<String> readTypesOfInstance(String owlInst) {
+
+		owlInst = PrologInterface.removeSingleQuotes(owlInst);
+		
+		HashMap<String, Vector<String>> types = 
+			PrologInterface.executeQuery("owl_has('" + owlInst + "', rdf:type, T)");
+		
+		if(types!=null && types.get("T").size()>0) {
+			return types.get("T");
+		}
+		return null;
+	}
 
 
 	/**
@@ -528,6 +540,7 @@ public class PrologQueryUtils {
 		inst = PrologInterface.removeSingleQuotes(inst);
 		prop = PrologInterface.removeSingleQuotes(prop);
 		val = PrologInterface.removeSingleQuotes(val);
+		type = PrologInterface.removeSingleQuotes(type);
 		
 		PrologInterface.executeQuery("rdf_assert('" + inst + "', '"+prop+"', literal(type('" + type + "', '" + val + "')))");
 	}
@@ -773,26 +786,28 @@ public class PrologQueryUtils {
 	 */
 	public static String getSemanticMapInstance(String roomNumber, String floorNumber, String streetNumber, String streetName) {
 
-		roomNumber = PrologInterface.removeSingleQuotes(roomNumber);
-		floorNumber = PrologInterface.removeSingleQuotes(floorNumber);
-		streetNumber = PrologInterface.removeSingleQuotes(streetNumber);
-		streetName = PrologInterface.removeSingleQuotes(streetName);
-
-		String q = 	"owl_individual_of(Map, 'http://ias.cs.tum.edu/kb/knowrob.owl#SemanticEnvironmentMap')," +
-					"owl_has(R, 'http://ias.cs.tum.edu/kb/knowrob.owl#describedInMap', Map)," +
-					"owl_has(R, 'http://ias.cs.tum.edu/kb/knowrob.owl#roomNumber', literal(type(_,'"+roomNumber+"')))";
-				
+		String q = 	"owl_individual_of(Map, 'http://ias.cs.tum.edu/kb/knowrob.owl#SemanticEnvironmentMap')";
+		
+		if(roomNumber!=null && !roomNumber.isEmpty()) {
+			roomNumber = PrologInterface.removeSingleQuotes(roomNumber);
+			q+= ",owl_has(R, 'http://ias.cs.tum.edu/kb/knowrob.owl#describedInMap', Map)," +
+			     "owl_has(R, 'http://ias.cs.tum.edu/kb/knowrob.owl#roomNumber', literal(type(_,'"+roomNumber+"')))";
+		}
+		
 		if(floorNumber!=null && !floorNumber.isEmpty()) {
+			floorNumber = PrologInterface.removeSingleQuotes(floorNumber);
 			q+= ",owl_has(S1, 'http://ias.cs.tum.edu/kb/knowrob.owl#properPhysicalParts', R)," +
 				 "rdf_has(R,  'http://ias.cs.tum.edu/kb/knowrob.owl#floorNumber', literal(type(_, '"+floorNumber+"')))";
 		}
 		
 		if(streetNumber!=null && !streetNumber.isEmpty()) {
+			streetNumber = PrologInterface.removeSingleQuotes(streetNumber);
 			q+= ",owl_has(S1, 'http://ias.cs.tum.edu/kb/knowrob.owl#properPhysicalParts', R)," +
 				"rdf_has(R, 'http://ias.cs.tum.edu/kb/knowrob.owl#streetNumber', literal(type(_, '"+streetNumber+"')))";
 		}
 		
 		if(streetName!=null && !streetName.isEmpty()) {
+			streetName = PrologInterface.removeSingleQuotes(streetName);
 			q+= ",owl_has(S1, 'http://ias.cs.tum.edu/kb/knowrob.owl#properPhysicalParts', R)," +
 				"rdf_has(S2, rdfs:label, literal(like('*"+streetName+"*'), _))";
 		}
@@ -805,11 +820,13 @@ public class PrologQueryUtils {
 		return null;
 	}
 
+	
 	public static void writeActionToOWLFile(String actionClass, String file) {
-
 		PrologInterface.executeQuery("export_action('" + actionClass + "', '" + file + "')");
-			
 	}
 	
+	
+	public static void deleteObjectInstance(String iri) {
+		PrologInterface.executeQuery("delete_object_information('" + iri + "')");
+	}
 }
-

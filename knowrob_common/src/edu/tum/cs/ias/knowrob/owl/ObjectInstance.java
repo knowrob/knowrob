@@ -6,6 +6,9 @@ import javax.vecmath.Matrix4d;
 import javax.vecmath.Quat4d;
 import javax.vecmath.Vector3d;
 
+import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
+import edu.tum.cs.ias.knowrob.prolog.PrologQueryUtils;
+
 
 public class ObjectInstance extends OWLIndividual {
 
@@ -233,6 +236,17 @@ public class ObjectInstance extends OWLIndividual {
 
 	
 	
+	public Vector<Float> getPoseAsVector() {
+		Vector<Float> r = new Vector<Float>();
+		
+		for(int i=0;i<4;i++)
+			for(int j=0;j<4;j++)
+				r.add((float) pose_matrix.getElement(i, j));
+		
+		return r;
+	}
+			
+			
 	
 	public void readFromProlog() {
 		
@@ -248,6 +262,31 @@ public class ObjectInstance extends OWLIndividual {
 	}
 	
 	public void writeToProlog() {
+
+		// write general instance-related stuff
+		super.writeToProlog();
 		
+		
+		// write object pose (new pose automatically overrides old one)
+		PrologQueryUtils.setObjPose(iri, "SemanticMapPerception",  getPoseAsVector());
+		
+		
+		// write object dimensions
+		PrologInterface.executeQuery("rdf_retractall('" + iri + "', 'http://ias.cs.tum.edu/kb/knowrob.owl#depthOfObject', _)");
+		PrologInterface.executeQuery("rdf_retractall('" + iri + "', 'http://ias.cs.tum.edu/kb/knowrob.owl#widthOfObject', _)");
+		PrologInterface.executeQuery("rdf_retractall('" + iri + "', 'http://ias.cs.tum.edu/kb/knowrob.owl#heightOfObject', _)");
+		PrologQueryUtils.assertDataPropertyForInst(iri, "http://ias.cs.tum.edu/kb/knowrob.owl#depthOfObject",  dimensions.x+"", "http://www.w3.org/2001/XMLSchema#float");
+		PrologQueryUtils.assertDataPropertyForInst(iri, "http://ias.cs.tum.edu/kb/knowrob.owl#widthOfObject",  dimensions.y+"", "http://www.w3.org/2001/XMLSchema#float");
+		PrologQueryUtils.assertDataPropertyForInst(iri, "http://ias.cs.tum.edu/kb/knowrob.owl#heightOfObject", dimensions.z+"", "http://www.w3.org/2001/XMLSchema#float");
+		
+		
+		// write child objects
+		PrologInterface.executeQuery("rdf_retractall('" + iri + "', 'http://ias.cs.tum.edu/kb/knowrob.owl#properPhysicalParts', _)");
+		
+		for(ObjectInstance child : physicalParts) {
+			child.writeToProlog();
+			PrologQueryUtils.assertObjectPropertyForInst(iri, "http://ias.cs.tum.edu/kb/knowrob.owl#properPhysicalParts",  child.getIRI());
+		}
 	}
 }
+
