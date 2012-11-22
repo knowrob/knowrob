@@ -910,7 +910,6 @@ public class SemanticMapVisApplet extends AnimatedCanvas implements MouseListene
 
 		// ignore list (not displayable):
 		if(type.equals("'http://ias.cs.tum.edu/kb/knowrob.owl#SemanticEnvironmentMap'")
-				|| type.equals("'http://ias.cs.tum.edu/kb/knowrob.owl#Door'")
 				|| type.equals("'http://ias.cs.tum.edu/kb/knowrob.owl#Vector'")
 				|| type.equals("'http://ias.cs.tum.edu/kb/knowrob.owl#WallOfAConstruction'")
 				) {
@@ -1117,9 +1116,7 @@ public class SemanticMapVisApplet extends AnimatedCanvas implements MouseListene
 			// check if it is a Door
 			HashMap<String, Vector<String>> door = PrologInterface.executeQuery(
 					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
-							"( rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'ConstructionArtifact');" +
-							"  rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'Box-Container');" +
-							"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'FurniturePiece'))");
+					"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'Door')");
 
 			if(door !=null && door.get("OBJECTCLASS") != null && door.get("OBJECTCLASS").size() > 0) {
 
