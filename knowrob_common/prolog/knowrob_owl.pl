@@ -34,6 +34,7 @@
       get_timepoint/2
     ]).
 
+:- use_module(library('crypt')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('thea/owl_parser')).
 :- use_module(library('semweb/owl')).
@@ -79,11 +80,7 @@ rdf_instance_from_class(Class, Instance) :-
 % @param SourceRef Atom as source reference for rdf_assert
 % @param Inst      Identifier of the generated instance of Class
 
-:- assert(instance_nr(0)).
 rdf_instance_from_class(Class, SourceRef, Instance) :-
-
-  % retrieve global index
-  instance_nr(Index),
 
   % create instance from type
   ((concat_atom(List, '#', Class),length(List,Length),Length>1) -> (
@@ -92,15 +89,27 @@ rdf_instance_from_class(Class, SourceRef, Instance) :-
   );(
     atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', Class, T)
   )),
-  atom_concat(T, Index, Instance),
+
+  rdf_unique_id(Class, Instance),
 
   ( ( nonvar(SourceRef), rdf_assert(Instance, rdf:type, T, SourceRef),!);
-    ( rdf_assert(Instance, rdf:type, T)) ),
+    ( rdf_assert(Instance, rdf:type, T)) ).
 
-  % update index
-  retract(instance_nr(_)),
-  Index1 is Index+1,
-  assert(instance_nr(Index1)).
+
+rdf_unique_id(Class, UniqID) :-
+
+  append("$1$", _, Seed),
+  crypt(Class, Seed),
+  format(atom(Hash), '~s~n', [Seed]), 
+  sub_atom(Hash, 3, 8, _, Sub),
+
+  atom_concat(Class,  '_', Class2),
+  atom_concat(Class2, Sub, Instance),
+
+  % check if there is no triple with this identifier as subject or object yet
+  ((rdf(Instance,_,_);rdf(_,_,Instance)) -> 
+    (rdf_unique_id(Class, UniqID)); 
+    (UniqID = Instance)).
 
 
 
