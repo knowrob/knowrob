@@ -168,9 +168,18 @@ public class OWLImportExport {
 				for(String prop : map_obj.getObjProperties().keySet()) {
 					for(String val : map_obj.getObjPropValues(prop)) {
 						
+						// skip values that are written later on
+						if(prop.contains("direction") ||
+							prop.contains("describedInMap"))
+							continue;
+						
 						OWLObjectProperty prop_short_name = factory.getOWLObjectProperty("knowrob:" + prop.split("#")[1],  pm);
 						if(prop_short_name!=null && val!=null) {
 							OWLIndividual value = idToInst.get(val);
+							
+							if(value==null || obj_inst==null)
+								continue;
+							
 							manager.addAxiom(ontology, factory.getOWLObjectPropertyAssertionAxiom(prop_short_name, obj_inst, value));
 						}
 						
@@ -187,13 +196,18 @@ public class OWLImportExport {
 
 				
 				// link hinges in a special way (set child, parent, hingedTo)
-				if(map_obj instanceof JointInstance) {
+				if(map_obj instanceof JointInstance && 
+						(((JointInstance) map_obj).parent)!=null && 
+						(((JointInstance) map_obj).child)!=null) {
 
 					OWLIndividual child = idToInst.get(((JointInstance) map_obj).child.getIRI());
 					OWLIndividual parent = idToInst.get(((JointInstance) map_obj).parent.getIRI());
 				
+					if(parent==null || child ==null)
+						continue;
+					
 					// set joint connection between parent and child
-					if(map_obj.hasType("HingedJoint") && child!= null && parent!=null) {
+					if(map_obj.hasType("HingedJoint")) {
 						OWLObjectProperty hingedTo = factory.getOWLObjectProperty("knowrob:hingedTo", pm);
 						manager.addAxiom(ontology, factory.getOWLObjectPropertyAssertionAxiom(hingedTo, parent, child));
 						
@@ -204,13 +218,8 @@ public class OWLImportExport {
 					
 					// set rigid connection between joint and parent/child resp.
 					OWLObjectProperty connectedTo = factory.getOWLObjectProperty("knowrob:connectedTo-Rigidly", pm);
-					if(child!= null) {
 						manager.addAxiom(ontology, factory.getOWLObjectPropertyAssertionAxiom(connectedTo, obj_inst, child));
-					}
-					
-					if(parent!=null) {
 						manager.addAxiom(ontology, factory.getOWLObjectPropertyAssertionAxiom(connectedTo, obj_inst, parent));
-					}
 				}
 			}
 			

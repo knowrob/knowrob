@@ -183,7 +183,7 @@ public class PrologQueryUtils {
 		if(types!=null && types.get("T").size()>0) {
 			return types.get("T");
 		}
-		return null;
+		return new Vector<String>();
 	}
 
 

@@ -207,9 +207,22 @@ public class JointInstance extends ObjectInstance {
 			PrologQueryUtils.assertObjectPropertyForInst(iri, "http://ias.cs.tum.edu/kb/knowrob.owl#connectedTo-Rigidly",  parent.getIRI());
 		}
 
-		
-		// TODO: 
 		// write direction vector
+		if(direction!=null && !(direction.x==0 && direction.y==0 && direction.z==0)) {
+			
+			PrologInterface.executeQuery("rdf_has('"+ iri + "', knowrob:'direction', DirVec),!, " +
+										 "rdf_retractall('"+ iri + "', knowrob:direction, DirVec), " +
+										 "rdf_retractall(DirVec, _, _)");
+			
+			PrologInterface.executeQuery(
+			  "rdf_instance_from_class(knowrob:'Vector', DirVec)," +
+		      "rdf_assert(DirVec, knowrob:'vectorX', literal(type(xsd:float, " + direction.x + ")))," +
+		      "rdf_assert(DirVec, knowrob:'vectorY', literal(type(xsd:float, " + direction.y + ")))," +
+		      "rdf_assert(DirVec, knowrob:'vectorZ', literal(type(xsd:float, " + direction.z + ")))," +
+		      "rdf_assert('"+ iri + "', knowrob:'direction', DirVec)");
+		}
+		
+		
 	}
 	
 }
