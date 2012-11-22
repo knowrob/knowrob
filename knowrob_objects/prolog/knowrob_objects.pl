@@ -29,6 +29,7 @@
       update_joint_information/7,
       read_joint_information/9,
       delete_joint_information/1,
+      delete_object_information/1,
       object_detection/3,
       comp_m00/2,
       comp_m01/2,
@@ -98,6 +99,7 @@
     update_joint_information(r, r, +, ?, +, +, +),
     read_joint_information(r, r, r, r, -, -, -, -, -),
     delete_joint_information(r),
+    delete_object_information(r),
     comp_xCoord(r, r), comp_yCoord(r, r), comp_zCoord(r, r),
     comp_m00(r, r),    comp_m01(r, r),    comp_m02(r, r),    comp_m03(r, r),    comp_m04(r, r),    comp_m05(r, r),
     comp_m10(r, r),    comp_m11(r, r),    comp_m12(r, r),    comp_m13(r, r),    comp_m14(r, r),    comp_m15(r, r),
@@ -634,7 +636,7 @@ read_joint_information(Joint, Type, Parent, Child, Pose, Direction, Radius, Qmin
 
 %% delete_joint_information(Joint) is det.
 %
-% Remove joint instance and all information stored for this joint
+% Remove joint instance and all information stored about this joint
 %
 % @param Joint Joint instance to be deleted
 %
@@ -646,9 +648,9 @@ delete_joint_information(Joint) :-
                        rdf_retractall(Perception, _, _)), _),
 
   % remove connection between parent and child
-  rdf_has(Parent, knowrob:'properPhysicalParts', Joint),
-  rdf_has(Joint, knowrob:'connectedTo-Rigidly', Parent),
-  rdf_has(Joint, knowrob:'connectedTo-Rigidly', Child),
+  rdf_retractall(Parent, knowrob:'properPhysicalParts', Joint),
+  rdf_retractall(Joint, knowrob:'connectedTo-Rigidly', Parent),
+  rdf_retractall(Joint, knowrob:'connectedTo-Rigidly', Child),
 
   rdf_retractall(Parent, knowrob:'prismaticallyConnectedTo', Child),
   rdf_retractall(Parent, knowrob:'hingedTo', Child),
@@ -665,7 +667,22 @@ delete_joint_information(Joint) :-
 
 
 
+%% delete_object_information(Joint) is det.
+%
+% Remove object instance and all information stored about it
+%
+% @param Object Object instance to be deleted
+%
+delete_object_information(Object) :-
 
+  % remove pose/perception instances
+  % removes timepoint, pose, perception itself
+  findall(Perception, (rdf_has(Perception, knowrob:objectActedOn, Object),
+                       rdf_retractall(Perception, _, _)), _),
+
+  % remove everything directly connected to the joint instance
+  rdf_retractall(Object, _, _),
+  rdf_retractall(_, _, Object).
 
 
 
