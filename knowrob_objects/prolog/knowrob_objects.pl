@@ -30,6 +30,7 @@
       read_joint_information/9,
       delete_joint_information/1,
       delete_object_information/1,
+      delete_object_information_recursive/1,
       object_detection/3,
       comp_m00/2,
       comp_m01/2,
@@ -100,6 +101,7 @@
     read_joint_information(r, r, r, r, -, -, -, -, -),
     delete_joint_information(r),
     delete_object_information(r),
+    delete_object_information_recursive(r),
     comp_xCoord(r, r), comp_yCoord(r, r), comp_zCoord(r, r),
     comp_m00(r, r),    comp_m01(r, r),    comp_m02(r, r),    comp_m03(r, r),    comp_m04(r, r),    comp_m05(r, r),
     comp_m10(r, r),    comp_m11(r, r),    comp_m12(r, r),    comp_m13(r, r),    comp_m14(r, r),    comp_m15(r, r),
@@ -116,22 +118,22 @@
 
 
 
-  storagePlaceFor(St, ObjT) :-
-    storagePlaceForBecause(St, ObjT, _).
+storagePlaceFor(St, ObjT) :-
+  storagePlaceForBecause(St, ObjT, _).
 
-  % two instances
-  storagePlaceForBecause(St, Obj, ObjT) :-
-    owl_subclass_of(StT, knowrob:'StorageConstruct'),
-    owl_restriction_on(StT, restriction(knowrob:'typePrimaryFunction-StoragePlaceFor', some_values_from(ObjT))),
-    owl_individual_of(Obj, ObjT),
-    owl_individual_of(St, StT).
+% two instances
+storagePlaceForBecause(St, Obj, ObjT) :-
+  owl_subclass_of(StT, knowrob:'StorageConstruct'),
+  owl_restriction_on(StT, restriction(knowrob:'typePrimaryFunction-StoragePlaceFor', some_values_from(ObjT))),
+  owl_individual_of(Obj, ObjT),
+  owl_individual_of(St, StT).
 
-  % obj type, storage instance
-  storagePlaceForBecause(St, ObjType, ObjT) :-
-    owl_subclass_of(StT, knowrob:'StorageConstruct'),
-    owl_restriction_on(StT, restriction(knowrob:'typePrimaryFunction-StoragePlaceFor', some_values_from(ObjT))),
-    owl_individual_of(St, StT),
-    owl_subclass_of(ObjType, ObjT).
+% obj type, storage instance
+storagePlaceForBecause(St, ObjType, ObjT) :-
+  owl_subclass_of(StT, knowrob:'StorageConstruct'),
+  owl_restriction_on(StT, restriction(knowrob:'typePrimaryFunction-StoragePlaceFor', some_values_from(ObjT))),
+  owl_individual_of(St, StT),
+  owl_subclass_of(ObjType, ObjT).
 
 
 
@@ -667,7 +669,7 @@ delete_joint_information(Joint) :-
 
 
 
-%% delete_object_information(Joint) is det.
+%% delete_object_information(Object) is det.
 %
 % Remove object instance and all information stored about it
 %
@@ -680,9 +682,40 @@ delete_object_information(Object) :-
   findall(Perception, (rdf_has(Perception, knowrob:objectActedOn, Object),
                        rdf_retractall(Perception, _, _)), _),
 
-  % remove everything directly connected to the joint instance
+  % remove everything directly connected to the object instance
   rdf_retractall(Object, _, _),
   rdf_retractall(_, _, Object).
+
+
+%% delete_object_information_recursive(Object) is det.
+%
+% Remove object instance and all information stored about it,
+% recursively for the object and all children that can be reached
+% by knowrob:parts or knowrob:describedInMap.
+% 
+% TODO: does this also include the room/street/city in maps?
+%
+% @param Object Object instance to be deleted
+%
+delete_object_information_recursive(Object) :-
+
+  % remove pose/perception instances
+  % removes timepoint, pose, perception itself
+  findall(Perception, (rdf_has(Perception, knowrob:objectActedOn, Object),
+                       rdf_retractall(Perception, _, _)), _),
+
+  findall(Child, (rdf_has(Object, knowrob:parts, Child); 
+                  rdf_has(Child, knowrob:describedInMap, Object)), Children),
+
+  % remove everything directly connected to the object instance
+  rdf_retractall(Object, _, _),
+  rdf_retractall(_, _, Object),
+
+  ((Children \= []) ->
+   ( findall(Child, (member(Child, Children), 
+                     delete_object_information_recursive(Child)), _)) ; 
+     true).
+
 
 
 
