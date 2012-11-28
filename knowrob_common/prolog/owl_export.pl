@@ -135,7 +135,7 @@ export_action(Action, File) :-
 export_to_owl(Atoms, File) :-
 
   open(File, write, Stream, [encoding('ascii')]),
-  rdf_save_header(Stream, []),
+  rdf_save_header(Stream, [write_xml_base(true)]),
 
   findall(_, (
     member(Atom, Atoms),
