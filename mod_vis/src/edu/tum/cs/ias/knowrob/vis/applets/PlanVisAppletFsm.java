@@ -214,6 +214,8 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 	public void setTask(Action action)
 	{
 		currTask = action;
+		selectedAction = null;
+		clickHistory.clear();
 		clickHistory.add(new ActionSelectHistoryInfo(currTask));
 		updateHistoryPosition();
 
@@ -450,12 +452,12 @@ public class PlanVisAppletFsm  extends PApplet implements MouseListener, MouseMo
 
 		ActionTransitions trans = currTask.getTransitionsRecursive();
 		if(trans!=null) {
-			synchronized(trans) {
+			//synchronized(trans) {
 				// draw transition arrows
 				for(ActionTransition t : trans) {
 					t.drawConnection(app);
 				}
-			}
+			//}
 		}
 	}
 	

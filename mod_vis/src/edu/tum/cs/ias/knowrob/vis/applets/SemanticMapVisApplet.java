@@ -27,6 +27,7 @@ import processing.core.PGraphics3D;
 import processing.core.PMatrix;
 
 
+import edu.tum.cs.ias.knowrob.owl.OWLThing;
 import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
 import edu.tum.cs.ias.knowrob.util.datastructures.Point;
 import edu.tum.cs.ias.knowrob.vis.AnimatedCanvas;
@@ -367,6 +368,9 @@ public class SemanticMapVisApplet extends AnimatedCanvas implements MouseListene
 	}
 
 	public void addObjectWithChildren(String identifier) {
+		
+		identifier = OWLThing.addSingleQuotes(OWLThing.removeSingleQuotes(identifier));
+		
 		HashMap<String, Vector<String>> physicalParts = PrologInterface.executeQuery(
 				"rdf_reachable("+identifier+", knowrob:properPhysicalParts, PART)");
 

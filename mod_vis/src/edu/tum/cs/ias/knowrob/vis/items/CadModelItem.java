@@ -34,6 +34,13 @@ public class CadModelItem extends Item {
 	@Override
 	public void drawIt(Canvas c) {
 		
+		// draw item-internal coordinate system
+//		c.strokeWeight(1.5f);
+//		c.stroke(255, 0, 0);      c.line(0, 0, 0,   2, 0, 0);
+//		c.stroke(0, 255, 0);      c.line(0, 0, 0,   0, 2, 0); 
+//		c.stroke(0, 0, 255);      c.line(0, 0, 0,   0, 0, 2);
+//		c.stroke(0, 0, 0);
+		
 		if (model != null) {
 			model.getParser().getModel().draw(c.g,colorOverride);
 		} else {
