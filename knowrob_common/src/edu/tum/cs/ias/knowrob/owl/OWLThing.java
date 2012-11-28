@@ -96,6 +96,14 @@ public class OWLThing implements Comparable<OWLThing> {
 		return null;
 	}
 
+	/**
+	 * Remove the IRI from the internal buffer.
+	 * 
+	 * @param iri IRI of the Thing to be removed
+	 */
+	public static void removeOWLThing(String iri) {
+		identifiers.remove(iri);
+	}
 	
 	
 	/**
