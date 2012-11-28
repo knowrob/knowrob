@@ -701,8 +701,12 @@ delete_object_information_recursive(Object) :-
 
   % remove pose/perception instances
   % removes timepoint, pose, perception itself
-  findall(Perception, (rdf_has(Perception, knowrob:objectActedOn, Object),
-                       rdf_retractall(Perception, _, _)), _),
+  findall(Perc-Mat, (rdf_has(Perc, knowrob:objectActedOn, Object),
+                     rdf_has(Perc, knowrob:eventOccursAt, Mat)), Perceptions),
+
+  findall(P-M, (member(P-M, Perceptions),
+                rdf_retractall(P, _, _),
+                rdf_retractall(M, _, _)), _),
 
   findall(Child, (rdf_has(Object, knowrob:parts, Child); 
                   rdf_has(Child, knowrob:describedInMap, Object)), Children),

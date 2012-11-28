@@ -234,6 +234,15 @@
         </owl:Restriction>
       </rdfs:subClassOf>
     </rdf:Description>
+    
+    <rdf:Description rdf:about="&knowrob;Robot">
+      <rdfs:subClassOf>
+        <owl:Restriction>
+          <owl:onProperty rdf:resource="&knowrob;pathToCadModel"/>
+          <owl:hasValue rdf:datatype="&xsd;string">package://knowrob_cad_models/models/collada/robot.kmz</owl:hasValue>
+        </owl:Restriction>
+      </rdfs:subClassOf>
+    </rdf:Description>
 
 </rdf:RDF>
 
