@@ -827,6 +827,12 @@ public class PrologQueryUtils {
 	
 	
 	public static void deleteObjectInstance(String iri) {
+		iri = PrologInterface.removeSingleQuotes(iri);
 		PrologInterface.executeQuery("delete_object_information('" + iri + "')");
+	}
+
+	public static void deleteObjectInstanceWithChildren(String iri) {
+		iri = PrologInterface.removeSingleQuotes(iri);
+		PrologInterface.executeQuery("delete_object_information_recursive('" + iri + "')");
 	}
 }
