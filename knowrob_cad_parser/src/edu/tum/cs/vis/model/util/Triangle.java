@@ -8,7 +8,9 @@
 package edu.tum.cs.vis.model.util;
 
 import java.awt.Color;
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.locks.Lock;
 
 import javax.vecmath.Point2f;
 import javax.vecmath.Point3f;
@@ -31,37 +33,37 @@ public class Triangle extends DrawObject {
 	/**
 	 * auto generated
 	 */
-	private static final long		serialVersionUID	= -5164768039180386782L;
+	private static final long	serialVersionUID	= -5164768039180386782L;
 
 	/**
 	 * log4j logger
 	 */
-	private static Logger			logger				= Logger.getLogger(Triangle.class);
+	private static Logger		logger				= Logger.getLogger(Triangle.class);
 
 	/**
 	 * Texture-Points
 	 */
-	protected Point2f				texPosition[];
+	protected Point2f			texPosition[];
 
 	/**
 	 * Triangles may have normal vector
 	 */
-	protected Vector3f				normalVector		= null;
+	protected Vector3f			normalVector		= null;
 
 	/**
 	 * Voronoi area of triangle
 	 */
-	protected Vector3f				cornerarea			= null;
+	protected Vector3f			cornerarea			= null;
 
 	/**
 	 * Centroid of triangle
 	 */
-	protected Point3f				centroid;
+	protected Point3f			centroid;
 
 	/**
 	 * List of all direct neighbor triangles
 	 */
-	protected ArrayList<Triangle>	neighbors			= new ArrayList<Triangle>(3);
+	protected Set<Triangle>		neighbors			= new HashSet<Triangle>(3);
 
 	/**
 	 * Initializes a triangle with given number of edges (Triangle: 3)
@@ -81,33 +83,29 @@ public class Triangle extends DrawObject {
 	 * @return true if <tt>neighbor</tt> is really a neighbor of this triangle and it was
 	 *         successfully added.
 	 */
-	public boolean addNeighbor(Triangle neighbor) {
+	public boolean addNeighbor(Triangle neighbor, Lock lock) {
 		boolean add = false;
-		synchronized (this) {
-			if (neighbors.size() >= 3) // for better performance skip if triangle has already all
-										// neighbors set
-				return false;
 
-			if (neighbors.contains(neighbor))
-				return false;
+		if (neighbors.size() >= 3) // for better performance skip if triangle has already all
+									// neighbors set
+			return false;
 
-			add = isDirectNeighbor(neighbor);
+		add = isDirectNeighbor(neighbor);
 
-			if (add) {
-				synchronized (neighbors) {
-					neighbors.add(neighbor);
-				}
-			}
-		}
 		if (add) {
-			synchronized (neighbor) {
-				synchronized (neighbor.neighbors) {
-					neighbor.neighbors.add(this);
-				}
+			if (lock != null)
+				lock.lock();
+			// to make sure neighbors is not cached
+			synchronized (neighbors) {
+				neighbors.add(neighbor);
 			}
-			return true;
+			synchronized (neighbor.neighbors) {
+				neighbor.neighbors.add(this);
+			}
+			if (lock != null)
+				lock.unlock();
 		}
-		return false;
+		return add;
 	}
 
 	/**
@@ -224,9 +222,8 @@ public class Triangle extends DrawObject {
 	 * Get list of all direct neighbor triangles.
 	 * 
 	 * @return list of triangles
-	 * @see Triangle#isNeighbor
 	 */
-	public ArrayList<Triangle> getNeighbors() {
+	public Set<Triangle> getNeighbors() {
 		return neighbors;
 	}
 
@@ -431,15 +428,14 @@ public class Triangle extends DrawObject {
 				break; // if 2 of 3 points aren't equal, it is no neighbor
 			Point3f p1 = position[i];
 			for (Point3f p2 : tr.position) {
-				// if (p1.x == p2.x && p1.y == p2.y && p1.z == p2.z) {
-				if (p1 == p2) {
+				if (p1.x == p2.x && p1.y == p2.y && p1.z == p2.z) {
+					// if (p1 == p2) {
 					eqCnt++;
 					if (eqCnt == 2) {
 						isNeighbor = true;
-					}
-					if (eqCnt == 3) {
+					} else if (eqCnt == 3) {
 						// if triangle has same position but is backface
-						isNeighbor = false;
+						return false;
 					}
 					break;
 				}
@@ -498,7 +494,7 @@ public class Triangle extends DrawObject {
 	 * @param neighbors
 	 *            triangles list.
 	 */
-	public void setNeighbors(ArrayList<Triangle> neighbors) {
+	public void setNeighbors(Set<Triangle> neighbors) {
 		this.neighbors = neighbors;
 	}
 

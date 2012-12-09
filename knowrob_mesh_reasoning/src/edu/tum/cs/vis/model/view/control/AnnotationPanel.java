@@ -65,14 +65,14 @@ public abstract class AnnotationPanel<T extends DrawableAnnotation> extends JPan
 		boolean useRand = false;
 		if (e.getActionCommand() == "default_color")
 			useRand = false;
-		else if (e.getActionCommand() == "random_color")
+		else if (e.getActionCommand() == "random_color") {
 			useRand = true;
-		else
+		} else
 			return;
 
 		synchronized (cas.getAnnotations()) {
 			for (Annotation a : cas.getAnnotations()) {
-				if (a.getClass() != annotationType) {
+				if (a.getClass().isInstance(annotationType)) {
 					continue;
 				}
 				@SuppressWarnings("rawtypes")

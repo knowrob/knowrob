@@ -226,8 +226,6 @@ public class CurvatureCalculation {
 	 *            resulting vertex curvature mapping
 	 * @param m
 	 *            model to calculate curvature for
-	 * @param inverseCurvature
-	 *            Invert curvature by inverting vertex normals
 	 */
 	public static void calculateCurvatures(HashMap<Vertex, Curvature> curvatures, final Model m) {
 
@@ -317,12 +315,12 @@ public class CurvatureCalculation {
 		// direction is smaller than 90° vote for inversion.
 		for (int i = 0; i < 6; i++) {
 			float coord[] = { 0, 0, 0 };
-			coord[i % 3] = 1;
+			coord[i % 3] = i < 3 ? 1 : -1;
 			double angle = Math.acos(extrema[i].getNormalVector().dot((new Vector3f(coord))));
 			if (angle <= Math.PI / 2)
-				vote++;
-			else
 				vote--;
+			else
+				vote++;
 		}
 
 		if (vote > 0) {
@@ -580,9 +578,6 @@ public class CurvatureCalculation {
 					}
 				}
 
-			}
-			for (Triangle n : neighborsToRemove) {
-				// t.removeNeighbor(n);
 			}
 			checkedTriangles.add(t);
 		}

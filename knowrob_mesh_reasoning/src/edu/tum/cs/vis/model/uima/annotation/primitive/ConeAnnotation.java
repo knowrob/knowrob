@@ -134,7 +134,7 @@ public class ConeAnnotation extends PrimitiveAnnotation<ConeAnnotation> {
 	 * @param model
 	 *            parent model
 	 * @param concave
-	 *            ist cone concave or convex
+	 *            is cone concave or convex
 	 * 
 	 */
 	public ConeAnnotation(HashMap<Vertex, Curvature> curvatures, Model model, boolean concave) {

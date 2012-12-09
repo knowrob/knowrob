@@ -173,6 +173,18 @@ public class MeshCas extends JCas implements Serializable {
 	}
 
 	/**
+	 * removes the annotation from annotations list
+	 * 
+	 * @param a
+	 *            annotation to remove
+	 */
+	public void removeAnnotation(Annotation a) {
+		synchronized (annotations) {
+			annotations.remove(a);
+		}
+	}
+
+	/**
 	 * Set curvature property for given vertex. Overwrites existing one for vertex.
 	 * 
 	 * @param v

@@ -19,6 +19,7 @@ import org.apache.log4j.xml.DOMConfigurator;
 
 import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.util.PrintUtil;
+import edu.tum.cs.vis.model.uima.analyser.ComplexHandleAnalyser;
 import edu.tum.cs.vis.model.uima.analyser.ContainerAnalyser;
 import edu.tum.cs.vis.model.uima.analyser.MeshAnalyser;
 import edu.tum.cs.vis.model.uima.analyser.NeighborAnalyser;
@@ -124,7 +125,6 @@ public class MeshReasoning {
 	 *            path to CAD model. Can be physical file path or http://, ftp:// or even package://
 	 *            which indicates a ros package
 	 * 
-	 * @see ResourceRetriever
 	 */
 	public void analyseByPath(String path) {
 
@@ -177,10 +177,13 @@ public class MeshReasoning {
 		analyser.add(pa);
 		ContainerAnalyser ca = new ContainerAnalyser();
 		analyser.add(ca);
+		ComplexHandleAnalyser cha = new ComplexHandleAnalyser();
+		analyser.add(cha);
 
 		Thread.yield();
 		pa.process(cas);
 		ca.process(cas);
+		cha.process(cas);
 
 	}
 

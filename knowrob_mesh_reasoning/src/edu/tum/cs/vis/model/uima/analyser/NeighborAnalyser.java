@@ -12,6 +12,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.log4j.Logger;
 
@@ -63,6 +65,8 @@ public class NeighborAnalyser extends MeshAnalyser {
 
 		final int interval = 100;
 
+		final Lock lock = new ReentrantLock();
+
 		List<Callable<Void>> threads = new LinkedList<Callable<Void>>();
 
 		for (int start = 0; start < allTriangles.size(); start += interval) {
@@ -77,7 +81,7 @@ public class NeighborAnalyser extends MeshAnalyser {
 						for (int j = i + 1; j < allTriangles.size(); j++) {
 							Triangle n = allTriangles.get(j);
 							// check and add triangle as neighbor
-							n.addNeighbor(tr);
+							n.addNeighbor(tr, lock);
 						}
 					}
 					trianglesElaborated.addAndGet(end - st);

@@ -35,7 +35,7 @@ public class MeshReasoningBatchTest {
 	 */
 	public static Object	monitor				= new Object();
 
-	static String			subfolder			= "furniture";
+	static String			subfolder			= "kitchen";
 
 	/**
 	 * Main entry point
