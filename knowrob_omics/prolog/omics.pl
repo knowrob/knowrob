@@ -37,7 +37,10 @@ POSSIBILITY OF SUCH DAMAGE.
 :- module(omics,
           [
            probability_given/4,
-           bayes_probability_given/4
+           bayes_probability_given/4,
+           probableLocationOf/2,
+           allProbableLocationOf/2,
+           mostProbableLocationOf/2
            ]).
 
 
@@ -53,8 +56,22 @@ POSSIBILITY OF SUCH DAMAGE.
   probability_subj(r,r,-),
   probability_obj(r,r,-),
   probability_given(r,r,r,-),
-  bayes_probability_given(r,r,r,-).
+  bayes_probability_given(r,r,r,-),
+  probableLocationOf(r,-),
+  mostProbableLocationOf(r,-),
+  allProbableLocationOf(r,-).
 
+
+probableLocationOf(ObjT, [P, Type]):-
+  bayes_probability_given(knowrob:'RELocations', Type, ObjT, P).
+
+mostProbableLocationOf(ObjT,MaxProbLoc):-
+  allProbableLocationOf(ObjT, [MaxProbLoc | _ ] ).
+
+allProbableLocationOf(ObjT, ObjTProbList):-
+  findall([P,Type], (bayes_probability_given(knowrob:'RELocations', Type, ObjT, P)), Types), 
+  sort(Types,TypesSortedByProbOrderByInc), 
+  reverse(TypesSortedByProbOrderByInc, ObjTProbList).
   
 % Lambda is < 1, typical value 0.5, laplace =1
 % influence how unseen objects are  

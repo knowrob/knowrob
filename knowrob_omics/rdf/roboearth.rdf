@@ -1,0 +1,2245 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE rdf:RDF[
+     <!ENTITY ns1 'http://ias.cs.tum.edu/kb/knowrob.owl#'>
+    <!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+ ]><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:ns1="http://ias.cs.tum.edu/kb/knowrob.owl#">
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-0">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CitrusFruit"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-1">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bowl-Eating"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-10">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-100">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vegetable-Food"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-101">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ComputerDisplay"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-102">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bagel"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-103">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#TableSpoon-MeasuringTool"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-104">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Onion-Foodstuff"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-105">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Plant-NonWoody"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-106">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SaladDressing"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-107">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Tympani"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-108">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bun"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-109">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Egg-Foodstuff"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-11">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sink"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-110">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-111">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-112">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#BananaTree"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-113">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#AppleTree"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-114">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-115">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-116">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Soup"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-117">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Telephone"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-118">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#FoodOrDrink"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-119">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Tongs"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-12">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-120">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Wine"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-121">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bill-PaymentRequest"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-122">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#EdibleNut"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-123">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ContainerArtifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-124">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#BoxTheContainer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-125">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Doughnut"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-126">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SodaCan"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-127">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sandwich"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-128">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CoffeeBush"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-129">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Mushroom"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-13">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Stool-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-130">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Nail"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-131">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#GourdPlant"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-132">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cake"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-133">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Oil"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-134">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CowsMilk-Product"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-135">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Flashlight"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-136">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Pick-TheTool"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-137">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Amphetamine"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-138">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cheese"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-139">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Biscuit"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-14">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Oven"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-140">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ContainerArtifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-141">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Tomato-Foodstuff"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-142">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sandwich"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-143">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CookingRange"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-144">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Tomato-Foodstuff"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-145">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Pie"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-146">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#WatermelonPlant"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-147">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CombustibleFuelSubstance"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-148">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Pasta"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-149">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CookingRange"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-15">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ComputerMouse"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-150">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Preservative-Food"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-151">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PaperTowel"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-152">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ElectricalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-153">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Spice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-154">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sink"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-155">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bell"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-156">
+  <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+  <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bottle"></ns1:subject>
+  <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-157">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Telephone"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-158">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#GameBoard"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-159">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-16">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CookingVessel"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-160">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Pancake"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-161">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drink"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-162">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Knife"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-163">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SilverwarePiece"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-164">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ElectricalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-165">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ContainerArtifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-166">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#GrapeVine"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-167">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#BellPepper"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-168">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CocaCola"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-169">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CookingVessel"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-17">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Spoon-SilverwarePiece"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-170">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-171">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CoffeeMaker"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-172">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Jar"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-173">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#NewZealandPerson"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-174">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Food-ReadyToEat"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-175">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bun"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-176">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SoftDrink"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-177">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Napkin"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-178">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#DessertFood"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-179">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sauce"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-18">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bucket"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-180">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Wine"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-181">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Crayon"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-182">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#FruitTree"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-183">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Partition-ConstructionArtifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-184">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sugar-Table"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-185">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Platform"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-186">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Helicopter"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-187">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cup"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-188">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Meat"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-189">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PartiallyTangible"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-19">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cockroach"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-190">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Container"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-191">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#TableKnife"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-192">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PartiallyTangible"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-193">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Ketchup"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-194">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Implement"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-195">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bacon"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-196">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CoconutMeat"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-197">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Pizza"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-198">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Waffle"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-199">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#StrawberryPlant"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-2">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#KeyOfLock"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-20">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CookingRange"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-200">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bottle"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-201">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CookingRange"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-202">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sauce"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-203">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SaltShaker"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-204">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Framework-SupportingStructure"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-205">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ContainerArtifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-206">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Skillet"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-207">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LemonJuice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-208">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chopstick"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-209">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#FrenchFry"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-21">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Board-PieceOfWood"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-210">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Artifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-211">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#AdultMaleHuman"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-212">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Lemonade"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-213">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Nut-TheFruit"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-214">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drink"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-215">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-216">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Gravy"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-217">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#FruitTree"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-218">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Fruit"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-219">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Fruit"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-22">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Fork-SilverwarePiece"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-220">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Rice-Foodstuff"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-221">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Colander"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-222">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#MechanicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-223">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bowl-Eating"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-224">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#FlourOrMeal"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-225">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-226">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OliveTree"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-227">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PaperBag"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-228">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Artifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-229">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Artifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-23">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Refrigerator"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-230">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ContainerArtifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-231">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Food-ReadyToEat"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-232">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Lunch"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-233">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Food-ReadyToEat"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-234">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-235">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cupboard"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-236">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Implement"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-237">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sponge-CleaningImplement"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-238">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Salad"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-239">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-24">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PepperShaker"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-240">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Gin"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-241">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sandwich"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-242">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Tobacco"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-243">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Dishwasher"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-244">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#WashCloth"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-245">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-246">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Fuse-ElectricalComponent"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-247">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#TabletDrug"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-248">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Mustard-ThePreparation"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-249">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#BakingSoda"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-25">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#DishTowel"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-250">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Pastry-Stuff"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-251">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Homemaker"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-252">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Implement"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-253">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Pasta"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-254">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Scissors"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-255">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ElectronicDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-256">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Connector"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-257">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PostageStamp"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-258">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-259">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PersonalComputer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-26">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#FoodOrDrinkPreparationDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-260">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PostageStamp"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-261">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Ledger"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-262">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Typewriter"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-263">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Computer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-264">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#InstrumentalArtifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-265">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LaptopComputer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-266">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#File-Tool"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-267">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Stapler"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-268">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Artifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-269">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-27">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CookingVessel"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-270">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#NewspaperCopy"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-271">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VideoScreen"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-272">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Pencil"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-273">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-274">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#AnimalPen"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-275">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LetterOpener"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-276">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Covering-Object"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-277">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Ledger"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-278">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-279">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-28">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ProtectiveCovering"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-280">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#FileCabinet-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-281">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Covering-Object"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-282">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Board-PieceOfWood"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-283">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ElectronicDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-284">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PostalService"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-285">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Telephone"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-286">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LaunchPad"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-287">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Staple"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-288">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#BusinessPerson"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-289">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#InstrumentalArtifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-29">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Refrigerator"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-290">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Notepad"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-291">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Clock"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-292">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Connector"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-293">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VideoScreen"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-294">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Modem"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-295">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Computer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-296">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Envelope"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-297">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SkilledWorker"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-298">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#FileCabinet-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-299">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RadioDish"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-3">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Muffin"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-30">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-300">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CreditCard"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-301">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Rampart"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-302">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cup"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-303">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LaptopComputer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-304">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ElectronicDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-305">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#InstrumentalArtifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-306">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Pencil"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-307">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Tape"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-308">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ProjectionDisplayDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-309">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#InformationStorageDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-31">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Container"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-310">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Strip-Artifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-311">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#InformationStorageDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-312">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficialDocument"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-313">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ComputerMouse"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-314">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Briefcase"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-315">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Artifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-316">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Marker-WritingImplement"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-317">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-318">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#BoxTheContainer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-319">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SurfaceRegion-Tangible"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-32">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Knife"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-320">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-321">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Tool-PowerTool"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-322">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhonographRecord"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-323">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-324">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ComputerWorkstation"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-325">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#TranscriptCopy"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-326">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Receptionist"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-327">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#DeviceRequiringSkillForProperUse"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-328">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-329">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Solution"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-33">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Muffin"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-330">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Fuse-ElectricalComponent"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-331">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ButtonTheFastener"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-332">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#TelephoneReceiver"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-333">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Manager"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-334">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-335">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Paper"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-336">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalPartOfObject"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-337">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ChinaCabinet-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-338">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#WindowPortal"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-339">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OfficialDocument"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-34">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#DrinkingGlass"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-340">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Stairway"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-341">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RoomInAConstruction"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-342">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Framework-SupportingStructure"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-343">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Doorway"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-344">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Painting-ArtForm"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-345">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Pole-Rod"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-346">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Photograph"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-347">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Framework-SupportingStructure"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-348">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-349">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-35">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Water"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-350">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SportsEquipment"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-351">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Carpet"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-352">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Rug"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-353">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Framework-SupportingStructure"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-354">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Stairway"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-355">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Closet"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-356">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Covering-Object"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-357">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Doorway"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-358">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Fedora"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-359">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Person"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-36">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Food-ReadyToEat"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-360">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Shoe"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-361">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-362">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ProjectionDisplayDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-363">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SheetOfSomeStuff"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-364">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-365">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SheetOfSomeStuff"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-366">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Ledger"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-367">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Crayon"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-368">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-369">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Board-PieceOfWood"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-37">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ButtonTheFastener"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-370">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Teacher"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-371">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Doorway"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-372">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Coat"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-373">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CedarChest"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-374">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VendingMachine"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-375">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-376">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Mirror"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-377">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LightingDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-378">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sofa-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-379">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-38">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Water"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-380">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ProjectionDisplayDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-381">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-382">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-383">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-384">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Telephone"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-385">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-386">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-387">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drawer"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Notepad"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-388">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#DrinkingGlass"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-389">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cup"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-39">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bread"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-390">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#AlcoholicBeverage"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-391">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShotGlass"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-392">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Stool-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-393">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sink"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-394">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sandwich"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-395">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Tap-FlowControlDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-396">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CocktailDrink"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-397">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bottle"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-398">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Beer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-399">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Employee"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-4">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#FoodBlender"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-40">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Handle"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-400">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Drink"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-401">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Person"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-402">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Chair-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-403">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CocktailDrink"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-404">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Telephone"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-405">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Computer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-406">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LaptopComputer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-407">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-408">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Stapler"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-409">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LightingDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-41">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cookie"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-410">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#FileCabinet-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-411">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PersonalComputer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-412">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Telephone"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-413">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LaptopComputer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-414">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Painting-ArtForm"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-415">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#MechanicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-416">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-417">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#File-Tool"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-418">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#InstrumentalArtifact"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-419">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VideoScreen"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-42">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Broom"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-420">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalPartOfObject"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-421">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bed-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PlumbingFixture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-422">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bed-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Lock"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-423">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bed-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Connector"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-424">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bed-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bench-Topographical"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-425">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bed-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Connector"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-426">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bed-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Towel"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-427">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bed-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sock"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-428">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bed-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Jacket"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-429">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bed-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Clothing-Generic"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-43">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#DoorInABuilding"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-430">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bed-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#MusicalPerformer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-431">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#WasteBasket"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SeatingDeviceSeat"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-432">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#WasteBasket"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ElectricalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-433">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#WasteBasket"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#VideoScreen"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-434">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#WasteBasket"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#StageForPerformances"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-435">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#WasteBasket"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Lectern"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-436">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#WasteBasket"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Doorway"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-437">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#WasteBasket"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Pencil"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-438">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#WasteBasket"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-439">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#WasteBasket"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Gathering-SocialGroup"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-44">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#MagazineCopy"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-440">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cupboard"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sandal"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-441">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cupboard"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#DrinkingGlass"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-442">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cupboard"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ChemicallyAcidicSubstance"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-443">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cupboard"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ComputerMouse"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-444">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cupboard"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Microscope"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-445">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cupboard"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#LaptopComputer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-446">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cupboard"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Doctor-Medical"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-447">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cupboard"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Rat"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-45">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CoffeeMaker"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-46">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#SaladFork"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-47">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Pipe-GenericConduit"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-48">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Egg-Birds"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-49">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Snack"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-5">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ManualCanOpener"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-50">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CoffeeCup"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-51">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Eyelid"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-52">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-53">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bread"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-54">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Sink"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-55">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cup"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-56">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Refrigerator"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-57">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CowsMilk-Product"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-58">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Plant-NonWoody"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-59">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Peer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-6">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Eyeglasses"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-60">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Dishwasher"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-61">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CuttingBoard"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-62">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#MeasuringCup"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-63">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Table-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-64">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Skillet"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-65">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Scissors"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-66">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Vegetable-Food"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-67">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Skillet"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-68">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Buttocks"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-69">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CookingRange"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-7">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cup"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-70">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Purse"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-71">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#BlackPepperVine"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-72">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Root"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-73">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Refrigerator"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-74">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Spoon-SilverwarePiece"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-75">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CookingRange"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-76">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Towel"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-77">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-78">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#DeviceRequiringSkillForProperUse"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-79">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Teaspoon"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-8">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#HotBeveragePot"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-80">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Egg-Foodstuff"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-81">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#DinnerPlate"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-82">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#CoffeeBush"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-83">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#MeatGrinder"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-84">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ElectronicDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-85">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cup"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-86">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#MechanicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-87">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Beer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-88">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#MicrowaveOven"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-89">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Jar"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-9">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Saucer"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-90">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#PhysicalDevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-91">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cake"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-92">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Spatula"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-93">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Pliers"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-94">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#DinnerPlate"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-95">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Burner"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-96">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#EdibleFruit"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-97">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Tap-PlumbingFixture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-98">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#BladeOfADevice"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations-99">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#DrinkingGlass"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#RELocations"></rdf:type>
+</rdf:Description>
+</rdf:RDF>
