@@ -2242,4 +2242,64 @@
     <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#DrinkingGlass"></ns1:subject>
     <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
 </rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-1000">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#HospitalRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bed-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-1001">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#HospitalRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bed-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-1002">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#HospitalRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bed-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-1003">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#HospitalRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Bed-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-1004">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#HospitalRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-1005">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#HospitalRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-1006">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#HospitalRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#Cabinet-PieceOfFurniture"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-1007">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#HospitalRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-1008">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#HospitalRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-1009">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#HospitalRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-1010">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#HospitalRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
+<rdf:Description rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations-1011">
+    <ns1:object rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#HospitalRoom"></ns1:object>
+    <ns1:subject rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#ShelfInABuilding"></ns1:subject>
+    <rdf:type rdf:resource="http://ias.cs.tum.edu/kb/knowrob.owl#OmicsLocations"></rdf:type>
+</rdf:Description>
 </rdf:RDF>

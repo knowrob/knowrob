@@ -38,9 +38,11 @@ POSSIBILITY OF SUCH DAMAGE.
           [
            probability_given/4,
            bayes_probability_given/4,
-           probableLocationOf/2,
-           allProbableLocationOf/2,
-           mostProbableLocationOf/2
+           probableObjectInRoom/2,
+           allProbableObjectInRoomAboveThreshold/3,
+           probableLocationOfObject/2,
+           allProbableLocationOfObject/2,
+           mostProbableLocationOfObject/2
            ]).
 
 
@@ -57,18 +59,25 @@ POSSIBILITY OF SUCH DAMAGE.
   probability_obj(r,r,-),
   probability_given(r,r,r,-),
   bayes_probability_given(r,r,r,-),
-  probableLocationOf(r,-),
-  mostProbableLocationOf(r,-),
-  allProbableLocationOf(r,-).
+  probableObjectInRoom(r,-),
+  allProbableObjectInRoomAboveThreshold(r,-,-),
+  probableLocationOfObject(r,-),
+  mostProbableLocationOfObject(r,-),
+  allProbableLocationOfObject(r,-).
 
+probableObjectInRoom(RoomT,[P,Type]):- 
+  probability_given(knowrob:'OmicsLocations', Type, RoomT, P).
 
-probableLocationOf(ObjT, [P, Type]):-
+allProbableObjectInRoomAboveThreshold(RoomT,Threshold,All):-
+  findall( [P, O] , (probability_given(knowrob:'OmicsLocations', O, RoomT , P), P >= Threshold), All).
+
+probableLocationOfObject(ObjT, [P, Type]):-
   bayes_probability_given(knowrob:'RELocations', Type, ObjT, P).
 
-mostProbableLocationOf(ObjT,MaxProbLoc):-
-  allProbableLocationOf(ObjT, [MaxProbLoc | _ ] ).
+mostProbableLocationOfObject(ObjT,MaxProbLoc):-
+  allProbableLocationOfObject(ObjT, [MaxProbLoc | _ ] ).
 
-allProbableLocationOf(ObjT, ObjTProbList):-
+allProbableLocationOfObject(ObjT, ObjTProbList):-
   findall([P,Type], (bayes_probability_given(knowrob:'RELocations', Type, ObjT, P)), Types), 
   sort(Types,TypesSortedByProbOrderByInc), 
   reverse(TypesSortedByProbOrderByInc, ObjTProbList).
@@ -157,7 +166,7 @@ bayes_probability_given(Type, Obj, Subj, P):-
   probability_obj(Type,Obj,P2),
 
   % calc denominator
-  findall(P3, (probability_given(Type, Subj, O, P4),
+  findall(P3, (probability_given(Type, Subj, _O, P4),
                probability_obj(Type, Obj,P5),
                P3 is P4 * P5),
           Ps),
