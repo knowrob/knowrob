@@ -26,9 +26,9 @@ set( OWL_PATH_PREFIX ${ias_knowledge_base_PACKAGE_PATH} )
 fix_ros_destination_path(OWL_PATH_PREFIX)
 
 add_classpath(${PROJECT_SOURCE_DIR}/lib/commons-math3-3.0/commons-math3-3.0.jar)
-add_classpath(${PROJECT_SOURCE_DIR}/lib/ejml-0.19.jar)
+add_classpath(${PROJECT_SOURCE_DIR}/lib/ejml-0.21.jar)
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/commons-math3-3.0/commons-math3-3.0.jar)
-add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/ejml-0.19.jar)
+add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/ejml-0.21.jar)
 
 add_classpath(${knowrob_cad_parser_PACKAGE_PATH}/lib/processing/core.jar)
 add_runtime_classpath(${knowrob_cad_parser_PACKAGE_PATH}/lib/processing/core.jar)

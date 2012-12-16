@@ -296,15 +296,19 @@ public class ConeAnnotation extends PrimitiveAnnotation<ConeAnnotation> {
 		if (intersections.size() == 0) {
 			for (Iterator<Vertex> it = vertices.keySet().iterator(); it.hasNext();) {
 				Vertex v = it.next();
-				Vector3f norm = (Vector3f) v.getNormalVector().clone();
 				if (curvatures.get(v).getCurvatureMax() == 0)
 					continue;
+				Vector3f norm = (Vector3f) v.getNormalVector().clone();
 				norm.scale(-1 / curvatures.get(v).getCurvatureMax());
 				norm.add(v);
 				intersections.add(new Point3f(norm));
 			}
 
 		}
+
+		// This is really bad. We have no points
+		if (intersections.size() == 0)
+			return;
 
 		// Now intersections are found. Find the best fitting line between through these points.
 		// Should be the generating line (line in the middle of cylinder).

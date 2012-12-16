@@ -43,6 +43,8 @@ public class BestFitLine3D {
 	 * and <tt>direction</tt>. Additionally you get perpendicular direction vector for perpendicular
 	 * line.
 	 * 
+	 * If the number of points is 0, the function returns immediately without changing anything.
+	 * 
 	 * @param points
 	 *            List of points to fit line
 	 * @param dir
@@ -55,6 +57,10 @@ public class BestFitLine3D {
 	public static void getBestFitLine(ArrayList<Point3f> points, Vector3f dir, Vector3f dirPerp,
 			Point3f center) {
 		// Try to best fit a line through the intersection points:
+
+		if (points.size() == 0) {
+			return;
+		}
 
 		// Number of maximum rows for SVD. If value is too large SVD will throw a Out of Heap
 		// Exception

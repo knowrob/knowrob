@@ -14,7 +14,7 @@
   <depend package="rosjava_jni"/>
 
   <export>
-    <java classpath="${prefix}/bin:${prefix}/lib/commons-math3-3.0/commons-math3-3.0.jar:${prefix}/lib/ejml-0.19.jar"/>
+    <java classpath="${prefix}/bin:${prefix}/lib/commons-math3-3.0/commons-math3-3.0.jar:${prefix}/lib/ejml-0.21.jar"/>
 
     <rosdoc config="rosdoc.yaml" />
   </export>
