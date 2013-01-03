@@ -244,7 +244,7 @@ public class PrologQueryUtils {
 		
 		for(String prev_act : prev_acts) {
 			
-			HashMap<String, Vector<String>> values =
+			HashMap<String, Vector<String>> values =  // TODO: check that that action is in the same task!
 				PrologInterface.executeQuery(
 						"owl_individual_of('" + PrologInterface.removeSingleQuotes(prev_act) + "', '" + prevActionClass + "'), " +
 						"rdf_has('" + PrologInterface.removeSingleQuotes(prev_act) + "', 'http://ias.cs.tum.edu/kb/knowrob.owl#" + prop + "' , Val)");

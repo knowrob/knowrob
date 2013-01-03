@@ -49,7 +49,34 @@ public class PrologInterface {
     		}
     	}
     }
-    
+	
+	
+    /**
+     *  Initialize a local Prolog engine with the init file given as argument
+     *  
+     *  @param initFile String with the path of the file to be used for initialization
+     *  
+     */
+	public static void initLocalProlog(String initFile) {
+
+		if(!PrologInterface.isInitialized()) {
+			try {
+				Vector<String> args= new Vector<String>(Arrays.asList(jpl.fli.Prolog.get_default_init_args()));
+				// args.add( "-G256M" );
+				// args.add( "-q" );
+				args.add( "-nosignals" );
+				jpl.fli.Prolog.set_default_init_args( args.toArray( new String[0] ) );
+
+				// load the appropriate startup file for this context
+				new jpl.Query("ensure_loaded('"+initFile+"')").oneSolution();
+
+				PrologInterface.setInitialized(true);
+				
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
     
 	/**
 	 * Wrapper around the JPL Prolog query interface. Assumes a Prolog engine to be
