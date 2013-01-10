@@ -42,7 +42,8 @@ POSSIBILITY OF SUCH DAMAGE.
            allProbableObjectInRoomAboveThreshold/3,
            probableLocationOfObject/2,
            allProbableLocationOfObject/2,
-           mostProbableLocationOfObject/2
+           mostProbableLocationOfObject/2,
+           allProbableLocInstancesOfObject/2
            ]).
 
 
@@ -63,7 +64,58 @@ POSSIBILITY OF SUCH DAMAGE.
   allProbableObjectInRoomAboveThreshold(r,-,-),
   probableLocationOfObject(r,-),
   mostProbableLocationOfObject(r,-),
-  allProbableLocationOfObject(r,-).
+  allProbableLocationOfObject(r,-),
+  allProbableLocInstancesOfObject(r,-).
+
+allProbableLocInstancesOfObject(ObjT,LocInstances):-
+  allProbableLocationOfObject(ObjT, AllProbLoc), 
+  findall([P, I], (member([P, Type], AllProbLoc), owl_individual_of(I,Type)), LocInstances).
+
+r_func(X,Y):-
+  A is -0.125,
+  B is 0.125,
+  C is 0.375,
+  D is 0.625,
+  trapezoidal_shaped_func(A,B,C,D,X,YVal),
+  Y is floor(YVal * 255).
+
+g_func(X,Y):-
+  A is 0.125,
+  B is 0.375,
+  C is 0.625,
+  D is 0.875,
+  trapezoidal_shaped_func(A,B,C,D,X,YVal),
+  Y is floor(YVal * 255).
+
+b_func(X,Y):-
+  A is 0.375,
+  B is 0.625,
+  C is 0.875,
+  D is 1.125,
+  trapezoidal_shaped_func(A,B,C,D,X,YVal),
+  Y is floor(YVal * 255).
+
+  % min_list([ ((X - A) / (B - A)) ,1 ,((D - X) / (D - C)) ], Min),
+  % Y is floor(max(Min, 0) * 255).
+
+trapezoidal_shaped_func(A,B,C,D,X,Y):-
+  min_list([ ((X - A) / (B - A)) ,1 ,((D - X) / (D - C)) ], Min),
+  Y is max(Min, 0).
+
+heatmap(Objs):-
+  visualisation_canvas(Canvas),
+  findall(Cost, member([Cost, _], Objs), Costs),
+%  sumlist(Costs, Max),
+  sort(Costs,SortedCosts),
+  reverse(SortedCosts,Rev),
+  nth0(0, Rev, Max),
+  findall(_,(member([C,Obj], Objs),
+             X is 1 - C / Max,
+             r_func(X,R),
+             g_func(X,G),
+             b_func(X,B),
+             highlight_object(Obj, @(true), R, G, B, '1.0', Canvas)),_).
+
 
 probableObjectInRoom(RoomT,[P,Type]):- 
   probability_given(knowrob:'OmicsLocations', Type, RoomT, P).
