@@ -1,5 +1,5 @@
 
-import simplejson as json
+import json
 import rospy
 import srv
 
