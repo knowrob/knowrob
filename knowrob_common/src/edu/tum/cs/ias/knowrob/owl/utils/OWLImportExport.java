@@ -88,9 +88,15 @@ public class OWLImportExport {
 	 * @param namespace Namespace of the OWL file to be created 
 	 * @param map_id Instance identifier of the semantic map
 	 * @param map List of {@link ObjectInstance}s
+	 * @param address 
 	 * @return
 	 */
+	
 	public OWLOntology createOWLMapDescription(String namespace, String map_id, ArrayList<ObjectInstance> map) {
+		return createOWLMapDescription(namespace, map_id, map, null);
+	}
+	
+	public OWLOntology createOWLMapDescription(String namespace, String map_id, ArrayList<ObjectInstance> map, ArrayList<String[]> address) {
 
 		OWLOntology ontology = null;
 		HashMap<String, OWLNamedIndividual> idToInst = new HashMap<String, OWLNamedIndividual>(); 
@@ -118,6 +124,22 @@ public class OWLImportExport {
 			// create SemanticMap object in the ontology
 			idToInst.put(namespace + map_id, createSemMapInst("map:", map_id, ontology));
 
+			
+			// create address part of the map if 'address' variable is not null
+			if(address!=null) {
+				
+				OWLNamedIndividual child = null;
+				
+
+				OWLNamedIndividual sem_map_inst = idToInst.get(namespace+map_id);
+				
+				for(String[] component : address) {
+
+					child = createAndLinkAddressPart(component, child, sem_map_inst, namespace, ontology);
+
+				}
+			}
+			
 
 			// create time point 
 			OWLNamedIndividual time_inst = createTimePointInst(System.currentTimeMillis()/1000, ontology);
@@ -229,6 +251,46 @@ public class OWLImportExport {
 		}
 
 		return ontology;
+	}
+
+
+	
+	/**
+	 * Create the address part of a semantic map. It contains a hierarchy of individuals, e.g. City-Street-Building-Floor-Room.
+	 * 
+	 * @param component String[] of the form ["knowrob:RoomInAConstruction", "knowrob:roomNumber", "3010"]
+	 * @param child Optional reference to a spatial child of the current object, e.g. a room instance if the current element 
+	 *         is a floor; null if the current element is on the lowest level above the SemanticEnvironmentMap instance
+	 * @param sem_map_inst {@link OWLIndividual} of a SemanticEnvironmentMap 
+	 * @param ontology {@link OWLOntology} to which the axioms will be added
+	 * @return
+	 */
+	public OWLNamedIndividual createAndLinkAddressPart(String[] component, OWLNamedIndividual child, OWLNamedIndividual sem_map_inst, String namespace, OWLOntology ontology) {
+		
+		// create individual 
+		OWLClass obj_class = factory.getOWLClass(component[0], pm);
+		OWLNamedIndividual obj_inst = factory.getOWLNamedIndividual("map:"+edu.tum.cs.ias.knowrob.owl.OWLIndividual.getOWLIndividualOfClass(obj_class.getIRI().toString()).getShortName(), pm);
+		manager.addAxiom(ontology, factory.getOWLClassAssertionAxiom(obj_class, obj_inst));
+		
+		
+		// link lowest level with 'describedInMap'
+		
+		OWLObjectProperty describedInMap = factory.getOWLObjectProperty("knowrob:describedInMap", pm);
+		OWLObjectProperty properPhysicalParts = factory.getOWLObjectProperty("knowrob:properPhysicalParts", pm);
+		
+		if(child==null) {
+			manager.addAxiom(ontology, factory.getOWLObjectPropertyAssertionAxiom(describedInMap, obj_inst, sem_map_inst));
+			
+		} else { // link higher levels with 'properPhysicalParts'
+			manager.addAxiom(ontology, factory.getOWLObjectPropertyAssertionAxiom(properPhysicalParts, obj_inst, child));
+		}
+		
+		// set properties (roomNumber, label, etc)
+		OWLDataProperty property = factory.getOWLDataProperty(component[1],  pm);
+		if(property!=null)
+			manager.addAxiom(ontology, factory.getOWLDataPropertyAssertionAxiom(property, obj_inst, component[2]));
+		
+		return obj_inst;
 	}
 
 
