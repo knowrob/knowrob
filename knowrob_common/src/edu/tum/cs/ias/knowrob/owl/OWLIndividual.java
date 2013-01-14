@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 import java.util.Vector;
 
 import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
@@ -102,8 +104,15 @@ public class OWLIndividual extends OWLThing {
 	 * @return Instance of an {@link OWLIndividual} of the specified class
 	 */
 	public static OWLIndividual getOWLIndividualOfClass(String cl) {
-		String new_iri = cl + new SimpleDateFormat("yyyyMMddHHmmss").
-		format(Calendar.getInstance().getTime());
+		
+		char[] chars = "abcdefghijklmnopqrstuvwxyzABSDEFGHIJKLMNOPQRSTUVWXYZ1234567890".toCharArray();
+		Random r = new Random(System.currentTimeMillis());
+		char[] id = new char[8];
+		for (int i = 0;  i < 8;  i++) {
+		    id[i] = chars[r.nextInt(chars.length)];
+		}
+		
+		String new_iri = cl + "_" + new String(id);
 		
 		OWLIndividual res = getOWLIndividual(new_iri, null);
 		res.addType(OWLClass.getOWLClass(cl));
