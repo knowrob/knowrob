@@ -504,8 +504,8 @@
     <!-- http://www.w3.org/2002/07/owl#Thing -->
 
     <owl:Class rdf:about="&owl;Thing"/>
-    
-    
+
+
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#VisualSLAMCapability -->
 
@@ -524,7 +524,7 @@
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-    
+
 </rdf:RDF>
 
 

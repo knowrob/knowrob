@@ -483,27 +483,27 @@ in_ContGeneric(InnerObj, OuterObj) :-
 
 % MT: tried to use matrix transformation library to perform easier computation of 'inside'
 % using bounding box. Problem; does not work as long as not both objects are bound
-% 
+%
 % holds(in_ContGeneric(InnerObj, OuterObj), T) :-
-% 
-% 
+%
+%
 % % TODO: take time into account
-% 
+%
 %     nonvar(InnerObj), nonvar(OuterObj),
 %     transform_relative_to(InnerObj, OuterObj, [_,_,_,IrelOX,_,_,_,IrelOY,_,_,_,IrelOZ,_,_,_,_]),
-% 
+%
 %     % read the dimensions of the outer entity
 %     rdf_triple(knowrob:widthOfObject, OuterObj, LOW),strip_literal_type(LOW,Ow),atom_to_term(Ow,OW,_),
 %     rdf_triple(knowrob:heightOfObject,OuterObj, LOH),strip_literal_type(LOH,Oh),atom_to_term(Oh,OH,_),
 %     rdf_triple(knowrob:depthOfObject, OuterObj, LOD),strip_literal_type(LOD,Od),atom_to_term(Od,OD,_),
-% 
-% 
+%
+%
 %     % is InnerInOuterCoordList inside bounding box of outer object?
-%     
+%
 %     >=( OD, IrelOX),
 %     >=( OW, IrelOY),
 %     >=( OH, IrelOZ),
-% 
+%
 %     InnerObj \= OuterObj.
 
 holds(in_ContGeneric(InnerObj, OuterObj), T) :-
@@ -573,9 +573,9 @@ objectAtPoint2D(Point2D, Obj) :-
     rdf_triple(knowrob:yCoord, Point2D, PCyy), strip_literal_type(PCyy, PCy), atom_to_term(PCy,PY,_),
     objectAtPoint2D(PX,PY,Obj).
 
-% 
+%
 % FIXME: THIS IS BROKEN FOR ALL NON-STANDARD ROTATIONS if the upper left matrix is partly zero
-% 
+%
 
 objectAtPoint2D(PX,PY,Obj) :-
 

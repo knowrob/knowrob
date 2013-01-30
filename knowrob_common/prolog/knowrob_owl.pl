@@ -100,15 +100,15 @@ rdf_unique_id(Class, UniqID) :-
 
   append("$1$", _, Seed),
   crypt(Class, Seed),
-  format(atom(Hash), '~s~n', [Seed]), 
+  format(atom(Hash), '~s~n', [Seed]),
   sub_atom(Hash, 3, 8, _, Sub),
 
   atom_concat(Class,  '_', Class2),
   atom_concat(Class2, Sub, Instance),
 
   % check if there is no triple with this identifier as subject or object yet
-  ((rdf(Instance,_,_);rdf(_,_,Instance)) -> 
-    (rdf_unique_id(Class, UniqID)); 
+  ((rdf(Instance,_,_);rdf(_,_,Instance)) ->
+    (rdf_unique_id(Class, UniqID));
     (UniqID = Instance)).
 
 

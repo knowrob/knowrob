@@ -24,7 +24,7 @@ register_ros_package( Package, AbsoluteDirectory ) :-
   atom_concat(PackagePath, '/prolog/', AbsoluteDirectory),
   asserta(library_directory(AbsoluteDirectory)),
   assert(user:file_search_path(ros, AbsoluteDirectory)),
-  assert( ros_package_initialized(Package) ),  
+  assert( ros_package_initialized(Package) ),
   add_ros_package_to_classpath(Package),
   init_ros_package( AbsoluteDirectory ).
 
@@ -49,7 +49,7 @@ rospack_package_classpath(Package, Path) :-
   process_create(path('rospack'), ['export', '--lang=java', '--attrib=classpath', Package], [stdout(pipe(RospackOutput)), process(_PID)]),
   read_line_to_codes(RospackOutput, C),
   string_to_list(String, C),
-  concat_atom(List,' ',String),% split string at ' ' 
+  concat_atom(List,' ',String),% split string at ' '
   concat_atom(List,':',Path).  % concat list elements with seperator ':'
 
 % concat a value to an environment varible

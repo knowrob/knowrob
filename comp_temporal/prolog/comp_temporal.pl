@@ -83,7 +83,7 @@
 %
 % @param Long Identifier of the longer time segment
 % @param Short Identifier of the contained time segment or time point
-% 
+%
     comp_temporallySubsumes(Long, Short) :-
 
       % case: both temporally extended, i.e. start and end set
@@ -180,7 +180,7 @@
 
       Duration is (End-Start).
 
-%%  Allen's 13 temporal relations for intervals 
+%%  Allen's 13 temporal relations for intervals
 
 comp_equalI(I1,I2):-
    start_time_value(I1,ST),
@@ -227,7 +227,7 @@ comp_duringI(I1,I2):-
 
 comp_duringInvI(I1,I2):-
    comp_duringI(I2,I1).
-   
+
 comp_startsI(I1,I2):-
    start_time_value(I1,ST1),
    end_time_value(I1,ET1),
@@ -250,7 +250,7 @@ comp_finishesI(I1,I2):-
 comp_finishesInvI(I1,I2):-
    comp_finishesI(I2,I1).
 
-%% helper predicates 
+%% helper predicates
 
 time_point_value(TP, Value) :-
   rdf_split_url(_, StartLocal, TP),
@@ -260,7 +260,7 @@ time_point_value(TP, Value) :-
 start_time_value(I,Value) :-
   rdf_has(I, knowrob:startTime, TP),
   time_point_value(TP, Value).
-  
+
 end_time_value(I, Value) :-
   ( rdf_has(I, knowrob:endTime, TP),
     time_point_value(TP, Value), ! ) ;

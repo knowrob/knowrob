@@ -692,7 +692,7 @@ delete_object_information(Object) :-
 % Remove object instance and all information stored about it,
 % recursively for the object and all children that can be reached
 % by knowrob:parts or knowrob:describedInMap.
-% 
+%
 % TODO: does this also include the room/street/city in maps?
 %
 % @param Object Object instance to be deleted
@@ -708,7 +708,7 @@ delete_object_information_recursive(Object) :-
                 rdf_retractall(P, _, _),
                 rdf_retractall(M, _, _)), _),
 
-  findall(Child, (rdf_has(Object, knowrob:parts, Child); 
+  findall(Child, (rdf_has(Object, knowrob:parts, Child);
                   rdf_has(Child, knowrob:describedInMap, Object)), Children),
 
   % remove everything directly connected to the object instance
@@ -716,8 +716,8 @@ delete_object_information_recursive(Object) :-
   rdf_retractall(_, _, Object),
 
   ((Children \= []) ->
-   ( findall(Child, (member(Child, Children), 
-                     delete_object_information_recursive(Child)), _)) ; 
+   ( findall(Child, (member(Child, Children),
+                     delete_object_information_recursive(Child)), _)) ;
      true).
 
 

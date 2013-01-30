@@ -243,7 +243,7 @@ vector3d_to_list(Vector, List) :-
     jpl_get(Vector, z, Z),
 
     List = [X, Y, Z].
-    
+
 list_to_vector3f(List, Vector) :-
     nonvar(List), var(Vector),
     jpl_new('javax.vecmath.Vector3f', List, Vector).
