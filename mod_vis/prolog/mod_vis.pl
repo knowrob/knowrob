@@ -475,6 +475,25 @@ planvis_create(PlanVis) :-
 planvis_create(PlanVis) :-
     planvis(PlanVis).
 
+
+%% planvis_create_fsm(-PlanVis) is det.
+%
+% Launch the planvis applet for state-machine recipes
+%
+
+planvis_create_fsm(PlanVis) :-
+    planvis(fail),
+    jpl_new('javax.swing.JFrame', [], Frame),
+    jpl_call(Frame, 'resize', [1600, 400], _),
+    jpl_new('edu.tum.cs.ias.knowrob.vis.applets.PlanVisAppletFsm', [], PlanVis),
+    jpl_call(PlanVis, 'init', [], _),
+    jpl_call(Frame, 'add', [PlanVis], _),
+    jpl_call(Frame, 'setVisible', [@(true)], _),
+    retract(planvis(fail)),
+    assert(planvis(PlanVis)),!.
+planvis_create_fsm(PlanVis) :-
+    planvis(PlanVis).
+
 %% planvis_load(+Identifier,+Planvis) is det.
 %
 % Load the action/plan with given by Identifier and all its children recursively
