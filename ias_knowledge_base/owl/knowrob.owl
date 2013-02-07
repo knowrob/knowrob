@@ -352,11 +352,10 @@
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#duration -->
 
-    <owl:ObjectProperty rdf:about="&knowrob;duration">
+    <owl:DatatypeProperty rdf:about="&knowrob;duration">
         <rdfs:domain rdf:resource="&knowrob;TemporalThing"/>
-        <rdfs:range rdf:resource="&knowrob;TimeInterval"/>
-        <rdfs:subPropertyOf rdf:resource="&knowrob;temporallyRelated"/>
-    </owl:ObjectProperty>
+        <rdfs:range rdf:resource="&xsd;float"/>
+    </owl:DatatypeProperty>
 
 
 

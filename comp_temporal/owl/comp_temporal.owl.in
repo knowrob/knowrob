@@ -32,11 +32,11 @@
     <rdfs:subPropertyOf rdf:resource="&knowrob;#after"/>
   </owl:ObjectProperty>
 
-  <owl:ObjectProperty rdf:about="#duration">
+  <owl:DatatypeProperty rdf:about="#duration">
     <rdfs:domain rdf:resource="&knowrob;#TemporalThing"/>
     <rdfs:range rdf:resource="&knowrob;#TimeInterval"/>
     <rdfs:subPropertyOf rdf:resource="&knowrob;#duration"/>
-  </owl:ObjectProperty>
+  </owl:DatatypeProperty>
 
   <owl:ObjectProperty rdf:about="#temporallySubsumes">
     <rdfs:range rdf:resource="&knowrob;#TemporalThing"/>
