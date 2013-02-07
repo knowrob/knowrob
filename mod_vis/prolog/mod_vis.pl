@@ -494,6 +494,7 @@ planvis_create_fsm(PlanVis) :-
 planvis_create_fsm(PlanVis) :-
     planvis(PlanVis).
 
+
 %% planvis_load(+Identifier,+Planvis) is det.
 %
 % Load the action/plan with given by Identifier and all its children recursively

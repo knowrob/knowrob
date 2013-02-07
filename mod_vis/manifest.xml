@@ -15,7 +15,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/mod_vis</url>
 
-  <depend package="knowrob_cad_models"/>
+<!--   <depend package="knowrob_cad_models"/> -->
   <depend package="knowrob_cad_parser"/>
   <depend package="ias_knowledge_base"/>
   <depend package="jpl"/>
