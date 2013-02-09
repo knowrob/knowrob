@@ -12,6 +12,7 @@
   <depend package="mod_vis"/>
   <depend package="jpl"/>
   <depend package="rosjava_jni"/>
+  <depend package="knowrob_ransac_segmentation"/>
 
   <export>
     <java classpath="${prefix}/bin:${prefix}/lib/commons-math3-3.0/commons-math3-3.0.jar:${prefix}/lib/ejml-0.21.jar"/>

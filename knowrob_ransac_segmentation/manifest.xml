@@ -1,0 +1,14 @@
+<package>
+  <description brief="knowrob_ransac_segmentation">
+
+     A package which provides a RANSAC based segmentation algorithm for planes, speres, cone, cylinder and tori. Supports point cloud data and cad models as data.
+
+  </description>
+  <author>Stefan Profanter</author>
+  <license>GPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/knowrob_ransac_segmentation</url>
+
+</package>
+
+
