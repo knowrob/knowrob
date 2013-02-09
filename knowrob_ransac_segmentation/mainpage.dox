@@ -1,0 +1,16 @@
+/**
+\mainpage
+\htmlinclude manifest.html
+
+\b knowrob_ransac_segmentation 
+
+<!-- 
+A package which provides a RANSAC based segmentation algorithm for planes, speres, cone, cylinder and tori. Supports point cloud data and cad models as data.
+
+Original source: http://cg.cs.uni-bonn.de/en/publications/paper-details/schnabel-2007-efficient/
+-->
+
+-->
+
+
+*/
