@@ -9,6 +9,7 @@ package edu.tum.cs.vis.model;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -141,11 +142,21 @@ public class MeshReasoning {
 		}
 
 		Model model = itemModel.getParser().getModel();
-		model.removeDoubleSidedTriangles(); // in ply files there may be double sided triangles
 		logger.debug("Model parsed. Took: "
 				+ PrintUtil.prettyMillis(System.currentTimeMillis() - start) + " (Vertices: "
 				+ model.getVertices().size() + ", Lines: " + model.getLines().size()
 				+ ", Triangles: " + model.getTriangles().size() + ")");
+		start = System.currentTimeMillis();
+
+		model.removeDoubleSidedTriangles(); // in ply files there may be double sided triangles
+		model.updateVertexSharing();
+		model.updateVertexNormals();
+		logger.debug("Model initialized. Took: "
+				+ PrintUtil.prettyMillis(System.currentTimeMillis() - start) + " (Vertices: "
+				+ model.getVertices().size() + ", Lines: " + model.getLines().size()
+				+ ", Triangles: " + model.getTriangles().size() + ")");
+
+		File f = model.exportVerticesAsTxt();
 
 		// normalize model for further reasoning
 		model.normalize();

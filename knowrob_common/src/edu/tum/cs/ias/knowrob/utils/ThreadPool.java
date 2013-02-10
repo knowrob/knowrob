@@ -5,7 +5,7 @@
  * 
  * Contributors: Stefan Profanter - initial API and implementation, Year: 2012
  ******************************************************************************/
-package edu.tum.cs.vis.model.util;
+package edu.tum.cs.ias.knowrob.utils;
 
 import java.util.List;
 import java.util.concurrent.Callable;

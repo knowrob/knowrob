@@ -8,13 +8,10 @@
 package edu.tum.cs.vis.model.util.algorithm;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Callable;
 
 import javax.vecmath.Vector3f;
@@ -26,10 +23,10 @@ import org.apache.commons.math3.linear.LUDecomposition;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
 
+import edu.tum.cs.ias.knowrob.utils.ThreadPool;
 import edu.tum.cs.vis.model.Model;
 import edu.tum.cs.vis.model.util.BSphere;
 import edu.tum.cs.vis.model.util.Curvature;
-import edu.tum.cs.vis.model.util.ThreadPool;
 import edu.tum.cs.vis.model.util.Triangle;
 import edu.tum.cs.vis.model.util.Vertex;
 
@@ -231,150 +228,9 @@ public class CurvatureCalculation {
 
 		if (m.getVertices().size() == 0)
 			return;
-
-		checkVertexSharing(m);
-		calculateVertexNormals(m);
 		calculateVoronoiArea(m);
 		calculateCurvature(curvatures, m);
 		setCurvatureHueSaturation(curvatures, m);
-	}
-
-	/**
-	 * Ported from trimesh2 (Szymon Rusinkiewicz Princeton University)
-	 * 
-	 * uses average of per-face normals, weighted according to: Max, N.
-	 * "Weights for Computing Vertex Normals from Facet Normals," Journal of Graphics Tools, Vol. 4,
-	 * No. 2, 1999.
-	 * 
-	 * @param m
-	 *            model to calculate curvature for
-	 * @param inverseCurvature
-	 *            Invert curvature by inverting vertex normals
-	 */
-	private static void calculateVertexNormals(final Model m) {
-		// Compute from faces
-
-		List<Callable<Void>> threads = new LinkedList<Callable<Void>>();
-
-		final int interval = 500;
-
-		// Reset normal vectors, because vertex normals from collada aren't correct
-		for (Vertex v : m.getVertices()) {
-			v.getNormalVector().x = v.getNormalVector().y = v.getNormalVector().z = 0;
-		}
-
-		for (int start = 0; start < m.getTriangles().size(); start += interval) {
-			final int st = start;
-			threads.add(new Callable<Void>() {
-
-				@Override
-				public Void call() throws Exception {
-					int end = Math.min(st + interval, m.getTriangles().size());
-					for (int i = st; i < end; i++) {
-						calculateVertexNormalsForTriangle(m.getTriangles().get(i));
-					}
-					return null;
-				}
-
-			});
-		};
-
-		ThreadPool.executeInPool(threads);
-
-		// Normalize all vectors.
-		// Additionally search the vectors which have max x, max y and max z coordinates (needed for
-		// vertex winding check / inverted normals check)
-
-		Vertex extrema[] = new Vertex[6];
-
-		for (Vertex v : m.getVertices()) {
-			v.getNormalVector().normalize();
-			float coord[] = new float[3];
-			v.get(coord);
-			// Set all max values
-			for (int i = 0; i < 3; i++) {
-				float extCoord[] = new float[3];
-				if (extrema[i] != null)
-					extrema[i].get(extCoord);
-				if (extrema[i] == null || extCoord[i] < coord[i])
-					extrema[i] = v;
-			}
-			// Set all min values
-			for (int i = 0; i < 3; i++) {
-				float extCoord[] = new float[3];
-				if (extrema[i + 3] != null)
-					extrema[i + 3].get(extCoord);
-				if (extrema[i + 3] == null || extCoord[i] > coord[i])
-					extrema[i + 3] = v;
-			}
-		}
-
-		int vote = 0;
-		// Now the vertex normal of maxX must point in approximately the same direction as the
-		// vector from (0,0,0) to the vertex. If the angle between the vertex normal and the
-		// direction is smaller than 90° vote for inversion.
-		for (int i = 0; i < 6; i++) {
-			float coord[] = { 0, 0, 0 };
-			coord[i % 3] = i < 3 ? 1 : -1;
-			double angle = Math.acos(extrema[i].getNormalVector().dot((new Vector3f(coord))));
-			if (angle <= Math.PI / 2)
-				vote--;
-			else
-				vote++;
-		}
-
-		if (vote > 0) {
-			// They voted for inverting
-			for (Vertex v : m.getVertices()) {
-				v.getNormalVector().scale(-1);
-			}
-		}
-
-	}
-
-	/**
-	 * Calculate vertex normals for each vertex of triangle.
-	 * 
-	 * @param t
-	 *            Triangle
-	 */
-	static void calculateVertexNormalsForTriangle(final Triangle t) {
-		Vertex p0 = t.getPosition()[0];
-		Vertex p1 = t.getPosition()[1];
-		Vertex p2 = t.getPosition()[2];
-
-		// get vectors from p0 to p1 and so on
-		Vector3f a = new Vector3f(p0);
-		a.sub(p2);
-		Vector3f b = new Vector3f(p1);
-		b.sub(p0);
-		Vector3f c = new Vector3f(p2);
-		c.sub(p1);
-		// length of these vectors
-		float l2a = a.lengthSquared(), l2b = b.lengthSquared(), l2c = c.lengthSquared();
-		if (l2a == 0 || l2b == 0 || l2c == 0)
-			return;
-
-		Vector3f facenormal = new Vector3f();
-		facenormal.cross(a, b); // unscaled normal
-
-		Vector3f normalP0 = (Vector3f) facenormal.clone();
-		normalP0.scale(1.0f / (l2a * l2c));
-		synchronized (p0.getNormalVector()) {
-			p0.getNormalVector().add(normalP0);
-		}
-
-		Vector3f normalP1 = (Vector3f) facenormal.clone();
-		normalP1.scale(1.0f / (l2b * l2a));
-		synchronized (p1.getNormalVector()) {
-			p1.getNormalVector().add(normalP1);
-		}
-
-		Vector3f normalP2 = (Vector3f) facenormal.clone();
-		normalP2.scale(1.0f / (l2c * l2b));
-		synchronized (p2.getNormalVector()) {
-			p2.getNormalVector().add(normalP2);
-		}
 	}
 
 	/**
@@ -489,97 +345,6 @@ public class CurvatureCalculation {
 		synchronized (t.getPosition()[2]) {
 			t.getPosition()[2]
 					.setPointarea(t.getPosition()[2].getPointarea() + t.getCornerarea().z);
-		}
-	}
-
-	/**
-	 * Check for each vertex if it should be shared with neighbor triangles or not.
-	 * 
-	 * @param m
-	 *            model to check
-	 */
-	private static void checkVertexSharing(final Model m) {
-
-		final Set<Triangle> checkedTriangles = Collections.synchronizedSet(new HashSet<Triangle>());
-
-		for (Triangle t : m.getTriangles())
-			checkVertexSharingForTriangle(m, t, checkedTriangles);
-	}
-
-	/**
-	 * Check for all vertices between given triangle and its neighbors if the vertex should be
-	 * shared or not according to the dihedral angle.
-	 * 
-	 * @param t
-	 *            Triangle to check
-	 * @param checkedTriangles
-	 *            already checked triangles
-	 */
-	static void checkVertexSharingForTriangle(final Model m, final Triangle t,
-			final Set<Triangle> checkedTriangles) {
-		synchronized (t) {
-			if (checkedTriangles.contains(t))
-				return;
-			HashSet<Triangle> neighborsToRemove = new HashSet<Triangle>();
-			synchronized (t.getNeighbors()) {
-				for (Triangle n : t.getNeighbors()) {
-					synchronized (n) {
-						if (checkedTriangles.contains(n))
-							continue;
-
-						double angle = t.getDihedralAngle(n);
-
-						// Share vertices if angle is < 30 degree
-						boolean share = (angle < 30 / 180.0 * Math.PI);
-
-						for (Vertex vt : t.getPosition()) {
-							for (int i = 0; i < n.getPosition().length; i++) {
-								Vertex vn = n.getPosition()[i];
-								if (share && vn != vt && vt.sameCoordinates(vn)) {
-									// merge vertices
-									n.getPosition()[i] = vt;
-									int cnt = 0;
-									for (Triangle tmpTri : t.getNeighbors()) {
-										for (Vertex tmpVer : tmpTri.getPosition())
-											if (tmpVer == vn) {
-												cnt++;
-												break;
-											}
-									}
-									if (cnt == 0) {
-										for (Triangle tmpTri : n.getNeighbors()) {
-											if (tmpTri == t)
-												continue;
-											for (Vertex tmpVer : tmpTri.getPosition())
-												if (tmpVer == vn) {
-													cnt++;
-													break;
-												}
-										}
-									}
-									if (cnt == 0) {
-										synchronized (m.getVertices()) {
-											m.getVertices().remove(vn);
-										}
-									}
-								} else if (!share && vn == vt) {
-									// split vertices
-									Vertex clone = (Vertex) vt.clone();
-									synchronized (m.getVertices()) {
-										m.getVertices().add(clone);
-									}
-									n.getPosition()[i] = clone;
-									if (!t.isAdjacentNeighbor(n)) {
-										neighborsToRemove.add(n);
-									}
-								}
-							}
-						}
-					}
-				}
-
-			}
-			checkedTriangles.add(t);
 		}
 	}
 

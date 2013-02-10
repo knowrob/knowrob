@@ -17,8 +17,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.log4j.Logger;
 
+import edu.tum.cs.ias.knowrob.utils.ThreadPool;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
-import edu.tum.cs.vis.model.util.ThreadPool;
 import edu.tum.cs.vis.model.util.Triangle;
 
 /**

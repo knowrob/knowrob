@@ -20,6 +20,7 @@ import javax.vecmath.Vector3f;
 
 import org.apache.log4j.Logger;
 
+import edu.tum.cs.ias.knowrob.utils.ThreadPool;
 import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.primitive.ConeAnnotation;
@@ -28,7 +29,6 @@ import edu.tum.cs.vis.model.uima.annotation.primitive.PrimitiveType;
 import edu.tum.cs.vis.model.uima.annotation.primitive.SphereAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.util.Curvature;
-import edu.tum.cs.vis.model.util.ThreadPool;
 import edu.tum.cs.vis.model.util.Triangle;
 import edu.tum.cs.vis.model.util.Vertex;
 

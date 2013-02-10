@@ -12,6 +12,7 @@
   <depend package="mod_vis"/>
   <depend package="jpl"/>
   <depend package="rosjava_jni"/>
+  <depend package="knowrob_common"/>
   <depend package="knowrob_ransac_segmentation"/>
 
   <export>

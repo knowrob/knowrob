@@ -8,13 +8,28 @@
 package edu.tum.cs.vis.model;
 
 import java.awt.Color;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
+import org.apache.log4j.Logger;
+
 import processing.core.PGraphics;
+import edu.tum.cs.ias.knowrob.utils.ThreadPool;
 import edu.tum.cs.vis.model.util.BSphere;
 import edu.tum.cs.vis.model.util.Group;
 import edu.tum.cs.vis.model.util.Line;
@@ -33,9 +48,14 @@ import edu.tum.cs.vis.model.util.Vertex;
 public class Model {
 
 	/**
+	 * Log4J Logger
+	 */
+	private static Logger			logger				= Logger.getLogger(Model.class);
+
+	/**
 	 * Absolute file path where the relative paths within the model are based.
 	 */
-	private String					textureBasePath	= null;
+	private String					textureBasePath		= null;
 
 	/**
 	 * Main group of the model. Each model should have at least one group.
@@ -45,30 +65,35 @@ public class Model {
 	/**
 	 * List of all vertices in this model
 	 */
-	private final ArrayList<Vertex>	vertices		= new ArrayList<Vertex>();
+	private final ArrayList<Vertex>	vertices			= new ArrayList<Vertex>();
 
 	/**
 	 * List of all triangles in this model
 	 */
-	final ArrayList<Triangle>		triangles		= new ArrayList<Triangle>();
+	final ArrayList<Triangle>		triangles			= new ArrayList<Triangle>();
 
 	/**
 	 * List of all lines in this model
 	 */
-	private final ArrayList<Line>	lines			= new ArrayList<Line>();
+	private final ArrayList<Line>	lines				= new ArrayList<Line>();
 
 	/**
 	 * Minimum bounding sphere of this model. Only set if previously calculated (by Miniball class).
 	 * 
 	 * @see edu.tum.cs.vis.model.util.algorithm.Miniball
 	 */
-	private BSphere					boundingSphere	= null;
+	private BSphere					boundingSphere		= null;
 
 	/**
 	 * Current model scale. Is used to normalize model for further reasoning. getUnscaled methods
 	 * use this value to undo scaling for parameters such as height, width, radius, ...
 	 */
-	private float					scale			= 1;
+	private float					scale				= 1;
+
+	/**
+	 * Indicates if the vertex normals of each vertex have already been initialized.
+	 */
+	private boolean					normalsInitialized	= false;
 
 	/**
 	 * @param g
@@ -311,6 +336,317 @@ public class Model {
 			}
 
 		}
+	}
+
+	/**
+	 * Check for each vertex if it should be shared with neighbor triangles or not. This decision is
+	 * made according to the dihedral angle between the two triangles
+	 * 
+	 */
+	public void updateVertexSharing() {
+
+		final Set<Triangle> checkedTriangles = Collections.synchronizedSet(new HashSet<Triangle>());
+
+		for (Triangle t : triangles)
+			updateVertexSharingForTriangle(t, checkedTriangles);
+	}
+
+	/**
+	 * Check for all vertices between given triangle and its neighbors if the vertex should be
+	 * shared or not according to the dihedral angle.
+	 * 
+	 * @param t
+	 *            Triangle to check
+	 * @param checkedTriangles
+	 *            already checked triangles
+	 */
+	private void updateVertexSharingForTriangle(final Triangle t,
+			final Set<Triangle> checkedTriangles) {
+		synchronized (t) {
+			if (checkedTriangles.contains(t))
+				return;
+			HashSet<Triangle> neighborsToRemove = new HashSet<Triangle>();
+			synchronized (t.getNeighbors()) {
+				for (Triangle n : t.getNeighbors()) {
+					synchronized (n) {
+						if (checkedTriangles.contains(n))
+							continue;
+
+						double angle = t.getDihedralAngle(n);
+
+						// Share vertices if angle is < 30 degree
+						boolean share = (angle < 30 / 180.0 * Math.PI);
+
+						for (Vertex vt : t.getPosition()) {
+							for (int i = 0; i < n.getPosition().length; i++) {
+								Vertex vn = n.getPosition()[i];
+								if (share && vn != vt && vt.sameCoordinates(vn)) {
+									// merge vertices
+									n.getPosition()[i] = vt;
+									int cnt = 0;
+									for (Triangle tmpTri : t.getNeighbors()) {
+										for (Vertex tmpVer : tmpTri.getPosition())
+											if (tmpVer == vn) {
+												cnt++;
+												break;
+											}
+									}
+									if (cnt == 0) {
+										for (Triangle tmpTri : n.getNeighbors()) {
+											if (tmpTri == t)
+												continue;
+											for (Vertex tmpVer : tmpTri.getPosition())
+												if (tmpVer == vn) {
+													cnt++;
+													break;
+												}
+										}
+									}
+									if (cnt == 0) {
+										synchronized (vertices) {
+											vertices.remove(vn);
+										}
+									}
+								} else if (!share && vn == vt) {
+									// split vertices
+									Vertex clone = (Vertex) vt.clone();
+									synchronized (vertices) {
+										vertices.add(clone);
+									}
+									n.getPosition()[i] = clone;
+									if (!t.isAdjacentNeighbor(n)) {
+										neighborsToRemove.add(n);
+									}
+								}
+							}
+						}
+					}
+				}
+
+			}
+			checkedTriangles.add(t);
+		}
+	}
+
+	/**
+	 * Ported from trimesh2 (Szymon Rusinkiewicz Princeton University)
+	 * 
+	 * uses average of per-face normals, weighted according to: Max, N.
+	 * "Weights for Computing Vertex Normals from Facet Normals," Journal of Graphics Tools, Vol. 4,
+	 * No. 2, 1999.
+	 * 
+	 * @param m
+	 *            model to calculate curvature for
+	 * @param inverseCurvature
+	 *            Invert curvature by inverting vertex normals
+	 */
+	public void updateVertexNormals() {
+		// Compute from faces
+
+		List<Callable<Void>> threads = new LinkedList<Callable<Void>>();
+
+		final int interval = 500;
+
+		// Reset normal vectors, because vertex normals from collada aren't correct
+		for (Vertex v : vertices) {
+			v.getNormalVector().x = v.getNormalVector().y = v.getNormalVector().z = 0;
+		}
+
+		for (int start = 0; start < triangles.size(); start += interval) {
+			final int st = start;
+			threads.add(new Callable<Void>() {
+
+				@Override
+				public Void call() throws Exception {
+					int end = Math.min(st + interval, triangles.size());
+					for (int i = st; i < end; i++) {
+						calculateVertexNormalsForTriangle(triangles.get(i));
+					}
+					return null;
+				}
+
+			});
+		};
+
+		ThreadPool.executeInPool(threads);
+
+		// Normalize all vectors.
+		// Additionally search the vectors which have max x, max y and max z coordinates (needed for
+		// vertex winding check / inverted normals check)
+
+		Vertex extrema[] = new Vertex[6];
+
+		for (Vertex v : vertices) {
+			v.getNormalVector().normalize();
+			float coord[] = new float[3];
+			v.get(coord);
+			// Set all max values
+			for (int i = 0; i < 3; i++) {
+				float extCoord[] = new float[3];
+				if (extrema[i] != null)
+					extrema[i].get(extCoord);
+				if (extrema[i] == null || extCoord[i] < coord[i])
+					extrema[i] = v;
+			}
+			// Set all min values
+			for (int i = 0; i < 3; i++) {
+				float extCoord[] = new float[3];
+				if (extrema[i + 3] != null)
+					extrema[i + 3].get(extCoord);
+				if (extrema[i + 3] == null || extCoord[i] > coord[i])
+					extrema[i + 3] = v;
+			}
+		}
+
+		int vote = 0;
+		// Now the vertex normal of maxX must point in approximately the same direction as the
+		// axis. If the angle between the vertex normal and the direction is smaller than 90° vote
+		// for inversion.
+		for (int i = 0; i < 6; i++) {
+			float coord[] = { 0, 0, 0 };
+			coord[i % 3] = i < 3 ? 1 : -1;
+			double angle = Math.acos(extrema[i].getNormalVector().dot((new Vector3f(coord))));
+			System.out.println("Angle: " + (angle * 180 / Math.PI));
+			if (angle < Math.PI / 2)
+				vote--;
+			else
+				vote++;
+		}
+		System.out.println("VOTE: " + vote);
+		if (vote > 0) {
+			// They voted for inverting
+			for (Vertex v : vertices) {
+				v.getNormalVector().scale(-1);
+			}
+		}
+
+		normalsInitialized = true;
+
+	}
+
+	/**
+	 * Calculate vertex normals for each vertex of triangle.
+	 * 
+	 * @param t
+	 *            Triangle
+	 */
+	static void calculateVertexNormalsForTriangle(final Triangle t) {
+		Vertex p0 = t.getPosition()[0];
+		Vertex p1 = t.getPosition()[1];
+		Vertex p2 = t.getPosition()[2];
+
+		// get vectors from p0 to p1 and so on
+		Vector3f a = new Vector3f(p0);
+		a.sub(p2);
+		Vector3f b = new Vector3f(p1);
+		b.sub(p0);
+		Vector3f c = new Vector3f(p2);
+		c.sub(p1);
+		// length of these vectors
+		float l2a = a.lengthSquared(), l2b = b.lengthSquared(), l2c = c.lengthSquared();
+		if (l2a == 0 || l2b == 0 || l2c == 0)
+			return;
+
+		Vector3f facenormal = new Vector3f();
+		facenormal.cross(a, b); // unscaled normal
+
+		Vector3f normalP0 = (Vector3f) facenormal.clone();
+		normalP0.scale(1.0f / (l2a * l2c));
+		synchronized (p0.getNormalVector()) {
+			p0.getNormalVector().add(normalP0);
+		}
+
+		Vector3f normalP1 = (Vector3f) facenormal.clone();
+		normalP1.scale(1.0f / (l2b * l2a));
+		synchronized (p1.getNormalVector()) {
+			p1.getNormalVector().add(normalP1);
+		}
+
+		Vector3f normalP2 = (Vector3f) facenormal.clone();
+		normalP2.scale(1.0f / (l2c * l2b));
+		synchronized (p2.getNormalVector()) {
+			p2.getNormalVector().add(normalP2);
+		}
+	}
+
+	/**
+	 * Export the vertices of the model into a temporary txt file with the format:
+	 * 
+	 * <pre>
+	 * NUMBER_OF_POINTS
+	 * x1	y1	z1	nx1	nx2	nx3
+	 * x2	y2	z2	nx2	nx2	nx2
+	 * </pre>
+	 * 
+	 * where the first 3 values are the coordinates of the point, the next 3 values represent the
+	 * normal vector.
+	 * 
+	 * The file name is generated in the temporary directory and will be unique.
+	 * 
+	 * @return the file containing the exported model or null on error
+	 */
+	public File exportVerticesAsTxt() {
+		try {
+			File tmp = File.createTempFile("knowrob_", ".txt",
+					new File(System.getProperty("java.io.tmpdir")));
+			exportVerticesAsTxt(tmp, true);
+			return tmp;
+		} catch (IOException e) {
+			logger.error("Couldn't create temp file name: " + e.getMessage());
+			return null;
+		}
+
+	}
+
+	/**
+	 * Export the vertices of the model into a txt file with the format:
+	 * 
+	 * <pre>
+	 * NUMBER_OF_POINTS
+	 * x1	y1	z1	nx1	nx2	nx3
+	 * x2	y2	z2	nx2	nx2	nx2
+	 * </pre>
+	 * 
+	 * where the first 3 values are the coordinates of the point, the next 3 values represent the
+	 * normal vector.
+	 * 
+	 * @param path
+	 *            the path to the file where to store the data
+	 * @param overwrite
+	 *            overwrite existing file
+	 * @return true on success
+	 */
+	public boolean exportVerticesAsTxt(File path, boolean overwrite) {
+
+		try {
+			if (!overwrite && path.exists()) {
+				logger.error("Couldn't export model to file. Already exists: "
+						+ path.getAbsolutePath());
+				return false;
+			}
+			FileWriter fstream = new FileWriter(path);
+			BufferedWriter out = new BufferedWriter(fstream);
+			out.write(vertices.size() + "\n");
+			NumberFormat df = new DecimalFormat("0.####################");
+			for (int i = 0; i < vertices.size(); i++) {
+				Vertex v = vertices.get(i);
+				out.write(df.format(v.x) + "\t" + df.format(v.y) + "\t" + df.format(v.z));
+				if (normalsInitialized) {
+					out.write("\t" + df.format(v.getNormalVector().x) + "\t"
+							+ df.format(v.getNormalVector().y) + "\t"
+							+ df.format(v.getNormalVector().z));
+				}
+				if (i < vertices.size() - 1)
+					out.write("\n");
+			}
+			logger.info("Model exported to file " + path.getAbsolutePath());
+			out.close();
+			return true;
+		} catch (IOException e) {
+			logger.error("Couldn't export model to file " + path.getAbsolutePath() + ". "
+					+ e.getMessage());
+		}
+		return false;
 	}
 
 }
