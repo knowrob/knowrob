@@ -51,6 +51,7 @@
       reset_highlighting/1,
       show_images/2,
       planvis_create/1,
+      planvis_create_fsm/1,
       planvis_load/2,
       planvis_highlight/2,
       planvis_highlight/3,
