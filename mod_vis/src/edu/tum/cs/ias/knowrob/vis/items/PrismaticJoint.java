@@ -25,7 +25,7 @@ public class PrismaticJoint extends Item {
 	@Override
 	public void drawIt(Canvas c) {
 		
-		(new Cylinder(new Vector3f(0f, 0f, -0.1f), new Vector3f(0f, 0f, 0.2f), 0.01f)).draw(c);
+		(new ConePrimitive(new Vector3f(0f, 0f, -0.1f), new Vector3f(0f, 0f, 0.2f), 0.01f)).draw(c);
 		
 		c.translate(0.0f, 0.0f, 0.2f);
 		c.box(0.02f, 0.02f, 0.02f);

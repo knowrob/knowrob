@@ -26,9 +26,9 @@ public class DrinkingGlass extends Item {
 	@Override
 	public void drawIt(Canvas c) {
 		
-		(new Cylinder(new Vector3f(0f, 0f, 0f),    new Vector3f(0f, 0f, 0.005f), 0.04f)).draw(c); // foot
-		(new Cylinder(new Vector3f(0f, 0f, 0f),    new Vector3f(0f, 0f, 0.05f),  0.005f)).draw(c);  // 
-		(new Cylinder(new Vector3f(0f, 0f, 0.05f), new Vector3f(0f, 0f, 0.15f),  0.03f)).draw(c);  // glass
+		(new ConePrimitive(new Vector3f(0f, 0f, 0f),    new Vector3f(0f, 0f, 0.005f), 0.04f)).draw(c); // foot
+		(new ConePrimitive(new Vector3f(0f, 0f, 0f),    new Vector3f(0f, 0f, 0.05f),  0.005f)).draw(c);  // 
+		(new ConePrimitive(new Vector3f(0f, 0f, 0.05f), new Vector3f(0f, 0f, 0.15f),  0.03f)).draw(c);  // glass
 		
 	}
 }

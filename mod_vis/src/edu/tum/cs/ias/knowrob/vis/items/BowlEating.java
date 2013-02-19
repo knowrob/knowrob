@@ -25,7 +25,7 @@ public class BowlEating extends Item {
 	@Override
 	public void drawIt(Canvas c) {
 
-		(new Cylinder(new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0f, 0.10f), 0.08f)).draw(c); // lower part
+		(new ConePrimitive(new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0f, 0.10f), 0.08f)).draw(c); // lower part
 		  
 	}
 

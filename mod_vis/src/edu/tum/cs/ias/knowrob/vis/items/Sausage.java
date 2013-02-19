@@ -26,7 +26,7 @@ public class Sausage extends Item {
 	@Override
 	public void drawIt(Canvas c) {
 		
-		(new Cylinder(new Vector3f(-0.05f, -0.05f, 0f), new Vector3f(0.05f, 0.05f, 0f), 0.03f)).draw(c);
+		(new ConePrimitive(new Vector3f(-0.05f, -0.05f, 0f), new Vector3f(0.05f, 0.05f, 0f), 0.03f)).draw(c);
 
 	}
 

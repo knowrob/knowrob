@@ -27,8 +27,8 @@ public class Cup extends Item {
 	@Override
 	public void drawIt(Canvas c) {
 		
-		(new Cylinder(new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0f, 0.10f), 0.05f)).draw(c); // cup
-		(new Cylinder(new Vector3f(-0.01f, 0.05f, 0.05f), new Vector3f(0.01f, 0.05f, 0.05f),0.025f)).draw(c); // handle
+		(new ConePrimitive(new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0f, 0.10f), 0.05f)).draw(c); // cup
+		(new ConePrimitive(new Vector3f(-0.01f, 0.05f, 0.05f), new Vector3f(0.01f, 0.05f, 0.05f),0.025f)).draw(c); // handle
 		
 	}
 }

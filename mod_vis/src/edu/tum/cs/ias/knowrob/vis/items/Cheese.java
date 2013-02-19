@@ -26,7 +26,7 @@ public class Cheese extends Item {
 	@Override
 	public void drawIt(Canvas c) {
 		
-		(new Cylinder(new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0f, 0.05f), 0.04f)).draw(c); // lower part
+		(new ConePrimitive(new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0f, 0.05f), 0.04f)).draw(c); // lower part
 
 	}
 

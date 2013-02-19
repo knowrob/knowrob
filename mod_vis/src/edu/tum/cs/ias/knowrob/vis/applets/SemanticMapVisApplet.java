@@ -17,6 +17,7 @@ import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3d;
+import javax.vecmath.Vector3f;
 
 import peasy.PeasyCam;
 import peasy.CameraState;
@@ -1126,6 +1127,29 @@ public class SemanticMapVisApplet extends AnimatedCanvas implements MouseListene
 
 				it = new Door(pose, dim);
 				it.defaultColor = convertColor(255, 175, 0, 255);
+				it.setColor(it.defaultColor);
+				it.name = identifier;
+
+				return it;
+			}
+
+			// check if it is a cylinder
+			HashMap<String, Vector<String>> cyl = PrologInterface.executeQuery(
+					"rdf_has("+identifier+", rdf:type, OBJECTCLASS)," +
+					"rdf_reachable(OBJECTCLASS, rdfs:subClassOf, knowrob:'Cylinder')," +
+					"rdf_triple(knowrob:longitudinalDirection, C, Dir)," +
+					"rdf_has(Dir, knowrob:vectorX, literal(type(xsd:'float',DirX)))," +
+					"rdf_has(Dir, knowrob:vectorY, literal(type(xsd:'float',DirY)))," +
+					"rdf_has(Dir, knowrob:vectorZ, literal(type(xsd:'float',DirZ)))");
+
+			if(cyl !=null && cyl.get("OBJECTCLASS") != null && cyl.get("OBJECTCLASS").size() > 0) {
+
+				Vector3d dir = new Vector3d(Double.valueOf(cyl.get("DirX").get(0)), 
+						Double.valueOf(cyl.get("DirY").get(0)), 
+						Double.valueOf(cyl.get("DirZ").get(0)));
+				
+				it = new Cone(pose, new Vector3d(), dir, 0.01f,0.01f,0.04f);
+				it.defaultColor = convertColor(255, 225, 0, 255);
 				it.setColor(it.defaultColor);
 				it.name = identifier;
 

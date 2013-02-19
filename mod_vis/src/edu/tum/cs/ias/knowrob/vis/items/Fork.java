@@ -31,7 +31,7 @@ public class Fork extends Item {
 		
 			c.scale(0.01f);
 			
-			(new Cylinder(new Vector3f(-7.8f, 0f, -1.04f), new Vector3f(1.69f, 0f, -1.04f), 1.04f)).draw(c);  // main spree
+			(new ConePrimitive(new Vector3f(-7.8f, 0f, -1.04f), new Vector3f(1.69f, 0f, -1.04f), 1.04f)).draw(c);  // main spree
 		
 			c.beginShape(PConstants.QUAD_STRIP);
 			c.vertex(1.3f,1.04f,-0.39f); c.vertex(1.3f,1.04f,0.39f);

@@ -25,8 +25,8 @@ public class PancakeMix extends Item {
 	@Override
 	public void drawIt(Canvas c) {
 		
-		(new Cylinder(new Vector3f(0f, 0f, 0f),    new Vector3f(0f, 0f, 0.15f), 0.04f)).draw(c); // cup
-		(new Cylinder(new Vector3f(0f, 0f, 0.15f), new Vector3f(0f, 0f, 0.18f), 0.025f)).draw(c); // nozzle
+		(new ConePrimitive(new Vector3f(0f, 0f, 0f),    new Vector3f(0f, 0f, 0.15f), 0.04f)).draw(c); // cup
+		(new ConePrimitive(new Vector3f(0f, 0f, 0.15f), new Vector3f(0f, 0f, 0.18f), 0.025f)).draw(c); // nozzle
 		
 	}
 }

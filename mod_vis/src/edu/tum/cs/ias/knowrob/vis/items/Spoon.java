@@ -25,10 +25,10 @@ public class Spoon extends Item {
 	public void drawIt(Canvas c) {
 
 		// main spree
-		(new Cylinder(new Vector3f(-0.078f, 0f, -0.0104f), new Vector3f(0.039f, 0f, -0.0104f), 0.0104f)).draw(c);
+		(new ConePrimitive(new Vector3f(-0.078f, 0f, -0.0104f), new Vector3f(0.039f, 0f, -0.0104f), 0.0104f)).draw(c);
 		
 		// spoon
-		(new Cylinder(new Vector3f(0.052f, 0f, -0.078f),   new Vector3f(0.052f, 0f, -0.013f), 0.026f)).draw(c);
+		(new ConePrimitive(new Vector3f(0.052f, 0f, -0.078f),   new Vector3f(0.052f, 0f, -0.013f), 0.026f)).draw(c);
 		
 	}
 

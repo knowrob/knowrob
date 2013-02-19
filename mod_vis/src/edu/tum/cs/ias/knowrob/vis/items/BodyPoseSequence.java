@@ -217,13 +217,13 @@ public class BodyPoseSequence extends ItemBase implements DrawableAnimated {
 	}
 	
 	protected void cyl(Canvas c, float x1, float y1, float z1, float x2, float y2, float z2, float r){
-		Cylinder cyl = new Cylinder(new Vector3f(x1, y1, z1), new Vector3f(x2, y2, z2), r);
+		ConePrimitive cyl = new ConePrimitive(new Vector3f(x1, y1, z1), new Vector3f(x2, y2, z2), r);
 		cyl.draw(c);
 	}
 	
 	
 	protected void cone(Canvas c, float x1, float y1, float z1, float x2, float y2, float z2, float r1, float r2){
-		Cylinder cyl = new Cylinder(new Vector3f(x1, y1, z1), new Vector3f(x2, y2, z2), r1, r2);
+		ConePrimitive cyl = new ConePrimitive(new Vector3f(x1, y1, z1), new Vector3f(x2, y2, z2), r1, r2);
 		cyl.draw(c);
 	}
 	

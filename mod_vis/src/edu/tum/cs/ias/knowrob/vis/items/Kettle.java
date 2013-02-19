@@ -27,7 +27,7 @@ public class Kettle extends Item {
 	@Override
 	public void drawIt(Canvas c) {
 		
-      (new Cylinder(new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0f, 0.15f), 0.09f)).draw(c); // body 
+      (new ConePrimitive(new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0f, 0.15f), 0.09f)).draw(c); // body 
 		//(new Cylinder(new Vector3f(-0.01f, 0.08f, 0.075f), new Vector3f(0.01f, 0.075f, 0.075f),0.04f)).draw(c); // handle
 		
 	}

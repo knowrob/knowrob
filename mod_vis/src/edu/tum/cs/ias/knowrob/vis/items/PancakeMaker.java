@@ -25,7 +25,7 @@ public class PancakeMaker extends Item {
 	@Override
 	public void drawIt(Canvas c) {
 
-		(new Cylinder(new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0f, 0.07f), 0.015f)).draw(c); 
+		(new ConePrimitive(new Vector3f(0f, 0f, 0f), new Vector3f(0f, 0f, 0.07f), 0.015f)).draw(c); 
 		
 	}
 }
