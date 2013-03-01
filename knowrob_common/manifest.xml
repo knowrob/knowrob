@@ -14,9 +14,10 @@
   <depend package="rosprolog"/>
 
   <export>
-<!--     <java classpath="${prefix}/bin:${prefix}/lib/guava-r09.jar:${prefix}/lib/vecmath.jar"/> -->
-  <java classpath="${prefix}/bin:${prefix}/lib/owlapi-bin.jar:${prefix}/lib/vecmath.jar:${prefix}/lib/guava-r09.jar:${prefix}/lib/commons-lang-2.6.jar:${prefix}/lib/HermiT.jar"/>
+  <java classpath="${prefix}/bin:${prefix}/lib/commons-lang-2.6.jar:${prefix}/lib/commons-logging-1.1.1.jar:${prefix}/lib/commons-net-3.0.1.jar:${prefix}/lib/guava-r09.jar:${prefix}/lib/HermiT.jar:${prefix}/lib/owlapi-bin.jar:${prefix}/lib/vecmath.jar:${prefix}/lib/httpcomponents-client/commons-codec-1.4.jar:${prefix}/lib/httpcomponents-client/httpclient-4.1.1.jar:${prefix}/lib/httpcomponents-client/httpclient-cache-4.1.1.jar:${prefix}/lib/httpcomponents-client/httpcore-4.1.jar:${prefix}/lib/httpcomponents-client/httpmime-4.1.1.jar"/>
 </export>
+
+
 
 
 </package>

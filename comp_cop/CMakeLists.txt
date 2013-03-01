@@ -37,20 +37,10 @@ set(JAVA_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/bin)
 #######################################
 # Classpath
 add_classpath(${PROJECT_SOURCE_DIR}/lib/apache-mime4j-0.6.jar)
-add_classpath(${PROJECT_SOURCE_DIR}/lib/commons-codec-1.3.jar)
-add_classpath(${PROJECT_SOURCE_DIR}/lib/commons-logging-1.1.1.jar)
-add_classpath(${PROJECT_SOURCE_DIR}/lib/httpclient-4.0.1.jar)
-add_classpath(${PROJECT_SOURCE_DIR}/lib/httpcore-4.0.1.jar)
-add_classpath(${PROJECT_SOURCE_DIR}/lib/httpmime-4.0.1.jar)
 add_classpath(${PROJECT_SOURCE_DIR}/lib/xmlrpc-1.1.1.jar)
 add_classpath(${PROJECT_SOURCE_DIR}/lib/google-api-translate-java-0.92.jar)
 
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/apache-mime4j-0.6.jar)
-add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/commons-codec-1.3.jar)
-add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/commons-logging-1.1.1.jar)
-add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/httpclient-4.0.1.jar)
-add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/httpcore-4.0.1.jar)
-add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/httpmime-4.0.1.jar)
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/xmlrpc-1.1.1.jar)
 add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/google-api-translate-java-0.92.jar)
 
@@ -60,6 +50,18 @@ add_classpath(${jpl_PACKAGE_PATH}/prolog/jpl.jar)
 
 rosbuild_find_ros_package(rosjava_jni)
 add_classpath(${rosjava_jni_PACKAGE_PATH}/bin)
+
+rosbuild_find_ros_package(knowrob_common)
+add_classpath(${knowrob_common_PACKAGE_PATH}/lib/commons-logging-1.1.1.jar)
+add_classpath(${knowrob_common_PACKAGE_PATH}/lib/httpcomponents-client/commons-codec-1.3.jar)
+add_classpath(${knowrob_common_PACKAGE_PATH}/lib/httpcomponents-client/httpclient-4.0.1.jar)
+add_classpath(${knowrob_common_PACKAGE_PATH}/lib/httpcomponents-client/httpcore-4.0.1.jar)
+add_classpath(${knowrob_common_PACKAGE_PATH}/lib/httpcomponents-client/httpmime-4.0.1.jar)
+add_runtime_classpath(${knowrob_common_PACKAGE_PATH}/lib/commons-logging-1.1.1.jar)
+add_runtime_classpath(${knowrob_common_PACKAGE_PATH}/lib/httpcomponents-client/commons-codec-1.3.jar)
+add_runtime_classpath(${knowrob_common_PACKAGE_PATH}/lib/httpcomponents-client/httpclient-4.0.1.jar)
+add_runtime_classpath(${knowrob_common_PACKAGE_PATH}/lib/httpcomponents-client/httpcore-4.0.1.jar)
+add_runtime_classpath(${knowrob_common_PACKAGE_PATH}/lib/httpcomponents-client/httpmime-4.0.1.jar)
 
 # generate launch script
 rospack_add_java_executable(BarcodeWebLookup edu.tum.cs.ias.knowrob.BarcodeWebLookup)
