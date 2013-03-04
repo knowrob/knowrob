@@ -10,7 +10,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/knowrob_cad_parser/lib/processing/PeasyCam.jar"/>
-	<classpathentry kind="lib" path="/home/stefan/ros/knowrob/knowrob_common/lib/vecmath.jar"/>
 	<classpathentry kind="lib" path="/knowrob_cad_parser/bin" sourcepath="/knowrob_cad_parser/src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/knowrob_cad_parser"/>
 	<classpathentry kind="lib" path="/knowrob_cad_parser/lib/j3dcore.jar"/>
@@ -18,7 +17,6 @@
 	<classpathentry kind="lib" path="/knowrob_cad_parser/lib/dae4j.jar"/>
 	<classpathentry kind="lib" path="/knowrob_cad_parser/lib/log4j-1.2.16.jar"/>
 	<classpathentry kind="lib" path="/knowrob_cad_parser/lib/processing/core.jar"/>
-	<classpathentry kind="lib" path="/home/stefan/ros/knowrob/knowrob_common/lib/commons-net-3.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/ejml-0.21.jar" sourcepath="/home/stefan/Downloads/ejml-0.21-src.zip">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:file:/home/stefan/ros/knowrob/knowrob_mesh_reasoning/lib/ejml-0.21-doc.zip!/"/>
@@ -26,5 +24,7 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="/opt/ros/fuerte/stacks/client_rosjava_jni/rosjava_jni/bin"/>
 	<classpathentry kind="lib" path="/knowrob_common/bin"/>
+	<classpathentry kind="lib" path="/knowrob_common/lib/commons-net-3.0.1.jar"/>
+	<classpathentry kind="lib" path="/knowrob_common/lib/vecmath.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

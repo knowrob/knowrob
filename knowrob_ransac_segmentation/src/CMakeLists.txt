@@ -7,6 +7,10 @@ if (OPENMP_FOUND)
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
 
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
+
+
 #Get source files
 file(GLOB ransac_SOURCES_GfxTL "GfxTL/*.cpp")
 file(GLOB ransac_SOURCES_MiscLib "MiscLib/*.cpp")
