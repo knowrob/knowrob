@@ -123,12 +123,13 @@ public class SemanticMapVisApplet extends AnimatedCanvas implements MouseListene
 		cam = new PeasyCam(this, 0,0,0, 50);
 
 		// values for zooming (min distance to which one can zoom in)
-		cam.setMinimumDistance(1);
+		cam.setMinimumDistance(0.01);
 		cam.setMaximumDistance(500);
 
 		cam.setRightDragHandler(cam.getPanDragHandler());
 		cam.setLeftDragHandler(cam.getRotateDragHandler());
-
+		cam.setWheelScale(0.2);
+		
 		// initialize camera view parameters
 		cam.setRotations(1.808507, -0.46793357, 0.056346834);
 		cam.setDistance(75.6322);
