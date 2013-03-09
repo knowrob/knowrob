@@ -80,14 +80,15 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 	private static PrimitiveType getPrimitiveType(HashMap<Vertex, Curvature> curvatures, Vertex v) {
 
 		Curvature c = curvatures.get(v);
-		if (c.getSaturation() < 0.45)
+
+		if (c.getSaturation() < 0.30)
 			return PrimitiveType.PLANE;
 
 		float hue = c.getHue();
 
-		if (hue < 35 * Math.PI / 180)
+		if (hue < 15 * Math.PI / 180)
 			return PrimitiveType.SPHERE_CONVEX;
-		else if (hue >= 35 * Math.PI / 180 && hue < 75 * Math.PI / 180)
+		else if (hue >= 15 * Math.PI / 180 && hue < 75 * Math.PI / 180)
 			return PrimitiveType.CONE_CONVEX;
 		else if (hue >= 75 * Math.PI / 180 && hue < 150 * Math.PI / 180
 				|| hue >= 230 * Math.PI / 180)
@@ -412,7 +413,7 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 		}
 
 		// Combine very small annotations with surrounding larger ones
-		for (Iterator<Annotation> it = cas.getAnnotations().iterator(); it.hasNext();) {
+		/*for (Iterator<Annotation> it = cas.getAnnotations().iterator(); it.hasNext();) {
 			Annotation a = it.next();
 			if (a instanceof PrimitiveAnnotation) {
 				PrimitiveAnnotation pa = (PrimitiveAnnotation) a;
@@ -464,7 +465,7 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 					}
 				}
 			}
-		}
+		}*/
 
 		// Combine neighboring annotations which were previously divided by smaller annotations and
 		// are now neighbors
@@ -480,11 +481,17 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 					if (a1.getClass() != pa.getClass())
 						continue;
 					if (pa instanceof ConeAnnotation
-							&& ((ConeAnnotation) pa).isConcave() != ((ConeAnnotation) a1).isConcave()) {
+							&& ((ConeAnnotation) pa).isConcave() != ((ConeAnnotation) a1)
+									.isConcave()) {
 						continue;
 					} else if (pa instanceof SphereAnnotation
 							&& ((SphereAnnotation) pa).isConcave() != ((SphereAnnotation) a1)
 									.isConcave()) {
+						continue;
+					} else if (pa instanceof PlaneAnnotation
+							&& Math.acos(((PlaneAnnotation) pa).getPlaneNormal().dot(
+									((PlaneAnnotation) a1).getPlaneNormal())) > 45.0 * Math.PI / 180.0) {
+						// Two planes, but angle bigger than 45 degree
 						continue;
 					}
 					synchronized (cas.getAnnotations()) {

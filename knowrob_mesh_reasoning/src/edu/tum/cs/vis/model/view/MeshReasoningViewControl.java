@@ -9,17 +9,20 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
@@ -27,6 +30,7 @@ import javax.swing.ScrollPaneConstants;
 import edu.tum.cs.vis.model.uima.analyser.MeshAnalyser;
 import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
+import edu.tum.cs.vis.model.util.DrawType;
 import edu.tum.cs.vis.model.view.control.DrawSettingsPanel;
 
 /**
@@ -70,6 +74,10 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 	 * check box to enable or disable drawing of main mesh (base data)
 	 */
 	private final JCheckBox					cbxShowMesh;
+
+	private final JRadioButton				rbnDrawFill;
+	private final JRadioButton				rbnDrawLines;
+	private final JRadioButton				rbnDrawPoints;
 
 	/**
 	 * Button to save current view into an image file
@@ -152,6 +160,37 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 		c.gridy = 0;
 		topPnl.add(cbxShowMesh, c);
 
+		// Create the radio buttons.
+		rbnDrawFill = new JRadioButton("Fill");
+		rbnDrawFill.setMnemonic(KeyEvent.VK_1);
+		rbnDrawFill.setSelected(true);
+		rbnDrawFill.addActionListener(this);
+		rbnDrawLines = new JRadioButton("Lines");
+		rbnDrawLines.setMnemonic(KeyEvent.VK_1);
+		rbnDrawLines.setSelected(true);
+		rbnDrawLines.addActionListener(this);
+		rbnDrawPoints = new JRadioButton("Points");
+		rbnDrawPoints.setMnemonic(KeyEvent.VK_1);
+		rbnDrawPoints.setSelected(true);
+		rbnDrawPoints.addActionListener(this);
+
+		// Group the radio buttons.
+		ButtonGroup group = new ButtonGroup();
+		group.add(rbnDrawFill);
+		group.add(rbnDrawLines);
+		group.add(rbnDrawPoints);
+		c = new GridBagConstraints();
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 0;
+		c.gridy = 1;
+		topPnl.add(rbnDrawFill, c);
+		c.gridx = 1;
+		c.gridy = 1;
+		topPnl.add(rbnDrawLines, c);
+		c.gridx = 2;
+		c.gridy = 1;
+		topPnl.add(rbnDrawPoints, c);
+
 		this.add(topPnl, BorderLayout.NORTH);
 
 		Timer tim = new Timer();
@@ -175,8 +214,12 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 					"Filename", JOptionPane.INFORMATION_MESSAGE, null, null, defaultImageFilename);
 			if (str != null)
 				view.saveImage(str);
-		}
-
+		} else if (e.getSource() == rbnDrawFill)
+			view.setDrawType(DrawType.FILL);
+		else if (e.getSource() == rbnDrawLines)
+			view.setDrawType(DrawType.LINES);
+		else if (e.getSource() == rbnDrawPoints)
+			view.setDrawType(DrawType.POINTS);
 	}
 
 	/**

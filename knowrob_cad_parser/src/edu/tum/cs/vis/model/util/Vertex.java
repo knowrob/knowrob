@@ -10,6 +10,7 @@ package edu.tum.cs.vis.model.util;
 import java.awt.Color;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 /**
@@ -67,8 +68,13 @@ public class Vertex extends Point3f {
 	 * @param p
 	 *            coordinates for new vertex
 	 */
-	public Vertex(Point3f p) {
+	public Vertex(Tuple3f p) {
 		super(p);
+	}
+
+	public Vertex(Tuple3f p, Vector3f norm) {
+		super(p);
+		this.normalVector = (Vector3f) norm.clone();
 	}
 
 	@Override

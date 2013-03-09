@@ -7,8 +7,6 @@
  ******************************************************************************/
 package edu.tum.cs.vis.model.util;
 
-import java.awt.Color;
-
 import processing.core.PGraphics;
 
 /**
@@ -40,9 +38,24 @@ public class Line extends DrawObject {
 	 *            override the draw color an texture. Draw whole object in the given color if !=
 	 *            null
 	 */
-	public void draw(PGraphics g, Color overrideColor) {
-		applyColor(g, overrideColor);
-		g.line(position[0].x, position[0].y, position[0].z, position[1].x, position[1].y,
-				position[1].z);
+	public void draw(PGraphics g, DrawSettings drawSettings) {
+		applyColor(g, drawSettings);
+		if (drawSettings.drawType == DrawType.POINTS) {
+			for (int i = 0; i < position.length; i++) {
+				if (position[i].overrideColor != null) {
+					g.stroke(position[i].overrideColor.getRed(),
+							position[i].overrideColor.getGreen(),
+							position[i].overrideColor.getBlue());
+					g.noFill();
+				} else if (drawSettings.overrideColor == null && position[i].color != null) {
+					g.stroke(position[i].color.getRed(), position[i].color.getGreen(),
+							position[i].color.getBlue());
+					g.noFill();
+				}
+				g.point(position[i].x, position[i].y, position[i].z);
+			}
+		} else
+			g.line(position[0].x, position[0].y, position[0].z, position[1].x, position[1].y,
+					position[1].z);
 	}
 }

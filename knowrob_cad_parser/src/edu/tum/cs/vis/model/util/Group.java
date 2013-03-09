@@ -7,7 +7,6 @@
  ******************************************************************************/
 package edu.tum.cs.vis.model.util;
 
-import java.awt.Color;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -104,11 +103,11 @@ public class Group implements Serializable {
 	 *            override the draw color an texture. Draw whole object in the given color if !=
 	 *            null
 	 */
-	public void draw(PGraphics g, Color overrideColor) {
-		mesh.drawLines(g, overrideColor);
-		mesh.drawTriangles(g, overrideColor);
+	public void draw(PGraphics g, DrawSettings drawSettings) {
+		mesh.drawLines(g, drawSettings);
+		mesh.drawTriangles(g, drawSettings);
 		for (Group gr : children) {
-			gr.draw(g, overrideColor);
+			gr.draw(g, drawSettings);
 		}
 	}
 
@@ -192,6 +191,14 @@ public class Group implements Serializable {
 			g.getIntersectedTriangles(rayStart, rayEnd, intersectedTriangles);
 		}
 
+	}
+
+	public void getAllTriangles(final ArrayList<Triangle> triangles) {
+		mesh.getAllTriangles(triangles);
+
+		for (Group g : children) {
+			g.getAllTriangles(triangles);
+		}
 	}
 
 	/**

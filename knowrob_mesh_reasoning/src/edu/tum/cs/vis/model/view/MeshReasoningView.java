@@ -33,7 +33,10 @@ import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.util.Curvature;
+import edu.tum.cs.vis.model.util.DrawSettings;
+import edu.tum.cs.vis.model.util.DrawType;
 import edu.tum.cs.vis.model.util.IntersectedTriangle;
+import edu.tum.cs.vis.model.util.Triangle;
 import edu.tum.cs.vis.model.util.Vertex;
 
 /**
@@ -188,10 +191,14 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	@SuppressWarnings("rawtypes")
 	private final HashSet<MeshAnnotation>			selectedAnnotations	= new HashSet<MeshAnnotation>();
 
+	private boolean									selectTrianglesOnly	= false;
+
 	/**
 	 * The controller for this view
 	 */
 	private MeshReasoningViewControl				control				= null;
+
+	private final DrawSettings						drawSettings		= new DrawSettings();
 
 	/**
 	 * Add annotation to selected annotations
@@ -243,10 +250,12 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		// Must be called AFTER all scale, transform, rotate, ... calls
 		captureViewMatrix();
 
-		getSelectionGraphics().setDrawWithTransparency(selectedAnnotations.size() > 0);
+		getSelectionGraphics().setDrawWithTransparency(
+				(selectTrianglesOnly && selectedTriangles.size() > 0)
+						|| selectedAnnotations.size() > 0);
 
 		for (MeshCas c : casList) {
-			c.draw(g);
+			c.draw(g, drawSettings);
 			if (drawBoundingBox) {
 				g.noFill();
 				g.stroke(255, 125, 0);
@@ -257,29 +266,50 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 
 		getSelectionGraphics().setDrawWithTransparency(false);
 
-		synchronized (selectedAnnotations) {
+		if (selectTrianglesOnly) {
 
-			for (@SuppressWarnings("rawtypes")
-			MeshAnnotation ma : selectedAnnotations) {
-				ma.getMesh().drawTriangles(
-						g,
-						selectedAnnotations.size() > 1 ? new Color(255, 125, 0, 200) : new Color(
-								255, 50, 0, 200));
-			}
-
-			if (selectedAnnotations.size() == 1) {
-				@SuppressWarnings("rawtypes")
-				MeshAnnotation a = selectedAnnotations.iterator().next();
-
-				if (a instanceof PrimitiveAnnotation) {
-					@SuppressWarnings("rawtypes")
-					PrimitiveAnnotation an = (PrimitiveAnnotation) a;
-
-					an.drawPrimitiveAnnotation(g);
-
+			synchronized (selectedTriangles) {
+				for (IntersectedTriangle t : selectedTriangles) {
+					drawSettings.overrideColor = selectedTriangles.size() > 1 ? new Color(255, 125,
+							0, 200) : new Color(255, 50, 0, 200);
+					t.t.draw(g, drawSettings);
 				}
-			}
 
+				if (selectedTriangles.size() == 1) {
+					IntersectedTriangle t = selectedTriangles.get(0);
+
+					for (Triangle n : t.t.getNeighbors()) {
+
+						drawSettings.overrideColor = new Color(0, 50, 255, 200);
+						n.draw(g, drawSettings);
+					}
+				}
+
+			}
+		} else {
+			synchronized (selectedAnnotations) {
+
+				for (@SuppressWarnings("rawtypes")
+				MeshAnnotation ma : selectedAnnotations) {
+					drawSettings.overrideColor = selectedAnnotations.size() > 1 ? new Color(255,
+							125, 0, 200) : new Color(255, 50, 0, 200);
+					ma.getMesh().drawTriangles(g, drawSettings);
+				}
+
+				if (selectedAnnotations.size() == 1) {
+					@SuppressWarnings("rawtypes")
+					MeshAnnotation a = selectedAnnotations.iterator().next();
+
+					if (a instanceof PrimitiveAnnotation) {
+						@SuppressWarnings("rawtypes")
+						PrimitiveAnnotation an = (PrimitiveAnnotation) a;
+
+						an.drawPrimitiveAnnotation(g);
+
+					}
+				}
+
+			}
 		}
 
 		if (drawVertexNormals || drawVertexCurvature || drawVoronoiArea) {
@@ -429,6 +459,10 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		return selectNearestOnly;
 	}
 
+	public boolean isSelectTrianglesOnly() {
+		return selectTrianglesOnly;
+	}
+
 	@Override
 	public void keyTyped(KeyEvent e) {
 		char c = e.getKeyChar();
@@ -440,6 +474,18 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 			cam.setDistance(cam.getDistance() * 0.8, 250);
 		} else if (c == '.') {
 			cam.setDistance(cam.getDistance() * 1.2, 250);
+		} else if (c == '1') {
+			setDrawType(DrawType.FILL);
+		} else if (c == '2') {
+			setDrawType(DrawType.LINES);
+		} else if (c == '3') {
+			setDrawType(DrawType.POINTS);
+		} else if (c == 'w') {
+			drawSettings.incLineWidth();
+			draw();
+		} else if (c == 'q') {
+			drawSettings.decLineWidth();
+			draw();
 		}/* else if (c == 'm') {
 			test++;
 			} else if (c == 'n') {
@@ -473,6 +519,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 			}
 
 			if (!found) {
+
 				// It is new selection
 				selectedTriangles.clear();
 				for (MeshCas c : casList) {
@@ -483,23 +530,25 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 				}
 			}
 
-			// Check if one of selected triangles is in already selected annotation
-			ArrayList<IntersectedTriangle> newSelected = new ArrayList<IntersectedTriangle>();
-			for (IntersectedTriangle p : selectedTriangles) {
-				synchronized (selectedAnnotations) {
-					for (@SuppressWarnings("rawtypes")
-					MeshAnnotation ma : selectedAnnotations)
-						if (ma.meshContainsTriangle(p.t)) {
-							newSelected.add(p);
-						}
+			if (!selectTrianglesOnly) {
+				// Check if one of selected triangles is in already selected annotation
+				ArrayList<IntersectedTriangle> newSelected = new ArrayList<IntersectedTriangle>();
+				for (IntersectedTriangle p : selectedTriangles) {
+					synchronized (selectedAnnotations) {
+						for (@SuppressWarnings("rawtypes")
+						MeshAnnotation ma : selectedAnnotations)
+							if (ma.meshContainsTriangle(p.t)) {
+								newSelected.add(p);
+							}
+					}
 				}
-			}
-			if (newSelected.size() > 0) {
-				// Currently selected was in one or more of the selected annotations, so select
-				// out
-				// of current annotations
-				selectedTriangles.clear();
-				selectedTriangles.addAll(newSelected);
+				if (newSelected.size() > 0) {
+					// Currently selected was in one or more of the selected annotations, so select
+					// out
+					// of current annotations
+					selectedTriangles.clear();
+					selectedTriangles.addAll(newSelected);
+				}
 			}
 
 			if (selectNearestOnly && selectedTriangles.size() > 1) {
@@ -555,27 +604,29 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	 * Called to update list of selectedAnnotations after list of selectedTriangless has changed
 	 */
 	private void selectedTrianglesChanged() {
-		synchronized (selectedAnnotations) {
-			selectedAnnotations.clear();
-		}
-		for (MeshCas c : casList) {
-			for (Annotation a : c.getAnnotations()) {
-				if (!(a instanceof DrawableAnnotation))
-					continue;
-				@SuppressWarnings("rawtypes")
-				MeshAnnotation ma = (MeshAnnotation) a;
-				if (!ma.isDrawAnnotation())
-					continue; // Skip not visible annotations
-				for (IntersectedTriangle p : selectedTriangles)
-					if (ma.meshContainsTriangle(p.t)) {
-						synchronized (selectedAnnotations) {
-							selectedAnnotations.add(ma);
-						}
-						break;
-					}
+		if (!selectTrianglesOnly) {
+			synchronized (selectedAnnotations) {
+				selectedAnnotations.clear();
 			}
+			for (MeshCas c : casList) {
+				for (Annotation a : c.getAnnotations()) {
+					if (!(a instanceof DrawableAnnotation))
+						continue;
+					@SuppressWarnings("rawtypes")
+					MeshAnnotation ma = (MeshAnnotation) a;
+					if (!ma.isDrawAnnotation())
+						continue; // Skip not visible annotations
+					for (IntersectedTriangle p : selectedTriangles)
+						if (ma.meshContainsTriangle(p.t)) {
+							synchronized (selectedAnnotations) {
+								selectedAnnotations.add(ma);
+							}
+							break;
+						}
+				}
+			}
+			control.showSelectedAnnotation(selectedAnnotations);
 		}
-		control.showSelectedAnnotation(selectedAnnotations);
 
 	}
 
@@ -637,6 +688,11 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		}
 	}
 
+	public void setDrawType(DrawType t) {
+		drawSettings.drawType = t;
+		draw();
+	}
+
 	/**
 	 * 
 	 * @param drawVertexCurvature
@@ -692,6 +748,10 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	 */
 	public void setSelectNearestOnly(boolean selectNearestOnly) {
 		this.selectNearestOnly = selectNearestOnly;
+	}
+
+	public void setSelectTrianglesOnly(boolean select) {
+		selectTrianglesOnly = select;
 	}
 
 	@Override

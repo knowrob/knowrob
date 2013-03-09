@@ -9,7 +9,6 @@ package edu.tum.cs.vis.model;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -148,18 +147,11 @@ public class MeshReasoning {
 				+ ", Triangles: " + model.getTriangles().size() + ")");
 		start = System.currentTimeMillis();
 
+		/*double size = (model.getSizeX() + model.getSizeY() + model.getSizeZ()) / 3;
+		double maxFactor = (size * size) / 2000.0;
+		model.splitTriangles(maxFactor);*/
+
 		model.removeDoubleSidedTriangles(); // in ply files there may be double sided triangles
-		model.updateVertexSharing();
-		model.updateVertexNormals();
-		logger.debug("Model initialized. Took: "
-				+ PrintUtil.prettyMillis(System.currentTimeMillis() - start) + " (Vertices: "
-				+ model.getVertices().size() + ", Lines: " + model.getLines().size()
-				+ ", Triangles: " + model.getTriangles().size() + ")");
-
-		File f = model.exportVerticesAsTxt();
-
-		// normalize model for further reasoning
-		model.normalize();
 
 		// list of current running analyzers used in mesh reasoning view
 		ArrayList<MeshAnalyser> analyser;
@@ -171,12 +163,26 @@ public class MeshReasoning {
 		}
 		cas.setModel(model);
 
-		// Create analyzers and start them
-
 		NeighborAnalyser na = new NeighborAnalyser();
 		analyser.add(na);
 		Thread.yield();
 		na.process(cas);
+
+		model.updateVertexSharing();
+
+		model.updateVertexNormals();
+
+		logger.debug("Model initialized. Took: "
+				+ PrintUtil.prettyMillis(System.currentTimeMillis() - start) + " (Vertices: "
+				+ model.getVertices().size() + ", Lines: " + model.getLines().size()
+				+ ", Triangles: " + model.getTriangles().size() + ")");
+
+		// File f = model.exportVerticesAsTxt();
+
+		// normalize model for further reasoning
+		model.normalize();
+
+		// Create analyzers and start them
 
 		logger.debug("Calculating curvature ...");
 		long curvatureStartTime = System.currentTimeMillis();
@@ -194,7 +200,7 @@ public class MeshReasoning {
 		Thread.yield();
 		pa.process(cas);
 		ca.process(cas);
-		cha.process(cas);
+		// cha.process(cas);
 
 	}
 

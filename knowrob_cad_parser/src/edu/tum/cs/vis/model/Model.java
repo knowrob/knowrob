@@ -7,7 +7,6 @@
  ******************************************************************************/
 package edu.tum.cs.vis.model;
 
-import java.awt.Color;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -15,6 +14,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -31,10 +31,12 @@ import org.apache.log4j.Logger;
 import processing.core.PGraphics;
 import edu.tum.cs.ias.knowrob.utils.ThreadPool;
 import edu.tum.cs.vis.model.util.BSphere;
+import edu.tum.cs.vis.model.util.DrawSettings;
 import edu.tum.cs.vis.model.util.Group;
 import edu.tum.cs.vis.model.util.Line;
 import edu.tum.cs.vis.model.util.Triangle;
 import edu.tum.cs.vis.model.util.Vertex;
+import edu.tum.cs.vis.model.util.algorithm.Miniball;
 
 /**
  * 
@@ -50,50 +52,50 @@ public class Model {
 	/**
 	 * Log4J Logger
 	 */
-	private static Logger			logger				= Logger.getLogger(Model.class);
+	private static Logger				logger				= Logger.getLogger(Model.class);
 
 	/**
 	 * Absolute file path where the relative paths within the model are based.
 	 */
-	private String					textureBasePath		= null;
+	private String						textureBasePath		= null;
 
 	/**
 	 * Main group of the model. Each model should have at least one group.
 	 */
-	private Group					group;
+	private Group						group;
 
 	/**
 	 * List of all vertices in this model
 	 */
-	private final ArrayList<Vertex>	vertices			= new ArrayList<Vertex>();
+	private final ArrayList<Vertex>		vertices			= new ArrayList<Vertex>();
 
 	/**
 	 * List of all triangles in this model
 	 */
-	final ArrayList<Triangle>		triangles			= new ArrayList<Triangle>();
+	private final ArrayList<Triangle>	triangles			= new ArrayList<Triangle>();
 
 	/**
 	 * List of all lines in this model
 	 */
-	private final ArrayList<Line>	lines				= new ArrayList<Line>();
+	private final ArrayList<Line>		lines				= new ArrayList<Line>();
 
 	/**
 	 * Minimum bounding sphere of this model. Only set if previously calculated (by Miniball class).
 	 * 
 	 * @see edu.tum.cs.vis.model.util.algorithm.Miniball
 	 */
-	private BSphere					boundingSphere		= null;
+	private BSphere						boundingSphere		= null;
 
 	/**
 	 * Current model scale. Is used to normalize model for further reasoning. getUnscaled methods
 	 * use this value to undo scaling for parameters such as height, width, radius, ...
 	 */
-	private float					scale				= 1;
+	private float						scale				= 1;
 
 	/**
 	 * Indicates if the vertex normals of each vertex have already been initialized.
 	 */
-	private boolean					normalsInitialized	= false;
+	private boolean						normalsInitialized	= false;
 
 	/**
 	 * @param g
@@ -102,9 +104,9 @@ public class Model {
 	 *            Color to override face color of model. Useful if you want to ignore color of model
 	 *            and draw whole model in a specific color.
 	 */
-	public void draw(PGraphics g, Color overrideColor) {
+	public void draw(PGraphics g, DrawSettings drawSettings) {
 		if (group != null)
-			group.draw(g, overrideColor);
+			group.draw(g, drawSettings);
 	}
 
 	/**
@@ -115,6 +117,8 @@ public class Model {
 	 * @return the boundingSphere
 	 */
 	public BSphere getBoundingSphere() {
+		if (boundingSphere == null)
+			calculateBoundingsphere();
 		return boundingSphere;
 	}
 
@@ -273,18 +277,6 @@ public class Model {
 	}
 
 	/**
-	 * Sets the bounding sphere for the model. Calculated by Miniball class.
-	 * 
-	 * @see edu.tum.cs.vis.model.util.algorithm.Miniball
-	 * 
-	 * @param boundingSphere
-	 *            the boundingSphere to set
-	 */
-	public void setBoundingSphere(BSphere boundingSphere) {
-		this.boundingSphere = boundingSphere;
-	}
-
-	/**
 	 * Set main group of model.
 	 * 
 	 * @param group
@@ -309,6 +301,7 @@ public class Model {
 	 * to avoid two triangles drawn on exactly the same position. Used for mesh reasoning.
 	 */
 	public void removeDoubleSidedTriangles() {
+		boolean removed = false;
 		for (int i = 0; i < triangles.size(); i++) {
 			Triangle t1 = triangles.get(i);
 			for (int j = i + 1; j < triangles.size(); j++) {
@@ -329,12 +322,21 @@ public class Model {
 				}
 				if (eqCnt == 3) {
 					// triangles are the same, so remove j
-					triangles.remove(j);
 					this.group.removeTriangle(t2);
-					j--;
+					removed = true;
 				}
 			}
 
+		}
+		if (removed) {
+			triangles.clear();
+			this.group.getAllTriangles(triangles);
+			Set<Vertex> vertices = new HashSet<Vertex>();
+			for (Triangle t : triangles) {
+				vertices.addAll(Arrays.asList(t.getPosition()));
+			}
+			this.vertices.clear();
+			this.vertices.addAll(vertices);
 		}
 	}
 
@@ -351,6 +353,62 @@ public class Model {
 			updateVertexSharingForTriangle(t, checkedTriangles);
 	}
 
+	private void updateVertexSharingForNeighbors(final Triangle t, final Triangle n,
+			final Set<Triangle> checkedTriangles) {
+		if (t == n)
+			return;
+		synchronized (n) {
+			if (checkedTriangles.contains(n))
+				return;
+
+			double angle = t.getDihedralAngle(n);
+			// Share vertices if angle is < 30 degree
+			boolean share = (angle < 30 / 180.0 * Math.PI);
+
+			for (Vertex vt : t.getPosition()) {
+				for (int i = 0; i < n.getPosition().length; i++) {
+					Vertex vn = n.getPosition()[i];
+					if (share && vn != vt && vt.sameCoordinates(vn)) {
+						// merge vertices
+						n.getPosition()[i] = vt;
+						int cnt = 0;
+						for (Triangle tmpTri : t.getNeighbors()) {
+							for (Vertex tmpVer : tmpTri.getPosition())
+								if (tmpVer == vn) {
+									cnt++;
+									break;
+								}
+						}
+						if (cnt == 0) {
+							for (Triangle tmpTri : n.getNeighbors()) {
+								if (tmpTri == t)
+									continue;
+								for (Vertex tmpVer : tmpTri.getPosition())
+									if (tmpVer == vn) {
+										cnt++;
+										break;
+									}
+							}
+						}
+						if (cnt == 0) {
+							synchronized (vertices) {
+								vertices.remove(vn);
+							}
+						}
+					} else if (!share && vn == vt) {
+						// split vertices
+						System.out.println("split");
+						Vertex clone = (Vertex) vt.clone();
+						synchronized (vertices) {
+							vertices.add(clone);
+						}
+						n.getPosition()[i] = clone;
+					}
+				}
+			}
+		}
+	}
+
 	/**
 	 * Check for all vertices between given triangle and its neighbors if the vertex should be
 	 * shared or not according to the dihedral angle.
@@ -365,61 +423,12 @@ public class Model {
 		synchronized (t) {
 			if (checkedTriangles.contains(t))
 				return;
-			HashSet<Triangle> neighborsToRemove = new HashSet<Triangle>();
 			synchronized (t.getNeighbors()) {
 				for (Triangle n : t.getNeighbors()) {
-					synchronized (n) {
-						if (checkedTriangles.contains(n))
-							continue;
-
-						double angle = t.getDihedralAngle(n);
-
-						// Share vertices if angle is < 30 degree
-						boolean share = (angle < 30 / 180.0 * Math.PI);
-
-						for (Vertex vt : t.getPosition()) {
-							for (int i = 0; i < n.getPosition().length; i++) {
-								Vertex vn = n.getPosition()[i];
-								if (share && vn != vt && vt.sameCoordinates(vn)) {
-									// merge vertices
-									n.getPosition()[i] = vt;
-									int cnt = 0;
-									for (Triangle tmpTri : t.getNeighbors()) {
-										for (Vertex tmpVer : tmpTri.getPosition())
-											if (tmpVer == vn) {
-												cnt++;
-												break;
-											}
-									}
-									if (cnt == 0) {
-										for (Triangle tmpTri : n.getNeighbors()) {
-											if (tmpTri == t)
-												continue;
-											for (Vertex tmpVer : tmpTri.getPosition())
-												if (tmpVer == vn) {
-													cnt++;
-													break;
-												}
-										}
-									}
-									if (cnt == 0) {
-										synchronized (vertices) {
-											vertices.remove(vn);
-										}
-									}
-								} else if (!share && vn == vt) {
-									// split vertices
-									Vertex clone = (Vertex) vt.clone();
-									synchronized (vertices) {
-										vertices.add(clone);
-									}
-									n.getPosition()[i] = clone;
-									if (!t.isAdjacentNeighbor(n)) {
-										neighborsToRemove.add(n);
-									}
-								}
-							}
-						}
+					updateVertexSharingForNeighbors(t, n, checkedTriangles);
+					// also check neighbors of neighbor
+					for (Triangle nn : n.getNeighbors()) {
+						updateVertexSharingForNeighbors(t, nn, checkedTriangles);
 					}
 				}
 
@@ -454,18 +463,18 @@ public class Model {
 
 		for (int start = 0; start < triangles.size(); start += interval) {
 			final int st = start;
-			threads.add(new Callable<Void>() {
+			/*threads.add(new Callable<Void>() {
 
 				@Override
-				public Void call() throws Exception {
-					int end = Math.min(st + interval, triangles.size());
-					for (int i = st; i < end; i++) {
-						calculateVertexNormalsForTriangle(triangles.get(i));
-					}
-					return null;
-				}
+				public Void call() throws Exception {*/
+			int end = Math.min(st + interval, triangles.size());
+			for (int i = st; i < end; i++) {
+				calculateVertexNormalsForTriangle(triangles.get(i));
+			}
+			/*	return null;
+			}
 
-			});
+			});*/
 		};
 
 		ThreadPool.executeInPool(threads);
@@ -477,6 +486,7 @@ public class Model {
 		Vertex extrema[] = new Vertex[6];
 
 		for (Vertex v : vertices) {
+			System.out.println("norm: " + v.getNormalVector());
 			v.getNormalVector().normalize();
 			float coord[] = new float[3];
 			v.get(coord);
@@ -505,7 +515,8 @@ public class Model {
 		for (int i = 0; i < 6; i++) {
 			float coord[] = { 0, 0, 0 };
 			coord[i % 3] = i < 3 ? 1 : -1;
-			double angle = Math.acos(extrema[i].getNormalVector().dot((new Vector3f(coord))));
+			double dot = extrema[i].getNormalVector().dot((new Vector3f(coord)));
+			double angle = Math.acos(dot);
 			System.out.println("Angle: " + (angle * 180 / Math.PI));
 			if (angle < Math.PI / 2)
 				vote--;
@@ -647,6 +658,105 @@ public class Model {
 					+ e.getMessage());
 		}
 		return false;
+	}
+
+	public double getSizeX() {
+		return group.getMaxX() - group.getMinX();
+	}
+
+	public double getSizeY() {
+		return group.getMaxY() - group.getMinY();
+	}
+
+	public double getSizeZ() {
+		return group.getMaxZ() - group.getMinZ();
+	}
+
+	private void splitTriangles(ArrayList<Triangle> list, double maxArea,
+			ArrayList<Triangle> toRemove, ArrayList<Triangle> toAdd, ArrayList<Vertex> newVertices) {
+		for (Triangle t : list) {
+			if (t.getArea() > maxArea) {
+				toRemove.add(t);
+				Vertex newCenter = new Vertex(0, 0, 0);
+				Vector3f newNorm = new Vector3f(0, 0, 0);
+				for (int i = 0; i < 3; i++) {
+					newCenter.add(t.getPosition()[i]);
+					newNorm.add(t.getPosition()[i].getNormalVector());
+				}
+				newCenter.scale((float) (1.0 / 3.0));
+				newNorm.scale((float) (1.0 / 3.0));
+				newCenter.setNormalVector(newNorm);
+				newVertices.add(newCenter);
+				Triangle newT = new Triangle(t.getPosition()[0], t.getPosition()[1], newCenter);
+				newT.setAppearance(t.getAppearance());
+				newT.calculateNormalVector();
+				toAdd.add(newT);
+				newT = new Triangle(t.getPosition()[1], t.getPosition()[2], newCenter);
+				newT.setAppearance(t.getAppearance());
+				newT.calculateNormalVector();
+				toAdd.add(newT);
+				newT = new Triangle(t.getPosition()[2], t.getPosition()[0], newCenter);
+				newT.setAppearance(t.getAppearance());
+				newT.calculateNormalVector();
+				toAdd.add(newT);
+			}
+		}
+	}
+
+	private void splitTriangles(Group g, double maxArea) {
+
+		ArrayList<Triangle> toRemove = new ArrayList<Triangle>();
+		ArrayList<Vertex> newVertices = new ArrayList<Vertex>();
+
+		ArrayList<Triangle> toCheck = (ArrayList<Triangle>) g.getMesh().getTriangles().clone();
+		ArrayList<Triangle> newTriangles = new ArrayList<Triangle>();
+		ArrayList<Triangle> toAdd;
+		do {
+			toAdd = new ArrayList<Triangle>();
+			this.splitTriangles(toCheck, maxArea, toRemove, toAdd, newVertices);
+			toCheck.clear();
+			toCheck.addAll(toAdd);
+			newTriangles.addAll(toAdd);
+		} while (toCheck.size() > 0);
+		vertices.addAll(newVertices);
+		g.getMesh().getTriangles().removeAll(toRemove);
+		triangles.removeAll(toRemove);
+		newTriangles.removeAll(toRemove);
+		g.getMesh().getTriangles().addAll(newTriangles);
+		triangles.addAll(newTriangles);
+
+		for (Group c : g.getChildren()) {
+			splitTriangles(c, maxArea);
+		}
+
+	}
+
+	public void splitTriangles(double maxArea) {
+		splitTriangles(this.group, maxArea);
+	}
+
+	/**
+	 * Calculates the bounding sphere for the model. Calculated by Miniball class.
+	 * 
+	 * @see edu.tum.cs.vis.model.util.algorithm.Miniball
+	 * 
+	 */
+	private void calculateBoundingsphere() {
+		if (vertices.size() == 0)
+			return;
+
+		Miniball mb = new Miniball(3);
+		for (Vertex v : vertices) {
+			double arr[] = new double[3];
+			arr[0] = v.x;
+			arr[1] = v.y;
+			arr[2] = v.z;
+			mb.check_in(arr);
+		}
+		mb.build();
+		this.boundingSphere = new BSphere((float) Math.sqrt(mb.squared_radius()), new Vector3f(
+				(float) mb.center()[0], (float) mb.center()[1], (float) mb.center()[2]));
+
 	}
 
 }

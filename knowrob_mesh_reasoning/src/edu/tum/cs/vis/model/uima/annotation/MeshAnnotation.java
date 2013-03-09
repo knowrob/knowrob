@@ -13,6 +13,7 @@ import java.util.HashSet;
 import processing.core.PGraphics;
 import edu.tum.cs.vis.model.Model;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
+import edu.tum.cs.vis.model.util.DrawSettings;
 import edu.tum.cs.vis.model.util.Mesh;
 import edu.tum.cs.vis.model.util.Triangle;
 
@@ -85,9 +86,10 @@ public abstract class MeshAnnotation<S extends MeshAnnotation> extends DrawableA
 	}
 
 	@Override
-	protected void drawAnnotation(PGraphics g) {
-		mesh.drawLines(g, getDrawColor());
-		mesh.drawTriangles(g, getDrawColor());
+	protected void drawAnnotation(PGraphics g, DrawSettings drawSettings) {
+		drawSettings.overrideColor = getDrawColor();
+		mesh.drawLines(g, drawSettings);
+		mesh.drawTriangles(g, drawSettings);
 	}
 
 	/**

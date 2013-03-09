@@ -7,7 +7,6 @@
  ******************************************************************************/
 package edu.tum.cs.vis.model.util;
 
-import java.awt.Color;
 import java.io.Serializable;
 
 import processing.core.PGraphics;
@@ -78,21 +77,36 @@ public abstract class DrawObject implements Serializable {
 	 * @param overrideColor
 	 *            If != null this color is taken instead of the color from appearance
 	 */
-	protected void applyColor(PGraphics g, Color overrideColor) {
+	protected void applyColor(PGraphics g, DrawSettings drawSettings) {
 		if (appearance == null) {
 
 			g.noStroke();
-			if (overrideColor != null)
-				g.fill(overrideColor.getRed(), overrideColor.getGreen(), overrideColor.getBlue(),
-						overrideColor.getAlpha());
-			else
-				g.fill(200, 200, 200);
+			g.noFill();
+			if (drawSettings.drawType == DrawType.FILL) {
+				if (drawSettings.overrideColor != null)
+					g.fill(drawSettings.overrideColor.getRed(),
+							drawSettings.overrideColor.getGreen(),
+							drawSettings.overrideColor.getBlue(),
+							drawSettings.overrideColor.getAlpha());
+				else
+					g.fill(200, 200, 200);
+			} else {
+				if (drawSettings.overrideColor != null)
+					g.stroke(drawSettings.overrideColor.getRed(),
+							drawSettings.overrideColor.getGreen(),
+							drawSettings.overrideColor.getBlue(),
+							drawSettings.overrideColor.getAlpha());
+				else
+					g.stroke(200, 200, 200);
+				g.strokeWeight(drawSettings.getLineWidth());
+			}
 			return;
 		}
 		if (appearance.getColorLine() != null) {
-			if (overrideColor != null)
-				g.stroke(overrideColor.getRed(), overrideColor.getGreen(), overrideColor.getBlue(),
-						overrideColor.getAlpha());
+			if (drawSettings.overrideColor != null)
+				g.stroke(drawSettings.overrideColor.getRed(),
+						drawSettings.overrideColor.getGreen(),
+						drawSettings.overrideColor.getBlue(), drawSettings.overrideColor.getAlpha());
 			else
 				g.stroke(appearance.getColorLine().getRed(), appearance.getColorLine().getGreen(),
 						appearance.getColorLine().getBlue(), appearance.getColorLine().getAlpha());
@@ -101,20 +115,34 @@ public abstract class DrawObject implements Serializable {
 			g.noStroke();
 		}
 
-		if (overrideColor != null)
-			g.fill(overrideColor.getRed(), overrideColor.getGreen(), overrideColor.getBlue(),
-					overrideColor.getAlpha());
-		else if (appearance.getImageReference() == null) {
-			if (appearance.getColorFill() != null) {
-				g.fill(appearance.getColorFill().getRed(), appearance.getColorFill().getGreen(),
-						appearance.getColorFill().getBlue(), appearance.getColorFill().getAlpha());
+		if (drawSettings.drawType == DrawType.FILL) {
+			if (drawSettings.overrideColor != null)
+				g.fill(drawSettings.overrideColor.getRed(), drawSettings.overrideColor.getGreen(),
+						drawSettings.overrideColor.getBlue(), drawSettings.overrideColor.getAlpha());
+			else if (appearance.getImageReference() == null) {
+				if (appearance.getColorFill() != null) {
+					g.fill(appearance.getColorFill().getRed(),
+							appearance.getColorFill().getGreen(), appearance.getColorFill()
+									.getBlue(), appearance.getColorFill().getAlpha());
+				} else {
+					g.noFill();
+				}
 			} else {
-				g.noFill();
+				// Has texture
+				// Use fallback if texture isn't drawn. So fill triangles with white color
+				g.fill(255, 255, 255, 0);
 			}
 		} else {
-			// Has texture
-			// Use fallback if texture isn't drawn. So fill triangles with white color
-			g.fill(255, 255, 255, 0);
+			if (drawSettings.overrideColor != null)
+				g.stroke(drawSettings.overrideColor.getRed(),
+						drawSettings.overrideColor.getGreen(),
+						drawSettings.overrideColor.getBlue(), drawSettings.overrideColor.getAlpha());
+			else if (appearance.getColorFill() != null) {
+				g.stroke(appearance.getColorFill().getRed(), appearance.getColorFill().getGreen(),
+						appearance.getColorFill().getBlue(), appearance.getColorFill().getAlpha());
+			} else
+				g.stroke(255, 255, 255);
+			g.strokeWeight(drawSettings.getLineWidth());
 		}
 	}
 
@@ -215,9 +243,9 @@ public abstract class DrawObject implements Serializable {
 	 * 
 	 */
 	public void updateCentroid() {
-	/*
-	 * Overridden in triangles class
-	 */
+		/*
+		 * Overridden in triangles class
+		 */
 	}
 
 }

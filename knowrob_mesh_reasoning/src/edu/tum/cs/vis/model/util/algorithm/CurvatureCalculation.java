@@ -25,7 +25,6 @@ import org.apache.commons.math3.linear.RealVector;
 
 import edu.tum.cs.ias.knowrob.utils.ThreadPool;
 import edu.tum.cs.vis.model.Model;
-import edu.tum.cs.vis.model.util.BSphere;
 import edu.tum.cs.vis.model.util.Curvature;
 import edu.tum.cs.vis.model.util.Triangle;
 import edu.tum.cs.vis.model.util.Vertex;
@@ -392,31 +391,6 @@ public class CurvatureCalculation {
 	}
 
 	/**
-	 * Compute bounding sphere of the vertices.
-	 * 
-	 * @param m
-	 *            model with vertices
-	 */
-	private static void need_bsphere(Model m) {
-		if (m.getVertices().size() == 0)
-			return;
-
-		Miniball mb = new Miniball(3);
-		for (Vertex v : m.getVertices()) {
-			double arr[] = new double[3];
-			arr[0] = v.x;
-			arr[1] = v.y;
-			arr[2] = v.z;
-			mb.check_in(arr);
-		}
-		mb.build();
-		BSphere bsphere = new BSphere((float) Math.sqrt(mb.squared_radius()), new Vector3f(
-				(float) mb.center()[0], (float) mb.center()[1], (float) mb.center()[2]));
-		m.setBoundingSphere(bsphere);
-
-	}
-
-	/**
 	 * Reproject a curvature tensor from the basis spanned by old_u and old_v (which are assumed to
 	 * be unit-length and perpendicular) to the new_u, new_v basis. returns [new_ku, new_kuv,
 	 * new_kv]
@@ -491,7 +465,7 @@ public class CurvatureCalculation {
 	 *            model needed to calculate hue saturation scale
 	 */
 	private static void setCurvatureHueSaturation(HashMap<Vertex, Curvature> curvatures, Model m) {
-		float cscale = 100.0f * typical_scale(curvatures, m);
+		float cscale = 500.0f * typical_scale(curvatures, m);
 		cscale = cscale * cscale;
 		int nv = m.getVertices().size();
 		for (int i = 0; i < nv; i++) {
@@ -535,7 +509,6 @@ public class CurvatureCalculation {
 
 		float f = 0;
 		if (samples[which] == 0.0f || Float.isNaN(samples[which])) {
-			need_bsphere(m);
 			f = mult * m.getBoundingSphere().getR();
 			// logger.warn("Couldn't determine typical scale. Using bsphere value: " + f + ".");
 		} else {

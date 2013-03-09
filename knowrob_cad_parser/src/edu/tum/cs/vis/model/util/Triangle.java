@@ -7,13 +7,13 @@
  ******************************************************************************/
 package edu.tum.cs.vis.model.util;
 
-import java.awt.Color;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 
 import javax.vecmath.Point2f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 
@@ -71,6 +71,28 @@ public class Triangle extends DrawObject {
 	 */
 	public Triangle() {
 		super(3);
+	}
+
+	public Triangle(Tuple3f p1, Tuple3f p2, Tuple3f p3) {
+		super(3);
+		position[0] = new Vertex(p1);
+		position[1] = new Vertex(p2);
+		position[2] = new Vertex(p3);
+	}
+
+	public Triangle(Tuple3f p1, Vector3f normP1, Tuple3f p2, Vector3f normP2, Tuple3f p3,
+			Vector3f normP3) {
+		super(3);
+		position[0] = new Vertex(p1, normP1);
+		position[1] = new Vertex(p2, normP2);
+		position[2] = new Vertex(p3, normP3);
+	}
+
+	public Triangle(Vertex p1, Vertex p2, Vertex p3) {
+		super(3);
+		position[0] = p1;
+		position[1] = p2;
+		position[2] = p3;
 	}
 
 	/**
@@ -136,43 +158,74 @@ public class Triangle extends DrawObject {
 	 * @param overrideColor
 	 *            overrides the color to draw
 	 */
-	public void draw(PGraphics g, Color overrideColor) {
-		applyColor(g, overrideColor);
-		g.beginShape(PConstants.TRIANGLES);
-		if (appearance == null || appearance.getImageReference() == null || overrideColor != null
-				|| position[0].getNormalVector() != null) {
-			// no texture only color
+	public void draw(PGraphics g, DrawSettings drawSettings) {
+		applyColor(g, drawSettings);
+
+		if (drawSettings.drawType == DrawType.POINTS) {
 
 			for (int i = 0; i < position.length; i++) {
-
 				if (position[i].overrideColor != null) {
-					g.fill(position[i].overrideColor.getRed(),
+					g.stroke(position[i].overrideColor.getRed(),
 							position[i].overrideColor.getGreen(),
 							position[i].overrideColor.getBlue());
-				} else if (overrideColor == null && position[i].color != null) {
-					g.fill(position[i].color.getRed(), position[i].color.getGreen(),
+					g.noFill();
+				} else if (drawSettings.overrideColor == null && position[i].color != null) {
+					g.stroke(position[i].color.getRed(), position[i].color.getGreen(),
 							position[i].color.getBlue());
+					g.noFill();
+				}
+				g.point(position[i].x, position[i].y, position[i].z);
+			}
+		} else {
+			g.beginShape(PConstants.TRIANGLES);
+			if (appearance == null || appearance.getImageReference() == null
+					|| drawSettings.overrideColor != null || position[0].getNormalVector() != null) {
+				// no texture only color
+
+				for (int i = 0; i < position.length; i++) {
+
+					if (drawSettings.drawType == DrawType.LINES) {
+						if (position[i].overrideColor != null) {
+							g.stroke(position[i].overrideColor.getRed(),
+									position[i].overrideColor.getGreen(),
+									position[i].overrideColor.getBlue());
+							g.noFill();
+						} else if (drawSettings.overrideColor == null && position[i].color != null) {
+							g.stroke(position[i].color.getRed(), position[i].color.getGreen(),
+									position[i].color.getBlue());
+							g.noFill();
+						}
+					} else {
+						if (position[i].overrideColor != null) {
+							g.fill(position[i].overrideColor.getRed(),
+									position[i].overrideColor.getGreen(),
+									position[i].overrideColor.getBlue());
+						} else if (drawSettings.overrideColor == null && position[i].color != null) {
+							g.fill(position[i].color.getRed(), position[i].color.getGreen(),
+									position[i].color.getBlue());
+						}
+					}
+
+					if (position[i].getNormalVector() != null)
+						g.normal(position[i].getNormalVector().x, position[i].getNormalVector().y,
+								position[i].getNormalVector().z);
+					g.vertex(position[i].x, position[i].y, position[i].z);
 				}
 
-				if (position[i].getNormalVector() != null)
-					g.normal(position[i].getNormalVector().x, position[i].getNormalVector().y,
-							position[i].getNormalVector().z);
-				g.vertex(position[i].x, position[i].y, position[i].z);
-			}
+			} else {
+				// has texture
+				g.texture(appearance.getImageReference());
 
-		} else {
-			// has texture
-			g.texture(appearance.getImageReference());
+				for (int i = 0; i < position.length; i++) {
 
-			for (int i = 0; i < position.length; i++) {
+					g.vertex(position[i].x, position[i].y, position[i].z, texPosition[i].x,
+							texPosition[i].y);
 
-				g.vertex(position[i].x, position[i].y, position[i].z, texPosition[i].x,
-						texPosition[i].y);
+				}
 
 			}
-
+			g.endShape();
 		}
-		g.endShape();
 	}
 
 	/**

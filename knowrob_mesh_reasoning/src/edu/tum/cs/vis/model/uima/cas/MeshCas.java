@@ -20,6 +20,7 @@ import edu.tum.cs.vis.model.Model;
 import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.util.Curvature;
+import edu.tum.cs.vis.model.util.DrawSettings;
 import edu.tum.cs.vis.model.util.Triangle;
 import edu.tum.cs.vis.model.util.Vertex;
 
@@ -74,17 +75,17 @@ public class MeshCas extends JCas implements Serializable {
 	 * @param g
 	 *            Applet to draw on
 	 */
-	public void draw(PGraphics g) {
+	public void draw(PGraphics g, DrawSettings drawSettings) {
 		if (model == null)
 			return;
 		if (drawMesh)
-			model.draw(g, null);
+			model.draw(g, drawSettings);
 		synchronized (annotations) {
 			for (Annotation a : annotations) {
 				if (!(a instanceof DrawableAnnotation))
 					continue;
 				DrawableAnnotation ma = (DrawableAnnotation) a;
-				ma.draw(g);
+				ma.draw(g, drawSettings);
 
 			}
 		}

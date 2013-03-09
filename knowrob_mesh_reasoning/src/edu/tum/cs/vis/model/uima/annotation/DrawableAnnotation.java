@@ -9,6 +9,7 @@ package edu.tum.cs.vis.model.uima.annotation;
 
 import processing.core.PGraphics;
 import edu.tum.cs.uima.Annotation;
+import edu.tum.cs.vis.model.util.DrawSettings;
 
 /**
  * Base class for a drawable annotation.
@@ -33,9 +34,9 @@ public abstract class DrawableAnnotation extends Annotation {
 	 * @param g
 	 *            Applet to draw on
 	 */
-	public void draw(PGraphics g) {
+	public void draw(PGraphics g, DrawSettings drawSettings) {
 		if (drawAnnotation)
-			drawAnnotation(g);
+			drawAnnotation(g, drawSettings);
 	}
 
 	/**
@@ -44,7 +45,7 @@ public abstract class DrawableAnnotation extends Annotation {
 	 * @param g
 	 *            graphics context to draw on
 	 */
-	protected abstract void drawAnnotation(PGraphics g);
+	protected abstract void drawAnnotation(PGraphics g, DrawSettings drawSettings);
 
 	/**
 	 * true if this annotation should be drawn (is visible).

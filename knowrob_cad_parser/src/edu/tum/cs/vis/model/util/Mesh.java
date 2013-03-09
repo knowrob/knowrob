@@ -7,7 +7,6 @@
  ******************************************************************************/
 package edu.tum.cs.vis.model.util;
 
-import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -112,10 +111,10 @@ public class Mesh implements Serializable {
 	 *            override the draw color an texture. Draw whole object in the given color if !=
 	 *            null
 	 */
-	public void drawLines(PGraphics g, Color overrideColor) {
+	public void drawLines(PGraphics g, DrawSettings drawSettings) {
 		for (Line line : lines) {
 
-			line.draw(g, overrideColor);
+			line.draw(g, drawSettings);
 		}
 	}
 
@@ -128,12 +127,12 @@ public class Mesh implements Serializable {
 	 *            override the draw color an texture. Draw whole object in the given color if !=
 	 *            null
 	 */
-	public void drawTriangles(PGraphics g, Color overrideColor) {
+	public void drawTriangles(PGraphics g, DrawSettings drawSettings) {
 		if (!texturesInitialized)
 			setTextureImage();
 		synchronized (triangles) {
 			for (Triangle tri : triangles) {
-				tri.draw(g, overrideColor);
+				tri.draw(g, drawSettings);
 			}
 		}
 	}
@@ -218,6 +217,7 @@ public class Mesh implements Serializable {
 			final ArrayList<IntersectedTriangle> intersectedTriangles) {
 
 		for (Triangle tri : triangles) {
+
 			Point3f intersect = new Point3f();
 			if (tri.intersectsRay(rayStart, rayEnd, intersect))
 				intersectedTriangles.add(new IntersectedTriangle(tri, intersect));
@@ -471,6 +471,11 @@ public class Mesh implements Serializable {
 	 */
 	public void setTriangles(ArrayList<Triangle> triangles) {
 		this.triangles = triangles;
+	}
+
+	public void getAllTriangles(ArrayList<Triangle> triangles2) {
+		triangles2.addAll(triangles);
+
 	}
 
 }

@@ -71,6 +71,8 @@ public class DrawSettingsPanel extends JPanel implements ActionListener {
 	 * select only nearest triangle or all triangles intersecting mouse ray
 	 */
 	private final JCheckBox			cbxSelectNearestOnly;
+
+	private final JCheckBox			cbxSelectTriangles;
 	/**
 	 * draw bounding box for each group
 	 */
@@ -126,6 +128,11 @@ public class DrawSettingsPanel extends JPanel implements ActionListener {
 		cbxSelectNearestOnly.setSelected(view.isSelectNearestOnly());
 		this.add(cbxSelectNearestOnly);
 
+		cbxSelectTriangles = new JCheckBox("Select triangles");
+		cbxSelectTriangles.addActionListener(this);
+		cbxSelectTriangles.setSelected(view.isSelectTrianglesOnly());
+		this.add(cbxSelectTriangles);
+
 		cbxDrawBoundingBox = new JCheckBox("Bounding box");
 		cbxDrawBoundingBox.addActionListener(this);
 		cbxDrawBoundingBox.setSelected(view.isDrawBoundingBox());
@@ -179,5 +186,7 @@ public class DrawSettingsPanel extends JPanel implements ActionListener {
 			}
 		} else if (e.getSource() == cbxSelectNearestOnly)
 			view.setSelectNearestOnly(cbxSelectNearestOnly.isSelected());
+		else if (e.getSource() == cbxSelectTriangles)
+			view.setSelectTrianglesOnly(cbxSelectTriangles.isSelected());
 	}
 }

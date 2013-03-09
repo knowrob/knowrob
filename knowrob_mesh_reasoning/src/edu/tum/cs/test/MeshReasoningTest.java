@@ -29,7 +29,15 @@ public class MeshReasoningTest {
 
 		// String path = "models/box.dae";
 		// String path = "models/cup2.kmz";
-		String path = "/home/stefan/work/models/primitive/cylindery.dae";
+		// String path = "/home/stefan/work/models/primitive/cylindery.dae";
+		// String path = "/home/stefan/work/models/primitive/CylinderPart.dae";
+		// String path = "/home/stefan/work/models/primitive/cone.dae";
+		// String path = "/home/stefan/work/models/primitive/ConeCut.dae";
+		// String path = "/home/stefan/work/models/primitive/BoxCone.dae";
+		// String path = "/home/stefan/work/models/primitive/ConePart.dae";
+		// String path = "/home/stefan/work/models/primitive/TestObject.dae";
+		// String path = "/home/stefan/work/models/kitchen/mug/Cup1.kmz";
+		String path = "/home/stefan/work/models/primitive/CupOuter.dae";
 
 		MeshReasoning mr = MeshReasoning.initMeshReasoning(true);
 
