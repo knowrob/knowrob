@@ -178,8 +178,9 @@ public class Triangle extends DrawObject {
 			}
 		} else {
 			g.beginShape(PConstants.TRIANGLES);
-			if (appearance == null || appearance.getImageReference() == null
-					|| drawSettings.overrideColor != null || position[0].getNormalVector() != null) {
+			if (appearance == null || appearance.getImageReference() == null /*no appearance*/
+					|| drawSettings.overrideColor != null /*override*/
+					|| position[0].overrideColor != null /* points have colors */) {
 				// no texture only color
 
 				for (int i = 0; i < position.length; i++) {

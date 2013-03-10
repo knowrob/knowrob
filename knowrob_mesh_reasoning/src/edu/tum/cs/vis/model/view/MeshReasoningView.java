@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 import peasy.PeasyCam;
 import processing.core.PConstants;
 import processing.core.PGraphics;
+import edu.tum.cs.tools.ImageGeneratorState;
 import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
@@ -199,6 +200,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	private MeshReasoningViewControl				control				= null;
 
 	private final DrawSettings						drawSettings		= new DrawSettings();
+	private ImageGeneratorState						imageGeneratorMonitor;
 
 	/**
 	 * Add annotation to selected annotations
@@ -232,15 +234,18 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		else
 			background(bgcolorDark.getRed(), bgcolorDark.getGreen(), bgcolorDark.getBlue());
 		// draw axis
-		noFill();
-		strokeWeight(1);
-		stroke(125, 0, 0);
-		strokeWeight(1);
-		line(0, 0, 0, 1, 0, 0);
-		stroke(0, 125, 0);
-		line(0, 0, 0, 0, 1, 0);
-		stroke(0, 0, 125);
-		line(0, 0, 0, 0, 0, 1);
+
+		if (imageGeneratorMonitor == null) {
+			noFill();
+			strokeWeight(1);
+			stroke(125, 0, 0);
+			strokeWeight(1);
+			line(0, 0, 0, 1, 0, 0);
+			stroke(0, 125, 0);
+			line(0, 0, 0, 0, 1, 0);
+			stroke(0, 0, 125);
+			line(0, 0, 0, 0, 0, 1);
+		}
 
 		Vector3f camPos = new Vector3f(cam.getPosition());
 
@@ -367,8 +372,15 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 			}
 
 			Logger.getRootLogger().info("Image saved as: " + imageSavePath);
+			synchronized (imageSavePath) {
+				imageSavePath.notifyAll();
+			}
 			imageSavePath = null;
 		}
+	}
+
+	public PeasyCam getCam() {
+		return cam;
 	}
 
 	/**
@@ -486,12 +498,24 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		} else if (c == 'q') {
 			drawSettings.decLineWidth();
 			draw();
-		}/* else if (c == 'm') {
-			test++;
-			} else if (c == 'n') {
-			test--;
+		} else if (imageGeneratorMonitor != null && e.isControlDown() && c == 19) {
+			// Ctrl+S
+			if (imageGeneratorMonitor.currentState == ImageGeneratorState.PlainImage) {
+				saveImage(control.getDefaultImageFilename() + ".png", true);
+			} else {
+				saveImage(control.getDefaultImageFilename() + "_seg.png", true);
 			}
-			System.out.println("Test: " + test);*/
+			synchronized (imageGeneratorMonitor) {
+				imageGeneratorMonitor.notifyAll();
+			}
+		}
+		/* else if (c == 'm') {
+		
+		test++;
+		} else if (c == 'n') {
+		test--;
+		}
+		System.out.println("Test: " + test);*/
 	}
 
 	@Override
@@ -580,6 +604,21 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	 *            Filename for the image to save
 	 */
 	public void saveImage(String filename) {
+		saveImage(filename, false);
+
+	}
+
+	public void saveImage(String filename, boolean overwrite) {
+		if (imageSavePath != null) {
+			synchronized (imageSavePath) {
+				try {
+					imageSavePath.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
 		String path = filename;
 		if (!path.endsWith(".png"))
 			path += ".png";
@@ -590,14 +629,12 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		String basePath = path;
 		int num = 0;
 
-		while (new File(path).exists()) {
+		while (!overwrite && new File(path).exists()) {
 			num++;
 			path = basePath.substring(0, basePath.lastIndexOf('.')) + "-" + num + ".png";
-
 		}
 
 		imageSavePath = path;
-
 	}
 
 	/**
@@ -680,9 +717,10 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 
 		for (MeshCas c : casList) {
 			for (Vertex v : c.getModel().getVertices()) {
-				if (drawCurvatureColor)
-					v.overrideColor = c.getCurvature(v).getColor();
-				else
+				if (drawCurvatureColor) {
+					Curvature curv = c.getCurvature(v);
+					v.overrideColor = curv == null ? null : curv.getColor();
+				} else
 					v.overrideColor = null;
 			}
 		}
@@ -716,6 +754,11 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	 */
 	public void setDrawVoronoiArea(boolean drawVoronoiArea) {
 		this.drawVoronoiArea = drawVoronoiArea;
+	}
+
+	public void setImageGenerator(ImageGeneratorState imageGeneratorMonitor) {
+		this.imageGeneratorMonitor = imageGeneratorMonitor;
+
 	}
 
 	/**

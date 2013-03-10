@@ -93,14 +93,8 @@ public class Vertex extends Point3f {
 		if (o == this) {
 			return true;
 		}
-		if (!(o instanceof Point3f)) {
-			return false;
-		}
 
-		Point3f p = (Point3f) o;
-		Vertex v = (Vertex) o;
-		return (sameCoordinates(p) && v.pointarea == pointarea && v.normalVector
-				.equals(normalVector));
+		return false;
 	}
 
 	/**

@@ -123,7 +123,8 @@ public abstract class DrawObject implements Serializable {
 				if (appearance.getColorFill() != null) {
 					g.fill(appearance.getColorFill().getRed(),
 							appearance.getColorFill().getGreen(), appearance.getColorFill()
-									.getBlue(), appearance.getColorFill().getAlpha());
+									.getBlue(), appearance.getColorFill().getAlpha() == 0 ? 255
+									: appearance.getColorFill().getAlpha());
 				} else {
 					g.noFill();
 				}
@@ -139,7 +140,9 @@ public abstract class DrawObject implements Serializable {
 						drawSettings.overrideColor.getBlue(), drawSettings.overrideColor.getAlpha());
 			else if (appearance.getColorFill() != null) {
 				g.stroke(appearance.getColorFill().getRed(), appearance.getColorFill().getGreen(),
-						appearance.getColorFill().getBlue(), appearance.getColorFill().getAlpha());
+						appearance.getColorFill().getBlue(),
+						appearance.getColorFill().getAlpha() == 0 ? 255 : appearance.getColorFill()
+								.getAlpha());
 			} else
 				g.stroke(255, 255, 255);
 			g.strokeWeight(drawSettings.getLineWidth());

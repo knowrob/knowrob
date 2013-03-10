@@ -236,6 +236,10 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 		return cas;
 	}
 
+	public String getDefaultImageFilename() {
+		return defaultImageFilename;
+	}
+
 	/**
 	 * Sets default image file name to save image (screenshot)
 	 * 

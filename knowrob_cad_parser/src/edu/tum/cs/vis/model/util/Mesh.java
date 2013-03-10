@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.vecmath.Point3f;
@@ -320,7 +321,7 @@ public class Mesh implements Serializable {
 	 * 
 	 * @return the triangles
 	 */
-	public ArrayList<Triangle> getTriangles() {
+	public List<Triangle> getTriangles() {
 		return triangles;
 	}
 

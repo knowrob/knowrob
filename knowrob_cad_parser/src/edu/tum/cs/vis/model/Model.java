@@ -246,6 +246,7 @@ public class Model {
 	 * each vertex is scaled.
 	 */
 	public void normalize() {
+		reloadVertexList();
 		float x = group.getMaxX() - group.getMinX();
 		float y = group.getMaxY() - group.getMinY();
 		float z = group.getMaxZ() - group.getMinZ();
@@ -329,15 +330,22 @@ public class Model {
 
 		}
 		if (removed) {
-			triangles.clear();
-			this.group.getAllTriangles(triangles);
-			Set<Vertex> vertices = new HashSet<Vertex>();
-			for (Triangle t : triangles) {
-				vertices.addAll(Arrays.asList(t.getPosition()));
-			}
-			this.vertices.clear();
-			this.vertices.addAll(vertices);
+			reloadVertexList();
 		}
+	}
+
+	private void reloadVertexList() {
+		triangles.clear();
+		this.group.getAllTriangles(triangles);
+		Set<Vertex> vertices = new HashSet<Vertex>();
+		for (Triangle t : triangles) {
+			vertices.addAll(Arrays.asList(t.getPosition()));
+		}
+		for (Line l : lines) {
+			vertices.addAll(Arrays.asList(l.getPosition()));
+		}
+		this.vertices.clear();
+		this.vertices.addAll(vertices);
 	}
 
 	/**
@@ -351,6 +359,7 @@ public class Model {
 
 		for (Triangle t : triangles)
 			updateVertexSharingForTriangle(t, checkedTriangles);
+		reloadVertexList();
 	}
 
 	private void updateVertexSharingForNeighbors(final Triangle t, final Triangle n,
@@ -368,6 +377,10 @@ public class Model {
 			for (Vertex vt : t.getPosition()) {
 				for (int i = 0; i < n.getPosition().length; i++) {
 					Vertex vn = n.getPosition()[i];
+					/*
+					if ((vt.sameCoordinates(vn) && vt.getPointarea() == vn.getPointarea() && vt
+							.getNormalVector().equals(vn.getNormalVector()))
+							||(share && vn != vt && vt.sameCoordinates(vn))) {*/
 					if (share && vn != vt && vt.sameCoordinates(vn)) {
 						// merge vertices
 						n.getPosition()[i] = vt;
@@ -526,7 +539,7 @@ public class Model {
 		if (vote > 0) {
 			// They voted for inverting
 			for (Vertex v : vertices) {
-				v.getNormalVector().scale(-1);
+				v.getNormalVector().scale(-1f);
 			}
 		}
 
@@ -671,8 +684,8 @@ public class Model {
 		return group.getMaxZ() - group.getMinZ();
 	}
 
-	private void splitTriangles(ArrayList<Triangle> list, double maxArea,
-			ArrayList<Triangle> toRemove, ArrayList<Triangle> toAdd, ArrayList<Vertex> newVertices) {
+	private void splitTriangles(List<Triangle> list, double maxArea, ArrayList<Triangle> toRemove,
+			ArrayList<Triangle> toAdd, ArrayList<Vertex> newVertices) {
 		for (Triangle t : list) {
 			if (t.getArea() > maxArea) {
 				toRemove.add(t);
@@ -707,7 +720,7 @@ public class Model {
 		ArrayList<Triangle> toRemove = new ArrayList<Triangle>();
 		ArrayList<Vertex> newVertices = new ArrayList<Vertex>();
 
-		ArrayList<Triangle> toCheck = (ArrayList<Triangle>) g.getMesh().getTriangles().clone();
+		List<Triangle> toCheck = new ArrayList<Triangle>(g.getMesh().getTriangles());
 		ArrayList<Triangle> newTriangles = new ArrayList<Triangle>();
 		ArrayList<Triangle> toAdd;
 		do {
