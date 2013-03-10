@@ -362,8 +362,8 @@ public class Model {
 				return;
 
 			double angle = t.getDihedralAngle(n);
-			// Share vertices if angle is < 30 degree
-			boolean share = (angle < 30 / 180.0 * Math.PI);
+			// Share vertices if angle is < 15 degree
+			boolean share = (angle < 15 / 180.0 * Math.PI);
 
 			for (Vertex vt : t.getPosition()) {
 				for (int i = 0; i < n.getPosition().length; i++) {
@@ -397,12 +397,12 @@ public class Model {
 						}
 					} else if (!share && vn == vt) {
 						// split vertices
-						System.out.println("split");
+						/*System.out.println("split");
 						Vertex clone = (Vertex) vt.clone();
 						synchronized (vertices) {
 							vertices.add(clone);
 						}
-						n.getPosition()[i] = clone;
+						n.getPosition()[i] = clone;*/
 					}
 				}
 			}
@@ -486,7 +486,6 @@ public class Model {
 		Vertex extrema[] = new Vertex[6];
 
 		for (Vertex v : vertices) {
-			System.out.println("norm: " + v.getNormalVector());
 			v.getNormalVector().normalize();
 			float coord[] = new float[3];
 			v.get(coord);
@@ -517,13 +516,13 @@ public class Model {
 			coord[i % 3] = i < 3 ? 1 : -1;
 			double dot = extrema[i].getNormalVector().dot((new Vector3f(coord)));
 			double angle = Math.acos(dot);
-			System.out.println("Angle: " + (angle * 180 / Math.PI));
+			// System.out.println("Angle: " + (angle * 180 / Math.PI));
 			if (angle < Math.PI / 2)
 				vote--;
 			else
 				vote++;
 		}
-		System.out.println("VOTE: " + vote);
+		// System.out.println("VOTE: " + vote);
 		if (vote > 0) {
 			// They voted for inverting
 			for (Vertex v : vertices) {

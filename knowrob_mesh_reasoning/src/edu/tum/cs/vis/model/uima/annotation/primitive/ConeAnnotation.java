@@ -11,7 +11,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 import javax.vecmath.Matrix3f;
@@ -20,6 +19,9 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
+import org.ejml.factory.SingularMatrixException;
+import org.ejml.simple.SimpleMatrix;
+
 import processing.core.PGraphics;
 import edu.tum.cs.vis.model.Model;
 import edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation;
@@ -27,7 +29,6 @@ import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.util.Curvature;
 import edu.tum.cs.vis.model.util.Triangle;
 import edu.tum.cs.vis.model.util.Vertex;
-import edu.tum.cs.vis.model.util.algorithm.BestFitLine3D;
 import edu.tum.cs.vis.model.view.MeshReasoningView;
 
 /**
@@ -41,60 +42,7 @@ public class ConeAnnotation extends PrimitiveAnnotation<ConeAnnotation> {
 	/**
 	 * auto generated
 	 */
-	private static final long	serialVersionUID	= -7420446109108464883L;
-
-	/** Difference between 1.0 and the minimum float greater than 1.0 **/
-	private static double		FLT_EPSILON			= 1.1920929e-07f;
-
-	/**
-	 * Calculate the line segment PaPb that is the shortest route between two lines P1P2 and P3P4.
-	 * Calculate also the values of mua and mub where Pa = line1pos + mua (line1dir) Pb = line2pos +
-	 * mub (line2dir) Return FALSE if no solution exists.
-	 * 
-	 * Ported from: http://local.wasp.uwa.edu.au/~pbourke/geometry/lineline3d/
-	 **/
-	private static boolean calculateShortestRoute(Vertex line1pos, Vector3f line1dir,
-			Vertex line2pos, Vector3f line2dir, Vector3f pa, Vector3f pb) {
-		Vector3f p13;
-		double d1343, d4321, d1321, d4343, d2121;
-		double numer, denom;
-
-		p13 = new Vector3f(line1pos);
-		p13.sub(line2pos);
-
-		if (line2dir.lengthSquared() < FLT_EPSILON)
-			return false;
-
-		if (line1dir.lengthSquared() < FLT_EPSILON)
-			return false;
-
-		d1343 = p13.x * line2dir.x + p13.y * line2dir.y + p13.z * line2dir.z;
-		d4321 = line2dir.x * line1dir.x + line2dir.y * line1dir.y + line2dir.z * line1dir.z;
-		d1321 = p13.x * line1dir.x + p13.y * line1dir.y + p13.z * line1dir.z;
-		d4343 = line2dir.x * line2dir.x + line2dir.y * line2dir.y + line2dir.z * line2dir.z;
-		d2121 = line1dir.x * line1dir.x + line1dir.y * line1dir.y + line1dir.z * line1dir.z;
-
-		denom = d2121 * d4343 - d4321 * d4321;
-		if (Math.abs(denom) < FLT_EPSILON)
-			return false;
-		numer = d1343 * d4321 - d1321 * d4343;
-
-		float mua = (float) (numer / denom);
-		float mub = (float) ((d1343 + d4321 * mua) / d4343);
-
-		if (mua < -0.2 || mub < -0.2 || mua > 1.5 || mub > 1.5) {
-			return false;
-		}
-
-		pa.x = line1pos.x + mua * line1dir.x;
-		pa.y = line1pos.y + mua * line1dir.y;
-		pa.z = line1pos.z + mua * line1dir.z;
-		pb.x = line2pos.x + mub * line2dir.x;
-		pb.y = line2pos.y + mub * line2dir.y;
-		pb.z = line2pos.z + mub * line2dir.z;
-
-		return true;
-	}
+	private static final long			serialVersionUID	= -7420446109108464883L;
 
 	/**
 	 * indicates if cone is concave or convex
@@ -104,28 +52,28 @@ public class ConeAnnotation extends PrimitiveAnnotation<ConeAnnotation> {
 	/**
 	 * Centroid of cone
 	 */
-	private final Point3f				centroid		= new Point3f();
+	private final Point3f				centroid			= new Point3f();
 
 	/**
 	 * Defines the generating axis of the cone. Points into the direction of radiusSmall. Length of
 	 * this vector is half of the height of the cone.
 	 */
-	private final Vector3f				direction		= new Vector3f();
+	private final Vector3f				direction			= new Vector3f();
 
 	/**
 	 * radius at bottom of cone
 	 */
-	private float						radiusLarge		= 0;
+	private float						radiusLarge			= 0;
 
 	/**
 	 * radius at top of cone
 	 */
-	private float						radiusSmall		= 0;
+	private float						radiusSmall			= 0;
 
 	/**
 	 * list of all found intersection points needed for fitting cone into mesh
 	 */
-	private final ArrayList<Point3f>	intersections	= new ArrayList<Point3f>();
+	private final ArrayList<Point3f>	intersections		= new ArrayList<Point3f>();
 
 	/**
 	 * Create new cone annotation.
@@ -144,51 +92,59 @@ public class ConeAnnotation extends PrimitiveAnnotation<ConeAnnotation> {
 		this.concave = concave;
 	}
 
+	@SuppressWarnings("unused")
+	private void DrawDebugLines(PGraphics g) {
+		{
+
+			for (Triangle t : mesh.getTriangles()) {
+				for (Vertex v : t.getPosition()) {
+					Curvature c = curvatures.get(v);
+					Vector3f norm = (Vector3f) v.getNormalVector().clone();
+					norm.scale(-1 / c.getCurvatureMax());
+
+					g.fill(255, 0, 0);
+					// g.stroke(255, 255, 255);
+					g.stroke(50, 50, 50);
+					g.strokeWeight(2);
+
+					g.line(v.x, v.y, v.z, v.x + norm.x, v.y + norm.y, v.z + norm.z);
+
+					// g.stroke(255, 0, 0);
+					// g.line(v.x, v.y, v.z, v.x + c.getPrincipleDirectionMax().x,
+					// v.y + c.getPrincipleDirectionMax().y, v.z + c.getPrincipleDirectionMax().z);
+				}
+			}
+
+			g.strokeWeight(5);
+			g.stroke(0, 255, 0);
+
+			for (Point3f p : intersections) {
+
+				// Color c = Color.getHSBColor((vw.w - min) * factor, 1, 1);
+				// g.stroke(c.getRed(), c.getGreen(), c.getBlue());
+				// g.strokeWeight(10 * factor * (vw.w - min) + 5);
+				g.point(p.x, p.y, p.z);
+			}
+
+			g.stroke(255, 255, 0);
+			g.strokeWeight(20);
+			g.point(centroid.x, centroid.y, centroid.z);
+
+			g.stroke(0, 255, 255);
+			g.strokeWeight(5);
+
+			g.line(centroid.x, centroid.y, centroid.z, centroid.x + direction.x, centroid.y
+					+ direction.y, centroid.z + direction.z);
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#drawAnnotation(processing.core.PGraphics)
 	 */
 	@Override
 	public void drawPrimitiveAnnotation(PGraphics g) {
 
-		/*for (Triangle t : mesh.getTriangles()) {
-			for (Vertex v : t.getPosition()) {
-				Curvature c = curvatures.get(v);
-				Vector3f norm = (Vector3f) v.getNormalVector().clone();
-				norm.scale(-1 / c.getCurvatureMax());
-
-				g.fill(255, 0, 0);
-				// g.stroke(255, 255, 255);
-				g.stroke(50, 50, 50);
-				g.strokeWeight(2);
-
-				g.line(v.x, v.y, v.z, v.x + norm.x, v.y + norm.y, v.z + norm.z);
-
-				// g.stroke(255, 0, 0);
-				// g.line(v.x, v.y, v.z, v.x + c.getPrincipleDirectionMax().x,
-				// v.y + c.getPrincipleDirectionMax().y, v.z + c.getPrincipleDirectionMax().z);
-			}
-		}
-
-		g.strokeWeight(5);
-		g.stroke(0, 255, 0);
-
-		for (Point3f p : intersections) {
-
-			// Color c = Color.getHSBColor((vw.w - min) * factor, 1, 1);
-			// g.stroke(c.getRed(), c.getGreen(), c.getBlue());
-			// g.strokeWeight(10 * factor * (vw.w - min) + 5);
-			g.point(p.x, p.y, p.z);
-		}
-
-		g.stroke(255, 255, 0);
-		g.strokeWeight(20);
-		g.point(centroid.x, centroid.y, centroid.z);
-
-		g.stroke(0, 255, 255);
-		g.strokeWeight(5);
-
-		g.line(centroid.x, centroid.y, centroid.z, centroid.x + direction.x, centroid.y
-				+ direction.y, centroid.z + direction.z);*/
+		// DrawDebugLines(g);
 
 		g.noStroke();
 
@@ -219,142 +175,237 @@ public class ConeAnnotation extends PrimitiveAnnotation<ConeAnnotation> {
 		LinkedHashMap<Vertex, Float> vertices = new LinkedHashMap<Vertex, Float>();
 		getVerticesWithWeight(vertices);
 
-		/*
-		 * Get all intersection points between the vector normals to each other.
-		 */
-
-		intersections.clear();
-
-		Vector3f pa = new Vector3f();
-		Vector3f pb = new Vector3f();
-
-		HashSet<Vertex> alreadyAdded = new HashSet<Vertex>();
-
-		int cnt = 0;
-		for (Iterator<Vertex> it = vertices.keySet().iterator(); it.hasNext(); cnt++) {
-
-			// Find shortest route from this vector normal to another
-			Vertex v = it.next();
-			if (alreadyAdded.contains(v))
-				continue;
-
-			// Get vector normal and set its length according to the curvature radius (= 1/ curv).
-			// So on a perfect cylinder the vectors end in the same point.
-			Vector3f norm = (Vector3f) v.getNormalVector().clone();
-			norm.scale(-1 / curvatures.get(v).getCurvatureMax());
-
-			// Find the shortest intersection route
-			float minDist = Float.MAX_VALUE;
-			Point3f addCandidateA = null;
-			Point3f addCandidateB = null;
-			Vertex vAdded = null;
-
-			// float distNorm = norm.length();
-			Iterator<Vertex> it2 = vertices.keySet().iterator();
-			// forward iterator to position after it
-			for (int i = 0; i <= cnt && it2.hasNext(); i++)
-				it2.next();
-			for (; it2.hasNext();) {
-
-				Vertex v2 = it2.next();
-				if (v.equals(v2))
-					continue;
-
-				Vector3f norm2 = (Vector3f) v2.getNormalVector().clone();
-				norm2.scale(-1 / curvatures.get(v2).getCurvatureMax());
-
-				if (calculateShortestRoute(v, norm, v2, norm2, pa, pb)) {
-					// v and v2 have an intersection route. Check if it is the shortest possible for
-					// v
-					Vector3f tmp = new Vector3f(pa);
-					tmp.sub(pb);
-					if (tmp.lengthSquared() < minDist) {
-						minDist = tmp.lengthSquared();
-
-						// Get middle point of intersection route
-						pa.add(pb);
-						pa.scale(1f / 2f);
-						addCandidateA = new Point3f(pa);
-						addCandidateB = new Point3f(pb);
-						vAdded = v2;
-					}
-				}
-			}
-
-			alreadyAdded.add(v);
-			if (addCandidateA != null) {
-				alreadyAdded.add(vAdded);
-				intersections.add(addCandidateA);
-				intersections.add(addCandidateB);
-			}
-		}
-		alreadyAdded.clear();
-		alreadyAdded = null;
-
-		// If no intersections found use the endpoints of each normalvector multiplied by the
-		// curvature radius.
-		// Better than nothing.
-		if (intersections.size() == 0) {
-			for (Iterator<Vertex> it = vertices.keySet().iterator(); it.hasNext();) {
-				Vertex v = it.next();
-				if (curvatures.get(v).getCurvatureMax() == 0)
-					continue;
-				Vector3f norm = (Vector3f) v.getNormalVector().clone();
-				norm.scale(-1 / curvatures.get(v).getCurvatureMax());
-				norm.add(v);
-				intersections.add(new Point3f(norm));
-			}
-
-		}
-
-		// This is really bad. We have no points
-		if (intersections.size() == 0)
+		// we need at least 3 points
+		if (vertices.size() < 3)
 			return;
 
-		// Now intersections are found. Find the best fitting line between through these points.
-		// Should be the generating line (line in the middle of cylinder).
-		Vector3f perpDir = new Vector3f();
-		BestFitLine3D.getBestFitLine(intersections, direction, perpDir, centroid);
+		Vertex vert[] = vertices.keySet().toArray(new Vertex[0]);
 
-		// on very short cylinders it may happen that the direction vector shows in direction of
-		// radius vector, not the generating line. So compare area coverage of both directions:
-		// direction and perpDir and take the better one
+		Vector3f bestAxis = new Vector3f();
 
-		int maxDir = 2;
-		Vector3f dirs[] = new Vector3f[maxDir];
-		dirs[0] = (Vector3f) direction.clone();
-		dirs[1] = perpDir;
-		float minVar = Float.MAX_VALUE;
-		Vector3f minDir = null;
-		float minRadiusSmall = 0;
-		float minRadiusLarge = 0;
-		Point3f centroidMin = null;
+		float totalError = 0;
 
-		for (int i = 0; i < 2; i++) {
-			double radiusBottom[] = new double[maxDir];
-			double radiusTop[] = new double[maxDir];
-			double radiusBottomWeight[] = new double[maxDir];
-			double radiusTopWeight[] = new double[maxDir];
-			double heightBottom[] = new double[maxDir];
-			double heightTop[] = new double[maxDir];
+		// Based on: http://cg.cs.uni-bonn.de/aigaion2root/attachments/schnabel-2007-efficient.pdf
+		for (int i = 0; i < vert.length; i++) {
 
-			int currRadBottom = 0;
+			// Run multiple tests trying to find the best solution
+			for (int test = 0; test < 10; test++) {
+				boolean isCylinder = false;
 
-			double radBottom[] = new double[vertices.size()];
-			double radTop[] = new double[vertices.size()];
-			int currRadTop = 0;
+				// get two other random vertices
+				int idx2;
+				do {
+					idx2 = (int) Math.floor(Math.random() * vert.length);
+				} while (idx2 == i || vert[i].equals(vert[idx2]));
+				int idx3;
+				do {
+					idx3 = (int) Math.floor(Math.random() * vert.length);
+				} while (idx3 == i || idx3 == idx2 || vert[i].equals(vert[idx3])
+						|| vert[idx2].equals(vert[idx3]));
 
-			for (Iterator<Vertex> it = vertices.keySet().iterator(); it.hasNext();) {
-				Vertex v = it.next();
+				Vertex selection[] = new Vertex[3];
+				selection[0] = vert[i];
+				selection[1] = vert[idx2];
+				selection[2] = vert[idx3];
+
+				// each vertex represents a plane. (vertex point is a point on the plane, vertex
+				// normal
+				// is the plane normal). nx*x + xy*y + xz*z = nx*px+ny*py+nz*pz.
+				// See: http://mathworld.wolfram.com/Plane.html
+
+				SimpleMatrix a = new SimpleMatrix(3, 3);
+				SimpleMatrix b = new SimpleMatrix(3, 1);
+				for (int r = 0; r < 3; r++) {
+					a.setRow(r, 0, selection[r].getNormalVector().x,
+							selection[r].getNormalVector().y, selection[r].getNormalVector().z);
+					b.setRow(r, 0, selection[r].x * selection[r].getNormalVector().x
+							+ selection[r].y * selection[r].getNormalVector().y + selection[r].z
+							* selection[r].getNormalVector().z);
+				}
+				// This is the apex (tip) of the cone. It is the point where all three planes
+				// intersect.
+				SimpleMatrix x;
+				try {
+					x = a.solve(b);
+				} catch (SingularMatrixException e) {
+					continue;
+				}
+				Point3f apex = new Point3f((float) x.get(0, 0), (float) x.get(1, 0), (float) x.get(
+						2, 0));
+
+				float coords[] = new float[3];
+				apex.get(coords);
+				for (int j = 0; j < 3; j++) {
+					if (Float.isInfinite(coords[j]) || Float.isNaN(coords[j])) {
+						// there is no valid apex, this means that it is a cylinder
+						isCylinder = true;
+						break;
+					}
+				}
+				// Now calculate the axis:
+
+				Vector3f points[] = new Vector3f[3];
+				Vector3f axis = new Vector3f();
+				if (!isCylinder) {
+					// try to find the axis of the cone
+					Vector3f pointsCenter = new Vector3f();
+					for (int v = 0; v < 3; v++) {
+						points[v] = new Vector3f(selection[v]);
+						points[v].sub(apex);
+						points[v].scale(1 / points[v].length());
+						points[v].add(apex);
+						points[v].normalize();
+						pointsCenter.add(points[v]);
+					}
+					pointsCenter.scale((float) (1.0 / 3.0));
+					points[0].sub(pointsCenter);
+					points[1].sub(pointsCenter);
+					axis.cross(points[0], points[1]);
+					axis.normalize();
+					axis.scale(-1f);
+					if (axis.lengthSquared() == 0 || Float.isInfinite(axis.lengthSquared())
+							|| Float.isNaN(axis.lengthSquared())) {
+						// we have a cylinder because axis is zero which means there is no real apex
+						axis = points[2];
+						isCylinder = true;
+					}
+
+				}
+				float openingAngle = 0;
+
+				if (!isCylinder) {
+					for (int v = 0; v < 3; v++) {
+						points[v] = new Vector3f(selection[v]);
+						points[v].sub(apex);
+						float dot = points[v].dot(axis);
+						if (dot > 1.0)
+							dot = 1.0f;
+						if (dot < -1.0)
+							dot = -1.0f;
+						openingAngle += Math.acos(dot / (points[v].length()/* *axis.length=1*/));
+
+					}
+					openingAngle *= 1.0 / 3.0;
+					if (Float.isNaN(openingAngle)) {
+						isCylinder = true;
+					} else if (openingAngle > Math.PI / 2) {
+						// angle is outer angle, not inner, so convert. This is because an inverted
+						// axis
+						// direction
+						axis.scale(-1f);
+						openingAngle = (float) (Math.PI - openingAngle);
+					}
+				}
+				if (isCylinder) {
+					// Take the normal of the points cros product. This is the direction of the axis
+					axis.cross(selection[0].getNormalVector(), selection[1].getNormalVector());
+					axis.normalize();
+					if (Float.isNaN(axis.lengthSquared())) {
+						axis.cross(selection[0].getNormalVector(), selection[2].getNormalVector());
+					}
+					if (Float.isNaN(axis.lengthSquared())) {
+						axis.cross(selection[1].getNormalVector(), selection[2].getNormalVector());
+					}
+
+					if (Float.isNaN(axis.lengthSquared())) {
+						continue;
+					}
+					openingAngle = (float) (Math.PI / 2f);
+				}
+
+				// Ok, now we have the apex, axis and opening angle for cone OR axis for cylinder.
+
+				// Now measure how good these values fit the whole annotation by calculating the
+				// distance of each point to the cone.
+				float error = 0;
+
+				// If it is a cone, we have a valid apex. So check if all the points have approx.
+				// the openingAngle.
+				// If it is a cylinder, check if all the point normals are perpendicular to the
+				// axis
+
+				float boundingSphere = model.getBoundingSphere().getR();
+
+				for (int j = 0; j < vert.length; j++) {
+					if (j == i || j == idx2 || j == idx3)
+						continue;
+					float dot;
+					float len;
+					if (isCylinder) {
+						dot = vert[j].getNormalVector().dot(axis);
+						len = 1;
+					} else {
+
+						Vector3f v = new Vector3f(vert[j]);
+						v.sub(apex);
+						if (v.lengthSquared() < 0.000001 * boundingSphere)
+							// vector is at the same position as apex, therefore error is 0
+							continue;
+						dot = v.dot(axis);
+						len = v.length();
+					}
+					if (dot > 1.0)
+						dot = 1.0f;
+					if (dot < -1.0)
+						dot = -1.0f;
+					float angleToPoint = (float) Math.acos(dot / (len/* *axis.length=1*/));
+
+					// Weighted error sum
+					error += (Math.abs(angleToPoint - openingAngle)) * vertices.get(vert[j]);
+
+				}
+				float errorWeight = (float) (Math.PI - error);
+				Vector3f tmp = new Vector3f(axis);
+				tmp.scale(errorWeight);
+				bestAxis.add(tmp);
+				totalError += errorWeight;
+			}
+		}
+
+		bestAxis.scale(-1f / totalError);
+		bestAxis.normalize();
+
+		direction.set(bestAxis);
+
+		// calculate a temporary centroid
+		centroid.x = 0;
+		centroid.y = 0;
+		centroid.z = 0;
+
+		for (int i = 0; i < vert.length; i++) {
+			centroid.add(vert[i]);
+		}
+		centroid.scale(1f / vert.length);
+
+		double heightBottom = 0;
+		double heightTop = 0;
+
+		for (int run = 0; run < 10; run++) {
+
+			// Calculate centroid and radii
+
+			// calculate the bottom and top height:
+			double heightBottomWeight = 0;
+			double heightTopWeight = 0;
+			heightBottom = 0;
+			heightTop = 0;
+
+			double radiusBottom = 0;
+			double radiusTop = 0;
+
+			Vector3f directionCorrectorTop = new Vector3f();
+			Vector3f directionCorrectorBottom = new Vector3f();
+
+			for (Vertex v : vert) {
 				double weight = vertices.get(v);
 
 				// Project v onto direction vector
 				Vector3f tmp = new Vector3f(v);
 				tmp.sub(centroid);
-				double dot = tmp.dot(dirs[i]); // distance from center to v on direction vector
+				double dot = tmp.dot(direction); // distance from center to v on direction vector
 
 				// Calculate point on direction vector where v is perpendicular to direction vector
-				tmp = new Vector3f(dirs[i]);
+				tmp = new Vector3f(direction);
 				tmp.scale((float) dot);
 				tmp.add(centroid);
 
@@ -364,77 +415,72 @@ public class ConeAnnotation extends PrimitiveAnnotation<ConeAnnotation> {
 
 				if (dot < 0) {
 					// v is on bottom of cone
-					radiusBottom[i] += rad * weight;
-					radBottom[currRadBottom++] = rad;
-					radiusBottomWeight[i] += weight;
-					heightBottom[i] += Math.abs(dot) * weight;
+					heightBottomWeight += weight;
+					heightBottom += Math.abs(dot) * weight;
+					radiusBottom += rad * weight;
+					if (run > 0) {
+						Vector3f corr = new Vector3f(v.getNormalVector());
+						if (isConcave())
+							corr.scale(-1f);
+						corr.scale((radiusSmall - rad) * (float) weight);
+						directionCorrectorBottom.add(corr);
+					}
 				} else {
 					// v is on top of cone
-					radiusTop[i] += rad * weight;
-					radTop[currRadTop++] = rad;
-					radiusTopWeight[i] += weight;
-					heightTop[i] += Math.abs(dot) * weight;
+					heightTopWeight += weight;
+					heightTop += Math.abs(dot) * weight;
+					radiusTop += rad * weight;
+					if (run > 0) {
+						Vector3f corr = new Vector3f(v.getNormalVector());
+						if (!isConcave())
+							corr.scale(-1f);
+						corr.scale((radiusLarge - rad) * (float) weight);
+						directionCorrectorTop.add(corr);
+					}
 				}
+
 			}
-
-			radiusLarge = 0;
-			radiusSmall = 0;
-
-			if (radiusBottomWeight[i] == 0) {
-				heightBottom[i] = 0;
+			if (heightBottomWeight == 0) {
+				heightBottom = 0;
 			} else {
-				heightBottom[i] /= radiusBottomWeight[i];
-				radiusLarge = (float) (radiusBottom[i] / radiusBottomWeight[i]);
+				heightBottom /= heightBottomWeight;
+				radiusLarge = (float) (radiusBottom / heightBottomWeight);
+				directionCorrectorBottom.scale(1 / (float) heightBottomWeight);
 			}
-			if (radiusTopWeight[i] == 0) {
-				heightTop[i] = 0;
+			if (heightTopWeight == 0) {
+				heightTop = 0;
 			} else {
-				heightTop[i] /= radiusTopWeight[i];
-				radiusSmall = (float) (radiusTop[i] / radiusTopWeight[i]);
+				heightTop /= heightTopWeight;
+				radiusSmall = (float) (radiusTop / heightTopWeight);
+				directionCorrectorTop.scale(1 / (float) heightTopWeight);
 			}
-			if (radiusBottomWeight[i] == 0 && radiusTopWeight[i] != 0) {
-				radiusLarge = radiusSmall;
-			} else if (radiusBottomWeight[i] != 0 && radiusTopWeight[i] == 0) {
-				radiusSmall = radiusLarge;
-			}
-
-			float varSmall = 0;
-			for (int j = 0; j < currRadBottom; j++) {
-				varSmall += Math.pow(radBottom[j] - radiusLarge, 2);
-			}
-			varSmall /= currRadBottom - 1f;
-			float varLarge = 0;
-			for (int j = 0; j < currRadTop; j++) {
-				varLarge += Math.pow(radTop[j] - radiusSmall, 2);
-			}
-			varLarge /= currRadTop - 1f;
 
 			// Move centroid along direction vector to set it to the center of bottom and top
-			float diff = (float) (heightTop[i] - heightBottom[i]) / 2;
-			Vector3f tmp = new Vector3f(dirs[i]);
+			float diff = (float) (heightBottom - heightTop) / 2;
+			Vector3f tmp = new Vector3f(direction);
 			tmp.scale(diff);
-			Point3f centroidOrig = (Point3f) centroid.clone();
-			centroid.add(tmp);
+			centroid.sub(tmp);
 
-			// Set direction length to the height of cone
-			dirs[i].scale((float) (heightTop[i] + heightBottom[i]) / 2);
-
-			if (varSmall + varLarge < minVar) {
-				centroidMin = (Point3f) centroid.clone();
-				minVar = varSmall + varLarge;
-				minDir = dirs[i];
-				minRadiusSmall = radiusSmall;
-				minRadiusLarge = radiusLarge;
+			if (run > 0) {
+				centroid.sub(directionCorrectorBottom);
+				centroid.add(directionCorrectorTop);
+				float botLen = directionCorrectorBottom.length();
+				float topLen = directionCorrectorTop.length();
+				float newLen = (botLen + topLen) / 2f;
+				if (botLen != 0)
+					directionCorrectorBottom.scale(newLen / botLen);
+				if (topLen != 0)
+					directionCorrectorTop.scale(newLen / topLen);
+				direction.scale((float) (heightTop + heightBottom) / 2);
+				direction.add(directionCorrectorBottom);
+				direction.normalize();
+				if (newLen == 0 && diff == 0) {
+					break;
+				}
 			}
-			centroidOrig.get(centroid);
-		}
-		if (minDir != null) {
-			minDir.get(direction);
-			radiusSmall = minRadiusSmall;
-			radiusLarge = minRadiusLarge;
-			centroidMin.get(centroid);
 		}
 
+		direction.scale((float) (heightTop + heightBottom) / 2);
 		return;
 	}
 
