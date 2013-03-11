@@ -412,12 +412,13 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 			itemsElaborated.incrementAndGet();
 		}
 
-		// Combine very small annotations with surrounding larger ones
-		/*for (Iterator<Annotation> it = cas.getAnnotations().iterator(); it.hasNext();) {
+		// Combine very small annotations with surrounding larger ones and merge/remove invalid ones
+		for (Iterator<Annotation> it = cas.getAnnotations().iterator(); it.hasNext();) {
 			Annotation a = it.next();
 			if (a instanceof PrimitiveAnnotation) {
 				PrimitiveAnnotation pa = (PrimitiveAnnotation) a;
 
+				// zero area, remove
 				if (pa.getArea() == 0) {
 					synchronized (cas.getAnnotations()) {
 						it.remove();
@@ -428,6 +429,8 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 				@SuppressWarnings("unchecked")
 				HashSet<PrimitiveAnnotation> neighborAnnotations = pa.getNeighborAnnotations(cas,
 						PrimitiveAnnotation.class);
+
+				// check for cone annotation which has less than 2 triangles
 				if (neighborAnnotations.size() > 0 && a instanceof ConeAnnotation
 						&& ((PrimitiveAnnotation) a).getMesh().getTriangles().size() < 2) {
 					synchronized (cas.getAnnotations()) {
@@ -440,6 +443,9 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 					a1.updateAnnotationArea();
 					continue;
 				}
+
+				// merge small ones
+				/*
 				for (PrimitiveAnnotation a1 : neighborAnnotations) {
 
 					if (!isSamePlane(a1, pa))
@@ -463,9 +469,9 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 						a1.updateAnnotationArea();
 						break;
 					}
-				}
+				}*/
 			}
-		}*/
+		}
 
 		// Combine neighboring annotations which were previously divided by smaller annotations and
 		// are now neighbors
@@ -505,6 +511,8 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 			}
 		}
 
+		final List<PrimitiveAnnotation> failedFittings = new LinkedList<PrimitiveAnnotation>();
+
 		threads.add(new Callable<Void>() {
 
 			@Override
@@ -513,7 +521,11 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 				for (Iterator<Annotation> it = cas.getAnnotations().iterator(); it.hasNext();) {
 					Annotation a = it.next();
 					if (a instanceof PrimitiveAnnotation) {
-						((PrimitiveAnnotation) a).fit();
+						if (!((PrimitiveAnnotation) a).fit()) {
+							synchronized (failedFittings) {
+								failedFittings.add((PrimitiveAnnotation) a);
+							}
+						}
 					}
 				}
 				return null;
@@ -521,6 +533,44 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 		});
 
 		ThreadPool.executeInPool(threads);
+
+		if (failedFittings.size() > 0)
+			logger.debug("Merging failed fittings into neighbors (" + failedFittings.size() + ")");
+
+		for (PrimitiveAnnotation pa : failedFittings) {
+
+			@SuppressWarnings("unchecked")
+			HashSet<PrimitiveAnnotation> neighborAnnotations = pa.getNeighborAnnotations(cas,
+					PrimitiveAnnotation.class);
+			float maxArea = 0;
+			PrimitiveAnnotation bestNeighbor = null;
+			boolean bestIsSameInstance = false;
+			// find the biggest neighbor annotation or one of the same type
+			for (PrimitiveAnnotation a1 : neighborAnnotations) {
+
+				if (failedFittings.contains(a1))
+					continue;
+
+				if (pa.getClass() == a1.getClass()) {
+					bestIsSameInstance = true;
+					if (a1.getArea() > maxArea) {
+						bestNeighbor = a1;
+						maxArea = a1.getArea();
+					}
+				} else if (bestIsSameInstance)
+					continue;
+
+				if (a1.getArea() > maxArea) {
+					bestNeighbor = a1;
+					maxArea = a1.getArea();
+				}
+			}
+			if (bestNeighbor != null) {
+				// merge
+				bestNeighbor.getMesh().getTriangles().addAll(pa.getMesh().getTriangles());
+				bestNeighbor.updateAnnotationArea();
+			}
+		}
 
 		itemsElaborated.incrementAndGet();
 

@@ -70,11 +70,11 @@ public class ConeAnnotation extends PrimitiveAnnotation<ConeAnnotation> {
 	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#fitAnnotation()
 	 */
 	@Override
-	public void fitAnnotation() {
+	public boolean fitAnnotation() {
 
 		LinkedHashMap<Vertex, Float> vertices = new LinkedHashMap<Vertex, Float>();
 		Vector3f centroid = getVerticesWithWeight(vertices);
-		cone.fit(centroid, vertices.keySet(), vertices, mesh.getTriangles());
+		return cone.fit(centroid, vertices.keySet(), vertices, mesh.getTriangles());
 	}
 
 	/**

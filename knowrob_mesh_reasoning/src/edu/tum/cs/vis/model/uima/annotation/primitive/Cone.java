@@ -74,7 +74,7 @@ public class Cone extends PrimitiveShape {
 	 */
 	@Override
 	public void draw(PGraphics g, Color drawColor) {
-		DrawDebugLines(g);
+		// DrawDebugLines(g);
 
 		g.noStroke();
 

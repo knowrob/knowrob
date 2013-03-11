@@ -75,16 +75,22 @@ public abstract class PrimitiveAnnotation<S extends PrimitiveAnnotation> extends
 	/**
 	 * Try to best fit parameters for primitive annotation into triangle mesh and update area of
 	 * annotation.
+	 * 
+	 * @return true if annotation successfully fit. False if there was an error and the annotation
+	 *         is most likely something else (eg. a plane)
 	 */
-	public void fit() {
+	public boolean fit() {
 		updateAnnotationArea();
-		fitAnnotation();
+		return fitAnnotation();
 	}
 
 	/**
 	 * Try to best fit parameters for primitive annotation into triangle mesh.
+	 * 
+	 * @return true if annotation successfully fit. False if there was an error and the annotation
+	 *         is most likely something else (eg. a plane)
 	 */
-	protected abstract void fitAnnotation();
+	protected abstract boolean fitAnnotation();
 
 	/**
 	 * Get area of primitive annotation by summing area of all triangles.
@@ -186,7 +192,6 @@ public abstract class PrimitiveAnnotation<S extends PrimitiveAnnotation> extends
 				if (vertices.containsKey(v)) {
 					newArea += vertices.get(v);
 				}
-
 
 				vertices.put(v, newArea);
 			}

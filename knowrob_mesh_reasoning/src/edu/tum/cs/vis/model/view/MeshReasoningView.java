@@ -549,8 +549,37 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 				for (MeshCas c : casList) {
 					if (c.getModel() == null)
 						continue;
-					c.getModel().getGroup()
-							.getIntersectedTriangles(rayEnd, rayStart, selectedTriangles);
+					ArrayList<IntersectedTriangle> toAdd = new ArrayList<IntersectedTriangle>();
+					c.getModel().getGroup().getIntersectedTriangles(rayEnd, rayStart, toAdd);
+
+					// Now check if all triangles in toAdd are currently visible (enabled by
+					// checkbox). We only need to check, if main mesh is hidden.
+					if (!c.isDrawMesh()) {
+						ArrayList<IntersectedTriangle> toRemove = new ArrayList<IntersectedTriangle>();
+
+						for (IntersectedTriangle p : toAdd) {
+
+							boolean isVisible = false;
+							for (Annotation a : c.getAnnotations()) {
+								if (!(a instanceof DrawableAnnotation))
+									continue;
+								@SuppressWarnings("rawtypes")
+								MeshAnnotation ma = (MeshAnnotation) a;
+								if (!ma.isDrawAnnotation())
+									continue; // Skip not visible annotations
+
+								if (ma.meshContainsTriangle(p.t)) {
+									isVisible = true;
+									break;
+								}
+							}
+							if (!isVisible)
+								toRemove.add(p);
+						}
+						toAdd.removeAll(toRemove);
+					}
+
+					selectedTriangles.addAll(toAdd);
 				}
 			}
 

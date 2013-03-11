@@ -65,10 +65,10 @@ public class SphereAnnotation extends PrimitiveAnnotation<SphereAnnotation> {
 	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#fitAnnotation()
 	 */
 	@Override
-	public void fitAnnotation() {
+	public boolean fitAnnotation() {
 		HashSet<Vertex> vert = new HashSet<Vertex>();
 		Vector3f centroid = getVertices(vert);
-		sphere.fit(centroid, vert, null, mesh.getTriangles());
+		return sphere.fit(centroid, vert, null, mesh.getTriangles());
 	}
 
 	/**
