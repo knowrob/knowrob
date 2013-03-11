@@ -187,10 +187,10 @@ public abstract class PrimitiveAnnotation<S extends PrimitiveAnnotation> extends
 					newArea += vertices.get(v);
 				}
 
-				// Calculate weighted centroid
 
 				vertices.put(v, newArea);
 			}
+			// Calculate weighted centroid
 			centroid.x += t.getCentroid().x * a;
 			centroid.y += t.getCentroid().y * a;
 			centroid.z += t.getCentroid().z * a;
