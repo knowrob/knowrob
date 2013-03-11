@@ -47,6 +47,11 @@ public class SphereAnnotationPanel extends AnnotationPanel<SphereAnnotation> {
 	private final JTextField	txtRadius;
 
 	/**
+	 * Fitting error
+	 */
+	private final JTextField	txtFitError;
+
+	/**
 	 * Creates new sphere control panel
 	 * 
 	 * @param cas
@@ -94,6 +99,16 @@ public class SphereAnnotationPanel extends AnnotationPanel<SphereAnnotation> {
 		c.weightx = 1.0;
 		pnlInfo.add(txtRadius, c);
 
+		txtFitError = new JTextField();
+		c.gridx = 0;
+		c.gridy = 3;
+		c.weightx = 0.3;
+		pnlInfo.add(new JLabel("FitError", SwingConstants.CENTER), c);
+		c.gridx = 1;
+		c.gridy = 3;
+		c.weightx = 1.0;
+		pnlInfo.add(txtFitError, c);
+
 		add(pnlInfo, BorderLayout.CENTER);
 
 		setSelected(null);
@@ -107,11 +122,13 @@ public class SphereAnnotationPanel extends AnnotationPanel<SphereAnnotation> {
 		txtAreaTot.setEnabled(annotation != null);
 		txtAreaCov.setEnabled(annotation != null);
 		txtRadius.setEnabled(annotation != null);
+		txtFitError.setEnabled(annotation != null);
 
 		if (annotation != null) {
 			txtAreaTot.setText(String.valueOf(annotation.getPrimitiveAreaUnscaled()));
 			txtAreaCov.setText(String.valueOf(annotation.getAreaCoverage() * 100f) + "%");
 			txtRadius.setText(String.valueOf(annotation.getRadiusUnscaled()));
+			txtFitError.setText(String.valueOf(annotation.getSphere().getFitError()));
 
 		}
 

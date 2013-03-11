@@ -25,12 +25,24 @@ import edu.tum.cs.vis.model.util.Vertex;
  */
 public abstract class PrimitiveShape {
 
+	protected float	fitError	= -1;
+
+	protected abstract void calculateFitError(Set<Vertex> vertices, Map<Vertex, Float> weights,
+			List<Triangle> triangles);
+
 	public abstract void draw(PGraphics g, Color drawColor);
 
 	public abstract boolean fit(Vector3f centroid, Set<Vertex> vertices,
 			Map<Vertex, Float> weights, List<Triangle> triangles);
 
 	public abstract float getArea();
+
+	/**
+	 * @return the fitError
+	 */
+	public float getFitError() {
+		return fitError;
+	}
 
 	public abstract Matrix4f getPoseMatrix();
 

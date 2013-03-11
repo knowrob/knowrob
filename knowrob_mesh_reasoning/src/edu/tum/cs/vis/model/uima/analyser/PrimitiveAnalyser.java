@@ -572,6 +572,59 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 			}
 		}
 
+		// now check if all sphere annotations are spheres of if they should be cones by evaluating
+		// fit error.
+		// The fit error should be smaller than 0.001 for good fitted spheres
+
+		LinkedList<ConeAnnotation> toAdd = new LinkedList<ConeAnnotation>();
+
+		for (Iterator<Annotation> it = cas.getAnnotations().iterator(); it.hasNext();) {
+			Annotation a = it.next();
+			if (a instanceof SphereAnnotation) {
+				SphereAnnotation sa = (SphereAnnotation) a;
+
+				if (sa.getSphere().getFitError() < 0.005)
+					continue;
+
+				// create a temporary cone annotation and let it fit:
+				ConeAnnotation tmp = new ConeAnnotation(cas.getCurvatures(), cas.getModel(),
+						sa.isConcave());
+				tmp.getMesh().getTriangles().addAll(sa.getMesh().getTriangles());
+				if (!tmp.fit())
+					continue;
+				if (tmp.getCone().getFitError() < sa.getSphere().getFitError()) {
+					synchronized (cas.getAnnotations()) {
+						it.remove();
+					}
+					toAdd.add(tmp);
+					logger.debug("Changing sphere annotation to cone because fit error is smaller: "
+							+ tmp.getCone().getFitError() + "<" + sa.getSphere().getFitError());
+				}
+			}
+		}
+		synchronized (cas.getAnnotations()) {
+			cas.getAnnotations().addAll(toAdd);
+		}
+
+		// Combine neighboring annotations which were previously different types before changing
+		// sphere to cone
+		for (ConeAnnotation ca : toAdd) {
+
+			@SuppressWarnings("unchecked")
+			HashSet<ConeAnnotation> neighborAnnotations = ca.getNeighborAnnotations(cas,
+					ConeAnnotation.class);
+			for (ConeAnnotation c1 : neighborAnnotations) {
+				synchronized (cas.getAnnotations()) {
+					cas.getAnnotations().remove(ca);
+				}
+
+				c1.getMesh().getTriangles().addAll(ca.getMesh().getTriangles());
+				c1.updateAnnotationArea();
+				c1.fit();
+				break;
+			}
+		}
+
 		itemsElaborated.incrementAndGet();
 
 	}

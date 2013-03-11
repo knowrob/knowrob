@@ -55,6 +55,11 @@ public class PlaneAnnotationPanel extends AnnotationPanel<PlaneAnnotation> {
 	private final JTextField	txtNormal;
 
 	/**
+	 * Fitting error
+	 */
+	private final JTextField	txtFitError;
+
+	/**
 	 * Creates new plane annotation panel
 	 * 
 	 * @param cas
@@ -122,6 +127,16 @@ public class PlaneAnnotationPanel extends AnnotationPanel<PlaneAnnotation> {
 		c.weightx = 1.0;
 		pnlInfo.add(txtNormal, c);
 
+		txtFitError = new JTextField();
+		c.gridx = 0;
+		c.gridy = 5;
+		c.weightx = 0.3;
+		pnlInfo.add(new JLabel("FitError", SwingConstants.CENTER), c);
+		c.gridx = 1;
+		c.gridy = 5;
+		c.weightx = 1.0;
+		pnlInfo.add(txtFitError, c);
+
 		add(pnlInfo, BorderLayout.CENTER);
 
 		setSelected(null);
@@ -137,6 +152,7 @@ public class PlaneAnnotationPanel extends AnnotationPanel<PlaneAnnotation> {
 		txtShort.setEnabled(annotation != null);
 		txtLong.setEnabled(annotation != null);
 		txtNormal.setEnabled(annotation != null);
+		txtFitError.setEnabled(annotation != null);
 
 		if (annotation != null) {
 			txtAreaTot.setText(String.valueOf(annotation.getPrimitiveAreaUnscaled()));
@@ -144,6 +160,7 @@ public class PlaneAnnotationPanel extends AnnotationPanel<PlaneAnnotation> {
 			txtShort.setText(String.valueOf(annotation.getShortSideUnscaled().length()));
 			txtLong.setText(String.valueOf(annotation.getLongSideUnscaled().length()));
 			txtNormal.setText(String.valueOf(annotation.getPlaneNormal()));
+			txtFitError.setText(String.valueOf(annotation.getPlane().getFitError()));
 		}
 
 	}

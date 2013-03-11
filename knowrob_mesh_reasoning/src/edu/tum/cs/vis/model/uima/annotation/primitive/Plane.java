@@ -112,6 +112,39 @@ public class Plane extends PrimitiveShape {
 	private final Point3f	corner[]	= new Point3f[4];
 
 	/* (non-Javadoc)
+	 * @see edu.tum.cs.vis.model.uima.annotation.primitive.PrimitiveShape#calculateFitError(java.util.Set, java.util.Map, java.util.List)
+	 */
+	@Override
+	protected void calculateFitError(Set<Vertex> vertices, Map<Vertex, Float> weights,
+			List<Triangle> triangles) {
+		// Error is measured as distance from the point to the plane
+
+		Vector3f tmp = new Vector3f();
+		float vertError = 0;
+		float totWeight = 0;
+		// First check all vertices
+		for (Vertex v : vertices) {
+			tmp.set(v);
+			tmp.sub(centroid);
+			vertError += Math.abs(tmp.dot(planeNormal)) * weights.get(v);
+			totWeight += weights.get(v);
+		}
+		fitError = 0;
+		fitError += (vertError / totWeight);
+		// now also check centroid of triangles
+		float triangleError = 0;
+		totWeight = 0;
+		for (Triangle t : triangles) {
+			tmp.set(t.getCentroid());
+			tmp.sub(centroid);
+			triangleError += Math.abs(tmp.dot(planeNormal)) * t.getArea();
+			totWeight += t.getArea();
+		}
+		fitError += (triangleError / totWeight);
+
+	}
+
+	/* (non-Javadoc)
 	 * @see edu.tum.cs.vis.model.uima.annotation.primitive.PrimitiveShape#draw(processing.core.PGraphics, java.awt.Color)
 	 */
 	@Override
@@ -224,6 +257,7 @@ public class Plane extends PrimitiveShape {
 
 		updateFeatures(vertices);
 
+		calculateFitError(vertices, weights, triangles);
 		return true;
 
 	}

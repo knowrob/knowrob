@@ -10,6 +10,7 @@ package edu.tum.cs.vis.model.uima.annotation.primitive;
 import java.awt.Color;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Tuple3f;
@@ -66,9 +67,12 @@ public class SphereAnnotation extends PrimitiveAnnotation<SphereAnnotation> {
 	 */
 	@Override
 	public boolean fitAnnotation() {
+
+		HashMap<Vertex, Float> weights = new HashMap<Vertex, Float>();
+		getVerticesWithWeight(weights);
 		HashSet<Vertex> vert = new HashSet<Vertex>();
 		Vector3f centroid = getVertices(vert);
-		return sphere.fit(centroid, vert, null, mesh.getTriangles());
+		return sphere.fit(centroid, weights.keySet(), weights, mesh.getTriangles());
 	}
 
 	/**

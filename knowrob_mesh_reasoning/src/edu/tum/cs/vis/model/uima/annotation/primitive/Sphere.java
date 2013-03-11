@@ -137,6 +137,37 @@ public class Sphere extends PrimitiveShape {
 	}
 
 	/* (non-Javadoc)
+	 * @see edu.tum.cs.vis.model.uima.annotation.primitive.PrimitiveShape#calculateFitError(java.util.Set, java.util.Map)
+	 */
+	@Override
+	protected void calculateFitError(Set<Vertex> vertices, Map<Vertex, Float> weights,
+			List<Triangle> triangles) {
+		// Fitting quality is measured by the error between distance from Point to center and radius
+		Vector3f tmp = new Vector3f();
+		float vertError = 0;
+		float totWeight = 0;
+		// First check all vertices
+		for (Vertex v : vertices) {
+			tmp.set(v);
+			tmp.sub(center);
+			vertError += Math.abs(tmp.length() - radius) * weights.get(v);
+			totWeight += weights.get(v);
+		}
+		fitError = 0;
+		fitError += (vertError / totWeight);
+		// now also check centroid of triangles
+		float triangleError = 0;
+		totWeight = 0;
+		for (Triangle t : triangles) {
+			tmp.set(t.getCentroid());
+			tmp.sub(center);
+			triangleError += Math.abs(tmp.length() - radius) * t.getArea();
+			totWeight += t.getArea();
+		}
+		fitError += (triangleError / totWeight);
+	}
+
+	/* (non-Javadoc)
 	 * @see edu.tum.cs.vis.model.uima.annotation.primitive.PrimitiveShape#draw(processing.core.PGraphics, java.awt.Color)
 	 */
 	@Override
@@ -192,6 +223,8 @@ public class Sphere extends PrimitiveShape {
 		radius = getL(a, b, c, vertices);
 
 		// System.out.println("Center: " + center.toString() + " Radius: " + radius);
+
+		calculateFitError(vertices, weights, triangles);
 		return true;
 
 	}

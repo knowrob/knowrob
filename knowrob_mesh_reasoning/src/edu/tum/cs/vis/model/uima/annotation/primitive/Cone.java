@@ -16,6 +16,7 @@ import java.util.Set;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import org.ejml.factory.SingularMatrixException;
@@ -67,6 +68,37 @@ public class Cone extends PrimitiveShape {
 
 	public Cone(boolean concave) {
 		this.concave = concave;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.tum.cs.vis.model.uima.annotation.primitive.PrimitiveShape#calculateFitError(java.util.Set, java.util.Map, java.util.List)
+	 */
+	@Override
+	protected void calculateFitError(Set<Vertex> vertices, Map<Vertex, Float> weights,
+			List<Triangle> triangles) {
+		// Fitting quality is measured by the error between distance from Point to generating axis
+		// and the expected radius at this point
+		float vertError = 0;
+		float totWeight = 0;
+		Vector3f dirNorm = new Vector3f(direction);
+		dirNorm.normalize();
+		float halfHeight = direction.length();
+		// First check all vertices
+		for (Vertex v : vertices) {
+
+			vertError += getRadiusError(v, dirNorm, halfHeight) * weights.get(v);
+			totWeight += weights.get(v);
+		}
+		fitError = 0;
+		fitError += (vertError / totWeight);
+		// now also check for triangles
+		float triangleError = 0;
+		totWeight = 0;
+		for (Triangle t : triangles) {
+			triangleError += getRadiusError(t.getCentroid(), dirNorm, halfHeight) * t.getArea();
+			totWeight += t.getArea();
+		}
+		fitError += (triangleError / totWeight);
 	}
 
 	/* (non-Javadoc)
@@ -475,6 +507,7 @@ public class Cone extends PrimitiveShape {
 		}
 
 		direction.scale((float) (heightTop + heightBottom) / 2);
+		calculateFitError(vertices, weights, triangles);
 		return true;
 
 	}
@@ -538,6 +571,29 @@ public class Cone extends PrimitiveShape {
 	 */
 	public float getRadiusAvg() {
 		return (radiusLarge + radiusSmall) / 2f;
+	}
+
+	private float getRadiusError(Tuple3f v, Vector3f dirNorm, float halfHeight) {
+		Vector3f tmp = new Vector3f(v);
+		tmp.sub(centroid);
+		float dot = tmp.dot(dirNorm); // distance from center to v on
+										// direction vector
+
+		// Calculate point on direction vector where v is perpendicular to direction vector
+		tmp = new Vector3f(dirNorm);
+		tmp.scale(dot);
+		tmp.add(centroid);
+
+		// Sub v to get perpendicular distance between point on direction and v = Radius
+		tmp.sub(v);
+		// rad is the perpendicular distance from generating axis to point
+		float rad = tmp.length();
+
+		// now we need the expected radius at this position
+		float expRad = (1f - dot / halfHeight) / 2 * (radiusLarge - radiusSmall) + radiusSmall;
+
+		return Math.abs(rad - expRad);
+
 	}
 
 	/**

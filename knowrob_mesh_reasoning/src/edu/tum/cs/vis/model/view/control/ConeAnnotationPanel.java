@@ -51,6 +51,11 @@ public class ConeAnnotationPanel extends AnnotationPanel<ConeAnnotation> {
 	private final JTextField	txtDirectionVector;
 
 	/**
+	 * Fitting error
+	 */
+	private final JTextField	txtFitError;
+
+	/**
 	 * height of cone
 	 */
 	private final JTextField	txtHeight;
@@ -123,6 +128,16 @@ public class ConeAnnotationPanel extends AnnotationPanel<ConeAnnotation> {
 		c.weightx = 1.0;
 		pnlInfo.add(txtHeight, c);
 
+		txtFitError = new JTextField();
+		c.gridx = 0;
+		c.gridy = 5;
+		c.weightx = 0.3;
+		pnlInfo.add(new JLabel("FitError", SwingConstants.CENTER), c);
+		c.gridx = 1;
+		c.gridy = 5;
+		c.weightx = 1.0;
+		pnlInfo.add(txtFitError, c);
+
 		add(pnlInfo, BorderLayout.CENTER);
 
 		setSelected(null);
@@ -139,6 +154,7 @@ public class ConeAnnotationPanel extends AnnotationPanel<ConeAnnotation> {
 		txtRadius.setEnabled(annotation != null);
 		txtDirectionVector.setEnabled(annotation != null);
 		txtHeight.setEnabled(annotation != null);
+		txtFitError.setEnabled(annotation != null);
 
 		if (annotation != null) {
 			txtAreaTot.setText(String.valueOf(annotation.getPrimitiveAreaUnscaled()));
@@ -147,6 +163,7 @@ public class ConeAnnotationPanel extends AnnotationPanel<ConeAnnotation> {
 					+ String.valueOf(annotation.getRadiusSmallUnscaled()));
 			txtDirectionVector.setText(annotation.getDirectionUnscaled().toString());
 			txtHeight.setText(String.valueOf(annotation.getDirectionUnscaled().length() * 2));
+			txtFitError.setText(String.valueOf(annotation.getCone().getFitError()));
 		}
 
 	}
