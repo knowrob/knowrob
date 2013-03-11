@@ -36,9 +36,9 @@ public class MeshReasoningTest {
 		// String path = "/home/stefan/work/models/primitive/BoxCone.dae";
 		// String path = "/home/stefan/work/models/primitive/ConePart.dae";
 		String path = "/home/stefan/work/models/primitive/TestObject.dae";
-		// String path = "/home/stefan/work/models/kitchen/mug/Cup1.kmz";
 		// String path = "/home/stefan/work/models/primitive/CupOuter.dae";
 		// String path = "/home/stefan/work/models/primitive/ConeSphere.dae";
+		// String path = "/home/stefan/work/models/primitive/InvCone.dae";
 
 		/* Complex handle test */
 		// String path = "/home/stefan/work/models/hand-tools/putty.kmz";

@@ -8,6 +8,7 @@
 package edu.tum.cs.vis.model.uima.annotation.primitive;
 
 import java.awt.Color;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -60,6 +61,10 @@ public class Cone extends PrimitiveShape {
 	 */
 	private float			radiusSmall	= 0;
 
+	private final Vector3f	topCorr		= new Vector3f();
+
+	private final Vector3f	botCorr		= new Vector3f();
+
 	public Cone(boolean concave) {
 		this.concave = concave;
 	}
@@ -69,7 +74,7 @@ public class Cone extends PrimitiveShape {
 	 */
 	@Override
 	public void draw(PGraphics g, Color drawColor) {
-		// DrawDebugLines(g);
+		DrawDebugLines(g);
 
 		g.noStroke();
 
@@ -123,6 +128,16 @@ public class Cone extends PrimitiveShape {
 
 			g.line(centroid.x, centroid.y, centroid.z, centroid.x + direction.x, centroid.y
 					+ direction.y, centroid.z + direction.z);
+
+			g.stroke(0, 255, 0);
+			g.strokeWeight(5);
+
+			g.line(centroid.x + direction.x, centroid.y + direction.y, centroid.z + direction.z,
+					centroid.x + direction.x + topCorr.x, centroid.y + direction.y + topCorr.y,
+					centroid.z + direction.z + topCorr.z);
+			g.line(centroid.x - direction.x, centroid.y - direction.y, centroid.z - direction.z,
+					centroid.x - direction.x + botCorr.x, centroid.y - direction.y + botCorr.y,
+					centroid.z - direction.z + botCorr.z);
 		}
 	}
 
@@ -133,13 +148,13 @@ public class Cone extends PrimitiveShape {
 	public boolean fit(Vector3f centroid1, Set<Vertex> vertices, Map<Vertex, Float> weights,
 			List<Triangle> triangles) {
 		// we need at least 3 points
-		if (vertices.size() < 3)
+		if (vertices.size() <= 3)
 			return false;
 
 		centroid.set(centroid1);
 		Vertex vert[] = vertices.toArray(new Vertex[0]);
 
-		Vector3f bestAxis = new Vector3f();
+		Vector3f meanAxis = new Vector3f();
 
 		float totalError = 0;
 
@@ -290,7 +305,7 @@ public class Cone extends PrimitiveShape {
 
 				// Now measure how good these values fit the whole annotation by calculating the
 				// distance of each point to the cone.
-				float error = 0;
+				float goodness = 0;
 
 				// If it is a cone, we have a valid apex. So check if all the points have approx.
 				// the openingAngle.
@@ -321,27 +336,36 @@ public class Cone extends PrimitiveShape {
 						dot = -1.0f;
 					float angleToPoint = (float) Math.acos(dot / (len/* *axis.length=1*/));
 
-					// Weighted error sum
-					error += (Math.abs(angleToPoint - openingAngle)) * weights.get(vert[j]);
+					// Weighted sum
+					goodness += (Math.PI - Math.abs(angleToPoint - openingAngle))
+							* Math.pow(weights.get(vert[j]), 2);
 
 				}
-				float errorWeight = (float) (Math.PI - error);
+				float errorWeight = (float) (goodness * Math.pow(weights.get(selection[0])
+						* weights.get(selection[1]) * weights.get(selection[2]), 2));
 				Vector3f tmp = new Vector3f(axis);
 				tmp.scale(errorWeight);
-				bestAxis.add(tmp);
+				meanAxis.add(tmp);
 				totalError += errorWeight;
 			}
 		}
+		if (totalError != 0) {
+			meanAxis.scale(-1f / totalError);
+		}
+		if (meanAxis.lengthSquared() == 0)
+			return false;
+		meanAxis.normalize();
 
-		bestAxis.scale(-1f / totalError);
-		bestAxis.normalize();
-
-		direction.set(bestAxis);
+		direction.set(meanAxis);
 
 		double heightBottom = 0;
 		double heightTop = 0;
+		int prevTopCount = 0;
+		int topCount = 0;
 
-		for (int run = 0; run < 10; run++) {
+		Set<Vector3f> checked = new HashSet<Vector3f>();
+
+		for (int run = 0; run < 50; run++) {
 
 			// Calculate centroid and radii
 
@@ -353,12 +377,20 @@ public class Cone extends PrimitiveShape {
 
 			double radiusBottom = 0;
 			double radiusTop = 0;
+			prevTopCount = topCount;
+			topCount = 0;
 
 			Vector3f directionCorrectorTop = new Vector3f();
 			Vector3f directionCorrectorBottom = new Vector3f();
 
+			checked.clear();
+
 			for (Vertex v : vert) {
 				double weight = weights.get(v);
+				Vector3f check = new Vector3f(v);
+				if (checked.contains(check))
+					continue;
+				checked.add(check);
 
 				// Project v onto direction vector
 				Vector3f tmp = new Vector3f(v);
@@ -373,29 +405,30 @@ public class Cone extends PrimitiveShape {
 				// Sub v to get perpendicular distance between point on direction and v = Radius
 				tmp.sub(v);
 				float rad = tmp.length();
-
 				if (dot < 0) {
 					// v is on bottom of cone
 					heightBottomWeight += weight;
 					heightBottom += Math.abs(dot) * weight;
 					radiusBottom += rad * weight;
 					if (run > 0) {
-						Vector3f corr = new Vector3f(v.getNormalVector());
-						if (isConcave())
-							corr.scale(-1f);
-						corr.scale((radiusSmall - rad) * (float) weight);
+						Vector3f corr = new Vector3f(tmp);
+						corr.normalize();
+						corr.scale((radiusLarge - rad) * (float) weight);
 						directionCorrectorBottom.add(corr);
 					}
 				} else {
 					// v is on top of cone
+					topCount++;
 					heightTopWeight += weight;
 					heightTop += Math.abs(dot) * weight;
 					radiusTop += rad * weight;
-					if (run > 0) {
-						Vector3f corr = new Vector3f(v.getNormalVector());
-						if (!isConcave())
-							corr.scale(-1f);
-						corr.scale((radiusLarge - rad) * (float) weight);
+					if (run > 0 && tmp.lengthSquared() > 0) {
+						Vector3f corr = new Vector3f(tmp);
+						corr.normalize();
+						if (prevTopCount == 1)
+							corr.scale((-rad) * (float) weight);
+						else
+							corr.scale((radiusSmall - rad) * (float) weight);
 						directionCorrectorTop.add(corr);
 					}
 				}
@@ -422,20 +455,20 @@ public class Cone extends PrimitiveShape {
 			tmp.scale(diff);
 			centroid.sub(tmp);
 
+			botCorr.set(directionCorrectorBottom);
+			topCorr.set(directionCorrectorTop);
+
 			if (run > 0) {
-				centroid.sub(directionCorrectorBottom);
-				centroid.add(directionCorrectorTop);
-				float botLen = directionCorrectorBottom.length();
-				float topLen = directionCorrectorTop.length();
-				float newLen = (botLen + topLen) / 2f;
-				if (botLen != 0)
-					directionCorrectorBottom.scale(newLen / botLen);
-				if (topLen != 0)
-					directionCorrectorTop.scale(newLen / topLen);
+				Vector3f corrCentroid = new Vector3f(directionCorrectorBottom);
+				corrCentroid.add(directionCorrectorTop);
+				corrCentroid.scale(0.5f);
+				centroid.add(corrCentroid);
+
+				directionCorrectorTop.sub(directionCorrectorBottom);
 				direction.scale((float) (heightTop + heightBottom) / 2);
-				direction.add(directionCorrectorBottom);
+				direction.add(directionCorrectorTop);
 				direction.normalize();
-				if (newLen == 0 && diff == 0) {
+				if (directionCorrectorTop.lengthSquared() == 0 && diff == 0) {
 					break;
 				}
 			}
