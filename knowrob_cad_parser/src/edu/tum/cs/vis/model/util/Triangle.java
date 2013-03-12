@@ -169,7 +169,7 @@ public class Triangle extends DrawObject {
 							position[i].overrideColor.getGreen(),
 							position[i].overrideColor.getBlue());
 					g.noFill();
-				} else if (drawSettings.overrideColor == null && position[i].color != null) {
+				} else if (drawSettings.getOverrideColor() == null && position[i].color != null) {
 					g.stroke(position[i].color.getRed(), position[i].color.getGreen(),
 							position[i].color.getBlue());
 					g.noFill();
@@ -179,7 +179,7 @@ public class Triangle extends DrawObject {
 		} else {
 			g.beginShape(PConstants.TRIANGLES);
 			if (appearance == null || appearance.getImageReference() == null /*no appearance*/
-					|| drawSettings.overrideColor != null /*override*/
+					|| drawSettings.getOverrideColor() != null /*override*/
 					|| position[0].overrideColor != null /* points have colors */) {
 				// no texture only color
 
@@ -191,7 +191,8 @@ public class Triangle extends DrawObject {
 									position[i].overrideColor.getGreen(),
 									position[i].overrideColor.getBlue());
 							g.noFill();
-						} else if (drawSettings.overrideColor == null && position[i].color != null) {
+						} else if (drawSettings.getOverrideColor() == null
+								&& position[i].color != null) {
 							g.stroke(position[i].color.getRed(), position[i].color.getGreen(),
 									position[i].color.getBlue());
 							g.noFill();
@@ -201,7 +202,8 @@ public class Triangle extends DrawObject {
 							g.fill(position[i].overrideColor.getRed(),
 									position[i].overrideColor.getGreen(),
 									position[i].overrideColor.getBlue());
-						} else if (drawSettings.overrideColor == null && position[i].color != null) {
+						} else if (drawSettings.getOverrideColor() == null
+								&& position[i].color != null) {
 							g.fill(position[i].color.getRed(), position[i].color.getGreen(),
 									position[i].color.getBlue());
 						}

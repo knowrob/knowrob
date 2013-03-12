@@ -47,7 +47,7 @@ public class Line extends DrawObject {
 							position[i].overrideColor.getGreen(),
 							position[i].overrideColor.getBlue());
 					g.noFill();
-				} else if (drawSettings.overrideColor == null && position[i].color != null) {
+				} else if (drawSettings.getOverrideColor() == null && position[i].color != null) {
 					g.stroke(position[i].color.getRed(), position[i].color.getGreen(),
 							position[i].color.getBlue());
 					g.noFill();

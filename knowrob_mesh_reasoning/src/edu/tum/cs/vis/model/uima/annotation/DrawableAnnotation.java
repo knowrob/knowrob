@@ -7,9 +7,12 @@
  ******************************************************************************/
 package edu.tum.cs.vis.model.uima.annotation;
 
+import java.awt.Color;
+
 import processing.core.PGraphics;
 import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.vis.model.util.DrawSettings;
+import edu.tum.cs.vis.model.util.Triangle;
 
 /**
  * Base class for a drawable annotation.
@@ -26,7 +29,29 @@ public abstract class DrawableAnnotation extends Annotation {
 	/**
 	 * indicates whether this annotation should be drawn or not
 	 */
-	protected boolean			drawAnnotation		= true;
+	private boolean				drawAnnotation		= true;
+
+	/**
+	 * The annotation color for this type of annotation.
+	 */
+	private final Color			annotationColor;
+
+	/**
+	 * A random annotation color. Each annotation gets also a random color.
+	 */
+	private final Color			randomAnnotationColor;
+	/**
+	 * Use random color for drawing the annotation
+	 */
+	private boolean				useRandomColor		= false;
+
+	public DrawableAnnotation(Color annotationColor) {
+		randomAnnotationColor = new Color((int) (Math.random() * 255), (int) (Math.random() * 255),
+				(int) (Math.random() * 255));
+		this.annotationColor = annotationColor;
+	}
+
+	public abstract boolean containsTriangle(Triangle t);
 
 	/**
 	 * Draw the annotation with color from <code>getAnnotationColor()</code>
@@ -35,7 +60,7 @@ public abstract class DrawableAnnotation extends Annotation {
 	 *            Applet to draw on
 	 */
 	public void draw(PGraphics g, DrawSettings drawSettings) {
-		if (drawAnnotation)
+		if (drawAnnotation || drawSettings.forceDraw)
 			drawAnnotation(g, drawSettings);
 	}
 
@@ -48,12 +73,34 @@ public abstract class DrawableAnnotation extends Annotation {
 	protected abstract void drawAnnotation(PGraphics g, DrawSettings drawSettings);
 
 	/**
+	 * Returns the color for drawing this annotation. If useRandomColor is true, the random color
+	 * will be returned.
+	 * 
+	 * @return randomAnnotationColor if useRandomColor. Otherwise: annotationColor
+	 */
+	public Color getDrawColor() {
+		if (useRandomColor)
+			return randomAnnotationColor;
+
+		return annotationColor;
+	}
+
+	/**
 	 * true if this annotation should be drawn (is visible).
 	 * 
 	 * @return the drawAnnotation
 	 */
 	public boolean isDrawAnnotation() {
 		return drawAnnotation;
+	}
+
+	/**
+	 * Indicates if random color is used to draw this annotation
+	 * 
+	 * @return the useRandomColor
+	 */
+	public boolean isUseRandomColor() {
+		return useRandomColor;
 	}
 
 	/**
@@ -64,5 +111,15 @@ public abstract class DrawableAnnotation extends Annotation {
 	 */
 	public void setDrawAnnotation(boolean drawAnnotation) {
 		this.drawAnnotation = drawAnnotation;
+	}
+
+	/**
+	 * Set to true if random color should be used to draw annotation instead of predefined one.
+	 * 
+	 * @param useRandomColor
+	 *            the useRandomColor to set
+	 */
+	public void setUseRandomColor(boolean useRandomColor) {
+		this.useRandomColor = useRandomColor;
 	}
 }

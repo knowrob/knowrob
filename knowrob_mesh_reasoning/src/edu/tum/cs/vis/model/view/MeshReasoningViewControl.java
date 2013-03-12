@@ -28,7 +28,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 
 import edu.tum.cs.vis.model.uima.analyser.MeshAnalyser;
-import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
+import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.util.DrawType;
 import edu.tum.cs.vis.model.view.control.DrawSettingsPanel;
@@ -257,8 +257,7 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 	 * @param selectedAnnotations
 	 *            list of currently selected annotations
 	 */
-	public void showSelectedAnnotation(
-			@SuppressWarnings("rawtypes") HashSet<MeshAnnotation> selectedAnnotations) {
+	public void showSelectedAnnotation(HashSet<DrawableAnnotation> selectedAnnotations) {
 		if (selectedAnnotations.size() == 1) {
 			accordion.setSelectedAnnotation(selectedAnnotations.iterator().next());
 		} else

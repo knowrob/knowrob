@@ -180,7 +180,6 @@ public abstract class PrimitiveAnnotation<S extends PrimitiveAnnotation> extends
 	 * @return weighted centroid of all vertices
 	 */
 	protected Vector3f getVerticesWithWeight(HashMap<Vertex, Float> vertices) {
-		vertices.clear();
 		Vector3f centroid = new Vector3f();
 
 		float totalArea = 0;

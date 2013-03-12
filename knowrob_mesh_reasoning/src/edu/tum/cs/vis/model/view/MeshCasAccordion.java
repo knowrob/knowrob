@@ -33,6 +33,7 @@ import edu.tum.cs.vis.model.uima.annotation.primitive.PlaneAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.primitive.SphereAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.view.control.AnnotationPanel;
+import edu.tum.cs.vis.model.view.control.ComplexHandleAnnotationPanel;
 import edu.tum.cs.vis.model.view.control.ConeAnnotationPanel;
 import edu.tum.cs.vis.model.view.control.ContainerAnnotationPanel;
 import edu.tum.cs.vis.model.view.control.PlaneAnnotationPanel;
@@ -203,7 +204,7 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 		else if (clazz == ContainerAnnotation.class)
 			return new ContainerAnnotationPanel(cas);
 		else if (clazz == ComplexHandleAnnotation.class)
-			return new ConeAnnotationPanel(cas);
+			return new ComplexHandleAnnotationPanel(cas);
 
 		System.err
 				.println("Update createPanelForAnnotation() in MeshCasAccordion.java for creating AnnotationPanel for "

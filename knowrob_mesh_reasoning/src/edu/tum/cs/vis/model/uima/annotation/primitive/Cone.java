@@ -298,11 +298,12 @@ public class Cone extends PrimitiveShape {
 						points[v] = new Vector3f(selection[v]);
 						points[v].sub(apex);
 						float dot = points[v].dot(axis);
-						if (dot > 1.0)
-							dot = 1.0f;
-						if (dot < -1.0)
-							dot = -1.0f;
-						openingAngle += Math.acos(dot / (points[v].length()/* *axis.length=1*/));
+						float factor = dot / (points[v].length()/* *axis.length=1*/);
+						if (factor > 1.0)
+							factor = 1.0f;
+						if (factor < -1.0)
+							factor = -1.0f;
+						openingAngle += Math.acos(factor);
 
 					}
 					openingAngle *= 1.0 / 3.0;
@@ -362,11 +363,13 @@ public class Cone extends PrimitiveShape {
 						dot = v.dot(axis);
 						len = v.length();
 					}
-					if (dot > 1.0)
-						dot = 1.0f;
-					if (dot < -1.0)
-						dot = -1.0f;
-					float angleToPoint = (float) Math.acos(dot / (len/* *axis.length=1*/));
+
+					float factor = dot / (len/* *axis.length=1*/);
+					if (factor > 1.0)
+						factor = 1.0f;
+					if (factor < -1.0)
+						factor = -1.0f;
+					float angleToPoint = (float) Math.acos(factor);
 
 					// Weighted sum
 					goodness += (Math.PI - Math.abs(angleToPoint - openingAngle))
@@ -387,7 +390,6 @@ public class Cone extends PrimitiveShape {
 		if (meanAxis.lengthSquared() == 0)
 			return false;
 		meanAxis.normalize();
-
 		direction.set(meanAxis);
 
 		double heightBottom = 0;

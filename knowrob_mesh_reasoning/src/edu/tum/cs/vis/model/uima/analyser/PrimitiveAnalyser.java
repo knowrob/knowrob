@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -141,7 +142,7 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 	 *            plane 2
 	 * @return true if plane annotations should be combined into one
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unused" })
 	private static boolean isSamePlane(PrimitiveAnnotation a1, PrimitiveAnnotation a2) {
 		if (!(a1 instanceof PlaneAnnotation && a2 instanceof PlaneAnnotation))
 			return true;
@@ -403,6 +404,7 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 		};
 
 		ThreadPool.executeInPool(threads);
+		threads.clear();
 
 		// set primitive type for all triangles
 		final HashSet<Triangle> alreadyInAnnotation = new HashSet<Triangle>();
@@ -427,7 +429,7 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 				}
 
 				@SuppressWarnings("unchecked")
-				HashSet<PrimitiveAnnotation> neighborAnnotations = pa.getNeighborAnnotations(cas,
+				Set<PrimitiveAnnotation> neighborAnnotations = pa.getNeighborAnnotations(cas,
 						PrimitiveAnnotation.class);
 
 				// check for cone annotation which has less than 2 triangles
@@ -481,7 +483,7 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 				PrimitiveAnnotation pa = (PrimitiveAnnotation) a;
 
 				@SuppressWarnings("unchecked")
-				HashSet<PrimitiveAnnotation> neighborAnnotations = pa.getNeighborAnnotations(cas,
+				Set<PrimitiveAnnotation> neighborAnnotations = pa.getNeighborAnnotations(cas,
 						PrimitiveAnnotation.class);
 				for (PrimitiveAnnotation a1 : neighborAnnotations) {
 					if (a1.getClass() != pa.getClass())
@@ -540,7 +542,7 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 		for (PrimitiveAnnotation pa : failedFittings) {
 
 			@SuppressWarnings("unchecked")
-			HashSet<PrimitiveAnnotation> neighborAnnotations = pa.getNeighborAnnotations(cas,
+			Set<PrimitiveAnnotation> neighborAnnotations = pa.getNeighborAnnotations(cas,
 					PrimitiveAnnotation.class);
 			float maxArea = 0;
 			PrimitiveAnnotation bestNeighbor = null;
@@ -551,7 +553,18 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 				if (failedFittings.contains(a1))
 					continue;
 
-				if (pa.getClass() == a1.getClass()) {
+				boolean sameConvexity = pa.getClass() == a1.getClass();
+				if (sameConvexity && pa instanceof ConeAnnotation && a1 instanceof ConeAnnotation) {
+					sameConvexity = ((ConeAnnotation) pa).isConcave() == ((ConeAnnotation) a1)
+							.isConcave();
+				}
+				if (sameConvexity && pa instanceof SphereAnnotation
+						&& a1 instanceof SphereAnnotation) {
+					sameConvexity = ((SphereAnnotation) pa).isConcave() == ((SphereAnnotation) a1)
+							.isConcave();
+				}
+
+				if (sameConvexity) {
 					bestIsSameInstance = true;
 					if (a1.getArea() > maxArea) {
 						bestNeighbor = a1;
@@ -610,8 +623,7 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 		// sphere to cone
 		for (ConeAnnotation ca : toAdd) {
 
-			@SuppressWarnings("unchecked")
-			HashSet<ConeAnnotation> neighborAnnotations = ca.getNeighborAnnotations(cas,
+			Set<ConeAnnotation> neighborAnnotations = ca.getNeighborAnnotations(cas,
 					ConeAnnotation.class);
 			for (ConeAnnotation c1 : neighborAnnotations) {
 				synchronized (cas.getAnnotations()) {

@@ -36,6 +36,9 @@ add_runtime_classpath(${knowrob_cad_parser_PACKAGE_PATH}/lib/processing/core.jar
 add_classpath(${knowrob_common_PACKAGE_PATH}/lib/vecmath.jar)
 add_runtime_classpath(${knowrob_common_PACKAGE_PATH}/lib/vecmath.jar)
 
+add_classpath(${knowrob_common_PACKAGE_PATH}/lib/guava-14.0.jar)
+add_runtime_classpath(${knowrob_common_PACKAGE_PATH}/lib/guava-14.0.jar)
+
 add_classpath(${mod_vis_PACKAGE_PATH}/lib/processing/PeasyCam.jar)
 add_runtime_classpath(${mod_vis_PACKAGE_PATH}/lib/processing/PeasyCam.jar)
 

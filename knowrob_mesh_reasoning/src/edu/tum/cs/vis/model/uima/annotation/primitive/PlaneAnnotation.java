@@ -25,7 +25,7 @@ import edu.tum.cs.vis.model.util.Vertex;
  * @author Stefan Profanter
  * 
  */
-public class PlaneAnnotation extends PrimitiveAnnotation<PlaneAnnotation> {
+public final class PlaneAnnotation extends PrimitiveAnnotation<PlaneAnnotation> {
 
 	/**
 	 * auto generated

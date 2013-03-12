@@ -9,8 +9,8 @@ package edu.tum.cs.vis.model.uima.annotation.primitive;
 
 import java.awt.Color;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Set;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
@@ -30,7 +30,7 @@ import edu.tum.cs.vis.model.util.Vertex;
  * @author Stefan Profanter
  * 
  */
-public class ConeAnnotation extends PrimitiveAnnotation<ConeAnnotation> {
+public final class ConeAnnotation extends PrimitiveAnnotation<ConeAnnotation> {
 
 	/**
 	 * auto generated
@@ -53,6 +53,12 @@ public class ConeAnnotation extends PrimitiveAnnotation<ConeAnnotation> {
 	public ConeAnnotation(HashMap<Vertex, Curvature> curvatures, Model model, boolean concave) {
 		super(ConeAnnotation.class, curvatures, model, concave ? new Color(0, 125, 125)
 				: new Color(255, 255, 0));
+		cone = new Cone(concave);
+	}
+
+	public ConeAnnotation(HashMap<Vertex, Curvature> curvatures, Model model, boolean concave,
+			Color annotationColor) {
+		super(ConeAnnotation.class, curvatures, model, annotationColor);
 		cone = new Cone(concave);
 	}
 
@@ -134,7 +140,7 @@ public class ConeAnnotation extends PrimitiveAnnotation<ConeAnnotation> {
 	 * @see edu.tum.cs.vis.model.uima.annotation.MeshAnnotation#getNeighborAnnotations(edu.tum.cs.vis.model.uima.cas.MeshCas)
 	 */
 	@Override
-	public HashSet<ConeAnnotation> getNeighborAnnotations(MeshCas cas) {
+	public Set<ConeAnnotation> getNeighborAnnotations(MeshCas cas) {
 		return getNeighborAnnotations(cas, ConeAnnotation.class);
 	}
 

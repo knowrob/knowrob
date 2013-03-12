@@ -8,9 +8,10 @@ public class DrawSettings {
 		overrideColor = null;
 	}
 
-	public Color	overrideColor;
+	private Color	overrideColor;
 	public DrawType	drawType;
 	private int		lineWidth	= 1;
+	public boolean	forceDraw	= false;
 
 	public void incLineWidth() {
 		lineWidth++;
@@ -25,4 +26,30 @@ public class DrawSettings {
 	public int getLineWidth() {
 		return lineWidth;
 	}
+
+	@Override
+	public Object clone() {
+		DrawSettings ds = new DrawSettings();
+		ds.overrideColor = overrideColor == null ? null : new Color(overrideColor.getRed(),
+				overrideColor.getGreen(), overrideColor.getBlue(), overrideColor.getAlpha());
+		ds.drawType = drawType;
+		ds.lineWidth = lineWidth;
+		ds.forceDraw = forceDraw;
+		return ds;
+
+	}
+
+	public DrawSettings getTemporaryOverride(Color overrideColor) {
+		DrawSettings ds = (DrawSettings) this.clone();
+		ds.overrideColor = overrideColor;
+		return ds;
+	}
+
+	/**
+	 * @return the overrideColor
+	 */
+	public Color getOverrideColor() {
+		return overrideColor;
+	}
+
 }

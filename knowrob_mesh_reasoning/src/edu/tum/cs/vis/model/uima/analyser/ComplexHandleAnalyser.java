@@ -7,17 +7,24 @@
  ******************************************************************************/
 package edu.tum.cs.vis.model.uima.analyser;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.vecmath.Vector3f;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.HashMultimap;
+
+import edu.tum.cs.ias.knowrob.utils.ThreadPool;
 import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.vis.model.uima.annotation.ComplexHandleAnnotation;
+import edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation;
+import edu.tum.cs.vis.model.uima.annotation.primitive.ConeAnnotation;
+import edu.tum.cs.vis.model.uima.annotation.primitive.SphereAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.util.Triangle;
 import edu.tum.cs.vis.model.util.Vertex;
@@ -32,53 +39,85 @@ public class ComplexHandleAnalyser extends MeshAnalyser {
 	 */
 	private static Logger	logger	= Logger.getLogger(ComplexHandleAnalyser.class);
 
-	private static boolean isConvexRelation(Triangle t1, Triangle t2) {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private static ComplexHandleAnnotation regionGrowAnnotation(MeshCas cas,
+			PrimitiveAnnotation pa,
+			HashMap<PrimitiveAnnotation, ComplexHandleAnnotation> alreadyAdded) {
+		Set<PrimitiveAnnotation> neighbors = pa.getNeighborAnnotations(cas,
+				PrimitiveAnnotation.class);
+		ComplexHandleAnnotation newHandle = null;
+		if (alreadyAdded.containsKey(pa)) {
+			newHandle = alreadyAdded.get(pa);
+		}
 
-		Vertex notShared = null;
-		// Get the point of t2 which isn't on the shared edge
-		for (Vertex v : t2.getPosition()) {
-			notShared = v;
-			for (Vertex v1 : t1.getPosition()) {
-				if (v1.sameCoordinates(v)) {
-					notShared = null;
+		for (PrimitiveAnnotation n : neighbors) {
+			if (n instanceof SphereAnnotation && ((SphereAnnotation) n).isConcave())
+				continue;
+			if (n instanceof ConeAnnotation && ((ConeAnnotation) n).isConcave())
+				continue;
+
+			HashMultimap<Triangle, Triangle> edgeTriangles = HashMultimap.create(n.getMesh()
+					.getTriangles().size() / 3, 2);
+			Set<Vertex> edgeVertices = new HashSet<Vertex>();
+			pa.getNeighborEdge(cas, n, edgeVertices, edgeTriangles);
+
+			// check for a triangle pair where the angle between triangle normals is bigger or equal
+			// to 180 degree.
+			for (Triangle t : edgeTriangles.keySet()) {
+				Set<Triangle> partnerSet = edgeTriangles.get(t);
+
+				for (Triangle partner : partnerSet) {
+
+					float dot = t.getNormalVector().dot(partner.getNormalVector());
+					// allow a small error
+					if (dot > ComplexHandleAnnotation.DOT_NORMAL_TOLERANCE) {
+						// angle is smaller than 180 degree
+						continue;
+					}
+					// we have found two triangles, let's merge the two annotations into a complex
+					// handle
+
+					if (newHandle == null) {
+						newHandle = new ComplexHandleAnnotation(cas.getModel());
+						alreadyAdded.put(pa, newHandle);
+						newHandle.addAnnotation(pa);
+					}
+
+					// first check if neighbor annotation is already a part of complex handle
+					if (alreadyAdded.containsKey(n)) {
+						ComplexHandleAnnotation neighborHandle = alreadyAdded.get(n);
+						if (neighborHandle == newHandle)
+							continue;
+						if (!newHandle.allowMerge(neighborHandle))
+							continue;
+						newHandle.merge(neighborHandle);
+						alreadyAdded.remove(n);
+
+						// update reference list
+						for (PrimitiveAnnotation an : neighborHandle.getPrimitiveAnnotations()) {
+							alreadyAdded.put(an, newHandle);
+						}
+					} else {
+						newHandle.addAnnotation(n);
+					}
+					alreadyAdded.put(n, newHandle);
 					break;
 				}
 			}
-			if (notShared != null)
-				break;
 		}
 
-		if (notShared == null)
-			return false;
-
-		Vector3f vec = new Vector3f(notShared);
-
-		// Now determine if the triangles are convex or concave
-		vec.sub(t1.getCentroid());
-		vec.normalize();
-
-		if (t1.getNormalVector().dot(vec) > 0)
-			return false; // triangles are concave
-
-		// angle is between 0 and PI
-		double dot = t1.getNormalVector().dot(t2.getNormalVector());
-		// Make sure dot is between -1 and 1, then calculate acos
-		double angle = Math.acos(Math.max(-1, Math.min(1, dot)));
-
-		return angle >= 0.0 / 180.0 * Math.PI;
-		// return true;
+		return newHandle;
 	}
 
 	/**
-	 * Number of currently processed triangles. Used for progress status.
+	 * Number of triangles already elaborated/processed. Used for indicating current progress
 	 */
-	final AtomicInteger	trianglesElaborated	= new AtomicInteger(0);
+	final AtomicInteger	itemsElaborated		= new AtomicInteger(0);
 
 	/**
-	 * When calling <code>process</code> all triangles of the group and its children are collected
-	 * in this list to process them afterwards.
+	 * maximum items to elaborate. Used for indicating current progress
 	 */
-	ArrayList<Triangle>	allTriangles;
+	private int			maxItemsToElaborate	= 0;
 
 	/* (non-Javadoc)
 	 * @see edu.tum.cs.vis.model.uima.analyser.MeshAnalyser#getLogger()
@@ -99,88 +138,64 @@ public class ComplexHandleAnalyser extends MeshAnalyser {
 	/* (non-Javadoc)
 	 * @see edu.tum.cs.vis.model.uima.analyser.MeshAnalyser#processStart(edu.tum.cs.vis.model.uima.cas.MeshCas)
 	 */
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void processStart(final MeshCas cas) {
-		trianglesElaborated.set(0);
-		allTriangles = cas.getModel().getTriangles();
 
-		final HashMap<Triangle, ComplexHandleAnnotation> alreadyAdded = new HashMap<Triangle, ComplexHandleAnnotation>(
-				allTriangles.size());
+		HashMap<PrimitiveAnnotation, ComplexHandleAnnotation> alreadyAdded = new HashMap<PrimitiveAnnotation, ComplexHandleAnnotation>();
+		maxItemsToElaborate = cas.getAnnotations().size() + 1;
+		itemsElaborated.set(0);
+		for (Annotation a : cas.getAnnotations()) {
+			itemsElaborated.incrementAndGet();
+			if (!(a instanceof PrimitiveAnnotation))
+				continue;
+			if (a instanceof SphereAnnotation && ((SphereAnnotation) a).isConcave())
+				continue;
+			if (a instanceof ConeAnnotation && ((ConeAnnotation) a).isConcave())
+				continue;
+			// We only need planes and convex sphere or cone
+			PrimitiveAnnotation pa = (PrimitiveAnnotation) a;
+			regionGrowAnnotation(cas, pa, alreadyAdded);
 
-		for (int i = 0; i < allTriangles.size(); i++) {
+		}
 
-			Triangle t = allTriangles.get(i);
-			ComplexHandleAnnotation an;
-			an = alreadyAdded.get(t);
-			if (an == null) {
-				an = new ComplexHandleAnnotation(cas.getCurvatures(), cas.getModel());
-				alreadyAdded.put(t, an);
-				synchronized (an.getMesh().getTriangles()) {
-					// Drawing would throw exception with concurrent modification
-					an.getMesh().getTriangles().add(t);
+		// Make sure that no annotation is inserted multiple times
+		final Set<ComplexHandleAnnotation> toAdd = new HashSet<ComplexHandleAnnotation>();
+		toAdd.addAll(alreadyAdded.values());
+
+		final List<ComplexHandleAnnotation> failedFittings = new LinkedList<ComplexHandleAnnotation>();
+
+		List<Callable<Void>> threads = new LinkedList<Callable<Void>>();
+		threads.add(new Callable<Void>() {
+
+			@Override
+			public Void call() throws Exception {
+
+				for (ComplexHandleAnnotation cha : toAdd) {
+					if (!(cha.fit())) {
+						synchronized (failedFittings) {
+							failedFittings.add(cha);
+						}
+					}
 				}
-				cas.addAnnotation(an);
-			}
 
-			regionGrowTriangle(cas, alreadyAdded, t, an);
-			trianglesElaborated.addAndGet(1);
+				return null;
+			}
+		});
+		ThreadPool.executeInPool(threads);
+		if (failedFittings.size() > 0) {
+			logger.debug("Ignoring complex handles where fitting failed (" + failedFittings.size()
+					+ ")");
+			toAdd.removeAll(failedFittings);
 		}
 
-		// Delete annotations which have only one triangle
 		synchronized (cas.getAnnotations()) {
-			Iterator<Annotation> it = cas.getAnnotations().listIterator();
-
-			while (it.hasNext()) {
-				Annotation a = it.next();
-				if (!(a instanceof ComplexHandleAnnotation))
-					continue;
-				ComplexHandleAnnotation cha = (ComplexHandleAnnotation) a;
-				if (cha.getMesh().getTriangles().size() <= 1)
-					it.remove();
-				else
-					cha.fit();
-			}
-
+			cas.getAnnotations().addAll(toAdd);
 		}
-		trianglesElaborated.addAndGet(1);
 
+		itemsElaborated.incrementAndGet();
 		updateProgress();
 
-	}
-
-	void regionGrowTriangle(MeshCas cas, HashMap<Triangle, ComplexHandleAnnotation> alreadyAdded,
-			Triangle t, ComplexHandleAnnotation an) {
-
-		ComplexHandleAnnotation currentAnnotation = an;
-
-		for (Triangle n : t.getNeighbors()) {
-			// Avoid parallel elaboration of same triangle
-			ComplexHandleAnnotation neighborAn = null;
-			if (isConvexRelation(t, n)) {
-				neighborAn = alreadyAdded.get(n);
-
-				if (neighborAn == currentAnnotation)
-					continue; // already in same annotation
-
-				if (neighborAn == null) {
-					// add to this annotation
-					synchronized (currentAnnotation.getMesh().getTriangles()) {
-						currentAnnotation.getMesh().getTriangles().add(n);
-					}
-					alreadyAdded.put(n, currentAnnotation);
-					continue;
-				}
-
-				// otherwise merge annotations
-				neighborAn.merge(currentAnnotation);
-				synchronized (currentAnnotation.getMesh().getTriangles()) {
-					for (Triangle remap : currentAnnotation.getMesh().getTriangles())
-						alreadyAdded.put(remap, neighborAn);
-				}
-				cas.removeAnnotation(currentAnnotation);
-				currentAnnotation = neighborAn;
-			}
-		}
 	}
 
 	/* (non-Javadoc)
@@ -188,10 +203,9 @@ public class ComplexHandleAnalyser extends MeshAnalyser {
 	 */
 	@Override
 	public void updateProgress() {
-		if (allTriangles != null)
-			setProgress((float) trianglesElaborated.get() / (float) (allTriangles.size() + 1)
-					* 100.0f);
-
+		if (maxItemsToElaborate > 0) {
+			setProgress(itemsElaborated.get() / (float) (maxItemsToElaborate) * 100.0f);
+		}
 	}
 
 }

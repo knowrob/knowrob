@@ -10,7 +10,6 @@ package edu.tum.cs.vis.model.uima.annotation.primitive;
 import java.awt.Color;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Tuple3f;
@@ -28,7 +27,7 @@ import edu.tum.cs.vis.model.util.Vertex;
  * @author Stefan Profanter
  * 
  */
-public class SphereAnnotation extends PrimitiveAnnotation<SphereAnnotation> {
+public final class SphereAnnotation extends PrimitiveAnnotation<SphereAnnotation> {
 
 	/**
 	 * auto generated

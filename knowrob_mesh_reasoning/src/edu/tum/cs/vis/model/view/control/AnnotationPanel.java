@@ -18,7 +18,6 @@ import javax.swing.JRadioButton;
 
 import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
-import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 
 /**
@@ -72,11 +71,10 @@ public abstract class AnnotationPanel<T extends DrawableAnnotation> extends JPan
 
 		synchronized (cas.getAnnotations()) {
 			for (Annotation a : cas.getAnnotations()) {
-				if (a.getClass().isInstance(annotationType)) {
+				if (!(a.getClass() == annotationType)) {
 					continue;
 				}
-				@SuppressWarnings("rawtypes")
-				MeshAnnotation ma = (MeshAnnotation) a;
+				DrawableAnnotation ma = (DrawableAnnotation) a;
 				ma.setUseRandomColor(useRand);
 			}
 		}

@@ -35,7 +35,7 @@ public class MeshReasoningTest {
 		// String path = "/home/stefan/work/models/primitive/ConeCut.dae";
 		// String path = "/home/stefan/work/models/primitive/BoxCone.dae";
 		// String path = "/home/stefan/work/models/primitive/ConePart.dae";
-		String path = "/home/stefan/work/models/primitive/TestObject.dae";
+		// String path = "/home/stefan/work/models/primitive/TestObject.dae";
 		// String path = "/home/stefan/work/models/primitive/CupOuter.dae";
 		// String path = "/home/stefan/work/models/primitive/ConeSphere.dae";
 		// String path = "/home/stefan/work/models/primitive/InvCone.dae";
@@ -46,6 +46,11 @@ public class MeshReasoningTest {
 		// String path = "/home/stefan/work/models/hand-tools/wrench.kmz";
 		// String path = "/home/stefan/work/models/silverware/spoon2.kmz";
 		// String path = "/home/stefan/work/models/silverware/knife1.kmz";
+		// String path = "/home/stefan/work/models/industrial-parts/valves/Ball Valve.kmz";
+		// String path = "/home/stefan/work/models/silverware/Butter Knife.dae";
+		// String path = "/home/stefan/work/models/food-drinks/coke.kmz";
+		// String path = "/home/stefan/work/models/drinking-vessels/cup2.kmz";
+		// String path = "/home/stefan/work/models/drinking-vessels/my_mug_v2.kmz";
 		MeshReasoning mr = MeshReasoning.initMeshReasoning(true);
 
 		mr.analyseByPath(path);

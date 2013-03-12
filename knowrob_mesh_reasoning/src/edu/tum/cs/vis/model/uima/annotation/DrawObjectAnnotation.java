@@ -7,6 +7,8 @@
  ******************************************************************************/
 package edu.tum.cs.vis.model.uima.annotation;
 
+import java.awt.Color;
+
 import edu.tum.cs.vis.model.util.DrawObject;
 
 /**
@@ -28,6 +30,10 @@ public abstract class DrawObjectAnnotation extends DrawableAnnotation {
 	 * Object for which this annotation is
 	 */
 	protected DrawObject		object;
+
+	public DrawObjectAnnotation(Color annotationColor) {
+		super(annotationColor);
+	}
 
 	/**
 	 * Get object for which this annotation is.

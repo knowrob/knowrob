@@ -254,7 +254,7 @@ public class MeshReasoning {
 			Thread.yield();
 			pa.process(cas);
 			ca.process(cas);
-			// cha.process(cas);
+			cha.process(cas);
 		}
 
 	}

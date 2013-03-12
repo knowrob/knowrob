@@ -83,19 +83,17 @@ public abstract class DrawObject implements Serializable {
 			g.noStroke();
 			g.noFill();
 			if (drawSettings.drawType == DrawType.FILL) {
-				if (drawSettings.overrideColor != null)
-					g.fill(drawSettings.overrideColor.getRed(),
-							drawSettings.overrideColor.getGreen(),
-							drawSettings.overrideColor.getBlue(),
-							drawSettings.overrideColor.getAlpha());
+				if (drawSettings.getOverrideColor() != null)
+					g.fill(drawSettings.getOverrideColor().getRed(), drawSettings
+							.getOverrideColor().getGreen(), drawSettings.getOverrideColor()
+							.getBlue(), drawSettings.getOverrideColor().getAlpha());
 				else
 					g.fill(200, 200, 200);
 			} else {
-				if (drawSettings.overrideColor != null)
-					g.stroke(drawSettings.overrideColor.getRed(),
-							drawSettings.overrideColor.getGreen(),
-							drawSettings.overrideColor.getBlue(),
-							drawSettings.overrideColor.getAlpha());
+				if (drawSettings.getOverrideColor() != null)
+					g.stroke(drawSettings.getOverrideColor().getRed(), drawSettings
+							.getOverrideColor().getGreen(), drawSettings.getOverrideColor()
+							.getBlue(), drawSettings.getOverrideColor().getAlpha());
 				else
 					g.stroke(200, 200, 200);
 				g.strokeWeight(drawSettings.getLineWidth());
@@ -103,10 +101,10 @@ public abstract class DrawObject implements Serializable {
 			return;
 		}
 		if (appearance.getColorLine() != null) {
-			if (drawSettings.overrideColor != null)
-				g.stroke(drawSettings.overrideColor.getRed(),
-						drawSettings.overrideColor.getGreen(),
-						drawSettings.overrideColor.getBlue(), drawSettings.overrideColor.getAlpha());
+			if (drawSettings.getOverrideColor() != null)
+				g.stroke(drawSettings.getOverrideColor().getRed(), drawSettings.getOverrideColor()
+						.getGreen(), drawSettings.getOverrideColor().getBlue(), drawSettings
+						.getOverrideColor().getAlpha());
 			else
 				g.stroke(appearance.getColorLine().getRed(), appearance.getColorLine().getGreen(),
 						appearance.getColorLine().getBlue(), appearance.getColorLine().getAlpha());
@@ -116,9 +114,10 @@ public abstract class DrawObject implements Serializable {
 		}
 
 		if (drawSettings.drawType == DrawType.FILL) {
-			if (drawSettings.overrideColor != null)
-				g.fill(drawSettings.overrideColor.getRed(), drawSettings.overrideColor.getGreen(),
-						drawSettings.overrideColor.getBlue(), drawSettings.overrideColor.getAlpha());
+			if (drawSettings.getOverrideColor() != null)
+				g.fill(drawSettings.getOverrideColor().getRed(), drawSettings.getOverrideColor()
+						.getGreen(), drawSettings.getOverrideColor().getBlue(), drawSettings
+						.getOverrideColor().getAlpha());
 			else if (appearance.getImageReference() == null) {
 				if (appearance.getColorFill() != null) {
 					g.fill(appearance.getColorFill().getRed(),
@@ -134,10 +133,10 @@ public abstract class DrawObject implements Serializable {
 				g.fill(255, 255, 255, 0);
 			}
 		} else {
-			if (drawSettings.overrideColor != null)
-				g.stroke(drawSettings.overrideColor.getRed(),
-						drawSettings.overrideColor.getGreen(),
-						drawSettings.overrideColor.getBlue(), drawSettings.overrideColor.getAlpha());
+			if (drawSettings.getOverrideColor() != null)
+				g.stroke(drawSettings.getOverrideColor().getRed(), drawSettings.getOverrideColor()
+						.getGreen(), drawSettings.getOverrideColor().getBlue(), drawSettings
+						.getOverrideColor().getAlpha());
 			else if (appearance.getColorFill() != null) {
 				g.stroke(appearance.getColorFill().getRed(), appearance.getColorFill().getGreen(),
 						appearance.getColorFill().getBlue(),
