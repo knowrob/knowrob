@@ -292,9 +292,9 @@ public class SemanticMapVisApplet extends AnimatedCanvas implements MouseListene
 			id = new String[allItems.size()];
 			for(int i=0;i<allItems.size();i++) {
 				ItemBase itm = allItems.get(i);
-				itm.colorOverride = new Color(0xff000000 | ( 1*i + 1));
+				itm.setOverrideColor(new Color(0xff000000 | ( 1*i + 1)));
 				allItems.get(i).draw(buffer, currentFrame);
-				itm.colorOverride = null;
+				itm.setOverrideColor(null);
 				id[i] = itm.name;
 			}
 

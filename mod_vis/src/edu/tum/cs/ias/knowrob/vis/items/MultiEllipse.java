@@ -48,8 +48,8 @@ public class MultiEllipse extends ItemBase {
 					trafoMatrix[12], trafoMatrix[13], trafoMatrix[14], trafoMatrix[15]);
 		c.translate(0, 0, -z);
 		for(int i=0;i<colors.size();i++) {
-			if (colorOverride != null)
-				c.fill(colorOverride.getRed(), colorOverride.getGreen(), colorOverride.getBlue(), colorOverride.getAlpha());
+			if (drawSettings != null && drawSettings.getOverrideColor() != null)
+				c.fill(drawSettings.getOverrideColor().getRed(), drawSettings.getOverrideColor().getGreen(), drawSettings.getOverrideColor().getBlue(), drawSettings.getOverrideColor().getAlpha());
 			else
 				c.fill(colors.get(i));
 			c.ellipse(data.get(i)[0],data.get(i)[1],data.get(i)[2],data.get(i)[3]);

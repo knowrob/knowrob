@@ -8,6 +8,7 @@ import edu.tum.cs.ias.knowrob.vis.Canvas;
 import edu.tum.cs.ias.knowrob.vis.Drawable;
 import edu.tum.cs.ias.knowrob.vis.DrawableAnimated;
 import edu.tum.cs.ias.knowrob.vis.applets.SemanticMapVisApplet;
+import edu.tum.cs.vis.model.util.DrawSettings;
 
 /**
  * Abstract base class for items (animated or not) that have a default color and may have
@@ -20,7 +21,13 @@ public abstract class ItemBase implements Drawable, DrawableAnimated {
 	 * FIXME It is bad practice to use a static method of a class that is completely unrelated to this class. It destroys modularity. The static method convertColor should probably be moved here or some place else that is neutral.
 	 */
 	public int defaultColor = SemanticMapVisApplet.convertColor(220, 220, 220, 255);
-	public Color colorOverride = null;
+	protected DrawSettings drawSettings = null;
+	
+	public void setOverrideColor(Color overrideColor) {
+		if (drawSettings == null)
+			drawSettings = new DrawSettings();
+		drawSettings.setOverrideColor(overrideColor);
+	}
 	
 	/**
 	 * a transformation matrix to apply before drawing

@@ -40,9 +40,8 @@ public class CadModelItem extends Item {
 //		c.stroke(0, 255, 0);      c.line(0, 0, 0,   0, 2, 0); 
 //		c.stroke(0, 0, 255);      c.line(0, 0, 0,   0, 0, 2);
 //		c.stroke(0, 0, 0);
-		
 		if (model != null) {
-			model.getParser().getModel().draw(c.g,colorOverride);
+			model.getParser().getModel().draw(c.g,drawSettings);
 		} else {
 			super.draw(c);
 		}
