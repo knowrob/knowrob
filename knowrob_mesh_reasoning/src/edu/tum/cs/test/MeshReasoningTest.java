@@ -51,6 +51,9 @@ public class MeshReasoningTest {
 		// String path = "/home/stefan/work/models/food-drinks/coke.kmz";
 		// String path = "/home/stefan/work/models/drinking-vessels/cup2.kmz";
 		// String path = "/home/stefan/work/models/drinking-vessels/my_mug_v2.kmz";
+		// String path = "/home/stefan/work/models/food-drinks/mondamin-pancake-mix.dae";
+		// String path = "/home/stefan/work/models/cooking-vessels/pot-ww.dae";
+		String path = "/home/stefan/work/models/cooking-vessels/pancake_maker.dae";
 		MeshReasoning mr = MeshReasoning.initMeshReasoning(true);
 
 		mr.analyseByPath(path);

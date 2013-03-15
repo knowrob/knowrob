@@ -56,9 +56,9 @@ public final class SphereAnnotation extends PrimitiveAnnotation<SphereAnnotation
 	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#drawAnnotation(processing.core.PGraphics)
 	 */
 	@Override
-	public void drawPrimitiveAnnotation(PGraphics g) {
+	public void drawPrimitiveAnnotation(PGraphics g, Color color) {
 
-		sphere.draw(g, getDrawColor());
+		sphere.draw(g, color == null ? getDrawColor() : color);
 	}
 
 	/* (non-Javadoc)

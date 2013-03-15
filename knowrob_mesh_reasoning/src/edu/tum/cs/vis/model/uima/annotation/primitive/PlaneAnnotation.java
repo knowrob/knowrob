@@ -51,8 +51,8 @@ public final class PlaneAnnotation extends PrimitiveAnnotation<PlaneAnnotation> 
 	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#drawAnnotation(processing.core.PGraphics)
 	 */
 	@Override
-	public void drawPrimitiveAnnotation(PGraphics g) {
-		plane.draw(g, getDrawColor());
+	public void drawPrimitiveAnnotation(PGraphics g, Color color) {
+		plane.draw(g, color == null ? getDrawColor() : color);
 
 	}
 

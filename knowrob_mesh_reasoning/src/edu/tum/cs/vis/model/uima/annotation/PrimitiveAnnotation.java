@@ -63,6 +63,10 @@ public abstract class PrimitiveAnnotation<S extends PrimitiveAnnotation> extends
 		this.curvatures = curvatures;
 	}
 
+	public void drawPrimitiveAnnotation(PGraphics g) {
+		drawPrimitiveAnnotation(g, null);
+	}
+
 	/**
 	 * Draws primitive annotation on given graphics context. Drawin primitive annotation means:
 	 * drawing a sphere for sphere annotation or a cone for cone annotation, ...
@@ -70,7 +74,7 @@ public abstract class PrimitiveAnnotation<S extends PrimitiveAnnotation> extends
 	 * @param g
 	 *            graphics context
 	 */
-	public abstract void drawPrimitiveAnnotation(PGraphics g);
+	public abstract void drawPrimitiveAnnotation(PGraphics g, Color color);
 
 	/**
 	 * Try to best fit parameters for primitive annotation into triangle mesh and update area of

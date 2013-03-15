@@ -161,7 +161,7 @@ public class Triangle extends DrawObject {
 	public void draw(PGraphics g, DrawSettings drawSettings) {
 		applyColor(g, drawSettings);
 
-		if (drawSettings.drawType == DrawType.POINTS) {
+		if (drawSettings != null && drawSettings.drawType == DrawType.POINTS) {
 
 			for (int i = 0; i < position.length; i++) {
 				if (position[i].overrideColor != null) {
@@ -185,7 +185,7 @@ public class Triangle extends DrawObject {
 
 				for (int i = 0; i < position.length; i++) {
 
-					if (drawSettings.drawType == DrawType.LINES) {
+					if (drawSettings != null && drawSettings.drawType == DrawType.LINES) {
 						if (position[i].overrideColor != null) {
 							g.stroke(position[i].overrideColor.getRed(),
 									position[i].overrideColor.getGreen(),
@@ -202,7 +202,7 @@ public class Triangle extends DrawObject {
 							g.fill(position[i].overrideColor.getRed(),
 									position[i].overrideColor.getGreen(),
 									position[i].overrideColor.getBlue());
-						} else if (drawSettings.getOverrideColor() == null
+						} else if (drawSettings == null || drawSettings.getOverrideColor() == null
 								&& position[i].color != null) {
 							g.fill(position[i].color.getRed(), position[i].color.getGreen(),
 									position[i].color.getBlue());

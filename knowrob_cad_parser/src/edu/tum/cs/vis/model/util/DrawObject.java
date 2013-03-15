@@ -82,8 +82,8 @@ public abstract class DrawObject implements Serializable {
 
 			g.noStroke();
 			g.noFill();
-			if (drawSettings.drawType == DrawType.FILL) {
-				if (drawSettings.getOverrideColor() != null)
+			if (drawSettings == null || drawSettings.drawType == DrawType.FILL) {
+				if (drawSettings != null && drawSettings.getOverrideColor() != null)
 					g.fill(drawSettings.getOverrideColor().getRed(), drawSettings
 							.getOverrideColor().getGreen(), drawSettings.getOverrideColor()
 							.getBlue(), drawSettings.getOverrideColor().getAlpha());
@@ -101,7 +101,7 @@ public abstract class DrawObject implements Serializable {
 			return;
 		}
 		if (appearance.getColorLine() != null) {
-			if (drawSettings.getOverrideColor() != null)
+			if (drawSettings != null && drawSettings.getOverrideColor() != null)
 				g.stroke(drawSettings.getOverrideColor().getRed(), drawSettings.getOverrideColor()
 						.getGreen(), drawSettings.getOverrideColor().getBlue(), drawSettings
 						.getOverrideColor().getAlpha());
@@ -113,8 +113,8 @@ public abstract class DrawObject implements Serializable {
 			g.noStroke();
 		}
 
-		if (drawSettings.drawType == DrawType.FILL) {
-			if (drawSettings.getOverrideColor() != null)
+		if (drawSettings == null || drawSettings.drawType == DrawType.FILL) {
+			if (drawSettings != null && drawSettings.getOverrideColor() != null)
 				g.fill(drawSettings.getOverrideColor().getRed(), drawSettings.getOverrideColor()
 						.getGreen(), drawSettings.getOverrideColor().getBlue(), drawSettings
 						.getOverrideColor().getAlpha());
@@ -133,7 +133,7 @@ public abstract class DrawObject implements Serializable {
 				g.fill(255, 255, 255, 0);
 			}
 		} else {
-			if (drawSettings.getOverrideColor() != null)
+			if (drawSettings != null && drawSettings.getOverrideColor() != null)
 				g.stroke(drawSettings.getOverrideColor().getRed(), drawSettings.getOverrideColor()
 						.getGreen(), drawSettings.getOverrideColor().getBlue(), drawSettings
 						.getOverrideColor().getAlpha());

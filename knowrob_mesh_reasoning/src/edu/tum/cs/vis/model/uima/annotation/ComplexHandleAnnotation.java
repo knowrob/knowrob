@@ -129,11 +129,11 @@ public class ComplexHandleAnnotation extends DrawableAnnotation {
 		}
 	}
 
-	public void drawPrimitiveAnnotation(PGraphics g) {
+	public void drawPrimitiveAnnotation(PGraphics g, Color color) {
 
 		// Creating new color to set alpha to 255
-		cone.draw(g, new Color(getDrawColor().getRed(), getDrawColor().getGreen(), getDrawColor()
-				.getBlue(), 255));
+		Color c = color == null ? getDrawColor() : color;
+		cone.draw(g, new Color(c.getRed(), c.getGreen(), c.getBlue(), 255));
 
 	}
 

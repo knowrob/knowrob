@@ -27,6 +27,22 @@ public class DrawSettings {
 		return lineWidth;
 	}
 
+	/**
+	 * @param overrideColor
+	 *            the overrideColor to set
+	 */
+	public void setOverrideColor(Color overrideColor) {
+		this.overrideColor = overrideColor;
+	}
+
+	/**
+	 * @param lineWidth
+	 *            the lineWidth to set
+	 */
+	public void setLineWidth(int lineWidth) {
+		this.lineWidth = lineWidth;
+	}
+
 	@Override
 	public Object clone() {
 		DrawSettings ds = new DrawSettings();

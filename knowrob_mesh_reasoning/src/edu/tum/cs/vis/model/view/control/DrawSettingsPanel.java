@@ -155,9 +155,9 @@ public class DrawSettingsPanel extends JPanel implements ActionListener {
 		else if (e.getSource() == cbxDrawBoundingBox)
 			view.setDrawBoundingBox(cbxDrawBoundingBox.isSelected());
 		else if (e.getSource() == btnSetRotation) {
-			String current = Math.round(view.getRotation()[0] * 180f / Math.PI) + ","
-					+ Math.round(view.getRotation()[1] * 180f / Math.PI) + ","
-					+ Math.round(view.getRotation()[2] * 180f / Math.PI);
+			String current = Math.round(view.getCam().getRotations()[0] * 180f / Math.PI) + ","
+					+ Math.round(view.getCam().getRotations()[1] * 180f / Math.PI) + ","
+					+ Math.round(view.getCam().getRotations()[2] * 180f / Math.PI);
 
 			String s = (String) JOptionPane.showInputDialog(this,
 					"Enter the view parameters (in degree) in the format 'pitch,yaw,roll'",

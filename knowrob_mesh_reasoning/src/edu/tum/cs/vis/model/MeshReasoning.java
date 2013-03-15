@@ -8,13 +8,8 @@
 package edu.tum.cs.vis.model;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -23,7 +18,7 @@ import javax.swing.JFrame;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
-import edu.tum.cs.tools.ImageGeneratorState;
+import edu.tum.cs.tools.ImageGenerator.ImageGeneratorSettings;
 import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.util.PrintUtil;
 import edu.tum.cs.vis.model.uima.analyser.ComplexHandleAnalyser;
@@ -137,9 +132,9 @@ public class MeshReasoning {
 		analyseByPath(path, null);
 	}
 
-	public void analyseByPath(String path, ImageGeneratorState imageGeneratorMonitor) {
+	public void analyseByPath(String path, ImageGeneratorSettings imageGeneratorSettings) {
 
-		mrv.setImageGenerator(imageGeneratorMonitor);
+		mrv.setImageGeneratorSettings(imageGeneratorSettings);
 
 		logger.info("MeshReasoning started. Parsing model ...");
 		logger.debug("Path: " + path);
@@ -197,26 +192,22 @@ public class MeshReasoning {
 		// normalize model for further reasoning
 		model.normalize();
 
-		if (imageGeneratorMonitor != null) {
-			if (mrv.getCam() == null)
-				// we are sometimes too fast, so wait a bit
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
-				}
-			loadViewSettings(mrv.getControl().getDefaultImageFilename() + ".png.txt", true);
-			// Allow user to save plain image by pressing Ctrl+S
-			synchronized (imageGeneratorMonitor) {
-				logger.info("Press Ctrl+S to save current view as model image");
-				try {
-					imageGeneratorMonitor.wait();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				if (imageGeneratorMonitor.currentState == ImageGeneratorState.Stop)
-					return;
-				imageGeneratorMonitor.currentState = ImageGeneratorState.CurvatureImage;
+		if (imageGeneratorSettings != null) {
+			imageGeneratorSettings.waitSetup();
+
+			if (imageGeneratorSettings.isInitViewFromFile()) {
+				imageGeneratorSettings.initView(mrv.getCam());
+			}
+
+			if (imageGeneratorSettings.isSaveView() && !imageGeneratorSettings.isViewInitialized()) {
+				// allow user to set a viewpoint
+				logger.info("Set the desired view and then press Ctrl+S to continue");
+				imageGeneratorSettings.waitViewInitialized();
+			}
+
+			if (imageGeneratorSettings.isSavePlainModel()) {
+				// wait until model is saved
+				imageGeneratorSettings.waitSaved("plain");
 			}
 		}
 
@@ -228,34 +219,24 @@ public class MeshReasoning {
 		long curvatureDuration = System.currentTimeMillis() - curvatureStartTime;
 		logger.debug("Ended. Took: " + PrintUtil.prettyMillis(curvatureDuration));
 
-		if (imageGeneratorMonitor != null) {
-			// Allow user to save plain image by pressing Ctrl+S
+		if (imageGeneratorSettings != null && imageGeneratorSettings.isSaveCurvatureColor()) {
+			// wait until model is saved
 			mrv.setDrawCurvatureColor(true);
-			loadViewSettings(mrv.getControl().getDefaultImageFilename() + "_seg.png.txt", false);
-			synchronized (imageGeneratorMonitor) {
-				logger.info("Press Ctrl+S to save current view as segmentation image");
-				try {
-					imageGeneratorMonitor.wait();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				if (imageGeneratorMonitor.currentState == ImageGeneratorState.Stop)
-					return;
-			}
-		} else {
-
-			PrimitiveAnalyser pa = new PrimitiveAnalyser();
-			analyser.add(pa);
-			ContainerAnalyser ca = new ContainerAnalyser();
-			analyser.add(ca);
-			ComplexHandleAnalyser cha = new ComplexHandleAnalyser();
-			analyser.add(cha);
-
-			Thread.yield();
-			pa.process(cas);
-			ca.process(cas);
-			cha.process(cas);
+			imageGeneratorSettings.waitSaved("curvature");
+			mrv.setDrawCurvatureColor(false);
 		}
+
+		PrimitiveAnalyser pa = new PrimitiveAnalyser();
+		analyser.add(pa);
+		ContainerAnalyser ca = new ContainerAnalyser();
+		analyser.add(ca);
+		ComplexHandleAnalyser cha = new ComplexHandleAnalyser();
+		analyser.add(cha);
+
+		Thread.yield();
+		pa.process(cas, imageGeneratorSettings);
+		ca.process(cas, imageGeneratorSettings);
+		cha.process(cas, imageGeneratorSettings);
 
 	}
 
@@ -265,6 +246,11 @@ public class MeshReasoning {
 	public void clearHightlight() {
 		if (mrv != null)
 			mrv.clearSelectedAnnotations();
+	}
+
+	@SuppressWarnings("rawtypes")
+	public <T extends MeshAnnotation> HashSet<T> findAnnotations(Class<T> clazz) {
+		return cas.findAnnotations(clazz);
 	}
 
 	/**
@@ -335,48 +321,19 @@ public class MeshReasoning {
 	 *            Annotation to highlight
 	 */
 	public void highlightAnnotation(@SuppressWarnings("rawtypes") MeshAnnotation a) {
-		if (mrv == null)
-			return;
-		mrv.addSelectedAnnotation(a);
+		highlightAnnotation(a, null);
 	}
 
-	private void loadViewSettings(String settingsFile, boolean setDefault) {
-		File f = new File(settingsFile);
-		if (!f.exists()) {
-			if (setDefault)
-				mrv.setManualRotation((float) (35 * Math.PI / 180f),
-						(float) (-45 * Math.PI / 180f), (float) (130 * Math.PI / 180f));
+	/**
+	 * Highlight specified annotation in mesh reasoning view
+	 * 
+	 * @param a
+	 *            Annotation to highlight
+	 */
+	public void highlightAnnotation(@SuppressWarnings("rawtypes") MeshAnnotation a, Color color) {
+		if (mrv == null)
 			return;
-		}
-
-		try {
-			FileInputStream fstream = new FileInputStream(f);
-			// Get the object of DataInputStream
-			DataInputStream in = new DataInputStream(fstream);
-			BufferedReader br = new BufferedReader(new InputStreamReader(in));
-			String strLine;
-			// Read File Line By Line
-			while ((strLine = br.readLine()) != null) {
-				if (strLine.startsWith("View angles: ")) {
-					strLine = strLine.substring(13);
-					String nums[] = strLine.split(",");
-					if (nums.length != 3)
-						return;
-					logger.info("Loaded view from file: " + settingsFile);
-
-					int pitch = Integer.parseInt(nums[0]);
-					int yaw = Integer.parseInt(nums[1]);
-					int roll = Integer.parseInt(nums[2]);
-					mrv.setManualRotation((float) (pitch * Math.PI / 180f),
-							(float) (yaw * Math.PI / 180f), (float) (roll * Math.PI / 180f));
-				}
-			}
-
-			// Close the input stream
-			in.close();
-		} catch (IOException e) {
-			return;
-		}
+		mrv.addSelectedAnnotation(a, color);
 	}
 
 	/**

@@ -66,9 +66,9 @@ public final class ConeAnnotation extends PrimitiveAnnotation<ConeAnnotation> {
 	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#drawAnnotation(processing.core.PGraphics)
 	 */
 	@Override
-	public void drawPrimitiveAnnotation(PGraphics g) {
+	public void drawPrimitiveAnnotation(PGraphics g, Color color) {
 
-		cone.draw(g, getDrawColor());
+		cone.draw(g, color == null ? getDrawColor() : color);
 
 	}
 

@@ -5,16 +5,12 @@
  * 
  * Contributors: Stefan Profanter - initial API and implementation, Year: 2013
  ******************************************************************************/
-package edu.tum.cs.tools;
+package edu.tum.cs.tools.ImageGenerator;
 
 /**
  * @author Stefan Profanter
  * 
  */
-public class ImageGeneratorState {
-	public static final int	Stop			= -1;
-	public static final int	PlainImage		= 0;
-	public static final int	CurvatureImage	= 1;
-
-	public int				currentState	= PlainImage;
+public class BooleanContainer {
+	public boolean	val	= false;
 }

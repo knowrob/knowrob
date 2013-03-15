@@ -9,6 +9,7 @@ package edu.tum.cs.vis.model.uima.analyser;
 
 import org.apache.log4j.Logger;
 
+import edu.tum.cs.tools.ImageGenerator.ImageGeneratorSettings;
 import edu.tum.cs.uima.AnalysisEngine;
 import edu.tum.cs.uima.JCas;
 import edu.tum.cs.util.PrintUtil;
@@ -98,6 +99,16 @@ public abstract class MeshAnalyser extends AnalysisEngine {
 	 *            CAS to store found annotations.
 	 */
 	public void process(MeshCas cas) {
+		process(cas, null);
+	}
+
+	/**
+	 * Processes the given MeshCas
+	 * 
+	 * @param cas
+	 *            CAS to store found annotations.
+	 */
+	public void process(MeshCas cas, ImageGeneratorSettings settings) {
 		progress = 0;
 		updateProgress();
 		getLogger().debug("Started");
@@ -107,6 +118,8 @@ public abstract class MeshAnalyser extends AnalysisEngine {
 
 		updateProgress();
 		getLogger().debug("Ended. Took: " + PrintUtil.prettyMillis(processDuration));
+		if (settings != null)
+			settings.triggerAnalyser(this);
 	}
 
 	/**

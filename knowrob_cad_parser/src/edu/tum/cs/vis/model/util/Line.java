@@ -40,7 +40,7 @@ public class Line extends DrawObject {
 	 */
 	public void draw(PGraphics g, DrawSettings drawSettings) {
 		applyColor(g, drawSettings);
-		if (drawSettings.drawType == DrawType.POINTS) {
+		if (drawSettings != null && drawSettings.drawType == DrawType.POINTS) {
 			for (int i = 0; i < position.length; i++) {
 				if (position[i].overrideColor != null) {
 					g.stroke(position[i].overrideColor.getRed(),

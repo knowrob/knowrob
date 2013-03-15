@@ -12,11 +12,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.event.MouseInputListener;
 import javax.vecmath.Point3f;
@@ -27,7 +25,7 @@ import org.apache.log4j.Logger;
 import peasy.PeasyCam;
 import processing.core.PConstants;
 import processing.core.PGraphics;
-import edu.tum.cs.tools.ImageGeneratorState;
+import edu.tum.cs.tools.ImageGenerator.ImageGeneratorSettings;
 import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.vis.model.uima.annotation.ComplexHandleAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
@@ -190,7 +188,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	/**
 	 * List of selected annotations (annotations which contain one of selectedTriangles)
 	 * */
-	private final HashSet<DrawableAnnotation>		selectedAnnotations	= new HashSet<DrawableAnnotation>();
+	private final Map<DrawableAnnotation, Color>	selectedAnnotations	= new HashMap<DrawableAnnotation, Color>();
 
 	private boolean									selectTrianglesOnly	= false;
 
@@ -200,7 +198,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	private MeshReasoningViewControl				control				= null;
 
 	private final DrawSettings						drawSettings		= new DrawSettings();
-	private ImageGeneratorState						imageGeneratorMonitor;										;
+	private ImageGeneratorSettings					imageGeneratorSettings;
 
 	/**
 	 * Add annotation to selected annotations
@@ -209,8 +207,12 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	 *            annotation to add
 	 */
 	public void addSelectedAnnotation(@SuppressWarnings("rawtypes") MeshAnnotation a) {
+		addSelectedAnnotation(a, null);
+	}
+
+	public void addSelectedAnnotation(@SuppressWarnings("rawtypes") MeshAnnotation a, Color color) {
 		synchronized (selectedAnnotations) {
-			selectedAnnotations.add(a);
+			selectedAnnotations.put(a, color);
 		}
 		control.showSelectedAnnotation(selectedAnnotations);
 	}
@@ -229,13 +231,14 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	public void draw() {
 
 		scale(modelScale * userScale);
-		if (backgroundWhite)
+		if (backgroundWhite
+				|| (imageGeneratorSettings != null && imageGeneratorSettings.isWhiteBackground()))
 			background(bgcolorWhite.getRed(), bgcolorWhite.getGreen(), bgcolorWhite.getBlue());
 		else
 			background(bgcolorDark.getRed(), bgcolorDark.getGreen(), bgcolorDark.getBlue());
 		// draw axis
 
-		if (imageGeneratorMonitor == null) {
+		if (imageGeneratorSettings == null || (imageGeneratorSettings.isDrawAxis())) {
 			noFill();
 			strokeWeight(1);
 			stroke(125, 0, 0);
@@ -296,31 +299,36 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		} else {
 			synchronized (selectedAnnotations) {
 
-				DrawSettings tmpSet = drawSettings
-						.getTemporaryOverride(selectedAnnotations.size() > 1 ? new Color(255, 125,
-								0, 200) : new Color(255, 50, 0, 200));
-				for (DrawableAnnotation ma : selectedAnnotations) {
+				Color defaultColor = selectedAnnotations.size() > 1 ? new Color(255, 125, 0, 200)
+						: new Color(255, 50, 0, 200);
+				boolean drawPrimitives = (selectedAnnotations.size() == 1 || (imageGeneratorSettings != null && imageGeneratorSettings
+						.isAlwaysDrawSelectedPrimitives()));
+				for (DrawableAnnotation ma : selectedAnnotations.keySet()) {
+					Color anColor = selectedAnnotations.get(ma);
+					DrawSettings tmpSet = drawSettings
+							.getTemporaryOverride(anColor == null ? defaultColor : anColor);
 					ma.draw(g, tmpSet);
-				}
 
-				if (selectedAnnotations.size() == 1) {
-					DrawableAnnotation a = selectedAnnotations.iterator().next();
+					if (drawPrimitives) {
 
-					if (a instanceof PrimitiveAnnotation) {
-						@SuppressWarnings("rawtypes")
-						PrimitiveAnnotation an = (PrimitiveAnnotation) a;
+						Color primColor = new Color(tmpSet.getOverrideColor().getRed(), tmpSet
+								.getOverrideColor().getGreen(),
+								tmpSet.getOverrideColor().getBlue(), 255);
+						if (ma instanceof PrimitiveAnnotation) {
+							@SuppressWarnings("rawtypes")
+							PrimitiveAnnotation an = (PrimitiveAnnotation) ma;
 
-						an.drawPrimitiveAnnotation(g);
+							an.drawPrimitiveAnnotation(g, primColor);
 
-					} else if (a instanceof ComplexHandleAnnotation) {
-						@SuppressWarnings("rawtypes")
-						ComplexHandleAnnotation an = (ComplexHandleAnnotation) a;
+						} else if (ma instanceof ComplexHandleAnnotation) {
+							@SuppressWarnings("rawtypes")
+							ComplexHandleAnnotation an = (ComplexHandleAnnotation) ma;
 
-						an.drawPrimitiveAnnotation(g);
+							an.drawPrimitiveAnnotation(g, primColor);
 
+						}
 					}
 				}
-
 			}
 		}
 
@@ -362,27 +370,23 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		}
 
 		// Check if user wants to save current view
-		if (imageSavePath != null) {
-			save(imageSavePath);
-			FileWriter outFile;
-			try {
-				outFile = new FileWriter(imageSavePath + ".txt");
-				PrintWriter out = new PrintWriter(outFile);
-				String current = Math.round(getRotation()[0] * 180f / Math.PI) + ","
-						+ Math.round(getRotation()[1] * 180f / Math.PI) + ","
-						+ Math.round(getRotation()[2] * 180f / Math.PI);
-				out.println("View angles: " + current);
+		String imgGen = null;
+		if (imageGeneratorSettings != null)
+			imgGen = imageGeneratorSettings.getCurrentImageFile();
+		if (imageSavePath != null || imgGen != null) {
+			if (imgGen != null)
+				save(imgGen);
+			else
+				save(imageSavePath);
 
-				out.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
+			imageGeneratorSettings.saveView(cam, false);
 			Logger.getRootLogger().info("Image saved as: " + imageSavePath);
 			synchronized (imageSavePath) {
 				imageSavePath.notifyAll();
 			}
 			imageSavePath = null;
+			if (imgGen != null)
+				imageGeneratorSettings.triggerSaved();
 		}
 	}
 
@@ -404,15 +408,6 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	 */
 	public MeshReasoningViewControl getControl() {
 		return control;
-	}
-
-	/**
-	 * get current cam rotation
-	 * 
-	 * @return rotation for each axis
-	 */
-	public float[] getRotation() {
-		return cam.getRotations();
 	}
 
 	/**
@@ -505,16 +500,9 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		} else if (c == 'q') {
 			drawSettings.decLineWidth();
 			draw();
-		} else if (imageGeneratorMonitor != null && e.isControlDown() && c == 19) {
+		} else if (imageGeneratorSettings != null && e.isControlDown() && c == 19) {
 			// Ctrl+S
-			if (imageGeneratorMonitor.currentState == ImageGeneratorState.PlainImage) {
-				saveImage(control.getDefaultImageFilename() + ".png", true);
-			} else {
-				saveImage(control.getDefaultImageFilename() + "_seg.png", true);
-			}
-			synchronized (imageGeneratorMonitor) {
-				imageGeneratorMonitor.notifyAll();
-			}
+			imageGeneratorSettings.triggerViewInitialized();
 		}
 		/* else if (c == 'm') {
 		
@@ -594,7 +582,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 				ArrayList<IntersectedTriangle> newSelected = new ArrayList<IntersectedTriangle>();
 				for (IntersectedTriangle p : selectedTriangles) {
 					synchronized (selectedAnnotations) {
-						for (DrawableAnnotation ma : selectedAnnotations)
+						for (DrawableAnnotation ma : selectedAnnotations.keySet())
 							if (ma.containsTriangle(p.t)) {
 								newSelected.add(p);
 							}
@@ -691,7 +679,7 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 					for (IntersectedTriangle p : selectedTriangles)
 						if (ma.containsTriangle(p.t)) {
 							synchronized (selectedAnnotations) {
-								selectedAnnotations.add(ma);
+								selectedAnnotations.put(ma, null);
 							}
 							break;
 						}
@@ -791,8 +779,8 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		this.drawVoronoiArea = drawVoronoiArea;
 	}
 
-	public void setImageGenerator(ImageGeneratorState imageGeneratorMonitor) {
-		this.imageGeneratorMonitor = imageGeneratorMonitor;
+	public void setImageGeneratorSettings(ImageGeneratorSettings imageGeneratorSettings) {
+		this.imageGeneratorSettings = imageGeneratorSettings;
 
 	}
 
@@ -853,5 +841,8 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		perspective();
 
 		draw();
+		if (imageGeneratorSettings != null) {
+			imageGeneratorSettings.triggerSetup();
+		}
 	}
 }

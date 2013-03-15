@@ -4,6 +4,7 @@
 package edu.tum.cs.vis.model.view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -11,7 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -257,9 +258,9 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 	 * @param selectedAnnotations
 	 *            list of currently selected annotations
 	 */
-	public void showSelectedAnnotation(HashSet<DrawableAnnotation> selectedAnnotations) {
+	public void showSelectedAnnotation(Map<DrawableAnnotation, Color> selectedAnnotations) {
 		if (selectedAnnotations.size() == 1) {
-			accordion.setSelectedAnnotation(selectedAnnotations.iterator().next());
+			accordion.setSelectedAnnotation(selectedAnnotations.keySet().iterator().next());
 		} else
 			accordion.setSelectedAnnotation(null);
 	}
