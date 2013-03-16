@@ -202,7 +202,7 @@ public class Triangle extends DrawObject {
 							g.fill(position[i].overrideColor.getRed(),
 									position[i].overrideColor.getGreen(),
 									position[i].overrideColor.getBlue());
-						} else if (drawSettings == null || drawSettings.getOverrideColor() == null
+						} else if ((drawSettings == null || drawSettings.getOverrideColor() == null)
 								&& position[i].color != null) {
 							g.fill(position[i].color.getRed(), position[i].color.getGreen(),
 									position[i].color.getBlue());
