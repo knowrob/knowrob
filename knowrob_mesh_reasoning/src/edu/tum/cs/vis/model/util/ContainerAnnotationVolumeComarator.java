@@ -23,7 +23,7 @@ public class ContainerAnnotationVolumeComarator implements Comparator<ContainerA
 	 */
 	@Override
 	public int compare(ContainerAnnotation arg0, ContainerAnnotation arg1) {
-		return Float.compare(arg0.getVolume(), arg1.getVolume());
+		return Float.compare(arg0.getVolume(), arg1.getVolume()) * (-1);
 	}
 
 }

@@ -23,7 +23,7 @@ public class PrimitiveAnnotationAreaComparator implements Comparator<PrimitiveAn
 	 */
 	@Override
 	public int compare(PrimitiveAnnotation arg0, PrimitiveAnnotation arg1) {
-		return Float.compare(arg0.getArea(), arg1.getArea());
+		return Float.compare(arg0.getArea(), arg1.getArea()) * (-1);
 	}
 
 }

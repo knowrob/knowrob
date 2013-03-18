@@ -19,6 +19,7 @@ import javax.vecmath.Vector3f;
 
 import processing.core.PGraphics;
 import edu.tum.cs.vis.model.Model;
+import edu.tum.cs.vis.model.uima.annotation.HandleAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.util.Curvature;
@@ -30,7 +31,8 @@ import edu.tum.cs.vis.model.util.Vertex;
  * @author Stefan Profanter
  * 
  */
-public final class ConeAnnotation extends PrimitiveAnnotation<ConeAnnotation> {
+public final class ConeAnnotation extends PrimitiveAnnotation<ConeAnnotation> implements
+		HandleAnnotation {
 
 	/**
 	 * auto generated
@@ -101,6 +103,7 @@ public final class ConeAnnotation extends PrimitiveAnnotation<ConeAnnotation> {
 		return model.getUnscaled(getCentroid());
 	}
 
+	@Override
 	public Cone getCone() {
 		return cone;
 	}

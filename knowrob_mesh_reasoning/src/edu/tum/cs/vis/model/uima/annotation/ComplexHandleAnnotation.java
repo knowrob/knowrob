@@ -36,7 +36,7 @@ import edu.tum.cs.vis.model.util.Vertex;
  * @author Stefan Profanter
  * 
  */
-public class ComplexHandleAnnotation extends DrawableAnnotation {
+public class ComplexHandleAnnotation extends DrawableAnnotation implements HandleAnnotation {
 
 	/**
 	 * generated
@@ -167,6 +167,7 @@ public class ComplexHandleAnnotation extends DrawableAnnotation {
 	 * 
 	 * @return value > 0
 	 */
+	@Override
 	public float getAreaCoverage() {
 		float trianglesArea = 0;
 		for (@SuppressWarnings("rawtypes")
@@ -199,6 +200,7 @@ public class ComplexHandleAnnotation extends DrawableAnnotation {
 		return model.getUnscaled(getCentroid());
 	}
 
+	@Override
 	public Cone getCone() {
 		return cone;
 	}

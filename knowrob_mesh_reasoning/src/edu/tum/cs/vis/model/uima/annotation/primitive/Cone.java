@@ -538,6 +538,10 @@ public class Cone extends PrimitiveShape {
 		return direction;
 	}
 
+	public float getHeight() {
+		return direction.length() * 2f;
+	}
+
 	/**
 	 * Get pose matrix for cone.
 	 * 

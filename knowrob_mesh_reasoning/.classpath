@@ -4,11 +4,6 @@
 	<classpathentry kind="src" path="srv_gen/java"/>
 	<classpathentry kind="src" path="msg_gen/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/commons-math3-3.0/commons-math3-3.0.jar" sourcepath="lib/commons-math3-3.0/commons-math3-3.0-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/Mesh Reasoning/lib/commons-math3-3.0/commons-math3-3.0-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="/knowrob_cad_parser/lib/processing/PeasyCam.jar"/>
 	<classpathentry kind="lib" path="/knowrob_cad_parser/bin" sourcepath="/knowrob_cad_parser/src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/knowrob_cad_parser"/>
@@ -24,11 +19,15 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="/opt/ros/fuerte/stacks/client_rosjava_jni/rosjava_jni/bin"/>
 	<classpathentry kind="lib" path="/knowrob_common/bin"/>
-	<classpathentry kind="lib" path="/knowrob_common/lib/commons-net-3.0.1.jar"/>
 	<classpathentry kind="lib" path="/knowrob_common/lib/vecmath.jar"/>
 	<classpathentry kind="lib" path="/knowrob_common/lib/guava-14.0.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:platform:/resource/knowrob_common/lib/guava-14.0-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/commons-math3-3.1.1/commons-math3-3.1.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/knowrob_mesh_reasoning/lib/commons-math3-3.1.1/commons-math3-3.1.1-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="bin"/>

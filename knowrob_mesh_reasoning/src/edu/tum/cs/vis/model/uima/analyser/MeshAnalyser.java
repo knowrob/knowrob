@@ -120,6 +120,8 @@ public abstract class MeshAnalyser extends AnalysisEngine {
 		getLogger().debug("Ended. Took: " + PrintUtil.prettyMillis(processDuration));
 		if (settings != null)
 			settings.triggerAnalyser(this);
+
+		System.gc();
 	}
 
 	/**

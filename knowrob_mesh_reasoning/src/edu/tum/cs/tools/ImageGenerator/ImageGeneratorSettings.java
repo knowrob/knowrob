@@ -84,8 +84,10 @@ public class ImageGeneratorSettings {
 	private boolean																	viewInitialized					= false;
 	private boolean																	saveView						= true;
 	private boolean																	alwaysDrawSelectedPrimitives	= false;
+	private boolean																	closeAfterFinish				= false;
 
 	private final Map<Class<? extends MeshAnalyser>, String>						analyserSaveList				= new HashMap<Class<? extends MeshAnalyser>, String>();
+
 	private final Map<Class<? extends MeshAnalyser>, List<ImageGeneratorAction>>	analyserActionList				= new HashMap<Class<? extends MeshAnalyser>, List<ImageGeneratorAction>>();
 
 	public ImageGeneratorSettings(File inputBasePath, File outputBasePath) {
@@ -116,11 +118,21 @@ public class ImageGeneratorSettings {
 		analyserActionList.clear();
 	}
 
+	private void createOutputPath() {
+		File f = new File(outputBasePath, currentModel);
+		f = f.getParentFile();
+		if (!f.exists() && !f.mkdirs()) {
+			logger.error("Couldn't create output directories: " + f.getAbsolutePath());
+		}
+	}
+
 	/**
 	 * @return the currentImageFile
 	 */
-	public String getCurrentImageFile() {
-		return currentImageFile;
+	public String getAndClearCurrentImageFile() {
+		String ret = currentImageFile;
+		currentImageFile = null;
+		return ret;
 	}
 
 	/**
@@ -163,6 +175,13 @@ public class ImageGeneratorSettings {
 	 */
 	public boolean isAlwaysDrawSelectedPrimitives() {
 		return alwaysDrawSelectedPrimitives;
+	}
+
+	/**
+	 * @return the closeAfterFinish
+	 */
+	public boolean isCloseAfterFinish() {
+		return closeAfterFinish;
 	}
 
 	/**
@@ -253,11 +272,20 @@ public class ImageGeneratorSettings {
 	}
 
 	/**
+	 * @param closeAfterFinish
+	 *            the closeAfterFinish to set
+	 */
+	public void setCloseAfterFinish(boolean closeAfterFinish) {
+		this.closeAfterFinish = closeAfterFinish;
+	}
+
+	/**
 	 * @param currentModel
 	 *            the currentModel to set
 	 */
 	public void setCurrentModel(String currentModel) {
 		this.currentModel = currentModel;
+		createOutputPath();
 	}
 
 	/**
@@ -353,8 +381,8 @@ public class ImageGeneratorSettings {
 					e.printStackTrace();
 				}
 			}
-			currentImageFile = replaceModelExtension(append, ".png").getAbsolutePath();
-			logger.debug("Waiting for saved image: " + currentImageFile);
+			currentImageFile = replaceModelExtension(append, "png").getAbsolutePath();
+			// logger.debug("Waiting for saved image: " + currentImageFile);
 			try {
 				monitorSaved.wait();
 			} catch (InterruptedException e) {

@@ -29,7 +29,6 @@ import edu.tum.cs.tools.ImageGenerator.ImageGeneratorSettings;
 import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.vis.model.uima.annotation.ComplexHandleAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
-import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.util.Curvature;
@@ -206,11 +205,11 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 	 * @param a
 	 *            annotation to add
 	 */
-	public void addSelectedAnnotation(@SuppressWarnings("rawtypes") MeshAnnotation a) {
+	public void addSelectedAnnotation(DrawableAnnotation a) {
 		addSelectedAnnotation(a, null);
 	}
 
-	public void addSelectedAnnotation(@SuppressWarnings("rawtypes") MeshAnnotation a, Color color) {
+	public void addSelectedAnnotation(DrawableAnnotation a, Color color) {
 		synchronized (selectedAnnotations) {
 			selectedAnnotations.put(a, color);
 		}
@@ -311,9 +310,9 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 
 					if (drawPrimitives) {
 
-						Color primColor = new Color(tmpSet.getOverrideColor().getRed(), tmpSet
-								.getOverrideColor().getGreen(),
-								tmpSet.getOverrideColor().getBlue(), 255);
+						Color primColor = anColor != null ? new Color(tmpSet.getOverrideColor()
+								.getRed(), tmpSet.getOverrideColor().getGreen(), tmpSet
+								.getOverrideColor().getBlue(), 255) : null;
 						if (ma instanceof PrimitiveAnnotation) {
 							@SuppressWarnings("rawtypes")
 							PrimitiveAnnotation an = (PrimitiveAnnotation) ma;
@@ -321,7 +320,6 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 							an.drawPrimitiveAnnotation(g, primColor);
 
 						} else if (ma instanceof ComplexHandleAnnotation) {
-							@SuppressWarnings("rawtypes")
 							ComplexHandleAnnotation an = (ComplexHandleAnnotation) ma;
 
 							an.drawPrimitiveAnnotation(g, primColor);
@@ -372,22 +370,24 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		// Check if user wants to save current view
 		String imgGen = null;
 		if (imageGeneratorSettings != null)
-			imgGen = imageGeneratorSettings.getCurrentImageFile();
+			imgGen = imageGeneratorSettings.getAndClearCurrentImageFile();
 		if (imageSavePath != null || imgGen != null) {
-			if (imgGen != null)
+			if (imgGen != null) {
 				save(imgGen);
-			else
+				imageGeneratorSettings.saveView(cam, false);
+				Logger.getRootLogger().info("Image saved as: " + imgGen);
+				imageGeneratorSettings.triggerSaved();
+			} else {
 				save(imageSavePath);
 
-			imageGeneratorSettings.saveView(cam, false);
-			Logger.getRootLogger().info("Image saved as: " + imageSavePath);
-			synchronized (imageSavePath) {
-				imageSavePath.notifyAll();
+				synchronized (imageSavePath) {
+					imageSavePath.notifyAll();
+				}
+				Logger.getRootLogger().info("Image saved as: " + imageSavePath);
+				imageSavePath = null;
 			}
-			imageSavePath = null;
-			if (imgGen != null)
-				imageGeneratorSettings.triggerSaved();
 		}
+
 	}
 
 	public PeasyCam getCam() {

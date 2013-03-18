@@ -13,15 +13,20 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 
-import peasy.CameraState;
 import peasy.PeasyCam;
 
 /**
  * @author Stefan Profanter
  * 
  */
-public final class ViewSettings {
+public final class ViewSettings implements Serializable {
+
+	/**
+	 * auto generated
+	 */
+	private static final long	serialVersionUID	= 4193708032337186974L;
 
 	public static boolean loadSettings(File path, PeasyCam cam) {
 		if (!path.exists())
@@ -31,10 +36,13 @@ public final class ViewSettings {
 		try {
 			dec = new XMLDecoder(new FileInputStream(path));
 
-			CameraState state = (CameraState) dec.readObject();
-			cam.setState(state);
+			ViewSettings settings = (ViewSettings) dec.readObject();
 
-		} catch (IOException e) {
+			cam.setRotations(settings.rotation[0], settings.rotation[1], settings.rotation[2]);
+			cam.lookAt(settings.lookAt[0], settings.lookAt[1], settings.lookAt[2]);
+			cam.setDistance(settings.distance);
+			Thread.sleep(1500); // wait until camera updated
+		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		} finally {
@@ -49,7 +57,9 @@ public final class ViewSettings {
 
 		try {
 			enc = new XMLEncoder(new FileOutputStream(path));
-			enc.writeObject(cam.getState());
+			ViewSettings settings = new ViewSettings(cam);
+
+			enc.writeObject(settings);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
@@ -58,6 +68,72 @@ public final class ViewSettings {
 				enc.close();
 		}
 		return true;
+	}
+
+	private float[]	rotation;
+
+	private float[]	lookAt;
+
+	private double	distance;
+
+	public ViewSettings() {
+		rotation = new float[3];
+		lookAt = new float[3];
+		distance = 50;
+	}
+
+	/**
+	 * @param cam
+	 */
+	public ViewSettings(PeasyCam cam) {
+		rotation = cam.getRotations();
+		lookAt = cam.getLookAt();
+		distance = cam.getDistance();
+	}
+
+	/**
+	 * @return the distance
+	 */
+	public double getDistance() {
+		return distance;
+	}
+
+	/**
+	 * @return the lookAt
+	 */
+	public float[] getLookAt() {
+		return lookAt;
+	}
+
+	/**
+	 * @return the rotation
+	 */
+	public float[] getRotation() {
+		return rotation;
+	}
+
+	/**
+	 * @param distance
+	 *            the distance to set
+	 */
+	public void setDistance(double distance) {
+		this.distance = distance;
+	}
+
+	/**
+	 * @param lookAt
+	 *            the lookAt to set
+	 */
+	public void setLookAt(float[] lookAt) {
+		this.lookAt = lookAt;
+	}
+
+	/**
+	 * @param rotation
+	 *            the rotation to set
+	 */
+	public void setRotation(float[] rotation) {
+		this.rotation = rotation;
 	}
 
 }

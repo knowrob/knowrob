@@ -121,13 +121,12 @@ public class MeshCas extends JCas implements Serializable {
 	 *            Type of the annotations to find
 	 * @return the found annotations or empty
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public <T extends MeshAnnotation> HashSet<T> findAnnotations(Class<T> clazz) {
+	public <T extends DrawableAnnotation> HashSet<T> findAnnotations(Class<T> clazz) {
 		HashSet<T> an = new HashSet<T>();
 		for (Annotation a : getAnnotations()) {
-			if (!(a instanceof MeshAnnotation))
+			if (!(a instanceof DrawableAnnotation))
 				continue;
-			MeshAnnotation ma = (MeshAnnotation) a;
+			DrawableAnnotation ma = (DrawableAnnotation) a;
 			if (ma.getClass() == clazz || clazz.isInstance(ma)) {
 				an.add((T) a);
 			}

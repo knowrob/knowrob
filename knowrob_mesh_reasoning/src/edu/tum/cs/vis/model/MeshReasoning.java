@@ -11,13 +11,17 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.swing.JFrame;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
+import edu.tum.cs.tools.ImageGenerator.ImageGeneratorAction;
 import edu.tum.cs.tools.ImageGenerator.ImageGeneratorSettings;
 import edu.tum.cs.uima.Annotation;
 import edu.tum.cs.util.PrintUtil;
@@ -26,12 +30,19 @@ import edu.tum.cs.vis.model.uima.analyser.ContainerAnalyser;
 import edu.tum.cs.vis.model.uima.analyser.MeshAnalyser;
 import edu.tum.cs.vis.model.uima.analyser.NeighborAnalyser;
 import edu.tum.cs.vis.model.uima.analyser.PrimitiveAnalyser;
+import edu.tum.cs.vis.model.uima.annotation.ComplexHandleAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.ContainerAnnotation;
+import edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation;
+import edu.tum.cs.vis.model.uima.annotation.HandleAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.MeshAnnotation;
+import edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.primitive.ConeAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.primitive.PlaneAnnotation;
 import edu.tum.cs.vis.model.uima.annotation.primitive.SphereAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
+import edu.tum.cs.vis.model.util.ContainerAnnotationVolumeComarator;
+import edu.tum.cs.vis.model.util.HandleComparator;
+import edu.tum.cs.vis.model.util.PrimitiveAnnotationAreaComparator;
 import edu.tum.cs.vis.model.util.algorithm.CurvatureCalculation;
 import edu.tum.cs.vis.model.view.MeshReasoningView;
 import edu.tum.cs.vis.model.view.MeshReasoningViewControl;
@@ -59,20 +70,26 @@ public class MeshReasoning {
 	 * @return new mesh reasoning object
 	 */
 	public static MeshReasoning initMeshReasoning(boolean withView) {
-
-		DOMConfigurator.configureAndWatch("log4j.xml", 60 * 1000);
-		return new MeshReasoning(withView);
+		return MeshReasoning.initMeshReasoning(withView, null);
 	}
+
+	public static MeshReasoning initMeshReasoning(boolean withView,
+			ImageGeneratorSettings imageGenerator) {
+		DOMConfigurator.configureAndWatch("log4j.xml", 60 * 1000);
+		return new MeshReasoning(withView, imageGenerator);
+	}
+
+	private ImageGeneratorSettings		imageGeneratorSettings	= null;
 
 	/**
 	 * View for this mesh reasoning object
 	 */
-	private MeshReasoningView			mrv	= null;
+	private MeshReasoningView			mrv						= null;
 
 	/**
 	 * Mesh reasoning container
 	 */
-	private MeshCas						cas	= null;
+	private MeshCas						cas						= null;
 
 	/**
 	 * Main frame container for mesh reasoning view
@@ -93,6 +110,13 @@ public class MeshReasoning {
 	 * 
 	 */
 	public MeshReasoning(boolean withView) {
+		this(withView, null);
+	}
+
+	public MeshReasoning(boolean withView, ImageGeneratorSettings imageGenerator) {
+		imageGeneratorSettings = imageGenerator;
+		if (imageGeneratorSettings != null)
+			initImageGenerator();
 		cas = new MeshCas();
 
 		if (withView) {
@@ -106,6 +130,7 @@ public class MeshReasoning {
 			ArrayList<MeshAnalyser> analyser = new ArrayList<MeshAnalyser>();
 
 			mrv = new MeshReasoningView();
+			mrv.setImageGeneratorSettings(imageGeneratorSettings);
 			control = new MeshReasoningViewControl(cas, analyser, mrv);
 			mrv.setControl(control);
 			mrv.init();
@@ -129,13 +154,12 @@ public class MeshReasoning {
 	 * 
 	 */
 	public void analyseByPath(String path) {
-		analyseByPath(path, null);
-	}
 
-	public void analyseByPath(String path, ImageGeneratorSettings imageGeneratorSettings) {
-
-		mrv.setImageGeneratorSettings(imageGeneratorSettings);
-
+		if (imageGeneratorSettings != null) {
+			// update file name
+			imageGeneratorSettings.setCurrentModel(path.substring(imageGeneratorSettings
+					.getInputBasePath().getAbsolutePath().length() + 1));
+		}
 		logger.info("MeshReasoning started. Parsing model ...");
 		logger.debug("Path: " + path);
 		long start = System.currentTimeMillis();
@@ -238,6 +262,10 @@ public class MeshReasoning {
 		ca.process(cas, imageGeneratorSettings);
 		cha.process(cas, imageGeneratorSettings);
 
+		if (imageGeneratorSettings != null && imageGeneratorSettings.isCloseAfterFinish()) {
+			logger.debug("Closing ...");
+			System.exit(123);
+		}
 	}
 
 	/**
@@ -314,13 +342,43 @@ public class MeshReasoning {
 		return ret;
 	}
 
+	public HandleAnnotation[] getHandle() {
+		return getHandle(-1f, -1f);
+	}
+
+	public HandleAnnotation[] getHandle(double minRadius, double maxRadius) {
+		return getHandle(minRadius, maxRadius, -1f, -1f);
+	}
+
+	public HandleAnnotation[] getHandle(double minRadius, double maxRadius, double minLength,
+			double maxLength) {
+
+		Set<ConeAnnotation> cones = findAnnotationsCone();
+		Set<ComplexHandleAnnotation> complexHandle = cas
+				.findAnnotations(ComplexHandleAnnotation.class);
+		List<HandleAnnotation> allAnnotations = new ArrayList<HandleAnnotation>(cones.size()
+				+ complexHandle.size());
+		for (ConeAnnotation c : cones) {
+			if (c.isConcave())
+				continue;
+			allAnnotations.add(c);
+		}
+		allAnnotations.addAll(complexHandle);
+		cones.clear();
+		complexHandle.clear();
+		HandleAnnotation[] handleList = allAnnotations.toArray(new HandleAnnotation[0]);
+		Arrays.sort(handleList, new HandleComparator(cas.getModel(), minRadius, maxRadius,
+				minLength, maxLength));
+		return handleList;
+	}
+
 	/**
 	 * Highlight specified annotation in mesh reasoning view
 	 * 
 	 * @param a
 	 *            Annotation to highlight
 	 */
-	public void highlightAnnotation(@SuppressWarnings("rawtypes") MeshAnnotation a) {
+	public void highlightAnnotation(DrawableAnnotation a) {
 		highlightAnnotation(a, null);
 	}
 
@@ -330,10 +388,129 @@ public class MeshReasoning {
 	 * @param a
 	 *            Annotation to highlight
 	 */
-	public void highlightAnnotation(@SuppressWarnings("rawtypes") MeshAnnotation a, Color color) {
+	public void highlightAnnotation(DrawableAnnotation a, Color color) {
 		if (mrv == null)
 			return;
 		mrv.addSelectedAnnotation(a, color);
+	}
+
+	public void highlightAnnotation(HandleAnnotation handleAnnotation) {
+		if (handleAnnotation instanceof DrawableAnnotation) {
+			highlightAnnotation((DrawableAnnotation) handleAnnotation);
+		}
+
+	}
+
+	private void initImageGenerator() {
+		imageGeneratorSettings.setDrawAxis(false);
+		imageGeneratorSettings.setWhiteBackground(true);
+		// If there is a view settings file, load those settings
+		imageGeneratorSettings.setInitViewFromFile(true);
+		// If no view settings exist yet, allow to align model and then continue by pressing Ctrl+S
+		imageGeneratorSettings.setSaveView(true);
+		imageGeneratorSettings.setSavePlainModel(true);
+		imageGeneratorSettings.setSaveCurvatureColor(true);
+		imageGeneratorSettings.setCloseAfterFinish(true);
+		imageGeneratorSettings.addAnalyserToSave(PrimitiveAnalyser.class, "segmented");
+
+		/**
+		 * Analyser actions begin
+		 */
+		final MeshReasoning mr = this;
+
+		imageGeneratorSettings.clearAnalyserActions();
+		imageGeneratorSettings.addAnalyserAction(PrimitiveAnalyser.class,
+				new ImageGeneratorAction() {
+
+					@Override
+					public void trigger(ImageGeneratorSettings localSettings) {
+						mr.clearHightlight();
+						@SuppressWarnings("rawtypes")
+						PrimitiveAnnotation[] cones = mr.findAnnotationsCone().toArray(
+								new PrimitiveAnnotation[0]);
+						Arrays.sort(cones, new PrimitiveAnnotationAreaComparator());
+						int max = 3;
+						for (int i = 0; i < max && i < cones.length; i++) {
+							mr.highlightAnnotation(cones[i]);
+							localSettings.waitSaved("cones" + (i + 1));
+							mr.clearHightlight();
+						}
+					}
+				});
+		imageGeneratorSettings.addAnalyserAction(PrimitiveAnalyser.class,
+				new ImageGeneratorAction() {
+
+					@Override
+					public void trigger(ImageGeneratorSettings localSettings) {
+						mr.clearHightlight();
+						@SuppressWarnings("rawtypes")
+						PrimitiveAnnotation[] planes = mr.findAnnotationsPlane().toArray(
+								new PrimitiveAnnotation[0]);
+						Arrays.sort(planes, new PrimitiveAnnotationAreaComparator());
+						int max = 3;
+						for (int i = 0; i < max && i < planes.length; i++) {
+							mr.highlightAnnotation(planes[i]);
+							localSettings.waitSaved("planes" + (i + 1));
+							mr.clearHightlight();
+						}
+					}
+				});
+		imageGeneratorSettings.addAnalyserAction(PrimitiveAnalyser.class,
+				new ImageGeneratorAction() {
+
+					@Override
+					public void trigger(ImageGeneratorSettings localSettings) {
+						mr.clearHightlight();
+						@SuppressWarnings("rawtypes")
+						PrimitiveAnnotation[] spheres = mr.findAnnotationsSphere().toArray(
+								new PrimitiveAnnotation[0]);
+						Arrays.sort(spheres, new PrimitiveAnnotationAreaComparator());
+						int max = 3;
+						for (int i = 0; i < max && i < spheres.length; i++) {
+							mr.highlightAnnotation(spheres[i]);
+							localSettings.waitSaved("spheres" + (i + 1));
+							mr.clearHightlight();
+						}
+					}
+				});
+
+		imageGeneratorSettings.addAnalyserAction(ContainerAnalyser.class,
+				new ImageGeneratorAction() {
+
+					@Override
+					public void trigger(ImageGeneratorSettings localSettings) {
+						mr.clearHightlight();
+						ContainerAnnotation[] container = mr.findAnnotations(
+								ContainerAnnotation.class).toArray(new ContainerAnnotation[0]);
+						Arrays.sort(container, new ContainerAnnotationVolumeComarator());
+						int max = 3;
+						for (int i = 0; i < max && i < container.length; i++) {
+							mr.highlightAnnotation(container[i]);
+							localSettings.waitSaved("container" + (i + 1));
+							mr.clearHightlight();
+						}
+					}
+				});
+
+		imageGeneratorSettings.addAnalyserAction(ComplexHandleAnalyser.class,
+				new ImageGeneratorAction() {
+
+					@Override
+					public void trigger(ImageGeneratorSettings localSettings) {
+						mr.clearHightlight();
+						HandleAnnotation[] handles = mr.getHandle(0.008, 0.10, 0.02, 0.15);
+						int max = 3;
+						for (int i = 0; i < max && i < handles.length; i++) {
+							mr.highlightAnnotation(handles[i]);
+							localSettings.waitSaved("handle" + (i + 1));
+							mr.clearHightlight();
+						}
+					}
+				});
+
+		/**
+		 * Analyser actions end
+		 */
 	}
 
 	/**
