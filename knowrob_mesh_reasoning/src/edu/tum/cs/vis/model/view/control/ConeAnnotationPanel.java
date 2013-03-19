@@ -10,6 +10,7 @@ package edu.tum.cs.vis.model.view.control;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.text.DecimalFormat;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -18,6 +19,7 @@ import javax.swing.SwingConstants;
 
 import edu.tum.cs.vis.model.uima.annotation.primitive.ConeAnnotation;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
+import edu.tum.cs.vis.model.util.HandleComparator;
 
 /**
  * Control panel for cone annotation.
@@ -54,6 +56,7 @@ public class ConeAnnotationPanel extends AnnotationPanel<ConeAnnotation> {
 	 * Fitting error
 	 */
 	private final JTextField	txtFitError;
+	private final JTextField	txtHandleWeight;
 
 	/**
 	 * height of cone
@@ -138,6 +141,16 @@ public class ConeAnnotationPanel extends AnnotationPanel<ConeAnnotation> {
 		c.weightx = 1.0;
 		pnlInfo.add(txtFitError, c);
 
+		txtHandleWeight = new JTextField();
+		c.gridx = 0;
+		c.gridy = 6;
+		c.weightx = 0.3;
+		pnlInfo.add(new JLabel("HandleWeight", SwingConstants.CENTER), c);
+		c.gridx = 1;
+		c.gridy = 6;
+		c.weightx = 1.0;
+		pnlInfo.add(txtHandleWeight, c);
+
 		add(pnlInfo, BorderLayout.CENTER);
 
 		setSelected(null);
@@ -155,6 +168,7 @@ public class ConeAnnotationPanel extends AnnotationPanel<ConeAnnotation> {
 		txtDirectionVector.setEnabled(annotation != null);
 		txtHeight.setEnabled(annotation != null);
 		txtFitError.setEnabled(annotation != null);
+		txtHandleWeight.setEnabled(annotation != null);
 
 		if (annotation != null) {
 			txtAreaTot.setText(String.valueOf(annotation.getPrimitiveAreaUnscaled()));
@@ -164,6 +178,14 @@ public class ConeAnnotationPanel extends AnnotationPanel<ConeAnnotation> {
 			txtDirectionVector.setText(annotation.getDirectionUnscaled().toString());
 			txtHeight.setText(String.valueOf(annotation.getDirectionUnscaled().length() * 2));
 			txtFitError.setText(String.valueOf(annotation.getCone().getFitError()));
+
+			DecimalFormat scientForm = new DecimalFormat("0.####E0");
+			DecimalFormat normForm = new DecimalFormat("0.######");
+			double weight = HandleComparator.getHandleWeight(annotation, annotation.getModel(),
+					HandleComparator.DEFAULT_RADIUS_MIN, HandleComparator.DEFAULT_RADIUS_MAX,
+					HandleComparator.DEFAULT_LENGTH_MIN, HandleComparator.DEFAULT_LENGTH_MAX);
+			String str = weight < 0.00001 ? scientForm.format(weight) : normForm.format(weight);
+			txtHandleWeight.setText(String.valueOf(annotation.isConcave() ? 0 : str));
 		}
 
 	}

@@ -130,9 +130,11 @@ public class ImageGeneratorSettings {
 	 * @return the currentImageFile
 	 */
 	public String getAndClearCurrentImageFile() {
-		String ret = currentImageFile;
-		currentImageFile = null;
-		return ret;
+		synchronized (monitorSaved) {
+			String ret = currentImageFile;
+			currentImageFile = null;
+			return ret;
+		}
 	}
 
 	/**
@@ -343,13 +345,16 @@ public class ImageGeneratorSettings {
 		for (Class<? extends MeshAnalyser> clazz : analyserSaveList.keySet()) {
 			if (clazz.isInstance(meshAnalyser)) {
 				String append = analyserSaveList.get(clazz);
+				System.out.println("Wait save: " + append);
 				waitSaved(append);
 			}
 		}
 		for (Class<? extends MeshAnalyser> clazz : analyserActionList.keySet()) {
 			if (clazz.isInstance(meshAnalyser)) {
-				for (ImageGeneratorAction action : analyserActionList.get(clazz))
+				for (ImageGeneratorAction action : analyserActionList.get(clazz)) {
+					System.out.println("Trigger: " + clazz);
 					action.trigger(this);
+				}
 			}
 		}
 
@@ -371,16 +376,15 @@ public class ImageGeneratorSettings {
 	}
 
 	public void waitSaved(String append) {
+		while (currentImageFile != null) {
+			// wait if there is another file currently saving
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {}
+
+		}
 
 		synchronized (monitorSaved) {
-			if (currentImageFile != null) {
-				// there is already another job which waits for saving
-				try {
-					monitorSaved.wait();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
 			currentImageFile = replaceModelExtension(append, "png").getAbsolutePath();
 			// logger.debug("Waiting for saved image: " + currentImageFile);
 			try {

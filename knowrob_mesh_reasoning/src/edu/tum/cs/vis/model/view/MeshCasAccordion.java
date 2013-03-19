@@ -12,9 +12,11 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -78,13 +80,17 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 		/**
 		 * Checkbox at left side of button
 		 */
-		private final JCheckBox								checkbox;
+		final JCheckBox										checkbox;
 
 		/**
 		 * The component that is the body of the Outlook bar
 		 */
 		@SuppressWarnings("rawtypes")
 		final AnnotationPanel								component;
+
+		private final MeshCasAccordion						accordion;
+
+		public boolean										checkboxChangedProgrammatically	= false;
 
 		/**
 		 * Creates a new BarInfo
@@ -100,10 +106,11 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 		 */
 		public BarInfo(Class<? extends DrawableAnnotation> annotationType,
 				@SuppressWarnings("rawtypes") AnnotationPanel component, MeshCas cas,
-				int annotationCount) {
+				int annotationCount, MeshCasAccordion accordion) {
 			this.component = component;
 			this.annotationType = annotationType;
 			this.cas = cas;
+			this.accordion = accordion;
 
 			button = new JButton();
 			updateButtonLabel(annotationCount);
@@ -118,14 +125,26 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			synchronized (cas.getAnnotations()) {
-				for (Annotation m : cas.getAnnotations()) {
-					if (m.getClass() != annotationType || !(m instanceof DrawableAnnotation))
-						continue;
-					DrawableAnnotation ma = (DrawableAnnotation) m;
-					ma.setDrawAnnotation(checkbox.isSelected());
+			if (!checkboxChangedProgrammatically
+					&& checkMod(arg0.getModifiers(), ActionEvent.SHIFT_MASK)) {
+				// shift click, change all others
+				accordion.toggleCheckboxes(this);
+				JCheckBox sender = (JCheckBox) arg0.getSource();
+				// this click changes check state, so to ignore change, first invert it
+				sender.setSelected(!sender.isSelected());
+			} else
+				synchronized (cas.getAnnotations()) {
+					for (Annotation m : cas.getAnnotations()) {
+						if (m.getClass() != annotationType || !(m instanceof DrawableAnnotation))
+							continue;
+						DrawableAnnotation ma = (DrawableAnnotation) m;
+						ma.setDrawAnnotation(checkbox.isSelected());
+					}
 				}
-			}
+		}
+
+		private boolean checkMod(int modifiers, int mask) {
+			return ((modifiers & mask) == mask);
 		}
 
 		/**
@@ -283,7 +302,7 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 								@SuppressWarnings("rawtypes")
 								AnnotationPanel pnl = createPanelForAnnotation(c, cas);
 
-								BarInfo bi = new BarInfo(c, pnl, cas, types.get(c));
+								BarInfo bi = new BarInfo(c, pnl, cas, types.get(c), acc);
 								bi.button.addActionListener(acc);
 								bars.put(c, bi);
 							}
@@ -432,5 +451,19 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 			this.visibleBar = visibleBar;
 			render();
 		}
+	}
+
+	/**
+	 * @param barInfo
+	 */
+	public void toggleCheckboxes(BarInfo skip) {
+		Set<BarInfo> barInfos = new HashSet<BarInfo>(bars.values());
+		barInfos.remove(skip);
+		for (BarInfo bar : barInfos) {
+			bar.checkboxChangedProgrammatically = true;
+			bar.checkbox.doClick();
+			bar.checkboxChangedProgrammatically = false;
+		}
+
 	}
 }

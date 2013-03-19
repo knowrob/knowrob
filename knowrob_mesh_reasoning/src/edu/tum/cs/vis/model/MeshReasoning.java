@@ -260,7 +260,7 @@ public class MeshReasoning {
 		Thread.yield();
 		pa.process(cas, imageGeneratorSettings);
 		ca.process(cas, imageGeneratorSettings);
-		cha.process(cas, imageGeneratorSettings);
+		// cha.process(cas, imageGeneratorSettings);
 
 		if (imageGeneratorSettings != null && imageGeneratorSettings.isCloseAfterFinish()) {
 			logger.debug("Closing ...");
@@ -432,6 +432,9 @@ public class MeshReasoning {
 						int max = 3;
 						for (int i = 0; i < max && i < cones.length; i++) {
 							mr.highlightAnnotation(cones[i]);
+							try {
+								Thread.sleep(200);
+							} catch (InterruptedException e) {} // wait til selected
 							localSettings.waitSaved("cones" + (i + 1));
 							mr.clearHightlight();
 						}
@@ -450,6 +453,9 @@ public class MeshReasoning {
 						int max = 3;
 						for (int i = 0; i < max && i < planes.length; i++) {
 							mr.highlightAnnotation(planes[i]);
+							try {
+								Thread.sleep(200);
+							} catch (InterruptedException e) {} // wait til selected
 							localSettings.waitSaved("planes" + (i + 1));
 							mr.clearHightlight();
 						}
@@ -468,6 +474,9 @@ public class MeshReasoning {
 						int max = 3;
 						for (int i = 0; i < max && i < spheres.length; i++) {
 							mr.highlightAnnotation(spheres[i]);
+							try {
+								Thread.sleep(200);
+							} catch (InterruptedException e) {} // wait til selected
 							localSettings.waitSaved("spheres" + (i + 1));
 							mr.clearHightlight();
 						}
@@ -486,6 +495,9 @@ public class MeshReasoning {
 						int max = 3;
 						for (int i = 0; i < max && i < container.length; i++) {
 							mr.highlightAnnotation(container[i]);
+							try {
+								Thread.sleep(200);
+							} catch (InterruptedException e) {} // wait til selected
 							localSettings.waitSaved("container" + (i + 1));
 							mr.clearHightlight();
 						}
@@ -502,6 +514,9 @@ public class MeshReasoning {
 						int max = 3;
 						for (int i = 0; i < max && i < handles.length; i++) {
 							mr.highlightAnnotation(handles[i]);
+							try {
+								Thread.sleep(200);
+							} catch (InterruptedException e) {} // wait til selected
 							localSettings.waitSaved("handle" + (i + 1));
 							mr.clearHightlight();
 						}

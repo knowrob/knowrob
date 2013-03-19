@@ -207,7 +207,11 @@ public class Cone extends PrimitiveShape {
 				Math.max(extremaY[1] - extremaY[0], extremaZ[1] - extremaZ[0]));
 
 		// Based on: http://cg.cs.uni-bonn.de/aigaion2root/attachments/schnabel-2007-efficient.pdf
-		for (int i = 0; i < vert.length; i++) {
+		int skip = 1;
+		if (vert.length > 300) {
+			skip = Math.round(vert.length / 300f);
+		}
+		for (int i = 0; i < vert.length; i += skip) {
 			// Run multiple tests trying to find the best solution
 			for (int test = 0; test < 10; test++) {
 				boolean isCylinder = false;
@@ -344,7 +348,6 @@ public class Cone extends PrimitiveShape {
 				// the openingAngle.
 				// If it is a cylinder, check if all the point normals are perpendicular to the
 				// axis
-
 				for (int j = 0; j < vert.length; j++) {
 					if (j == i || j == idx2 || j == idx3)
 						continue;
@@ -376,6 +379,7 @@ public class Cone extends PrimitiveShape {
 							* Math.pow(weights.get(vert[j]), 2);
 
 				}
+
 				float errorWeight = (float) (goodness * Math.pow(weights.get(selection[0])
 						* weights.get(selection[1]) * weights.get(selection[2]), 2));
 				Vector3f tmp = new Vector3f(axis);
@@ -391,6 +395,7 @@ public class Cone extends PrimitiveShape {
 			return false;
 		meanAxis.normalize();
 		direction.set(meanAxis);
+		System.out.println("Axis: " + meanAxis);
 
 		double heightBottom = 0;
 		double heightTop = 0;

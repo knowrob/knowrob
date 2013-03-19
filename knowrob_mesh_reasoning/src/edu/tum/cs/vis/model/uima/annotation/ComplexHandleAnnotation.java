@@ -236,6 +236,10 @@ public class ComplexHandleAnnotation extends DrawableAnnotation implements Handl
 		return getDirectionUnscaled().length() * 2;
 	}
 
+	public Model getModel() {
+		return model;
+	}
+
 	/**
 	 * Get pose matrix for cone.
 	 * 

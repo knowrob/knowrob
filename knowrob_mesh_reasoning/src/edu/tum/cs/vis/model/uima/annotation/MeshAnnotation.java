@@ -105,6 +105,10 @@ public abstract class MeshAnnotation<S extends MeshAnnotation> extends DrawableA
 		return mesh;
 	}
 
+	public Model getModel() {
+		return model;
+	}
+
 	/**
 	 * Get all annotations of same type as this which are direct neighbors of this annotation by
 	 * getting all annotations where direct neighbor triangles are a member of.

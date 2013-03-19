@@ -21,10 +21,6 @@ import java.util.concurrent.Future;
  * 
  */
 public class ThreadPool {
-	/**
-	 * Main pool
-	 */
-	public static ExecutorService	pool;
 
 	/**
 	 * Executes the given callable objects in a thread pool and returns when all threads have
@@ -33,10 +29,14 @@ public class ThreadPool {
 	 * @param threads
 	 *            list of callable objects
 	 */
-	public static void executeInPool(List<Callable<Void>> threads) {
 
-		if (pool == null)
-			init();
+	public static void executeInPool(List<Callable<Void>> threads) {
+		executeInPool(threads, -1);
+	}
+	public static void executeInPool(List<Callable<Void>> threads, int numParallel) {
+		ExecutorService	pool;
+		int threadNum = numParallel <= 0 ? Runtime.getRuntime().availableProcessors() * 4 : numParallel;
+		pool = Executors.newFixedThreadPool(threadNum);
 
 		try {
 			List<Future<Void>> futures = pool.invokeAll(threads);
@@ -53,13 +53,5 @@ public class ThreadPool {
 			e.printStackTrace();
 		}
 		threads.clear();
-	}
-
-	/**
-	 * Initializes ExecutorService to use maximum ProcessorCount*25 threads at same time
-	 */
-	public static void init() {
-		int threadNum = Runtime.getRuntime().availableProcessors() * 25;
-		pool = Executors.newFixedThreadPool(threadNum);
 	}
 }

@@ -11,9 +11,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
+import edu.tum.cs.ias.knowrob.utils.ThreadPool;
 import edu.tum.cs.tools.ImageGenerator.ImageGeneratorSettings;
 import edu.tum.cs.util.PrintUtil;
 import edu.tum.cs.vis.model.MeshReasoning;
@@ -25,11 +31,18 @@ import edu.tum.cs.vis.model.parser.ModelParser;
  */
 public class ModelImageGenerator {
 
-	public static final String	MODEL_DIR			= "/home/stefan/work/models";
-	public static final String	IMAGE_DIR			= "/home/stefan/work/model_images";
-	public static final boolean	ALSO_EXISTING_ONES	= true;
+	public static final String			MODEL_DIR			= "/home/stefan/work/models";
+	public static final String			IMAGE_DIR			= "/home/stefan/work/model_images";
+	public static final boolean			ALSO_EXISTING_ONES	= false;
 
 	// static ImageGeneratorSettings settings;
+
+	private static List<Callable<Void>>	threads				= new LinkedList<Callable<Void>>();
+	static Logger						logger				= Logger.getLogger(ModelImageGenerator.class);
+
+	final static AtomicInteger			currentCount		= new AtomicInteger(0);
+
+	static int							totalCount			= 0;
 
 	@SuppressWarnings("rawtypes")
 	public static int exec(Class klass, String file) throws IOException, InterruptedException {
@@ -73,13 +86,17 @@ public class ModelImageGenerator {
 		long processStartTime = System.currentTimeMillis();
 		File dir = new File(MODEL_DIR);
 		if (!dir.exists()) {
-			System.err.println("Couldn't find directory: " + MODEL_DIR);
+			logger.error("Couldn't find directory: " + MODEL_DIR);
 			return;
 		}
+		logger.debug("Reading directory, please wait ... (" + MODEL_DIR + ")");
+
 		recursiveTraversal(dir);
+		totalCount = threads.size();
+		ThreadPool.executeInPool(threads, 2);
+		threads.clear();
 		long processDuration = System.currentTimeMillis() - processStartTime;
-		System.out.println("###### Ended. Took: " + PrintUtil.prettyMillis(processDuration)
-				+ " ######");
+		logger.debug("###### Ended. Took: " + PrintUtil.prettyMillis(processDuration) + " ######");
 	}
 
 	/**
@@ -99,10 +116,9 @@ public class ModelImageGenerator {
 		final String outPath = new File(IMAGE_DIR, fullWithoutExt.substring(MODEL_DIR.length()))
 				.getAbsolutePath();
 
-		File outParentFolder = new File(outPath).getParentFile();
+		final File outParentFolder = new File(outPath).getParentFile();
 		File allFiles[] = outParentFolder.listFiles();
-
-		String fileRegex = ".*" + new File(outPath).getName() + "-[a-zA-Z0-9]+\\.png$";
+		final String fileRegex = ".*" + new File(outPath).getName() + "-[a-zA-Z0-9]+\\.png$";
 
 		// check if there are already images of this model
 		if (!ALSO_EXISTING_ONES) {
@@ -114,29 +130,41 @@ public class ModelImageGenerator {
 			}
 		}
 
-		// Delete already existing ones
-		for (File fileCheck : allFiles) {
-			if (!fileCheck.isFile())
-				continue;
-			if (fileCheck.getAbsolutePath().matches(fileRegex)) {
-				fileCheck.delete();
-			}
-		}
+		threads.add(new Callable<Void>() {
 
-		// execProcess(MODEL_DIR, IMAGE_DIR, path);
+			@Override
+			public Void call() {
+				File filesCheck[] = outParentFolder.listFiles();
 
-		try {
-			if (exec(ModelImageGeneratorProcess.class, path) != 123) {
-				System.err.println("Stopping... Last process didn't exit properly");
-				System.exit(-1);
+				// Delete already existing ones
+				for (File fileCheck : filesCheck) {
+					if (!fileCheck.isFile())
+						continue;
+					if (fileCheck.getAbsolutePath().matches(fileRegex)) {
+						fileCheck.delete();
+					}
+				}
+				// execProcess(MODEL_DIR, IMAGE_DIR, path);
+
+				try {
+					if (exec(ModelImageGeneratorProcess.class, path) != 123) {
+						logger.error("Stopping... Last process didn't exit properly");
+						System.exit(-1);
+					}
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				int count = currentCount.incrementAndGet();
+				logger.debug("###### Process: " + count + "/" + totalCount + " "
+						+ String.format("%.2f%%", count / (float) totalCount * 100f) + " ######");
+				return null;
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		});
 
 	}
 
@@ -150,6 +178,7 @@ public class ModelImageGenerator {
 	 */
 	public static void recursiveTraversal(File fileObject) {
 		if (fileObject.isDirectory()) {
+			logger.debug("Next directory: " + fileObject.getAbsolutePath());
 			File allFiles[] = fileObject.listFiles();
 			for (File aFile : allFiles) {
 				recursiveTraversal(aFile);

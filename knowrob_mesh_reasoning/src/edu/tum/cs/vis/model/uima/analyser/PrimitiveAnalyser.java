@@ -82,7 +82,7 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 
 		Curvature c = curvatures.get(v);
 
-		if (c.getSaturation() < 0.30)
+		if (c.getSaturation() < 0.20)
 			return PrimitiveType.PLANE;
 
 		float hue = c.getHue();
@@ -619,6 +619,8 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 			cas.getAnnotations().addAll(toAdd);
 		}
 
+		Set<ConeAnnotation> toRefit = new HashSet<ConeAnnotation>();
+
 		// Combine neighboring annotations which were previously different types before changing
 		// sphere to cone
 		for (ConeAnnotation ca : toAdd) {
@@ -631,10 +633,13 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 				}
 
 				c1.getMesh().getTriangles().addAll(ca.getMesh().getTriangles());
-				c1.updateAnnotationArea();
-				c1.fit();
+				toRefit.add(c1);
 				break;
 			}
+		}
+		for (ConeAnnotation c : toRefit) {
+			c.updateAnnotationArea();
+			c.fit();
 		}
 
 		itemsElaborated.incrementAndGet();

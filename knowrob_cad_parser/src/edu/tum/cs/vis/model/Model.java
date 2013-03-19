@@ -410,8 +410,8 @@ public class Model {
 						}
 					} else if (!share && vn == vt) {
 						// split vertices
-						/*System.out.println("split");
-						Vertex clone = (Vertex) vt.clone();
+						// System.out.println("split");
+						/*Vertex clone = (Vertex) vt.clone();
 						synchronized (vertices) {
 							vertices.add(clone);
 						}
