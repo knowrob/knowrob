@@ -465,7 +465,7 @@ public class CurvatureCalculation {
 	 *            model needed to calculate hue saturation scale
 	 */
 	private static void setCurvatureHueSaturation(HashMap<Vertex, Curvature> curvatures, Model m) {
-		float cscale = 100.0f * typical_scale(curvatures, m);
+		float cscale = 120.0f * typical_scale(curvatures, m);
 		cscale = cscale * cscale;
 		int nv = m.getVertices().size();
 		for (int i = 0; i < nv; i++) {

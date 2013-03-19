@@ -79,11 +79,11 @@ public final class ConeAnnotation extends PrimitiveAnnotation<ConeAnnotation> im
 	 */
 	@Override
 	public boolean fitAnnotation() {
-		if (isConcave())
+		/*if (isConcave())
 			return true;
 
 		if (getArea() < 0.08)
-			return true;
+			return true;*/
 
 		LinkedHashMap<Vertex, Float> vertices = new LinkedHashMap<Vertex, Float>();
 		Vector3f centroid = getVerticesWithWeight(vertices);

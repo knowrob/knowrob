@@ -395,7 +395,6 @@ public class Cone extends PrimitiveShape {
 			return false;
 		meanAxis.normalize();
 		direction.set(meanAxis);
-		System.out.println("Axis: " + meanAxis);
 
 		double heightBottom = 0;
 		double heightTop = 0;
@@ -423,6 +422,9 @@ public class Cone extends PrimitiveShape {
 			Vector3f directionCorrectorBottom = new Vector3f();
 
 			checked.clear();
+
+			radiusSmall *= 0.90;
+			radiusLarge *= 0.90;
 
 			for (Vertex v : vert) {
 				double weight = weights.get(v);
@@ -504,15 +506,15 @@ public class Cone extends PrimitiveShape {
 				centroid.add(corrCentroid);
 
 				directionCorrectorTop.sub(directionCorrectorBottom);
+				directionCorrectorTop.scale(0.5f);// momentum/learning rate
 				direction.scale((float) (heightTop + heightBottom) / 2);
 				direction.add(directionCorrectorTop);
 				direction.normalize();
-				if (directionCorrectorTop.lengthSquared() == 0 && diff == 0) {
+				if (directionCorrectorTop.lengthSquared() < 1.0E-8 && diff < 1.0E-8)
 					break;
-				}
 			}
-		}
 
+		}
 		direction.scale((float) (heightTop + heightBottom) / 2);
 		calculateFitError(vertices, weights, triangles);
 		return true;
