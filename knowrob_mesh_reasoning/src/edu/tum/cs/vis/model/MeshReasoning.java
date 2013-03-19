@@ -260,7 +260,7 @@ public class MeshReasoning {
 		Thread.yield();
 		pa.process(cas, imageGeneratorSettings);
 		ca.process(cas, imageGeneratorSettings);
-		// cha.process(cas, imageGeneratorSettings);
+		cha.process(cas, imageGeneratorSettings);
 
 		if (imageGeneratorSettings != null && imageGeneratorSettings.isCloseAfterFinish()) {
 			logger.debug("Closing ...");

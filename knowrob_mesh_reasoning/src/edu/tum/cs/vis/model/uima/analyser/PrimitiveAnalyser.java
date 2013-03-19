@@ -220,7 +220,9 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 			annotation = new ConeAnnotation(cas.getCurvatures(), cas.getModel(),
 					type == PrimitiveType.CONE_CONCAVE);
 
-		annotation.getMesh().getTriangles().add(triangle);
+		synchronized (annotation.getMesh().getTriangles()) {
+			annotation.getMesh().getTriangles().add(triangle);
+		}
 		alreadyInAnnotation.add(triangle);
 
 		synchronized (cas.getAnnotations()) {
@@ -441,7 +443,9 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 
 					PrimitiveAnnotation a1 = neighborAnnotations.iterator().next();
 
-					a1.getMesh().getTriangles().addAll(pa.getMesh().getTriangles());
+					synchronized (a1.getMesh().getTriangles()) {
+						a1.getMesh().getTriangles().addAll(pa.getMesh().getTriangles());
+					}
 					a1.updateAnnotationArea();
 					continue;
 				}
@@ -506,7 +510,9 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 						it.remove();
 					}
 
-					a1.getMesh().getTriangles().addAll(pa.getMesh().getTriangles());
+					synchronized (a1.getMesh().getTriangles()) {
+						a1.getMesh().getTriangles().addAll(pa.getMesh().getTriangles());
+					}
 					a1.updateAnnotationArea();
 					break;
 				}
@@ -580,7 +586,9 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 			}
 			if (bestNeighbor != null) {
 				// merge
-				bestNeighbor.getMesh().getTriangles().addAll(pa.getMesh().getTriangles());
+				synchronized (bestNeighbor.getMesh().getTriangles()) {
+					bestNeighbor.getMesh().getTriangles().addAll(pa.getMesh().getTriangles());
+				}
 				bestNeighbor.updateAnnotationArea();
 			}
 		}
@@ -602,7 +610,9 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 				// create a temporary cone annotation and let it fit:
 				ConeAnnotation tmp = new ConeAnnotation(cas.getCurvatures(), cas.getModel(),
 						sa.isConcave());
-				tmp.getMesh().getTriangles().addAll(sa.getMesh().getTriangles());
+				synchronized (tmp.getMesh().getTriangles()) {
+					tmp.getMesh().getTriangles().addAll(sa.getMesh().getTriangles());
+				}
 				if (!tmp.fit())
 					continue;
 				if (tmp.getCone().getFitError() < sa.getSphere().getFitError()) {
@@ -631,8 +641,9 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 				synchronized (cas.getAnnotations()) {
 					cas.getAnnotations().remove(ca);
 				}
-
-				c1.getMesh().getTriangles().addAll(ca.getMesh().getTriangles());
+				synchronized (c1.getMesh().getTriangles()) {
+					c1.getMesh().getTriangles().addAll(ca.getMesh().getTriangles());
+				}
 				toRefit.add(c1);
 				break;
 			}

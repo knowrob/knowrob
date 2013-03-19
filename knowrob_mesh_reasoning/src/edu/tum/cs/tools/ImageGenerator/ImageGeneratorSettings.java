@@ -345,7 +345,6 @@ public class ImageGeneratorSettings {
 		for (Class<? extends MeshAnalyser> clazz : analyserSaveList.keySet()) {
 			if (clazz.isInstance(meshAnalyser)) {
 				String append = analyserSaveList.get(clazz);
-				System.out.println("Wait save: " + append);
 				waitSaved(append);
 			}
 		}

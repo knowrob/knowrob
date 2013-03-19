@@ -731,10 +731,14 @@ public class Model {
 			newTriangles.addAll(toAdd);
 		} while (toCheck.size() > 0);
 		vertices.addAll(newVertices);
-		g.getMesh().getTriangles().removeAll(toRemove);
+		synchronized (g.getMesh().getTriangles()) {
+			g.getMesh().getTriangles().removeAll(toRemove);
+		}
 		triangles.removeAll(toRemove);
 		newTriangles.removeAll(toRemove);
-		g.getMesh().getTriangles().addAll(newTriangles);
+		synchronized (g.getMesh().getTriangles()) {
+			g.getMesh().getTriangles().addAll(newTriangles);
+		}
 		triangles.addAll(newTriangles);
 
 		for (Group c : g.getChildren()) {

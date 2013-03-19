@@ -36,155 +36,7 @@ import edu.tum.cs.vis.model.view.MeshReasoningView;
  */
 public class Cone extends PrimitiveShape {
 
-	/**
-	 * indicates if cone is concave or convex
-	 */
-	private final boolean	concave;
-
-	/**
-	 * Centroid of cone
-	 */
-	private final Point3f	centroid	= new Point3f();
-
-	/**
-	 * Defines the generating axis of the cone. Points into the direction of radiusSmall. Length of
-	 * this vector is half of the height of the cone.
-	 */
-	private final Vector3f	direction	= new Vector3f();
-
-	/**
-	 * radius at bottom of cone
-	 */
-	private float			radiusLarge	= 0;
-
-	/**
-	 * radius at top of cone
-	 */
-	private float			radiusSmall	= 0;
-
-	private final Vector3f	topCorr		= new Vector3f();
-
-	private final Vector3f	botCorr		= new Vector3f();
-
-	public Cone(boolean concave) {
-		this.concave = concave;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.tum.cs.vis.model.uima.annotation.primitive.PrimitiveShape#calculateFitError(java.util.Set, java.util.Map, java.util.List)
-	 */
-	@Override
-	protected void calculateFitError(Set<Vertex> vertices, Map<Vertex, Float> weights,
-			List<Triangle> triangles) {
-		// Fitting quality is measured by the error between distance from Point to generating axis
-		// and the expected radius at this point
-		float vertError = 0;
-		float totWeight = 0;
-		Vector3f dirNorm = new Vector3f(direction);
-		dirNorm.normalize();
-		float halfHeight = direction.length();
-		// First check all vertices
-		for (Vertex v : vertices) {
-
-			vertError += getRadiusError(v, dirNorm, halfHeight) * weights.get(v);
-			totWeight += weights.get(v);
-		}
-		fitError = 0;
-		fitError += (vertError / totWeight);
-		// now also check for triangles
-		float triangleError = 0;
-		totWeight = 0;
-		for (Triangle t : triangles) {
-			triangleError += getRadiusError(t.getCentroid(), dirNorm, halfHeight) * t.getArea();
-			totWeight += t.getArea();
-		}
-		fitError += (triangleError / totWeight);
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.tum.cs.vis.model.uima.annotation.primitive.PrimitiveShape#draw(processing.core.PGraphics, java.awt.Color)
-	 */
-	@Override
-	public void draw(PGraphics g, Color drawColor) {
-		// DrawDebugLines(g);
-
-		g.noStroke();
-
-		g.fill(drawColor.getRed(), drawColor.getGreen(), drawColor.getBlue(), 150);
-
-		g.pushMatrix();
-
-		g.translate(centroid.x, centroid.y, centroid.z);
-
-		float dirLen = direction.length();
-
-		float rx = (float) Math.asin(-direction.y / dirLen);
-		float ry = (float) Math.atan2(direction.x / dirLen, direction.z / dirLen);
-		g.rotateY(ry);
-		g.rotateX(rx);
-
-		MeshReasoningView.drawCylinder(g, 30, radiusLarge, radiusSmall, dirLen * 2, false, false);
-		g.popMatrix();
-
-	}
-
-	@SuppressWarnings("unused")
-	private void DrawDebugLines(PGraphics g) {
-		{
-
-			/*for (Triangle t : mesh.getTriangles()) {
-				for (Vertex v : t.getPosition()) {
-					Curvature c = curvatures.get(v);
-					Vector3f norm = (Vector3f) v.getNormalVector().clone();
-					norm.scale(-1 / c.getCurvatureMax());
-
-					g.fill(255, 0, 0);
-					// g.stroke(255, 255, 255);
-					g.stroke(50, 50, 50);
-					g.strokeWeight(2);
-
-					g.line(v.x, v.y, v.z, v.x + norm.x, v.y + norm.y, v.z + norm.z);
-
-					// g.stroke(255, 0, 0);
-					// g.line(v.x, v.y, v.z, v.x + c.getPrincipleDirectionMax().x,
-					// v.y + c.getPrincipleDirectionMax().y, v.z + c.getPrincipleDirectionMax().z);
-				}
-			}*/
-
-			g.stroke(255, 255, 0);
-			g.strokeWeight(20);
-			g.point(centroid.x, centroid.y, centroid.z);
-
-			g.stroke(0, 255, 255);
-			g.strokeWeight(5);
-
-			g.line(centroid.x, centroid.y, centroid.z, centroid.x + direction.x, centroid.y
-					+ direction.y, centroid.z + direction.z);
-
-			g.stroke(0, 255, 0);
-			g.strokeWeight(5);
-
-			g.line(centroid.x + direction.x, centroid.y + direction.y, centroid.z + direction.z,
-					centroid.x + direction.x + topCorr.x, centroid.y + direction.y + topCorr.y,
-					centroid.z + direction.z + topCorr.z);
-			g.line(centroid.x - direction.x, centroid.y - direction.y, centroid.z - direction.z,
-					centroid.x - direction.x + botCorr.x, centroid.y - direction.y + botCorr.y,
-					centroid.z - direction.z + botCorr.z);
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.tum.cs.vis.model.uima.annotation.primitive.PrimitiveShape#fit(javax.vecmath.Vector3f, java.util.Map, java.util.List)
-	 */
-	@Override
-	public boolean fit(Vector3f centroid1, Set<Vertex> vertices, Map<Vertex, Float> weights,
-			List<Triangle> triangles) {
-		// we need at least 3 points
-		if (vertices.size() <= 3)
-			return false;
-
-		centroid.set(centroid1);
-		Vertex vert[] = vertices.toArray(new Vertex[0]);
+	private static Vector3f estimageDirection(Vertex vert[], Map<Vertex, Float> weights) {
 
 		Vector3f meanAxis = new Vector3f();
 
@@ -354,6 +206,9 @@ public class Cone extends PrimitiveShape {
 					float dot;
 					float len;
 					if (isCylinder) {
+						if (Float.isNaN(vert[j].getNormalVector().lengthSquared()))
+							// somehow there are sometimes NAN normal vectors
+							continue;
 						dot = vert[j].getNormalVector().dot(axis);
 						len = 1;
 					} else {
@@ -392,10 +247,13 @@ public class Cone extends PrimitiveShape {
 			meanAxis.scale(-1f / totalError);
 		}
 		if (meanAxis.lengthSquared() == 0)
-			return false;
+			return null;
 		meanAxis.normalize();
-		direction.set(meanAxis);
+		return meanAxis;
+	}
 
+	private static void estimateRadius(Cone c, Vertex vert[], Map<Vertex, Float> weights,
+			boolean smallRadius) {
 		double heightBottom = 0;
 		double heightTop = 0;
 		int prevTopCount = 0;
@@ -423,8 +281,10 @@ public class Cone extends PrimitiveShape {
 
 			checked.clear();
 
-			radiusSmall *= 0.90;
-			radiusLarge *= 0.90;
+			if (smallRadius) {
+				c.radiusSmall *= 0.60;
+				c.radiusLarge *= 0.60;
+			}
 
 			for (Vertex v : vert) {
 				double weight = weights.get(v);
@@ -435,13 +295,13 @@ public class Cone extends PrimitiveShape {
 
 				// Project v onto direction vector
 				Vector3f tmp = new Vector3f(v);
-				tmp.sub(centroid);
-				double dot = tmp.dot(direction); // distance from center to v on direction vector
+				tmp.sub(c.centroid);
+				double dot = tmp.dot(c.direction); // distance from center to v on direction vector
 
 				// Calculate point on direction vector where v is perpendicular to direction vector
-				tmp = new Vector3f(direction);
+				tmp = new Vector3f(c.direction);
 				tmp.scale((float) dot);
-				tmp.add(centroid);
+				tmp.add(c.centroid);
 
 				// Sub v to get perpendicular distance between point on direction and v = Radius
 				tmp.sub(v);
@@ -454,7 +314,7 @@ public class Cone extends PrimitiveShape {
 					if (run > 0) {
 						Vector3f corr = new Vector3f(tmp);
 						corr.normalize();
-						corr.scale((radiusLarge - rad) * (float) weight);
+						corr.scale((c.radiusLarge - rad) * (float) weight);
 						directionCorrectorBottom.add(corr);
 					}
 				} else {
@@ -469,7 +329,7 @@ public class Cone extends PrimitiveShape {
 						if (prevTopCount == 1)
 							corr.scale((-rad) * (float) weight);
 						else
-							corr.scale((radiusSmall - rad) * (float) weight);
+							corr.scale((c.radiusSmall - rad) * (float) weight);
 						directionCorrectorTop.add(corr);
 					}
 				}
@@ -479,44 +339,218 @@ public class Cone extends PrimitiveShape {
 				heightBottom = 0;
 			} else {
 				heightBottom /= heightBottomWeight;
-				radiusLarge = (float) (radiusBottom / heightBottomWeight);
+				c.radiusLarge = (float) (radiusBottom / heightBottomWeight);
 				directionCorrectorBottom.scale(1 / (float) heightBottomWeight);
 			}
 			if (heightTopWeight == 0) {
 				heightTop = 0;
 			} else {
 				heightTop /= heightTopWeight;
-				radiusSmall = (float) (radiusTop / heightTopWeight);
+				c.radiusSmall = (float) (radiusTop / heightTopWeight);
 				directionCorrectorTop.scale(1 / (float) heightTopWeight);
 			}
 
 			// Move centroid along direction vector to set it to the center of bottom and top
 			float diff = (float) (heightBottom - heightTop) / 2;
-			Vector3f tmp = new Vector3f(direction);
+			Vector3f tmp = new Vector3f(c.direction);
 			tmp.scale(diff);
-			centroid.sub(tmp);
+			c.centroid.sub(tmp);
 
-			botCorr.set(directionCorrectorBottom);
-			topCorr.set(directionCorrectorTop);
+			c.botCorr.set(directionCorrectorBottom);
+			c.topCorr.set(directionCorrectorTop);
 
 			if (run > 0) {
 				Vector3f corrCentroid = new Vector3f(directionCorrectorBottom);
 				corrCentroid.add(directionCorrectorTop);
 				corrCentroid.scale(0.5f);
-				centroid.add(corrCentroid);
+				c.centroid.add(corrCentroid);
 
 				directionCorrectorTop.sub(directionCorrectorBottom);
 				directionCorrectorTop.scale(0.5f);// momentum/learning rate
-				direction.scale((float) (heightTop + heightBottom) / 2);
-				direction.add(directionCorrectorTop);
-				direction.normalize();
+				c.direction.scale((float) (heightTop + heightBottom) / 2);
+				c.direction.add(directionCorrectorTop);
+				c.direction.normalize();
 				if (directionCorrectorTop.lengthSquared() < 1.0E-8 && diff < 1.0E-8)
 					break;
 			}
 
 		}
-		direction.scale((float) (heightTop + heightBottom) / 2);
-		calculateFitError(vertices, weights, triangles);
+		c.direction.scale((float) (heightTop + heightBottom) / 2);
+	}
+
+	/**
+	 * indicates if cone is concave or convex
+	 */
+	private final boolean	concave;
+
+	/**
+	 * Centroid of cone
+	 */
+	private final Point3f	centroid	= new Point3f();
+
+	/**
+	 * Defines the generating axis of the cone. Points into the direction of radiusSmall. Length of
+	 * this vector is half of the height of the cone.
+	 */
+	private final Vector3f	direction	= new Vector3f();
+
+	/**
+	 * radius at bottom of cone
+	 */
+	private float			radiusLarge	= 0;
+
+	/**
+	 * radius at top of cone
+	 */
+	private float			radiusSmall	= 0;
+
+	private final Vector3f	topCorr		= new Vector3f();
+
+	private final Vector3f	botCorr		= new Vector3f();
+
+	public Cone(boolean concave) {
+		this.concave = concave;
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.tum.cs.vis.model.uima.annotation.primitive.PrimitiveShape#calculateFitError(java.util.Set, java.util.Map, java.util.List)
+	 */
+	@Override
+	protected void calculateFitError(Set<Vertex> vertices, Map<Vertex, Float> weights,
+			List<Triangle> triangles) {
+		// Fitting quality is measured by the error between distance from Point to generating axis
+		// and the expected radius at this point
+		float vertError = 0;
+		float totWeight = 0;
+		Vector3f dirNorm = new Vector3f(direction);
+		dirNorm.normalize();
+		float halfHeight = direction.length();
+		// First check all vertices
+		for (Vertex v : vertices) {
+
+			vertError += getRadiusError(v, dirNorm, halfHeight) * weights.get(v);
+			totWeight += weights.get(v);
+		}
+		fitError = 0;
+		fitError += (vertError / totWeight);
+		// now also check for triangles
+		float triangleError = 0;
+		totWeight = 0;
+		for (Triangle t : triangles) {
+			triangleError += getRadiusError(t.getCentroid(), dirNorm, halfHeight) * t.getArea();
+			totWeight += t.getArea();
+		}
+		fitError += (triangleError / totWeight);
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.tum.cs.vis.model.uima.annotation.primitive.PrimitiveShape#draw(processing.core.PGraphics, java.awt.Color)
+	 */
+	@Override
+	public void draw(PGraphics g, Color drawColor) {
+		// DrawDebugLines(g);
+
+		g.noStroke();
+
+		g.fill(drawColor.getRed(), drawColor.getGreen(), drawColor.getBlue(), 150);
+
+		g.pushMatrix();
+
+		g.translate(centroid.x, centroid.y, centroid.z);
+
+		float dirLen = direction.length();
+
+		float rx = (float) Math.asin(-direction.y / dirLen);
+		float ry = (float) Math.atan2(direction.x / dirLen, direction.z / dirLen);
+		g.rotateY(ry);
+		g.rotateX(rx);
+
+		MeshReasoningView.drawCylinder(g, 30, radiusLarge, radiusSmall, dirLen * 2, false, false);
+		g.popMatrix();
+
+	}
+
+	@SuppressWarnings("unused")
+	private void DrawDebugLines(PGraphics g) {
+		{
+
+			/*for (Triangle t : mesh.getTriangles()) {
+				for (Vertex v : t.getPosition()) {
+					Curvature c = curvatures.get(v);
+					Vector3f norm = (Vector3f) v.getNormalVector().clone();
+					norm.scale(-1 / c.getCurvatureMax());
+
+					g.fill(255, 0, 0);
+					// g.stroke(255, 255, 255);
+					g.stroke(50, 50, 50);
+					g.strokeWeight(2);
+
+					g.line(v.x, v.y, v.z, v.x + norm.x, v.y + norm.y, v.z + norm.z);
+
+					// g.stroke(255, 0, 0);
+					// g.line(v.x, v.y, v.z, v.x + c.getPrincipleDirectionMax().x,
+					// v.y + c.getPrincipleDirectionMax().y, v.z + c.getPrincipleDirectionMax().z);
+				}
+			}*/
+
+			g.stroke(255, 255, 0);
+			g.strokeWeight(20);
+			g.point(centroid.x, centroid.y, centroid.z);
+
+			g.stroke(0, 255, 255);
+			g.strokeWeight(5);
+
+			g.line(centroid.x, centroid.y, centroid.z, centroid.x + direction.x, centroid.y
+					+ direction.y, centroid.z + direction.z);
+
+			g.stroke(0, 255, 0);
+			g.strokeWeight(5);
+
+			g.line(centroid.x + direction.x, centroid.y + direction.y, centroid.z + direction.z,
+					centroid.x + direction.x + topCorr.x, centroid.y + direction.y + topCorr.y,
+					centroid.z + direction.z + topCorr.z);
+			g.line(centroid.x - direction.x, centroid.y - direction.y, centroid.z - direction.z,
+					centroid.x - direction.x + botCorr.x, centroid.y - direction.y + botCorr.y,
+					centroid.z - direction.z + botCorr.z);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.tum.cs.vis.model.uima.annotation.primitive.PrimitiveShape#fit(javax.vecmath.Vector3f, java.util.Map, java.util.List)
+	 */
+	@Override
+	public boolean fit(Vector3f centroid1, Set<Vertex> vertices, Map<Vertex, Float> weights,
+			List<Triangle> triangles) {
+		// we need at least 3 points
+		if (vertices.size() <= 3)
+			return false;
+
+		centroid.set(centroid1);
+		Vertex vert[] = vertices.toArray(new Vertex[0]);
+
+		Vector3f axis = estimageDirection(vert, weights);
+		if (axis == null)
+			return false;
+		direction.set(axis);
+
+		Cone c1 = new Cone(concave);
+
+		c1.direction.set(axis);
+		estimateRadius(c1, vert, weights, false);
+		c1.calculateFitError(vertices, weights, triangles);
+		float error1 = c1.fitError;
+
+		Cone c2 = new Cone(concave);
+
+		c2.direction.set(axis);
+		estimateRadius(c2, vert, weights, true);
+		c2.calculateFitError(vertices, weights, triangles);
+		float error2 = c2.fitError;
+
+		if (error1 < error2)
+			set(c1);
+		else
+			set(c2);
 		return true;
 
 	}
@@ -638,6 +672,16 @@ public class Cone extends PrimitiveShape {
 	 */
 	public boolean isConcave() {
 		return concave;
+	}
+
+	private void set(Cone c) {
+		botCorr.set(c.botCorr);
+		topCorr.set(c.topCorr);
+		centroid.set(c.centroid);
+		direction.set(c.direction);
+		radiusLarge = c.radiusLarge;
+		radiusSmall = c.radiusSmall;
+		fitError = c.fitError;
 	}
 
 }

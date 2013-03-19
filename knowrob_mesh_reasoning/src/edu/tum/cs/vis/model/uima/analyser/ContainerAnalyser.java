@@ -128,8 +128,10 @@ public class ContainerAnalyser extends MeshAnalyser {
 		if (hasBottomCap || hasTopCap) {
 			// it is container, so create annotation
 			ContainerAnnotation ca = new ContainerAnnotation(cas.getModel());
-			ca.getMesh().getTriangles().addAll(an.getMesh().getTriangles());
-			ca.getMesh().getTriangles().addAll(capAnnotation.getMesh().getTriangles());
+			synchronized (ca.getMesh().getTriangles()) {
+				ca.getMesh().getTriangles().addAll(an.getMesh().getTriangles());
+				ca.getMesh().getTriangles().addAll(capAnnotation.getMesh().getTriangles());
+			}
 
 			ca.setDirection((Vector3f) an.getDirection().clone());
 
