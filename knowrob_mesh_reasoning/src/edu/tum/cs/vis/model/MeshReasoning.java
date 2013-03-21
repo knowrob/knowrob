@@ -21,6 +21,7 @@ import javax.swing.JFrame;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
+import sun.awt.SunToolkit;
 import edu.tum.cs.tools.ImageGenerator.ImageGeneratorAction;
 import edu.tum.cs.tools.ImageGenerator.ImageGeneratorSettings;
 import edu.tum.cs.uima.Annotation;
@@ -59,7 +60,7 @@ public class MeshReasoning {
 	/**
 	 * Log4j logger
 	 */
-	private static Logger	logger	= Logger.getRootLogger();
+	static Logger	logger	= Logger.getRootLogger();
 
 	/**
 	 * Main initialization method for creating mesh reasoning object. Constructs mesh reasoning
@@ -116,7 +117,8 @@ public class MeshReasoning {
 	public MeshReasoning(boolean withView, ImageGeneratorSettings imageGenerator) {
 		imageGeneratorSettings = imageGenerator;
 		if (imageGeneratorSettings != null)
-			initImageGenerator();
+			// initImageGenerator();
+			initImageGeneratorSpoon();
 		cas = new MeshCas();
 
 		if (withView) {
@@ -220,7 +222,14 @@ public class MeshReasoning {
 			imageGeneratorSettings.waitSetup();
 
 			if (imageGeneratorSettings.isInitViewFromFile()) {
-				imageGeneratorSettings.initView(mrv.getCam());
+				if (imageGeneratorSettings.initView(mrv.getCam())) {
+					SunToolkit.flushPendingEvents();
+					try {
+						Thread.sleep(2500); // wait until model correctly shown
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
 			}
 
 			if (imageGeneratorSettings.isSaveView() && !imageGeneratorSettings.isViewInitialized()) {
@@ -369,7 +378,15 @@ public class MeshReasoning {
 		HandleAnnotation[] handleList = allAnnotations.toArray(new HandleAnnotation[0]);
 		Arrays.sort(handleList, new HandleComparator(cas.getModel(), minRadius, maxRadius,
 				minLength, maxLength));
-		return handleList;
+		ArrayList<HandleAnnotation> rets = new ArrayList<HandleAnnotation>();
+		for (HandleAnnotation h : handleList) {
+			if (HandleComparator.getHandleWeight(h, cas.getModel(),
+					HandleComparator.DEFAULT_RADIUS_MIN, HandleComparator.DEFAULT_RADIUS_MAX,
+					HandleComparator.DEFAULT_LENGTH_MIN, HandleComparator.DEFAULT_LENGTH_MAX) < HandleComparator.MIN_WEIGHT_FOR_HANDLE)
+				break;
+			rets.add(h);
+		}
+		return rets.toArray(new HandleAnnotation[0]);
 	}
 
 	/**
@@ -510,7 +527,11 @@ public class MeshReasoning {
 					@Override
 					public void trigger(ImageGeneratorSettings localSettings) {
 						mr.clearHightlight();
-						HandleAnnotation[] handles = mr.getHandle(0.008, 0.10, 0.02, 0.15);
+						HandleAnnotation[] handles = mr.getHandle(
+								HandleComparator.DEFAULT_RADIUS_MIN,
+								HandleComparator.DEFAULT_RADIUS_MAX,
+								HandleComparator.DEFAULT_LENGTH_MIN,
+								HandleComparator.DEFAULT_LENGTH_MAX);
 						int max = 3;
 						for (int i = 0; i < max && i < handles.length; i++) {
 							mr.highlightAnnotation(handles[i]);
@@ -520,6 +541,75 @@ public class MeshReasoning {
 							localSettings.waitSaved("handle" + (i + 1));
 							mr.clearHightlight();
 						}
+					}
+				});
+
+		/**
+		 * Analyser actions end
+		 */
+	}
+
+	private void initImageGeneratorSpoon() {
+		imageGeneratorSettings.setDrawAxis(false);
+		imageGeneratorSettings.setWhiteBackground(true);
+		// If there is a view settings file, load those settings
+		imageGeneratorSettings.setInitViewFromFile(true);
+		// If no view settings exist yet, allow to align model and then continue by pressing Ctrl+S
+		imageGeneratorSettings.setSaveView(true);
+		imageGeneratorSettings.setSavePlainModel(true);
+		imageGeneratorSettings.setSaveCurvatureColor(true);
+		imageGeneratorSettings.setCloseAfterFinish(true);
+		// even draw fitted cone/sphere/plane if more than one annotation selected
+		imageGeneratorSettings.setAlwaysDrawSelectedPrimitives(true);
+
+		/**
+		 * Analyser actions begin
+		 */
+		final MeshReasoning mr = this;
+
+		imageGeneratorSettings.clearAnalyserActions();
+		imageGeneratorSettings.addAnalyserAction(PrimitiveAnalyser.class,
+				new ImageGeneratorAction() {
+
+					@Override
+					public void trigger(ImageGeneratorSettings localSettings) {
+						mr.clearHightlight();
+						@SuppressWarnings("rawtypes")
+						PrimitiveAnnotation[] cones = mr.findAnnotationsCone().toArray(
+								new PrimitiveAnnotation[0]);
+						Arrays.sort(cones, new PrimitiveAnnotationAreaComparator());
+
+						@SuppressWarnings("rawtypes")
+						PrimitiveAnnotation[] spheres = mr.findAnnotationsSphere().toArray(
+								new PrimitiveAnnotation[0]);
+						Arrays.sort(spheres, new PrimitiveAnnotationAreaComparator());
+
+						if (cones.length == 0) {
+							logger.warn("Skipping image because no cone found");
+							return;
+						}
+						if (spheres.length == 0) {
+							logger.warn("Skipping image because no sphere found");
+							return;
+						}
+						for (int i = 0; i < cones.length; i++) {
+							if (!((ConeAnnotation) cones[i]).isConcave()) {
+								mr.highlightAnnotation(cones[i]);
+								break;
+							}
+						}
+						for (int i = 0; i < spheres.length; i++) {
+							if (((SphereAnnotation) spheres[i]).isConcave()) {
+								mr.highlightAnnotation(spheres[i]);
+								break;
+							}
+						}
+						try {
+							Thread.sleep(200);
+						} catch (InterruptedException e) {} // wait til selected
+						localSettings.waitSaved("ConeSphere");
+						mr.clearHightlight();
+
 					}
 				});
 

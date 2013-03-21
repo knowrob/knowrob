@@ -102,12 +102,14 @@ public class HandleComparator implements Comparator<HandleAnnotation> {
 	private final double		minLength;
 	private final double		maxLength;
 	private final Model			model;
-	private final static double	WEIGHT_RADIUS		= 2;
+	private final static double	WEIGHT_RADIUS			= 2.5;
 
-	private final static double	WEIGHT_LENGTH		= 1;
+	private final static double	WEIGHT_LENGTH			= 1;
 
-	private final static double	WEIGHT_COVERAGE		= 0.5;
-	private final static double	WEIGHT_FIT_ERROR	= 1;
+	private final static double	WEIGHT_COVERAGE			= 0.5;
+	private final static double	WEIGHT_FIT_ERROR		= 0.75;
+
+	public final static double	MIN_WEIGHT_FOR_HANDLE	= (WEIGHT_RADIUS * WEIGHT_LENGTH * WEIGHT_FIT_ERROR) * 0.25;
 
 	public HandleComparator(Model model, double minRadius, double maxRadius, double minLength,
 			double maxLength) {

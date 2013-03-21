@@ -168,8 +168,8 @@ public class ImageGeneratorSettings {
 	/**
 	 * @param cam
 	 */
-	public void initView(PeasyCam cam) {
-		viewInitialized = ViewSettings.loadSettings(replaceModelExtension("xml"), cam);
+	public boolean initView(PeasyCam cam) {
+		return (viewInitialized = ViewSettings.loadSettings(replaceModelExtension("xml"), cam));
 	}
 
 	/**

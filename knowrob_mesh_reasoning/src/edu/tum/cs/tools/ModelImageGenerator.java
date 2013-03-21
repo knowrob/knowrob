@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
@@ -31,9 +32,12 @@ import edu.tum.cs.vis.model.parser.ModelParser;
  */
 public class ModelImageGenerator {
 
-	public static final String			MODEL_DIR			= "/home/stefan/work/models";
-	public static final String			IMAGE_DIR			= "/home/stefan/work/model_images";
-	public static final boolean			ALSO_EXISTING_ONES	= false;
+	// public static final String MODEL_DIR = "/home/stefan/work/models";
+	// public static final String IMAGE_DIR = "/home/stefan/work/model_images";
+	public static final String			MODEL_DIR			= "/home/stefan/Dropbox/work/spoon";
+	public static final String			IMAGE_DIR			= "/home/stefan/Dropbox/work/spoon_images";
+
+	public static final boolean			ALSO_EXISTING_ONES	= true;
 
 	// static ImageGeneratorSettings settings;
 
@@ -97,6 +101,7 @@ public class ModelImageGenerator {
 		threads.clear();
 		long processDuration = System.currentTimeMillis() - processStartTime;
 		logger.debug("###### Ended. Took: " + PrintUtil.prettyMillis(processDuration) + " ######");
+		System.exit(0);
 	}
 
 	/**
@@ -118,10 +123,13 @@ public class ModelImageGenerator {
 
 		final File outParentFolder = new File(outPath).getParentFile();
 		File allFiles[] = outParentFolder.listFiles();
-		final String fileRegex = ".*" + new File(outPath).getName() + "-[a-zA-Z0-9]+\\.png$";
+		final String fileRegex = ".*" + Pattern.quote(new File(outPath).getName())
+				+ "-[a-zA-Z0-9]+\\.png$";
+
+		File xmlFile = new File(outPath + ".xml");
 
 		// check if there are already images of this model
-		if (!ALSO_EXISTING_ONES) {
+		if (!ALSO_EXISTING_ONES && xmlFile.exists()) {
 			for (File fileCheck : allFiles) {
 				if (!fileCheck.isFile())
 					continue;
@@ -147,10 +155,11 @@ public class ModelImageGenerator {
 				// execProcess(MODEL_DIR, IMAGE_DIR, path);
 
 				try {
-					if (exec(ModelImageGeneratorProcess.class, path) != 123) {
+					exec(ModelImageGeneratorProcess.class, path);
+					/*
 						logger.error("Stopping... Last process didn't exit properly");
 						System.exit(-1);
-					}
+					}*/
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

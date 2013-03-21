@@ -8,6 +8,7 @@
 package edu.tum.cs.vis.model.uima.analyser;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -67,6 +68,150 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 
 		Curvature c = curvatures.get(v);
 		c.setPrimitiveType(getPrimitiveType(curvatures, v));
+	}
+
+	@SuppressWarnings("rawtypes")
+	private static void combineSameNeighboringAnnotations(MeshCas cas,
+			List<Annotation> annotations, boolean refit) {
+		// Combine neighboring annotations which were previously divided by smaller annotations and
+		// are now neighbors
+		Set<Annotation> toRefit = new HashSet<Annotation>();
+		for (Iterator<Annotation> it = annotations.iterator(); it.hasNext();) {
+			Annotation a = it.next();
+			if (a instanceof PrimitiveAnnotation) {
+				PrimitiveAnnotation pa = (PrimitiveAnnotation) a;
+
+				@SuppressWarnings("unchecked")
+				Set<PrimitiveAnnotation> neighborAnnotations = pa.getNeighborAnnotations(cas,
+						pa.getClass());
+				for (PrimitiveAnnotation a1 : neighborAnnotations) {
+					if (pa instanceof ConeAnnotation
+							&& ((ConeAnnotation) pa).isConcave() != ((ConeAnnotation) a1)
+									.isConcave()) {
+						continue;
+					} else if (pa instanceof SphereAnnotation
+							&& ((SphereAnnotation) pa).isConcave() != ((SphereAnnotation) a1)
+									.isConcave()) {
+						continue;
+					} else if (pa instanceof PlaneAnnotation
+							&& Math.acos(((PlaneAnnotation) pa).getPlaneNormal().dot(
+									((PlaneAnnotation) a1).getPlaneNormal())) > 45.0 * Math.PI / 180.0) {
+						// Two planes, but angle bigger than 45 degree
+						continue;
+					}
+					synchronized (annotations) {
+						it.remove();
+					}
+
+					synchronized (a1.getMesh().getTriangles()) {
+						a1.getMesh().getTriangles().addAll(pa.getMesh().getTriangles());
+					}
+					a1.updateAnnotationArea();
+					if (refit)
+						toRefit.add(a1);
+					break;
+				}
+			}
+		}
+		if (refit) {
+			fitAnnotations(toRefit);
+		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	private static void combineSmallAnnotations(MeshCas cas) {
+		// Combine very small annotations with surrounding larger ones and merge/remove invalid ones
+		for (Iterator<Annotation> it = cas.getAnnotations().iterator(); it.hasNext();) {
+			Annotation a = it.next();
+			if (a instanceof PrimitiveAnnotation) {
+				PrimitiveAnnotation pa = (PrimitiveAnnotation) a;
+
+				// zero area, remove
+				if (pa.getArea() == 0) {
+					synchronized (cas.getAnnotations()) {
+						it.remove();
+					}
+					continue;
+				}
+
+				@SuppressWarnings("unchecked")
+				Set<PrimitiveAnnotation> neighborAnnotations = pa.getNeighborAnnotations(cas,
+						PrimitiveAnnotation.class);
+
+				// check for cone annotation which has less than 2 triangles
+				if (neighborAnnotations.size() > 0 && a instanceof ConeAnnotation
+						&& ((PrimitiveAnnotation) a).getMesh().getTriangles().size() < 2) {
+					synchronized (cas.getAnnotations()) {
+						it.remove();
+					}
+
+					PrimitiveAnnotation a1 = neighborAnnotations.iterator().next();
+
+					synchronized (a1.getMesh().getTriangles()) {
+						a1.getMesh().getTriangles().addAll(pa.getMesh().getTriangles());
+					}
+					a1.updateAnnotationArea();
+					continue;
+				}
+
+				// merge small ones
+				/*
+				for (PrimitiveAnnotation a1 : neighborAnnotations) {
+
+					if (!isSamePlane(a1, pa))
+						continue;
+
+					if (!(pa instanceof PlaneAnnotation)
+							&& pa.getPrimitiveArea() / pa.getArea() > 0.8) {
+						continue;
+					}
+
+					float percentage = pa.getArea() / a1.getArea();
+
+					// If annotation is smaller than 5% of the area of the surrounding annotation,
+					// combine both into one
+					if (percentage < 0.05f) {
+						synchronized (cas.getAnnotations()) {
+							it.remove();
+						}
+
+						a1.getMesh().getTriangles().addAll(pa.getMesh().getTriangles());
+						a1.updateAnnotationArea();
+						break;
+					}
+				}*/
+			}
+		}
+	}
+
+	/**
+	 * @param annotations
+	 * @return
+	 */
+	@SuppressWarnings("rawtypes")
+	private static List<? extends PrimitiveAnnotation> fitAnnotations(
+			final Collection<Annotation> annotations) {
+
+		List<Callable<Void>> threads = new LinkedList<Callable<Void>>();
+		final List<PrimitiveAnnotation> failedFittings = new LinkedList<PrimitiveAnnotation>();
+		for (final Annotation a : annotations) {
+			if (a instanceof PrimitiveAnnotation) {
+				threads.add(new Callable<Void>() {
+					@Override
+					public Void call() throws Exception {
+						if (!((PrimitiveAnnotation) a).fit()) {
+							synchronized (failedFittings) {
+								failedFittings.add((PrimitiveAnnotation) a);
+							}
+						}
+						return null;
+					}
+				});
+			}
+		}
+
+		ThreadPool.executeInPool(threads);
+		return failedFittings;
 	}
 
 	/**
@@ -148,6 +293,64 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 			return true;
 		return planeAngleWithinTolerance(((PlaneAnnotation) a1).getPlaneNormal(),
 				((PlaneAnnotation) a2).getPlaneNormal());
+	}
+
+	/**
+	 * @param failedFittings
+	 */
+	@SuppressWarnings("rawtypes")
+	private static void mergeWithNeighbors(MeshCas cas, List<PrimitiveAnnotation> failedFittings) {
+		List<Annotation> toRefit = new ArrayList<Annotation>(failedFittings.size());
+		for (PrimitiveAnnotation pa : failedFittings) {
+
+			@SuppressWarnings("unchecked")
+			Set<PrimitiveAnnotation> neighborAnnotations = pa.getNeighborAnnotations(cas,
+					PrimitiveAnnotation.class);
+			float maxArea = 0;
+			PrimitiveAnnotation bestNeighbor = null;
+			boolean bestIsSameInstance = false;
+			// find the biggest neighbor annotation or one of the same type
+			for (PrimitiveAnnotation a1 : neighborAnnotations) {
+
+				if (failedFittings.contains(a1))
+					continue;
+
+				boolean sameConvexity = pa.getClass() == a1.getClass();
+				if (sameConvexity && pa instanceof ConeAnnotation && a1 instanceof ConeAnnotation) {
+					sameConvexity = ((ConeAnnotation) pa).isConcave() == ((ConeAnnotation) a1)
+							.isConcave();
+				}
+				if (sameConvexity && pa instanceof SphereAnnotation
+						&& a1 instanceof SphereAnnotation) {
+					sameConvexity = ((SphereAnnotation) pa).isConcave() == ((SphereAnnotation) a1)
+							.isConcave();
+				}
+
+				if (sameConvexity) {
+					bestIsSameInstance = true;
+					if (a1.getArea() > maxArea) {
+						bestNeighbor = a1;
+						maxArea = a1.getArea();
+					}
+				} else if (bestIsSameInstance)
+					continue;
+
+				if (a1.getArea() > maxArea) {
+					bestNeighbor = a1;
+					maxArea = a1.getArea();
+				}
+			}
+			if (bestNeighbor != null) {
+				// merge
+				synchronized (bestNeighbor.getMesh().getTriangles()) {
+					bestNeighbor.getMesh().getTriangles().addAll(pa.getMesh().getTriangles());
+				}
+				bestNeighbor.updateAnnotationArea();
+				toRefit.add(bestNeighbor);
+			}
+		}
+		fitAnnotations(toRefit);
+
 	}
 
 	/**
@@ -416,193 +619,40 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 			itemsElaborated.incrementAndGet();
 		}
 
-		// Combine very small annotations with surrounding larger ones and merge/remove invalid ones
-		for (Iterator<Annotation> it = cas.getAnnotations().iterator(); it.hasNext();) {
-			Annotation a = it.next();
-			if (a instanceof PrimitiveAnnotation) {
-				PrimitiveAnnotation pa = (PrimitiveAnnotation) a;
+		combineSmallAnnotations(cas);
 
-				// zero area, remove
-				if (pa.getArea() == 0) {
-					synchronized (cas.getAnnotations()) {
-						it.remove();
-					}
-					continue;
-				}
-
-				@SuppressWarnings("unchecked")
-				Set<PrimitiveAnnotation> neighborAnnotations = pa.getNeighborAnnotations(cas,
-						PrimitiveAnnotation.class);
-
-				// check for cone annotation which has less than 2 triangles
-				if (neighborAnnotations.size() > 0 && a instanceof ConeAnnotation
-						&& ((PrimitiveAnnotation) a).getMesh().getTriangles().size() < 2) {
-					synchronized (cas.getAnnotations()) {
-						it.remove();
-					}
-
-					PrimitiveAnnotation a1 = neighborAnnotations.iterator().next();
-
-					synchronized (a1.getMesh().getTriangles()) {
-						a1.getMesh().getTriangles().addAll(pa.getMesh().getTriangles());
-					}
-					a1.updateAnnotationArea();
-					continue;
-				}
-
-				// merge small ones
-				/*
-				for (PrimitiveAnnotation a1 : neighborAnnotations) {
-
-					if (!isSamePlane(a1, pa))
-						continue;
-
-					if (!(pa instanceof PlaneAnnotation)
-							&& pa.getPrimitiveArea() / pa.getArea() > 0.8) {
-						continue;
-					}
-
-					float percentage = pa.getArea() / a1.getArea();
-
-					// If annotation is smaller than 5% of the area of the surrounding annotation,
-					// combine both into one
-					if (percentage < 0.05f) {
-						synchronized (cas.getAnnotations()) {
-							it.remove();
-						}
-
-						a1.getMesh().getTriangles().addAll(pa.getMesh().getTriangles());
-						a1.updateAnnotationArea();
-						break;
-					}
-				}*/
-			}
-		}
-
-		// Combine neighboring annotations which were previously divided by smaller annotations and
-		// are now neighbors
-		for (Iterator<Annotation> it = cas.getAnnotations().iterator(); it.hasNext();) {
-			Annotation a = it.next();
-			if (a instanceof PrimitiveAnnotation) {
-				PrimitiveAnnotation pa = (PrimitiveAnnotation) a;
-
-				@SuppressWarnings("unchecked")
-				Set<PrimitiveAnnotation> neighborAnnotations = pa.getNeighborAnnotations(cas,
-						PrimitiveAnnotation.class);
-				for (PrimitiveAnnotation a1 : neighborAnnotations) {
-					if (a1.getClass() != pa.getClass())
-						continue;
-					if (pa instanceof ConeAnnotation
-							&& ((ConeAnnotation) pa).isConcave() != ((ConeAnnotation) a1)
-									.isConcave()) {
-						continue;
-					} else if (pa instanceof SphereAnnotation
-							&& ((SphereAnnotation) pa).isConcave() != ((SphereAnnotation) a1)
-									.isConcave()) {
-						continue;
-					} else if (pa instanceof PlaneAnnotation
-							&& Math.acos(((PlaneAnnotation) pa).getPlaneNormal().dot(
-									((PlaneAnnotation) a1).getPlaneNormal())) > 45.0 * Math.PI / 180.0) {
-						// Two planes, but angle bigger than 45 degree
-						continue;
-					}
-					synchronized (cas.getAnnotations()) {
-						it.remove();
-					}
-
-					synchronized (a1.getMesh().getTriangles()) {
-						a1.getMesh().getTriangles().addAll(pa.getMesh().getTriangles());
-					}
-					a1.updateAnnotationArea();
-					break;
-				}
-			}
-		}
+		combineSameNeighboringAnnotations(cas, cas.getAnnotations(), false);
 
 		final List<PrimitiveAnnotation> failedFittings = new LinkedList<PrimitiveAnnotation>();
+		failedFittings.addAll(fitAnnotations(cas.getAnnotations()));
 
-		threads.add(new Callable<Void>() {
-
-			@Override
-			public Void call() throws Exception {
-
-				for (Iterator<Annotation> it = cas.getAnnotations().iterator(); it.hasNext();) {
-					Annotation a = it.next();
-					if (a instanceof PrimitiveAnnotation) {
-						if (!((PrimitiveAnnotation) a).fit()) {
-							synchronized (failedFittings) {
-								failedFittings.add((PrimitiveAnnotation) a);
-							}
-						}
-					}
-				}
-				return null;
-			}
-		});
-
-		ThreadPool.executeInPool(threads);
-
-		if (failedFittings.size() > 0)
+		if (failedFittings.size() > 0) {
 			logger.debug("Merging failed fittings into neighbors (" + failedFittings.size() + ")");
-
-		for (PrimitiveAnnotation pa : failedFittings) {
-
-			@SuppressWarnings("unchecked")
-			Set<PrimitiveAnnotation> neighborAnnotations = pa.getNeighborAnnotations(cas,
-					PrimitiveAnnotation.class);
-			float maxArea = 0;
-			PrimitiveAnnotation bestNeighbor = null;
-			boolean bestIsSameInstance = false;
-			// find the biggest neighbor annotation or one of the same type
-			for (PrimitiveAnnotation a1 : neighborAnnotations) {
-
-				if (failedFittings.contains(a1))
-					continue;
-
-				boolean sameConvexity = pa.getClass() == a1.getClass();
-				if (sameConvexity && pa instanceof ConeAnnotation && a1 instanceof ConeAnnotation) {
-					sameConvexity = ((ConeAnnotation) pa).isConcave() == ((ConeAnnotation) a1)
-							.isConcave();
-				}
-				if (sameConvexity && pa instanceof SphereAnnotation
-						&& a1 instanceof SphereAnnotation) {
-					sameConvexity = ((SphereAnnotation) pa).isConcave() == ((SphereAnnotation) a1)
-							.isConcave();
-				}
-
-				if (sameConvexity) {
-					bestIsSameInstance = true;
-					if (a1.getArea() > maxArea) {
-						bestNeighbor = a1;
-						maxArea = a1.getArea();
-					}
-				} else if (bestIsSameInstance)
-					continue;
-
-				if (a1.getArea() > maxArea) {
-					bestNeighbor = a1;
-					maxArea = a1.getArea();
-				}
-			}
-			if (bestNeighbor != null) {
-				// merge
-				synchronized (bestNeighbor.getMesh().getTriangles()) {
-					bestNeighbor.getMesh().getTriangles().addAll(pa.getMesh().getTriangles());
-				}
-				bestNeighbor.updateAnnotationArea();
-			}
+			mergeWithNeighbors(cas, failedFittings);
+			combineSameNeighboringAnnotations(cas, cas.getAnnotations(), false);
 		}
 
 		// now check if all sphere annotations are spheres of if they should be cones by evaluating
 		// fit error.
 		// The fit error should be smaller than 0.001 for good fitted spheres
 
-		LinkedList<ConeAnnotation> toAdd = new LinkedList<ConeAnnotation>();
+		logger.debug("Checking spheres ...");
+
+		LinkedList<Annotation> toAdd = new LinkedList<Annotation>();
+		LinkedList<PrimitiveAnnotation> smallSpheres = new LinkedList<PrimitiveAnnotation>();
 
 		for (Iterator<Annotation> it = cas.getAnnotations().iterator(); it.hasNext();) {
 			Annotation a = it.next();
 			if (a instanceof SphereAnnotation) {
 				SphereAnnotation sa = (SphereAnnotation) a;
+
+				if (sa.getAreaCoverage() < 0.01) {
+					smallSpheres.add(sa);
+					synchronized (cas.getAnnotations()) {
+						it.remove();
+					}
+					continue;
+				}
 
 				if (sa.getSphere().getFitError() < 0.005)
 					continue;
@@ -620,38 +670,19 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 						it.remove();
 					}
 					toAdd.add(tmp);
-					logger.debug("Changing sphere annotation to cone because fit error is smaller: "
-							+ tmp.getCone().getFitError() + "<" + sa.getSphere().getFitError());
+					// logger.debug("Changing sphere annotation to cone because fit error is smaller: "
+					// + tmp.getCone().getFitError() + "<" + sa.getSphere().getFitError());
 				}
 			}
 		}
 		synchronized (cas.getAnnotations()) {
 			cas.getAnnotations().addAll(toAdd);
 		}
-
-		Set<ConeAnnotation> toRefit = new HashSet<ConeAnnotation>();
-
+		mergeWithNeighbors(cas, smallSpheres);
+		logger.debug("Combining neighbors ...");
 		// Combine neighboring annotations which were previously different types before changing
 		// sphere to cone
-		for (ConeAnnotation ca : toAdd) {
-
-			Set<ConeAnnotation> neighborAnnotations = ca.getNeighborAnnotations(cas,
-					ConeAnnotation.class);
-			for (ConeAnnotation c1 : neighborAnnotations) {
-				synchronized (cas.getAnnotations()) {
-					cas.getAnnotations().remove(ca);
-				}
-				synchronized (c1.getMesh().getTriangles()) {
-					c1.getMesh().getTriangles().addAll(ca.getMesh().getTriangles());
-				}
-				toRefit.add(c1);
-				break;
-			}
-		}
-		for (ConeAnnotation c : toRefit) {
-			c.updateAnnotationArea();
-			c.fit();
-		}
+		combineSameNeighboringAnnotations(cas, cas.getAnnotations(), true);
 
 		itemsElaborated.incrementAndGet();
 

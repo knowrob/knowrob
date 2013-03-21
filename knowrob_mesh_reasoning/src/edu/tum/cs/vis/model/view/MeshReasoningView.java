@@ -832,9 +832,11 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		cam.setRightDragHandler(cam.getPanDragHandler());
 
 		cam.setDistance(50);
+		cam.setWheelScale(0.25);
 
 		cam.rotateX((float) Math.PI / 2f);
 		cam.rotateZ((float) Math.PI);
+		cam.feed();
 
 		captureViewMatrix();
 

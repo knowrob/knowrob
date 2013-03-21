@@ -41,7 +41,7 @@ public final class ViewSettings implements Serializable {
 			cam.setRotations(settings.rotation[0], settings.rotation[1], settings.rotation[2]);
 			cam.lookAt(settings.lookAt[0], settings.lookAt[1], settings.lookAt[2]);
 			cam.setDistance(settings.distance);
-			Thread.sleep(1500); // wait until camera updated
+			cam.feed(); // update state
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;

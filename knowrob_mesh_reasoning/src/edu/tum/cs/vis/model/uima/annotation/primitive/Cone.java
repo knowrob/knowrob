@@ -36,7 +36,7 @@ import edu.tum.cs.vis.model.view.MeshReasoningView;
  */
 public class Cone extends PrimitiveShape {
 
-	private static Vector3f estimageDirection(Vertex vert[], Map<Vertex, Float> weights) {
+	private static Vector3f estimateDirection(Vertex vert[], Map<Vertex, Float> weights) {
 
 		Vector3f meanAxis = new Vector3f();
 
@@ -261,7 +261,7 @@ public class Cone extends PrimitiveShape {
 
 		Set<Vector3f> checked = new HashSet<Vector3f>();
 
-		for (int run = 0; run < 50; run++) {
+		for (int run = 0; run < 40; run++) {
 
 			// Calculate centroid and radii
 
@@ -370,8 +370,10 @@ public class Cone extends PrimitiveShape {
 				c.direction.scale((float) (heightTop + heightBottom) / 2);
 				c.direction.add(directionCorrectorTop);
 				c.direction.normalize();
-				if (directionCorrectorTop.lengthSquared() < 1.0E-8 && diff < 1.0E-8)
+				if (directionCorrectorTop.lengthSquared() < 1.0E-8 && diff == 0) {
 					break;
+
+				}
 			}
 
 		}
@@ -528,7 +530,7 @@ public class Cone extends PrimitiveShape {
 		centroid.set(centroid1);
 		Vertex vert[] = vertices.toArray(new Vertex[0]);
 
-		Vector3f axis = estimageDirection(vert, weights);
+		Vector3f axis = estimateDirection(vert, weights);
 		if (axis == null)
 			return false;
 		direction.set(axis);
@@ -542,15 +544,23 @@ public class Cone extends PrimitiveShape {
 
 		Cone c2 = new Cone(concave);
 
+		// try again and force a small radius
 		c2.direction.set(axis);
 		estimateRadius(c2, vert, weights, true);
 		c2.calculateFitError(vertices, weights, triangles);
 		float error2 = c2.fitError;
 
-		if (error1 < error2)
-			set(c1);
-		else
+		if (error2 < error1 * 0.8 || Float.isNaN(c1.direction.lengthSquared())
+				|| Float.isNaN(c1.radiusLarge) || Float.isNaN(c1.radiusSmall))
 			set(c2);
+		else
+			set(c1);
+
+		if (Float.isNaN(direction.lengthSquared()) || Float.isNaN(radiusLarge)
+				|| Float.isNaN(radiusSmall)) {
+			// reset cone, because it is invalid
+			set(new Cone(concave));
+		}
 		return true;
 
 	}
