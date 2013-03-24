@@ -139,17 +139,13 @@ public class Group implements Serializable {
 	 *            triangles to remove.
 	 * @return true if at least one triangle is found and removed.
 	 */
-	public boolean removeTriangle(Collection<Triangle> t) {
+	public void removeTriangle(Collection<Triangle> t) {
 		synchronized (mesh.getTriangles()) {
-			if (mesh.getTriangles().retainAll(t))
-				return true;
+			mesh.getTriangles().removeAll(t);
 		}
 		for (Group gr : children) {
-			boolean ret = gr.removeTriangle(t);
-			if (ret)
-				return ret;
+			gr.removeTriangle(t);
 		}
-		return false;
 	}
 
 	/**
@@ -216,7 +212,7 @@ public class Group implements Serializable {
 
 	}
 
-	public void getAllTriangles(final ArrayList<Triangle> triangles) {
+	public void getAllTriangles(final Collection<Triangle> triangles) {
 		mesh.getAllTriangles(triangles);
 
 		for (Group g : children) {

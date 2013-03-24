@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -479,7 +480,7 @@ public class Mesh implements Serializable {
 		this.triangles = triangles;
 	}
 
-	public void getAllTriangles(ArrayList<Triangle> triangles2) {
+	public void getAllTriangles(Collection<Triangle> triangles2) {
 		triangles2.addAll(triangles);
 
 	}

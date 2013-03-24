@@ -7,7 +7,6 @@
  ******************************************************************************/
 package edu.tum.cs.vis.model.uima.analyser;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -45,7 +44,7 @@ public class NeighborAnalyser extends MeshAnalyser {
 	 * When calling <code>process</code> all triangles of the group and its children are collected
 	 * in this list to process them afterwards.
 	 */
-	ArrayList<Triangle>		allTriangles;
+	List<Triangle>			allTriangles;
 
 	@Override
 	public Logger getLogger() {

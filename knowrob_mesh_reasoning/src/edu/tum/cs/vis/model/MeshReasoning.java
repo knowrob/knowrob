@@ -182,6 +182,9 @@ public class MeshReasoning {
 
 		start = System.currentTimeMillis();
 
+		// normalize model for further reasoning
+		model.normalize();
+
 		// list of current running analyzers used in mesh reasoning view
 		ArrayList<MeshAnalyser> analyser;
 		if (mrv != null) {
@@ -212,9 +215,6 @@ public class MeshReasoning {
 				+ ", Triangles: " + model.getTriangles().size() + ")");
 
 		// File f = model.exportVerticesAsTxt();
-
-		// normalize model for further reasoning
-		model.normalize();
 
 		if (imageGeneratorSettings != null) {
 			imageGeneratorSettings.waitSetup();

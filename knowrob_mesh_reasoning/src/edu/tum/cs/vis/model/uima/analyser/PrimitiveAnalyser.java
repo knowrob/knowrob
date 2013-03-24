@@ -7,7 +7,6 @@
  ******************************************************************************/
 package edu.tum.cs.vis.model.uima.analyser;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -72,10 +71,10 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 
 	@SuppressWarnings("rawtypes")
 	private static void combineSameNeighboringAnnotations(MeshCas cas,
-			List<Annotation> annotations, boolean refit) {
+			List<Annotation> annotations, Set<Annotation> toRefit) {
 		// Combine neighboring annotations which were previously divided by smaller annotations and
 		// are now neighbors
-		Set<Annotation> toRefit = new HashSet<Annotation>();
+		Set<Annotation> toRemove = new HashSet<Annotation>();
 		for (Iterator<Annotation> it = annotations.iterator(); it.hasNext();) {
 			Annotation a = it.next();
 			if (a instanceof PrimitiveAnnotation) {
@@ -99,28 +98,29 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 						// Two planes, but angle bigger than 45 degree
 						continue;
 					}
-					synchronized (annotations) {
-						it.remove();
-					}
+
+					// Found same annotations
+					toRemove.add(a);
 
 					synchronized (a1.getMesh().getTriangles()) {
 						a1.getMesh().getTriangles().addAll(pa.getMesh().getTriangles());
 					}
-					a1.updateAnnotationArea();
-					if (refit)
+					if (toRefit != null)
 						toRefit.add(a1);
 					break;
 				}
 			}
 		}
-		if (refit) {
-			fitAnnotations(toRefit);
+
+		synchronized (annotations) {
+			annotations.removeAll(toRemove);
 		}
 	}
 
 	@SuppressWarnings("rawtypes")
 	private static void combineSmallAnnotations(MeshCas cas) {
 		// Combine very small annotations with surrounding larger ones and merge/remove invalid ones
+		Set<Annotation> toRemove = new HashSet<Annotation>();
 		for (Iterator<Annotation> it = cas.getAnnotations().iterator(); it.hasNext();) {
 			Annotation a = it.next();
 			if (a instanceof PrimitiveAnnotation) {
@@ -128,9 +128,7 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 
 				// zero area, remove
 				if (pa.getArea() == 0) {
-					synchronized (cas.getAnnotations()) {
-						it.remove();
-					}
+					toRemove.add(a);
 					continue;
 				}
 
@@ -141,16 +139,13 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 				// check for cone annotation which has less than 2 triangles
 				if (neighborAnnotations.size() > 0 && a instanceof ConeAnnotation
 						&& ((PrimitiveAnnotation) a).getMesh().getTriangles().size() < 2) {
-					synchronized (cas.getAnnotations()) {
-						it.remove();
-					}
+					toRemove.add(a);
 
 					PrimitiveAnnotation a1 = neighborAnnotations.iterator().next();
 
 					synchronized (a1.getMesh().getTriangles()) {
 						a1.getMesh().getTriangles().addAll(pa.getMesh().getTriangles());
 					}
-					a1.updateAnnotationArea();
 					continue;
 				}
 
@@ -171,16 +166,16 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 					// If annotation is smaller than 5% of the area of the surrounding annotation,
 					// combine both into one
 					if (percentage < 0.05f) {
-						synchronized (cas.getAnnotations()) {
-							it.remove();
-						}
+						toRemove.add(a);
 
 						a1.getMesh().getTriangles().addAll(pa.getMesh().getTriangles());
-						a1.updateAnnotationArea();
 						break;
 					}
 				}*/
 			}
+		}
+		synchronized (cas.getAnnotations()) {
+			cas.getAnnotations().removeAll(toRemove);
 		}
 	}
 
@@ -203,7 +198,8 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 							synchronized (failedFittings) {
 								failedFittings.add((PrimitiveAnnotation) a);
 							}
-						}
+						} else
+							((PrimitiveAnnotation) a).updateAnnotationArea();
 						return null;
 					}
 				});
@@ -299,8 +295,9 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 	 * @param failedFittings
 	 */
 	@SuppressWarnings("rawtypes")
-	private static void mergeWithNeighbors(MeshCas cas, List<PrimitiveAnnotation> failedFittings) {
-		List<Annotation> toRefit = new ArrayList<Annotation>(failedFittings.size());
+	private static void mergeWithNeighbors(MeshCas cas, Set<PrimitiveAnnotation> failedFittings,
+			Set<Annotation> toRefit) {
+
 		for (PrimitiveAnnotation pa : failedFittings) {
 
 			@SuppressWarnings("unchecked")
@@ -345,12 +342,9 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 				synchronized (bestNeighbor.getMesh().getTriangles()) {
 					bestNeighbor.getMesh().getTriangles().addAll(pa.getMesh().getTriangles());
 				}
-				bestNeighbor.updateAnnotationArea();
 				toRefit.add(bestNeighbor);
 			}
 		}
-		fitAnnotations(toRefit);
-
 	}
 
 	/**
@@ -383,12 +377,12 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 	/**
 	 * list of all vertices of cad model
 	 */
-	ArrayList<Vertex>								allVertices;
+	List<Vertex>									allVertices;
 
 	/**
 	 * list of all triangles of cad model
 	 */
-	ArrayList<Triangle>								allTriangles;
+	List<Triangle>									allTriangles;
 
 	/**
 	 * Number of triangles already elaborated/processed. Used for indicating current progress
@@ -618,19 +612,21 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 			analyseTriangle(cas, t, alreadyInAnnotation);
 			itemsElaborated.incrementAndGet();
 		}
-
 		combineSmallAnnotations(cas);
 
-		combineSameNeighboringAnnotations(cas, cas.getAnnotations(), false);
+		combineSameNeighboringAnnotations(cas, cas.getAnnotations(), null);
 
-		final List<PrimitiveAnnotation> failedFittings = new LinkedList<PrimitiveAnnotation>();
+		final Set<PrimitiveAnnotation> failedFittings = new HashSet<PrimitiveAnnotation>();
 		failedFittings.addAll(fitAnnotations(cas.getAnnotations()));
 
+		Set<Annotation> toRefit = new HashSet<Annotation>();
 		if (failedFittings.size() > 0) {
 			logger.debug("Merging failed fittings into neighbors (" + failedFittings.size() + ")");
-			mergeWithNeighbors(cas, failedFittings);
-			combineSameNeighboringAnnotations(cas, cas.getAnnotations(), false);
+			mergeWithNeighbors(cas, failedFittings, toRefit);
+			combineSameNeighboringAnnotations(cas, cas.getAnnotations(), toRefit);
 		}
+		fitAnnotations(toRefit);
+		toRefit.clear();
 
 		// now check if all sphere annotations are spheres of if they should be cones by evaluating
 		// fit error.
@@ -638,8 +634,11 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 
 		logger.debug("Checking spheres ...");
 
-		LinkedList<Annotation> toAdd = new LinkedList<Annotation>();
-		LinkedList<PrimitiveAnnotation> smallSpheres = new LinkedList<PrimitiveAnnotation>();
+		Set<Annotation> toAdd = new HashSet<Annotation>();
+		Set<Annotation> toRemove = new HashSet<Annotation>();
+
+		// Merge spheres with small area coverage into neighbor
+		Set<PrimitiveAnnotation> smallSpheres = new HashSet<PrimitiveAnnotation>();
 
 		for (Iterator<Annotation> it = cas.getAnnotations().iterator(); it.hasNext();) {
 			Annotation a = it.next();
@@ -648,9 +647,6 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 
 				if (sa.getAreaCoverage() < 0.01) {
 					smallSpheres.add(sa);
-					synchronized (cas.getAnnotations()) {
-						it.remove();
-					}
 					continue;
 				}
 
@@ -665,24 +661,27 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 				}
 				if (!tmp.fit())
 					continue;
+				tmp.updateAnnotationArea();
 				if (tmp.getCone().getFitError() < sa.getSphere().getFitError()) {
-					synchronized (cas.getAnnotations()) {
-						it.remove();
-					}
+					toRemove.add(a);
 					toAdd.add(tmp);
 					// logger.debug("Changing sphere annotation to cone because fit error is smaller: "
 					// + tmp.getCone().getFitError() + "<" + sa.getSphere().getFitError());
 				}
 			}
 		}
+
 		synchronized (cas.getAnnotations()) {
+			cas.getAnnotations().removeAll(smallSpheres);
+			cas.getAnnotations().removeAll(toRemove);
 			cas.getAnnotations().addAll(toAdd);
 		}
-		mergeWithNeighbors(cas, smallSpheres);
+		mergeWithNeighbors(cas, smallSpheres, toRefit);
 		logger.debug("Combining neighbors ...");
 		// Combine neighboring annotations which were previously different types before changing
 		// sphere to cone
-		combineSameNeighboringAnnotations(cas, cas.getAnnotations(), true);
+		combineSameNeighboringAnnotations(cas, cas.getAnnotations(), toRefit);
+		fitAnnotations(toRefit);
 
 		itemsElaborated.incrementAndGet();
 

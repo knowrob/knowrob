@@ -52,50 +52,50 @@ public class Model {
 	/**
 	 * Log4J Logger
 	 */
-	private static Logger				logger				= Logger.getLogger(Model.class);
+	private static Logger			logger				= Logger.getLogger(Model.class);
 
 	/**
 	 * Absolute file path where the relative paths within the model are based.
 	 */
-	private String						textureBasePath		= null;
+	private String					textureBasePath		= null;
 
 	/**
 	 * Main group of the model. Each model should have at least one group.
 	 */
-	private Group						group;
+	private Group					group;
 
 	/**
 	 * List of all vertices in this model
 	 */
-	private final ArrayList<Vertex>		vertices			= new ArrayList<Vertex>();
+	private final List<Vertex>		vertices			= new ArrayList<Vertex>();
 
 	/**
 	 * List of all triangles in this model
 	 */
-	private final ArrayList<Triangle>	triangles			= new ArrayList<Triangle>();
+	private final List<Triangle>	triangles			= new ArrayList<Triangle>();
 
 	/**
 	 * List of all lines in this model
 	 */
-	private final ArrayList<Line>		lines				= new ArrayList<Line>();
+	private final List<Line>		lines				= new ArrayList<Line>();
 
 	/**
 	 * Minimum bounding sphere of this model. Only set if previously calculated (by Miniball class).
 	 * 
 	 * @see edu.tum.cs.vis.model.util.algorithm.Miniball
 	 */
-	private BSphere						boundingSphere		= null;
+	private BSphere					boundingSphere		= null;
 
 	/**
 	 * Current model scale. Is used to normalize model for further reasoning. getUnscaled methods
 	 * use this value to undo scaling for parameters such as height, width, radius, ...
 	 */
-	private float						scale				= 1;
+	private float					scale				= 1;
 
 	/**
 	 * Indicates if the vertex normals of each vertex have already been initialized.
 	 */
-	private boolean						normalsInitialized	= false;
+	private boolean					normalsInitialized	= false;
 
 	/**
 	 * @param g
@@ -136,7 +136,7 @@ public class Model {
 	 * 
 	 * @return the lines
 	 */
-	public ArrayList<Line> getLines() {
+	public List<Line> getLines() {
 		return lines;
 	}
 
@@ -164,7 +164,7 @@ public class Model {
 	 * 
 	 * @return the triangles
 	 */
-	public ArrayList<Triangle> getTriangles() {
+	public List<Triangle> getTriangles() {
 		return triangles;
 	}
 
@@ -226,7 +226,7 @@ public class Model {
 	 * 
 	 * @return the vertices
 	 */
-	public ArrayList<Vertex> getVertices() {
+	public List<Vertex> getVertices() {
 		return vertices;
 	}
 
@@ -386,13 +386,18 @@ public class Model {
 
 		final Set<Triangle> checkedTriangles = Collections.synchronizedSet(new HashSet<Triangle>());
 
+		Set<Vertex> toRemove = new HashSet<Vertex>();
+
 		for (Triangle t : triangles)
-			updateVertexSharingForTriangle(t, checkedTriangles);
+			updateVertexSharingForTriangle(t, checkedTriangles, toRemove);
+		synchronized (vertices) {
+			vertices.removeAll(toRemove);
+		}
 		reloadVertexList();
 	}
 
 	private void updateVertexSharingForNeighbors(final Triangle t, final Triangle n,
-			final Set<Triangle> checkedTriangles) {
+			final Set<Triangle> checkedTriangles, Set<Vertex> toRemove) {
 		if (t == n)
 			return;
 		synchronized (n) {
@@ -433,9 +438,7 @@ public class Model {
 							}
 						}
 						if (cnt == 0) {
-							synchronized (vertices) {
-								vertices.remove(vn);
-							}
+							toRemove.add(vn);
 						}
 					} else if (!share && vn == vt) {
 						// split vertices
@@ -461,16 +464,16 @@ public class Model {
 	 *            already checked triangles
 	 */
 	private void updateVertexSharingForTriangle(final Triangle t,
-			final Set<Triangle> checkedTriangles) {
+			final Set<Triangle> checkedTriangles, final Set<Vertex> toRemove) {
 		synchronized (t) {
 			if (checkedTriangles.contains(t))
 				return;
 			synchronized (t.getNeighbors()) {
 				for (Triangle n : t.getNeighbors()) {
-					updateVertexSharingForNeighbors(t, n, checkedTriangles);
+					updateVertexSharingForNeighbors(t, n, checkedTriangles, toRemove);
 					// also check neighbors of neighbor
 					for (Triangle nn : n.getNeighbors()) {
-						updateVertexSharingForNeighbors(t, nn, checkedTriangles);
+						updateVertexSharingForNeighbors(t, nn, checkedTriangles, toRemove);
 					}
 				}
 
@@ -567,6 +570,7 @@ public class Model {
 		// System.out.println("VOTE: " + vote);
 		if (vote > 0) {
 			// They voted for inverting
+			logger.debug("Inverting normal vertices, because vote is: " + vote);
 			for (Vertex v : vertices) {
 				v.getNormalVector().scale(-1f);
 			}

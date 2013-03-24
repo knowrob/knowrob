@@ -333,37 +333,40 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 		if (drawVertexNormals || drawVertexCurvature || drawVoronoiArea) {
 			g.strokeWeight(2f);
 			for (MeshCas c : casList) {
-				for (Vertex v : c.getModel().getVertices()) {
-					if (drawVertexNormals || drawVoronoiArea) {
-						g.stroke(41, 120, 37);
-						Vector3f n = (Vector3f) v.getNormalVector().clone();
-						n.scale(0.05f);
-						g.line(v.x, v.y, v.z, v.x + n.x, v.y + n.y, v.z + n.z);
-						g.fill(35, 148, 143);
-						g.noStroke();
-						g.sphereDetail(20);
-						if (drawVoronoiArea) {
-							g.pushMatrix();
-							g.translate(v.x + n.x, v.y + n.y, v.z + n.z);
-							g.sphere(v.getPointarea());
-							g.popMatrix();
+				synchronized (c.getModel().getVertices()) {
+					for (Vertex v : c.getModel().getVertices()) {
+						if (drawVertexNormals || drawVoronoiArea) {
+							g.stroke(41, 120, 37);
+							Vector3f n = (Vector3f) v.getNormalVector().clone();
+							n.scale(0.05f);
+							g.line(v.x, v.y, v.z, v.x + n.x, v.y + n.y, v.z + n.z);
+							g.fill(35, 148, 143);
+							g.noStroke();
+							g.sphereDetail(20);
+							if (drawVoronoiArea) {
+								g.pushMatrix();
+								g.translate(v.x + n.x, v.y + n.y, v.z + n.z);
+								g.sphere(v.getPointarea());
+								g.popMatrix();
+							}
+						}
+						if (drawVertexCurvature) {
+							Curvature curv = c.getCurvature(v);
+
+							g.stroke(0, 72, 153);
+
+							Vector3f max = (Vector3f) curv.getPrincipleDirectionMax().clone();
+							max.scale(curv.getCurvatureMax() / 20f);
+							g.line(v.x, v.y, v.z, v.x + max.x, v.y + max.y, v.z + max.z);
+
+							g.stroke(243, 146, 0);
+							Vector3f min = (Vector3f) curv.getPrincipleDirectionMin().clone();
+							min.scale(curv.getCurvatureMax() / 20f);
+							g.line(v.x, v.y, v.z, v.x + min.x, v.y + min.y, v.z + min.z);
 						}
 					}
-					if (drawVertexCurvature) {
-						Curvature curv = c.getCurvature(v);
-
-						g.stroke(0, 72, 153);
-
-						Vector3f max = (Vector3f) curv.getPrincipleDirectionMax().clone();
-						max.scale(curv.getCurvatureMax() / 20f);
-						g.line(v.x, v.y, v.z, v.x + max.x, v.y + max.y, v.z + max.z);
-
-						g.stroke(243, 146, 0);
-						Vector3f min = (Vector3f) curv.getPrincipleDirectionMin().clone();
-						min.scale(curv.getCurvatureMax() / 20f);
-						g.line(v.x, v.y, v.z, v.x + min.x, v.y + min.y, v.z + min.z);
-					}
 				}
+
 			}
 		}
 
