@@ -9,6 +9,7 @@ package edu.tum.cs.vis.model.util;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -119,8 +120,30 @@ public class Group implements Serializable {
 	 * @return true if triangle is found and removed.
 	 */
 	public boolean removeTriangle(Triangle t) {
-		if (mesh.getTriangles().remove(t))
-			return true;
+		synchronized (mesh.getTriangles()) {
+			if (mesh.getTriangles().remove(t))
+				return true;
+		}
+		for (Group gr : children) {
+			boolean ret = gr.removeTriangle(t);
+			if (ret)
+				return ret;
+		}
+		return false;
+	}
+
+	/**
+	 * Remove all triangles from group or child group.
+	 * 
+	 * @param t
+	 *            triangles to remove.
+	 * @return true if at least one triangle is found and removed.
+	 */
+	public boolean removeTriangle(Collection<Triangle> t) {
+		synchronized (mesh.getTriangles()) {
+			if (mesh.getTriangles().retainAll(t))
+				return true;
+		}
 		for (Group gr : children) {
 			boolean ret = gr.removeTriangle(t);
 			if (ret)

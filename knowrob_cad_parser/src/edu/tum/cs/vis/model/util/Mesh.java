@@ -398,68 +398,73 @@ public class Mesh implements Serializable {
 		HashSet<String> alreadyLoaded = new HashSet<String>();// if error reading file,
 																// pictures<path> is null. So avoid
 																// trying again
-		for (Triangle tri : triangles) {
-			if (tri.appearance.getImageFileName() == null)
-				continue;
-			String texfile = FileUtil.getAbsoluteFilePath(textureBasePath,
-					tri.appearance.getImageFileName());
-			if (pictures.get(texfile) == null && !alreadyLoaded.contains(texfile)) {
+		synchronized (triangles) {
+			for (Triangle tri : triangles) {
+				if (tri.appearance.getImageFileName() == null)
+					continue;
+				String texfile = FileUtil.getAbsoluteFilePath(textureBasePath,
+						tri.appearance.getImageFileName());
+				if (pictures.get(texfile) == null && !alreadyLoaded.contains(texfile)) {
 
-				alreadyLoaded.add(texfile);
-				BufferedImage bimg = null;
-				try {
-					bimg = ImageIO.read(new File(texfile));
-					// Convert BufferedImage to Image otherwise PImage constructor will fail!!
+					alreadyLoaded.add(texfile);
+					BufferedImage bimg = null;
+					try {
+						bimg = ImageIO.read(new File(texfile));
+						// Convert BufferedImage to Image otherwise PImage constructor will fail!!
 
-					Image i = bimg.getScaledInstance(bimg.getWidth(), bimg.getHeight(), 0);
+						Image i = bimg.getScaledInstance(bimg.getWidth(), bimg.getHeight(), 0);
 
-					PImage pImg = new PImage(i);
+						PImage pImg = new PImage(i);
 
-					pictures.put(texfile, pImg);
-				} catch (IOException e) {
-					System.err.println("Couldn't read file: " + texfile);
+						pictures.put(texfile, pImg);
+					} catch (IOException e) {
+						System.err.println("Couldn't read file: " + texfile);
+					}
+
 				}
-
 			}
+
 		}
 
 		// Now remove offset of texture coordinates because there is a bug with P3D when texture
 		// should repeated
-		for (Triangle tri : triangles) {
+		synchronized (triangles) {
+			for (Triangle tri : triangles) {
 
-			if (tri.appearance.getImageFileName() == null)
-				continue;
+				if (tri.appearance.getImageFileName() == null)
+					continue;
 
-			String texfile = FileUtil.getAbsoluteFilePath(textureBasePath,
-					tri.appearance.getImageFileName());
-			// PImage tex = applet.loadImage(texfile);
-			PImage tex = pictures.get(texfile);
-			if (tex == null)
-				continue;
+				String texfile = FileUtil.getAbsoluteFilePath(textureBasePath,
+						tri.appearance.getImageFileName());
+				// PImage tex = applet.loadImage(texfile);
+				PImage tex = pictures.get(texfile);
+				if (tex == null)
+					continue;
 
-			double xMin = Double.MAX_VALUE;
-			double yMin = Double.MAX_VALUE;
+				double xMin = Double.MAX_VALUE;
+				double yMin = Double.MAX_VALUE;
 
-			for (int i = 0; i < 3; i++) {
+				for (int i = 0; i < 3; i++) {
 
-				double x = tri.texPosition[i].x * tex.width;
-				double y = tex.height - tri.texPosition[i].y * tex.height;
-				tri.texPosition[i].x = (float) x;
-				tri.texPosition[i].y = (float) y;
-				xMin = Math.min(x, xMin);
-				yMin = Math.min(y, yMin);
+					double x = tri.texPosition[i].x * tex.width;
+					double y = tex.height - tri.texPosition[i].y * tex.height;
+					tri.texPosition[i].x = (float) x;
+					tri.texPosition[i].y = (float) y;
+					xMin = Math.min(x, xMin);
+					yMin = Math.min(y, yMin);
+				}
+
+				// Remove offset of texture coordinate if all coordinates are greater than texture
+				xMin = Math.floor(xMin / tex.width);
+				yMin = Math.floor(yMin / tex.height);
+
+				for (int i = 0; i < 3; i++) {
+					tri.texPosition[i].x -= xMin * tex.width;
+					tri.texPosition[i].y -= yMin * tex.height;
+				}
+
+				tri.appearance.setImageReference(tex);
 			}
-
-			// Remove offset of texture coordinate if all coordinates are greater than texture
-			xMin = Math.floor(xMin / tex.width);
-			yMin = Math.floor(yMin / tex.height);
-
-			for (int i = 0; i < 3; i++) {
-				tri.texPosition[i].x -= xMin * tex.width;
-				tri.texPosition[i].y -= yMin * tex.height;
-			}
-
-			tri.appearance.setImageReference(tex);
 		}
 		texturesInitialized = true;
 	}

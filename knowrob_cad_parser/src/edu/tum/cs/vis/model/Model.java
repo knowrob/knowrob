@@ -300,44 +300,73 @@ public class Model {
 	/**
 	 * Searches for triangles which have exactly the same coordinate points and removes one of them
 	 * to avoid two triangles drawn on exactly the same position. Used for mesh reasoning.
+	 * 
+	 * @return Number of removed triangles
 	 */
-	public void removeDoubleSidedTriangles() {
-		boolean removed = false;
-		for (int i = 0; i < triangles.size(); i++) {
-			Triangle t1 = triangles.get(i);
-			for (int j = i + 1; j < triangles.size(); j++) {
-				Triangle t2 = triangles.get(j);
-				int eqCnt = 0;
-				for (int k = 0; k < 3; k++) {
-					Point3f p1 = t1.getPosition()[k];
-					for (Point3f p2 : t2.getPosition()) {
-						if (p1.x == p2.x && p1.y == p2.y && p1.z == p2.z) {
-							eqCnt++;
-							break;
+	public int removeDoubleSidedTriangles() {
+		final Set<Triangle> toRemove = new HashSet<Triangle>();
+
+		final int interval = 1000;
+		List<Callable<Void>> threads = new LinkedList<Callable<Void>>();
+		for (int start = 0; start < triangles.size(); start += interval) {
+			final int st = start;
+			threads.add(new Callable<Void>() {
+
+				@Override
+				public Void call() throws Exception {
+					int end = Math.min(st + interval, triangles.size());
+					for (int i = st; i < end; i++) {
+						Triangle t1 = triangles.get(i);
+						if (toRemove.contains(t1))
+							continue;
+						for (int j = i + 1; j < triangles.size(); j++) {
+							Triangle t2 = triangles.get(j);
+
+							if (toRemove.contains(t2))
+								continue;
+							int eqCnt = 0;
+							for (int k = 0; k < 3; k++) {
+								Point3f p1 = t1.getPosition()[k];
+								for (Point3f p2 : t2.getPosition()) {
+									if (p1.x == p2.x && p1.y == p2.y && p1.z == p2.z) {
+										eqCnt++;
+										break;
+									}
+								}
+								if (eqCnt != k + 1) {
+									// break if not enough vertices are equal
+									break;
+								}
+							}
+							if (eqCnt == 3) {
+								// triangles are the same, so remove j
+
+								synchronized (toRemove) {
+									toRemove.add(t2);
+								}
+							}
 						}
 					}
-					if (eqCnt != k + 1) {
-						// break if not enough vertices are equal
-						break;
-					}
+					return null;
 				}
-				if (eqCnt == 3) {
-					// triangles are the same, so remove j
-					this.group.removeTriangle(t2);
-					removed = true;
-				}
-			}
 
-		}
-		if (removed) {
+			});
+		};
+
+		ThreadPool.executeInPool(threads);
+		if (toRemove.size() > 0) {
+			this.group.removeTriangle(toRemove);
 			reloadVertexList();
 		}
+		return toRemove.size();
 	}
 
 	private void reloadVertexList() {
-		triangles.clear();
-		this.group.getAllTriangles(triangles);
-		Set<Vertex> vertices = new HashSet<Vertex>();
+		synchronized (triangles) {
+			triangles.clear();
+			this.group.getAllTriangles(triangles);
+		}
+		Set<Vertex> vertices = new HashSet<Vertex>(triangles.size() * 2);
 		for (Triangle t : triangles) {
 			vertices.addAll(Arrays.asList(t.getPosition()));
 		}

@@ -35,7 +35,7 @@ public class ThreadPool {
 	}
 	public static void executeInPool(List<Callable<Void>> threads, int numParallel) {
 		ExecutorService	pool;
-		int threadNum = numParallel <= 0 ? Runtime.getRuntime().availableProcessors() * 4 : numParallel;
+		int threadNum = numParallel <= 0 ? Runtime.getRuntime().availableProcessors() * 2 : numParallel;
 		pool = Executors.newFixedThreadPool(threadNum);
 
 		try {

@@ -182,22 +182,20 @@ public class MeshReasoning {
 
 		start = System.currentTimeMillis();
 
-		/*double size = (model.getSizeX() + model.getSizeY() + model.getSizeZ()) / 3;
-		double maxFactor = (size * size) / 2000.0;
-		model.splitTriangles(maxFactor);*/
-
-		logger.debug("Checking for double sided triangles ...");
-		model.removeDoubleSidedTriangles(); // in ply files there may be double sided triangles
-
 		// list of current running analyzers used in mesh reasoning view
 		ArrayList<MeshAnalyser> analyser;
 		if (mrv != null) {
 			analyser = mrv.getControl().getAnalyser();
 		} else {
 			cas = new MeshCas();
-			analyser = new ArrayList<MeshAnalyser>();
+			analyser = new ArrayList<MeshAnalyser>(5);
 		}
 		cas.setModel(model);
+
+		// in ply (and also collada) files there may be double sided triangles
+		logger.debug("Checking for double sided triangles ...");
+		logger.debug("Removed " + model.removeDoubleSidedTriangles() + " triangles. Took: "
+				+ PrintUtil.prettyMillis(System.currentTimeMillis() - start));
 
 		NeighborAnalyser na = new NeighborAnalyser();
 		analyser.add(na);
