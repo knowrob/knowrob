@@ -36,6 +36,7 @@
       mesh_annotator_clear_highlight/1,
       mesh_find_handle/2,
       mesh_find_handle/4,
+      mesh_find_handle/6,
       listsplit/3,
       jpl_set_to_list/2,
       comp_physical_parts/2,
@@ -256,41 +257,6 @@ mesh_is_supporting_plane(PlaneAnnotation, Identifier) :-
 mesh_is_supporting_plane(PlaneAnnotation) :-
 	mesh_is_supporting_plane(PlaneAnnotation,_).
 
-:- dynamic
-        mesh_min_radius/1,
-        mesh_max_radius/1.
-
-mesh_handle_comparator(Comp, W1, W2) :-
-	jpl_call(W1,'getAreaCoverage',[],Cov1),
-	jpl_call(W2,'getAreaCoverage',[],Cov2),
-	jpl_call(W1,'getRadiusAvgUnscaled',[],Rad1),
-	jpl_call(W2,'getRadiusAvgUnscaled',[],Rad2),
-	( mesh_min_radius(MinRadius),mesh_max_radius(MaxRadius) ->
-		(
-			(Rad1 > MinRadius , Rad1 < MaxRadius) ->
-			Rad1Ok = true
-			; Rad1Ok = false
-		)
-		; Rad1Ok = false
-	),
-	( mesh_min_radius(MinRadius),mesh_max_radius(MaxRadius) ->
-		(
-			(Rad2 > MinRadius , Rad2 < MaxRadius) ->
-			Rad2Ok = true
-			; Rad2Ok = false
-		)
-		; Rad2Ok = false
-	),
-	(	Cov1 < 0.6 , Cov2 >= 0.6 -> Comp = '>'
-	;	Cov1 >= 0.6, Cov2 < 0.6 -> Comp = '<'
-	;	not(Rad1Ok), Rad2Ok -> Comp = '>'
-	;	Rad1Ok, not(Rad2Ok) -> Comp = '<'
-	;	jpl_call(W1,'getHeightUnscaled',[],H1),
-		jpl_call(W2,'getHeightUnscaled',[],H2),
-		(   H1 < H2 -> Comp = '>'
-		;   H1 >= H2 -> Comp = '<')
-	).
-
 listsplit([H|T], H, T).
 
 %% jpl_set_to_list(+Set,-List) is det.
@@ -305,26 +271,31 @@ jpl_set_to_list(Set,List) :-
 
 %% mesh_find_handle(+MeshAnnotator, -HandleAnnotations) is det.
 %% mesh_find_handle(+MeshAnnotator, -HandleAnnotations, +MinRadius, +MaxRadius) is det.
+%% mesh_find_handle(+MeshAnnotator, -HandleAnnotations, +MinRadius, +MaxRadius, +MinLength, +MaxLength) is det.
 %
 % Returns a list which contains annotations sorted by its probability that they are the object handle.
-% Sorting is achieved by calling mesh_handle_comparator which compares two annotations by its probability.
+% Sorting is based on a weight function defined in Java. If no boundaries for radius and length are given,
+% the weight is proportional to the radius. If only radius is given, the length is ignored. If radius and length
+% is given, both are used to calculate the weight.
 %
 % @param MeshAnnotator			reasoning container
 % @param HandleAnnotations		the resulting sorted annotation list
-% @param MinRadius				minimum radius which the handle should have
-% @param MaxRadius				maximum radius which the handle should have
+% @param MinRadius			minimum radius which the handle should have
+% @param MaxRadius			maximum radius which the handle should have
+% @param MinLength			minimum length which the handle should have
+% @param MaxLength			maximum length which the handle should have
 %
 mesh_find_handle(MeshAnnotator, HandleAnnotations) :-
-  mesh_find_annotations(MeshAnnotator,'Cone',AnnList),
-  predsort(mesh_handle_comparator, AnnList, HandleAnnotations).
+  jpl_call(MeshAnnotator, 'getHandle', [], HandleArr),
+  jpl_array_to_list(HandleArr, HandleAnnotations).
 
 mesh_find_handle(MeshAnnotator, HandleAnnotations, MinRadius, MaxRadius) :-
-  assert(mesh_min_radius(MinRadius)),
-  assert(mesh_max_radius(MaxRadius)),
-  mesh_find_handle(MeshAnnotator, HandleAnnotations),
-  retractall(mesh_min_radius(_)),
-  retractall(mesh_max_radius(_)).
+  jpl_call(MeshAnnotator, 'getHandle', [MinRadius, MaxRadius], HandleArr),
+  jpl_array_to_list(HandleArr, HandleAnnotations).
 
+mesh_find_handle(MeshAnnotator, HandleAnnotations, MinRadius, MaxRadius, MinLength, MaxLength) :-
+  jpl_call(MeshAnnotator, 'getHandle', [MinRadius, MaxRadius, MinLength, MaxLength], HandleArr),
+  jpl_array_to_list(HandleArr, HandleAnnotations).
 
 
 

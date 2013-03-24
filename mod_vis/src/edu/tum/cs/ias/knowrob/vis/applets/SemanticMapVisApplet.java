@@ -861,11 +861,10 @@ public class SemanticMapVisApplet extends AnimatedCanvas implements MouseListene
 		// check if exists
 		try{
 			type = tpe.get("SUBJECT").get(0);
-
+			addObjectWithChildren(type);
 		} catch(Exception e) {
 			displayMessage("Semantic map not found");
 		}  
-		addObjectWithChildren(type);
 	}
 
 

@@ -57,12 +57,25 @@ public class HandleComparator implements Comparator<HandleAnnotation> {
 
 	}*/
 
+	/**
+	 * Calculates the weight for a handle. If no min/max radius is given (=-1) then the weight is
+	 * proportional to the radius. If only radius is given, the length is ignored. If both are
+	 * given, the weight is calculated as a combination of radius and length.
+	 * 
+	 * @param o1
+	 * @param model
+	 * @param minRadius
+	 * @param maxRadius
+	 * @param minLength
+	 * @param maxLength
+	 * @return
+	 */
 	public static double getHandleWeight(HandleAnnotation o1, Model model, double minRadius,
 			double maxRadius, double minLength, double maxLength) {
 		double w = getMinMaxWeight(model.getUnscaled(o1.getCone().getRadiusAvg()), minRadius,
-				maxRadius, WEIGHT_RADIUS)
+				maxRadius, WEIGHT_RADIUS, model.getUnscaled(o1.getCone().getRadiusAvg()))
 				* getMinMaxWeight(model.getUnscaled(o1.getCone().getHeight()), minLength,
-						maxLength, WEIGHT_LENGTH) * getAreaCoverageWeight(o1.getAreaCoverage());
+						maxLength, WEIGHT_LENGTH, 1) * getAreaCoverageWeight(o1.getAreaCoverage());
 
 		// it may be that the cone wasn't fit correctly and is therefore NAN
 		if (Double.isNaN(w))
@@ -70,8 +83,10 @@ public class HandleComparator implements Comparator<HandleAnnotation> {
 		return w;
 	}
 
-	private static double getMinMaxWeight(float x, double min, double max, double itemWeight) {
-		return (min >= 0 && max > min) ? getWeight(x, min, max) * itemWeight : 1;
+	private static double getMinMaxWeight(float x, double min, double max, double itemWeight,
+			double fallback) {
+		return (min >= 0 && max > min) ? getWeight(x, min, max) * itemWeight + x * 0.001 : fallback
+				* itemWeight;
 	}
 
 	/**

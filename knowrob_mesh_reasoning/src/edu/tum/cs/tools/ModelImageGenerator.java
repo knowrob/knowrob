@@ -32,12 +32,12 @@ import edu.tum.cs.vis.model.parser.ModelParser;
  */
 public class ModelImageGenerator {
 
-	// public static final String MODEL_DIR = "/home/stefan/work/models";
-	// public static final String IMAGE_DIR = "/home/stefan/work/model_images";
-	public static final String			MODEL_DIR			= "/home/stefan/Dropbox/work/spoon";
-	public static final String			IMAGE_DIR			= "/home/stefan/Dropbox/work/spoon_images";
+	public static final String			MODEL_DIR			= "/home/stefan/work/models";
+	public static final String			IMAGE_DIR			= "/home/stefan/work/model_images";
+	// public static final String MODEL_DIR = "/home/stefan/Dropbox/work/spoon";
+	// public static final String IMAGE_DIR = "/home/stefan/Dropbox/work/spoon_images";
 
-	public static final boolean			ALSO_EXISTING_ONES	= true;
+	public static final boolean			ALSO_EXISTING_ONES	= false;
 
 	// static ImageGeneratorSettings settings;
 

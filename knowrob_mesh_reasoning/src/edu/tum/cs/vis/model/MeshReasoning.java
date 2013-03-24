@@ -117,8 +117,8 @@ public class MeshReasoning {
 	public MeshReasoning(boolean withView, ImageGeneratorSettings imageGenerator) {
 		imageGeneratorSettings = imageGenerator;
 		if (imageGeneratorSettings != null)
-			// initImageGenerator();
-			initImageGeneratorSpoon();
+			initImageGenerator();
+		// initImageGeneratorSpoon();
 		cas = new MeshCas();
 
 		if (withView) {
@@ -352,7 +352,7 @@ public class MeshReasoning {
 	}
 
 	public HandleAnnotation[] getHandle() {
-		return getHandle(-1f, -1f);
+		return getHandle(-1f, -1f, -1f, -1f);
 	}
 
 	public HandleAnnotation[] getHandle(double minRadius, double maxRadius) {
@@ -409,13 +409,6 @@ public class MeshReasoning {
 		if (mrv == null)
 			return;
 		mrv.addSelectedAnnotation(a, color);
-	}
-
-	public void highlightAnnotation(HandleAnnotation handleAnnotation) {
-		if (handleAnnotation instanceof DrawableAnnotation) {
-			highlightAnnotation((DrawableAnnotation) handleAnnotation);
-		}
-
 	}
 
 	private void initImageGenerator() {
@@ -534,7 +527,7 @@ public class MeshReasoning {
 								HandleComparator.DEFAULT_LENGTH_MAX);
 						int max = 3;
 						for (int i = 0; i < max && i < handles.length; i++) {
-							mr.highlightAnnotation(handles[i]);
+							mr.highlightAnnotation((DrawableAnnotation) handles[i]);
 							try {
 								Thread.sleep(200);
 							} catch (InterruptedException e) {} // wait til selected
