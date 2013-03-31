@@ -352,6 +352,8 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 						}
 						if (drawVertexCurvature) {
 							Curvature curv = c.getCurvature(v);
+							if (curv == null)
+								continue;
 
 							g.stroke(0, 72, 153);
 

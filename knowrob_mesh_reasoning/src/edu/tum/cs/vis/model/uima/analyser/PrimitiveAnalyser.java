@@ -683,7 +683,7 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 		combineSameNeighboringAnnotations(cas, cas.getAnnotations(), toRefit);
 		fitAnnotations(toRefit);
 
-		itemsElaborated.incrementAndGet();
+		itemsElaborated.addAndGet((int) (allTriangles.size() * 0.1));
 
 	}
 
@@ -694,7 +694,8 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 	public void updateProgress() {
 		if (allVertices != null && allVertices.size() > 0) {
 			setProgress(itemsElaborated.get()
-					/ (float) (allVertices.size() + allTriangles.size() + 1) * 100.0f);
+					/ (float) (allVertices.size() + allTriangles.size() + (int) (allTriangles
+							.size() * 0.1)) * 100.0f);
 		}
 
 	}

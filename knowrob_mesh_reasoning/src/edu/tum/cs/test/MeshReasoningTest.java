@@ -63,7 +63,8 @@ public class MeshReasoningTest {
 		// String path =
 		// "/home/stefan/work/models/industrial-parts/AFAG_11005009_Modultraeger_doppel_MT_45x2a_(0).kmz";
 		// String path = "/home/stefan/work/models/hand-tools/paintbrush2.kmz";
-		String path = "/home/stefan/work/models/cooking-vessels/pot3.kmz";
+		// String path = "/home/stefan/work/models/cooking-vessels/pot3.kmz";
+		String path = "/home/stefan/Desktop/verticalPiece.ply";
 		MeshReasoning mr = MeshReasoning.initMeshReasoning(true);
 
 		mr.analyseByPath(path);
