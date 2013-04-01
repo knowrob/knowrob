@@ -34,6 +34,9 @@ public final class SphereAnnotation extends PrimitiveAnnotation<SphereAnnotation
 	 */
 	private static final long	serialVersionUID	= 4870579150170536881L;
 
+	/**
+	 * Sphere representing annotation
+	 */
 	private final Sphere		sphere;
 
 	/**
@@ -137,6 +140,11 @@ public final class SphereAnnotation extends PrimitiveAnnotation<SphereAnnotation
 		return model.getUnscaled(getRadius());
 	}
 
+	/**
+	 * Get fitted sphere for annotation.
+	 * 
+	 * @return fitted sphere
+	 */
 	public Sphere getSphere() {
 		return sphere;
 	}

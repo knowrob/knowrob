@@ -125,7 +125,7 @@ public class ContainerAnalyser extends MeshAnalyser {
 					return; // isn't container. Is a closed box.
 			}
 		}
-		if (hasBottomCap || hasTopCap) {
+		if ((hasBottomCap || hasTopCap) && capAnnotation != null) {
 			// it is container, so create annotation
 			ContainerAnnotation ca = new ContainerAnnotation(cas.getModel());
 			synchronized (ca.getMesh().getTriangles()) {

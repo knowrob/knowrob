@@ -63,6 +63,12 @@ public abstract class PrimitiveAnnotation<S extends PrimitiveAnnotation> extends
 		this.curvatures = curvatures;
 	}
 
+	/**
+	 * Draws the primitive annotation (= cone, plane, sphere) of this annotation.
+	 * 
+	 * @param g
+	 *            graphics context to draw on.
+	 */
 	public void drawPrimitiveAnnotation(PGraphics g) {
 		drawPrimitiveAnnotation(g, null);
 	}
@@ -73,6 +79,9 @@ public abstract class PrimitiveAnnotation<S extends PrimitiveAnnotation> extends
 	 * 
 	 * @param g
 	 *            graphics context
+	 * @param color
+	 *            draw color for drawing primitive annotation. may also be null to use default
+	 *            values.
 	 */
 	public abstract void drawPrimitiveAnnotation(PGraphics g, Color color);
 

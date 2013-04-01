@@ -7,11 +7,18 @@
  ******************************************************************************/
 package edu.tum.cs.tools.ImageGenerator;
 
-
 /**
+ * Interface for a specific image generator action.
+ * 
  * @author Stefan Profanter
  * 
  */
 public interface ImageGeneratorAction {
+	/**
+	 * The action method.
+	 * 
+	 * @param settings
+	 *            ImageGeneratorSettings of current MeshReasoning process.
+	 */
 	public void trigger(ImageGeneratorSettings settings);
 }

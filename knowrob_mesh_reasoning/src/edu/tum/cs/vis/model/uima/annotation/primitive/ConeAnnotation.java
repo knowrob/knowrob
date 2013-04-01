@@ -39,6 +39,9 @@ public final class ConeAnnotation extends PrimitiveAnnotation<ConeAnnotation> im
 	 */
 	private static final long	serialVersionUID	= -7420446109108464883L;
 
+	/**
+	 * Cone representing the cone annotation.
+	 */
 	private final Cone			cone;
 
 	/**
@@ -58,6 +61,18 @@ public final class ConeAnnotation extends PrimitiveAnnotation<ConeAnnotation> im
 		cone = new Cone(concave);
 	}
 
+	/**
+	 * Create new cone annotation.
+	 * 
+	 * @param curvatures
+	 *            Map of curvatures for vertices
+	 * @param model
+	 *            parent model
+	 * @param concave
+	 *            is cone concave or convex
+	 * @param annotationColor
+	 *            User defined color of the cone annotation.
+	 */
 	public ConeAnnotation(HashMap<Vertex, Curvature> curvatures, Model model, boolean concave,
 			Color annotationColor) {
 		super(ConeAnnotation.class, curvatures, model, annotationColor);

@@ -109,9 +109,9 @@ public class Mesh implements Serializable {
 	 * 
 	 * @param g
 	 *            Applet to draw on
-	 * @param overrideColor
-	 *            override the draw color an texture. Draw whole object in the given color if !=
-	 *            null
+	 * @param drawSettings
+	 *            override the draw color, texture (and other settings). Draw whole object in the
+	 *            given color if != null
 	 */
 	public void drawLines(PGraphics g, DrawSettings drawSettings) {
 		for (Line line : lines) {
@@ -125,9 +125,9 @@ public class Mesh implements Serializable {
 	 * 
 	 * @param g
 	 *            Graphics to draw on
-	 * @param overrideColor
-	 *            override the draw color an texture. Draw whole object in the given color if !=
-	 *            null
+	 * @param drawSettings
+	 *            override the draw color, texture (and other settings). Draw whole object in the
+	 *            given color if != null
 	 */
 	public void drawTriangles(PGraphics g, DrawSettings drawSettings) {
 		if (!texturesInitialized)
@@ -480,6 +480,12 @@ public class Mesh implements Serializable {
 		this.triangles = triangles;
 	}
 
+	/**
+	 * Add all triangles contained in this mesh to the provided collection.
+	 * 
+	 * @param triangles2
+	 *            Collection where all triangles of this mesh are added.
+	 */
 	public void getAllTriangles(Collection<Triangle> triangles2) {
 		triangles2.addAll(triangles);
 

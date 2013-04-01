@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Stefan Profanter. All rights reserved. This program and the accompanying
+ * Copyright (c) 2013 Stefan Profanter. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the GNU Public License v3.0 which accompanies
  * this distribution, and is available at http://www.gnu.org/licenses/gpl.html
  * 
@@ -36,6 +36,19 @@ import edu.tum.cs.vis.model.view.MeshReasoningView;
  */
 public class Cone extends PrimitiveShape {
 
+	/**
+	 * Estimates direction vector of cone by selecting 3 vertices randomly, using their normal
+	 * vertices to calculate a intersection point which represents the generating line. Repeated for
+	 * each vertex, this method returns the average direction of all vertices which should be a
+	 * first estimate.
+	 * 
+	 * @param vert
+	 *            list of all vertices representing the cone.
+	 * @param weights
+	 *            Weights for each vertex. Used to avoid big influence of wrong, small area vertices
+	 *            on the resulting direction.
+	 * @return Estimated vector for the generating line (= direction) of the cone
+	 */
 	private static Vector3f estimateDirection(Vertex vert[], Map<Vertex, Float> weights) {
 
 		Vector3f meanAxis = new Vector3f();
@@ -252,6 +265,22 @@ public class Cone extends PrimitiveShape {
 		return meanAxis;
 	}
 
+	/**
+	 * Estimate cone radius by using average value of the distance from generating line to vertex.
+	 * 
+	 * @param c
+	 *            Cone on which the radius should be estimated.
+	 * @param vert
+	 *            List of vertices representing the cone.
+	 * @param weights
+	 *            Weights for each vertex. Used to avoid big influence of wrong, small area vertices
+	 *            on the resulting direction.
+	 * @param smallRadius
+	 *            if set to true, method tries to minimize the radius. If a cone is very short and
+	 *            <code>smallRadius</code> is set to true, the final result may be something
+	 *            undesired. Thus you should try to fit with and without smallRadius enabled and
+	 *            compare the fit error.
+	 */
 	private static void estimateRadius(Cone c, Vertex vert[], Map<Vertex, Float> weights,
 			boolean smallRadius) {
 		double heightBottom = 0;
@@ -406,10 +435,22 @@ public class Cone extends PrimitiveShape {
 	 */
 	private float			radiusSmall	= 0;
 
+	/**
+	 * Top correction vector. Only used for debugging.
+	 */
 	private final Vector3f	topCorr		= new Vector3f();
 
+	/**
+	 * Bottom correction vector. Only used for debugging.
+	 */
 	private final Vector3f	botCorr		= new Vector3f();
 
+	/**
+	 * Creates a new cone.
+	 * 
+	 * @param concave
+	 *            indicates if cone is convex or concave.
+	 */
 	public Cone(boolean concave) {
 		this.concave = concave;
 	}
@@ -472,6 +513,13 @@ public class Cone extends PrimitiveShape {
 
 	}
 
+	/**
+	 * Draws additional lines and stuff used for debugging. (i.e. generating line, correction
+	 * vectors, ...)
+	 * 
+	 * @param g
+	 *            Graphics context
+	 */
 	@SuppressWarnings("unused")
 	private void DrawDebugLines(PGraphics g) {
 		{
@@ -495,16 +543,19 @@ public class Cone extends PrimitiveShape {
 				}
 			}*/
 
+			// centroid
 			g.stroke(255, 255, 0);
 			g.strokeWeight(20);
 			g.point(centroid.x, centroid.y, centroid.z);
 
+			// generating line
 			g.stroke(0, 255, 255);
 			g.strokeWeight(5);
 
 			g.line(centroid.x, centroid.y, centroid.z, centroid.x + direction.x, centroid.y
 					+ direction.y, centroid.z + direction.z);
 
+			// top and bottom correction of direction axis
 			g.stroke(0, 255, 0);
 			g.strokeWeight(5);
 
@@ -576,6 +627,8 @@ public class Cone extends PrimitiveShape {
 	}
 
 	/**
+	 * Centroid of cone.
+	 * 
 	 * @return the centroid
 	 */
 	public Point3f getCentroid() {
@@ -583,12 +636,20 @@ public class Cone extends PrimitiveShape {
 	}
 
 	/**
+	 * Direction (generating line) of cone. Points from centroid to the top of the cone. Length is
+	 * exactly half height of the cone.
+	 * 
 	 * @return the direction
 	 */
 	public Vector3f getDirection() {
 		return direction;
 	}
 
+	/**
+	 * Cone height.
+	 * 
+	 * @return cone height.
+	 */
 	public float getHeight() {
 		return direction.length() * 2f;
 	}
@@ -630,6 +691,18 @@ public class Cone extends PrimitiveShape {
 		return (radiusLarge + radiusSmall) / 2f;
 	}
 
+	/**
+	 * Calculate the error of currently estimated radius and the radius for <code>v</code>.
+	 * 
+	 * @param v
+	 *            Point for which radius error should be calculated.
+	 * @param dirNorm
+	 *            direction vector normalized
+	 * @param halfHeight
+	 *            half height of the cone.
+	 * @return absolute error of currently estimated radius compared to the radius for
+	 *         <code>v</code>
+	 */
 	private float getRadiusError(Tuple3f v, Vector3f dirNorm, float halfHeight) {
 		Vector3f tmp = new Vector3f(v);
 		tmp.sub(centroid);
@@ -646,7 +719,8 @@ public class Cone extends PrimitiveShape {
 		// rad is the perpendicular distance from generating axis to point
 		float rad = tmp.length();
 
-		// now we need the expected radius at this position
+		// now we need the expected radius at this position. Uses triangle (which represents half of
+		// a longitudinal cut) to calculate expected radius at height of v.
 		float expRad = (1f - dot / halfHeight) / 2 * (radiusLarge - radiusSmall) + radiusSmall;
 
 		return Math.abs(rad - expRad);
@@ -684,6 +758,13 @@ public class Cone extends PrimitiveShape {
 		return concave;
 	}
 
+	/**
+	 * Copy parameters of <code>c</code> to this cone instance. Afterwards this is the same cone as
+	 * <code>c</code>.
+	 * 
+	 * @param c
+	 *            Cone to get parameters from.
+	 */
 	private void set(Cone c) {
 		botCorr.set(c.botCorr);
 		topCorr.set(c.topCorr);

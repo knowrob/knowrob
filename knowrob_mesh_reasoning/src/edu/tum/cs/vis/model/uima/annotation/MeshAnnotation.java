@@ -105,6 +105,11 @@ public abstract class MeshAnnotation<S extends MeshAnnotation> extends DrawableA
 		return mesh;
 	}
 
+	/**
+	 * Get parent model of annotation.
+	 * 
+	 * @return the model
+	 */
 	public Model getModel() {
 		return model;
 	}

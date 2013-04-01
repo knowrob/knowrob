@@ -56,6 +56,10 @@ public class ConeAnnotationPanel extends AnnotationPanel<ConeAnnotation> {
 	 * Fitting error
 	 */
 	private final JTextField	txtFitError;
+
+	/**
+	 * textfield for handle weight
+	 */
 	private final JTextField	txtHandleWeight;
 
 	/**

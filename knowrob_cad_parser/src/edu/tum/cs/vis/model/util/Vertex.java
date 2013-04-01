@@ -72,6 +72,14 @@ public class Vertex extends Point3f {
 		super(p);
 	}
 
+	/**
+	 * Create a new vertex at given point <code>p</code> with given normal vector <code>norm</code>
+	 * 
+	 * @param p
+	 *            point of the vertex
+	 * @param norm
+	 *            normal vector of the vertex
+	 */
 	public Vertex(Tuple3f p, Vector3f norm) {
 		super(p);
 		this.normalVector = (Vector3f) norm.clone();

@@ -74,6 +74,9 @@ public class MeshCas extends JCas implements Serializable {
 	 * 
 	 * @param g
 	 *            Applet to draw on
+	 * 
+	 * @param drawSettings
+	 *            draw settings to draw annotation. Used e.g. to override annotation color.
 	 */
 	public void draw(PGraphics g, DrawSettings drawSettings) {
 		if (model == null)
@@ -121,13 +124,14 @@ public class MeshCas extends JCas implements Serializable {
 	 *            Type of the annotations to find
 	 * @return the found annotations or empty
 	 */
+	@SuppressWarnings("unchecked")
 	public <T extends DrawableAnnotation> HashSet<T> findAnnotations(Class<T> clazz) {
 		HashSet<T> an = new HashSet<T>();
 		for (Annotation a : getAnnotations()) {
 			if (!(a instanceof DrawableAnnotation))
 				continue;
 			DrawableAnnotation ma = (DrawableAnnotation) a;
-			if (ma.getClass() == clazz || clazz.isInstance(ma)) {
+			if ((ma.getClass() == clazz || clazz.isInstance(ma))) {
 				an.add((T) a);
 			}
 		}

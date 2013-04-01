@@ -88,7 +88,7 @@ public class NeighborAnalyser extends MeshAnalyser {
 				}
 
 			});
-		};
+		}
 
 		ThreadPool.executeInPool(threads);
 		updateProgress();

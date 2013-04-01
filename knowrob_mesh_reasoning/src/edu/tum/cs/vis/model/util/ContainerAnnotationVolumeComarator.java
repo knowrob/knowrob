@@ -15,7 +15,6 @@ import edu.tum.cs.vis.model.uima.annotation.ContainerAnnotation;
  * @author Stefan Profanter
  * 
  */
-@SuppressWarnings("rawtypes")
 public class ContainerAnnotationVolumeComarator implements Comparator<ContainerAnnotation> {
 
 	/* (non-Javadoc)

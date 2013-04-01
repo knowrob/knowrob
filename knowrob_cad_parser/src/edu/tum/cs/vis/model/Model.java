@@ -100,9 +100,9 @@ public class Model {
 	/**
 	 * @param g
 	 *            Graphics context to draw on
-	 * @param overrideColor
-	 *            Color to override face color of model. Useful if you want to ignore color of model
-	 *            and draw whole model in a specific color.
+	 * @param drawSettings
+	 *            Settings for drawing the model, e.g. to override face color of model. Useful if
+	 *            you want to ignore color of model and draw whole model in a specific color.
 	 */
 	public void draw(PGraphics g, DrawSettings drawSettings) {
 		if (group != null)
@@ -361,6 +361,10 @@ public class Model {
 		return toRemove.size();
 	}
 
+	/**
+	 * Rebuilds the main triangles and vertices list by iterating over all child groups and
+	 * collecting all triangles and vertices found.
+	 */
 	private void reloadVertexList() {
 		synchronized (triangles) {
 			triangles.clear();
@@ -396,6 +400,21 @@ public class Model {
 		reloadVertexList();
 	}
 
+	/**
+	 * Check for the given two triangles if their vertices should be shared or not. The decision is
+	 * made according to the dihedral angle between the two triangles.
+	 * 
+	 * @param t
+	 *            the main triangle
+	 * @param n
+	 *            one of the neighboring triangles of <code>t</code>
+	 * @param checkedTriangles
+	 *            Set of already checked triangles. If one is already checked, it is ignored in this
+	 *            call.
+	 * @param toRemove
+	 *            Set of vertices which should be removed from the main vertices list. Combined
+	 *            vertices which aren't anymore in the model will be added to this set.
+	 */
 	private void updateVertexSharingForNeighbors(final Triangle t, final Triangle n,
 			final Set<Triangle> checkedTriangles, Set<Vertex> toRemove) {
 		if (t == n)
@@ -462,6 +481,9 @@ public class Model {
 	 *            Triangle to check
 	 * @param checkedTriangles
 	 *            already checked triangles
+	 * @param toRemove
+	 *            Set of vertices which should be removed from the main vertices list. Combined
+	 *            vertices which aren't anymore in the model will be added to this set.
 	 */
 	private void updateVertexSharingForTriangle(final Triangle t,
 			final Set<Triangle> checkedTriangles, final Set<Vertex> toRemove) {
@@ -488,11 +510,6 @@ public class Model {
 	 * uses average of per-face normals, weighted according to: Max, N.
 	 * "Weights for Computing Vertex Normals from Facet Normals," Journal of Graphics Tools, Vol. 4,
 	 * No. 2, 1999.
-	 * 
-	 * @param m
-	 *            model to calculate curvature for
-	 * @param inverseCurvature
-	 *            Invert curvature by inverting vertex normals
 	 */
 	public void updateVertexNormals() {
 		// Compute from faces
@@ -705,83 +722,31 @@ public class Model {
 		return false;
 	}
 
+	/**
+	 * Get the model size on x axis.
+	 * 
+	 * @return model size on x axis calculated by the maximum x value minus minimum x value
+	 */
 	public double getSizeX() {
 		return group.getMaxX() - group.getMinX();
 	}
 
+	/**
+	 * Get the model size on y axis.
+	 * 
+	 * @return model size on y axis calculated by the maximum y value minus minimum y value
+	 */
 	public double getSizeY() {
 		return group.getMaxY() - group.getMinY();
 	}
 
+	/**
+	 * Get the model size on z axis.
+	 * 
+	 * @return model size on z axis calculated by the maximum z value minus minimum z value
+	 */
 	public double getSizeZ() {
 		return group.getMaxZ() - group.getMinZ();
-	}
-
-	private void splitTriangles(List<Triangle> list, double maxArea, ArrayList<Triangle> toRemove,
-			ArrayList<Triangle> toAdd, ArrayList<Vertex> newVertices) {
-		for (Triangle t : list) {
-			if (t.getArea() > maxArea) {
-				toRemove.add(t);
-				Vertex newCenter = new Vertex(0, 0, 0);
-				Vector3f newNorm = new Vector3f(0, 0, 0);
-				for (int i = 0; i < 3; i++) {
-					newCenter.add(t.getPosition()[i]);
-					newNorm.add(t.getPosition()[i].getNormalVector());
-				}
-				newCenter.scale((float) (1.0 / 3.0));
-				newNorm.scale((float) (1.0 / 3.0));
-				newCenter.setNormalVector(newNorm);
-				newVertices.add(newCenter);
-				Triangle newT = new Triangle(t.getPosition()[0], t.getPosition()[1], newCenter);
-				newT.setAppearance(t.getAppearance());
-				newT.calculateNormalVector();
-				toAdd.add(newT);
-				newT = new Triangle(t.getPosition()[1], t.getPosition()[2], newCenter);
-				newT.setAppearance(t.getAppearance());
-				newT.calculateNormalVector();
-				toAdd.add(newT);
-				newT = new Triangle(t.getPosition()[2], t.getPosition()[0], newCenter);
-				newT.setAppearance(t.getAppearance());
-				newT.calculateNormalVector();
-				toAdd.add(newT);
-			}
-		}
-	}
-
-	private void splitTriangles(Group g, double maxArea) {
-
-		ArrayList<Triangle> toRemove = new ArrayList<Triangle>();
-		ArrayList<Vertex> newVertices = new ArrayList<Vertex>();
-
-		List<Triangle> toCheck = new ArrayList<Triangle>(g.getMesh().getTriangles());
-		ArrayList<Triangle> newTriangles = new ArrayList<Triangle>();
-		ArrayList<Triangle> toAdd;
-		do {
-			toAdd = new ArrayList<Triangle>();
-			this.splitTriangles(toCheck, maxArea, toRemove, toAdd, newVertices);
-			toCheck.clear();
-			toCheck.addAll(toAdd);
-			newTriangles.addAll(toAdd);
-		} while (toCheck.size() > 0);
-		vertices.addAll(newVertices);
-		synchronized (g.getMesh().getTriangles()) {
-			g.getMesh().getTriangles().removeAll(toRemove);
-		}
-		triangles.removeAll(toRemove);
-		newTriangles.removeAll(toRemove);
-		synchronized (g.getMesh().getTriangles()) {
-			g.getMesh().getTriangles().addAll(newTriangles);
-		}
-		triangles.addAll(newTriangles);
-
-		for (Group c : g.getChildren()) {
-			splitTriangles(c, maxArea);
-		}
-
-	}
-
-	public void splitTriangles(double maxArea) {
-		splitTriangles(this.group, maxArea);
 	}
 
 	/**

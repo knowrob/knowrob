@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Stefan Profanter. All rights reserved. This program and the accompanying
+ * Copyright (c) 2013 Stefan Profanter. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the GNU Public License v3.0 which accompanies
  * this distribution, and is available at http://www.gnu.org/licenses/gpl.html
  * 
@@ -27,27 +27,71 @@ import edu.tum.cs.vis.model.MeshReasoning;
 import edu.tum.cs.vis.model.parser.ModelParser;
 
 /**
+ * This class provides a main method to batch process a folder containing model files generating
+ * model images. Different images are generated for each model, showing different types of
+ * annotations and properties.
+ * 
  * @author Stefan Profanter
  * 
  */
 public class ModelImageGenerator {
 
+	/**
+	 * Source folder which contains all the models. Traversed recursively.
+	 */
 	public static final String			MODEL_DIR			= "/home/stefan/work/models";
+	/**
+	 * Output folder for images. The folder structure of the source folder is recreated in this
+	 * folder.
+	 */
 	public static final String			IMAGE_DIR			= "/home/stefan/work/model_images";
-	// public static final String MODEL_DIR = "/home/stefan/Dropbox/work/spoon";
-	// public static final String IMAGE_DIR = "/home/stefan/Dropbox/work/spoon_images";
 
+	/**
+	 * Recreate images also for already created ones. This means that already existing images will
+	 * be overwritten (useful if algorithm has changed and new images for all model, not only new
+	 * ones, should be created).
+	 */
 	public static final boolean			ALSO_EXISTING_ONES	= false;
 
 	// static ImageGeneratorSettings settings;
 
+	/**
+	 * List of threads, each MeshReasoning for a Model is executed in a separate thread or process.
+	 */
 	private static List<Callable<Void>>	threads				= new LinkedList<Callable<Void>>();
+
+	/**
+	 * Log4j logger
+	 */
 	static Logger						logger				= Logger.getLogger(ModelImageGenerator.class);
 
+	/**
+	 * Number of already elaborated models. Used for progress indication.
+	 */
 	final static AtomicInteger			currentCount		= new AtomicInteger(0);
 
+	/**
+	 * Number of total models to elaborate. Used for progress indication.
+	 */
 	static int							totalCount			= 0;
 
+	/**
+	 * Spawn a new process, executing the main method of provided class <code>klass</code>. Method
+	 * is blocking (waits until process ended). <code>file</code> is the command line parameter for
+	 * the new process. The class path of current process is used for the new process.
+	 * 
+	 * @param klass
+	 *            Class which contains main method to execute. Class must be existent in current
+	 *            classpath.
+	 * @param file
+	 *            Command line parameter for the new process. File should be the model file for the
+	 *            process.
+	 * @return Exit code of the process.
+	 * @throws IOException
+	 *             thrown if java executable not found
+	 * @throws InterruptedException
+	 *             thown if process is interrupted.
+	 */
 	@SuppressWarnings("rawtypes")
 	public static int exec(Class klass, String file) throws IOException, InterruptedException {
 		String javaHome = System.getProperty("java.home");
@@ -68,6 +112,16 @@ public class ModelImageGenerator {
 		return process.exitValue();
 	}
 
+	/**
+	 * Start mesh reasoning on given model. Called by a child process.
+	 * 
+	 * @param inputFolder
+	 *            Model input folder.
+	 * @param outputFolder
+	 *            Image output folder.
+	 * @param path
+	 *            Path to the model to analyze.
+	 */
 	public static void execProcess(String inputFolder, String outputFolder, String path) {
 		// System.err.println("Starting generator with setting:\n\tinput:  " + inputFolder
 		// + "\n\toutput: " + outputFolder + "\n\tfile:   " + path);
@@ -81,7 +135,10 @@ public class ModelImageGenerator {
 	}
 
 	/**
+	 * Main method.
+	 * 
 	 * @param args
+	 *            none
 	 */
 	public static void main(String[] args) {
 
@@ -161,10 +218,8 @@ public class ModelImageGenerator {
 						System.exit(-1);
 					}*/
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				int count = currentCount.incrementAndGet();

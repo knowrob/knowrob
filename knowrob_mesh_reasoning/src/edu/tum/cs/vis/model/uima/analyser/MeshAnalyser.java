@@ -107,6 +107,8 @@ public abstract class MeshAnalyser extends AnalysisEngine {
 	 * 
 	 * @param cas
 	 *            CAS to store found annotations.
+	 * @param settings
+	 *            image generator settings. If image generator is used, this should be != null.
 	 */
 	public void process(MeshCas cas, ImageGeneratorSettings settings) {
 		progress = 0;

@@ -103,7 +103,7 @@ public class CurvatureCalculation {
 				}
 
 			});
-		};
+		}
 
 		ThreadPool.executeInPool(threads);
 
@@ -269,7 +269,7 @@ public class CurvatureCalculation {
 				}
 
 			});
-		};
+		}
 
 		ThreadPool.executeInPool(threads);
 	}
@@ -353,6 +353,7 @@ public class CurvatureCalculation {
 	 * 
 	 * returns pdir1
 	 */
+	@SuppressWarnings("javadoc")
 	private static void diagonalize_curv(final Vector3f old_u, final Vector3f old_v, float ku,
 			float kuv, float kv, final Vector3f new_norm, Vector3f pdir[], float k[]) {
 		Vector3f r_old_u = new Vector3f(), r_old_v = new Vector3f();
@@ -394,16 +395,8 @@ public class CurvatureCalculation {
 	 * Reproject a curvature tensor from the basis spanned by old_u and old_v (which are assumed to
 	 * be unit-length and perpendicular) to the new_u, new_v basis. returns [new_ku, new_kuv,
 	 * new_kv]
-	 * 
-	 * @param old_u
-	 * @param old_v
-	 * @param old_ku
-	 * @param old_kuv
-	 * @param old_kv
-	 * @param new_u
-	 * @param new_v
-	 * @return [new_ku, new_kuv, new_kv]
 	 */
+	@SuppressWarnings("javadoc")
 	private static float[] proj_curv(final Vector3f old_u, final Vector3f old_v, float old_ku,
 			float old_kuv, float old_kv, final Vector3f new_u, final Vector3f new_v) {
 		Vector3f r_new_u = new Vector3f(), r_new_v = new Vector3f();
@@ -425,6 +418,7 @@ public class CurvatureCalculation {
 	/**
 	 * Rotate a coordinate system to be perpendicular to the given normal
 	 */
+	@SuppressWarnings("javadoc")
 	private static void rot_coord_sys(final Vector3f old_u, final Vector3f old_v,
 			final Vector3f new_norm, Vector3f new_u, Vector3f new_v) {
 		old_u.get(new_u);
@@ -484,7 +478,11 @@ public class CurvatureCalculation {
 	 * Compute a "typical scale" for the mesh: computed as 1% of the reciprocal of the 10-th
 	 * percentile curvature
 	 * 
-	 * @return
+	 * @param curvatures
+	 *            Curvature values for each vertex
+	 * @param m
+	 *            main model
+	 * @return typical scale value for the mesh
 	 */
 	private static float typical_scale(HashMap<Vertex, Curvature> curvatures, Model m) {
 		float frac = 0.1f;

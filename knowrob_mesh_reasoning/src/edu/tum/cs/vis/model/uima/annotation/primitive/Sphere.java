@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Stefan Profanter. All rights reserved. This program and the accompanying
+ * Copyright (c) 2013 Stefan Profanter. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the GNU Public License v3.0 which accompanies
  * this distribution, and is available at http://www.gnu.org/licenses/gpl.html
  * 
@@ -21,7 +21,11 @@ import edu.tum.cs.vis.model.util.Triangle;
 import edu.tum.cs.vis.model.util.Vertex;
 
 /**
- * Represents a Sphere as PrimitiveShape
+ * Represents a Sphere as PrimitiveShape.
+ * 
+ * Fitting is based on: <a href="http://profanter.me/static/publications/BachelorThesis/Thesis.pdf"
+ * >http://profanter.me/static/publications/BachelorThesis/Thesis.pdf</a>, chapter
+ * "3.3.3.2 Fit sphere"
  * 
  * @author Stefan Profanter
  * 
@@ -30,15 +34,11 @@ public class Sphere extends PrimitiveShape {
 
 	/**
 	 * For additional explanation see: <a
-	 * href="http://www.profanter.me/pub/BachelorThesis/Thesis.pdf"
-	 * >http://www.profanter.me/pub/BachelorThesis/Thesis.pdf</a>, chapter "3.3.3.2 Fit sphere"
-	 * 
-	 * @param a
-	 * @param b
-	 * @param c
-	 * @param vertices
-	 * @return
+	 * href="http://profanter.me/static/publications/BachelorThesis/Thesis.pdf"
+	 * >http://profanter.me/static/publications/BachelorThesis/Thesis.pdf</a>, chapter
+	 * "3.3.3.2 Fit sphere"
 	 */
+	@SuppressWarnings("javadoc")
 	private static float getL(float a, float b, float c, Set<Vertex> vertices) {
 		float sum = 0;
 		for (Vertex v : vertices) {
@@ -49,14 +49,11 @@ public class Sphere extends PrimitiveShape {
 
 	/**
 	 * For additional explanation see: <a
-	 * href="http://www.profanter.me/pub/BachelorThesis/Thesis.pdf"
-	 * >http://www.profanter.me/pub/BachelorThesis/Thesis.pdf</a>, chapter "3.3.3.2 Fit sphere"
-	 * 
-	 * @param a
-	 * @param b
-	 * @param c
-	 * @return
+	 * href="http://profanter.me/static/publications/BachelorThesis/Thesis.pdf"
+	 * >http://profanter.me/static/publications/BachelorThesis/Thesis.pdf</a>, chapter
+	 * "3.3.3.2 Fit sphere"
 	 */
+	@SuppressWarnings("javadoc")
 	private static float getLa(float a, float b, float c, Set<Vertex> vertices) {
 		float sum = 0;
 		for (Vertex v : vertices) {
@@ -67,14 +64,11 @@ public class Sphere extends PrimitiveShape {
 
 	/**
 	 * For additional explanation see: <a
-	 * href="http://www.profanter.me/pub/BachelorThesis/Thesis.pdf"
-	 * >http://www.profanter.me/pub/BachelorThesis/Thesis.pdf</a>, chapter "3.3.3.2 Fit sphere"
-	 * 
-	 * @param a
-	 * @param b
-	 * @param c
-	 * @return
+	 * href="http://profanter.me/static/publications/BachelorThesis/Thesis.pdf"
+	 * >http://profanter.me/static/publications/BachelorThesis/Thesis.pdf</a>, chapter
+	 * "3.3.3.2 Fit sphere"
 	 */
+	@SuppressWarnings("javadoc")
 	private static float getLb(float a, float b, float c, Set<Vertex> vertices) {
 		float sum = 0;
 		for (Vertex v : vertices) {
@@ -85,14 +79,11 @@ public class Sphere extends PrimitiveShape {
 
 	/**
 	 * For additional explanation see: <a
-	 * href="http://www.profanter.me/pub/BachelorThesis/Thesis.pdf"
-	 * >http://www.profanter.me/pub/BachelorThesis/Thesis.pdf</a>, chapter "3.3.3.2 Fit sphere"
-	 * 
-	 * @param a
-	 * @param b
-	 * @param c
-	 * @return
+	 * href="http://profanter.me/static/publications/BachelorThesis/Thesis.pdf"
+	 * >http://profanter.me/static/publications/BachelorThesis/Thesis.pdf</a>, chapter
+	 * "3.3.3.2 Fit sphere"
 	 */
+	@SuppressWarnings("javadoc")
 	private static float getLc(float a, float b, float c, Set<Vertex> vertices) {
 		float sum = 0;
 		for (Vertex v : vertices) {
@@ -103,15 +94,11 @@ public class Sphere extends PrimitiveShape {
 
 	/**
 	 * For additional explanation see: <a
-	 * href="http://www.profanter.me/pub/BachelorThesis/Thesis.pdf"
-	 * >http://www.profanter.me/pub/BachelorThesis/Thesis.pdf</a>, chapter "3.3.3.2 Fit sphere"
-	 * 
-	 * @param v
-	 * @param a
-	 * @param b
-	 * @param c
-	 * @return
+	 * href="http://profanter.me/static/publications/BachelorThesis/Thesis.pdf"
+	 * >http://profanter.me/static/publications/BachelorThesis/Thesis.pdf</a>, chapter
+	 * "3.3.3.2 Fit sphere"
 	 */
+	@SuppressWarnings("javadoc")
 	private static float getLi(Vertex v, float a, float b, float c) {
 		return (float) Math
 				.sqrt(Math.pow(v.x - a, 2) + Math.pow(v.y - b, 2) + Math.pow(v.z - c, 2));
@@ -132,6 +119,12 @@ public class Sphere extends PrimitiveShape {
 	 */
 	private float			radius	= 0;
 
+	/**
+	 * Create new sphere.
+	 * 
+	 * @param concave
+	 *            concave or convex?
+	 */
 	public Sphere(boolean concave) {
 		this.concave = concave;
 	}

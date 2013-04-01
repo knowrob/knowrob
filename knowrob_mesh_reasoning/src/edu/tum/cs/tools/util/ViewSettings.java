@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Stefan Profanter. All rights reserved. This program and the accompanying
+ * Copyright (c) 2013 Stefan Profanter. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the GNU Public License v3.0 which accompanies
  * this distribution, and is available at http://www.gnu.org/licenses/gpl.html
  * 
@@ -18,6 +18,9 @@ import java.io.Serializable;
 import peasy.PeasyCam;
 
 /**
+ * Wrapper class for image generator view settings. Provides methods for saving and loading view
+ * settings.
+ * 
  * @author Stefan Profanter
  * 
  */
@@ -28,6 +31,15 @@ public final class ViewSettings implements Serializable {
 	 */
 	private static final long	serialVersionUID	= 4193708032337186974L;
 
+	/**
+	 * Load view settings from specified path (.xml file) and set the Camera to this view.
+	 * 
+	 * @param path
+	 *            Path to view settings xml file
+	 * @param cam
+	 *            Camera to initialize with loaded values.
+	 * @return false if file doesn't exist or parse error.
+	 */
 	public static boolean loadSettings(File path, PeasyCam cam) {
 		if (!path.exists())
 			return false;
@@ -52,6 +64,16 @@ public final class ViewSettings implements Serializable {
 		return true;
 	}
 
+	/**
+	 * Save camera view settings to .xml file indicated by path. Already existing file will be
+	 * overwritten.
+	 * 
+	 * @param path
+	 *            Path for .xml file. <code>path</code> should contain the extension .xml
+	 * @param cam
+	 *            Current camera view
+	 * @return true if successfully saved.
+	 */
 	public static boolean saveSettings(File path, PeasyCam cam) {
 		XMLEncoder enc = null;
 
@@ -70,12 +92,24 @@ public final class ViewSettings implements Serializable {
 		return true;
 	}
 
+	/**
+	 * Camera rotation
+	 */
 	private float[]	rotation;
 
+	/**
+	 * Camera look at
+	 */
 	private float[]	lookAt;
 
+	/**
+	 * Camera distance
+	 */
 	private double	distance;
 
+	/**
+	 * Default constructor used by XML deserializer.
+	 */
 	public ViewSettings() {
 		rotation = new float[3];
 		lookAt = new float[3];
@@ -83,7 +117,10 @@ public final class ViewSettings implements Serializable {
 	}
 
 	/**
+	 * Initialize view settings with parameters of provided camera.
+	 * 
 	 * @param cam
+	 *            Camera to initialize view settings
 	 */
 	public ViewSettings(PeasyCam cam) {
 		rotation = cam.getRotations();
@@ -92,6 +129,8 @@ public final class ViewSettings implements Serializable {
 	}
 
 	/**
+	 * Distance of camera to lookAt point.
+	 * 
 	 * @return the distance
 	 */
 	public double getDistance() {
@@ -99,6 +138,8 @@ public final class ViewSettings implements Serializable {
 	}
 
 	/**
+	 * Look at point.
+	 * 
 	 * @return the lookAt
 	 */
 	public float[] getLookAt() {
@@ -106,6 +147,8 @@ public final class ViewSettings implements Serializable {
 	}
 
 	/**
+	 * Camera rotation.
+	 * 
 	 * @return the rotation
 	 */
 	public float[] getRotation() {
@@ -113,6 +156,8 @@ public final class ViewSettings implements Serializable {
 	}
 
 	/**
+	 * Set distance of camera to lookAt point.
+	 * 
 	 * @param distance
 	 *            the distance to set
 	 */
@@ -121,6 +166,8 @@ public final class ViewSettings implements Serializable {
 	}
 
 	/**
+	 * Look at point of camera
+	 * 
 	 * @param lookAt
 	 *            the lookAt to set
 	 */
@@ -129,6 +176,8 @@ public final class ViewSettings implements Serializable {
 	}
 
 	/**
+	 * Camera rotation
+	 * 
 	 * @param rotation
 	 *            the rotation to set
 	 */

@@ -39,6 +39,18 @@ public class ComplexHandleAnalyser extends MeshAnalyser {
 	 */
 	private static Logger	logger	= Logger.getLogger(ComplexHandleAnalyser.class);
 
+	/**
+	 * Tries to find complex handle by region growing. Neighboring annotations are combined if their
+	 * angle is smaller than 180 degree to form a convex handle.
+	 * 
+	 * @param cas
+	 *            MeshCas
+	 * @param pa
+	 *            Annotation from where to start region growing.
+	 * @param alreadyAdded
+	 *            Map of already added annotations and their complex handle
+	 * @return the new complex handle
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static ComplexHandleAnnotation regionGrowAnnotation(MeshCas cas,
 			PrimitiveAnnotation pa,

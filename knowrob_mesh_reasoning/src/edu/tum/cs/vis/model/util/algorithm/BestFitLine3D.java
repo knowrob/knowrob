@@ -35,7 +35,7 @@ public class BestFitLine3D {
 	 *            center of best fit line
 	 */
 	public static void getBestFitLine(ArrayList<Point3f> points, Vector3f dir, Point3f center) {
-		getBestFitLine(points, dir, null, center);;
+		getBestFitLine(points, dir, null, center);
 	}
 
 	/**

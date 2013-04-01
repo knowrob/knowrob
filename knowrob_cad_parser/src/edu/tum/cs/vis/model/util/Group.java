@@ -100,9 +100,9 @@ public class Group implements Serializable {
 	 * 
 	 * @param g
 	 *            The applet to draw on.
-	 * @param overrideColor
-	 *            override the draw color an texture. Draw whole object in the given color if !=
-	 *            null
+	 * @param drawSettings
+	 *            override the draw color, texture (and other settings). Draw whole object in the
+	 *            given color if != null
 	 */
 	public void draw(PGraphics g, DrawSettings drawSettings) {
 		mesh.drawLines(g, drawSettings);
@@ -137,7 +137,6 @@ public class Group implements Serializable {
 	 * 
 	 * @param t
 	 *            triangles to remove.
-	 * @return true if at least one triangle is found and removed.
 	 */
 	public void removeTriangle(Collection<Triangle> t) {
 		synchronized (mesh.getTriangles()) {
@@ -212,6 +211,13 @@ public class Group implements Serializable {
 
 	}
 
+	/**
+	 * Add all triangles enclosed by this group and all child groups to the <code>triangles</code>
+	 * collection.
+	 * 
+	 * @param triangles
+	 *            collection where all the triangles are added.
+	 */
 	public void getAllTriangles(final Collection<Triangle> triangles) {
 		mesh.getAllTriangles(triangles);
 
@@ -395,6 +401,10 @@ public class Group implements Serializable {
 	 * Call this function only in the root group! It will center the whole Group with its children
 	 * to the Point (0,0,0) which means the volumetric center will then be at point 0.
 	 * 
+	 * @param textureBasePath
+	 *            base path for a relative file path of texture images.
+	 * @param isRoot
+	 *            this should only be true for the root group.
 	 */
 	private void initialize(String textureBasePath, boolean isRoot) {
 		// Initialize min and max values of mesh

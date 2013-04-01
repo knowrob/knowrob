@@ -44,6 +44,9 @@ public class ComplexHandleAnnotationPanel extends AnnotationPanel<ComplexHandleA
 	 */
 	private final JTextField	txtAreaCov;
 
+	/**
+	 * Textfield for handle weight
+	 */
 	private final JTextField	txtHandleWeight;
 	/**
 	 * dimension of selected annotation

@@ -88,8 +88,15 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 		@SuppressWarnings("rawtypes")
 		final AnnotationPanel								component;
 
+		/**
+		 * Parent accordion
+		 */
 		private final MeshCasAccordion						accordion;
 
+		/**
+		 * If checkbox is changed programatically, this is set to true to avoid firing additional
+		 * events
+		 */
 		public boolean										checkboxChangedProgrammatically	= false;
 
 		/**
@@ -103,6 +110,8 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 		 *            Main CAS
 		 * @param annotationCount
 		 *            Count of annotations for this annotation type
+		 * @param accordion
+		 *            parent MeshCasAccordion
 		 */
 		public BarInfo(Class<? extends DrawableAnnotation> annotationType,
 				@SuppressWarnings("rawtypes") AnnotationPanel component, MeshCas cas,
@@ -143,6 +152,15 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 				}
 		}
 
+		/**
+		 * Check keyboard modifiers for given mask
+		 * 
+		 * @param modifiers
+		 *            event modifiers
+		 * @param mask
+		 *            mask to check
+		 * @return true if mask matches modifiers
+		 */
 		private boolean checkMod(int modifiers, int mask) {
 			return ((modifiers & mask) == mask);
 		}
@@ -209,6 +227,8 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 	 * 
 	 * @param clazz
 	 *            AnnotationType for which to create panel
+	 * @param cas
+	 *            MeshCas
 	 * @return the control panel
 	 */
 	@SuppressWarnings("rawtypes")
@@ -381,6 +401,8 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 		if (visibleComponent != null) {
 			this.remove(visibleComponent);
 		}
+		if (barInfo == null)
+			return; // should never happen
 		visibleComponent = barInfo.getComponent();
 		this.add(visibleComponent, BorderLayout.CENTER);
 
@@ -454,7 +476,10 @@ public class MeshCasAccordion extends JPanel implements ActionListener {
 	}
 
 	/**
-	 * @param barInfo
+	 * Toggle checkboxes of all BarInfo but skip the indicated one.
+	 * 
+	 * @param skip
+	 *            BarInfo to skip
 	 */
 	public void toggleCheckboxes(BarInfo skip) {
 		Set<BarInfo> barInfos = new HashSet<BarInfo>(bars.values());

@@ -72,6 +72,9 @@ public class DrawSettingsPanel extends JPanel implements ActionListener {
 	 */
 	private final JCheckBox			cbxSelectNearestOnly;
 
+	/**
+	 * Checkbox for selectTrianglesOnly setting.
+	 */
 	private final JCheckBox			cbxSelectTriangles;
 	/**
 	 * draw bounding box for each group

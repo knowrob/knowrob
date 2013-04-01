@@ -32,6 +32,9 @@ public final class PlaneAnnotation extends PrimitiveAnnotation<PlaneAnnotation> 
 	 */
 	private static final long	serialVersionUID	= 7758656289829843165L;
 
+	/**
+	 * Plane representing the plane annotation
+	 */
 	private final Plane			plane;
 
 	/**
@@ -123,6 +126,11 @@ public final class PlaneAnnotation extends PrimitiveAnnotation<PlaneAnnotation> 
 		return model.getUnscaled(getLongSide());
 	}
 
+	/**
+	 * Get the unerlying plane.
+	 * 
+	 * @return fitted plane for annotation
+	 */
 	public Plane getPlane() {
 		return plane;
 	}

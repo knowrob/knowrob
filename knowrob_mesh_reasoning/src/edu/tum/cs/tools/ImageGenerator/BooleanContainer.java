@@ -8,9 +8,14 @@
 package edu.tum.cs.tools.ImageGenerator;
 
 /**
+ * Wrapper for boolean to represent a boolean value as an object. (Needed for monitors)
+ * 
  * @author Stefan Profanter
  * 
  */
 public class BooleanContainer {
+	/**
+	 * The wrapper value
+	 */
 	public boolean	val	= false;
 }

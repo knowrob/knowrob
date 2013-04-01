@@ -34,9 +34,9 @@ public class Line extends DrawObject {
 	 * 
 	 * @param g
 	 *            Applet to draw on
-	 * @param overrideColor
-	 *            override the draw color an texture. Draw whole object in the given color if !=
-	 *            null
+	 * @param drawSettings
+	 *            override the draw color, texture (and other settings). Draw whole object in the
+	 *            given color if != null
 	 */
 	public void draw(PGraphics g, DrawSettings drawSettings) {
 		applyColor(g, drawSettings);

@@ -69,6 +69,17 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 		c.setPrimitiveType(getPrimitiveType(curvatures, v));
 	}
 
+	/**
+	 * Combines neighboring annotations which are of the same type into the same annotation.
+	 * 
+	 * @param cas
+	 *            MeshCas
+	 * @param annotations
+	 *            List of all annotations to check
+	 * @param toRefit
+	 *            Set of annotations which need a refit of primitive types because they have been
+	 *            changed.
+	 */
 	@SuppressWarnings("rawtypes")
 	private static void combineSameNeighboringAnnotations(MeshCas cas,
 			List<Annotation> annotations, Set<Annotation> toRefit) {
@@ -117,9 +128,14 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 		}
 	}
 
+	/**
+	 * Combine very small annotations with surrounding larger ones and merge/remove invalid ones
+	 * 
+	 * @param cas
+	 *            MeshCas
+	 */
 	@SuppressWarnings("rawtypes")
 	private static void combineSmallAnnotations(MeshCas cas) {
-		// Combine very small annotations with surrounding larger ones and merge/remove invalid ones
 		Set<Annotation> toRemove = new HashSet<Annotation>();
 		for (Iterator<Annotation> it = cas.getAnnotations().iterator(); it.hasNext();) {
 			Annotation a = it.next();
@@ -180,8 +196,11 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 	}
 
 	/**
+	 * Get list of annotations of the specified type found in given annotations list.
+	 * 
 	 * @param annotations
-	 * @return
+	 *            list of annotations to search through
+	 * @return subset of annotations list of the given annotation type
 	 */
 	@SuppressWarnings("rawtypes")
 	private static List<? extends PrimitiveAnnotation> fitAnnotations(
@@ -292,13 +311,23 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 	}
 
 	/**
-	 * @param failedFittings
+	 * Merge given set of annotations with neighboring annotations. The neighbor annotation to merge
+	 * into is chosen by it's size. If an annotation of the same type is one of the neighbors, this
+	 * one is preferred over the bigger one.
+	 * 
+	 * @param cas
+	 *            MeshCas
+	 * @param toMerge
+	 *            Set of annotations to merge
+	 * @param toRefit
+	 *            Returns a set of annotations which need a refit because their structure has
+	 *            changed.
 	 */
 	@SuppressWarnings("rawtypes")
-	private static void mergeWithNeighbors(MeshCas cas, Set<PrimitiveAnnotation> failedFittings,
+	private static void mergeWithNeighbors(MeshCas cas, Set<PrimitiveAnnotation> toMerge,
 			Set<Annotation> toRefit) {
 
-		for (PrimitiveAnnotation pa : failedFittings) {
+		for (PrimitiveAnnotation pa : toMerge) {
 
 			@SuppressWarnings("unchecked")
 			Set<PrimitiveAnnotation> neighborAnnotations = pa.getNeighborAnnotations(cas,
@@ -309,7 +338,7 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 			// find the biggest neighbor annotation or one of the same type
 			for (PrimitiveAnnotation a1 : neighborAnnotations) {
 
-				if (failedFittings.contains(a1))
+				if (toMerge.contains(a1))
 					continue;
 
 				boolean sameConvexity = pa.getClass() == a1.getClass();
@@ -600,7 +629,7 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 				}
 
 			});
-		};
+		}
 
 		ThreadPool.executeInPool(threads);
 		threads.clear();
@@ -683,7 +712,7 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 		combineSameNeighboringAnnotations(cas, cas.getAnnotations(), toRefit);
 		fitAnnotations(toRefit);
 
-		itemsElaborated.addAndGet((int) (allTriangles.size() * 0.1));
+		itemsElaborated.addAndGet((int) (allTriangles.size() * 0.1));// now we have 100%
 
 	}
 

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 
 import javax.vecmath.Point2f;
@@ -299,6 +300,9 @@ public class ColladaParser extends ModelParser {
 	 * 
 	 * @param g
 	 *            Geometry object to parse
+	 * @param currGroup
+	 *            group of which the current geometry is part of. Used to add all found vertices to
+	 *            the group's vertices list.
 	 * @param instanceMaterial
 	 *            List of all known materials which may be referred by the geometry object
 	 * @param transformations
@@ -308,8 +312,7 @@ public class ColladaParser extends ModelParser {
 	 *            the collada Structure
 	 */
 	private static void parseGeometry(Geometry g, Group currGroup,
-			HashMap<String, String> instanceMaterial, ArrayList<BaseXform> transformations,
-			Collada collada) {
+			Map<String, String> instanceMaterial, List<BaseXform> transformations, Collada collada) {
 		Mesh m = g.getMesh();
 		ArrayList<Vertex> vertices = getVerticesOfMesh(m, m.getVertices().getInputs(), "POSITION");
 		ArrayList<Vertex> normals = getVerticesOfMesh(m, m.getVertices().getInputs(), "NORMAL");
@@ -342,18 +345,18 @@ public class ColladaParser extends ModelParser {
 	 * 
 	 * @param l
 	 *            the line object to parse
-	 * @param m
-	 *            parent mesh for the line
+	 * @param currGroup
+	 *            group of which the current geometry is part of. Used to add all found vertices to
+	 *            the group's vertices list.
 	 * @param instanceMaterial
 	 *            List of all known materials which may be referred by the geometry object
-	 * @param transformations
-	 *            List of all parent transformations which should be applied to this and it's
-	 *            subsequent geometries
 	 * @param collada
 	 *            the collada Structure
+	 * @param vertices
+	 *            List of vertices of the line.
 	 */
 	private static void parseGeometryLine(Lines l, Group currGroup,
-			HashMap<String, String> instanceMaterial, Collada collada, ArrayList<Vertex> vertices) {
+			Map<String, String> instanceMaterial, Collada collada, List<Vertex> vertices) {
 		Material mat = null;
 		if (instanceMaterial.containsKey(l.getMaterial())) {
 			mat = collada.findMaterial(instanceMaterial.get(l.getMaterial()));
@@ -410,18 +413,19 @@ public class ColladaParser extends ModelParser {
 	 * @param t
 	 *            the line object to parse
 	 * @param m
-	 *            parent mesh for the line
+	 *            parent mesh for the triangle
 	 * @param instanceMaterial
 	 *            List of all known materials which may be referred by the geometry object
-	 * @param transformations
-	 *            List of all parent transformations which should be applied to this and it's
-	 *            subsequent geometries
 	 * @param collada
 	 *            the collada Structure
+	 * @param vertices
+	 *            List of vertices of the line.
+	 * @param currGroup
+	 *            group of which the current geometry is part of. Used to add all found vertices to
+	 *            the group's vertices list.
 	 */
 	private static void parseGeometryTriangle(Triangles t, Group currGroup,
-			HashMap<String, String> instanceMaterial, Collada collada, ArrayList<Vertex> vertices,
-			Mesh m) {
+			Map<String, String> instanceMaterial, Collada collada, List<Vertex> vertices, Mesh m) {
 		Appearance appearance;
 		if (instanceMaterial.containsKey(t.getMaterial())) {
 			Material mat = collada.findMaterial(instanceMaterial.get(t.getMaterial()));
@@ -519,7 +523,7 @@ public class ColladaParser extends ModelParser {
 	/**
 	 * Convert a collada source item to the corresponding float array
 	 * 
-	 * @param the
+	 * @param s
 	 *            collada source
 	 * @return float array with float[count][stride]
 	 */
@@ -539,8 +543,11 @@ public class ColladaParser extends ModelParser {
 	 *            vertex to apply the transformation onto
 	 * @param transformations
 	 *            list of transformations to apply
+	 * @param withTranslate
+	 *            if false, only rotation part of transformation matrix is applied. If true, the
+	 *            vertex is also translated according to the transformation matrix.
 	 */
-	private static void useTransformation(Vertex vertex, ArrayList<BaseXform> transformations,
+	private static void useTransformation(Vertex vertex, List<BaseXform> transformations,
 			boolean withTranslate) {
 		for (int idx = transformations.size() - 1; idx >= 0; idx--) {
 			BaseXform transform = transformations.get(idx);
@@ -649,6 +656,8 @@ public class ColladaParser extends ModelParser {
 	 * 
 	 * @param node
 	 *            Node to parse (may have other sub-Nodes => called recursively)
+	 * @param currGroup
+	 *            Group of which the node is part of.
 	 * @param transformations
 	 *            List of all parent transformations which should be applied to this and it's
 	 *            subsequent nodes

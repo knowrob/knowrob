@@ -35,6 +35,9 @@ public class MeshReasoningBatchTest {
 	 */
 	public static Object	monitor				= new Object();
 
+	/**
+	 * subfolder of root models folder
+	 */
 	static String			subfolder			= "kitchen";
 
 	/**

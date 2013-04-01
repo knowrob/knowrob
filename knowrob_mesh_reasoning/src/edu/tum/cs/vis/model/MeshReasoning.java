@@ -74,12 +74,25 @@ public class MeshReasoning {
 		return MeshReasoning.initMeshReasoning(withView, null);
 	}
 
+	/**
+	 * Initialize mesh reasoning object for image generation.
+	 * 
+	 * @param withView
+	 *            Also create GUI to visualize mesh reasoning. Should be true if image generation is
+	 *            used.
+	 * @param imageGenerator
+	 *            ImageGeneratorSettings for image generation
+	 * @return new Mesh Reasoning object.
+	 */
 	public static MeshReasoning initMeshReasoning(boolean withView,
 			ImageGeneratorSettings imageGenerator) {
 		DOMConfigurator.configureAndWatch("log4j.xml", 60 * 1000);
 		return new MeshReasoning(withView, imageGenerator);
 	}
 
+	/**
+	 * Settings for image generator. If null, image generation is disabled.
+	 */
 	private ImageGeneratorSettings		imageGeneratorSettings	= null;
 
 	/**
@@ -114,6 +127,17 @@ public class MeshReasoning {
 		this(withView, null);
 	}
 
+	/**
+	 * Constructor for mesh reasoning object. Initializes object and creates mesh reasoning view if
+	 * indicated.
+	 * 
+	 * @param withView
+	 *            set to true if mesh reasoning view should be created and shown
+	 * @param imageGenerator
+	 *            ImageGeneratorSettings for image generation. Set to null if image generation not
+	 *            used.
+	 * 
+	 */
 	public MeshReasoning(boolean withView, ImageGeneratorSettings imageGenerator) {
 		imageGeneratorSettings = imageGenerator;
 		if (imageGeneratorSettings != null)
@@ -283,6 +307,13 @@ public class MeshReasoning {
 			mrv.clearSelectedAnnotations();
 	}
 
+	/**
+	 * Get all annotations of given class.
+	 * 
+	 * @param clazz
+	 *            Class of desired annotation type.
+	 * @return HashSet of annotations found in model.
+	 */
 	@SuppressWarnings("rawtypes")
 	public <T extends MeshAnnotation> HashSet<T> findAnnotations(Class<T> clazz) {
 		return cas.findAnnotations(clazz);
@@ -349,14 +380,50 @@ public class MeshReasoning {
 		return ret;
 	}
 
+	/**
+	 * Get list of all handle annotations in model. List is ordered using HandleComparator.
+	 * 
+	 * @return Ordered list by handle probability of all handles found in model.
+	 * 
+	 * @see edu.tum.cs.vis.model.util.HandleComparator
+	 */
 	public HandleAnnotation[] getHandle() {
 		return getHandle(-1f, -1f, -1f, -1f);
 	}
 
+	/**
+	 * Get list of all handle annotations in model. List is ordered using HandleComparator.
+	 * 
+	 * @param minRadius
+	 *            handle minimum radius (in meters)
+	 * @param maxRadius
+	 *            handle maximum radius (in meters)
+	 * 
+	 * @return Ordered list by handle probability of all handles found in model.
+	 * 
+	 * @see edu.tum.cs.vis.model.util.HandleComparator
+	 */
 	public HandleAnnotation[] getHandle(double minRadius, double maxRadius) {
 		return getHandle(minRadius, maxRadius, -1f, -1f);
 	}
 
+	/**
+	 * Get list of all handle annotations in model. List is ordered using HandleComparator.
+	 * 
+	 * 
+	 * @param minRadius
+	 *            handle minimum radius (in meters)
+	 * @param maxRadius
+	 *            handle maximum radius (in meters)
+	 * @param minLength
+	 *            handle minimum length (in meters)
+	 * @param maxLength
+	 *            handle maximum length (in meters)
+	 * 
+	 * @return Ordered list by handle probability of all handles found in model.
+	 * 
+	 * @see edu.tum.cs.vis.model.util.HandleComparator
+	 */
 	public HandleAnnotation[] getHandle(double minRadius, double maxRadius, double minLength,
 			double maxLength) {
 
@@ -402,6 +469,8 @@ public class MeshReasoning {
 	 * 
 	 * @param a
 	 *            Annotation to highlight
+	 * @param color
+	 *            highlight color. Set to null to use default color.
 	 */
 	public void highlightAnnotation(DrawableAnnotation a, Color color) {
 		if (mrv == null)
@@ -409,6 +478,9 @@ public class MeshReasoning {
 		mrv.addSelectedAnnotation(a, color);
 	}
 
+	/**
+	 * Init imageGeneratorSettings with predefined settings.
+	 */
 	private void initImageGenerator() {
 		imageGeneratorSettings.setDrawAxis(false);
 		imageGeneratorSettings.setWhiteBackground(true);
@@ -442,7 +514,9 @@ public class MeshReasoning {
 							mr.highlightAnnotation(cones[i]);
 							try {
 								Thread.sleep(200);
-							} catch (InterruptedException e) {} // wait til selected
+							} catch (InterruptedException e) {// do nothing
+							}
+							// wait til selected
 							localSettings.waitSaved("cones" + (i + 1));
 							mr.clearHightlight();
 						}
@@ -463,7 +537,8 @@ public class MeshReasoning {
 							mr.highlightAnnotation(planes[i]);
 							try {
 								Thread.sleep(200);
-							} catch (InterruptedException e) {} // wait til selected
+							} catch (InterruptedException e) {// do nothing
+							} // wait til selected
 							localSettings.waitSaved("planes" + (i + 1));
 							mr.clearHightlight();
 						}
@@ -484,7 +559,8 @@ public class MeshReasoning {
 							mr.highlightAnnotation(spheres[i]);
 							try {
 								Thread.sleep(200);
-							} catch (InterruptedException e) {} // wait til selected
+							} catch (InterruptedException e) {// do nothing
+							} // wait til selected
 							localSettings.waitSaved("spheres" + (i + 1));
 							mr.clearHightlight();
 						}
@@ -505,7 +581,8 @@ public class MeshReasoning {
 							mr.highlightAnnotation(container[i]);
 							try {
 								Thread.sleep(200);
-							} catch (InterruptedException e) {} // wait til selected
+							} catch (InterruptedException e) {// do nothing
+							} // wait til selected
 							localSettings.waitSaved("container" + (i + 1));
 							mr.clearHightlight();
 						}
@@ -528,7 +605,8 @@ public class MeshReasoning {
 							mr.highlightAnnotation((DrawableAnnotation) handles[i]);
 							try {
 								Thread.sleep(200);
-							} catch (InterruptedException e) {} // wait til selected
+							} catch (InterruptedException e) {// do nothing
+							} // wait til selected
 							localSettings.waitSaved("handle" + (i + 1));
 							mr.clearHightlight();
 						}
@@ -540,6 +618,10 @@ public class MeshReasoning {
 		 */
 	}
 
+	/**
+	 * Init image generator settings for spoon images where handle and spoon sphere are selected.
+	 */
+	@SuppressWarnings("unused")
 	private void initImageGeneratorSpoon() {
 		imageGeneratorSettings.setDrawAxis(false);
 		imageGeneratorSettings.setWhiteBackground(true);
@@ -597,7 +679,8 @@ public class MeshReasoning {
 						}
 						try {
 							Thread.sleep(200);
-						} catch (InterruptedException e) {} // wait til selected
+						} catch (InterruptedException e) {// do nothing
+						} // wait til selected
 						localSettings.waitSaved("ConeSphere");
 						mr.clearHightlight();
 

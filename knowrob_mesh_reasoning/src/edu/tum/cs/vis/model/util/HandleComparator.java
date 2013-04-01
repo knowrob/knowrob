@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Stefan Profanter. All rights reserved. This program and the accompanying
+ * Copyright (c) 2013 Stefan Profanter. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the GNU Public License v3.0 which accompanies
  * this distribution, and is available at http://www.gnu.org/licenses/gpl.html
  * 
@@ -15,24 +15,40 @@ import edu.tum.cs.vis.model.Model;
 import edu.tum.cs.vis.model.uima.annotation.HandleAnnotation;
 
 /**
+ * Handle comparator used to sort list of handle annotations according their handle probability.
+ * 
  * @author Stefan Profanter
  * 
  */
 public class HandleComparator implements Comparator<HandleAnnotation> {
+	/**
+	 * default minimum radius
+	 */
 	public static float	DEFAULT_RADIUS_MIN	= 0.004f;	// 4 millimeters
+	/**
+	 * default maximum radius
+	 */
 	public static float	DEFAULT_RADIUS_MAX	= 0.05f;	// 80 millimeters
+	/**
+	 * default minimum length
+	 */
 	public static float	DEFAULT_LENGTH_MIN	= 0.01f;	// 1cm
+	/**
+	 * default maximum length
+	 */
 	public static float	DEFAULT_LENGTH_MAX	= 0.80f;	// 80cm
 
+	/**
+	 * Get weight for area coverage based on sigmoid function. Area coverage should be bigger than
+	 * 0.5 (= 50%)
+	 * 
+	 * @param coverage
+	 *            area coverage to calculate weight for
+	 * @return weight for provided area coverage
+	 */
 	private static double getAreaCoverageWeight(float coverage) {
 		// calculates sigmoid: 1/(1+e^(-(x-0.5)*20))
 		return 1 / (1 + Math.exp(-(Math.min(coverage, 1) - 0.5) * 20)) * WEIGHT_COVERAGE;
-	}
-
-	private static double getFitErrorWeight(float fitError) {
-		// calculates mirrored sigmoid: 1-1/(1+e^(-(x-0.5)*10))
-
-		return 1 - 1 / (1 + Math.exp(-(fitError - 0.5) * 10)) * WEIGHT_FIT_ERROR;
 	}
 
 	/*public static void main(String[] args) {
@@ -62,20 +78,26 @@ public class HandleComparator implements Comparator<HandleAnnotation> {
 	 * proportional to the radius. If only radius is given, the length is ignored. If both are
 	 * given, the weight is calculated as a combination of radius and length.
 	 * 
-	 * @param o1
+	 * @param h
+	 *            Handle annotation
 	 * @param model
+	 *            parent model of annotation (needed to get unscaled value)
 	 * @param minRadius
+	 *            minimum desired handle radius
 	 * @param maxRadius
+	 *            maximum desired handle radius
 	 * @param minLength
+	 *            minimum desired handle length
 	 * @param maxLength
-	 * @return
+	 *            maximum desired handle length
+	 * @return weight for the handle. The bigger the weight, the more probable it is a handle
 	 */
-	public static double getHandleWeight(HandleAnnotation o1, Model model, double minRadius,
+	public static double getHandleWeight(HandleAnnotation h, Model model, double minRadius,
 			double maxRadius, double minLength, double maxLength) {
-		double w = getMinMaxWeight(model.getUnscaled(o1.getCone().getRadiusAvg()), minRadius,
-				maxRadius, WEIGHT_RADIUS, model.getUnscaled(o1.getCone().getRadiusAvg()))
-				* getMinMaxWeight(model.getUnscaled(o1.getCone().getHeight()), minLength,
-						maxLength, WEIGHT_LENGTH, 1) * getAreaCoverageWeight(o1.getAreaCoverage());
+		double w = getMinMaxWeight(model.getUnscaled(h.getCone().getRadiusAvg()), minRadius,
+				maxRadius, WEIGHT_RADIUS, model.getUnscaled(h.getCone().getRadiusAvg()))
+				* getMinMaxWeight(model.getUnscaled(h.getCone().getHeight()), minLength, maxLength,
+						WEIGHT_LENGTH, 1) * getAreaCoverageWeight(h.getAreaCoverage());
 
 		// it may be that the cone wasn't fit correctly and is therefore NAN
 		if (Double.isNaN(w))
@@ -83,6 +105,21 @@ public class HandleComparator implements Comparator<HandleAnnotation> {
 		return w;
 	}
 
+	/**
+	 * Get weight of x for specified min/max values.
+	 * 
+	 * @param x
+	 *            value to calculate weight for
+	 * @param min
+	 *            min value
+	 * @param max
+	 *            max value
+	 * @param itemWeight
+	 *            basic weighting of x
+	 * @param fallback
+	 *            fallback weight if min and/or max have invalid values (smaller than 0)
+	 * @return the weight for x
+	 */
 	private static double getMinMaxWeight(float x, double min, double max, double itemWeight,
 			double fallback) {
 		return (min >= 0 && max > min) ? getWeight(x, min, max) * itemWeight + x * 0.001 : fallback
@@ -95,9 +132,12 @@ public class HandleComparator implements Comparator<HandleAnnotation> {
 	 * ,x>b}}] Where a = minVal, b=maxVal
 	 * 
 	 * @param x
+	 *            value to calculate weight for
 	 * @param minVal
+	 *            min value
 	 * @param maxVal
-	 * @return
+	 *            max value
+	 * @return the weight for x
 	 */
 	private static double getWeight(double x, double minVal, double maxVal) {
 		if (x == 0)
@@ -110,22 +150,70 @@ public class HandleComparator implements Comparator<HandleAnnotation> {
 			return 1;
 	}
 
+	/**
+	 * Current desired min radius
+	 */
 	private final double		minRadius;
 
+	/**
+	 * Current desired max radius
+	 */
 	private final double		maxRadius;
 
+	/**
+	 * Current desired min length
+	 */
 	private final double		minLength;
+
+	/**
+	 * Current desired max length
+	 */
 	private final double		maxLength;
+
+	/**
+	 * Parent model
+	 */
 	private final Model			model;
+
+	/**
+	 * Basic weighting factor (importance) of radius
+	 */
 	private final static double	WEIGHT_RADIUS			= 2.5;
 
+	/**
+	 * Basic weighting factor (importance) of length
+	 */
 	private final static double	WEIGHT_LENGTH			= 1;
 
+	/**
+	 * Basic weighting factor (importance) of area coverage
+	 */
 	private final static double	WEIGHT_COVERAGE			= 0.5;
+
+	/**
+	 * Basic weighting factor (importance) of fit error
+	 */
 	private final static double	WEIGHT_FIT_ERROR		= 0.75;
 
+	/**
+	 * Minimum needed weight so that it is a handle
+	 */
 	public final static double	MIN_WEIGHT_FOR_HANDLE	= (WEIGHT_RADIUS * WEIGHT_LENGTH * WEIGHT_FIT_ERROR) * 0.25;
 
+	/**
+	 * Initialize handle comparator with given values.
+	 * 
+	 * @param model
+	 *            parent model
+	 * @param minRadius
+	 *            minimum desired radius or -1
+	 * @param maxRadius
+	 *            maximum desired radius or -1
+	 * @param minLength
+	 *            minimum desired length or -1
+	 * @param maxLength
+	 *            maximum desired length or -1
+	 */
 	public HandleComparator(Model model, double minRadius, double maxRadius, double minLength,
 			double maxLength) {
 		this.model = model;

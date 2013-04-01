@@ -31,6 +31,15 @@ public abstract class DrawObjectAnnotation extends DrawableAnnotation {
 	 */
 	protected DrawObject		object;
 
+	/**
+	 * Constructor for draw object annotation. Initializes random annotation color and set default
+	 * annotation color to given one.
+	 * 
+	 * @param annotationColor
+	 *            default annotation color
+	 * 
+	 * @see edu.tum.cs.vis.model.uima.annotation.DrawableAnnotation
+	 */
 	public DrawObjectAnnotation(Color annotationColor) {
 		super(annotationColor);
 	}

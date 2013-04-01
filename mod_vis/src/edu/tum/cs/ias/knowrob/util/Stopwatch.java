@@ -1,5 +1,11 @@
 package edu.tum.cs.ias.knowrob.util;
 
+/**
+ * Stop watch millisecond accuracy. For measuring different time spans.
+ * 
+ * @author Stefan Profanter
+ *
+ */
 public class Stopwatch {
     
     private long startTime = 0;

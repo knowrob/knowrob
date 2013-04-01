@@ -45,12 +45,26 @@ public abstract class DrawableAnnotation extends Annotation {
 	 */
 	private boolean				useRandomColor		= false;
 
+	/**
+	 * Constructor for drawable annotation. Initializes random annotation color and set default
+	 * annotation color to given one.
+	 * 
+	 * @param annotationColor
+	 *            default annotation color
+	 */
 	public DrawableAnnotation(Color annotationColor) {
 		randomAnnotationColor = new Color((int) (Math.random() * 255), (int) (Math.random() * 255),
 				(int) (Math.random() * 255));
 		this.annotationColor = annotationColor;
 	}
 
+	/**
+	 * Checks if annotation contains given triangle.
+	 * 
+	 * @param t
+	 *            Triangle to check
+	 * @return true if annotation contains <code>t</code>
+	 */
 	public abstract boolean containsTriangle(Triangle t);
 
 	/**
@@ -58,6 +72,9 @@ public abstract class DrawableAnnotation extends Annotation {
 	 * 
 	 * @param g
 	 *            Applet to draw on
+	 * @param drawSettings
+	 *            drawSettings to draw annotation. Useful if you need to override annotation color.
+	 *            Can also be null to use default values.
 	 */
 	public void draw(PGraphics g, DrawSettings drawSettings) {
 		if (drawAnnotation || drawSettings.forceDraw)
@@ -69,6 +86,9 @@ public abstract class DrawableAnnotation extends Annotation {
 	 * 
 	 * @param g
 	 *            graphics context to draw on
+	 * @param drawSettings
+	 *            drawSettings to draw annotation. Useful if you need to override annotation color.
+	 *            Can also be null to use default values.
 	 */
 	protected abstract void drawAnnotation(PGraphics g, DrawSettings drawSettings);
 

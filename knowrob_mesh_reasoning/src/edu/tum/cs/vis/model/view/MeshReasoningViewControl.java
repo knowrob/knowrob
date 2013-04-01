@@ -60,11 +60,11 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 	/**
 	 * List which shows the current progress of all analysers
 	 */
-	private final JList						analyserList;
+	private final JList<String>				analyserList;
 	/**
 	 * List model for analyserList
 	 */
-	private final DefaultListModel			analyserListModel;
+	private final DefaultListModel<String>	analyserListModel;
 
 	/**
 	 * Panel which contains controls which influence drawing of model
@@ -76,8 +76,19 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 	 */
 	private final JCheckBox					cbxShowMesh;
 
+	/**
+	 * Radio button for draw type filled
+	 */
 	private final JRadioButton				rbnDrawFill;
+
+	/**
+	 * Radio button for draw type lines
+	 */
 	private final JRadioButton				rbnDrawLines;
+
+	/**
+	 * Radio button for draw type points
+	 */
 	private final JRadioButton				rbnDrawPoints;
 
 	/**
@@ -121,9 +132,9 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 		this.analyser = analyser;
 
 		accordion = new MeshCasAccordion(cas);
-		analyserListModel = new DefaultListModel();
+		analyserListModel = new DefaultListModel<String>();
 
-		analyserList = new JList(analyserListModel);
+		analyserList = new JList<String>(analyserListModel);
 		updateAnalyserList();
 
 		JScrollPane scrollAccordion = new JScrollPane(accordion,
@@ -237,6 +248,11 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 		return cas;
 	}
 
+	/**
+	 * Get default image filename set by corresponding setter.
+	 * 
+	 * @return default image filename
+	 */
 	public String getDefaultImageFilename() {
 		return defaultImageFilename;
 	}

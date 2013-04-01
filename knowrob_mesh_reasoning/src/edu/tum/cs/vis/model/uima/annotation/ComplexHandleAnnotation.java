@@ -43,10 +43,20 @@ public class ComplexHandleAnnotation extends DrawableAnnotation implements Handl
 	 */
 	private static final long				serialVersionUID		= 1983829446921229660L;
 
+	/**
+	 * Set of primitive annotations which represent the complex handle.
+	 */
 	@SuppressWarnings("rawtypes")
 	private final Set<PrimitiveAnnotation>	primitiveAnnotations	= new HashSet<PrimitiveAnnotation>();
 
+	/**
+	 * Fitted cone of complex handle
+	 */
 	private final Cone						cone;
+
+	/**
+	 * The parent model of complex handle.
+	 */
 	private final Model						model;
 	/**
 	 * allowed tolerance between normal vectors. Tolerance is indicated as the result of the dot
@@ -58,8 +68,6 @@ public class ComplexHandleAnnotation extends DrawableAnnotation implements Handl
 	/**
 	 * Create new complex handle annotation.
 	 * 
-	 * @param curvatures
-	 *            Map of curvatures for vertices
 	 * @param model
 	 *            parent model
 	 */
@@ -69,6 +77,13 @@ public class ComplexHandleAnnotation extends DrawableAnnotation implements Handl
 		cone = new Cone(false);
 	}
 
+	/**
+	 * Add given annotation to the complex handle. After all annotations are added, you have to call
+	 * fit afterwards to refit cone.
+	 * 
+	 * @param pa
+	 *            annotation to add.
+	 */
 	public void addAnnotation(@SuppressWarnings("rawtypes") PrimitiveAnnotation pa) {
 		primitiveAnnotations.add(pa);
 
@@ -77,6 +92,9 @@ public class ComplexHandleAnnotation extends DrawableAnnotation implements Handl
 	/**
 	 * Check if the neighborHandle violates constraints for complex handle.
 	 * 
+	 * @param neighborHandle
+	 *            handle to check
+	 * @return true if neighborHandle combined with this handle doesn't violate handle constraint
 	 */
 	@SuppressWarnings("rawtypes")
 	public boolean allowMerge(ComplexHandleAnnotation neighborHandle) {
@@ -129,6 +147,14 @@ public class ComplexHandleAnnotation extends DrawableAnnotation implements Handl
 		}
 	}
 
+	/**
+	 * Draw fitted cone of complex handle.
+	 * 
+	 * @param g
+	 *            Graphics context
+	 * @param color
+	 *            color to draw. If null, default handle color is used.
+	 */
 	public void drawPrimitiveAnnotation(PGraphics g, Color color) {
 
 		// Creating new color to set alpha to 255
@@ -138,7 +164,9 @@ public class ComplexHandleAnnotation extends DrawableAnnotation implements Handl
 	}
 
 	/**
-	 * @return
+	 * Fit cone to annotation.
+	 * 
+	 * @return true if successfully fit.
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean fit() {
@@ -156,6 +184,11 @@ public class ComplexHandleAnnotation extends DrawableAnnotation implements Handl
 		return cone.fit(centroid, vertices.keySet(), vertices, triangles);
 	}
 
+	/**
+	 * Gets the area of fitted cone.
+	 * 
+	 * @return Area of cone.
+	 */
 	public float getArea() {
 		return cone.getArea();
 	}
@@ -177,6 +210,11 @@ public class ComplexHandleAnnotation extends DrawableAnnotation implements Handl
 		return trianglesArea / cone.getArea();
 	}
 
+	/**
+	 * Gets the unscaled area of fitted cone.
+	 * 
+	 * @return unscaled Area of cone.
+	 */
 	public float getAreaUnscaled() {
 
 		return model.getUnscaled(getArea());
@@ -236,6 +274,11 @@ public class ComplexHandleAnnotation extends DrawableAnnotation implements Handl
 		return getDirectionUnscaled().length() * 2;
 	}
 
+	/**
+	 * Get parent model of annotation.
+	 * 
+	 * @return the model
+	 */
 	public Model getModel() {
 		return model;
 	}
@@ -250,6 +293,11 @@ public class ComplexHandleAnnotation extends DrawableAnnotation implements Handl
 		return cone.getPoseMatrix();
 	}
 
+	/**
+	 * Get set of primitive annotations which are part of this complex handle annotation.
+	 * 
+	 * @return set of primitive annotations representing this handle
+	 */
 	@SuppressWarnings("rawtypes")
 	public Set<PrimitiveAnnotation> getPrimitiveAnnotations() {
 		return primitiveAnnotations;
@@ -338,8 +386,10 @@ public class ComplexHandleAnnotation extends DrawableAnnotation implements Handl
 	}
 
 	/**
+	 * Merge given complex handle into this one. You have to call fit to refit the cone.
+	 * 
 	 * @param an
-	 * @param t
+	 *            annotation to merge into this.
 	 */
 	public void merge(ComplexHandleAnnotation an) {
 		primitiveAnnotations.addAll(an.primitiveAnnotations);

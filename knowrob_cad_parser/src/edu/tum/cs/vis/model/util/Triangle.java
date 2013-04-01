@@ -73,13 +73,36 @@ public class Triangle extends DrawObject {
 		super(3);
 	}
 
+	/**
+	 * Create new triangle by the given three corner points.
+	 * 
+	 * @param p1
+	 *            corner 1
+	 * @param p2
+	 *            corner 2
+	 * @param p3
+	 *            corner 3
+	 */
 	public Triangle(Tuple3f p1, Tuple3f p2, Tuple3f p3) {
-		super(3);
-		position[0] = new Vertex(p1);
-		position[1] = new Vertex(p2);
-		position[2] = new Vertex(p3);
+		this(new Vertex(p1), new Vertex(p2), new Vertex(p3));
 	}
 
+	/**
+	 * Create a new triangle by the given three corner points and their normal vertices.
+	 * 
+	 * @param p1
+	 *            corner 1
+	 * @param normP1
+	 *            normal vertex at corner 1
+	 * @param p2
+	 *            corner 2
+	 * @param normP2
+	 *            normal vertex at corner 2
+	 * @param p3
+	 *            corner 3
+	 * @param normP3
+	 *            normal vertex at corner 3
+	 */
 	public Triangle(Tuple3f p1, Vector3f normP1, Tuple3f p2, Vector3f normP2, Tuple3f p3,
 			Vector3f normP3) {
 		super(3);
@@ -88,6 +111,16 @@ public class Triangle extends DrawObject {
 		position[2] = new Vertex(p3, normP3);
 	}
 
+	/**
+	 * Create new triangle by the given three corner points.
+	 * 
+	 * @param p1
+	 *            corner 1
+	 * @param p2
+	 *            corner 2
+	 * @param p3
+	 *            corner 3
+	 */
 	public Triangle(Vertex p1, Vertex p2, Vertex p3) {
 		super(3);
 		position[0] = p1;
@@ -102,8 +135,13 @@ public class Triangle extends DrawObject {
 	 * 
 	 * @param neighbor
 	 *            neighbor to add.
+	 * @param lock
+	 *            Mutex lock to avoid multithreading issues. This object should be the same for all
+	 *            calling threads. Used to synchronizes adding a neighbor to the triangle
 	 * @return true if <tt>neighbor</tt> is really a neighbor of this triangle and it was
 	 *         successfully added.
+	 * 
+	 * 
 	 */
 	public boolean addNeighbor(Triangle neighbor, Lock lock) {
 		boolean add = false;
@@ -155,8 +193,9 @@ public class Triangle extends DrawObject {
 	 * 
 	 * @param g
 	 *            Graphics to draw on
-	 * @param overrideColor
-	 *            overrides the color to draw
+	 * @param drawSettings
+	 *            override the draw color, texture (and other settings). Draw whole object in the
+	 *            given color if != null
 	 */
 	public void draw(PGraphics g, DrawSettings drawSettings) {
 		applyColor(g, drawSettings);
