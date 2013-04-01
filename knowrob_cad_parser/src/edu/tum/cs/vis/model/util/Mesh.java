@@ -148,12 +148,9 @@ public class Mesh implements Serializable {
 	public float getDepth() {
 		if (minZ != null && maxZ != null)
 			return Math.abs(maxZ - minZ);
-		if (triangles.size() == 0) {
-			minZ = 0f;
-			maxZ = 0f;
-		} else {
-			minZ = Float.MAX_VALUE;
-			maxZ = Float.MIN_VALUE;
+		minZ = Float.MAX_VALUE;
+		maxZ = Float.MIN_VALUE;
+		if (triangles.size() > 0) {
 
 			for (Triangle tri : triangles) {
 				for (int v = 0; v < 3; v++) {
@@ -180,12 +177,9 @@ public class Mesh implements Serializable {
 	public float getHeight() {
 		if (minY != null && maxY != null)
 			return Math.abs(maxY - minY);
-		if (triangles.size() == 0) {
-			minY = 0f;
-			maxY = 0f;
-		} else {
-			minY = Float.MAX_VALUE;
-			maxY = Float.MIN_VALUE;
+		minY = Float.MAX_VALUE;
+		maxY = Float.MIN_VALUE;
+		if (triangles.size() > 0) {
 
 			for (Triangle tri : triangles) {
 				for (int v = 0; v < 3; v++) {
@@ -237,7 +231,7 @@ public class Mesh implements Serializable {
 	}
 
 	/**
-	 * Set maximum x coordinate of this mesh. No coordinate of all its children should be bigger
+	 * Set maximum x coordinate of this mesh. No coordinate of any of its children should be bigger
 	 * than this value. Used for drawing a bounding box.
 	 * 
 	 * @return maximum x
@@ -335,12 +329,10 @@ public class Mesh implements Serializable {
 	public float getWidth() {
 		if (minX != null && maxX != null)
 			return Math.abs(maxX - minX);
-		if (triangles.size() == 0) {
-			minX = 0f;
-			maxX = 0f;
-		} else {
-			minX = Float.MAX_VALUE;
-			maxX = Float.MIN_VALUE;
+
+		minX = Float.MAX_VALUE;
+		maxX = Float.MIN_VALUE;
+		if (triangles.size() > 0) {
 
 			for (Triangle tri : triangles) {
 				for (int v = 0; v < 3; v++) {

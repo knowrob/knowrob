@@ -47,13 +47,18 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 	/**
 	 * Log4J Logger
 	 */
-	private static Logger	logger			= Logger.getLogger(PrimitiveAnalyser.class);
+	private static Logger		logger					= Logger.getLogger(PrimitiveAnalyser.class);
+
+	/**
+	 * Degree between normal vertices for allowed combining of neighboring plane annotations
+	 */
+	private static final float	PLANE_COMBINE_DEGREE	= 10f;
 
 	/**
 	 * Tolerance in radiant between two surface normals of triangles to connect them as a single
 	 * plane
 	 */
-	private static double	PLANE_TOLERANCE	= 2f * Math.PI / 180f;
+	private static double		PLANE_TOLERANCE			= 2f * Math.PI / 180f;
 
 	/**
 	 * Set primitive type of vertex
@@ -95,6 +100,8 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 				Set<PrimitiveAnnotation> neighborAnnotations = pa.getNeighborAnnotations(cas,
 						pa.getClass());
 				for (PrimitiveAnnotation a1 : neighborAnnotations) {
+					if (toRemove.contains(a1))
+						continue;
 					if (pa instanceof ConeAnnotation
 							&& ((ConeAnnotation) pa).isConcave() != ((ConeAnnotation) a1)
 									.isConcave()) {
@@ -105,13 +112,14 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 						continue;
 					} else if (pa instanceof PlaneAnnotation
 							&& Math.acos(((PlaneAnnotation) pa).getPlaneNormal().dot(
-									((PlaneAnnotation) a1).getPlaneNormal())) > 45.0 * Math.PI / 180.0) {
-						// Two planes, but angle bigger than 45 degree
+									((PlaneAnnotation) a1).getPlaneNormal())) > PLANE_COMBINE_DEGREE
+									* Math.PI / 180.0) {
+						// Two planes, but angle bigger than PLANE_COMBINE_DEGREE degree
 						continue;
 					}
 
 					// Found same annotations
-					toRemove.add(a);
+					toRemove.add(pa);
 
 					synchronized (a1.getMesh().getTriangles()) {
 						a1.getMesh().getTriangles().addAll(pa.getMesh().getTriangles());
@@ -341,6 +349,15 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 				if (toMerge.contains(a1))
 					continue;
 
+				if (pa instanceof PlaneAnnotation
+						&& a1 instanceof PlaneAnnotation
+						&& Math.acos(((PlaneAnnotation) pa).getPlaneNormal().dot(
+								((PlaneAnnotation) a1).getPlaneNormal())) > PLANE_COMBINE_DEGREE
+								* Math.PI / 180.0) {
+					// Two planes, but angle bigger than XX degree
+					continue;
+				}
+
 				boolean sameConvexity = pa.getClass() == a1.getClass();
 				if (sameConvexity && pa instanceof ConeAnnotation && a1 instanceof ConeAnnotation) {
 					sameConvexity = ((ConeAnnotation) pa).isConcave() == ((ConeAnnotation) a1)
@@ -372,6 +389,12 @@ public class PrimitiveAnalyser extends MeshAnalyser {
 					bestNeighbor.getMesh().getTriangles().addAll(pa.getMesh().getTriangles());
 				}
 				toRefit.add(bestNeighbor);
+			} else {
+				// no neighbor found, add as new annotation
+				synchronized (cas.getAnnotations()) {
+					cas.getAnnotations().add(pa);
+				}
+				toRefit.add(pa);
 			}
 		}
 	}
