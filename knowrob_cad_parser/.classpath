@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="srv_gen/java"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="msg_gen/java"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/processing/core.jar"/>
+	<classpathentry kind="lib" path="lib/processing/PeasyCam.jar"/>
+	<classpathentry kind="lib" path="lib/dae4j.jar"/>
+	<classpathentry kind="lib" path="lib/j3dcore.jar"/>
+	<classpathentry kind="lib" path="lib/j3dutils.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-1.2.16.jar"/>
+	<classpathentry kind="lib" path="/knowrob_common/lib/vecmath.jar"/>
+	<classpathentry kind="var" path="ROS_STACKS/client_rosjava_jni/rosjava_jni/bin"/>
+	<classpathentry kind="lib" path="/knowrob_common/bin" sourcepath="/knowrob/knowrob_common/src"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

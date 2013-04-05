@@ -11,7 +11,7 @@
 	<classpathentry kind="lib" path="lib/controlP5.jar"/>
 	<classpathentry kind="lib" path="/knowrob_cad_parser/bin" sourcepath="/knowrob_cad_parser/src"/>
 	<classpathentry kind="lib" path="lib/snakeyaml-1.9.jar"/>
-	<classpathentry kind="lib" path="/opt/ros/fuerte/stacks/client_rosjava_jni/rosjava_jni/bin"/>
-	<classpathentry kind="lib" path="/usr/lib/swi-prolog/lib/jpl.jar"/>
+	<classpathentry kind="var" path="ROS_STACKS/client_rosjava_jni/rosjava_jni/bin"/>
+	<classpathentry kind="var" path="JPL_LIB"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -9,12 +9,8 @@
 	<classpathentry kind="lib" path="lib/owlapi-bin.jar"/>
 	<classpathentry kind="lib" path="lib/vecmath.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/usr/share/java/jpl.jar"/>
-	<classpathentry kind="lib" path="/opt/ros/fuerte/stacks/client_rosjava_jni/rosjava_jni/bin"/>
-	<classpathentry kind="lib" path="lib/guava-14.0.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/knowrob_common/lib/guava-14.0-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="lib" path="lib/guava-14.0.jar"/>
+	<classpathentry kind="var" path="ROS_STACKS/client_rosjava_jni/rosjava_jni/bin"/>
+	<classpathentry kind="var" path="JPL_LIB"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
