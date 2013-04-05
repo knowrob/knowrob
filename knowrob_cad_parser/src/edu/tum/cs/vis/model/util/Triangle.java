@@ -524,7 +524,6 @@ public class Triangle extends DrawObject {
 			Point3f p1 = position[i];
 			for (Point3f p2 : tr.position) {
 				if (p1.x == p2.x && p1.y == p2.y && p1.z == p2.z) {
-					// if (p1 == p2) {
 					eqCnt++;
 					if (eqCnt == 2) {
 						isNeighbor = true;

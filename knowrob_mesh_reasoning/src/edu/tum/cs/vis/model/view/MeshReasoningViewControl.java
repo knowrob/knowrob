@@ -76,6 +76,8 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 	 */
 	private final JCheckBox					cbxShowMesh;
 
+	private final JButton					btnControlInfo;
+
 	/**
 	 * Radio button for draw type filled
 	 */
@@ -163,14 +165,33 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 		this.add(bottomPnl, BorderLayout.SOUTH);
 
 		JPanel topPnl = new JPanel(new GridBagLayout());
-		cbxShowMesh = new JCheckBox("Show mesh");
-		cbxShowMesh.addActionListener(this);
-		cbxShowMesh.setSelected(true);
+
 		GridBagConstraints c = new GridBagConstraints();
+		JPanel topPnl1 = new JPanel(new GridBagLayout());
+		JPanel topPnl2 = new JPanel(new GridBagLayout());
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 0;
 		c.gridy = 0;
-		topPnl.add(cbxShowMesh, c);
+		topPnl.add(topPnl1, c);
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 0;
+		c.gridy = 1;
+		topPnl.add(topPnl2, c);
+
+		cbxShowMesh = new JCheckBox("Show mesh");
+		cbxShowMesh.addActionListener(this);
+		cbxShowMesh.setSelected(true);
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 0;
+		c.gridy = 0;
+		topPnl1.add(cbxShowMesh, c);
+
+		btnControlInfo = new JButton("control info");
+		btnControlInfo.addActionListener(this);
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 1;
+		c.gridy = 0;
+		topPnl1.add(btnControlInfo, c);
 
 		// Create the radio buttons.
 		rbnDrawFill = new JRadioButton("Fill");
@@ -195,13 +216,13 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 0;
 		c.gridy = 1;
-		topPnl.add(rbnDrawFill, c);
+		topPnl2.add(rbnDrawFill, c);
 		c.gridx = 1;
 		c.gridy = 1;
-		topPnl.add(rbnDrawLines, c);
+		topPnl2.add(rbnDrawLines, c);
 		c.gridx = 2;
 		c.gridy = 1;
-		topPnl.add(rbnDrawPoints, c);
+		topPnl2.add(rbnDrawPoints, c);
 
 		this.add(topPnl, BorderLayout.NORTH);
 
@@ -221,7 +242,9 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == cbxShowMesh)
 			cas.setDrawMesh(cbxShowMesh.isSelected());
-		else if (e.getSource() == btnSave) {
+		if (e.getSource() == btnControlInfo) {
+			ControlInfoDialog cid = new ControlInfoDialog(null);
+		} else if (e.getSource() == btnSave) {
 			String str = (String) JOptionPane.showInputDialog(null, "Enter a filename ",
 					"Filename", JOptionPane.INFORMATION_MESSAGE, null, null, defaultImageFilename);
 			if (str != null)
@@ -265,6 +288,10 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 	 */
 	public void setDefaultImageFilename(String s) {
 		defaultImageFilename = s;
+	}
+
+	private void showControlInfo() {
+
 	}
 
 	/**

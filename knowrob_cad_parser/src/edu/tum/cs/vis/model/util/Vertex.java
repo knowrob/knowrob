@@ -8,6 +8,9 @@
 package edu.tum.cs.vis.model.util;
 
 import java.awt.Color;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
@@ -47,6 +50,8 @@ public class Vertex extends Point3f {
 	 * Overrides color of triangle with this color.
 	 */
 	public Color				overrideColor		= null;
+
+	private final Set<Vertex>	neighbors			= new HashSet<Vertex>();
 
 	/**
 	 * Constructor for vertex
@@ -178,6 +183,44 @@ public class Vertex extends Point3f {
 		x = newPos[0] / newPos[3];
 		y = newPos[1] / newPos[3];
 		z = newPos[2] / newPos[3];
+	}
+
+	/**
+	 * @return the neighbors
+	 */
+	public Set<Vertex> getNeighbors() {
+		return neighbors;
+	}
+
+	public void addNeighbor(Vertex v) {
+		if (v == this)
+			return;
+		synchronized (neighbors) {
+			neighbors.add(v);
+		}
+	}
+
+	public void addNeighbor(Collection<Vertex> neig) {
+		synchronized (neighbors) {
+			synchronized (neig) {
+				neighbors.addAll(neig);
+			}
+			// make sure we didn't add ourself as neighbor
+			if (neighbors.contains(this))
+				neighbors.remove(this);
+		}
+	}
+
+	public void addNeighbor(Vertex[] neig) {
+		synchronized (neighbors) {
+			synchronized (neig) {
+				for (Vertex v : neig) {
+					if (v == this)
+						continue;
+					neighbors.add(v);
+				}
+			}
+		}
 	}
 
 }

@@ -610,11 +610,11 @@ public class Model {
 
 		// get vectors from p0 to p1 and so on
 		Vector3f a = new Vector3f(p0);
-		a.sub(p2);
+		a.sub(p1);
 		Vector3f b = new Vector3f(p1);
-		b.sub(p0);
+		b.sub(p2);
 		Vector3f c = new Vector3f(p2);
-		c.sub(p1);
+		c.sub(p0);
 		// length of these vectors
 		float l2a = a.lengthSquared(), l2b = b.lengthSquared(), l2c = c.lengthSquared();
 		if (l2a == 0 || l2b == 0 || l2c == 0)
@@ -773,4 +773,33 @@ public class Model {
 
 	}
 
+	/**
+	 * A characteristic "feature size" for the mesh. Computed as the median edge length.
+	 * 
+	 * Ported (and modified) from trimesh2 library (version: 2.2.12)
+	 * 
+	 * @return median edge length
+	 */
+	public float feature_size() {
+		if (triangles.size() == 0)
+			return 0.0f;
+
+		int nf = triangles.size();
+		int nsamp = Math.min(nf / 2, 333);
+
+		Float[] samples = new Float[nsamp * 3];
+
+		for (int i = 0; i < nsamp; i++) {
+
+			int ind = (int) (Math.random() * nf);
+			final Vertex p0 = triangles.get(ind).getPosition()[0];
+			final Vertex p1 = triangles.get(ind).getPosition()[1];
+			final Vertex p2 = triangles.get(ind).getPosition()[2];
+			samples[i * 3] = p0.distanceSquared(p1);
+			samples[i * 3 + 1] = p1.distanceSquared(p2);
+			samples[i * 3 + 2] = p2.distanceSquared(p0);
+		}
+		Arrays.sort(samples);
+		return getUnscaled((float) Math.sqrt(samples[samples.length / 2]));
+	}
 }

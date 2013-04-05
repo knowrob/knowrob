@@ -12,8 +12,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicLong;
 
+import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
@@ -28,6 +31,38 @@ import edu.tum.cs.vis.model.Model;
 import edu.tum.cs.vis.model.util.Curvature;
 import edu.tum.cs.vis.model.util.Triangle;
 import edu.tum.cs.vis.model.util.Vertex;
+
+abstract class ACCUM {
+	public abstract void a(final Model m, HashMap<Vertex, Curvature> curvatures, Vertex v0,
+			Vertex c, float w, Vertex v);
+}
+
+class AccumCurv extends ACCUM {
+	/**
+	 * Accumulates curvature. Ported from trimesh2.
+	 * 
+	 * @param m
+	 * @param curvatures
+	 * @param v0
+	 * @param c
+	 * @param w
+	 * @param v
+	 */
+	@Override
+	public void a(final Model m, HashMap<Vertex, Curvature> curvatures, Vertex v0, Vertex c,
+			float w, Vertex v) {
+		Curvature curv = curvatures.get(v);
+		Curvature curv0 = curvatures.get(v0);
+		if (curv == null || curv0 == null)
+			return;
+		float ncurv[] = CurvatureCalculation.proj_curv(curv.getPrincipleDirectionMax(),
+				curv.getPrincipleDirectionMin(), curv.getCurvatureMax(), 0, curv.getCurvatureMin(),
+				curv0.getPrincipleDirectionMax(), curv0.getPrincipleDirectionMin());
+		Vector3f tmp = new Vector3f(ncurv);
+		tmp.scale(w);
+		c.add(tmp);
+	}
+}
 
 /**
  * 
@@ -133,12 +168,7 @@ public class CurvatureCalculation {
 	 */
 	static void calculateCurvatureForTriangle(HashMap<Vertex, Curvature> curvatures, Triangle tri) {
 		// Edges
-		Vector3f e[] = new Vector3f[3];
-
-		for (int j = 0; j < 3; j++) {
-			e[j] = new Vector3f(tri.getPosition()[(j + 2) % 3]);
-			e[j].sub(tri.getPosition()[(j + 1) % 3]);
-		}
+		Vector3f e[] = tri.getEdges();
 
 		// N-T-B coordinate system per face
 		Vector3f t = new Vector3f(e[0]);
@@ -229,7 +259,7 @@ public class CurvatureCalculation {
 			return;
 		calculateVoronoiArea(m);
 		calculateCurvature(curvatures, m);
-		setCurvatureHueSaturation(curvatures, m);
+		setCurvatureHueSaturation(curvatures, m, 0.05f);
 	}
 
 	/**
@@ -282,12 +312,7 @@ public class CurvatureCalculation {
 	 */
 	static void calculateVoronoiAreaForTriangle(Triangle t) {
 		// Edges
-		Vector3f e[] = new Vector3f[3];
-
-		for (int i = 0; i < 3; i++) {
-			e[i] = new Vector3f(t.getPosition()[(i + 2) % 3]);
-			e[i].sub(t.getPosition()[(i + 1) % 3]);
-		}
+		Vector3f e[] = t.getEdges();
 
 		// Compute corner weights
 		Vector3f tmp = new Vector3f();
@@ -392,12 +417,113 @@ public class CurvatureCalculation {
 	}
 
 	/**
+	 * Diffuse the curvatures across the mesh
+	 * 
+	 * @param m
+	 * @param sigma
+	 */
+	private static void diffuse_curv(Model m, HashMap<Vertex, Curvature> curvatures, float sigma) {
+		int nv = m.getVertices().size();
+
+		float invsigma2 = (float) (1.0f / Math.pow(sigma, 2));
+
+		Vertex[] cflt = new Vertex[nv];
+		// TODO #pragma omp parallel
+		{
+			// Thread-local flags
+			Map<Vertex, Long> flags = new HashMap<Vertex, Long>(nv);
+			AtomicLong flag_curr = new AtomicLong(0);
+
+			// TODO #pragma omp for
+			ACCUM accumCurv = new AccumCurv();
+			for (int i = 0; i < nv; i++) {
+				cflt[i] = new Vertex(0, 0, 0);
+				diffuse_vert_field(m, curvatures, flags, flag_curr, accumCurv, i, invsigma2,
+						cflt[i]);
+			}
+
+			// TODO #pragma omp for
+			for (int i = 0; i < nv; i++) {
+				Vertex v = m.getVertices().get(i);
+				Curvature c = curvatures.get(v);
+				Vector3f pdir[] = new Vector3f[] { c.getPrincipleDirectionMax(),
+						c.getPrincipleDirectionMin() };
+				float k[] = new float[] { c.getCurvatureMax(), c.getCurvatureMin() };
+				diagonalize_curv(c.getPrincipleDirectionMax(), c.getPrincipleDirectionMin(),
+						cflt[i].x, cflt[i].y, cflt[i].z, v.getNormalVector(), pdir, k);
+				c.setPrincipleDirectionMax(pdir[0]);
+				c.setPrincipleDirectionMin(pdir[1]);
+				c.setCurvatureMax(k[0]);
+				c.setCurvatureMin(k[1]);
+			}
+		} // #pragma omp parallel
+	}
+
+	/**
+	 * Diffuse a vector field at 1 vertex, weighted by a Gaussian of width 1/sqrt(invsigma2)
+	 * 
+	 * @param m
+	 * @param curvatures
+	 * @param flags
+	 * @param flag_curr_par
+	 * @param accum
+	 * @param v
+	 * @param invsigma2
+	 * @param flt
+	 */
+	private static void diffuse_vert_field(final Model m, HashMap<Vertex, Curvature> curvatures,
+			Map<Vertex, Long> flags, AtomicLong flag_curr, final ACCUM accum, int v,
+			float invsigma2, Vertex flt) {
+		Vertex vert = m.getVertices().get(v);
+		if (vert.getNeighbors().size() == 0) {
+			// flt.set(0, 0, 0);
+			accum.a(m, curvatures, vert, flt, 1.0f, vert);
+			return;
+		}
+
+		// flt.set(0, 0, 0);
+		accum.a(m, curvatures, vert, flt, vert.getPointarea(), vert);
+		float sum_w = vert.getPointarea();
+		final Vector3f nv = vert.getNormalVector();
+
+		long flag_curr_val = flag_curr.incrementAndGet();
+		flags.put(vert, flag_curr_val);
+		LinkedList<Vertex> boundary = new LinkedList<Vertex>();
+		boundary.addAll(vert.getNeighbors());
+		while (boundary.size() > 0) {
+			Vertex n = boundary.pop();
+			if (flags.get(n) != null && flags.get(n) == flag_curr_val)
+				continue;
+			flags.put(n, flag_curr_val);
+			if (nv.dot(n.getNormalVector()) <= 0.0f)
+				continue;
+			// Gaussian weight
+			float w = wt(n, vert, invsigma2);
+			if (w == 0.0f)
+				continue;
+			// Downweight things pointing in different directions
+			w *= nv.dot(n.getNormalVector());
+			// Surface area "belonging" to each point
+			w *= n.getPointarea();
+			// Accumulate weight times field at neighbor
+			accum.a(m, curvatures, vert, flt, w, n);
+			sum_w += w;
+			for (Vertex nn : n.getNeighbors()) {
+				if (flags.get(nn) != null && flags.get(nn) == flag_curr_val)
+					continue;
+				boundary.push(nn);
+			}
+		}
+		flt.scale(1 / sum_w);
+	}
+
+	/**
 	 * Reproject a curvature tensor from the basis spanned by old_u and old_v (which are assumed to
 	 * be unit-length and perpendicular) to the new_u, new_v basis. returns [new_ku, new_kuv,
 	 * new_kv]
 	 */
 	@SuppressWarnings("javadoc")
-	private static float[] proj_curv(final Vector3f old_u, final Vector3f old_v, float old_ku,
+	static float[] proj_curv(final Vector3f old_u, final Vector3f old_v, float old_ku,
 			float old_kuv, float old_kv, final Vector3f new_u, final Vector3f new_v) {
 		Vector3f r_new_u = new Vector3f(), r_new_v = new Vector3f();
 		Vector3f tmp = new Vector3f();
@@ -455,10 +581,19 @@ public class CurvatureCalculation {
 	 * 
 	 * @param curvatures
 	 *            maps curvatures to vertices
+	 * @param smoothSigma
+	 *            Sigma value for smoothing the curvature. Set to 0 to disable smoothing.
 	 * @param m
 	 *            model needed to calculate hue saturation scale
 	 */
-	private static void setCurvatureHueSaturation(HashMap<Vertex, Curvature> curvatures, Model m) {
+	private static void setCurvatureHueSaturation(HashMap<Vertex, Curvature> curvatures, Model m,
+			float smoothSigma) {
+		if (smoothSigma > 0.0f) {
+			smoothSigma *= m.feature_size();
+			System.out.println("sigma: " + smoothSigma + " feature: " + m.feature_size());
+			diffuse_curv(m, curvatures, smoothSigma);
+		}
+
 		float cscale = 120.0f * typical_scale(curvatures, m);
 		cscale = cscale * cscale;
 		int nv = m.getVertices().size();
@@ -513,5 +648,16 @@ public class CurvatureCalculation {
 			f = mult / samples[which];
 		}
 		return f;
+	}
+
+	/**
+	 * Approximation to Gaussian... Used in filtering
+	 * 
+	 * @return
+	 */
+	private static float wt(Point3f p1, Point3f p2, float invsigma2) {
+		float d2 = invsigma2 * p1.distanceSquared(p2);
+		return (float) ((d2 >= 9.0f) ? 0.0f : Math.exp(-0.5f * d2));
+		// return (d2 >= 25.0f) ? 0.0f : exp(-0.5f*d2);
 	}
 }

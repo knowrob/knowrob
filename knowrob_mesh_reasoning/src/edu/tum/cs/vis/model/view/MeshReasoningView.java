@@ -282,6 +282,8 @@ public final class MeshReasoningView extends PAppletSelection implements MouseIn
 						|| selectedAnnotations.size() > 0);
 
 		for (MeshCas c : casList) {
+			if (c.getModel() == null)
+				return;
 
 			c.draw(g, drawSettings);
 			if (drawBoundingBox) {

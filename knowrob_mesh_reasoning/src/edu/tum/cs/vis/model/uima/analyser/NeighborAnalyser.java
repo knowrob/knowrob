@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 import edu.tum.cs.ias.knowrob.utils.ThreadPool;
 import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.util.Triangle;
+import edu.tum.cs.vis.model.util.Vertex;
 
 /**
  * Analyzer for a mesh which sets direct neighbors of a triangle.
@@ -77,10 +78,27 @@ public class NeighborAnalyser extends MeshAnalyser {
 					int end = Math.min(st + interval, allTriangles.size());
 					for (int i = st; i < end; i++) {
 						Triangle tr = allTriangles.get(i);
+						for (Vertex v : tr.getPosition()) {
+							// vertices on same triangle are always direct neighbors
+							v.addNeighbor(tr.getPosition());
+						}
 						for (int j = i + 1; j < allTriangles.size(); j++) {
 							Triangle n = allTriangles.get(j);
 							// check and add triangle as neighbor
-							n.addNeighbor(tr, lock);
+							if (n.addNeighbor(tr, lock)) {
+								// they are neighbors, update vertex neighbors for vertices which
+								// are on both triangles
+								for (Vertex v : tr.getPosition()) {
+									for (Vertex vn : n.getPosition()) {
+										if (v != vn && v.sameCoordinates(vn)) {
+											// not same vertex reference, but same position ->
+											// combine neighbor vertices
+											v.addNeighbor(vn.getNeighbors());
+											vn.addNeighbor(v.getNeighbors());
+										}
+									}
+								}
+							}
 						}
 					}
 					trianglesElaborated.addAndGet(end - st);
