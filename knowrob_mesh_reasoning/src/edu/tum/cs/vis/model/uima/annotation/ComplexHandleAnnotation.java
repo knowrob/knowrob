@@ -8,10 +8,8 @@
 package edu.tum.cs.vis.model.uima.annotation;
 
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Set;
 
 import javax.vecmath.Matrix4f;
@@ -173,7 +171,7 @@ public class ComplexHandleAnnotation extends DrawableAnnotation implements Handl
 
 		LinkedHashMap<Vertex, Float> vertices = new LinkedHashMap<Vertex, Float>();
 		Vector3f centroid = new Vector3f();
-		List<Triangle> triangles = new ArrayList<Triangle>();
+		Set<Triangle> triangles = new HashSet<Triangle>();
 
 		for (@SuppressWarnings("rawtypes")
 		PrimitiveAnnotation pa : primitiveAnnotations) {

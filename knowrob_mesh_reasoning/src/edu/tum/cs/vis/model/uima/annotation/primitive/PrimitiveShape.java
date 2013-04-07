@@ -8,7 +8,7 @@
 package edu.tum.cs.vis.model.uima.annotation.primitive;
 
 import java.awt.Color;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,7 +41,7 @@ public abstract class PrimitiveShape {
 	 *            Triangles of annotation
 	 */
 	protected abstract void calculateFitError(Set<Vertex> vertices, Map<Vertex, Float> weights,
-			List<Triangle> triangles);
+			Collection<Triangle> triangles);
 
 	/**
 	 * Draw primitive shape (cone, plane, sphere) on graphics context.
@@ -67,7 +67,7 @@ public abstract class PrimitiveShape {
 	 * @return true if successfully fit.
 	 */
 	public abstract boolean fit(Vector3f centroid, Set<Vertex> vertices,
-			Map<Vertex, Float> weights, List<Triangle> triangles);
+			Map<Vertex, Float> weights, Collection<Triangle> triangles);
 
 	/**
 	 * Get area of primitive shape.

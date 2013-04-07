@@ -8,7 +8,7 @@
 package edu.tum.cs.vis.model.uima.annotation.primitive;
 
 import java.awt.Color;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -134,7 +134,7 @@ public class Sphere extends PrimitiveShape {
 	 */
 	@Override
 	protected void calculateFitError(Set<Vertex> vertices, Map<Vertex, Float> weights,
-			List<Triangle> triangles) {
+			Collection<Triangle> triangles) {
 		// Fitting quality is measured by the error between distance from Point to center and radius
 		Vector3f tmp = new Vector3f();
 		float vertError = 0;
@@ -178,7 +178,7 @@ public class Sphere extends PrimitiveShape {
 	 */
 	@Override
 	public boolean fit(Vector3f centroid, Set<Vertex> vertices, Map<Vertex, Float> weights,
-			List<Triangle> triangles) {
+			Collection<Triangle> triangles) {
 		/*
 		 * Fitting sphere iteratively according to http://www.geometrictools.com/Documentation/LeastSquaresFitting.pdf
 		 */

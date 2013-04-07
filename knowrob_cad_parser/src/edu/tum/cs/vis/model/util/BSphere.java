@@ -55,4 +55,24 @@ public class BSphere {
 	public float getR() {
 		return r;
 	}
+
+	/**
+	 * Get area of bounding sphere.
+	 * 
+	 * @return area
+	 */
+	public float getArea() {
+
+		return (float) (4f * Math.PI * (r * r));
+	}
+
+	/**
+	 * Get volume of bounding sphere
+	 * 
+	 * @return volume
+	 */
+	public float getVolume() {
+
+		return (float) ((4 / 3 * Math.PI) * r * r * r);
+	}
 }

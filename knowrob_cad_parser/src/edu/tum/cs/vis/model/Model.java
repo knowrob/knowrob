@@ -505,7 +505,7 @@ public class Model {
 	}
 
 	/**
-	 * Ported from trimesh2 (Szymon Rusinkiewicz Princeton University)
+	 * Ported from trimesh2 (2.12) (Szymon Rusinkiewicz Princeton University)
 	 * 
 	 * uses average of per-face normals, weighted according to: Max, N.
 	 * "Weights for Computing Vertex Normals from Facet Normals," Journal of Graphics Tools, Vol. 4,
@@ -776,7 +776,7 @@ public class Model {
 	/**
 	 * A characteristic "feature size" for the mesh. Computed as the median edge length.
 	 * 
-	 * Ported (and modified) from trimesh2 library (version: 2.2.12)
+	 * Ported (and modified) from trimesh2 library (version: 2.12)
 	 * 
 	 * @return median edge length
 	 */

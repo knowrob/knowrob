@@ -8,7 +8,7 @@
 package edu.tum.cs.vis.model.uima.annotation.primitive;
 
 import java.awt.Color;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -116,7 +116,7 @@ public class Plane extends PrimitiveShape {
 	 */
 	@Override
 	protected void calculateFitError(Set<Vertex> vertices, Map<Vertex, Float> weights,
-			List<Triangle> triangles) {
+			Collection<Triangle> triangles) {
 		// Error is measured as distance from the point to the plane
 
 		Vector3f tmp = new Vector3f();
@@ -183,7 +183,7 @@ public class Plane extends PrimitiveShape {
 	 */
 	@Override
 	public boolean fit(Vector3f centroid1, Set<Vertex> vertices, Map<Vertex, Float> weights,
-			List<Triangle> triangles) {
+			Collection<Triangle> triangles) {
 
 		/*
 		 * Best fitting plane.
@@ -239,7 +239,7 @@ public class Plane extends PrimitiveShape {
 		planeNormal.y = (float) svd.getV().get(1, 3);
 		planeNormal.z = (float) svd.getV().get(2, 3);
 		if (planeNormal.length() == 0) { // if svd fails, should never happen
-			planeNormal.get(triangles.get(0).getNormalVector());
+			planeNormal.get(triangles.iterator().next().getNormalVector());
 		} else
 			planeNormal.normalize();
 

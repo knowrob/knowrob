@@ -8,8 +8,8 @@
 package edu.tum.cs.vis.model.uima.annotation.primitive;
 
 import java.awt.Color;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -460,7 +460,7 @@ public class Cone extends PrimitiveShape {
 	 */
 	@Override
 	protected void calculateFitError(Set<Vertex> vertices, Map<Vertex, Float> weights,
-			List<Triangle> triangles) {
+			Collection<Triangle> triangles) {
 		// Fitting quality is measured by the error between distance from Point to generating axis
 		// and the expected radius at this point
 		float vertError = 0;
@@ -573,7 +573,7 @@ public class Cone extends PrimitiveShape {
 	 */
 	@Override
 	public boolean fit(Vector3f centroid1, Set<Vertex> vertices, Map<Vertex, Float> weights,
-			List<Triangle> triangles) {
+			Collection<Triangle> triangles) {
 		// we need at least 3 points
 		if (vertices.size() <= 3)
 			return false;

@@ -76,6 +76,9 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 	 */
 	private final JCheckBox					cbxShowMesh;
 
+	/**
+	 * Button to open ControlInfoDialog
+	 */
 	private final JButton					btnControlInfo;
 
 	/**
@@ -243,6 +246,7 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 		if (e.getSource() == cbxShowMesh)
 			cas.setDrawMesh(cbxShowMesh.isSelected());
 		if (e.getSource() == btnControlInfo) {
+			@SuppressWarnings("unused")
 			ControlInfoDialog cid = new ControlInfoDialog(null);
 		} else if (e.getSource() == btnSave) {
 			String str = (String) JOptionPane.showInputDialog(null, "Enter a filename ",
@@ -288,10 +292,6 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 	 */
 	public void setDefaultImageFilename(String s) {
 		defaultImageFilename = s;
-	}
-
-	private void showControlInfo() {
-
 	}
 
 	/**

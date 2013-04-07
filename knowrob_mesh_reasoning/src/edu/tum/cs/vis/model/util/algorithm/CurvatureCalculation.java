@@ -32,22 +32,29 @@ import edu.tum.cs.vis.model.util.Curvature;
 import edu.tum.cs.vis.model.util.Triangle;
 import edu.tum.cs.vis.model.util.Vertex;
 
+/**
+ * Accumulator class. Ported from trimesh2 (2.12).
+ * 
+ * @author Stefan Profanter
+ * 
+ */
 abstract class ACCUM {
+	/**
+	 * The accumulaor functor
+	 */
+	@SuppressWarnings("javadoc")
 	public abstract void a(final Model m, HashMap<Vertex, Curvature> curvatures, Vertex v0,
 			Vertex c, float w, Vertex v);
 }
 
+/**
+ * Accumulator class for curvature accumulation. Ported from trimesh2 (2.12).
+ * 
+ * @author Stefan Profanter
+ * 
+ */
 class AccumCurv extends ACCUM {
-	/**
-	 * Accumulates curvature. Ported from trimesh2.
-	 * 
-	 * @param m
-	 * @param curvatures
-	 * @param v0
-	 * @param c
-	 * @param w
-	 * @param v
-	 */
+
 	@Override
 	public void a(final Model m, HashMap<Vertex, Curvature> curvatures, Vertex v0, Vertex c,
 			float w, Vertex v) {
@@ -68,7 +75,7 @@ class AccumCurv extends ACCUM {
  * 
  * Methods to calculate curvature for vertices.
  * 
- * Ported from trimesh2 (Szymon Rusinkiewicz Princeton University)
+ * Ported from trimesh2 (2.12) (Szymon Rusinkiewicz Princeton University)
  * 
  * @author Stefan Profanter
  * 
@@ -263,7 +270,7 @@ public class CurvatureCalculation {
 	}
 
 	/**
-	 * Ported from trimesh2 (Szymon Rusinkiewicz Princeton University)
+	 * Ported from trimesh2 (2.12) (Szymon Rusinkiewicz Princeton University)
 	 * 
 	 * Compute the area "belonging" to each vertex or each corner of a triangle (defined as Voronoi
 	 * area restricted to the 1-ring of a vertex, or to the triangle).
@@ -420,7 +427,11 @@ public class CurvatureCalculation {
 	 * Diffuse the curvatures across the mesh
 	 * 
 	 * @param m
+	 *            the main model
+	 * @param curvatures
+	 *            map assigning a curvature to each vertex of the model
 	 * @param sigma
+	 *            smoothing sigma
 	 */
 	private static void diffuse_curv(Model m, HashMap<Vertex, Curvature> curvatures, float sigma) {
 		int nv = m.getVertices().size();
@@ -460,17 +471,10 @@ public class CurvatureCalculation {
 	}
 
 	/**
-	 * Diffuse a vector field at 1 vertex, weighted by a Gaussian of width 1/sqrt(invsigma2)
-	 * 
-	 * @param m
-	 * @param curvatures
-	 * @param flags
-	 * @param flag_curr_par
-	 * @param accum
-	 * @param v
-	 * @param invsigma2
-	 * @param flt
+	 * Diffuse a vector field at 1 vertex, weighted by a Gaussian of width 1/sqrt(invsigma2) Ported
+	 * from trimesh2 (2.12)
 	 */
+	@SuppressWarnings("javadoc")
 	private static void diffuse_vert_field(final Model m, HashMap<Vertex, Curvature> curvatures,
 			Map<Vertex, Long> flags, AtomicLong flag_curr, final ACCUM accum, int v,
 			float invsigma2, Vertex flt) {
@@ -589,9 +593,8 @@ public class CurvatureCalculation {
 	private static void setCurvatureHueSaturation(HashMap<Vertex, Curvature> curvatures, Model m,
 			float smoothSigma) {
 		if (smoothSigma > 0.0f) {
-			smoothSigma *= m.feature_size();
-			System.out.println("sigma: " + smoothSigma + " feature: " + m.feature_size());
-			diffuse_curv(m, curvatures, smoothSigma);
+			float scaledSigma = smoothSigma * m.feature_size();
+			diffuse_curv(m, curvatures, scaledSigma);
 		}
 
 		float cscale = 120.0f * typical_scale(curvatures, m);
@@ -651,10 +654,13 @@ public class CurvatureCalculation {
 	}
 
 	/**
-	 * Approximation to Gaussian... Used in filtering
+	 * Approximation to Gaussian... Used in filtering.
 	 * 
-	 * @return
+	 * Ported from trimesh2 (2.12)
+	 * 
+	 * @return gaussian approximation
 	 */
+	@SuppressWarnings("javadoc")
 	private static float wt(Point3f p1, Point3f p2, float invsigma2) {
 		float d2 = invsigma2 * p1.distanceSquared(p2);
 		return (float) ((d2 >= 9.0f) ? 0.0f : Math.exp(-0.5f * d2));

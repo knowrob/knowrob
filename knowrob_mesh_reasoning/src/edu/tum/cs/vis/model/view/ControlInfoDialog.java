@@ -22,15 +22,32 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 /**
+ * Dialog window showing information on available shortcut keys.
+ * 
  * @author Stefan Profanter
  * 
  */
 public class ControlInfoDialog extends JDialog implements ActionListener {
 
-	private final JButton			closeBtn;
-	private JPanel					myPanel		= null;
+	/**
+	 * auto generated
+	 */
+	private static final long		serialVersionUID	= -3897203470825310360L;
 
-	private final static String[][]	shortcuts	= new String[][] {
+	/**
+	 * Close button for dialog
+	 */
+	private final JButton			closeBtn;
+
+	/**
+	 * Main panel of dialog
+	 */
+	private JPanel					myPanel				= null;
+
+	/**
+	 * List of available shortcuts
+	 */
+	private final static String[][]	shortcuts			= new String[][] {
 			{ "left click", "Camera rotation" },
 			{ "right click", "Camera move" },
 			{ "mouse wheel", "Camera zoom" },
@@ -46,6 +63,12 @@ public class ControlInfoDialog extends JDialog implements ActionListener {
 			{ "<html>Shift+Click on<br />Annotation checkbox</html>",
 			"<html>Toggle all<br />other annotations</html>" } };
 
+	/**
+	 * Main constructor for ControlInfoDialog
+	 * 
+	 * @param owner
+	 *            Owner of dialog.
+	 */
 	public ControlInfoDialog(Frame owner) {
 		super(owner, true);
 		setTitle("Control info");

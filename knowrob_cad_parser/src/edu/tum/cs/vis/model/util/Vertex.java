@@ -51,6 +51,9 @@ public class Vertex extends Point3f {
 	 */
 	public Color				overrideColor		= null;
 
+	/**
+	 * List of direct neighbors of vertex
+	 */
 	private final Set<Vertex>	neighbors			= new HashSet<Vertex>();
 
 	/**
@@ -192,6 +195,13 @@ public class Vertex extends Point3f {
 		return neighbors;
 	}
 
+	/**
+	 * Add neighbor vertex to the neighbors list. You have to check, that v is really a direct
+	 * neighbor (this one is connected to v through a single edge).
+	 * 
+	 * @param v
+	 *            vertex to add
+	 */
 	public void addNeighbor(Vertex v) {
 		if (v == this)
 			return;
@@ -200,6 +210,13 @@ public class Vertex extends Point3f {
 		}
 	}
 
+	/**
+	 * Add list of vertices as neighbors. You have to check, that v is really a direct neighbor
+	 * (this one is connected to v through a single edge).
+	 * 
+	 * @param neig
+	 *            list of neighbors to add
+	 */
 	public void addNeighbor(Collection<Vertex> neig) {
 		synchronized (neighbors) {
 			synchronized (neig) {
@@ -211,6 +228,13 @@ public class Vertex extends Point3f {
 		}
 	}
 
+	/**
+	 * Add list of vertices as neighbors. You have to check, that v is really a direct neighbor
+	 * (this one is connected to v through a single edge).
+	 * 
+	 * @param neig
+	 *            list of neighbors to add
+	 */
 	public void addNeighbor(Vertex[] neig) {
 		synchronized (neighbors) {
 			synchronized (neig) {

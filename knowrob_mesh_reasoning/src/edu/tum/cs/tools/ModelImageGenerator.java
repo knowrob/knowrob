@@ -51,7 +51,7 @@ public class ModelImageGenerator {
 	 * be overwritten (useful if algorithm has changed and new images for all model, not only new
 	 * ones, should be created).
 	 */
-	public static final boolean			ALSO_EXISTING_ONES	= false;
+	public static final boolean			ALSO_EXISTING_ONES	= true;
 
 	// static ImageGeneratorSettings settings;
 
@@ -74,6 +74,11 @@ public class ModelImageGenerator {
 	 * Number of total models to elaborate. Used for progress indication.
 	 */
 	static int							totalCount			= 0;
+
+	/**
+	 * current time in ms when processing started
+	 */
+	public static long					processStartTime	= 0;
 
 	/**
 	 * Spawn a new process, executing the main method of provided class <code>klass</code>. Method
@@ -144,7 +149,7 @@ public class ModelImageGenerator {
 
 		DOMConfigurator.configureAndWatch("log4j.xml", 60 * 1000);
 
-		long processStartTime = System.currentTimeMillis();
+		processStartTime = System.currentTimeMillis();
 		File dir = new File(MODEL_DIR);
 		if (!dir.exists()) {
 			logger.error("Couldn't find directory: " + MODEL_DIR);
@@ -223,8 +228,14 @@ public class ModelImageGenerator {
 					e.printStackTrace();
 				}
 				int count = currentCount.incrementAndGet();
+
+				long currentDuration = System.currentTimeMillis() - processStartTime;
+				double progress = count / (float) totalCount * 100f;
+				long remainMs = (long) ((100f - progress) * (currentDuration / progress));
 				logger.debug("###### Process: " + count + "/" + totalCount + " "
-						+ String.format("%.2f%%", count / (float) totalCount * 100f) + " ######");
+						+ String.format("%.2f%%", progress) + " Elapsed time: "
+						+ PrintUtil.prettyMillis(currentDuration) + ", estimated remaining time: "
+						+ PrintUtil.prettyMillis(remainMs) + " ######");
 				return null;
 			}
 

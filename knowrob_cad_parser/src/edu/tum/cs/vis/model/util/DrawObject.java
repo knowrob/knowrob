@@ -252,6 +252,12 @@ public abstract class DrawObject implements Serializable {
 		 */
 	}
 
+	/**
+	 * Get edge vectors. Each vector points from one edge point to the next one. For a triangle you
+	 * will get 3 edges representing the outer line.
+	 * 
+	 * @return List of edges
+	 */
 	public Vector3f[] getEdges() {
 		Vector3f e[] = new Vector3f[3];
 

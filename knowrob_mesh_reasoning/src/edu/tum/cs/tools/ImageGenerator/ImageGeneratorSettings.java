@@ -140,6 +140,11 @@ public class ImageGeneratorSettings {
 	private boolean																	drawAxis						= false;
 
 	/**
+	 * Show frames minimized
+	 */
+	private boolean																	runBackground					= false;
+
+	/**
 	 * Set to true after view successfully initialized from view settings file .xml
 	 */
 	private boolean																	viewInitialized					= false;
@@ -329,6 +334,15 @@ public class ImageGeneratorSettings {
 	}
 
 	/**
+	 * Show frames minimized?
+	 * 
+	 * @return runBackground true if frames should open minimized.
+	 */
+	public boolean isRunBackground() {
+		return runBackground;
+	}
+
+	/**
 	 * True if curvature image should be saved.
 	 * 
 	 * @return the saveCurvatureColor
@@ -487,6 +501,14 @@ public class ImageGeneratorSettings {
 	}
 
 	/**
+	 * @param runBackground
+	 *            the runBackground to set
+	 */
+	public void setRunBackground(boolean runBackground) {
+		this.runBackground = runBackground;
+	}
+
+	/**
 	 * Set to true if curvature image should be saved. postfix: curvature.
 	 * 
 	 * @param saveCurvatureColor
@@ -546,7 +568,6 @@ public class ImageGeneratorSettings {
 		for (Class<? extends MeshAnalyser> clazz : analyserActionList.keySet()) {
 			if (clazz.isInstance(meshAnalyser)) {
 				for (ImageGeneratorAction action : analyserActionList.get(clazz)) {
-					System.out.println("Trigger: " + clazz);
 					action.trigger(this);
 				}
 			}

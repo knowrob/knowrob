@@ -153,6 +153,9 @@ public class MeshReasoning {
 			frame.setTitle("Mesh reasoning view");
 			frame.setLocationRelativeTo(null);
 
+			if (imageGeneratorSettings != null && imageGeneratorSettings.isRunBackground())
+				frame.setState(java.awt.Frame.ICONIFIED);
+
 			ArrayList<MeshAnalyser> analyser = new ArrayList<MeshAnalyser>();
 
 			mrv = new MeshReasoningView();
@@ -492,6 +495,8 @@ public class MeshReasoning {
 		imageGeneratorSettings.setSaveCurvatureColor(true);
 		imageGeneratorSettings.setCloseAfterFinish(true);
 		imageGeneratorSettings.addAnalyserToSave(PrimitiveAnalyser.class, "segmented");
+		// don't show window
+		imageGeneratorSettings.setRunBackground(true);
 
 		/**
 		 * Analyser actions begin
