@@ -155,10 +155,10 @@ public class PlaneAnnotationPanel extends AnnotationPanel<PlaneAnnotation> {
 		txtFitError.setEnabled(annotation != null);
 
 		if (annotation != null) {
-			txtAreaTot.setText(String.valueOf(annotation.getPrimitiveAreaUnscaled()));
+			txtAreaTot.setText(String.valueOf(annotation.getPrimitiveArea()));
 			txtAreaCov.setText(String.valueOf(annotation.getAreaCoverage() * 100f) + "%");
-			txtShort.setText(String.valueOf(annotation.getShortSideUnscaled().length()));
-			txtLong.setText(String.valueOf(annotation.getLongSideUnscaled().length()));
+			txtShort.setText(String.valueOf(annotation.getShortSide().length()));
+			txtLong.setText(String.valueOf(annotation.getLongSide().length()));
 			txtNormal.setText(String.valueOf(annotation.getPlaneNormal()));
 			txtFitError.setText(String.valueOf(annotation.getPlane().getFitError()));
 		}

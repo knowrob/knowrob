@@ -57,15 +57,15 @@ public class ContainerAnalyser extends MeshAnalyser {
 			@SuppressWarnings("rawtypes") HashSet<PrimitiveAnnotation> annotations) {
 
 		// expected areas of top and bottom cap
-		float areaOfCapSmall = (float) (Math.pow(an.getRadiusSmall(), 2) * Math.PI);
-		float areaOfCapLarge = (float) (Math.pow(an.getRadiusLarge(), 2) * Math.PI);
-		float heightHalf = an.getDirection().length();
+		float areaOfCapSmall = (float) (Math.pow(an.getCone().getRadiusSmall(), 2) * Math.PI);
+		float areaOfCapLarge = (float) (Math.pow(an.getCone().getRadiusLarge(), 2) * Math.PI);
+		float heightHalf = an.getCone().getDirection().length();
 
 		// get two points to create a ray aligned to cone direction
-		Point3f topCapCenter = new Point3f(an.getCentroid());
-		topCapCenter.add(an.getDirection());
+		Point3f topCapCenter = new Point3f(an.getCone().getCentroid());
+		topCapCenter.add(an.getCone().getDirection());
 
-		Point3f centroid = new Point3f(an.getCentroid());
+		Point3f centroid = new Point3f(an.getCone().getCentroid());
 
 		boolean hasTopCap = false;
 		boolean hasBottomCap = false;
@@ -94,7 +94,7 @@ public class ContainerAnalyser extends MeshAnalyser {
 
 				// intersection point found. Check distance:
 				Vector3f midToIntersect = new Vector3f(intersect);
-				midToIntersect.sub(an.getCentroid());
+				midToIntersect.sub(an.getCone().getCentroid());
 				float distToIntersect = midToIntersect.length();
 
 				float proportion = distToIntersect / heightHalf;
@@ -105,7 +105,7 @@ public class ContainerAnalyser extends MeshAnalyser {
 					continue; // plane isn't at the top or bottom of the cylinder or is not as near
 								// as previous found
 
-				if (midToIntersect.dot(an.getDirection()) > 0) {
+				if (midToIntersect.dot(an.getCone().getDirection()) > 0) {
 					// is top
 					if (pa.getArea() / areaOfCapSmall > 0.7) {
 						hasTopCap = true;
@@ -133,13 +133,13 @@ public class ContainerAnalyser extends MeshAnalyser {
 				ca.getMesh().getTriangles().addAll(capAnnotation.getMesh().getTriangles());
 			}
 
-			ca.setDirection((Vector3f) an.getDirection().clone());
+			ca.setDirection((Vector3f) an.getCone().getDirection().clone());
 
 			if (hasTopCap) {
 				ca.getDirection().scale(-1);
 			}
 
-			ca.setVolume(an.getVolume());
+			ca.setVolume(an.getCone().getVolume());
 
 			cas.addAnnotation(ca);
 		}

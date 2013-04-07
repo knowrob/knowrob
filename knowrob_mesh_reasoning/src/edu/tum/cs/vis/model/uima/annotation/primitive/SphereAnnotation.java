@@ -78,21 +78,12 @@ public final class SphereAnnotation extends PrimitiveAnnotation<SphereAnnotation
 	}
 
 	/**
-	 * Get sphere center
-	 * 
-	 * @return the center
-	 */
-	public Vector3f getCenter() {
-		return sphere.getCenter();
-	}
-
-	/**
 	 * Get sphere center unscaled
 	 * 
 	 * @return the center
 	 */
-	public Tuple3f getCenterUnscaled() {
-		return model.getUnscaled(getCenter());
+	public Tuple3f getCenter() {
+		return model.getUnscaled(sphere.getCenter());
 	}
 
 	/**
@@ -102,6 +93,7 @@ public final class SphereAnnotation extends PrimitiveAnnotation<SphereAnnotation
 	 * 
 	 * @return 4x4 pose matrix of the plane relative to the object centroid
 	 */
+	@Override
 	public Matrix4f getPoseMatrix() {
 		return sphere.getPoseMatrix();
 	}
@@ -111,24 +103,7 @@ public final class SphereAnnotation extends PrimitiveAnnotation<SphereAnnotation
 	 */
 	@Override
 	public float getPrimitiveArea() {
-		return sphere.getArea();
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#getPrimitiveAreaUnscaled()
-	 */
-	@Override
-	public float getPrimitiveAreaUnscaled() {
-		return model.getUnscaled(getPrimitiveArea());
-	}
-
-	/**
-	 * get radius of sphere
-	 * 
-	 * @return the radius
-	 */
-	public float getRadius() {
-		return sphere.getRadius();
+		return model.getUnscaled(sphere.getArea());
 	}
 
 	/**
@@ -136,12 +111,15 @@ public final class SphereAnnotation extends PrimitiveAnnotation<SphereAnnotation
 	 * 
 	 * @return the radius
 	 */
-	public float getRadiusUnscaled() {
-		return model.getUnscaled(getRadius());
+	public float getRadius() {
+		return model.getUnscaled(sphere.getRadius());
 	}
 
 	/**
 	 * Get fitted sphere for annotation.
+	 * 
+	 * WARNING: Sphere parameters are scaled. To get unscaled values put them through
+	 * model.getUnscaled().
 	 * 
 	 * @return fitted sphere
 	 */
@@ -150,20 +128,11 @@ public final class SphereAnnotation extends PrimitiveAnnotation<SphereAnnotation
 	}
 
 	/**
-	 * Get sphere volume
-	 * 
-	 * @return the volume of the sphere
-	 */
-	public float getVolume() {
-		return sphere.getVolume();
-	}
-
-	/**
 	 * Get unscaled sphere volume
 	 * 
 	 * @return the unscaled volume of the sphere
 	 */
-	public float getVolumeUnscaled() {
+	public float getVolume() {
 
 		return model.getUnscaled(sphere.getVolume());
 	}

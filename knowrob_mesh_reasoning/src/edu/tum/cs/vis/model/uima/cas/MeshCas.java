@@ -168,6 +168,20 @@ public class MeshCas extends JCas implements Serializable {
 	}
 
 	/**
+	 * @return
+	 */
+	public Triangle[] getTriangles() {
+		return model.getTriangles().toArray(new Triangle[0]);
+	}
+
+	/**
+	 * @return
+	 */
+	public Vertex[] getVertices() {
+		return model.getVertices().toArray(new Vertex[0]);
+	}
+
+	/**
 	 * Should mesh be drawn or not
 	 * 
 	 * @return the drawMesh
@@ -219,5 +233,4 @@ public class MeshCas extends JCas implements Serializable {
 	public void setModel(Model model) {
 		this.model = model;
 	}
-
 }

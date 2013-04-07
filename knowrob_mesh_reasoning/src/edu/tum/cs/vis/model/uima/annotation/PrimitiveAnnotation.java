@@ -28,7 +28,8 @@ import edu.tum.cs.vis.model.util.Vertex;
  * 
  */
 @SuppressWarnings("rawtypes")
-public abstract class PrimitiveAnnotation<S extends PrimitiveAnnotation> extends MeshAnnotation<S> {
+public abstract class PrimitiveAnnotation<S extends PrimitiveAnnotation> extends MeshAnnotation<S>
+		implements PrologAnnotationInterface {
 
 	/**
 	 * auto generated
@@ -105,55 +106,27 @@ public abstract class PrimitiveAnnotation<S extends PrimitiveAnnotation> extends
 	 */
 	protected abstract boolean fitAnnotation();
 
-	/**
-	 * Get area of primitive annotation by summing area of all triangles.
-	 * 
-	 * @return the area
-	 * 
-	 * @see PrimitiveAnnotation#getPrimitiveArea()
-	 */
+	@Override
 	public float getArea() {
 		if (area == 0)
 			updateAnnotationArea();
 		return area;
 	}
 
-	/**
-	 * Get value between > 0 for area coverage which indicates how good primitive annotation is fit
-	 * into mesh. 1 indicates perfect fit, because area of triangles is exactly the same as area of
-	 * primitive annotation.
-	 * 
-	 * @return value > 0
-	 */
+	@Override
 	public float getAreaCoverage() {
 		return getArea() / getPrimitiveArea();
 	}
 
-	/**
-	 * Get total area of triangles unscaled.
-	 * 
-	 * @return sum of area of all triangles.
-	 */
-	public float getAreaUnscaled() {
-		return model.getUnscaled(area);
+	@Override
+	public Triangle[] getTriangles() {
+		return mesh.getTriangles().toArray(new Triangle[0]);
 	}
 
-	/**
-	 * Returns the total area of the primitive (total surface of sphere, cylinder, plane). The
-	 * covered area (area of all triangles of annotation) is normally smaller than this area.
-	 * 
-	 * @return the total area of the primitive
-	 */
-	public abstract float getPrimitiveArea();
-
-	/**
-	 * Returns the total area (unscaled) of the primitive (total surface of sphere, cylinder,
-	 * plane). The covered area (area of all triangles of annotation) is normally smaller than this
-	 * area.
-	 * 
-	 * @return the total area of the primitive
-	 */
-	public abstract float getPrimitiveAreaUnscaled();
+	@Override
+	public Vertex[] getVertices() {
+		return mesh.getVertices().toArray(new Vertex[0]);
+	}
 
 	/**
 	 * Add all vertices of mesh to <tt>vertices</tt> and additionally calculate centroid of all
@@ -228,6 +201,7 @@ public abstract class PrimitiveAnnotation<S extends PrimitiveAnnotation> extends
 		area = 0;
 		for (Triangle t : mesh.getTriangles())
 			area += t.getArea();
+		area = model.getUnscaled(area);
 	}
 
 }

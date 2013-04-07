@@ -8,12 +8,14 @@
 package edu.tum.cs.vis.model.uima.annotation;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Set;
 
 import javax.vecmath.Matrix4f;
-import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
@@ -34,7 +36,8 @@ import edu.tum.cs.vis.model.util.Vertex;
  * @author Stefan Profanter
  * 
  */
-public class ComplexHandleAnnotation extends DrawableAnnotation implements HandleAnnotation {
+public class ComplexHandleAnnotation extends DrawableAnnotation implements HandleAnnotation,
+		PrologAnnotationInterface {
 
 	/**
 	 * generated
@@ -183,12 +186,18 @@ public class ComplexHandleAnnotation extends DrawableAnnotation implements Handl
 	}
 
 	/**
-	 * Gets the area of fitted cone.
+	 * Gets the area of all triangles.
 	 * 
 	 * @return Area of cone.
 	 */
+	@Override
 	public float getArea() {
-		return cone.getArea();
+		float trianglesArea = 0;
+		for (@SuppressWarnings("rawtypes")
+		PrimitiveAnnotation pa : primitiveAnnotations) {
+			trianglesArea += pa.getArea();
+		}
+		return model.getUnscaled(trianglesArea);
 	}
 
 	/**
@@ -200,31 +209,7 @@ public class ComplexHandleAnnotation extends DrawableAnnotation implements Handl
 	 */
 	@Override
 	public float getAreaCoverage() {
-		float trianglesArea = 0;
-		for (@SuppressWarnings("rawtypes")
-		PrimitiveAnnotation pa : primitiveAnnotations) {
-			trianglesArea += pa.getArea();
-		}
-		return trianglesArea / cone.getArea();
-	}
-
-	/**
-	 * Gets the unscaled area of fitted cone.
-	 * 
-	 * @return unscaled Area of cone.
-	 */
-	public float getAreaUnscaled() {
-
-		return model.getUnscaled(getArea());
-	}
-
-	/**
-	 * Get centroid of cone
-	 * 
-	 * @return the centroid
-	 */
-	public Point3f getCentroid() {
-		return cone.getCentroid();
+		return getPrimitiveArea() / getArea();
 	}
 
 	/**
@@ -232,23 +217,13 @@ public class ComplexHandleAnnotation extends DrawableAnnotation implements Handl
 	 * 
 	 * @return the centroid
 	 */
-	public Tuple3f getCentroidUnscaled() {
-		return model.getUnscaled(getCentroid());
+	public Tuple3f getCentroid() {
+		return model.getUnscaled(cone.getCentroid());
 	}
 
 	@Override
 	public Cone getCone() {
 		return cone;
-	}
-
-	/**
-	 * get direction of cone. Direction is aligned with generating line and shows from centroid to
-	 * small radius cap. Length of direction is half height of the cone (center to one end).
-	 * 
-	 * @return the direction
-	 */
-	public Vector3f getDirection() {
-		return cone.getDirection();
 	}
 
 	/**
@@ -259,8 +234,8 @@ public class ComplexHandleAnnotation extends DrawableAnnotation implements Handl
 	 * 
 	 * @return the direction
 	 */
-	public Vector3f getDirectionUnscaled() {
-		return new Vector3f(model.getUnscaled(getDirection()));
+	public Vector3f getDirection() {
+		return new Vector3f(model.getUnscaled(cone.getDirection()));
 	}
 
 	/**
@@ -268,8 +243,8 @@ public class ComplexHandleAnnotation extends DrawableAnnotation implements Handl
 	 * 
 	 * @return unscaled height
 	 */
-	public float getHeightUnscaled() {
-		return getDirectionUnscaled().length() * 2;
+	public float getHeight() {
+		return getDirection().length() * 2;
 	}
 
 	/**
@@ -286,6 +261,7 @@ public class ComplexHandleAnnotation extends DrawableAnnotation implements Handl
 	 * 
 	 * @return 4x4 pose matrix of the plane relative to the object centroid
 	 */
+	@Override
 	public Matrix4f getPoseMatrix() {
 
 		return cone.getPoseMatrix();
@@ -301,13 +277,12 @@ public class ComplexHandleAnnotation extends DrawableAnnotation implements Handl
 		return primitiveAnnotations;
 	}
 
-	/**
-	 * Get average radius of cone which is the average between small and large radius
-	 * 
-	 * @return the average radius
+	/* (non-Javadoc)
+	 * @see edu.tum.cs.vis.model.uima.annotation.PrologBaseAnnotation#getPrimitiveArea()
 	 */
-	public float getRadiusAvg() {
-		return cone.getRadiusAvg();
+	@Override
+	public float getPrimitiveArea() {
+		return model.getUnscaled(cone.getArea());
 	}
 
 	/**
@@ -315,17 +290,8 @@ public class ComplexHandleAnnotation extends DrawableAnnotation implements Handl
 	 * 
 	 * @return average radius unscaled
 	 */
-	public float getRadiusAvgUnscaled() {
-		return model.getUnscaled(getRadiusAvg());
-	}
-
-	/**
-	 * Get large radius, which is at the bottom of cone.
-	 * 
-	 * @return the radiusLarge
-	 */
-	public float getRadiusLarge() {
-		return cone.getRadiusLarge();
+	public float getRadiusAvg() {
+		return model.getUnscaled(cone.getRadiusAvg());
 	}
 
 	/**
@@ -333,17 +299,8 @@ public class ComplexHandleAnnotation extends DrawableAnnotation implements Handl
 	 * 
 	 * @return the radiusLarge
 	 */
-	public float getRadiusLargeUnscaled() {
-		return model.getUnscaled(getRadiusLarge());
-	}
-
-	/**
-	 * Get small radius, which is at the bottom of cone.
-	 * 
-	 * @return the radiusSmall
-	 */
-	public float getRadiusSmall() {
-		return cone.getRadiusSmall();
+	public float getRadiusLarge() {
+		return model.getUnscaled(cone.getRadiusLarge());
 	}
 
 	/**
@@ -351,17 +308,32 @@ public class ComplexHandleAnnotation extends DrawableAnnotation implements Handl
 	 * 
 	 * @return the radiusSmall
 	 */
-	public float getRadiusSmallUnscaled() {
-		return model.getUnscaled(getRadiusSmall());
+	public float getRadiusSmall() {
+		return model.getUnscaled(cone.getRadiusSmall());
 	}
 
-	/**
-	 * Get volume of cone.
-	 * 
-	 * @return the volume
+	/* (non-Javadoc)
+	 * @see edu.tum.cs.vis.model.uima.annotation.PrologBaseAnnotation#getTriangles()
 	 */
-	public float getVolume() {
-		return cone.getVolume();
+	@Override
+	public Triangle[] getTriangles() {
+		List<Triangle> t = new ArrayList<Triangle>();
+		for (@SuppressWarnings("rawtypes")
+		PrimitiveAnnotation a : primitiveAnnotations)
+			t.addAll(Arrays.asList(a.getTriangles()));
+		return t.toArray(new Triangle[0]);
+	}
+
+	/* (non-Javadoc)
+	 * @see edu.tum.cs.vis.model.uima.annotation.PrologBaseAnnotation#getVertices()
+	 */
+	@Override
+	public Vertex[] getVertices() {
+		Set<Vertex> v = new HashSet<Vertex>();
+		for (@SuppressWarnings("rawtypes")
+		PrimitiveAnnotation a : primitiveAnnotations)
+			v.addAll(Arrays.asList(a.getVertices()));
+		return v.toArray(new Vertex[0]);
 	}
 
 	/**
@@ -369,9 +341,9 @@ public class ComplexHandleAnnotation extends DrawableAnnotation implements Handl
 	 * 
 	 * @return the volume unscaled.
 	 */
-	public float getVolumeUnscaled() {
+	public float getVolume() {
 
-		return model.getUnscaled(getVolume());
+		return model.getUnscaled(cone.getVolume());
 	}
 
 	/**

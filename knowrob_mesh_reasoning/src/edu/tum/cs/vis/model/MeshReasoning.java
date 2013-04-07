@@ -44,6 +44,8 @@ import edu.tum.cs.vis.model.uima.cas.MeshCas;
 import edu.tum.cs.vis.model.util.ContainerAnnotationVolumeComarator;
 import edu.tum.cs.vis.model.util.HandleComparator;
 import edu.tum.cs.vis.model.util.PrimitiveAnnotationAreaComparator;
+import edu.tum.cs.vis.model.util.Triangle;
+import edu.tum.cs.vis.model.util.Vertex;
 import edu.tum.cs.vis.model.util.algorithm.CurvatureCalculation;
 import edu.tum.cs.vis.model.view.MeshReasoningView;
 import edu.tum.cs.vis.model.view.MeshReasoningViewControl;
@@ -455,6 +457,14 @@ public class MeshReasoning {
 			rets.add(h);
 		}
 		return rets.toArray(new HandleAnnotation[0]);
+	}
+
+	public Triangle[] getTriangles() {
+		return cas.getTriangles();
+	}
+
+	public Vertex[] getVertices() {
+		return cas.getVertices();
 	}
 
 	/**

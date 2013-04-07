@@ -175,12 +175,12 @@ public class ConeAnnotationPanel extends AnnotationPanel<ConeAnnotation> {
 		txtHandleWeight.setEnabled(annotation != null);
 
 		if (annotation != null) {
-			txtAreaTot.setText(String.valueOf(annotation.getPrimitiveAreaUnscaled()));
+			txtAreaTot.setText(String.valueOf(annotation.getPrimitiveArea()));
 			txtAreaCov.setText(String.valueOf(annotation.getAreaCoverage() * 100f) + "%");
-			txtRadius.setText(String.valueOf(annotation.getRadiusLargeUnscaled()) + " -> "
-					+ String.valueOf(annotation.getRadiusSmallUnscaled()));
-			txtDirectionVector.setText(annotation.getDirectionUnscaled().toString());
-			txtHeight.setText(String.valueOf(annotation.getDirectionUnscaled().length() * 2));
+			txtRadius.setText(String.valueOf(annotation.getRadiusLarge()) + " -> "
+					+ String.valueOf(annotation.getRadiusSmall()));
+			txtDirectionVector.setText(annotation.getDirection().toString());
+			txtHeight.setText(String.valueOf(annotation.getDirection().length() * 2));
 			txtFitError.setText(String.valueOf(annotation.getCone().getFitError()));
 
 			DecimalFormat scientForm = new DecimalFormat("0.####E0");

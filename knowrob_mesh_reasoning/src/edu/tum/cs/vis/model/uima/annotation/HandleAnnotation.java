@@ -27,6 +27,10 @@ public interface HandleAnnotation {
 	/**
 	 * Get the cone which represents the handle.
 	 * 
+	 * 
+	 * WARNING: Sphere parameters are scaled. To get unscaled values put them through
+	 * model.getUnscaled().
+	 * 
 	 * @return the cone
 	 */
 	public Cone getCone();

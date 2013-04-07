@@ -34,6 +34,8 @@
       mesh_is_supporting_plane/2,
       mesh_annotator_highlight/2,
       mesh_annotator_clear_highlight/1,
+      mesh_vertices/2,
+      mesh_triangles/2,
       mesh_find_handle/2,
       mesh_find_handle/4,
       mesh_find_handle/6,
@@ -42,6 +44,8 @@
       comp_physical_parts/2,
       annotation_area/2,
       annotation_area_coverage/2,
+      annotation_vertices/2,
+      annotation_triangles/2,
       annotation_pose_list/2,
       annotation_cone_radius_avg/2,
       annotation_cone_radius_max/2,
@@ -160,6 +164,28 @@ mesh_annotator_init(MeshAnnotator, WithCanvas) :-
   jpl_call('edu.tum.cs.vis.model.MeshReasoning', 'initMeshReasoning', [WithCanvas], MeshAnnotator).
 mesh_annotator_init(MeshAnnotator) :-
   mesh_annotator_init(MeshAnnotator, @(true)).
+
+%% mesh_triangles(+MeshAnnotator,-Triangles) is det.
+%
+% Get all triangles of model or specified annotation.
+%
+% @param MeshAnnotator	reasoning container
+% @param Triangles	List of all triangles being part of model or given annotation
+%
+mesh_triangles(MeshAnnotator, Triangles) :-
+  jpl_call(MeshAnnotator, 'getTriangles', [], TriangleArr),
+  jpl_array_to_list(TriangleArr, Triangles).
+
+%% mesh_vertices(+MeshAnnotator,-Vertices) is det.
+%
+% Get all triangles of model or specified annotation.
+%
+% @param MeshAnnotator	reasoning container
+% @param Vertices	List of all vertices being part of model or given annotation
+%
+mesh_vertices(MeshAnnotator, Vertices) :-
+  jpl_call(MeshAnnotator, 'getVertices', [], VerticesArr),
+  jpl_array_to_list(VerticesArr, Vertices).
 
 
 
@@ -358,10 +384,11 @@ annotation_to_knowrob_class('Plane', 'FlatPhysicalSurface').
 annotation_to_knowrob_class('Container', 'ContainerArtifact').
 
 
-annotation_pose_list(PrimitiveAnnotation, PoseList) :-
-  jpl_datum_to_type(PrimitiveAnnotation,
-      class([edu,tum,cs,vis,model,uima,annotation,primitive],[_])),
-  jpl_call(PrimitiveAnnotation,'getPoseMatrix',[],PoseMatrix),
+annotation_pose_list(PartInst, PoseList) :-
+  mesh_annotation_java_obj(PartInst, PrologAnnotationInterface),
+%  jpl_datum_to_type(PrologAnnotationInterface,
+%      class([edu,tum,cs,vis,model,uima,annotation],['PrologAnnotationInterface'])),
+  jpl_call(PrologAnnotationInterface,'getPoseMatrix',[],PoseMatrix),
   knowrob_coordinates:matrix4d_to_list(PoseMatrix, PoseList).
 
 
@@ -373,17 +400,45 @@ annotation_pose_list(PrimitiveAnnotation, PoseList) :-
 %
 
 annotation_area(PartInst, Area) :-
-  mesh_annotation_java_obj(PartInst, PrimitiveAnnotation),
-  jpl_datum_to_type(PrimitiveAnnotation,
-      class([edu,tum,cs,vis,model,uima,annotation,primitive],[_])),
-  jpl_call(PrimitiveAnnotation,'getPrimitiveArea',[],Area).
+  mesh_annotation_java_obj(PartInst, PrologAnnotationInterface),
+%  jpl_datum_to_type(PrologAnnotationInterface,
+%      class([edu,tum,cs,vis,model,uima,annotation],['PrologAnnotationInterface'])),
+  jpl_call(PrologAnnotationInterface,'getPrimitiveArea',[],Area).
 
 annotation_area_coverage(PartInst, AreaCoverage) :-
-  mesh_annotation_java_obj(PartInst, PrimitiveAnnotation),
-  jpl_datum_to_type(PrimitiveAnnotation,
-      class([edu,tum,cs,vis,model,uima,annotation,primitive],[_])),
-  jpl_call(PrimitiveAnnotation,'getAreaCoverage',[],AreaCoverage).
+  mesh_annotation_java_obj(PartInst, PrologAnnotationInterface),
+%  jpl_datum_to_type(PrologAnnotationInterface,
+%      class([edu,tum,cs,vis,model,uima,annotation],['PrologAnnotationInterface'])),
+  jpl_call(PrologAnnotationInterface,'getAreaCoverage',[],AreaCoverage).
 
+
+%% annotation_triangles(+Annotation,-Triangles) is det.
+%
+% Get all triangles of specified annotation.
+%
+% @param Annotation	Annotation to get all triangles from
+% @param Triangles	List of all triangles being part of given annotation
+%
+annotation_triangles(Annotation, Triangles) :-
+  mesh_annotation_java_obj(Annotation, PrologAnnotationInterface),
+%  jpl_datum_to_type(PrologAnnotationInterface,
+%      class([edu,tum,cs,vis,model,uima,annotation],['PrologAnnotationInterface'])),
+  jpl_call(PrologAnnotationInterface, 'getTriangles', [], TriangleArr),
+  jpl_array_to_list(TriangleArr, Triangles).
+
+%% mesh_annotator_vertices(+MeshAnnotator,-Vertices) is det.
+%
+% Get all vertices of model or specified annotation.
+%
+% @param MeshAnnotator	reasoning container
+% @param Vertices	List of all vertices being part of model or given annotation
+%
+annotation_vertices(Annotation, Vertices) :-
+  mesh_annotation_java_obj(Annotation, PrologAnnotationInterface),
+%  jpl_datum_to_type(PrologAnnotationInterface,
+%      class([edu,tum,cs,vis,model,uima,annotation],['PrologAnnotationInterface'])),
+  jpl_call(PrologAnnotationInterface, 'getVertices', [], VerticesArr),
+  jpl_array_to_list(VerticesArr, Vertices).
 
 
 

@@ -13,10 +13,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.vecmath.Point3f;
@@ -318,6 +320,18 @@ public class Mesh implements Serializable {
 	 */
 	public List<Triangle> getTriangles() {
 		return triangles;
+	}
+
+	/**
+	 * Get all vertices of this mesh
+	 * 
+	 * @return the vertices
+	 */
+	public Set<Vertex> getVertices() {
+		Set<Vertex> v = new HashSet<Vertex>(triangles.size() * 2);
+		for (Triangle t : triangles)
+			v.addAll(Arrays.asList(t.getPosition()));
+		return v;
 	}
 
 	/**

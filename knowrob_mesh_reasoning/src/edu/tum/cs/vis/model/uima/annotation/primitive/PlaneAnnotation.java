@@ -11,7 +11,6 @@ import java.awt.Color;
 import java.util.HashMap;
 
 import javax.vecmath.Matrix4f;
-import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
@@ -71,31 +70,12 @@ public final class PlaneAnnotation extends PrimitiveAnnotation<PlaneAnnotation> 
 	}
 
 	/**
-	 * Get centroid of plane
-	 * 
-	 * @return the centroid
-	 */
-	public Vector3f getCentroid() {
-		return plane.getCentroid();
-	}
-
-	/**
 	 * Get centroid of plane at unscaled position
 	 * 
 	 * @return the centroid
 	 */
-	public Tuple3f getCentroidUnscaled() {
-		return model.getUnscaled(getCentroid());
-	}
-
-	/**
-	 * Get plane corners
-	 * 
-	 * @return the corner
-	 */
-	public Point3f[] getCorner() {
-
-		return plane.getCorner();
+	public Tuple3f getCentroid() {
+		return model.getUnscaled(plane.getCentroid());
 	}
 
 	/**
@@ -103,18 +83,9 @@ public final class PlaneAnnotation extends PrimitiveAnnotation<PlaneAnnotation> 
 	 * 
 	 * @return the corner
 	 */
-	public Tuple3f[] getCornerUnscaled() {
+	public Tuple3f[] getCorner() {
 
-		return model.getUnscaled(getCorner());
-	}
-
-	/**
-	 * Get vector (length, direction) of long side.
-	 * 
-	 * @return the longSide
-	 */
-	public Vector3f getLongSide() {
-		return plane.getLongSide();
+		return model.getUnscaled(plane.getCorner());
 	}
 
 	/**
@@ -122,12 +93,15 @@ public final class PlaneAnnotation extends PrimitiveAnnotation<PlaneAnnotation> 
 	 * 
 	 * @return the longSide
 	 */
-	public Vector3f getLongSideUnscaled() {
-		return model.getUnscaled(getLongSide());
+	public Vector3f getLongSide() {
+		return model.getUnscaled(plane.getLongSide());
 	}
 
 	/**
 	 * Get the unerlying plane.
+	 * 
+	 * WARNING: Sphere parameters are scaled. To get unscaled values put them through
+	 * model.getUnscaled().
 	 * 
 	 * @return fitted plane for annotation
 	 */
@@ -149,6 +123,7 @@ public final class PlaneAnnotation extends PrimitiveAnnotation<PlaneAnnotation> 
 	 * 
 	 * @return 4x4 pose matrix of the plane relative to the object centroid
 	 */
+	@Override
 	public Matrix4f getPoseMatrix() {
 		return plane.getPoseMatrix();
 	}
@@ -158,25 +133,7 @@ public final class PlaneAnnotation extends PrimitiveAnnotation<PlaneAnnotation> 
 	 */
 	@Override
 	public float getPrimitiveArea() {
-		return plane.getArea();
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.tum.cs.vis.model.uima.annotation.PrimitiveAnnotation#getPrimitiveAreaUnscaled()
-	 */
-	@Override
-	public float getPrimitiveAreaUnscaled() {
-		// shortSide is half length of the rectangles short side. Same with long side.
-		return model.getUnscaled(getPrimitiveArea());
-	}
-
-	/**
-	 * Get vector (length, direction) of short side.
-	 * 
-	 * @return the shortSide
-	 */
-	public Vector3f getShortSide() {
-		return plane.getShortSide();
+		return model.getUnscaled(plane.getArea());
 	}
 
 	/**
@@ -184,8 +141,8 @@ public final class PlaneAnnotation extends PrimitiveAnnotation<PlaneAnnotation> 
 	 * 
 	 * @return the shortSide
 	 */
-	public Vector3f getShortSideUnscaled() {
-		return model.getUnscaled(getShortSide());
+	public Vector3f getShortSide() {
+		return model.getUnscaled(plane.getShortSide());
 	}
 
 }
