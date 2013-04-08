@@ -21,7 +21,6 @@ import javax.swing.JFrame;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
-import sun.awt.SunToolkit;
 import edu.tum.cs.tools.ImageGenerator.ImageGeneratorAction;
 import edu.tum.cs.tools.ImageGenerator.ImageGeneratorSettings;
 import edu.tum.cs.uima.Annotation;
@@ -250,7 +249,6 @@ public class MeshReasoning {
 
 			if (imageGeneratorSettings.isInitViewFromFile()) {
 				if (imageGeneratorSettings.initView(mrv.getCam())) {
-					SunToolkit.flushPendingEvents();
 					try {
 						Thread.sleep(2500); // wait until model correctly shown
 					} catch (InterruptedException e) {
@@ -459,10 +457,20 @@ public class MeshReasoning {
 		return rets.toArray(new HandleAnnotation[0]);
 	}
 
+	/**
+	 * Gets all triangles of the model.
+	 * 
+	 * @return Array of triangles
+	 */
 	public Triangle[] getTriangles() {
 		return cas.getTriangles();
 	}
 
+	/**
+	 * Gets all vertices of the model
+	 * 
+	 * @return Array of vertices
+	 */
 	public Vertex[] getVertices() {
 		return cas.getVertices();
 	}

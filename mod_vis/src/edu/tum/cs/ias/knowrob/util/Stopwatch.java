@@ -8,16 +8,34 @@ package edu.tum.cs.ias.knowrob.util;
  */
 public class Stopwatch {
     
+	/**
+	 * Stopwatch start time
+	 */
     private long startTime = 0;
+	/**
+	 * Stopwatch stop time
+	 */
     private long stopTime = 0;
+	/**
+	 * Stopwatch elapsed time
+	 */
     private long elapsed = 0;
+    /**
+     * Is stopwatch currently running?
+     */
     private boolean running = false;
     
+    /**
+     * Start stopwatch
+     */
     public void start() {        
         this.running = true;
         this.startTime = System.currentTimeMillis();
     }
     
+    /**
+     * Stop stopwatch
+     */
     public void stop() {
         this.stopTime = System.currentTimeMillis();
         this.running = false;
@@ -26,7 +44,7 @@ public class Stopwatch {
     
     /**
      * gets elapsed time in msecs
-     * @return
+     * @return elapsed time in milliseconds
      */
     public long getElapsedTime() {
         if(running)
@@ -37,7 +55,7 @@ public class Stopwatch {
     
     /**
      * gets elapsed time in seconds
-     * @return
+     * @return elapsed time in seconds
      */
     public double getElapsedTimeSecs() {
     	return (double)getElapsedTime() / 1000;

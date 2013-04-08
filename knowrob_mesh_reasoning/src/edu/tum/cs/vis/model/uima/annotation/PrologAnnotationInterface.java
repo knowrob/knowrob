@@ -50,7 +50,17 @@ public interface PrologAnnotationInterface {
 	 */
 	public abstract float getPrimitiveArea();
 
+	/**
+	 * Gets all triangles of annotation
+	 * 
+	 * @return array of triangles
+	 */
 	public Triangle[] getTriangles();
 
+	/**
+	 * Gets all vertices of annotation
+	 * 
+	 * @return array of vertices
+	 */
 	public Vertex[] getVertices();
 }

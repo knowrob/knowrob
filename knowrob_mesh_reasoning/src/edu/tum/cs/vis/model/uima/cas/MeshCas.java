@@ -168,14 +168,18 @@ public class MeshCas extends JCas implements Serializable {
 	}
 
 	/**
-	 * @return
+	 * Gets all triangles of mesh
+	 * 
+	 * @return array of triangles
 	 */
 	public Triangle[] getTriangles() {
 		return model.getTriangles().toArray(new Triangle[0]);
 	}
 
 	/**
-	 * @return
+	 * Gets all vertices of mesh
+	 * 
+	 * @return array of vertices
 	 */
 	public Vertex[] getVertices() {
 		return model.getVertices().toArray(new Vertex[0]);

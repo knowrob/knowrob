@@ -146,9 +146,18 @@ public class ActionDrawInformation {
 	 *
 	 */
 	public static enum HighlightType {
-		NOT_HIGHTLIGHTED, 	//Use default color
-		CHILD_HIGHLIGHTED, 	//Use highlight color
-		THIS_HIGHLIGHTED	//Use bright highlight color
+		/**
+		 * Use default color
+		 */
+		NOT_HIGHTLIGHTED,
+		/**
+		 * Use highlight color
+		 */
+		CHILD_HIGHLIGHTED,
+		/**
+		 * Use bright highlight color
+		 */
+		THIS_HIGHLIGHTED
 	}
 	/**
 	 * Highlight state of current action
@@ -1147,7 +1156,7 @@ public class ActionDrawInformation {
 	
 	/**
 	 * Get height of drawing text
-	 * @return
+	 * @return text height
 	 */
 	public float getTextHeight()
 	{
@@ -1166,7 +1175,7 @@ public class ActionDrawInformation {
 	/**
 	 * Get the bounding box of currently drawn action.
 	 * If drawn as simple, the simple bounding box is returned, otherwise the extended bounding box.
-	 * @return
+	 * @return bounding box as rectangle
 	 */
 	public Rectangle getBoundingBox()
 	{

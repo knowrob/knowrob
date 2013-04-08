@@ -60,11 +60,11 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 	/**
 	 * List which shows the current progress of all analysers
 	 */
-	private final JList<String>				analyserList;
+	private final JList						analyserList;
 	/**
 	 * List model for analyserList
 	 */
-	private final DefaultListModel<String>	analyserListModel;
+	private final DefaultListModel			analyserListModel;
 
 	/**
 	 * Panel which contains controls which influence drawing of model
@@ -137,9 +137,9 @@ public final class MeshReasoningViewControl extends JPanel implements ActionList
 		this.analyser = analyser;
 
 		accordion = new MeshCasAccordion(cas);
-		analyserListModel = new DefaultListModel<String>();
+		analyserListModel = new DefaultListModel();
 
-		analyserList = new JList<String>(analyserListModel);
+		analyserList = new JList(analyserListModel);
 		updateAnalyserList();
 
 		JScrollPane scrollAccordion = new JScrollPane(accordion,
