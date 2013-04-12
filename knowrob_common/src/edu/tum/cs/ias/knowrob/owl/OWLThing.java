@@ -1,6 +1,7 @@
 package edu.tum.cs.ias.knowrob.owl;
 
 import java.util.Hashtable;
+import java.util.Random;
 
 public class OWLThing implements Comparable<OWLThing> {
 	
@@ -288,7 +289,24 @@ public class OWLThing implements Comparable<OWLThing> {
         }
         else return iri;
 	}
-	
+
+	/**
+	 * Generate unique identifiers by adding a quasi-unique suffix to an IRI.
+	 * 
+	 * @param iri Base IRI to be extended
+	 * @return Concatenation of iri with unique suffix
+	 */
+	public static String getUniqueID(String iri) {
+		
+		char[] chars = "abcdefghijklmnopqrstuvwxyzABSDEFGHIJKLMNOPQRSTUVWXYZ1234567890".toCharArray();
+		Random r = new Random(System.currentTimeMillis());
+		char[] id = new char[8];
+		for (int i = 0;  i < 8;  i++) {
+		    id[i] = chars[r.nextInt(chars.length)];
+		}
+		
+		return iri + "_" + new String(id);
+	} 
 	
 	public boolean isReadFromProlog() {
 		return readFromProlog;

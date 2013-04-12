@@ -105,22 +105,12 @@ public class OWLIndividual extends OWLThing {
 	 */
 	public static OWLIndividual getOWLIndividualOfClass(String cl) {
 		
-		char[] chars = "abcdefghijklmnopqrstuvwxyzABSDEFGHIJKLMNOPQRSTUVWXYZ1234567890".toCharArray();
-		Random r = new Random(System.currentTimeMillis());
-		char[] id = new char[8];
-		for (int i = 0;  i < 8;  i++) {
-		    id[i] = chars[r.nextInt(chars.length)];
-		}
-		
-		String new_iri = cl + "_" + new String(id);
-		
-		OWLIndividual res = getOWLIndividual(new_iri, null);
+		OWLIndividual res = getOWLIndividual(getUniqueID(cl), null);
 		res.addType(OWLClass.getOWLClass(cl));
 		
 		return res;
 	}
 
-	
 
 	/**
 	 * Get 
