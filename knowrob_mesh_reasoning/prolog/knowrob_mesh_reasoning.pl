@@ -81,7 +81,7 @@
             annotation_handle(r,r),
             annotation_supporting_plane(r,r),
             annotation_area(r,?),
-            annotation_area_coverage(r,?),
+            annotation_area_coverage(r,?),  
             annotation_pose_list(r,?),
             annotation_cone_radius_avg(r,?),
             annotation_cone_radius_max(r,?),
@@ -125,6 +125,37 @@ object_main_axis(Obj, [X,Y,Z]) :-
   rdf_has(Dir, knowrob:vectorX, literal(type(xsd:'float',X))),
   rdf_has(Dir, knowrob:vectorY, literal(type(xsd:'float',Y))),
   rdf_has(Dir, knowrob:vectorZ, literal(type(xsd:'float',Z))).
+
+
+bottle_cap(Obj, Cap) :-
+ findall(Z-P,
+      (rdf_triple(knowrob:properPhysicalParts, Obj, P),
+       owl_individual_of(P, knowrob:'Cone'),
+       objpart_pos(P, [_,_,Z])), ConePos),
+  keysort(ConePos, ConePosAsc),
+  last(ConePosAsc, _-Cap).
+
+objpart_pos(Part, [X,Y,Z]) :-
+  annotation_pose_list(Part, PL),
+  PL= [_,_,_,X,_,_,_,Y,_,_,_,Z,_,_,_,_].
+
+
+
+grasp_point(Obj, GraspPoint) :-
+  rdf_triple(knowrob:properPhysicalParts, Obj, Handle),
+  annotation_handle(Handle,  'http://ias.cs.tum.edu/kb/knowrob.owl#Handle'),
+%   rdfs_instance_of(Handle, knowrob:'Handle'), 
+  annotation_pose_list(Handle, GraspPoint).
+
+pouring_onto(Obj, Part) :-
+  findall(A-P, (rdf_triple(knowrob:properPhysicalParts, Obj, P),
+                rdf_triple(rdf:type, P, knowrob:'FlatPhysicalSurface'),
+                rdf_triple(knowrob:areaOfObject, P, AL),
+                strip_literal_type(AL, A)), Planes),
+  list_to_set(Planes, Planes_unique),
+  keysort(Planes_unique, PlanesAsc),
+  last(PlanesAsc, _-Part).
+
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -342,7 +373,7 @@ mesh_find_handle(MeshAnnotator, HandleAnnotations, MinRadius, MaxRadius, MinLeng
 mesh_annotator_for_obj(Obj, MeshAnnotator) :-
   ((mesh_annotator_java_obj(Obj, MeshAnnotator),!) ;
    (get_model_path(Obj, Path),
-    mesh_annotator_init(MeshAnnotator, @(false)),
+    mesh_annotator_init(MeshAnnotator, @(true)),
     jpl_call(MeshAnnotator, 'analyseByPath', [Path], _),
     assert(mesh_annotator_java_obj(Obj, MeshAnnotator)))).
 
@@ -367,7 +398,7 @@ comp_physical_parts(Obj, PartInst) :-
   annotation_to_knowrob_class(Type, KnowRobClass),
 
   % TODO workaround: container does not have a pose yet
-  (annotation_pose_list(Annotation, PoseList) -> (
+  (java_annotation_pose_list(Annotation, PoseList) -> (
    create_object_perception(KnowRobClass, PoseList, ['MeshSegmentation'], PartInst)) ;
    rdf_instance_from_class(KnowRobClass, PartInst)),
 
@@ -378,20 +409,23 @@ comp_physical_parts(Obj, PartInst) :-
   assert(mesh_annotation_java_obj(PartInst, Annotation)).
 
 
-annotation_to_knowrob_class('Cone', 'Cone').
-annotation_to_knowrob_class('Sphere', 'Sphere').
-annotation_to_knowrob_class('Plane', 'FlatPhysicalSurface').
-annotation_to_knowrob_class('Container', 'ContainerArtifact').
+annotation_to_knowrob_class('Cone', 'http://ias.cs.tum.edu/kb/knowrob.owl#Cone').
+annotation_to_knowrob_class('Sphere', 'http://ias.cs.tum.edu/kb/knowrob.owl#Sphere').
+annotation_to_knowrob_class('Plane', 'http://ias.cs.tum.edu/kb/knowrob.owl#FlatPhysicalSurface').
+annotation_to_knowrob_class('Container', 'http://ias.cs.tum.edu/kb/knowrob.owl#ContainerArtifact').
+annotation_to_knowrob_class('ComplexHandle', 'http://ias.cs.tum.edu/kb/knowrob.owl#Handle').
+
 
 
 annotation_pose_list(PartInst, PoseList) :-
   mesh_annotation_java_obj(PartInst, PrologAnnotationInterface),
+  java_annotation_pose_list(PrologAnnotationInterface, PoseList).
+
+java_annotation_pose_list(PrologAnnotationInterface, PoseList) :-
 %  jpl_datum_to_type(PrologAnnotationInterface,
 %      class([edu,tum,cs,vis,model,uima,annotation],['PrologAnnotationInterface'])),
   jpl_call(PrologAnnotationInterface,'getPoseMatrix',[],PoseMatrix),
   knowrob_coordinates:matrix4d_to_list(PoseMatrix, PoseList).
-
-
 
 
 
@@ -569,11 +603,13 @@ annotation_supporting_plane(PartInst, SuppPlaneClass) :-
 
   once(owl_subclass_of(SuppPlaneClass, 'http://ias.cs.tum.edu/kb/knowrob.owl#SupportingPlane')),
 
+  once(owl_has(Obj, knowrob:properPhysicalParts, PartInst)),
+
   findall(Plane, owl_individual_of(Plane, knowrob:'FlatPhysicalSurface'), Planes),
   member(PartInst, Planes),
 
   mesh_annotation_java_obj(PartInst, PlaneAnnotation),
-  mesh_is_supporting_plane(PlaneAnnotation, PartInst).
+  mesh_is_supporting_plane(PlaneAnnotation, Obj).
 
 
 % % % % % % % % % % % % % % % % % % % % % % %
@@ -582,15 +618,20 @@ annotation_supporting_plane(PartInst, SuppPlaneClass) :-
 % check if an existing object part (e.g. cylinder) is a handle
 annotation_handle(PartInst, HandleClass) :-
 
-  var(PartInst),
+%   var(PartInst),
   once(owl_subclass_of(HandleClass, 'http://ias.cs.tum.edu/kb/knowrob.owl#Handle')),
 
   % find mesh annotator stored for the parent object of this part
-  once((owl_has(Obj, knowrob:properPhysicalParts, PartInst),
+  once((owl_has(Obj, knowrob:properPhysicalParts, PartInst), % TODO: only works for a single object that is analyzed
    mesh_annotator_java_obj(Obj, MeshAnnotator))),
+
+%   print(Obj),
 
   % this will likely return many candidates if we only sort, but do not filter candidates
   mesh_find_handle(MeshAnnotator, HandleAnnotations),
+
+%   print(HandleAnnotations),
+
   member(HandleAnn, HandleAnnotations),
   mesh_annotation_java_obj(PartInst, HandleAnn). % TODO: find respective cone instance and assing class
 
