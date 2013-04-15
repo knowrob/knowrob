@@ -1,3 +1,0 @@
-<launch>
-  <node name="bosch_semantic_map" pkg="rosprolog" type="run_with_prolog_env" args="bosch_semantic_map $(find json_prolog)/bin/json_prolog" />
-</launch>
