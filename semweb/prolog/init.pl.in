@@ -20,7 +20,7 @@
 
 :- register_ros_package(jpl).
 :- use_module(library('jpl')).
-:- jpl_set_default_jvm_opts(['-Xmx512M']).
+:- jpl_set_default_jvm_opts(['-Xmx2048M']).
 
 :- register_ros_package(ias_prolog_addons).
 :- register_ros_package(semweb).
