@@ -81,7 +81,7 @@
             annotation_handle(r,r),
             annotation_supporting_plane(r,r),
             annotation_area(r,?),
-            annotation_area_coverage(r,?),  
+            annotation_area_coverage(r,?),
             annotation_pose_list(r,?),
             annotation_cone_radius_avg(r,?),
             annotation_cone_radius_max(r,?),
@@ -144,7 +144,7 @@ objpart_pos(Part, [X,Y,Z]) :-
 grasp_point(Obj, GraspPoint) :-
   rdf_triple(knowrob:properPhysicalParts, Obj, Handle),
   annotation_handle(Handle,  'http://ias.cs.tum.edu/kb/knowrob.owl#Handle'),
-%   rdfs_instance_of(Handle, knowrob:'Handle'), 
+%   rdfs_instance_of(Handle, knowrob:'Handle'),
   annotation_pose_list(Handle, GraspPoint).
 
 pouring_onto(Obj, Part) :-
@@ -398,9 +398,13 @@ comp_physical_parts(Obj, PartInst) :-
   annotation_to_knowrob_class(Type, KnowRobClass),
 
   % TODO workaround: container does not have a pose yet
-  (java_annotation_pose_list(Annotation, PoseList) -> (
-   create_object_perception(KnowRobClass, PoseList, ['MeshSegmentation'], PartInst)) ;
-   rdf_instance_from_class(KnowRobClass, PartInst)),
+  ( jpl_datum_to_type(Annotation,
+      class([edu,tum,cs,vis,model,uima,annotation],['ContainerAnnotation'])) ->
+    ( rdf_instance_from_class(KnowRobClass, PartInst)) ;
+    ( java_annotation_pose_list(Annotation, PoseList),
+      create_object_perception(KnowRobClass, PoseList, ['MeshSegmentation'], PartInst))),
+
+%    rdf_instance_from_class(KnowRobClass, PartInst),
 
   % assert sub-parts
   rdf_assert(Obj, knowrob:properPhysicalParts, PartInst),
