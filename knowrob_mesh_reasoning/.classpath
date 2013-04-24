@@ -13,12 +13,12 @@
 	<classpathentry kind="lib" path="/knowrob_cad_parser/lib/log4j-1.2.16.jar"/>
 	<classpathentry kind="lib" path="/knowrob_cad_parser/lib/processing/core.jar"/>
 	<classpathentry kind="lib" path="lib/ejml-0.21.jar"/>
-	<classpathentry kind="var" path="ROS_STACKS/client_rosjava_jni/rosjava_jni/bin"/>
 	<classpathentry kind="lib" path="/knowrob_common/lib/guava-14.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-math3-3.1.1/commons-math3-3.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-math3-3.1.1/commons-math3-3.1.1-javadoc.jar"/>
 	<classpathentry kind="lib" path="lib/commons-math3-3.1.1/commons-math3-3.1.1-sources.jar"/>
 	<classpathentry kind="lib" path="/knowrob_common/lib/vecmath.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/knowrob_common"/>
+	<classpathentry kind="lib" path="/opt/ros/fuerte/stacks/client_rosjava_jni/rosjava_jni/bin"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

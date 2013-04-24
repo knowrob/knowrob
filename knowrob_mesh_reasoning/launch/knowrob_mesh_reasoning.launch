@@ -1,0 +1,3 @@
+<launch>
+  <node name="json_prolog" pkg="rosprolog" type="run_with_prolog_env" args="knowrob_mesh_reasoning $(find json_prolog)/bin/json_prolog" />
+</launch>
