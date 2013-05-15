@@ -26,7 +26,7 @@ set(ubuntu_version_regex "Ubuntu ([0-9]+\\.[0-9]+).*")
 string(REGEX REPLACE "${ubuntu_version_regex}" "\\1" ubuntu_version "${variable}")
 
 if(ubuntu_version)
-  if(ubuntu_version STREQUAL "11.10")
+  if(ubuntu_version STREQUAL "11.10" OR ubuntu_version STREQUAL "10.04")
     add_classpath(/usr/share/java/json-lib.jar)
     add_classpath(/usr/share/java/commons-collections3.jar)
     add_classpath(/usr/share/java/ezmorph.jar)
