@@ -509,7 +509,7 @@ public class CommunicationVisApplet extends PApplet {
 
 	public static void main(String args[]) {
 
-		PApplet.main(new String[] { "de.tum.in.fipm.kipm.gui.visualisation.applets.CommunicationVisApplet" });
+		PApplet.main(new String[] { "edu.tum.cs.ias.knowrob.vis.applets.CommunicationVisApplet" });
 	}
 }
 
