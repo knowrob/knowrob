@@ -33,6 +33,7 @@
       mesh_is_supporting_plane/1,
       mesh_is_supporting_plane/2,
       mesh_annotator_highlight/2,
+      mesh_annotator_highlight_part/2,
       mesh_annotator_clear_highlight/1,
       mesh_vertices/2,
       mesh_triangles/2,
@@ -62,7 +63,8 @@
       annotation_container_direction/2,
       annotation_container_volume/2,
       annotation_supporting_plane/2,
-      annotation_handle/2
+      annotation_handle/2,
+      bottle_cap/2
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -98,7 +100,9 @@
             annotation_container_direction(r,?),
             annotation_container_volume(r,?),
             object_main_cone(r,r),
-            object_main_axis(r,?).
+            object_main_axis(r,?),
+            bottle_cap(r,r),
+            mesh_annotator_highlight_part(r,r).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -238,6 +242,13 @@ mesh_annotator_highlight(MeshAnnotator,[AnnotationHead|AnnotationTail]) :-
 mesh_annotator_highlight(_,[]).
 mesh_annotator_highlight(MeshAnnotator, Annotation) :-
 	jpl_call(MeshAnnotator, 'highlightAnnotation', [Annotation], _).
+
+
+% wrapper to highlight OWL instances instead of Java objects
+mesh_annotator_highlight_part(ObjInst, PartInst) :-
+   mesh_annotator_for_obj(ObjInst, MeshAnnotator),
+   mesh_annotation_java_obj(PartInst, Annotation),
+   mesh_annotator_highlight(MeshAnnotator, Annotation).
 
 %% mesh_annotator_clear_hightlight(+MeshAnnotator) is det
 %

@@ -24,7 +24,7 @@ import processing.core.PApplet;
 import processing.core.PFont;
 
 /**
- * Visualization applet for action plans/sequences. 
+ * Visualization applet for action plans/sequences.
  * @author Stefan Profanter
  * @see edu.tum.cs.ias.knowrob.vis.actions.Action
  */
@@ -36,49 +36,49 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 	 * Font for drawing text
 	 */
 	private PFont dejavuFont;
-	
+
 	/**
 	 * Current selected action
 	 */
 	private Action currAction;
-	
+
 	/**
 	 * Normal cursor (arrow)
 	 */
 	private static final Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
-	
+
 	/**
 	 * Hand cursor
 	 */
 	private static final Cursor handCursor = new Cursor(Cursor.HAND_CURSOR);
-	
+
 	/**
 	 * Move cursor
 	 */
 	private static final Cursor moveCursor = new Cursor(Cursor.MOVE_CURSOR);
-	
+
 	/**
 	 * mouseClicked has a bug so that for each click it is called two times.
 	 * Prevent it by time measure
 	 */
 	private long lastClickTime = 0;
-	
+
 	/**
 	 * history of selected actions.
 	 * It's used like a breadcrumbs menu. If you select an action it will be added to this arrray.
 	 * If you go back to a certain action in the history all remaining actions after the selected will be removed from history.
 	 */
 	private ArrayList<ActionSelectHistoryInfo> clickHistory = new ArrayList<ActionSelectHistoryInfo>();
-	
+
 	/**
 	 * Draw offset. Used when image moved/dragged.
 	 */
 	private Vector2f drawOffset = new Vector2f(0,0);
 	/**
-	 * Used in MouseDragging for calculating the dragging distance 
+	 * Used in MouseDragging for calculating the dragging distance
 	 */
 	private Vector2f draggingStart = new Vector2f(0,0);
-	
+
 	/**
 	 * Constructor
 	 */
@@ -86,7 +86,7 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 	{
 		this.redraw();
 	}
-	
+
 	@Override
 	public void setup()
 	{
@@ -96,7 +96,7 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		    this.frame.setTitle("Action plans visualisation");
 		    this.frame.setBackground(new Color(10, 10, 10));
 		}
-		
+
 		addMouseMotionListener(this);
 		addMouseListener(this);
 
@@ -106,36 +106,36 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 	    ellipseMode(RADIUS);
 	    frameRate(20);
 	}
-	
+
 	@Override
 	public void draw() {
 
 		background(40);
-		
+
 		textFont(dejavuFont);
 	    textMode(SCREEN);
-	    	    
-	    
+
+
 	    drawCurrAction();
 	    drawHistory();
-	    
-	    
+
+
 	}
-	
+
 	/**
 	 * Load a plan with the given prolog identifier and all it's subactions.
 	 * @param iri Something like 'http://www.roboearth.org/kb/serve_drink.owl#ServeADrink'
 	 * @return The main action initialized by the identifier
 	 */
 	private Action loadPrologPlanRecursive(String iri)
-	{	
-		
+	{
+
 		//Get the action name
 		String label = "";
 		try
 		{
 			HashMap<String, Vector<String>> qLabel = PrologInterface.executeQuery("rdf_has('"+iri+"',rdfs:label,L),util:strip_literal_type(L,Label)");
-			
+
 			label = qLabel.get("Label").get(0);
 			if (label.startsWith("'") && label.endsWith("'"))
 			{
@@ -152,7 +152,7 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		}
 
 		Action ret = Action.getAction(iri, label);
-		
+
 		//get properties
 		try
 		{
@@ -179,7 +179,7 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		} catch (Exception e)
 		{
 			e.printStackTrace();
-		}		
+		}
 
 		//get subactions
 		try {
@@ -213,11 +213,11 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		} catch (Exception e)
 		{
 			e.printStackTrace();
-		}		
-		
+		}
+
 		return ret;
 	}
-	
+
 	/**
 	 * Load a plan by starting with the given identifier and load all it's referenced actions recursively.
 	 * @param identifier Something like 'http://www.roboearth.org/kb/serve_drink.owl#ServeADrink'
@@ -227,9 +227,9 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		Action a = loadPrologPlanRecursive(identifier);
 		if (a!= null)
 			setMainAction(a);
-	}	
-	
-	
+	}
+
+
 	/**
 	 * Sets the action which should be selected at the beginning.
 	 * If none set, nothing will be drawn.
@@ -242,7 +242,7 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		updateHistoryPosition();
 		this.redraw();
 	}
-	
+
 	/**
 	 * Draw an arrow between the given two points with current stroke and fill settings.
 	 * @param applet Applet to draw on
@@ -260,23 +260,23 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		distLeft.scale(-lineWidth);
 		Vector2f distRight = new Vector2f(rot90);
 		distRight.scale(lineWidth);
-		
+
 		//following points are described as if the arrow is pointing from left to right horizontally
-		
+
 		//upper left
 		Vector2f p1 = new Vector2f(distLeft);
 		p1.add(from);
 		//bottom left
 		Vector2f p7 = new Vector2f(distRight);
 		p7.add(from);
-		
+
 		if (blockLength < 0)
 		{
 			blockLength = Math.max(len*0.5f, len - 3*lineWidth);
 		}
 		Vector2f transl = new Vector2f(norm);
 		transl.scale(blockLength);
-		
+
 		//middle up on line
 		Vector2f p2 = new Vector2f(distLeft);
 		//upper tip
@@ -286,7 +286,7 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		p2.add(from);
 		p3.add(transl);
 		p3.add(from);
-		
+
 		//middle bottom on line
 		Vector2f p6 = new Vector2f(distRight);
 		//bottom tip
@@ -296,8 +296,8 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		p6.add(from);
 		p5.add(transl);
 		p5.add(from);
-		
-		
+
+
 		applet.beginShape();
 
 		applet.vertex(p1.x,p1.y);
@@ -307,14 +307,14 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		applet.vertex(p5.x,p5.y);
 		applet.vertex(p6.x,p6.y);
 		applet.vertex(p7.x,p7.y);
-				
+
 		applet.endShape(CLOSE);
-		
-		
+
+
 	}
-	
+
 	/**
-	 * Draw an arrow pointing right at given position. 
+	 * Draw an arrow pointing right at given position.
 	 * @param applet Applet to draw on
 	 * @param x x position of the arrow bounding box.
 	 * @param y y position of the arrow bounding box
@@ -324,10 +324,10 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 	public static void arrow(PApplet applet, float x, float y, float width, float height)
 	{
 		applet.beginShape();
-		
+
 		float indentY = 2f/7f*height;
 		float indentX = 4f/9f*width;
-		
+
 		applet.vertex(x,y+indentY);
 		applet.vertex(x+indentX,y+indentY);
 		applet.vertex(x+indentX,y);
@@ -335,10 +335,10 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		applet.vertex(x+indentX,y+height);
 		applet.vertex(x+indentX,y+height-indentY);
 		applet.vertex(x,y+height-indentY);
-				
+
 		applet.endShape(CLOSE);
 	}
-	
+
 	/**
 	 * Update position for each ActionSelectHistoryInfo object in the clickHistory array.
 	 * Needed for example if a new history object is added/deleted.
@@ -366,11 +366,11 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 			for (int i= 0; i<clickHistory.size(); i++)
 			{
 				clickHistory.get(i).setPosition(currX, 0, i==clickHistory.size()-1);
-				currX += clickHistory.get(i).getDimension().x;	
+				currX += clickHistory.get(i).getDimension().x;
 			}
 		}
 	}
-	
+
 	/**
 	 * Draw the current history in the upper area of the window
 	 */
@@ -383,7 +383,7 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 			}
 		}
 	}
-	
+
 	/**
 	 * Draw the current selected action
 	 */
@@ -391,10 +391,10 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 	{
 		if (currAction == null)
 			return;
-		
+
 		currAction.getDrawInfo().drawExtendedBox(this, new Vector2f(50+drawOffset.x,80+drawOffset.y), drawOffset);
 	}
-	
+
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		if (getHistoryHover(e.getX(), e.getY())>=0)
@@ -402,7 +402,7 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 			setCursor(handCursor);
 			return;
 		}
-		
+
 		if (currAction ==null)
 		{
 			setCursor(normalCursor);
@@ -420,10 +420,10 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		{
 			drawOffset.x = Math.min(0, drawOffset.x+ e.getX() - draggingStart.x);
 			drawOffset.y = Math.min(0,drawOffset.y + e.getY() - draggingStart.y);
-			
+
 			float viewOffsetX = Math.min(0, this.getWidth()-(currAction.getDrawInfo().getBoundingBox().width+100));
 			float viewOffsetY = Math.min(0, this.getHeight()-(currAction.getDrawInfo().getBoundingBox().height+130));
-	
+
 			drawOffset.x = Math.max(viewOffsetX,drawOffset.x);
 			drawOffset.y = Math.max(viewOffsetY,drawOffset.y);
 
@@ -431,7 +431,7 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 			draggingStart.y = e.getY();
 		}
     }
-	
+
 	@Override
 	public void mousePressed(MouseEvent e) {
 		if (e.getButton() == 3)
@@ -476,7 +476,7 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 				updateHistoryPosition();
 				return;
 			}
-			
+
 			//Check if clicked on an expand button
 			Action a = currAction.getDrawInfo().checkClickExpand(e.getX(), e.getY());
 			if (a!= null)
@@ -485,7 +485,7 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 				currAction.getDrawInfo().notifyModified();
 				return;
 			}
-			
+
 			//Check if clicked on an action
 			a = currAction.getDrawInfo().checkClick(e.getX(), e.getY());
 			if (a!= null && a != currAction)
@@ -497,11 +497,11 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 					clickHistory.add(new ActionSelectHistoryInfo(currAction));
 				updateHistoryPosition();
 			}
-			
-			
+
+
 		}
     }
-	
+
 	/**
 	 * Get index of history object under current mouse position.
 	 * If mouse isn't on history, -1 will be returned.
@@ -526,7 +526,7 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		}
 		return idx;
 	}
-	
+
 	/**
 	 * Highlight the action referenced by <code>a</code>
 	 * @param a action to highlight
@@ -540,7 +540,7 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		currAction.getDrawInfo().clearHightlight();
 		return currAction.getDrawInfo().highlightSubsequence(a,expand);
 	}
-	
+
 	/**
 	 * Highlight the action referenced by <code>identifier</code>
 	 * @param identifier action identified by <code>identifier</code> to highlight
@@ -554,7 +554,7 @@ public class PlanVisApplet  extends PApplet implements MouseListener, MouseMotio
 		currAction.getDrawInfo().clearHightlight();
 		return currAction.getDrawInfo().highlightSubsequence(identifier,expand);
 	}
-	
+
 	/**
 	 * Clear all highlighted actions so that none is highlighted.
 	 */
