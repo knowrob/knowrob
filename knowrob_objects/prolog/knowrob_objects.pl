@@ -926,12 +926,21 @@ object_detection(Object, Time, Detection) :-
 % and compatibility predicate.
 %
 % @param Object      Object identifier
-% @param Orientation Identifier of the pose matrix
+% @param Pose Identifier of the pose matrix
 %
-comp_orientation(Object, Orientation) :-
+comp_orientation(Object, Pose) :-
 
     latest_detection_of_instance(Object, LatestDetection),
-    rdf_triple(knowrob:eventOccursAt, LatestDetection, Orientation),!.
+    rdf_triple(knowrob:eventOccursAt, LatestDetection, PoseLocal),
+
+    % transform into global coordinates if relativeTo relation is given
+    (( owl_has(PoseLocal, knowrob:relativeTo, RefObj),
+       current_object_pose(RefObj, RefObjPose),
+       knowrob_objects:rotmat_to_list(PoseLocal, PoseList),
+       pose_into_global_coord(PoseList, RefObjPose, PoseGlobal),
+       append([['http://ias.cs.tum.edu/kb/knowrob.owl#rotMat3D'],PoseGlobal], PoseListGlobal),
+       atomic_list_concat(PoseListGlobal, '_', Pose),! ) ;
+    (  Pose = PoseLocal) ),!.
 
 
 
