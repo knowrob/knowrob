@@ -31,12 +31,9 @@ package edu.tum.cs.ias.knowrob.json_prolog;
 
 import net.sf.json.*;
 import net.sf.json.util.JSONUtils;
-import jpl.Compound;
 import jpl.JPLException;
 import jpl.Query;
 import jpl.Term;
-import jpl.Variable;
-
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,14 +54,8 @@ public class JSONQuery {
   static public Query makeQuery(String json) throws InvalidJSONQuery {
     try {
       JSONArray json_query = JSONArray.fromObject(json);
-      Term q = makeCompoundTerm(json_query);
-      
-      Variable goal = new Variable();
 
-      return new Query(new Compound(",", new Term[]{
-	  			new Compound("expand_goal", new Term[]{q, goal}),
-	  			new Compound("call", new Term[]{goal})}));
-      
+      return new Query(makeCompoundTerm(json_query));
     } catch (Exception e) {
       throw new InvalidJSONQuery("Unable to parse JSON query: " + json + ", Exception: " + e.toString());
     }
