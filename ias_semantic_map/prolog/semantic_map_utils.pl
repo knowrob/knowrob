@@ -18,6 +18,7 @@
 :- module(ias_semantic_map,
     [
       readMap/1,
+      readMap/2,
       rdf_atom_no_ns/2,
       withoutNamespace/2,
       objectType/2,
@@ -34,14 +35,17 @@
     ]).
 
 readMap([R0|EntityList]) :-
-    readEntity('http://ias.cs.tum.edu/kb/knowrob.owl#SemanticEnvironmentMap0', 'null', R0),
+    readMap([R0|EntityList], 'http://ias.cs.tum.edu/kb/knowrob.owl#SemanticEnvironmentMap0').
+
+readMap([R0|EntityList], MapInstance) :-
+    readEntity(MapInstance, 'null', R0),
     setof(TopLevelObj,
           ( owl_individual_of(TopLevelObj, knowrob:'StorageConstruct');
             owl_individual_of(TopLevelObj, knowrob:'FurniturePiece');
             owl_individual_of(TopLevelObj, knowrob:'CounterTop') ),
           TopLevelObjs),
-    readEntities(TopLevelObjs, 'http://ias.cs.tum.edu/kb/knowrob.owl#SemanticEnvironmentMap0', EntityList).
-    
+    readEntities(TopLevelObjs, MapInstance, EntityList).
+
 
 readEntities([], _, []).
 readEntities([E|Es], P, Res) :-
@@ -56,7 +60,7 @@ readEntities([E|Es], P, Res) :-
   readEntities(Es, P, Res1),
   append(R, Res1, Res).
 
-  
+
 readEntity(E, Parent, [E_no_ns, Parent_no_ns, Pose]) :-
     rdf_atom_no_ns(E, E_no_ns),
     ((Parent = 'null') ->
