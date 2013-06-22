@@ -22,4 +22,12 @@
 % JPL
 :- register_ros_package(jpl).
 
-:- use_module(comp_similarity).
+:- register_ros_package(ias_prolog_addons).
+
+:- use_module(library(comp_similarity)).
+
+% load and configure unit testing environment
+:- use_module(library(plunit)).
+:- set_test_options([load('always'),
+                     run('make'),
+                     silent(true)]).
