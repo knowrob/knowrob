@@ -1,0 +1,5 @@
+- git: {local-name: stacks/knowrob, uri: 'git@github.com:knowrob/knowrob.git'}
+- git: {local-name: stacks/knowrob_addons, uri: 'git@github.com:knowrob/knowrob_addons.git'}
+- git: {local-name: stacks/knowrob_gui, uri: 'git@github.com:knowrob/knowrob_gui.git'}
+- git: {local-name: stacks/knowrob_human, uri: 'git@github.com:knowrob/knowrob_human.git'}
+- git: {local-name: stacks/ias_common, uri: 'git@github.com:code-iai/ias_common.git'}
