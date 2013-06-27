@@ -48,11 +48,15 @@ import jargs.gnu.CmdLineParser;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -66,6 +70,8 @@ import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 import edu.tum.cs.ias.knowrob.owl.OWLThing;
 
@@ -145,7 +151,7 @@ public class URDF2SRDL {
 
 	}
 
-	protected boolean buildSRDL(String targetURI, ArrayList<Capability> caps) {
+	protected boolean buildSRDL(String targetURI, ArrayList<Capability> caps, ArrayList<PlanningGroup> groups) {
 
 		System.out.println("[INFO]\tCreating SRDL description ...");
 
@@ -178,6 +184,7 @@ public class URDF2SRDL {
 			srdl.append(getOntologyImports(targetURI, imports));
 			srdl.append(getCapabilitySpec(robotName, caps));
 			srdl.append(getLinksAndJoints(docElement, targetURI, robotName));
+			srdl.append(getPlanningGroups(groups, robotName));
 			srdl.append(getFooter());
 
 		} catch (Exception e) {
@@ -192,9 +199,9 @@ public class URDF2SRDL {
 
 	}
 
-	public boolean saveSRDL(String filename, String targetURI, ArrayList<Capability> caps) {
+	public boolean saveSRDL(String filename, String targetURI, ArrayList<Capability> caps, ArrayList<PlanningGroup> parsedGroups) {
 
-		if (!buildSRDL(targetURI, caps)) {
+		if (!buildSRDL(targetURI, caps, parsedGroups)) {
 			return false;
 		}
 
@@ -227,6 +234,7 @@ public class URDF2SRDL {
 
 	}
 
+	
 	protected static String getHeader(String targetURI) {
 
 		String targetURI2; // used for xml:base attribute without '#'
@@ -521,7 +529,39 @@ public class URDF2SRDL {
 		return s.toString();
 		
 	}
-	
+
+	protected static String getPlanningGroups(ArrayList<PlanningGroup> groups, String robotName) {
+
+		String i1 = indent;
+		String i2 = i1 + indent;
+
+		StringBuffer s = new StringBuffer();
+
+		if (groups != null && groups.size() > 0) {
+
+			s.append("\n\n");
+			s.append(i1 + "<!-- =========================================== -->\n");
+			s.append(i1 + "<!-- | Planning Groups                         | -->\n");
+			s.append(i1 + "<!-- =========================================== -->\n");
+			
+			for (PlanningGroup pg : groups) {
+
+				s.append("\n\n");
+				s.append(i1 + "<!-- &robot;" + pg.getName() + " -->\n\n");
+				s.append(i1 + "<owl:NamedIndividual rdf:about=\"&robot;" + pg.getName() + "\">\n");
+				s.append(i2 + "<rdf:type rdf:resource=\"&srdl2-comp;ComponentComposition\"/>\n");
+				s.append(i2 + "<rdf:type rdf:resource=\"&srdl2-comp;ArmComponent\"/>\n");
+				s.append(i2 + "<srdl2-comp:baseLinkOfComposition rdf:resource=\"&robot;" + pg.getBaseLink() + "\"/>\n");
+				s.append(i2 + "<srdl2-comp:endLinkOfComposition rdf:resource=\"&robot;" + pg.getTipLink() + "\"/>\n");
+				s.append(i1 + "</owl:NamedIndividual>\n");
+				
+			}
+
+		}
+
+		return s.toString();
+
+	}
 	protected static String getFooter() {
 		return "\n\n</rdf:RDF>\n";
 	}
@@ -776,7 +816,153 @@ public class URDF2SRDL {
 		return result;
 
 	}
-	
+
+	public ArrayList<PlanningGroup> loadPlanningGroups(String filename) {
+
+		ArrayList<PlanningGroup> groups = new ArrayList<PlanningGroup>();
+
+		System.out.println("[INFO]\tLoading planning groups from '" + filename + "' ...");
+
+		try {
+			InputStream input = new FileInputStream(new File(filename));
+
+			Yaml yaml = new Yaml(new SafeConstructor());
+			Map<?, ?> data = (Map<?, ?>) yaml.load(input);
+			Set<?> set = data.keySet();
+			String[] keys = set.toArray(new String[set.size()]);
+			for (String key : keys) {
+				if (key.equalsIgnoreCase("groups")) {
+					ArrayList<?> values = (ArrayList<?>) data.get(key);
+					Map<?, ?>[] groupMaps = values.toArray(new Map<?, ?>[values.size()]);
+					PlanningGroup pg = null;
+					for (Map<?, ?> groupMap : groupMaps) {
+						Set<?> groupKeySet = groupMap.keySet();
+						String[] groupKeys = groupKeySet.toArray(new String[groupKeySet.size()]);
+						for (String groupKey : groupKeys) {
+							if (groupKey.equalsIgnoreCase("name")) {
+
+								if (pg == null) {
+									pg = new PlanningGroup();
+								}
+								String groupName = (String) groupMap.get(groupKey);
+								if (pg.isNameSet()) {
+									throw new Exception(
+											"[ERROR] name is set more than one time ("
+													+ pg.getName() + ", "
+													+ groupName + ")");
+								} else {
+									pg.setName(groupName);
+								}
+
+							} else if (groupKey.equalsIgnoreCase("base_link")) {
+
+								if (pg == null) {
+									pg = new PlanningGroup();
+								}
+								String baseLink = (String) groupMap.get(groupKey);
+								if (pg.isBaseLinkSet()) {
+									throw new Exception(
+											"[ERROR] base_link is set more than one time ("
+													+ pg.getBaseLink() + ", "
+													+ baseLink + ")");
+								} else {
+									pg.setBaseLink(baseLink);
+								}
+
+							} else if (groupKey.equalsIgnoreCase("tip_link")) {
+
+								if (pg == null) {
+									pg = new PlanningGroup();
+								}
+								String tipLink = (String) groupMap.get(groupKey);
+								if (pg.isTipLinkSet()) {
+									throw new Exception(
+											"[ERROR] tip_link is set more than one time ("
+													+ pg.getTipLink() + ", "
+													+ tipLink + ")");
+								} else {
+									pg.setTipLink(tipLink);
+								}
+
+							}
+
+						}
+						
+						if (pg != null && pg.isAllSet()) {
+							groups.add(pg);
+							pg = null;
+						} else {
+							throw new Exception("[ERROR] planning group misses parameter");
+						}
+						
+					}
+					break;
+				}
+			}
+
+		} catch (FileNotFoundException fnfe) {
+			System.out.println("[WARNING] Could not find file " + filename
+					+ "! " + "No planning groups will be created in SRDL.");
+			fnfe.printStackTrace();
+			groups.clear();
+		} catch (Exception e) {
+			System.out.println("[WARNING] Unexpected file format (" + filename
+					+ ")! " + "No planning groups will be created in SRDL.");
+			e.printStackTrace();
+			groups.clear();
+		}
+
+		return groups;
+
+	}
+
+	protected class PlanningGroup {
+
+		protected String name;
+		protected String baseLink = null;
+		protected String tipLink = null;
+
+		public String getName() {
+			return name;
+		}
+
+		public String getBaseLink() {
+			return baseLink;
+		}
+
+		public String getTipLink() {
+			return tipLink;
+		}
+
+		public boolean isAllSet() {
+			return isNameSet() && isBaseLinkSet() && isTipLinkSet();
+		}		
+		
+		public boolean isNameSet() {
+			return (name != null);
+		}
+
+		public boolean isBaseLinkSet() {
+			return (baseLink != null);
+		}
+
+		public boolean isTipLinkSet() {
+			return (tipLink != null);
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public void setBaseLink(String baseLink) {
+			this.baseLink = baseLink;
+		}
+
+		public void setTipLink(String tipLink) {
+			this.tipLink = tipLink;
+		}
+
+	}
 	protected static void printUsage() {
 
 		StringBuffer usage = new StringBuffer(); 
@@ -814,6 +1000,7 @@ public class URDF2SRDL {
 		CmdLineParser parser = new CmdLineParser();
 		CmdLineParser.Option help = parser.addBooleanOption('h', "help");
 		CmdLineParser.Option urdfFile = parser.addStringOption('u', "urdf");
+		CmdLineParser.Option groupsFile = parser.addStringOption('g', "groups");
 		CmdLineParser.Option srdlFile = parser.addStringOption('s', "srdl");
 		CmdLineParser.Option targetUri = parser.addStringOption('i', "uri");
 		CmdLineParser.Option capsList = parser.addStringOption('c', "caps");
@@ -822,22 +1009,23 @@ public class URDF2SRDL {
 
 		try {
 			parser.parse(args);
-		} catch ( CmdLineParser.OptionException e ) {
+		} catch (CmdLineParser.OptionException e) {
 			System.out.println("[ERROR]\t" + e.getMessage());
 			printUsage();
 			System.exit(2);
 		}
 
-		boolean showUsage = (Boolean)parser.getOptionValue(help, Boolean.FALSE);
-		String urdfValue = (String)parser.getOptionValue(urdfFile);
-		String srdlValue = (String)parser.getOptionValue(srdlFile);
-		String uriValue = (String)parser.getOptionValue(targetUri);
-		String capsValue = (String)parser.getOptionValue(capsList);
+		boolean showUsage = (Boolean) parser.getOptionValue(help, Boolean.FALSE);
+		String urdfValue = (String) parser.getOptionValue(urdfFile);
+		String groupsValue = (String) parser.getOptionValue(groupsFile);
+		String srdlValue = (String) parser.getOptionValue(srdlFile);
+		String uriValue = (String) parser.getOptionValue(targetUri);
+		String capsValue = (String) parser.getOptionValue(capsList);
 		ArrayList<Capability> caps = new ArrayList<Capability>();
 
 		String[] otherArgs = parser.getRemainingArgs();
 		for (String s : otherArgs) {
-			System.out.println("[INFO]\tIgnoring other argument '"+s+"'");
+			System.out.println("[INFO]\tIgnoring other argument '" + s + "'");
 		}
 
 		if (!showUsage) {
@@ -865,13 +1053,13 @@ public class URDF2SRDL {
 					String token = t.nextToken().trim();
 					Capability c = null;
 					try {
-						c = Capability.valueOf(token);	
+						c = Capability.valueOf(token);
 					} catch (Exception e) {
 						System.out.println("[ERROR]\tUnknown SRDL capability '" + token + "'");
 						showUsage = true;
 					}
 					if (c != null) {
-						caps.add(c);	
+						caps.add(c);
 					}
 				}
 			}
@@ -884,7 +1072,11 @@ public class URDF2SRDL {
 
 		URDF2SRDL ui = new URDF2SRDL();
 		if (ui.loadURDF(urdfValue)) {
-			ui.saveSRDL(srdlValue, uriValue, caps);
+			ArrayList<PlanningGroup> parsedGroups = null;
+			if (groupsValue != null) {
+				parsedGroups = ui.loadPlanningGroups(groupsValue);
+			}
+			ui.saveSRDL(srdlValue, uriValue, caps, parsedGroups);
 		}
 
 		System.out.println();
