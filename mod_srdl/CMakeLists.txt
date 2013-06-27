@@ -33,5 +33,5 @@ foreach( _in ${inputs} )
 endforeach( _in )
 
 # Build urdf converter (converter from urdf to srdl)
-# rosbuild_add_executable(urdfImporter src/urdfImporter.cpp)
-
+add_java_source_dir( ${PROJECT_SOURCE_DIR}/src )
+rospack_add_java_executable( urdf_to_owl org.roboearth.wp5.io.URDF2SRDL)
