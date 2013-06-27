@@ -4,3 +4,4 @@ srv/lisp
 *.class
 .project
 .classpath
+lib
