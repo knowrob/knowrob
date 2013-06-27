@@ -67,6 +67,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import edu.tum.cs.ias.knowrob.owl.OWLThing;
+
 
 public class URDF2SRDL {
 
@@ -349,8 +351,11 @@ public class URDF2SRDL {
 		HashMap<String,String> precJoints;
 		precJoints = new HashMap<String,String>();
 		
+		// mapping from matrix index to matrix IRI
+		HashMap<Integer,String> jointPoses = new HashMap<Integer, String>();
+		
 		// check if urdf description is complete and fill convenience data structures
-		collectCheckedLinksAndJoints(docElement, jointList, linkList, succJoints, precJoints);
+		collectCheckedLinksAndJoints(docElement, jointList, linkList, succJoints, precJoints, jointPoses);
 
 		//Read Gazebo Tags of docElement file
 		GazeboInformationReader gazeboReader = new GazeboInformationReader(docElement);
@@ -415,7 +420,7 @@ public class URDF2SRDL {
 			s.append(generalReader.getAttributeIncludesFor(i2, prefix, joint));
 			//Include hasAttribute-Tags for gazebo information
 			s.append(gazeboReader.getAttributeIncludesFor(i2, prefix, jointName));
-			s.append(i2+"<knowrob:orientation rdf:resource=\"&robot;RotationMatrix3D_" + ++mCount + "\"/>\n");
+			s.append(i2+"<knowrob:orientation rdf:resource=\""+ jointPoses.get(++mCount) + "\"/>\n");
 			s.append(i1+"</owl:NamedIndividual>\n");
 
 			// add related rotation matrix
@@ -525,7 +530,8 @@ public class URDF2SRDL {
 			ArrayList<Element> jointList, 
 			ArrayList<Element> linkList, 
 			HashMap<String,ArrayList<String>> succJoints, 
-			HashMap<String,String> precMatrices) {
+			HashMap<String,String> precMatrices,
+			HashMap<Integer,String> jointPoses) {
 
 		// list of all joints
 		jointList.clear();
@@ -655,7 +661,8 @@ public class URDF2SRDL {
 			}
 
 			// fill mapping of link to preceding joint's rotational matrix
-			precMatrices.put(childLink, "&robot;RotationMatrix3D_" + mCount++);
+			jointPoses.put(mCount, OWLThing.getUniqueID("&robot;RotationMatrix3D"));
+			precMatrices.put(childLink, jointPoses.get(mCount++));
 			
 		}
 
