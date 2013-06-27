@@ -60,7 +60,6 @@ public class GeneralInformationReader {
 					"gazebo", 
 					"parent", 
 					"child", 
-					"link", 
 					"origin", 
 					"axis", 
 					"safety_controller", 

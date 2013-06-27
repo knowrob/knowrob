@@ -1650,9 +1650,18 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
     </owl:DatatypeProperty>
     
     
+    <!-- &srdl2-comp;imageSizeX -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;imageSizeX">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+    
     <!-- &srdl2-comp;imageSize -->
 
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;imageSize">
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;imageSizeX">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
         <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
         <rdfs:range rdf:resource="&xsd;string"/>

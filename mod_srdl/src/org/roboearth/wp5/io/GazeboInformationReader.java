@@ -189,9 +189,19 @@ public class GazeboInformationReader {
 	 */
 	private String createAttributeString(String indent, String prop, String datatype, String value) {
 		
-		return indent + "<srdl2-comp:" + NormalizeName.normalize(prop)
-				+ " rdf:datatype=\"" + datatype + "\">" + value + "</srdl2-comp:"
-				+ NormalizeName.normalize(prop) + ">\n";
-	}
+		if(prop.equals("imageSize")) {
+			return  indent + "<srdl2-comp:" + NormalizeName.normalize(prop)
+					+ "X rdf:datatype=\"" + datatype + "\">" + value.split(" ")[0] + "</srdl2-comp:"
+					+ NormalizeName.normalize(prop) + ">\n" + 
+					indent + "<srdl2-comp:" + NormalizeName.normalize(prop)
+					+ "Y rdf:datatype=\"" + datatype + "\">" + value.split(" ")[1] + "</srdl2-comp:"
+					+ NormalizeName.normalize(prop) + ">\n";
+			
+		} else {
 
+			return indent + "<srdl2-comp:" + NormalizeName.normalize(prop)
+					+ " rdf:datatype=\"" + datatype + "\">" + value + "</srdl2-comp:"
+					+ NormalizeName.normalize(prop) + ">\n";	
+		}
+	}
 }
