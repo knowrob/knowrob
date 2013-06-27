@@ -13,6 +13,9 @@
     <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    
+    <!ENTITY srdl2-comp "http://ias.cs.tum.edu/kb/srdl2-comp.owl#" >
+    <!ENTITY qudt-unit "http://qudt.org/vocab/unit#" >
 ]>
 
 
@@ -31,6 +34,59 @@
     </owl:Ontology>
 
 
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <owl:AnnotationProperty rdf:about="&rdfs;comment"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://qudt.org/vocab/unit#DegreeAngle -->
+
+    <rdfs:Datatype rdf:about="http://qudt.org/vocab/unit#DegreeAngle"/>
+    
+
+
+    <!-- http://qudt.org/vocab/unit#Hertz -->
+
+    <rdfs:Datatype rdf:about="http://qudt.org/vocab/unit#Hertz"/>
+    
+
+
+    <!-- http://qudt.org/vocab/unit#Kilogram -->
+
+    <rdfs:Datatype rdf:about="http://qudt.org/vocab/unit#Kilogram"/>
+    
+
+
+    <!-- http://qudt.org/vocab/unit#Meter -->
+
+    <rdfs:Datatype rdf:about="http://qudt.org/vocab/unit#Meter"/>
+    
+
+
+    <!-- http://qudt.org/vocab/unit#Unitless -->
+
+    <rdfs:Datatype rdf:about="http://qudt.org/vocab/unit#Unitless"/>
+    
 
 
     <!-- 
@@ -116,8 +172,8 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
 
     <owl:ObjectProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#subComponent">
         <rdf:type rdf:resource="&owl;TransitiveProperty"/>
-        <rdfs:range rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
         <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
     </owl:ObjectProperty>
     
 
@@ -148,8 +204,8 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
 
     <owl:ObjectProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#successorInKinematicChain">
         <rdf:type rdf:resource="&owl;TransitiveProperty"/>
-        <rdfs:range rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#HardwareComponent"/>
         <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#HardwareComponent"/>
+        <rdfs:range rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#HardwareComponent"/>
         <rdfs:subPropertyOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#subComponent"/>
     </owl:ObjectProperty>
     
@@ -164,10 +220,15 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
     
 
 
+    <!-- http://ias.cs.tum.edu/kb/srdl2.owl#dependsOn -->
+
+    <owl:ObjectProperty rdf:about="&srdl2;dependsOn"/>
+    
+
+
     <!-- http://ias.cs.tum.edu/kb/srdl2.owl#providesModelFor -->
 
     <owl:ObjectProperty rdf:about="&srdl2;providesModelFor">
-        <rdfs:domain rdf:resource="&srdl2;ObjectRecognitionModel"/>
         <rdfs:range rdf:resource="&owl;Class"/>
     </owl:ObjectProperty>
     
@@ -184,41 +245,800 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#ComponentAttributeProperty -->
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#lengthOfObject -->
 
-    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#ComponentAttributeProperty"/>
+    <owl:DatatypeProperty rdf:about="&knowrob;lengthOfObject"/>
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#attributeName -->
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#massOfObject -->
 
-    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#attributeName">
+    <owl:DatatypeProperty rdf:about="&knowrob;massOfObject"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#radius -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;radius"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#Cx -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Cx">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#ComponentAttribute"/>
-        <rdfs:subPropertyOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#ComponentAttributeProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#CxPrime -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#CxPrime">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#Cy -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Cy">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#alwaysOn -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#alwaysOn">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#bodyName -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#bodyName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
         <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#attributeUnitOfMeasure -->
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#box_size -->
 
-    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#attributeUnitOfMeasure">
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#box_size">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#ComponentAttribute"/>
-        <rdfs:subPropertyOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#ComponentAttributeProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
         <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#attributeValue -->
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#bumperTopicName -->
 
-    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#attributeValue">
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#bumperTopicName">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#ComponentAttribute"/>
-        <rdfs:subPropertyOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#ComponentAttributeProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:subPropertyOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#topicName"/>
         <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#calibration_falling -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#calibration_falling">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#calibration_rising -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#calibration_rising">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#cameraInfoTopicName -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#cameraInfoTopicName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:subPropertyOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#topicName"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#cameraName -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#cameraName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#cylinder_length -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#cylinder_length">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:subPropertyOf rdf:resource="&knowrob;lengthOfObject"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#cylinder_radius -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#cylinder_radius">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:subPropertyOf rdf:resource="&knowrob;radius"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#displayRays -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#displayRays">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#distortion_k1 -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#distortion_k1">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#distortion_k2 -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#distortion_k2">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#distortion_k3 -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#distortion_k3">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#distortion_t1 -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#distortion_t1">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#distortion_t2 -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#distortion_t2">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#farClip -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#farClip">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#farClipDist -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#farClipDist">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#filterTextureName -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#filterTextureName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#focal_length -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#focal_length">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#fov -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#fov">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#frameName -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#frameName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#fudgeFactor -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#fudgeFactor">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#gaussianNoise -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#gaussianNoise">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#geom -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#geom">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#hackBaseline -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#hackBaseline">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#hfov -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#hfov">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#imageFormat -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#imageFormat">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#imageSizeX -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#imageSizeX">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#imageTopicName -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#imageTopicName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:subPropertyOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#topicName"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#inertia_ixx -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#inertia_ixx">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Kilogram"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#inertia_ixy -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#inertia_ixy">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Kilogram"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#inertia_ixz -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#inertia_ixz">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Kilogram"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#inertia_iyy -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#inertia_iyy">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Kilogram"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#inertia_iyz -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#inertia_iyz">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Kilogram"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#inertia_izz -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#inertia_izz">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Kilogram"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#initial_joint_position -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#initial_joint_position">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#interface_bumper -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#interface_bumper">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#interface_camera -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#interface_camera">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#interface_laser -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#interface_laser">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#kd -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#kd">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#kp -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#kp">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#laserCount -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#laserCount">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#mass_value -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#mass_value">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:subPropertyOf rdf:resource="&knowrob;massOfObject"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Kilogram"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#material -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#material">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#material_name -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#material_name">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#maxAngle -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#maxAngle">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#DegreeAngle"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#maxRange -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#maxRange">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Meter"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#mesh_filename -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#mesh_filename">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#mimic_joint -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#mimic_joint">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#mimic_multiplier -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#mimic_multiplier">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#mimic_offset -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#mimic_offset">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#minAngle -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#minAngle">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#DegreeAngle"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#minRange -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#minRange">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Meter"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#mu1 -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#mu1">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#mu2 -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#mu2">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#nearClip -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#nearClip">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#nearClipDist -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#nearClipDist">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#origin -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#origin">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#origin_rpy -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#origin_rpy">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:subPropertyOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#origin"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#origin_xyz -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#origin_xyz">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:subPropertyOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#origin"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#pollServiceName -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#pollServiceName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#projectorTopicName -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#projectorTopicName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:subPropertyOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#topicName"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#provideFeedback -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#provideFeedback">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#rangeCount -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#rangeCount">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Meter"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#rayCount -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#rayCount">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#resRange -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#resRange">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Meter"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#selfCollide -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#selfCollide">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#stopKd -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#stopKd">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#stopKp -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#stopKp">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#textureName -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#textureName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#textureTopicName -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#textureTopicName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:subPropertyOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#topicName"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#topicName -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#topicName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#updateRate -->
+
+    <owl:DatatypeProperty rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#updateRate">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Component"/>
+        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Hertz"/>
     </owl:DatatypeProperty>
     
 
@@ -244,9 +1064,27 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
     
 
 
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Arm -->
+
+    <owl:Class rdf:about="&knowrob;Arm"/>
+    
+
+
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Artifact -->
 
     <owl:Class rdf:about="&knowrob;Artifact"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#HolderGripper -->
+
+    <owl:Class rdf:about="&knowrob;HolderGripper"/>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Map -->
+
+    <owl:Class rdf:about="&knowrob;Map"/>
     
 
 
@@ -306,7 +1144,9 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
 
     <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#BaseMotionController -->
 
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#BaseMotionController"/>
+    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#BaseMotionController">
+        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#MotionControllerComponent"/>
+    </owl:Class>
     
 
 
@@ -443,12 +1283,6 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#ComponentAttribute -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#ComponentAttribute"/>
-    
-
-
     <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#ComponentComposition -->
 
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#ComponentComposition">
@@ -494,7 +1328,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
 
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#ControllerComponent">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#SoftwareComponent"/>
-        <rdfs:comment>Software components that controls the robot&apos;s motions, from single motions up to the task level</rdfs:comment>
+        <rdfs:comment>Software components that controls the robot&#39;s motions, from single motions up to the task level</rdfs:comment>
     </owl:Class>
     
 
@@ -589,14 +1423,6 @@ Example: hand that is made of several links and joints</rdfs:comment>
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#GlobalShutterCamera -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#GlobalShutterCamera">
-        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Camera"/>
-    </owl:Class>
-    
-
-
     <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#GraspController -->
 
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#GraspController">
@@ -664,6 +1490,14 @@ Example: hand that is made of several links and joints</rdfs:comment>
     
 
 
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#HolonomicBase -->
+
+    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#HolonomicBase">
+        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#MobileBase"/>
+    </owl:Class>
+    
+
+
     <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#ImageFeatureBasedObjectRecognition -->
 
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#ImageFeatureBasedObjectRecognition">
@@ -694,9 +1528,9 @@ Example: hand that is made of several links and joints</rdfs:comment>
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#KukaLwr4 -->
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#KukaLWR4 -->
 
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#KukaLwr4">
+    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#KukaLWR4">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#ArmComponent"/>
     </owl:Class>
     
@@ -705,6 +1539,7 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#KukaOmnidirPlatform -->
 
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#KukaOmnidirPlatform">
+        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#HolonomicBase"/>
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#WheeledBase"/>
     </owl:Class>
     
@@ -945,6 +1780,14 @@ Example: hand that is made of several links and joints</rdfs:comment>
     <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#PerceptionComponent">
         <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#SoftwareComponent"/>
         <rdfs:comment>Software components that interpret sensor data to perceive the environment</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#PhilipsArm -->
+
+    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#PhilipsArm">
+        <rdfs:subClassOf rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#ArmComponent"/>
     </owl:Class>
     
 
@@ -1356,725 +2199,15 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/srdl2.owl#ObjectRecognitionModel -->
+    <!-- http://www.w3.org/2002/07/owl#Class -->
 
-    <owl:Class rdf:about="&srdl2;ObjectRecognitionModel"/>
+    <owl:Class rdf:about="&owl;Class"/>
     
 
 
     <!-- http://www.w3.org/2002/07/owl#Thing -->
 
     <owl:Class rdf:about="&owl;Thing"/>
-
-    
-    
-    
-
-        <!-- &srdl2-comp;alwaysOn -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;alwaysOn">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;boolean"/>
-    </owl:DatatypeProperty>
-    
-    
-    
-    <!-- &srdl2-comp;bodyName -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;bodyName">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;box_size -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;box_size">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;bumperTopicName -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;bumperTopicName">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;calibration_falling -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;calibration_falling">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;calibration_rising -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;calibration_rising">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;cameraInfoTopicName -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;cameraInfoTopicName">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;cameraName -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;cameraName">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;Cx -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;Cx">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;CxPrime -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;CxPrime">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;Cy -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;Cy">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;cylinder_length -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;cylinder_length">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;cylinder_radius -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;cylinder_radius">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;displayRays -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;displayRays">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;boolean"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;distortion_k1 -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;distortion_k1">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;distortion_k2 -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;distortion_k2">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;distortion_k3 -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;distortion_k3">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;distortion_t1 -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;distortion_t1">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;distortion_t2 -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;distortion_t2">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;farClip -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;farClip">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;farClipDist -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;farClipDist">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;filterTextureName -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;filterTextureName">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;focal_length -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;focal_length">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;fov -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;fov">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;frameName -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;frameName">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;fudgeFactor -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;fudgeFactor">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;gaussianNoise -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;gaussianNoise">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;geom -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;geom">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;hackBaseline -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;hackBaseline">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;hfov -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;hfov">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;imageFormat -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;imageFormat">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;imageSizeX -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;imageSizeX">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;imageSize -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;imageSizeX">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;imageTopicName -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;imageTopicName">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;inertia_ixx -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;inertia_ixx">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Kilogram"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;inertia_ixy -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;inertia_ixy">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Kilogram"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;inertia_ixz -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;inertia_ixz">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Kilogram"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;inertia_iyy -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;inertia_iyy">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Kilogram"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;inertia_iyz -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;inertia_iyz">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Kilogram"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;inertia_izz -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;inertia_izz">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Kilogram"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;initial_joint_position -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;initial_joint_position">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;interface_bumper -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;interface_bumper">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;interface_camera -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;interface_camera">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;interface_laser -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;interface_laser">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;kd -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;kd">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;kp -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;kp">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;laserCount -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;laserCount">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;mass_value -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;mass_value">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Kilogram"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;material -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;material">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;material_name -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;material_name">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;maxAngle -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;maxAngle">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;DegreeAngle"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;maxRange -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;maxRange">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Meter"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;mesh_filename -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;mesh_filename">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;mimic_joint -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;mimic_joint">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;mimic_multiplier -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;mimic_multiplier">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;mimic_offset -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;mimic_offset">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;minAngle -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;minAngle">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;DegreeAngle"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;minRange -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;minRange">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Meter"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;mu1 -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;mu1">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;mu2 -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;mu2">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;nearClip -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;nearClip">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;nearClipDist -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;nearClipDist">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;origin -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;origin">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;origin_rpy -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;origin_rpy">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;origin_xyz -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;origin_xyz">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;pollServiceName -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;pollServiceName">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;projectorTopicName -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;projectorTopicName">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;provideFeedback -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;provideFeedback">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;boolean"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;rangeCount -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;rangeCount">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Meter"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;rayCount -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;rayCount">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;resRange -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;resRange">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Meter"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;selfCollide -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;selfCollide">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;boolean"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;stopKd -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;stopKd">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;stopKp -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;stopKp">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;textureName -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;textureName">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;textureTopicName -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;textureTopicName">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;topicName -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;topicName">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:DatatypeProperty>
-    
-    
-    <!-- &srdl2-comp;updateRate -->
-
-    <owl:DatatypeProperty rdf:about="&srdl2-comp;updateRate">
-        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
-        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
-        <rdfs:range rdf:resource="&qudt-unit;Hertz"/>
-    </owl:DatatypeProperty>
-    
-    
-
-    
     
 
 
@@ -2089,14 +2222,6 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
     <rdf:Description>
         <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Base"/>
-            <rdf:Description rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#GripperComponent"/>
-            <rdf:Description rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Sensor"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
             <rdf:Description rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#ArmComponent"/>
             <rdf:Description rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Base"/>
             <rdf:Description rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#ManipulationEntity"/>
@@ -2104,9 +2229,13 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
             <rdf:Description rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Torso"/>
         </owl:members>
     </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Base"/>
+            <rdf:Description rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#GripperComponent"/>
+            <rdf:Description rdf:about="http://ias.cs.tum.edu/kb/srdl2-comp.owl#Sensor"/>
+        </owl:members>
+    </rdf:Description>
 </rdf:RDF>
-
-
-
-<!-- Generated by the OWL API (version 3.4.2) http://owlapi.sourceforge.net -->
 
