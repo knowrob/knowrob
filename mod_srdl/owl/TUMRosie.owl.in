@@ -1,0 +1,2746 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY srdl_path 'file://@SRDL_PACKAGE_PATH@/owl/'>
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY swrl "http://www.w3.org/2003/11/swrl#" >
+    <!ENTITY dc "http://purl.org/dc/elements/1.1/" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY srdl2 "http://ias.cs.tum.edu/kb/srdl2.owl#" >
+    <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY srdl2-cap "http://ias.cs.tum.edu/kb/srdl2-cap.owl#" >
+    <!ENTITY srdl2-comp "http://ias.cs.tum.edu/kb/srdl2-comp.owl#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY tum_rosie "http://ias.cs.tum.edu/kb/TUMRosie.owl#" >
+]>
+
+
+<rdf:RDF xmlns="http://ias.cs.tum.edu/kb/TUMRosie.owl#"
+     xml:base="http://ias.cs.tum.edu/kb/TUMRosie.owl"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:srdl2-cap="http://ias.cs.tum.edu/kb/srdl2-cap.owl#"
+     xmlns:srdl2="http://ias.cs.tum.edu/kb/srdl2.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:srdl2-comp="http://ias.cs.tum.edu/kb/srdl2-comp.owl#">
+
+    <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/TUMRosie.owl">
+        <owl:imports rdf:resource="&srdl_path;srdl2-comp.owl"/>
+    </owl:Ontology>
+
+
+    <!-- =========================================== -->
+    <!-- |   SRDL2 Robot Capabilities              | -->
+    <!-- =========================================== -->
+
+
+    <owl:Class rdf:about="&tum_rosie;TUMRosie">
+        <rdfs:subClassOf rdf:resource="&knowrob;Robot"/>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&srdl2-cap;hasCapability"/>
+                        <owl:someValuesFrom rdf:resource="&srdl2-cap;move_base"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&srdl2-cap;hasCapability"/>
+                        <owl:someValuesFrom rdf:resource="&srdl2-cap;move_arm"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&srdl2-cap;hasCapability"/>
+                        <owl:someValuesFrom rdf:resource="&srdl2-cap;GraspingCapability"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+
+    <!-- =========================================== -->
+    <!-- |   Robot Instance                        | -->
+    <!-- =========================================== -->
+
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_robot1">
+        <rdf:type rdf:resource="&tum_rosie;TUMRosie"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_world"/>
+
+        <!-- Software components -->
+        <srdl2-comp:subComponent rdf:resource="&pr2;LeftArmController"/>
+        <srdl2-comp:subComponent rdf:resource="&pr2;RightArmController"/>
+    </owl:NamedIndividual>
+
+
+    
+
+    <!-- =========================================== -->
+    <!-- | Planning Groups                         | -->
+    <!-- =========================================== -->
+
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_left_arm">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
+        <rdf:type rdf:resource="&srdl2-comp;Pr2Arm"/>
+        <srdl2-comp:baseLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_calib_left_arm_base_link"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_l_wrist_roll_link"/>
+    </owl:NamedIndividual>
+
+
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_right_arm">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
+        <rdf:type rdf:resource="&srdl2-comp;Pr2Arm"/>
+        <srdl2-comp:baseLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_calib_right_arm_base_link"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_right_arm_7_link"/>
+    </owl:NamedIndividual>
+
+
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_left_hand">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
+        <rdf:type rdf:resource="&srdl2-comp;DlrHitHand"/>
+        <srdl2-comp:baseLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_right_arm_hand_link"/>
+    </owl:NamedIndividual>
+
+
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_right_hand">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
+        <rdf:type rdf:resource="&srdl2-comp;DlrHitHand"/>
+        <srdl2-comp:baseLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_r_gripper_palm_link"/>
+    </owl:NamedIndividual>
+
+
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_base">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
+        <rdf:type rdf:resource="&srdl2-comp;Pr2Base"/>
+
+        <srdl2-comp:baseLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_base_link"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_left_front_wheel_link"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_right_front_wheel_link"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_left_back_wheel_link"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_right_back_wheel_link"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_laser_front_left_fixed_joint"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_laser_rear_right_fixed_joint"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_base_torso_joint"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_base_left_arm_base_joint"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_base_right_arm_base_joint"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_ptu_base_joint"/>
+    </owl:NamedIndividual>
+
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;LeftArmController">
+        <rdf:type rdf:resource="&srdl2-comp;ArmMotionController"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RightArmController">
+        <rdf:type rdf:resource="&srdl2-comp;ArmMotionController"/>
+    </owl:NamedIndividual>
+
+
+    
+    
+    
+    
+    
+    <!-- =========================================== -->
+    <!-- |   Robot Joints                          | -->
+    <!-- =========================================== -->
+
+
+    <!-- &tum_rosie;TUMRosie_base_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_base_joint">
+        <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
+        <srdl2-comp:urdfName>base_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_world"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_base_link"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_FKJONvEU"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_FKJONvEU -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_FKJONvEU">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_left_front_wheel_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_left_front_wheel_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>left_front_wheel_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_base_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_base_left_front_wheel_link"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_xF07htbS"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_xF07htbS -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_xF07htbS">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_FKJONvEU"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.38</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.145</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.125</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_right_front_wheel_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_right_front_wheel_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>right_front_wheel_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_base_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_base_right_front_wheel_link"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_qlUzyia7"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_qlUzyia7 -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_qlUzyia7">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_FKJONvEU"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.38</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">-0.145</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.125</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_left_back_wheel_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_left_back_wheel_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>left_back_wheel_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_base_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_base_left_back_wheel_link"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_NjN4Fjiu"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_NjN4Fjiu -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_NjN4Fjiu">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_FKJONvEU"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">-0.38</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.145</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.125</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_right_back_wheel_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_right_back_wheel_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>right_back_wheel_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_base_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_base_right_back_wheel_link"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_tee8zfMf"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_tee8zfMf -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_tee8zfMf">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_FKJONvEU"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">-0.38</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">-0.145</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.125</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_laser_front_left_fixed_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_laser_front_left_fixed_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>laser_front_left_fixed_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_base_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_laser_front_left"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_rtSUMokX"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_rtSUMokX -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_rtSUMokX">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_FKJONvEU"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">0.7213823574366063</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.6925369985634013</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.412</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.6925369985634013</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">0.7213823574366063</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.306</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.53</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_laser_rear_right_fixed_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_laser_rear_right_fixed_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>laser_rear_right_fixed_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_base_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_laser_rear_right"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_OrLoTmpl"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_OrLoTmpl -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_OrLoTmpl">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_FKJONvEU"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">-0.7083823161851549</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">0.7058289411154485</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">-0.422</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">-0.7058289411154485</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">-0.7083823161851549</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">-0.3</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">-0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.53</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_base_torso_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_base_torso_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>base_torso_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_base_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_torso_link"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_undqPkT7"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_undqPkT7 -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_undqPkT7">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_FKJONvEU"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.26</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">1.49</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_base_left_arm_base_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_base_left_arm_base_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>base_left_arm_base_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_base_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_calib_left_arm_base_link"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_o3ZV5aSk"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_o3ZV5aSk -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_o3ZV5aSk">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_FKJONvEU"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">0.5000030748090096</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.4330115331692312</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.7499986248813845</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.395</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.12371843893709</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">0.8928576370336994</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">0.4330115331692312</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.059</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">-0.857140987847685</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">-0.12371843893709</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">0.5000030748090096</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">1.149</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_left_arm_0_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_left_arm_0_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>left_arm_0_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_calib_left_arm_base_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_left_arm_1_link"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_L1Tnb91I"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_L1Tnb91I -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_L1Tnb91I">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_o3ZV5aSk"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.11</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_left_arm_1_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_left_arm_1_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>left_arm_1_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_left_arm_1_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_left_arm_2_link"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_SWhFG7xG"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_SWhFG7xG -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_SWhFG7xG">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_L1Tnb91I"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.2</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_left_arm_2_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_left_arm_2_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>left_arm_2_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_left_arm_2_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_left_arm_3_link"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_3c5MefUO"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_3c5MefUO -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_3c5MefUO">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_SWhFG7xG"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.2</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_left_arm_3_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_left_arm_3_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>left_arm_3_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_left_arm_3_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_left_arm_4_link"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_T7s6HctM"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_T7s6HctM -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_T7s6HctM">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_3c5MefUO"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.2</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_left_arm_4_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_left_arm_4_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>left_arm_4_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_left_arm_4_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_left_arm_5_link"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_g7myObzb"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_g7myObzb -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_g7myObzb">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_T7s6HctM"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.2</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_left_arm_5_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_left_arm_5_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>left_arm_5_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_left_arm_5_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_left_arm_6_link"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_6HQaP1On"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_6HQaP1On -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_6HQaP1On">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_g7myObzb"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.19</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_left_arm_6_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_left_arm_6_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>left_arm_6_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_left_arm_6_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_left_arm_7_link"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_sHHSVYWL"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_sHHSVYWL -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_sHHSVYWL">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_6HQaP1On"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.078</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_left_arm_hand_fixed_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_left_arm_hand_fixed_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>left_arm_hand_fixed_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_left_arm_7_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_left_arm_hand_link"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_mU2AQ6Kt"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_mU2AQ6Kt -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_mU2AQ6Kt">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_sHHSVYWL"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">0.7071067811868645</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.7071067811862305</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">-0.075</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">3.46241118769072E-12</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">3.4624111876938247E-12</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">1.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.075</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">-0.7071067811862305</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">-0.7071067811868645</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">-0.094</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_base_right_arm_base_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_base_right_arm_base_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>base_right_arm_base_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_base_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_calib_right_arm_base_link"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_ySYOp5NE"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_ySYOp5NE -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_ySYOp5NE">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_FKJONvEU"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">-0.4956535830071895</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.4274893814051262</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">-0.7560293343766482</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.385121</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.12059126935153208</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">-0.8959216191882429</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">0.42753034749278723</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">-0.0570121</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">-0.8601077091901463</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.12073641147963488</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">0.49561824778220076</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">1.15408</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_right_arm_0_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_right_arm_0_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>right_arm_0_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_calib_right_arm_base_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_right_arm_1_link"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_pNm7T2kS"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_pNm7T2kS -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_pNm7T2kS">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_ySYOp5NE"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.11</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_right_arm_1_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_right_arm_1_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>right_arm_1_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_right_arm_1_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_right_arm_2_link"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_4MHdd2sg"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_4MHdd2sg -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_4MHdd2sg">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_pNm7T2kS"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.2</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_right_arm_2_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_right_arm_2_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>right_arm_2_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_right_arm_2_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_right_arm_3_link"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_VI6vGZYe"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_VI6vGZYe -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_VI6vGZYe">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_4MHdd2sg"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.2</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_right_arm_3_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_right_arm_3_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>right_arm_3_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_right_arm_3_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_right_arm_4_link"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_iGZXNZ7A"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_iGZXNZ7A -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_iGZXNZ7A">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_VI6vGZYe"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.2</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_right_arm_4_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_right_arm_4_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>right_arm_4_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_right_arm_4_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_right_arm_5_link"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_cSjVI7Vi"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_cSjVI7Vi -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_cSjVI7Vi">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_iGZXNZ7A"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.2</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_right_arm_5_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_right_arm_5_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>right_arm_5_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_right_arm_5_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_right_arm_6_link"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_zSanO52G"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_zSanO52G -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_zSanO52G">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_cSjVI7Vi"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.19</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_right_arm_6_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_right_arm_6_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>right_arm_6_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_right_arm_6_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_right_arm_7_link"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_otE2PTgU"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_otE2PTgU -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_otE2PTgU">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_zSanO52G"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.078</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_right_arm_hand_fixed_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_right_arm_hand_fixed_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>right_arm_hand_fixed_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_right_arm_7_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_right_arm_hand_link"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_krlazRwS"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_krlazRwS -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_krlazRwS">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_otE2PTgU"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">-0.7071067811848895</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.7071067811882056</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.075</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">3.4624111877003912E-12</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">-3.4624111876841534E-12</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-1.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.075</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.7071067811882056</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">-0.7071067811848895</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">-0.094</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_ptu_base_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_ptu_base_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>ptu_base_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_base_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_measured_ptu_base"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_HpfSFREh"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_HpfSFREh -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_HpfSFREh">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_FKJONvEU"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.405</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">1.53</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_head_pan_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_head_pan_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>head_pan_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_measured_ptu_base"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_head_pan_link"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_BSzASYsY"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_BSzASYsY -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_BSzASYsY">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_HpfSFREh"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_head_tilt_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_head_tilt_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>head_tilt_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_head_pan_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_ptu_tilt_center"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_YSq2JWAn"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_YSq2JWAn -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_YSq2JWAn">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_BSzASYsY"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.101</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_RightEyeCalc_fixed_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_RightEyeCalc_fixed_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>RightEyeCalc_fixed_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_ptu_tilt_center"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_RightEyeCalc"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_EvU7FU39"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_EvU7FU39 -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_EvU7FU39">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_YSq2JWAn"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">-0.001438966790964713</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">0.9999898630093491</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.00426652705578198</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0450085</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0023451152602089287</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">-0.0042631452251432195</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">0.9999881629435449</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">-0.0690627</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.9999962148973319</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.00144895525554018</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">-0.00233895696339342</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.110697</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_LeftEyeCalc_fixed_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_LeftEyeCalc_fixed_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>LeftEyeCalc_fixed_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_RightEyeCalc"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_LeftEyeCalc"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_YdRThKSK"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_YdRThKSK -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_YdRThKSK">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_EvU7FU39"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">0.9999700316161058</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.005590780702486323</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">-0.005355281581866474</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">-0.125335</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.005585240410122647</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">0.999983852271845</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0010489447659468253</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">-4.53696E-4</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0053610595263907275</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0010190027956687696</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">0.9999851102261758</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">-6.52368E-4</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_sr4_fixed_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_sr4_fixed_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>sr4_fixed_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_RightEyeCalc"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_sr4"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_Uby32I0K"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_Uby32I0K -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_Uby32I0K">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_EvU7FU39"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">-0.9999515138595201</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">2.0733635975081952E-4</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">-0.009845148129299153</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">-0.0619785</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">-1.8292230031959728E-6</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">-0.999782210914837</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.020869373131321502</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.001762617</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">-0.00984733094335011</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">-0.0208683432469927</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">0.9997337357133738</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">-0.0379636</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_RightEyeCalc_sensor_fixed_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_RightEyeCalc_sensor_fixed_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>RightEyeCalc_sensor_fixed_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_RightEyeCalc"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_RightEyeCalc_sensor"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_A526XHDv"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_A526XHDv -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_A526XHDv">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_EvU7FU39"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">2.3976582465313225E-23</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-4.8965888601467475E-12</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">-1.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">1.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">-1.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_LeftEyeCalc_sensor_fixed_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_LeftEyeCalc_sensor_fixed_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>LeftEyeCalc_sensor_fixed_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_LeftEyeCalc"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_LeftEyeCalc_sensor"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_ylDUaNbd"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_ylDUaNbd -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_ylDUaNbd">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_YdRThKSK"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">2.3976582465313225E-23</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-4.8965888601467475E-12</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">-1.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">1.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">-1.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_wide_stereo_frame_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_wide_stereo_frame_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>wide_stereo_frame_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_RightEyeCalc"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_wide_stereo_link"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_VjwlfNhB"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_VjwlfNhB -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_VjwlfNhB">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_EvU7FU39"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">2.3976582465313225E-23</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">-1.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">-0.07</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">-1.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">-0.07</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">1.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_wide_stereo_optical_frame_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_wide_stereo_optical_frame_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>wide_stereo_optical_frame_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_wide_stereo_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_wide_stereo_optical_frame"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_BfXqbKKm"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_BfXqbKKm -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_BfXqbKKm">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_VjwlfNhB"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">1.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">-4.8965888601467475E-12</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">2.3976582465313225E-23</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">1.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">1.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">-4.8965888601467475E-12</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_wide_stereo_gazebo_l_stereo_camera_frame_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_wide_stereo_gazebo_l_stereo_camera_frame_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>wide_stereo_gazebo_l_stereo_camera_frame_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_wide_stereo_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_wide_stereo_gazebo_l_stereo_camera_frame"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_vUKVszJA"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_vUKVszJA -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_vUKVszJA">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_VjwlfNhB"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_wide_stereo_gazebo_l_stereo_camera_optical_frame_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_wide_stereo_gazebo_l_stereo_camera_optical_frame_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>wide_stereo_gazebo_l_stereo_camera_optical_frame_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_wide_stereo_gazebo_l_stereo_camera_frame"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_wide_stereo_gazebo_l_stereo_camera_optical_frame"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_SSDnzARY"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_SSDnzARY -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_SSDnzARY">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_vUKVszJA"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">1.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">-4.8965888601467475E-12</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">2.3976582465313225E-23</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">1.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">1.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">-4.8965888601467475E-12</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_wide_stereo_gazebo_r_stereo_camera_frame_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_wide_stereo_gazebo_r_stereo_camera_frame_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>wide_stereo_gazebo_r_stereo_camera_frame_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_wide_stereo_gazebo_l_stereo_camera_frame"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_wide_stereo_gazebo_r_stereo_camera_frame"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_yO6rvwlJ"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_yO6rvwlJ -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_yO6rvwlJ">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_vUKVszJA"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">-0.09</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_wide_stereo_gazebo_r_stereo_camera_optical_frame_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_wide_stereo_gazebo_r_stereo_camera_optical_frame_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>wide_stereo_gazebo_r_stereo_camera_optical_frame_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_wide_stereo_gazebo_r_stereo_camera_frame"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_wide_stereo_gazebo_r_stereo_camera_optical_frame"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_X5Ty4FIT"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_X5Ty4FIT -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_X5Ty4FIT">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_yO6rvwlJ"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">1.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">-4.8965888601467475E-12</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">2.3976582465313225E-23</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">1.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">1.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">-4.8965888601467475E-12</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_shoulder_tilt_fixed_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_shoulder_tilt_fixed_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>shoulder_tilt_fixed_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_torso_link"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_shoulder_tilt_base"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_T3SINFZR"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_T3SINFZR -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_T3SINFZR">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_undqPkT7"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.147</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.1625</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.035</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_shoulder_tilting_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_shoulder_tilting_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>shoulder_tilting_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_shoulder_tilt_base"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_shoulder_tilt_end"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_LW11iByN"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_LW11iByN -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_LW11iByN">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_T3SINFZR"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.07</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_laser_tilt_fixed_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_laser_tilt_fixed_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>laser_tilt_fixed_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_shoulder_tilt_end"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_shoulder_tilting_laser"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_kS3gkAUr"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_kS3gkAUr -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_kS3gkAUr">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_LW11iByN"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.078</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.03</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &tum_rosie;TUMRosie_shoulder_tilting_laser_sensor_fixed_joint -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_shoulder_tilting_laser_sensor_fixed_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>shoulder_tilting_laser_sensor_fixed_joint</srdl2-comp:urdfName>
+        <srdl2-comp:precedingLink rdf:resource="&tum_rosie;TUMRosie_shoulder_tilting_laser"/>
+        <srdl2-comp:succeedingLink rdf:resource="&tum_rosie;TUMRosie_shoulder_tilting_laser_sensor"/>
+        <knowrob:orientation rdf:resource="&tum_rosie;RotationMatrix3D_rQGDDzfS"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;RotationMatrix3D_rQGDDzfS -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;RotationMatrix3D_rQGDDzfS">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&tum_rosie;RotationMatrix3D_kS3gkAUr"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+
+    <!-- =========================================== -->
+    <!-- |   Robot Links                           | -->
+    <!-- =========================================== -->
+
+
+    <!-- &tum_rosie;TUMRosie_world -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_world">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>world</srdl2-comp:urdfName>
+        <srdl2-comp:link_name rdf:datatype="&xsd;string">world</srdl2-comp:link_name>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_base_joint"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_base_link -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_base_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>base_link</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">200.0</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.976666666667</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">6.60166666667</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">6.375</srdl2-comp:inertia_izz>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/base.stl</srdl2-comp:mesh_filename>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">DarkGrey</srdl2-comp:material_name>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.76 0.60 0.60</srdl2-comp:box_size>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_left_front_wheel_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_right_front_wheel_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_left_back_wheel_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_right_back_wheel_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_laser_front_left_fixed_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_laser_rear_right_fixed_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_base_torso_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_base_left_arm_base_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_base_right_arm_base_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_ptu_base_joint"/>
+        <srdl2-comp:material rdf:datatype="&xsd;string">TUMRosie.material</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_base_left_front_wheel_link -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_base_left_front_wheel_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>base_left_front_wheel_link</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">3.0</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.01594375</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.0234375</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.01594375</srdl2-comp:inertia_izz>
+        <srdl2-comp:cylinder_length rdf:datatype="&qudt-unit;Unitless">0.13</srdl2-comp:cylinder_length>
+        <srdl2-comp:cylinder_radius rdf:datatype="&qudt-unit;Unitless">0.125</srdl2-comp:cylinder_radius>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Black</srdl2-comp:material_name>
+        <srdl2-comp:cylinder_length rdf:datatype="&qudt-unit;Unitless">0.13</srdl2-comp:cylinder_length>
+        <srdl2-comp:cylinder_radius rdf:datatype="&qudt-unit;Unitless">0.12375</srdl2-comp:cylinder_radius>
+        <srdl2-comp:material rdf:datatype="&xsd;string">Gazebo/Black</srdl2-comp:material>
+        <srdl2-comp:mu1 rdf:datatype="&qudt-unit;Unitless">0.0</srdl2-comp:mu1>
+        <srdl2-comp:mu2 rdf:datatype="&qudt-unit;Unitless">0.0</srdl2-comp:mu2>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_base_right_front_wheel_link -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_base_right_front_wheel_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>base_right_front_wheel_link</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">3.0</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.01594375</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.0234375</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.01594375</srdl2-comp:inertia_izz>
+        <srdl2-comp:cylinder_length rdf:datatype="&qudt-unit;Unitless">0.13</srdl2-comp:cylinder_length>
+        <srdl2-comp:cylinder_radius rdf:datatype="&qudt-unit;Unitless">0.125</srdl2-comp:cylinder_radius>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Black</srdl2-comp:material_name>
+        <srdl2-comp:cylinder_length rdf:datatype="&qudt-unit;Unitless">0.13</srdl2-comp:cylinder_length>
+        <srdl2-comp:cylinder_radius rdf:datatype="&qudt-unit;Unitless">0.12375</srdl2-comp:cylinder_radius>
+        <srdl2-comp:material rdf:datatype="&xsd;string">Gazebo/Black</srdl2-comp:material>
+        <srdl2-comp:mu1 rdf:datatype="&qudt-unit;Unitless">0.0</srdl2-comp:mu1>
+        <srdl2-comp:mu2 rdf:datatype="&qudt-unit;Unitless">0.0</srdl2-comp:mu2>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_base_left_back_wheel_link -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_base_left_back_wheel_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>base_left_back_wheel_link</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">3.0</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.01594375</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.0234375</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.01594375</srdl2-comp:inertia_izz>
+        <srdl2-comp:cylinder_length rdf:datatype="&qudt-unit;Unitless">0.13</srdl2-comp:cylinder_length>
+        <srdl2-comp:cylinder_radius rdf:datatype="&qudt-unit;Unitless">0.125</srdl2-comp:cylinder_radius>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Black</srdl2-comp:material_name>
+        <srdl2-comp:cylinder_length rdf:datatype="&qudt-unit;Unitless">0.13</srdl2-comp:cylinder_length>
+        <srdl2-comp:cylinder_radius rdf:datatype="&qudt-unit;Unitless">0.12375</srdl2-comp:cylinder_radius>
+        <srdl2-comp:material rdf:datatype="&xsd;string">Gazebo/Black</srdl2-comp:material>
+        <srdl2-comp:mu1 rdf:datatype="&qudt-unit;Unitless">0.0</srdl2-comp:mu1>
+        <srdl2-comp:mu2 rdf:datatype="&qudt-unit;Unitless">0.0</srdl2-comp:mu2>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_base_right_back_wheel_link -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_base_right_back_wheel_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>base_right_back_wheel_link</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">3.0</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.01594375</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.0234375</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.01594375</srdl2-comp:inertia_izz>
+        <srdl2-comp:cylinder_length rdf:datatype="&qudt-unit;Unitless">0.13</srdl2-comp:cylinder_length>
+        <srdl2-comp:cylinder_radius rdf:datatype="&qudt-unit;Unitless">0.125</srdl2-comp:cylinder_radius>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Black</srdl2-comp:material_name>
+        <srdl2-comp:cylinder_length rdf:datatype="&qudt-unit;Unitless">0.13</srdl2-comp:cylinder_length>
+        <srdl2-comp:cylinder_radius rdf:datatype="&qudt-unit;Unitless">0.12375</srdl2-comp:cylinder_radius>
+        <srdl2-comp:material rdf:datatype="&xsd;string">Gazebo/Black</srdl2-comp:material>
+        <srdl2-comp:mu1 rdf:datatype="&qudt-unit;Unitless">0.0</srdl2-comp:mu1>
+        <srdl2-comp:mu2 rdf:datatype="&qudt-unit;Unitless">0.0</srdl2-comp:mu2>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_laser_front_left -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_laser_front_left">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>laser_front_left</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">1.66666666667e-10</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">1.66666666667e-10</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">1.66666666667e-10</srdl2-comp:inertia_izz>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:box_size>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:box_size>
+        <rdf:type rdf:resource="&srdl2-comp;LaserScanner"/>
+        <srdl2-comp:rayCount rdf:datatype="&qudt-unit;Unitless">682</srdl2-comp:rayCount>
+        <srdl2-comp:rangeCount rdf:datatype="&qudt-unit;Meter">682</srdl2-comp:rangeCount>
+        <srdl2-comp:laserCount rdf:datatype="&qudt-unit;Unitless">1</srdl2-comp:laserCount>
+        <srdl2-comp:origin rdf:datatype="&xsd;string">0.0 0.0 0.0</srdl2-comp:origin>
+        <srdl2-comp:displayRays rdf:datatype="&xsd;string">off</srdl2-comp:displayRays>
+        <srdl2-comp:minAngle rdf:datatype="&qudt-unit;DegreeAngle">-120</srdl2-comp:minAngle>
+        <srdl2-comp:maxAngle rdf:datatype="&qudt-unit;DegreeAngle">120</srdl2-comp:maxAngle>
+        <srdl2-comp:minRange rdf:datatype="&qudt-unit;Meter">0.02</srdl2-comp:minRange>
+        <srdl2-comp:maxRange rdf:datatype="&qudt-unit;Meter">5.60</srdl2-comp:maxRange>
+        <srdl2-comp:resRange rdf:datatype="&qudt-unit;Meter">0.01</srdl2-comp:resRange>
+        <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">20.0</srdl2-comp:updateRate>
+        <srdl2-comp:gaussianNoise rdf:datatype="&qudt-unit;Unitless">0.005</srdl2-comp:gaussianNoise>
+        <srdl2-comp:alwaysOn rdf:datatype="&xsd;string">true</srdl2-comp:alwaysOn>
+        <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">20.0</srdl2-comp:updateRate>
+        <srdl2-comp:topicName rdf:datatype="&xsd;string">laser/laser_front_left</srdl2-comp:topicName>
+        <srdl2-comp:frameName rdf:datatype="&xsd;string">laser_front_left</srdl2-comp:frameName>
+        <srdl2-comp:interface_laser rdf:datatype="&xsd;string">laser_front_left_iface</srdl2-comp:interface_laser>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_laser_rear_right -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_laser_rear_right">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>laser_rear_right</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">1.66666666667e-10</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">1.66666666667e-10</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">1.66666666667e-10</srdl2-comp:inertia_izz>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:box_size>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:box_size>
+        <rdf:type rdf:resource="&srdl2-comp;LaserScanner"/>
+        <srdl2-comp:rayCount rdf:datatype="&qudt-unit;Unitless">682</srdl2-comp:rayCount>
+        <srdl2-comp:rangeCount rdf:datatype="&qudt-unit;Meter">682</srdl2-comp:rangeCount>
+        <srdl2-comp:laserCount rdf:datatype="&qudt-unit;Unitless">1</srdl2-comp:laserCount>
+        <srdl2-comp:origin rdf:datatype="&xsd;string">0.0 0.0 0.0</srdl2-comp:origin>
+        <srdl2-comp:displayRays rdf:datatype="&xsd;string">off</srdl2-comp:displayRays>
+        <srdl2-comp:minAngle rdf:datatype="&qudt-unit;DegreeAngle">-120</srdl2-comp:minAngle>
+        <srdl2-comp:maxAngle rdf:datatype="&qudt-unit;DegreeAngle">120</srdl2-comp:maxAngle>
+        <srdl2-comp:minRange rdf:datatype="&qudt-unit;Meter">0.02</srdl2-comp:minRange>
+        <srdl2-comp:maxRange rdf:datatype="&qudt-unit;Meter">5.60</srdl2-comp:maxRange>
+        <srdl2-comp:resRange rdf:datatype="&qudt-unit;Meter">0.01</srdl2-comp:resRange>
+        <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">20.0</srdl2-comp:updateRate>
+        <srdl2-comp:gaussianNoise rdf:datatype="&qudt-unit;Unitless">0.005</srdl2-comp:gaussianNoise>
+        <srdl2-comp:alwaysOn rdf:datatype="&xsd;string">true</srdl2-comp:alwaysOn>
+        <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">20.0</srdl2-comp:updateRate>
+        <srdl2-comp:topicName rdf:datatype="&xsd;string">laser/laser_rear_right</srdl2-comp:topicName>
+        <srdl2-comp:frameName rdf:datatype="&xsd;string">laser_rear_right</srdl2-comp:frameName>
+        <srdl2-comp:interface_laser rdf:datatype="&xsd;string">laser_rear_right_iface</srdl2-comp:interface_laser>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_torso_link -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_torso_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>torso_link</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">5.0</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.305052083333</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.135083333333</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.370052083333</srdl2-comp:inertia_izz>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/torso.stl</srdl2-comp:mesh_filename>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.29 0.49 0.805</srdl2-comp:box_size>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_shoulder_tilt_fixed_joint"/>
+        <srdl2-comp:material rdf:datatype="&xsd;string">TUMRosie.material</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_calib_left_arm_base_link -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_calib_left_arm_base_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>calib_left_arm_base_link</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">2.0</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.00381666666667</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.0036</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.00381666666667</srdl2-comp:inertia_izz>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/arm_base.dae</srdl2-comp:mesh_filename>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Orange</srdl2-comp:material_name>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/convex/arm_base_convex.stl</srdl2-comp:mesh_filename>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_left_arm_0_joint"/>
+        <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_left_arm_1_link -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_left_arm_1_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>left_arm_1_link</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">2.0</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.0136666666667</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.003</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0118666666667</srdl2-comp:inertia_izz>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/arm_segment_a.dae</srdl2-comp:mesh_filename>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Orange</srdl2-comp:material_name>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/convex/arm_segment_a_convex.stl</srdl2-comp:mesh_filename>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_left_arm_1_joint"/>
+        <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_left_arm_2_link -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_left_arm_2_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>left_arm_2_link</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">2.0</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.0136666666667</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.003</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0118666666667</srdl2-comp:inertia_izz>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/arm_segment_b.dae</srdl2-comp:mesh_filename>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Orange</srdl2-comp:material_name>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/convex/arm_segment_b_convex.stl</srdl2-comp:mesh_filename>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_left_arm_2_joint"/>
+        <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_left_arm_3_link -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_left_arm_3_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>left_arm_3_link</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">2.0</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.0136666666667</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.003</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0118666666667</srdl2-comp:inertia_izz>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/arm_segment_a.dae</srdl2-comp:mesh_filename>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Orange</srdl2-comp:material_name>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/convex/arm_segment_a_convex.stl</srdl2-comp:mesh_filename>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_left_arm_3_joint"/>
+        <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_left_arm_4_link -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_left_arm_4_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>left_arm_4_link</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">2.0</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.0136666666667</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.003</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0118666666667</srdl2-comp:inertia_izz>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/arm_segment_b.dae</srdl2-comp:mesh_filename>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Orange</srdl2-comp:material_name>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/convex/arm_segment_b_convex.stl</srdl2-comp:mesh_filename>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_left_arm_4_joint"/>
+        <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_left_arm_5_link -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_left_arm_5_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>left_arm_5_link</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">2.0</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.0126506666667</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.003</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0108506666667</srdl2-comp:inertia_izz>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/arm_segment_last.dae</srdl2-comp:mesh_filename>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Orange</srdl2-comp:material_name>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/convex/arm_segment_last_convex.stl</srdl2-comp:mesh_filename>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_left_arm_5_joint"/>
+        <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_left_arm_6_link -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_left_arm_6_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>left_arm_6_link</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.2</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.000520833333333</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.000520833333333</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.000520833333333</srdl2-comp:inertia_izz>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/arm_wrist.dae</srdl2-comp:mesh_filename>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/convex/arm_wrist_convex.stl</srdl2-comp:mesh_filename>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_left_arm_6_joint"/>
+        <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_left_arm_7_link -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_left_arm_7_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>left_arm_7_link</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.2</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.0333333333333</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.0333333333333</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0333333333333</srdl2-comp:inertia_izz>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/arm_flanche.dae</srdl2-comp:mesh_filename>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/convex/arm_flanche_convex.stl</srdl2-comp:mesh_filename>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_left_arm_hand_fixed_joint"/>
+        <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_left_arm_hand_link -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_left_arm_hand_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>left_arm_hand_link</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.01</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.00166666666667</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.00166666666667</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.00166666666667</srdl2-comp:inertia_izz>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:box_size>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/convex/hand_convex.stl</srdl2-comp:mesh_filename>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_calib_right_arm_base_link -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_calib_right_arm_base_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>calib_right_arm_base_link</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">2.0</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.00381666666667</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.0036</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.00381666666667</srdl2-comp:inertia_izz>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/arm_base.dae</srdl2-comp:mesh_filename>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Orange</srdl2-comp:material_name>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/convex/arm_base_convex.stl</srdl2-comp:mesh_filename>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_right_arm_0_joint"/>
+        <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_right_arm_1_link -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_right_arm_1_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>right_arm_1_link</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">2.0</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.0136666666667</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.003</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0118666666667</srdl2-comp:inertia_izz>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/arm_segment_a.dae</srdl2-comp:mesh_filename>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Orange</srdl2-comp:material_name>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/convex/arm_segment_a_convex.stl</srdl2-comp:mesh_filename>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_right_arm_1_joint"/>
+        <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_right_arm_2_link -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_right_arm_2_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>right_arm_2_link</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">2.0</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.0136666666667</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.003</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0118666666667</srdl2-comp:inertia_izz>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/arm_segment_b.dae</srdl2-comp:mesh_filename>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Orange</srdl2-comp:material_name>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/convex/arm_segment_b_convex.stl</srdl2-comp:mesh_filename>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_right_arm_2_joint"/>
+        <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_right_arm_3_link -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_right_arm_3_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>right_arm_3_link</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">2.0</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.0136666666667</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.003</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0118666666667</srdl2-comp:inertia_izz>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/arm_segment_a.dae</srdl2-comp:mesh_filename>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Orange</srdl2-comp:material_name>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/convex/arm_segment_a_convex.stl</srdl2-comp:mesh_filename>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_right_arm_3_joint"/>
+        <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_right_arm_4_link -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_right_arm_4_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>right_arm_4_link</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">2.0</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.0136666666667</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.003</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0118666666667</srdl2-comp:inertia_izz>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/arm_segment_b.dae</srdl2-comp:mesh_filename>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Orange</srdl2-comp:material_name>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/convex/arm_segment_b_convex.stl</srdl2-comp:mesh_filename>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_right_arm_4_joint"/>
+        <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_right_arm_5_link -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_right_arm_5_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>right_arm_5_link</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">2.0</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.0126506666667</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.003</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0108506666667</srdl2-comp:inertia_izz>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/arm_segment_last.dae</srdl2-comp:mesh_filename>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Orange</srdl2-comp:material_name>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/convex/arm_segment_last_convex.stl</srdl2-comp:mesh_filename>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_right_arm_5_joint"/>
+        <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_right_arm_6_link -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_right_arm_6_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>right_arm_6_link</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.2</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.000520833333333</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.000520833333333</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.000520833333333</srdl2-comp:inertia_izz>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/arm_wrist.dae</srdl2-comp:mesh_filename>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/convex/arm_wrist_convex.stl</srdl2-comp:mesh_filename>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_right_arm_6_joint"/>
+        <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_right_arm_7_link -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_right_arm_7_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>right_arm_7_link</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.2</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.0333333333333</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.0333333333333</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0333333333333</srdl2-comp:inertia_izz>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/arm_flanche.dae</srdl2-comp:mesh_filename>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/convex/arm_flanche_convex.stl</srdl2-comp:mesh_filename>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_right_arm_hand_fixed_joint"/>
+        <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_right_arm_hand_link -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_right_arm_hand_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>right_arm_hand_link</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.01</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.00166666666667</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.00166666666667</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.00166666666667</srdl2-comp:inertia_izz>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:box_size>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/convex/hand_convex.stl</srdl2-comp:mesh_filename>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_measured_ptu_base -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_measured_ptu_base">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>measured_ptu_base</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.1</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.000166666666667</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.000166666666667</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.000166666666667</srdl2-comp:inertia_izz>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:box_size>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:box_size>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_head_pan_joint"/>
+        <srdl2-comp:material rdf:datatype="&xsd;string">ptu.material</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_head_pan_link -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_head_pan_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>head_pan_link</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.9</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.002317575</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.000975</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.002077575</srdl2-comp:inertia_izz>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/ptu0.stl</srdl2-comp:mesh_filename>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.09 0.07 0.151</srdl2-comp:box_size>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_head_tilt_joint"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_ptu_tilt_center -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_ptu_tilt_center">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>ptu_tilt_center</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.9</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.001226175</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.0022875</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.002778675</srdl2-comp:inertia_izz>
+        <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://ias_robot_defs/meshes/TUMRosie/ptu1.stl</srdl2-comp:mesh_filename>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.070 0.160 0.107</srdl2-comp:box_size>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_RightEyeCalc_fixed_joint"/>
+        <srdl2-comp:material rdf:datatype="&xsd;string">ptu.material</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_RightEyeCalc -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_RightEyeCalc">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>RightEyeCalc</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.2</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.000333333333333</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.000333333333333</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.000333333333333</srdl2-comp:inertia_izz>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.05 0.05 0.09</srdl2-comp:box_size>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.01 0.01 0.01</srdl2-comp:box_size>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_LeftEyeCalc_fixed_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_sr4_fixed_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_RightEyeCalc_sensor_fixed_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_wide_stereo_frame_joint"/>
+        <srdl2-comp:material rdf:datatype="&xsd;string">Gazebo/Red</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_LeftEyeCalc -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_LeftEyeCalc">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>LeftEyeCalc</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.2</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.000333333333333</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.000333333333333</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.000333333333333</srdl2-comp:inertia_izz>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.05 0.05 0.09</srdl2-comp:box_size>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.01 0.01 0.01</srdl2-comp:box_size>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_LeftEyeCalc_sensor_fixed_joint"/>
+        <srdl2-comp:material rdf:datatype="&xsd;string">Gazebo/Red</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_sr4 -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_sr4">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>sr4</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.2</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.000333333333333</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.000333333333333</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.000333333333333</srdl2-comp:inertia_izz>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.05 0.05 0.09</srdl2-comp:box_size>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.01 0.01 0.01</srdl2-comp:box_size>
+        <srdl2-comp:material rdf:datatype="&xsd;string">Gazebo/Red</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_RightEyeCalc_sensor -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_RightEyeCalc_sensor">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>RightEyeCalc_sensor</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">1.66666666667e-10</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">1.66666666667e-10</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">1.66666666667e-10</srdl2-comp:inertia_izz>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:box_size>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:box_size>
+        <rdf:type rdf:resource="&srdl2-comp;Camera"/>
+        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">400</srdl2-comp:imageSize>
+        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">300</srdl2-comp:imageSize>
+        <srdl2-comp:imageFormat rdf:datatype="&xsd;string">R8G8B8</srdl2-comp:imageFormat>
+        <srdl2-comp:hfov rdf:datatype="&qudt-unit;Unitless">104</srdl2-comp:hfov>
+        <srdl2-comp:nearClip rdf:datatype="&qudt-unit;Unitless">0.1</srdl2-comp:nearClip>
+        <srdl2-comp:farClip rdf:datatype="&qudt-unit;Unitless">100</srdl2-comp:farClip>
+        <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">20.0</srdl2-comp:updateRate>
+        <srdl2-comp:alwaysOn rdf:datatype="&xsd;string">true</srdl2-comp:alwaysOn>
+        <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">20.0</srdl2-comp:updateRate>
+        <srdl2-comp:imageTopicName rdf:datatype="&xsd;string">cameras/RightEyeCalc_sensor</srdl2-comp:imageTopicName>
+        <srdl2-comp:cameraInfoTopicName rdf:datatype="&xsd;string">cameras/RightEyeCalc_sensorInfo</srdl2-comp:cameraInfoTopicName>
+        <srdl2-comp:frameName rdf:datatype="&xsd;string">RightEyeCalc_sensor</srdl2-comp:frameName>
+        <srdl2-comp:interface_camera rdf:datatype="&xsd;string">RightEyeCalc_sensor_iface</srdl2-comp:interface_camera>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_LeftEyeCalc_sensor -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_LeftEyeCalc_sensor">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>LeftEyeCalc_sensor</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">1.66666666667e-10</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">1.66666666667e-10</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">1.66666666667e-10</srdl2-comp:inertia_izz>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:box_size>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:box_size>
+        <rdf:type rdf:resource="&srdl2-comp;Camera"/>
+        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">400</srdl2-comp:imageSize>
+        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">300</srdl2-comp:imageSize>
+        <srdl2-comp:imageFormat rdf:datatype="&xsd;string">R8G8B8</srdl2-comp:imageFormat>
+        <srdl2-comp:hfov rdf:datatype="&qudt-unit;Unitless">104</srdl2-comp:hfov>
+        <srdl2-comp:nearClip rdf:datatype="&qudt-unit;Unitless">0.1</srdl2-comp:nearClip>
+        <srdl2-comp:farClip rdf:datatype="&qudt-unit;Unitless">100</srdl2-comp:farClip>
+        <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">20.0</srdl2-comp:updateRate>
+        <srdl2-comp:alwaysOn rdf:datatype="&xsd;string">true</srdl2-comp:alwaysOn>
+        <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">20.0</srdl2-comp:updateRate>
+        <srdl2-comp:imageTopicName rdf:datatype="&xsd;string">cameras/LeftEyeCalc_sensor</srdl2-comp:imageTopicName>
+        <srdl2-comp:cameraInfoTopicName rdf:datatype="&xsd;string">cameras/LeftEyeCalc_sensorInfo</srdl2-comp:cameraInfoTopicName>
+        <srdl2-comp:frameName rdf:datatype="&xsd;string">LeftEyeCalc_sensor</srdl2-comp:frameName>
+        <srdl2-comp:interface_camera rdf:datatype="&xsd;string">LeftEyeCalc_sensor_iface</srdl2-comp:interface_camera>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_wide_stereo_link -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_wide_stereo_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>wide_stereo_link</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.1</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.01</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.01</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.01</srdl2-comp:inertia_izz>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:box_size>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Blue</srdl2-comp:material_name>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:box_size>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_wide_stereo_optical_frame_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_wide_stereo_gazebo_l_stereo_camera_frame_joint"/>
+        <srdl2-comp:material rdf:datatype="&xsd;string">PR2/Blue</srdl2-comp:material>
+        <srdl2-comp:turnGravityOff rdf:datatype="&xsd;string">true</srdl2-comp:turnGravityOff>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_wide_stereo_optical_frame -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_wide_stereo_optical_frame">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>wide_stereo_optical_frame</srdl2-comp:urdfName>
+        <srdl2-comp:link_name rdf:datatype="&xsd;string">wide_stereo_optical_frame</srdl2-comp:link_name>
+        <srdl2-comp:link_type rdf:datatype="&xsd;string">camera</srdl2-comp:link_type>
+        <srdl2-comp:material rdf:datatype="&xsd;string">PR2/Green</srdl2-comp:material>
+        <srdl2-comp:turnGravityOff rdf:datatype="&xsd;string">true</srdl2-comp:turnGravityOff>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_wide_stereo_gazebo_l_stereo_camera_frame -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_wide_stereo_gazebo_l_stereo_camera_frame">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>wide_stereo_gazebo_l_stereo_camera_frame</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.01</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:inertia_izz>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.01 0.01 0.01</srdl2-comp:box_size>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.01 0.01 0.01</srdl2-comp:box_size>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_wide_stereo_gazebo_l_stereo_camera_optical_frame_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_wide_stereo_gazebo_r_stereo_camera_frame_joint"/>
+        <rdf:type rdf:resource="&srdl2-comp;Camera"/>
+        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">640</srdl2-comp:imageSize>
+        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">480</srdl2-comp:imageSize>
+        <srdl2-comp:imageFormat rdf:datatype="&xsd;string">BAYER_BGGR8</srdl2-comp:imageFormat>
+        <srdl2-comp:hfov rdf:datatype="&qudt-unit;Unitless">90</srdl2-comp:hfov>
+        <srdl2-comp:nearClip rdf:datatype="&qudt-unit;Unitless">0.1</srdl2-comp:nearClip>
+        <srdl2-comp:farClip rdf:datatype="&qudt-unit;Unitless">100</srdl2-comp:farClip>
+        <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">25.0</srdl2-comp:updateRate>
+        <srdl2-comp:alwaysOn rdf:datatype="&xsd;string">true</srdl2-comp:alwaysOn>
+        <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">25.0</srdl2-comp:updateRate>
+        <srdl2-comp:imageTopicName rdf:datatype="&xsd;string">wide_stereo/left/image_raw</srdl2-comp:imageTopicName>
+        <srdl2-comp:cameraInfoTopicName rdf:datatype="&xsd;string">wide_stereo/left/camera_info</srdl2-comp:cameraInfoTopicName>
+        <srdl2-comp:frameName rdf:datatype="&xsd;string">wide_stereo_optical_frame</srdl2-comp:frameName>
+        <srdl2-comp:hackBaseline rdf:datatype="&qudt-unit;Unitless">0</srdl2-comp:hackBaseline>
+        <srdl2-comp:CxPrime rdf:datatype="&qudt-unit;Unitless">320.5</srdl2-comp:CxPrime>
+        <srdl2-comp:Cx rdf:datatype="&qudt-unit;Unitless">320.5</srdl2-comp:Cx>
+        <srdl2-comp:Cy rdf:datatype="&qudt-unit;Unitless">240.5</srdl2-comp:Cy>
+        <srdl2-comp:focal_length rdf:datatype="&qudt-unit;Unitless">320</srdl2-comp:focal_length>
+        <srdl2-comp:distortion_k1 rdf:datatype="&qudt-unit;Unitless">0.00000001</srdl2-comp:distortion_k1>
+        <srdl2-comp:distortion_k2 rdf:datatype="&qudt-unit;Unitless">0.00000001</srdl2-comp:distortion_k2>
+        <srdl2-comp:distortion_k3 rdf:datatype="&qudt-unit;Unitless">0.00000001</srdl2-comp:distortion_k3>
+        <srdl2-comp:distortion_t1 rdf:datatype="&qudt-unit;Unitless">0.00000001</srdl2-comp:distortion_t1>
+        <srdl2-comp:distortion_t2 rdf:datatype="&qudt-unit;Unitless">0.00000001</srdl2-comp:distortion_t2>
+        <srdl2-comp:interface_camera rdf:datatype="&xsd;string">wide_stereo_gazebo_l_stereo_camera_iface</srdl2-comp:interface_camera>
+        <srdl2-comp:turnGravityOff rdf:datatype="&xsd;string">true</srdl2-comp:turnGravityOff>
+        <srdl2-comp:material rdf:datatype="&xsd;string">PR2/Blue</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_wide_stereo_gazebo_l_stereo_camera_optical_frame -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_wide_stereo_gazebo_l_stereo_camera_optical_frame">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>wide_stereo_gazebo_l_stereo_camera_optical_frame</srdl2-comp:urdfName>
+        <srdl2-comp:link_name rdf:datatype="&xsd;string">wide_stereo_gazebo_l_stereo_camera_optical_frame</srdl2-comp:link_name>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_wide_stereo_gazebo_r_stereo_camera_frame -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_wide_stereo_gazebo_r_stereo_camera_frame">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>wide_stereo_gazebo_r_stereo_camera_frame</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.01</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:inertia_izz>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.01 0.01 0.01</srdl2-comp:box_size>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.01 0.01 0.01</srdl2-comp:box_size>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_wide_stereo_gazebo_r_stereo_camera_optical_frame_joint"/>
+        <rdf:type rdf:resource="&srdl2-comp;Camera"/>
+        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">640</srdl2-comp:imageSize>
+        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">480</srdl2-comp:imageSize>
+        <srdl2-comp:imageFormat rdf:datatype="&xsd;string">BAYER_BGGR8</srdl2-comp:imageFormat>
+        <srdl2-comp:hfov rdf:datatype="&qudt-unit;Unitless">90</srdl2-comp:hfov>
+        <srdl2-comp:nearClip rdf:datatype="&qudt-unit;Unitless">0.1</srdl2-comp:nearClip>
+        <srdl2-comp:farClip rdf:datatype="&qudt-unit;Unitless">100</srdl2-comp:farClip>
+        <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">25.0</srdl2-comp:updateRate>
+        <srdl2-comp:alwaysOn rdf:datatype="&xsd;string">true</srdl2-comp:alwaysOn>
+        <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">25.0</srdl2-comp:updateRate>
+        <srdl2-comp:imageTopicName rdf:datatype="&xsd;string">wide_stereo/right/image_raw</srdl2-comp:imageTopicName>
+        <srdl2-comp:cameraInfoTopicName rdf:datatype="&xsd;string">wide_stereo/right/camera_info</srdl2-comp:cameraInfoTopicName>
+        <srdl2-comp:frameName rdf:datatype="&xsd;string">wide_stereo_optical_frame</srdl2-comp:frameName>
+        <srdl2-comp:hackBaseline rdf:datatype="&qudt-unit;Unitless">0.09</srdl2-comp:hackBaseline>
+        <srdl2-comp:CxPrime rdf:datatype="&qudt-unit;Unitless">320.5</srdl2-comp:CxPrime>
+        <srdl2-comp:Cx rdf:datatype="&qudt-unit;Unitless">320.5</srdl2-comp:Cx>
+        <srdl2-comp:Cy rdf:datatype="&qudt-unit;Unitless">240.5</srdl2-comp:Cy>
+        <srdl2-comp:focal_length rdf:datatype="&qudt-unit;Unitless">320</srdl2-comp:focal_length>
+        <srdl2-comp:distortion_k1 rdf:datatype="&qudt-unit;Unitless">0.00000001</srdl2-comp:distortion_k1>
+        <srdl2-comp:distortion_k2 rdf:datatype="&qudt-unit;Unitless">0.00000001</srdl2-comp:distortion_k2>
+        <srdl2-comp:distortion_k3 rdf:datatype="&qudt-unit;Unitless">0.00000001</srdl2-comp:distortion_k3>
+        <srdl2-comp:distortion_t1 rdf:datatype="&qudt-unit;Unitless">0.00000001</srdl2-comp:distortion_t1>
+        <srdl2-comp:distortion_t2 rdf:datatype="&qudt-unit;Unitless">0.00000001</srdl2-comp:distortion_t2>
+        <srdl2-comp:interface_camera rdf:datatype="&xsd;string">wide_stereo_gazebo_r_stereo_camera_iface</srdl2-comp:interface_camera>
+        <srdl2-comp:turnGravityOff rdf:datatype="&xsd;string">true</srdl2-comp:turnGravityOff>
+        <srdl2-comp:material rdf:datatype="&xsd;string">PR2/Blue</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_wide_stereo_gazebo_r_stereo_camera_optical_frame -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_wide_stereo_gazebo_r_stereo_camera_optical_frame">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>wide_stereo_gazebo_r_stereo_camera_optical_frame</srdl2-comp:urdfName>
+        <srdl2-comp:link_name rdf:datatype="&xsd;string">wide_stereo_gazebo_r_stereo_camera_optical_frame</srdl2-comp:link_name>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_shoulder_tilt_base -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_shoulder_tilt_base">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>shoulder_tilt_base</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.425</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.000347083333333</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.000347083333333</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.000347083333333</srdl2-comp:inertia_izz>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.07 0.07 0.07</srdl2-comp:box_size>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.07 0.07 0.07</srdl2-comp:box_size>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_shoulder_tilting_joint"/>
+        <srdl2-comp:material rdf:datatype="&xsd;string">cube_light_gray</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_shoulder_tilt_end -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_shoulder_tilt_end">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>shoulder_tilt_end</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.425</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.000347083333333</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.000347083333333</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.000347083333333</srdl2-comp:inertia_izz>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.07 0.07 0.07</srdl2-comp:box_size>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.07 0.07 0.07</srdl2-comp:box_size>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_laser_tilt_fixed_joint"/>
+        <srdl2-comp:material rdf:datatype="&xsd;string">cube_light_gray</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_shoulder_tilting_laser -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_shoulder_tilting_laser">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>shoulder_tilting_laser</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.2</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.000163333333333</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.000163333333333</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.000163333333333</srdl2-comp:inertia_izz>
+        <srdl2-comp:cylinder_length rdf:datatype="&qudt-unit;Unitless">0.06</srdl2-comp:cylinder_length>
+        <srdl2-comp:cylinder_radius rdf:datatype="&qudt-unit;Unitless">0.025</srdl2-comp:cylinder_radius>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Black</srdl2-comp:material_name>
+        <srdl2-comp:cylinder_length rdf:datatype="&qudt-unit;Unitless">0.08</srdl2-comp:cylinder_length>
+        <srdl2-comp:cylinder_radius rdf:datatype="&qudt-unit;Unitless">0.025</srdl2-comp:cylinder_radius>
+        <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_shoulder_tilting_laser_sensor_fixed_joint"/>
+        <srdl2-comp:material rdf:datatype="&xsd;string">Gazebo/Black</srdl2-comp:material>
+    </owl:NamedIndividual>
+
+
+    <!-- &tum_rosie;TUMRosie_shoulder_tilting_laser_sensor -->
+
+    <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_shoulder_tilting_laser_sensor">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>shoulder_tilting_laser_sensor</srdl2-comp:urdfName>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">1.66666666667e-10</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">1.66666666667e-10</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">1.66666666667e-10</srdl2-comp:inertia_izz>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:box_size>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:box_size>
+        <rdf:type rdf:resource="&srdl2-comp;LaserScanner"/>
+        <srdl2-comp:rayCount rdf:datatype="&qudt-unit;Unitless">640</srdl2-comp:rayCount>
+        <srdl2-comp:rangeCount rdf:datatype="&qudt-unit;Meter">640</srdl2-comp:rangeCount>
+        <srdl2-comp:laserCount rdf:datatype="&qudt-unit;Unitless">1</srdl2-comp:laserCount>
+        <srdl2-comp:origin rdf:datatype="&xsd;string">0.0 0.0 0.0</srdl2-comp:origin>
+        <srdl2-comp:displayRays rdf:datatype="&xsd;string">off</srdl2-comp:displayRays>
+        <srdl2-comp:minAngle rdf:datatype="&qudt-unit;DegreeAngle">-80</srdl2-comp:minAngle>
+        <srdl2-comp:maxAngle rdf:datatype="&qudt-unit;DegreeAngle">80</srdl2-comp:maxAngle>
+        <srdl2-comp:minRange rdf:datatype="&qudt-unit;Meter">0.03</srdl2-comp:minRange>
+        <srdl2-comp:maxRange rdf:datatype="&qudt-unit;Meter">60.00</srdl2-comp:maxRange>
+        <srdl2-comp:resRange rdf:datatype="&qudt-unit;Meter">0.01</srdl2-comp:resRange>
+        <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">20.0</srdl2-comp:updateRate>
+        <srdl2-comp:gaussianNoise rdf:datatype="&qudt-unit;Unitless">0.005</srdl2-comp:gaussianNoise>
+        <srdl2-comp:alwaysOn rdf:datatype="&xsd;string">true</srdl2-comp:alwaysOn>
+        <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">20.0</srdl2-comp:updateRate>
+        <srdl2-comp:topicName rdf:datatype="&xsd;string">laser/shoulder_tilting_laser_sensor</srdl2-comp:topicName>
+        <srdl2-comp:frameName rdf:datatype="&xsd;string">shoulder_tilting_laser_sensor</srdl2-comp:frameName>
+        <srdl2-comp:interface_laser rdf:datatype="&xsd;string">shoulder_tilting_laser_sensor_iface</srdl2-comp:interface_laser>
+    </owl:NamedIndividual>
+
+
+</rdf:RDF>
