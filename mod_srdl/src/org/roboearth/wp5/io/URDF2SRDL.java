@@ -176,7 +176,6 @@ public class URDF2SRDL {
 
 			// ontologies, which shall be imported into the SRDL description
 			ArrayList<String> imports = new ArrayList<String>();
-			imports.add(SRDL2_IMPORT);
 			imports.add(SRDL2_COMP_IMPORT);
 
 			// build SRDL document
