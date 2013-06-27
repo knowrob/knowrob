@@ -174,8 +174,8 @@ public class GeneralInformationReader {
 	 */
 	private String createAttributeString(String indent, String name, String type, String value) {
 		
-		return indent + "<srdl2-prop:" + NormalizeName.normalize(name)
-				+ " rdf:datatype=\"" + type + "\">" + value + "</srdl2-prop:"
+		return indent + "<srdl2-comp:" + NormalizeName.normalize(name)
+				+ " rdf:datatype=\"" + type + "\">" + value + "</srdl2-comp:"
 				+ NormalizeName.normalize(name) + ">\n";
 	}
 }

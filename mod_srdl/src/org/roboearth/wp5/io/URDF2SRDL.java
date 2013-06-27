@@ -86,7 +86,6 @@ public class URDF2SRDL {
 //	public final static String SRDL2_IMPORT = "&srdl_path;srdl2.owl";
 	public final static String SRDL2_IMPORT = "http://ias.cs.tum.edu/kb/srdl2.owl";
 	public final static String SRDL2_COMP_IMPORT = "http://ias.cs.tum.edu/kb/srdl2-comp.owl";
-	public final static String SRDL2_PROP_IMPORT = "http://ias.cs.tum.edu/kb/srdl2-prop.owl";
 	public final static String ROBOEARTH_IMPORT = "&roboearth_path;roboearth.owl";
 
 	public final static String XSD = "http://www.w3.org/2001/XMLSchema#";
@@ -97,7 +96,6 @@ public class URDF2SRDL {
 	public final static String SRDL2 = "http://ias.cs.tum.edu/kb/srdl2.owl#";
 	public final static String SRDL2_CAP = "http://ias.cs.tum.edu/kb/srdl2-cap.owl#";
 	public final static String SRDL2_COMP = "http://ias.cs.tum.edu/kb/srdl2-comp.owl#";
-	public final static String SRDL2_PROP = "http://ias.cs.tum.edu/kb/srdl2-prop.owl#";
 	public final static String QUDT_UNIT = "http://qudt.org/vocab/unit#";
 	public final static String KNOWROB = "http://ias.cs.tum.edu/kb/knowrob.owl#";
 	public final static String ROBOEARTH = "http://www.roboearth.org/kb/roboearth.owl#";
@@ -172,7 +170,6 @@ public class URDF2SRDL {
 			ArrayList<String> imports = new ArrayList<String>();
 			imports.add(SRDL2_IMPORT);
 			imports.add(SRDL2_COMP_IMPORT);
-			imports.add(SRDL2_PROP_IMPORT);
 
 			// build SRDL document
 			srdl.append(getHeader(targetURI));
@@ -252,7 +249,6 @@ public class URDF2SRDL {
 		"  <!ENTITY rdf \"" + RDF + "\" >\n" +
 		"  <!ENTITY srdl2-comp \"" + SRDL2_COMP + "\" >\n" +
 		"  <!ENTITY srdl2-cap \"" + SRDL2_CAP + "\" >\n" +
-		"  <!ENTITY srdl2-prop \"" + SRDL2_PROP + "\" >\n" +
 		"  <!ENTITY qudt-unit \"" + QUDT_UNIT + "\" >\n" +
 		"  <!ENTITY robot \"" + targetURI + "\" >\n" +
 		"]>\n\n\n" +
@@ -266,7 +262,6 @@ public class URDF2SRDL {
 		"  xmlns:owl=\"" + OWL +  "\"\n" +
 		"  xmlns:srdl2-cap=\"" + SRDL2_CAP +  "\"\n" +
 		"  xmlns:srdl2-comp=\"" + SRDL2_COMP +  "\"\n" +
-		"  xmlns:srdl2-prop=\"" + SRDL2_PROP +  "\"\n" +
 		"  xmlns:qudt-unit=\"" + QUDT_UNIT +  "\"\n" +
 		"  xmlns:rdf=\"" + RDF +  "\">\n";
 		

@@ -44,9 +44,7 @@
 package org.roboearth.wp5.io;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -191,8 +189,8 @@ public class GazeboInformationReader {
 	 */
 	private String createAttributeString(String indent, String prop, String datatype, String value) {
 		
-		return indent + "<srdl2-prop:" + NormalizeName.normalize(prop)
-				+ " rdf:datatype=\"" + datatype + "\">" + value + "</srdl2-prop:"
+		return indent + "<srdl2-comp:" + NormalizeName.normalize(prop)
+				+ " rdf:datatype=\"" + datatype + "\">" + value + "</srdl2-comp:"
 				+ NormalizeName.normalize(prop) + ">\n";
 	}
 

@@ -1365,6 +1365,707 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
     <!-- http://www.w3.org/2002/07/owl#Thing -->
 
     <owl:Class rdf:about="&owl;Thing"/>
+
+    
+    
+    
+
+        <!-- &srdl2-comp;alwaysOn -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;alwaysOn">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+    
+    
+    <!-- &srdl2-comp;bodyName -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;bodyName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;box_size -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;box_size">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;bumperTopicName -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;bumperTopicName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;calibration_falling -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;calibration_falling">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;calibration_rising -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;calibration_rising">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;cameraInfoTopicName -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;cameraInfoTopicName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;cameraName -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;cameraName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;Cx -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;Cx">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;CxPrime -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;CxPrime">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;Cy -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;Cy">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;cylinder_length -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;cylinder_length">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;cylinder_radius -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;cylinder_radius">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;displayRays -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;displayRays">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;distortion_k1 -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;distortion_k1">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;distortion_k2 -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;distortion_k2">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;distortion_k3 -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;distortion_k3">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;distortion_t1 -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;distortion_t1">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;distortion_t2 -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;distortion_t2">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;farClip -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;farClip">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;farClipDist -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;farClipDist">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;filterTextureName -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;filterTextureName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;focal_length -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;focal_length">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;fov -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;fov">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;frameName -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;frameName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;fudgeFactor -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;fudgeFactor">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;gaussianNoise -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;gaussianNoise">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;geom -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;geom">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;hackBaseline -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;hackBaseline">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;hfov -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;hfov">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;imageFormat -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;imageFormat">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;imageSize -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;imageSize">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;imageTopicName -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;imageTopicName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;inertia_ixx -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;inertia_ixx">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Kilogram"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;inertia_ixy -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;inertia_ixy">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Kilogram"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;inertia_ixz -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;inertia_ixz">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Kilogram"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;inertia_iyy -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;inertia_iyy">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Kilogram"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;inertia_iyz -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;inertia_iyz">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Kilogram"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;inertia_izz -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;inertia_izz">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Kilogram"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;initial_joint_position -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;initial_joint_position">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;interface_bumper -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;interface_bumper">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;interface_camera -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;interface_camera">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;interface_laser -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;interface_laser">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;kd -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;kd">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;kp -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;kp">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;laserCount -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;laserCount">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;mass_value -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;mass_value">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Kilogram"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;material -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;material">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;material_name -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;material_name">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;maxAngle -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;maxAngle">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;DegreeAngle"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;maxRange -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;maxRange">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Meter"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;mesh_filename -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;mesh_filename">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;mimic_joint -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;mimic_joint">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;mimic_multiplier -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;mimic_multiplier">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;mimic_offset -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;mimic_offset">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;minAngle -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;minAngle">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;DegreeAngle"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;minRange -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;minRange">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Meter"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;mu1 -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;mu1">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;mu2 -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;mu2">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;nearClip -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;nearClip">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;nearClipDist -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;nearClipDist">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;origin -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;origin">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;origin_rpy -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;origin_rpy">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;origin_xyz -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;origin_xyz">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;pollServiceName -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;pollServiceName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;projectorTopicName -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;projectorTopicName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;provideFeedback -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;provideFeedback">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;rangeCount -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;rangeCount">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Meter"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;rayCount -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;rayCount">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;resRange -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;resRange">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Meter"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;selfCollide -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;selfCollide">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;stopKd -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;stopKd">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;stopKp -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;stopKp">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;textureName -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;textureName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;textureTopicName -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;textureTopicName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;topicName -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;topicName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+    
+    <!-- &srdl2-comp;updateRate -->
+
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;updateRate">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Hertz"/>
+    </owl:DatatypeProperty>
+    
+    
+
+    
     
 
 
