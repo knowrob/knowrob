@@ -304,7 +304,9 @@ public class OWLThing implements Comparable<OWLThing> {
 		for (int i = 0;  i < 8;  i++) {
 		    id[i] = chars[r.nextInt(chars.length)];
 		}
-		
+		try { Thread.sleep(5); } catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		return iri + "_" + new String(id);
 	} 
 	
