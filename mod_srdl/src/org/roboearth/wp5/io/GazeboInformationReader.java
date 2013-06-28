@@ -192,10 +192,10 @@ public class GazeboInformationReader {
 		if(prop.equals("imageSize")) {
 			return  indent + "<srdl2-comp:" + NormalizeName.normalize(prop)
 					+ "X rdf:datatype=\"" + datatype + "\">" + value.split(" ")[0] + "</srdl2-comp:"
-					+ NormalizeName.normalize(prop) + ">\n" + 
+					+ NormalizeName.normalize(prop) + "X>\n" + 
 					indent + "<srdl2-comp:" + NormalizeName.normalize(prop)
 					+ "Y rdf:datatype=\"" + datatype + "\">" + value.split(" ")[1] + "</srdl2-comp:"
-					+ NormalizeName.normalize(prop) + ">\n";
+					+ NormalizeName.normalize(prop) + "Y>\n";
 			
 		} else {
 
