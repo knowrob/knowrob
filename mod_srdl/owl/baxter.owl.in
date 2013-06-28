@@ -91,7 +91,8 @@
 
     <owl:NamedIndividual rdf:about="&pr2;baxter_left_arm">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
-        <rdf:type rdf:resource="&srdl2-comp;Arm"/>
+        <rdf:type rdf:resource="&srdl2-comp;ArmComponent"/>
+        <rdf:type rdf:resource="&srdl2-comp;LeftArm"/>
         <srdl2-comp:baseLinkOfComposition rdf:resource="&pr2;baxter_left_upper_shoulder"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;baxter_left_wrist"/>
     </owl:NamedIndividual>
@@ -100,7 +101,8 @@
 
     <owl:NamedIndividual rdf:about="&pr2;baxter_right_arm">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
-        <rdf:type rdf:resource="&srdl2-comp;Arm"/>
+        <rdf:type rdf:resource="&srdl2-comp;ArmComponent"/>
+        <rdf:type rdf:resource="&srdl2-comp;RightArm"/>
         <srdl2-comp:baseLinkOfComposition rdf:resource="&pr2;baxter_right_upper_shoulder"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;baxter_right_wrist"/>
     </owl:NamedIndividual>
@@ -109,7 +111,8 @@
 
     <owl:NamedIndividual rdf:about="&pr2;baxter_l_gripper">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
-        <rdf:type rdf:resource="&srdl2-comp;Gripper"/>
+        <rdf:type rdf:resource="&srdl2-comp;GripperComponent"/>
+        <rdf:type rdf:resource="&srdl2-comp;LeftHand"/>
         <srdl2-comp:baseLinkOfComposition rdf:resource="&pr2;baxter_left_hand"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;baxter_left_gripper"/>
     </owl:NamedIndividual>
@@ -118,7 +121,8 @@
 
     <owl:NamedIndividual rdf:about="&pr2;baxter_r_gripper">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
-        <rdf:type rdf:resource="&srdl2-comp;Gripper"/>
+        <rdf:type rdf:resource="&srdl2-comp;ArmComponent"/>
+        <rdf:type rdf:resource="&srdl2-comp;RightHand"/>
         <srdl2-comp:baseLinkOfComposition rdf:resource="&pr2;baxter_right_hand"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;baxter_right_gripper"/>
     </owl:NamedIndividual>

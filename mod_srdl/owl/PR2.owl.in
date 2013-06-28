@@ -12,6 +12,7 @@
     <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
     <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY qudt-unit "http://qudt.org/vocab/unit#" >
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
     <!ENTITY srdl2-comp "http://ias.cs.tum.edu/kb/srdl2-comp.owl#" >
     <!ENTITY srdl2-cap "http://ias.cs.tum.edu/kb/srdl2-cap.owl#" >
@@ -87,6 +88,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_left_arm">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
         <rdf:type rdf:resource="&srdl2-comp;Pr2Arm"/>
+        <rdf:type rdf:resource="&srdl2-comp;LeftArm"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;pr2_l_forearm_cam_optical_frame"/>
         <srdl2-comp:baseLinkOfComposition rdf:resource="&pr2;pr2_l_shoulder_pan_link"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;pr2_l_wrist_roll_link"/>
@@ -97,6 +99,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_right_arm">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
         <rdf:type rdf:resource="&srdl2-comp;Pr2Arm"/>
+        <rdf:type rdf:resource="&srdl2-comp;RightArm"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;pr2_r_forearm_cam_optical_frame"/>
         <srdl2-comp:baseLinkOfComposition rdf:resource="&pr2;pr2_r_shoulder_pan_link"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;pr2_r_wrist_roll_link"/>
@@ -107,6 +110,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_left_gripper">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
         <rdf:type rdf:resource="&srdl2-comp;Pr2Gripper"/>
+        <rdf:type rdf:resource="&srdl2-comp;LeftHand"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;pr2_l_gripper_l_finger_tip_link"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;pr2_l_gripper_led_frame"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;pr2_l_gripper_motor_accelerometer_link"/>
@@ -120,6 +124,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_right_gripper">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
         <rdf:type rdf:resource="&srdl2-comp;Pr2Gripper"/>
+        <rdf:type rdf:resource="&srdl2-comp;RightHand"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;pr2_r_gripper_l_finger_tip_link"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;pr2_r_gripper_led_frame"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;pr2_r_gripper_motor_accelerometer_link"/>
@@ -3936,8 +3941,8 @@
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_high_def_optical_frame_joint"/>
         <rdf:type rdf:resource="&srdl2-comp;Camera"/>
         <srdl2-comp:imageFormat rdf:datatype="&xsd;string">R8G8B8</srdl2-comp:imageFormat>
-        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">2448</srdl2-comp:imageSize>
-        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">2050</srdl2-comp:imageSize>
+        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">2448</srdl2-comp:imageSizeX>
+        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">2050</srdl2-comp:imageSizeY>
         <srdl2-comp:hfov rdf:datatype="&qudt-unit;Unitless">45</srdl2-comp:hfov>
         <srdl2-comp:nearClip rdf:datatype="&xsd;string">0.1</srdl2-comp:nearClip>
         <srdl2-comp:farClip rdf:datatype="&qudt-unit;Unitless">100</srdl2-comp:farClip>
@@ -4042,8 +4047,8 @@
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_wide_stereo_gazebo_l_stereo_camera_optical_frame_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_wide_stereo_gazebo_r_stereo_camera_frame_joint"/>
         <rdf:type rdf:resource="&srdl2-comp;Camera"/>
-        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">640</srdl2-comp:imageSize>
-        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">480</srdl2-comp:imageSize>
+        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">640</srdl2-comp:imageSizeX>
+        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">480</srdl2-comp:imageSizeY>
         <srdl2-comp:imageFormat rdf:datatype="&xsd;string">BAYER_BGGR8</srdl2-comp:imageFormat>
         <srdl2-comp:hfov rdf:datatype="&qudt-unit;Unitless">90</srdl2-comp:hfov>
         <srdl2-comp:nearClip rdf:datatype="&xsd;string">0.1</srdl2-comp:nearClip>
@@ -4094,8 +4099,8 @@
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:inertia_izz>
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_wide_stereo_gazebo_r_stereo_camera_optical_frame_joint"/>
         <rdf:type rdf:resource="&srdl2-comp;Camera"/>
-        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">640</srdl2-comp:imageSize>
-        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">480</srdl2-comp:imageSize>
+        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">640</srdl2-comp:imageSizeX>
+        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">480</srdl2-comp:imageSizeY>
         <srdl2-comp:imageFormat rdf:datatype="&xsd;string">BAYER_BGGR8</srdl2-comp:imageFormat>
         <srdl2-comp:hfov rdf:datatype="&qudt-unit;Unitless">90</srdl2-comp:hfov>
         <srdl2-comp:nearClip rdf:datatype="&xsd;string">0.1</srdl2-comp:nearClip>
@@ -4178,8 +4183,8 @@
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_narrow_stereo_gazebo_l_stereo_camera_optical_frame_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_narrow_stereo_gazebo_r_stereo_camera_frame_joint"/>
         <rdf:type rdf:resource="&srdl2-comp;Camera"/>
-        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">640</srdl2-comp:imageSize>
-        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">480</srdl2-comp:imageSize>
+        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">640</srdl2-comp:imageSizeX>
+        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">480</srdl2-comp:imageSizeY>
         <srdl2-comp:imageFormat rdf:datatype="&xsd;string">L8</srdl2-comp:imageFormat>
         <srdl2-comp:hfov rdf:datatype="&qudt-unit;Unitless">45</srdl2-comp:hfov>
         <srdl2-comp:nearClip rdf:datatype="&xsd;string">0.1</srdl2-comp:nearClip>
@@ -4230,8 +4235,8 @@
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:inertia_izz>
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_narrow_stereo_gazebo_r_stereo_camera_optical_frame_joint"/>
         <rdf:type rdf:resource="&srdl2-comp;Camera"/>
-        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">640</srdl2-comp:imageSize>
-        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">480</srdl2-comp:imageSize>
+        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">640</srdl2-comp:imageSizeX>
+        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">480</srdl2-comp:imageSizeY>
         <srdl2-comp:imageFormat rdf:datatype="&xsd;string">L8</srdl2-comp:imageFormat>
         <srdl2-comp:hfov rdf:datatype="&qudt-unit;Unitless">45</srdl2-comp:hfov>
         <srdl2-comp:nearClip rdf:datatype="&xsd;string">0.1</srdl2-comp:nearClip>
@@ -5171,8 +5176,8 @@
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:inertia_izz>
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_l_forearm_cam_optical_frame_joint"/>
         <rdf:type rdf:resource="&srdl2-comp;Camera"/>
-        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">640</srdl2-comp:imageSize>
-        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">480</srdl2-comp:imageSize>
+        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">640</srdl2-comp:imageSizeX>
+        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">480</srdl2-comp:imageSizeY>
         <srdl2-comp:imageFormat rdf:datatype="&xsd;string">R8G8B8</srdl2-comp:imageFormat>
         <srdl2-comp:hfov rdf:datatype="&qudt-unit;Unitless">90</srdl2-comp:hfov>
         <srdl2-comp:nearClip rdf:datatype="&xsd;string">0.1</srdl2-comp:nearClip>
@@ -5223,8 +5228,8 @@
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:inertia_izz>
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_r_forearm_cam_optical_frame_joint"/>
         <rdf:type rdf:resource="&srdl2-comp;Camera"/>
-        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">640</srdl2-comp:imageSize>
-        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">480</srdl2-comp:imageSize>
+        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">640</srdl2-comp:imageSizeX>
+        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">480</srdl2-comp:imageSizeY>
         <srdl2-comp:imageFormat rdf:datatype="&xsd;string">R8G8B8</srdl2-comp:imageFormat>
         <srdl2-comp:hfov rdf:datatype="&qudt-unit;Unitless">90</srdl2-comp:hfov>
         <srdl2-comp:nearClip rdf:datatype="&xsd;string">0.1</srdl2-comp:nearClip>

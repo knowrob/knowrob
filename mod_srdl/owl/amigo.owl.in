@@ -97,6 +97,7 @@
     <owl:NamedIndividual rdf:about="&robot;left_arm">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
         <rdf:type rdf:resource="&srdl2-comp;ArmComponent"/>
+        <rdf:type rdf:resource="&srdl2-comp;LeftArm"/>
         <srdl2-comp:baseLinkOfComposition rdf:resource="&robot;base_link"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&robot;grippoint_left"/>
     </owl:NamedIndividual>
@@ -107,6 +108,7 @@
     <owl:NamedIndividual rdf:about="&robot;right_arm">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
         <rdf:type rdf:resource="&srdl2-comp;ArmComponent"/>
+        <rdf:type rdf:resource="&srdl2-comp;RightArm"/>
         <srdl2-comp:baseLinkOfComposition rdf:resource="&robot;base_link"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&robot;grippoint_right"/>
     </owl:NamedIndividual>
@@ -4681,8 +4683,8 @@
         <srdl2-comp:succeedingJoint rdf:resource="&robot;amigo_kinect_rgb_joint"/>
         <rdf:type rdf:resource="&srdl2-comp;Camera"/>
         <srdl2-comp:imageFormat rdf:datatype="&xsd;string">R8G8B8</srdl2-comp:imageFormat>
-        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">640</srdl2-comp:imageSize>
-        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">480</srdl2-comp:imageSize>
+        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">640</srdl2-comp:imageSizeX>
+        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">480</srdl2-comp:imageSizeY>
         <srdl2-comp:hfov rdf:datatype="&qudt-unit;Unitless">60</srdl2-comp:hfov>
         <srdl2-comp:nearClip rdf:datatype="&qudt-unit;Unitless">0.05</srdl2-comp:nearClip>
         <srdl2-comp:farClip rdf:datatype="&qudt-unit;Unitless">3</srdl2-comp:farClip>

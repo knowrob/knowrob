@@ -89,7 +89,8 @@
 
     <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_left_arm">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
-        <rdf:type rdf:resource="&srdl2-comp;Pr2Arm"/>
+        <rdf:type rdf:resource="&srdl2-comp;KukaLWR4"/>
+        <rdf:type rdf:resource="&srdl2-comp;LeftArm"/>
         <srdl2-comp:baseLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_calib_left_arm_base_link"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_l_wrist_roll_link"/>
     </owl:NamedIndividual>
@@ -98,7 +99,8 @@
 
     <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_right_arm">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
-        <rdf:type rdf:resource="&srdl2-comp;Pr2Arm"/>
+        <rdf:type rdf:resource="&srdl2-comp;KukaLWR4"/>
+        <rdf:type rdf:resource="&srdl2-comp;RightArm"/>
         <srdl2-comp:baseLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_calib_right_arm_base_link"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_right_arm_7_link"/>
     </owl:NamedIndividual>
@@ -108,6 +110,7 @@
     <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_left_hand">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
         <rdf:type rdf:resource="&srdl2-comp;DlrHitHand"/>
+        <rdf:type rdf:resource="&srdl2-comp;LeftHand"/>
         <srdl2-comp:baseLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_right_arm_hand_link"/>
     </owl:NamedIndividual>
 
@@ -116,6 +119,7 @@
     <owl:NamedIndividual rdf:about="&tum_rosie;TUMRosie_right_hand">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
         <rdf:type rdf:resource="&srdl2-comp;DlrHitHand"/>
+        <rdf:type rdf:resource="&srdl2-comp;RightHand"/>
         <srdl2-comp:baseLinkOfComposition rdf:resource="&tum_rosie;TUMRosie_r_gripper_palm_link"/>
     </owl:NamedIndividual>
 
@@ -2458,8 +2462,8 @@
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:box_size>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:box_size>
         <rdf:type rdf:resource="&srdl2-comp;Camera"/>
-        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">400</srdl2-comp:imageSize>
-        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">300</srdl2-comp:imageSize>
+        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">400</srdl2-comp:imageSizeX>
+        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">300</srdl2-comp:imageSizeY>
         <srdl2-comp:imageFormat rdf:datatype="&xsd;string">R8G8B8</srdl2-comp:imageFormat>
         <srdl2-comp:hfov rdf:datatype="&qudt-unit;Unitless">104</srdl2-comp:hfov>
         <srdl2-comp:nearClip rdf:datatype="&qudt-unit;Unitless">0.1</srdl2-comp:nearClip>
@@ -2489,8 +2493,8 @@
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:box_size>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:box_size>
         <rdf:type rdf:resource="&srdl2-comp;Camera"/>
-        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">400</srdl2-comp:imageSize>
-        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">300</srdl2-comp:imageSize>
+        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">400</srdl2-comp:imageSizeX>
+        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">300</srdl2-comp:imageSizeY>
         <srdl2-comp:imageFormat rdf:datatype="&xsd;string">R8G8B8</srdl2-comp:imageFormat>
         <srdl2-comp:hfov rdf:datatype="&qudt-unit;Unitless">104</srdl2-comp:hfov>
         <srdl2-comp:nearClip rdf:datatype="&qudt-unit;Unitless">0.1</srdl2-comp:nearClip>
@@ -2556,8 +2560,8 @@
         <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_wide_stereo_gazebo_l_stereo_camera_optical_frame_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_wide_stereo_gazebo_r_stereo_camera_frame_joint"/>
         <rdf:type rdf:resource="&srdl2-comp;Camera"/>
-        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">640</srdl2-comp:imageSize>
-        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">480</srdl2-comp:imageSize>
+        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">640</srdl2-comp:imageSizeX>
+        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">480</srdl2-comp:imageSizeY>
         <srdl2-comp:imageFormat rdf:datatype="&xsd;string">BAYER_BGGR8</srdl2-comp:imageFormat>
         <srdl2-comp:hfov rdf:datatype="&qudt-unit;Unitless">90</srdl2-comp:hfov>
         <srdl2-comp:nearClip rdf:datatype="&qudt-unit;Unitless">0.1</srdl2-comp:nearClip>
@@ -2609,8 +2613,8 @@
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.01 0.01 0.01</srdl2-comp:box_size>
         <srdl2-comp:succeedingJoint rdf:resource="&tum_rosie;TUMRosie_wide_stereo_gazebo_r_stereo_camera_optical_frame_joint"/>
         <rdf:type rdf:resource="&srdl2-comp;Camera"/>
-        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">640</srdl2-comp:imageSize>
-        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">480</srdl2-comp:imageSize>
+        <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">640</srdl2-comp:imageSizeX>
+        <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">480</srdl2-comp:imageSizeY>
         <srdl2-comp:imageFormat rdf:datatype="&xsd;string">BAYER_BGGR8</srdl2-comp:imageFormat>
         <srdl2-comp:hfov rdf:datatype="&qudt-unit;Unitless">90</srdl2-comp:hfov>
         <srdl2-comp:nearClip rdf:datatype="&qudt-unit;Unitless">0.1</srdl2-comp:nearClip>
