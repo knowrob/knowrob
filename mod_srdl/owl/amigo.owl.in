@@ -97,7 +97,7 @@
     <owl:NamedIndividual rdf:about="&robot;left_arm">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
         <rdf:type rdf:resource="&srdl2-comp;ArmComponent"/>
-        <rdf:type rdf:resource="&srdl2-comp;LeftArm"/>
+        <rdf:type rdf:resource="&knowrob;LeftArm"/>
         <srdl2-comp:baseLinkOfComposition rdf:resource="&robot;base_link"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&robot;grippoint_left"/>
     </owl:NamedIndividual>
@@ -108,7 +108,7 @@
     <owl:NamedIndividual rdf:about="&robot;right_arm">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
         <rdf:type rdf:resource="&srdl2-comp;ArmComponent"/>
-        <rdf:type rdf:resource="&srdl2-comp;RightArm"/>
+        <rdf:type rdf:resource="&knowrob;RightArm"/>
         <srdl2-comp:baseLinkOfComposition rdf:resource="&robot;base_link"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&robot;grippoint_right"/>
     </owl:NamedIndividual>
