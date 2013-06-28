@@ -206,24 +206,8 @@ comp_type_available(Super, SubT) :-
 % @param Sub    Component that is part of the Super component
 %
 sub_component(Super, Sub) :-  % direct or transitive subComponent
-  nonvar(Super),
   owl_has(Super, srdl2comp:'subComponent', Sub);
   owl_has(Super, srdl2comp:'successorInKinematicChain', Sub).
-
-sub_component(Super, Sub) :-  % Composition is subComponent if base and end link are
-  nonvar(Super),
-  owl_has(Sub, srdl2comp:'baseLinkOfComposition', Base),
-      sub_component(Super, Base),
-  owl_has(Sub, srdl2comp:'endLinkOfComposition', End),
-      sub_component(Super, End).
-
-sub_component(Super, Sub) :-  % direct or transitive subComponent
-  nonvar(Sub),var(Super),
-  owl_has(Sub, srdl2comp:'predecessorInKinematicChain', Super).
-
-sub_component(Super, Sub) :-  % Component is subComponent of composition if it is subComponent of its base link
-  owl_has(Super, srdl2comp:'baseLinkOfComposition', Base),
-      sub_component(Base, Sub).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
