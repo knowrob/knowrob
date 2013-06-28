@@ -174,7 +174,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_base_footprint_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>base_footprint_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_base_footprint"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_base_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_GcAehtFJ"/>
     </owl:NamedIndividual>
@@ -209,7 +209,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_base_bellow_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>base_bellow_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_base_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_base_bellow_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_6tqlPS4S"/>
     </owl:NamedIndividual>
@@ -245,7 +245,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_base_laser_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>base_laser_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_base_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_base_laser_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_LoRqLyxE"/>
     </owl:NamedIndividual>
@@ -281,7 +281,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_fl_caster_rotation_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>fl_caster_rotation_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_base_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_fl_caster_rotation_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_9mLTSyE4"/>
     </owl:NamedIndividual>
@@ -317,7 +317,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_fl_caster_l_wheel_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>fl_caster_l_wheel_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_fl_caster_rotation_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_fl_caster_l_wheel_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_33vn0oDf"/>
     </owl:NamedIndividual>
@@ -353,7 +353,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_fl_caster_r_wheel_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>fl_caster_r_wheel_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_fl_caster_rotation_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_fl_caster_r_wheel_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_TXVFSjad"/>
     </owl:NamedIndividual>
@@ -389,7 +389,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_fr_caster_rotation_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>fr_caster_rotation_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_base_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_fr_caster_rotation_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_gVN7JkgB"/>
     </owl:NamedIndividual>
@@ -425,7 +425,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_fr_caster_l_wheel_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>fr_caster_l_wheel_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_fr_caster_rotation_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_fr_caster_l_wheel_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_Z9bR8r27"/>
     </owl:NamedIndividual>
@@ -461,7 +461,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_fr_caster_r_wheel_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>fr_caster_r_wheel_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_fr_caster_rotation_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_fr_caster_r_wheel_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_m95idp0u"/>
     </owl:NamedIndividual>
@@ -497,7 +497,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_bl_caster_rotation_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>bl_caster_rotation_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_base_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_bl_caster_rotation_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_u3UgUoGI"/>
     </owl:NamedIndividual>
@@ -533,7 +533,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_bl_caster_l_wheel_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>bl_caster_l_wheel_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_bl_caster_rotation_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_bl_caster_l_wheel_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_R3NI2nO7"/>
     </owl:NamedIndividual>
@@ -569,7 +569,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_bl_caster_r_wheel_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>bl_caster_r_wheel_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_bl_caster_rotation_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_bl_caster_r_wheel_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_NYuRKn57"/>
     </owl:NamedIndividual>
@@ -605,7 +605,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_br_caster_rotation_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>br_caster_rotation_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_base_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_br_caster_rotation_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_HaPPGtTM"/>
     </owl:NamedIndividual>
@@ -641,7 +641,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_br_caster_l_wheel_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>br_caster_l_wheel_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_br_caster_rotation_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_br_caster_l_wheel_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_SaL4fsVZ"/>
     </owl:NamedIndividual>
@@ -677,7 +677,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_br_caster_r_wheel_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>br_caster_r_wheel_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_br_caster_rotation_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_br_caster_r_wheel_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_K5alIqsV"/>
     </owl:NamedIndividual>
@@ -713,7 +713,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_torso_lift_joint">
         <rdf:type rdf:resource="&srdl2-comp;PrismaticUrdfJoint"/>
         <srdl2-comp:urdfName>torso_lift_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_base_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_torso_lift_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_DJWOZfr0"/>
     </owl:NamedIndividual>
@@ -749,7 +749,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_torso_lift_side_plate_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>l_torso_lift_side_plate_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_torso_lift_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_torso_lift_side_plate_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_1JOh7dzx"/>
     </owl:NamedIndividual>
@@ -785,7 +785,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_torso_lift_side_plate_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>r_torso_lift_side_plate_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_torso_lift_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_torso_lift_side_plate_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_SDeAzb7v"/>
     </owl:NamedIndividual>
@@ -821,7 +821,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_torso_lift_motor_screw_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>torso_lift_motor_screw_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_base_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_torso_lift_motor_screw_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_dSIQRiKB"/>
     </owl:NamedIndividual>
@@ -857,7 +857,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_imu_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>imu_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_torso_lift_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_imu_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_0QpZSi3B"/>
     </owl:NamedIndividual>
@@ -893,7 +893,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_head_pan_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>head_pan_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_torso_lift_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_head_pan_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_wOjrHg91"/>
     </owl:NamedIndividual>
@@ -929,7 +929,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_head_tilt_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>head_tilt_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_head_pan_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_head_tilt_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_0rQPb5kY"/>
     </owl:NamedIndividual>
@@ -965,7 +965,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_head_plate_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>head_plate_frame_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_head_tilt_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_head_plate_frame"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_6pxYU5AY"/>
     </owl:NamedIndividual>
@@ -1001,7 +1001,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_sensor_mount_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>sensor_mount_frame_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_head_plate_frame"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_sensor_mount_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_hnucu4Da"/>
     </owl:NamedIndividual>
@@ -1037,7 +1037,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_high_def_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>high_def_frame_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_sensor_mount_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_high_def_frame"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_bzMap0sR"/>
     </owl:NamedIndividual>
@@ -1073,7 +1073,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_high_def_optical_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>high_def_optical_frame_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_high_def_frame"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_high_def_optical_frame"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_7xvj98IP"/>
     </owl:NamedIndividual>
@@ -1109,7 +1109,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_double_stereo_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>double_stereo_frame_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_sensor_mount_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_double_stereo_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_ixqxI9N3"/>
     </owl:NamedIndividual>
@@ -1145,7 +1145,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_wide_stereo_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>wide_stereo_frame_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_double_stereo_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_wide_stereo_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_89UbJW3e"/>
     </owl:NamedIndividual>
@@ -1181,7 +1181,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_wide_stereo_optical_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>wide_stereo_optical_frame_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_wide_stereo_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_wide_stereo_optical_frame"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_47BksTjc"/>
     </owl:NamedIndividual>
@@ -1217,7 +1217,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_wide_stereo_gazebo_l_stereo_camera_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>wide_stereo_gazebo_l_stereo_camera_frame_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_wide_stereo_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_wide_stereo_gazebo_l_stereo_camera_frame"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_e7xy1Vmq"/>
     </owl:NamedIndividual>
@@ -1253,7 +1253,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_wide_stereo_gazebo_l_stereo_camera_optical_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>wide_stereo_gazebo_l_stereo_camera_optical_frame_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_wide_stereo_gazebo_l_stereo_camera_frame"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_wide_stereo_gazebo_l_stereo_camera_optical_frame"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_ckbld2U8"/>
     </owl:NamedIndividual>
@@ -1289,7 +1289,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_wide_stereo_gazebo_r_stereo_camera_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>wide_stereo_gazebo_r_stereo_camera_frame_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_wide_stereo_gazebo_l_stereo_camera_frame"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_wide_stereo_gazebo_r_stereo_camera_frame"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_5ezDGZr6"/>
     </owl:NamedIndividual>
@@ -1325,7 +1325,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_wide_stereo_gazebo_r_stereo_camera_optical_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>wide_stereo_gazebo_r_stereo_camera_optical_frame_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_wide_stereo_gazebo_r_stereo_camera_frame"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_wide_stereo_gazebo_r_stereo_camera_optical_frame"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_gevTeYvj"/>
     </owl:NamedIndividual>
@@ -1361,7 +1361,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_narrow_stereo_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>narrow_stereo_frame_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_double_stereo_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_narrow_stereo_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_obmPVX3u"/>
     </owl:NamedIndividual>
@@ -1397,7 +1397,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_narrow_stereo_optical_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>narrow_stereo_optical_frame_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_narrow_stereo_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_narrow_stereo_optical_frame"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_L0fh2XaS"/>
     </owl:NamedIndividual>
@@ -1433,7 +1433,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_narrow_stereo_gazebo_l_stereo_camera_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>narrow_stereo_gazebo_l_stereo_camera_frame_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_narrow_stereo_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_narrow_stereo_gazebo_l_stereo_camera_frame"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_H7WqNVqS"/>
     </owl:NamedIndividual>
@@ -1469,7 +1469,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_narrow_stereo_gazebo_l_stereo_camera_optical_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>narrow_stereo_gazebo_l_stereo_camera_optical_frame_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_narrow_stereo_gazebo_l_stereo_camera_frame"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_narrow_stereo_gazebo_l_stereo_camera_optical_frame"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_pjkab3cn"/>
     </owl:NamedIndividual>
@@ -1505,7 +1505,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_narrow_stereo_gazebo_r_stereo_camera_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>narrow_stereo_gazebo_r_stereo_camera_frame_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_narrow_stereo_gazebo_l_stereo_camera_frame"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_narrow_stereo_gazebo_r_stereo_camera_frame"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_lh2jV1sl"/>
     </owl:NamedIndividual>
@@ -1541,7 +1541,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_narrow_stereo_gazebo_r_stereo_camera_optical_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>narrow_stereo_gazebo_r_stereo_camera_optical_frame_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_narrow_stereo_gazebo_r_stereo_camera_frame"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_narrow_stereo_gazebo_r_stereo_camera_optical_frame"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_IfUL22yJ"/>
     </owl:NamedIndividual>
@@ -1577,7 +1577,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_projector_wg6802418_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>projector_wg6802418_frame_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_head_plate_frame"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_projector_wg6802418_frame"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_lSr0tPKK"/>
     </owl:NamedIndividual>
@@ -1613,7 +1613,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_projector_wg6802418_child_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>projector_wg6802418_child_frame_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_projector_wg6802418_frame"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_projector_wg6802418_child_frame"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_hQ9idM2I"/>
     </owl:NamedIndividual>
@@ -1649,7 +1649,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_laser_tilt_mount_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>laser_tilt_mount_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_torso_lift_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_laser_tilt_mount_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_EO3MjN07"/>
     </owl:NamedIndividual>
@@ -1685,7 +1685,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_laser_tilt_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>laser_tilt_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_laser_tilt_mount_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_laser_tilt_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_n1ouHSUD"/>
     </owl:NamedIndividual>
@@ -1721,7 +1721,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_shoulder_pan_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>r_shoulder_pan_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_torso_lift_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_shoulder_pan_link"/>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">1000000.0</srdl2-comp:stopKp>
@@ -1759,7 +1759,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_shoulder_lift_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>r_shoulder_lift_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_r_shoulder_pan_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_shoulder_lift_link"/>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">1000000.0</srdl2-comp:stopKp>
@@ -1797,7 +1797,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_upper_arm_roll_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>r_upper_arm_roll_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_r_shoulder_lift_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_upper_arm_roll_link"/>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">1000000.0</srdl2-comp:stopKp>
@@ -1836,7 +1836,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_upper_arm_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>r_upper_arm_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_r_upper_arm_roll_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_upper_arm_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_fxeELEJY"/>
     </owl:NamedIndividual>
@@ -1872,7 +1872,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_forearm_roll_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>r_forearm_roll_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_r_elbow_flex_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_forearm_roll_link"/>
         <srdl2-comp:fudgeFactor rdf:datatype="&qudt-unit;Unitless">0.5</srdl2-comp:fudgeFactor>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_qx0SkDMb"/>
@@ -1909,7 +1909,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_elbow_flex_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>r_elbow_flex_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_r_upper_arm_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_elbow_flex_link"/>
         <srdl2-comp:initial_joint_position rdf:datatype="&xsd;string">-1.0</srdl2-comp:initial_joint_position>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
@@ -1948,7 +1948,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_forearm_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>r_forearm_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_r_forearm_roll_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_forearm_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_1DXSbI6E"/>
     </owl:NamedIndividual>
@@ -1984,7 +1984,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_wrist_flex_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>r_wrist_flex_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_r_forearm_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_wrist_flex_link"/>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">1000000.0</srdl2-comp:stopKp>
@@ -2022,7 +2022,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_wrist_roll_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>r_wrist_roll_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_r_wrist_flex_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_wrist_roll_link"/>
         <srdl2-comp:fudgeFactor rdf:datatype="&qudt-unit;Unitless">0.5</srdl2-comp:fudgeFactor>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_6jEB1w94"/>
@@ -2059,7 +2059,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_gripper_palm_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>r_gripper_palm_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_r_wrist_roll_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_gripper_palm_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_Xc3UvuF2"/>
     </owl:NamedIndividual>
@@ -2095,7 +2095,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_gripper_led_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>r_gripper_led_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_r_gripper_palm_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_gripper_led_frame"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_bvVNuS1W"/>
     </owl:NamedIndividual>
@@ -2131,7 +2131,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_gripper_motor_accelerometer_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>r_gripper_motor_accelerometer_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_r_gripper_palm_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_gripper_motor_accelerometer_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_3pj6ZAwU"/>
     </owl:NamedIndividual>
@@ -2167,7 +2167,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_gripper_tool_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>r_gripper_tool_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_r_gripper_palm_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_gripper_tool_frame"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_Yn1eJxNS"/>
     </owl:NamedIndividual>
@@ -2203,7 +2203,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_gripper_motor_slider_joint">
         <rdf:type rdf:resource="&srdl2-comp;PrismaticUrdfJoint"/>
         <srdl2-comp:urdfName>r_gripper_motor_slider_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_r_gripper_palm_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_gripper_motor_slider_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_Slmm2zUy"/>
     </owl:NamedIndividual>
@@ -2239,7 +2239,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_gripper_motor_screw_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>r_gripper_motor_screw_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_r_gripper_motor_slider_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_gripper_motor_screw_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_ihNoXwoj"/>
     </owl:NamedIndividual>
@@ -2275,7 +2275,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_gripper_l_finger_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>r_gripper_l_finger_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_r_gripper_palm_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_gripper_l_finger_link"/>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">10000000.0</srdl2-comp:stopKp>
@@ -2315,7 +2315,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_gripper_r_finger_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>r_gripper_r_finger_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_r_gripper_palm_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_gripper_r_finger_link"/>
         <srdl2-comp:mimic_joint rdf:datatype="&xsd;string">r_gripper_l_finger_joint</srdl2-comp:mimic_joint>
         <srdl2-comp:mimic_multiplier rdf:datatype="&qudt-unit;Unitless">1</srdl2-comp:mimic_multiplier>
@@ -2358,7 +2358,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_gripper_l_finger_tip_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>r_gripper_l_finger_tip_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_r_gripper_l_finger_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_gripper_l_finger_tip_link"/>
         <srdl2-comp:mimic_joint rdf:datatype="&xsd;string">r_gripper_l_finger_joint</srdl2-comp:mimic_joint>
         <srdl2-comp:mimic_multiplier rdf:datatype="&qudt-unit;Unitless">1</srdl2-comp:mimic_multiplier>
@@ -2401,7 +2401,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_gripper_r_finger_tip_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>r_gripper_r_finger_tip_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_r_gripper_r_finger_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_gripper_r_finger_tip_link"/>
         <srdl2-comp:mimic_joint rdf:datatype="&xsd;string">r_gripper_l_finger_joint</srdl2-comp:mimic_joint>
         <srdl2-comp:mimic_multiplier rdf:datatype="&qudt-unit;Unitless">1</srdl2-comp:mimic_multiplier>
@@ -2444,7 +2444,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_gripper_joint">
         <rdf:type rdf:resource="&srdl2-comp;PrismaticUrdfJoint"/>
         <srdl2-comp:urdfName>r_gripper_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_r_gripper_r_finger_tip_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_gripper_l_finger_tip_frame"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_z6pGzpDM"/>
     </owl:NamedIndividual>
@@ -2480,7 +2480,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_shoulder_pan_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>l_shoulder_pan_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_torso_lift_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_shoulder_pan_link"/>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">1000000.0</srdl2-comp:stopKp>
@@ -2518,7 +2518,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_shoulder_lift_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>l_shoulder_lift_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_l_shoulder_pan_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_shoulder_lift_link"/>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">1000000.0</srdl2-comp:stopKp>
@@ -2556,7 +2556,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_upper_arm_roll_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>l_upper_arm_roll_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_l_shoulder_lift_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_upper_arm_roll_link"/>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">1000000.0</srdl2-comp:stopKp>
@@ -2595,7 +2595,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_upper_arm_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>l_upper_arm_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_l_upper_arm_roll_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_upper_arm_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_g0R6Jthq"/>
     </owl:NamedIndividual>
@@ -2631,7 +2631,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_forearm_roll_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>l_forearm_roll_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_l_elbow_flex_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_forearm_roll_link"/>
         <srdl2-comp:fudgeFactor rdf:datatype="&qudt-unit;Unitless">0.5</srdl2-comp:fudgeFactor>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_E8IxQrmO"/>
@@ -2668,7 +2668,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_elbow_flex_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>l_elbow_flex_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_l_upper_arm_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_elbow_flex_link"/>
         <srdl2-comp:initial_joint_position rdf:datatype="&xsd;string">-1.0</srdl2-comp:initial_joint_position>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
@@ -2707,7 +2707,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_forearm_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>l_forearm_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_l_forearm_roll_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_forearm_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_oITiBeSY"/>
     </owl:NamedIndividual>
@@ -2743,7 +2743,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_wrist_flex_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>l_wrist_flex_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_l_forearm_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_wrist_flex_link"/>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">1000000.0</srdl2-comp:stopKp>
@@ -2781,7 +2781,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_wrist_roll_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>l_wrist_roll_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_l_wrist_flex_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_wrist_roll_link"/>
         <srdl2-comp:fudgeFactor rdf:datatype="&qudt-unit;Unitless">0.5</srdl2-comp:fudgeFactor>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_uSau6jLT"/>
@@ -2818,7 +2818,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_gripper_palm_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>l_gripper_palm_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_l_wrist_roll_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_gripper_palm_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_qQRDPj3R"/>
     </owl:NamedIndividual>
@@ -2854,7 +2854,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_gripper_led_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>l_gripper_led_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_l_gripper_palm_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_gripper_led_frame"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_NOL6Vi9f"/>
     </owl:NamedIndividual>
@@ -2890,7 +2890,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_gripper_motor_accelerometer_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>l_gripper_motor_accelerometer_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_l_gripper_palm_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_gripper_motor_accelerometer_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_qrivp7kg"/>
     </owl:NamedIndividual>
@@ -2926,7 +2926,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_gripper_tool_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>l_gripper_tool_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_l_gripper_palm_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_gripper_tool_frame"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_Nr0Xv7sE"/>
     </owl:NamedIndividual>
@@ -2962,7 +2962,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_gripper_motor_slider_joint">
         <rdf:type rdf:resource="&srdl2-comp;PrismaticUrdfJoint"/>
         <srdl2-comp:urdfName>l_gripper_motor_slider_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_l_gripper_palm_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_gripper_motor_slider_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_JnQ7f5IS"/>
     </owl:NamedIndividual>
@@ -2998,7 +2998,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_gripper_motor_screw_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>l_gripper_motor_screw_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_l_gripper_motor_slider_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_gripper_motor_screw_link"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_rSeODbu8"/>
     </owl:NamedIndividual>
@@ -3034,7 +3034,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_gripper_l_finger_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>l_gripper_l_finger_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_l_gripper_palm_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_gripper_l_finger_link"/>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">10000000.0</srdl2-comp:stopKp>
@@ -3074,7 +3074,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_gripper_r_finger_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>l_gripper_r_finger_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_l_gripper_palm_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_gripper_r_finger_link"/>
         <srdl2-comp:mimic_joint rdf:datatype="&xsd;string">l_gripper_l_finger_joint</srdl2-comp:mimic_joint>
         <srdl2-comp:mimic_multiplier rdf:datatype="&qudt-unit;Unitless">1</srdl2-comp:mimic_multiplier>
@@ -3117,7 +3117,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_gripper_l_finger_tip_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>l_gripper_l_finger_tip_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_l_gripper_l_finger_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_gripper_l_finger_tip_link"/>
         <srdl2-comp:mimic_joint rdf:datatype="&xsd;string">l_gripper_l_finger_joint</srdl2-comp:mimic_joint>
         <srdl2-comp:mimic_multiplier rdf:datatype="&qudt-unit;Unitless">1</srdl2-comp:mimic_multiplier>
@@ -3160,7 +3160,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_gripper_r_finger_tip_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>l_gripper_r_finger_tip_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_l_gripper_r_finger_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_gripper_r_finger_tip_link"/>
         <srdl2-comp:mimic_joint rdf:datatype="&xsd;string">l_gripper_l_finger_joint</srdl2-comp:mimic_joint>
         <srdl2-comp:mimic_multiplier rdf:datatype="&qudt-unit;Unitless">1</srdl2-comp:mimic_multiplier>
@@ -3203,7 +3203,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_gripper_joint">
         <rdf:type rdf:resource="&srdl2-comp;PrismaticUrdfJoint"/>
         <srdl2-comp:urdfName>l_gripper_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_l_gripper_r_finger_tip_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_gripper_l_finger_tip_frame"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_LbPtKpyQ"/>
     </owl:NamedIndividual>
@@ -3239,7 +3239,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_forearm_cam_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>l_forearm_cam_frame_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_l_forearm_roll_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_forearm_cam_frame"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_Fn0rGwmw"/>
     </owl:NamedIndividual>
@@ -3275,7 +3275,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_forearm_cam_optical_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>l_forearm_cam_optical_frame_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_l_forearm_cam_frame"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_forearm_cam_optical_frame"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_Rn5FdxpJ"/>
     </owl:NamedIndividual>
@@ -3311,7 +3311,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_forearm_cam_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>r_forearm_cam_frame_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_r_forearm_roll_link"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_forearm_cam_frame"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_G1yhgkEV"/>
     </owl:NamedIndividual>
@@ -3347,7 +3347,7 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_forearm_cam_optical_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>r_forearm_cam_optical_frame_joint</srdl2-comp:urdfName>
-        <srdl2-comp:precedingLink rdf:resource="&pr2;pr2_r_forearm_cam_frame"/>
+        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_forearm_cam_optical_frame"/>
         <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_BWfq1iVT"/>
     </owl:NamedIndividual>
