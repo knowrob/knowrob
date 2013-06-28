@@ -421,7 +421,7 @@ public class URDF2SRDL {
 			}				
 			s.append("\"/>\n");
 			s.append(i2+"<srdl2-comp:urdfName>"+jointName+"</srdl2-comp:urdfName>\n");
-			s.append(i2+"<srdl2-comp:precedingLink rdf:resource=\"&robot;" + prefix + parentLinkName + "\"/>\n");
+//			s.append(i2+"<srdl2-comp:precedingLink rdf:resource=\"&robot;" + prefix + parentLinkName + "\"/>\n");
 			s.append(i2+"<srdl2-comp:succeedingLink rdf:resource=\"&robot;" + prefix + childLinkName + "\"/>\n");
 			//Include hasAttribute-Tags for gazebo information
 			s.append(generalReader.getAttributeIncludesFor(i2, prefix, joint));
