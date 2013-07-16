@@ -1,8 +1,10 @@
 <stack>
   <description brief="knowrob">
 
-    KnowRob is a knowledge processing framework developed in the IAS group
-    at the Technische Universitaet Muenchen, Germany.
+    KnowRob is a knowledge processing framework for robots. It has originally
+    been developed in the IAS group at Technische Universitaet Muenchen,
+    Germany and is currently maintained by Moritz Tenorth at the Institute
+    for Artificial Intelligence in Bremen, Germany.
 
     It provides tools for knowledge acquisition, representation and reasoning
     that are tailored to the demands in mobile robotics.
@@ -11,7 +13,7 @@
   <author>Maintained by Moritz Tenorth</author>
   <license>GPL,BSD</license>  
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/knowrob</url>
+  <url>http://www.knowrob.org</url>
   <depend stack="client_rosjava_jni" /> <!-- rosjava_jni, tfjava -->
   <depend stack="ias_common" /> <!-- vision_srvs -->
   <depend stack="robot_model" /> <!-- urdf -->
