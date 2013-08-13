@@ -78,6 +78,9 @@
     </owl:Class>
 
 
+    <owl:NamedIndividual rdf:about="&pr2;timepoint_1357020000">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
 
 
     <!-- =========================================== -->
@@ -174,15 +177,24 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_base_footprint_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>base_footprint_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_base_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_GcAehtFJ"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_GcAehtFJ -->
+    <!-- &pr2;Proprioception_uRGxT4M5 -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_GcAehtFJ">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_uRGxT4M5">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_uu2HfI4c"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_base_footprint_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_uu2HfI4c -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_uu2HfI4c">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
@@ -209,17 +221,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_base_bellow_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>base_bellow_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_base_bellow_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_6tqlPS4S"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_6tqlPS4S -->
+    <!-- &pr2;Proprioception_qNnHF433 -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_6tqlPS4S">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_qNnHF433">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_cIprDPPJ"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_base_bellow_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_cIprDPPJ -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_cIprDPPJ">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_GcAehtFJ"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_uu2HfI4c"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -245,17 +266,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_base_laser_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>base_laser_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_base_laser_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_LoRqLyxE"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_LoRqLyxE -->
+    <!-- &pr2;Proprioception_NMe9J39q -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_LoRqLyxE">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_NMe9J39q">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_9E7AnN8H"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_base_laser_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_9E7AnN8H -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_9E7AnN8H">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_GcAehtFJ"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_uu2HfI4c"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -281,17 +311,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_fl_caster_rotation_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>fl_caster_rotation_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_fl_caster_rotation_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_9mLTSyE4"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_9mLTSyE4 -->
+    <!-- &pr2;Proprioception_HZy7G9X9 -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_9mLTSyE4">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_HZy7G9X9">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_vEZ3tNd6"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_fl_caster_rotation_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_vEZ3tNd6 -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_vEZ3tNd6">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_GcAehtFJ"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_uu2HfI4c"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -317,17 +356,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_fl_caster_l_wheel_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>fl_caster_l_wheel_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_fl_caster_l_wheel_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_33vn0oDf"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_33vn0oDf -->
+    <!-- &pr2;Proprioception_5XsyN95w -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_33vn0oDf">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_5XsyN95w">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_9hwqVBp5"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_fl_caster_l_wheel_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_9hwqVBp5 -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_9hwqVBp5">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_9mLTSyE4"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_vEZ3tNd6"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -353,17 +401,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_fl_caster_r_wheel_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>fl_caster_r_wheel_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_fl_caster_r_wheel_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_TXVFSjad"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_TXVFSjad -->
+    <!-- &pr2;Proprioception_KTTSJ6yh -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_TXVFSjad">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_KTTSJ6yh">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_vfoS3zvs"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_fl_caster_r_wheel_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_vfoS3zvs -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_vfoS3zvs">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_9mLTSyE4"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_vEZ3tNd6"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -389,17 +446,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_fr_caster_rotation_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>fr_caster_rotation_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_fr_caster_rotation_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_gVN7JkgB"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_gVN7JkgB -->
+    <!-- &pr2;Proprioception_5ySqlVmV -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_gVN7JkgB">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_5ySqlVmV">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_rd62LzLs"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_fr_caster_rotation_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_rd62LzLs -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_rd62LzLs">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_GcAehtFJ"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_uu2HfI4c"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -425,17 +491,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_fr_caster_l_wheel_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>fr_caster_l_wheel_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_fr_caster_l_wheel_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_Z9bR8r27"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_Z9bR8r27 -->
+    <!-- &pr2;Proprioception_WugIQSTR -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_Z9bR8r27">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_WugIQSTR">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_aptL0ExX"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_fr_caster_l_wheel_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_aptL0ExX -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_aptL0ExX">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_gVN7JkgB"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_rd62LzLs"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -461,17 +536,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_fr_caster_r_wheel_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>fr_caster_r_wheel_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_fr_caster_r_wheel_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_m95idp0u"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_m95idp0u -->
+    <!-- &pr2;Proprioception_jsaaUT2g -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_m95idp0u">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_jsaaUT2g">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_xnmdgFFl"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_fr_caster_r_wheel_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_xnmdgFFl -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_xnmdgFFl">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_gVN7JkgB"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_rd62LzLs"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -497,17 +581,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_bl_caster_rotation_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>bl_caster_rotation_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_bl_caster_rotation_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_u3UgUoGI"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_u3UgUoGI -->
+    <!-- &pr2;Proprioception_hGLZ9ZzZ -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_u3UgUoGI">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_hGLZ9ZzZ">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_sl4mZDVj"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_bl_caster_rotation_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_sl4mZDVj -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_sl4mZDVj">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_GcAehtFJ"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_uu2HfI4c"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -533,17 +626,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_bl_caster_l_wheel_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>bl_caster_l_wheel_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_bl_caster_l_wheel_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_R3NI2nO7"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_R3NI2nO7 -->
+    <!-- &pr2;Proprioception_0S0hBX7V -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_R3NI2nO7">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_0S0hBX7V">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_iYx12sax"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_bl_caster_l_wheel_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_iYx12sax -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_iYx12sax">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_u3UgUoGI"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_sl4mZDVj"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -569,17 +671,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_bl_caster_r_wheel_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>bl_caster_r_wheel_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_bl_caster_r_wheel_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_NYuRKn57"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_NYuRKn57 -->
+    <!-- &pr2;Proprioception_wA3IHXck -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_NYuRKn57">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_wA3IHXck">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_tYteArdI"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_bl_caster_r_wheel_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_tYteArdI -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_tYteArdI">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_u3UgUoGI"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_sl4mZDVj"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -605,17 +716,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_br_caster_rotation_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>br_caster_rotation_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_br_caster_rotation_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_HaPPGtTM"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_HaPPGtTM -->
+    <!-- &pr2;Proprioception_ldwnJKtw -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_HaPPGtTM">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_ldwnJKtw">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_pUanjptG"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_br_caster_rotation_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_pUanjptG -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_pUanjptG">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_GcAehtFJ"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_uu2HfI4c"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -641,17 +761,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_br_caster_l_wheel_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>br_caster_l_wheel_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_br_caster_l_wheel_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_SaL4fsVZ"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_SaL4fsVZ -->
+    <!-- &pr2;Proprioception_IbpOPLzU -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_SaL4fsVZ">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_IbpOPLzU">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_88y6Hwfd"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_br_caster_l_wheel_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_88y6Hwfd -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_88y6Hwfd">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_HaPPGtTM"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_pUanjptG"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -677,17 +806,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_br_caster_r_wheel_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>br_caster_r_wheel_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_br_caster_r_wheel_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_K5alIqsV"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_K5alIqsV -->
+    <!-- &pr2;Proprioception_SoIMKRnS -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_K5alIqsV">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_SoIMKRnS">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_u8szOwnB"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_br_caster_r_wheel_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_u8szOwnB -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_u8szOwnB">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_HaPPGtTM"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_pUanjptG"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -713,17 +851,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_torso_lift_joint">
         <rdf:type rdf:resource="&srdl2-comp;PrismaticUrdfJoint"/>
         <srdl2-comp:urdfName>torso_lift_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_torso_lift_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_DJWOZfr0"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_DJWOZfr0 -->
+    <!-- &pr2;Proprioception_ZoBeQPv1 -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_DJWOZfr0">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_ZoBeQPv1">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_q60IxuDz"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_torso_lift_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_q60IxuDz -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_q60IxuDz">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_GcAehtFJ"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_uu2HfI4c"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -749,17 +896,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_torso_lift_side_plate_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>l_torso_lift_side_plate_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_torso_lift_side_plate_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_1JOh7dzx"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_1JOh7dzx -->
+    <!-- &pr2;Proprioception_QhZwmN3Y -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_1JOh7dzx">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_QhZwmN3Y">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_5GG72iQA"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_l_torso_lift_side_plate_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_5GG72iQA -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_5GG72iQA">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_DJWOZfr0"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_q60IxuDz"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -785,17 +941,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_torso_lift_side_plate_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>r_torso_lift_side_plate_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_torso_lift_side_plate_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_SDeAzb7v"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_SDeAzb7v -->
+    <!-- &pr2;Proprioception_bZYkYDQB -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_SDeAzb7v">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_bZYkYDQB">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_rGxy9iVY"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_r_torso_lift_side_plate_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_rGxy9iVY -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_rGxy9iVY">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_DJWOZfr0"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_q60IxuDz"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -821,17 +986,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_torso_lift_motor_screw_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>torso_lift_motor_screw_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_torso_lift_motor_screw_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_dSIQRiKB"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_dSIQRiKB -->
+    <!-- &pr2;Proprioception_4SmStAny -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_dSIQRiKB">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_4SmStAny">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_iAXQBesU"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_torso_lift_motor_screw_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_iAXQBesU -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_iAXQBesU">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_GcAehtFJ"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_uu2HfI4c"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -857,17 +1031,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_imu_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>imu_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_imu_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_0QpZSi3B"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_0QpZSi3B -->
+    <!-- &pr2;Proprioception_eSjQ1AsK -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_0QpZSi3B">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_eSjQ1AsK">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_gQzFNn3E"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_imu_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_gQzFNn3E -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_gQzFNn3E">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_DJWOZfr0"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_q60IxuDz"/>
         <knowrob:m00 rdf:datatype="&xsd;double">-1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">-2.0682310711021444E-13</knowrob:m02>
@@ -893,17 +1076,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_head_pan_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>head_pan_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_head_pan_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_wOjrHg91"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_wOjrHg91 -->
+    <!-- &pr2;Proprioception_k6y3vFjF -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_wOjrHg91">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_k6y3vFjF">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_sOvTmm6P"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_head_pan_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_sOvTmm6P -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_sOvTmm6P">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_DJWOZfr0"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_q60IxuDz"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -929,17 +1121,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_head_tilt_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>head_tilt_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_head_tilt_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_0rQPb5kY"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_0rQPb5kY -->
+    <!-- &pr2;Proprioception_H4rtBFr4 -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_0rQPb5kY">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_H4rtBFr4">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_jKTbPjSN"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_head_tilt_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_jKTbPjSN -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_jKTbPjSN">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_wOjrHg91"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_sOvTmm6P"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -965,17 +1166,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_head_plate_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>head_plate_frame_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_head_plate_frame"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_6pxYU5AY"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_6pxYU5AY -->
+    <!-- &pr2;Proprioception_rKRV2ZLZ -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_6pxYU5AY">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_rKRV2ZLZ">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_cnxMWjmd"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_head_plate_frame_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_cnxMWjmd -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_cnxMWjmd">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_0rQPb5kY"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_jKTbPjSN"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1001,17 +1211,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_sensor_mount_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>sensor_mount_frame_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_sensor_mount_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_hnucu4Da"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_hnucu4Da -->
+    <!-- &pr2;Proprioception_OKJn8YQo -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_hnucu4Da">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_OKJn8YQo">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_ont3tkrr"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_sensor_mount_frame_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_ont3tkrr -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_ont3tkrr">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_6pxYU5AY"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_cnxMWjmd"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1037,17 +1256,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_high_def_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>high_def_frame_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_high_def_frame"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_bzMap0sR"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_bzMap0sR -->
+    <!-- &pr2;Proprioception_JIswRY8n -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_bzMap0sR">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_JIswRY8n">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_kjabdiIp"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_high_def_frame_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_kjabdiIp -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_kjabdiIp">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_hnucu4Da"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_ont3tkrr"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1073,17 +1301,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_high_def_optical_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>high_def_optical_frame_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_high_def_optical_frame"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_7xvj98IP"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_7xvj98IP -->
+    <!-- &pr2;Proprioception_DVKuO5V4 -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_7xvj98IP">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_DVKuO5V4">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_3xyTDptT"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_high_def_optical_frame_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_3xyTDptT -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_3xyTDptT">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_bzMap0sR"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_kjabdiIp"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">1.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1109,17 +1346,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_double_stereo_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>double_stereo_frame_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_double_stereo_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_ixqxI9N3"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_ixqxI9N3 -->
+    <!-- &pr2;Proprioception_1TDVU34s -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_ixqxI9N3">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_1TDVU34s">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_pvslHnzi"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_double_stereo_frame_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_pvslHnzi -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_pvslHnzi">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_hnucu4Da"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_ont3tkrr"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1145,17 +1391,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_wide_stereo_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>wide_stereo_frame_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_wide_stereo_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_89UbJW3e"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_89UbJW3e -->
+    <!-- &pr2;Proprioception_SM3en1Aq -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_89UbJW3e">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_SM3en1Aq">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_lt0utnQi"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_wide_stereo_frame_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_lt0utnQi -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_lt0utnQi">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_ixqxI9N3"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_pvslHnzi"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1181,17 +1436,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_wide_stereo_optical_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>wide_stereo_optical_frame_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_wide_stereo_optical_frame"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_47BksTjc"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_47BksTjc -->
+    <!-- &pr2;Proprioception_2u5NsRlR -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_47BksTjc">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_2u5NsRlR">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_Z7GUVb3g"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_wide_stereo_optical_frame_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_Z7GUVb3g -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_Z7GUVb3g">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_89UbJW3e"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_lt0utnQi"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">1.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1217,17 +1481,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_wide_stereo_gazebo_l_stereo_camera_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>wide_stereo_gazebo_l_stereo_camera_frame_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_wide_stereo_gazebo_l_stereo_camera_frame"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_e7xy1Vmq"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_e7xy1Vmq -->
+    <!-- &pr2;Proprioception_Tqs7YOSP -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_e7xy1Vmq">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_Tqs7YOSP">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_U3n4F0ig"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_wide_stereo_gazebo_l_stereo_camera_frame_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_U3n4F0ig -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_U3n4F0ig">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_89UbJW3e"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_lt0utnQi"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1253,17 +1526,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_wide_stereo_gazebo_l_stereo_camera_optical_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>wide_stereo_gazebo_l_stereo_camera_optical_frame_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_wide_stereo_gazebo_l_stereo_camera_optical_frame"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_ckbld2U8"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_ckbld2U8 -->
+    <!-- &pr2;Proprioception_golx5N1d -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_ckbld2U8">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_golx5N1d">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_73khe9lr"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_wide_stereo_gazebo_l_stereo_camera_optical_frame_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_73khe9lr -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_73khe9lr">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_e7xy1Vmq"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_U3n4F0ig"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">1.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1289,17 +1571,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_wide_stereo_gazebo_r_stereo_camera_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>wide_stereo_gazebo_r_stereo_camera_frame_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_wide_stereo_gazebo_r_stereo_camera_frame"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_5ezDGZr6"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_5ezDGZr6 -->
+    <!-- &pr2;Proprioception_aAEvZTOV -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_5ezDGZr6">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_aAEvZTOV">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_1eEd0ec0"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_wide_stereo_gazebo_r_stereo_camera_frame_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_1eEd0ec0 -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_1eEd0ec0">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_e7xy1Vmq"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_U3n4F0ig"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1325,17 +1616,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_wide_stereo_gazebo_r_stereo_camera_optical_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>wide_stereo_gazebo_r_stereo_camera_optical_frame_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_wide_stereo_gazebo_r_stereo_camera_optical_frame"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_gevTeYvj"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_gevTeYvj -->
+    <!-- &pr2;Proprioception_xAxX6TUh -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_gevTeYvj">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_xAxX6TUh">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_VclmTes8"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_wide_stereo_gazebo_r_stereo_camera_optical_frame_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_VclmTes8 -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_VclmTes8">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_5ezDGZr6"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_1eEd0ec0"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">1.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1361,17 +1661,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_narrow_stereo_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>narrow_stereo_frame_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_narrow_stereo_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_obmPVX3u"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_obmPVX3u -->
+    <!-- &pr2;Proprioception_mb2B8Gbv -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_obmPVX3u">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_mb2B8Gbv">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_8aiSsdvk"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_narrow_stereo_frame_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_8aiSsdvk -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_8aiSsdvk">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_ixqxI9N3"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_pvslHnzi"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1397,17 +1706,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_narrow_stereo_optical_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>narrow_stereo_optical_frame_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_narrow_stereo_optical_frame"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_L0fh2XaS"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_L0fh2XaS -->
+    <!-- &pr2;Proprioception_h0IKQEst -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_L0fh2XaS">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_h0IKQEst">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_49ZLbbLi"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_narrow_stereo_optical_frame_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_49ZLbbLi -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_49ZLbbLi">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_obmPVX3u"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_8aiSsdvk"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">1.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1433,17 +1751,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_narrow_stereo_gazebo_l_stereo_camera_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>narrow_stereo_gazebo_l_stereo_camera_frame_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_narrow_stereo_gazebo_l_stereo_camera_frame"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_H7WqNVqS"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_H7WqNVqS -->
+    <!-- &pr2;Proprioception_F8BcXFxS -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_H7WqNVqS">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_F8BcXFxS">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_GLwaF2Yj"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_narrow_stereo_gazebo_l_stereo_camera_frame_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_GLwaF2Yj -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_GLwaF2Yj">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_obmPVX3u"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_8aiSsdvk"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1469,17 +1796,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_narrow_stereo_gazebo_l_stereo_camera_optical_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>narrow_stereo_gazebo_l_stereo_camera_optical_frame_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_narrow_stereo_gazebo_l_stereo_camera_optical_frame"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_pjkab3cn"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_pjkab3cn -->
+    <!-- &pr2;Proprioception_yjUaULmz -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_pjkab3cn">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_yjUaULmz">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_4JpBMZ4I"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_narrow_stereo_gazebo_l_stereo_camera_optical_frame_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_4JpBMZ4I -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_4JpBMZ4I">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_H7WqNVqS"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_GLwaF2Yj"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">1.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1505,17 +1841,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_narrow_stereo_gazebo_r_stereo_camera_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>narrow_stereo_gazebo_r_stereo_camera_frame_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_narrow_stereo_gazebo_r_stereo_camera_frame"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_lh2jV1sl"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_lh2jV1sl -->
+    <!-- &pr2;Proprioception_WjNSYLuY -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_lh2jV1sl">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_WjNSYLuY">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_ZH7KvXmF"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_narrow_stereo_gazebo_r_stereo_camera_frame_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_ZH7KvXmF -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_ZH7KvXmF">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_H7WqNVqS"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_GLwaF2Yj"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1541,17 +1886,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_narrow_stereo_gazebo_r_stereo_camera_optical_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>narrow_stereo_gazebo_r_stereo_camera_optical_frame_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_narrow_stereo_gazebo_r_stereo_camera_optical_frame"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_IfUL22yJ"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_IfUL22yJ -->
+    <!-- &pr2;Proprioception_NdbUtH1U -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_IfUL22yJ">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_NdbUtH1U">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_IUuuT59c"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_narrow_stereo_gazebo_r_stereo_camera_optical_frame_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_IUuuT59c -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_IUuuT59c">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_lh2jV1sl"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_ZH7KvXmF"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">1.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1577,17 +1931,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_projector_wg6802418_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>projector_wg6802418_frame_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_projector_wg6802418_frame"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_lSr0tPKK"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_lSr0tPKK -->
+    <!-- &pr2;Proprioception_9UaH7zPy -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_lSr0tPKK">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_9UaH7zPy">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_DSbED5oa"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_projector_wg6802418_frame_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_DSbED5oa -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_DSbED5oa">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_6pxYU5AY"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_cnxMWjmd"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1613,17 +1976,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_projector_wg6802418_child_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>projector_wg6802418_child_frame_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_projector_wg6802418_child_frame"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_hQ9idM2I"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_hQ9idM2I -->
+    <!-- &pr2;Proprioception_OOBM3vjj -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_hQ9idM2I">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_OOBM3vjj">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_PS9Ra4rl"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_projector_wg6802418_child_frame_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_PS9Ra4rl -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_PS9Ra4rl">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_lSr0tPKK"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_DSbED5oa"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">-1.0</knowrob:m02>
@@ -1649,17 +2021,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_laser_tilt_mount_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>laser_tilt_mount_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_laser_tilt_mount_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_EO3MjN07"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_EO3MjN07 -->
+    <!-- &pr2;Proprioception_bOvd9wqH -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_EO3MjN07">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_bOvd9wqH">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_EtSubRGz"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_laser_tilt_mount_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_EtSubRGz -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_EtSubRGz">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_DJWOZfr0"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_q60IxuDz"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1685,17 +2066,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_laser_tilt_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>laser_tilt_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_laser_tilt_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_n1ouHSUD"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_n1ouHSUD -->
+    <!-- &pr2;Proprioception_62Pb6Sfp -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_n1ouHSUD">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_62Pb6Sfp">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_ArjDXQWx"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_laser_tilt_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_ArjDXQWx -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_ArjDXQWx">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_EO3MjN07"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_EtSubRGz"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1721,19 +2111,28 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_shoulder_pan_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>r_shoulder_pan_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_shoulder_pan_link"/>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">1000000.0</srdl2-comp:stopKp>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_iY8DtSbB"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_iY8DtSbB -->
+    <!-- &pr2;Proprioception_zXk1szGZ -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_iY8DtSbB">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_zXk1szGZ">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_LrfQuQZI"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_r_shoulder_pan_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_LrfQuQZI -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_LrfQuQZI">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_DJWOZfr0"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_q60IxuDz"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1759,19 +2158,28 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_shoulder_lift_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>r_shoulder_lift_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_shoulder_lift_link"/>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">1000000.0</srdl2-comp:stopKp>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_uY2R1ReO"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_uY2R1ReO -->
+    <!-- &pr2;Proprioception_bVF8NzMD -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_uY2R1ReO">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_bVF8NzMD">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_JFRFGYxs"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_r_shoulder_lift_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_JFRFGYxs -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_JFRFGYxs">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_iY8DtSbB"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_LrfQuQZI"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1797,20 +2205,29 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_upper_arm_roll_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>r_upper_arm_roll_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_upper_arm_roll_link"/>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">1000000.0</srdl2-comp:stopKp>
         <srdl2-comp:fudgeFactor rdf:datatype="&qudt-unit;Unitless">0.5</srdl2-comp:fudgeFactor>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_nDOmhGc3"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_nDOmhGc3 -->
+    <!-- &pr2;Proprioception_4R5pgxky -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_nDOmhGc3">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_4R5pgxky">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_BzfYbU7q"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_r_upper_arm_roll_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_BzfYbU7q -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_BzfYbU7q">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_uY2R1ReO"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_JFRFGYxs"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1836,17 +2253,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_upper_arm_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>r_upper_arm_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_upper_arm_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_fxeELEJY"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_fxeELEJY -->
+    <!-- &pr2;Proprioception_qPXTmvqX -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_fxeELEJY">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_qPXTmvqX">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_MzcbIV0B"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_r_upper_arm_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_MzcbIV0B -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_MzcbIV0B">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_nDOmhGc3"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_BzfYbU7q"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1872,18 +2298,27 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_forearm_roll_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>r_forearm_roll_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_forearm_roll_link"/>
         <srdl2-comp:fudgeFactor rdf:datatype="&qudt-unit;Unitless">0.5</srdl2-comp:fudgeFactor>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_qx0SkDMb"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_qx0SkDMb -->
+    <!-- &pr2;Proprioception_o4yGyEYH -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_qx0SkDMb">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_o4yGyEYH">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_Zxl1GUpR"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_r_forearm_roll_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_Zxl1GUpR -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_Zxl1GUpR">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_oMMHvMkT"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_FtO3SRTS"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1909,20 +2344,29 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_elbow_flex_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>r_elbow_flex_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_elbow_flex_link"/>
         <srdl2-comp:initial_joint_position rdf:datatype="&xsd;string">-1.0</srdl2-comp:initial_joint_position>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">1000000.0</srdl2-comp:stopKp>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_oMMHvMkT"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_oMMHvMkT -->
+    <!-- &pr2;Proprioception_H29joSm4 -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_oMMHvMkT">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_H29joSm4">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_FtO3SRTS"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_r_elbow_flex_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_FtO3SRTS -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_FtO3SRTS">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_fxeELEJY"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_MzcbIV0B"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1948,17 +2392,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_forearm_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>r_forearm_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_forearm_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_1DXSbI6E"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_1DXSbI6E -->
+    <!-- &pr2;Proprioception_SXQs8AD2 -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_1DXSbI6E">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_SXQs8AD2">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_BpvbmRaA"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_r_forearm_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_BpvbmRaA -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_BpvbmRaA">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_qx0SkDMb"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_Zxl1GUpR"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1984,19 +2437,28 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_wrist_flex_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>r_wrist_flex_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_wrist_flex_link"/>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">1000000.0</srdl2-comp:stopKp>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_0lXsgzS6"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_0lXsgzS6 -->
+    <!-- &pr2;Proprioception_rAj59pSf -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_0lXsgzS6">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_rAj59pSf">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_1GjjUXzI"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_r_wrist_flex_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_1GjjUXzI -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_1GjjUXzI">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_1DXSbI6E"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_BpvbmRaA"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2022,18 +2484,27 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_wrist_roll_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>r_wrist_roll_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_wrist_roll_link"/>
         <srdl2-comp:fudgeFactor rdf:datatype="&qudt-unit;Unitless">0.5</srdl2-comp:fudgeFactor>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_6jEB1w94"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_6jEB1w94 -->
+    <!-- &pr2;Proprioception_PydwfnYD -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_6jEB1w94">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_PydwfnYD">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_GSMnQW4t"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_r_wrist_roll_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_GSMnQW4t -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_GSMnQW4t">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_0lXsgzS6"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_1GjjUXzI"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2059,17 +2530,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_gripper_palm_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>r_gripper_palm_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_gripper_palm_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_Xc3UvuF2"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_Xc3UvuF2 -->
+    <!-- &pr2;Proprioception_ILxuctOl -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_Xc3UvuF2">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_ILxuctOl">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_SxtwAUks"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_r_gripper_palm_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_SxtwAUks -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_SxtwAUks">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_6jEB1w94"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_GSMnQW4t"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2095,17 +2575,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_gripper_led_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>r_gripper_led_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_gripper_led_frame"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_bvVNuS1W"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_bvVNuS1W -->
+    <!-- &pr2;Proprioception_ULsHJvRw -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_bvVNuS1W">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_ULsHJvRw">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_XfqkeM96"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_r_gripper_led_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_XfqkeM96 -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_XfqkeM96">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_Xc3UvuF2"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_SxtwAUks"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2131,17 +2620,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_gripper_motor_accelerometer_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>r_gripper_motor_accelerometer_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_gripper_motor_accelerometer_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_3pj6ZAwU"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_3pj6ZAwU -->
+    <!-- &pr2;Proprioception_MES1cqou -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_3pj6ZAwU">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_MES1cqou">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_ObPSHHF4"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_r_gripper_motor_accelerometer_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_ObPSHHF4 -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_ObPSHHF4">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_Xc3UvuF2"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_SxtwAUks"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2167,17 +2665,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_gripper_tool_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>r_gripper_tool_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_gripper_tool_frame"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_Yn1eJxNS"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_Yn1eJxNS -->
+    <!-- &pr2;Proprioception_HkDvugnG -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_Yn1eJxNS">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_HkDvugnG">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_10LQeJHe"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_r_gripper_tool_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_10LQeJHe -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_10LQeJHe">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_Xc3UvuF2"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_SxtwAUks"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2203,17 +2710,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_gripper_motor_slider_joint">
         <rdf:type rdf:resource="&srdl2-comp;PrismaticUrdfJoint"/>
         <srdl2-comp:urdfName>r_gripper_motor_slider_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_gripper_motor_slider_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_Slmm2zUy"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_Slmm2zUy -->
+    <!-- &pr2;Proprioception_5kwWAgt6 -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_Slmm2zUy">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_5kwWAgt6">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_Ul7ObPyW"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_r_gripper_motor_slider_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_Ul7ObPyW -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_Ul7ObPyW">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_Xc3UvuF2"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_SxtwAUks"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2239,17 +2755,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_gripper_motor_screw_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>r_gripper_motor_screw_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_gripper_motor_screw_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_ihNoXwoj"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_ihNoXwoj -->
+    <!-- &pr2;Proprioception_KdZ2wdXR -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_ihNoXwoj">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_KdZ2wdXR">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_PjNXVNOW"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_r_gripper_motor_screw_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_PjNXVNOW -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_PjNXVNOW">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_Slmm2zUy"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_Ul7ObPyW"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2275,21 +2800,30 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_gripper_l_finger_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>r_gripper_l_finger_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_gripper_l_finger_link"/>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">10000000.0</srdl2-comp:stopKp>
         <srdl2-comp:fudgeFactor rdf:datatype="&qudt-unit;Unitless">1.0</srdl2-comp:fudgeFactor>
         <srdl2-comp:provideFeedback rdf:datatype="&xsd;boolean">true</srdl2-comp:provideFeedback>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_dfuxHwFh"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_dfuxHwFh -->
+    <!-- &pr2;Proprioception_juImEnpb -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_dfuxHwFh">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_juImEnpb">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_2jJbuMR8"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_r_gripper_l_finger_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_2jJbuMR8 -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_2jJbuMR8">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_Xc3UvuF2"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_SxtwAUks"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2315,24 +2849,33 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_gripper_r_finger_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>r_gripper_r_finger_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_gripper_r_finger_link"/>
         <srdl2-comp:mimic_joint rdf:datatype="&xsd;string">r_gripper_l_finger_joint</srdl2-comp:mimic_joint>
-        <srdl2-comp:mimic_multiplier rdf:datatype="&qudt-unit;Unitless">1</srdl2-comp:mimic_multiplier>
-        <srdl2-comp:mimic_offset rdf:datatype="&qudt-unit;Unitless">0</srdl2-comp:mimic_offset>
+        <srdl2-comp:mimic_multiplier rdf:datatype="&xsd;string">1</srdl2-comp:mimic_multiplier>
+        <srdl2-comp:mimic_offset rdf:datatype="&xsd;string">0</srdl2-comp:mimic_offset>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">10000000.0</srdl2-comp:stopKp>
         <srdl2-comp:fudgeFactor rdf:datatype="&qudt-unit;Unitless">1.0</srdl2-comp:fudgeFactor>
         <srdl2-comp:provideFeedback rdf:datatype="&xsd;boolean">true</srdl2-comp:provideFeedback>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_rwnrIDZe"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_rwnrIDZe -->
+    <!-- &pr2;Proprioception_SqiXtjNx -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_rwnrIDZe">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_SqiXtjNx">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_QUdNvB7j"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_r_gripper_r_finger_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_QUdNvB7j -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_QUdNvB7j">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_Xc3UvuF2"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_SxtwAUks"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2358,24 +2901,33 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_gripper_l_finger_tip_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>r_gripper_l_finger_tip_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_gripper_l_finger_tip_link"/>
         <srdl2-comp:mimic_joint rdf:datatype="&xsd;string">r_gripper_l_finger_joint</srdl2-comp:mimic_joint>
-        <srdl2-comp:mimic_multiplier rdf:datatype="&qudt-unit;Unitless">1</srdl2-comp:mimic_multiplier>
-        <srdl2-comp:mimic_offset rdf:datatype="&qudt-unit;Unitless">0</srdl2-comp:mimic_offset>
+        <srdl2-comp:mimic_multiplier rdf:datatype="&xsd;string">1</srdl2-comp:mimic_multiplier>
+        <srdl2-comp:mimic_offset rdf:datatype="&xsd;string">0</srdl2-comp:mimic_offset>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">10000000.0</srdl2-comp:stopKp>
         <srdl2-comp:fudgeFactor rdf:datatype="&qudt-unit;Unitless">1.0</srdl2-comp:fudgeFactor>
         <srdl2-comp:provideFeedback rdf:datatype="&xsd;boolean">true</srdl2-comp:provideFeedback>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_jpLJbBya"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_jpLJbBya -->
+    <!-- &pr2;Proprioception_t4MBv93L -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_jpLJbBya">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_t4MBv93L">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_MSUWfznj"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_r_gripper_l_finger_tip_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_MSUWfznj -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_MSUWfznj">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_dfuxHwFh"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_2jJbuMR8"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2401,24 +2953,33 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_gripper_r_finger_tip_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>r_gripper_r_finger_tip_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_gripper_r_finger_tip_link"/>
         <srdl2-comp:mimic_joint rdf:datatype="&xsd;string">r_gripper_l_finger_joint</srdl2-comp:mimic_joint>
-        <srdl2-comp:mimic_multiplier rdf:datatype="&qudt-unit;Unitless">1</srdl2-comp:mimic_multiplier>
-        <srdl2-comp:mimic_offset rdf:datatype="&qudt-unit;Unitless">0</srdl2-comp:mimic_offset>
+        <srdl2-comp:mimic_multiplier rdf:datatype="&xsd;string">1</srdl2-comp:mimic_multiplier>
+        <srdl2-comp:mimic_offset rdf:datatype="&xsd;string">0</srdl2-comp:mimic_offset>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">10000000.0</srdl2-comp:stopKp>
         <srdl2-comp:fudgeFactor rdf:datatype="&qudt-unit;Unitless">1.0</srdl2-comp:fudgeFactor>
         <srdl2-comp:provideFeedback rdf:datatype="&xsd;boolean">true</srdl2-comp:provideFeedback>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_fntSVzPa"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_fntSVzPa -->
+    <!-- &pr2;Proprioception_XZjqS6rj -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_fntSVzPa">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_XZjqS6rj">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_XSRaMyqu"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_r_gripper_r_finger_tip_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_XSRaMyqu -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_XSRaMyqu">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_rwnrIDZe"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_QUdNvB7j"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2444,17 +3005,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_gripper_joint">
         <rdf:type rdf:resource="&srdl2-comp;PrismaticUrdfJoint"/>
         <srdl2-comp:urdfName>r_gripper_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_gripper_l_finger_tip_frame"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_z6pGzpDM"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_z6pGzpDM -->
+    <!-- &pr2;Proprioception_TX1zB4Kj -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_z6pGzpDM">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_TX1zB4Kj">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_R509JEgc"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_r_gripper_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_R509JEgc -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_R509JEgc">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_fntSVzPa"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_XSRaMyqu"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2480,19 +3050,28 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_shoulder_pan_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>l_shoulder_pan_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_shoulder_pan_link"/>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">1000000.0</srdl2-comp:stopKp>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_fYTKvn8x"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_fYTKvn8x -->
+    <!-- &pr2;Proprioception_jdNGac8r -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_fYTKvn8x">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_jdNGac8r">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_e34AQFmA"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_l_shoulder_pan_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_e34AQFmA -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_e34AQFmA">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_DJWOZfr0"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_q60IxuDz"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2518,19 +3097,28 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_shoulder_lift_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>l_shoulder_lift_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_shoulder_lift_link"/>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">1000000.0</srdl2-comp:stopKp>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_SYKcSmdV"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_SYKcSmdV -->
+    <!-- &pr2;Proprioception_a8bYFaEn -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_SYKcSmdV">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_a8bYFaEn">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_a1KJzDSy"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_l_shoulder_lift_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_a1KJzDSy -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_a1KJzDSy">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_fYTKvn8x"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_e34AQFmA"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2556,20 +3144,29 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_upper_arm_roll_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>l_upper_arm_roll_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_upper_arm_roll_link"/>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">1000000.0</srdl2-comp:stopKp>
         <srdl2-comp:fudgeFactor rdf:datatype="&qudt-unit;Unitless">0.5</srdl2-comp:fudgeFactor>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_Bdo2NuNF"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_Bdo2NuNF -->
+    <!-- &pr2;Proprioception_x66sLaML -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_Bdo2NuNF">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_x66sLaML">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_ODh02rPz"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_l_upper_arm_roll_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_ODh02rPz -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_ODh02rPz">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_SYKcSmdV"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_a1KJzDSy"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2595,17 +3192,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_upper_arm_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>l_upper_arm_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_upper_arm_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_g0R6Jthq"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_g0R6Jthq -->
+    <!-- &pr2;Proprioception_D3Vos8iZ -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_g0R6Jthq">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_D3Vos8iZ">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_JzYiNq6x"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_l_upper_arm_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_JzYiNq6x -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_JzYiNq6x">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_Bdo2NuNF"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_ODh02rPz"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2631,18 +3237,27 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_forearm_roll_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>l_forearm_roll_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_forearm_roll_link"/>
         <srdl2-comp:fudgeFactor rdf:datatype="&qudt-unit;Unitless">0.5</srdl2-comp:fudgeFactor>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_E8IxQrmO"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_E8IxQrmO -->
+    <!-- &pr2;Proprioception_2ZORx9on -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_E8IxQrmO">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_2ZORx9on">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_7zRKRpdV"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_l_forearm_roll_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_7zRKRpdV -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_7zRKRpdV">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_xMv18gl3"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_PMfshwZs"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2668,20 +3283,29 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_elbow_flex_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>l_elbow_flex_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_elbow_flex_link"/>
         <srdl2-comp:initial_joint_position rdf:datatype="&xsd;string">-1.0</srdl2-comp:initial_joint_position>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">1000000.0</srdl2-comp:stopKp>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_xMv18gl3"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_xMv18gl3 -->
+    <!-- &pr2;Proprioception_Uc0Nuef6 -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_xMv18gl3">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_Uc0Nuef6">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_PMfshwZs"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_l_elbow_flex_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_PMfshwZs -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_PMfshwZs">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_g0R6Jthq"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_JzYiNq6x"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2707,17 +3331,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_forearm_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>l_forearm_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_forearm_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_oITiBeSY"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_oITiBeSY -->
+    <!-- &pr2;Proprioception_ic1hAclt -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_oITiBeSY">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_ic1hAclt">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_KKWB2ufq"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_l_forearm_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_KKWB2ufq -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_KKWB2ufq">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_E8IxQrmO"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_7zRKRpdV"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2743,19 +3376,28 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_wrist_flex_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>l_wrist_flex_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_wrist_flex_link"/>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">1000000.0</srdl2-comp:stopKp>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_AGQwadVb"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_AGQwadVb -->
+    <!-- &pr2;Proprioception_07qz4aRr -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_AGQwadVb">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_07qz4aRr">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_WITRyviB"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_l_wrist_flex_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_WITRyviB -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_WITRyviB">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_oITiBeSY"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_KKWB2ufq"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2781,18 +3423,27 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_wrist_roll_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>l_wrist_roll_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_wrist_roll_link"/>
         <srdl2-comp:fudgeFactor rdf:datatype="&qudt-unit;Unitless">0.5</srdl2-comp:fudgeFactor>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_uSau6jLT"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_uSau6jLT -->
+    <!-- &pr2;Proprioception_iNq802DS -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_uSau6jLT">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_iNq802DS">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_5EJNgsPP"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_l_wrist_roll_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_5EJNgsPP -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_5EJNgsPP">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_AGQwadVb"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_WITRyviB"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2818,17 +3469,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_gripper_palm_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>l_gripper_palm_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_gripper_palm_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_qQRDPj3R"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_qQRDPj3R -->
+    <!-- &pr2;Proprioception_aJOpEYbO -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_qQRDPj3R">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_aJOpEYbO">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_1SqWZs6P"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_l_gripper_palm_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_1SqWZs6P -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_1SqWZs6P">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_uSau6jLT"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_5EJNgsPP"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2854,17 +3514,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_gripper_led_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>l_gripper_led_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_gripper_led_frame"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_NOL6Vi9f"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_NOL6Vi9f -->
+    <!-- &pr2;Proprioception_6FyynWsO -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_NOL6Vi9f">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_6FyynWsO">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_cAnayra1"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_l_gripper_led_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_cAnayra1 -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_cAnayra1">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_qQRDPj3R"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_1SqWZs6P"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2890,17 +3559,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_gripper_motor_accelerometer_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>l_gripper_motor_accelerometer_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_gripper_motor_accelerometer_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_qrivp7kg"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_qrivp7kg -->
+    <!-- &pr2;Proprioception_vVlGW6PX -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_qrivp7kg">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_vVlGW6PX">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_7MH9uxYI"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_l_gripper_motor_accelerometer_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_7MH9uxYI -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_7MH9uxYI">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_qQRDPj3R"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_1SqWZs6P"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2926,17 +3604,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_gripper_tool_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>l_gripper_tool_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_gripper_tool_frame"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_Nr0Xv7sE"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_Nr0Xv7sE -->
+    <!-- &pr2;Proprioception_bRNKS3jH -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_Nr0Xv7sE">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_bRNKS3jH">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_2KohdvfG"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_l_gripper_tool_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_2KohdvfG -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_2KohdvfG">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_qQRDPj3R"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_1SqWZs6P"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2962,17 +3649,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_gripper_motor_slider_joint">
         <rdf:type rdf:resource="&srdl2-comp;PrismaticUrdfJoint"/>
         <srdl2-comp:urdfName>l_gripper_motor_slider_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_gripper_motor_slider_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_JnQ7f5IS"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_JnQ7f5IS -->
+    <!-- &pr2;Proprioception_yPGcY3r7 -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_JnQ7f5IS">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_yPGcY3r7">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_oIhJjwl5"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_l_gripper_motor_slider_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_oIhJjwl5 -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_oIhJjwl5">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_qQRDPj3R"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_1SqWZs6P"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2998,17 +3694,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_gripper_motor_screw_joint">
         <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
         <srdl2-comp:urdfName>l_gripper_motor_screw_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_gripper_motor_screw_link"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_rSeODbu8"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_rSeODbu8 -->
+    <!-- &pr2;Proprioception_nsaQZPGi -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_rSeODbu8">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_nsaQZPGi">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_3lP8Okx6"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_l_gripper_motor_screw_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_3lP8Okx6 -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_3lP8Okx6">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_JnQ7f5IS"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_oIhJjwl5"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -3034,21 +3739,30 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_gripper_l_finger_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>l_gripper_l_finger_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_gripper_l_finger_link"/>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">10000000.0</srdl2-comp:stopKp>
         <srdl2-comp:fudgeFactor rdf:datatype="&qudt-unit;Unitless">1.0</srdl2-comp:fudgeFactor>
         <srdl2-comp:provideFeedback rdf:datatype="&xsd;boolean">true</srdl2-comp:provideFeedback>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_PA8iJ0zv"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_PA8iJ0zv -->
+    <!-- &pr2;Proprioception_Ks2i7PMG -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_PA8iJ0zv">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_Ks2i7PMG">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_YjwgxhN4"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_l_gripper_l_finger_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_YjwgxhN4 -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_YjwgxhN4">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_qQRDPj3R"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_1SqWZs6P"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -3074,24 +3788,33 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_gripper_r_finger_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>l_gripper_r_finger_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_gripper_r_finger_link"/>
         <srdl2-comp:mimic_joint rdf:datatype="&xsd;string">l_gripper_l_finger_joint</srdl2-comp:mimic_joint>
-        <srdl2-comp:mimic_multiplier rdf:datatype="&qudt-unit;Unitless">1</srdl2-comp:mimic_multiplier>
-        <srdl2-comp:mimic_offset rdf:datatype="&qudt-unit;Unitless">0</srdl2-comp:mimic_offset>
+        <srdl2-comp:mimic_multiplier rdf:datatype="&xsd;string">1</srdl2-comp:mimic_multiplier>
+        <srdl2-comp:mimic_offset rdf:datatype="&xsd;string">0</srdl2-comp:mimic_offset>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">10000000.0</srdl2-comp:stopKp>
         <srdl2-comp:fudgeFactor rdf:datatype="&qudt-unit;Unitless">1.0</srdl2-comp:fudgeFactor>
         <srdl2-comp:provideFeedback rdf:datatype="&xsd;boolean">true</srdl2-comp:provideFeedback>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_KxOrt0Qv"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_KxOrt0Qv -->
+    <!-- &pr2;Proprioception_QDiuAVFB -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_KxOrt0Qv">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_QDiuAVFB">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_0jsw5jSg"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_l_gripper_r_finger_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_0jsw5jSg -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_0jsw5jSg">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_qQRDPj3R"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_1SqWZs6P"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -3117,24 +3840,33 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_gripper_l_finger_tip_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>l_gripper_l_finger_tip_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_gripper_l_finger_tip_link"/>
         <srdl2-comp:mimic_joint rdf:datatype="&xsd;string">l_gripper_l_finger_joint</srdl2-comp:mimic_joint>
-        <srdl2-comp:mimic_multiplier rdf:datatype="&qudt-unit;Unitless">1</srdl2-comp:mimic_multiplier>
-        <srdl2-comp:mimic_offset rdf:datatype="&qudt-unit;Unitless">0</srdl2-comp:mimic_offset>
+        <srdl2-comp:mimic_multiplier rdf:datatype="&xsd;string">1</srdl2-comp:mimic_multiplier>
+        <srdl2-comp:mimic_offset rdf:datatype="&xsd;string">0</srdl2-comp:mimic_offset>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">10000000.0</srdl2-comp:stopKp>
         <srdl2-comp:fudgeFactor rdf:datatype="&qudt-unit;Unitless">1.0</srdl2-comp:fudgeFactor>
         <srdl2-comp:provideFeedback rdf:datatype="&xsd;boolean">true</srdl2-comp:provideFeedback>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_sffSVrar"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_sffSVrar -->
+    <!-- &pr2;Proprioception_0yS5qT3X -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_sffSVrar">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_0yS5qT3X">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_4wNs3pHY"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_l_gripper_l_finger_tip_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_4wNs3pHY -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_4wNs3pHY">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_PA8iJ0zv"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_YjwgxhN4"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -3160,24 +3892,33 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_gripper_r_finger_tip_joint">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>l_gripper_r_finger_tip_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_gripper_r_finger_tip_link"/>
         <srdl2-comp:mimic_joint rdf:datatype="&xsd;string">l_gripper_l_finger_joint</srdl2-comp:mimic_joint>
-        <srdl2-comp:mimic_multiplier rdf:datatype="&qudt-unit;Unitless">1</srdl2-comp:mimic_multiplier>
-        <srdl2-comp:mimic_offset rdf:datatype="&qudt-unit;Unitless">0</srdl2-comp:mimic_offset>
+        <srdl2-comp:mimic_multiplier rdf:datatype="&xsd;string">1</srdl2-comp:mimic_multiplier>
+        <srdl2-comp:mimic_offset rdf:datatype="&xsd;string">0</srdl2-comp:mimic_offset>
         <srdl2-comp:stopKd rdf:datatype="&xsd;string">1.0</srdl2-comp:stopKd>
         <srdl2-comp:stopKp rdf:datatype="&xsd;string">10000000.0</srdl2-comp:stopKp>
         <srdl2-comp:fudgeFactor rdf:datatype="&qudt-unit;Unitless">1.0</srdl2-comp:fudgeFactor>
         <srdl2-comp:provideFeedback rdf:datatype="&xsd;boolean">true</srdl2-comp:provideFeedback>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_Pf9kZshQ"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_Pf9kZshQ -->
+    <!-- &pr2;Proprioception_HwGM4Tcx -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_Pf9kZshQ">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_HwGM4Tcx">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_ZsuBLnXW"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_l_gripper_r_finger_tip_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_ZsuBLnXW -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_ZsuBLnXW">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_KxOrt0Qv"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_0jsw5jSg"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -3203,17 +3944,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_gripper_joint">
         <rdf:type rdf:resource="&srdl2-comp;PrismaticUrdfJoint"/>
         <srdl2-comp:urdfName>l_gripper_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_gripper_l_finger_tip_frame"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_LbPtKpyQ"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_LbPtKpyQ -->
+    <!-- &pr2;Proprioception_ladavHpy -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_LbPtKpyQ">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_ladavHpy">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_arrPkm18"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_l_gripper_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_arrPkm18 -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_arrPkm18">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_Pf9kZshQ"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_ZsuBLnXW"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -3239,17 +3989,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_forearm_cam_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>l_forearm_cam_frame_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_forearm_cam_frame"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_Fn0rGwmw"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_Fn0rGwmw -->
+    <!-- &pr2;Proprioception_Ia8SSHuW -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_Fn0rGwmw">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_Ia8SSHuW">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_16Stmbfl"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_l_forearm_cam_frame_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_16Stmbfl -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_16Stmbfl">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_E8IxQrmO"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_7zRKRpdV"/>
         <knowrob:m00 rdf:datatype="&xsd;double">0.8457278217040647</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">-0.5336145159154667</knowrob:m02>
@@ -3275,17 +4034,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_l_forearm_cam_optical_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>l_forearm_cam_optical_frame_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_l_forearm_cam_optical_frame"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_Rn5FdxpJ"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_Rn5FdxpJ -->
+    <!-- &pr2;Proprioception_SmrAzNjE -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_Rn5FdxpJ">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_SmrAzNjE">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_n4MVs0nJ"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_l_forearm_cam_optical_frame_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_n4MVs0nJ -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_n4MVs0nJ">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_Fn0rGwmw"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_16Stmbfl"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">1.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -3311,17 +4079,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_forearm_cam_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>r_forearm_cam_frame_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_forearm_cam_frame"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_G1yhgkEV"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_G1yhgkEV -->
+    <!-- &pr2;Proprioception_Zki2FMr3 -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_G1yhgkEV">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_Zki2FMr3">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_i1t5b0DH"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_r_forearm_cam_frame_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_i1t5b0DH -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_i1t5b0DH">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_qx0SkDMb"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_Zxl1GUpR"/>
         <knowrob:m00 rdf:datatype="&xsd;double">0.8457278217040647</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">-0.5336145159154667</knowrob:m02>
@@ -3347,17 +4124,26 @@
     <owl:NamedIndividual rdf:about="&pr2;pr2_r_forearm_cam_optical_frame_joint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>r_forearm_cam_optical_frame_joint</srdl2-comp:urdfName>
-        
         <srdl2-comp:succeedingLink rdf:resource="&pr2;pr2_r_forearm_cam_optical_frame"/>
-        <knowrob:orientation rdf:resource="&pr2;RotationMatrix3D_BWfq1iVT"/>
     </owl:NamedIndividual>
 
 
-    <!-- &pr2;RotationMatrix3D_BWfq1iVT -->
+    <!-- &pr2;Proprioception_QgIk9JXY -->
 
-    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_BWfq1iVT">
+    <owl:NamedIndividual rdf:about="&pr2;Proprioception_QgIk9JXY">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&pr2;RotationMatrix3D_2dROAepc"/>
+        <knowrob:startTime rdf:resource="&pr2;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&pr2;pr2_r_forearm_cam_optical_frame_joint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- &pr2;RotationMatrix3D_2dROAepc -->
+
+    <owl:NamedIndividual rdf:about="&pr2;RotationMatrix3D_2dROAepc">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_G1yhgkEV"/>
+        <knowrob:relativeTo rdf:resource="&pr2;RotationMatrix3D_i1t5b0DH"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">1.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -3943,9 +4729,9 @@
         <srdl2-comp:imageFormat rdf:datatype="&xsd;string">R8G8B8</srdl2-comp:imageFormat>
         <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">2448</srdl2-comp:imageSizeX>
         <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">2050</srdl2-comp:imageSizeY>
-        <srdl2-comp:hfov rdf:datatype="&qudt-unit;Unitless">45</srdl2-comp:hfov>
+        <srdl2-comp:hfov rdf:datatype="&xsd;string">45</srdl2-comp:hfov>
         <srdl2-comp:nearClip rdf:datatype="&xsd;string">0.1</srdl2-comp:nearClip>
-        <srdl2-comp:farClip rdf:datatype="&qudt-unit;Unitless">100</srdl2-comp:farClip>
+        <srdl2-comp:farClip rdf:datatype="&xsd;string">100</srdl2-comp:farClip>
         <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">20.0</srdl2-comp:updateRate>
         <srdl2-comp:alwaysOn rdf:datatype="&xsd;boolean">true</srdl2-comp:alwaysOn>
         <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">20.0</srdl2-comp:updateRate>
@@ -3957,7 +4743,7 @@
         <srdl2-comp:CxPrime rdf:datatype="&xsd;string">1224.5</srdl2-comp:CxPrime>
         <srdl2-comp:Cx rdf:datatype="&xsd;string">1224.5</srdl2-comp:Cx>
         <srdl2-comp:Cy rdf:datatype="&xsd;string">1025.5</srdl2-comp:Cy>
-        <srdl2-comp:focal_length rdf:datatype="&qudt-unit;Unitless">2955</srdl2-comp:focal_length>
+        <srdl2-comp:focal_length rdf:datatype="&xsd;string">2955</srdl2-comp:focal_length>
         <srdl2-comp:distortion_k1 rdf:datatype="&xsd;string">0.0</srdl2-comp:distortion_k1>
         <srdl2-comp:distortion_k2 rdf:datatype="&xsd;string">0.0</srdl2-comp:distortion_k2>
         <srdl2-comp:distortion_k3 rdf:datatype="&xsd;string">0.0</srdl2-comp:distortion_k3>
@@ -4050,9 +4836,9 @@
         <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">640</srdl2-comp:imageSizeX>
         <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">480</srdl2-comp:imageSizeY>
         <srdl2-comp:imageFormat rdf:datatype="&xsd;string">BAYER_BGGR8</srdl2-comp:imageFormat>
-        <srdl2-comp:hfov rdf:datatype="&qudt-unit;Unitless">90</srdl2-comp:hfov>
+        <srdl2-comp:hfov rdf:datatype="&xsd;string">90</srdl2-comp:hfov>
         <srdl2-comp:nearClip rdf:datatype="&xsd;string">0.1</srdl2-comp:nearClip>
-        <srdl2-comp:farClip rdf:datatype="&qudt-unit;Unitless">100</srdl2-comp:farClip>
+        <srdl2-comp:farClip rdf:datatype="&xsd;string">100</srdl2-comp:farClip>
         <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">25.0</srdl2-comp:updateRate>
         <srdl2-comp:alwaysOn rdf:datatype="&xsd;boolean">true</srdl2-comp:alwaysOn>
         <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">25.0</srdl2-comp:updateRate>
@@ -4060,11 +4846,11 @@
         <srdl2-comp:imageTopicName rdf:datatype="&xsd;string">image_raw</srdl2-comp:imageTopicName>
         <srdl2-comp:cameraInfoTopicName rdf:datatype="&xsd;string">camera_info</srdl2-comp:cameraInfoTopicName>
         <srdl2-comp:frameName rdf:datatype="&xsd;string">wide_stereo_optical_frame</srdl2-comp:frameName>
-        <srdl2-comp:hackBaseline rdf:datatype="&qudt-unit;Unitless">0</srdl2-comp:hackBaseline>
+        <srdl2-comp:hackBaseline rdf:datatype="&xsd;string">0</srdl2-comp:hackBaseline>
         <srdl2-comp:CxPrime rdf:datatype="&xsd;string">320.5</srdl2-comp:CxPrime>
         <srdl2-comp:Cx rdf:datatype="&xsd;string">320.5</srdl2-comp:Cx>
         <srdl2-comp:Cy rdf:datatype="&xsd;string">240.5</srdl2-comp:Cy>
-        <srdl2-comp:focal_length rdf:datatype="&qudt-unit;Unitless">320</srdl2-comp:focal_length>
+        <srdl2-comp:focal_length rdf:datatype="&xsd;string">320</srdl2-comp:focal_length>
         <srdl2-comp:distortion_k1 rdf:datatype="&xsd;string">0.0</srdl2-comp:distortion_k1>
         <srdl2-comp:distortion_k2 rdf:datatype="&xsd;string">0.0</srdl2-comp:distortion_k2>
         <srdl2-comp:distortion_k3 rdf:datatype="&xsd;string">0.0</srdl2-comp:distortion_k3>
@@ -4102,9 +4888,9 @@
         <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">640</srdl2-comp:imageSizeX>
         <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">480</srdl2-comp:imageSizeY>
         <srdl2-comp:imageFormat rdf:datatype="&xsd;string">BAYER_BGGR8</srdl2-comp:imageFormat>
-        <srdl2-comp:hfov rdf:datatype="&qudt-unit;Unitless">90</srdl2-comp:hfov>
+        <srdl2-comp:hfov rdf:datatype="&xsd;string">90</srdl2-comp:hfov>
         <srdl2-comp:nearClip rdf:datatype="&xsd;string">0.1</srdl2-comp:nearClip>
-        <srdl2-comp:farClip rdf:datatype="&qudt-unit;Unitless">100</srdl2-comp:farClip>
+        <srdl2-comp:farClip rdf:datatype="&xsd;string">100</srdl2-comp:farClip>
         <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">25.0</srdl2-comp:updateRate>
         <srdl2-comp:alwaysOn rdf:datatype="&xsd;boolean">true</srdl2-comp:alwaysOn>
         <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">25.0</srdl2-comp:updateRate>
@@ -4116,7 +4902,7 @@
         <srdl2-comp:CxPrime rdf:datatype="&xsd;string">320.5</srdl2-comp:CxPrime>
         <srdl2-comp:Cx rdf:datatype="&xsd;string">320.5</srdl2-comp:Cx>
         <srdl2-comp:Cy rdf:datatype="&xsd;string">240.5</srdl2-comp:Cy>
-        <srdl2-comp:focal_length rdf:datatype="&qudt-unit;Unitless">320</srdl2-comp:focal_length>
+        <srdl2-comp:focal_length rdf:datatype="&xsd;string">320</srdl2-comp:focal_length>
         <srdl2-comp:distortion_k1 rdf:datatype="&xsd;string">0.0</srdl2-comp:distortion_k1>
         <srdl2-comp:distortion_k2 rdf:datatype="&xsd;string">0.0</srdl2-comp:distortion_k2>
         <srdl2-comp:distortion_k3 rdf:datatype="&xsd;string">0.0</srdl2-comp:distortion_k3>
@@ -4186,9 +4972,9 @@
         <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">640</srdl2-comp:imageSizeX>
         <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">480</srdl2-comp:imageSizeY>
         <srdl2-comp:imageFormat rdf:datatype="&xsd;string">L8</srdl2-comp:imageFormat>
-        <srdl2-comp:hfov rdf:datatype="&qudt-unit;Unitless">45</srdl2-comp:hfov>
+        <srdl2-comp:hfov rdf:datatype="&xsd;string">45</srdl2-comp:hfov>
         <srdl2-comp:nearClip rdf:datatype="&xsd;string">0.1</srdl2-comp:nearClip>
-        <srdl2-comp:farClip rdf:datatype="&qudt-unit;Unitless">100</srdl2-comp:farClip>
+        <srdl2-comp:farClip rdf:datatype="&xsd;string">100</srdl2-comp:farClip>
         <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">25.0</srdl2-comp:updateRate>
         <srdl2-comp:alwaysOn rdf:datatype="&xsd;boolean">true</srdl2-comp:alwaysOn>
         <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">25.0</srdl2-comp:updateRate>
@@ -4196,7 +4982,7 @@
         <srdl2-comp:imageTopicName rdf:datatype="&xsd;string">image_raw</srdl2-comp:imageTopicName>
         <srdl2-comp:cameraInfoTopicName rdf:datatype="&xsd;string">camera_info</srdl2-comp:cameraInfoTopicName>
         <srdl2-comp:frameName rdf:datatype="&xsd;string">narrow_stereo_optical_frame</srdl2-comp:frameName>
-        <srdl2-comp:hackBaseline rdf:datatype="&qudt-unit;Unitless">0</srdl2-comp:hackBaseline>
+        <srdl2-comp:hackBaseline rdf:datatype="&xsd;string">0</srdl2-comp:hackBaseline>
         <srdl2-comp:CxPrime rdf:datatype="&xsd;string">320.5</srdl2-comp:CxPrime>
         <srdl2-comp:Cx rdf:datatype="&xsd;string">320.5</srdl2-comp:Cx>
         <srdl2-comp:Cy rdf:datatype="&xsd;string">240.5</srdl2-comp:Cy>
@@ -4238,9 +5024,9 @@
         <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">640</srdl2-comp:imageSizeX>
         <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">480</srdl2-comp:imageSizeY>
         <srdl2-comp:imageFormat rdf:datatype="&xsd;string">L8</srdl2-comp:imageFormat>
-        <srdl2-comp:hfov rdf:datatype="&qudt-unit;Unitless">45</srdl2-comp:hfov>
+        <srdl2-comp:hfov rdf:datatype="&xsd;string">45</srdl2-comp:hfov>
         <srdl2-comp:nearClip rdf:datatype="&xsd;string">0.1</srdl2-comp:nearClip>
-        <srdl2-comp:farClip rdf:datatype="&qudt-unit;Unitless">100</srdl2-comp:farClip>
+        <srdl2-comp:farClip rdf:datatype="&xsd;string">100</srdl2-comp:farClip>
         <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">25.0</srdl2-comp:updateRate>
         <srdl2-comp:alwaysOn rdf:datatype="&xsd;boolean">true</srdl2-comp:alwaysOn>
         <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">25.0</srdl2-comp:updateRate>
@@ -4310,7 +5096,7 @@
         <srdl2-comp:projectorTopicName rdf:datatype="&xsd;string">projector_wg6802418_controller/projector</srdl2-comp:projectorTopicName>
         <srdl2-comp:fov rdf:datatype="&xsd;string">0.959931088597</srdl2-comp:fov>
         <srdl2-comp:nearClipDist rdf:datatype="&xsd;string">0.1</srdl2-comp:nearClipDist>
-        <srdl2-comp:farClipDist rdf:datatype="&qudt-unit;Unitless">10</srdl2-comp:farClipDist>
+        <srdl2-comp:farClipDist rdf:datatype="&xsd;string">10</srdl2-comp:farClipDist>
     </owl:NamedIndividual>
 
 
@@ -5179,9 +5965,9 @@
         <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">640</srdl2-comp:imageSizeX>
         <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">480</srdl2-comp:imageSizeY>
         <srdl2-comp:imageFormat rdf:datatype="&xsd;string">R8G8B8</srdl2-comp:imageFormat>
-        <srdl2-comp:hfov rdf:datatype="&qudt-unit;Unitless">90</srdl2-comp:hfov>
+        <srdl2-comp:hfov rdf:datatype="&xsd;string">90</srdl2-comp:hfov>
         <srdl2-comp:nearClip rdf:datatype="&xsd;string">0.1</srdl2-comp:nearClip>
-        <srdl2-comp:farClip rdf:datatype="&qudt-unit;Unitless">100</srdl2-comp:farClip>
+        <srdl2-comp:farClip rdf:datatype="&xsd;string">100</srdl2-comp:farClip>
         <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">25.0</srdl2-comp:updateRate>
         <srdl2-comp:alwaysOn rdf:datatype="&xsd;boolean">true</srdl2-comp:alwaysOn>
         <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">25.0</srdl2-comp:updateRate>
@@ -5189,11 +5975,11 @@
         <srdl2-comp:imageTopicName rdf:datatype="&xsd;string">image_raw</srdl2-comp:imageTopicName>
         <srdl2-comp:cameraInfoTopicName rdf:datatype="&xsd;string">camera_info</srdl2-comp:cameraInfoTopicName>
         <srdl2-comp:frameName rdf:datatype="&xsd;string">l_forearm_cam_optical_frame</srdl2-comp:frameName>
-        <srdl2-comp:hackBaseline rdf:datatype="&qudt-unit;Unitless">0</srdl2-comp:hackBaseline>
+        <srdl2-comp:hackBaseline rdf:datatype="&xsd;string">0</srdl2-comp:hackBaseline>
         <srdl2-comp:CxPrime rdf:datatype="&xsd;string">320.5</srdl2-comp:CxPrime>
         <srdl2-comp:Cx rdf:datatype="&xsd;string">320.5</srdl2-comp:Cx>
         <srdl2-comp:Cy rdf:datatype="&xsd;string">240.5</srdl2-comp:Cy>
-        <srdl2-comp:focal_length rdf:datatype="&qudt-unit;Unitless">320</srdl2-comp:focal_length>
+        <srdl2-comp:focal_length rdf:datatype="&xsd;string">320</srdl2-comp:focal_length>
         <srdl2-comp:distortion_k1 rdf:datatype="&xsd;string">0.0</srdl2-comp:distortion_k1>
         <srdl2-comp:distortion_k2 rdf:datatype="&xsd;string">0.0</srdl2-comp:distortion_k2>
         <srdl2-comp:distortion_k3 rdf:datatype="&xsd;string">0.0</srdl2-comp:distortion_k3>
@@ -5231,9 +6017,9 @@
         <srdl2-comp:imageSizeX rdf:datatype="&xsd;string">640</srdl2-comp:imageSizeX>
         <srdl2-comp:imageSizeY rdf:datatype="&xsd;string">480</srdl2-comp:imageSizeY>
         <srdl2-comp:imageFormat rdf:datatype="&xsd;string">R8G8B8</srdl2-comp:imageFormat>
-        <srdl2-comp:hfov rdf:datatype="&qudt-unit;Unitless">90</srdl2-comp:hfov>
+        <srdl2-comp:hfov rdf:datatype="&xsd;string">90</srdl2-comp:hfov>
         <srdl2-comp:nearClip rdf:datatype="&xsd;string">0.1</srdl2-comp:nearClip>
-        <srdl2-comp:farClip rdf:datatype="&qudt-unit;Unitless">100</srdl2-comp:farClip>
+        <srdl2-comp:farClip rdf:datatype="&xsd;string">100</srdl2-comp:farClip>
         <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">25.0</srdl2-comp:updateRate>
         <srdl2-comp:alwaysOn rdf:datatype="&xsd;boolean">true</srdl2-comp:alwaysOn>
         <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">25.0</srdl2-comp:updateRate>
@@ -5241,11 +6027,11 @@
         <srdl2-comp:imageTopicName rdf:datatype="&xsd;string">image_raw</srdl2-comp:imageTopicName>
         <srdl2-comp:cameraInfoTopicName rdf:datatype="&xsd;string">camera_info</srdl2-comp:cameraInfoTopicName>
         <srdl2-comp:frameName rdf:datatype="&xsd;string">r_forearm_cam_optical_frame</srdl2-comp:frameName>
-        <srdl2-comp:hackBaseline rdf:datatype="&qudt-unit;Unitless">0</srdl2-comp:hackBaseline>
+        <srdl2-comp:hackBaseline rdf:datatype="&xsd;string">0</srdl2-comp:hackBaseline>
         <srdl2-comp:CxPrime rdf:datatype="&xsd;string">320.5</srdl2-comp:CxPrime>
         <srdl2-comp:Cx rdf:datatype="&xsd;string">320.5</srdl2-comp:Cx>
         <srdl2-comp:Cy rdf:datatype="&xsd;string">240.5</srdl2-comp:Cy>
-        <srdl2-comp:focal_length rdf:datatype="&qudt-unit;Unitless">320</srdl2-comp:focal_length>
+        <srdl2-comp:focal_length rdf:datatype="&xsd;string">320</srdl2-comp:focal_length>
         <srdl2-comp:distortion_k1 rdf:datatype="&xsd;string">0.0</srdl2-comp:distortion_k1>
         <srdl2-comp:distortion_k2 rdf:datatype="&xsd;string">0.0</srdl2-comp:distortion_k2>
         <srdl2-comp:distortion_k3 rdf:datatype="&xsd;string">0.0</srdl2-comp:distortion_k3>
