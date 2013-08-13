@@ -427,7 +427,7 @@ public class URDF2SRDL {
 			s.append(generalReader.getAttributeIncludesFor(i2, prefix, joint));
 			//Include hasAttribute-Tags for gazebo information
 			s.append(gazeboReader.getAttributeIncludesFor(i2, prefix, jointName));
-			s.append(i2+"<knowrob:orientation rdf:resource=\""+ jointPoses.get(++mCount) + "\"/>\n");
+//			s.append(i2+"<knowrob:orientation rdf:resource=\""+ jointPoses.get(++mCount) + "\"/>\n");
 			s.append(i1+"</owl:NamedIndividual>\n");
 
 			// add related rotation matrix
@@ -452,6 +452,21 @@ public class URDF2SRDL {
 			// current joint
 			String currMatrix = precJoints.get(childLinkName);
 			
+			
+			// create Proprioception instance for this joint
+			
+			String proprio = OWLThing.getUniqueID("&robot;Proprioception");
+			
+			s.append("\n\n");
+			s.append(i1+"<!-- " + proprio + " -->\n\n");
+			s.append(i1+"<owl:NamedIndividual rdf:about=\"" + proprio + "\">\n");
+			s.append(i2+"<rdf:type rdf:resource=\"&knowrob;Proprioception\"/>\n");
+			s.append(i2+"<knowrob:eventOccursAt rdf:resource=\"" + currMatrix + "\"/>\n");
+			s.append(i2+"<knowrob:startTime rdf:resource=\"&robot;timepoint_1357020000\"/>\n");
+			s.append(i2+"<knowrob:objectActedOn rdf:resource=\"&robot;" + prefix + jointName + "\"/>\n");
+			s.append(i1+"</owl:NamedIndividual>\n\n");
+
+			// create RotationMatrix3D for the default orientation
 			s.append("\n\n");
 			s.append(i1+"<!-- " + currMatrix + " -->\n\n");
 			s.append(i1+"<owl:NamedIndividual rdf:about=\"" + currMatrix + "\">\n");
@@ -523,7 +538,12 @@ public class URDF2SRDL {
 		s.append(i1+"<owl:NamedIndividual rdf:about=\"&robot;" + rob + "\">\n");
 		s.append(i2+"<rdf:type rdf:resource=\"&robot;" + robotName + "\"/>\n");
 		s.append(i2+"<srdl2-comp:succeedingLink rdf:resource=\"&robot;" + prefix + rootLinkInstance +"\"/>\n");
-		s.append(i1+"</owl:NamedIndividual>\n");
+		s.append(i1+"</owl:NamedIndividual>\n\n\n\n");
+		
+		
+		s.append(i1+"<owl:NamedIndividual rdf:about=\"&robot;timepoint_1357020000\">\n");
+		s.append(i2+"<rdf:type rdf:resource=\"&knowrob;TimePoint\"/>\n");
+		s.append(i1+"</owl:NamedIndividual>\n\n\n");
 		
 		return s.toString();
 		
