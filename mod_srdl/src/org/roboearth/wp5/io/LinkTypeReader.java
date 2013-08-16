@@ -43,13 +43,16 @@
 
 package org.roboearth.wp5.io;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import org.w3c.dom.Node;
 
 public class LinkTypeReader {
 
-	private static String[] tagsForTypeInclusion = {"sensor"};
+	private static List<String> tagsForTypeInclusion = Arrays.asList(new String[]{"sensor"});
 
 	private static HashMap<String, HashMap<String, String>> linkTags = new HashMap<String, HashMap<String, String>>();
 
@@ -68,29 +71,31 @@ public class LinkTypeReader {
 	public static String getLinkTypeTag(String indent, Node gazebo) {
 
 		String tagname = gazebo.getNodeName().toLowerCase();
+
+		boolean include = false;
+
+		// check if tag has form 'sensor:type' or just 'type' with type being in linkTags
+		String prefix = "";
+		String tag = "";
 		
 		if(tagname.contains(":")){
-			
-			// there may be some type information available
-			String[] info = tagname.split(":");
-			boolean include = false;
-			for(String possibleTag: tagsForTypeInclusion){
-				if(possibleTag.equals(info[0])){
-					include = true;
-				}
-			}
-
-			if(include) {
-				return indent + "<rdf:type rdf:resource=\"" + nameToLinkType(info) + "\"/>\n";
-				
-			} else{
-				
-				// skip controllers for now
-				if(!tagname.contains("controller:"))
-					System.out.println("[PIF]\tIgnored Tag: " + tagname);
-			}
+			prefix = tagname.split(":")[0];	
+			tag    = tagname.split(":")[1];
 		}
-		return "";
+
+		if(tagsForTypeInclusion.contains(prefix)) {
+			include = true;
+		}
+		
+		for(HashMap<String, String> types : linkTags.values()) {
+			if(types.keySet().contains(tag))
+				include = true;
+		}
+		
+		if(include)
+			return indent + "<rdf:type rdf:resource=\"" + nameToLinkType(tagname.split(":")) + "\"/>\n";
+		else
+			return "";
 	}
 
 	
