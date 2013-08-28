@@ -24,6 +24,7 @@
       storagePlaceFor/2,
       storagePlaceForBecause/3,
       current_object_pose/2,
+      object_pose_at_time/3,
       rotmat_to_list/2,
       create_joint_information/9,
       update_joint_information/7,
@@ -91,6 +92,7 @@
     storagePlaceFor(r,r),
     storagePlaceForBecause(r,r,r),
     current_object_pose(r,-),
+    current_object_pose(r,r,-),
     rotmat_to_list(r,-),
     comp_orientation(r, r),
     instantiate_at_position(r,+,r),
@@ -146,6 +148,17 @@ current_object_pose(Obj, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22,
   rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#orientation',Obj,Pose),!,
   rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]).
 
+
+%% object_pose_at_time(+ObjInstance, +Time, -PoseList) is det.
+%
+% Get the pose of an object based on the latest perception before Time
+%
+object_pose_at_time(Obj, Time, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]) :-
+
+  object_detection(Obj, Time, Detection),
+  rdf_triple(knowrob:eventOccursAt, Detection, Pose),!,
+  
+  rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]).
 
 
 %% rotmat_to_list(+RotMatInstance, -PoseList) is det.
@@ -754,7 +767,7 @@ holds_tt(Goal, [Start, End]) :-
 
       forall( ( member(D_O, Detections), nth0(0, D_O, Detection),
                 rdf_triple(knowrob:startTime, Detection, DStT),
-                rdf_triple(knowrob:temporallySubsumes, knowrob:'holds_tt', DStT) ),
+                rdf_triple(knowrob:temporallySubsumes, knowrob:'holds_tt', DStT) ), % MT: change this line to get rid of asserts?
               holds(Goal, DStT) ),
 
     rdf_retractall(knowrob:'holds_tt', _, _).
@@ -954,11 +967,11 @@ comp_orientation(Object, Pose) :-
 %
 temporally_subsumes(Long, Short) :-
 
-      detection_starttime(Long, LongSt),!,
-      detection_endtime(Long,   LongEt),!,
+      once(detection_starttime(Long, LongSt)),
+      once(detection_endtime(Long,   LongEt)),
 
-      detection_starttime(Short, ShortSt),!,
-      detection_endtime(Short,   ShortEt),!,
+      once(detection_starttime(Short, ShortSt)),
+      once(detection_endtime(Short,   ShortEt)),
 
       % compare the start and end times
       (ShortSt=<ShortEt),
