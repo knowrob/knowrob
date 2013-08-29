@@ -967,11 +967,11 @@ comp_orientation(Object, Pose) :-
 %
 temporally_subsumes(Long, Short) :-
 
-      once(detection_starttime(Long, LongSt)),
-      once(detection_endtime(Long,   LongEt)),
-
       once(detection_starttime(Short, ShortSt)),
       once(detection_endtime(Short,   ShortEt)),
+      
+      once(detection_starttime(Long, LongSt)),
+      once(detection_endtime(Long,   LongEt)),
 
       % compare the start and end times
       (ShortSt=<ShortEt),
@@ -993,6 +993,10 @@ detection_starttime(Detection, StartTime) :-
   % start time is asserted
   rdf_triple(knowrob:startTime, Detection, StartTtG),
   rdf_split_url(_, StartTt, StartTtG),
+  atom_concat('timepoint_', StartTAtom, StartTt),
+  term_to_atom(StartTime, StartTAtom),! ;
+
+  rdf_split_url(_, StartTt, Detection),
   atom_concat('timepoint_', StartTAtom, StartTt),
   term_to_atom(StartTime, StartTAtom).
 
