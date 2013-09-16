@@ -14,7 +14,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/comp_cop</url>
   <depend package="rosjava_jni"/>
-  <depend package="vision_srvs"/>
+<!--   <depend package="vision_srvs"/> -->
   <depend package="ias_knowledge_base"/>
   <depend package="jpl"/>
 
