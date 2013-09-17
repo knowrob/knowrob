@@ -2917,19 +2917,6 @@ See also xAxisPredicateOfSystem and yAxisPredicateOfSystem.</rdfs:comment>
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#ActionResult -->
 
     <owl:Class rdf:about="&knowrob;ActionResult">
-        <owl:equivalentClass>
-            <owl:Class>
-                <owl:oneOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="&knowrob;CONDITION_TRUE"/>
-                    <rdf:Description rdf:about="&knowrob;CONDITION_FALSE"/>
-                    <rdf:Description rdf:about="&knowrob;COMPLETED_OUT_OF_RESOURCES"/>
-                    <rdf:Description rdf:about="&knowrob;COMPLETED_ERROR"/>
-                    <rdf:Description rdf:about="&knowrob;COMPLETED_TIMEOUT"/>
-                    <rdf:Description rdf:about="&knowrob;COMPLETED_ABORTED"/>
-                    <rdf:Description rdf:about="&knowrob;COMPLETED_OK"/>
-                </owl:oneOf>
-            </owl:Class>
-        </owl:equivalentClass>
         <rdfs:subClassOf rdf:resource="&knowrob;Situation"/>
     </owl:Class>
 
@@ -10883,62 +10870,6 @@ Cf. Surface, whose instances are two-dimensional, intangible regions of space.</
         <rdf:type rdf:resource="&knowrob;Dirtiness"/>
         <rdf:type rdf:resource="&owl;NamedIndividual"/>
     </owl:Thing>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#COMPLETED_ABORTED -->
-
-    <owl:NamedIndividual rdf:about="&knowrob;COMPLETED_ABORTED">
-        <rdf:type rdf:resource="&knowrob;ActionResult"/>
-    </owl:NamedIndividual>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#COMPLETED_ERROR -->
-
-    <owl:NamedIndividual rdf:about="&knowrob;COMPLETED_ERROR">
-        <rdf:type rdf:resource="&knowrob;ActionResult"/>
-    </owl:NamedIndividual>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#COMPLETED_OK -->
-
-    <owl:NamedIndividual rdf:about="&knowrob;COMPLETED_OK">
-        <rdf:type rdf:resource="&knowrob;ActionResult"/>
-    </owl:NamedIndividual>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#COMPLETED_OUT_OF_RESOURCES -->
-
-    <owl:NamedIndividual rdf:about="&knowrob;COMPLETED_OUT_OF_RESOURCES">
-        <rdf:type rdf:resource="&knowrob;ActionResult"/>
-    </owl:NamedIndividual>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#COMPLETED_TIMEOUT -->
-
-    <owl:NamedIndividual rdf:about="&knowrob;COMPLETED_TIMEOUT">
-        <rdf:type rdf:resource="&knowrob;ActionResult"/>
-    </owl:NamedIndividual>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#CONDITION_FALSE -->
-
-    <owl:NamedIndividual rdf:about="&knowrob;CONDITION_FALSE">
-        <rdf:type rdf:resource="&knowrob;ActionResult"/>
-    </owl:NamedIndividual>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#CONDITION_TRUE -->
-
-    <owl:NamedIndividual rdf:about="&knowrob;CONDITION_TRUE">
-        <rdf:type rdf:resource="&knowrob;ActionResult"/>
-    </owl:NamedIndividual>
 
 
 
