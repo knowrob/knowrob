@@ -130,8 +130,8 @@ public class JSONQuery {
         terms[i - startIndex] = decodeJSONValue(val.getString(i));
       else if (JSONUtils.isBoolean(val.get(i)))
         terms[i - startIndex] = decodeJSONValue(val.getBoolean(i));
-//      else if (JSONUtils.isDouble(val.get(i)))
-//        terms[i - startIndex] = decodeJSONValue(val.getDouble(i));
+      else if (JSONUtils.isDouble(val.get(i).getClass()))
+        terms[i - startIndex] = decodeJSONValue(val.getDouble(i));
       else if (JSONUtils.isNumber(val.get(i)))
         terms[i - startIndex] = decodeJSONValue(val.getInt(i));
       else if (JSONUtils.isObject(val.get(i)))
