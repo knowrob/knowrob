@@ -10,6 +10,7 @@
     <!ENTITY SRDL "http://ias.cs.tum.edu/kb/SRDL.owl#" >
     <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
     <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
+    <!ENTITY roboearth "http://www.roboearth.org/kb/roboearth.owl#">
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
     <!ENTITY srdl2-cap "http://ias.cs.tum.edu/kb/srdl2-cap.owl#" >
     <!ENTITY srdl2-action "http://ias.cs.tum.edu/kb/srdl2-action.owl#" >
@@ -27,6 +28,7 @@
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#"
+     xmlns:roboearth="http://www.roboearth.org/kb/roboearth.owl#"
      xmlns:srdl2-action="http://ias.cs.tum.edu/kb/srdl2-action.owl#">
     <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/srdl2-action.owl">
         <owl:imports rdf:resource="&srdl_path;srdl2-cap.owl"/>
@@ -86,7 +88,16 @@
         </rdfs:subClassOf>
     </owl:Class>
 
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#re_explore -->
 
+    <owl:Class rdf:about="&roboearth;re_explore">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&srdl2-cap;dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="&srdl2-cap;VisualSLAMCapability"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#ClosingACupboard -->
 
@@ -112,7 +123,16 @@
         </rdfs:subClassOf>
     </owl:Class>
 
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Perceiving -->
 
+    <owl:Class rdf:about="&knowrob;Perceiving">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&srdl2-cap;dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="&srdl2-cap;ObjectRecognitionCapability"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
 
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#ClosingADrawer -->
 
@@ -130,6 +150,17 @@
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#ClosingAGripper -->
 
     <owl:Class rdf:about="&knowrob;ClosingAGripper">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&srdl2-cap;dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="&srdl2-cap;GripperMotionCapability"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#ClosingAGripper -->
+
+    <owl:Class rdf:about="&knowrob;OpeningAGripper">
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&srdl2-cap;dependsOnCapability"/>
@@ -288,6 +319,18 @@
     <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#PuttingDownAnObjectCapability -->
 
     <owl:Class rdf:about="&srdl2-cap;PuttingDownAnObjectCapability"/>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#VisualSLAMCapability -->
+
+    <owl:Class rdf:about="&srdl2-cap;VisualSLAMCapability"/>
+
+
+
+    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#PerceptionCapability -->
+
+    <owl:Class rdf:about="&srdl2-cap;ObjectRecognitionCapability"/>
 </rdf:RDF>
 
 
