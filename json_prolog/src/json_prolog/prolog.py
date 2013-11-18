@@ -56,7 +56,7 @@ class PrologQuery(object):
 
 
 class Prolog(object):
-    def __init__(self, ns='/json_prolog'):
+    def __init__(self, ns='json_prolog'):
         global _simple_query_srv
         global _next_solution_srv
         global _finish_query_srv
