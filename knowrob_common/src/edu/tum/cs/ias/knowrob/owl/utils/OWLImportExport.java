@@ -538,129 +538,131 @@ public class OWLImportExport {
 
 						
 						// assuming there is only one object and one pose per perception:
-						for(OWLIndividual obj : objs) {
-							for(OWLIndividual pose : poses) {
+						if(objs != null && poses != null) {
+							for(OWLIndividual obj : objs) {
+								for(OWLIndividual pose : poses) {
 
-								String iri = obj.toStringID();
-								
-								// create map object
-								ObjectInstance cur = ObjectInstance.getObjectInstance(iri);
+									String iri = obj.toStringID();
 
-								// get types
-								for(OWLClassExpression c: obj.getTypes(ont)) {
-									cur.addType(edu.tum.cs.ias.knowrob.owl.OWLClass.getOWLClass(c.asOWLClass().toStringID()));
-								}
-								
-								// special treatment for MapJoints
-								if(cur.hasType("HingedJoint") || cur.hasType("PrismaticJoint")) {
-									cur = JointInstance.getMapJoint(iri);
+									// create map object
+									ObjectInstance cur = ObjectInstance.getObjectInstance(iri);
+
+									// get types
 									for(OWLClassExpression c: obj.getTypes(ont)) {
 										cur.addType(edu.tum.cs.ias.knowrob.owl.OWLClass.getOWLClass(c.asOWLClass().toStringID()));
 									}
-								}
 
-								
-								// iterate over all data properties and read them to the internal representation
-								Map<OWLDataPropertyExpression, Set<OWLLiteral>> data_props = 
-										obj.getDataPropertyValues(ont);
-								
-								for(OWLDataPropertyExpression prop : data_props.keySet()) {
-									for(OWLLiteral d : data_props.get(prop)) {
-										cur.addDataPropValue(prop.asOWLDataProperty().toStringID(), d.getLiteral());
+									// special treatment for MapJoints
+									if(cur.hasType("HingedJoint") || cur.hasType("PrismaticJoint")) {
+										cur = JointInstance.getMapJoint(iri);
+										for(OWLClassExpression c: obj.getTypes(ont)) {
+											cur.addType(edu.tum.cs.ias.knowrob.owl.OWLClass.getOWLClass(c.asOWLClass().toStringID()));
+										}
 									}
-								}
-								
-								
-								// iterate over all object properties and read them to the internal representation
-								Map<OWLObjectPropertyExpression, Set<OWLIndividual>> obj_props = 
-										obj.getObjectPropertyValues(ont);
 
-								for(OWLObjectPropertyExpression prop: obj_props.keySet()) {
-									for(OWLIndividual d : obj_props.get(prop)) {
-										cur.addObjPropValue(prop.asOWLObjectProperty().toStringID(), d.toStringID());
+
+									// iterate over all data properties and read them to the internal representation
+									Map<OWLDataPropertyExpression, Set<OWLLiteral>> data_props = 
+											obj.getDataPropertyValues(ont);
+
+									for(OWLDataPropertyExpression prop : data_props.keySet()) {
+										for(OWLLiteral d : data_props.get(prop)) {
+											cur.addDataPropValue(prop.asOWLDataProperty().toStringID(), d.getLiteral());
+										}
 									}
-								}
-								
-								
-								// get dimensions
-								OWLDataProperty width  = factory.getOWLDataProperty("knowrob:widthOfObject", pm);
-								OWLDataProperty depth  = factory.getOWLDataProperty("knowrob:depthOfObject", pm);
-								OWLDataProperty height = factory.getOWLDataProperty("knowrob:heightOfObject", pm);
 
-								if(data_props.get(depth) != null) {
-									for(OWLLiteral d : data_props.get(depth)) {
-										cur.getDimensions().x = Double.valueOf(d.getLiteral());
+
+									// iterate over all object properties and read them to the internal representation
+									Map<OWLObjectPropertyExpression, Set<OWLIndividual>> obj_props = 
+											obj.getObjectPropertyValues(ont);
+
+									for(OWLObjectPropertyExpression prop: obj_props.keySet()) {
+										for(OWLIndividual d : obj_props.get(prop)) {
+											cur.addObjPropValue(prop.asOWLObjectProperty().toStringID(), d.toStringID());
+										}
 									}
-								}
-								
-								if(data_props.get(width) != null) {
-									for(OWLLiteral w : data_props.get(width)) {
-										cur.getDimensions().y = Double.valueOf(w.getLiteral());
+
+
+									// get dimensions
+									OWLDataProperty width  = factory.getOWLDataProperty("knowrob:widthOfObject", pm);
+									OWLDataProperty depth  = factory.getOWLDataProperty("knowrob:depthOfObject", pm);
+									OWLDataProperty height = factory.getOWLDataProperty("knowrob:heightOfObject", pm);
+
+									if(data_props.get(depth) != null) {
+										for(OWLLiteral d : data_props.get(depth)) {
+											cur.getDimensions().x = Double.valueOf(d.getLiteral());
+										}
 									}
-								}
-								
-								if(data_props.get(height) != null) {
-									for(OWLLiteral h : data_props.get(height)) {
-										cur.getDimensions().z = Double.valueOf(h.getLiteral());
+
+									if(data_props.get(width) != null) {
+										for(OWLLiteral w : data_props.get(width)) {
+											cur.getDimensions().y = Double.valueOf(w.getLiteral());
+										}
 									}
-								}
 
-								// read hinge-specific properties
-								if(cur.hasType("HingedJoint") || cur.hasType("PrismaticJoint")) {
+									if(data_props.get(height) != null) {
+										for(OWLLiteral h : data_props.get(height)) {
+											cur.getDimensions().z = Double.valueOf(h.getLiteral());
+										}
+									}
 
-									if(cur.hasType("PrismaticJoint")) {
+									// read hinge-specific properties
+									if(cur.hasType("HingedJoint") || cur.hasType("PrismaticJoint")) {
 
-										OWLObjectProperty direction = factory.getOWLObjectProperty("knowrob:direction", pm);
-										
-										if(obj_props.containsKey(direction)) {
-											for(OWLIndividual dir : obj_props.get(direction)) {
+										if(cur.hasType("PrismaticJoint")) {
 
-												Map<OWLDataPropertyExpression, Set<OWLLiteral>> vec_props = 
-														dir.getDataPropertyValues(ont);
+											OWLObjectProperty direction = factory.getOWLObjectProperty("knowrob:direction", pm);
 
-												OWLDataProperty vectorx  = factory.getOWLDataProperty("knowrob:vectorX", pm);
-												OWLDataProperty vectory  = factory.getOWLDataProperty("knowrob:vectorY", pm);
-												OWLDataProperty vectorz  = factory.getOWLDataProperty("knowrob:vectorZ", pm);
+											if(obj_props.containsKey(direction)) {
+												for(OWLIndividual dir : obj_props.get(direction)) {
 
-												if(vec_props.containsKey(vectorx)) {
-													for(OWLLiteral x : vec_props.get(vectorx)) {
-														((JointInstance) cur).direction.x = Double.valueOf(x.getLiteral());
+													Map<OWLDataPropertyExpression, Set<OWLLiteral>> vec_props = 
+															dir.getDataPropertyValues(ont);
+
+													OWLDataProperty vectorx  = factory.getOWLDataProperty("knowrob:vectorX", pm);
+													OWLDataProperty vectory  = factory.getOWLDataProperty("knowrob:vectorY", pm);
+													OWLDataProperty vectorz  = factory.getOWLDataProperty("knowrob:vectorZ", pm);
+
+													if(vec_props.containsKey(vectorx)) {
+														for(OWLLiteral x : vec_props.get(vectorx)) {
+															((JointInstance) cur).direction.x = Double.valueOf(x.getLiteral());
+														}
 													}
-												}
-												if(vec_props.containsKey(vectory)) {
-													for(OWLLiteral y : vec_props.get(vectory)) {
-														((JointInstance) cur).direction.y = Double.valueOf(y.getLiteral());
+													if(vec_props.containsKey(vectory)) {
+														for(OWLLiteral y : vec_props.get(vectory)) {
+															((JointInstance) cur).direction.y = Double.valueOf(y.getLiteral());
+														}
 													}
-												}
-												if(vec_props.containsKey(vectorz)) {
-													for(OWLLiteral z : vec_props.get(vectorz)) {
-														((JointInstance) cur).direction.z = Double.valueOf(z.getLiteral());
+													if(vec_props.containsKey(vectorz)) {
+														for(OWLLiteral z : vec_props.get(vectorz)) {
+															((JointInstance) cur).direction.z = Double.valueOf(z.getLiteral());
+														}
 													}
 												}
 											}
 										}
 									}
-								}
 
 
-								// get pose elements
-								Map<OWLDataPropertyExpression, Set<OWLLiteral>> matrix_elems = 
-										pose.getDataPropertyValues(ont);
+									// get pose elements
+									Map<OWLDataPropertyExpression, Set<OWLLiteral>> matrix_elems = 
+											pose.getDataPropertyValues(ont);
 
-								for(int i=0;i<4;i++) {
-									for(int j=0;j<4;j++){
-										OWLDataProperty m_ij = factory.getOWLDataProperty("knowrob:m"+i+j, pm);
-										Set<OWLLiteral> elem = matrix_elems.get(m_ij);
+									for(int i=0;i<4;i++) {
+										for(int j=0;j<4;j++){
+											OWLDataProperty m_ij = factory.getOWLDataProperty("knowrob:m"+i+j, pm);
+											Set<OWLLiteral> elem = matrix_elems.get(m_ij);
 
-										for(OWLLiteral e : elem) {
-											cur.getPoseMatrix().setElement(i, j, Double.valueOf(e.getLiteral()) );	
+											for(OWLLiteral e : elem) {
+												cur.getPoseMatrix().setElement(i, j, Double.valueOf(e.getLiteral()) );	
+											}
+
+
 										}
-
-
 									}
-								}
-								objects.put(cur.getShortName(), cur);
+									objects.put(cur.getShortName(), cur);
 
+								}
 							}
 						}
 					}
@@ -729,19 +731,20 @@ public class OWLImportExport {
 
 						Set<OWLIndividual> objs  = perc_props.get(objectActedOn);
 
-						
-						for(OWLIndividual obj : objs) {
+						if(objs != null) {
+							for(OWLIndividual obj : objs) {
 
-							// get proper physical parts
-							Map<OWLObjectPropertyExpression, Set<OWLIndividual>> obj_props = 
-								obj.getObjectPropertyValues(ont);
+								// get proper physical parts
+								Map<OWLObjectPropertyExpression, Set<OWLIndividual>> obj_props = 
+										obj.getObjectPropertyValues(ont);
 
-							OWLObjectProperty parts = factory.getOWLObjectProperty("knowrob:properPhysicalParts", pm);
-							if(obj_props.containsKey(parts)) {
-								for(OWLIndividual p : obj_props.get(parts)) {
-									ObjectInstance part = objects.get(OWLThing.getShortNameOfIRI(p.toStringID()));
-									if(part!=null) {
-										objects.get(OWLThing.getShortNameOfIRI(obj.toStringID())).addPhysicalPart(part);
+								OWLObjectProperty parts = factory.getOWLObjectProperty("knowrob:properPhysicalParts", pm);
+								if(obj_props.containsKey(parts)) {
+									for(OWLIndividual p : obj_props.get(parts)) {
+										ObjectInstance part = objects.get(OWLThing.getShortNameOfIRI(p.toStringID()));
+										if(part!=null) {
+											objects.get(OWLThing.getShortNameOfIRI(obj.toStringID())).addPhysicalPart(part);
+										}
 									}
 								}
 							}
@@ -764,33 +767,34 @@ public class OWLImportExport {
 						Set<OWLIndividual> objs  = perc_props.get(objectActedOn);
 
 
-						
-						for(OWLIndividual obj : objs) {
-							
-							Map<OWLObjectPropertyExpression, Set<OWLIndividual>> obj_props = 
-									obj.getObjectPropertyValues(ont);
-							OWLObjectProperty connectedTo = factory.getOWLObjectProperty("knowrob:connectedTo-Rigidly", pm);
-							
-							if(obj_props.containsKey(connectedTo)) {
-								
-								ObjectInstance cur = objects.get(OWLThing.getShortNameOfIRI(obj.toStringID()));
-								
-								for(OWLIndividual rel : obj_props.get(connectedTo)) {
-									
-									ObjectInstance connectedObj = objects.get(OWLThing.getShortNameOfIRI(rel.toStringID()));
-									
-									if(connectedObj!=null) {
-										
-										// connectedObj is a child if it is also contained 
-										// in the physicalParts list of the current object
-										if(connectedObj.hasPhysicalPart(cur)) {
-											((JointInstance) cur).parent = connectedObj;
-										} else {
-											((JointInstance) cur).child = connectedObj;
+						if(objs!=null) {
+							for(OWLIndividual obj : objs) {
+
+								Map<OWLObjectPropertyExpression, Set<OWLIndividual>> obj_props = 
+										obj.getObjectPropertyValues(ont);
+								OWLObjectProperty connectedTo = factory.getOWLObjectProperty("knowrob:connectedTo-Rigidly", pm);
+
+								if(obj_props.containsKey(connectedTo)) {
+
+									ObjectInstance cur = objects.get(OWLThing.getShortNameOfIRI(obj.toStringID()));
+
+									for(OWLIndividual rel : obj_props.get(connectedTo)) {
+
+										ObjectInstance connectedObj = objects.get(OWLThing.getShortNameOfIRI(rel.toStringID()));
+
+										if(connectedObj!=null) {
+
+											// connectedObj is a child if it is also contained 
+											// in the physicalParts list of the current object
+											if(connectedObj.hasPhysicalPart(cur)) {
+												((JointInstance) cur).parent = connectedObj;
+											} else {
+												((JointInstance) cur).child = connectedObj;
+											}
+
 										}
-										
+
 									}
-									
 								}
 							}
 						}
