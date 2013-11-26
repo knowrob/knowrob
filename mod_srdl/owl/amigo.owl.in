@@ -18,6 +18,7 @@
   <!ENTITY srdl2-cap "http://ias.cs.tum.edu/kb/srdl2-cap.owl#" >
   <!ENTITY qudt-unit "http://qudt.org/vocab/unit#" >
   <!ENTITY robot "http://ias.cs.tum.edu/kb/amigo.owl#" >
+  <!ENTITY pr2 "http://ias.cs.tum.edu/kb/PR2.owl#" >
 ]>
 
 
