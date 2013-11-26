@@ -74,8 +74,6 @@ public class OWLImportExport {
 	OWLOntologyManager manager;
 	DefaultPrefixManager pm;
 
-	int inst_counter=0;	// counter to create unique instance identifiers
-
 	public OWLImportExport() {
 		//readKnowRobObjectClasses();
 	}
@@ -310,7 +308,7 @@ public class OWLImportExport {
 		OWLNamedIndividual obj_inst = createObjectInst(map_obj, ontology);
 
 		// create pose matrix instance
-		OWLNamedIndividual pose_inst = createPoseInst(map_obj.getPoseMatrix(), ontology);
+		OWLNamedIndividual pose_inst = createPoseInst(map_obj.getPoseMatrix(), manager, factory, pm, ontology);
 
 		// create perception instance
 		createPerceptionInst("knowrob:SemanticMapPerception", obj_inst, pose_inst, timestamp, ontology);
@@ -380,7 +378,7 @@ public class OWLImportExport {
 			// set direction for prismatic joints
 			if(map_obj.hasType("PrismaticJoint")) {
 				
-				OWLNamedIndividual dir_vec = createDirVector(((JointInstance) map_obj).direction, ontology);
+				OWLNamedIndividual dir_vec = createDirVector(((JointInstance) map_obj).direction, manager, factory, pm, ontology);
 				
 				OWLObjectProperty direction = factory.getOWLObjectProperty("knowrob:direction", pm);
 				manager.addAxiom(ontology, factory.getOWLObjectPropertyAssertionAxiom(direction, obj_inst, dir_vec));
@@ -417,12 +415,11 @@ public class OWLImportExport {
 	 * @param ontology  Ontology to which the axioms are to be added
 	 * @return 			Created instance of a RotationMatrix3D
 	 */
-	public OWLNamedIndividual createPoseInst(Matrix4d pose, OWLOntology ontology) { 
+	public static OWLNamedIndividual createPoseInst(Matrix4d pose, OWLOntologyManager manager, OWLDataFactory factory, DefaultPrefixManager pm, OWLOntology ontology) { 
 
 		// create pose matrix instance
 		OWLClass pose_class = factory.getOWLClass("knowrob:RotationMatrix3D", pm);
-		OWLNamedIndividual pose_inst = factory.getOWLNamedIndividual(
-				instForClass("knowrob:RotationMatrix3D"), pm);
+		OWLNamedIndividual pose_inst = factory.getOWLNamedIndividual(IRI.create(OWLThing.getUniqueID("knowrob:RotationMatrix3D")));
 		manager.addAxiom(ontology, factory.getOWLClassAssertionAxiom(pose_class, pose_inst));
 
 		// set pose properties
@@ -443,11 +440,12 @@ public class OWLImportExport {
 	 * @param ontology  Ontology to which the axioms are to be added
 	 * @return 			Created instance of a Vector
 	 */
-	public OWLNamedIndividual createDirVector(Vector3d dir_vec, OWLOntology ontology) { 
+	public static OWLNamedIndividual createDirVector(Vector3d dir_vec, OWLOntologyManager manager, OWLDataFactory factory, DefaultPrefixManager pm, OWLOntology ontology) { 
 
-		// create pose matrix instance
+
+		// create vector instance
 		OWLClass vec_class = factory.getOWLClass("knowrob:Vector", pm);
-		OWLNamedIndividual vec_inst = factory.getOWLNamedIndividual(instForClass("knowrob:Vector"), pm);
+		OWLNamedIndividual vec_inst = factory.getOWLNamedIndividual(IRI.create(OWLThing.getUniqueID("knowrob:Vector")));
 		manager.addAxiom(ontology, factory.getOWLClassAssertionAxiom(vec_class, vec_inst));
 
 		// set vector dimensions
@@ -477,7 +475,7 @@ public class OWLImportExport {
 		// create perception instance
 		OWLClass perc_class = factory.getOWLClass(type, pm);
 		OWLNamedIndividual perc_inst = factory.getOWLNamedIndividual(
-				instForClass(type), pm);
+				OWLThing.getUniqueID(type), pm);
 		manager.addAxiom(ontology, factory.getOWLClassAssertionAxiom(perc_class, perc_inst));
 
 		// link to the object instance and the pose instance
@@ -857,16 +855,6 @@ public class OWLImportExport {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-	
-
-	/**
-	 * Create a unique instance identifier from a class string
-	 * @param cl 	Class string
-	 * @return 		Instance identifier (class string plus index)
-	 */
-	protected String instForClass(String cl) {
-		return cl+(inst_counter++);
 	}
 
 
