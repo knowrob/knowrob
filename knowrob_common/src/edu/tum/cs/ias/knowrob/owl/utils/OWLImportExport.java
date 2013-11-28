@@ -419,9 +419,10 @@ public class OWLImportExport {
 
 		// create pose matrix instance
 		OWLClass pose_class = factory.getOWLClass("knowrob:RotationMatrix3D", pm);
-		OWLNamedIndividual pose_inst = factory.getOWLNamedIndividual(IRI.create(OWLThing.getUniqueID("knowrob:RotationMatrix3D")));
+		OWLNamedIndividual pose_inst = factory.getOWLNamedIndividual(OWLThing.getUniqueID("knowrob:RotationMatrix3D"), pm);
 		manager.addAxiom(ontology, factory.getOWLClassAssertionAxiom(pose_class, pose_inst));
 
+		
 		// set pose properties
 		for(int i=0;i<4;i++) {
 			for(int j=0;j<4;j++) {
@@ -445,7 +446,7 @@ public class OWLImportExport {
 
 		// create vector instance
 		OWLClass vec_class = factory.getOWLClass("knowrob:Vector", pm);
-		OWLNamedIndividual vec_inst = factory.getOWLNamedIndividual(IRI.create(OWLThing.getUniqueID("knowrob:Vector")));
+		OWLNamedIndividual vec_inst = factory.getOWLNamedIndividual(OWLThing.getUniqueID("knowrob:Vector"), pm);
 		manager.addAxiom(ontology, factory.getOWLClassAssertionAxiom(vec_class, vec_inst));
 
 		// set vector dimensions
