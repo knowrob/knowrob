@@ -31,7 +31,8 @@
       rdf_instance_from_class/2,
       rdf_instance_from_class/3,
       get_timepoint/1,
-      get_timepoint/2
+      get_timepoint/2,
+      create_timepoint/2
     ]).
 
 :- use_module(library('crypt')).
@@ -49,6 +50,7 @@
             class_properties_transitive_nosup_1(r,r,r),
             rdf_instance_from_class(r,r),
             rdf_instance_from_class(r,r,r),
+            create_timepoint(+,r),
             get_timepoint(r),
             get_timepoint(+,r),
             create_restr(r, r, r, r, +, r).
@@ -139,6 +141,17 @@ create_restr(Class, Prop, Value, RestrType, SourceRef, Restr) :-
   rdf_assert(Restr, RestrType, Value, SourceRef).
 
 
+%% create_timepoint(+TimeStamp, -TimePoint) is det.
+%
+% Create a timepoint-identifier for the given time stamp
+%
+% @param T Time stamp as number (seconds since 1970)
+% @param T TimePoint instance identifying the given time stamp
+%
+create_timepoint(TimeStamp, TimePoint) :-
+  atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#timepoint_', TimeStamp, TimePoint),
+  rdf_assert(TimePoint, rdf:type, knowrob:'TimePoint').
+
 
 %% get_timepoint(-T) is det.
 %
@@ -149,8 +162,7 @@ create_restr(Class, Prop, Value, RestrType, SourceRef, Restr) :-
 get_timepoint(T) :-
   set_prolog_flag(float_format, '%.12g'),
   get_time(Ts),
-  atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#timepoint_', Ts, T),
-  rdf_assert(T, rdf:type, knowrob:'TimePoint').
+  create_timepoint(Ts, T).
 
 
 
