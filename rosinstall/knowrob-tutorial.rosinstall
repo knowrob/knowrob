@@ -1,3 +1,2 @@
-- git: {local-name: stacks/ias_common, uri: 'https://github.com/code-iai/ias_common.git'}
 - git: {local-name: stacks/knowrob, uri: 'https://github.com/knowrob/knowrob.git'}
 - git: {local-name: stacks/knowrob_tutorials, uri: 'https://github.com/knowrob/knowrob_tutorials.git'}
