@@ -1,2 +1,3 @@
 - git: {local-name: stacks/knowrob, uri: 'https://github.com/knowrob/knowrob.git'}
 - git: {local-name: stacks/knowrob_tutorials, uri: 'https://github.com/knowrob/knowrob_tutorials.git'}
+- git: {local-name: rosjava_jni, uri: 'https://github.com/gheorghelisca/rosjava_jni.git'}
