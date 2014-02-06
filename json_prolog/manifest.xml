@@ -13,6 +13,7 @@
   <depend package="rosprolog"/>
   <depend package="jpl"/>
   <depend package="rospy"/>
+  <depend package="json_prolog_msgs"/>
 
   <export>
     <cpp cflags="-I${prefix}/include"
