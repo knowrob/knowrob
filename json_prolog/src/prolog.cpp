@@ -29,9 +29,11 @@
 
 #include <json_prolog/prolog.h>
 
-#include <json_prolog/PrologQuery.h>
-#include <json_prolog/PrologNextSolution.h>
-#include <json_prolog/PrologFinish.h>
+#include <json_prolog_msgs/PrologQuery.h>
+#include <json_prolog_msgs/PrologNextSolution.h>
+#include <json_prolog_msgs/PrologFinish.h>
+
+using namespace json_prolog_msgs;
 
 namespace json_prolog
 {

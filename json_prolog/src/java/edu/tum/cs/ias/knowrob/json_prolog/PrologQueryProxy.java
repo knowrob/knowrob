@@ -36,9 +36,9 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import ros.RosException;
-import ros.pkg.json_prolog.srv.PrologFinish;
-import ros.pkg.json_prolog.srv.PrologNextSolution;
-import ros.pkg.json_prolog.srv.PrologQuery;
+import ros.pkg.json_prolog_msgs.srv.PrologFinish;
+import ros.pkg.json_prolog_msgs.srv.PrologNextSolution;
+import ros.pkg.json_prolog_msgs.srv.PrologQuery;
 
 /**
  * Wrapper class for Prolog queries that provides an iterator to step through the results.

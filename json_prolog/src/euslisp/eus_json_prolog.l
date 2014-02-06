@@ -8,7 +8,7 @@
 ;; Author: Manabu Saito <saito@jsk.t.u-tokyo.ac.jp>
 ;;
 
-(ros::roseus-add-srvs "json_prolog")
+(ros::roseus-add-srvs "json_prolog_msgs")
 
 ;; convert json to list, this can't convert lists correctly
 (defun read-json (str)
@@ -55,11 +55,11 @@
   (:query
    (query &key (mode :all) pose) ;; mode is :all or :incremental
    (when (not finished) (send self :finish))
-   (let ((req (instance json_prolog::PrologQueryRequest :init)) res)
+   (let ((req (instance json_prolog_msgs::PrologQueryRequest :init)) res)
 	 (cond ((eq mode :all)
-			(send req :mode json_prolog::PrologQuery::*ALL_SOLUTIONS*))
+			(send req :mode json_prolog_msgs::PrologQuery::*ALL_SOLUTIONS*))
 		   ((eq mode :incremental)
-			(send req :mode json_prolog::PrologQuery::*INCREMENTAL*))
+			(send req :mode json_prolog_msgs::PrologQuery::*INCREMENTAL*))
 		   (t
 			(warn "mode should be :all or :incremental in :query")))
 	 (when pose
@@ -112,19 +112,19 @@
   (:next
    ()
    (if finished (return-from :next))
-   (let ((req (instance json_prolog::PrologNextSolutionRequest :init))
+   (let ((req (instance json_prolog_msgs::PrologNextSolutionRequest :init))
 		 res st answer)
 	 (send req :id id)
 	 (setq res (ros::service-call next-srv req))
 	 (setq st (send res :status))
 	 (cond
-	  ((eq st json_prolog::PrologNextSolution::*NO_SOLUTION*)
+	  ((eq st json_prolog_msgs::PrologNextSolution::*NO_SOLUTION*)
 	   (ros::ros-debug "No Solution") (send self :finish) nil)
-	  ((eq st json_prolog::PrologNextSolution::*WRONG_ID*)
+	  ((eq st json_prolog_msgs::PrologNextSolution::*WRONG_ID*)
 	   (ros::ros-info "Wrong Query ID") (send self :finish) nil)
-	  ((eq st json_prolog::PrologNextSolution::*QUERY_FAILED*)
+	  ((eq st json_prolog_msgs::PrologNextSolution::*QUERY_FAILED*)
 	   (ros::ros-info "Prolog query failed") (send self :finish) nil)
-	  ((eq st json_prolog::PrologNextSolution::*OK*)
+	  ((eq st json_prolog_msgs::PrologNextSolution::*OK*)
 	   (setq answer (read-json (send res :solution)))
 	   (case (car attribute)
 		 (:pose (setq answer (send self :extract-pose answer (cdr attribute)))))
@@ -134,7 +134,7 @@
   (:finish
    ()
    (if finished (return-from :finish))
-   (let ((req (instance json_prolog::PrologFinishRequest :init)) res)
+   (let ((req (instance json_prolog_msgs::PrologFinishRequest :init)) res)
 	 (send req :id id)
 	 (setq res (ros::service-call finish-srv req))
 	 (setq finished t attribute nil)

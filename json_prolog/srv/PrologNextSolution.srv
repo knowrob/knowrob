@@ -1,9 +1,0 @@
-string id
----
-byte NO_SOLUTION = 0
-byte WRONG_ID = 1
-byte QUERY_FAILED = 2
-byte OK = 3
-
-byte status
-string solution

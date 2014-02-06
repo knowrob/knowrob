@@ -33,9 +33,9 @@ import ros.NodeHandle;
 import ros.Ros;
 import ros.ServiceClient;
 
-import ros.pkg.json_prolog.srv.PrologQuery;
-import ros.pkg.json_prolog.srv.PrologFinish;
-import ros.pkg.json_prolog.srv.PrologNextSolution;
+import ros.pkg.json_prolog_msgs.srv.PrologQuery;
+import ros.pkg.json_prolog_msgs.srv.PrologFinish;
+import ros.pkg.json_prolog_msgs.srv.PrologNextSolution;
 
 
 /**
