@@ -1,7 +1,7 @@
 
 import json
 import rospy
-import srv
+from json_prolog_msgs import srv
 
 _simple_query_srv = None
 _next_solution_srv = None
