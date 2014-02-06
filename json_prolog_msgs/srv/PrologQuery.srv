@@ -1,0 +1,16 @@
+# The following constants, together with the `mode' slot, allow for
+# configuring how the prolog engine is supposed to generate
+# solutions. ALL_SOLUTIONS indicates that the query should be
+# processed completely immediately. INCREMENTAL indicates that only
+# one solution should be generated at one time whenever the
+# next_solution is called.
+
+byte ALL_SOLUTIONS=0
+byte INCREMENTAL=1
+
+byte mode
+string id
+string query
+---
+bool ok
+string message
