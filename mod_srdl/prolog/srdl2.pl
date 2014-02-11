@@ -119,18 +119,21 @@ required_cap_for_action(Action, Cap) :-
 
 % capability asserted for robot instance
 cap_available_on_robot(Cap, Robot) :-
+    owl_individual_of(Robot, knowrob:'Robot'),
     owl_has(Robot, srdl2cap:'hasCapability', SubCap),
     owl_subclass_of(SubCap, Cap).
 
 % capability asserted for robot class
 cap_available_on_robot(Cap, Robot) :-
     rdfs_individual_of(Robot, RobotClass),
+    owl_subclass_of(RobotClass, knowrob:'Robot'),
     class_properties(RobotClass, srdl2cap:'hasCapability', SubCap),
     owl_subclass_of(SubCap, Cap).
 
 % capability depends only on available components or capabilities
 cap_available_on_robot(Cap, Robot) :-
 
+    owl_individual_of(Robot, knowrob:'Robot'),
     rdfs_subclass_of(Cap, srdl2cap:'Capability'),
 
     forall( class_properties(Cap, srdl2comp:'dependsOnComponent', CompT),
