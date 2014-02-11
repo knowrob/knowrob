@@ -23,9 +23,11 @@
         action_feasible_on_robot/2,
         missing_for_action/4,
         missing_cap_for_action/3,
-        missing_cap_for_action/3,
+        required_cap_for_action/2,
         missing_comp_for_action/3,
         required_comp_for_action/2,
+        cap_available_on_robot/2,
+        comp_type_available/2,
         sub_component/2
   ]).
 
