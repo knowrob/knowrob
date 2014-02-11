@@ -130,13 +130,19 @@ cap_available_on_robot(Cap, Robot) :-
     rdfs_individual_of(Robot, RobotClass),
     owl_subclass_of(RobotClass, knowrob:'Robot'),
     class_properties(RobotClass, srdl2cap:'hasCapability', SubCap),
-    owl_subclass_of(SubCap, Cap).
+
+    % If sub-properties are available, their super-capabilites are also
+    % available. Make sure, however, not to scale beyond 'Capability'.
+    owl_subclass_of(SubCap, Cap),
+    owl_subclass_of(Cap, srdl2cap:'Capability'),
+    \+ rdf_equal(Cap, srdl2cap:'Capability').
 
 % capability depends only on available components or capabilities
 cap_available_on_robot(Cap, Robot) :-
 
     owl_individual_of(Robot, knowrob:'Robot'),
-    rdfs_subclass_of(Cap, srdl2cap:'Capability'),
+    owl_subclass_of(Cap, srdl2cap:'Capability'),
+    \+ rdf_equal(Cap, srdl2cap:'Capability'),
 
     forall( class_properties(Cap, srdl2comp:'dependsOnComponent', CompT),
             comp_type_available(Robot, CompT) ),
