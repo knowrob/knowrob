@@ -87,6 +87,28 @@
         <srdl2-comp:endLinkOfComposition rdf:resource="&robot;ari_camera_link"/>
 
         <srdl2-comp:succeedingLink rdf:resource="&robot;ari_base_link"/>
+        
+	<!-- Software components -->
+        <srdl2-comp:subComponent rdf:resource="&robot;ari_vs"/>
+        <srdl2-comp:subComponent rdf:resource="&robot;ari_object_recognition_model"/>
+	<srdl2-comp:subComponent rdf:resource="&robot;ari_object_recognition_component"/>
+
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="&robot;ari_camera">
+        <rdf:type rdf:resource="&knowrob;Camera"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="&robot;ari_vs">
+        <rdf:type rdf:resource="&srdl2-comp;VisualSlamMappingComponent"/>
+    </owl:NamedIndividual>
+
+     <owl:NamedIndividual rdf:about="&robot;ari_object_recognition_model">
+        <rdf:type rdf:resource="&knowrob;ObjectRecognitionModel"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="&robot;ari_object_recognition_component">
+        <rdf:type rdf:resource="&srdl2-comp;ObjectRecognitionComponent"/>
     </owl:NamedIndividual>
 
 
@@ -1313,6 +1335,7 @@
     <owl:NamedIndividual rdf:about="&robot;ari_camera_mount">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>camera_mount</srdl2-comp:urdfName>
+	<srdl2-comp:subComponent rdf:resource="&robot;ari_camera"/>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;ari_camera_pan_joint"/>
     </owl:NamedIndividual>
 
