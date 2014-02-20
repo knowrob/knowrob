@@ -1024,13 +1024,8 @@ detection_endtime(Detection, EndTime) :-
   term_to_atom(EndTime, EndTAtom),!;
 
   % search for later detections of the object
-  ( rdf_has(Detection, knowrob:objectActedOn, Object),
-    rdf_has(LaterDetection, knowrob:objectActedOn, Object),
-    LaterDetection \= Detection,
-    rdfs_individual_of(LaterDetection,  knowrob:'MentalEvent'),
-    rdf_triple(knowrob:startTime, Detection, StT),
+  ( rdf_has(LaterDetection, knowrob:previousDetectionOfObject, Detection),
     rdf_triple(knowrob:startTime, LaterDetection, EndTtG),
-    rdf_triple(knowrob:after, StT, EndTtG),
     rdf_split_url(_, EndTt, EndTtG),
     atom_concat('timepoint_', EndTAtom, EndTt),
     term_to_atom(EndTime, EndTAtom),! );
