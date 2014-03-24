@@ -53,8 +53,17 @@
         <!-- Software components -->
         <srdl2-comp:subComponent rdf:resource="&pr2;LeftArmController"/>
         <srdl2-comp:subComponent rdf:resource="&pr2;RightArmController"/>
+	<srdl2-comp:subComponent rdf:resource="&pr2;pr2_object_recognition_model"/>
+	<srdl2-comp:subComponent rdf:resource="&pr2;pr2_object_recognition_component"/>
     </owl:NamedIndividual>
 
+    <owl:NamedIndividual rdf:about="&pr2;pr2_object_recognition_model">
+        <rdf:type rdf:resource="&knowrob;ObjectRecognitionModel"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="&pr2;pr2_object_recognition_component">
+        <rdf:type rdf:resource="&srdl2-comp;ObjectRecognitionComponent"/>
+    </owl:NamedIndividual>
 
     <owl:Class rdf:about="&knowrob;PR2">
         <rdfs:subClassOf>
@@ -71,6 +80,10 @@
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&srdl2-cap;hasCapability"/>
                         <owl:someValuesFrom rdf:resource="&srdl2-cap;move_base"/>
+                    </owl:Restriction>
+		    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&srdl2-cap;hasCapability"/>
+                        <owl:someValuesFrom rdf:resource="&srdl2-cap;ObjectRecognitionCapability"/>
                     </owl:Restriction>
                 </owl:intersectionOf>
             </owl:Class>
