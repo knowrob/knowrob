@@ -127,8 +127,8 @@ cap_available_on_robot(Cap, Robot) :-
 
 % capability asserted for robot class
 cap_available_on_robot(Cap, Robot) :-
-    rdfs_individual_of(Robot, RobotClass),
     owl_subclass_of(RobotClass, knowrob:'Robot'),
+    rdfs_individual_of(Robot, RobotClass),
     class_properties(RobotClass, srdl2cap:'hasCapability', SubCap),
 
     % If sub-properties are available, their super-capabilites are also
