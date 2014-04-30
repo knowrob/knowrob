@@ -103,6 +103,10 @@ required_cap_for_action(Action, Cap) :-
   class_properties(Action, srdl2cap:'dependsOnCapability', Cap).
 
 required_cap_for_action(Action, Cap) :-
+  class_properties(Action, srdl2cap:'dependsOnCapability', Cp),
+  class_properties(Cp, srdl2cap:'dependsOnCapability', Cap).
+
+required_cap_for_action(Action, Cap) :-
   plan_subevents_recursive(Action, SubAction),
   class_properties(SubAction, srdl2cap:'dependsOnCapability', Cap).
 

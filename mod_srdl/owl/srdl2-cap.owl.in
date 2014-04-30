@@ -252,6 +252,12 @@
                 <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/srdl2-cap.owl#ArmCollisionCheckCapability"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#dependsOnComponent"/>
+                <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl#ArmComponent"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
     </owl:Class>
     
 
