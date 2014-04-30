@@ -98,11 +98,11 @@
 % owl_parse(+OWL_Parse_Mode).
 
 
-owl_parse(URL, RDF_Load_Mode, OWL_Parse_Mode,Imports) :-
-	(   RDF_Load_Mode=complete,!,rdf_retractall(_,_,_); true),
-	retractall(rdf_db:rdf_source(_,_,_,_)),
-	rdf_load_stream(URL,[URL],Imports),
-	owl_parse(OWL_Parse_Mode).
+owl_parse(URL, _RDF_Load_Mode, _OWL_Parse_Mode,Imports) :-
+% 	(   RDF_Load_Mode=complete,!,rdf_retractall(_,_,_); true),
+% 	retractall(rdf_db:rdf_source(_,_,_,_)),
+	rdf_load_stream(URL,[URL],Imports).
+% 	owl_parse(OWL_Parse_Mode).
 
 
 owl_parse(OWL_Parse_Mode) :-
