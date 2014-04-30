@@ -126,7 +126,8 @@ rdfs_instance_of(Resource, Class) :-
 %
 rdfs_computable_class(Class, ComputableClass) :-
 
-  rdfs_computable_sql_class(Class, ComputableClass);
+%  MT: commented unused SQL computable code for performance reasons
+%   rdfs_computable_sql_class(Class, ComputableClass);
   rdfs_computable_prolog_class(Class, ComputableClass).
 
 
@@ -159,8 +160,9 @@ rdfs_computable_prolog_class(Class, ComputableClass) :-
 % Search ComputableProperty with the target Property.
 %
 rdfs_computable_property(Property, ComputableProperty) :-
-  rdfs_computable_sql_property(Property, ComputableProperty)
-  ; rdfs_computable_prolog_property(Property, ComputableProperty).
+%  MT: commented unused SQL computable code for performance reasons
+%   rdfs_computable_sql_property(Property, ComputableProperty) ;
+  rdfs_computable_prolog_property(Property, ComputableProperty).
 
 
 %% rdfs_computable_sql_property(+Property, -ComputableProperty) is nondet.
@@ -301,8 +303,10 @@ rdfs_computable_triple(Property, Frame, Value) :-
 
 % The real work is done here
 rdfs_computable_triple_1(Property, Frame, Value) :-
-    catch(rdfs_computable_sql_triple(Property,    Frame, Value), error(instantiation_error, _), fail)
-  ; catch(rdfs_computable_prolog_triple(Property, Frame, Value), error(instantiation_error, _), fail).
+
+%  MT: commented unused SQL computable code for performance reasons
+%     catch(rdfs_computable_sql_triple(Property,    Frame, Value), error(instantiation_error, _), fail) ;
+  catch(rdfs_computable_prolog_triple(Property, Frame, Value), error(instantiation_error, _), fail).
 
 
 % Helpers for caching...
