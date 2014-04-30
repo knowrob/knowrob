@@ -20,7 +20,6 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('thea/owl_parser')).
 :- use_module(library('semweb/owl')).
-:- use_module(library('semweb/rdf_edit')).
 
 
 :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/ias_semantic_map.owl', false, false, true).
