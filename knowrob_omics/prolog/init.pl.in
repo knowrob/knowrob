@@ -43,5 +43,6 @@
 :- rdf_load('@LOCAL_PACKAGE_PATH@/rdf/locations.rdf',omics).
 :- rdf_load('@LOCAL_PACKAGE_PATH@/rdf/roboearth.rdf',roboearth).
 
+:- register_ros_package(knowrob_omics).
 :- use_module(library('omics')).
 
