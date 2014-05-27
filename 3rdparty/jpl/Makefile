@@ -6,7 +6,7 @@ all: installed
 BUILD_TOPDIR = $(shell pwd)
 
 JPL_DIR = jpl
-JPL_URL = http://code.in.tum.de/files/jpl.tar.gz
+JPL_URL = http://www.knowrob.org/kb/jpl.tar.gz
 LIBSWIPL=/usr/lib/libswipl.so
 
 $(JPL_DIR):
