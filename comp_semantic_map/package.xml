@@ -1,0 +1,35 @@
+<package>
+  <name>comp_semantic_map</name>
+  <version>1.0.0</version>
+  <description>comp_semantic_map</description>
+  <maintainer email="tenorth@cs.uni-bremen.de">Moritz Tenorth</maintainer>
+
+  <license>BSD</license>
+
+  <url type="website">http://ros.org/wiki/comp_semantic_map</url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <author>Lars Kunze</author>
+
+  <!-- Dependencies which this package needs to build itself. -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed to compile this package. -->
+  <build_depend>ias_knowledge_base</build_depend>
+  <build_depend>comp_spatial</build_depend>
+  <build_depend>comp_temporal</build_depend>
+  <build_depend>ias_prolog_addons</build_depend>
+
+  <!-- Dependencies needed after this package is compiled. -->
+  <run_depend>ias_knowledge_base</run_depend>
+  <run_depend>comp_spatial</run_depend>
+  <run_depend>comp_temporal</run_depend>
+  <run_depend>ias_prolog_addons</run_depend>
+
+  <!-- Dependencies needed only for running tests. -->
+  <!-- <test_depend>ias_knowledge_base</test_depend> -->
+  <!-- <test_depend>comp_spatial</test_depend> -->
+  <!-- <test_depend>comp_temporal</test_depend> -->
+  <!-- <test_depend>ias_prolog_addons</test_depend> -->
+
+</package>

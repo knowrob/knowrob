@@ -1,0 +1,43 @@
+<package>
+  <name>mod_probcog</name>
+  <version>1.0.0</version>
+  <description>Integration of KnowRob with the ProbCog library providing statistical relational learning and reasoning methods.</description>
+  <maintainer email="tenorth@cs.uni-bremen.de">Moritz Tenorth</maintainer>
+
+  <license>GPL</license>
+
+  <url type="website">http://ros.org/wiki/mod_probcog</url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <author>Daniel Nyga</author>
+  <author>Moritz Tenorth</author>
+
+  <!-- Dependencies which this package needs to build itself. -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed to compile this package. -->
+  <build_depend>ias_knowledge_base</build_depend>
+<!--   <build_depend>srldb</build_depend> -->
+  <build_depend>comp_temporal</build_depend>
+  <build_depend>comp_spatial</build_depend>
+  <build_depend>mod_vis</build_depend>
+
+  <!-- Dependencies needed after this package is compiled. -->
+  <run_depend>ias_knowledge_base</run_depend>
+<!--   <run_depend>srldb</run_depend> -->
+  <run_depend>comp_temporal</run_depend>
+  <run_depend>comp_spatial</run_depend>
+  <run_depend>mod_vis</run_depend>
+
+  <!-- Dependencies needed only for running tests. -->
+  <!-- <test_depend>ias_knowledge_base</test_depend> -->
+  <!-- <test_depend>srldb</test_depend> -->
+  <!-- <test_depend>comp_temporal</test_depend> -->
+  <!-- <test_depend>comp_spatial</test_depend> -->
+  <!-- <test_depend>mod_vis</test_depend> -->
+
+<export>
+    <rosdoc config="rosdoc.yaml"/>
+</export>
+
+</package>

@@ -1,28 +1,15 @@
-cmake_minimum_required(VERSION 2.4.6)
-include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
+# Catkin User Guide: http://www.ros.org/doc/groovy/api/catkin/html/user_guide/user_guide.html
+# Catkin CMake Standard: http://www.ros.org/doc/groovy/api/catkin/html/user_guide/standards.html
+cmake_minimum_required(VERSION 2.8.3)
+project(comp_semantic_map)
 
-rosbuild_init()
-rosbuild_include(rosprolog utils)
+# Load catkin and all dependencies required for this package
+find_package(catkin REQUIRED COMPONENTS ias_knowledge_base comp_spatial comp_temporal ias_prolog_addons)
 
-rosbuild_find_ros_package(ias_knowledge_base)
-set( OWL_PATH_PREFIX ${ias_knowledge_base_PACKAGE_PATH} )
-fix_ros_destination_path(OWL_PATH_PREFIX)
-
-file(GLOB inputs owl/*.in)
-foreach( _in ${inputs} )
-  string(REPLACE ".in" "" _out ${_in})
-  configure_file( ${_in} ${_out} )
-endforeach( _in )
-
-
-# replace path to local OWL files
-rosbuild_find_ros_package(comp_semantic_map)
-set( LOCAL_PACKAGE_PATH ${comp_semantic_map_PACKAGE_PATH} )
-fix_ros_destination_path(LOCAL_PACKAGE_PATH)
-
-file(GLOB inputs prolog/*.in)
-foreach( _in ${inputs} )
-  string(REPLACE ".in" "" _out ${_in})
-  configure_file( ${_in} ${_out} )
-endforeach( _in )
-
+# catkin_package parameters: http://ros.org/doc/groovy/api/catkin/html/dev_guide/generated_cmake_api.html#catkin-package
+catkin_package(
+    DEPENDS ias_knowledge_base comp_spatial comp_temporal ias_prolog_addons
+    CATKIN_DEPENDS # TODO
+    INCLUDE_DIRS # TODO include
+    LIBRARIES # TODO
+)

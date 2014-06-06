@@ -1,0 +1,33 @@
+<package>
+  <name>knowrob_actions</name>
+  <version>1.0.0</version>
+  <description>knowrob_actions</description>
+  <maintainer email="tenorth@cs.uni-bremen.de">Moritz Tenorth</maintainer>
+
+  <license>BSD</license>
+
+  <url type="website">http://ros.org/wiki/knowrob_actions</url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <author>Moritz Tenorth</author>
+
+  <!-- Dependencies which this package needs to build itself. -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed to compile this package. -->
+  <build_depend>knowrob_common</build_depend>
+  <build_depend>knowrob_objects</build_depend>
+
+  <!-- Dependencies needed after this package is compiled. -->
+  <run_depend>knowrob_common</run_depend>
+  <run_depend>knowrob_objects</run_depend>
+
+  <!-- Dependencies needed only for running tests. -->
+  <!-- <test_depend>knowrob_common</test_depend> -->
+  <!-- <test_depend>knowrob_objects</test_depend> -->
+
+<export>
+    <java classpath="${prefix}/bin:/usr/share/java/json-lib.jar:/usr/share/java/commons-collections3.jar:/usr/share/java/ezmorph.jar:/usr/share/java/commons-beanutils.jar:/usr/share/java/commons-lang.jar:/usr/share/java/commons-logging.jar"/>
+</export>
+
+</package>

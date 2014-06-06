@@ -1,0 +1,32 @@
+<package>
+  <name>rosprolog</name>
+  <version>1.0.0</version>
+  <description>Script to execute prolog and set the prolog library paths
+    to other ros prolog packages.</description>
+  <maintainer email="tenorth@cs.uni-bremen.de">Moritz Tenorth</maintainer>
+
+  <license>BSD</license>
+
+  <url type="website">http://www.ros.org/wiki/rosprolog</url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <author>Lorenz Moesenlechner</author>
+
+  <!-- Dependencies which this package needs to build itself. -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed to compile this package. -->
+<!--   <build_depend>rosbuild</build_depend> -->
+
+  <!-- Dependencies needed after this package is compiled. -->
+<!--   <run_depend>rosbuild</run_depend> -->
+
+  <!-- Dependencies needed only for running tests. -->
+  <!-- <test_depend>rosbuild</test_depend> -->
+
+<export>
+    <rosdoc config="rosdoc.yaml"/>
+    <rosbuild cmake_directory="${prefix}/cmake"/>
+</export>
+
+</package>

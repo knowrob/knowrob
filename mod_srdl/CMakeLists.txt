@@ -1,42 +1,21 @@
-cmake_minimum_required(VERSION 2.4.6)
-include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
+# Catkin User Guide: http://www.ros.org/doc/groovy/api/catkin/html/user_guide/user_guide.html
+# Catkin CMake Standard: http://www.ros.org/doc/groovy/api/catkin/html/user_guide/standards.html
+cmake_minimum_required(VERSION 2.8.3)
+project(mod_srdl)
 
-rosbuild_init()
-rosbuild_include(rosprolog utils)
+# Load catkin and all dependencies required for this package
+find_package(catkin REQUIRED COMPONENTS ias_knowledge_base knowrob_common urdf)
 
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
-set(JAVA_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/bin)
 
-# set ias kb package path
-rosbuild_find_ros_package(ias_knowledge_base)
-set( IAS_KB_PACKAGE_PATH ${ias_knowledge_base_PACKAGE_PATH} )
-fix_ros_destination_path(IAS_KB_PACKAGE_PATH)
+# TODO: Build urdf converter (converter from urdf to srdl)
+# add_jar_dir(lib)
+# add_java_source_dir( ${PROJECT_SOURCE_DIR}/src )
+# rospack_add_java_executable( urdf_to_owl org.roboearth.wp5.io.URDF2SRDL)
 
-file(GLOB inputs owl/*.in)
-foreach( _in ${inputs} )
-  string(REPLACE ".in" "" _out ${_in})
-  configure_file( ${_in} ${_out} )
-endforeach( _in )
-
-# set local package path of mod_srdl in owl and prolog files
-rosbuild_find_ros_package(mod_srdl)
-set( SRDL_PACKAGE_PATH ${mod_srdl_PACKAGE_PATH} )
-fix_ros_destination_path(SRDL_PACKAGE_PATH)
-
-file(GLOB inputs prolog/*.in)
-foreach( _in ${inputs} )
-  string(REPLACE ".in" "" _out ${_in})
-  configure_file( ${_in} ${_out} )
-endforeach( _in )
-
-file(GLOB inputs owl/*.in)
-foreach( _in ${inputs} )
-  string(REPLACE ".in" "" _out ${_in})
-  configure_file( ${_in} ${_out} )
-endforeach( _in )
-
-# Build urdf converter (converter from urdf to srdl)
-add_jar_dir(lib)
-add_java_source_dir( ${PROJECT_SOURCE_DIR}/src )
-rospack_add_java_executable( urdf_to_owl org.roboearth.wp5.io.URDF2SRDL)
+# catkin_package parameters: http://ros.org/doc/groovy/api/catkin/html/dev_guide/generated_cmake_api.html#catkin-package
+catkin_package(
+    DEPENDS ias_knowledge_base knowrob_common urdf
+    CATKIN_DEPENDS # TODO
+    INCLUDE_DIRS # TODO include
+    LIBRARIES # TODO
+)

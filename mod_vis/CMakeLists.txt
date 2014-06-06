@@ -1,42 +1,22 @@
-cmake_minimum_required(VERSION 2.4.6)
-include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
+# Catkin User Guide: http://www.ros.org/doc/groovy/api/catkin/html/user_guide/user_guide.html
+# Catkin CMake Standard: http://www.ros.org/doc/groovy/api/catkin/html/user_guide/standards.html
+cmake_minimum_required(VERSION 2.8.3)
+project(mod_vis)
 
-rosbuild_init()
-rosbuild_gensrv()
+# Load catkin and all dependencies required for this package
+find_package(catkin REQUIRED COMPONENTS knowrob_cad_parser ias_knowledge_base)
 
 
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
-set(JAVA_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/bin)
+add_service_files(
+  FILES CommVisSetLeftImg.srv CommVisSetReqText.srv CommVisSetResText.srv CommVisSetRightImg.srv
+)
 
-rosbuild_find_ros_package(mod_vis)
-rosbuild_find_ros_package(knowrob_cad_models)
-rosbuild_find_ros_package(knowrob_cad_parser)
-rosbuild_find_ros_package(knowrob_common)
+generate_messages()
 
-add_classpath(${PROJECT_SOURCE_DIR}/lib/processing/core.jar)
-add_classpath(${PROJECT_SOURCE_DIR}/lib/processing/PeasyCam.jar)
-add_classpath(${PROJECT_SOURCE_DIR}/lib/dae4j.jar)
-add_classpath(${PROJECT_SOURCE_DIR}/lib/log4j-1.2.16.jar)
-add_classpath(${PROJECT_SOURCE_DIR}/lib/controlP5.jar)
-add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/processing/core.jar)
-add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/processing/PeasyCam.jar)
-add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/dae4j.jar)
-add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/log4j-1.2.16.jar)
-add_runtime_classpath(${PROJECT_SOURCE_DIR}/lib/controlP5.jar)
-
-add_classpath(${knowrob_cad_parser_PACKAGE_PATH}/bin)
-add_runtime_classpath(${knowrob_cad_parser_PACKAGE_PATH}/bin)
-
-add_classpath(${knowrob_common_PACKAGE_PATH}/lib/vecmath.jar)
-add_runtime_classpath(${knowrob_common_PACKAGE_PATH}/lib/vecmath.jar)
-add_classpath(${knowrob_common_PACKAGE_PATH}/lib/snakeyaml/snakeyaml-1.11.jar)
-add_runtime_classpath(${knowrob_common_PACKAGE_PATH}/lib/snakeyaml/snakeyaml-1.11.jar)
-
-rosbuild_find_ros_package(jpl)
-add_classpath(${jpl_PACKAGE_PATH}/jpl/jpl.jar)
-add_runtime_classpath(${jpl_PACKAGE_PATH}/prolog/jpl.jar)
-
-add_java_source_dir(${PROJECT_SOURCE_DIR}/src)
-
-rospack_add_java_executable(communication_vis edu.tum.cs.ias.knowrob.vis.applets.CommunicationVisApplet)
+# catkin_package parameters: http://ros.org/doc/groovy/api/catkin/html/dev_guide/generated_cmake_api.html#catkin-package
+catkin_package(
+    DEPENDS knowrob_cad_parser ias_knowledge_base
+    CATKIN_DEPENDS # TODO
+    INCLUDE_DIRS # TODO include
+    LIBRARIES # TODO
+)

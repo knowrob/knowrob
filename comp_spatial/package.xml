@@ -1,0 +1,38 @@
+<package>
+  <name>comp_spatial</name>
+  <version>1.0.0</version>
+  <description>Routines for spatial reasoning in Prolog.
+
+     Contains Prolog computables for calculating qualitative spatial relations,
+     but also those for extracting certain elements from the string representation
+     of a matrix.</description>
+  <maintainer email="tenorth@cs.uni-bremen.de">Moritz Tenorth</maintainer>
+
+  <license>GPL</license>
+
+  <url type="website">http://ros.org/wiki/comp_spatial</url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <author>Moritz Tenorth</author>
+  <author>Lars Kunze</author>
+
+  <!-- Dependencies which this package needs to build itself. -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed to compile this package. -->
+  <build_depend>ias_knowledge_base</build_depend>
+  <build_depend>comp_temporal</build_depend>
+
+  <!-- Dependencies needed after this package is compiled. -->
+  <run_depend>ias_knowledge_base</run_depend>
+  <run_depend>comp_temporal</run_depend>
+
+  <!-- Dependencies needed only for running tests. -->
+  <!-- <test_depend>ias_knowledge_base</test_depend> -->
+  <!-- <test_depend>comp_temporal</test_depend> -->
+
+<export>
+    <rosdoc config="rosdoc.yaml"/>
+</export>
+
+</package>

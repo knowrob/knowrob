@@ -1,0 +1,47 @@
+<package>
+  <name>mod_vis</name>
+  <version>1.0.0</version>
+  <description>Visualization module for the Prolog knowledge base.
+
+     Instances in the knowledge base can be pushed to the visualization
+     canvas, are then drawn and can be further inspected.
+
+     Currently supported: Action sequences, linked to the resp. human pose
+     sequence, as well as most objects that are relevant in the IAS kitchen.</description>
+  <maintainer email="tenorth@cs.uni-bremen.de">Moritz Tenorth</maintainer>
+
+  <license>GPL</license>
+
+  <url type="website">http://ros.org/wiki/mod_vis</url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <author>Moritz Tenorth</author>
+  <author>Jakob Engel</author>
+
+  <!-- Dependencies which this package needs to build itself. -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed to compile this package. -->
+  <build_depend>knowrob_cad_parser</build_depend>
+  <build_depend>ias_knowledge_base</build_depend>
+<!--   <build_depend>jpl</build_depend> -->
+<!--   <build_depend>rosjava_jni</build_depend> -->
+
+  <!-- Dependencies needed after this package is compiled. -->
+  <run_depend>knowrob_cad_parser</run_depend>
+  <run_depend>ias_knowledge_base</run_depend>
+<!--   <run_depend>jpl</run_depend> -->
+<!--   <run_depend>rosjava_jni</run_depend> -->
+
+  <!-- Dependencies needed only for running tests. -->
+  <!-- <test_depend>knowrob_cad_parser</test_depend> -->
+  <!-- <test_depend>ias_knowledge_base</test_depend> -->
+  <!-- <test_depend>jpl</test_depend> -->
+  <!-- <test_depend>rosjava_jni</test_depend> -->
+
+<export>
+    <java classpath="${prefix}/bin:${prefix}/lib/vecmath.jar:${prefix}/lib/dae4j.jar:${prefix}/lib/processing/PeasyCam.jar:${prefix}/lib/log4j-1.2.16.jar:${prefix}/lib/controlP5.jar:${prefix}/lib/snakeyaml-1.9.jar"/>
+    <rosdoc config="rosdoc.yaml"/>
+</export>
+
+</package>

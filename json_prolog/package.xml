@@ -1,0 +1,46 @@
+<package>
+  <name>json_prolog</name>
+  <version>1.0.0</version>
+  <description>json_prolog provides an interface to SWI prolog through ROS
+    services. It is implemented in Java by using rosjava and JPL.</description>
+  <maintainer email="tenorth@cs.uni-bremen.de">Moritz Tenorth</maintainer>
+
+  <license>BSD</license>
+
+  <url type="website">http://ros.org/wiki/json_prolog</url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <author>Lorenz Moesenlechner</author>
+  <author>Moritz Tenorth</author>
+
+  <!-- Dependencies which this package needs to build itself. -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed to compile this package. -->
+<!--   <build_depend>rosjava_jni</build_depend> -->
+  <build_depend>rosprolog</build_depend>
+<!--   <build_depend>jpl</build_depend> -->
+  <build_depend>rospy</build_depend>
+  <build_depend>json_prolog_msgs</build_depend>
+
+  <!-- Dependencies needed after this package is compiled. -->
+<!--   <run_depend>rosjava_jni</run_depend> -->
+  <run_depend>rosprolog</run_depend>
+<!--   <run_depend>jpl</run_depend> -->
+  <run_depend>rospy</run_depend>
+  <run_depend>json_prolog_msgs</run_depend>
+
+  <!-- Dependencies needed only for running tests. -->
+  <!-- <test_depend>rosjava_jni</test_depend> -->
+  <!-- <test_depend>rosprolog</test_depend> -->
+  <!-- <test_depend>jpl</test_depend> -->
+  <!-- <test_depend>rospy</test_depend> -->
+  <!-- <test_depend>json_prolog_msgs</test_depend> -->
+
+<export>
+    <cpp lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -ljson_prolog" cflags="-I${prefix}/include"/>
+    <java classpath="${prefix}/bin"/>
+    <rosdoc config="rosdoc.yaml"/>
+</export>
+
+</package>

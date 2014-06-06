@@ -1,0 +1,43 @@
+<package>
+  <name>ias_prolog_addons</name>
+  <version>1.0.0</version>
+  <description>Some utilities for Prolog:
+      * Interface to the Weka and Mallet machine learning libraries, whose algorithms can be applied to instances in KnowRob (in classifiers.pl)
+      * jython-interface for Prolog (in jython.pl, deprecated for internal use)
+      * Several small utility scripts (in util.pl)
+      * Methods for computing different semantic similarity values (comp_similarity.pl)</description>
+  <maintainer email="tenorth@cs.uni-bremen.de">Moritz Tenorth</maintainer>
+
+  <license>GPL</license>
+
+  <url type="website">http://www.ros.org/wiki/ias_prolog_addons</url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <author>Bernhard Kirchlechner</author>
+  <author>Moritz Tenorth</author>
+  <author>Jakob Engel</author>
+
+  <!-- Dependencies which this package needs to build itself. -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed to compile this package. -->
+<!--   <build_depend>jpl</build_depend> -->
+<!--   <build_depend>rosjava_jni</build_depend> -->
+  <build_depend>rosprolog</build_depend>
+
+  <!-- Dependencies needed after this package is compiled. -->
+<!--   <run_depend>jpl</run_depend> -->
+<!--   <run_depend>rosjava_jni</run_depend> -->
+  <run_depend>rosprolog</run_depend>
+
+  <!-- Dependencies needed only for running tests. -->
+  <!-- <test_depend>jpl</test_depend> -->
+  <!-- <test_depend>rosjava_jni</test_depend> -->
+  <!-- <test_depend>rosprolog</test_depend> -->
+
+<export>
+    <java classpath="${prefix}/lib/classifier_interface.jar:${prefix}/lib/mallet-deps.jar:${prefix}/lib/mallet-dist.jar:${prefix}/lib/weka_fipm.jar"/>
+    <rosdoc config="rosdoc.yaml"/>
+</export>
+
+</package>

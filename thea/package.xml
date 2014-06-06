@@ -1,0 +1,29 @@
+<package>
+  <name>thea</name>
+  <version>1.0.0</version>
+  <description>Owl parser and reasoner library for swi-prolog.
+
+      Taken from: http://www.semanticweb.gr/TheaOWLLib/</description>
+  <maintainer email="tenorth@cs.uni-bremen.de">Moritz Tenorth</maintainer>
+
+  <license>GPL</license>
+
+  <url type="website">http://ros.org/wiki/thea</url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <author>Vangelis Vassiliadis</author>
+
+  <!-- Dependencies which this package needs to build itself. -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed to compile this package. -->
+
+  <!-- Dependencies needed after this package is compiled. -->
+
+  <!-- Dependencies needed only for running tests. -->
+
+<export>
+    <rosdoc config="rosdoc.yaml"/>
+</export>
+
+</package>
