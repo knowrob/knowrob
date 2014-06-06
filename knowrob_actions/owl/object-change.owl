@@ -26,7 +26,7 @@
      xmlns:owl2="http://www.w3.org/2006/12/owl2#"
      xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#">
     <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/object-change.owl">
-        <owl:imports rdf:resource="file://@OWL_PATH_PREFIX@/owl/knowrob.owl"/>
+        <owl:imports rdf:resource="package://ias_knowledge_base/owl/knowrob.owl"/>
     </owl:Ontology>
 
 

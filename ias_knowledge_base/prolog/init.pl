@@ -21,15 +21,18 @@
 
 % Semweb library for OWL/RDF access
 :- register_ros_package(semweb).
-:- register_ros_package(knowrob_common).
-:- register_ros_package(knowrob_actions).
-
 
 % TUM utilities library
 :- register_ros_package(ias_prolog_addons).
 :- use_module(library('classifiers')).
 :- use_module(library('jython')).
 :- use_module(library('util')).
+
+
+:- register_ros_package(knowrob_common).
+% :- register_ros_package(knowrob_actions).
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % parse OWL files, register name spaces

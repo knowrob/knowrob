@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE owl [
 
-     <!ENTITY local_path 'file://@OWL_PATH_PREFIX@/owl/'>
      <!ENTITY rdf  "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
      <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
      <!ENTITY xsd  "http://www.w3.org/2001/XMLSchema#" >
@@ -19,7 +18,7 @@
 
 <Ontology rdf:about="">
   <versionInfo>March 18. 2003, GS</versionInfo>
-  <imports rdf:resource="&local_path;rdf-schema.xml"/>
+  <imports rdf:resource="package://ias_knowledge_base/owl/rdf-schema.xml"/>
   <dc:title>Classes and properties for the Web Ontology Language OWL</dc:title>
   <dc:creator>W3C Web Ontology (WebOnt) Working Group</dc:creator>
   <dc:subject>OWL; Web Ontology Language; Semantic Web</dc:subject>

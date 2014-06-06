@@ -3,8 +3,6 @@
 
 <!DOCTYPE rdf:RDF [
 
-    <!ENTITY srdl_path 'file://@SRDL_PACKAGE_PATH@/owl/'>
-
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY dc "http://purl.org/dc/elements/1.1/" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
@@ -29,7 +27,7 @@
      xmlns:srdl2-comp="http://ias.cs.tum.edu/kb/srdl2-comp.owl#"
      xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#">
     <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/srdl2-cap.owl">
-        <owl:imports rdf:resource="&srdl_path;srdl2-comp.owl"/>
+        <owl:imports rdf:resource="package://mod_srdl/owl/srdl2-comp.owl"/>
     </owl:Ontology>
 
 

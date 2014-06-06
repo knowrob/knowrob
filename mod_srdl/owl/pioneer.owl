@@ -5,7 +5,6 @@
 <!-- =============================================== -->
 
 <!DOCTYPE rdf:RDF [ 
-  <!ENTITY srdl_path 'file://@SRDL_PACKAGE_PATH@/owl/'>
   <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
   <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
   <!ENTITY srdl2 "http://ias.cs.tum.edu/kb/srdl2.owl#" >
@@ -38,8 +37,7 @@
 
 
     <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/ari.owl">
-        <owl:imports rdf:resource="http://ias.cs.tum.edu/kb/srdl2.owl"/>
-        <owl:imports rdf:resource="http://ias.cs.tum.edu/kb/srdl2-comp.owl"/>
+        <owl:imports rdf:resource="package://mod_srdl/owl/srdl2-comp.owl"/>
     </owl:Ontology>
 
 

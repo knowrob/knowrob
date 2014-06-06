@@ -2,7 +2,6 @@
 
 
 <!DOCTYPE rdf:RDF [
-    <!ENTITY roboearth_path 'http://ias.cs.tum.edu/kb/'>
     <!ENTITY map 'http://www.roboearth.org/kb/map_hospital_room.owl#'>
 
     <!ENTITY kb "http://ias.cs.tum.edu/kb/" >
@@ -27,7 +26,7 @@
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#">
     <owl:Ontology rdf:about="">
-      <owl:imports rdf:resource="&roboearth_path;roboearth.owl"/>
+      <owl:imports rdf:resource="package://ias_knowledge_base/owl/roboearth.owl"/>
     </owl:Ontology>
 
 

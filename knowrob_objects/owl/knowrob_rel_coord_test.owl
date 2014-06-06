@@ -24,7 +24,7 @@
      xmlns:qudt="http://qudt.org/schema/qudt#"
      xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#">
     <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl">
-        <owl:imports rdf:resource="file:///home/tenorth/work/ros/knowrob/ias_knowledge_base/owl/knowrob.owl"/>
+        <owl:imports rdf:resource="package://ias_knowledge_base/owl/knowrob.owl"/>
     </owl:Ontology>
 
 

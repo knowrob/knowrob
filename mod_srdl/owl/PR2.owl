@@ -3,8 +3,6 @@
 
 <!DOCTYPE rdf:RDF [
 
-    <!ENTITY srdl_path 'file://@SRDL_PACKAGE_PATH@/owl/'>
-
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY pr2 "http://ias.cs.tum.edu/kb/PR2.owl#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
@@ -32,7 +30,7 @@
      xmlns:srdl2-cap="http://ias.cs.tum.edu/kb/srdl2-cap.owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/PR2.owl">
-        <owl:imports rdf:resource="&srdl_path;srdl2-comp.owl"/>
+        <owl:imports rdf:resource="package://mod_srdl/owl/srdl2-comp.owl"/>
     </owl:Ontology>
 
 
