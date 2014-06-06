@@ -33,7 +33,7 @@
     ]).
 
 :- use_module(library('semweb/rdfs')).
-:- use_module(library('thea/owl_parser')).
+% % :- use_module(library('owl_parser')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/rdfs_computable')).
 :- use_module(library('knowrob_owl')).

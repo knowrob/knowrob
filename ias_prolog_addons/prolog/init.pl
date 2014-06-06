@@ -20,7 +20,7 @@
 % dependencies
 
 % JPL
-:- register_ros_package(jpl).
+% :- register_ros_package(jpl).
 
 :- register_ros_package(ias_prolog_addons).
 

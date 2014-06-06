@@ -11,4 +11,4 @@
 :- use_module(library('knowrob_objects')).
 :- use_module(library('knowrob_perception')).
 :- use_module(library('knowrob_coordinates')).
-:- use_module(library('tf_prolog')).
+% :- use_module(library('tf_prolog')).

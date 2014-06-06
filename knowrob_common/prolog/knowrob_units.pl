@@ -25,13 +25,13 @@
     ]).
 
 :- use_module(library('semweb/rdfs')).
-:- use_module(library('thea/owl_parser')).
+:- use_module(library('owl_parser')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/rdfs_computable')).
 
 :- rdf_meta(convert_to_unit(r,r,r)).
 
-:- owl_parser:owl_parse('../owl/knowrob_units.owl', false, false, true).
+:- owl_parse('package://knowrob_common/owl/knowrob_units.owl').
 
 :- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
 :- rdf_db:rdf_register_ns(owl, 'http://www.w3.org/2002/07/owl#', [keep(true)]).

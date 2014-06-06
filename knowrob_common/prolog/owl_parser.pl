@@ -33,9 +33,12 @@ owl_parse_1(URL,Imported) :-
     % build global path and load OWL file
     atomic_list_concat([PkgPath|LocalPath], '/',  GlobalPath),
 
+    print('Importing '), print(GlobalPath), print(' ... \n'),
+
     rdf_load(GlobalPath,[blank_nodes(noshare)])
     ) ; (
     RDF_Stream = URL, % URL is a file name
+    print('Importing '), print(RDF_Stream), print(' ... \n'),
     rdf_load(RDF_Stream,[blank_nodes(noshare)]))
   ),
   (   rdf(_,'http://www.w3.org/2002/07/owl#imports',Import_URL),

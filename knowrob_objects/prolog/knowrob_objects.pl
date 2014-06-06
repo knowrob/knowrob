@@ -78,13 +78,13 @@
     ]).
 
 :- use_module(library('semweb/rdfs')).
-:- use_module(library('thea/owl_parser')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/rdfs_computable')).
 :- use_module(library('knowrob_owl')).
 :- use_module(library('knowrob_perception')).
+:- use_module(library('owl_parser')).
 
-:- owl_parser:owl_parse('../owl/knowrob_objects.owl', false, false, true).
+:- owl_parser:owl_parse('package://knowrob_objects/owl/knowrob_objects.owl').
 
 
 

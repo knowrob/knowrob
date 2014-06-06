@@ -8,5 +8,6 @@
 
 :- use_module(library('knowrob_owl')).
 % :- use_module(library('knowrob_units')).
+:- use_module(library('owl_parser')).
 :- use_module(library('owl_export')).
 
