@@ -29,7 +29,7 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdf_edit')).
 :- use_module(library('semweb/rdfs')).
-:- use_module(library('semweb/owl')).
+:- use_module(library('owl')).
 
 % Thea OWL parser library
 :- register_ros_package(thea).

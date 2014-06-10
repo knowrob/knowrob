@@ -1,0 +1,3 @@
+<launch>
+  <node name="json_prolog" pkg="rosprolog" type="run_with_prolog_env" args="ias_semantic_map $(find json_prolog)/bin/json_prolog" />
+</launch>
