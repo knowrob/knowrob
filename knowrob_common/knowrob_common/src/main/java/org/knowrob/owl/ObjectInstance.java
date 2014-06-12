@@ -205,9 +205,9 @@ public class ObjectInstance extends OWLIndividual {
 	 * @param position Position vector
 	 */
 	public void setPosition(Vector3d position) {
-		pose_matrix.setM03(position.x);
-		pose_matrix.setM13(position.y);
-		pose_matrix.setM23(position.z);
+		pose_matrix.setElement(0, 3, position.x);
+		pose_matrix.setElement(1, 3, position.y);
+		pose_matrix.setElement(2, 3, position.z);
 	}
 
 	
