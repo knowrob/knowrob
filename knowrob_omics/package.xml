@@ -15,12 +15,12 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <!-- Dependencies needed to compile this package. -->
-  <build_depend>ias_knowledge_base</build_depend>
+  <build_depend>knowrob_common</build_depend>
 
   <!-- Dependencies needed after this package is compiled. -->
-  <run_depend>ias_knowledge_base</run_depend>
+  <run_depend>knowrob_common</run_depend>
 
   <!-- Dependencies needed only for running tests. -->
-  <!-- <test_depend>ias_knowledge_base</test_depend> -->
+  <!-- <test_depend>knowrob_common</test_depend> -->
 
 </package>

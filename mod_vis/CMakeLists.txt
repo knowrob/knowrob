@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(mod_vis)
 
 # Load catkin and all dependencies required for this package
-find_package(catkin REQUIRED COMPONENTS knowrob_cad_parser ias_knowledge_base)
+find_package(catkin REQUIRED COMPONENTS knowrob_cad_parser knowrob_common)
 
 
 add_service_files(
@@ -15,7 +15,7 @@ generate_messages()
 
 # catkin_package parameters: http://ros.org/doc/groovy/api/catkin/html/dev_guide/generated_cmake_api.html#catkin-package
 catkin_package(
-    DEPENDS knowrob_cad_parser ias_knowledge_base
+    DEPENDS knowrob_cad_parser knowrob_common
     CATKIN_DEPENDS # TODO
     INCLUDE_DIRS # TODO include
     LIBRARIES # TODO

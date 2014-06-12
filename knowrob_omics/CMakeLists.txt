@@ -4,11 +4,11 @@ cmake_minimum_required(VERSION 2.8.3)
 project(knowrob_omics)
 
 # Load catkin and all dependencies required for this package
-find_package(catkin REQUIRED COMPONENTS ias_knowledge_base)
+find_package(catkin REQUIRED COMPONENTS knowrob_common)
 
 # catkin_package parameters: http://ros.org/doc/groovy/api/catkin/html/dev_guide/generated_cmake_api.html#catkin-package
 catkin_package(
-    DEPENDS ias_knowledge_base
+    DEPENDS knowrob_common
     CATKIN_DEPENDS # TODO
     INCLUDE_DIRS # TODO include
     LIBRARIES # TODO

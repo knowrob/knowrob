@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(mod_srdl)
 
 # Load catkin and all dependencies required for this package
-find_package(catkin REQUIRED COMPONENTS ias_knowledge_base knowrob_common urdf)
+find_package(catkin REQUIRED COMPONENTS knowrob_common urdf)
 
 
 # TODO: Build urdf converter (converter from urdf to srdl)
@@ -14,7 +14,7 @@ find_package(catkin REQUIRED COMPONENTS ias_knowledge_base knowrob_common urdf)
 
 # catkin_package parameters: http://ros.org/doc/groovy/api/catkin/html/dev_guide/generated_cmake_api.html#catkin-package
 catkin_package(
-    DEPENDS ias_knowledge_base knowrob_common urdf
+    DEPENDS knowrob_common urdf
     CATKIN_DEPENDS # TODO
     INCLUDE_DIRS # TODO include
     LIBRARIES # TODO

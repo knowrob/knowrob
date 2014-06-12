@@ -23,19 +23,19 @@
 
   <!-- Dependencies needed to compile this package. -->
   <build_depend>knowrob_cad_parser</build_depend>
-  <build_depend>ias_knowledge_base</build_depend>
+  <build_depend>knowrob_common</build_depend>
 <!--   <build_depend>jpl</build_depend> -->
 <!--   <build_depend>rosjava_jni</build_depend> -->
 
   <!-- Dependencies needed after this package is compiled. -->
   <run_depend>knowrob_cad_parser</run_depend>
-  <run_depend>ias_knowledge_base</run_depend>
+  <run_depend>knowrob_common</run_depend>
 <!--   <run_depend>jpl</run_depend> -->
 <!--   <run_depend>rosjava_jni</run_depend> -->
 
   <!-- Dependencies needed only for running tests. -->
   <!-- <test_depend>knowrob_cad_parser</test_depend> -->
-  <!-- <test_depend>ias_knowledge_base</test_depend> -->
+  <!-- <test_depend>knowrob_common</test_depend> -->
   <!-- <test_depend>jpl</test_depend> -->
   <!-- <test_depend>rosjava_jni</test_depend> -->
 
