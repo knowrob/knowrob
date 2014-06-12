@@ -1,16 +1,31 @@
-# Catkin User Guide: http://www.ros.org/doc/groovy/api/catkin/html/user_guide/user_guide.html
-# Catkin CMake Standard: http://www.ros.org/doc/groovy/api/catkin/html/user_guide/standards.html
+##############################################################################
+# CMake
+##############################################################################
+
 cmake_minimum_required(VERSION 2.8.3)
 project(knowrob_common)
 
-# Load catkin and all dependencies required for this package
-find_package(catkin REQUIRED COMPONENTS semweb rosprolog)
+##############################################################################
+# Catkin
+##############################################################################
 
+find_package(catkin REQUIRED COMPONENTS semweb rosprolog rosjava_build_tools)
 
-# catkin_package parameters: http://ros.org/doc/groovy/api/catkin/html/dev_guide/generated_cmake_api.html#catkin-package
+# Set the gradle targets you want catkin's make to run by default, e.g.
+#   catkin_rosjava_setup(installApp)
+# Note that the catkin_create_rosjava_xxx scripts will usually automatically
+# add tasks to this for you when you create subprojects.
+catkin_rosjava_setup(installApp publishMavenJavaPublicationToMavenRepository)
+
 catkin_package(
-    DEPENDS semweb rosprolog
-    CATKIN_DEPENDS # TODO
-    INCLUDE_DIRS # TODO include
-    LIBRARIES # TODO
+    DEPENDS rosprolog
 )
+
+##############################################################################
+# Installation
+##############################################################################
+
+# Change this to match the maven group name you have specified in the 
+# allprojects closure the root build.gradle
+install(DIRECTORY ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_MAVEN_DESTINATION}/org/knowrob/${PROJECT_NAME}/
+        DESTINATION ${CATKIN_GLOBAL_MAVEN_DESTINATION}/com/github/rosjava/${PROJECT_NAME})
