@@ -1,13 +1,12 @@
 <package>
-  <name>ias_semantic_map</name>
+  <name>knowrob_map_data</name>
   <version>1.0.0</version>
-  <description>Semantic maps of different kitchens of the IAS group at TUM, created from 3D laser scans,
-    represented as OWL file, plus additional predicates for manipulating the map and reasoning on it.</description>
+  <description>Semantic maps of different kitchens</description>
   <maintainer email="tenorth@cs.uni-bremen.de">Moritz Tenorth</maintainer>
 
   <license>GPL</license>
 
-  <url type="website">http://www.ros.org/wiki/ias_semantic_map</url>
+  <url type="website">http://www.ros.org/wiki/knowrob_map_data</url>
   <!-- <url type="bugtracker"></url> -->
 
   <author>Lars Kunze</author>
