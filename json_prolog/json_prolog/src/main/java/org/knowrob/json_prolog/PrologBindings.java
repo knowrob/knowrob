@@ -27,14 +27,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package edu.tum.cs.ias.knowrob.json_prolog;
+package org.knowrob.json_prolog;
 
 import java.util.HashMap;
 import java.util.Vector;
 
 import jpl.Term;
 
-import edu.tum.cs.ias.knowrob.json_prolog.JSONQuery.InvalidJSONQuery;
+import org.knowrob.json_prolog.JSONQuery.InvalidJSONQuery;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;

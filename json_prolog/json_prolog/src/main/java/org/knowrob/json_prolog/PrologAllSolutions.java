@@ -27,45 +27,42 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package edu.tum.cs.ias.knowrob.json_prolog;
+package org.knowrob.json_prolog;
 
-import java.util.Vector;
+import java.util.Hashtable;
 
-public class PrologTerm {
+import jpl.Term;
 
-	private String name_;
-	private Vector<PrologValue> values_;
-	
+public final class PrologAllSolutions implements PrologSolutions {
 
-	
-	public PrologTerm(String name, Vector<PrologValue> values) {
-		this.name_ = name;
-		this.values_ = values;
-	}
+  private int currentIndex = 0;
+  Hashtable<String, jpl.Term>[] solutions;
+  
+  @SuppressWarnings("unchecked")
+  PrologAllSolutions(jpl.Query query) {
+    solutions = (Hashtable<String, jpl.Term>[])query.allSolutions();
+  }
+  
+  @Override
+  public void close() {
+    // This method doesn't need to do anything here. We already closed the query. 
+  }  
+  
+  @Override
+  public void reset() {
+    currentIndex = 0;
+  }
 
-	
-	public String getName_() {
-		return name_;
-	}
+  @Override
+  public Hashtable<String, Term> nextSolution() {
+    Hashtable<String, jpl.Term> result = solutions[currentIndex];
+    currentIndex++;
+    return result;
+  }
 
+  @Override
+  public boolean hasMoreSolutions() {
+    return currentIndex < solutions.length;
+  }
 
-	public void setName_(String name) {
-		name_ = name;
-	}
-
-
-	public Vector<PrologValue> getValues_() {
-		return values_;
-	}
-
-
-	public void setValues_(Vector<PrologValue> values) {
-		values_ = values;
-	}
-
-
-	public int arity() { 
-		return values_.size(); 
-	}
-	
 }

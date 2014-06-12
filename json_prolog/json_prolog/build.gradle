@@ -27,9 +27,13 @@ mainClassName = 'org.ros.RosRun'
 */
 
 dependencies {
+  compile project(':json_prolog_msgs')
+
   /* An external maven artifact dependency */
   compile 'org.ros.rosjava_core:rosjava:[0.1,)'
 
   compile 'jpl:jpl:3.1.4-alpha'
   compile 'net.sf.json-lib:json-lib:2.4:jdk15'
+
+  compile 'org.ros.rosjava_messages:geometry_msgs:1.10.+'
 }

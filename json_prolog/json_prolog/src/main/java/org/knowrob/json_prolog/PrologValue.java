@@ -27,7 +27,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package edu.tum.cs.ias.knowrob.json_prolog;
+package org.knowrob.json_prolog;
 
 import java.util.Vector;
 
