@@ -32,15 +32,11 @@ package org.knowrob.json_prolog;
 import java.util.*;
 import java.io.*;
 
-import json_prolog_msgs.PrologQuery;
-
 import org.ros.namespace.GraphName;
 import org.ros.node.AbstractNodeMain;
 import org.ros.node.ConnectedNode;
-import org.ros.node.NodeMain;
 import org.ros.node.parameter.ParameterTree;
 import org.ros.node.service.ServiceResponseBuilder;
-import org.ros.node.service.ServiceServer;
 
 /**
  * ROS service interface to rosprolog
