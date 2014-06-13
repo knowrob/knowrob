@@ -38,8 +38,8 @@
 :- use_module(library('crypt')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
-:- use_module(library('semweb/owl')).
-:- use_module(library('semweb/rdfs_computable')).
+:- use_module(library('rdfs_computable')).
+:- use_module(library('owl')).
 
 :- rdf_meta class_properties(r,r,t),
             class_properties_some(r,r,t),

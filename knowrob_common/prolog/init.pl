@@ -1,14 +1,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % dependencies
 
-:- register_ros_package(semweb).
-:- register_ros_package(knowrob_common).
-% % :- register_ros_package(knowrob_objects).
 
-:- register_ros_package(jpl).
+:- register_ros_package(knowrob_common).
+
 :- use_module(library('jpl')).
 :- jpl_set_default_jvm_opts(['-Xmx2048M']).
-
 
 
 :- use_module(library('semweb/rdf_db')).

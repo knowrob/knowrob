@@ -10,10 +10,10 @@
       rdfs_assert_prop_conc/3,
       rdf_common_ancestor/2
     ]).
-:- use_module(rdfs).
-:- use_module(rdf_db).
-:- use_module(library(odbc)).
-:- use_module(library(lists)).
+:- use_module(library('semweb/rdfs')).
+:- use_module(library('semweb/rdf_db')).
+:- use_module(library('odbc')).
+:- use_module(library('lists')).
 
 :- rdf_register_ns(computable, 'http://ias.cs.tum.edu/kb/computable.owl#').
 :- rdf_meta

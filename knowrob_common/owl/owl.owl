@@ -18,7 +18,7 @@
 
 <Ontology rdf:about="">
   <versionInfo>March 18. 2003, GS</versionInfo>
-  <imports rdf:resource="package://ias_knowledge_base/owl/rdf-schema.xml"/>
+  <imports rdf:resource="package://knowrob_common/owl/rdf-schema.xml"/>
   <dc:title>Classes and properties for the Web Ontology Language OWL</dc:title>
   <dc:creator>W3C Web Ontology (WebOnt) Working Group</dc:creator>
   <dc:subject>OWL; Web Ontology Language; Semantic Web</dc:subject>
