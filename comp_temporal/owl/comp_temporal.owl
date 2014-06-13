@@ -21,7 +21,7 @@
    xmlns:knowrob="&knowrob;#"
    xml:base="http://ias.cs.tum.edu/kb/comp_temporal.owl">
   <owl:Ontology rdf:about="">
-    <owl:imports rdf:resource="package://ias_knowledge_base/owl/knowrob.owl"/>
+    <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
   </owl:Ontology>
 
 
