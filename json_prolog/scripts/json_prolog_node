@@ -1,0 +1,6 @@
+#!/bin/bash
+
+export LD_LIBRARY_PATH=/usr/lib/swi-prolog/lib/i386:$LD_LIBRARY_PATH
+export LD_PRELOAD=libswipl.so
+
+../json_prolog/build/install/json_prolog/bin/json_prolog org.knowrob.json_prolog.JSONPrologNode
