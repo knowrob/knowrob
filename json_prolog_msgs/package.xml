@@ -13,12 +13,11 @@
 
   <!-- Dependencies which this package needs to build itself. -->
   <buildtool_depend>catkin</buildtool_depend>
+  
   <build_depend>message_generation</build_depend>
+  <build_depend>std_msgs</build_depend>
+
   <run_depend>message_runtime</run_depend>
-  <!-- Dependencies needed to compile this package. -->
-
-  <!-- Dependencies needed after this package is compiled. -->
-
-  <!-- Dependencies needed only for running tests. -->
+  <run_depend>std_msgs</run_depend>
 
 </package>

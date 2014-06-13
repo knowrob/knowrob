@@ -2,14 +2,14 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(json_prolog_msgs)
 
-find_package(catkin REQUIRED roscpp rospy std_msgs geometry_msgs message_generation)
+find_package(catkin REQUIRED roscpp rospy std_msgs message_generation)
 
 add_service_files(
   FILES PrologFinish.srv  PrologNextSolution.srv  PrologQuery.srv
 )
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
-    DEPENDENCIES geometry_msgs std_msgs
+    DEPENDENCIES std_msgs
 )
 
 # catkin_package parameters: http://ros.org/doc/groovy/api/catkin/html/dev_guide/generated_cmake_api.html#catkin-package
@@ -19,3 +19,4 @@ catkin_package(
     INCLUDE_DIRS # TODO include
     LIBRARIES # TODO
 )
+

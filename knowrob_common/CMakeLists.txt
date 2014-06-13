@@ -9,7 +9,7 @@ project(knowrob_common)
 # Catkin
 ##############################################################################
 
-find_package(catkin REQUIRED COMPONENTS semweb rosprolog rosjava_build_tools)
+find_package(catkin REQUIRED COMPONENTS rosprolog rosjava_build_tools)
 
 # Set the gradle targets you want catkin's make to run by default, e.g.
 #   catkin_rosjava_setup(installApp)

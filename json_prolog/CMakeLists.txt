@@ -34,13 +34,16 @@ add_definitions(${JSON_GLIB_CFLAGS})
 link_directories(${JSON_GLIB_LIBRARIY_DIRS})
 
 add_library(json_prolog src/prolog.cpp src/prolog_query_proxy.cpp src/prolog_bindings.cpp src/prolog_value.cpp)
-target_link_libraries(json_prolog ${JSON_GLIB_LIBRARIES})
+target_link_libraries(json_prolog ${JSON_GLIB_LIBRARIES} ${catkin_LIBRARIES})
+add_dependencies(json_prolog ${catkin_EXPORTED_TARGETS})
 
 add_executable(test_json_prolog examples/test_json_prolog.cpp)
 target_link_libraries(test_json_prolog json_prolog ${catkin_LIBRARIES})
+add_dependencies(test_json_prolog ${catkin_EXPORTED_TARGETS})
 
 add_executable(object_positions examples/object_positions.cpp)
 target_link_libraries(object_positions json_prolog ${catkin_LIBRARIES})
+add_dependencies(object_positions ${catkin_EXPORTED_TARGETS})
 
 
 ##############################################################################

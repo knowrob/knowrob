@@ -63,7 +63,7 @@ public class JSONPrologNode extends AbstractNodeMain {
 
 	@Override
 	public GraphName getDefaultNodeName() {
-		return GraphName.of("json_prolog/server");
+		return GraphName.of("json_prolog");
 	}
 
 	@Override
@@ -112,10 +112,10 @@ public class JSONPrologNode extends AbstractNodeMain {
 		}
 
 		// create services
-		connectedNode.newServiceServer("query", json_prolog_msgs.PrologQuery._TYPE, new QueryCallback() );
-		connectedNode.newServiceServer("simple_query", json_prolog_msgs.PrologQuery._TYPE, new SimpleQueryCallback() );
-		connectedNode.newServiceServer("next_solution", json_prolog_msgs.PrologQuery._TYPE, new NextSolutionCallback() );
-		connectedNode.newServiceServer("finish", json_prolog_msgs.PrologQuery._TYPE, new FinishCallback() );
+		connectedNode.newServiceServer(getDefaultNodeName() + "/query", json_prolog_msgs.PrologQuery._TYPE, new QueryCallback() );
+		connectedNode.newServiceServer(getDefaultNodeName() + "/simple_query", json_prolog_msgs.PrologQuery._TYPE, new SimpleQueryCallback() );
+		connectedNode.newServiceServer(getDefaultNodeName() + "/next_solution", json_prolog_msgs.PrologQuery._TYPE, new NextSolutionCallback() );
+		connectedNode.newServiceServer(getDefaultNodeName() + "/finish", json_prolog_msgs.PrologQuery._TYPE, new FinishCallback() );
 
 		connectedNode.getLog().info("json_prolog initialized and waiting for queries.");
 
