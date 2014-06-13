@@ -29,8 +29,8 @@
 
 :- use_module(library('semweb/rdfs')).
 % :- use_module(library('thea/owl_parser')).
-:- use_module(library('semweb/owl')).
-:- use_module(library('semweb/rdfs_computable')).
+:- use_module(library('owl')).
+:- use_module(library('rdfs_computable')).
 % :- use_module(library('tf_prolog')).
 :- use_module(library('knowrob_objects')).
 :- use_module(library('owl_export')).
