@@ -32,17 +32,14 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % dependencies
 
-%:- register_ros_package(ias_knowledge_base).
-%:- register_ros_package(ias_prolog_addons).
-
-:- register_ros_package(semweb).
-:- use_module(library('semweb/rdfs')).
-:- use_module(library('semweb/rdf_db')).
-
-:- rdf_db:rdf_register_ns(knowrob,'http://ias.cs.tum.edu/kb/knowrob.owl#',[keep(true)]).
-:- rdf_load('@LOCAL_PACKAGE_PATH@/rdf/locations.rdf',omics).
-:- rdf_load('@LOCAL_PACKAGE_PATH@/rdf/roboearth.rdf',roboearth).
+:- register_ros_package(knowrob_common).
+:- use_module(library('owl_parser')).
 
 :- register_ros_package(knowrob_omics).
 :- use_module(library('omics')).
+
+:- rdf_db:rdf_register_ns(knowrob,'http://ias.cs.tum.edu/kb/knowrob.owl#',[keep(true)]).
+:- owl_parser:owl_parse('package://knowrob_omics/rdf/locations.rdf').
+:- owl_parser:owl_parse('package://knowrob_omics/rdf/roboearth.rdf').
+
 

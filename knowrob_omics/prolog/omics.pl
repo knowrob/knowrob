@@ -67,6 +67,8 @@ POSSIBILITY OF SUCH DAMAGE.
   allProbableLocationOfObject(r,-),
   allProbableLocInstancesOfObject(r,-).
 
+:- rdf_db:rdf_register_ns(knowrob,'http://ias.cs.tum.edu/kb/knowrob.owl#',[keep(true)]).
+  
 allProbableLocInstancesOfObject(ObjT,LocInstances):-
   allProbableLocationOfObject(ObjT, AllProbLoc), 
   findall([P, I], (member([P, Type], AllProbLoc), owl_individual_of(I,Type)), LocInstances).
