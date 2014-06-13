@@ -50,6 +50,10 @@
 	  print_objects_at_location(r,r),
 	  display_object_images_at_location(r).
 
+
+:- rdf_db:rdf_register_ns(germandeli, 'http://ias.cs.tum.edu/kb/germandeli.owl#', [keep(true)]).
+
+	  
 %% best_location_maxMaxWup(+Object, -BestLocation).
 %
 % computes the best location where to place a certain object
