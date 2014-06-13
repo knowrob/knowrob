@@ -9,7 +9,7 @@ project(json_prolog)
 # Catkin
 ##############################################################################
 
-find_package(catkin REQUIRED rosjava_build_tools)
+find_package(catkin REQUIRED rosjava_build_tools roscpp rospy json_prolog_msgs)
 
 # Set the gradle targets you want catkin's make to run by default, e.g.
 #   catkin_rosjava_setup(installApp)
@@ -19,11 +19,28 @@ catkin_rosjava_setup(installApp publishMavenJavaPublicationToMavenRepository)
 
 catkin_package()
 
+
 include(FindPkgConfig)
 pkg_check_modules(SWIPL REQUIRED swipl)
 include_directories(${SWIPL_INCLUDE_DIRS})
 link_directories(${SWIPL_LIBRARY_DIRS})
 
+# C++ client library
+include_directories(include ${catkin_INCLUDE_DIRS})
+
+find_package(PkgConfig)
+pkg_check_modules(JSON_GLIB REQUIRED json-glib-1.0)
+add_definitions(${JSON_GLIB_CFLAGS})
+link_directories(${JSON_GLIB_LIBRARIY_DIRS})
+
+add_library(json_prolog src/prolog.cpp src/prolog_query_proxy.cpp src/prolog_bindings.cpp src/prolog_value.cpp)
+target_link_libraries(json_prolog ${JSON_GLIB_LIBRARIES})
+
+add_executable(test_json_prolog examples/test_json_prolog.cpp)
+target_link_libraries(test_json_prolog json_prolog ${catkin_LIBRARIES})
+
+add_executable(object_positions examples/object_positions.cpp)
+target_link_libraries(object_positions json_prolog ${catkin_LIBRARIES})
 
 
 ##############################################################################
