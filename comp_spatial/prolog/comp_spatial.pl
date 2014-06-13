@@ -44,11 +44,9 @@
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
-:- use_module(library('semweb/rdfs_computable')).
-:- use_module(library('thea/owl_parser')).
+:- use_module(library('rdfs_computable')).
 :- use_module(library('knowrob_objects')).
 
-:- owl_parser:owl_parse('../owl/comp_spatial.owl', false, false, true).
 
 :- rdf_db:rdf_register_ns(knowrob,      'http://ias.cs.tum.edu/kb/knowrob.owl#',      [keep(true)]).
 :- rdf_db:rdf_register_ns(comp_spatial, 'http://ias.cs.tum.edu/kb/comp_spatial.owl#', [keep(true)]).

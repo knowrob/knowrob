@@ -19,7 +19,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % dependencies
 
-:- register_ros_package(ias_knowledge_base).
+:- register_ros_package(knowrob_common).
 :- register_ros_package(knowrob_objects).
 :- register_ros_package(comp_temporal).
 :- register_ros_package(comp_spatial).
@@ -29,7 +29,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % parse OWL files, register name spaces
 
-:- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/comp_spatial.owl', false, false, true).
+:- owl_parse('package://comp_spatial/owl/comp_spatial.owl').
 :- rdf_db:rdf_register_ns(comp_spatial, 'http://ias.cs.tum.edu/kb/comp_spatial.owl#',     [keep(true)]).
 
 
