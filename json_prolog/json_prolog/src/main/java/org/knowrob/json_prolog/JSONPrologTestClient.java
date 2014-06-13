@@ -27,9 +27,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-import edu.tum.cs.ias.knowrob.json_prolog.Prolog;
-import edu.tum.cs.ias.knowrob.json_prolog.PrologBindings;
-import edu.tum.cs.ias.knowrob.json_prolog.PrologQueryProxy;
+package org.knowrob.json_prolog;
+
+import org.knowrob.json_prolog.Prolog;
+import org.knowrob.json_prolog.PrologBindings;
+import org.knowrob.json_prolog.PrologQueryProxy;
 
 
 public class JSONPrologTestClient {
