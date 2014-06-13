@@ -33,14 +33,14 @@
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
-:- use_module(library('thea/owl_parser')).
-:- use_module(library('semweb/owl')).
-:- use_module(library('semweb/rdfs_computable')).
+:- use_module(library('owl')).
+:- use_module(library('owl_parser')).
+:- use_module(library('rdfs_computable')).
 :- use_module(library('knowrob_owl')).
 
 
-:- owl_parser:owl_parse('../owl/srdl2-action.owl', false, false, true).
-:- owl_parser:owl_parse('../owl/PR2.owl', false, false, true).
+:- owl_parser:owl_parse('package://mod_srdl/owl/srdl2-action.owl').
+:- owl_parser:owl_parse('package://mod_srdl/owl/PR2.owl').
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(srdl2, 'http://ias.cs.tum.edu/kb/srdl2.owl#', [keep(true)]).

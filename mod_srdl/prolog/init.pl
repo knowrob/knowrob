@@ -15,12 +15,11 @@
 %% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %%
 
-:- register_ros_package(ias_knowledge_base).
-:- register_ros_package(mod_srdl).
 :- register_ros_package(knowrob_common).
+:- register_ros_package(mod_srdl).
 
 :- use_module(library('srdl2')).
-:- use_module(library('knowrob_owl')).
+
 
 :- rdf_db:rdf_register_ns(pr2, 'http://ias.cs.tum.edu/kb/PR2.owl#', [keep(true)]).
 
