@@ -15,3 +15,4 @@
  */
 
 include 'knowrob_vis'
+include 'data_vis_msgs'
