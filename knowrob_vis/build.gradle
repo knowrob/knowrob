@@ -55,6 +55,7 @@ subprojects {
       to see what is going on under the hood.
     */
     apply plugin: 'ros-java'
+    apply plugin: 'eclipse'
 }
 
 /*
