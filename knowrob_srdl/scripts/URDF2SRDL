@@ -1,0 +1,8 @@
+#!/bin/bash
+
+export LD_LIBRARY_PATH=/usr/lib/swi-prolog/lib/i386:$LD_LIBRARY_PATH
+export LD_PRELOAD=libswipl.so
+
+echo "`rospack find knowrob_srdl`/knowrob_srdl/build/install/knowrob_srdl/bin/knowrob_srdl org.knowrob.knowrob_srdl.URDF2SRDL"
+
+`rospack find knowrob_srdl`/knowrob_srdl/build/install/knowrob_srdl/bin/knowrob_srdl $@ 2>&1
