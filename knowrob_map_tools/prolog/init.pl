@@ -16,13 +16,8 @@
 %%
 
 :- register_ros_package(comp_spatial).
-:- use_module(library('comp_spatial')).
 
-%:- consult('semRoom_semantic_map').
-% :- consult('ias_semantic_map').
-:- consult('ccrl2_semantic_map').
-:- consult('semantic_map_utils').
+:- register_ros_package(knowrob_map_tools).
 
-% :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/ias_map_addons.owl', false, false, true).
-% :- rdf_db:rdf_register_ns(map_addons, 'http://ias.cs.tum.edu/kb/map_addons.owl#', [keep(true)]).
+:- use_module(library('semantic_map_utils')).
 
