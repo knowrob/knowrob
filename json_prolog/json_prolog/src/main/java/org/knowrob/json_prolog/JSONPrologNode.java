@@ -105,8 +105,8 @@ public class JSONPrologNode extends AbstractNodeMain {
 				}
 			}
 
-			if(params.has("goal")) {
-				String goal = params.getString("goal");
+			if(params.has("initial_goal")) {
+				String goal = params.getString("initial_goal");
 				new jpl.Query(goal).oneSolution();
 			}
 		}
