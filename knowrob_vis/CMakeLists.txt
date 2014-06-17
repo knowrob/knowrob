@@ -9,7 +9,7 @@ project(knowrob_vis)
 # Catkin
 ##############################################################################
 
-find_package(catkin REQUIRED rosjava_build_tools data_vis_msgs)
+find_package(catkin REQUIRED rosjava_build_tools data_vis_msgs knowrob_common knowrob_mongo)
 
 # Set the gradle targets you want catkin's make to run by default, e.g.
 #   catkin_rosjava_setup(installApp)
@@ -18,7 +18,7 @@ find_package(catkin REQUIRED rosjava_build_tools data_vis_msgs)
 catkin_rosjava_setup(installApp publishMavenJavaPublicationToMavenRepository)
 
 catkin_package(
-    DEPENDS knowrob_common
+    DEPENDS knowrob_common knowrob_mongo
 )
 
 ##############################################################################

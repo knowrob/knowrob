@@ -12,21 +12,22 @@ import java.text.DecimalFormat;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Quat4d;
 
+import org.ros.message.Duration;
+import org.ros.message.Time;
+import org.ros.namespace.GraphName;
+import org.ros.node.AbstractNodeMain;
+import org.ros.node.ConnectedNode;
+import org.ros.node.topic.Publisher;
+import org.knowrob.owl.OWLThing;
+import org.knowrob.prolog.PrologInterface;
+
 import org.knowrob.tfmemory.TFMemory;
 
-import ros.NodeHandle;
-import ros.Publisher;
-import ros.Ros;
-import ros.RosException;
-import ros.communication.Duration;
-import ros.communication.Time;
-import ros.pkg.std_msgs.msg.ColorRGBA;
-import ros.pkg.tf.msg.tfMessage;
-import ros.pkg.visualization_msgs.msg.Marker;
-import ros.pkg.visualization_msgs.msg.MarkerArray;
+import std_msgs.ColorRGBA;
 import tfjava.StampedTransform;
-import edu.tum.cs.ias.knowrob.owl.OWLThing;
-import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
+import visualization_msgs.Marker;
+import visualization_msgs.MarkerArray;
+
 
 
 /**
@@ -39,12 +40,16 @@ import edu.tum.cs.ias.knowrob.prolog.PrologInterface;
  * @author tenorth@cs.uni-bremen.de
  *
  */
-public class MarkerVisualization {
+public class MarkerVisualization extends AbstractNodeMain {
 
-	static Ros ros;
-	public static NodeHandle n;
 	Publisher<MarkerArray> pub;
-	
+	ConnectedNode node;
+
+	@Override
+	public GraphName getDefaultNodeName() {
+		return GraphName.of("knowrob_vis");
+	}
+
 	/**
 	 * Store the markers to be published
 	 */
@@ -76,8 +81,6 @@ public class MarkerVisualization {
 	 */
 	public MarkerVisualization() {
 
-		initRos();
-
 		// only needed for testing from Java:
 		//PrologInterface.initJPLProlog("knowrob_vis");
 		//PrologInterface.executeQuery("register_ros_package(knowrob_mongo)");
@@ -87,13 +90,17 @@ public class MarkerVisualization {
 		highlighted = new ConcurrentHashMap<String, ColorRGBA>(8, 0.9f, 1);
 		trajectories = new HashMap<String, List<String>>();
 
-		try {
-			pub = n.advertise("visualization_marker_array", new MarkerArray(), 1000, true);
-		} catch (RosException e) {
-			e.printStackTrace();
-		}
 	}
 
+	  @Override
+	  public void onStart(final ConnectedNode connectedNode) {
+		
+		  node = connectedNode;
+	    pub = connectedNode.newPublisher("visualization_marker_array", visualization_msgs.MarkerArray._TYPE);
+	    
+	    
+	  }
+	
 	/**
 	 * Add object 'identifier' to the visualization.
 	 *
@@ -213,7 +220,7 @@ public class MarkerVisualization {
 
 		if(!highlight) {
 			synchronized (markers) {
-				markers.get(identifier).color = highlighted.get(identifier);
+				markers.get(identifier).setColor(highlighted.get(identifier));
 			}
 
 		} else {
@@ -221,18 +228,17 @@ public class MarkerVisualization {
 			synchronized (highlighted) {
 				synchronized (markers) {
 					if(markers.get(identifier)!=null) {
-						highlighted.put(identifier, markers.get(identifier).color);
+						highlighted.put(identifier, markers.get(identifier).getColor());
 					}
 				}
 			}
 
 			synchronized (markers) {
 				if(markers.get(identifier)!=null) {
-					markers.get(identifier).color = new ColorRGBA();
-					markers.get(identifier).color.r = ((float) r)/255;
-					markers.get(identifier).color.g = ((float) g)/255;
-					markers.get(identifier).color.b = ((float) b)/255;
-					markers.get(identifier).color.a = ((float) a)/255;
+					markers.get(identifier).getColor().setR(((float) r)/255);
+					markers.get(identifier).getColor().setG(((float) g)/255);
+					markers.get(identifier).getColor().setB(((float) b)/255);
+					markers.get(identifier).getColor().setA(((float) a)/255);
 				}
 			}
 		}
@@ -269,7 +275,7 @@ public class MarkerVisualization {
 		synchronized (highlighted) {
 			synchronized (markers) {
 				for(String obj : highlighted.keySet()) {
-					markers.get(obj).color = highlighted.get(obj);
+					markers.get(obj).setColor(highlighted.get(obj));
 				}
 			}
 		}
@@ -335,19 +341,6 @@ public class MarkerVisualization {
 	// Helper methods: read data from Prolog, create data structures
 	//
 
-	/**
-	 * Thread-safe ROS initialization
-	 */
-	protected static void initRos() {
-
-		ros = Ros.getInstance();
-
-		if(!Ros.getInstance().isInitialized()) {
-			ros.init("knowrob_vis");
-		}
-		n = ros.createNodeHandle();
-
-	}
 	
 
 	/**
@@ -357,14 +350,13 @@ public class MarkerVisualization {
 	public void publishMarkers() {
 		synchronized (markers) {
 			
-			MarkerArray arr = new MarkerArray();
+			MarkerArray arr = pub.newMessage();
 			
 			for(Marker mrk : markers.values()) {
-				arr.markers.add(mrk);
+				arr.getMarkers().add(mrk);
 			}
 			pub.publish(arr);
 		}
-		n.spinOnce();
 	}
 
 
@@ -405,17 +397,16 @@ public class MarkerVisualization {
 
 		if(blk!=null)
 			return null;
+		
+		Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
 
+		m.getHeader().setFrameId("/map");
+		m.getHeader().setStamp(node.getCurrentTime());
+		m.setNs("knowrob_vis");
+		m.setId(id++);
 
-		Marker m = new Marker();
-
-		m.header.frame_id = "/map";
-		m.header.stamp = Time.now();
-		m.ns = "knowrob_vis";
-		m.id = id++;
-
-		m.action = Marker.ADD;
-		m.lifetime = new Duration();
+		m.setAction(Marker.ADD);
+		m.setLifetime(new Duration());
 
 		try {
 			// read object pose
@@ -436,20 +427,20 @@ public class MarkerVisualization {
 				Quat4d q = new Quat4d();
 				q.set(poseMat);
 
-				m.pose.orientation.w = q.w;
-				m.pose.orientation.x = q.x;
-				m.pose.orientation.y = q.y;
-				m.pose.orientation.z = q.z;
+				m.getPose().getOrientation().setW(q.w);
+				m.getPose().getOrientation().setX(q.x);
+				m.getPose().getOrientation().setY(q.y);
+				m.getPose().getOrientation().setZ(q.z);
 
-				m.pose.position.x = poseMat.m03;
-				m.pose.position.y = poseMat.m13;
-				m.pose.position.z = poseMat.m23;
+				m.getPose().getPosition().setX(poseMat.m03);
+				m.getPose().getPosition().setY(poseMat.m13);
+				m.getPose().getPosition().setZ(poseMat.m23);
 
 				// debug
 				//System.err.println("adding " + identifier + " at pose [" + m.pose.position.x + ", " + m.pose.position.y + ", " + m.pose.position.z + "]");
 
 			} else {
-				m.type = Marker.CUBE;
+				m.setType(Marker.CUBE);
 			}
 
 		} catch (Exception e) {
@@ -466,14 +457,14 @@ public class MarkerVisualization {
 					"rdf_has('"+identifier+"', knowrob:heightOfObject, literal(type(_, H)))");
 
 			if (res!=null && res.get("D") != null && res.get("D").size() > 0 && res.get("D").get(0)!=null) {
-				m.scale.x = Double.valueOf(OWLThing.removeSingleQuotes(res.get("D").get(0)));
-				m.scale.y = Double.valueOf(OWLThing.removeSingleQuotes(res.get("W").get(0)));
-				m.scale.z = Double.valueOf(OWLThing.removeSingleQuotes(res.get("H").get(0)));
+				m.getScale().setX(Double.valueOf(OWLThing.removeSingleQuotes(res.get("D").get(0))));
+				m.getScale().setY(Double.valueOf(OWLThing.removeSingleQuotes(res.get("W").get(0))));
+				m.getScale().setZ(Double.valueOf(OWLThing.removeSingleQuotes(res.get("H").get(0))));
 
 			} else {
-				m.scale.x = 0.05;
-				m.scale.y = 0.05;
-				m.scale.z = 0.05;
+				m.getScale().setX(0.05);
+				m.getScale().setY(0.05);
+				m.getScale().setZ(0.05);
 			}
 
 		} catch (Exception e) {
@@ -488,22 +479,22 @@ public class MarkerVisualization {
 
 			if (res!=null && res.get("Path") != null && res.get("Path").size() > 0 && res.get("Path").get(0)!=null) {
 
-				m.type = Marker.MESH_RESOURCE;
-				m.mesh_resource = OWLThing.removeSingleQuotes(res.get("Path").get(0));
+				m.setType(Marker.MESH_RESOURCE);
+				m.setMeshResource(OWLThing.removeSingleQuotes(res.get("Path").get(0)));
 
-				m.scale.x = 1.0;
-				m.scale.y = 1.0;
-				m.scale.z = 1.0;
+				m.getScale().setX(1.0);
+				m.getScale().setY(1.0);
+				m.getScale().setZ(1.0);
 
 			} else {
-				m.type = Marker.CUBE;
+				m.setType(Marker.CUBE);
 			}
 
 			// set light grey color by default
-			m.color.r = 0.6f;
-			m.color.g = 0.6f;
-			m.color.b = 0.6f;
-			m.color.a = 1.0f;
+			m.getColor().setR(0.6f);
+			m.getColor().setG(0.6f);
+			m.getColor().setB(0.6f);
+			m.getColor().setA(1.0f);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -521,26 +512,26 @@ public class MarkerVisualization {
 	 */
 	Marker readLinkMarkerFromProlog(String link, String timepoint) {
 
-		Marker m = new Marker();
+		Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
 
-		m.header.frame_id = "/map";
-		m.header.stamp = Time.now();
-		m.ns = "knowrob_vis";
-		m.id = id++;
+		m.getHeader().setFrameId("/map");
+		m.getHeader().setStamp(node.getCurrentTime());
+		m.setNs("knowrob_vis");
+		m.setId(id++);
 
-		m.action = Marker.ADD;
-		m.lifetime = new Duration();
+		m.setAction(Marker.ADD);
+		m.setLifetime(new Duration());
 
-		m.scale.x = 0.05;
-		m.scale.y = 0.05;
-		m.scale.z = 0.05;
+		m.getScale().setX(0.05);
+		m.getScale().setY(0.05);
+		m.getScale().setZ(0.05);
 
-		m.type = Marker.ARROW;
+		m.setType(Marker.ARROW);
 
-		m.color.r = 1.0f;
-		m.color.g = 1.0f;
-		m.color.b = 0.0f;
-		m.color.a = 1.0f;
+		m.getColor().setR(1.0f);
+		m.getColor().setG(1.0f);
+		m.getColor().setB(0.0f);
+		m.getColor().setA(1.0f);
 
 		try {
 			
@@ -554,14 +545,14 @@ public class MarkerVisualization {
 			time.nsecs = (int) (1E9 * (posix_ts - ((int) posix_ts)));
 			
 			StampedTransform tr = tf.lookupTransform("/map", link, time);
-			m.pose.position.x = tr.getTranslation().x;
-			m.pose.position.y = tr.getTranslation().y;
-			m.pose.position.z = tr.getTranslation().z;
+			m.getPose().getPosition().setX(tr.getTranslation().x);
+			m.getPose().getPosition().setY(tr.getTranslation().y);
+			m.getPose().getPosition().setZ(tr.getTranslation().z);
 
-			m.pose.orientation.w = tr.getRotation().w;
-			m.pose.orientation.x = tr.getRotation().x;
-			m.pose.orientation.y = tr.getRotation().y;
-			m.pose.orientation.z = tr.getRotation().z;
+			m.getPose().getOrientation().setW(tr.getRotation().w);
+			m.getPose().getOrientation().setX(tr.getRotation().x);
+			m.getPose().getOrientation().setY(tr.getRotation().y);
+			m.getPose().getOrientation().setZ(tr.getRotation().z);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
