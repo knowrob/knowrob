@@ -23,7 +23,7 @@
      xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#"
      xmlns:ccrl2_semantic_map_addons="http://ias.cs.tum.edu/kb/ccrl2_semantic_map_addons.owl#">
     <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/ccrl2_semantic_map_addons.owl#">
-        <owl:imports rdf:resource="package://ias_knowledge_base/owl/knowrob.owl"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
     </owl:Ontology>
 
 
