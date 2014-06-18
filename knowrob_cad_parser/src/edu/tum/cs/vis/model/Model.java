@@ -617,26 +617,46 @@ public class Model {
 		c.sub(p0);
 		// length of these vectors
 		float l2a = a.lengthSquared(), l2b = b.lengthSquared(), l2c = c.lengthSquared();
-		if (l2a == 0 || l2b == 0 || l2c == 0)
+		if (l2a == 0.0 || l2b == 0.0 || l2c == 0.0)
 			return;
 
 		Vector3f facenormal = new Vector3f();
 		facenormal.cross(a, b); // unscaled normal
 
+		float areaOfTriangle = facenormal.length() * 0.5f;
+
+		// check if NaN might arise for the normals and avoid it
+		if (areaOfTriangle == 0.0) {
+			System.out.println("tri: " + t + p0 + p1 + p2);
+			// System.out.println("a,b fn" + facenormal);
+			// System.out.println("ERROR: a b are collinear");
+			// System.out.println("a = " + a + "b = " + b + "c = " + c);
+			// System.out.println("e1 = " + t.getEdges()[0] + "e2 = " + t.getEdges()[1] + "e3 = "
+			// + t.getEdges()[2]);
+			// facenormal.cross(b, c);
+			// System.out.println("b,c fn " + facenormal);
+			// facenormal.cross(a, c);
+			// System.out.println("a,c fn " + facenormal);
+			return;
+		}
+
 		Vector3f normalP0 = (Vector3f) facenormal.clone();
-		normalP0.scale(1.0f / (l2a * l2c));
+		// normalP0.scale(1.0f / (l2a * l2c));
+		normalP0.scale(1.0f / areaOfTriangle);
 		synchronized (p0.getNormalVector()) {
 			p0.getNormalVector().add(normalP0);
 		}
 
 		Vector3f normalP1 = (Vector3f) facenormal.clone();
-		normalP1.scale(1.0f / (l2b * l2a));
+		// normalP1.scale(1.0f / (l2b * l2a));
+		normalP1.scale(1.0f / areaOfTriangle);
 		synchronized (p1.getNormalVector()) {
 			p1.getNormalVector().add(normalP1);
 		}
 
 		Vector3f normalP2 = (Vector3f) facenormal.clone();
-		normalP2.scale(1.0f / (l2c * l2b));
+		// normalP2.scale(1.0f / (l2c * l2b));
+		normalP2.scale(1.0f / areaOfTriangle);
 		synchronized (p2.getNormalVector()) {
 			p2.getNormalVector().add(normalP2);
 		}

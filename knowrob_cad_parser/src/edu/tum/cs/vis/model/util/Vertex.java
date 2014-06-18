@@ -37,7 +37,7 @@ public class Vertex extends Point3f {
 	private Vector3f			normalVector		= new Vector3f();
 
 	/**
-	 * voronoi area of vertex
+	 * Voronoi area of vertex
 	 */
 	private float				pointarea			= 0f;
 
@@ -50,6 +50,11 @@ public class Vertex extends Point3f {
 	 * Overrides color of triangle with this color.
 	 */
 	public Color				overrideColor		= null;
+
+	/**
+	 * States whether the vertex is a sharp vertex or not
+	 */
+	private boolean				isSharpVertex		= false;
 
 	/**
 	 * List of direct neighbors of vertex
@@ -247,4 +252,17 @@ public class Vertex extends Point3f {
 		}
 	}
 
+	/**
+	 * Returns if the Vertex is sharp or not
+	 */
+	public boolean isSharpVertex() {
+		return isSharpVertex;
+	}
+
+	/**
+	 * Sets a Vertex to be sharp
+	 */
+	public void isSharpVertex(final boolean value) {
+		this.isSharpVertex = value;
+	}
 }

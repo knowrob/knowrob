@@ -66,6 +66,16 @@ public class Triangle extends DrawObject {
 	protected Set<Triangle>		neighbors			= new HashSet<Triangle>(3);
 
 	/**
+	 * List of sharp edges found for this triangle
+	 */
+	protected Set<Vector3f>		sharpEdges			= new HashSet<Vector3f>();
+
+	/**
+	 * Stores if a triangle contains three sharp vertices
+	 */
+	private boolean				isSharpTriangle		= false;
+
+	/**
 	 * Initializes a triangle with given number of edges (Triangle: 3)
 	 * 
 	 */
@@ -166,6 +176,26 @@ public class Triangle extends DrawObject {
 				lock.unlock();
 		}
 		return add;
+	}
+
+	/**
+	 * Add an isolated neighbor to the neighbors list. If list contains already neighbor this
+	 * doesn't add again. If not, the neighbor will be added and this instance will be added as a
+	 * neighbor in the given neighbor instance.
+	 * 
+	 * Use with care to add just created triangles for the sharp detection process!
+	 * 
+	 * @param neighbor
+	 *            neighbor to add
+	 */
+	public void addNeighbor(Triangle neighbor) {
+		synchronized (neighbors) {
+			neighbors.add(neighbor);
+		}
+		synchronized (neighbor.neighbors) {
+			neighbor.neighbors.add(this);
+		}
+
 	}
 
 	/**
@@ -320,6 +350,27 @@ public class Triangle extends DrawObject {
 	 */
 	public Set<Triangle> getNeighbors() {
 		return neighbors;
+	}
+
+	/**
+	 * Get set of all the sharp edges of this triangle
+	 * 
+	 * @return set of all sharp edges
+	 */
+	public Set<Vector3f> getSharpEdges() {
+		return sharpEdges;
+	}
+
+	/**
+	 * Adds a sharp edge to the triangle Checks if it is already marked as sharp edge irrespective
+	 * of the direction
+	 */
+	public void addSharpEdge(Vector3f edge) {
+		Vector3f edgeNegated = new Vector3f();
+		edgeNegated.negate(edge);
+		if ((!sharpEdges.contains(edge)) && (!sharpEdges.contains(edgeNegated))) {
+			sharpEdges.add(edge);
+		}
 	}
 
 	/**
@@ -612,6 +663,22 @@ public class Triangle extends DrawObject {
 		this.texPosition = texPosition;
 	}
 
+	/**
+	 * States whether or not the triangle has 3 sharp vertices
+	 */
+	public boolean isSharpTriangle() {
+		return isSharpTriangle;
+	}
+
+	/**
+	 * Checks if the triangle has indeed 3 sharp vertices and then sets its property accordingly
+	 */
+	public void checkIsSharpTriangle() {
+		if (position[0].isSharpVertex() && position[1].isSharpVertex()
+				&& position[2].isSharpVertex())
+			this.isSharpTriangle = true;
+	}
+
 	@Override
 	public void updateCentroid() {
 		centroid = new Point3f(0, 0, 0);
@@ -621,5 +688,4 @@ public class Triangle extends DrawObject {
 		}
 		centroid.scale(1f / position.length);
 	}
-
 }
