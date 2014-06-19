@@ -618,38 +618,38 @@ public class Model {
 		// length of these vectors
 		float l2a = a.lengthSquared(), l2b = b.lengthSquared(), l2c = c.lengthSquared();
 		if (l2a == 0.0 || l2b == 0.0 || l2c == 0.0) {
-			System.out.println("skipping triangle: " + t + "\n(" + p0 + p1 + p2 + ")");
+			logger.debug("skipping triangle: " + t + "\n(" + p0 + p1 + p2 + ")");
 			return;
 		}
 
 		Vector3f facenormal = new Vector3f();
 		facenormal.cross(a, b); // unscaled normal
 
-		float areaOfTriangle = facenormal.length() * 0.5f;
+		// float areaOfTriangle = facenormal.length() * 0.5f;
 
 		// check if NaN might arise for the normals and avoid it
-		if (areaOfTriangle == 0.0) {
-			System.out.println("skipping triangle: " + t + "\n(" + p0 + p1 + p2 + ")");
-			return;
-		}
+		// if (areaOfTriangle == 0.0) {
+		// logger.debug("skipping triangle: " + t + "\n(" + p0 + p1 + p2 + ")");
+		// return;
+		// }
 
 		Vector3f normalP0 = (Vector3f) facenormal.clone();
-		// normalP0.scale(1.0f / (l2a * l2c));
-		normalP0.scale(1.0f / areaOfTriangle);
+		normalP0.scale(1.0f / (l2a * l2c));
+		// normalP0.scale(1.0f / areaOfTriangle);
 		synchronized (p0.getNormalVector()) {
 			p0.getNormalVector().add(normalP0);
 		}
 
 		Vector3f normalP1 = (Vector3f) facenormal.clone();
-		// normalP1.scale(1.0f / (l2b * l2a));
-		normalP1.scale(1.0f / areaOfTriangle);
+		normalP1.scale(1.0f / (l2b * l2a));
+		// normalP1.scale(1.0f / areaOfTriangle);
 		synchronized (p1.getNormalVector()) {
 			p1.getNormalVector().add(normalP1);
 		}
 
 		Vector3f normalP2 = (Vector3f) facenormal.clone();
-		// normalP2.scale(1.0f / (l2c * l2b));
-		normalP2.scale(1.0f / areaOfTriangle);
+		normalP2.scale(1.0f / (l2c * l2b));
+		// normalP2.scale(1.0f / areaOfTriangle);
 		synchronized (p2.getNormalVector()) {
 			p2.getNormalVector().add(normalP2);
 		}
