@@ -617,8 +617,10 @@ public class Model {
 		c.sub(p0);
 		// length of these vectors
 		float l2a = a.lengthSquared(), l2b = b.lengthSquared(), l2c = c.lengthSquared();
-		if (l2a == 0.0 || l2b == 0.0 || l2c == 0.0)
+		if (l2a == 0.0 || l2b == 0.0 || l2c == 0.0) {
+			System.out.println("skipping triangle: " + t + "\n(" + p0 + p1 + p2 + ")");
 			return;
+		}
 
 		Vector3f facenormal = new Vector3f();
 		facenormal.cross(a, b); // unscaled normal
@@ -627,16 +629,7 @@ public class Model {
 
 		// check if NaN might arise for the normals and avoid it
 		if (areaOfTriangle == 0.0) {
-			System.out.println("tri: " + t + p0 + p1 + p2);
-			// System.out.println("a,b fn" + facenormal);
-			// System.out.println("ERROR: a b are collinear");
-			// System.out.println("a = " + a + "b = " + b + "c = " + c);
-			// System.out.println("e1 = " + t.getEdges()[0] + "e2 = " + t.getEdges()[1] + "e3 = "
-			// + t.getEdges()[2]);
-			// facenormal.cross(b, c);
-			// System.out.println("b,c fn " + facenormal);
-			// facenormal.cross(a, c);
-			// System.out.println("a,c fn " + facenormal);
+			System.out.println("skipping triangle: " + t + "\n(" + p0 + p1 + p2 + ")");
 			return;
 		}
 

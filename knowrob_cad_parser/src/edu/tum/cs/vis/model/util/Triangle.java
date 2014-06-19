@@ -673,10 +673,13 @@ public class Triangle extends DrawObject {
 	/**
 	 * Checks if the triangle has indeed 3 sharp vertices and then sets its property accordingly
 	 */
-	public void checkIsSharpTriangle() {
+	public boolean checkIsSharpTriangle() {
 		if (position[0].isSharpVertex() && position[1].isSharpVertex()
-				&& position[2].isSharpVertex())
+				&& position[2].isSharpVertex()) {
 			this.isSharpTriangle = true;
+			return true;
+		}
+		return false;
 	}
 
 	@Override
