@@ -33,12 +33,12 @@ public class Triangle extends DrawObject {
 	/**
 	 * auto generated
 	 */
-	private static final long	serialVersionUID	= -5164768039180386782L;
+	private static final long	serialVersionUID		= -5164768039180386782L;
 
 	/**
 	 * log4j logger
 	 */
-	private static Logger		logger				= Logger.getLogger(Triangle.class);
+	private static Logger		logger					= Logger.getLogger(Triangle.class);
 
 	/**
 	 * Texture-Points
@@ -48,12 +48,12 @@ public class Triangle extends DrawObject {
 	/**
 	 * Triangles may have normal vector
 	 */
-	protected Vector3f			normalVector		= null;
+	protected Vector3f			normalVector			= null;
 
 	/**
 	 * Voronoi area of triangle
 	 */
-	protected Vector3f			cornerarea			= null;
+	protected Vector3f			cornerarea				= null;
 
 	/**
 	 * Centroid of triangle
@@ -63,17 +63,42 @@ public class Triangle extends DrawObject {
 	/**
 	 * List of all direct neighbor triangles
 	 */
-	protected Set<Triangle>		neighbors			= new HashSet<Triangle>(3);
+	protected Set<Triangle>		neighbors				= new HashSet<Triangle>(3);
 
 	/**
 	 * List of sharp edges found for this triangle
 	 */
-	protected Set<Vector3f>		sharpEdges			= new HashSet<Vector3f>();
+	protected Set<Vector3f>		sharpEdges				= new HashSet<Vector3f>();
 
 	/**
-	 * Stores if a triangle contains three sharp vertices
+	 * Stores if a triangle contains three "sharp" vertices
 	 */
-	private boolean				isSharpTriangle		= false;
+	private boolean				isSharpTriangle			= false;
+
+	/**
+	 * Stores if a triangle is a "seed triangle" as described in
+	 * 
+	 * Guillaume Lavoue, Florent Dupont, Atilla Baskurt, "A new CAD mesh segmentation method, based
+	 * on curvature tensor analysis", Computer-Aided Design 37(2005) 975-987
+	 */
+	private boolean				isSeedTriangle			= false;
+
+	/**
+	 * Stores the region label which the triangle belongs to
+	 */
+	private int					regionLabel				= -1;
+
+	/**
+	 * Stores the Min and Max Curvature associated to the triangle in the case the triangle is a
+	 * "seed triangle" as defined in the paper
+	 * 
+	 * Guillaume Lavoue, Florent Dupont, Atilla Baskurt, "A new CAD mesh segmentation method, based
+	 * on curvature tensor analysis", Computer-Aided Design 37(2005) 975-987.
+	 * 
+	 * KMin is stored on position 0 and KMax is stored on position 1.
+	 * 
+	 */
+	private final float[]		curvatureMinMaxValue	= { 0.0f, 0.0f };
 
 	/**
 	 * Initializes a triangle with given number of edges (Triangle: 3)
@@ -680,6 +705,130 @@ public class Triangle extends DrawObject {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Sets the region label of the triangle
+	 */
+	public void setRegionLabel(final int newLabel) {
+		this.regionLabel = newLabel;
+	}
+
+	/**
+	 * Gets the region label property of the current Triangle object
+	 */
+	public int getRegionLabel() {
+		return regionLabel;
+	}
+
+	/**
+	 * Helper method that returns the number of sharp vertices of the current triangle object, as
+	 * defined in
+	 * 
+	 * Guillaume Lavoue, Florent Dupont, Atilla Baskurt, "A new CAD mesh segmentation method, based
+	 * on curvature tensor analysis", Computer-Aided Design 37(2005) 975-987.
+	 * 
+	 */
+	public int numOfSharpVertices() {
+		int cont = 0;
+		for (int i = 0; i < position.length; ++i) {
+			if (position[i].isSharpVertex()) {
+				cont++;
+			}
+		}
+		return cont;
+	}
+
+	/**
+	 * Checks if the triangle is a "seed triangle" as described in the paper:
+	 * 
+	 * Guillaume Lavoue, Florent Dupont, Atilla Baskurt, "A new CAD mesh segmentation method, based
+	 * on curvature tensor analysis", Computer-Aided Design 37(2005) 975-987.
+	 * 
+	 * and if this is true it also sets the triangle labeled KMin and KMax values as described in
+	 * the same paper
+	 */
+	public boolean updateIsSeedTriangle() {
+		int numOfSharpVertices = this.numOfSharpVertices();
+		if (numOfSharpVertices == 0) {
+			if (((position[0].getClusterCurvatureVal()[0] == position[1].getClusterCurvatureVal()[0]) && (position[1]
+					.getClusterCurvatureVal()[0] == position[2].getClusterCurvatureVal()[0]))
+					&& ((position[0].getClusterCurvatureVal()[1] == position[1]
+							.getClusterCurvatureVal()[1]) && (position[1].getClusterCurvatureVal()[1] == position[2]
+							.getClusterCurvatureVal()[1]))) {
+				setCurvatureLevels(position[0].getClusterCurvatureVal()[0],
+						position[1].getClusterCurvatureVal()[1]);
+				this.isSeedTriangle = true;
+				return true;
+			}
+			this.isSeedTriangle = false;
+			return false;
+		} else if (numOfSharpVertices == 1) {
+			Vertex[] v = new Vertex[2];
+			int cont = 0;
+			if (position[0].isSharpVertex()) {
+				v[cont].set(position[0].x, position[0].y, position[0].z);
+				++cont;
+			}
+			if (position[1].isSharpVertex()) {
+				v[cont].set(position[1].x, position[1].y, position[1].z);
+				++cont;
+			}
+			if (position[2].isSharpVertex() && cont < 2) {
+				v[cont].set(position[2].x, position[2].y, position[2].z);
+			}
+			if ((v[0].getClusterCurvatureVal()[0] == v[1].getClusterCurvatureVal()[0])
+					&& v[0].getClusterCurvatureVal()[1] == v[1].getClusterCurvatureVal()[1]) {
+				setCurvatureLevels(v[0].getClusterCurvatureVal()[0],
+						v[0].getClusterCurvatureVal()[1]);
+				this.isSeedTriangle = true;
+				return true;
+			}
+			this.isSeedTriangle = false;
+			return false;
+		} else if (numOfSharpVertices == 2) {
+			for (int i = 0; i < position.length; ++i) {
+				if (position[i].isSharpVertex()) {
+					setCurvatureLevels(position[i].getClusterCurvatureVal()[0],
+							position[i].getClusterCurvatureVal()[1]);
+					this.isSeedTriangle = true;
+					return true;
+				}
+			}
+			this.isSeedTriangle = false;
+			return false;
+		}
+		this.isSeedTriangle = false;
+		return false;
+	}
+
+	/**
+	 * Getter for the isSeedTriangle property. To be called after the update method has been called
+	 */
+	public boolean isSeedTriangle() {
+		return isSeedTriangle;
+	}
+
+	/**
+	 * Sets the curvature values for the current triangle when this is checked as being a "seed"
+	 * triangle, according to the paper
+	 * 
+	 * Guillaume Lavoue, Florent Dupont, Atilla Baskurt, "A new CAD mesh segmentation method, based
+	 * on curvature tensor analysis", Computer-Aided Design 37(2005) 975-987.
+	 * 
+	 */
+	private void setCurvatureLevels(final float minCurvatureLevel, final float maxCurvatureLevel) {
+		this.curvatureMinMaxValue[0] = minCurvatureLevel;
+		this.curvatureMinMaxValue[1] = maxCurvatureLevel;
+	}
+
+	/**
+	 * Gets the curvature values for the current triangle.
+	 * 
+	 * To be called only if before the method isSeedTriangle has been called
+	 */
+	public float[] getCurvatureValues() {
+		return curvatureMinMaxValue;
 	}
 
 	@Override
