@@ -117,7 +117,7 @@ public class TFBroadcaster  extends AbstractNodeMain {
     
     public static void main(String argv[]) throws java.io.IOException {
     	
-        // Pulling the internals of rosrun to slightly customise what to run
+        // Pulling the internals of rosrun to slightly customize what to run
         String[] args = { "org.knowrob.tf_prolog.tfjava.TFBroadcaster" };
         CommandLineLoader loader = new CommandLineLoader(Lists.newArrayList(args));
         NodeConfiguration nodeConfiguration = loader.build();

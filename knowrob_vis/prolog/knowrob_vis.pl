@@ -87,6 +87,8 @@
 visualisation_canvas :-
     v_canvas(fail),
     jpl_new('org.knowrob.vis.MarkerVisualization', [], Canvas),
+    jpl_list_to_array(['org.knowrob.vis.MarkerVisualization'], Arr),
+    jpl_call('org.knowrob.utils.ros.RosUtilities', runRosjavaNode, [Canvas, Arr], _),
     retract(v_canvas(fail)),
     assert(v_canvas(Canvas)),!.
 visualisation_canvas(Canvas) :-

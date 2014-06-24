@@ -18,10 +18,16 @@ import org.ros.namespace.GraphName;
 import org.ros.node.AbstractNodeMain;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Publisher;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.DefaultHandler;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.knowrob.owl.OWLThing;
 import org.knowrob.prolog.PrologInterface;
 
 import org.knowrob.tfmemory.TFMemory;
+import org.knowrob.utils.ros.RosUtilities;
 
 import std_msgs.ColorRGBA;
 import tfjava.StampedTransform;
@@ -44,6 +50,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 	Publisher<MarkerArray> pub;
 	ConnectedNode node;
+	Server server;
 
 	@Override
 	public GraphName getDefaultNodeName() {
@@ -90,17 +97,18 @@ public class MarkerVisualization extends AbstractNodeMain {
 		highlighted = new ConcurrentHashMap<String, ColorRGBA>(8, 0.9f, 1);
 		trajectories = new HashMap<String, List<String>>();
 
+		startWebServer(1111);
 	}
 
-	  @Override
-	  public void onStart(final ConnectedNode connectedNode) {
-		
-		  node = connectedNode;
-	    pub = connectedNode.newPublisher("visualization_marker_array", visualization_msgs.MarkerArray._TYPE);
-	    
-	    
-	  }
-	
+	@Override
+	public void onStart(final ConnectedNode connectedNode) {
+
+		node = connectedNode;
+		pub = connectedNode.newPublisher("visualization_marker_array", visualization_msgs.MarkerArray._TYPE);
+
+
+	}
+
 	/**
 	 * Add object 'identifier' to the visualization.
 	 *
@@ -128,7 +136,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 		// read children and add them too
 		for(String child : readChildren(identifier))
 			addMarker(child, timepoint);
-		
+
 		publishMarkers();
 	}
 
@@ -161,7 +169,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 		// remove children and remove them too
 		for(String child : readChildren(identifier))
 			markers.remove(child);
-		
+
 		publishMarkers();
 	}
 
@@ -321,7 +329,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 	/**
 	 * Remove trajectory markers
-         */
+	 */
 	public void removeTrajectory(String tflink) {
 		if (trajectories.get(tflink) != null){
 			for (int i = 0; i < trajectories.get(tflink).size(); i++) {
@@ -341,7 +349,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	// Helper methods: read data from Prolog, create data structures
 	//
 
-	
+
 
 	/**
 	 * Create a MarkerArray from the internal 'markers' buffer and publish 
@@ -349,9 +357,9 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 */
 	public void publishMarkers() {
 		synchronized (markers) {
-			
+
 			MarkerArray arr = pub.newMessage();
-			
+
 			for(Marker mrk : markers.values()) {
 				arr.getMarkers().add(mrk);
 			}
@@ -367,7 +375,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @param timepoint
 	 */
 	protected void addMarker(String identifier, String timepoint) {
-		
+
 		// read marker from Prolog
 		Marker m = readMarkerFromProlog(identifier, timepoint);
 
@@ -378,7 +386,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 			}
 		}
 	}
-	
+
 
 	/**
 	 * Read object information from Prolog and create a marker from it
@@ -393,11 +401,11 @@ public class MarkerVisualization extends AbstractNodeMain {
 		// check if object is blacklisted
 		HashMap<String, Vector<String>> blk = PrologInterface.executeQuery(
 				"owl_individual_of('"+ identifier + "', 'http://ias.cs.tum.edu/kb/srdl2-comp.owl#UrdfJoint') ;" +
-				"owl_individual_of('"+ identifier + "', 'http://ias.cs.tum.edu/kb/knowrob.owl#RoomInAConstruction')");
+						"owl_individual_of('"+ identifier + "', 'http://ias.cs.tum.edu/kb/knowrob.owl#RoomInAConstruction')");
 
 		if(blk!=null)
 			return null;
-		
+
 		Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
 
 		m.getHeader().setFrameId("/map");
@@ -453,8 +461,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 			// read object dimensions if available, default to a 10cm cube
 			HashMap<String, Vector<String>> res = PrologInterface.executeQuery(
 					"rdf_has('"+identifier+"', knowrob:depthOfObject,  literal(type(_, D))), " +
-					"rdf_has('"+identifier+"', knowrob:widthOfObject,  literal(type(_, W))), " +
-					"rdf_has('"+identifier+"', knowrob:heightOfObject, literal(type(_, H)))");
+							"rdf_has('"+identifier+"', knowrob:widthOfObject,  literal(type(_, W))), " +
+							"rdf_has('"+identifier+"', knowrob:heightOfObject, literal(type(_, H)))");
 
 			if (res!=null && res.get("D") != null && res.get("D").size() > 0 && res.get("D").get(0)!=null) {
 				m.getScale().setX(Double.valueOf(OWLThing.removeSingleQuotes(res.get("D").get(0))));
@@ -534,16 +542,16 @@ public class MarkerVisualization extends AbstractNodeMain {
 		m.getColor().setA(1.0f);
 
 		try {
-			
+
 			TFMemory tf = TFMemory.getInstance();
-			
+
 			String ts = timepoint.split("timepoint_")[1];
 			double posix_ts = Double.valueOf(ts.substring(0, ts.length()-1));
-			
+
 			Time time = new Time();
 			time.secs = (int)posix_ts;
 			time.nsecs = (int) (1E9 * (posix_ts - ((int) posix_ts)));
-			
+
 			StampedTransform tr = tf.lookupTransform("/map", link, time);
 			m.getPose().getPosition().setX(tr.getTranslation().x);
 			m.getPose().getPosition().setY(tr.getTranslation().y);
@@ -553,7 +561,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 			m.getPose().getOrientation().setX(tr.getRotation().x);
 			m.getPose().getOrientation().setY(tr.getRotation().y);
 			m.getPose().getOrientation().setZ(tr.getRotation().z);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -591,8 +599,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 					// read all physical parts of all child objects
 					HashMap<String, Vector<String>> parts = PrologInterface.executeQuery(
 							"rdf_reachable("+mapParts.get("PART").get(i)+", knowrob:properPhysicalParts, P);" +
-							"rdf_reachable("+mapParts.get("PART").get(i)+", 'http://ias.cs.tum.edu/kb/srdl2-comp.owl#subComponent', P);" +
-							"rdf_reachable("+mapParts.get("PART").get(i)+", 'http://ias.cs.tum.edu/kb/srdl2-comp.owl#successorInKinematicChain', P)");
+									"rdf_reachable("+mapParts.get("PART").get(i)+", 'http://ias.cs.tum.edu/kb/srdl2-comp.owl#subComponent', P);" +
+									"rdf_reachable("+mapParts.get("PART").get(i)+", 'http://ias.cs.tum.edu/kb/srdl2-comp.owl#successorInKinematicChain', P)");
 
 					if(parts != null && parts.get("P") != null) {
 
@@ -609,19 +617,44 @@ public class MarkerVisualization extends AbstractNodeMain {
 	}
 
 
+	public void startWebServer(int port) {
+		
+        server = new Server(port);
+        
+        ResourceHandler resource_handler = new ResourceHandler();
+        
+        resource_handler.setDirectoriesListed(true);
+        resource_handler.setWelcomeFiles(new String[]{ "index.html", "robohow.html" });
+        resource_handler.setResourceBase(RosUtilities.rospackFind("knowrob_vis") + "/html");
+ 
+        DefaultHandler def = new DefaultHandler();
+        def.setServeIcon(false);
+        
+        HandlerList handlers = new HandlerList();
+        handlers.setHandlers(new Handler[] { resource_handler,  def});
+        server.setHandler(handlers);
+ 
+        try {
+			server.start();
+//	        server.join();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public static void main(String args[]) {
 
-//		MarkerVisualization vis = new MarkerVisualization();
-//		vis.addObjectWithChildren("http://ias.cs.tum.edu/kb/ias_semantic_map.owl#SemanticEnvironmentMap0", "http://ias.cs.tum.edu/kb/knowrob.owl#timepoint_1377766542");
-//		vis.highlight("http://ias.cs.tum.edu/kb/knowrob.owl#Refrigerator67", true, 150, 0, 0, 180);
+		//		MarkerVisualization vis = new MarkerVisualization();
+		//		vis.addObjectWithChildren("http://ias.cs.tum.edu/kb/ias_semantic_map.owl#SemanticEnvironmentMap0", "http://ias.cs.tum.edu/kb/knowrob.owl#timepoint_1377766542");
+		//		vis.highlight("http://ias.cs.tum.edu/kb/knowrob.owl#Refrigerator67", true, 150, 0, 0, 180);
 
-//		PrologInterface.executeQuery("mng_robot_pose_at_time(pr2:'PR2Robot1', '/map', knowrob:timepoint_1392799360, Pose)");
-//		PrologInterface.executeQuery("add_object_with_children(pr2:'PR2Robot1', knowrob:timepoint_1392799360)");
+		//		PrologInterface.executeQuery("mng_robot_pose_at_time(pr2:'PR2Robot1', '/map', knowrob:timepoint_1392799360, Pose)");
+		//		PrologInterface.executeQuery("add_object_with_children(pr2:'PR2Robot1', knowrob:timepoint_1392799360)");
 
-//		vis.addObjectWithChildren("pr2:'PR2Robot1'", "http://ias.cs.tum.edu/kb/knowrob.owl#timepoint_1377766542");
+		//		vis.addObjectWithChildren("pr2:'PR2Robot1'", "http://ias.cs.tum.edu/kb/knowrob.owl#timepoint_1377766542");
 
 
-//		vis.addObjectWithChildren("pr2:'PR2Robot1'", "http://ias.cs.tum.edu/kb/knowrob.owl#timepoint_1377766542");
+		//		vis.addObjectWithChildren("pr2:'PR2Robot1'", "http://ias.cs.tum.edu/kb/knowrob.owl#timepoint_1377766542");
 
 	}
 }
