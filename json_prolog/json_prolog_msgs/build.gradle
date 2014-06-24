@@ -19,3 +19,11 @@ try {
 } catch (NullPointerException e) {
     println("Couldn't find json_prolog_msgs on the ROS_PACKAGE_PATH")
 }
+
+task writeClasspath << {
+    buildDir.mkdirs()
+    new File(buildDir, "classpath.txt").text = configurations.runtime.asPath +
+                                               ":" + buildDir + "/libs/" +
+                                               project.name + "-" +
+                                               project.version + ".jar" + "\n"
+}

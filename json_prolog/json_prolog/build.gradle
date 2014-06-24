@@ -37,3 +37,11 @@ dependencies {
 
   compile 'org.ros.rosjava_messages:geometry_msgs:1.10.+'
 }
+
+task writeClasspath << {
+    buildDir.mkdirs()
+    new File(buildDir, "classpath.txt").text = configurations.runtime.asPath +
+                                               ":" + buildDir + "/libs/" +
+                                               project.name + "-" +
+                                               project.version + ".jar" + "\n"
+}

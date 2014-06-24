@@ -38,3 +38,10 @@ dependencies {
   compile 'jpl:jpl:3.1.4-alpha'
 }
 
+task writeClasspath << {
+    buildDir.mkdirs()
+    new File(buildDir, "classpath.txt").text = configurations.runtime.asPath +
+                                               ":" + buildDir + "/libs/" +
+                                               project.name + "-" +
+                                               project.version + ".jar" + "\n"
+}

@@ -15,7 +15,7 @@ find_package(catkin REQUIRED rosjava_build_tools data_vis_msgs knowrob_common kn
 #   catkin_rosjava_setup(installApp)
 # Note that the catkin_create_rosjava_xxx scripts will usually automatically
 # add tasks to this for you when you create subprojects.
-catkin_rosjava_setup(installApp publishMavenJavaPublicationToMavenRepository)
+catkin_rosjava_setup(installApp publishMavenJavaPublicationToMavenRepository writeClasspath)
 
 catkin_package(
     DEPENDS knowrob_common knowrob_mongo
