@@ -3,8 +3,17 @@ package org.knowrob.utils.ros;
 import java.io.*;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.ros.internal.loader.CommandLineLoader;
+import org.ros.node.AbstractNodeMain;
+import org.ros.node.DefaultNodeMainExecutor;
+import org.ros.node.NodeConfiguration;
+import org.ros.node.NodeMainExecutor;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 
 
 public class RosUtilities {
@@ -78,6 +87,21 @@ public class RosUtilities {
         }
         return handle;
     }
+    
+    
+    public static void runRosjavaNode(AbstractNodeMain node, String[] args) {
+    	
+    	Logger.getLogger("ros").setLevel(Level.WARNING);
+    	
+        CommandLineLoader loader = new CommandLineLoader(Lists.newArrayList(args));
+        NodeConfiguration nodeConfiguration = loader.build();
+
+        NodeMainExecutor nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
+        nodeMainExecutor.execute(node, nodeConfiguration);
+
+    }
+    
+    
     
     /**
      * Kill a process based on its UUID (which has been returned 
