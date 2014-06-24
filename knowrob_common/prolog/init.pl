@@ -18,6 +18,7 @@
 :- use_module(library('rdfs_computable')).
 
 
+:- use_module(library('util')).
 :- use_module(library('knowrob_owl')).
 % :- use_module(library('knowrob_units')).
 :- use_module(library('owl_export')).
