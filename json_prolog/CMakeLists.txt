@@ -1,23 +1,19 @@
-##############################################################################
-# CMake
-##############################################################################
-
 cmake_minimum_required(VERSION 2.8.3)
 project(json_prolog)
 
-##############################################################################
-# Catkin
-##############################################################################
-
 find_package(catkin REQUIRED rosjava_build_tools roscpp rospy json_prolog_msgs)
 
-# Set the gradle targets you want catkin's make to run by default, e.g.
-#   catkin_rosjava_setup(installApp)
-# Note that the catkin_create_rosjava_xxx scripts will usually automatically
-# add tasks to this for you when you create subprojects.
+
 catkin_rosjava_setup(installApp publishMavenJavaPublicationToMavenRepository writeClasspath)
 
-catkin_package()
+install(DIRECTORY ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_MAVEN_DESTINATION}/org/knowrob/${PROJECT_NAME}/
+        DESTINATION ${CATKIN_GLOBAL_MAVEN_DESTINATION}/org/knowrob/${PROJECT_NAME})
+
+
+
+catkin_package(
+    DEPENDS rosprolog
+)
 
 
 include(FindPkgConfig)
@@ -45,12 +41,3 @@ add_executable(object_positions examples/object_positions.cpp)
 target_link_libraries(object_positions json_prolog ${catkin_LIBRARIES})
 add_dependencies(object_positions ${catkin_EXPORTED_TARGETS})
 
-
-##############################################################################
-# Installation
-##############################################################################
-
-# Change this to match the maven group name you have specified in the 
-# allprojects closure the root build.gradle
-install(DIRECTORY ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_MAVEN_DESTINATION}/org/knowrob/${PROJECT_NAME}/ 
-        DESTINATION ${CATKIN_GLOBAL_MAVEN_DESTINATION}/org/knowrob/${PROJECT_NAME})
