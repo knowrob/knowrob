@@ -2,13 +2,24 @@
 # correctly for nodes using rosprolog, i.e. for setting classpath and
 # ld_library_path correctly.
 
-function get_pkg_classpath() {
-    ROS_EXPORT_CP=$(rospack export --lang=java --attrib=classpath $1)
-    export $2="$(echo $ROS_EXPORT_CP | sed 's/ /:/g')"
-}
 
-# TODO: rewrite using pkg-config
-# function get_pkg_ld_lib_path() {
-#     ROS_EXPORT_LD=$(rospack export --lang=java --attrib=ld_lib_path $1)
-#     export $2=$(echo $ROS_EXPORT_LD | sed 's/ /:/g'):$(rospack find rosjava_jni)/bin
-# }
+# search for files 'classpath.txt' in all packages the package $1 depends on
+# and concatenate the classpath variables
+function get_pkg_classpath() {
+    ROS_CP=""
+
+    # find classpath for package itself
+    PKG_PATH=`rospack find $1`
+    for cp in `find $PKG_PATH -name classpath.txt`; do
+      ROS_CP=`cat ${cp}`:$ROS_CP
+    done
+
+    # find classpath for all dependencies
+    for dep in `rospack depends $1`; do
+      PKG_PATH=`rospack find $dep`
+      for cp in `find $PKG_PATH -name classpath.txt`; do
+        ROS_CP=`cat ${cp}`:$ROS_CP
+      done
+    done
+    export $2=$ROS_CP
+}
