@@ -9,30 +9,24 @@
      in the environment.</description>
   <maintainer email="tenorth@cs.uni-bremen.de">Moritz Tenorth</maintainer>
 
-  <license>BSD</license>
+  <license>LGPL</license>
 
   <url type="website">http://ros.org/wiki/comp_orgprinciples</url>
-  <!-- <url type="bugtracker"></url> -->
+  <url type="bugtracker">https://github.com/knowrob/knowrob/issues</url>
 
   <author>Martin Schuster</author>
 
-  <!-- Dependencies which this package needs to build itself. -->
+
   <buildtool_depend>catkin</buildtool_depend>
 
-  <!-- Dependencies needed to compile this package. -->
   <build_depend>rosprolog</build_depend>
   <build_depend>knowrob_common</build_depend>
 
-  <!-- Dependencies needed after this package is compiled. -->
   <run_depend>rosprolog</run_depend>
   <run_depend>knowrob_common</run_depend>
 
-  <!-- Dependencies needed only for running tests. -->
-  <!-- <test_depend>rosprolog</test_depend> -->
-  <!-- <test_depend>ias_prolog_addons</test_depend> -->
-
-<export>
-    <rosdoc config="rosdoc.yaml"/>
-</export>
+  <export>
+      <rosdoc config="rosdoc.yaml"/>
+  </export>
 
 </package>

@@ -4,29 +4,23 @@
   <description>Semantic maps of different kitchens</description>
   <maintainer email="tenorth@cs.uni-bremen.de">Moritz Tenorth</maintainer>
 
-  <license>GPL</license>
+  <license>LGPL</license>
 
   <url type="website">http://www.ros.org/wiki/knowrob_map_data</url>
-  <!-- <url type="bugtracker"></url> -->
+  <url type="bugtracker">https://github.com/knowrob/knowrob/issues</url>
 
   <author>Lars Kunze</author>
   <author>Lorenz Moesenlechner</author>
   <author>Moritz Tenorth</author>
 
-  <!-- Dependencies which this package needs to build itself. -->
   <buildtool_depend>catkin</buildtool_depend>
 
-  <!-- Dependencies needed to compile this package. -->
   <build_depend>comp_spatial</build_depend>
 
-  <!-- Dependencies needed after this package is compiled. -->
   <run_depend>comp_spatial</run_depend>
 
-  <!-- Dependencies needed only for running tests. -->
-  <!-- <test_depend>comp_spatial</test_depend> -->
-
-<export>
+  <export>
     <rosdoc config="rosdoc.yaml"/>
-</export>
+  </export>
 
 </package>
