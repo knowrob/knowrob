@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" media="all" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700|Oswald|Source+Code+Pro" />
+  <link rel="stylesheet" type="text/css" href="screen.css"/>
+  
+  <script type="text/javascript" src="lib/ros/three.min.js"></script>
+  <script type="text/javascript" src="lib/ros/eventemitter2.min.js"></script>
+  <script type="text/javascript" src="lib/ros/ColladaLoader2.min.js"></script>
+  <script type="text/javascript" src="lib/ros/roslib.min.js"></script>
+  <script type="text/javascript" src="lib/ros/mjpegcanvas.min.js"></script>
+  <script type="text/javascript" src="lib/ros/ros3d.js"></script>
+  <script type="text/javascript" src="lib/ros/json_prolog.js"></script>
+  <script type="text/javascript" src="lib/ros/MarkerClient.js"></script>
+  <script type="text/javascript" src="lib/ros/MarkerArrayClient.js"></script>
+
+  <script type="text/javascript" src="lib/d3/d3.v3.min.js"></script>
+  <script type="text/javascript" src="lib/d3/d3-tip.js"></script>
+  
+  <script type="text/javascript" src="lib/chart/DonutChart.js"></script>
+  <script type="text/javascript" src="lib/chart/BarChart.js"></script>
+  <script type="text/javascript" src="lib/chart/TreeDiagram.js"></script>
+  <script type="text/javascript" src="lib/chart/DataVisClient.js"></script>
+  <script type="text/javascript" src="lib/chart/array-nonstandard.js"></script>
+  <script type="text/javascript" src="lib/chart/Control.js"></script>
+  
+  <script type="text/javascript" src="lib/designator/desig.js"></script>
+
+  <script type="text/javascript" type="text/javascript">
+
+    function init() {
+    
+      // Connect to ROS.
+      var ros = new ROSLIB.Ros({
+        url : 'ws://localhost:9090'
+      });
+
+      // Create the main viewer.
+      var viewer = new ROS3D.Viewer({
+        divID : 'markers',
+        width : 950,
+        height : 495,
+        antialias : true,
+        background : '#ffffff'
+      });
+      
+      viewer.addObject(new ROS3D.Grid());
+
+      // Setup a client to listen to TFs.
+      var tfClient = new ROSLIB.TFClient({
+        ros : ros,
+        angularThres : 0.01,
+        transThres : 0.01,
+        rate : 10.0,
+        fixedFrame : '/my_frame'
+      });
+
+      // Setup the marker client.
+      var markerClient = new ROS3D.MarkerClient({
+        ros : ros,
+        tfClient : tfClient,
+        topic : '/visualization_marker',
+        rootObject : viewer.scene
+      });
+      
+      // Setup the marker array client.
+      var markerArrayClient = new ROS3D.MarkerArrayClient({
+        ros : ros,
+        tfClient : tfClient,
+        topic : '/visualization_marker_array',
+        markerClient : markerClient
+      });
+
+      var listener = new ROSLIB.Topic({
+        ros : ros,
+        name : '/logged_designators',
+        messageType : 'designator_integration_msgs/Designator'
+      });
+
+      listener.subscribe(function(message) {
+        document.getElementById("designator").innerHTML=format_designator(message.description, "", 0, 0);
+      });
+      
+      var viewer = new MJPEGCANVAS.Viewer({
+        divID : 'mjpeg',
+        host : 'localhost',
+        width : 320,
+        height : 240,
+        topic : '/logged_images'
+      });
+
+      var options = {
+        ros: ros,
+        containerId: '#chart',
+        topic: 'data_vis_msgs',
+        //width: 500,//210,
+        //height: 500//210
+      };
+      var dataVisClient = new DataVisClient(options);
+
+      // fill example qurey select
+      populateQuerySelect('examplequery', "queriesForRobohow.json");
+
+      master = new Control({
+        sliderHigh: "slider1",
+        initButton: "controlInitButton",
+        timeDisplay: "currentTime"
+      });
+    };
+
+    //global jsonprolog handle
+    var prolog;
+
+    function queryProlog(q) {
+
+      if (q.substr(q.length - 1) == ".") {
+        q = q.substr(0, q.length - 1);
+
+        if (prolog != null && prolog.finished == false) {
+          //console.log(prolog.finished);
+          prolog.finishClient();
+        }
+
+
+        prolog = new JsonProlog({});
+
+        document.query_form.history.value += "?- " + q +  ".\n\n";
+
+        prolog.jsonQuery(q, function(result) {
+            document.query_form.history.value += result;
+        });
+
+        document.query_form.user_query.value = "";
+        document.query_form.history.scrollTop = document.query_form.history.scrollHeight;
+
+        // reset select
+        //var select = document.getElementById('examplequery');
+        //select.selectedIndex = 0;
+      } else if (q.substr(q.length - 1) == ";") {
+        nextQueryProlog();
+      } else {
+        if (prolog != null && prolog.finished == false) {
+          prolog.finishClient();
+        }
+      }
+    };
+    
+    function nextQueryProlog() {
+      prolog.nextQuery(function(result) {
+            document.query_form.history.value += result;
+        });
+      document.query_form.history.scrollTop = document.query_form.history.scrollHeight;
+    };
+
+
+    // example query selection stuff
+    // -------------------------------------
+
+    // fill the select with json data from url
+    function populateQuerySelect(id, url) {
+
+      // url must point to a json-file containing an array named "query" with
+      // the query strings to display in the select
+      var request = new XMLHttpRequest
+      request.open("GET", url, false);
+      request.send(null);
+
+      var querylist = JSON.parse(request.responseText);
+
+      var select = document.getElementById(id);
+
+      for (var i = 0; i < querylist.query.length; i++) {
+        var opt = document.createElement('option');
+        opt.value = querylist.query[i].q;
+        opt.innerHTML = querylist.query[i].text;
+        select.appendChild(opt);
+      }
+    }
+
+    // append the selected query to the user_query form
+    function addSelectedToQueryform(selectid) {
+      var select = document.getElementById(selectid);
+      document.query_form.user_query.value = select.options[select.selectedIndex].value;
+    }
+
+</script>
+</head>
+
+<body onload="init()" style="position:relative; left:20px;">
+  <h1>RoboHow Web Console</h1>
+
+  <div id="logo_right" style="position:absolute; left:1700px; top:5px; width:180px; border: none; ">
+    <img src="logos/robohow-logo.svg" width="180">
+  </div>
+  
+  <div id="console" style="position:absolute; left:0;  top:75px; width:510px; height:500px; border: 1px black solid;">
+    <div style="padding:15px;">
+    <form name="query_form" action="post">
+
+      <textarea name="history" readonly  cols="66" rows="23" style="font-family: Source Code Pro,Consolas,monospace; font-size:9pt;background:#ffffff;border: 1px black solid; margin-bottom:5px;"></textarea>
+      
+      <textarea name="user_query" cols="66" rows="10" style="font-family: Source Code Pro,Consolas,monospace; font-size:9pt; border: 1px black solid; margin-bottom:5px; "></textarea>
+
+      <input type="button" name="q" value="Send query"
+      onclick="queryProlog(document.query_form.user_query.value);">
+
+      <!-- <input type="button" name="n" value="Next solution"
+      onclick="nextQueryProlog();"> -->
+      <input id="slider1" type="range" min="0" max="100" value="0">
+      <input id="controlInitButton" type="button" value="start slider control">
+      <span id="currentTime">0</span>
+
+    </form>
+    </div>
+  </div>
+  
+  
+  <div id="markers"    style="position:absolute; left:520px;  top:75px; width:950px; border: 1px black solid; "></div>
+  
+  <div id="designator" style="position:absolute; left:1480px; top:75px; width:400px; height:607px; border: 1px black solid; position:absolute; overflow:auto;"></div>
+  
+  <div id="library"    style="position:absolute; left:0px; width:510px; top:510px; border: 1px black solid; position:relative;">
+    <select onclick="addSelectedToQueryform('examplequery')" size="23" name="examplequery" id="examplequery" style="width:510px; font-size:12px;"><option value=0></option></select>
+  </div>
+
+  <div id="chart" style="position:absolute; left:520px; top:583px; width:920px; height:316px; border: 1px black solid; padding:15px;"></div>
+  
+  <div id="mjpeg" style="position:absolute; left:1480px; top:689px; width:400px; height:240px; border: 1px black solid; text-align:center;"></div>
+  
+  
+  
+  
+  <div id="footer" style="position:absolute; left:0px; top:950px; width:1800px; border: none; text-align:center; font-family:Open Sans, sans-serif; font-size:10pt;">
+    The development of this system has received funding from the following projects:
+    <br/>
+    <a href="http://www.robohow.eu" class="media" title="http://www.robohow.eu"  rel="nofollow"><img src="logos/robohow-logo.png" class="media" alt="" /></a>
+    <a href="http://www.roboearth.org" class="media" title="http://www.roboearth.org"  rel="nofollow"><img src="logos/roboearth-logo.png" class="media" alt="" /></a>
+    <a href="http://www.sherpa-project.eu" class="media" title="http://www.sherpa-project.eu"  rel="nofollow"><img src="logos/sherpa-logo.png" class="media" alt="" /></a>
+    <a href="http://www.saphari.eu" class="media" title="http://www.saphari.eu"  rel="nofollow"><img src="logos/saphari-logo.png" class="media" alt="" /></a>
+    <a href="http://cordis.europa.eu/fp7/ict/programme/challenge2_en.html" class="media" title="http://cordis.europa.eu/fp7/ict/programme/challenge2_en.html"  rel="nofollow"><img src="logos/fp7-logo.png" class="media" alt="" /></a>
+    </div>
+  </div>
+  
+
+  
+  
+</body>
+</html>

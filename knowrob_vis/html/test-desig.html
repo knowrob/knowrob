@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" media="all" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700|Oswald|Source+Code+Pro" />
+  <script type="text/javascript" src="http://cdn.robotwebtools.org/threejs/current/three.min.js"></script>
+  <script type="text/javascript" src="http://cdn.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+  <script type="text/javascript" src="http://cdn.robotwebtools.org/ColladaAnimationCompress/current/ColladaLoader2.min.js"></script>
+  <script type="text/javascript" src="http://cdn.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+  <script type="text/javascript" src="http://localhost/~tenorth/ros3d.min.js"></script>
+  <script type="text/javascript" src="http://localhost/~tenorth/json_prolog.js"></script>
+  <link rel="stylesheet" type="text/css" href="screen.css"/>
+
+  <style type="text/css">
+    div.div0 {
+/*       border:1px solid grey; */
+      padding:5px;
+      font-size:13px;
+/*       margin-left:20px; */
+    }
+    div.div1 {
+      border:1px solid grey;
+      padding:5px;
+      margin-left:20px;
+      font-size:13px;
+      background-color:#F8F8F8;
+    }
+    div.div2 {
+      border:1px solid grey;
+      padding:5px;
+      margin-left:20px;
+      font-size:13px;
+      background-color:#F0F0F0;
+    }
+    div.div3 {
+      border:1px solid grey;
+      padding:5px;
+      margin-left:20px;
+      font-size:13px;
+      background-color:#E8E8E8;
+    }
+    div.div4 {
+      border:1px solid grey;
+      padding:5px;
+      margin-left:20px;
+      font-size:13px;
+      background-color:#E0E0E0;
+    }
+  </style>
+  
+  <script type="text/javascript" type="text/javascript">
+
+//     var desig_data = {"_id" : { "$oid" : "5305f0546e268d5cea74f5ec" },
+//                       "designator" : { "GOAL-POSE" : { "FOLLOW" : {} },
+//                                       "_id" : "designator_MkttKD40SvqDw7",
+//                                       "_annotation" : "voluntary-movement-details",
+//                                       "_designator_type" : "action"
+//                                     },
+//                       "__recorded" : { "$date" : 1392898132000 },
+//                       "__topic" : "/logged_designators" };
+//     var desig_data = { "_id" : { "$oid" : "5305f04d6e268d5cea74f501" }, "designator" : { "TO" : "REACH", "LOCATION" : { "ON" : "CUPBOARD", "NAME" : "kitchen_island", "_DESIGNATOR_TYPE" : "LOCATION" }, "_id" : "designator_sG9OypEYuWDjzC", "_annotation" : "goal-location", "_designator_type" : "location" }, "__recorded" : { "$date" : 1392898125000 }, "__topic" : "/logged_designators" };
+//     var desig_data = { "_id" : { "$oid" : "5305f0136e268d5cea74ed53" }, "designator" : { "NAME" : "PANCAKE-MIX", "AT" : { "POSE" : { "header" : { "seq" : 0, "stamp" : { "$date" : 1392898061234 }, "frame_id" : "/map" }, "pose" : { "position" : { "x" : -0.7095643222817593, "y" : 0.831679329187465, "z" : 0.9887872776803326 }, "orientation" : { "x" : 0, "y" : 0, "z" : 0, "w" : 1 } } }, "_DESIGNATOR_TYPE" : "LOCATION" }, "DIMENSIONS" : {}, "Z-OFFSET" : 0.1375269144773483, "SIZE" : "UNKNOWN", "SHAPE" : "CYLINDER", "COLOR" : "UNKNOWN", "TYPE" : "CONTAINER", "MAX-HANDLES" : 1, "HANDLE" : { "TYPE" : "HANDLE", "AT" : { "POSE" : { "position" : { "x" : 0.05999999865889549, "y" : 0, "z" : 0 }, "orientation" : { "x" : 0.7071067811865475, "y" : 0, "z" : 0, "w" : 0.7071067811865476 } }, "_DESIGNATOR_TYPE" : "LOCATION" }, "_DESIGNATOR_TYPE" : "OBJECT" }, "HANDLE" : { "TYPE" : "HANDLE", "AT" : { "POSE" : { "position" : { "x" : 0.01999999955296517, "y" : 0.03999999910593033, "z" : 0 }, "orientation" : { "x" : 0.5, "y" : 0.4999999999999999, "z" : 0.5, "w" : 0.5000000000000001 } }, "_DESIGNATOR_TYPE" : "LOCATION" }, "_DESIGNATOR_TYPE" : "OBJECT" }, "HANDLE" : { "TYPE" : "HANDLE", "AT" : { "POSE" : { "position" : { "x" : -0.01999999955296516, "y" : 4.898587087097457e-18, "z" : 0 }, "orientation" : { "x" : 4.329780281177466e-17, "y" : 0.7071067811865475, "z" : 0.7071067811865476, "w" : 4.329780281177467e-17 } }, "_DESIGNATOR_TYPE" : "LOCATION" }, "_DESIGNATOR_TYPE" : "OBJECT" }, "HANDLE" : { "TYPE" : "HANDLE", "AT" : { "POSE" : { "position" : { "x" : 0.01999999955296516, "y" : -0.03999999910593033, "z" : 0 }, "orientation" : { "x" : -0.4999999999999999, "y" : 0.5, "z" : 0.5000000000000001, "w" : -0.5 } }, "_DESIGNATOR_TYPE" : "LOCATION" }, "_DESIGNATOR_TYPE" : "OBJECT" }, "_id" : "designator_ihL5ALvSKDoA7E", "_designator_type" : "object" }, "__recorded" : { "$date" : 1392898067000 }, "__topic" : "/logged_designators" };
+                      
+  
+    function init() {
+
+      // Connect to ROS.
+      var ros = new ROSLIB.Ros({
+        url : 'ws://localhost:9090'
+      });
+
+      var listener = new ROSLIB.Topic({
+        ros : ros,
+        name : '/designators',
+        messageType : 'designator_integration_msgs/Designator'
+      });
+
+      listener.subscribe(function(message) {
+
+        document.getElementById("designator").innerHTML=format_designator(message.description, "", 0);
+    
+        console.log('Received message on ' + listener.name + ': ' + message.description);
+      });
+    };
+
+    function format_designator(desig, pre, level) {
+
+      console.log(desig);
+    
+      post = pre;
+      post += "<div class='div"+level+"'>"
+
+      for (var d in desig) {
+        console.log(level);
+      
+        post = post + d;
+        
+        if(desig[d] instanceof Object) {
+          format_designator(desig[d], post, level+1);
+        } else {
+          post += " = " + desig[d];
+          post += "<br/>"
+        }
+      }
+      post += "</div>"
+
+      return post;
+    };
+    
+   
+</script>
+</head>
+
+<body onload="init()" style=" position:relative; left:20px;">
+  <h1>KnowRob Web Console</h1>
+  <div id="designator" style="border: 1px black solid; width:600px; height:600px; position:relative; left:0px; top:0px; overflow:auto;"></div>
+</body>
+</html>

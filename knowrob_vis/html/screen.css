@@ -1,0 +1,1259 @@
+/******************************************************************************
+ ********************************  ATTENTION  *********************************
+         DO NOT MODIFY THIS FILE, IT WILL NOT BE PRESERVED ON UPDATES!
+ ******************************************************************************
+  If you want to add some own screen CSS, have a look at the README of this
+  template and "/user/screen.css". You have been warned!
+ *****************************************************************************/
+
+/*
+   This template includes CSS from the "starter" DokuWiki template by
+   Anika Henke (brings important and basic styling for syntax and core
+   features). These files will be included BEFORE this specific CSS file. In
+   this file, I just overwrite non fitting DokuWiki "starter" CSS + add some
+   CSS for some exclusive objects of this template.
+
+   Why I am doing this? Well, read <http://j.mp/eq8zSo>.
+*/
+
+
+
+/******************************************************************************
+ ******** Most basic styles                                        ************
+ ******** Originally based on starter template's basic.css         ************
+ ******** Have a look at http://j.mp/eq8zSo for more information   ************
+ ******************************************************************************/
+html,
+body {
+    padding: 0;
+    color: __text__;
+}
+html {
+    margin: 0;
+    overflow-x: hidden;
+/*     overflow-y: scroll; */
+    background-color: transparent;
+}
+body {
+    margin: 0 auto;
+    font: normal 100%/1.4em Verdana,Arial,Helvetica,sans-serif;
+    /* same font stack should be used for ".dokuwiki div.toc" */
+}
+h1, h1 a,
+h2, h2 a,
+h3, h3 a,
+h4, h4 a,
+h5, h5 a,
+h6, h6 a ,
+.btb-header{
+    font-family: Oswald,Arial,Helvetica,sans-serif;
+    /* same font stack should be used for ".dokuwiki div.tocheader" */
+    font-weight: normal;
+    color: #333;
+    background-color: inherit;
+    line-height: 1.4em !important;
+    text-align: left;
+    border: none;
+    padding: 0;
+    clear: left; /* ideally 'both', but problems with toc */
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    padding: 0.5em 0 0;
+    margin: 0.3em auto 0.1em 0 !important;
+}
+h1 {
+    font-size: 2.286em; /* 32px, base 14px (see ".dokuwiki") */
+    line-height: 2.857em; /* 40px, base 14px (see ".dokuwiki") */
+}
+h2 {
+    font-size: 1.714em; /* 24px, base 14px (see ".dokuwiki") */
+}
+h3 {
+    font-size: 1.286em; /* 18px, base 14px (see ".dokuwiki") */
+}
+h4 {
+    font-size: 1.143em; /* 16px, base 14px (see ".dokuwiki") */
+}
+h5,
+h6 {
+    font-size: 1em; /* 14px, base 14px (see ".dokuwiki") */
+}
+.dokuwiki div.page h1:first-child, /* remove top margin from headlines when there is no text above */
+.dokuwiki div.page h2:first-child,
+.dokuwiki div.page h3:first-child {
+    margin-top: 0 !important;
+}
+caption,
+legend {
+    background-color: inherit;
+    padding: 0;
+    line-height: 1.2em;
+    font-family: inherit;
+    font-weight: normal;
+    color: __text__;
+    clear: none;
+}
+legend {
+    text-align: left; /* needed for webkit browsers */
+    #font-family: 'Open Sans',Arial,Helvetica,sans-serif; /* fix MSIE 6/7 */
+}
+
+/* basic margins and paddings */
+p,
+ul,
+ol,
+dl,
+pre,
+table,
+hr,
+blockquote,
+fieldset,
+address {
+    margin: 0 0 1.4em 0;
+    padding: 0;
+}
+div {
+    margin: 0;
+    padding: 0;
+}
+
+/* lists */
+ul,
+ol {
+    padding: 0 0 0 1.5em;
+}
+li,
+dd {
+    padding: 0;
+    margin: 0 0 0 1.5em;
+}
+dt {
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+}
+li ul,
+li ol,
+li dl,
+dl ul,
+dl ol,
+dl dl {
+    margin-bottom: 0;
+    padding: 0;
+}
+li li {
+    font-size: 100%;
+}
+ul             { list-style: disc outside; }
+ol             { list-style: decimal outside; }
+ol ol          { list-style-type: lower-alpha; }
+ol ol ol       { list-style-type: upper-roman; }
+ol ol ol ol    { list-style-type: upper-alpha; }
+ol ol ol ol ol { list-style-type: lower-roman; }
+
+/* tables */
+table {
+    border-collapse: collapse;
+    empty-cells: show;
+    border-spacing: 0;
+    border: 1px solid __border__;
+}
+caption {
+    caption-side: top;
+    text-align: left;
+    margin: 0 0 .3em;
+}
+th,
+td {
+    padding: .3em .5em;
+    margin: 0;
+    vertical-align: top;
+    border: 1px solid __border__;
+    text-align: left;
+}
+th {
+    font-weight: bold;
+    background-color: __background_alt__;
+}
+
+/* links */
+a:link,
+a:link:active,
+a:visited,
+a:visited:active {
+    text-decoration: none;
+    color: __existing__;
+}
+a:link:hover,
+a:link:focus,
+a:link:active,
+a:visited:hover,
+a:visited:focus,
+a:visited:active {
+    text-decoration: none;
+    border-bottom: none;
+}
+a:link:focus,
+a:visited:focus {
+    outline: 1px dotted;
+}
+
+/* misc */
+img {
+    border-width: 0;
+    vertical-align: middle;
+    color: #666;
+    background-color: transparent;
+    font-style: italic;
+}
+hr {
+    border-style: solid;
+    border-width: 1px 0 0;
+    text-align: center;
+    height: 0;
+    width: 100%;
+    clear: both;
+}
+acronym,
+abbr {
+    cursor: help;
+    border-bottom: 1px dotted;
+    font-style: normal;
+}
+em acronym,
+em abbr,
+i acronym,
+i abbr {
+    font-style: italic;
+}
+pre,
+code,
+samp,
+kbd {
+    font-family: Source Code Pro,Consolas,monospace;
+    /* same font stack should be used for ".dokuwiki table.diff td" and
+       ".dokuwiki textarea.edit" */
+    font-size: 1em;
+    direction: ltr;
+    text-align: left;
+}
+pre {
+    overflow: auto;
+}
+pre,
+code {
+    background-color: transparent !important;
+}
+* html pre,
+* html code {
+    width: 100%; /* fix MSIE 6 */
+}
+blockquote {
+    padding: 0 0.75em;
+    border: solid #606060;
+    border-width: 0 0 0 .25em;
+}
+q:before,
+q:after {
+    content: '';
+}
+sub,
+sup {
+    font-size: .8em;
+    line-height: 1;
+}
+sub {
+    vertical-align: sub;
+}
+sup {
+    vertical-align: super;
+}
+
+/* forms */
+form {
+    display: inline;
+    margin: 0;
+    padding: 0;
+}
+fieldset {
+    padding: 1em 1em 0;
+    border: 1px solid __text_alt__;
+}
+legend {
+    margin: 0;
+    padding: 0 .1em;
+}
+label {
+    vertical-align: middle;
+    cursor: pointer;
+}
+input,
+textarea,
+button,
+select,
+optgroup,
+option {
+    font: inherit;
+    color: inherit;
+    /* background-color destroys button look */
+    line-height: 1;
+    margin: 0;
+    vertical-align: middle;
+}
+input[type=text],
+input[type=password],
+textarea {
+    padding: .1em;
+}
+input[type=radio],
+input[type=checkbox],
+input.check {
+    padding: 0;
+}
+input[type=submit],
+input.button,
+button {
+    cursor: pointer;
+}
+input[disabled],
+button[disabled],
+input[readonly],
+button[readonly] {
+    cursor: auto;
+}
+optgroup {
+    font-style: italic;
+    font-weight: bold;
+}
+option {
+    font-style: normal;
+    font-weight: normal;
+}
+
+/* general classes */
+div.clearer {
+    /* additional to what's already in DokuWiki's lib/styles/all.css: */
+    font-size: 1px;
+    visibility: hidden;
+}
+.a11y {
+    position: absolute;
+    left: -9000px;
+    top: -4000px;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    display: inline;
+}
+
+
+
+/******************************************************************************
+ ******** Main design styles for the page content                  ************
+ ******** Originally based on starter template's content.css       ************
+ ******** Have a look at http://j.mp/eq8zSo for more information   ************
+ ******************************************************************************/
+.dokuwiki {
+    font-size: 0.875em !important; /* 14px (base: 16px from browser) */
+    line-height: 1.8em !important;
+}
+.dokuwiki p,
+.dokuwiki ul,
+.dokuwiki ol,
+.dokuwiki dl,
+.dokuwiki pre,
+.dokuwiki table,
+.dokuwiki hr,
+.dokuwiki blockquote,
+.dokuwiki fieldset,
+.dokuwiki address {
+    margin: 0 0 1em; /* =14px (base 25px = 1.8em line-height) */
+}
+.dokuwiki ul ul,
+.dokuwiki ul ol,
+.dokuwiki ol ul,
+.dokuwiki ol ol {
+    margin-bottom: 0;
+}
+
+/* code */
+.dokuwiki pre,
+.dokuwiki tt,
+.dokuwiki code,
+.dokuwiki samp,
+.dokuwiki kbd {
+    background-color: __background_alt__;
+    color: __text__;
+}
+.dokuwiki em.u code { /* fix if background-color hides underlining */
+    text-decoration: underline;
+}
+.dokuwiki pre {
+    padding: 0.5em;
+    border: 1px dashed __border__;
+    line-height: 1.3em;
+}
+.dokuwiki pre.file,
+.dokuwiki pre.code {
+    line-height: 1.3em;
+    font-size: 0.929em; /* =13px (base 14px) */
+    background-color: __background_alt__ !important;
+}
+.dokuwiki dl.file dt,
+.dokuwiki dl.code dt {
+    background-color: __background_alt__;
+    border: solid __border__;
+    border-width: 1px 1px 0;
+    color: inherit;
+    display: inline;
+    padding: 1px .5em;
+    margin-left: 1em;
+    line-height: 1.1em;
+    font-size: 0.929em; /* =13px (base 14px) */
+    font-weight: normal;
+    font-family: Source Code Pro,Consolas,monospace;
+}
+.dokuwiki dl.code dt a,
+.dokuwiki dl.file dt a {
+    color: __text__;
+    border-bottom: 0;
+    padding-left: 18px;
+}
+.dokuwiki dl.code dt a:hover,
+.dokuwiki dl.code dt a:active,
+.dokuwiki dl.file dt a:hover,
+.dokuwiki dl.file dt a:active {
+    text-decoration: underline;
+}
+.dokuwiki dl.code dd,
+.dokuwiki dl.file dd {
+    margin: 0;
+}
+
+/* tables */
+th,
+td {
+    border: 0;
+}
+td[align="right"],
+th[align="right"] {
+    text-align: right;
+}
+.dokuwiki table.inline {
+    #border: 1px solid #606060; /* fix MSIE 6/7 */
+}
+.dokuwiki table.inline th,
+.dokuwiki table.inline tr {
+    border: 1px solid #606060;
+}
+.dokuwiki table.inline td {
+    border: 1px solid __text_alt__;
+}
+.dokuwiki table.inline th {
+    color: inherit;
+    background-color: __background_neu__;
+}
+.dokuwiki table.inline tr {
+    background-color: __background_alt__;
+}
+.dokuwiki table.inline tr:hover th,
+.dokuwiki table.inline th:hover {
+    background-color: __background__;
+}
+.dokuwiki table.inline tr:hover td {
+    background-color: __background_neu__;
+}
+
+/* embedded images (styles are already partly set in DokuWiki's lib/styles/all.css) */
+.dokuwiki img.medialeft {
+    margin: .5em 1.5em .5em 0;
+}
+.dokuwiki img.mediaright {
+    margin: .5em 0 .5em 1.5em;
+}
+.dokuwiki img.mediacenter {
+    margin: .5em auto;
+}
+
+/* messages with msg() / message are */
+div.error,
+div.info,
+div.success,
+div.notify {
+    background-position: .5em 4px;
+}
+
+
+
+/******************************************************************************
+ **************** Styles for the template itself, structure *******************
+ ******************************************************************************/
+div#pagewrap {
+    margin: 15px auto;
+    background-color: transparent;
+    padding: 0 30px;
+    width: 890px; /* =width of 950px cause of 2*30px padding */
+}
+
+#tmpl_header {
+    width: 100%;
+    height: 80px;
+    padding: 0;
+    margin: 0 0 2.5em 0;
+    border-bottom: 1px solid #606060;
+}
+#tmpl_header #tmpl_header_left {
+    position: relative;
+    float: left;
+    width: 30%;
+    height: 100%;
+}
+#tmpl_header #tmpl_header_right {
+    position: relative;
+    float: right;
+    width: 69%; /* let 1% space for browser rounding errors */
+    height: 100%;
+    line-height: 22px; /* px instead of em to get a cross-browser reliable baseline with the txt logo */
+}
+#tmpl_header #tmpl_header_logo {
+    position: absolute;
+    bottom: 0;
+    padding: 0;
+    margin: 0;
+}
+#tmpl_header p {
+    margin-bottom: 0;
+}
+
+.dokuwiki div#content {
+    width: 100%;
+    min-height: 870px;
+    padding: 0;
+}
+.dokuwiki .page {
+    padding: 0 0 2em 0;
+    margin: 0;
+}
+
+/* header: dynamic text logo */
+#tmpl_header #tmpl_header_logo a.tmpl_header_logo_txt,
+#tmpl_header #tmpl_header_logo a.tmpl_header_logo_txt:visited,
+#tmpl_header #tmpl_header_logo a.tmpl_header_logo_txt:hover,
+#tmpl_header #tmpl_header_logo a.tmpl_header_logo_txt:active {
+    font-family: Oswald,Arial,Helvetica,sans-serif;
+    font-size: 48px;   /* px instead of em to get a cross-browser reliable... */
+    line-height: 59px; /* ...baseline with the header nav within tmpl_header_right */
+    vertical-align: top;
+/*     font-weight: bold; */
+    text-decoration: none;
+    color: __text__;
+/*     text-transform: uppercase; */
+    margin: 0;
+    padding: 0;
+    outline: 0;
+}
+/* header: image base logo (-> prsnl10/user/logo.[png|gif|jpeg]) */
+#tmpl_header #tmpl_header_logo #tmpl_header_logo_img,
+#tmpl_header #tmpl_header_logo a,
+#tmpl_header #tmpl_header_logo a:link,
+#tmpl_header #tmpl_header_logo a:visited,
+#tmpl_header #tmpl_header_logo a:hover,
+#tmpl_header #tmpl_header_logo a:active {
+    text-decoration: none;
+    border: 0 none;
+    margin: 0;
+    padding: 0;
+    outline: 0 none;
+}
+/* header: optional navigation */
+#tmpl_header #tmpl_header_nav {
+    position: absolute;
+    bottom: 0;
+    font-family: Oswald,Arial,Helvetica,sans-serif;
+    font-size: 112.5%; /* 18px (base: 16px) */
+    margin-bottom: 8px;
+    width: 100%;
+    text-align: right;
+}
+#tmpl_header #tmpl_header_nav a,
+#tmpl_header #tmpl_header_nav a:visited {
+    margin-left: 10px;
+    color: __text__;
+    text-decoration: none;
+    border: 0 none;
+    outline: 0 none;
+}
+#tmpl_header #tmpl_header_nav a:hover {
+    margin-left: 10px;
+    color: __text__;
+/*     text-transform: uppercase; */
+    text-decoration: underline;
+    border: 0 none;
+    outline: 0 none;
+}
+
+#tmpl_footer {
+    border-top: 1px solid #606060;
+    margin: 1em 0;
+    padding: 0.2em 0;
+    font-size: 0.714em; /* 10px (base: 14px) */
+    color: __text_neu__;
+    text-align: center;
+    #zoom: 1; /* fix MSIE 6/7 */
+}
+#tmpl_footer a,
+#tmpl_footer a:link,
+#tmpl_footer a:visited {
+    color: __text_neu__;
+    border-bottom: none !important;
+}
+#tmpl_footer a:hover {
+   color: __existing__;
+}
+#tmpl_footer #tmpl_footer_actlinksleft {
+    float: left;
+    margin-right: 1.5em;
+}
+#tmpl_footer #tmpl_footer_actlinksright {
+    float: right;
+}
+#tmpl_footer #tmpl_footer_metainfo {
+    margin-top: 1em;
+}
+#tmpl_footer a[rel=license] {
+    margin-left: 5px;
+}
+
+/* more width for all admin and edit actions */
+div#pagewrap.admin {
+    width: 95%;
+    max-width: 1100px !important;
+    padding: auto 15px;
+}
+div#pagewrap.admin div#content {
+    width: 100%;
+}
+/* admin menu: config manager */
+.dokuwiki #config__manager fieldset {
+   margin-left: 0;
+   margin-right: 0;
+   background-color: transparent;
+   border: 1px solid #606060;
+}
+/* admin menu: acl manager tree */
+.dokuwiki div#acl_manager div#acl__tree {
+    background-color: __background_alt__;
+}
+/* admin menu: plugin manager */
+.dokuwiki div#plugin__manager form.plugins input[type=checkbox] {
+    margin-top: 0.5em;
+}
+/* admin menu: plugin manager - more space for plugin info */
+.dokuwiki div#plugin__manager dl {
+    font-size: 0.857em; /* 12px, base 14px (see ".dokuwiki") */
+}
+.dokuwiki div#plugin__manager dt {
+    width: 11em;
+    font-weight: bold;
+}
+.dokuwiki div#plugin__manager dd {
+    margin-left: 11em;
+}
+/* "remeber me" checkbox, login */
+.dokuwiki form#dw__login input.edit {
+    font-weight: normal;
+    margin-left: 0.4em;
+    margin-right: 0.4em;
+}
+.dokuwiki form#dw__login label.simple {
+    text-align: center;
+    padding-bottom: 0.4em;
+}
+.dokuwiki form#dw__register input.edit {
+    font-weight: normal;
+    margin-left: 0.4em;
+}
+.dokuwiki form#dw__register fieldset {
+   width: 490px;
+}
+
+/* taken from starter template's design.css:
+   license note in footer and under edit window */
+.dokuwiki div.license {
+    font-size: 93.75%;
+}
+
+/* taken from starter template's design.css: JS popup */
+.JSpopup {
+    background-color: __background__;
+    color: __text__;
+    border: 1px solid __border__;
+    line-height: 1.2;
+    padding: 0 .2em;
+}
+.JSpopup ul,
+.JSpopup ol {
+    padding-left: 0;
+}
+
+
+
+/******************************************************************************
+ ******** Adjust the starter template styles: _diff.css            ************
+ ******** Have a look at http://j.mp/eq8zSo for more information   ************
+ ******************************************************************************/
+.dokuwiki table.diff td {
+    font-family: Source Code Pro,Consolas,monospace;
+    /* same font stack should be used for "pre, code, samp, kbd" and
+       ".dokuwiki textarea.edit" */
+    font-size: 0.857em; /* 12px (base: 14px) */
+}
+.dokuwiki table.diff th {
+    font-size: 0.779em; /* 12px (base: 15.4px) */
+}
+.dokuwiki table.diff td.diff-addedline,
+.dokuwiki table.diff td.diff-deletedline,
+.dokuwiki table.diff td.diff-context {
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+
+
+/******************************************************************************
+ ******** Adjust the starter template styles: _links.css           ************
+ ******** Have a look at http://j.mp/eq8zSo for more information   ************
+ ******************************************************************************/
+/* wikilink1 = existing wikipage
+   wikilink2 = not existing wikipage */
+.dokuwiki a.wikilink1,
+.dokuwiki a.wikilink1:link,
+.dokuwiki a.wikilink1:visited {
+    color: __existing__;
+    border-bottom: 1px solid __existing__;
+}
+.dokuwiki a.wikilink2,
+.dokuwiki a.wikilink2:link,
+.dokuwiki a.wikilink2:visited {
+    color: __missing__;
+    border-bottom: 1px solid __missing__;
+}
+.dokuwiki a.wikilink1:hover,
+.dokuwiki a.wikilink1:focus,
+.dokuwiki a.wikilink1:active,
+.dokuwiki a.wikilink2:hover,
+.dokuwiki a.wikilink2:focus,
+.dokuwiki a.wikilink2:active {
+    border-bottom: 0 none !important;
+}
+/* external link */
+.dokuwiki a.urlextern {
+    padding-left: 0;
+    background: 0 none;
+    border-bottom: 1px solid __existing__ !important;
+}
+.dokuwiki a.urlextern:active,
+.dokuwiki a.urlextern:hover {
+    border-bottom: 0 none !important;
+}
+/* special links */
+.dokuwiki a.windows,
+.dokuwiki a.mail,
+.dokuwiki a.mediafile,
+.dokuwiki a.interwiki {
+    border-bottom: 1px dashed __existing__;
+}
+.dokuwiki a.windows:hover,
+.dokuwiki a.windows:active,
+.dokuwiki a.mail:hover,
+.dokuwiki a.mail:active,
+.dokuwiki a.mediafile:hover,
+.dokuwiki a.mediafile:active,
+.dokuwiki a.interwiki:hover,
+.dokuwiki a.interwiki:active {
+    border-bottom: 0 none;
+}
+/* any link to current page */
+.dokuwiki span.curid a {
+    font-weight: normal;
+}
+
+
+
+/******************************************************************************
+ ******** Adjust the starter template styles: _toc.css             ************
+ ******** Old Table of contents (TOC), until DokuWiki 2012-01-25   ************
+ ******** Have a look at http://j.mp/eq8zSo for more information   ************
+ ******************************************************************************/
+.dokuwiki div.toc {
+    float: left;
+    font-family: Verdana,Arial,Helvetica,sans-serif;
+    margin: 0 0 1.5em;
+    padding: 0;
+    width: 100%;
+    clear: both;
+    background-color: transparent;
+}
+.dokuwiki div.toc div.tocheader {
+    font-family: 'Open Sans',Arial,Helvetica,sans-serif;
+    font-size: 1.429em; /* 20px, base 14px (see ".dokuwiki") */
+    font-weight: normal;
+}
+.dokuwiki div.toc #toc__header {
+    background-color: transparent;
+    border: 1px solid #606060;
+    padding: 0.5em;
+    margin-bottom: 0;
+}
+/* see http://jonrohan.me/guide/css/creating-triangles-in-css/ for info about
+   css arrows */
+.dokuwiki div.toc span.toc_open,
+.dokuwiki div.toc span.toc_close {
+    border-color: transparent;
+}
+* html .dokuwiki div.toc span.toc_open,
+* html .dokuwiki div.toc span.toc_close {
+    border-color: #fff; /* fix MSIE 6 */
+}
+.dokuwiki div.toc span.toc_open {
+    border-top-color: __text__ !important;
+}
+.dokuwiki div.toc span.toc_close {
+    border-bottom-color: __text__ !important;
+}
+.dokuwiki div.toc #toc__inside {
+    background-color: transparent;
+    border-right: 1px dotted #606060;
+    border-left: 1px dotted #606060;
+    border-bottom: 1px dotted #606060;
+    color: __text__;
+    padding-bottom: 7px !important;
+}
+.dokuwiki div.toc #toc__inside ul,
+.dokuwiki div.toc #toc__inside ul ul {
+    padding-left: 1.7em;
+}
+.dokuwiki div.toc #toc__inside ul li {
+    list-style: circle;
+}
+.dokuwiki div.toc #toc__inside a,
+.dokuwiki div.toc #toc__inside a:visited {
+    color: __text__;
+}
+.dokuwiki div.toc #toc__inside a,
+.dokuwiki div.toc #toc__inside a:visited {
+    color: __text__;
+}
+.dokuwiki div.toc #toc__inside a:hover,
+.dokuwiki div.toc #toc__inside a:active {
+    border-bottom: 1px dashed __text__;
+}
+
+
+
+
+/******************************************************************************
+ ******** Adjust the starter template styles: _toc.css             ************
+ ******** New Table of contents (TOC), since DokuWiki 2012-09-10   ************
+ ******** Have a look at http://j.mp/eq8zSo for more information   ************
+ ******************************************************************************/
+div.dokuwiki #dw__toc {
+    margin: 2.4em 0 0 2em;
+    float: right;
+    width: 200px;
+    font-family: Verdana,Arial,Helvetica,sans-serif;
+    font-size: 90%;
+    background-color: transparent;
+}
+
+div.dokuwiki #dw__toc h3 {
+    font-family: 'Open Sans',Arial,Helvetica,sans-serif;
+    font-size: 1em; /* 20px, base 14px (see ".dokuwiki") */
+    font-weight: bold;
+    background-color: transparent;
+    border: 1px solid #606060;
+    padding: 0.2em 0.5em;
+    margin-bottom: 0;
+}
+
+div.dokuwiki #dw__toc h3 strong {
+    margin-top: 0.2em;
+}
+
+div.dokuwiki #dw__toc h3 ~ div {
+    background-color: transparent;
+    border-right: 1px dotted #606060;
+    border-left: 1px dotted #606060;
+    border-bottom: 1px dotted #606060;
+    color: __text__;
+    padding-bottom: 7px !important;
+    padding-left: 10px;
+    padding-right: 7px;
+}
+
+.dokuwiki #dw__toc ul,
+.dokuwiki #dw__toc ul ul {
+    padding-left: 1em;
+}
+.dokuwiki #dw__toc ul li {
+    list-style: circle;
+}
+.dokuwiki #dw__toc a,
+.dokuwiki #dw__toc a:visited {
+    color: __text__;
+}
+.dokuwiki #dw__toc a,
+.dokuwiki #dw__toc a:visited {
+    color: __text__;
+}
+.dokuwiki #dw__toc a:hover,
+.dokuwiki #dw__toc a:active {
+    border-bottom: 1px dashed __text__;
+}
+
+
+
+
+/******************************************************************************
+ ******** Adjust the starter template styles: _footnotes.css         **********
+ ******** Have a look at http://j.mp/eq8zSo for more information     **********
+ ******************************************************************************/
+/* JSpopup */
+div.insitu-footnote {
+    background-color: #f7f9fa;
+    border: 1px solid __border__;
+    padding: 3px 7px 3px 10px;
+    font-size: 0.857em; /* 12px, base 14px (see ".dokuwiki") */
+}
+.dokuwiki div.footnotes {
+    font-size: 0.857em; /* 12px, base 14px (see ".dokuwiki") */
+    border-top: 1px dotted #606060;
+}
+/* link to text from footnote at bottom */
+.dokuwiki div.footnotes div.fn sup a.fn_bot {
+    font-weight: normal;
+}
+
+
+
+/******************************************************************************
+ ******** Adjust the starter template styles: _forms.css             **********
+ ******** Have a look at http://j.mp/eq8zSo for more information     **********
+ ******************************************************************************/
+.dokuwiki fieldset {
+    margin: auto;
+}
+/* normal buttons */
+.dokuwiki input.button,
+.dokuwiki button.button {
+    background: __text__ none !important;
+    border: 1px solid __text__;
+    color: #fff;
+    font-weight: bold;
+    font-size: 10px !important;
+    padding: 5px 6px;
+    line-height: 1.333em;
+    #line-height: 1em; /* fix MSIE 6, 7 */
+}
+.dokuwiki input.button[type=image],
+.dokuwiki button.button[type=image] {
+    background: none;
+    background-color: transparent !important;
+    border: 0;
+    padding: 0;
+}
+* html .dokuwiki input.button,
+* html .dokuwiki button.button {
+    height: 28px; /* fix MSIE 6 */
+}
+
+
+
+/******************************************************************************
+ ******** Adjust the starter template styles: _edit.css            ************
+ ******** Have a look at http://j.mp/eq8zSo for more information   ************
+ ******************************************************************************/
+/* nice alphatransparency background for toolbar except for IE <7 */
+html>body button.toolbutton {
+    background:  __background__ url(images/buttonshadow.png) repeat-x bottom;
+}
+/* buttons: section edit at wiki page */
+.dokuwiki div.secedit input.button {
+    color: __background_neu__ !important;
+    background: none !important;
+    border: none;
+}
+.dokuwiki div.secedit input.button:hover {
+    color: __existing__ !important;
+}
+.dokuwiki textarea.edit,
+.dokuwiki input.edit,
+.dokuwiki select.edit {
+    border: 1px solid #606060;
+    background-color: #fff;
+}
+.dokuwiki div.preview {
+    border-color: #606060;
+}
+.dokuwiki textarea.edit {
+    line-height: 1.214em; /* 17px, base 14px (see ".dokuwiki") */
+    font-family: Source Code Pro,Consolas,monospace;
+    /* same font stack should be used for "pre, code, samp, kbd" and
+       ".dokuwiki table.diff td" */
+}
+* html .dokuwiki textarea.edit {
+    width: 100%; /* fix MSIE 6 */
+}
+div.picker {
+    background-color: #ebebeb;
+}
+/* buttons inside of picker */
+div.picker button.pickerbutton {
+    border: 0;
+    background-color: #ebebeb;
+}
+
+
+
+/******************************************************************************
+ ******** Adjust the starter template styles: _imgdetail.css       ************
+ ******** Have a look at http://j.mp/eq8zSo for more information   ************
+ ******************************************************************************/
+#dokuwiki__detail {
+    padding-left: 2.5em;
+}
+#dokuwiki__detail h1 {
+    margin-bottom: 20px !important;
+    padding: 0;
+    line-height: 1em;
+}
+
+
+
+/******************************************************************************
+ ******** Adjust the starter template styles: _media_popup.css       **********
+ ******** Have a look at http://j.mp/eq8zSo for more information     **********
+ ******************************************************************************/
+html.popup {
+    background-image: none;
+    background-color: #fff;
+    font-size: 14px;
+}
+html.popup body {
+    background-image: none;
+    background-color: #fff;
+}
+html.popup #media__content a.select {
+    text-decoration: none;
+    border-bottom: 0 none;
+}
+html.popup #media__content a.select:hover {
+    text-decoration: underline;
+}
+html.popup #media__manager button {
+    /* nice alphatransparency background for toolbar except for IE <7 */
+    background: #fff url(images/buttonshadow.png) repeat-x bottom  !important;
+    border: 2px;
+    border-color: #ebebeb;
+    padding: 0 6px;
+}
+html.popup #media__popup {
+    background-color: __background_neu__;
+    width: 310px;
+}
+html.popup #media__manager h1,
+html.popup #media__manager h2,
+html.popup #media__popup h1,
+html.popup #media__popup h2 {
+    line-height: 1em;
+    margin-top: 0 !important;
+    padding-top: 2px;
+}
+html.popup html.popup #media__opts {
+    padding-left: 1em;
+    margin-bottom: 0.5em;
+}
+html.popup #media__opts input {
+    float: left;
+    display: block;
+    margin-top: 4px;
+    position: absolute;
+}
+*+html.popup #media__opts input,
+* html.popup #media__opts input {
+    position: static;
+}
+html.popup #media__opts label {
+    display: block;
+    float: left;
+    margin-left: 20px;
+    margin-bottom: 4px;
+}
+*+html.popup #media__opts label,
+* html.popup #media__opts label {
+    margin-left: 10px;
+}
+html.popup #media__opts br {
+    clear: left;
+}
+
+
+
+/******************************************************************************
+ ******** Adjust the starter template styles: _media_fullscreen.css  **********
+ ******** Have a look at http://j.mp/eq8zSo for more information     **********
+ ******************************************************************************/
+#mediamanager__page h2,
+#mediamanager__page h3 {
+    font-size: 12px !important;
+    font-family: Verdana,Arial,Helvetica,sans-serif;
+    line-height: 1.5em !important;
+    font-weight: normal !important;
+    padding: 3px 10px !important;
+}
+#mediamanager__page div.namespaces h2 {
+    margin-left: 0.3em !important;
+    margin-bottom: 0 !important;
+    padding-top: 0.5em !important;
+    padding-bottom: 0.6em !important;
+}
+#mediamanager__page div.namespaces div.panelHeader {
+    font-size: 12px;
+    padding-top: 5px;
+}
+#mediamanager__page h3,
+#mediamanager__page ul.tabs li {
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 12px;
+}
+#mediamanager__page .panelHeader ul {
+    list-style-image: none !important;
+}
+#mediamanager__page .panelHeader ul .ui-buttonset {
+    font-size: 12px ;
+}
+#mediamanager__page .panelHeader ul li.ui-buttonset {
+    background-position: 3px 0;
+    padding-bottom: 3px;
+}
+#mediamanager__page .panelHeader div.no input.button {
+    padding: 1px;
+    line-height: 1em;
+}
+/* The ".mediamanagerfix" class gets assigned in main.php for the full screen
+   media manager only. */
+.dokuwiki div#content.mediamanagerfix {
+    min-height: 0; /* the automatic resize (JS) has many problems if a parent container got a min-height */
+}
+.dokuwiki div#content.mediamanagerfix h1 {
+    line-height: 1em;
+    margin-top: -15px !important;
+    margin-bottom: 15px !important;
+}
+
+
+
+/******************************************************************************
+ ******** Adjust the starter template styles: _modal.css             **********
+ ******** Have a look at http://j.mp/eq8zSo for more information     **********
+ ******************************************************************************/
+#link__wiz {
+    width: 350px;
+    height: 290px;
+    line-height: 1.357em; /* 19px, base 14px (see ".dokuwiki") */
+    text-align: center;
+}
+#link__wiz_header {
+    line-height: 1em;
+}
+#link__wiz_result {
+    width: 343px;
+    height: 233px;
+}
+#link__wiz_result a:link,
+#link__wiz_result a:link:active,
+#link__wiz_result a:visited,
+#link__wiz_result a:visited:active {
+    text-decoration: none;
+    border-bottom: 0 none;
+}
+#link__wiz_result a:hover {
+    text-decoration: underline;
+}
+
+
+
+/******************************************************************************
+ ************************* Additional Plugin CSS ******************************
+ ******************************************************************************/
+/* bureaucracy */
+.dokuwiki form.bureaucracy__plugin fieldset {
+    border: 1px dotted #606060;
+    border-style: solid\9; /* fix MSIE 6/7/8 */
+}
+.dokuwiki form.bureaucracy__plugin label span,
+.dokuwiki form.bureaucracy__plugin input.edit,
+.dokuwiki form.bureaucracy__plugin textarea.edit {
+    text-align: left !important;
+    margin: auto 5px;
+    float: none !important;
+    width: 96% !important;
+    min-width: 96%;
+    max-width: 96%;
+}
+/* gallery plugin */
+.dokuwiki .gallery table,
+.dokuwiki .gallery td {
+    border: 0 none;
+}
+
+
+/* bibtexbrowser stuff  */
+
+.btb-header {
+    font-size: 1.714em;
+}
+
+.bibtitle {
+    font-weight:bold;
+}
+
+.bibitem {
+    line-height:1.4;
+    padding: 10px;
+}
+
+div.desig {
+  padding:1px 5px;
+  font-size:13px;
+}
+div.div0 {
+  background-color:#F8F8F8;
+}
+div.div1 {
+  margin-left:5px;
+  background-color:#EEEEEE;
+}
+div.div2 {
+  margin-left:5px;
+  background-color:#E8E8E8;
+}
+div.div3 {
+  margin-left:5px;
+  background-color:#DDDDDD;
+}
+div.div4 {
+  margin-left:5px;
+  background-color:#D0D0D0;
+}
+div.div5 {
+  margin-left:5px;
+  background-color:#CCCCCC;
+}
+

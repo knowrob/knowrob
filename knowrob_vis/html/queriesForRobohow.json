@@ -1,0 +1,43 @@
+{
+  "query": [
+    {"q": "", "text": "----- init -----"},
+    {"q": "visualisation_canvas, diagram_canvas.", "text": "initialize canvases"},
+    {"q": "load_experiment('/var/roslog/current-experiment/cram_log.owl').", "text": "load current experiment"},
+    {"q": "load_experiment('/var/roslog/first-part-demo/cram_log.owl').", "text": "load pick and place part"},
+    {"q": "load_experiment('/var/roslog/pouring-part-demo/cram_log.owl').", "text": "load pouring part"},
+    {"q": "owl_individual_of(A, knowrob:'SemanticEnvironmentMap'), !, add_object_with_children(A).", "text": "load semantic map"},
+    
+    {"q": "", "text": ""},
+    {"q": "", "text": "----- Belief of the Robot -----"},
+    {"q": "task(T), task_goal(T, '(OBJECT-PLACED-AT ?OBJ ?LOC)'), task_start(T, S), task_end(T, E), add_trajectory('/base_link', S, E, 1.0).", "text": "PR2's path during a pick-and-place sequence"},
+    {"q": "findall([Obj, E], \n ((task_end(T,E), task_class(T,knowrob:'UIMAPerception'), rdf_has(T, knowrob:'perceptionResult', Obj))), \n Objs),!, member([Obj, E], Objs), belief_at(loc(Obj,Loc), E), \n add_object_as_semantic_instance(Obj, Loc, E, SemanticMapInstance), \n add_object_with_children(SemanticMapInstance).", "text": "Where were the objects perceived during the execution?"},
+    {"q": "findall(E,((task_end(T,E), task_goal(T,'PUTDOWN'))), Es),!, member(E, Es), \n mng_robot_pose_at_time(pr2:'PR2Robot1','/map',E,Pose),\n add_robot_as_basic_semantic_instance(Pose, E, SemanticMapInstance), \nadd_object_with_children(SemanticMapInstance), \nhighlight_object(SemanticMapInstance).", "text": "What were the robot poses during all PUT-DOWN Actions?"},
+    {"q": "successful_instances_of_given_goal('PUTDOWN', Tasks), \n member(T, Tasks), task_end(T,End), !,\n mng_robot_pose_at_time(pr2:'PR2Robot1','/map',End,Pose),\n add_object_with_children(pr2:'PR2Robot1',End).", "text": " Where was the robot localized at the time of a successful putdown?"},
+    {"q": "task_start(T,S), task_end(T,E), task_goal(T,'PUTDOWN'),\n arm_used_for_manipulation(T, Link), add_trajectory(Link, S, E, 0.1).", "text": "What is the trajectory of the arm during a PUT-DOWN Action?"},
+    {"q": "task_start(T,S), task_end(T,E), \ntask_goal(T,'REPLACEABLE-FUNCTION-DEMO-PART-POURING'), publish_designator(T), \nadd_trajectory('/r_wrist_roll_link', S, E, 0.1), \n!, mng_robot_pose_at_time(pr2:'PR2Robot1','/map',S,Pose), \nadd_object_with_children(pr2:'PR2Robot1',S).", "text": "What is the trajectory of the arm during the pouring Action?"},
+    {"q": "remove_object_with_children(pr2:'PR2Robot1').", "text": "Stop publishing PR2 markers"},
+    {"q": "remove_trajectory('/base_link'), \n remove_trajectory('/l_wrist_roll_link'), \n remove_trajectory('/r_wrist_roll_link').", "text": "Stop publishing trajectories to the scene"},
+
+    
+    {"q": "", "text": ""},
+    {"q": "", "text": "----- Logfile statistics -----"},
+     {"q": "owl_parse('/var/roslog/exp-2014-04-01_11-09-16/cram_log.owl', false, false, true),\nowl_parse('/var/roslog/exp-2014-04-01_12-16-27/cram_log.owl', false, false, true),\nowl_parse('/var/roslog/exp-2014-04-01_13-17-38/cram_log.owl', false, false, true),\nowl_parse('/var/roslog/exp-2014-04-01_14-56-13/cram_log.owl', false, false, true).", "text": "Add OWL Files for statistics"},	
+    {"q": "findall(Type-Num, (owl_subclass_of(T, knowrob:'CRAMFailure'),\n rdf_split_url(_, Type, T),findall(F, failure_class(F, T), Failures),\n length(Failures, Num)), Distrib),pairs_keys_values(Distrib, Types, Nums),\n add_diagram(errordist, 'Error distribution', piechart, xlabel, ylabel, 350, 350, '11px', [[Types, Nums]]).", "text": "Show occurences of typical error types in the chart"},
+     
+
+    {"q": "", "text": ""},
+    {"q": "", "text": "----- Human experiments -----"},
+    {"q": "register_ros_package(mongo_prolog).", "text": "Init mongo_prolog"},
+    {"q": "mongo_prolog:action_trajectory(flip).", "text": "Flipping trajectory"},
+    {"q": "mongo_prolog:action_trajectory(pour).", "text": "Pouring trajectory"},
+    {"q": "mongo_prolog:remove_trajectory.", "text": "Remove trajectory"},
+
+ 
+    {"q": "", "text": ""},
+    {"q": "", "text": "----- Highlighting an object -----"},
+    {"q": "highlight_object_with_children('http://ias.cs.tum.edu/kb/knowrob.owl#Refrigerator67').", "text": "highlight object"},
+    {"q": "reset_highlight.", "text": "reset highlight"}
+
+
+  ]
+}
