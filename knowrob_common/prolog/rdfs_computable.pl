@@ -12,7 +12,7 @@
     ]).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
-:- use_module(library('odbc')).
+% :- use_module(library('odbc')).
 :- use_module(library('lists')).
 
 :- rdf_register_ns(computable, 'http://ias.cs.tum.edu/kb/computable.owl#').
