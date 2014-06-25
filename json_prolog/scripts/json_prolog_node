@@ -8,8 +8,15 @@
 ##############################################################################
 
 
-ARCH=`uname -i`
-export LD_LIBRARY_PATH=/usr/lib/swi-prolog/lib/$ARCH:$LD_LIBRARY_PATH
+
+
+if [ $(uname -i) == 'x86_64' ]; then
+  export LD_LIBRARY_PATH=/usr/lib/swi-prolog/lib/amd64:$LD_LIBRARY_PATH
+else
+  export LD_LIBRARY_PATH=/usr/lib/swi-prolog/lib/i386:$LD_LIBRARY_PATH
+fi
+
+
 export LD_PRELOAD=libswipl.so
 
 source $(rospack find rosprolog)/scripts/rosprolog_utils.sh
