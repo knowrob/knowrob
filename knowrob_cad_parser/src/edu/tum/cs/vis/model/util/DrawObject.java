@@ -9,8 +9,6 @@ package edu.tum.cs.vis.model.util;
 
 import java.io.Serializable;
 
-import javax.vecmath.Vector3f;
-
 import processing.core.PGraphics;
 
 /**
@@ -258,14 +256,12 @@ public abstract class DrawObject implements Serializable {
 	 * 
 	 * @return List of edges
 	 */
-	public Vector3f[] getEdges() {
-		Vector3f e[] = new Vector3f[3];
-
+	public Edge[] getEdges() {
+		Edge[] e = new Edge[3];
 		for (int j = 0; j < position.length; j++) {
-			e[j] = new Vector3f(position[(j + 2) % position.length]);
-			e[j].sub(position[(j + 1) % position.length]);
+			e[j] = new Edge(position[(j + 2) % position.length],
+					position[(j + 1) % position.length]);
 		}
 		return e;
 	}
-
 }
