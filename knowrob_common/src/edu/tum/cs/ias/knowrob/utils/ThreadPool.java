@@ -33,6 +33,7 @@ public class ThreadPool {
 	public static void executeInPool(List<Callable<Void>> threads) {
 		executeInPool(threads, -1);
 	}
+	
 	public static void executeInPool(List<Callable<Void>> threads, int numParallel) {
 		ExecutorService	pool;
 		int threadNum = numParallel <= 0 ? Runtime.getRuntime().availableProcessors() * 2 : numParallel;
@@ -53,5 +54,6 @@ public class ThreadPool {
 			e.printStackTrace();
 		}
 		threads.clear();
+		pool.shutdown();
 	}
 }
