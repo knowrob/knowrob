@@ -29,10 +29,17 @@
 
   <script type="text/javascript" type="text/javascript">
 
+    // global ROS handle
+    var ros;
+    
+    //global jsonprolog handle
+    var prolog;
+    
+    
     function init() {
     
       // Connect to ROS.
-      var ros = new ROSLIB.Ros({
+      ros = new ROSLIB.Ros({
         url : 'ws://localhost:9090'
       });
 
@@ -109,8 +116,6 @@
       });
     };
 
-    //global jsonprolog handle
-    var prolog;
 
     function queryProlog(q) {
 
@@ -123,7 +128,7 @@
         }
 
 
-        prolog = new JsonProlog({});
+        prolog = new JsonProlog(ros, {});
 
         document.query_form.history.value += "?- " + q +  ".\n\n";
 

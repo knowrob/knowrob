@@ -1,14 +1,11 @@
 
-function JsonProlog(options){
+function JsonProlog(ros, options){
 
   var that = this;
   this.raw = options.raw || false;
   this.finished = false;
-
-  var ros = new ROSLIB.Ros({
-    url : 'ws://localhost:9090'
-  });
-
+  var ros = ros;
+  
   this.makeid = function() {
 
     var text = "";
