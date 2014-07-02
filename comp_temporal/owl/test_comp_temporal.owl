@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY test "http://ias.cs.tum.edu/kb/test_comp_temporal.owl#" >
+]>
+
+<rdf:RDF xmlns="http://ias.cs.tum.edu/kb/test_comp_temporal.owl#"
+     xml:base="http://ias.cs.tum.edu/kb/test_comp_temporal.owl"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:test="http://ias.cs.tum.edu/kb/test_comp_temporal.owl#">
+
+    <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/test_comp_temporal.owl">
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
+    </owl:Ontology>
+
+
+    <!-- Event Individuals  of the following form:   -->
+    
+    <!--  \______________ Long ______________|       -->
+    <!--  |_Short1_|_Short2_|       |_Short3_|       -->
+    <!--                                 |_Short4_|  -->
+
+
+    <owl:namedIndividual rdf:about="&test;Long">
+        <rdf:type rdf:resource="&knowrob;Event"/>
+        <knowrob:startTime rdf:resource="&test;timepoint_1377777000"/>
+        <knowrob:endTime rdf:resource="&test;timepoint_1377777010"/>
+    </owl:namedIndividual>
+    <owl:namedIndividual rdf:about="&test;Short1">
+        <rdf:type rdf:resource="&knowrob;Event"/>
+        <knowrob:startTime rdf:resource="&test;timepoint_1377777000"/>
+        <knowrob:endTime rdf:resource="&test;timepoint_1377777002"/>
+    </owl:namedIndividual>
+    <owl:namedIndividual rdf:about="&test;Short2">
+        <rdf:type rdf:resource="&knowrob;Event"/>
+        <knowrob:startTime rdf:resource="&test;timepoint_1377777002"/>
+        <knowrob:endTime rdf:resource="&test;timepoint_1377777004"/>
+    </owl:namedIndividual>
+    <owl:namedIndividual rdf:about="&test;Short3">
+        <rdf:type rdf:resource="&knowrob;Event"/>
+        <knowrob:startTime rdf:resource="&test;timepoint_1377777008"/>
+        <knowrob:endTime rdf:resource="&test;timepoint_1377777010"/>
+    </owl:namedIndividual>
+    <owl:namedIndividual rdf:about="&test;Short4">
+        <rdf:type rdf:resource="&knowrob;Event"/>
+        <knowrob:startTime rdf:resource="&test;timepoint_1377777009"/>
+        <knowrob:endTime rdf:resource="&test;timepoint_1377777011"/>
+    </owl:namedIndividual>
+
+
+    <!-- Timepoint Individuals -->
+
+    <owl:NamedIndividual rdf:about="&test;timepoint_1377777000">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="&test;timepoint_1377777002">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="&test;timepoint_1377777004">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="&test;timepoint_1377777008">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="&test;timepoint_1377777009">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="&test;timepoint_1377777010">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="&test;timepoint_1377777011">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
+
+
+</rdf:RDF>
