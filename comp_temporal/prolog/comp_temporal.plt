@@ -47,38 +47,44 @@ test(comp_temporallySubsumes) :-
 test(comp_after) :-
     comp_after(test:'timepoint_1377777000', test:'timepoint_1377777002').
 
-% test(comp_time_point_start_time) :-
-%     comp_time_point_start_time(test:'Long', T)
-% 
-% test(comp_time_point_end_time) :- 
-%     comp_time_point_end_time(T, T)
-% 
-% test(comp_duration) :- 
-%     comp_duration(Event, Duration)
+test(comp_duration) :-
+    comp_duration('http://ias.cs.tum.edu/kb/test_comp_temporal.owl#Long', 10).
 
-test(comp_equalI) :- 
-    comp_equalI(test:'Long', test:'Long').
+test(comp_equalI) :-
+      comp_equalI(test:'Long', test:'Long'),
+    \+comp_equalI(test:'Long', test:'Short1').
 
-test(comp_beforeI) :- 
-    comp_beforeI(test:'Short1',test:'Short3').
+test(comp_beforeI) :-
+      comp_beforeI(test:'Short1',test:'Short3'),
+    \+comp_beforeI(test:'Short3',test:'Short1'),
+    \+comp_beforeI(test:'Short1',test:'Short2'),
+    \+comp_beforeI(test:'Short2',test:'Short1').
 
-test(comp_afterI) :- 
-    comp_afterI(test:'Short3',test:'Short1').
+test(comp_afterI) :-
+      comp_afterI(test:'Short3',test:'Short1'),
+    \+comp_afterI(test:'Short1',test:'Short3'),
+    \+comp_afterI(test:'Short1',test:'Short2'),
+    \+comp_afterI(test:'Short2',test:'Short1').
 
-test(comp_overlapsI) :- 
-    comp_overlapsI(test:'Long', test:'Short4').
+test(comp_overlapsI) :-
+      comp_overlapsI(test:'Long', test:'Short4'),
+    \+comp_overlapsI(test:'Short4', test:'Long').
 
-test(comp_overlapsInvI) :- 
-    comp_overlapsInvI(test:'Short4', test:'Long').
+test(comp_overlapsInvI) :-
+      comp_overlapsInvI(test:'Short4', test:'Long'),
+    \+comp_overlapsInvI(test:'Long', test:'Short4').
 
-test(comp_meetsI) :- 
-    comp_meetsI(test:'Short1', test:'Short2').
+test(comp_meetsI) :-
+    comp_meetsI(test:'Short1', test:'Short2'),
+    \+comp_meetsI(test:'Short1', test:'Short3').
 
 test(comp_meetsInvI) :- 
-    comp_meetsInvI(test:'Short2', test:'Short1').
+    comp_meetsInvI(test:'Short2', test:'Short1'),
+    \+comp_meetsInvI(test:'Short3', test:'Short1').
 
-test(comp_duringI) :- 
-    comp_duringI(test:'Short2',test:'Long').
+test(comp_duringI) :-
+    comp_duringI(test:'Short2',test:'Long'),
+    \+ comp_duringI(test:'Short1',test:'Short2').
 
 test(comp_duringInvI) :- 
     comp_duringInvI(test:'Long',test:'Short2').
@@ -90,10 +96,12 @@ test(comp_startsInvI) :-
     comp_startsInvI(test:'Long',test:'Short1').
 
 test(comp_finishesI) :- 
-    comp_finishesI(test:'Short3',test:'Long').
+    comp_finishesI(test:'Short3',test:'Long'),
+    \+ comp_finishesInvI(test:'Short4',test:'Long').
 
-test(comp_finishesInvI) :- 
-    comp_finishesInvI(test:'Long',test:'Short3').
+test(comp_finishesInvI) :-
+    comp_finishesInvI(test:'Long',test:'Short3'),
+    \+ comp_finishesInvI(test:'Long',test:'Short4').
 
 
 :- end_tests(comp_temporal).
