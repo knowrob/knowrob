@@ -20,7 +20,7 @@
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#">
     <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/pancake-making.owl">
-        <owl:imports rdf:resource="package://ias_knowledge_base/owl/knowrob.owl"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
     </owl:Ontology>
 
 
