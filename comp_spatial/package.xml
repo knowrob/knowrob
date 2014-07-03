@@ -3,9 +3,8 @@
   <version>1.0.0</version>
   <description>Routines for spatial reasoning in Prolog.
 
-     Contains Prolog computables for calculating qualitative spatial relations,
-     but also those for extracting certain elements from the string representation
-     of a matrix.
+     Contains Prolog computables for calculating qualitative spatial relations.
+     
   </description>
   <maintainer email="tenorth@cs.uni-bremen.de">Moritz Tenorth</maintainer>
 

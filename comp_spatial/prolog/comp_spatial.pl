@@ -67,7 +67,9 @@
     adjacent_Objects(r, r),
     comp_below_of(r,r),
     comp_above_of(r,r),
-    comp_toTheSideOf(r, r),    comp_toTheRightOf(r, r),    comp_toTheLeftOf(r, r),
+    comp_toTheSideOf(r, r),
+    comp_toTheRightOf(r, r),
+    comp_toTheLeftOf(r, r),
     comp_inFrontOf(r, r),
     comp_inCenterOf(r, r),
     comp_center(r, r).
@@ -174,7 +176,49 @@ holds(on_Physical(Top, Bottom),T) :-
 %
 comp_above_of(Top, Bottom) :-
     get_timepoint(T),
-    holds(comp_below_of(Bottom, Top), T).
+    holds(comp_above_of(Top, Bottom), T).
+
+
+
+%% holds(+BelowOf:compound, +T) is nondet.
+%
+% Usage: holds(comp_above_of(?Top, ?Bottom), +T)
+%
+% Check if Bottom has been in the area of and below Top at time point T.
+%
+% Currently does not take the orientation into account, only the position and dimension.
+%
+% @param Top    Identifier of the upper Object
+% @param Bottom Identifier of the lower Object
+% @param T      TimePoint or Event for which the relations is supposed to hold
+%
+
+holds(comp_above_of(Top, Bottom),T) :-
+
+
+    % get object center for Top
+    object_detection(Top, T, VPT),
+    rdf_triple(knowrob:eventOccursAt, VPT,    TopMatrix),
+    rdf_triple(knowrob:m03, TopMatrix, TCxx),strip_literal_type(TCxx, TCx),atom_to_term(TCx,TX,_),
+    rdf_triple(knowrob:m13, TopMatrix, TCyy),strip_literal_type(TCyy, TCy),atom_to_term(TCy,TY,_),
+    rdf_triple(knowrob:m23, TopMatrix, TCzz),strip_literal_type(TCzz, TCz),atom_to_term(TCz,TZ,_),
+
+%     rdf_triple(knowrob:heightOfObject, Top, literal(type(_,Th))),atom_to_term(Th,TH,_),
+
+    % query for objects at center point
+    objectAtPoint2D(TX,TY,Bottom),
+
+    % get height of objects at center point
+    object_detection(Bottom, T, VPB),
+    rdf_triple(knowrob:eventOccursAt, VPB, BottomMatrix),
+    rdf_triple(knowrob:m23, BottomMatrix, BCzz), strip_literal_type(BCzz, BCz),atom_to_term(BCz,BZ,_),
+%     rdf_triple(knowrob:heightOfObject, Bottom, literal(type(_,Bh))),atom_to_term(Bh,BH,_),
+
+%     print('bottom height:'), print(BH),
+
+    % the criterion is if the difference between them is less than epsilon=5cm
+    <( BZ, TZ),
+    Top \= Bottom.
 
 
 
@@ -190,43 +234,8 @@ comp_above_of(Top, Bottom) :-
 %
 comp_below_of(Bottom, Top) :-
     get_timepoint(T),
-    holds(comp_below_of(Bottom, Top), T).
+    holds(comp_above_of(Top, Bottom), T).
 
-
-
-%% holds(+BelowOf:compound, +T) is nondet.
-%
-% Usage: holds(comp_below_of(?Top, ?Bottom), +T)
-%
-% Check if Bottom has been in the area of and below Top at time point T.
-%
-% Currently does not take the orientation into account, only the position and dimension.
-%
-% @param Top    Identifier of the upper Object
-% @param Bottom Identifier of the lower Object
-% @param T      TimePoint or Event for which the relations is supposed to hold
-%
-
-holds(comp_below_of(Bottom, Top),T) :-
-
-    % get object center for Bottom
-    object_detection(Bottom, T, VPB),
-
-    rdf_triple(knowrob:eventOccursAt, VPB,    BottomMatrix),
-    rdf_triple(knowrob:m03, BottomMatrix, BCxx),strip_literal_type(BCxx, BCx),atom_to_term(BCx,BX,_),
-    rdf_triple(knowrob:m13, BottomMatrix, BCyy),strip_literal_type(BCyy, BCy),atom_to_term(BCy,BY,_),
-    rdf_triple(knowrob:m23, BottomMatrix, BCzz),strip_literal_type(BCzz, BCz),atom_to_term(BCz,BZ,_),
-
-    % query for objects at center point
-    objectAtPoint2D(BX,BY,Top),
-
-    % get objects at center point
-    object_detection(Top, T, VPT),
-    rdf_triple(knowrob:eventOccursAt, VPT, TopMatrix),
-    rdf_triple(knowrob:m23, TopMatrix, TCzz), strip_literal_type(TCzz, TCz),atom_to_term(TCz,TZ,_),
-
-    >( TZ, BZ ),
-    Top \= Bottom.
 
 
 %% comp_toTheLeftOf(?Left, ?Right) is nondet.
@@ -506,7 +515,7 @@ in_ContGeneric(InnerObj, OuterObj) :-
 
 holds(in_ContGeneric(InnerObj, OuterObj), T) :-
 
-    (var(InnerObj); var(OuterObj)),
+%     (var(InnerObj); var(OuterObj)),
 
     object_detection(InnerObj, T, VPI),
     object_detection(OuterObj, T, VPO),
