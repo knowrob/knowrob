@@ -133,6 +133,7 @@
     <owl:ObjectProperty rdf:about="&knowrob;behind-Generally">
         <rdfs:comment rdf:datatype="&xsd;string">An instance of SpatialPredicate. (behind-Generally AFT FORE) means that AFT is behind FORE. More precisely, a line originating at the center of FORE projecting away from the front side of FORE and parallel to the intrinsic front-to-back axis of FORE forms an angle of less than 45 degrees with a line intersecting both AFT and FORE. Note that AFT may be intangible (e.g., a shadow), although FORE must be tangible.</rdfs:comment>
         <rdfs:domain rdf:resource="&knowrob;SpatialThing-Localized"/>
+        <rdfs:range rdf:resource="&knowrob;SpatialThing-Localized"/>
         <rdfs:subPropertyOf rdf:resource="&knowrob;directionalRelations"/>
     </owl:ObjectProperty>
     
@@ -141,6 +142,8 @@
     <!-- http://ias.cs.tum.edu/kb/knowrob.owl#belowOf -->
 
     <owl:ObjectProperty rdf:about="&knowrob;belowOf">
+        <rdfs:domain rdf:resource="&knowrob;SpatialThing-Localized"/>
+        <rdfs:range rdf:resource="&knowrob;SpatialThing-Localized"/>
         <rdfs:subPropertyOf rdf:resource="&knowrob;directionalRelations"/>
     </owl:ObjectProperty>
     
