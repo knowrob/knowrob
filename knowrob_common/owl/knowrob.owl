@@ -550,6 +550,7 @@
 
     <owl:ObjectProperty rdf:about="&knowrob;inCenterOf">
         <rdfs:domain rdf:resource="&knowrob;SpatialThing-Localized"/>
+        <rdfs:range rdf:resource="&knowrob;SpatialThing-Localized"/>
         <rdfs:subPropertyOf rdf:resource="&knowrob;topologicalRelations"/>
     </owl:ObjectProperty>
     
@@ -561,6 +562,8 @@
         <rdfs:comment rdf:datatype="&xsd;string">(inFrontOf-Generally FORE AFT) means that FORE is in front of the tangible object AFT. More precisely, the intrinsic back-to-front axis of AFT is within 45 degrees of some line intersecting both FORE and AFT. Note that FORE may be an intangible spatial object, such as an image projected onto a screen.</rdfs:comment>
         <rdfs:domain rdf:resource="&knowrob;SpatialThing-Localized"/>
         <rdfs:subPropertyOf rdf:resource="&knowrob;directionalRelations"/>
+        <rdfs:domain rdf:resource="&knowrob;SpatialThing-Localized"/>
+        <rdfs:range rdf:resource="&knowrob;SpatialThing-Localized"/>
     </owl:ObjectProperty>
     
 
@@ -1561,6 +1564,8 @@ Note that locatedAtPoint-Spatial is irreflexive; in order to locate points in sp
     <owl:ObjectProperty rdf:about="&knowrob;toTheLeftOf">
         <rdfs:comment rdf:datatype="&xsd;string">(toTheLeftOf OBJ1 OBJ2) says that OBJ1 is located to OBJ2&apos;s left. Thus the arg2 of toTheLeftOf is restricted to instances of LeftAndRightSidedObject. The arg1 can be any instance of SpatialThing-Localized. Because of this asymmetry in argument restrictions, toTheRightOf is not sufficient for representing all cases in which one object is to the right of another (see toTheRightOf). Note that this predicate cannot be used to state that an object is to the left of another, from the perspective of a third party, except as an argument in a perceivesThat assertion.</rdfs:comment>
         <rdfs:subPropertyOf rdf:resource="&knowrob;toTheSideOf"/>
+        <rdfs:domain rdf:resource="&knowrob;SpatialThing-Localized"/>
+        <rdfs:range rdf:resource="&knowrob;SpatialThing-Localized"/>
     </owl:ObjectProperty>
     
 
@@ -1570,6 +1575,8 @@ Note that locatedAtPoint-Spatial is irreflexive; in order to locate points in sp
     <owl:ObjectProperty rdf:about="&knowrob;toTheRightOf">
         <rdfs:comment rdf:datatype="&xsd;string">(toTheRightOf OBJ1 OBJ2) says that OBJ1 is located to OBJ2&apos;s right. Thus the arg2 of toTheRightOf is restricted to instances of LeftAndRightSidedObject. The arg1 can be any instance of SpatialThing-Localized. Because of this asymmetry in argument restrictions, toTheRightOf is not sufficient for representing all cases in which one object is to the left of another (see toTheLeftOf). Note that this predicate cannot be used to state that an object is to the right of another, from the perspective of a third party, except as an argument in a perceivesThat assertion.</rdfs:comment>
         <rdfs:subPropertyOf rdf:resource="&knowrob;toTheSideOf"/>
+        <rdfs:domain rdf:resource="&knowrob;SpatialThing-Localized"/>
+        <rdfs:range rdf:resource="&knowrob;SpatialThing-Localized"/>
     </owl:ObjectProperty>
     
 
@@ -1579,6 +1586,8 @@ Note that locatedAtPoint-Spatial is irreflexive; in order to locate points in sp
     <owl:ObjectProperty rdf:about="&knowrob;toTheSideOf">
         <rdfs:comment rdf:datatype="&xsd;string">(toTheSideOf OBJ1 OBJ2) says that OBJ1 is located to OBJ2&apos;s left or right side. Thus the arg2 of toTheSideOf is restricted to instances of LeftAndRightSidedObject. The arg1 can be any instance of SpatialThing-Localized. Because of this asymmetry in argument restrictions, toTheSideOf is not sufficient for representing all cases in which one object is to the right or left of another (see toTheRightOf and toTheLeftOf). Note that this predicate cannot be used to state that an object is to the side of another, from the perspective of a third party, except as an argument in a perceivesThat assertion.</rdfs:comment>
         <rdfs:subPropertyOf rdf:resource="&knowrob;directionalRelations"/>
+        <rdfs:domain rdf:resource="&knowrob;SpatialThing-Localized"/>
+        <rdfs:range rdf:resource="&knowrob;SpatialThing-Localized"/>
     </owl:ObjectProperty>
     
 
