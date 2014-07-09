@@ -30,7 +30,6 @@
   <run_depend>knowrob_map_tools</run_depend>
   <run_depend>knowrob_mongo</run_depend>
   <run_depend>knowrob_objects</run_depend>
-  <run_depend>knowrob_omics</run_depend>
   <run_depend>knowrob_srdl</run_depend>
   <run_depend>knowrob_vis</run_depend>
   <run_depend>rosprolog</run_depend>
