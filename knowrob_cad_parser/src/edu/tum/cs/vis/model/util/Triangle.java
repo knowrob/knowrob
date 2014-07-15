@@ -105,6 +105,8 @@ public class Triangle extends DrawObject {
 	 */
 	private boolean				isCurvatureMinMaxValueInit	= false;
 
+	public boolean				isVisited					= false;
+
 	/**
 	 * Initializes a triangle with given number of edges (Triangle: 3)
 	 * 
@@ -387,7 +389,7 @@ public class Triangle extends DrawObject {
 	 * 
 	 * @return triangle
 	 */
-	public Triangle getNeighborOfEdge(Edge edge) {
+	public Triangle getNeighborOfEdge(final Edge edge) {
 		for (Triangle t : neighbors) {
 			int sharedVertices = 0;
 			for (int i = 0; i < t.getPosition().length; ++i) {
@@ -398,6 +400,28 @@ public class Triangle extends DrawObject {
 				// System.out.println("sharedVertices -> " + sharedVertices);
 				if (sharedVertices == 2) {
 					return t;
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Get common edge of two different triangles
+	 * 
+	 * @param triangle
+	 * @return edge
+	 */
+	public Edge getCommonEdge(final Triangle triangle) {
+		if (this.equals(triangle)) {
+			return null;
+		}
+		Edge[] thisEdges = this.getEdges();
+		Edge[] triangleEdges = triangle.getEdges();
+		for (int i = 0; i < thisEdges.length; ++i) {
+			for (int j = 0; j < triangleEdges.length; ++j) {
+				if (thisEdges[i].isEqualTo(triangleEdges[j])) {
+					return thisEdges[i];
 				}
 			}
 		}
@@ -423,6 +447,9 @@ public class Triangle extends DrawObject {
 			return triangleEdges;
 		}
 		Edge[] nonSharpEdges = new Edge[numNonSharpEdges];
+		if (numNonSharpEdges == 0) {
+			return nonSharpEdges;
+		}
 		int cont = 0;
 		for (Edge edge : sharpEdges) {
 			for (int j = 0; j < triangleEdges.length; ++j) {
@@ -873,8 +900,12 @@ public class Triangle extends DrawObject {
 					&& ((position[0].getClusterCurvatureVal()[1] == position[1]
 							.getClusterCurvatureVal()[1]) && (position[1].getClusterCurvatureVal()[1] == position[2]
 							.getClusterCurvatureVal()[1]))) {
+				if (position[0].getClusterCurvatureVal()[0] == 0
+						&& position[0].getClusterCurvatureVal()[1] == 0) {
+					System.out.println("yes");
+				}
 				setCurvatureLevels(position[0].getClusterCurvatureVal()[0],
-						position[1].getClusterCurvatureVal()[1]);
+						position[0].getClusterCurvatureVal()[1]);
 				this.isSeedTriangle = true;
 				return true;
 			}
@@ -884,15 +915,15 @@ public class Triangle extends DrawObject {
 			Vertex[] v = new Vertex[2];
 			int cont = 0;
 			if (!position[0].isSharpVertex()) {
-				v[cont] = new Vertex(position[0].x, position[0].y, position[0].z);
+				v[cont] = position[0];
 				++cont;
 			}
 			if (!position[1].isSharpVertex()) {
-				v[cont] = new Vertex(position[1].x, position[1].y, position[1].z);
+				v[cont] = position[1];
 				++cont;
 			}
 			if (!position[2].isSharpVertex() && cont < 2) {
-				v[cont] = new Vertex(position[2].x, position[2].y, position[2].z);
+				v[cont] = position[2];
 			}
 			if ((v[0].getClusterCurvatureVal()[0] == v[1].getClusterCurvatureVal()[0])
 					&& v[0].getClusterCurvatureVal()[1] == v[1].getClusterCurvatureVal()[1]) {
@@ -934,7 +965,7 @@ public class Triangle extends DrawObject {
 	 * on curvature tensor analysis", Computer-Aided Design 37(2005) 975-987.
 	 * 
 	 */
-	private void setCurvatureLevels(final float minCurvatureLevel, final float maxCurvatureLevel) {
+	public void setCurvatureLevels(final float minCurvatureLevel, final float maxCurvatureLevel) {
 		this.isCurvatureMinMaxValueInit = true;
 		this.curvatureMinMaxValue[0] = minCurvatureLevel;
 		this.curvatureMinMaxValue[1] = maxCurvatureLevel;
