@@ -78,6 +78,16 @@ public class Edge {
 	}
 
 	/**
+	 * Returns true if edge has vertex v or false otherwise
+	 */
+	public boolean hasVertex(Vertex v) {
+		if (vertices[0].sameCoordinates(v) || vertices[1].sameCoordinates(v)) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Set edge based on existing vertices (if any)
 	 */
 	public void setEdgeValue() {
