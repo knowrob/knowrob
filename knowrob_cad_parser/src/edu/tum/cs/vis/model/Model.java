@@ -16,6 +16,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,6 +35,7 @@ import edu.tum.cs.vis.model.util.BSphere;
 import edu.tum.cs.vis.model.util.DrawSettings;
 import edu.tum.cs.vis.model.util.Group;
 import edu.tum.cs.vis.model.util.Line;
+import edu.tum.cs.vis.model.util.Region;
 import edu.tum.cs.vis.model.util.Triangle;
 import edu.tum.cs.vis.model.util.Vertex;
 import edu.tum.cs.vis.model.util.algorithm.Miniball;
@@ -78,6 +80,11 @@ public class Model {
 	 * List of all lines in this model
 	 */
 	private final List<Line>		lines				= new ArrayList<Line>();
+
+	/**
+	 * List of all regions in this model
+	 */
+	private final List<Region>		regions				= new ArrayList<Region>();
 
 	/**
 	 * Minimum bounding sphere of this model. Only set if previously calculated (by Miniball class).
@@ -138,6 +145,23 @@ public class Model {
 	 */
 	public List<Line> getLines() {
 		return lines;
+	}
+
+	/**
+	 * Get all regions of the model
+	 * 
+	 * @return the regions (can be empty list)
+	 */
+	public List<Region> getRegions() {
+		return regions;
+	}
+
+	public HashMap<Integer, Region> getRegionsMap() {
+		HashMap<Integer, Region> regionsMap = new HashMap<Integer, Region>();
+		for (Region r : regions) {
+			regionsMap.put(r.getRegionId(), r);
+		}
+		return regionsMap;
 	}
 
 	/**
@@ -288,6 +312,17 @@ public class Model {
 	}
 
 	/**
+	 * Set the regions of model by resetting them if existent
+	 * 
+	 * @param regions
+	 *            the analyzed list of regions
+	 */
+	public void setRegions(List<Region> regions) {
+		this.regions.clear();
+		this.regions.addAll(regions);
+	}
+
+	/**
 	 * Set texture base path for all texture elements of this model.
 	 * 
 	 * @param textureBasePath
@@ -365,7 +400,7 @@ public class Model {
 	 * Rebuilds the main triangles and vertices list by iterating over all child groups and
 	 * collecting all triangles and vertices found.
 	 */
-	private void reloadVertexList() {
+	public void reloadVertexList() {
 		synchronized (triangles) {
 			triangles.clear();
 			this.group.getAllTriangles(triangles);
