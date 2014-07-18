@@ -340,6 +340,7 @@ public class PlyParser extends ModelParser {
 						vert[i] = model.getVertices().get(l.values.get(i).intValue());
 					}
 					t.setPosition(vert);
+					t.updateEdges();
 					if (!t.calculateNormalVector()) {
 						continue;
 					}

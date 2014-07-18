@@ -513,6 +513,7 @@ public class ColladaParser extends ModelParser {
 				continue;
 			}
 			tri.updateCentroid();
+			tri.updateEdges();
 
 			// add it to the Collection
 			currGroup.addTriangle(tri);

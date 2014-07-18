@@ -39,6 +39,13 @@ public class Edge {
 	private boolean			isSharpEdge		= false;
 
 	/**
+	 * Empty Constructor for the edge
+	 */
+	public Edge() {
+		return;
+	}
+
+	/**
 	 * Constructor for the edge based on two points
 	 */
 	public Edge(Vertex position1, Vertex position2) {

@@ -66,9 +66,10 @@ public class Triangle extends DrawObject {
 	protected Set<Triangle>		neighbors					= new HashSet<Triangle>(3);
 
 	/**
-	 * List of sharp edges found for this triangle
+	 * Array containing the three edges that define the triangle as returned from the getEdges
+	 * inherited routine from DrawObject
 	 */
-	protected Set<Edge>			sharpEdges					= new HashSet<Edge>();
+	protected Edge[]			edges						= new Edge[3];
 
 	/**
 	 * Stores if a triangle contains three "sharp" vertices
@@ -416,12 +417,11 @@ public class Triangle extends DrawObject {
 		if (this.equals(triangle)) {
 			return null;
 		}
-		Edge[] thisEdges = this.getEdges();
 		Edge[] triangleEdges = triangle.getEdges();
-		for (int i = 0; i < thisEdges.length; ++i) {
+		for (int i = 0; i < edges.length; ++i) {
 			for (int j = 0; j < triangleEdges.length; ++j) {
-				if (thisEdges[i].isEqualTo(triangleEdges[j])) {
-					return thisEdges[i];
+				if (edges[i].isEqualTo(triangleEdges[j])) {
+					return edges[i];
 				}
 			}
 		}
@@ -429,35 +429,70 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
-	 * Get set of all the sharp edges of this triangle
+	 * Get an array containing the 3 edges that define the triangle as returned by the
+	 * DrawObject.getEdges() method => need to call updateEdges() method first to initialize them
 	 * 
-	 * @return set of all sharp edges
+	 * @return edges
 	 */
-	public Set<Edge> getSharpEdges() {
+	@Override
+	public Edge[] getEdges() {
+		return edges;
+	}
+
+	/**
+	 * Get an array of sharp edges in the order given by the edges array
+	 * 
+	 * NOTE: This needs to be called after the sharp edge detection processing in order to deliver
+	 * the expected results!
+	 * 
+	 * @return array of sharp edges
+	 */
+	public Edge[] getSharpEdges() {
+		int numSharpEdges = 0;
+		for (int i = 0; i < edges.length; ++i) {
+			if (edges[i].getIsSharpEdge()) {
+				numSharpEdges++;
+			}
+		}
+		if (numSharpEdges == 3) {
+			return edges;
+		}
+		Edge[] sharpEdges = new Edge[numSharpEdges];
+		numSharpEdges = 0;
+		for (int i = 0; i < edges.length; ++i) {
+			if (edges[i].getIsSharpEdge()) {
+				sharpEdges[numSharpEdges++] = edges[i];
+			}
+		}
 		return sharpEdges;
 	}
 
 	/**
-	 * Get an array of non-sharp edges in the order given by the inherited method getEdges()
+	 * Get an array of non-sharp edges in the order given by the edges array.
+	 * 
+	 * NOTE: This needs to be called after sharp edge detection processing in order to deliver the
+	 * expected results!
+	 * 
+	 * @return array of non-sharp edges
 	 */
 	public Edge[] getNonSharpEdges() {
-		Edge[] triangleEdges = getEdges();
-		int numNonSharpEdges = 3 - sharpEdges.size();
+		int numNonSharpEdges = 0;
+		for (int i = 0; i < edges.length; ++i) {
+			if (!edges[i].getIsSharpEdge()) {
+				numNonSharpEdges++;
+			}
+		}
 		if (numNonSharpEdges == 3) {
-			return triangleEdges;
+			return edges;
 		}
 		Edge[] nonSharpEdges = new Edge[numNonSharpEdges];
 		if (numNonSharpEdges == 0) {
 			return nonSharpEdges;
 		}
-		int cont = 0;
-		for (Edge edge : sharpEdges) {
-			for (int j = 0; j < triangleEdges.length; ++j) {
-				if (!(triangleEdges[j].getEdgeValue().equals(edge.getEdgeValue()))
-						&& !(triangleEdges[j].getEdgeValue().equals(edge.getInvertedEdgeValue()))) {
-					nonSharpEdges[cont] = triangleEdges[j];
-					cont++;
-				}
+		numNonSharpEdges = 0;
+		for (int i = 0; i < edges.length; ++i) {
+			if (!edges[i].getIsSharpEdge()) {
+				nonSharpEdges[numNonSharpEdges++] = edges[i];
 			}
 		}
 		return nonSharpEdges;
@@ -509,17 +544,9 @@ public class Triangle extends DrawObject {
 	 * marks the edge as being sharp
 	 */
 	public void addSharpEdge(Edge edge) {
-		Edge[] edges = this.getEdges();
 		for (int i = 0; i < edges.length; ++i) {
 			if (edges[i].isEqualTo(edge)) {
-				for (Edge sharpEdge : sharpEdges) {
-					if (edge.isEqualTo(sharpEdge)) {
-						// logger.debug("already in sharpEdges");
-						return;
-					}
-				}
 				edges[i].setIsSharpEdge(true);
-				sharpEdges.add(edges[i]);
 				return;
 			}
 		}
@@ -830,7 +857,6 @@ public class Triangle extends DrawObject {
 	 *            edge to be checked if in triangle
 	 */
 	public boolean containsEdge(Edge edge) {
-		Edge[] edges = this.getEdges();
 		for (int i = 0; i < edges.length; ++i) {
 			if (edges[i].isEqualTo(edge)) {
 				return true;
@@ -881,6 +907,16 @@ public class Triangle extends DrawObject {
 			}
 		}
 		return cont;
+	}
+
+	/**
+	 * Updates the edges array content using the Vertices of the Triangle object
+	 */
+	public void updateEdges() {
+		for (int j = 0; j < position.length; j++) {
+			edges[j] = new Edge(position[(j + 2) % position.length], position[(j + 1)
+					% position.length]);
+		}
 	}
 
 	/**

@@ -91,6 +91,7 @@ public class CustomParser extends ModelParser {
 						t.getPosition()[2] = model.getVertices().get(p3);
 
 						t.updateCentroid();
+						t.updateEdges();
 						m.getTriangles().add(t);
 					}
 				}
