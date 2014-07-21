@@ -4,3 +4,4 @@ patched
 prolog/
 rospack_nosubdirs
 downloaded
+*.jar
