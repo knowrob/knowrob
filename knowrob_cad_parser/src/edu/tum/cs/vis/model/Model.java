@@ -627,6 +627,9 @@ public class Model {
 				v.getNormalVector().scale(-1f);
 			}
 		}
+		for (Triangle t : triangles) {
+			t.calculateNormalVector();
+		}
 
 		normalsInitialized = true;
 
