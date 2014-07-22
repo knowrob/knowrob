@@ -149,6 +149,29 @@ public class Edge {
 		return false;
 	}
 
+	// /**
+	// * Checks if the vertex v belongs to the edge
+	// *
+	// * @param v
+	// * @return boolean: true if v is on the direction of the edge, false otherwise
+	// */
+	// public boolean containsVertex(Vertex v) {
+	// float tol = 1e-9f;
+	// if (vertices[0].sameCoordinates(v)) {
+	// return true;
+	// }
+	// if (vertices[1].sameCoordinates(v)) {
+	// return true;
+	// }
+	// Vector3f sideEdge = new Vector3f(v);
+	// sideEdge.sub(vertices[0]);
+	// sideEdge.cross(sideEdge, edge);
+	// if (sideEdge.length() >= -tol && sideEdge.length() <= tol) {
+	// return true;
+	// }
+	// return false;
+	// }
+
 	@Override
 	public String toString() {
 		String print = "Edge: " + this.edge + "\n";

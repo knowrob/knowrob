@@ -79,7 +79,6 @@ public abstract class DrawObject implements Serializable {
 	 */
 	protected void applyColor(PGraphics g, DrawSettings drawSettings) {
 		if (appearance == null) {
-
 			g.noStroke();
 			g.noFill();
 			if (drawSettings == null || drawSettings.drawType == DrawType.FILL) {

@@ -752,26 +752,22 @@ public class Triangle extends DrawObject {
 	 * @return true if <code>tr</code> is a neighbor
 	 */
 	public boolean isDirectNeighbor(Triangle tr) {
-
 		int eqCnt = 0;
 		boolean isNeighbor = false;
-
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < position.length; i++) {
 			if (i == 2 && eqCnt == 0)
 				break; // if 2 of 3 points aren't equal, it is no neighbor
-			Point3f p1 = position[i];
-			for (Point3f p2 : tr.position) {
+			Vertex p1 = position[i];
+			for (Vertex p2 : tr.position) {
 				if (p1.x == p2.x && p1.y == p2.y && p1.z == p2.z) {
 					eqCnt++;
 					if (eqCnt == 2) {
-						isNeighbor = true;
+						isNeighbor = true; // two common vertices, so neighbors
 					} else if (eqCnt == 3) {
-						// if triangle has same position but is backface
-						return false;
+						return false; // similar triangles back to back
 					}
 					break;
 				}
-
 			}
 		}
 		return isNeighbor;
@@ -936,10 +932,10 @@ public class Triangle extends DrawObject {
 					&& ((position[0].getClusterCurvatureVal()[1] == position[1]
 							.getClusterCurvatureVal()[1]) && (position[1].getClusterCurvatureVal()[1] == position[2]
 							.getClusterCurvatureVal()[1]))) {
-				if (position[0].getClusterCurvatureVal()[0] == 0
-						&& position[0].getClusterCurvatureVal()[1] == 0) {
-					System.out.println("yes");
-				}
+				// if (position[0].getClusterCurvatureVal()[0] == 0
+				// && position[0].getClusterCurvatureVal()[1] == 0) {
+				// System.out.println("yes");
+				// }
 				setCurvatureLevels(position[0].getClusterCurvatureVal()[0],
 						position[0].getClusterCurvatureVal()[1]);
 				this.isSeedTriangle = true;

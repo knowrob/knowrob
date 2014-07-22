@@ -187,6 +187,25 @@ public class Region {
 	}
 
 	/**
+	 * Method that determines the common edge a triangle from outside or inside the region (not from
+	 * the boundary) has with the region boundary
+	 * 
+	 * @param triangle
+	 * @return the common edge or null if not any
+	 */
+	public Edge getCommonEdge(Triangle triangle) {
+		if (!boundaryTriangles.contains(triangle)) {
+			for (Triangle n : boundaryTriangles) {
+				Edge edge = triangle.getCommonEdge(n);
+				if (edge != null) {
+					return edge;
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Setter for the KMin curvature value
 	 */
 	public void setCurvatureMin(final float kMin) {
