@@ -35,15 +35,13 @@
     ]).
 
 :- use_module(library('semweb/rdfs')).
-:- use_module(library('thea/owl_parser')).
-:- use_module(library('semweb/owl')).
-:- use_module(library('semweb/rdfs_computable')).
+:- use_module(library('owl_parser')).
+:- use_module(library('owl')).
+:- use_module(library('rdfs_computable')).
 :- use_module(library('jpl')).
 :- use_module(library('knowrob_objects')).
 :- use_module(library('knowrob_perception')).
 :- use_module(library('knowrob_coordinates')).
-
-:- owl_parser:owl_parse('../owl/knowrob_mongo.owl', false, false, true).
 
 
 :-  rdf_meta
