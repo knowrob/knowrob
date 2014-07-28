@@ -4,11 +4,9 @@ PL_ARGS=$@
 PL_INIT_FILE=$(rospack find rosprolog)/prolog/init.pl
 SCRIPT_FILE=""
 
-source $(rospack find rosprolog)/scripts/rosprolog_utils.sh
-
 if [ -n "$1" ] && [ -n "$(rospack find $1)" ]; then
-    get_pkg_classpath $1 ROS_EXPORT_CLASSPATH
-    export CLASSPATH=$ROS_EXPORT_CLASSPATH:$CLASSPATH
+    ROS_EXPORT_CLASSPATH=`get_pkg_classpath $1`
+    export CLASSPATH=${ROS_EXPORT_CLASSPATH}:$CLASSPATH
 
     if [ -f $(rospack find $1)/prolog/init.pl ]; then
         SCRIPT_FILE="-g register_ros_package($1)"
