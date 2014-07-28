@@ -69,7 +69,7 @@
             highlight_object_with_children(r),
             highlight_object_with_children(r,?),
             add_diagram(+,+,+,+,+,+,+,+,+),
-            remove_diagram(+), % TODO: not sure if this is correct
+            remove_diagram(+),
             add_trajectory(r,r,r),
             add_trajectory(r,r,r,+).
 
