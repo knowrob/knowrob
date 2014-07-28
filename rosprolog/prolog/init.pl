@@ -47,12 +47,11 @@ add_ros_package_to_classpath(Package):-
 % calculates java dependencies for classpath
 rospack_package_classpath(Package, Path) :-
   nonvar(Package),
-  process_create(path('rospack'), ['export', '--lang=java', '--attrib=classpath', Package], [stdout(pipe(RospackOutput)), process(PID)]),
+  rospack_package_path('rosprolog', RosprologPath),
+  process_create(path('rosrun'), ['rosprolog', 'get_pkg_classpath', Package], [stdout(pipe(RospackOutput)), process(PID)]),
   read_line_to_codes(RospackOutput, C),
-  string_to_list(String, C),
-  concat_atom(List,' ',String),% split string at ' '
-  concat_atom(List,':',Path),
-  process_wait(PID, _).  % concat list elements with seperator ':'
+  string_to_list(Path, C),
+  process_wait(PID, _).
 
 % concat a value to an environment varible
 % please note: delimiters have to be set within Val, e.g.:
