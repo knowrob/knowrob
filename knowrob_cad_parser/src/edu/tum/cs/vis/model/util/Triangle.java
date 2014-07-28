@@ -92,16 +92,16 @@ public class Triangle extends DrawObject {
 	private int					regionLabel					= -1;
 
 	/**
-	 * Stores the Min and Max Curvature associated to the triangle in the case the triangle is a
-	 * "seed triangle" as defined in the paper
+	 * Stores the Min, Max and MinMax curvatures associated to the triangle in the case the triangle
+	 * is a "seed triangle" as defined in the paper
 	 * 
 	 * Guillaume Lavoue, Florent Dupont, Atilla Baskurt, "A new CAD mesh segmentation method, based
 	 * on curvature tensor analysis", Computer-Aided Design 37(2005) 975-987.
 	 * 
-	 * KMin is stored on position 0 and KMax is stored on position 1.
+	 * KMin is stored on position 0, KMax is stored on position 1, KMinKMax is stored on position 2
 	 * 
 	 */
-	private final float[]		curvatureMinMaxValue		= { 0.0f, 0.0f };
+	private final float[]		curvatureMinMaxValue		= { 0.0f, 0.0f, 0.0f };
 
 	/**
 	 * Flag to mark whether the curvatures Min Max values have been modified from default
@@ -947,13 +947,17 @@ public class Triangle extends DrawObject {
 					.getClusterCurvatureVal()[0] == position[2].getClusterCurvatureVal()[0]))
 					&& ((position[0].getClusterCurvatureVal()[1] == position[1]
 							.getClusterCurvatureVal()[1]) && (position[1].getClusterCurvatureVal()[1] == position[2]
-							.getClusterCurvatureVal()[1]))) {
+							.getClusterCurvatureVal()[1]))
+					&& ((position[0].getClusterCurvatureVal()[2] == position[1]
+							.getClusterCurvatureVal()[2]) && (position[1].getClusterCurvatureVal()[2] == position[2]
+							.getClusterCurvatureVal()[2]))) {
 				// if (position[0].getClusterCurvatureVal()[0] == 0
 				// && position[0].getClusterCurvatureVal()[1] == 0) {
 				// System.out.println("yes");
 				// }
 				setCurvatureLevels(position[0].getClusterCurvatureVal()[0],
-						position[0].getClusterCurvatureVal()[1]);
+						position[0].getClusterCurvatureVal()[1],
+						position[0].getClusterCurvatureVal()[2]);
 				this.isSeedTriangle = true;
 				return true;
 			}
@@ -974,9 +978,10 @@ public class Triangle extends DrawObject {
 				v[cont] = position[2];
 			}
 			if ((v[0].getClusterCurvatureVal()[0] == v[1].getClusterCurvatureVal()[0])
-					&& v[0].getClusterCurvatureVal()[1] == v[1].getClusterCurvatureVal()[1]) {
+					&& v[0].getClusterCurvatureVal()[1] == v[1].getClusterCurvatureVal()[1]
+					&& v[0].getClusterCurvatureVal()[2] == v[1].getClusterCurvatureVal()[2]) {
 				setCurvatureLevels(v[0].getClusterCurvatureVal()[0],
-						v[0].getClusterCurvatureVal()[1]);
+						v[0].getClusterCurvatureVal()[1], v[0].getClusterCurvatureVal()[2]);
 				this.isSeedTriangle = true;
 				return true;
 			}
@@ -986,7 +991,8 @@ public class Triangle extends DrawObject {
 			for (int i = 0; i < position.length; ++i) {
 				if (position[i].isSharpVertex()) {
 					setCurvatureLevels(position[i].getClusterCurvatureVal()[0],
-							position[i].getClusterCurvatureVal()[1]);
+							position[i].getClusterCurvatureVal()[1],
+							position[i].getClusterCurvatureVal()[2]);
 					this.isSeedTriangle = true;
 					return true;
 				}
@@ -1013,10 +1019,12 @@ public class Triangle extends DrawObject {
 	 * on curvature tensor analysis", Computer-Aided Design 37(2005) 975-987.
 	 * 
 	 */
-	public void setCurvatureLevels(final float minCurvatureLevel, final float maxCurvatureLevel) {
+	public void setCurvatureLevels(final float minCurvatureLevel, final float maxCurvatureLevel,
+			final float minMaxCurvatureLevel) {
 		this.isCurvatureMinMaxValueInit = true;
 		this.curvatureMinMaxValue[0] = minCurvatureLevel;
 		this.curvatureMinMaxValue[1] = maxCurvatureLevel;
+		this.curvatureMinMaxValue[2] = minMaxCurvatureLevel;
 	}
 
 	@Override
@@ -1034,10 +1042,11 @@ public class Triangle extends DrawObject {
 		String print = "Triangle: " + System.identityHashCode(this) + "\n";
 		print = print + "V1: " + position[0] + " V2: " + position[1] + " V3: " + position[2] + "\n";
 		print = print + "isSeedTriangle: " + isSeedTriangle + "\n";
-		if (isSeedTriangle || (curvatureMinMaxValue[0] != 0.0f && curvatureMinMaxValue[1] != 0.0f)) {
+		if (isSeedTriangle
+				|| (curvatureMinMaxValue[0] != 0.0f && curvatureMinMaxValue[1] != 0.0f && curvatureMinMaxValue[2] != 0.0f)) {
 			print = print + "Region: " + regionLabel + "\n";
 			print = print + "KMin: " + curvatureMinMaxValue[0] + "KMax: " + curvatureMinMaxValue[1]
-					+ "\n";
+					+ "KMinKMax : " + curvatureMinMaxValue[2] + "\n";
 		}
 		return print;
 	}

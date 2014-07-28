@@ -30,9 +30,11 @@ public class Region {
 
 	/**
 	 * The curvature parameters of the boundary. The first parameter stores the minimum value of the
-	 * curvature and the second one the maximum value of the parameter
+	 * curvature, the second one the maximum value of the curvature and the third the MinMax
+	 * curvature value as it was computed by the CurvatureCalculation class of the
+	 * knowrob_mesh_reasoning package
 	 */
-	private final float[]			curvatureMinMax		= new float[2];
+	private final float[]			curvatureMinMax		= new float[3];
 
 	/**
 	 * A list of all the triangles inside the region
@@ -66,7 +68,7 @@ public class Region {
 		this.id = newId;
 		this.area = 0.0f;
 		this.perimeter = 0.0f;
-		this.curvatureMinMax[0] = this.curvatureMinMax[1] = 0.0f;
+		this.curvatureMinMax[0] = this.curvatureMinMax[1] = this.curvatureMinMax[2] = 0.0f;
 	}
 
 	/**
@@ -78,6 +80,7 @@ public class Region {
 		this.perimeter = 0.0f;
 		this.curvatureMinMax[0] = newCurvatureValues[0];
 		this.curvatureMinMax[1] = newCurvatureValues[1];
+		this.curvatureMinMax[2] = newCurvatureValues[2];
 	}
 
 	/**
@@ -91,6 +94,7 @@ public class Region {
 		this.addTriangleToRegion(initSeedTr);
 		this.curvatureMinMax[0] = initSeedTr.getCurvatureValues()[0];
 		this.curvatureMinMax[1] = initSeedTr.getCurvatureValues()[1];
+		this.curvatureMinMax[2] = initSeedTr.getCurvatureValues()[2];
 	}
 
 	/**
@@ -217,6 +221,13 @@ public class Region {
 	 */
 	public void setCurvatureMax(final float kMax) {
 		this.curvatureMinMax[1] = kMax;
+	}
+
+	/**
+	 * Setter for the KMinKMax curvature value
+	 */
+	public void setCurvatureMinMax(final float kMinkMax) {
+		this.curvatureMinMax[2] = kMinkMax;
 	}
 
 	/**
@@ -398,8 +409,9 @@ public class Region {
 					Vertex oppositeVertex = neighbor.getOppositeVertexFromEdge(nonSharpEdges[j]);
 					if (oppositeVertex != null
 							&& ((oppositeVertex.isSharpVertex()) || ((oppositeVertex
-									.getClusterCurvatureVal()[0] == curvatureMinMax[0]) && (oppositeVertex
-									.getClusterCurvatureVal()[1] == curvatureMinMax[1])))) {
+									.getClusterCurvatureVal()[0] == curvatureMinMax[0])
+									&& (oppositeVertex.getClusterCurvatureVal()[1] == curvatureMinMax[1]) && (oppositeVertex
+									.getClusterCurvatureVal()[2] == curvatureMinMax[2])))) {
 						this.addTriangleToRegion(neighbor);
 					}
 				}
@@ -411,7 +423,7 @@ public class Region {
 	public String toString() {
 		String print = "Region ID " + id + "\n";
 		print = print + "Curvatures: KMin = " + curvatureMinMax[0] + ", KMax = "
-				+ curvatureMinMax[1] + "\n";
+				+ curvatureMinMax[1] + curvatureMinMax[2] + "\n";
 		print = print + "Triangles: " + triangles.size() + "\n";
 		print = print + "Boundary Triangles: " + boundaryTriangles.size() + "\n";
 		print = print + "Boundary Edges: " + edgeBoundary.size() + "\n";

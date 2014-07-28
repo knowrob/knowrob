@@ -57,9 +57,10 @@ public class Vertex extends Point3f {
 	private int					clusterLabel		= -1;
 
 	/**
-	 * Cluster label principal curvature values: KMin is stored first and KMax second
+	 * Cluster label principal curvature values: KMin is stored first, KMax second and KMinKMax
+	 * curvature third
 	 */
-	private final float[]		clusterCurvatureVal	= { 0.0f, 0.0f };
+	private final float[]		clusterCurvatureVal	= { 0.0f, 0.0f, 0.0f };
 
 	/**
 	 * States whether the vertex is a sharp vertex or not
@@ -307,10 +308,12 @@ public class Vertex extends Point3f {
 	}
 
 	/**
-	 * Sets cluster min / max curvature values for the vertex
+	 * Sets cluster Kmin, Kmax and KMinKMax curvature values for the vertex
 	 */
-	public void setClusterCurvatureVal(final float newKMin, final float newKMax) {
+	public void setClusterCurvatureVal(final float newKMin, final float newKMax,
+			final float newKMinKMax) {
 		this.clusterCurvatureVal[0] = newKMin;
 		this.clusterCurvatureVal[1] = newKMax;
+		this.clusterCurvatureVal[2] = newKMinKMax;
 	}
 }
