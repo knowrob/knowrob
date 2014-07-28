@@ -50,7 +50,6 @@ import org.ros.message.MessageFactory;
 import org.ros.message.Time;
 import org.ros.node.NodeConfiguration;
 
-import geometry_msgs.Pose;
 import geometry_msgs.TransformStamped;
 import tfjava.Stamped;
 import tfjava.StampedTransform;
