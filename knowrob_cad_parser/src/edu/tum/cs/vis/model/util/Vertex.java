@@ -136,7 +136,16 @@ public class Vertex extends Point3f {
 	 * @return true if x,y,z are equal
 	 */
 	public boolean sameCoordinates(Point3f p) {
-		return (p.x == x && p.y == y && p.z == z);
+		// if exact coordinates return true
+		if (p.x == x && p.y == y && p.z == z) {
+			return true;
+		}
+		// else check if vertices have different coordinates
+		// but within the tolerance level
+		float distanceTolerance = UtilityValues.DISTANCE_TOL;
+		Vector3f diff = new Vector3f(x, y, z);
+		diff.sub(p);
+		return (diff.length() <= distanceTolerance);
 	}
 
 	/**

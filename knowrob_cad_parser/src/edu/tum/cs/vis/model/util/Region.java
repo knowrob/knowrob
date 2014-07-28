@@ -177,7 +177,7 @@ public class Region {
 		List<Edge> commonEdges = new ArrayList<Edge>();
 		for (Edge e : this.edgeBoundary) {
 			for (Edge en : neighbor.edgeBoundary) {
-				if (e.isEqualTo(en)) {
+				if (e.isDirectNeighbor(en)) {
 					commonEdges.add(e);
 					break;
 				}
@@ -196,7 +196,7 @@ public class Region {
 	public Edge getCommonEdge(Triangle triangle) {
 		if (!boundaryTriangles.contains(triangle)) {
 			for (Triangle n : boundaryTriangles) {
-				Edge edge = triangle.getCommonEdge(n);
+				Edge edge = n.getCommonEdge(triangle);
 				if (edge != null) {
 					return edge;
 				}
@@ -384,21 +384,24 @@ public class Region {
 			Triangle tr = triangles.get(i);
 			Edge[] nonSharpEdges = tr.getNonSharpEdges();
 			for (int j = 0; j < nonSharpEdges.length; ++j) {
-				Triangle neighbor = tr.getNeighborOfEdge(nonSharpEdges[j]);
-				if (neighbor == null) {
+				List<Triangle> neighborList = tr.getNeighborsOfEdge(nonSharpEdges[j]);
+				if (neighborList.size() == 0) {
 					// System.out.println(tr.getNeighbors().size());
 					// System.out.println("null @: " + i + " " + j);
 					continue;
 				}
-				if (neighbor.getRegionLabel() != -1) {
-					// if already classified, then skip it
-					continue;
-				}
-				Vertex oppositeVertex = neighbor.getOppositeVertexFromEdge(nonSharpEdges[j]);
-				if ((oppositeVertex.isSharpVertex())
-						|| ((oppositeVertex.getClusterCurvatureVal()[0] == curvatureMinMax[0]) && (oppositeVertex
-								.getClusterCurvatureVal()[1] == curvatureMinMax[1]))) {
-					this.addTriangleToRegion(neighbor);
+				for (Triangle neighbor : neighborList) {
+					if (neighbor.getRegionLabel() != -1) {
+						// if already classified, then skip it
+						continue;
+					}
+					Vertex oppositeVertex = neighbor.getOppositeVertexFromEdge(nonSharpEdges[j]);
+					if (oppositeVertex != null
+							&& ((oppositeVertex.isSharpVertex()) || ((oppositeVertex
+									.getClusterCurvatureVal()[0] == curvatureMinMax[0]) && (oppositeVertex
+									.getClusterCurvatureVal()[1] == curvatureMinMax[1])))) {
+						this.addTriangleToRegion(neighbor);
+					}
 				}
 			}
 		}

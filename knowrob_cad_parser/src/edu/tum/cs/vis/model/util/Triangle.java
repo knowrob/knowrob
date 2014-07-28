@@ -7,7 +7,9 @@
  ******************************************************************************/
 package edu.tum.cs.vis.model.util;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 
@@ -188,10 +190,6 @@ public class Triangle extends DrawObject {
 	 */
 	public boolean addNeighbor(Triangle neighbor, Lock lock) {
 		boolean add = false;
-
-		if (neighbors.size() >= 3) // for better performance skip if triangle has already all
-									// neighbors set
-			return false;
 
 		add = isDirectNeighbor(neighbor);
 
@@ -386,25 +384,21 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
-	 * Get neighbor of a certain edge (if any)
+	 * Get neighbor of a certain edge from the CAD model.
 	 * 
 	 * @return triangle
 	 */
-	public Triangle getNeighborOfEdge(final Edge edge) {
+	public List<Triangle> getNeighborsOfEdge(final Edge edge) {
+		List<Triangle> toAdd = new ArrayList<Triangle>();
 		for (Triangle t : neighbors) {
-			int sharedVertices = 0;
-			for (int i = 0; i < t.getPosition().length; ++i) {
-				if (edge.getVerticesOfEdge()[0].sameCoordinates(t.getPosition()[i])
-						|| edge.getVerticesOfEdge()[1].sameCoordinates(t.getPosition()[i])) {
-					sharedVertices++;
-				}
-				// System.out.println("sharedVertices -> " + sharedVertices);
-				if (sharedVertices == 2) {
-					return t;
+			Edge[] tEdges = t.getEdges();
+			for (int i = 0; i < tEdges.length; ++i) {
+				if (edge.isDirectNeighbor(tEdges[i])) {
+					toAdd.add(t);
 				}
 			}
 		}
-		return null;
+		return toAdd;
 	}
 
 	/**
@@ -414,14 +408,13 @@ public class Triangle extends DrawObject {
 	 * @return edge
 	 */
 	public Edge getCommonEdge(final Triangle triangle) {
-		if (this.equals(triangle)) {
-			return null;
-		}
-		Edge[] triangleEdges = triangle.getEdges();
-		for (int i = 0; i < edges.length; ++i) {
-			for (int j = 0; j < triangleEdges.length; ++j) {
-				if (edges[i].isEqualTo(triangleEdges[j])) {
-					return edges[i];
+		if (neighbors.contains(triangle)) {
+			Edge[] triangleEdges = triangle.getEdges();
+			for (int i = 0; i < edges.length; ++i) {
+				for (int j = 0; j < triangleEdges.length; ++j) {
+					if (edges[i].isDirectNeighbor(triangleEdges[j])) {
+						return edges[i];
+					}
 				}
 			}
 		}
@@ -499,25 +492,30 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
-	 * Determines the opposite edge of a given parameter edge using the way the edges of a triangle
-	 * were rendered by the getEdges() method
+	 * Determines the opposite vertex from an edge passed as a parameter. The edge needs to be a
+	 * neighboring edge. This is not checked! Handle with care!
 	 * 
 	 * @param edge
 	 * 
 	 * @return opposite vertex of the edge
 	 */
 	public Vertex getOppositeVertexFromEdge(Edge edge) {
-		int contOfVertices = 0;
-		int index = -1;
-		for (int i = 0; i < position.length; ++i) {
-			if (!edge.getVerticesOfEdge()[0].sameCoordinates(position[i])
-					&& !edge.getVerticesOfEdge()[1].sameCoordinates(position[i])) {
-				contOfVertices++;
-				index = i;
+		boolean flagNotDirectNeighbor = true;
+		// first get the common edge section belonging to the triangle
+		for (int i = 0; i < edges.length; ++i) {
+			if (edges[i].isDirectNeighbor(edge)) {
+				edge = edges[i];
+				flagNotDirectNeighbor = false;
 			}
 		}
-		if (contOfVertices == 1) {
-			return position[index];
+		if (flagNotDirectNeighbor) {
+			return null;
+		}
+		// determine opposite vertex
+		for (int i = 0; i < position.length; ++i) {
+			if (!edge.hasVertex(position[i])) {
+				return position[i];
+			}
 		}
 		logger.debug("bad tesselation @ " + this.toString());
 		return null;
@@ -545,7 +543,7 @@ public class Triangle extends DrawObject {
 	 */
 	public void addSharpEdge(Edge edge) {
 		for (int i = 0; i < edges.length; ++i) {
-			if (edges[i].isEqualTo(edge)) {
+			if (edges[i].isDirectNeighbor(edge)) {
 				edges[i].setIsSharpEdge(true);
 				return;
 			}
@@ -769,6 +767,24 @@ public class Triangle extends DrawObject {
 					break;
 				}
 			}
+		}
+		// also mind the inexact triangle hits (vertices are not the same)
+		if (isNeighbor == false) {
+			eqCnt = 0;
+			Edge[] trEdges = tr.getEdges();
+			for (int i = 0; i < edges.length; ++i) {
+				for (int j = 0; j < trEdges.length; ++j) {
+					if (edges[i].isDirectNeighbor(trEdges[j])) {
+						eqCnt++;
+					}
+				}
+			}
+			// if one hit only happened the triangles are neighbors
+			if (eqCnt == 1) {
+				return true;
+			}
+			// otherwise they are not neighbors at all or just the same or back-faced
+			return false;
 		}
 		return isNeighbor;
 	}
