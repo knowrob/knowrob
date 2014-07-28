@@ -42,7 +42,10 @@
      comp_duringI/2,
      comp_duringInvI/2,
      comp_finishesI/2,
-     comp_finishesInvI/2
+     comp_finishesInvI/2,
+     time_point_value/2,
+     start_time_value/2,
+     end_time_value/2
     ]).
 
 :-  rdf_meta
