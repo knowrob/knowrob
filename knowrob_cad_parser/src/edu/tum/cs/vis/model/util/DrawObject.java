@@ -117,8 +117,8 @@ public abstract class DrawObject implements Serializable {
 				g.fill(drawSettings.getOverrideColor().getRed(), drawSettings.getOverrideColor()
 						.getGreen(), drawSettings.getOverrideColor().getBlue(), drawSettings
 						.getOverrideColor().getAlpha());
-			else if (appearance.getImageReference() == null) {
-				if (appearance.getColorFill() != null) {
+			else if (appearance == null || appearance.getImageReference() == null) {
+				if (appearance != null && appearance.getColorFill() != null) {
 					g.fill(appearance.getColorFill().getRed(),
 							appearance.getColorFill().getGreen(), appearance.getColorFill()
 									.getBlue(), appearance.getColorFill().getAlpha() == 0 ? 255

@@ -407,7 +407,8 @@ public class Mesh implements Serializable {
 																// trying again
 		synchronized (triangles) {
 			for (Triangle tri : triangles) {
-				if (tri.appearance.getImageFileName() == null)
+				if (tri == null || tri.appearance == null
+						|| tri.appearance.getImageFileName() == null)
 					continue;
 				String texfile = FileUtil.getAbsoluteFilePath(textureBasePath,
 						tri.appearance.getImageFileName());
@@ -438,7 +439,8 @@ public class Mesh implements Serializable {
 		synchronized (triangles) {
 			for (Triangle tri : triangles) {
 
-				if (tri.appearance.getImageFileName() == null)
+				if (tri == null || tri.appearance == null
+						|| tri.appearance.getImageFileName() == null)
 					continue;
 
 				String texfile = FileUtil.getAbsoluteFilePath(textureBasePath,
