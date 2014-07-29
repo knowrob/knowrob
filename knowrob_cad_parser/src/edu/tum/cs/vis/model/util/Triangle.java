@@ -509,6 +509,7 @@ public class Triangle extends DrawObject {
 			}
 		}
 		if (flagNotDirectNeighbor) {
+			logger.warn(edge + " is not a direct neighbor of any edge of\n" + this.toString());
 			return null;
 		}
 		// determine opposite vertex
@@ -517,7 +518,9 @@ public class Triangle extends DrawObject {
 				return position[i];
 			}
 		}
-		logger.debug("bad tesselation @ " + this.toString());
+		// commented out the warning as returning null does not affect performance
+		// logger.warn("Could not identify opposite vertex of\n" + edge + "\nfor\n" +
+		// this.toString());
 		return null;
 	}
 
@@ -1042,11 +1045,12 @@ public class Triangle extends DrawObject {
 		String print = "Triangle: " + System.identityHashCode(this) + "\n";
 		print = print + "V1: " + position[0] + " V2: " + position[1] + " V3: " + position[2] + "\n";
 		print = print + "isSeedTriangle: " + isSeedTriangle + "\n";
-		if (isSeedTriangle
-				|| (curvatureMinMaxValue[0] != 0.0f && curvatureMinMaxValue[1] != 0.0f && curvatureMinMaxValue[2] != 0.0f)) {
+		if (regionLabel != -1) {
 			print = print + "Region: " + regionLabel + "\n";
-			print = print + "KMin: " + curvatureMinMaxValue[0] + "KMax: " + curvatureMinMaxValue[1]
-					+ "KMinKMax : " + curvatureMinMaxValue[2] + "\n";
+			print = print + "KMin: " + curvatureMinMaxValue[0] + ", KMax: "
+					+ curvatureMinMaxValue[1] + ", KMinKMax : " + curvatureMinMaxValue[2] + "\n";
+		} else {
+			print = print + "Region: unset" + "\n";
 		}
 		return print;
 	}
