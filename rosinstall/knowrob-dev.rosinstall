@@ -3,9 +3,8 @@
 #       access. Please contact the KnowRob developers if you think you
 #       should have access to those.
 #
-- git: {local-name: stacks/knowrob, uri: 'https://github.com/knowrob/knowrob.git'}
-- git: {local-name: stacks/knowrob_addons, uri: 'https://github.com/knowrob/knowrob_addons.git'}
-- git: {local-name: stacks/knowrob_dev, uri: 'https://github.com/code-iai/knowrob_dev.git'}
+- git: {local-name: stacks/knowrob, uri: 'https://github.com/knowrob/knowrob.git', version: indigo-devel }
+- git: {local-name: stacks/knowrob_addons, uri: 'https://github.com/knowrob/knowrob_addons.git', version: indigo-devel }
+- git: {local-name: stacks/knowrob_dev, uri: 'https://github.com/code-iai/knowrob_dev.git', version: indigo-devel }
 - git: {local-name: stacks/knowrob_gui, uri: 'https://github.com/knowrob/knowrob_gui.git'}
 - git: {local-name: stacks/knowrob_human, uri: 'https://github.com/knowrob/knowrob_human.git'}
-- git: {local-name: rosjava_jni, uri: 'https://github.com/gheorghelisca/rosjava_jni.git'}
