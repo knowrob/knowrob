@@ -114,7 +114,7 @@ public class OWLImportExport {
 			manager.setOntologyFormat(ontology, new RDFXMLOntologyFormat());
 
 			// Import KnowRob ontology
-			OWLImportsDeclaration oid = factory.getOWLImportsDeclaration(IRI.create(KNOWROB));
+			OWLImportsDeclaration oid = factory.getOWLImportsDeclaration(IRI.create("package://knowrob_common/owl/knowrob.owl"));
 			AddImport addImp = new AddImport(ontology,oid);
 			manager.applyChange(addImp);
 
