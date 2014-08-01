@@ -26,3 +26,11 @@ dependencies {
   compile 'org.yaml:snakeyaml:1.13'
   compile 'args4j:args4j:2.0.28'
 }
+
+task writeClasspath << {
+    buildDir.mkdirs()
+    new File(buildDir, "classpath.txt").text = configurations.runtime.asPath +
+                                               ":" + buildDir + "/libs/" +
+                                               project.name + "-" +
+                                               project.version + ".jar" + "\n"
+}
