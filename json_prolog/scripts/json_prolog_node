@@ -19,10 +19,9 @@ fi
 
 export LD_PRELOAD=libswipl.so
 
-source $(rospack find rosprolog)/scripts/rosprolog_utils.sh
+PKG_CLASSPATH=`$(rospack find rosprolog)/scripts/get_pkg_classpath $(rosparam get /initial_package)`
+JSON_PROLOG_CLASSPATH=`$(rospack find rosprolog)/scripts/get_pkg_classpath json_prolog `
 
-get_pkg_classpath $(rosparam get /initial_package) PKG_CLASSPATH
-get_pkg_classpath json_prolog JSON_PROLOG_CLASSPATH
 export CLASSPATH=$PKG_CLASSPATH:$JSON_PROLOG_CLASSPATH:$CLASSPATH
 
 
