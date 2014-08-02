@@ -38,7 +38,7 @@ public class UtilityValues {
 	/**
 	 * Maximum number of iterations after which the region merging stops
 	 */
-	public static final int		ITERATIONS_LIM_REGION_MERGING	= 180;
+	public static final int		ITERATIONS_LIM_REGION_MERGING	= 300;
 
 	/**
 	 * Area filtering threshold
@@ -48,12 +48,17 @@ public class UtilityValues {
 	/**
 	 * Minimum distance threshold for the Region Adjacency Graph
 	 */
-	public static final float	MIN_DISTANCE_TOL				= 5e-12f;
+	public static final float	MIN_DISTANCE_TOL				= 5e-15f;
 
 	/**
 	 * Angle tolerance (in DEG) for deciding whether or not two lines are parallel
 	 */
 	public static final float	ANGLE_TOLERANCE					= 0.5f;
+
+	/**
+	 * Curvature hue / saturation smoothing value
+	 */
+	public static final float	CURV_SMOOTHING					= 0.01f;
 
 	/**
 	 * No instantiation
