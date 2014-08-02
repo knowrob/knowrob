@@ -423,7 +423,7 @@ public class Region {
 	public String toString() {
 		String print = "Region ID " + id + "\n";
 		print = print + "Curvatures: KMin = " + curvatureMinMax[0] + ", KMax = "
-				+ curvatureMinMax[1] + curvatureMinMax[2] + "\n";
+				+ curvatureMinMax[1] + ", KMinMax= " + curvatureMinMax[2] + "\n";
 		print = print + "Triangles: " + triangles.size() + "\n";
 		print = print + "Boundary Triangles: " + boundaryTriangles.size() + "\n";
 		print = print + "Boundary Edges: " + edgeBoundary.size() + "\n";
