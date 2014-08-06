@@ -108,8 +108,6 @@ public class Triangle extends DrawObject {
 	 */
 	private boolean				isCurvatureMinMaxValueInit	= false;
 
-	public boolean				isVisited					= false;
-
 	/**
 	 * Initializes a triangle with given number of edges (Triangle: 3)
 	 * 
