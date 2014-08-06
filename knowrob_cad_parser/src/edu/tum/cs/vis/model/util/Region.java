@@ -8,6 +8,7 @@
 
 package edu.tum.cs.vis.model.util;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,25 +63,20 @@ public class Region {
 	private float					perimeter;
 
 	/**
+	 * The appearance associated with the region. This is used to customize the view of the
+	 * triangles that are part of region
+	 */
+	private Appearance				appearance			= new Appearance();
+
+	/**
 	 * Constructor for a region that takes only the region id
 	 */
 	public Region(final int newId) {
 		this.id = newId;
+		this.initializeApperance();
 		this.area = 0.0f;
 		this.perimeter = 0.0f;
 		this.curvatureMinMax[0] = this.curvatureMinMax[1] = this.curvatureMinMax[2] = 0.0f;
-	}
-
-	/**
-	 * Constructor for a region that takes the region id and the curvature values for a region.
-	 */
-	public Region(final int newId, final float[] newCurvatureValues) {
-		this.id = newId;
-		this.area = 0.0f;
-		this.perimeter = 0.0f;
-		this.curvatureMinMax[0] = newCurvatureValues[0];
-		this.curvatureMinMax[1] = newCurvatureValues[1];
-		this.curvatureMinMax[2] = newCurvatureValues[2];
 	}
 
 	/**
@@ -89,6 +85,7 @@ public class Region {
 	 */
 	public Region(final int newId, final Triangle initSeedTr) {
 		this.id = newId;
+		this.initializeApperance();
 		this.area = 0.0f;
 		this.perimeter = 0.0f;
 		this.addTriangleToRegion(initSeedTr);
@@ -109,6 +106,13 @@ public class Region {
 	 */
 	public float getAreaOfRegion() {
 		return this.area;
+	}
+
+	/**
+	 * Getter for the region's appearance
+	 */
+	public Appearance getAppearance() {
+		return this.appearance;
 	}
 
 	/**
@@ -210,6 +214,13 @@ public class Region {
 	}
 
 	/**
+	 * Setter for the apperance of the region
+	 */
+	public void setApperance(final Appearance newAppearance) {
+		this.appearance = newAppearance;
+	}
+
+	/**
 	 * Setter for the KMin curvature value
 	 */
 	public void setCurvatureMin(final float kMin) {
@@ -239,6 +250,15 @@ public class Region {
 			return true;
 		}
 		return false;
+	}
+
+	public void initializeApperance() {
+		int R, G, B, min = 0, max = 255;
+		R = min + (int) (Math.random() * ((max - min) + 1));
+		G = min + (int) (Math.random() * ((max - min) + 1));
+		B = min + (int) (Math.random() * ((max - min) + 1));
+		Color regionColor = new Color(R, G, B);
+		this.appearance.setColorFill(regionColor);
 	}
 
 	/**
@@ -284,7 +304,13 @@ public class Region {
 	 */
 	public void addTrianglesToRegion(final List<Triangle> newTr) {
 		for (int i = 0; i < newTr.size(); ++i) {
-			this.addTriangleToRegion(newTr.get(i));
+			Triangle triangle = newTr.get(i);
+			if (!triangles.contains(triangle)) {
+				triangles.add(triangle);
+				triangle.setRegionLabel(id);
+				triangle.appearance = this.appearance;
+				this.updateAreaOfRegion(triangle);
+			}
 		}
 	}
 
@@ -297,7 +323,7 @@ public class Region {
 		if (!triangles.contains(newTr) && newTr.getRegionLabel() == -1) {
 			triangles.add(newTr);
 			newTr.setRegionLabel(id);
-			newTr.isVisited = true;
+			newTr.appearance = this.appearance;
 			this.updateAreaOfRegion(newTr);
 			this.addTriangleToRegionBoundary(newTr);
 		}
