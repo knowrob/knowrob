@@ -344,19 +344,38 @@ public class Region {
 		// }
 		// boundaryTriangles.add(newTr);
 		if (!triangles.containsAll(newTr.getNeighbors())) {
-			List<Triangle> toRemove = new ArrayList<Triangle>();
-			// check for old triangles that are not on boundary
-			// of current updated region
-			for (Triangle tr : boundaryTriangles) {
-				if (triangles.containsAll(tr.getNeighbors())) {
-					toRemove.add(tr);
-				}
-			}
-			// remove triangles that are not on the boundary anymore
-			boundaryTriangles.removeAll(toRemove);
 			// add current Triangle object located on boundary
 			boundaryTriangles.add(newTr);
+		} else {
+			// check if newTr is a "margin" triangle
+			for (Edge e : newTr.getEdges()) {
+				List<Triangle> neighborsOfEdge = newTr.getNeighborsOfEdge(e);
+				if (neighborsOfEdge.size() == 0) {
+					boundaryTriangles.add(newTr);
+				}
+			}
 		}
+		List<Triangle> toRemove = new ArrayList<Triangle>();
+		// make sure neighboring triangles are not on the region boundary given the new added
+		// triangle
+		for (Triangle tr : newTr.getNeighbors()) {
+			// a margin triangle is one that does not have neighbors for an edge
+			boolean marginTriangle = false;
+			for (Edge tre : tr.getEdges()) {
+				List<Triangle> neighborsOfEdge = tr.getNeighborsOfEdge(tre);
+				if (neighborsOfEdge.size() == 0) {
+					marginTriangle = true;
+				}
+			}
+			// if the neighboring triangle has all its neighbors in the region and is not a
+			// margin triangle then it is not on the boundary
+			if (triangles.containsAll(tr.getNeighbors()) && !marginTriangle) {
+				toRemove.add(tr);
+			}
+		}
+		// remove triangles that are not on the boundary anymore
+		boundaryTriangles.removeAll(toRemove);
+		return;
 	}
 
 	/**
@@ -383,8 +402,13 @@ public class Region {
 		for (Triangle tr : triangles) {
 			if (!triangles.containsAll(tr.getNeighbors())) {
 				boundaryTriangles.add(tr);
-			} else {
-				boundaryTriangles.remove(tr);
+				continue;
+			}
+			for (Edge e : tr.getEdges()) {
+				List<Triangle> neighborsOfEdge = tr.getNeighborsOfEdge(e);
+				if (neighborsOfEdge.size() == 0) {
+					boundaryTriangles.add(tr);
+				}
 			}
 		}
 	}
@@ -393,22 +417,45 @@ public class Region {
 		regionNeighbors.clear();
 		edgeBoundary.clear();
 		for (Triangle t : boundaryTriangles) {
-			for (Triangle n : t.getNeighbors()) {
-				if (n.getRegionLabel() != t.getRegionLabel()) {
-					for (int i = 0; i < allRegions.size(); ++i) {
-						if (allRegions.get(i).getRegionId() == n.getRegionLabel()) {
-							if (!regionNeighbors.contains(allRegions.get(i))) {
-								regionNeighbors.add(allRegions.get(i));
+			// if no neighboring triangles, just add the edge to boundary
+			for (Edge e : t.getEdges()) {
+				List<Triangle> neighborsOfEdge = t.getNeighborsOfEdge(e);
+				if (neighborsOfEdge.size() != 0) {
+					for (Triangle n : neighborsOfEdge) {
+						if (n.getRegionLabel() != t.getRegionLabel()) {
+							for (int i = 0; i < allRegions.size(); ++i) {
+								if (allRegions.get(i).getRegionId() == n.getRegionLabel()
+										&& !regionNeighbors.contains(allRegions.get(i))) {
+									regionNeighbors.add(allRegions.get(i));
+								}
+								if (!edgeBoundary.contains(e)) {
+									edgeBoundary.add(e);
+								}
 							}
-							Edge commonEdge = t.getCommonEdge(n);
-							if (!edgeBoundary.contains(commonEdge)) {
-								edgeBoundary.add(commonEdge);
-							}
-							break;
 						}
+					}
+				} else {
+					if (!edgeBoundary.contains(e)) {
+						edgeBoundary.add(e);
 					}
 				}
 			}
+			// for (Triangle n : t.getNeighbors()) {
+			// if (n.getRegionLabel() != t.getRegionLabel()) {
+			// for (int i = 0; i < allRegions.size(); ++i) {
+			// if (allRegions.get(i).getRegionId() == n.getRegionLabel()) {
+			// if (!regionNeighbors.contains(allRegions.get(i))) {
+			// regionNeighbors.add(allRegions.get(i));
+			// }
+			// Edge commonEdge = t.getCommonEdge(n);
+			// if (!edgeBoundary.contains(commonEdge)) {
+			// edgeBoundary.add(commonEdge);
+			// }
+			// break;
+			// }
+			// }
+			// }
+			// }
 		}
 		updatePerimeterOfRegion();
 	}
