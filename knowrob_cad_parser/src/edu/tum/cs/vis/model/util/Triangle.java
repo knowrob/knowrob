@@ -109,6 +109,11 @@ public class Triangle extends DrawObject {
 	private boolean				isCurvatureMinMaxValueInit	= false;
 
 	/**
+	 * Caching flag to signal whether a trinangle was visited or not for different algorithms
+	 */
+	private boolean				isVisited					= false;
+
+	/**
 	 * Initializes a triangle with given number of edges (Triangle: 3)
 	 * 
 	 */
@@ -590,6 +595,22 @@ public class Triangle extends DrawObject {
 	 */
 	public Point2f[] getTexPosition() {
 		return texPosition;
+	}
+
+	/**
+	 * Get if the triangle was marked as visited or not
+	 * 
+	 * @return isVisited true or false boolean value
+	 */
+	public boolean isVisited() {
+		return isVisited;
+	}
+
+	/**
+	 * Method that sets the isVisited property field of the triangle instance
+	 */
+	public void setIsVisited(final boolean isVisited) {
+		this.isVisited = isVisited;
 	}
 
 	/**
