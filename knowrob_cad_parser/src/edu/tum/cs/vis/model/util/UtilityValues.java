@@ -48,17 +48,22 @@ public class UtilityValues {
 	/**
 	 * Minimum distance threshold for the Region Adjacency Graph
 	 */
-	public static final float	MIN_DISTANCE_TOL				= 5e-15f;
+	public static final float	MIN_DISTANCE_TOL				= 7.5f;
 
 	/**
 	 * Angle tolerance (in DEG) for deciding whether or not two lines are parallel
 	 */
-	public static final float	ANGLE_TOLERANCE					= 0.5f;
+	public static final float	ANGLE_TOLERANCE					= 0.1f;
 
 	/**
 	 * Curvature hue / saturation smoothing value
 	 */
 	public static final float	CURV_SMOOTHING					= 0.01f;
+
+	/**
+	 * Sharp edge threshold angle value in degrees
+	 */
+	public static final float	SHARP_EDGE_ANGLE_TOL			= 65.0f;
 
 	/**
 	 * No instantiation
