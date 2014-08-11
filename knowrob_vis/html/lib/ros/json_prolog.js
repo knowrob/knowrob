@@ -38,7 +38,7 @@ function JsonProlog(ros, options){
         query : query
       });
 
-      console.log(request);
+//       console.log(request);
     
       jsonPrologQueryClient.callService(request, function(result) {
 
@@ -49,7 +49,7 @@ function JsonProlog(ros, options){
           serviceType : 'json_prolog/PrologNextSolution'
         });
 
-        console.log(result);
+//         console.log(result);
 
         if (result.ok == true) {
 
@@ -76,8 +76,8 @@ function JsonProlog(ros, options){
 
     jsonPrologNextResultClient.callService(request2, function(result) {
 
-      console.log(result);
-      console.log(result.solution);
+//       console.log(result);
+//       console.log(result.solution);
 
       // TODO result.solution should be parsed
       if (result.status == 0 && result.solution == "") {
@@ -112,11 +112,11 @@ function JsonProlog(ros, options){
           var ret = parseSolution(solution, 0, "");
         }
 
-        console.log(solution);
+//         console.log(solution);
         callback(ret);
-      } else {
-        console.log("wtf?");
-      }
+      } //else {
+//         console.log("wtf?");
+//       }
     });
 
 
