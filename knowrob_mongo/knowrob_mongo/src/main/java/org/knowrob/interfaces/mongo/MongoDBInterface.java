@@ -6,6 +6,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Matrix4d;
 
@@ -42,8 +43,23 @@ public class MongoDBInterface {
 	 */
 	public MongoDBInterface() {
 
+		String host = "localhost";
+		int port = 27017;
+		
+		// check if MONGO_PORT_27017_TCP_ADDR and MONGO_PORT_27017_TCP_PORT 
+		// environment variables are set
+		
+        Map<String, String> env = System.getenv();
+        if(env.containsKey("MONGO_PORT_27017_TCP_ADDR")) {
+        	host = env.get("MONGO_PORT_27017_TCP_ADDR");
+        }
+        
+        if(env.containsKey("MONGO_PORT_27017_TCP_PORT")) {
+        	port = Integer.valueOf(env.get("MONGO_PORT_27017_TCP_PORT"));
+        }
+        
 		try {
-			mongoClient = new MongoClient( "localhost" , 27017 );
+			mongoClient = new MongoClient(host, port);
 			db = mongoClient.getDB("roslog");
 
 		} catch (UnknownHostException e) {
