@@ -3,9 +3,16 @@ function Control(options) {
   var sliderLow = options.sliderLow || "";
   var sliderHigh = options.sliderHigh;
   var initButton = options.initButton;
+
+  var startButton = options.startButton;
+  var stopButton = options.stopButton;
+
   var timeDisplay = options.timeDisplay;
   var startTime = 0;
   var endTime = 0;
+
+  var elapsedTime = 0;
+  var commandTimer;
 
   this.init = function() {
 
@@ -32,6 +39,7 @@ function Control(options) {
         var seconds = time - minutes * 60
         console.log(time);
         that.update(time);
+        that.elapsedTime = time;
         document.getElementById(timeDisplay).innerHTML= minutes.toString() + ":" + seconds.toString();
       };
 
@@ -126,4 +134,21 @@ function Control(options) {
     document.getElementById(initButton).disabled = true;
     that.init();
   };
+
+  document.getElementById(startButton).onclick = function() {
+    document.getElementById(startButton).disabled = true;
+    that.commandTimer = setInterval(function(){
+      if (that.elapsedTime < (endTime - startTime)){
+        that.elapsedTime += 10;
+        that.update(that.elapsedTime);
+        document.getElementById(sliderHigh).value = elapsedTime;
+      }
+    },1000);
+  };
+
+  document.getElementById(stopButton).onclick = function() {
+    document.getElementById(startButton).disabled = false;
+    clearInterval(that.commandTimer);
+  };
+
 }
