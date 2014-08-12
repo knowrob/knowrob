@@ -53,25 +53,36 @@ public class Prolog extends AbstractNodeMain {
 	
 	public ConnectedNode node;
 
+	
+	
 	@Override
 	public void onStart(final ConnectedNode connectedNode) {
 		
 		this.node = connectedNode;
 		
+		// wait for node to be ready
 		try {
-			query_client = connectedNode.newServiceClient("simple_query", rosjava_test_msgs.AddTwoInts._TYPE);
+			while(node == null) {
+				Thread.sleep(200);
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			query_client = connectedNode.newServiceClient("json_prolog/simple_query", json_prolog_msgs.PrologQuery._TYPE);
 		} catch (ServiceNotFoundException e) {
 			throw new RosRuntimeException(e);
 		}
 		
 		try {
-			next_solution_client = connectedNode.newServiceClient("next_solution", rosjava_test_msgs.AddTwoInts._TYPE);
+			next_solution_client = connectedNode.newServiceClient("json_prolog/next_solution", json_prolog_msgs.PrologNextSolution._TYPE);
 		} catch (ServiceNotFoundException e) {
 			throw new RosRuntimeException(e);
 		}
 		
 		try {
-			finish_client = connectedNode.newServiceClient("finish", rosjava_test_msgs.AddTwoInts._TYPE);
+			finish_client = connectedNode.newServiceClient("json_prolog/finish", json_prolog_msgs.PrologFinish._TYPE);
 		} catch (ServiceNotFoundException e) {
 			throw new RosRuntimeException(e);
 		} 
@@ -86,6 +97,16 @@ public class Prolog extends AbstractNodeMain {
 	 * 
 	 */
 	public PrologQueryProxy query(String query_str) {
+		
+		// wait for node to be ready
+		try {
+			while(node == null) {
+				Thread.sleep(200);
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
 		return new PrologQueryProxy(this, query_str);
 	}
 	
@@ -98,6 +119,15 @@ public class Prolog extends AbstractNodeMain {
 	 * 
 	 */
 	public PrologBindings once(String query_str) {
+		
+		// wait for node to be ready
+		try {
+			while(node == null) {
+				Thread.sleep(200);
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		
 		PrologQueryProxy query = new PrologQueryProxy(this, query_str);
 		PrologBindings result = query.iterator().next();

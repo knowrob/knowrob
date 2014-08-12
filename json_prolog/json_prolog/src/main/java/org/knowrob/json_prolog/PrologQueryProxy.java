@@ -70,6 +70,15 @@ public class PrologQueryProxy implements Iterable<PrologBindings> {
 		this.finished_ = false;
 		this.bindings_ = new ArrayList<PrologBindings>();
 
+		
+		// wait for node to be ready
+		try {
+			while(prolog.query_client == null) {
+				Thread.sleep(200);
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
 		final json_prolog_msgs.PrologQueryRequest req = prolog.query_client.newMessage();
 		req.setId(query_id_);
