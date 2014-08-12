@@ -188,6 +188,6 @@ function splitJvmOpts() {
 eval splitJvmOpts $DEFAULT_JVM_OPTS $JAVA_OPTS $JSON_PROLOG_OPTS
 
 
-exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.ros.RosRun org.knowrob.json_prolog.JSONPrologNode
+exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.knowrob.json_prolog.JSONPrologTestClient
 
 
