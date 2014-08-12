@@ -10,11 +10,11 @@ install(DIRECTORY ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_MAVEN_DESTINATION}/org/
         DESTINATION ${CATKIN_GLOBAL_MAVEN_DESTINATION}/org/knowrob/${PROJECT_NAME})
 
 
-
-catkin_package(
-    DEPENDS rosprolog
+catkin_package(INCLUDE_DIRS include
+  LIBRARIES json_prolog
+  CATKIN_DEPENDS json_prolog_msgs #not sure if this is needed
+  DEPENDS rosprolog knowrob_common
 )
-
 
 include(FindPkgConfig)
 pkg_check_modules(SWIPL REQUIRED swipl)
