@@ -22,7 +22,7 @@
     {"q": "", "text": ""},
     {"q": "", "text": "----- Logfile statistics -----"},
      {"q": "owl_parse('/var/roslog/exp-2014-04-01_11-09-16/cram_log.owl', false, false, true),\nowl_parse('/var/roslog/exp-2014-04-01_12-16-27/cram_log.owl', false, false, true),\nowl_parse('/var/roslog/exp-2014-04-01_13-17-38/cram_log.owl', false, false, true),\nowl_parse('/var/roslog/exp-2014-04-01_14-56-13/cram_log.owl', false, false, true).", "text": "Add OWL Files for statistics"},	
-    {"q": "findall(Type-Num, (owl_subclass_of(T, knowrob:'CRAMFailure'),\n rdf_split_url(_, Type, T),findall(F, failure_class(F, T), Failures),\n length(Failures, Num)), Distrib),pairs_keys_values(Distrib, Types, Nums),\n add_diagram(errordist, 'Error distribution', piechart, xlabel, ylabel, 350, 350, '11px', [[Types, Nums]]).", "text": "Show occurences of typical error types in the chart"},
+    {"q": "findall(Type-Num, (owl_subclass_of(T, knowrob:'CRAMFailure'),\n rdf_split_url(_, Type, T),findall(F, failure_type(F, T), Failures),\n length(Failures, Num)), Distrib),pairs_keys_values(Distrib, Types, Nums),\n add_diagram(errordist, 'Error distribution', piechart, xlabel, ylabel, 350, 350, '11px', [[Types, Nums]]).", "text": "Show occurences of typical error types in the chart"},
      
 
     {"q": "", "text": ""},

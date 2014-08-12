@@ -32,6 +32,7 @@ package org.knowrob.json_prolog;
 import org.knowrob.json_prolog.Prolog;
 import org.knowrob.json_prolog.PrologBindings;
 import org.knowrob.json_prolog.PrologQueryProxy;
+import org.knowrob.utils.ros.RosUtilities;
 
 
 public class JSONPrologTestClient {
@@ -39,6 +40,8 @@ public class JSONPrologTestClient {
 	public static void main(String args[]) {
 
 	 Prolog pl = new Prolog();
+	 RosUtilities.runRosjavaNode(pl, new String[]{"org.knowrob.json_prolog.Prolog"});
+	 
 	 PrologQueryProxy bdgs = pl.query("member(A, [1, 2, 3, 4]), B = ['x', A], C = foo(bar, A, B)");
 
 	 

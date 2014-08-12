@@ -1455,6 +1455,7 @@ Note that locatedAtPoint-Spatial is irreflexive; in order to locate points in sp
 
     <owl:ObjectProperty rdf:about="&knowrob;subAction">
         <rdfs:subPropertyOf rdf:resource="&knowrob;subEvents"/>
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
     </owl:ObjectProperty>
     
 

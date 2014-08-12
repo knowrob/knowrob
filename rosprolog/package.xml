@@ -16,6 +16,9 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
+  <run_depend>swi-prolog</run_depend>
+  <run_depend>swi-prolog-java</run_depend>
+  
   <export>
     <rosdoc config="rosdoc.yaml"/>
   </export>

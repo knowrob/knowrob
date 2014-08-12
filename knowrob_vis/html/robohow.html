@@ -121,21 +121,22 @@
     };
 
 
-    function queryProlog(query, history) {
+    function queryProlog(query) {
 
+      var history = ace.edit("history");
       var q = query.getValue();
 
       if (q.substr(q.length - 1) == ".") {
         q = q.substr(0, q.length - 1);
 
         if (prolog != null && prolog.finished == false) {
-          //console.log(prolog.finished);
           prolog.finishClient();
         }
 
         prolog = new JsonProlog(ros, {});
 
-        history.setValue(history.getValue() + "?- " + q +  ".\n\n", -1);
+
+        history.setValue(history.getValue() + "\n\n?- " + q +  ".\n", -1);
 
         prolog.jsonQuery(q, function(result) {
             history.setValue(history.getValue() + result, -1);
@@ -151,7 +152,9 @@
       }
     };
 
-    function nextQueryProlog(history) {
+    function nextQueryProlog() {
+
+      var history = ace.edit("history");
       prolog.nextQuery(function(result) {
             history.setValue(history.getValue() + result, -1);
         });
@@ -199,6 +202,14 @@
       user_query.gotoLine(count, session.getLine(count-1).length);
     }
 
+    // hook for links of class "show_code" that pastes the content of the
+    // previous code block into the query field
+    $( document ).ready(function() {
+      $( "a.show_code" ).click(function( event ) {
+        setQueryValue( $(this).closest("pre + *").prev().find('code').html() );
+        event.preventDefault();
+      });
+    });
 
     function setupHistoryField() {
         var history = ace.edit("history");
@@ -212,7 +223,8 @@
             highlightActiveLine: false,
             highlightGutterLine: false
         });
-        history.renderer.$cursorLayer.element.style.opacity=0
+//         history.renderer.$cursorLayer.element.style.opacity=0;
+
         return history;
     }
 
@@ -232,7 +244,7 @@
             name: 'send_query',
             bindKey: {win: 'Ctrl-Enter',  mac: 'Command-Enter'},
             exec: function(editor) {
-                queryProlog(user_query, history);
+                queryProlog(user_query);
             },
             readOnly: false
         });
@@ -240,15 +252,13 @@
             name: 'next_result',
             bindKey: {win: 'Ctrl-;',  mac: 'Command-;'},
             exec: function(editor) {
-                console.log("next result");
-                nextQueryProlog(history);
+                nextQueryProlog();
             },
             readOnly: false
         });
 
         return user_query;
     }
-
 </script>
 </head>
 

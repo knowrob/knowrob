@@ -15,7 +15,8 @@
 %% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %%
 
-:- register_ros_package(ias_knowledge_base).
+:- register_ros_package(knowrob_common).
+:- register_ros_package(knowrob_objects).
 :- register_ros_package(knowrob_mongo).
 
 :- use_module(library(knowrob_mongo)).

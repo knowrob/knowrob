@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 2.8.3)
 project(knowrob_map_data)
 
 
-find_package(catkin REQUIRED COMPONENTS comp_spatial)
+find_package(catkin REQUIRED COMPONENTS knowrob_map_tools)
 
 catkin_package(
-    DEPENDS comp_spatial
+    DEPENDS knowrob_map_tools
 )

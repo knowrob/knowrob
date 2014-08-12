@@ -52,7 +52,7 @@ public class PrologQueryUtils {
 	}
 
 	public static void parseOwlFile(String filename) {
-		PrologInterface.executeQuery("owl_parser:owl_parse('"+ filename +"', false, false, true)");
+		PrologInterface.executeQuery("owl_parser:owl_parse('"+ filename +"')");
 	}
 	
 	
