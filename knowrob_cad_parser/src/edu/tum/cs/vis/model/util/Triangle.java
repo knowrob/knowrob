@@ -504,15 +504,26 @@ public class Triangle extends DrawObject {
 	 */
 	public Vertex getOppositeVertexFromEdge(Edge edge) {
 		boolean flagNotDirectNeighbor = true;
+		boolean flagSharpEdgeBounded = false;
 		// first get the common edge section belonging to the triangle
 		for (int i = 0; i < edges.length; ++i) {
 			if (edges[i].isDirectNeighbor(edge)) {
-				edge = edges[i];
 				flagNotDirectNeighbor = false;
+				if (edges[i].getIsSharpEdge()) {
+					flagSharpEdgeBounded = true;
+					break;
+				}
+				edge = edges[i];
+				break;
 			}
 		}
+
 		if (flagNotDirectNeighbor) {
 			logger.warn(edge + " is not a direct neighbor of any edge of\n" + this.toString());
+			return null;
+		}
+
+		if (flagSharpEdgeBounded) {
 			return null;
 		}
 		// determine opposite vertex
@@ -781,13 +792,13 @@ public class Triangle extends DrawObject {
 			for (Vertex p2 : tr.position) {
 				if (p1.x == p2.x && p1.y == p2.y && p1.z == p2.z) {
 					eqCnt++;
-					if (eqCnt == 2) {
-						isNeighbor = true; // two common vertices, so neighbors
-					} else if (eqCnt == 3) {
-						return false; // similar triangles back to back
-					}
 					break;
 				}
+			}
+			if (eqCnt == 2) {
+				isNeighbor = true; // two common vertices, so neighbors
+			} else if (eqCnt == 3) {
+				return false; // similar triangles back to back
 			}
 		}
 		// also mind the inexact triangle hits (vertices are not the same)
