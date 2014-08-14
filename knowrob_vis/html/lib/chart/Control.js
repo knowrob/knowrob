@@ -42,7 +42,7 @@ function Control(options) {
         var seconds = time - minutes * 60
         console.log(time);
         that.update(time);
-        that.elapsedTime = time;
+        that.elapsedTime = parseInt(time);
         document.getElementById(timeDisplay).innerHTML= minutes.toString() + ":" + seconds.toString();
       };
 
@@ -99,12 +99,12 @@ function Control(options) {
     that.commandTimer = setInterval(function(){
       console.log("foo");
       if (that.elapsedTime < (endTime - startTime)){
-        console.log("bar");
+        console.log(that.elapsedTime);
         that.elapsedTime += 10;
         that.update(that.elapsedTime);
-        document.getElementById(sliderHigh).value = elapsedTime;
+        document.getElementById(sliderHigh).value = that.elapsedTime;
       }
-    },1000);
+    },3000);
   };
 
   document.getElementById(stopButton).onclick = function() {
