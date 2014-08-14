@@ -1,5 +1,8 @@
 function Control(options) {
   var that = this;
+
+  var ros = options.ros;
+
   var sliderLow = options.sliderLow || "";
   var sliderHigh = options.sliderHigh;
   var initButton = options.initButton;
@@ -18,7 +21,7 @@ function Control(options) {
 
     var startEndQuery = "findall(Time, task_start(T, Time), List), sort(List, Sorted), nth0(0, Sorted, X), last(Sorted, Y), string_concat('http://ias.cs.tum.edu/kb/cram_log.owl#timepoint_', Firststring, X), string_concat('http://ias.cs.tum.edu/kb/cram_log.owl#timepoint_', Laststring, Y), atom_number(Firststring, First), atom_number(Laststring, Last)";
 
-    var prolog = new JsonProlog({raw: true});
+    var prolog = new JsonProlog(ros, {raw: true});
     prolog.jsonQuery(startEndQuery, function(result){
       prolog.finishClient();
 
@@ -61,7 +64,7 @@ function Control(options) {
     console.log("new step");
 
     // error statistic until now
-    var prolog = new JsonProlog({raw: true});
+    var prolog = new JsonProlog(ros, {raw: true});
     prolog.jsonQuery(queryErrorsUntilNow, function(result){
       console.log("update errors until now!");
     });
@@ -69,7 +72,7 @@ function Control(options) {
     prolog.finishClient();
 
     // task tree until now
-    var prolog = new JsonProlog({raw: true});
+    var prolog = new JsonProlog(ros, {raw: true});
     prolog.jsonQuery(queryTaskTreeUntilNow, function(result){
       console.log("update task tree until now!");
     });
@@ -77,7 +80,7 @@ function Control(options) {
     prolog.finishClient();
 
     // robot pose at timepoint
-    var prolog = new JsonProlog({raw: true});
+    var prolog = new JsonProlog(ros, {raw: true});
     prolog.jsonQuery(robotPoseAtTime, function(result){
       console.log("update robot pose!");
     });
@@ -94,7 +97,9 @@ function Control(options) {
   document.getElementById(startButton).onclick = function() {
     document.getElementById(startButton).disabled = true;
     that.commandTimer = setInterval(function(){
+      console.log("foo");
       if (that.elapsedTime < (endTime - startTime)){
+        console.log("bar");
         that.elapsedTime += 10;
         that.update(that.elapsedTime);
         document.getElementById(sliderHigh).value = elapsedTime;
