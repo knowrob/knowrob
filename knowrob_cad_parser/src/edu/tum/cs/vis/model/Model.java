@@ -105,6 +105,46 @@ public class Model {
 	private boolean					normalsInitialized	= false;
 
 	/**
+	 * Lowest mean curvature value of the CAD model
+	 */
+	private float					lowMeanCurvature	= Float.MAX_VALUE;
+
+	/**
+	 * Highest mean curvature value of the CAD model
+	 */
+	private float					highMeanCurvature	= Float.MIN_VALUE;
+
+	/**
+	 * Lowest Gaussian curvature value of the CAD model
+	 */
+	private float					lowGaussCurvature	= Float.MAX_VALUE;
+
+	/**
+	 * Highest Gaussian curvature value of the CAD model
+	 */
+	private float					highGaussCurvature	= Float.MIN_VALUE;
+
+	/**
+	 * Average mean curvature values of the vertices of CAD model
+	 */
+	private float					avgMeanCurvature	= 0f;
+
+	/**
+	 * Variance of the mean curvature values of the vertices of the CAD model
+	 */
+	private float					varMeanCurvature	= 0f;
+
+	/**
+	 * Average Gaussian curvature values of the vertices of the CAD model
+	 */
+	private float					avgGaussCurvature	= 0f;
+
+	/**
+	 * Variance of the Gaussian curvature values of the vertices of the CAD model
+	 */
+	private float					varGaussCurvature	= 0f;
+
+	/**
 	 * @param g
 	 *            Graphics context to draw on
 	 * @param drawSettings
@@ -204,6 +244,82 @@ public class Model {
 	}
 
 	/**
+	 * Get the lowest mean curvature value of the object. If this is equal to Float.MAX_VALUE, then
+	 * it has not been set
+	 * 
+	 * @return lowMeanCurvature value of the CAD model
+	 */
+	public float getLowMeanCurvature() {
+		return lowMeanCurvature;
+	}
+
+	/**
+	 * Get the highest mean curvature value of the object. If this is equal to Float.MIN_VALUE, then
+	 * it has not been set
+	 * 
+	 * @return highMeanCurvature value of the CAD model
+	 */
+	public float getHighMeanCurvature() {
+		return highMeanCurvature;
+	}
+
+	/**
+	 * Get the lowest Gaussian curvature value of the object. If this is equal to Float.MAX_VALUE,
+	 * then it has not been set
+	 * 
+	 * @return lowGaussCurvature value of the CAD model
+	 */
+	public float getLowGaussCurvature() {
+		return lowGaussCurvature;
+	}
+
+	/**
+	 * Get the highest Gaussian curvature value of the object. If this is equal to FLoat.MIN_VALUE,
+	 * then it has not been set
+	 * 
+	 * @return highGaussCUrvature value of the CAD model
+	 */
+	public float getHighGaussCurvature() {
+		return highGaussCurvature;
+	}
+
+	/**
+	 * Get the average mean curvature value of the object.
+	 * 
+	 * @return avgMeanCurvature value of the CAD model
+	 */
+	public float getAvgMeanCurvature() {
+		return avgMeanCurvature;
+	}
+
+	/**
+	 * Get the average Gaussian curvature value of the object
+	 * 
+	 * @return avgGaussCurvature value of the CAD model
+	 */
+	public float getAvgGaussCurvature() {
+		return avgGaussCurvature;
+	}
+
+	/**
+	 * Get the variance of the mean curvature values of the object vertices
+	 * 
+	 * @return variance of mean curvature points in the CAD model
+	 */
+	public float getVarMeanCurvature() {
+		return varMeanCurvature;
+	}
+
+	/**
+	 * Get the variance of the Gaussian curvature values of the object vertices
+	 * 
+	 * @return variance of the Gaussian curvature points in the CAD model
+	 */
+	public float getVarGaussCurvature() {
+		return varGaussCurvature;
+	}
+
+	/**
 	 * Unscale the specified point coordinates by dividing each coordinate of <tt>corner</tt> by
 	 * <tt>getScale</tt>
 	 * 
@@ -280,6 +396,7 @@ public class Model {
 		scale(1f / max);
 
 		scale = 1f / max;
+		logger.debug("Model normalized to fit a unity length cube. Scaling applied: " + scale);
 	}
 
 	/**
@@ -332,6 +449,78 @@ public class Model {
 	 */
 	public void setTextureBasePath(String textureBasePath) {
 		this.textureBasePath = textureBasePath;
+	}
+
+	/**
+	 * Set the lowest mean curvature of the CAD model
+	 * 
+	 * @param lowMeanCurvature
+	 */
+	public void setLowMeanCurvature(final float lowMeanCurvature) {
+		this.lowMeanCurvature = lowMeanCurvature;
+	}
+
+	/**
+	 * Set the highest mean curvature of the CAD model
+	 * 
+	 * @param highMeanCurvature
+	 */
+	public void setHighMeanCurvature(final float highMeanCurvature) {
+		this.highMeanCurvature = highMeanCurvature;
+	}
+
+	/**
+	 * Set the lowest Gaussian curvature value of the CAD model
+	 * 
+	 * @param lowGaussCurvature
+	 */
+	public void setLowGaussCurvature(final float lowGaussCurvature) {
+		this.lowGaussCurvature = lowGaussCurvature;
+	}
+
+	/**
+	 * Set the lowest Gaussian curvature value of the CAD model
+	 * 
+	 * @param highGaussCurvature
+	 */
+	public void setHighGaussCurvature(final float highGaussCurvature) {
+		this.highGaussCurvature = highGaussCurvature;
+	}
+
+	/**
+	 * Set the average mean curvature value of the CAD model
+	 * 
+	 * @param avgMeanCurvature
+	 */
+	public void setAvgMeanCurvature(final float avgMeanCurvature) {
+		this.avgMeanCurvature = avgMeanCurvature;
+	}
+
+	/**
+	 * Set the average Gaussian curvature value of the CAD model
+	 * 
+	 * @param avgGaussCurvature
+	 */
+	public void setAvgGaussCurvature(final float avgGaussCurvature) {
+		this.avgGaussCurvature = avgGaussCurvature;
+	}
+
+	/**
+	 * Set the variance of the mean curvatures of the points in the CAD model
+	 * 
+	 * @param varMeanCurvature
+	 */
+	public void setVarMeanCurvature(final float varMeanCurvature) {
+		this.varMeanCurvature = varMeanCurvature;
+	}
+
+	/**
+	 * Set the variance of the Gaussian curvatures of the points in the CAD model
+	 * 
+	 * @param varGaussCurvature
+	 */
+	public void setVarGaussCurvature(final float varGaussCurvature) {
+		this.varGaussCurvature = varGaussCurvature;
 	}
 
 	/**
