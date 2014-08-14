@@ -204,6 +204,7 @@ public class Region {
 	public Edge getCommonEdge(Triangle triangle) {
 		if (!boundaryTriangles.contains(triangle)) {
 			for (Triangle n : boundaryTriangles) {
+				// Edge edge = triangle.getCommonEdge(n);
 				Edge edge = n.getCommonEdge(triangle);
 				if (edge != null) {
 					return edge;
@@ -400,14 +401,17 @@ public class Region {
 	public void updateRegionBoundary() {
 		boundaryTriangles.clear();
 		for (Triangle tr : triangles) {
-			if (!triangles.containsAll(tr.getNeighbors())) {
-				boundaryTriangles.add(tr);
-				continue;
-			}
 			for (Edge e : tr.getEdges()) {
 				List<Triangle> neighborsOfEdge = tr.getNeighborsOfEdge(e);
 				if (neighborsOfEdge.size() == 0) {
 					boundaryTriangles.add(tr);
+				} else {
+					for (int i = 0; i < neighborsOfEdge.size(); ++i) {
+						if (triangles.contains(neighborsOfEdge.get(i))) {
+							boundaryTriangles.add(tr);
+							break;
+						}
+					}
 				}
 			}
 		}
@@ -466,26 +470,29 @@ public class Region {
 	public void buildUpRegion() {
 		for (int i = 0; i < triangles.size(); ++i) {
 			Triangle tr = triangles.get(i);
-			Edge[] nonSharpEdges = tr.getNonSharpEdges();
-			for (int j = 0; j < nonSharpEdges.length; ++j) {
-				List<Triangle> neighborList = tr.getNeighborsOfEdge(nonSharpEdges[j]);
-				if (neighborList.size() == 0) {
-					// System.out.println(tr.getNeighbors().size());
-					// System.out.println("null @: " + i + " " + j);
-					continue;
-				}
-				for (Triangle neighbor : neighborList) {
-					if (neighbor.getRegionLabel() != -1) {
-						// if already classified, then skip it
+			// Edge[] nonSharpEdges = tr.getNonSharpEdges();
+			Edge[] edges = tr.getEdges();
+			for (int j = 0; j < edges.length; ++j) {
+				if (!edges[j].getIsSharpEdge()) {
+					List<Triangle> neighborList = tr.getNeighborsOfEdge(edges[j]);
+					if (neighborList.size() == 0) {
+						// System.out.println(tr.getNeighbors().size());
+						// System.out.println("null @: " + i + " " + j);
 						continue;
 					}
-					Vertex oppositeVertex = neighbor.getOppositeVertexFromEdge(nonSharpEdges[j]);
-					if (oppositeVertex != null
-							&& ((oppositeVertex.isSharpVertex()) || ((oppositeVertex
-									.getClusterCurvatureVal()[0] == curvatureMinMax[0])
-									&& (oppositeVertex.getClusterCurvatureVal()[1] == curvatureMinMax[1]) && (oppositeVertex
-									.getClusterCurvatureVal()[2] == curvatureMinMax[2])))) {
-						this.addTriangleToRegion(neighbor);
+					for (Triangle neighbor : neighborList) {
+						if (neighbor.getRegionLabel() != -1) {
+							// if already classified, then skip it
+							continue;
+						}
+						Vertex oppositeVertex = neighbor.getOppositeVertexFromEdge(edges[j]);
+						if (oppositeVertex != null
+								&& ((oppositeVertex.isSharpVertex()) || ((oppositeVertex
+										.getClusterCurvatureVal()[0] == curvatureMinMax[0])
+										&& (oppositeVertex.getClusterCurvatureVal()[1] == curvatureMinMax[1]) && (oppositeVertex
+										.getClusterCurvatureVal()[2] == curvatureMinMax[2])))) {
+							this.addTriangleToRegion(neighbor);
+						}
 					}
 				}
 			}
