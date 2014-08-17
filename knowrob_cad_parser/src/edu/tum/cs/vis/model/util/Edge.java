@@ -160,8 +160,7 @@ public class Edge {
 		float angle = this.edge.angle(edge.edge) * 180.f / (float) Math.PI;
 		// if the angle is in [0,angleTolerance] || [180-angleTolerance,180] then edges are
 		// collinear
-		if (angle <= UtilityValues.ANGLE_TOLERANCE
-				|| angle >= (180.0f - UtilityValues.ANGLE_TOLERANCE)) {
+		if (angle <= Thresholds.ANGLE_TOLERANCE || angle >= (180.0f - Thresholds.ANGLE_TOLERANCE)) {
 			return true;
 		}
 		return false;
@@ -201,14 +200,13 @@ public class Edge {
 		// create edge given the vertex to be compared
 		Vector3f edgeCmp = new Vector3f(v);
 		edgeCmp.sub(vertices[0]);
-		if (edgeCmp.length() <= UtilityValues.DISTANCE_TOL) {
+		if (edgeCmp.length() <= Thresholds.DISTANCE_TOLERANCE) {
 			return false;
 		}
 		// get the angle (in DEG) between the two edges (in [0,180])
 		float angle = edgeRef.angle(edgeCmp) * 180.0f / (float) Math.PI;
 		// check if the angle is bigger than the tolerance
-		if (angle > UtilityValues.ANGLE_TOLERANCE
-				&& angle < (180.f - UtilityValues.ANGLE_TOLERANCE)) {
+		if (angle > Thresholds.ANGLE_TOLERANCE && angle < (180.f - Thresholds.ANGLE_TOLERANCE)) {
 			return false;
 		}
 		// now the edges are parallel so v is on the ref edge
@@ -216,10 +214,10 @@ public class Edge {
 		float dotProd = edgeCmp.dot(edgeRef);
 		// the vertex is inside if dotProd in between the edgeRef with the tolerance levels
 		// discounted for the edge vertices
-		if (dotProd <= UtilityValues.DISTANCE_TOL) {
+		if (dotProd <= Thresholds.DISTANCE_TOLERANCE) {
 			return false;
 		}
-		if (dotProd >= (edge.length() * (edge.length() - UtilityValues.DISTANCE_TOL))) {
+		if (dotProd >= (edge.length() * (edge.length() - Thresholds.DISTANCE_TOLERANCE))) {
 			return false;
 		}
 		return true;

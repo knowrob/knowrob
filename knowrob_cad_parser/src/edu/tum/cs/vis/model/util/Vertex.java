@@ -143,7 +143,7 @@ public class Vertex extends Point3f {
 		}
 		// else check if vertices have different coordinates
 		// but within the tolerance level
-		float distanceTolerance = UtilityValues.DISTANCE_TOL;
+		float distanceTolerance = Thresholds.DISTANCE_TOLERANCE;
 		Vector3f diff = new Vector3f(x, y, z);
 		diff.sub(p);
 		return (diff.length() <= distanceTolerance);
