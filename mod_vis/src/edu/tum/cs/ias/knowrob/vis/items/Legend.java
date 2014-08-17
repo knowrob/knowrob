@@ -39,5 +39,6 @@ public class Legend implements Drawable {
 		while((line = r.readLine()) != null) {			
 			this.stringLeg.add(line);
 		}
+		r.close();
 	}
 }

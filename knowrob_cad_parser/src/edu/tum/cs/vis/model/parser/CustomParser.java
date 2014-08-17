@@ -51,6 +51,8 @@ public class CustomParser extends ModelParser {
 			FileInputStream fstream = new FileInputStream(filename);
 			// Get the object of DataInputStream
 			DataInputStream in = new DataInputStream(fstream);
+			@SuppressWarnings("resource")
+			// necessary to close resources at the outer layer only
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 			String strLine;
 
