@@ -3,7 +3,8 @@
  * materials are made available under the terms of the GNU Public License v3.0 which accompanies
  * this distribution, and is available at http://www.gnu.org/licenses/gpl.html
  * 
- * Contributors: Stefan Profanter - initial API and implementation, Year: 2012
+ * Contributors: Stefan Profanter - initial API and implementation, Year: 2012; Andrei Stoica -
+ * refactored implementation during Google Summer of Code 2014
  ******************************************************************************/
 package edu.tum.cs.vis.model.util;
 
@@ -17,17 +18,16 @@ import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 /**
- * A vertex (corner point) of a triangle or line. Vertex may have normal vector and voronoi area
- * assigned.
- * 
+ * A vertex (corner point) of a triangle or line. Vertex may have normal vector, Voronoi area
+ * assigned and curvature values assigned.
  * 
  * @author Stefan Profanter
- * 
+ * @author Andrei Stoica - added curvature support and its functionality
  */
 public class Vertex extends Point3f {
 
 	/**
-	 * 
+	 * auto generated
 	 */
 	private static final long	serialVersionUID	= 4454667509075960402L;
 
@@ -57,8 +57,8 @@ public class Vertex extends Point3f {
 	private int					clusterLabel		= -1;
 
 	/**
-	 * Cluster label principal curvature values: KMin is stored first, KMax second and KMinKMax
-	 * curvature third
+	 * Cluster label principal curvature values: <tt>kMin</tt> is stored first, <tt>kMax</tt> second
+	 * and <tt>kMinkMax</tt> curvature third
 	 */
 	private final float[]		clusterCurvatureVal	= { 0.0f, 0.0f, 0.0f };
 
@@ -109,6 +109,10 @@ public class Vertex extends Point3f {
 		this.normalVector = (Vector3f) norm.clone();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see javax.vecmath.Tuple3f#clone()
+	 */
 	@Override
 	public Object clone() {
 		Vertex v = new Vertex(this);
@@ -120,6 +124,10 @@ public class Vertex extends Point3f {
 		return v;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see javax.vecmath.Tuple3f#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object o) {
 		if (o == this) {
@@ -150,7 +158,7 @@ public class Vertex extends Point3f {
 	}
 
 	/**
-	 * Get normal vector of vertex
+	 * Gets the normal vector of the vertex
 	 * 
 	 * @return the normalVector
 	 */
@@ -159,7 +167,7 @@ public class Vertex extends Point3f {
 	}
 
 	/**
-	 * Get voronoi area of vertex
+	 * Gets the Voronoi area (pointarea) of the vertex
 	 * 
 	 * @return the pointarea
 	 */
@@ -167,6 +175,10 @@ public class Vertex extends Point3f {
 		return pointarea;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see javax.vecmath.Tuple3f#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		return Float.valueOf(x).hashCode() ^ Float.valueOf(y).hashCode()
@@ -175,7 +187,7 @@ public class Vertex extends Point3f {
 	}
 
 	/**
-	 * set normal vector of vertex
+	 * Sets the normal vector of the vertex
 	 * 
 	 * @param normalVector
 	 *            the normalVector to set
@@ -185,7 +197,7 @@ public class Vertex extends Point3f {
 	}
 
 	/**
-	 * set Voronoi area of vertex
+	 * Sets the Voronoi area (pointarea) of the vertex
 	 * 
 	 * @param pointarea
 	 *            the pointarea to set
@@ -196,7 +208,7 @@ public class Vertex extends Point3f {
 	}
 
 	/**
-	 * Apply 4x4 transformation matrix to the vector
+	 * Apply a 4x4 transformation matrix to the vector
 	 * 
 	 * @param matrix
 	 *            the transformation matrix
@@ -214,6 +226,8 @@ public class Vertex extends Point3f {
 	}
 
 	/**
+	 * Returns the vertex 1-ring neighborhood vertices
+	 * 
 	 * @return the neighbors
 	 */
 	public Set<Vertex> getNeighbors() {
@@ -221,7 +235,7 @@ public class Vertex extends Point3f {
 	}
 
 	/**
-	 * Add neighbor vertex to the neighbors list. You have to check, that v is really a direct
+	 * Adds neighbor vertex to the neighbors list. You have to check, that v is really a direct
 	 * neighbor (this one is connected to v through a single edge).
 	 * 
 	 * @param v
@@ -281,6 +295,9 @@ public class Vertex extends Point3f {
 
 	/**
 	 * Sets a Vertex to be sharp
+	 * 
+	 * @param value
+	 *            to be set
 	 */
 	public void isSharpVertex(final boolean value) {
 		this.isSharpVertex = value;
@@ -294,21 +311,31 @@ public class Vertex extends Point3f {
 	}
 
 	/**
-	 * Sets cluster label it to specified value
+	 * Sets cluster label id to the specified value
+	 * 
+	 * @param newLabel
+	 *            of cluster to be set
 	 */
 	public void setClusterLabel(final int newLabel) {
 		this.clusterLabel = newLabel;
 	}
 
 	/**
-	 * Gets cluster min / max curvature values of the vertex
+	 * Gets cluster <tt>kMin</tt>, <tt>kMax</tt> and <tt>kMinMax</tt> curvature values of the vertex
 	 */
 	public float[] getClusterCurvatureVal() {
 		return clusterCurvatureVal;
 	}
 
 	/**
-	 * Sets cluster Kmin, Kmax and KMinKMax curvature values for the vertex
+	 * Sets the cluster <tt>kMin</tt>, <tt>kMax</tt> and <tt>kMinkMax</tt> curvature values for the
+	 * vertex
+	 * 
+	 * @param values
+	 *            of the curvature properties of the associated cluster of the vertex:
+	 *            <tt>clusterCurvatureVal[0] = kMin</tt> (minimum curvature value),
+	 *            <tt>clusterCurvatureVal[1] = kMax</tt> (maximum curvature value),
+	 *            <tt>clusterCurvatureVal[2] = kMinkMax</tt> (min-max curvature property value)
 	 */
 	public void setClusterCurvatureVal(final float newKMin, final float newKMax,
 			final float newKMinKMax) {

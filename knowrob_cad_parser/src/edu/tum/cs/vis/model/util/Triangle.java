@@ -3,7 +3,8 @@
  * materials are made available under the terms of the GNU Public License v3.0 which accompanies
  * this distribution, and is available at http://www.gnu.org/licenses/gpl.html
  * 
- * Contributors: Stefan Profanter - initial API and implementation, Year: 2012
+ * Contributors: Stefan Profanter - initial API and implementation, Year: 2012; Andrei Stoica -
+ * refactored implementation during the Google Summer of Code 2014
  ******************************************************************************/
 package edu.tum.cs.vis.model.util;
 
@@ -25,10 +26,14 @@ import processing.core.PConstants;
 import processing.core.PGraphics;
 
 /**
- * DrawObject which represents a triangle (object with 3 points).
+ * DrawObject which represents a triangle (object with 3 points). The implementation covers the
+ * functionality needed to describe the neighboring relations between faces of a mesh along the
+ * information and properties of such a face, such as vertices, edges, appearance, area, normal
+ * vector, centroid, curvature values. Additionally the drawing utility of a face is also
+ * implemented
  * 
  * @author Stefan Profanter
- * 
+ * @author Andrei Stoica - refactored original implementation and added complementary functionality
  */
 public class Triangle extends DrawObject {
 
@@ -79,10 +84,12 @@ public class Triangle extends DrawObject {
 	private boolean				isSharpTriangle				= false;
 
 	/**
-	 * Stores if a triangle is a "seed triangle" as described in
+	 * Stores if a triangle is a "seed triangle" as described in the paper
+	 * "A new CAD mesh segmentation method, based on curvature tensor analysis", Guillaume Lavoue,
+	 * Florent Dupont, Atilla Baskurt, Computer-Aided Design 37 (2005), 975–987.
 	 * 
-	 * Guillaume Lavoue, Florent Dupont, Atilla Baskurt, "A new CAD mesh segmentation method, based
-	 * on curvature tensor analysis", Computer-Aided Design 37(2005) 975-987
+	 * @see <a
+	 *      href="http://dl.acm.org/citation.cfm?id=1649921">"A new CAD mesh segmentation method, based on curvature tensor analysis"</a>
 	 */
 	private boolean				isSeedTriangle				= false;
 
@@ -92,19 +99,22 @@ public class Triangle extends DrawObject {
 	private int					regionLabel					= -1;
 
 	/**
-	 * Stores the Min, Max and MinMax curvatures associated to the triangle in the case the triangle
-	 * is a "seed triangle" as defined in the paper
+	 * Stores the minimum curvature <tt>kMin</tt>, maximum curvature <tt>kMax</tt> and min-max
+	 * curvature <tt>kMinkMax</tt> values associated to the triangle in the case the triangle is a
+	 * "seed triangle" as defined in the paper
+	 * "A new CAD mesh segmentation method, based on curvature tensor analysis", Guillaume Lavoue,
+	 * Florent Dupont, Atilla Baskurt, Computer-Aided Design 37 (2005), 975–987.
 	 * 
-	 * Guillaume Lavoue, Florent Dupont, Atilla Baskurt, "A new CAD mesh segmentation method, based
-	 * on curvature tensor analysis", Computer-Aided Design 37(2005) 975-987.
+	 * <tt>kMin</tt> is stored on position 0, <tt>kMax</tt> is stored on position 1,
+	 * <tt>kMinkMax</tt> is stored on position 2
 	 * 
-	 * KMin is stored on position 0, KMax is stored on position 1, KMinKMax is stored on position 2
-	 * 
+	 * @see <a
+	 *      href="http://dl.acm.org/citation.cfm?id=1649921">"A new CAD mesh segmentation method, based on curvature tensor analysis"</a>
 	 */
 	private final float[]		curvatureMinMaxValue		= { 0.0f, 0.0f, 0.0f };
 
 	/**
-	 * Flag to mark whether the curvatures Min Max values have been modified from default
+	 * Flag to mark whether the curvatures <tt>kMin</tt> Max values have been modified from default
 	 */
 	private boolean				isCurvatureMinMaxValueInit	= false;
 
@@ -335,7 +345,7 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
-	 * returns the area of the triangle in 3d space. Unit is the same as you draw the triangle.
+	 * Returns the area of the triangle in 3d space. Unit is the same as you draw the triangle.
 	 * 
 	 * @return the area in drawing unit.
 	 */
@@ -360,7 +370,7 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
-	 * Get centroid of triangle
+	 * Gets the centroid of the triangle
 	 * 
 	 * @return the centroid
 	 */
@@ -369,7 +379,7 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
-	 * Get voronoi area of triangle
+	 * Gets the Voronoi area of the triangle
 	 * 
 	 * @return the cornerarea
 	 */
@@ -378,16 +388,16 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
-	 * Get list of all direct neighbor triangles.
+	 * Gets the list of all the direct neighboring triangles.
 	 * 
-	 * @return list of triangles
+	 * @return list of neighboring triangles
 	 */
 	public Set<Triangle> getNeighbors() {
 		return neighbors;
 	}
 
 	/**
-	 * Get neighbor of a certain edge from the CAD model.
+	 * Gets neighbor of a certain edge from the CAD model.
 	 * 
 	 * @return triangle
 	 */
@@ -405,10 +415,12 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
-	 * Get common edge of two different triangles
+	 * Gets the common edge (if it exists) of the triangle instance and of the one passed as
+	 * argument
 	 * 
 	 * @param triangle
-	 * @return edge
+	 *            to be checked
+	 * @return edge shared with triangle
 	 */
 	public Edge getCommonEdge(final Triangle triangle) {
 		if (neighbors.contains(triangle)) {
@@ -425,8 +437,7 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
-	 * Get an array containing the 3 edges that define the triangle as returned by the
-	 * DrawObject.getEdges() method => need to call updateEdges() method first to initialize them
+	 * Gets an array containing the 3 edges of the triangle
 	 * 
 	 * @return edges
 	 */
@@ -436,17 +447,15 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
-	 * Get an array of sharp edges in the order given by the edges array
-	 * 
-	 * NOTE: This needs to be called after the sharp edge detection processing in order to deliver
-	 * the expected results!
+	 * Get an array of sharp edges. NOTE: This needs to be called after the sharp edge detection
+	 * processing in order to deliver the expected results!
 	 * 
 	 * @return array of sharp edges
 	 */
 	public Edge[] getSharpEdges() {
 		int numSharpEdges = 0;
 		for (int i = 0; i < edges.length; ++i) {
-			if (edges[i].getIsSharpEdge()) {
+			if (edges[i].isSharpEdge()) {
 				numSharpEdges++;
 			}
 		}
@@ -456,7 +465,7 @@ public class Triangle extends DrawObject {
 		Edge[] sharpEdges = new Edge[numSharpEdges];
 		numSharpEdges = 0;
 		for (int i = 0; i < edges.length; ++i) {
-			if (edges[i].getIsSharpEdge()) {
+			if (edges[i].isSharpEdge()) {
 				sharpEdges[numSharpEdges++] = edges[i];
 			}
 		}
@@ -464,17 +473,15 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
-	 * Get an array of non-sharp edges in the order given by the edges array.
-	 * 
-	 * NOTE: This needs to be called after sharp edge detection processing in order to deliver the
-	 * expected results!
+	 * Get an array of non-sharp edges. NOTE: This needs to be called after sharp edge detection
+	 * processing in order to deliver the expected results!
 	 * 
 	 * @return array of non-sharp edges
 	 */
 	public Edge[] getNonSharpEdges() {
 		int numNonSharpEdges = 0;
 		for (int i = 0; i < edges.length; ++i) {
-			if (!edges[i].getIsSharpEdge()) {
+			if (!edges[i].isSharpEdge()) {
 				numNonSharpEdges++;
 			}
 		}
@@ -487,7 +494,7 @@ public class Triangle extends DrawObject {
 		}
 		numNonSharpEdges = 0;
 		for (int i = 0; i < edges.length; ++i) {
-			if (!edges[i].getIsSharpEdge()) {
+			if (!edges[i].isSharpEdge()) {
 				nonSharpEdges[numNonSharpEdges++] = edges[i];
 			}
 		}
@@ -496,7 +503,7 @@ public class Triangle extends DrawObject {
 
 	/**
 	 * Determines the opposite vertex from an edge passed as a parameter. The edge needs to be a
-	 * neighboring edge. This is not checked! Handle with care!
+	 * neighboring edge in order for the method to return a not null vertex.
 	 * 
 	 * @param edge
 	 * 
@@ -509,7 +516,7 @@ public class Triangle extends DrawObject {
 		for (int i = 0; i < edges.length; ++i) {
 			if (edges[i].isDirectNeighbor(edge)) {
 				flagNotDirectNeighbor = false;
-				if (edges[i].getIsSharpEdge()) {
+				if (edges[i].isSharpEdge()) {
 					flagSharpEdgeBounded = true;
 					break;
 				}
@@ -541,34 +548,41 @@ public class Triangle extends DrawObject {
 	/**
 	 * Gets the curvature values for the current triangle.
 	 * 
-	 * To be called only if before the method isSeedTriangle has been called
+	 * @return curvature properties' values
 	 */
 	public float[] getCurvatureValues() {
 		return curvatureMinMaxValue;
 	}
 
 	/**
-	 * Gets the value of the field isCurvatureMinMaxValueInit
+	 * Returns whether the curvature values have been initialized or not
+	 * 
+	 * @return true or false
 	 */
 	public boolean getIsCurvatureMinMaxValueInit() {
 		return isCurvatureMinMaxValueInit;
 	}
 
 	/**
-	 * Adds a sharp edge to the triangle if this belongs to the triangle. In this case, it also
-	 * marks the edge as being sharp
+	 * Sets an edge of the triangle as sharp edge if this is a direct neighbor of the edge passed as
+	 * parameter.
+	 * 
+	 * @param edge
+	 *            sharp edge to be checked
 	 */
 	public void addSharpEdge(Edge edge) {
 		for (int i = 0; i < edges.length; ++i) {
 			if (edges[i].isDirectNeighbor(edge)) {
-				edges[i].setIsSharpEdge(true);
+				edges[i].isSharpEdge(true);
 				return;
 			}
 		}
 	}
 
 	/**
-	 * Gets the region label property of the current Triangle object
+	 * Gets the region label of which the triangle currently belongs to.
+	 * 
+	 * @return region label id
 	 */
 	public int getRegionLabel() {
 		return regionLabel;
@@ -576,22 +590,18 @@ public class Triangle extends DrawObject {
 
 	/**
 	 * Calculates the angle between surface normal of this triangle and the given one. Angle is
-	 * between 0 and PI (180Â°).
+	 * between 0 and PI.
 	 * 
 	 * @param t
 	 *            counterpart triangle
 	 * @return angle in radiant between 0 and PI
 	 */
 	public double getDihedralAngle(Triangle t) {
-		// double dot = this.getNormalVector().dot(t.getNormalVector());
-		// dot = Math.max(-1, dot);
-		// dot = Math.min(1, dot);
-		// return Math.acos(dot);
 		return this.getNormalVector().angle(t.getNormalVector());
 	}
 
 	/**
-	 * get normal vector of triangle
+	 * Gets normal vector of triangle
 	 * 
 	 * @return the normalVector
 	 */
@@ -600,7 +610,7 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
-	 * Get position array for texture
+	 * Gets position array for texture
 	 * 
 	 * @return the texPosition
 	 */
@@ -609,7 +619,7 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
-	 * Get if the triangle was marked as visited or not
+	 * Returns if the triangle was marked as visited or not
 	 * 
 	 * @return isVisited true or false boolean value
 	 */
@@ -618,7 +628,7 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
-	 * Method that sets the isVisited property field of the triangle instance
+	 * Sets the triangle as visited
 	 */
 	public void setIsVisited(final boolean isVisited) {
 		this.isVisited = isVisited;
@@ -775,8 +785,10 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
-	 * Checks if <code>tr</code> is a direct neighbor which means that at least 2 vertices of both
-	 * triangles must be at the same coordinate.
+	 * Checks if <code>tr</code> is a direct neighbor. A direct neighbor has a common edge with the
+	 * triangle. This means that either that two triangles are direct neighbors if they have exactly
+	 * 2 common vertices or if they share one edge such that at least on vertex of one of the
+	 * triangles is laying inside the edge of the other one.
 	 * 
 	 * @param tr
 	 *            triangle to check if it is a neighbor
@@ -858,6 +870,8 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
+	 * Sets the cornerarea of the triangle
+	 * 
 	 * @param cornerarea
 	 *            the cornerarea to set
 	 */
@@ -866,7 +880,7 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
-	 * Set the list of direct neighbor triangles.
+	 * Sets the list of direct neighbor triangles.
 	 * 
 	 * @param neighbors
 	 *            triangles list.
@@ -876,7 +890,7 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
-	 * Set normal vector of triangle
+	 * Sets the normal vector of the triangle
 	 * 
 	 * @param normalVector
 	 *            the normalVector to set
@@ -886,10 +900,10 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
-	 * set texture position array for texture of triangle
+	 * Sets the texture position array for the texture of the triangle
 	 * 
 	 * @param texPosition
-	 *            * the texPosition to set
+	 *            to set
 	 */
 	public void setTexPosition(Point2f[] texPosition) {
 		this.texPosition = texPosition;
@@ -911,14 +925,25 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
-	 * States whether or not the triangle has 3 sharp vertices
+	 * Returns whether or not the triangle has 3 sharp vertices as defined by the paper
+	 * "A new CAD mesh segmentation method, based on curvature tensor analysis", Guillaume Lavoue,
+	 * Florent Dupont, Atilla Baskurt, Computer-Aided Design 37 (2005), 975–987.
+	 * 
+	 * @see <a
+	 *      href="http://dl.acm.org/citation.cfm?id=1649921">"A new CAD mesh segmentation method, based on curvature tensor analysis"</a>
 	 */
 	public boolean isSharpTriangle() {
 		return isSharpTriangle;
 	}
 
 	/**
-	 * Checks if the triangle has indeed 3 sharp vertices and then sets its property accordingly
+	 * Checks if the triangle has indeed 3 sharp vertices as described in the paper
+	 * "A new CAD mesh segmentation method, based on curvature tensor analysis", Guillaume Lavoue,
+	 * Florent Dupont, Atilla Baskurt, Computer-Aided Design 37 (2005), 975–987, and then sets this
+	 * property field accordingly.
+	 * 
+	 * @see <a
+	 *      href="http://dl.acm.org/citation.cfm?id=1649921">"A new CAD mesh segmentation method, based on curvature tensor analysis"</a>
 	 */
 	public boolean checkIsSharpTriangle() {
 		if (position[0].isSharpVertex() && position[1].isSharpVertex()
@@ -931,18 +956,19 @@ public class Triangle extends DrawObject {
 
 	/**
 	 * Sets the region label of the triangle
+	 * 
+	 * @param newLabel
+	 *            of region to set
 	 */
 	public void setRegionLabel(final int newLabel) {
 		this.regionLabel = newLabel;
 	}
 
 	/**
-	 * Helper method that returns the number of sharp vertices of the current triangle object, as
-	 * defined in
+	 * Returns the number of sharp vertices of the current triangle object, as
 	 * 
-	 * Guillaume Lavoue, Florent Dupont, Atilla Baskurt, "A new CAD mesh segmentation method, based
-	 * on curvature tensor analysis", Computer-Aided Design 37(2005) 975-987.
-	 * 
+	 * @param number
+	 *            of sharp vertices
 	 */
 	public int numOfSharpVertices() {
 		int cont = 0;
@@ -955,7 +981,8 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
-	 * Updates the edges array content using the Vertices of the Triangle object
+	 * Updates the edges array content using the Vertices of the Triangle object. Needs to be called
+	 * in order to set the edges field of the triangle after it has been created
 	 */
 	public void updateEdges() {
 		for (int j = 0; j < position.length; j++) {
@@ -969,9 +996,6 @@ public class Triangle extends DrawObject {
 	 * 
 	 * Guillaume Lavoue, Florent Dupont, Atilla Baskurt, "A new CAD mesh segmentation method, based
 	 * on curvature tensor analysis", Computer-Aided Design 37(2005) 975-987.
-	 * 
-	 * and if this is true it also sets the triangle labeled KMin and KMax values as described in
-	 * the same paper
 	 */
 	public boolean updateIsSeedTriangle() {
 		int numOfSharpVertices = this.numOfSharpVertices();
@@ -984,10 +1008,6 @@ public class Triangle extends DrawObject {
 					&& ((position[0].getClusterCurvatureVal()[2] == position[1]
 							.getClusterCurvatureVal()[2]) && (position[1].getClusterCurvatureVal()[2] == position[2]
 							.getClusterCurvatureVal()[2]))) {
-				// if (position[0].getClusterCurvatureVal()[0] == 0
-				// && position[0].getClusterCurvatureVal()[1] == 0) {
-				// System.out.println("yes");
-				// }
 				setCurvatureLevels(position[0].getClusterCurvatureVal()[0],
 						position[0].getClusterCurvatureVal()[1],
 						position[0].getClusterCurvatureVal()[2]);
@@ -1038,18 +1058,15 @@ public class Triangle extends DrawObject {
 	}
 
 	/**
-	 * Getter for the isSeedTriangle property. To be called after the update method has been called
+	 * Returns if the triangle is a seed triangle. To be called after the
+	 * {@link #updateIsSeedTriangle()} has been called.
 	 */
 	public boolean isSeedTriangle() {
 		return isSeedTriangle;
 	}
 
 	/**
-	 * Sets the curvature values for the current triangle when this is checked as being a "seed"
-	 * triangle, according to the paper
-	 * 
-	 * Guillaume Lavoue, Florent Dupont, Atilla Baskurt, "A new CAD mesh segmentation method, based
-	 * on curvature tensor analysis", Computer-Aided Design 37(2005) 975-987.
+	 * Sets the curvature values for the current triangle.
 	 * 
 	 */
 	public void setCurvatureLevels(final float minCurvatureLevel, final float maxCurvatureLevel,
@@ -1060,6 +1077,10 @@ public class Triangle extends DrawObject {
 		this.curvatureMinMaxValue[2] = minMaxCurvatureLevel;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see edu.tum.cs.vis.model.util.DrawObject#updateCentroid()
+	 */
 	@Override
 	public void updateCentroid() {
 		centroid = new Point3f(0, 0, 0);
@@ -1070,6 +1091,10 @@ public class Triangle extends DrawObject {
 		centroid.scale(1f / position.length);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		String print = "Triangle: " + System.identityHashCode(this) + "\n";

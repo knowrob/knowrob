@@ -3,7 +3,8 @@
  * materials are made available under the terms of the GNU Public License v3.0 which accompanies
  * this distribution, and is available at http://www.gnu.org/licenses/gpl.html
  * 
- * Contributors: Stefan Profanter - initial API and implementation, Year: 2013
+ * Contributors: Stefan Profanter - initial API and implementation, Year: 2013; Andrei Stoica -
+ * minor refactor during Google Summer of Code 2014.
  ******************************************************************************/
 package edu.tum.cs.vis.model.util;
 
@@ -15,13 +16,33 @@ import processing.core.PGraphics;
  * Base class for all drawable model parts (Line / Triangle)
  * 
  * @author Stefan Profanter
- * 
+ * @author Andrei Stoica - optimized some checks and refactored getEdges() public method
  */
 public abstract class DrawObject implements Serializable {
 	/**
 	 * auto generated
 	 */
 	private static final long	serialVersionUID	= -1917773602783043823L;
+
+	/**
+	 * the position points of the object
+	 */
+	protected Vertex			position[];
+
+	/**
+	 * Color or texture of the object
+	 */
+	protected Appearance		appearance;
+
+	/**
+	 * Constructor which initializes position array to <code>numberOfEdges</code> items.
+	 * 
+	 * @param numberOfEdges
+	 *            number of edges. Line: 2, Triangle: 3
+	 */
+	public DrawObject(final int numberOfEdges) {
+		position = new Vertex[numberOfEdges];
+	}
 
 	/**
 	 * Multiplies the two given matrix. Must have correct size for multiplying.
@@ -47,26 +68,6 @@ public abstract class DrawObject implements Serializable {
 		}
 
 		return result;
-	}
-
-	/**
-	 * the position points of the object
-	 */
-	protected Vertex		position[];
-
-	/**
-	 * Color or texture of the object
-	 */
-	protected Appearance	appearance;
-
-	/**
-	 * Constructor which initializes position array to <code>numberOfEdges</code> items.
-	 * 
-	 * @param numberOfEdges
-	 *            number of edges. Line: 2, Triangle: 3
-	 */
-	public DrawObject(final int numberOfEdges) {
-		position = new Vertex[numberOfEdges];
 	}
 
 	/**
