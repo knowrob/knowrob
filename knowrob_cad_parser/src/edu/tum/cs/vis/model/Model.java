@@ -3,7 +3,8 @@
  * materials are made available under the terms of the GNU Public License v3.0 which accompanies
  * this distribution, and is available at http://www.gnu.org/licenses/gpl.html
  * 
- * Contributors: Stefan Profanter - initial API and implementation, Year: 2012
+ * Contributors: Stefan Profanter - initial API and implementation, Year: 2012 Andrei Stoica -
+ * complemented implementation during Google Summer of Code 2014.
  ******************************************************************************/
 package edu.tum.cs.vis.model;
 
@@ -41,20 +42,20 @@ import edu.tum.cs.vis.model.util.Vertex;
 import edu.tum.cs.vis.model.util.algorithm.Miniball;
 
 /**
- * 
- * Class which represents a CAD model loaded from file. A CAD model consists of triangles and lines
- * which have vertices. These can be grouped hierarchically into subgroups.
- * 
+ * Class which implements the architecture and functionality of a CAD model loaded from file. A CAD
+ * model consists of triangles, edges and vertices. These can be grouped hierarchically into
+ * subgroups based on the parsing of the model. Additionally information about the surface of the
+ * model's mesh is stored by the average, variance, minimum and maximum curvature properties.
  * 
  * @author Stefan Profanter
- * 
+ * @author Andrei Stoica
  */
 public class Model {
 
 	/**
 	 * Log4J Logger
 	 */
-	private static Logger			logger				= Logger.getLogger(Model.class);
+	private static final Logger		LOGGER				= Logger.getLogger(Model.class);
 
 	/**
 	 * Absolute file path where the relative paths within the model are based.
@@ -97,7 +98,7 @@ public class Model {
 	 * Current model scale. Is used to normalize model for further reasoning. getUnscaled methods
 	 * use this value to undo scaling for parameters such as height, width, radius, ...
 	 */
-	private float					scale				= 1;
+	private float					scale				= 1f;
 
 	/**
 	 * Indicates if the vertex normals of each vertex have already been initialized.
@@ -145,6 +146,9 @@ public class Model {
 	private float					varGaussCurvature	= 0f;
 
 	/**
+	 * Draws the model starting from its main group of triangles. The rendering is performed in
+	 * breadth by going into all children of the parent group.
+	 * 
 	 * @param g
 	 *            Graphics context to draw on
 	 * @param drawSettings
@@ -170,7 +174,7 @@ public class Model {
 	}
 
 	/**
-	 * Get main group of model
+	 * Gets main group of the model
 	 * 
 	 * @return the group
 	 */
@@ -179,7 +183,7 @@ public class Model {
 	}
 
 	/**
-	 * Get all lines of model
+	 * Gets all lines of the model
 	 * 
 	 * @return the lines
 	 */
@@ -188,7 +192,7 @@ public class Model {
 	}
 
 	/**
-	 * Get all regions of the model
+	 * Gets all regions of the model
 	 * 
 	 * @return the regions (can be empty list)
 	 */
@@ -205,8 +209,8 @@ public class Model {
 	}
 
 	/**
-	 * Gets scale factor of model. Model is scaled (normalized) for reasoning. This value indicates
-	 * this scale factor.
+	 * Gets the scale factor of the model. Model is scaled (normalized) for reasoning. This value
+	 * indicates the scale factor used in doing so.
 	 * 
 	 * @return model scale
 	 */
@@ -215,7 +219,7 @@ public class Model {
 	}
 
 	/**
-	 * Get texture base path which is the base for all relative texture paths for this model.
+	 * Gets texture base path which is the base for all relative texture paths for this model.
 	 * 
 	 * @return the textureBasePath
 	 */
@@ -224,7 +228,7 @@ public class Model {
 	}
 
 	/**
-	 * Get all triangles of model
+	 * Gets all the triangles of the model
 	 * 
 	 * @return the triangles
 	 */
@@ -233,7 +237,7 @@ public class Model {
 	}
 
 	/**
-	 * Unscale the specified float value by dividing <tt>scaled</tt> by <tt>getScale</tt>
+	 * Unscales the specified float value by dividing <tt>scaled</tt> by <tt>getScale</tt>
 	 * 
 	 * @param scaled
 	 *            scaled value
@@ -244,8 +248,8 @@ public class Model {
 	}
 
 	/**
-	 * Get the lowest mean curvature value of the object. If this is equal to Float.MAX_VALUE, then
-	 * it has not been set
+	 * Gets the lowest mean curvature value of the object. If this is equal to Float.MAX_VALUE, then
+	 * it has not been set (default valued).
 	 * 
 	 * @return lowMeanCurvature value of the CAD model
 	 */
@@ -254,8 +258,8 @@ public class Model {
 	}
 
 	/**
-	 * Get the highest mean curvature value of the object. If this is equal to Float.MIN_VALUE, then
-	 * it has not been set
+	 * Gets the highest mean curvature value of the object. If this is equal to Float.MIN_VALUE,
+	 * then it has not been set (default valued).
 	 * 
 	 * @return highMeanCurvature value of the CAD model
 	 */
@@ -264,8 +268,8 @@ public class Model {
 	}
 
 	/**
-	 * Get the lowest Gaussian curvature value of the object. If this is equal to Float.MAX_VALUE,
-	 * then it has not been set
+	 * Gets the lowest Gaussian curvature value of the object. If this is equal to Float.MAX_VALUE,
+	 * then it has not been set (default valued).
 	 * 
 	 * @return lowGaussCurvature value of the CAD model
 	 */
@@ -274,17 +278,17 @@ public class Model {
 	}
 
 	/**
-	 * Get the highest Gaussian curvature value of the object. If this is equal to FLoat.MIN_VALUE,
-	 * then it has not been set
+	 * Gets the highest Gaussian curvature value of the object. If this is equal to FLoat.MIN_VALUE,
+	 * then it has not been set (default valued).
 	 * 
-	 * @return highGaussCUrvature value of the CAD model
+	 * @return highGaussCurvature value of the CAD model
 	 */
 	public float getHighGaussCurvature() {
 		return highGaussCurvature;
 	}
 
 	/**
-	 * Get the average mean curvature value of the object.
+	 * Gets the average mean curvature value of the model.
 	 * 
 	 * @return avgMeanCurvature value of the CAD model
 	 */
@@ -293,7 +297,7 @@ public class Model {
 	}
 
 	/**
-	 * Get the average Gaussian curvature value of the object
+	 * Gest the average Gaussian curvature value of the model.
 	 * 
 	 * @return avgGaussCurvature value of the CAD model
 	 */
@@ -302,7 +306,7 @@ public class Model {
 	}
 
 	/**
-	 * Get the variance of the mean curvature values of the object vertices
+	 * Get the variance of the mean curvature values of the model vertices
 	 * 
 	 * @return variance of mean curvature points in the CAD model
 	 */
@@ -311,7 +315,7 @@ public class Model {
 	}
 
 	/**
-	 * Get the variance of the Gaussian curvature values of the object vertices
+	 * Get the variance of the Gaussian curvature values of the model vertices
 	 * 
 	 * @return variance of the Gaussian curvature points in the CAD model
 	 */
@@ -320,7 +324,7 @@ public class Model {
 	}
 
 	/**
-	 * Unscale the specified point coordinates by dividing each coordinate of <tt>corner</tt> by
+	 * Unscales the specified point coordinates by dividing each coordinate of <tt>corner</tt> by
 	 * <tt>getScale</tt>
 	 * 
 	 * @param corner
@@ -336,7 +340,7 @@ public class Model {
 	}
 
 	/**
-	 * Unscale the specified float value by dividing <tt>t</tt> by <tt>getScale</tt>
+	 * Unscales the specified float value by dividing <tt>t</tt> by <tt>getScale</tt>
 	 * 
 	 * @param t
 	 *            scaled value
@@ -349,7 +353,7 @@ public class Model {
 	}
 
 	/**
-	 * Unscale the specified float value by dividing <tt>t</tt> by <tt>getScale</tt>
+	 * Unscales the specified float value by dividing <tt>t</tt> by <tt>getScale</tt>
 	 * 
 	 * @param t
 	 *            scaled value
@@ -362,7 +366,7 @@ public class Model {
 	}
 
 	/**
-	 * Get all vertices of model
+	 * Gets all vertices of model
 	 * 
 	 * @return the vertices
 	 */
@@ -371,14 +375,13 @@ public class Model {
 	}
 
 	/**
-	 * Mirror model on x axis my multiplying each x value of all vertices with -1
+	 * Mirrors model on x axis my multiplying each x value of all vertices with -1
 	 */
 	public void mirrorX() {
 		for (Vertex v : vertices) {
 			v.x *= (-1);
 		}
 		group.resetMinMaxValues();
-
 	}
 
 	/**
@@ -396,11 +399,11 @@ public class Model {
 		scale(1f / max);
 
 		scale = 1f / max;
-		logger.debug("Model normalized to fit a unity length cube. Scaling applied: " + scale);
+		LOGGER.debug("Model normalized to fit a unity length cube. Scaling applied: " + scale);
 	}
 
 	/**
-	 * Scale model by given factor by multiplying all vertices with <tt>factor</tt>. Call setScale
+	 * Scales model by given factor by multiplying all vertices with <tt>factor</tt>. Call setScale
 	 * afterwards if you want to set scale factor also for parameters.
 	 * 
 	 * @param factor
@@ -421,7 +424,7 @@ public class Model {
 	}
 
 	/**
-	 * Set main group of model.
+	 * Sets main group of model.
 	 * 
 	 * @param group
 	 *            the group to set
@@ -431,18 +434,20 @@ public class Model {
 	}
 
 	/**
-	 * Set the regions of model by resetting them if existent
+	 * Sets the regions of model by resetting them if existent.
 	 * 
 	 * @param regions
 	 *            the analyzed list of regions
 	 */
 	public void setRegions(List<Region> regions) {
-		this.regions.clear();
-		this.regions.addAll(regions);
+		if (this.regions != null) {
+			this.regions.clear();
+			this.regions.addAll(regions);
+		}
 	}
 
 	/**
-	 * Set texture base path for all texture elements of this model.
+	 * Sets the texture base path for all texture elements of this model.
 	 * 
 	 * @param textureBasePath
 	 *            the textureBasePath to set
@@ -452,7 +457,7 @@ public class Model {
 	}
 
 	/**
-	 * Set the lowest mean curvature of the CAD model
+	 * Sets the lowest mean curvature of the CAD model
 	 * 
 	 * @param lowMeanCurvature
 	 */
@@ -461,7 +466,7 @@ public class Model {
 	}
 
 	/**
-	 * Set the highest mean curvature of the CAD model
+	 * Sets the highest mean curvature of the CAD model
 	 * 
 	 * @param highMeanCurvature
 	 */
@@ -470,7 +475,7 @@ public class Model {
 	}
 
 	/**
-	 * Set the lowest Gaussian curvature value of the CAD model
+	 * Sets the lowest Gaussian curvature value of the CAD model
 	 * 
 	 * @param lowGaussCurvature
 	 */
@@ -479,7 +484,7 @@ public class Model {
 	}
 
 	/**
-	 * Set the lowest Gaussian curvature value of the CAD model
+	 * Sets the lowest Gaussian curvature value of the CAD model
 	 * 
 	 * @param highGaussCurvature
 	 */
@@ -488,7 +493,7 @@ public class Model {
 	}
 
 	/**
-	 * Set the average mean curvature value of the CAD model
+	 * Sets the average mean curvature value of the CAD model
 	 * 
 	 * @param avgMeanCurvature
 	 */
@@ -497,7 +502,7 @@ public class Model {
 	}
 
 	/**
-	 * Set the average Gaussian curvature value of the CAD model
+	 * Sets the average Gaussian curvature value of the CAD model
 	 * 
 	 * @param avgGaussCurvature
 	 */
@@ -506,7 +511,7 @@ public class Model {
 	}
 
 	/**
-	 * Set the variance of the mean curvatures of the points in the CAD model
+	 * Sets the variance of the mean curvatures of the points in the CAD model
 	 * 
 	 * @param varMeanCurvature
 	 */
@@ -515,7 +520,7 @@ public class Model {
 	}
 
 	/**
-	 * Set the variance of the Gaussian curvatures of the points in the CAD model
+	 * Sets the variance of the Gaussian curvatures of the points in the CAD model
 	 * 
 	 * @param varGaussCurvature
 	 */
@@ -608,8 +613,8 @@ public class Model {
 	}
 
 	/**
-	 * Check for each vertex if it should be shared with neighbor triangles or not. This decision is
-	 * made according to the dihedral angle between the two triangles
+	 * Checks for each vertex if it should be shared with neighbor triangles or not. This decision
+	 * is made according to the dihedral angle between the two triangles
 	 * 
 	 */
 	public void updateVertexSharing() {
@@ -627,7 +632,7 @@ public class Model {
 	}
 
 	/**
-	 * Check for the given two triangles if their vertices should be shared or not. The decision is
+	 * Checks for the given two triangles if their vertices should be shared or not. The decision is
 	 * made according to the dihedral angle between the two triangles.
 	 * 
 	 * @param t
@@ -731,41 +736,26 @@ public class Model {
 	}
 
 	/**
-	 * Ported from trimesh2 (2.12) (Szymon Rusinkiewicz Princeton University)
+	 * Ported from trimesh2 (2.12) (Szymon Rusinkiewicz Princeton University). Uses average of
+	 * per-face normals, weighted according to: Max, N. "Weights for Computing Vertex Normals from
+	 * Facet Normals", Journal of Graphics Tools, Vol. 4, No. 2, 1999.
 	 * 
-	 * uses average of per-face normals, weighted according to: Max, N.
-	 * "Weights for Computing Vertex Normals from Facet Normals," Journal of Graphics Tools, Vol. 4,
-	 * No. 2, 1999.
+	 * @see <a href="https://computing.llnl.gov/vis/images/pdf/max_jgt99.pdf">"Weights for Computing
+	 *      Vertex Normals from Facet Normals", N. Max</a><br>
+	 *      <a href="http://gfx.cs.princeton.edu/pubs/_2004_ECA/curvpaper.pdf">
+	 *      "Estimating Curvatures and Their Derivatives on Triangle Meshes", S. Rusinkiewicz</a>
 	 */
 	public void updateVertexNormals() {
 		// Compute from faces
-
-		List<Callable<Void>> threads = new LinkedList<Callable<Void>>();
-
-		final int interval = 500;
 
 		// Reset normal vectors, because vertex normals from collada aren't correct
 		for (Vertex v : vertices) {
 			v.getNormalVector().x = v.getNormalVector().y = v.getNormalVector().z = 0;
 		}
 
-		for (int start = 0; start < triangles.size(); start += interval) {
-			final int st = start;
-			/*threads.add(new Callable<Void>() {
-
-				@Override
-				public Void call() throws Exception {*/
-			int end = Math.min(st + interval, triangles.size());
-			for (int i = st; i < end; i++) {
-				calculateVertexNormalsForTriangle(triangles.get(i));
-			}
-			/*	return null;
-			}
-
-			});*/
-		};
-
-		ThreadPool.executeInPool(threads);
+		for (int i = 0; i < triangles.size(); ++i) {
+			calculateVertexNormalsForTriangle(triangles.get(i));
+		}
 
 		// Normalize all vectors.
 		// Additionally search the vectors which have max x, max y and max z coordinates (needed for
@@ -813,7 +803,7 @@ public class Model {
 		// System.out.println("VOTE: " + vote);
 		if (vote > 0) {
 			// They voted for inverting
-			logger.debug("Inverting normal vertices, because vote is: " + vote);
+			LOGGER.debug("Inverting normal vertices, because vote is: " + vote);
 			for (Vertex v : vertices) {
 				v.getNormalVector().scale(-1f);
 			}
@@ -827,12 +817,12 @@ public class Model {
 	}
 
 	/**
-	 * Calculate vertex normals for each vertex of triangle.
+	 * Calculate vertex normals for each vertex of a triangle.
 	 * 
 	 * @param t
 	 *            Triangle
 	 */
-	static void calculateVertexNormalsForTriangle(final Triangle t) {
+	private static void calculateVertexNormalsForTriangle(final Triangle t) {
 		Vertex p0 = t.getPosition()[0];
 		Vertex p1 = t.getPosition()[1];
 		Vertex p2 = t.getPosition()[2];
@@ -847,20 +837,12 @@ public class Model {
 		// length of these vectors
 		float l2a = a.lengthSquared(), l2b = b.lengthSquared(), l2c = c.lengthSquared();
 		if (l2a == 0.0 || l2b == 0.0 || l2c == 0.0) {
-			logger.debug("skipping triangle: " + t + "\n(" + p0 + p1 + p2 + ")");
+			LOGGER.debug("skipping triangle: " + t + "\n(" + p0 + p1 + p2 + ")");
 			return;
 		}
 
 		Vector3f facenormal = new Vector3f();
 		facenormal.cross(a, b); // unscaled normal
-
-		// float areaOfTriangle = facenormal.length() * 0.5f;
-
-		// check if NaN might arise for the normals and avoid it
-		// if (areaOfTriangle == 0.0) {
-		// logger.debug("skipping triangle: " + t + "\n(" + p0 + p1 + p2 + ")");
-		// return;
-		// }
 
 		Vector3f normalP0 = (Vector3f) facenormal.clone();
 		normalP0.scale(1.0f / (l2a * l2c));
@@ -907,7 +889,7 @@ public class Model {
 			exportVerticesAsTxt(tmp, true);
 			return tmp;
 		} catch (IOException e) {
-			logger.error("Couldn't create temp file name: " + e.getMessage());
+			LOGGER.error("Couldn't create temp file name: " + e.getMessage());
 			return null;
 		}
 
@@ -935,7 +917,7 @@ public class Model {
 
 		try {
 			if (!overwrite && path.exists()) {
-				logger.error("Couldn't export model to file. Already exists: "
+				LOGGER.error("Couldn't export model to file. Already exists: "
 						+ path.getAbsolutePath());
 				return false;
 			}
@@ -954,11 +936,11 @@ public class Model {
 				if (i < vertices.size() - 1)
 					out.write("\n");
 			}
-			logger.info("Model exported to file " + path.getAbsolutePath());
+			LOGGER.info("Model exported to file " + path.getAbsolutePath());
 			out.close();
 			return true;
 		} catch (IOException e) {
-			logger.error("Couldn't export model to file " + path.getAbsolutePath() + ". "
+			LOGGER.error("Couldn't export model to file " + path.getAbsolutePath() + ". "
 					+ e.getMessage());
 		}
 		return false;
