@@ -9,6 +9,7 @@
 package edu.tum.cs.vis.model.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -204,7 +205,7 @@ public class Triangle extends DrawObject {
 	public boolean addNeighbor(Triangle neighbor, Lock lock) {
 		boolean add = false;
 
-		add = isDirectNeighbor(neighbor);
+		add = isDirectNeighbor(neighbor, Thresholds.FAST_NEIGHBOR_DETECTION);
 
 		if (add) {
 			if (lock != null)
@@ -794,34 +795,42 @@ public class Triangle extends DrawObject {
 	 *            triangle to check if it is a neighbor
 	 * @return true if <code>tr</code> is a neighbor
 	 */
-	public boolean isDirectNeighbor(Triangle tr) {
+	public boolean isDirectNeighbor(Triangle tr, final boolean fastDetection) {
 		int eqCnt = 0;
-		boolean isNeighbor = false;
-		for (int i = 0; i < position.length; i++) {
-			if (i == 2 && eqCnt == 0)
-				break; // if 2 of 3 points aren't equal, it is no neighbor
-			Vertex p1 = position[i];
-			for (Vertex p2 : tr.position) {
-				if (p1.x == p2.x && p1.y == p2.y && p1.z == p2.z) {
-					eqCnt++;
-					break;
+		if (fastDetection == true) {
+			// fast detection based only on checking the vertices
+			boolean isNeighbor = false;
+			for (int i = 0; i < position.length; i++) {
+				if (i == 2 && eqCnt == 0)
+					break; // if 2 of 3 points aren't equal, it is no neighbor
+				Vertex p1 = position[i];
+				for (Vertex p2 : tr.position) {
+					if (p1.x == p2.x && p1.y == p2.y && p1.z == p2.z) {
+						eqCnt++;
+						break;
+					}
+				}
+				if (eqCnt == 2) {
+					isNeighbor = true; // two common vertices, so neighbors
+				} else if (eqCnt == 3) {
+					return false; // similar triangles back to back
 				}
 			}
-			if (eqCnt == 2) {
-				isNeighbor = true; // two common vertices, so neighbors
-			} else if (eqCnt == 3) {
-				return false; // similar triangles back to back
-			}
-		}
-		// also mind the inexact triangle hits (vertices are not the same)
-		if (isNeighbor == false) {
-			eqCnt = 0;
-			Edge[] trEdges = tr.getEdges();
+			return isNeighbor;
+		} else {
+			// slow detection based on edges
+			List<Edge> trEdges = new ArrayList<Edge>();
+			trEdges.addAll(Arrays.asList(tr.getEdges()));
 			for (int i = 0; i < edges.length; ++i) {
-				for (int j = 0; j < trEdges.length; ++j) {
-					if (edges[i].isDirectNeighbor(trEdges[j])) {
+				for (int j = 0; j < trEdges.size(); ++j) {
+					if (edges[i].isDirectNeighbor(trEdges.get(j))) {
 						eqCnt++;
+						trEdges.remove(trEdges.get(j));
+						break;
 					}
+				}
+				if (eqCnt == 2) {
+					return false;
 				}
 			}
 			// if one hit only happened the triangles are neighbors
@@ -831,7 +840,6 @@ public class Triangle extends DrawObject {
 			// otherwise they are not neighbors at all or just the same or back-faced
 			return false;
 		}
-		return isNeighbor;
 	}
 
 	/**
