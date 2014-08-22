@@ -211,15 +211,37 @@ comp_type_available(Super, SubT) :-
 %% sub_component(?Super, ?Sub) is nondet.
 %
 % Recursively read all sub-components of a robot or a component
-% 
-% IMPORTANT: 
 %
 % @param Super  Upper component
 % @param Sub    Component that is part of the Super component
 %
-sub_component(Super, Sub) :-  % direct or transitive subComponent
-  owl_has(Super, srdl2comp:'subComponent', Sub);
+
+% Directly asserted sub-component (subComponent is not transitive because
+% this would allow predecessor/successor loops
+sub_component(Super, Sub) :-
+  \+ owl_individual_of(Super, srdl2comp:'ComponentComposition'),
+  owl_has(Super, srdl2comp:'subComponent', Sub).
+
+% Transitive: successorInKinematicChain, which is transitive and allows
+% to step over link/joint chains
+sub_component(Super, Sub) :-
+  \+ owl_individual_of(Super, srdl2comp:'ComponentComposition'),
   owl_has(Super, srdl2comp:'successorInKinematicChain', Sub).
+
+% Handle component compositions: subcomponents are those between their
+% baseLink and endLinks
+%
+% Note: Compositions are only considered as annotations, i.e. all sub-
+%       components of this composition are supposed to already be part
+%       of the main kinematic chain, thus the case distinction in the
+%       beginning.
+% 
+sub_component(Super, Sub) :-
+  owl_individual_of(Super, srdl2comp:'ComponentComposition'),
+  owl_has(Super, srdl2comp:'baseLinkOfComposition', Base),
+  owl_has(Super, srdl2comp:'endLinkOfComposition', End),
+  sub_component(Base, Sub),
+  sub_component(Sub, End).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
