@@ -112,8 +112,11 @@
       populateQuerySelect('examplequery', "queriesForRobohow.json");
 
       master = new Control({
+        ros: ros,
         sliderHigh: "slider1",
         initButton: "controlInitButton",
+        startButton: "startButton",
+        stopButton: "stopButton",
         timeDisplay: "currentTime"
       });
     };
@@ -277,6 +280,12 @@
     <script>
       var user_query = setupQueryField();
     </script>
+    <div id="control_panel" style="position:relative; top:0px; border-top:1px solid black;">
+      <input id="startButton" type="button" value="play">
+      <input id="stopButton" type="button" value="stop">
+      <input id="slider1" type="range" min="0" max="100" value="0">
+      <input id="controlInitButton" type="button" value="init">
+      <span id="currentTime">0</span></div>
   </div>
   
   
