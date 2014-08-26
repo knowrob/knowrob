@@ -55,6 +55,7 @@ public class Stamped<T> {
         this.frameID = null;
         this.timeStamp = null;
     }
+
     /**
      * Constructs a wrapper for data stamped with frameID and timeStamp.
      */    
@@ -62,6 +63,20 @@ public class Stamped<T> {
         this.data = data;
         this.frameID = frameID;
         this.timeStamp = timeStamp;
+    }
+    
+    /**
+     * Constructs a wrapper for data stamped with frameID and timeStamp.
+     */    
+    public Stamped(T data, String frameID, double posix_ts) {
+    	
+		Time t = new Time();
+		t.secs = (int)posix_ts;
+		t.nsecs = (int) (1E9 * (posix_ts - ((int) posix_ts)));
+		
+        this.data = data;
+        this.frameID = frameID;
+        this.timeStamp = t;
     }
     
     /**

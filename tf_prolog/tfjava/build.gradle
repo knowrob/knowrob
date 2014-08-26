@@ -33,3 +33,10 @@ dependencies {
   compile 'java3d:vecmath:1.3.1'
 }
 
+task writeClasspath << {
+    buildDir.mkdirs()
+    new File(buildDir, "classpath.txt").text = configurations.runtime.asPath +
+                                               ":" + buildDir + "/libs/" +
+                                               project.name + "-" +
+                                               project.version + ".jar" + "\n"
+}

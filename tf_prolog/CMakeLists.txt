@@ -4,7 +4,7 @@ project(tf_prolog)
 
 find_package(catkin REQUIRED rosprolog rosjava_build_tools)
 
-catkin_rosjava_setup(publishMavenJavaPublicationToMavenRepository)
+catkin_rosjava_setup(publishMavenJavaPublicationToMavenRepository writeClasspath)
 
 catkin_package(
     DEPENDS rosprolog
