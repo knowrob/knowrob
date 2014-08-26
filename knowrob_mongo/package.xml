@@ -17,9 +17,11 @@
   <build_depend>rosjava_build_tools</build_depend>
 
   <build_depend>knowrob_objects</build_depend>
+  <build_depend>knowrob_srdl</build_depend>
   <build_depend>tf_prolog</build_depend>
 
   <run_depend>knowrob_objects</run_depend>
+  <run_depend>knowrob_srdl</run_depend>
   <run_depend>tf_prolog</run_depend>
 
 </package>
