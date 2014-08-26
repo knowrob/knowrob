@@ -5,6 +5,8 @@
   <author>Lorenz Moesenlechner</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
+  <rosdep name="automake"/>
+  <rosdep name="autoconf"/>
   <export>
     <java classpath="${prefix}/jpl/jpl.jar"
           ld_lib_path="${prefix}/jpl"/>
