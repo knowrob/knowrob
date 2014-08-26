@@ -8,7 +8,6 @@ import java.util.Set;
 
 import javax.vecmath.Vector3d;
 
-
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 

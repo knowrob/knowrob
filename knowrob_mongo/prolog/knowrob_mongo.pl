@@ -42,6 +42,7 @@
 :- use_module(library('knowrob_objects')).
 :- use_module(library('knowrob_perception')).
 :- use_module(library('knowrob_coordinates')).
+:- use_module(library('srdl2')).
 
 
 :-  rdf_meta
@@ -206,14 +207,10 @@ mng_transform_pose(PoseListIn, SourceFrame, TargetFrame, TimePoint, PoseListOut)
   TimeInt is round(Time),
 
   knowrob_coordinates:list_to_matrix4d(PoseListIn, MatrixIn),
-  jpl_new('ros.communication.Time', [], TimeIn),
-  jpl_set(TimeIn, 'secs', TimeInt),
-  jpl_new('tfjava.Stamped', [MatrixIn, SourceFrame, TimeIn], StampedIn),
+  jpl_new('tfjava.Stamped', [MatrixIn, SourceFrame, TimeInt], StampedIn),
 
   knowrob_coordinates:list_to_matrix4d([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1], MatrixOut),
-  jpl_new('ros.communication.Time', [], TimeOut),
-  jpl_set(TimeOut, 'secs', TimeInt),
-  jpl_new('tfjava.Stamped', [MatrixOut, '/base_link', TimeOut], StampedOut),
+  jpl_new('tfjava.Stamped', [MatrixOut, '/base_link', TimeInt], StampedOut),
 
   jpl_new('org.knowrob.interfaces.mongo.MongoDBInterface', [], DB),
   jpl_call(DB, 'transformPose', [TargetFrame, StampedIn, StampedOut], @(true)),
@@ -356,7 +353,7 @@ obj_visible_in_camera(Obj, Camera, TimePoint) :-
   once(owl_has(Camera, 'http://ias.cs.tum.edu/kb/srdl2-comp.owl#urdfName', literal(CamFrameID))),
   atom_concat('/', CamFrameID, CamFrame),
 
-
+  % TODO: mng_latest_designator_before_time does not refer to Obj
   (object_pose_at_time(Obj, TimePoint, PoseListObj); mng_latest_designator_before_time(TimePoint, 'object', PoseListObj)),
   mng_transform_pose(PoseListObj, '/map', CamFrame, TimePoint, RelObjPose),
 

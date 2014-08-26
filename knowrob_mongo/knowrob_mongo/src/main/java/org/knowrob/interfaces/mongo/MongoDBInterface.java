@@ -1,7 +1,5 @@
 package org.knowrob.interfaces.mongo;
 
-import geometry_msgs.PoseStamped;
-
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,10 +10,9 @@ import javax.vecmath.Matrix4d;
 
 import org.knowrob.interfaces.mongo.types.Designator;
 import org.knowrob.interfaces.mongo.types.ISODate;
-import org.knowrob.interfaces.mongo.types.PoseStampedFactory;
 import org.knowrob.tfmemory.TFMemory;
-
 import org.ros.message.Time;
+
 import tfjava.Stamped;
 import tfjava.StampedTransform;
 
@@ -204,6 +201,7 @@ public class MongoDBInterface {
 	}
 
 
+	@SuppressWarnings("unchecked")
 	public Matrix4d getDesignatorLocation(String id) {
 		Matrix4d poseMatrix = null;
 		DBCollection coll = db.getCollection("logged_designators");
@@ -222,8 +220,7 @@ public class MongoDBInterface {
 				DBObject row = cursor.next();
 				Designator res = new Designator().readFromDBObject((BasicDBObject) row.get("designator"));
 				Designator res2 = (Designator)res.get("AT");
-				PoseStamped pose_stamped = (PoseStamped)res2.get("POSE");
-				poseMatrix = PoseStampedFactory.toMatrix4d(pose_stamped);
+				poseMatrix = ((Stamped<Matrix4d>)res2.get("POSE")).getData();
 				break;
 
 			}

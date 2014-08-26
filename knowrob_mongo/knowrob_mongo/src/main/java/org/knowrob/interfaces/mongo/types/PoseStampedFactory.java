@@ -7,9 +7,7 @@ import java.util.Date;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Quat4d;
 import javax.vecmath.Vector3d;
-
-import org.ros.message.MessageFactory;
-import org.ros.node.NodeConfiguration;
+import tfjava.Stamped;
 
 
 import com.mongodb.BasicDBObject;
@@ -24,12 +22,9 @@ public class PoseStampedFactory {
 	 * @param row BasicDBObject, e.g. result of a MongoDB query
 	 * @return Instance of PoseStamped with values from row
 	 */
-	public static PoseStamped readFromDBObject(DBObject row) {
+	public static Stamped<Matrix4d> readFromDBObject(DBObject row) {
 
-		NodeConfiguration nodeConfiguration = NodeConfiguration.newPrivate();
-		MessageFactory messageFactory = nodeConfiguration.getTopicMessageFactory();
-		
-		PoseStamped p = messageFactory.newFromType(geometry_msgs.PoseStamped._TYPE);
+		Stamped<Matrix4d> p = new Stamped<Matrix4d>();
 		
 		BasicDBObject header = (BasicDBObject) row.get("header");
 		BasicDBObject pose   = (BasicDBObject) row.get("pose");
@@ -38,39 +33,24 @@ public class PoseStampedFactory {
 		if(header==null || pose == null)
 			return null;
 		
-		p.getHeader().setFrameId(header.getString("frame_id"));
-		p.getHeader().setSeq(header.getInt("seq"));
-		p.getHeader().setStamp(new ISODate((Date) header.get("stamp")).toROSTime());
+		p.frameID = header.getString("frame_id");
+		p.timeStamp = new ISODate((Date) header.get("stamp")).toROSTime();
+
+		Vector3d v = new Vector3d();
+		v.x = ((BasicDBObject) pose.get("position")).getDouble("x");
+		v.y = ((BasicDBObject) pose.get("position")).getDouble("y");
+		v.z = ((BasicDBObject) pose.get("position")).getDouble("z");
 		
-		p.getPose().getPosition().setX(((BasicDBObject) pose.get("position")).getDouble("x"));
-		p.getPose().getPosition().setY(((BasicDBObject) pose.get("position")).getDouble("y"));
-		p.getPose().getPosition().setZ(((BasicDBObject) pose.get("position")).getDouble("z"));
+		Quat4d q = new Quat4d();
+		q.x = ((BasicDBObject) pose.get("orientation")).getDouble("x");
+		q.y = ((BasicDBObject) pose.get("orientation")).getDouble("y");
+		q.z = ((BasicDBObject) pose.get("orientation")).getDouble("z");
+		q.w = ((BasicDBObject) pose.get("orientation")).getDouble("w");
 		
-		p.getPose().getOrientation().setX(((BasicDBObject) pose.get("orientation")).getDouble("x"));
-		p.getPose().getOrientation().setY(((BasicDBObject) pose.get("orientation")).getDouble("y"));
-		p.getPose().getOrientation().setZ(((BasicDBObject) pose.get("orientation")).getDouble("z"));
-		p.getPose().getOrientation().setW(((BasicDBObject) pose.get("orientation")).getDouble("w"));
+		Matrix4d mat = new Matrix4d(q, v, 1.0);
+		p.setData(mat);
 		
 		return p;
-	}
-	
-	/**
-	 * Transform pose to matrix representation 
-	 * 
-	 * @return Matrix4d representing this pose
-	 */
-	public static Matrix4d toMatrix4d(PoseStamped p) {
-		
-		Quat4d q = new Quat4d(p.getPose().getOrientation().getX(), 
-							  p.getPose().getOrientation().getY(),
-							  p.getPose().getOrientation().getZ(),
-							  p.getPose().getOrientation().getW());
-		
-		Vector3d t = new Vector3d(p.getPose().getPosition().getX(),
-								  p.getPose().getPosition().getY(),
-								  p.getPose().getPosition().getZ());
-		
-		return new Matrix4d(q, t, 1);
 	}
 	
 }
