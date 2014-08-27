@@ -54,6 +54,7 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('rdfs_computable')).
 :- use_module(library('jpl')).
+:- use_module(library('knowrob_cram')).
 
 
 :- rdf_meta add_object(r),
@@ -311,10 +312,21 @@ reset_highlight :-
 %
 % Launch the diagram data publisher
 %
+
 :- assert(d_canvas(fail)).
+%diagram_canvas :-
+%    d_canvas(fail),
+%    jpl_new('org.knowrob.vis.DiagramVisualization', [], Canvas),
+%    retract(d_canvas(fail)),
+%    assert(d_canvas(Canvas)),!.
+%diagram_canvas(Canvas) :-
+%    d_canvas(Canvas).
+
 diagram_canvas :-
     d_canvas(fail),
     jpl_new('org.knowrob.vis.DiagramVisualization', [], Canvas),
+    jpl_list_to_array(['org.knowrob.vis.DiagramVisualization'], Arr),
+    jpl_call('org.knowrob.utils.ros.RosUtilities', runRosjavaNode, [Canvas, Arr], _),
     retract(d_canvas(fail)),
     assert(d_canvas(Canvas)),!.
 diagram_canvas(Canvas) :-
