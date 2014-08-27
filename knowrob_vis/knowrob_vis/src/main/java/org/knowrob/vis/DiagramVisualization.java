@@ -46,10 +46,10 @@ public class DiagramVisualization extends AbstractNodeMain {
 	public void onStart(final ConnectedNode connectedNode) {
 
 		node = connectedNode;
-		pub = connectedNode.newPublisher("data_vis_msgs", data_vis_msgs.DataVis._TYPE);
+		pub = connectedNode.newPublisher("/data_vis_msgs", data_vis_msgs.DataVis._TYPE);
 	}
 
-	
+
 	
 	/**
 	 * Add diagram to the visualization.
@@ -88,6 +88,8 @@ public class DiagramVisualization extends AbstractNodeMain {
 				diagrams.put(id, data);
 			}
 		}
+		publishDiagrams();
+		publishDiagrams();
 	}
 
 
