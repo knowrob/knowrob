@@ -67,7 +67,7 @@ function DataVisClient(options) {
           .handle.update(message.values);
       }
 
-    } else if (message.values[0].value2.length == 0) {
+    } else if (message.values.length == 0) {//[0].value2.length == 0) {
       chartHandle.find(function (element, index, array) {
           if(element.id == message.id) {return true} else {return false}
         }, this)

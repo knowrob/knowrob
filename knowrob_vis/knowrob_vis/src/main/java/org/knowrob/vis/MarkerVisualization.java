@@ -104,7 +104,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	public void onStart(final ConnectedNode connectedNode) {
 
 		node = connectedNode;
-		pub = connectedNode.newPublisher("visualization_marker_array", visualization_msgs.MarkerArray._TYPE);
+		pub = connectedNode.newPublisher("/visualization_marker_array", visualization_msgs.MarkerArray._TYPE);
 
 
 	}
