@@ -38,9 +38,9 @@ rosbuild_find_ros_package(ias_knowledge_base)
 set( IAS_KNOWLEDGE_BASE_PACKAGE_PATH ${ias_knowledge_base_PACKAGE_PATH} )
 fix_ros_destination_path(IAS_KNOWLEDGE_BASE_PACKAGE_PATH)
 
-rosbuild_find_ros_package(comp_germandeli)
-set( GERMANDELI_PACKAGE_PATH ${comp_germandeli_PACKAGE_PATH} )
-fix_ros_destination_path(GERMANDELI_PACKAGE_PATH)
+# rosbuild_find_ros_package(comp_germandeli)
+# set( GERMANDELI_PACKAGE_PATH ${comp_germandeli_PACKAGE_PATH} )
+# fix_ros_destination_path(GERMANDELI_PACKAGE_PATH)
 
 rosbuild_find_ros_package(ias_semantic_map)
 set( IAS_SEMANTIC_MAP_PACKAGE_PATH ${ias_semantic_map_PACKAGE_PATH} )
