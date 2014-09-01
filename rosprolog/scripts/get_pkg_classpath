@@ -3,7 +3,7 @@
 # search for files 'classpath.txt' in all packages the package $1 depends on
 # and concatenate the classpath variables
 
-ROS_CP=""
+ROS_CP=$2
 
 # find classpath for package itself
 PKG_PATH=`rospack find $1`
