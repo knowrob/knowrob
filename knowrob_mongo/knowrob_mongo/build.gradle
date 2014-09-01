@@ -22,6 +22,10 @@
  which usually occur on minor and major version numbers.
 */
 
+/* This plugin is necessary for creating installApp tasks (i.e. executables) */
+apply plugin: 'application'
+mainClassName = 'org.ros.RosRun'
+
 dependencies {
   /* Example of an external maven artifact dependency */
   /* compile 'org.ros.rosjava_core:rosjava:[0.1,)' */
