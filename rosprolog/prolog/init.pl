@@ -42,7 +42,10 @@ use_ros_module( Package, FilePath ) :-
 add_ros_package_to_classpath(Package):-
 	rospack_package_classpath(Package, Path),
 	atom_concat(':',Path,PackagePath),
-	setenv("CLASSPATH",PackagePath).
+	setenv("CLASSPATH",PackagePath),
+	print('\n\n\n'), print(PackagePath), print('\n\n\n').
+% 	,
+% 	concat_env("CLASSPATH",PackagePath).
 
 % calculates java dependencies for classpath
 rospack_package_classpath(Package, Path) :-
