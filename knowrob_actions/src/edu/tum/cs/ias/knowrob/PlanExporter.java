@@ -391,7 +391,7 @@ public class PlanExporter {
                     PrologInterface.executeQuery("class_properties("+action+", Prop, Val)");
 
     		int idx = params.get("Prop").lastIndexOf(PrologInterface.
-    				addSingleQuotes("http://ias.cs.tum.edu/kb/knowrob.owl#bodyPartsUsed"));
+    				addSingleQuotes("http://knowrob.org/kb/knowrob.owl#bodyPartsUsed"));
     		
             if(idx>-1) {
             	if(params.get("Val").get(idx).contains("right") ||

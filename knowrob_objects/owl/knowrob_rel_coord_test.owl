@@ -6,24 +6,24 @@
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY swrl "http://www.w3.org/2003/11/swrl#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
-    <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
+    <!ENTITY knowrob "http://knowrob.org/kb/knowrob.owl#" >
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
-    <!ENTITY computable "http://ias.cs.tum.edu/kb/computable.owl#" >
+    <!ENTITY computable "http://knowrob.org/kb/computable.owl#" >
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
 ]>
 
 
-<rdf:RDF xmlns="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#"
-     xml:base="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl"
+<rdf:RDF xmlns="http://knowrob.org/kb/knowrob_rel_coord_test.owl#"
+     xml:base="http://knowrob.org/kb/knowrob_rel_coord_test.owl"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:swrl="http://www.w3.org/2003/11/swrl#"
-     xmlns:computable="http://ias.cs.tum.edu/kb/computable.owl#"
+     xmlns:computable="http://knowrob.org/kb/computable.owl#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:qudt="http://qudt.org/schema/qudt#"
-     xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#">
-    <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl">
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/knowrob_rel_coord_test.owl">
         <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
     </owl:Ontology>
 
@@ -55,28 +55,28 @@
      -->
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpedit2x2 -->
+    <!-- http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpedit2x2 -->
 
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpedit2x2">
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpedit2x2">
         <rdfs:subClassOf rdf:resource="&knowrob;ShelfInABuilding"/>
         <rdfs:subClassOf>
             <owl:Class>
                 <owl:intersectionOf rdf:parseType="Collection">
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;properPhysicalParts"/>
-                        <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor1"/>
+                        <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor1"/>
                     </owl:Restriction>
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;properPhysicalParts"/>
-                        <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor2"/>
+                        <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor2"/>
                     </owl:Restriction>
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;properPhysicalParts"/>
-                        <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor3"/>
+                        <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor3"/>
                     </owl:Restriction>
                     <owl:Restriction>
                         <owl:onProperty rdf:resource="&knowrob;properPhysicalParts"/>
-                        <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor4"/>
+                        <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor4"/>
                     </owl:Restriction>
                 </owl:intersectionOf>
             </owl:Class>
@@ -85,136 +85,136 @@
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor1 -->
+    <!-- http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor1 -->
 
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor1">
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor1">
         <rdfs:subClassOf rdf:resource="&knowrob;Door"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;properPhysicalParts"/>
-                <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoorHandle1"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoorHandle1"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;orientation"/>
-                <owl:hasValue rdf:resource="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#RotationMatrixDoor1"/>
+                <owl:hasValue rdf:resource="http://knowrob.org/kb/knowrob_rel_coord_test.owl#RotationMatrixDoor1"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor2 -->
+    <!-- http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor2 -->
 
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor2">
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor2">
         <rdfs:subClassOf rdf:resource="&knowrob;Door"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;orientation"/>
-                <owl:hasValue rdf:resource="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#RotationMatrixDoor2"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;properPhysicalParts"/>
-                <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoorHandle2"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor3 -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor3">
-        <rdfs:subClassOf rdf:resource="&knowrob;Door"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;properPhysicalParts"/>
-                <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoorHandle3"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;orientation"/>
-                <owl:hasValue rdf:resource="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#RotationMatrixDoor3"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor4 -->
-
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor4">
-        <rdfs:subClassOf rdf:resource="&knowrob;Door"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;orientation"/>
-                <owl:hasValue rdf:resource="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#RotationMatrixDoor4"/>
+                <owl:hasValue rdf:resource="http://knowrob.org/kb/knowrob_rel_coord_test.owl#RotationMatrixDoor2"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;properPhysicalParts"/>
-                <owl:someValuesFrom rdf:resource="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoorHandle4"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoorHandle2"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoorHandle1 -->
+    <!-- http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor3 -->
 
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoorHandle1">
-        <rdfs:subClassOf rdf:resource="&knowrob;Handle"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor3">
+        <rdfs:subClassOf rdf:resource="&knowrob;Door"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;properPhysicalParts"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoorHandle3"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;orientation"/>
-                <owl:hasValue rdf:resource="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#RotationMatrixHandle1"/>
+                <owl:hasValue rdf:resource="http://knowrob.org/kb/knowrob_rel_coord_test.owl#RotationMatrixDoor3"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoorHandle2 -->
+    <!-- http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor4 -->
 
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoorHandle2">
-        <rdfs:subClassOf rdf:resource="&knowrob;Handle"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor4">
+        <rdfs:subClassOf rdf:resource="&knowrob;Door"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;orientation"/>
-                <owl:hasValue rdf:resource="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#RotationMatrixHandle2"/>
+                <owl:hasValue rdf:resource="http://knowrob.org/kb/knowrob_rel_coord_test.owl#RotationMatrixDoor4"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;properPhysicalParts"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoorHandle4"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoorHandle3 -->
+    <!-- http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoorHandle1 -->
 
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoorHandle3">
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoorHandle1">
         <rdfs:subClassOf rdf:resource="&knowrob;Handle"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;orientation"/>
-                <owl:hasValue rdf:resource="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#RotationMatrixHandle3"/>
+                <owl:hasValue rdf:resource="http://knowrob.org/kb/knowrob_rel_coord_test.owl#RotationMatrixHandle1"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoorHandle4 -->
+    <!-- http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoorHandle2 -->
 
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoorHandle4">
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoorHandle2">
         <rdfs:subClassOf rdf:resource="&knowrob;Handle"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;orientation"/>
-                <owl:hasValue rdf:resource="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#RotationMatrixHandle4"/>
+                <owl:hasValue rdf:resource="http://knowrob.org/kb/knowrob_rel_coord_test.owl#RotationMatrixHandle2"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoorHandle3 -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoorHandle3">
+        <rdfs:subClassOf rdf:resource="&knowrob;Handle"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;orientation"/>
+                <owl:hasValue rdf:resource="http://knowrob.org/kb/knowrob_rel_coord_test.owl#RotationMatrixHandle3"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoorHandle4 -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoorHandle4">
+        <rdfs:subClassOf rdf:resource="&knowrob;Handle"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;orientation"/>
+                <owl:hasValue rdf:resource="http://knowrob.org/kb/knowrob_rel_coord_test.owl#RotationMatrixHandle4"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -232,27 +232,27 @@
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpedit2x2 -->
+    <!-- http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpedit2x2 -->
 
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpedit2x2"/>
-
-
-
-    <!-- http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor1 -->
-
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor1"/>
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpedit2x2"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor2 -->
+    <!-- http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor1 -->
 
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor2"/>
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor1"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#RotationMatrixDoor1 -->
+    <!-- http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor2 -->
 
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#RotationMatrixDoor1">
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor2"/>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob_rel_coord_test.owl#RotationMatrixDoor1 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob_rel_coord_test.owl#RotationMatrixDoor1">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
         <knowrob:m03 rdf:datatype="http://qudt.org/vocab/unit#Meter">-0.2</knowrob:m03>
         <knowrob:m12 rdf:datatype="&xsd;float">0.0</knowrob:m12>
@@ -270,14 +270,14 @@
         <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
         <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
         <knowrob:m00 rdf:datatype="&xsd;float">1.0</knowrob:m00>
-        <knowrob:relativeTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpedit2x2"/>
+        <knowrob:relativeTo rdf:resource="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpedit2x2"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#RotationMatrixDoor2 -->
+    <!-- http://knowrob.org/kb/knowrob_rel_coord_test.owl#RotationMatrixDoor2 -->
 
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#RotationMatrixDoor2">
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob_rel_coord_test.owl#RotationMatrixDoor2">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
         <knowrob:m03 rdf:datatype="http://qudt.org/vocab/unit#Meter">-0.2</knowrob:m03>
         <knowrob:m13 rdf:datatype="http://qudt.org/vocab/unit#Meter">-0.2</knowrob:m13>
@@ -295,14 +295,14 @@
         <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
         <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
         <knowrob:m00 rdf:datatype="&xsd;float">1.0</knowrob:m00>
-        <knowrob:relativeTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpedit2x2"/>
+        <knowrob:relativeTo rdf:resource="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpedit2x2"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#RotationMatrixDoor3 -->
+    <!-- http://knowrob.org/kb/knowrob_rel_coord_test.owl#RotationMatrixDoor3 -->
 
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#RotationMatrixDoor3">
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob_rel_coord_test.owl#RotationMatrixDoor3">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
         <knowrob:m03 rdf:datatype="http://qudt.org/vocab/unit#Meter">-0.2</knowrob:m03>
         <knowrob:m13 rdf:datatype="http://qudt.org/vocab/unit#Meter">-0.2</knowrob:m13>
@@ -320,14 +320,14 @@
         <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
         <knowrob:m00 rdf:datatype="&xsd;float">1.0</knowrob:m00>
         <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
-        <knowrob:relativeTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpedit2x2"/>
+        <knowrob:relativeTo rdf:resource="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpedit2x2"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#RotationMatrixDoor4 -->
+    <!-- http://knowrob.org/kb/knowrob_rel_coord_test.owl#RotationMatrixDoor4 -->
 
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#RotationMatrixDoor4">
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob_rel_coord_test.owl#RotationMatrixDoor4">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
         <knowrob:m03 rdf:datatype="http://qudt.org/vocab/unit#Meter">-0.2</knowrob:m03>
         <knowrob:m23 rdf:datatype="http://qudt.org/vocab/unit#Meter">-0.2</knowrob:m23>
@@ -345,14 +345,14 @@
         <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
         <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
         <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
-        <knowrob:relativeTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpedit2x2"/>
+        <knowrob:relativeTo rdf:resource="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpedit2x2"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#RotationMatrixHandle1 -->
+    <!-- http://knowrob.org/kb/knowrob_rel_coord_test.owl#RotationMatrixHandle1 -->
 
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#RotationMatrixHandle1">
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob_rel_coord_test.owl#RotationMatrixHandle1">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
         <knowrob:m03 rdf:datatype="http://qudt.org/vocab/unit#Meter">-0.01</knowrob:m03>
         <knowrob:m13 rdf:datatype="http://qudt.org/vocab/unit#Meter">-0.15</knowrob:m13>
@@ -370,14 +370,14 @@
         <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
         <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
         <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
-        <knowrob:relativeTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor1"/>
+        <knowrob:relativeTo rdf:resource="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor1"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#RotationMatrixHandle2 -->
+    <!-- http://knowrob.org/kb/knowrob_rel_coord_test.owl#RotationMatrixHandle2 -->
 
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#RotationMatrixHandle2">
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob_rel_coord_test.owl#RotationMatrixHandle2">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
         <knowrob:m03 rdf:datatype="http://qudt.org/vocab/unit#Meter">-0.01</knowrob:m03>
         <knowrob:m23 rdf:datatype="http://qudt.org/vocab/unit#Meter">0.0</knowrob:m23>
@@ -395,14 +395,14 @@
         <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
         <knowrob:m00 rdf:datatype="&xsd;float">1.0</knowrob:m00>
         <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
-        <knowrob:relativeTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor2"/>
+        <knowrob:relativeTo rdf:resource="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor2"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#RotationMatrixHandle3 -->
+    <!-- http://knowrob.org/kb/knowrob_rel_coord_test.owl#RotationMatrixHandle3 -->
 
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#RotationMatrixHandle3">
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob_rel_coord_test.owl#RotationMatrixHandle3">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
         <knowrob:m03 rdf:datatype="http://qudt.org/vocab/unit#Meter">-0.01</knowrob:m03>
         <knowrob:m23 rdf:datatype="http://qudt.org/vocab/unit#Meter">0.0</knowrob:m23>
@@ -420,14 +420,14 @@
         <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
         <knowrob:m00 rdf:datatype="&xsd;float">1.0</knowrob:m00>
         <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
-        <knowrob:relativeTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor2"/>
+        <knowrob:relativeTo rdf:resource="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor2"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#RotationMatrixHandle4 -->
+    <!-- http://knowrob.org/kb/knowrob_rel_coord_test.owl#RotationMatrixHandle4 -->
 
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#RotationMatrixHandle4">
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob_rel_coord_test.owl#RotationMatrixHandle4">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
         <knowrob:m03 rdf:datatype="http://qudt.org/vocab/unit#Meter">-0.01</knowrob:m03>
         <knowrob:m13 rdf:datatype="http://qudt.org/vocab/unit#Meter">-0.15</knowrob:m13>
@@ -445,7 +445,7 @@
         <knowrob:m33 rdf:datatype="&xsd;float">1.0</knowrob:m33>
         <knowrob:m11 rdf:datatype="&xsd;float">1.0</knowrob:m11>
         <knowrob:m22 rdf:datatype="&xsd;float">1.0</knowrob:m22>
-        <knowrob:relativeTo rdf:resource="http://ias.cs.tum.edu/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor2"/>
+        <knowrob:relativeTo rdf:resource="http://knowrob.org/kb/knowrob_rel_coord_test.owl#IkeaExpeditDoor2"/>
     </owl:NamedIndividual>
 </rdf:RDF>
 

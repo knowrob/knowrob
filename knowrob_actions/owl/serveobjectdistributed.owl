@@ -1,15 +1,15 @@
 <?xml version='1.0' encoding='US-ASCII'?>
 <!DOCTYPE rdf:RDF [
-    <!ENTITY pr2 'http://ias.cs.tum.edu/kb/PR2.owl#'>
-    <!ENTITY comp_cop 'http://ias.cs.tum.edu/kb/comp_cop.owl#'>
-    <!ENTITY comp_spatial 'http://ias.cs.tum.edu/kb/comp_spatial.owl#'>
-    <!ENTITY comp_temporal 'http://ias.cs.tum.edu/kb/comp_temporal.owl#'>
-    <!ENTITY computable 'http://ias.cs.tum.edu/kb/computable.owl#'>
-    <!ENTITY knowrob 'http://ias.cs.tum.edu/kb/knowrob.owl#'>
-    <!ENTITY cad 'http://ias.cs.tum.edu/kb/knowrob_cad_models.owl#'>
-    <!ENTITY srdl2cap 'http://ias.cs.tum.edu/kb/srdl2-cap.owl#'>
-    <!ENTITY srdl2comp 'http://ias.cs.tum.edu/kb/srdl2-comp.owl#'>
-    <!ENTITY srdl2 'http://ias.cs.tum.edu/kb/srdl2.owl#'>
+    <!ENTITY pr2 'http://knowrob.org/kb/PR2.owl#'>
+    <!ENTITY comp_cop 'http://knowrob.org/kb/comp_cop.owl#'>
+    <!ENTITY comp_spatial 'http://knowrob.org/kb/comp_spatial.owl#'>
+    <!ENTITY comp_temporal 'http://knowrob.org/kb/comp_temporal.owl#'>
+    <!ENTITY computable 'http://knowrob.org/kb/computable.owl#'>
+    <!ENTITY knowrob 'http://knowrob.org/kb/knowrob.owl#'>
+    <!ENTITY cad 'http://knowrob.org/kb/knowrob_cad_models.owl#'>
+    <!ENTITY srdl2cap 'http://knowrob.org/kb/srdl2-cap.owl#'>
+    <!ENTITY srdl2comp 'http://knowrob.org/kb/srdl2-comp.owl#'>
+    <!ENTITY srdl2 'http://knowrob.org/kb/srdl2.owl#'>
     <!ENTITY dc 'http://purl.org/dc/elements/1.1/'>
     <!ENTITY amigo 'http://www.roboearth.org/kb/amigo.owl#'>
     <!ENTITY roboearth 'http://www.roboearth.org/kb/roboearth.owl#'>

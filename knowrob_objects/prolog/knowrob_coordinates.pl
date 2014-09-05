@@ -38,8 +38,8 @@
 
 :- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
 :- rdf_db:rdf_register_ns(owl, 'http://www.w3.org/2002/07/owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(knowrob_coordinates, 'http://ias.cs.tum.edu/kb/knowrob_coordinates.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob_coordinates, 'http://knowrob.org/kb/knowrob_coordinates.owl#', [keep(true)]).
 
 
 

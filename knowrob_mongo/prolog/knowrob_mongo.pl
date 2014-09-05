@@ -60,9 +60,9 @@
 
 :- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
 :- rdf_db:rdf_register_ns(owl, 'http://www.w3.org/2002/07/owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(xsd, 'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
-:- rdf_db:rdf_register_ns(srdl2comp, 'http://ias.cs.tum.edu/kb/srdl2-comp.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(srdl2comp, 'http://knowrob.org/kb/srdl2-comp.owl#', [keep(true)]).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -146,7 +146,7 @@ mng_desig_get_value(Designator, DesigJava, Prop, Pose) :-
   jpl_get(Header, 'stamp', Stamp),
   jpl_get(Stamp,  'secs', TimeSecs),
   term_to_atom(TimeSecs, TimeSecsAtom),
-  atom_concat('http://ias.cs.tum.edu/kb/knowrob_mongo.owl#timepoint_', TimeSecsAtom, PoseTimePoint),
+  atom_concat('http://knowrob.org/kb/knowrob_mongo.owl#timepoint_', TimeSecsAtom, PoseTimePoint),
 
   % transform into /map
   jpl_call(PoseStamped, 'getMatrix4d', [], PoseMatrix4d),
@@ -159,12 +159,12 @@ mng_desig_get_value(Designator, DesigJava, Prop, Pose) :-
   jpl_call(DesigJava, 'getDetectionType', [], DetectionType),
 
   % create perception instance attached to the object this designator belongs to
-  atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', DetectionType, DClass),
+  atom_concat('http://knowrob.org/kb/knowrob.owl#', DetectionType, DClass),
   rdf_instance_from_class(DClass, Detection),
   set_object_perception(Obj, Detection),
   rdf_assert(Detection, knowrob:eventOccursAt, Pose),
 
-  rdf_assert(PoseTimePoint, rdf:type, 'http://ias.cs.tum.edu/kb/knowrob.owl#TimePoint'),
+  rdf_assert(PoseTimePoint, rdf:type, 'http://knowrob.org/kb/knowrob.owl#TimePoint'),
   rdf_assert(Detection, knowrob:startTime, PoseTimePoint).
 
 % just return the value for other properties
@@ -276,7 +276,7 @@ mng_comp_pose(RobotPart, Pose) :-
 %
 mng_comp_pose_at_time(RobotPart, TargetFrame, TimePoint, Pose) :-
 
-  owl_has(RobotPart, 'http://ias.cs.tum.edu/kb/srdl2-comp.owl#urdfName', literal(SourceFrameID)),
+  owl_has(RobotPart, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(SourceFrameID)),
   atom_concat('/', SourceFrameID, SourceFrame),
 
   mng_obj_pose_at_time(RobotPart, SourceFrame, TargetFrame, TimePoint, Pose).
@@ -308,7 +308,7 @@ mng_obj_pose_at_time(Obj, SourceFrame, TargetFrame, TimePoint, Pose) :-
   create_pose(PoseListOut, Pose),
   rdf_assert(Pose, knowrob:tfFrame, TargetFrame),
 
-  rdf_instance_from_class('http://ias.cs.tum.edu/kb/knowrob.owl#Proprioception', Perception),
+  rdf_instance_from_class('http://knowrob.org/kb/knowrob.owl#Proprioception', Perception),
   rdf_assert(Perception, knowrob:startTime, TimePoint),
 
   set_object_perception(Obj, Perception),
@@ -350,7 +350,7 @@ obj_visible_in_camera(Obj, Camera, TimePoint) :-
 
 
   % Read object pose w.r.t. camera
-  once(owl_has(Camera, 'http://ias.cs.tum.edu/kb/srdl2-comp.owl#urdfName', literal(CamFrameID))),
+  once(owl_has(Camera, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(CamFrameID))),
   atom_concat('/', CamFrameID, CamFrame),
 
   % TODO: mng_latest_designator_before_time does not refer to Obj
@@ -375,7 +375,7 @@ obj_blocked_by_in_camera(Obj, Blocker, Camera, TimePoint) :-
   member(Camera, Cameras),
 
   % Read camera frame ID
-  once(owl_has(Camera, 'http://ias.cs.tum.edu/kb/srdl2-comp.owl#urdfName', literal(CamFrameID))),
+  once(owl_has(Camera, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(CamFrameID))),
   atom_concat('/', CamFrameID, CamFrame),
 
 
@@ -391,9 +391,9 @@ obj_blocked_by_in_camera(Obj, Blocker, Camera, TimePoint) :-
 %   ObjYDeg is ObjBearingY /2 /pi * 360,
 
   % Read poses of blocking robot parts w.r.t. camera
-  sub_component('http://ias.cs.tum.edu/kb/PR2.owl#PR2Robot1', Blocker),
-  rdfs_individual_of(Blocker, 'http://ias.cs.tum.edu/kb/srdl2-comp.owl#UrdfLink'),
-  owl_has(Blocker, 'http://ias.cs.tum.edu/kb/srdl2-comp.owl#urdfName', literal(PartFrameID)),
+  sub_component('http://knowrob.org/kb/PR2.owl#PR2Robot1', Blocker),
+  rdfs_individual_of(Blocker, 'http://knowrob.org/kb/srdl2-comp.owl#UrdfLink'),
+  owl_has(Blocker, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(PartFrameID)),
   atom_concat('/', PartFrameID, PartFrame),
 
 %   print(PartFrame),

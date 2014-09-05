@@ -6,27 +6,27 @@
     <!ENTITY owl2 "http://www.w3.org/2006/12/owl2#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
     <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
-    <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
+    <!ENTITY knowrob "http://knowrob.org/kb/knowrob.owl#" >
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
-    <!ENTITY computable "http://ias.cs.tum.edu/kb/computable.owl#" >
+    <!ENTITY computable "http://knowrob.org/kb/computable.owl#" >
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
     <!ENTITY protege "http://protege.stanford.edu/plugins/owl/protege#" >
 ]>
 
 
-<rdf:RDF xmlns="http://ias.cs.tum.edu/kb/object-change.owl#"
-     xml:base="http://ias.cs.tum.edu/kb/object-change.owl"
+<rdf:RDF xmlns="http://knowrob.org/kb/object-change.owl#"
+     xml:base="http://knowrob.org/kb/object-change.owl"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:computable="http://ias.cs.tum.edu/kb/computable.owl#"
+     xmlns:computable="http://knowrob.org/kb/computable.owl#"
      xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
      xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl2="http://www.w3.org/2006/12/owl2#"
-     xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#">
-    <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/object-change.owl">
-        <owl:imports rdf:resource="package://ias_knowledge_base/owl/knowrob.owl"/>
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/object-change.owl">
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
     </owl:Ontology>
 
 
@@ -42,27 +42,27 @@
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#target -->
+    <!-- http://knowrob.org/kb/computable.owl#target -->
 
     <owl:ObjectProperty rdf:about="&computable;target"/>
 
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#objectActedOn -->
+    <!-- http://knowrob.org/kb/knowrob.owl#objectActedOn -->
 
     <owl:ObjectProperty rdf:about="&knowrob;objectActedOn"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#toLocation -->
+    <!-- http://knowrob.org/kb/knowrob.owl#toLocation -->
 
     <owl:ObjectProperty rdf:about="&knowrob;toLocation"/>
 
 
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#transformedInto -->
+    <!-- http://knowrob.org/kb/object-change.owl#transformedInto -->
 
-    <owl:ObjectProperty rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#transformedInto">
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/object-change.owl#transformedInto">
         <rdfs:range rdf:resource="&knowrob;EnduringThing-Localized"/>
         <rdfs:domain rdf:resource="&knowrob;EnduringThing-Localized"/>
     </owl:ObjectProperty>
@@ -80,25 +80,25 @@
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#cache -->
+    <!-- http://knowrob.org/kb/computable.owl#cache -->
 
     <owl:DatatypeProperty rdf:about="&computable;cache"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#command -->
+    <!-- http://knowrob.org/kb/computable.owl#command -->
 
     <owl:DatatypeProperty rdf:about="&computable;command"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#visible -->
+    <!-- http://knowrob.org/kb/computable.owl#visible -->
 
     <owl:DatatypeProperty rdf:about="&computable;visible"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#temperatureOfObject -->
+    <!-- http://knowrob.org/kb/knowrob.owl#temperatureOfObject -->
 
     <owl:DatatypeProperty rdf:about="&knowrob;temperatureOfObject"/>
 
@@ -116,73 +116,73 @@
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#PrologProperty -->
+    <!-- http://knowrob.org/kb/computable.owl#PrologProperty -->
 
     <owl:Class rdf:about="&computable;PrologProperty"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Bread -->
+    <!-- http://knowrob.org/kb/knowrob.owl#Bread -->
 
     <owl:Class rdf:about="&knowrob;Bread"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#CakePan -->
+    <!-- http://knowrob.org/kb/knowrob.owl#CakePan -->
 
     <owl:Class rdf:about="&knowrob;CakePan"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Cracking -->
+    <!-- http://knowrob.org/kb/knowrob.owl#Cracking -->
 
     <owl:Class rdf:about="&knowrob;Cracking"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#CuttingOffAPiece -->
+    <!-- http://knowrob.org/kb/knowrob.owl#CuttingOffAPiece -->
 
     <owl:Class rdf:about="&knowrob;CuttingOffAPiece"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Dough -->
+    <!-- http://knowrob.org/kb/knowrob.owl#Dough -->
 
     <owl:Class rdf:about="&knowrob;Dough"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Egg-Chickens -->
+    <!-- http://knowrob.org/kb/knowrob.owl#Egg-Chickens -->
 
     <owl:Class rdf:about="&knowrob;Egg-Chickens"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Eggshell -->
+    <!-- http://knowrob.org/kb/knowrob.owl#Eggshell -->
 
     <owl:Class rdf:about="&knowrob;Eggshell"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#EnduringThing-Localized -->
+    <!-- http://knowrob.org/kb/knowrob.owl#EnduringThing-Localized -->
 
     <owl:Class rdf:about="&knowrob;EnduringThing-Localized"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Mixing -->
+    <!-- http://knowrob.org/kb/knowrob.owl#Mixing -->
 
     <owl:Class rdf:about="&knowrob;Mixing"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PancakeMix -->
+    <!-- http://knowrob.org/kb/knowrob.owl#PancakeMix -->
 
     <owl:Class rdf:about="&knowrob;PancakeMix"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PuttingSomethingOnto -->
+    <!-- http://knowrob.org/kb/knowrob.owl#PuttingSomethingOnto -->
 
     <owl:Class rdf:about="&knowrob;PuttingSomethingOnto"/>
 
@@ -200,13 +200,13 @@
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#postActors -->
+    <!-- http://knowrob.org/kb/knowrob.owl#postActors -->
 
     <owl:NamedIndividual rdf:about="&knowrob;postActors"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#thermicallyConnectedTo -->
+    <!-- http://knowrob.org/kb/knowrob.owl#thermicallyConnectedTo -->
 
     <owl:NamedIndividual rdf:about="&knowrob;thermicallyConnectedTo"/>
 
@@ -214,9 +214,9 @@
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#computeActionEffect -->
+    <!-- http://knowrob.org/kb/object-change.owl#computeActionEffect -->
 
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#computeActionEffect">
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/object-change.owl#computeActionEffect">
         <rdf:type rdf:resource="&computable;PrologProperty"/>
         <computable:command rdf:datatype="&xsd;string">action_effects</computable:command>
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
@@ -226,9 +226,9 @@
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#computeThermicallyConnectedTo -->
+    <!-- http://knowrob.org/kb/object-change.owl#computeThermicallyConnectedTo -->
 
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#computeThermicallyConnectedTo">
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/object-change.owl#computeThermicallyConnectedTo">
         <rdf:type rdf:resource="&computable;PrologProperty"/>
         <computable:command rdf:datatype="&xsd;string">comp_thermicallyConnectedTo</computable:command>
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
@@ -238,14 +238,14 @@
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/object-change.owl#computeTransformedInto -->
+    <!-- http://knowrob.org/kb/object-change.owl#computeTransformedInto -->
 
-    <owl:NamedIndividual rdf:about="http://ias.cs.tum.edu/kb/object-change.owl#computeTransformedInto">
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/object-change.owl#computeTransformedInto">
         <rdf:type rdf:resource="&computable;PrologProperty"/>
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
         <computable:command rdf:datatype="&xsd;string">transformed_into_transitive</computable:command>
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-        <computable:target rdf:resource="http://ias.cs.tum.edu/kb/object-change.owl#transformedInto"/>
+        <computable:target rdf:resource="http://knowrob.org/kb/object-change.owl#transformedInto"/>
     </owl:NamedIndividual>
 
 

@@ -24,5 +24,5 @@
 
 :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/ias_semantic_map.owl', false, false, true).
 
-:- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(ias_map, 'http://ias.cs.tum.edu/kb/ias_semantic_map.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(ias_map, 'http://knowrob.org/kb/ias_semantic_map.owl#', [keep(true)]).

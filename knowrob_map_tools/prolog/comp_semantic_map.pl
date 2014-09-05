@@ -91,8 +91,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 :- owl_parser:owl_parse('../owl/comp_semantic_map.owl', false, false, true).
 
-:- rdf_db:rdf_register_ns(knowrob,      'http://ias.cs.tum.edu/kb/knowrob.owl#',      [keep(true)]).
-:- rdf_db:rdf_register_ns(comp_sem_map, 'http://ias.cs.tum.edu/kb/comp_semantic_map.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob,      'http://knowrob.org/kb/knowrob.owl#',      [keep(true)]).
+:- rdf_db:rdf_register_ns(comp_sem_map, 'http://knowrob.org/kb/comp_semantic_map.owl#', [keep(true)]).
 
 
 % define predicates as rdf_meta predicates
@@ -465,7 +465,7 @@ level_distance(A,B,D):-
 %
 create_perception_instance(Perception) :-
 
-  rdf_instance_from_class('http://ias.cs.tum.edu/kb/knowrob.owl#Perceiving', Perception),
+  rdf_instance_from_class('http://knowrob.org/kb/knowrob.owl#Perceiving', Perception),
 
   % create detection time point
   get_timepoint(TimePoint),
@@ -503,7 +503,7 @@ set_perception_pose(Perception, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M2
   % set the pose
   atomic_list_concat(['rotMat3D_',M00,'_',M01,'_',M02,'_',M03,'_',M10,'_',M11,'_',M12,'_',M13,'_',M20,'_',M21,'_',M22,'_',M23,'_',M30,'_',M31,'_',M32,'_',M33], LocIdentifier),
 
-  atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', LocIdentifier, Loc),
+  atom_concat('http://knowrob.org/kb/knowrob.owl#', LocIdentifier, Loc),
   rdf_assert(Loc, rdf:type, knowrob:'RotationMatrix3D'),
   rdf_assert(Perception, knowrob:eventOccursAt, Loc).
 

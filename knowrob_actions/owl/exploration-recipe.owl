@@ -4,45 +4,45 @@
 <!DOCTYPE rdf:RDF [
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY dc "http://purl.org/dc/elements/1.1/" >
-    <!ENTITY pr2 "http://ias.cs.tum.edu/kb/PR2.owl#" >
+    <!ENTITY pr2 "http://knowrob.org/kb/PR2.owl#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
-    <!ENTITY srdl2 "http://ias.cs.tum.edu/kb/srdl2.owl#" >
-    <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
+    <!ENTITY srdl2 "http://knowrob.org/kb/srdl2.owl#" >
+    <!ENTITY knowrob "http://knowrob.org/kb/knowrob.owl#" >
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
-    <!ENTITY comp_cop "http://ias.cs.tum.edu/kb/comp_cop.owl#" >
+    <!ENTITY comp_cop "http://knowrob.org/kb/comp_cop.owl#" >
     <!ENTITY amigo "http://www.roboearth.org/kb/amigo.owl#" >
-    <!ENTITY srdl2cap "http://ias.cs.tum.edu/kb/srdl2-cap.owl#" >
-    <!ENTITY srdl2comp "http://ias.cs.tum.edu/kb/srdl2-comp.owl#" >
-    <!ENTITY computable "http://ias.cs.tum.edu/kb/computable.owl#" >
+    <!ENTITY srdl2cap "http://knowrob.org/kb/srdl2-cap.owl#" >
+    <!ENTITY srdl2comp "http://knowrob.org/kb/srdl2-comp.owl#" >
+    <!ENTITY computable "http://knowrob.org/kb/computable.owl#" >
     <!ENTITY roboearth "http://www.roboearth.org/kb/roboearth.owl#" >
-    <!ENTITY comp_spatial "http://ias.cs.tum.edu/kb/comp_spatial.owl#" >
-    <!ENTITY comp_temporal "http://ias.cs.tum.edu/kb/comp_temporal.owl#" >
+    <!ENTITY comp_spatial "http://knowrob.org/kb/comp_spatial.owl#" >
+    <!ENTITY comp_temporal "http://knowrob.org/kb/comp_temporal.owl#" >
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
-    <!ENTITY cad "http://ias.cs.tum.edu/kb/knowrob_cad_models.owl#" >
+    <!ENTITY cad "http://knowrob.org/kb/knowrob_cad_models.owl#" >
 ]>
 
 
-<rdf:RDF xmlns="http://ias.cs.tum.edu/kb/knowrob.owl.owl#"
-     xml:base="http://ias.cs.tum.edu/kb/knowrob.owl.owl"
+<rdf:RDF xmlns="http://knowrob.org/kb/knowrob.owl.owl#"
+     xml:base="http://knowrob.org/kb/knowrob.owl.owl"
      xmlns:dc="http://purl.org/dc/elements/1.1/"
      xmlns:amigo="http://www.roboearth.org/kb/amigo.owl#"
-     xmlns:comp_temporal="http://ias.cs.tum.edu/kb/comp_temporal.owl#"
-     xmlns:pr2="http://ias.cs.tum.edu/kb/PR2.owl#"
-     xmlns:srdl2cap="http://ias.cs.tum.edu/kb/srdl2-cap.owl#"
-     xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#"
+     xmlns:comp_temporal="http://knowrob.org/kb/comp_temporal.owl#"
+     xmlns:pr2="http://knowrob.org/kb/PR2.owl#"
+     xmlns:srdl2cap="http://knowrob.org/kb/srdl2-cap.owl#"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:computable="http://ias.cs.tum.edu/kb/computable.owl#"
-     xmlns:cad="http://ias.cs.tum.edu/kb/knowrob_cad_models.owl#"
-     xmlns:srdl2="http://ias.cs.tum.edu/kb/srdl2.owl#"
+     xmlns:computable="http://knowrob.org/kb/computable.owl#"
+     xmlns:cad="http://knowrob.org/kb/knowrob_cad_models.owl#"
+     xmlns:srdl2="http://knowrob.org/kb/srdl2.owl#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:comp_cop="http://ias.cs.tum.edu/kb/comp_cop.owl#"
-     xmlns:srdl2comp="http://ias.cs.tum.edu/kb/srdl2-comp.owl#"
+     xmlns:comp_cop="http://knowrob.org/kb/comp_cop.owl#"
+     xmlns:srdl2comp="http://knowrob.org/kb/srdl2-comp.owl#"
      xmlns:roboearth="http://www.roboearth.org/kb/roboearth.owl#"
-     xmlns:comp_spatial="http://ias.cs.tum.edu/kb/comp_spatial.owl#">
-    <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl.owl#">
-        <owl:imports rdf:resource="package://ias_knowledge_base/owl/knowrob.owl"/>
+     xmlns:comp_spatial="http://knowrob.org/kb/comp_spatial.owl#">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/knowrob.owl.owl#">
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
     </owl:Ontology>
 
 
@@ -70,67 +70,67 @@
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#causedBy -->
+    <!-- http://knowrob.org/kb/knowrob.owl#causedBy -->
 
     <owl:ObjectProperty rdf:about="&knowrob;causedBy"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#conditionEvaluated -->
+    <!-- http://knowrob.org/kb/knowrob.owl#conditionEvaluated -->
 
     <owl:ObjectProperty rdf:about="&knowrob;conditionEvaluated"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#fromState -->
+    <!-- http://knowrob.org/kb/knowrob.owl#fromState -->
 
     <owl:ObjectProperty rdf:about="&knowrob;fromState"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#modelsForPlace -->
+    <!-- http://knowrob.org/kb/knowrob.owl#modelsForPlace -->
 
     <owl:ObjectProperty rdf:about="&knowrob;modelsForPlace"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#objectActedOn -->
+    <!-- http://knowrob.org/kb/knowrob.owl#objectActedOn -->
 
     <owl:ObjectProperty rdf:about="&knowrob;objectActedOn"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#stateTransition -->
+    <!-- http://knowrob.org/kb/knowrob.owl#stateTransition -->
 
     <owl:ObjectProperty rdf:about="&knowrob;stateTransition"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#subAction -->
+    <!-- http://knowrob.org/kb/knowrob.owl#subAction -->
 
     <owl:ObjectProperty rdf:about="&knowrob;subAction"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#taskEndState -->
+    <!-- http://knowrob.org/kb/knowrob.owl#taskEndState -->
 
     <owl:ObjectProperty rdf:about="&knowrob;taskEndState"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#taskStartState -->
+    <!-- http://knowrob.org/kb/knowrob.owl#taskStartState -->
 
     <owl:ObjectProperty rdf:about="&knowrob;taskStartState"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#toState -->
+    <!-- http://knowrob.org/kb/knowrob.owl#toState -->
 
     <owl:ObjectProperty rdf:about="&knowrob;toState"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#dependsOnComponent -->
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#dependsOnComponent -->
 
     <owl:ObjectProperty rdf:about="&srdl2comp;dependsOnComponent"/>
 
@@ -147,13 +147,13 @@
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#distanceTranslated -->
+    <!-- http://knowrob.org/kb/knowrob.owl#distanceTranslated -->
 
     <owl:DatatypeProperty rdf:about="&knowrob;distanceTranslated"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#serviceCalled -->
+    <!-- http://knowrob.org/kb/knowrob.owl#serviceCalled -->
 
     <owl:DatatypeProperty rdf:about="&knowrob;serviceCalled"/>
 
@@ -170,25 +170,25 @@
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#ActionResult -->
+    <!-- http://knowrob.org/kb/knowrob.owl#ActionResult -->
 
     <owl:Class rdf:about="&knowrob;ActionResult"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#CheckingWhetherConditionObtains -->
+    <!-- http://knowrob.org/kb/knowrob.owl#CheckingWhetherConditionObtains -->
 
     <owl:Class rdf:about="&knowrob;CheckingWhetherConditionObtains"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#EnvironmentExploration -->
+    <!-- http://knowrob.org/kb/knowrob.owl#EnvironmentExploration -->
 
     <owl:Class rdf:about="&knowrob;EnvironmentExploration"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#HospitalRoom -->
+    <!-- http://knowrob.org/kb/knowrob.owl#HospitalRoom -->
 
     <owl:Class rdf:about="&knowrob;HospitalRoom">
         <rdfs:subClassOf rdf:resource="&knowrob;RoomInAConstruction"/>
@@ -196,57 +196,57 @@
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#IntrinsicStateChangeEvent -->
+    <!-- http://knowrob.org/kb/knowrob.owl#IntrinsicStateChangeEvent -->
 
     <owl:Class rdf:about="&knowrob;IntrinsicStateChangeEvent"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#LoadTypicalObjectModels -->
+    <!-- http://knowrob.org/kb/knowrob.owl#LoadTypicalObjectModels -->
 
     <owl:Class rdf:about="&knowrob;LoadTypicalObjectModels"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#PurposefulAction -->
+    <!-- http://knowrob.org/kb/knowrob.owl#PurposefulAction -->
 
     <owl:Class rdf:about="&knowrob;PurposefulAction"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#RoomInAConstruction -->
+    <!-- http://knowrob.org/kb/knowrob.owl#RoomInAConstruction -->
 
     <owl:Class rdf:about="&knowrob;RoomInAConstruction"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#StartExplorationModules -->
+    <!-- http://knowrob.org/kb/knowrob.owl#StartExplorationModules -->
 
     <owl:Class rdf:about="&knowrob;StartExplorationModules"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#StopExplorationModules -->
+    <!-- http://knowrob.org/kb/knowrob.owl#StopExplorationModules -->
 
     <owl:Class rdf:about="&knowrob;StopExplorationModules"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#UploadMapToRoboEarth -->
+    <!-- http://knowrob.org/kb/knowrob.owl#UploadMapToRoboEarth -->
 
     <owl:Class rdf:about="&knowrob;UploadMapToRoboEarth"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl.owl#re_explore -->
+    <!-- http://knowrob.org/kb/knowrob.owl.owl#re_explore -->
 
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/knowrob.owl.owl#re_explore">
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl.owl#re_explore">
         <rdfs:subClassOf rdf:resource="&knowrob;EnvironmentExploration"/>
     </owl:Class>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#BaseMotionCapability -->
+    <!-- http://knowrob.org/kb/srdl2-cap.owl#BaseMotionCapability -->
 
     <owl:Class rdf:about="&srdl2cap;BaseMotionCapability">
         <rdfs:subClassOf rdf:resource="&srdl2cap;BodyMotionCapability"/>
@@ -260,13 +260,13 @@
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/srdl2-cap.owl#BodyMotionCapability -->
+    <!-- http://knowrob.org/kb/srdl2-cap.owl#BodyMotionCapability -->
 
     <owl:Class rdf:about="&srdl2cap;BodyMotionCapability"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/srdl2-comp.owl#MobileBase -->
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#MobileBase -->
 
     <owl:Class rdf:about="&srdl2comp;MobileBase"/>
 
@@ -604,7 +604,7 @@
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#COMPLETED_OK -->
+    <!-- http://knowrob.org/kb/knowrob.owl#COMPLETED_OK -->
 
     <owl:NamedIndividual rdf:about="&knowrob;COMPLETED_OK">
         <rdf:type rdf:resource="&knowrob;ActionResult"/>
@@ -612,7 +612,7 @@
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#CONDITION_FALSE -->
+    <!-- http://knowrob.org/kb/knowrob.owl#CONDITION_FALSE -->
 
     <owl:NamedIndividual rdf:about="&knowrob;CONDITION_FALSE">
         <rdf:type rdf:resource="&knowrob;ActionResult"/>
@@ -620,7 +620,7 @@
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#CONDITION_TRUE -->
+    <!-- http://knowrob.org/kb/knowrob.owl#CONDITION_TRUE -->
 
     <owl:NamedIndividual rdf:about="&knowrob;CONDITION_TRUE">
         <rdf:type rdf:resource="&knowrob;ActionResult"/>
@@ -628,13 +628,13 @@
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#HospitalRoom -->
+    <!-- http://knowrob.org/kb/knowrob.owl#HospitalRoom -->
 
     <owl:NamedIndividual rdf:about="&knowrob;HospitalRoom"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#IntrinsicStateChangeEvent_ImdOljeR -->
+    <!-- http://knowrob.org/kb/knowrob.owl#IntrinsicStateChangeEvent_ImdOljeR -->
 
     <owl:NamedIndividual rdf:about="&knowrob;IntrinsicStateChangeEvent_ImdOljeR">
         <rdf:type rdf:resource="&knowrob;IntrinsicStateChangeEvent"/>
@@ -645,7 +645,7 @@
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#IntrinsicStateChangeEvent_NGUjNLjb -->
+    <!-- http://knowrob.org/kb/knowrob.owl#IntrinsicStateChangeEvent_NGUjNLjb -->
 
     <owl:NamedIndividual rdf:about="&knowrob;IntrinsicStateChangeEvent_NGUjNLjb">
         <rdf:type rdf:resource="&knowrob;IntrinsicStateChangeEvent"/>
@@ -656,7 +656,7 @@
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#IntrinsicStateChangeEvent_ZEynvebK -->
+    <!-- http://knowrob.org/kb/knowrob.owl#IntrinsicStateChangeEvent_ZEynvebK -->
 
     <owl:NamedIndividual rdf:about="&knowrob;IntrinsicStateChangeEvent_ZEynvebK">
         <rdf:type rdf:resource="&knowrob;IntrinsicStateChangeEvent"/>
@@ -673,7 +673,7 @@
         <knowrob:toState rdf:resource="&roboearth;explore-environment"/>
     </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#IntrinsicStateChangeEvent_ZGrISRTe -->
+    <!-- http://knowrob.org/kb/knowrob.owl#IntrinsicStateChangeEvent_ZGrISRTe -->
 
     <owl:NamedIndividual rdf:about="&knowrob;IntrinsicStateChangeEvent_ZGrISRTe">
         <rdf:type rdf:resource="&knowrob;IntrinsicStateChangeEvent"/>
@@ -684,7 +684,7 @@
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#IntrinsicStateChangeEvent_ZJTDfFXN -->
+    <!-- http://knowrob.org/kb/knowrob.owl#IntrinsicStateChangeEvent_ZJTDfFXN -->
 
     <owl:NamedIndividual rdf:about="&knowrob;IntrinsicStateChangeEvent_ZJTDfFXN">
         <rdf:type rdf:resource="&knowrob;IntrinsicStateChangeEvent"/>
@@ -694,7 +694,7 @@
     </owl:NamedIndividual>
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#IntrinsicStateChangeEvent_lyzZGUFb -->
+    <!-- http://knowrob.org/kb/knowrob.owl#IntrinsicStateChangeEvent_lyzZGUFb -->
 
     <owl:NamedIndividual rdf:about="&knowrob;IntrinsicStateChangeEvent_lyzZGUFb">
         <rdf:type rdf:resource="&knowrob;IntrinsicStateChangeEvent"/>
@@ -703,7 +703,7 @@
         <knowrob:toState rdf:resource="&roboearth;move-to-origin"/>
     </owl:NamedIndividual>
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#IntrinsicStateChangeEvent_MaYlfZy -->
+    <!-- http://knowrob.org/kb/knowrob.owl#IntrinsicStateChangeEvent_MaYlfZy -->
 
     <owl:NamedIndividual rdf:about="&knowrob;IntrinsicStateChangeEvent_MaYlfZy">
         <rdf:type rdf:resource="&knowrob;IntrinsicStateChangeEvent"/>

@@ -400,8 +400,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 		// check if object is blacklisted
 		HashMap<String, Vector<String>> blk = PrologInterface.executeQuery(
-				"owl_individual_of('"+ identifier + "', 'http://ias.cs.tum.edu/kb/srdl2-comp.owl#UrdfJoint') ;" +
-						"owl_individual_of('"+ identifier + "', 'http://ias.cs.tum.edu/kb/knowrob.owl#RoomInAConstruction')");
+				"owl_individual_of('"+ identifier + "', 'http://knowrob.org/kb/srdl2-comp.owl#UrdfJoint') ;" +
+						"owl_individual_of('"+ identifier + "', 'http://knowrob.org/kb/knowrob.owl#RoomInAConstruction')");
 
 		if(blk!=null)
 			return null;
@@ -599,8 +599,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 					// read all physical parts of all child objects
 					HashMap<String, Vector<String>> parts = PrologInterface.executeQuery(
 							"rdf_reachable("+mapParts.get("PART").get(i)+", knowrob:properPhysicalParts, P);" +
-									"rdf_reachable("+mapParts.get("PART").get(i)+", 'http://ias.cs.tum.edu/kb/srdl2-comp.owl#subComponent', P);" +
-									"rdf_reachable("+mapParts.get("PART").get(i)+", 'http://ias.cs.tum.edu/kb/srdl2-comp.owl#successorInKinematicChain', P)");
+									"rdf_reachable("+mapParts.get("PART").get(i)+", 'http://knowrob.org/kb/srdl2-comp.owl#subComponent', P);" +
+									"rdf_reachable("+mapParts.get("PART").get(i)+", 'http://knowrob.org/kb/srdl2-comp.owl#successorInKinematicChain', P)");
 
 					if(parts != null && parts.get("P") != null) {
 
@@ -645,16 +645,16 @@ public class MarkerVisualization extends AbstractNodeMain {
 	public static void main(String args[]) {
 
 		//		MarkerVisualization vis = new MarkerVisualization();
-		//		vis.addObjectWithChildren("http://ias.cs.tum.edu/kb/ias_semantic_map.owl#SemanticEnvironmentMap0", "http://ias.cs.tum.edu/kb/knowrob.owl#timepoint_1377766542");
-		//		vis.highlight("http://ias.cs.tum.edu/kb/knowrob.owl#Refrigerator67", true, 150, 0, 0, 180);
+		//		vis.addObjectWithChildren("http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0", "http://knowrob.org/kb/knowrob.owl#timepoint_1377766542");
+		//		vis.highlight("http://knowrob.org/kb/knowrob.owl#Refrigerator67", true, 150, 0, 0, 180);
 
 		//		PrologInterface.executeQuery("mng_robot_pose_at_time(pr2:'PR2Robot1', '/map', knowrob:timepoint_1392799360, Pose)");
 		//		PrologInterface.executeQuery("add_object_with_children(pr2:'PR2Robot1', knowrob:timepoint_1392799360)");
 
-		//		vis.addObjectWithChildren("pr2:'PR2Robot1'", "http://ias.cs.tum.edu/kb/knowrob.owl#timepoint_1377766542");
+		//		vis.addObjectWithChildren("pr2:'PR2Robot1'", "http://knowrob.org/kb/knowrob.owl#timepoint_1377766542");
 
 
-		//		vis.addObjectWithChildren("pr2:'PR2Robot1'", "http://ias.cs.tum.edu/kb/knowrob.owl#timepoint_1377766542");
+		//		vis.addObjectWithChildren("pr2:'PR2Robot1'", "http://knowrob.org/kb/knowrob.owl#timepoint_1377766542");
 
 	}
 }

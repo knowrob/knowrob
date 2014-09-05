@@ -3,32 +3,32 @@
 
 <!DOCTYPE rdf:RDF [
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
-    <!ENTITY pr2 "http://ias.cs.tum.edu/kb/PR2.owl#" >
+    <!ENTITY pr2 "http://knowrob.org/kb/PR2.owl#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
-    <!ENTITY srdl2 "http://ias.cs.tum.edu/kb/srdl2.owl#" >
+    <!ENTITY srdl2 "http://knowrob.org/kb/srdl2.owl#" >
     <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
-    <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
+    <!ENTITY knowrob "http://knowrob.org/kb/knowrob.owl#" >
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
     <!ENTITY qudt-unit "http://qudt.org/vocab/unit#" >
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
-    <!ENTITY srdl2-comp "http://ias.cs.tum.edu/kb/srdl2-comp.owl#" >
-    <!ENTITY srdl2-cap "http://ias.cs.tum.edu/kb/srdl2-cap.owl#" >
+    <!ENTITY srdl2-comp "http://knowrob.org/kb/srdl2-comp.owl#" >
+    <!ENTITY srdl2-cap "http://knowrob.org/kb/srdl2-cap.owl#" >
 ]>
 
 
-<rdf:RDF xmlns="http://ias.cs.tum.edu/kb/PR2.owl#"
-     xml:base="http://ias.cs.tum.edu/kb/PR2.owl"
-     xmlns:srdl2-comp="http://ias.cs.tum.edu/kb/srdl2-comp.owl#"
-     xmlns:PR2="http://ias.cs.tum.edu/kb/PR2.owl#"
-     xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#"
+<rdf:RDF xmlns="http://knowrob.org/kb/PR2.owl#"
+     xml:base="http://knowrob.org/kb/PR2.owl"
+     xmlns:srdl2-comp="http://knowrob.org/kb/srdl2-comp.owl#"
+     xmlns:PR2="http://knowrob.org/kb/PR2.owl#"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
-     xmlns:srdl2="http://ias.cs.tum.edu/kb/srdl2.owl#"
+     xmlns:srdl2="http://knowrob.org/kb/srdl2.owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
-     xmlns:srdl2-cap="http://ias.cs.tum.edu/kb/srdl2-cap.owl#"
+     xmlns:srdl2-cap="http://knowrob.org/kb/srdl2-cap.owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/PR2.owl">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/PR2.owl">
         <owl:imports rdf:resource="package://knowrob_srdl/owl/srdl2-comp.owl"/>
     </owl:Ontology>
 

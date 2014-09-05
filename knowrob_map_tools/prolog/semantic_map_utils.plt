@@ -30,9 +30,9 @@
 :- owl_parser:owl_parse('package://knowrob_map_data/owl/ccrl2_semantic_map.owl').
 
 :- rdf_db:rdf_register_ns(xsd,      'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
-:- rdf_db:rdf_register_ns(knowrob,  'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(test_map, 'http://ias.cs.tum.edu/kb/test_comp_spatial.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(ias_map,  'http://ias.cs.tum.edu/kb/ias_semantic_map.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob,  'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(test_map, 'http://knowrob.org/kb/test_comp_spatial.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(ias_map,  'http://knowrob.org/kb/ias_semantic_map.owl#', [keep(true)]).
 
 
 test(map_instance) :-
@@ -41,7 +41,7 @@ test(map_instance) :-
 
 test(map_root_objects) :-
   map_root_objects(ias_map:'SemanticEnvironmentMap0', O),
-  member('http://ias.cs.tum.edu/kb/knowrob.owl#CounterTop205', O),
+  member('http://knowrob.org/kb/knowrob.owl#CounterTop205', O),
   length(O, 23),!.
 
   
@@ -60,22 +60,22 @@ test(map_child_object) :-
 
 test(map_child_objects) :-
   map_child_objects(knowrob:'Dishwasher37',
-                    ['http://ias.cs.tum.edu/kb/knowrob.owl#Door40',
-                     'http://ias.cs.tum.edu/kb/knowrob.owl#Handle145']),!.
+                    ['http://knowrob.org/kb/knowrob.owl#Door40',
+                     'http://knowrob.org/kb/knowrob.owl#Handle145']),!.
 
 
 test(map_object_info) :-
-  map_object_info(['http://ias.cs.tum.edu/kb/knowrob.owl#CounterTop205',
-                   'http://ias.cs.tum.edu/kb/knowrob.owl#CounterTop',
+  map_object_info(['http://knowrob.org/kb/knowrob.owl#CounterTop205',
+                   'http://knowrob.org/kb/knowrob.owl#CounterTop',
                    [-0.08847681,-0.99607825,0.0,1.1006587,0.99607825,-0.08847681,0.0,0.54706275,0.0,0.0,1.0,0.84,0.0,0.0,0.0,1.0],
                    [2.0500002,0.57500005,0.02]]),!.
 
 test(map_object_type) :-
-  map_object_type('http://ias.cs.tum.edu/kb/knowrob.owl#CounterTop205',
-                   'http://ias.cs.tum.edu/kb/knowrob.owl#CounterTop'),!.
+  map_object_type('http://knowrob.org/kb/knowrob.owl#CounterTop205',
+                   'http://knowrob.org/kb/knowrob.owl#CounterTop'),!.
 
 test(map_object_label) :-
-  map_object_label('http://ias.cs.tum.edu/kb/knowrob.owl#CounterTop205', 'Counter'),!.
+  map_object_label('http://knowrob.org/kb/knowrob.owl#CounterTop205', 'Counter'),!.
 
 
 

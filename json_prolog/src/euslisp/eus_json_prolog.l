@@ -75,16 +75,16 @@
 		 (send self :solutions)
 	   (send res :ok))
 	 ))
-  ;; for http://ias.cs.tum.edu/kb/knowrob.owl\orientation
+  ;; for http://knowrob.org/kb/knowrob.owl\orientation
   (:attribute-pose
    (query objs &rest args)
    (dolist (obj objs)
 	 (let (mtmp)
-	   (setq query (format nil "~a,rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#orientation',~a,POSE_~a)" query obj obj))
+	   (setq query (format nil "~a,rdf_triple('http://knowrob.org/kb/knowrob.owl#orientation',~a,POSE_~a)" query obj obj))
 	   (dotimes (i 4)
 		 (dotimes (j 4)
 		   (setq mtmp (format nil "~a_M~a~a" obj i j))
-		   (setq query (format nil "~a,rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#m~a~a',POSE_~a,_~a), strip_literal_type(_~a, ~a)" query i j obj mtmp mtmp mtmp))))))
+		   (setq query (format nil "~a,rdf_triple('http://knowrob.org/kb/knowrob.owl#m~a~a',POSE_~a,_~a), strip_literal_type(_~a, ~a)" query i j obj mtmp mtmp mtmp))))))
    query)
   (:extract-pose
    (answer objs)
@@ -214,10 +214,10 @@
 
 ;; with rosrun json_prolog json_prolog ias_semantic_map
 (defun knowrob-sample1 ()
-  (send *prolog* :query "rdfs_individual_of(Fridge, 'http://ias.cs.tum.edu/kb/knowrob.owl#Refrigerator'), rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#orientation',Fridge,Pose), rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#m03',Pose,_M03), strip_literal_type(_M03, X), rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#m13',Pose,_M13), strip_literal_type(_M13, Y), rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#m23',Pose,_M23), strip_literal_type(_M23, Z)"))
+  (send *prolog* :query "rdfs_individual_of(Fridge, 'http://knowrob.org/kb/knowrob.owl#Refrigerator'), rdf_triple('http://knowrob.org/kb/knowrob.owl#orientation',Fridge,Pose), rdf_triple('http://knowrob.org/kb/knowrob.owl#m03',Pose,_M03), strip_literal_type(_M03, X), rdf_triple('http://knowrob.org/kb/knowrob.owl#m13',Pose,_M13), strip_literal_type(_M13, Y), rdf_triple('http://knowrob.org/kb/knowrob.owl#m23',Pose,_M23), strip_literal_type(_M23, Z)"))
 
 (defun find-knowrob-objects (&optional (objtype "Refrigerator"))
-  (let ((rdf-type (format nil "'http://ias.cs.tum.edu/kb/knowrob.owl#~a'" objtype)))
+  (let ((rdf-type (format nil "'http://knowrob.org/kb/knowrob.owl#~a'" objtype)))
 	(send *prolog* :query
 		  (list->prolog
 		   (list `(rdfs_individual_of :obj ,rdf-type)))

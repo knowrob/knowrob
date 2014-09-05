@@ -7,14 +7,14 @@
     <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
-    <!ENTITY computable "http://ias.cs.tum.edu/kb/computable.owl#" >
+    <!ENTITY computable "http://knowrob.org/kb/computable.owl#" >
 ]>
 
 
-<rdf:RDF xmlns="http://ias.cs.tum.edu/kb/computable.owl#"
-     xml:base="http://ias.cs.tum.edu/kb/computable.owl"
+<rdf:RDF xmlns="http://knowrob.org/kb/computable.owl#"
+     xml:base="http://knowrob.org/kb/computable.owl"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:computable="http://ias.cs.tum.edu/kb/computable.owl#"
+     xmlns:computable="http://knowrob.org/kb/computable.owl#"
      xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
@@ -34,7 +34,7 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#first -->
+    <!-- http://knowrob.org/kb/computable.owl#first -->
 
     <owl:ObjectProperty rdf:about="#first">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
@@ -59,7 +59,7 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#hasParameter -->
+    <!-- http://knowrob.org/kb/computable.owl#hasParameter -->
 
     <owl:ObjectProperty rdf:about="#hasParameter">
         <rdfs:domain rdf:resource="#JythonComputable"/>
@@ -68,7 +68,7 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#hasValue -->
+    <!-- http://knowrob.org/kb/computable.owl#hasValue -->
 
     <owl:ObjectProperty rdf:about="#hasValue">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
@@ -77,7 +77,7 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#rest -->
+    <!-- http://knowrob.org/kb/computable.owl#rest -->
 
     <owl:ObjectProperty rdf:about="#rest">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
@@ -102,7 +102,7 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#target -->
+    <!-- http://knowrob.org/kb/computable.owl#target -->
 
     <owl:ObjectProperty rdf:about="#target">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
@@ -122,7 +122,7 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#cache -->
+    <!-- http://knowrob.org/kb/computable.owl#cache -->
 
     <owl:DatatypeProperty rdf:about="#cache">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
@@ -149,7 +149,7 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#command -->
+    <!-- http://knowrob.org/kb/computable.owl#command -->
 
     <owl:DatatypeProperty rdf:about="#command">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
@@ -167,7 +167,7 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#database -->
+    <!-- http://knowrob.org/kb/computable.owl#database -->
 
     <owl:DatatypeProperty rdf:about="#database">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
@@ -177,7 +177,7 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#frameSelect -->
+    <!-- http://knowrob.org/kb/computable.owl#frameSelect -->
 
     <owl:DatatypeProperty rdf:about="#frameSelect">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
@@ -187,7 +187,7 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#frameValueSelect -->
+    <!-- http://knowrob.org/kb/computable.owl#frameValueSelect -->
 
     <owl:DatatypeProperty rdf:about="#frameValueSelect">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
@@ -197,7 +197,7 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#frameVariable -->
+    <!-- http://knowrob.org/kb/computable.owl#frameVariable -->
 
     <owl:DatatypeProperty rdf:about="#frameVariable">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
@@ -206,7 +206,7 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#hasName -->
+    <!-- http://knowrob.org/kb/computable.owl#hasName -->
 
     <owl:DatatypeProperty rdf:about="#hasName">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
@@ -216,7 +216,7 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#isType -->
+    <!-- http://knowrob.org/kb/computable.owl#isType -->
 
     <owl:DatatypeProperty rdf:about="#isType">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
@@ -243,7 +243,7 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#nameOfReturn -->
+    <!-- http://knowrob.org/kb/computable.owl#nameOfReturn -->
 
     <owl:DatatypeProperty rdf:about="#nameOfReturn">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
@@ -253,7 +253,7 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#password -->
+    <!-- http://knowrob.org/kb/computable.owl#password -->
 
     <owl:DatatypeProperty rdf:about="#password">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
@@ -263,7 +263,7 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#testCommand -->
+    <!-- http://knowrob.org/kb/computable.owl#testCommand -->
 
     <owl:DatatypeProperty rdf:about="#testCommand">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
@@ -273,7 +273,7 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#user -->
+    <!-- http://knowrob.org/kb/computable.owl#user -->
 
     <owl:DatatypeProperty rdf:about="#user">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
@@ -283,7 +283,7 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#valueSelect -->
+    <!-- http://knowrob.org/kb/computable.owl#valueSelect -->
 
     <owl:DatatypeProperty rdf:about="#valueSelect">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
@@ -293,7 +293,7 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#visible -->
+    <!-- http://knowrob.org/kb/computable.owl#visible -->
 
     <owl:DatatypeProperty rdf:about="#visible">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
@@ -367,13 +367,13 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#Computable -->
+    <!-- http://knowrob.org/kb/computable.owl#Computable -->
 
     <owl:Class rdf:about="#Computable"/>
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#ComputableClass -->
+    <!-- http://knowrob.org/kb/computable.owl#ComputableClass -->
 
     <owl:Class rdf:about="#ComputableClass">
         <rdfs:subClassOf rdf:resource="#Computable"/>
@@ -387,7 +387,7 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#ComputableProperty -->
+    <!-- http://knowrob.org/kb/computable.owl#ComputableProperty -->
 
     <owl:Class rdf:about="#ComputableProperty">
         <rdfs:subClassOf rdf:resource="#Computable"/>
@@ -401,7 +401,7 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#ExplicitParameter -->
+    <!-- http://knowrob.org/kb/computable.owl#ExplicitParameter -->
 
     <owl:Class rdf:about="#ExplicitParameter">
         <rdfs:subClassOf rdf:resource="#Parameter"/>
@@ -425,7 +425,7 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#ImplicitParameter -->
+    <!-- http://knowrob.org/kb/computable.owl#ImplicitParameter -->
 
     <owl:Class rdf:about="#ImplicitParameter">
         <rdfs:subClassOf rdf:resource="#Parameter"/>
@@ -447,7 +447,7 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#JythonClass -->
+    <!-- http://knowrob.org/kb/computable.owl#JythonClass -->
 
     <owl:Class rdf:about="#JythonClass">
         <rdfs:subClassOf rdf:resource="#ComputableClass"/>
@@ -456,13 +456,13 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#JythonComputable -->
+    <!-- http://knowrob.org/kb/computable.owl#JythonComputable -->
 
     <owl:Class rdf:about="#JythonComputable"/>
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#JythonProperty -->
+    <!-- http://knowrob.org/kb/computable.owl#JythonProperty -->
 
     <owl:Class rdf:about="#JythonProperty">
         <rdfs:subClassOf rdf:resource="#ComputableProperty"/>
@@ -473,13 +473,13 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#Parameter -->
+    <!-- http://knowrob.org/kb/computable.owl#Parameter -->
 
     <owl:Class rdf:about="#Parameter"/>
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#PrologClass -->
+    <!-- http://knowrob.org/kb/computable.owl#PrologClass -->
 
     <owl:Class rdf:about="#PrologClass">
         <rdfs:subClassOf rdf:resource="#ComputableClass"/>
@@ -488,13 +488,13 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#PrologComputable -->
+    <!-- http://knowrob.org/kb/computable.owl#PrologComputable -->
 
     <owl:Class rdf:about="#PrologComputable"/>
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#PrologProperty -->
+    <!-- http://knowrob.org/kb/computable.owl#PrologProperty -->
 
     <owl:Class rdf:about="#PrologProperty">
         <rdfs:subClassOf rdf:resource="#ComputableProperty"/>
@@ -505,7 +505,7 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#PropertyCombination -->
+    <!-- http://knowrob.org/kb/computable.owl#PropertyCombination -->
 
     <owl:Class rdf:about="#PropertyCombination">
         <owl:disjointWith rdf:resource="#PropertyConcatenation"/>
@@ -513,13 +513,13 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#PropertyConcatenation -->
+    <!-- http://knowrob.org/kb/computable.owl#PropertyConcatenation -->
 
     <owl:Class rdf:about="#PropertyConcatenation"/>
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#SqlClass -->
+    <!-- http://knowrob.org/kb/computable.owl#SqlClass -->
 
     <owl:Class rdf:about="#SqlClass">
         <rdfs:subClassOf rdf:resource="#ComputableClass"/>
@@ -528,13 +528,13 @@
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#SqlComputable -->
+    <!-- http://knowrob.org/kb/computable.owl#SqlComputable -->
 
     <owl:Class rdf:about="#SqlComputable"/>
     
 
 
-    <!-- http://ias.cs.tum.edu/kb/computable.owl#SqlProperty -->
+    <!-- http://knowrob.org/kb/computable.owl#SqlProperty -->
 
     <owl:Class rdf:about="#SqlProperty">
         <rdfs:subClassOf rdf:resource="#ComputableProperty"/>

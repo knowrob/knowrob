@@ -28,6 +28,6 @@
 % parse OWL files, register name spaces
 
 :- owl_parser:owl_parse('package://comp_temporal/owl/comp_temporal.owl').
-:- rdf_db:rdf_register_ns(comp_temporal, 'http://ias.cs.tum.edu/kb/comp_temporal.owl#',     [keep(true)]).
+:- rdf_db:rdf_register_ns(comp_temporal, 'http://knowrob.org/kb/comp_temporal.owl#',     [keep(true)]).
 
 

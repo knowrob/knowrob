@@ -57,7 +57,7 @@
 
 :- rdf_db:rdf_register_ns(owl,    'http://www.w3.org/2002/07/owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(rdfs,   'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
-:- rdf_db:rdf_register_ns(knowrob,'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob,'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
 
 
@@ -89,7 +89,7 @@ rdf_instance_from_class(Class, SourceRef, Instance) :-
     % Class is already a URI
     T=Class
   );(
-    atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', Class, T)
+    atom_concat('http://knowrob.org/kb/knowrob.owl#', Class, T)
   )),
 
   rdf_unique_id(Class, Instance),
@@ -149,7 +149,7 @@ create_restr(Class, Prop, Value, RestrType, SourceRef, Restr) :-
 % @param T TimePoint instance identifying the given time stamp
 %
 create_timepoint(TimeStamp, TimePoint) :-
-  atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#timepoint_', TimeStamp, TimePoint),
+  atom_concat('http://knowrob.org/kb/knowrob.owl#timepoint_', TimeStamp, TimePoint),
   rdf_assert(TimePoint, rdf:type, knowrob:'TimePoint').
 
 
@@ -186,7 +186,7 @@ get_timepoint(Diff, Time) :-
    (atom_concat('-', Dunit, Diff), atom_concat(DiffHours,   'h', Dunit),term_to_atom(A, DiffHours))   -> (T is Ts - 3600.0 * A) ),
 
 
-  atom_concat('http://ias.cs.tum.edu/kb/knowrob.owl#timepoint_', T, Time),
+  atom_concat('http://knowrob.org/kb/knowrob.owl#timepoint_', T, Time),
   rdf_assert(Time, rdf:type, knowrob:'TimePoint').
 
 
