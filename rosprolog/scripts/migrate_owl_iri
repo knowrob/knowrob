@@ -3,12 +3,12 @@
 # Finds all files with the given extensions in any subdirectory of the current
 # directory and replaces the IRIs with the new knowrob.org IRIs.
 # 
-# The default extensions are *.owl *.rdf *.pl *.cpp *.java *.json *.yaml *.l *.js
+# The default extensions are *.owl *.rdf *.pl *.cpp *.java *.json *.yaml *.l *.js *.lisp *.py
 # You can add additional file types using the -e argument.
 # 
 
 OPTIND=1
-extensions='owl rdf pl cpp java json yaml l js'
+extensions='owl rdf pl cpp java json yaml l js lisp py'
 
 while getopts "he:" opt ; do
   case "$opt" in
