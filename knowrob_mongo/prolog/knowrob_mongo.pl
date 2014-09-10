@@ -65,6 +65,20 @@
 :- rdf_db:rdf_register_ns(srdl2comp, 'http://knowrob.org/kb/srdl2-comp.owl#', [keep(true)]).
 
 
+
+mongo_interface :-
+    mongo_interface(_).
+
+:- assert(mng_interface(fail)).
+mongo_interface(DB) :-
+    mng_interface(fail),
+    jpl_new('org.knowrob.interfaces.mongo.MongoDBInterface', [], DB),
+    retract(mng_interface(fail)),
+    assert(mng_interface(DB)),!.
+mongo_interface(DB) :-
+    mng_interface(DB).
+
+
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % Designator integration
 %
@@ -81,7 +95,7 @@ mng_latest_designator_before_time(TimePoint, Type, PoseList) :-
   atom_concat('timepoint_', TimeAtom, TimePointLocal),
   term_to_atom(Time, TimeAtom),
 
-  jpl_new('org.knowrob.interfaces.mongo.MongoDBInterface', [], DB),
+  mongo_interface(DB),
   jpl_call(DB, 'latestUIMAPerceptionBefore', [Time], Designator),
   jpl_call(Designator, 'get', ['_designator_type'], Type),
   jpl_call(Designator, 'get', ['POSE-ON-PLANE'], StampedPoseString),
@@ -104,7 +118,7 @@ mng_designator_type(Designator, Type) :-
 
   rdf_split_url(_, DesigID, Designator),
 
-  jpl_new('org.knowrob.interfaces.mongo.MongoDBInterface', [], DB),
+  mongo_interface(DB),
   jpl_call(DB, 'getDesignatorByID', [DesigID], DesigJava),
 
   jpl_call(DesigJava, 'getType', [], Type).
@@ -114,7 +128,7 @@ mng_designator_props(Designator, Prop, Value) :-
 
   rdf_split_url(_, DesigID, Designator),
 
-  jpl_new('org.knowrob.interfaces.mongo.MongoDBInterface', [], DB),
+  mongo_interface(DB),
   jpl_call(DB, 'getDesignatorByID', [DesigID], DesigJava),
 
   jpl_call(DesigJava, 'keySet', [], PropsSet),
@@ -192,7 +206,7 @@ mng_lookup_transform(Target, Source, TimePoint, Transform) :-
   atom_concat('timepoint_', TimeAtom, TimePointLocal),
   term_to_atom(Time, TimeAtom),
 
-  jpl_new('org.knowrob.interfaces.mongo.MongoDBInterface', [], DB),
+  mongo_interface(DB),
   jpl_call(DB, 'lookupTransform', [Target, Source, Time], StampedTransform),
 
   jpl_call(StampedTransform, 'getMatrix4', [], TransformMatrix4d),
@@ -212,7 +226,7 @@ mng_transform_pose(PoseListIn, SourceFrame, TargetFrame, TimePoint, PoseListOut)
   knowrob_coordinates:list_to_matrix4d([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1], MatrixOut),
   jpl_new('tfjava.Stamped', [MatrixOut, '/base_link', TimeInt], StampedOut),
 
-  jpl_new('org.knowrob.interfaces.mongo.MongoDBInterface', [], DB),
+  mongo_interface(DB),
   jpl_call(DB, 'transformPose', [TargetFrame, StampedIn, StampedOut], @(true)),
   
   jpl_call(StampedOut, 'getData', [], MatrixOut2),
