@@ -3,13 +3,12 @@
  * materials are made available under the terms of the GNU Public License v3.0 which accompanies
  * this distribution, and is available at http://www.gnu.org/licenses/gpl.html
  * 
- * Contributors: Stefan Profanter - initial API and implementation, Year: 2013
+ * Contributors: Stefan Profanter - initial API and implementation, Year: 2013; Andrei Stoica -
+ * minor refactor during Google Summer of Code 2014.
  ******************************************************************************/
 package edu.tum.cs.vis.model.util;
 
 import java.io.Serializable;
-
-import javax.vecmath.Vector3f;
 
 import processing.core.PGraphics;
 
@@ -17,13 +16,33 @@ import processing.core.PGraphics;
  * Base class for all drawable model parts (Line / Triangle)
  * 
  * @author Stefan Profanter
- * 
+ * @author Andrei Stoica - optimized some checks and refactored getEdges() public method
  */
 public abstract class DrawObject implements Serializable {
 	/**
 	 * auto generated
 	 */
 	private static final long	serialVersionUID	= -1917773602783043823L;
+
+	/**
+	 * the position points of the object
+	 */
+	protected Vertex			position[];
+
+	/**
+	 * Color or texture of the object
+	 */
+	protected Appearance		appearance;
+
+	/**
+	 * Constructor which initializes position array to <code>numberOfEdges</code> items.
+	 * 
+	 * @param numberOfEdges
+	 *            number of edges. Line: 2, Triangle: 3
+	 */
+	public DrawObject(final int numberOfEdges) {
+		position = new Vertex[numberOfEdges];
+	}
 
 	/**
 	 * Multiplies the two given matrix. Must have correct size for multiplying.
@@ -52,26 +71,6 @@ public abstract class DrawObject implements Serializable {
 	}
 
 	/**
-	 * the position points of the object
-	 */
-	protected Vertex		position[];
-
-	/**
-	 * Color or texture of the object
-	 */
-	protected Appearance	appearance;
-
-	/**
-	 * Constructor which initializes position array to <code>numberOfEdges</code> items.
-	 * 
-	 * @param numberOfEdges
-	 *            number of edges. Line: 2, Triangle: 3
-	 */
-	public DrawObject(final int numberOfEdges) {
-		position = new Vertex[numberOfEdges];
-	}
-
-	/**
 	 * Apply the color of appearance member to the PApplet. Called before drawing a DrawObject.
 	 * 
 	 * @param g
@@ -81,7 +80,6 @@ public abstract class DrawObject implements Serializable {
 	 */
 	protected void applyColor(PGraphics g, DrawSettings drawSettings) {
 		if (appearance == null) {
-
 			g.noStroke();
 			g.noFill();
 			if (drawSettings == null || drawSettings.drawType == DrawType.FILL) {
@@ -120,8 +118,8 @@ public abstract class DrawObject implements Serializable {
 				g.fill(drawSettings.getOverrideColor().getRed(), drawSettings.getOverrideColor()
 						.getGreen(), drawSettings.getOverrideColor().getBlue(), drawSettings
 						.getOverrideColor().getAlpha());
-			else if (appearance.getImageReference() == null) {
-				if (appearance.getColorFill() != null) {
+			else if (appearance == null || appearance.getImageReference() == null) {
+				if (appearance != null && appearance.getColorFill() != null) {
 					g.fill(appearance.getColorFill().getRed(),
 							appearance.getColorFill().getGreen(), appearance.getColorFill()
 									.getBlue(), appearance.getColorFill().getAlpha() == 0 ? 255
@@ -258,14 +256,12 @@ public abstract class DrawObject implements Serializable {
 	 * 
 	 * @return List of edges
 	 */
-	public Vector3f[] getEdges() {
-		Vector3f e[] = new Vector3f[3];
-
+	public Edge[] getEdges() {
+		Edge[] e = new Edge[3];
 		for (int j = 0; j < position.length; j++) {
-			e[j] = new Vector3f(position[(j + 2) % position.length]);
-			e[j].sub(position[(j + 1) % position.length]);
+			e[j] = new Edge(position[(j + 2) % position.length],
+					position[(j + 1) % position.length]);
 		}
 		return e;
 	}
-
 }

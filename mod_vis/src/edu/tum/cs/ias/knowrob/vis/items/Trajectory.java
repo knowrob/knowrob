@@ -162,6 +162,7 @@ public class Trajectory implements Drawable, DrawableAnimated {
 			s.print(p.v.z);
 			s.print('\n');
 		}
+		s.close();
 	}
 	
 	public void readAsc(java.io.File matlabAsciiFile) throws NumberFormatException, IOException {
@@ -191,6 +192,7 @@ public class Trajectory implements Drawable, DrawableAnimated {
 				z = 0;
 			this.addPoint(x, y, z);
 		}
+		r.close();
 	}
 	
 	public double getMinDistance(){
