@@ -3,24 +3,31 @@
 # search for files 'classpath.txt' in all packages the package $1 depends on
 # and concatenate the classpath variables
 
-ROS_CP=$2
+ROS_CP=""
 
 # find classpath for package itself
 PKG_PATH=`rospack find $1`
-for cp in `find $PKG_PATH -name classpath.txt`; do
-  ROS_CP=`cat ${cp}`:$ROS_CP
-done
+
+CLP="$PKG_PATH/$1/build/classpath.txt"
+
+if [ -e $CLP ]; then
+  ROS_CP=`cat $CLP`:$ROS_CP
+fi
+
+
 
 # find classpath for all dependencies
-for dep in `rospack depends $1`; do
-  PKG_PATH=`rospack find $dep`
-  for cp in `find $PKG_PATH -name classpath.txt`; do
-    ROS_CP=`cat ${cp}`:$ROS_CP
-  done
+for dep in `rospack depends-manifests $1`; do
+  PKG_PATH=${dep%'/package.xml'}
+  PKG_NAME="${PKG_PATH##*/}"
+
+  CLP="$PKG_PATH/$PKG_NAME/build/classpath.txt"
+  if [ -e $CLP ]; then
+    ROS_CP=`cat $CLP`:$ROS_CP
+  fi
 done
 
 # remove duplicates in the classpath
 ROS_CP=$(echo "$ROS_CP" | awk -v RS=':' -v ORS=":" '!a[$1]++')
 
 echo $ROS_CP
-
