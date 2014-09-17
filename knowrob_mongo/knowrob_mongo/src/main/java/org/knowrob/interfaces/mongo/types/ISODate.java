@@ -28,7 +28,7 @@ public class ISODate {
 	 * @param t
 	 */
 	public ISODate(Time t) {
-		date = new Date((long)t.secs * 1000 + t.nsecs/1000);
+		date = new Date((long)t.secs * 1000 + t.nsecs/1000000);
 	}
 
 	/**
@@ -53,11 +53,11 @@ public class ISODate {
 	}
 
 	public long getNanoSeconds() {
-		return date.getTime() * 1000;
+		return date.getTime() * 1000000;
 	}
 
 	public long getMilliSeconds() {
-		return date.getTime() * 1000;
+		return date.getTime();
 	}
 	
 	public Time toROSTime() {
@@ -67,7 +67,7 @@ public class ISODate {
 		
 		Time t  = new Time();
 		t.secs  = (int) (ms / 1000);
-		t.nsecs = (int) (ms % 1000) * 1000;
+		t.nsecs = (int) (ms % 1000) * 1000000;
 		return t;	
 	}
 	
