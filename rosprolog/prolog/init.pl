@@ -47,8 +47,7 @@ add_ros_package_to_classpath(Package):-
 % calculates java dependencies for classpath
 rospack_package_classpath(Package, Path) :-
   nonvar(Package),
-  getenv("CLASSPATH",OldVal),
-  process_create(path('rosrun'), ['rosprolog', 'get_pkg_classpath', Package, OldVal], [stdout(pipe(RospackOutput)), process(PID)]),
+  process_create(path('rosrun'), ['rosprolog', 'get_pkg_classpath', Package], [stdout(pipe(RospackOutput)), process(PID)]),
   read_line_to_codes(RospackOutput, C),
   string_to_list(Path, C),
   process_wait(PID, _).
