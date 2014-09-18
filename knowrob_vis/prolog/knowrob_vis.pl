@@ -38,6 +38,7 @@
       highlight_object/6,
       highlight_object_with_children/1,
       highlight_object_with_children/2,
+      highlight_object_with_children/3,
       reset_highlight/0,
       diagram_canvas/0,
       add_diagram/9,
@@ -68,6 +69,7 @@
             highlight_object(r,?,?,?,?,?),
             highlight_object_with_children(r),
             highlight_object_with_children(r,?),
+            highlight_object_with_children(r,?,?),
             add_diagram(+,+,+,+,+,+,+,+,+),
             remove_diagram(+),
             add_trajectory(r,r,r),
@@ -253,7 +255,7 @@ remove_trajectory(Link) :-
 %
 highlight_object(Identifier) :-
     v_canvas(Canvas),
-    jpl_call(Canvas, 'highlight', [Identifier, @(true)], _).
+    jpl_call(Canvas, 'highlight', [Identifier, @(true), 'ff00ff00'], _).
 
 highlight_object(Identifier, Highlight) :-
     v_canvas(Canvas),
@@ -271,6 +273,7 @@ highlight_object(Identifier, Highlight, R, B, G, Prob) :-
 
 %% highlight_object_with_children(+Identifier) is det.
 %% highlight_object_with_children(+Identifier, +Highlight) is det.
+%% highlight_object_with_children(+Identifier, +Highlight, +Color) is det.
 %
 % Highlights an object and everything that is reachable from it via knowrob:properPhysicalPartTypes
 %
@@ -278,6 +281,8 @@ highlight_object(Identifier, Highlight, R, B, G, Prob) :-
 % it is missing, a value of @(true) is assumed.
 %
 % @param Identifier eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
+% @param Highlight  @(true) = highlight; @(false)=remove highlighting
+% @param Color      Color value as integer, e.g. #AARRBBGG
 %
 highlight_object_with_children(Identifier) :-
     v_canvas(Canvas),
@@ -286,6 +291,10 @@ highlight_object_with_children(Identifier) :-
 highlight_object_with_children(Identifier, Highlight) :-
     v_canvas(Canvas),
     jpl_call(Canvas, 'highlightWithChildren', [Identifier, Highlight], _).
+
+highlight_object_with_children(Identifier, Highlight, Color) :-
+    v_canvas(Canvas),
+    jpl_call(Canvas, 'highlightWithChildren', [Identifier, Highlight, Color], _).
 
 
 
