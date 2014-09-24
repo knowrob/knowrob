@@ -11,6 +11,8 @@ import java.text.DecimalFormat;
 
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Quat4d;
+import javax.vecmath.Vector3d;
+import javax.vecmath.Vector4d;
 
 import org.ros.message.Duration;
 import org.ros.message.Time;
@@ -25,7 +27,6 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.knowrob.owl.OWLThing;
 import org.knowrob.prolog.PrologInterface;
-
 import org.knowrob.tfmemory.TFMemory;
 import org.knowrob.utils.ros.RosUtilities;
 
@@ -44,6 +45,7 @@ import visualization_msgs.MarkerArray;
  * in the 'rviz' program.
  *
  * @author tenorth@cs.uni-bremen.de
+ * @author danielb@cs.uni-bremen.de
  *
  */
 public class MarkerVisualization extends AbstractNodeMain {
@@ -80,9 +82,13 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 */
 	protected Map<String, List<String>> trajectories;
 	//private static List<String> trajectoryIds = new ArrayList<String>();
-
-
-
+	
+	/**
+	 * Stores the set of joints which are available from the XSens motion
+	 * capturing suite.
+	 */
+	private Map<String,HumanJoint> humanJoints;
+	
 	/**
 	 * Constructor. Starts the marker publisher in a parallel thread.
 	 */
@@ -96,6 +102,9 @@ public class MarkerVisualization extends AbstractNodeMain {
 		markers =  new ConcurrentHashMap<String, Marker>(8, 0.9f, 1);
 		highlighted = new ConcurrentHashMap<String, ColorRGBA>(8, 0.9f, 1);
 		trajectories = new HashMap<String, List<String>>();
+		
+		humanJoints = new HashMap<String,HumanJoint>();
+		initializeHumanJoints();
 
 		startWebServer(1111);
 	}
@@ -289,9 +298,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 		}
 		publishMarkers();
 	}
-
-
-
+	
+	
 	/**
 	 * Show hands and base trajectory in visualization.
 	 *
@@ -343,13 +351,64 @@ public class MarkerVisualization extends AbstractNodeMain {
 		publishMarkers();
 	}
 
+	/**
+	 * Shows the human pose at given time point as
+	 * a stick-man in the visualization canvas.
+	 * The pose is read from the 'roslog' mongo database.
+	 * 
+	 * @param timepoint The time point of interest
+	 * TODO: Support multiple stick-mans!
+	 * 		- TF frames named with different prefix
+	 */
+	public void addHumanPose(String timepoint) {
+		final Time time = parseTime(timepoint);
+		
+		int index = 0;
+		
+		for(HumanJoint sourceJoint : humanJoints.values()) {
+			for(String conn : sourceJoint.getConnections()) {
+				final HumanJoint targetJoint = humanJoints.get(conn);
+				addJointMarker(createJointConnectionMarker(
+						sourceJoint,targetJoint,time,index), index);
+				index += 1;
+			}
+		}
+		
+		for(HumanJoint joint : humanJoints.values()) {
+			addJointMarker(createJointSphereMarker(
+					joint,time,index), index);
+			index += 1;
+		}
+	}
+	
+	public void removeHumanPose(String timepoint) {
+		int index = 0;
+		
+		for(HumanJoint joint : humanJoints.values()) {
+			removeHumanMarker(index);
+			index += 1;
+			for(@SuppressWarnings("unused") String conn : joint.getConnections()) {
+				removeHumanMarker(index);
+				index += 1;
+			}
+		}
+		
+		publishMarkers();
+	}
+
+	private void removeHumanMarker(int index) {
+		final StringBuilder identifier = new StringBuilder();
+		identifier.append("human_").append(index);
+		
+		synchronized (markers) {
+			markers.remove(identifier.toString());
+		}
+	}
 
 	// // // // // // // // // // // // // // // // // // // // // // // // // // //
 	//
 	// Helper methods: read data from Prolog, create data structures
 	//
-
-
 
 	/**
 	 * Create a MarkerArray from the internal 'markers' buffer and publish 
@@ -386,7 +445,6 @@ public class MarkerVisualization extends AbstractNodeMain {
 			}
 		}
 	}
-
 
 	/**
 	 * Read object information from Prolog and create a marker from it
@@ -616,6 +674,165 @@ public class MarkerVisualization extends AbstractNodeMain {
 		return children.toArray(new String[]{});
 	}
 
+	/////////////////
+	////// Human Pose Start
+	/////////////////
+	
+	/**
+	 * Instantiates HumanJoint's based on XSens TF format
+	 * (i.e. the skeletal structure captured by the XSens suite).
+	 */
+	private void initializeHumanJoints() {
+		// TODO: Don't restrict to XSens data format.
+		// Make the skeletal structure configurable.
+		addHumanJoint("/Head", "/Neck", 0.2);
+		addHumanJoint("/Neck", 0.1);
+		addHumanJoint("/RightShoulder", "/RightUpperArm", 0.1);
+		addHumanJoint("/LeftShoulder", "/LeftUpperArm", 0.1);
+		addHumanJoint("/RightUpperArm", "/RightForearm", 0.1);
+		addHumanJoint("/LeftUpperArm", "/LeftForearm", 0.1);
+		addHumanJoint("/RightForearm", "/RightHand", 0.1);
+		addHumanJoint("/LeftForearm", "/LeftHand", 0.1);
+		addHumanJoint("/RightHand", 0.15);
+		addHumanJoint("/LeftHand", 0.15);
+		addHumanJoint("/T8", new String[]{"/RightShoulder","/LeftShoulder"}, 0.1);
+		addHumanJoint("/T12", "/T8", 0.1);
+		addHumanJoint("/L3", "/T12", 0.1);
+		addHumanJoint("/L5", "/L3", 0.1);
+		addHumanJoint("/Pelvis", new String[]{"/RightUpperLeg","/LeftUpperLeg","/L5"}, 0.2);
+		addHumanJoint("/RightUpperLeg", "/RightLowerLeg", 0.1);
+		addHumanJoint("/LeftUpperLeg", "/LeftLowerLeg", 0.1);
+		addHumanJoint("/RightLowerLeg", "/RightFoot", 0.1);
+		addHumanJoint("/LeftLowerLeg", "/LeftFoot", 0.1);
+		addHumanJoint("/RightFoot", "/RightToe", 0.1);
+		addHumanJoint("/LeftFoot", "/LeftToe", 0.1);
+		addHumanJoint("/RightToe", 0.1);
+		addHumanJoint("/LeftToe", 0.1);
+	}
+
+	private void addHumanJoint(String frame, double size) {
+		addHumanJoint(frame, new String[]{}, size);
+	}
+	private void addHumanJoint(String frame, String connection, double size) {
+		addHumanJoint(frame, new String[]{connection}, size);
+	}
+	private void addHumanJoint(String frame, String connections[], double size) {
+		humanJoints.put(frame, new HumanJoint(frame, connections, size));
+	}
+	
+	private void addJointMarker(Marker marker, int index) {
+		final StringBuilder identifier = new StringBuilder();
+		identifier.append("human_").append(index);
+		
+		synchronized (markers) {
+			markers.put(identifier.toString(), marker);
+		}
+		publishMarkers();
+	}
+	
+	private Marker createJointSphereMarker(HumanJoint joint, Time timepoint, int index) {
+		final Marker m = createJointMarker(index);
+		final StampedTransform tf = joint.lookupPose(timepoint);
+
+		m.setType(Marker.SPHERE);
+		m.getScale().setX(joint.getSize());
+		m.getScale().setY(joint.getSize());
+		m.getScale().setZ(joint.getSize());
+
+		m.getPose().getPosition().setX(tf.getTranslation().x);
+		m.getPose().getPosition().setY(tf.getTranslation().y);
+		m.getPose().getPosition().setZ(tf.getTranslation().z);
+
+		m.getPose().getOrientation().setX(0.0);
+		m.getPose().getOrientation().setY(0.0);
+		m.getPose().getOrientation().setZ(0.0);
+		m.getPose().getOrientation().setW(1.0);
+
+        return m;
+	}
+	
+	private Marker createJointConnectionMarker(HumanJoint sourceJoint,
+			HumanJoint targetJoint, Time timepoint, int index) {
+		final Marker m = createJointMarker(index);
+		final StampedTransform sourceTf = sourceJoint.lookupPose(timepoint);
+		final StampedTransform targetTf = targetJoint.lookupPose(timepoint);
+		
+		m.setType(Marker.CYLINDER);
+
+		// Vector pointing upwards
+		final Vector3d up = new Vector3d(0.0,0.0,1.0);
+		// Vector pointing from target joint to source joint
+		final Vector3d dp = new Vector3d(targetTf.getTranslation());
+		dp.sub(sourceTf.getTranslation());
+
+		// Radius in x/z directions
+		m.getScale().setX(0.1);
+		m.getScale().setY(0.1);
+		// The height of the cylinder
+		m.getScale().setZ(dp.length());
+
+		// Compute point between both joints
+		final Vector3d center = new Vector3d(targetTf.getTranslation());
+		center.add(sourceTf.getTranslation());
+		center.scale(0.5);
+		m.getPose().getPosition().setX(center.x);
+		m.getPose().getPosition().setY(center.y);
+		m.getPose().getPosition().setZ(center.z);
+		
+		final Vector4d orient = computeOrientation(up,dp);
+		m.getPose().getOrientation().setX(orient.x);
+		m.getPose().getOrientation().setY(orient.y);
+		m.getPose().getOrientation().setZ(orient.z);
+		m.getPose().getOrientation().setW(orient.w);
+		
+		return m;
+	}
+	
+	private Vector4d computeOrientation(Vector3d u, Vector3d v) {
+		
+		final Vector3d uv = new Vector3d();
+		uv.cross(u,v);
+		double w = Math.sqrt(u.lengthSquared()*v.lengthSquared()) + u.dot(v);
+		
+		final Vector4d out = new Vector4d(uv.x, uv.y, uv.z, w);
+		out.normalize();
+		
+        return out;
+	}
+	
+	private Marker createJointMarker(int index) {
+		final Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
+
+		m.getHeader().setFrameId("/map");
+		m.setNs("human_pose");
+		m.setId(index);
+		m.getColor().setR(1.0f);
+		m.getColor().setG(1.0f);
+		m.getColor().setB(0.0f);
+		m.getColor().setA(1.0f);
+		
+		return m;
+	}
+	
+	/**
+	 * Parses String with common time format 'timepoint_%d'
+	 * and returns a Time object.
+	 */
+	private Time parseTime(String timepoint) {
+		
+		String ts = timepoint.split("timepoint_")[1];
+		double posix_ts = Double.valueOf(ts.substring(0, ts.length()-1));
+
+		Time time = new Time();
+		time.secs = (int)posix_ts;
+		time.nsecs = (int) (1E9 * (posix_ts - ((int) posix_ts)));
+		
+		return time;
+	}
+
+	/////////////////
+	////// Human Pose Stop
+	/////////////////
 
 	public void startWebServer(int port) {
 		

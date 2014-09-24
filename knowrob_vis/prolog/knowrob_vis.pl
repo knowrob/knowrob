@@ -19,6 +19,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 @author Moritz Tenorth
+@author Daniel Beßler
 @license GPL
 */
 
@@ -221,6 +222,31 @@ remove_trajectory(Link) :-
 
 
 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%
+% Human pose
+%
+
+%% add_human_pose(+Timepoint) is det.
+%
+% Reads joint poses of a human from logged tf data and visualizes them in the
+% Web-based canvas using a stick-man model.
+%
+% @param Timepoint  Time stamp identifier of the pose
+%
+add_human_pose(Timepoint) :-
+    v_canvas(Canvas),
+     
+    jpl_call(Canvas, 'addHumanPose', [Timepoint], _).
+
+%% remove_human_pose() is det.
+%
+% Removes all human pose visualizations from the visualization canvas.
+%
+remove_human_pose() :-
+    v_canvas(Canvas),
+     
+    jpl_call(Canvas, 'removeHumanPose', [], _).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
