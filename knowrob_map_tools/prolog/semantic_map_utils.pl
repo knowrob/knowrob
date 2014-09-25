@@ -154,7 +154,7 @@ map_instance( Map ) :-
     rdf_has(Map, rdf:type, knowrob:'SemanticEnvironmentMap').
 
 map_read_all([R0|EntityList]) :-
-    map_read_all([R0|EntityList], 'http://ias.cs.tum.edu/kb/ias_semantic_map.owl#SemanticEnvironmentMap0').
+    map_read_all([R0|EntityList], 'http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0').
 
 map_read_all([R0|EntityList], MapInstance) :-
     map_read_entity(MapInstance, 'null', R0),

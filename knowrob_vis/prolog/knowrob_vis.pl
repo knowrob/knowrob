@@ -115,7 +115,7 @@ clear_canvas :-
 %
 % Add object to the scene
 %
-% @param Identifier Object identifier, eg. "http://ias.cs.tum.edu/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
+% @param Identifier Object identifier, eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
 %
 add_object(Identifier) :-
     get_timepoint(Time),
@@ -126,7 +126,7 @@ add_object(Identifier) :-
 %
 % Add object to the scene with its position at time 'Time'
 %
-% @param Identifier Object identifier, eg. "http://ias.cs.tum.edu/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
+% @param Identifier Object identifier, eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
 %
 add_object(Identifier, Time) :-
     v_canvas(Canvas),
@@ -139,7 +139,7 @@ add_object(Identifier, Time) :-
 % Adds objects to the scene, including all items that are reachable via knowrob:properPhysicalPartTypes
 % or via knowrob:describedInMap
 %
-% @param Identifier eg. "http://ias.cs.tum.edu/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
+% @param Identifier eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
 %
 add_object_with_children(Identifier) :-
     get_timepoint(Time),
@@ -151,7 +151,7 @@ add_object_with_children(Identifier) :-
 % Adds objects to the scene, including all items that are reachable via knowrob:properPhysicalPartTypes
 % or via knowrob:describedInMap, with their positions at time 'Time'
 %
-% @param Identifier eg. "http://ias.cs.tum.edu/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
+% @param Identifier eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
 %
 add_object_with_children(Identifier, Time) :-
     v_canvas(Canvas),
@@ -162,7 +162,7 @@ add_object_with_children(Identifier, Time) :-
 %
 % Remove object from the scene
 %
-% @param Identifier Object identifier, eg. "http://ias.cs.tum.edu/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
+% @param Identifier Object identifier, eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
 %
 remove_object(Identifier) :-
     v_canvas(Canvas),
@@ -174,7 +174,7 @@ remove_object(Identifier) :-
 % Removes objects from the scene, including all items that are reachable via knowrob:properPhysicalPartTypes
 % or via knowrob:describedInMap
 %
-% @param Identifier eg. "http://ias.cs.tum.edu/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
+% @param Identifier eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
 %
 remove_object_with_children(Identifier) :-
     v_canvas(Canvas),
@@ -198,7 +198,7 @@ add_trajectory(Link, Starttime, Endtime) :-
 add_trajectory(Link, Starttime, Endtime, Interval) :-
     v_canvas(Canvas),
 
-    ((rdf_has(Link, 'http://ias.cs.tum.edu/kb/srdl2-comp.owl#urdfName', literal(Tf)),
+    ((rdf_has(Link, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(Tf)),
       atomic_list_concat(['/', Tf], TfLink)) ;
      (TfLink = Link)),!,
     
@@ -214,7 +214,7 @@ add_trajectory(Link, Starttime, Endtime, Interval) :-
 remove_trajectory(Link) :-
     v_canvas(Canvas),
     
-    ((rdf_has(Link, 'http://ias.cs.tum.edu/kb/srdl2-comp.owl#urdfName', literal(Tf)),
+    ((rdf_has(Link, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(Tf)),
       atomic_list_concat(['/', Tf], TfLink)) ;
      (TfLink = Link)),!,
      
@@ -267,7 +267,7 @@ add_human_pose(Timepoint) :-
 % parameter. This is done e.g. using the alpha channel or the hue value in HSV space
 % (ignoring, in this case, the parameters R, B, G).
 %
-% @param Identifier eg. "http://ias.cs.tum.edu/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
+% @param Identifier eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
 % @param Highlight  @(true) = highlight; @(false)=remove highlighting
 % @param Color      Color value as integer, e.g. #AARRBBGG
 % @param R          Red color value
@@ -301,7 +301,7 @@ highlight_object(Identifier, Highlight, R, B, G, Prob) :-
 % The parameter Highlight specifies if the highlighting shall be activated or reset; if
 % it is missing, a value of @(true) is assumed.
 %
-% @param Identifier eg. "http://ias.cs.tum.edu/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
+% @param Identifier eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
 %
 highlight_object_with_children(Identifier) :-
     v_canvas(Canvas),
@@ -335,10 +335,21 @@ reset_highlight :-
 %
 % Launch the diagram data publisher
 %
+
 :- assert(d_canvas(fail)).
+%diagram_canvas :-
+%    d_canvas(fail),
+%    jpl_new('org.knowrob.vis.DiagramVisualization', [], Canvas),
+%    retract(d_canvas(fail)),
+%    assert(d_canvas(Canvas)),!.
+%diagram_canvas(Canvas) :-
+%    d_canvas(Canvas).
+
 diagram_canvas :-
     d_canvas(fail),
     jpl_new('org.knowrob.vis.DiagramVisualization', [], Canvas),
+    jpl_list_to_array(['org.knowrob.vis.DiagramVisualization'], Arr),
+    jpl_call('org.knowrob.utils.ros.RosUtilities', runRosjavaNode, [Canvas, Arr], _),
     retract(d_canvas(fail)),
     assert(d_canvas(Canvas)),!.
 diagram_canvas(Canvas) :-

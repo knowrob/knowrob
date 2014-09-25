@@ -20,9 +20,9 @@
 :- owl_parse('package://knowrob_actions/owl/object-change.owl').
 % :- owl_parse('package://knowrob_actions/owl/pancake-making.owl').
 
-:- rdf_db:rdf_register_ns(knowrob,      'http://ias.cs.tum.edu/kb/knowrob.owl#',      [keep(true)]).
-:- rdf_db:rdf_register_ns(object_change, 'http://ias.cs.tum.edu/kb/object-change.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(pancake, 'http://ias.cs.tum.edu/kb/pancake-making.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob,      'http://knowrob.org/kb/knowrob.owl#',      [keep(true)]).
+:- rdf_db:rdf_register_ns(object_change, 'http://knowrob.org/kb/object-change.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(pancake, 'http://knowrob.org/kb/pancake-making.owl#', [keep(true)]).
 
 :-  rdf_meta
         transformed_into(r, r),

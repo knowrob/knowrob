@@ -94,8 +94,8 @@ public class URDF2SRDL {
 	public final static String ROBOEARTH_PATH = "file://@RE_PATH_PREFIX@/owl/";
 	
 //	public final static String SRDL2_IMPORT = "&srdl_path;srdl2.owl";
-	public final static String SRDL2_IMPORT = "http://ias.cs.tum.edu/kb/srdl2.owl";
-	public final static String SRDL2_COMP_IMPORT = "http://ias.cs.tum.edu/kb/srdl2-comp.owl";
+	public final static String SRDL2_IMPORT = "http://knowrob.org/kb/srdl2.owl";
+	public final static String SRDL2_COMP_IMPORT = "http://knowrob.org/kb/srdl2-comp.owl";
 	public final static String ROBOEARTH_IMPORT = "&roboearth_path;roboearth.owl";
 
 	public final static String XSD = "http://www.w3.org/2001/XMLSchema#";
@@ -103,11 +103,11 @@ public class URDF2SRDL {
 	public final static String RDFS = "http://www.w3.org/2000/01/rdf-schema#";
 	public final static String OWL = "http://www.w3.org/2002/07/owl#";
 	public final static String OWL2XML = "http://www.w3.org/2006/12/owl2-xml#";
-	public final static String SRDL2 = "http://ias.cs.tum.edu/kb/srdl2.owl#";
-	public final static String SRDL2_CAP = "http://ias.cs.tum.edu/kb/srdl2-cap.owl#";
-	public final static String SRDL2_COMP = "http://ias.cs.tum.edu/kb/srdl2-comp.owl#";
+	public final static String SRDL2 = "http://knowrob.org/kb/srdl2.owl#";
+	public final static String SRDL2_CAP = "http://knowrob.org/kb/srdl2-cap.owl#";
+	public final static String SRDL2_COMP = "http://knowrob.org/kb/srdl2-comp.owl#";
 	public final static String QUDT_UNIT = "http://qudt.org/vocab/unit#";
-	public final static String KNOWROB = "http://ias.cs.tum.edu/kb/knowrob.owl#";
+	public final static String KNOWROB = "http://knowrob.org/kb/knowrob.owl#";
 	public final static String ROBOEARTH = "http://www.roboearth.org/kb/roboearth.owl#";
 	
 
@@ -1010,7 +1010,7 @@ public class URDF2SRDL {
 
 		usage.append("\n\nExample:\n" +
 				"rosrun knowrob_srdl URDF2SRDL -u pr2.urdf -s pr2.owl " +
-				"-i http://ias.cs.tum.edu/kb/PR2.owl# " +
+				"-i http://knowrob.org/kb/PR2.owl# " +
 				"-c move_base,move_arm,GraspingCapability\n");
 
 		System.out.println(usage.toString());

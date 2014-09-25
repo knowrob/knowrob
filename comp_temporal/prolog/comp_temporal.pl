@@ -74,8 +74,8 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('rdfs_computable')).
 
-:- rdf_db:rdf_register_ns(knowrob,      'http://ias.cs.tum.edu/kb/knowrob.owl#',      [keep(true)]).
-:- rdf_db:rdf_register_ns(comp_temporal, 'http://ias.cs.tum.edu/kb/comp_temporal.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob,      'http://knowrob.org/kb/knowrob.owl#',      [keep(true)]).
+:- rdf_db:rdf_register_ns(comp_temporal, 'http://knowrob.org/kb/comp_temporal.owl#', [keep(true)]).
 
 
 %% comp_temporallySubsumes(?Long, ?Short) is nondet.

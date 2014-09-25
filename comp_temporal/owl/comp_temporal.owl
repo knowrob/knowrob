@@ -5,21 +5,21 @@
           <!ENTITY rdfs 'http://www.w3.org/2000/01/rdf-schema'>
           <!ENTITY owl 'http://www.w3.org/2002/07/owl'>
           <!ENTITY xsd 'http://www.w3.org/2001/XMLSchema#'>
-          <!ENTITY knowrob 'http://ias.cs.tum.edu/kb/knowrob.owl'>
-          <!ENTITY actionmodel 'http://ias.cs.tum.edu/kb/actionmodel.owl'>
+          <!ENTITY knowrob 'http://knowrob.org/kb/knowrob.owl'>
+          <!ENTITY actionmodel 'http://knowrob.org/kb/actionmodel.owl'>
 
           ]>
 
 <rdf:RDF
-   xmlns:computable="http://ias.cs.tum.edu/kb/computable.owl#"
+   xmlns:computable="http://knowrob.org/kb/computable.owl#"
    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns="http://ias.cs.tum.edu/kb/comp_temporal.owl#"
+   xmlns="http://knowrob.org/kb/comp_temporal.owl#"
    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
    xmlns:owl="http://www.w3.org/2002/07/owl#"
    xmlns:am="&actionmodel;#"
    xmlns:knowrob="&knowrob;#"
-   xml:base="http://ias.cs.tum.edu/kb/comp_temporal.owl">
+   xml:base="http://knowrob.org/kb/comp_temporal.owl">
   <owl:Ontology rdf:about="">
     <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
   </owl:Ontology>

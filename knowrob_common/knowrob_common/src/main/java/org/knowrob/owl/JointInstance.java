@@ -10,9 +10,9 @@ import org.knowrob.prolog.PrologQueryUtils;
 
 public class JointInstance extends ObjectInstance {
 
-	private final static String prop_qmin = "http://ias.cs.tum.edu/kb/knowrob.owl#minJointValue";
-	private final static String prop_qmax = "http://ias.cs.tum.edu/kb/knowrob.owl#maxJointValue";
-	private final static String prop_radius = "http://ias.cs.tum.edu/kb/knowrob.owl#turnRadius";
+	private final static String prop_qmin = "http://knowrob.org/kb/knowrob.owl#minJointValue";
+	private final static String prop_qmax = "http://knowrob.org/kb/knowrob.owl#maxJointValue";
+	private final static String prop_radius = "http://knowrob.org/kb/knowrob.owl#turnRadius";
 	
 	/**
 	 * Direction of the prismatic joint
@@ -187,24 +187,24 @@ public class JointInstance extends ObjectInstance {
 
 		
 		// set joint connection between parent and child
-		if(types.contains(OWLClass.getOWLClass("http://ias.cs.tum.edu/kb/knowrob.owl#HingedJoint")) && 	child!= null && parent!=null) {
-			PrologInterface.executeQuery("rdf_retractall('" + parent.getIRI() + "', 'http://ias.cs.tum.edu/kb/knowrob.owl#hingedTo', _)");
-			PrologQueryUtils.assertObjectPropertyForInst(parent.getIRI(), "http://ias.cs.tum.edu/kb/knowrob.owl#hingedTo",  child.getIRI());
+		if(types.contains(OWLClass.getOWLClass("http://knowrob.org/kb/knowrob.owl#HingedJoint")) && 	child!= null && parent!=null) {
+			PrologInterface.executeQuery("rdf_retractall('" + parent.getIRI() + "', 'http://knowrob.org/kb/knowrob.owl#hingedTo', _)");
+			PrologQueryUtils.assertObjectPropertyForInst(parent.getIRI(), "http://knowrob.org/kb/knowrob.owl#hingedTo",  child.getIRI());
 			
-		} else if(types.contains(OWLClass.getOWLClass("http://ias.cs.tum.edu/kb/knowrob.owl#PrismaticJoint")) && child!= null && parent!=null) {
-			PrologInterface.executeQuery("rdf_retractall('" + parent.getIRI() + "', 'http://ias.cs.tum.edu/kb/knowrob.owl#prismaticallyConnectedTo', _)");
-			PrologQueryUtils.assertObjectPropertyForInst(parent.getIRI(), "http://ias.cs.tum.edu/kb/knowrob.owl#prismaticallyConnectedTo",  child.getIRI());
+		} else if(types.contains(OWLClass.getOWLClass("http://knowrob.org/kb/knowrob.owl#PrismaticJoint")) && child!= null && parent!=null) {
+			PrologInterface.executeQuery("rdf_retractall('" + parent.getIRI() + "', 'http://knowrob.org/kb/knowrob.owl#prismaticallyConnectedTo', _)");
+			PrologQueryUtils.assertObjectPropertyForInst(parent.getIRI(), "http://knowrob.org/kb/knowrob.owl#prismaticallyConnectedTo",  child.getIRI());
 		}
 
 		// set rigid connection between joint and parent/child resp.
 		if(child!= null) {
-			PrologInterface.executeQuery("rdf_retractall('" + iri + "', 'http://ias.cs.tum.edu/kb/knowrob.owl#connectedTo-Rigidly', _)");
-			PrologQueryUtils.assertObjectPropertyForInst(iri, "http://ias.cs.tum.edu/kb/knowrob.owl#connectedTo-Rigidly",  child.getIRI());
+			PrologInterface.executeQuery("rdf_retractall('" + iri + "', 'http://knowrob.org/kb/knowrob.owl#connectedTo-Rigidly', _)");
+			PrologQueryUtils.assertObjectPropertyForInst(iri, "http://knowrob.org/kb/knowrob.owl#connectedTo-Rigidly",  child.getIRI());
 		}
 
 		if(parent!=null) {
-			PrologInterface.executeQuery("rdf_retractall('" + iri + "', 'http://ias.cs.tum.edu/kb/knowrob.owl#connectedTo-Rigidly', _)");
-			PrologQueryUtils.assertObjectPropertyForInst(iri, "http://ias.cs.tum.edu/kb/knowrob.owl#connectedTo-Rigidly",  parent.getIRI());
+			PrologInterface.executeQuery("rdf_retractall('" + iri + "', 'http://knowrob.org/kb/knowrob.owl#connectedTo-Rigidly', _)");
+			PrologQueryUtils.assertObjectPropertyForInst(iri, "http://knowrob.org/kb/knowrob.owl#connectedTo-Rigidly",  parent.getIRI());
 		}
 
 		// write direction vector

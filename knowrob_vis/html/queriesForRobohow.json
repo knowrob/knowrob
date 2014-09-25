@@ -35,7 +35,7 @@
  
     {"q": "", "text": ""},
     {"q": "", "text": "----- Highlighting an object -----"},
-    {"q": "highlight_object_with_children('http://ias.cs.tum.edu/kb/knowrob.owl#Refrigerator67').", "text": "highlight object"},
+    {"q": "highlight_object_with_children('http://knowrob.org/kb/knowrob.owl#Refrigerator67').", "text": "highlight object"},
     {"q": "reset_highlight.", "text": "reset highlight"}
 
 

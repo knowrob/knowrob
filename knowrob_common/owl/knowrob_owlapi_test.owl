@@ -5,30 +5,30 @@
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY swrl "http://www.w3.org/2003/11/swrl#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
-    <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
+    <!ENTITY knowrob "http://knowrob.org/kb/knowrob.owl#" >
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
-    <!ENTITY computable "http://ias.cs.tum.edu/kb/computable.owl#" >
+    <!ENTITY computable "http://knowrob.org/kb/computable.owl#" >
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
 ]>
 
 
-<rdf:RDF xmlns="http://ias.cs.tum.edu/kb/knowrob_owlapi_test.owl#"
-     xml:base="http://ias.cs.tum.edu/kb/knowrob_owlapi_test.owl"
+<rdf:RDF xmlns="http://knowrob.org/kb/knowrob_owlapi_test.owl#"
+     xml:base="http://knowrob.org/kb/knowrob_owlapi_test.owl"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:swrl="http://www.w3.org/2003/11/swrl#"
-     xmlns:computable="http://ias.cs.tum.edu/kb/computable.owl#"
+     xmlns:computable="http://knowrob.org/kb/computable.owl#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#">
-    <owl:Ontology rdf:about="http://ias.cs.tum.edu/kb/knowrob_owlapi_test.owl">
-        <owl:imports rdf:resource="package://ias_knowledge_base/owl//knowrob.owl"/>
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/knowrob_owlapi_test.owl">
+        <owl:imports rdf:resource="package://knowrob_common/owl//knowrob.owl"/>
     </owl:Ontology>
 
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#outputsCreated -->
+    <!-- http://knowrob.org/kb/knowrob.owl#outputsCreated -->
 
     <owl:ObjectProperty rdf:about="&knowrob;outputsCreated"/>
 
@@ -45,33 +45,33 @@
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Dough -->
+    <!-- http://knowrob.org/kb/knowrob.owl#Dough -->
 
     <owl:Class rdf:about="&knowrob;Dough"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Event -->
+    <!-- http://knowrob.org/kb/knowrob.owl#Event -->
 
     <owl:Class rdf:about="&knowrob;Event"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#LiquidTangibleThing -->
+    <!-- http://knowrob.org/kb/knowrob.owl#LiquidTangibleThing -->
 
     <owl:Class rdf:about="&knowrob;LiquidTangibleThing"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob.owl#Mixing -->
+    <!-- http://knowrob.org/kb/knowrob.owl#Mixing -->
 
     <owl:Class rdf:about="&knowrob;Mixing"/>
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob_owlapi_test.owl#CreateDough -->
+    <!-- http://knowrob.org/kb/knowrob_owlapi_test.owl#CreateDough -->
 
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/knowrob_owlapi_test.owl#CreateDough">
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_owlapi_test.owl#CreateDough">
         <rdfs:subClassOf rdf:resource="&knowrob;Mixing"/>
         <rdfs:subClassOf>
             <owl:Restriction>
@@ -83,9 +83,9 @@
 
 
 
-    <!-- http://ias.cs.tum.edu/kb/knowrob_owlapi_test.owl#CreateLiquid -->
+    <!-- http://knowrob.org/kb/knowrob_owlapi_test.owl#CreateLiquid -->
 
-    <owl:Class rdf:about="http://ias.cs.tum.edu/kb/knowrob_owlapi_test.owl#CreateLiquid">
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_owlapi_test.owl#CreateLiquid">
         <owl:equivalentClass>
             <owl:Class>
                 <owl:intersectionOf rdf:parseType="Collection">

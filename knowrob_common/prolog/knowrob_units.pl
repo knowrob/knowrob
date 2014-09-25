@@ -35,9 +35,9 @@
 
 :- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
 :- rdf_db:rdf_register_ns(owl, 'http://www.w3.org/2002/07/owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
-:- rdf_db:rdf_register_ns(knowrob_units, 'http://ias.cs.tum.edu/kb/knowrob_units.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob_units, 'http://knowrob.org/kb/knowrob_units.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(xsd, 'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
 :- rdf_db:rdf_register_ns(qudt, 'http://qudt.org/schema/qudt#', [keep(true)]).
 :- rdf_db:rdf_register_ns(unit, 'http://qudt.org/vocab/unit#', [keep(true)]).

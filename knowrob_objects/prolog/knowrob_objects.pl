@@ -116,7 +116,7 @@
 
 :- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
 :- rdf_db:rdf_register_ns(owl, 'http://www.w3.org/2002/07/owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(knowrob, 'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(xsd, 'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
 
 
@@ -146,7 +146,7 @@ storagePlaceForBecause(St, ObjType, ObjT) :-
 %
 current_object_pose(Obj, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]) :-
 
-  rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#orientation',Obj,Pose),!,
+  rdf_triple('http://knowrob.org/kb/knowrob.owl#orientation',Obj,Pose),!,
   rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]).
 
 
@@ -168,25 +168,25 @@ object_pose_at_time(Obj, Time, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21
 %
 rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]) :-
 
-    rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#m00',Pose,M00literal), strip_literal_type(M00literal, M00a), term_to_atom(M00, M00a),
-    rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#m01',Pose,M01literal), strip_literal_type(M01literal, M01a), term_to_atom(M01, M01a),
-    rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#m02',Pose,M02literal), strip_literal_type(M02literal, M02a), term_to_atom(M02, M02a),
-    rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#m03',Pose,M03literal), strip_literal_type(M03literal, M03a), term_to_atom(M03, M03a),
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m00',Pose,M00literal), strip_literal_type(M00literal, M00a), term_to_atom(M00, M00a),
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m01',Pose,M01literal), strip_literal_type(M01literal, M01a), term_to_atom(M01, M01a),
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m02',Pose,M02literal), strip_literal_type(M02literal, M02a), term_to_atom(M02, M02a),
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m03',Pose,M03literal), strip_literal_type(M03literal, M03a), term_to_atom(M03, M03a),
 
-    rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#m10',Pose,M10literal), strip_literal_type(M10literal, M10a), term_to_atom(M10, M10a),
-    rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#m11',Pose,M11literal), strip_literal_type(M11literal, M11a), term_to_atom(M11, M11a),
-    rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#m12',Pose,M12literal), strip_literal_type(M12literal, M12a), term_to_atom(M12, M12a),
-    rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#m13',Pose,M13literal), strip_literal_type(M13literal, M13a), term_to_atom(M13, M13a),
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m10',Pose,M10literal), strip_literal_type(M10literal, M10a), term_to_atom(M10, M10a),
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m11',Pose,M11literal), strip_literal_type(M11literal, M11a), term_to_atom(M11, M11a),
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m12',Pose,M12literal), strip_literal_type(M12literal, M12a), term_to_atom(M12, M12a),
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m13',Pose,M13literal), strip_literal_type(M13literal, M13a), term_to_atom(M13, M13a),
 
-    rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#m20',Pose,M20literal), strip_literal_type(M20literal, M20a), term_to_atom(M20, M20a),
-    rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#m21',Pose,M21literal), strip_literal_type(M21literal, M21a), term_to_atom(M21, M21a),
-    rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#m22',Pose,M22literal), strip_literal_type(M22literal, M22a), term_to_atom(M22, M22a),
-    rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#m23',Pose,M23literal), strip_literal_type(M23literal, M23a), term_to_atom(M23, M23a),
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m20',Pose,M20literal), strip_literal_type(M20literal, M20a), term_to_atom(M20, M20a),
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m21',Pose,M21literal), strip_literal_type(M21literal, M21a), term_to_atom(M21, M21a),
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m22',Pose,M22literal), strip_literal_type(M22literal, M22a), term_to_atom(M22, M22a),
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m23',Pose,M23literal), strip_literal_type(M23literal, M23a), term_to_atom(M23, M23a),
 
-    rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#m30',Pose,M30literal), strip_literal_type(M30literal, M30a), term_to_atom(M30, M30a),
-    rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#m31',Pose,M31literal), strip_literal_type(M31literal, M31a), term_to_atom(M31, M31a),
-    rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#m32',Pose,M32literal), strip_literal_type(M32literal, M32a), term_to_atom(M32, M32a),
-    rdf_triple('http://ias.cs.tum.edu/kb/knowrob.owl#m33',Pose,M33literal), strip_literal_type(M33literal, M33a), term_to_atom(M33, M33a),!.
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m30',Pose,M30literal), strip_literal_type(M30literal, M30a), term_to_atom(M30, M30a),
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m31',Pose,M31literal), strip_literal_type(M31literal, M31a), term_to_atom(M31, M31a),
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m32',Pose,M32literal), strip_literal_type(M32literal, M32a), term_to_atom(M32, M32a),
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m33',Pose,M33literal), strip_literal_type(M33literal, M33a), term_to_atom(M33, M33a),!.
 
 
 
@@ -339,7 +339,7 @@ find_missing_objprops(Inst, P, Oinst) :-
     class_to_inst(C, Inst),
     class_properties_nosup(C, P, O),
     owl_individual_of(P, owl:'ObjectProperty'),
-    P\='http://ias.cs.tum.edu/kb/knowrob.owl#spatiallyRelated',
+    P\='http://knowrob.org/kb/knowrob.owl#spatiallyRelated',
     (rdfs_individual_of(Inst, C) ; (rdfs_individual_of(Inst, Csup), owl_direct_subclass_of(C, Csup))),
     (rdfs_individual_of(Oinst, O) ; (owl_direct_subclass_of(O, Osup), rdfs_individual_of(Oinst, Osup))),
     \+rdf_has(Inst, P, Oinst).
@@ -440,7 +440,7 @@ tboxify_object_inst(ObjInst, ClassName, ReferenceObj, ReferenceObjCl, SourceRef)
   findall([P, O], ((rdf_has(ObjInst, P, O),
                     owl_individual_of(P, owl:'DatatypeProperty'));
                    (rdf_has(ObjInst, rdf:type, T),
-                    P = 'http://ias.cs.tum.edu/kb/knowrob.owl#pathToCadModel',
+                    P = 'http://knowrob.org/kb/knowrob.owl#pathToCadModel',
                     class_properties(T, P, O))), DataPs),
   sort(DataPs, DataPsSorted),
 
@@ -456,7 +456,7 @@ tboxify_object_inst(ObjInst, ClassName, ReferenceObj, ReferenceObjCl, SourceRef)
 
   findall(Part, (member(Part, PartsSorted),
                  ((tboxified(Part, PartClassName)) -> true ;
-                  (rdf_unique_class_id('http://ias.cs.tum.edu/kb/knowrob.owl#SpatialThing', SourceRef, PartClassName))),
+                  (rdf_unique_class_id('http://knowrob.org/kb/knowrob.owl#SpatialThing', SourceRef, PartClassName))),
 
                  create_restr(ClassName, knowrob:properPhysicalParts, PartClassName, owl:someValuesFrom, SourceRef, ObjRestr),
 
@@ -472,7 +472,7 @@ tboxify_object_inst(ObjInst, ClassName, ReferenceObj, ReferenceObjCl, SourceRef)
 
   findall(Conn, (member(Conn, ConnectedSorted),
                 ((tboxified(Conn, ConnectedClassName))  -> true ;
-                 (rdf_unique_class_id('http://ias.cs.tum.edu/kb/knowrob.owl#SpatialThing', SourceRef, ConnectedClassName))),
+                 (rdf_unique_class_id('http://knowrob.org/kb/knowrob.owl#SpatialThing', SourceRef, ConnectedClassName))),
 
                 create_restr(ClassName, knowrob:connectedTo, ConnectedClassName, owl:someValuesFrom, SourceRef, ObjRestr),
 
@@ -952,7 +952,7 @@ comp_orientation(Object, Pose) :-
        current_object_pose(RefObj, RefObjPose),
        knowrob_objects:rotmat_to_list(PoseLocal, PoseList),
        pose_into_global_coord(PoseList, RefObjPose, PoseGlobal),
-       append([['http://ias.cs.tum.edu/kb/knowrob.owl#rotMat3D'],PoseGlobal], PoseListGlobal),
+       append([['http://knowrob.org/kb/knowrob.owl#rotMat3D'],PoseGlobal], PoseListGlobal),
        atomic_list_concat(PoseListGlobal, '_', Pose),! ) ;
     (  Pose = PoseLocal) ),!.
 

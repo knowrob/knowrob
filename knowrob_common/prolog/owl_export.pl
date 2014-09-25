@@ -41,7 +41,7 @@
 
 :- rdf_db:rdf_register_ns(owl,    'http://www.w3.org/2002/07/owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(rdfs,   'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
-:- rdf_db:rdf_register_ns(knowrob,'http://ias.cs.tum.edu/kb/knowrob.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob,'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(roboearth,'http://www.roboearth.org/kb/roboearth.owl#', [keep(true)]).
 
 
@@ -166,15 +166,15 @@ read_object_info(Inst, ObjInfosSorted) :-
 
   % read all direct properties
   findall(PartInfo, (
-              rdf_reachable(Inst, 'http://ias.cs.tum.edu/kb/knowrob.owl#properPhysicalParts', Part),
+              rdf_reachable(Inst, 'http://knowrob.org/kb/knowrob.owl#properPhysicalParts', Part),
               Part \= Inst,
               read_object_info(Part, PartInfo)
           ), PartInfos),
 
   % read all perception instances
   findall(Perc, (
-              owl_has(Perc, 'http://ias.cs.tum.edu/kb/knowrob.owl#objectActedOn', Inst),
-              owl_individual_of(Perc, 'http://ias.cs.tum.edu/kb/knowrob.owl#MentalEvent')
+              owl_has(Perc, 'http://knowrob.org/kb/knowrob.owl#objectActedOn', Inst),
+              owl_individual_of(Perc, 'http://knowrob.org/kb/knowrob.owl#MentalEvent')
         ), Perceptions),
 
   % read properties of all perception instances
@@ -200,15 +200,15 @@ read_object_info(Inst, ObjInfosSorted) :-
 read_map_info(Map, MapInfosSorted) :-
 
   % read all objects in the map (knowrob:describedInMap) ...
-  findall(Obj,   (owl_has(Obj, 'http://ias.cs.tum.edu/kb/knowrob.owl#describedInMap', Map)), RootObjs),
+  findall(Obj,   (owl_has(Obj, 'http://knowrob.org/kb/knowrob.owl#describedInMap', Map)), RootObjs),
 
   % ... and their parts
   findall(Part, (member(Obj, RootObjs),
-                  rdf_reachable(Obj, 'http://ias.cs.tum.edu/kb/knowrob.owl#parts', Part)), Parts),
+                  rdf_reachable(Obj, 'http://knowrob.org/kb/knowrob.owl#parts', Part)), Parts),
 
   % ... as well as the things they are part of (e.g. street, building)
   findall(Super, (member(Obj, RootObjs),
-                  rdf_reachable(Super, 'http://ias.cs.tum.edu/kb/knowrob.owl#parts', Obj)), SuperRootObjs),
+                  rdf_reachable(Super, 'http://knowrob.org/kb/knowrob.owl#parts', Obj)), SuperRootObjs),
 
   append([SuperRootObjs, RootObjs, Parts], Objs),
 

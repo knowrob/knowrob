@@ -10,9 +10,9 @@
     {"q": "", "text": "----- marker canvas -----"},
     {"q": "visualisation_canvas.", "text": "init visualisation canvas"},
     {"q": "owl_individual_of(A, knowrob:'SemanticEnvironmentMap'), !, add_object_with_children(A).", "text": "add object to canvas"},
-    {"q": "highlight_object_with_children('http://ias.cs.tum.edu/kb/knowrob.owl#Refrigerator67').", "text": "highlight object"},
+    {"q": "highlight_object_with_children('http://knowrob.org/kb/knowrob.owl#Refrigerator67').", "text": "highlight object"},
     {"q": "reset_highlight.", "text": "reset highlight"},
-    {"q": "remove_object_with_children('http://ias.cs.tum.edu/kb/knowrob.owl#Refrigerator67').", "text": "remove object"},
+    {"q": "remove_object_with_children('http://knowrob.org/kb/knowrob.owl#Refrigerator67').", "text": "remove object"},
 
     {"q": "", "text": ""},
     {"q": "", "text": "----- diagram canvas -----"},
@@ -40,7 +40,7 @@
     {"q": "", "text": "----- Logfile statistics -----"},
     {"q": "register_ros_package(knowrob_mongo),\nregister_ros_package(mod_srdl),\nregister_ros_package(mod_execution_trace),\nvisualisation_canvas,\ndiagram_canvas.", "text": "init all"},
     {"q": "owl_parse('path/to/pick-and-place.owl', false, false, true).", "text": "Parse logfile"},
-    {"q": "Labels = ['ManipulationPoseUnreachable', 'ObjectNotFound', 'ManipulationFailed', 'LocationNotReached', 'ObjectLost', 'ManipulationPoseOccupied'],findall(N, (\nmember(Error, Labels),\n    findall(E, (failure_class(E, C), string_concat('http://ias.cs.tum.edu/kb/knowrob.owl#', Error, C)), List), length(List, N)\n  ),\nOccurence),\nadd_diagram(iderror, 'error distribution', barchart, xlabel, ylabel, '210', '210', '12px', [[Labels,Occurence]]).", "text": "Show occurences of typical error types in bar or donut chart - new file format!"},
+    {"q": "Labels = ['ManipulationPoseUnreachable', 'ObjectNotFound', 'ManipulationFailed', 'LocationNotReached', 'ObjectLost', 'ManipulationPoseOccupied'],findall(N, (\nmember(Error, Labels),\n    findall(E, (failure_class(E, C), string_concat('http://knowrob.org/kb/knowrob.owl#', Error, C)), List), length(List, N)\n  ),\nOccurence),\nadd_diagram(iderror, 'error distribution', barchart, xlabel, ylabel, '210', '210', '12px', [[Labels,Occurence]]).", "text": "Show occurences of typical error types in bar or donut chart - new file format!"},
     {"q": "Labels = ['MANIPULATION-POSE-UNREACHABLE', 'OBJECT-NOT-FOUND', 'MANIPULATION-FAILED', 'LOCATION-NOT-REACHED', 'OBJECT-LOST', 'MANIPULATION-POSE-OCCUPIED'],\nfindall(N,\n  (\n    member(Error, Labels),\n    findall([E,B], (failure_task(E, C), failure_attribute(E, rdfs:'label', X), [X]=[literal(type(A,B))], B=Error), List), length(List, N)\n  ),\nOccurence),\nadd_diagram(iderror, 'error distribution', barchart, xlabel, ylabel, '210', '210', '12px', [[Labels,Occurence]]).", "text": "Show occurences of typical error types in bar or donut chart"},
     {"q": "Labels = ['Failed Instances', 'Successful Instances'], bagof(Err, (task_class(Task, knowrob:'PerformOnProcessModule'),  failure_task(Err, Task)), Errors), length(Errors, NumErr), bagof(Task, task_class(Task, knowrob:'PerformOnProcessModule'), Tasks), length(Tasks, NumT), NumSuccess is NumT- NumErr, add_diagram(iderror, 'error distribution', barchart, xlabel, ylabel, '210', '210', '12px', [[Labels,[NumErr, NumSuccess]]]).", "text": "Show occurences of errors in a certain task type bar or donut chart"},
     {"q": "aggregate_all(sum(D) / count, (task(T),task_class(T, knowrob:'UIMAPerception'),duration_of_a_task(T,D)), D1), Avg is D1, Labels = ['Duration in seconds'], add_diagram(iderror, 'error distribution', barchart, xlabel, ylabel, '210', '210', '12px', [[Labels,[Avg]]]).", "text": " How long did a task of a certain type take on average?"},
@@ -73,6 +73,6 @@
     {"q": "", "text": "----- Task Tree -----"},
     {"q": "assert((\n  tasktree(Task, List):-\n    findall(Subsub,\n      (\n        subtask(Task, Sub),\n        tasktree(Sub, Subsub)\n      ),\n      Sublist),\n    List = [Task, Sublist]\n)).", "text": "Assert tasktree rule (needed for following query, only invoke once)"},
     {"q": "owl_parse('path/to/log/pick-and-place.owl', false, false, true).", "text": "load owl file"},
-    {"q": "Root = 'http://ias.cs.tum.edu/kb/cram_log.owl#CRAMAction_m2XW5s7U',\ntasktree(Root, List), flatten(List, Flat), once(maplist( \\X^Node^(((subtask(P, X), Parent = P); Parent = X), ((returned_value(X, Value), Color = red); Color = green),\natom_concat('Name: ', X, Namestring),\natom_concat('Parent: ', Parent, Parentstring),\nNode = [[X, Parent, Color],[Namestring, Parentstring, Color]]), Flat, Nodes)), add_diagram(tree, title, treechart, xlabel, ylabel, '960', '500', '12px', Nodes).", "text": "Show tasks and subtasks as a tree (adjust root node)"}
+    {"q": "Root = 'http://knowrob.org/kb/cram_log.owl#CRAMAction_m2XW5s7U',\ntasktree(Root, List), flatten(List, Flat), once(maplist( \\X^Node^(((subtask(P, X), Parent = P); Parent = X), ((returned_value(X, Value), Color = red); Color = green),\natom_concat('Name: ', X, Namestring),\natom_concat('Parent: ', Parent, Parentstring),\nNode = [[X, Parent, Color],[Namestring, Parentstring, Color]]), Flat, Nodes)), add_diagram(tree, title, treechart, xlabel, ylabel, '960', '500', '12px', Nodes).", "text": "Show tasks and subtasks as a tree (adjust root node)"}
   ]
 }

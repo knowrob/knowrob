@@ -51,7 +51,7 @@
 	  display_object_images_at_location(r).
 
 
-:- rdf_db:rdf_register_ns(germandeli, 'http://ias.cs.tum.edu/kb/germandeli.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(germandeli, 'http://knowrob.org/kb/germandeli.owl#', [keep(true)]).
 
 	  
 %% best_location_maxMaxWup(+Object, -BestLocation).
@@ -164,7 +164,7 @@ classes_of_objects(Classes, Objects) :-
 % only returns classes that are subclasses of knowrob:'SpatialThing'
 class_of_object(Class, Object) :-
 	owl_has(Object, rdf:type, Class),
-	owl_subclass_of(Class, 'http://ias.cs.tum.edu/kb/knowrob.owl#SpatialThing'), %only consider relevant object classes
+	owl_subclass_of(Class, 'http://knowrob.org/kb/knowrob.owl#SpatialThing'), %only consider relevant object classes
 	! %if there are multiple, just take the first one for now
 	.
 

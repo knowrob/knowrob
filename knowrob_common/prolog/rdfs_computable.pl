@@ -15,7 +15,7 @@
 % :- use_module(library('odbc')).
 :- use_module(library('lists')).
 
-:- rdf_register_ns(computable, 'http://ias.cs.tum.edu/kb/computable.owl#').
+:- rdf_register_ns(computable, 'http://knowrob.org/kb/computable.owl#').
 :- rdf_meta
   rdfs_computable_class(t,t),
   rdfs_computable_instance_of(t,t),

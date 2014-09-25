@@ -21,7 +21,7 @@
 :- use_module(library('srdl2')).
 :- use_module(library('knowrob_owl')).
 
-:- rdf_db:rdf_register_ns(pr2, 'http://ias.cs.tum.edu/kb/PR2.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(pr2, 'http://knowrob.org/kb/PR2.owl#', [keep(true)]).
 
 
 :- owl_parser:owl_parse('package://knowrob_srdl/owl/srdl2-action.owl').

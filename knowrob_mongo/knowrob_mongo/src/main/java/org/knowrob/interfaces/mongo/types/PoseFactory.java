@@ -16,10 +16,8 @@ public class PoseFactory {
 	 * @param row BasicDBObject, e.g. result of a MongoDB query
 	 * @return Instance of Pose with values from row
 	 */
-	public static Matrix4d readFromDBObject(DBObject row) {	
+	public static Matrix4d readFromDBObject(DBObject pose) {	
 		
-		BasicDBObject pose   = (BasicDBObject) row.get("pose");
-
 		Vector3d v = new Vector3d();
 		v.x = ((BasicDBObject) pose.get("position")).getDouble("x");
 		v.y = ((BasicDBObject) pose.get("position")).getDouble("y");

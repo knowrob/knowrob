@@ -4,13 +4,13 @@
 <!DOCTYPE rdf:RDF [
     <!ENTITY map 'http://www.roboearth.org/kb/map_hospital_room.owl#'>
 
-    <!ENTITY kb "http://ias.cs.tum.edu/kb/" >
+    <!ENTITY kb "http://knowrob.org/kb/" >
     <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
     <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
     <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
-    <!ENTITY knowrob "http://ias.cs.tum.edu/kb/knowrob.owl#" >
+    <!ENTITY knowrob "http://knowrob.org/kb/knowrob.owl#" >
     <!ENTITY roboearth "http://www.roboearth.org/kb/roboearth.owl#" >
     <!ENTITY serve_drink "http://www.roboearth.org/kb/serve_drink.owl#" >
 ]>
@@ -21,12 +21,12 @@
      xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
      xmlns:serve_drink="http://www.roboearth.org/kb/serve_drink.owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-     xmlns:knowrob="http://ias.cs.tum.edu/kb/knowrob.owl#"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#">
     <owl:Ontology rdf:about="">
-      <owl:imports rdf:resource="package://ias_knowledge_base/owl/roboearth.owl"/>
+      <owl:imports rdf:resource="package://knowrob_common/owl/roboearth.owl"/>
     </owl:Ontology>
 
 

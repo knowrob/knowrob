@@ -4,7 +4,7 @@ project(knowrob_mongo)
 
 find_package(catkin REQUIRED rosjava_build_tools tf_prolog rosprolog)
 
-catkin_rosjava_setup(publishMavenJavaPublicationToMavenRepository writeClasspath)
+catkin_rosjava_setup(installApp publishMavenJavaPublicationToMavenRepository writeClasspath)
 
 catkin_package(
   DEPENDS tf_prolog

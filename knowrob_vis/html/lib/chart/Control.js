@@ -20,7 +20,7 @@ function Control(options) {
 
   this.init = function() {
     console.log("control init");
-    var startEndQuery = "findall(Time, task_start(T, Time), _List), sort(_List, _Sorted), nth0(0, _Sorted, X), last(_Sorted, Y), string_concat('http://ias.cs.tum.edu/kb/cram_log.owl#timepoint_', Firststring, X), string_concat('http://ias.cs.tum.edu/kb/cram_log.owl#timepoint_', Laststring, Y), atom_number(Firststring, First), atom_number(Laststring, Last)";
+    var startEndQuery = "findall(Time, task_start(T, Time), _List), sort(_List, _Sorted), nth0(0, _Sorted, X), last(_Sorted, Y), string_concat('http://knowrob.org/kb/cram_log.owl#timepoint_', Firststring, X), string_concat('http://knowrob.org/kb/cram_log.owl#timepoint_', Laststring, Y), atom_number(Firststring, First), atom_number(Laststring, Last)";
 
     var prolog = new JsonProlog(ros, {raw: true});
     prolog.jsonQuery(startEndQuery, function(result){
@@ -64,9 +64,9 @@ function Control(options) {
     // change these queries as needed
     var robotPoseAtTime = "E = " + actualTime.toString() + ", mng_robot_pose_at_time(pr2:'PR2Robot1','/map',E,Pose), add_robot_as_basic_semantic_instance(Pose, E, SemanticMapInstance), add_object_with_children(SemanticMapInstance), highlight_object(SemanticMapInstance)";
 
-    var queryErrorsUntilNow = "Time = " + actualTime.toString() + ",Labels = ['ManipulationPoseUnreachable', 'ObjectNotFound', 'ManipulationFailed', 'LocationNotReached', 'ObjectLost', 'ManipulationPoseOccupied'],findall(N, (member(Error, Labels),findall(E, (failure_class(E, C), C=knowrob:Error, failure_attribute(E, knowrob:startTime, Y), string_concat('http://ias.cs.tum.edu/kb/cram_log.owl#timepoint_', Etimestring, Y), atom_number(Etimestring, Etime), Etime =< Time), List), length(List, N)),Occurence),add_diagram(errorsuntilnow, 'errors until now', barchart, xlabel, ylabel, '210', '210', '12px', [[Labels,Occurence]])";
+    var queryErrorsUntilNow = "Time = " + actualTime.toString() + ",Labels = ['ManipulationPoseUnreachable', 'ObjectNotFound', 'ManipulationFailed', 'LocationNotReached', 'ObjectLost', 'ManipulationPoseOccupied'],findall(N, (member(Error, Labels),findall(E, (failure_class(E, C), C=knowrob:Error, failure_attribute(E, knowrob:startTime, Y), string_concat('http://knowrob.org/kb/cram_log.owl#timepoint_', Etimestring, Y), atom_number(Etimestring, Etime), Etime =< Time), List), length(List, N)),Occurence),add_diagram(errorsuntilnow, 'errors until now', barchart, xlabel, ylabel, '210', '210', '12px', [[Labels,Occurence]])";
 
-    var queryTaskTreeUntilNow = "Time = " + actualTime.toString() + ", tasktree('http://ias.cs.tum.edu/kb/cram_log.owl#CRAMAction_6gCmeZ3S', List), flatten(List, F), include("+'\\'+"T^(task_start(T, Timestring1), string_concat('http://ias.cs.tum.edu/kb/cram_log.owl#timepoint_', Timestring2, Timestring1), atom_number(Timestring2, Starttime), Starttime =< Time), F, Flat), once(maplist("+'\\'+"X^Node^(((subtask(P, X), Parent = P); Parent = X), ((returned_value(X, Value), Color = red); Color = green), Node = [[X, Parent, Color],[X, Parent, Color]]), Flat, Nodes)), add_diagram(tree, title, treechart, xlabel, ylabel, '960', '500', '12px', Nodes)"
+    var queryTaskTreeUntilNow = "Time = " + actualTime.toString() + ", tasktree('http://knowrob.org/kb/cram_log.owl#CRAMAction_6gCmeZ3S', List), flatten(List, F), include("+'\\'+"T^(task_start(T, Timestring1), string_concat('http://knowrob.org/kb/cram_log.owl#timepoint_', Timestring2, Timestring1), atom_number(Timestring2, Starttime), Starttime =< Time), F, Flat), once(maplist("+'\\'+"X^Node^(((subtask(P, X), Parent = P); Parent = X), ((returned_value(X, Value), Color = red); Color = green), Node = [[X, Parent, Color],[X, Parent, Color]]), Flat, Nodes)), add_diagram(tree, title, treechart, xlabel, ylabel, '960', '500', '12px', Nodes)"
 
     console.log("new step");
 
