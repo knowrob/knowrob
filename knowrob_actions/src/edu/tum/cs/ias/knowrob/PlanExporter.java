@@ -46,7 +46,6 @@ public class PlanExporter {
     public String exportPlanToCPL(String plan_name) {
     	
         plan_name = PrologInterface.addSingleQuotes(plan_name);
-		String res = "";
 		
 		HashMap<String, Vector<String>> plan_steps = 
 			PrologInterface.executeQuery("plan_subevents("+ plan_name +", Steps)");
@@ -185,17 +184,18 @@ public class PlanExporter {
 
 
 		// export to string
-		res += "(def-top-level-plan " + lispify(plan_name) + " () \n";
-		res += "(with-designators (\n      ";
-		res += Joiner.on("\n      ").join(orderedDesigValues);
+		StringBuilder res = new StringBuilder();
+		res.append("(def-top-level-plan ").append(lispify(plan_name)).append(" () \n");
+		res.append("(with-designators (\n      ");
+		res.append(Joiner.on("\n      ").join(orderedDesigValues));
 		
-		res += ")\n\n";
+		res.append(")\n\n");
 		
-		res += Joiner.on("\n").join(plan);
+		res.append(Joiner.on("\n").join(plan));
 		
-		res += "))";
+		res.append("))");
 		
-		return res;
+		return res.toString();
 	}
 
     

@@ -236,17 +236,15 @@ remove_trajectory(Link) :-
 %
 add_human_pose(Timepoint) :-
     v_canvas(Canvas),
-     
     jpl_call(Canvas, 'addHumanPose', [Timepoint], _).
 
 %% remove_human_pose() is det.
 %
 % Removes all human pose visualizations from the visualization canvas.
 %
-remove_human_pose() :-
-    v_canvas(Canvas),
-     
-    jpl_call(Canvas, 'removeHumanPose', [], _).
+%remove_human_pose() :-
+%    v_canvas(Canvas),
+%    jpl_call(Canvas, 'removeHumanPose', [], _).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
