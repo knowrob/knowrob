@@ -248,25 +248,25 @@ set_perception_cov(Perception, [M00, M01, M02, M03, M04, M05, M10, M11, M12, M13
 
 
 
-%% compatible_obj_types(?A, ?B) is det.
-%
-% Check if the CoP results A and B are compatible.
-%
-% This predicate maps the returned classes against KnowRob classes and determines
-% if these classes are disjoint (i.e. the results are incompatible)
-%
-% Example: compatible_obj_types('green', 'Knife')  are compatible results
-%          compatible_obj_types('green', 'orange') are incompatible
-%
-% @param CopIdentifier     Atom identifying something in CoP
-% @param KnowrobIdentifier Corresponding atom identifying something in KnowRob
-%
-compatible_obj_types(A, B) :-
-  ((nonvar(A))->(downcase_atom(A, Alower));(Alower=A)),
-  ((nonvar(B))->(downcase_atom(B, Blower));(Blower=B)),
-
-  cop_to_knowrob(Alower, Akr),
-  cop_to_knowrob(Blower, Bkr),
-  not(owl_disjoint_with(Akr, Bkr)).
+% % %% compatible_obj_types(?A, ?B) is det.
+% % %
+% % % Check if the CoP results A and B are compatible.
+% % %
+% % % This predicate maps the returned classes against KnowRob classes and determines
+% % % if these classes are disjoint (i.e. the results are incompatible)
+% % %
+% % % Example: compatible_obj_types('green', 'Knife')  are compatible results
+% % %          compatible_obj_types('green', 'orange') are incompatible
+% % %
+% % % @param CopIdentifier     Atom identifying something in CoP
+% % % @param KnowrobIdentifier Corresponding atom identifying something in KnowRob
+% % %
+% % compatible_obj_types(A, B) :-
+% %   ((nonvar(A))->(downcase_atom(A, Alower));(Alower=A)),
+% %   ((nonvar(B))->(downcase_atom(B, Blower));(Blower=B)),
+% % 
+% %   cop_to_knowrob(Alower, Akr),
+% %   cop_to_knowrob(Blower, Bkr),
+% %   not(owl_disjoint_with(Akr, Bkr)).
 
 

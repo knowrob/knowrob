@@ -212,14 +212,17 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 *
 	 * @param identifier OWL identifier of an object instance
 	 * @param highlight True to set, False to remove highlight
-	 * @param color Integer of the form #AARRGGBB
+	 * @param color String of the form #RRGGBB
 	 */
-	public void highlight(String identifier, boolean highlight, int color) {
-		int a = color & 0xff000000 >> 24;
-		int r = color & 0x00ff0000 >> 16;
-		int g = color & 0x0000ff00 >> 8;
-		int b = color & 0x000000ff;
-		highlight(identifier, highlight, r, g, b, a);
+	public void highlight(String identifier, boolean highlight, String color) {
+
+		int col = Integer.valueOf(color, 16);
+		
+		int r = (col & 0xff0000) >> 16;
+		int g = (col & 0x00ff00) >> 8;
+		int b = (col & 0x0000ff);
+		
+		highlight(identifier, highlight, r, g, b, 255);
 	}
 
 
@@ -263,6 +266,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	}
 
 
+
 	/**
 	 * Highlight the object 'identifier' and its children in red
 	 *
@@ -270,13 +274,24 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @param highlight True to set, False to remove highlight
 	 */
 	public void highlightWithChildren(String identifier, boolean highlight) {
+		highlightWithChildren(identifier, highlight, "ff0000");
+	}
+	
+	/**
+	 * Highlight the object 'identifier' and its children in the given color
+	 *
+	 * @param identifier OWL identifier of an object instance
+	 * @param highlight True to set, False to remove highlight
+	 * @param color Integer of the form #AARRGGBB
+	 */
+	public void highlightWithChildren(String identifier, boolean highlight, String color) {
 
 		// remove this object
-		highlight(identifier, highlight);
+		highlight(identifier, highlight, color);
 
 		// remove children and highlight them too
 		for(String child : readChildren(identifier)) {
-			highlight(child, highlight);
+			highlight(child, highlight, color);
 		}
 		publishMarkers();
 	}

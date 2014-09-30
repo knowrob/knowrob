@@ -392,8 +392,8 @@ public class TFMemory {
 		Date end   = new Date((long) (date.getTime() + 500));
 
 		// read all frames in time slice
-		query = QueryBuilder.start("__recorded").greaterThanEquals( start )
-							.and("__recorded").lessThan( end )
+		query = QueryBuilder.start("transforms.header.stamp").greaterThanEquals( start )
+							.and("transforms.header.stamp").lessThan( end )
 							.get();
 
 		// TODO: check if we can read only the latest transforms for the child frame
