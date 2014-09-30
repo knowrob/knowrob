@@ -426,3 +426,84 @@ obj_blocked_by_in_camera(Obj, Blocker, Camera, TimePoint) :-
   abs(ObjBearingY - BlkBearingY) < 10/360 * 2 * pi.
 
 
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%
+% designator matches predicate 
+% 
+
+%% desig_list_to_query(+ConstrList, +Prefix, -QueryStringList)
+%
+%
+%
+%
+% @param ConstrList       List of constraints of the form [Key, Val], while Val may either be an atom or a nested list
+% @param Prefix           Prefix to be used for constructing the resulting query strings
+% @param QueryStringList  List of key-value pairs to be used in a MongoDB query, e.g.  'producer.company'-'ABC123'
+% 
+
+% special list starts:
+desig_list_to_query(DesigList, Prefix, QueryStringList) :-
+
+    once( (member(Pre, [[an, action], [an, object], [a, location]]),
+           append(Pre, Rest, DesigList)) ),
+
+    findall(QSL, (member(Desig, Rest),
+                  once(desig_list_to_query(Desig, Prefix, QSL))), QueryStringList).
+
+
+% TODO: problem
+%  - add 'OBJ' if 'an object' appears in the middle of a query
+%  - do not add this when the query starts with that 
+
+                  
+                  
+% [an, action [type, navigation],
+%             [goal, [a, location,
+%                        [to, see],
+%                        [an, object,
+%                             [type, 'PANCAKEMIX']]]]]
+
+    
+    
+
+% simple case: normal key/value pair
+desig_list_to_query([Key, Val], Prefix, Str-LispVal) :-
+    atom(Key), atom(Val),
+
+    once(lispify_desig(Key, LispKey)),
+    once(lispify_desig(Val, LispVal)),
+
+    atomic_list_concat([Prefix, '.', LispKey], Str).
+
+
+% recursive case: value is a list, we have to iterate
+desig_list_to_query([Key, Val], Prefix, QueryStringList) :-
+    atom(Key), is_list(Val),
+
+    once(lispify_desig(Key, LispKey)),
+    atomic_list_concat([Prefix, '.', LispKey], NewPrefix),
+    
+    desig_list_to_query(Val, NewPrefix, QueryStringList).
+    
+
+
+% mapping from query language to designator slots
+lispify_desig('object_acted_on', 'OBJ').
+
+% default: do not modify value
+lispify_desig(A, A).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
