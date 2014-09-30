@@ -73,7 +73,7 @@ rdf_instance_from_class(Class, Instance) :-
 
 
 
-%% rdf_instance_from_class(+Class, +SourceRef -Inst) is nondet.
+%% rdf_instance_from_class(+Class, +SourceRef, -Inst) is nondet.
 %
 % Utility predicate to generate unique instance identifiers using
 % the source reference SourceRef for rdf_assert
