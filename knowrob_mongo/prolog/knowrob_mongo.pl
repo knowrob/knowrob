@@ -432,6 +432,31 @@ obj_blocked_by_in_camera(Obj, Blocker, Camera, TimePoint) :-
 % designator matches predicate 
 % 
 
+
+
+mng_desig_matches(Designator, QueryPattern) :-
+
+  % convert query pattern into list of query strings suitable for MongoDB queries
+  desig_list_to_query(QueryPattern, 'designator', QueryStrings),
+  pairs_keys_values(QueryStrings, QueryKeys, QueryValues),
+
+  % send MongoDB query:
+  mongo_interface(DB),
+  jpl_call(DB, 'getDesignatorByID', [QueryKeys, QueryValues], DesigJavaList),
+
+  member(DesigJava, DesigJavaList),
+  jpl_call(DesigJava, 'get', ['_id'], DesigID),
+  rdf_split_url('http://knowrob.org/kb/cram_log.owl#', DesigID, Designator).
+
+                  
+% [an, action, [TYPE, NAVIGATION],
+%             [GOAL, [a, location,
+%                        [TO, SEE],
+%                        [OBJECT_ACTED_ON,
+%                             [TYPE, 'PANCAKEMIX']]]]]
+
+
+
 %% desig_list_to_query(+ConstrList, +Prefix, -QueryStringList)
 %
 %
@@ -440,7 +465,7 @@ obj_blocked_by_in_camera(Obj, Blocker, Camera, TimePoint) :-
 % @param ConstrList       List of constraints of the form [Key, Val], while Val may either be an atom or a nested list
 % @param Prefix           Prefix to be used for constructing the resulting query strings
 % @param QueryStringList  List of key-value pairs to be used in a MongoDB query, e.g.  'producer.company'-'ABC123'
-% 
+%
 
 % special list starts:
 desig_list_to_query(DesigList, Prefix, QueryStringList) :-
@@ -449,23 +474,12 @@ desig_list_to_query(DesigList, Prefix, QueryStringList) :-
            append(Pre, Rest, DesigList)) ),
 
     findall(QSL, (member(Desig, Rest),
-                  once(desig_list_to_query(Desig, Prefix, QSL))), QueryStringList).
+                  once(desig_list_to_query(Desig, Prefix, QSL))), QueryStringLists),
+
+    flatten(QueryStringLists, QueryStringList).
 
 
-% TODO: problem
-%  - add 'OBJ' if 'an object' appears in the middle of a query
-%  - do not add this when the query starts with that 
 
-                  
-                  
-% [an, action [type, navigation],
-%             [goal, [a, location,
-%                        [to, see],
-%                        [an, object,
-%                             [type, 'PANCAKEMIX']]]]]
-
-    
-    
 
 % simple case: normal key/value pair
 desig_list_to_query([Key, Val], Prefix, Str-LispVal) :-
