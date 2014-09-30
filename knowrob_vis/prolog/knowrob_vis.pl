@@ -255,7 +255,7 @@ remove_trajectory(Link) :-
 %
 highlight_object(Identifier) :-
     v_canvas(Canvas),
-    jpl_call(Canvas, 'highlight', [Identifier, @(true), 'ff00ff00'], _).
+    jpl_call(Canvas, 'highlight', [Identifier, @(true)], _).
 
 highlight_object(Identifier, Highlight) :-
     v_canvas(Canvas),

@@ -213,8 +213,6 @@ public class MarkerVisualization extends AbstractNodeMain {
 		int g = (col & 0x00ff00) >> 8;
 		int b = (col & 0x0000ff);
 		
-		System.err.println("RGBA: ["+r+","+g+","+b+"]");
-		
 		highlight(identifier, highlight, r, g, b, 255);
 	}
 
@@ -267,7 +265,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @param highlight True to set, False to remove highlight
 	 */
 	public void highlightWithChildren(String identifier, boolean highlight) {
-		highlightWithChildren(identifier, highlight, "ffff0000");
+		highlightWithChildren(identifier, highlight, "ff0000");
 	}
 	
 	/**
