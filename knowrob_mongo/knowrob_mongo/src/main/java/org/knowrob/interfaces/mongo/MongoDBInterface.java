@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.vecmath.Matrix4d;
 
@@ -134,13 +135,13 @@ public class MongoDBInterface {
 	 * @param values Strings of values that these fields need to have
 	 * @return List of @Designator data structures that match the query expressions
 	 */
-	public Designator[] getDesignatorsByPattern(ArrayList<String> keys, ArrayList<String> values) {
+	public Designator[] getDesignatorsByPattern(String[] keys, String[] values) {
 		
 		DBCollection coll = db.getCollection("logged_designators");
 		
 		QueryBuilder qb = QueryBuilder.start("designator").exists("_id");
-		for(int i=0; i<keys.size(); i++) {
-			qb = qb.and(keys.get(i)).is(values.get(i));
+		for(int i=0; i<keys.length; i++) {
+			qb = qb.and(keys[i]).is(Pattern.compile(values[i],Pattern.CASE_INSENSITIVE)); // pattern for case insensitive matching
 		}
 		
 		DBObject query = qb.get();
@@ -293,7 +294,9 @@ public class MongoDBInterface {
 		v.add("SEE");
 		v.add("PANCAKEMIX");
 		
-		Designator[] res = m.getDesignatorsByPattern(k, v);
+		Designator[] res = m.getDesignatorsByPattern(
+				new String[]{"designator.TYPE", "designator.GOAL.TO", "designator.GOAL.OBJ.TYPE"}, 
+				new String[]{"navigation", "see", "PANCAKEMIX"});
 		
 		System.out.println(res.length);
 

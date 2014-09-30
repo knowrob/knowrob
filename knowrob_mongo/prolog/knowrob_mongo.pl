@@ -54,6 +54,11 @@
     mng_comp_pose(r, r),
     mng_comp_pose_at_time(r, +, r, r),
 
+    mng_desig_matches(r, +),
+    mng_obj_pose_by_desig(r,r),
+    mng_designator_props(r,?),
+    mng_designator_type(r,?),
+
     obj_blocked_by_in_camera(r, r, r, r),
     obj_visible_in_camera(r, r, r).
 
@@ -430,37 +435,45 @@ obj_blocked_by_in_camera(Obj, Blocker, Camera, TimePoint) :-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
 % designator matches predicate 
+%
+
+
+%% mng_desig_matches(?Designator, +QueryPattern) is nondet.
+%
+% This predicate allows to retrieve designators from the log database that
+% match a query pattern given as nested lists of key-value pairs. An example
+% of such a query pattern may look like 
+% [an, action, [type, navigation], [goal, [a, location, [to, see], [object_acted_on, [type, 'PANCAKEMIX']]]]]
+%
+% @param Designator    Designator instance that matches the pattern
+% @param QueryPattern  Query pattern as nested lists
 % 
-
-
-
 mng_desig_matches(Designator, QueryPattern) :-
 
   % convert query pattern into list of query strings suitable for MongoDB queries
   desig_list_to_query(QueryPattern, 'designator', QueryStrings),
   pairs_keys_values(QueryStrings, QueryKeys, QueryValues),
 
+  jpl_list_to_array(QueryKeys, QueryKeysArr),
+  jpl_list_to_array(QueryValues, QueryValuesArr),
+  
   % send MongoDB query:
   mongo_interface(DB),
-  jpl_call(DB, 'getDesignatorByID', [QueryKeys, QueryValues], DesigJavaList),
+  jpl_call(DB, 'getDesignatorsByPattern', [QueryKeysArr, QueryValuesArr], DesigJavaArr),
 
+  jpl_array_to_list(DesigJavaArr, DesigJavaList),
+  
   member(DesigJava, DesigJavaList),
   jpl_call(DesigJava, 'get', ['_id'], DesigID),
   rdf_split_url('http://knowrob.org/kb/cram_log.owl#', DesigID, Designator).
 
-                  
-% [an, action, [TYPE, NAVIGATION],
-%             [GOAL, [a, location,
-%                        [TO, SEE],
-%                        [OBJECT_ACTED_ON,
-%                             [TYPE, 'PANCAKEMIX']]]]]
-
-
 
 %% desig_list_to_query(+ConstrList, +Prefix, -QueryStringList)
 %
-%
-%
+% Generate a list of query strings that can be used to send queries
+% to MongoDB. The keys are chained hierarchically using the dot
+% notation. Both keys and values are converted by the lispify_desig
+% predicate that, by default, converts them to UPPERCASE.
 %
 % @param ConstrList       List of constraints of the form [Key, Val], while Val may either be an atom or a nested list
 % @param Prefix           Prefix to be used for constructing the resulting query strings
@@ -477,8 +490,6 @@ desig_list_to_query(DesigList, Prefix, QueryStringList) :-
                   once(desig_list_to_query(Desig, Prefix, QSL))), QueryStringLists),
 
     flatten(QueryStringLists, QueryStringList).
-
-
 
 
 % simple case: normal key/value pair
@@ -502,22 +513,20 @@ desig_list_to_query([Key, Val], Prefix, QueryStringList) :-
     
 
 
-% mapping from query language to designator slots
+%% lispify_desig(?QueryVal, ?LispVal) is det.
+%
+% Convert values in the query language to the corresponding Lisp
+% identifiers. Special transforms can be defined, while the default
+% is just to convert the values to UPPERCASE.
+%
+% @param QueryVal  Identifier in the query language
+% @param LispVal   Identifier used in Lisp and in the MongoDB logs
+%
+
 lispify_desig('object_acted_on', 'OBJ').
 
 % default: do not modify value
-lispify_desig(A, A).
-
-
-
-
-
-
-
-
-
-
-
-
+lispify_desig(A, CapA) :-
+  upcase_atom(A, CapA).
 
 
