@@ -742,36 +742,37 @@ delete_object_information_recursive(Object) :-
 %
 
 
-%% holds_tt(+Goal, +StartEndList) is nondet.
-%
-% General definition of holds_tt that uses holds(..) to check if a relation
-% holds throughout a time span (i.e. for each time point during the time span)
-%
-% @param Goal  The goal that is to be checked
-% @param StartEndList Start time and end time of the time span under consideration [Start, End]
-%
-holds_tt(Goal, [Start, End]) :-
-
-    rdf_assert(knowrob:'holds_tt', rdf:type, knowrob:'TimeInterval'),
-    rdf_assert(knowrob:'holds_tt', knowrob:startTime, Start),
-    rdf_assert(knowrob:'holds_tt', knowrob:endTime,   End),
-
-    holds(Goal, Start),
-    holds(Goal, End),
-
-% TODO: update this in order to use the linked list (go back until end time, then collect until start time)
-
-    % find all detections of the objects at hand
-    arg(1, Goal, Arg1),arg(2, Goal, Arg2),
-    findall([D_i,Arg1], ( (rdf_has(D_i, knowrob:objectActedOn, Arg1);rdf_has(D_i, knowrob:objectActedOn, Arg2)),
-                           rdfs_individual_of(D_i,  knowrob:'MentalEvent')), Detections),
-
-      forall( ( member(D_O, Detections), nth0(0, D_O, Detection),
-                rdf_triple(knowrob:startTime, Detection, DStT),
-                rdf_triple(knowrob:temporallySubsumes, knowrob:'holds_tt', DStT) ), % MT: change this line to get rid of asserts?
-              holds(Goal, DStT) ),
-
-    rdf_retractall(knowrob:'holds_tt', _, _).
+% MT: commented since there is no generic 'holds' implementation, which causes a warning
+% % %% holds_tt(+Goal, +StartEndList) is nondet.
+% % %
+% % % General definition of holds_tt that uses holds(..) to check if a relation
+% % % holds throughout a time span (i.e. for each time point during the time span)
+% % %
+% % % @param Goal  The goal that is to be checked
+% % % @param StartEndList Start time and end time of the time span under consideration [Start, End]
+% % %
+% % % holds_tt(Goal, [Start, End]) :-
+% % % 
+% % %     rdf_assert(knowrob:'holds_tt', rdf:type, knowrob:'TimeInterval'),
+% % %     rdf_assert(knowrob:'holds_tt', knowrob:startTime, Start),
+% % %     rdf_assert(knowrob:'holds_tt', knowrob:endTime,   End),
+% % % 
+% % %     holds(Goal, Start),
+% % %     holds(Goal, End),
+% % % 
+% % % % TODO: update this in order to use the linked list (go back until end time, then collect until start time)
+% % % 
+% % %     % find all detections of the objects at hand
+% % %     arg(1, Goal, Arg1),arg(2, Goal, Arg2),
+% % %     findall([D_i,Arg1], ( (rdf_has(D_i, knowrob:objectActedOn, Arg1);rdf_has(D_i, knowrob:objectActedOn, Arg2)),
+% % %                            rdfs_individual_of(D_i,  knowrob:'MentalEvent')), Detections),
+% % % 
+% % %       forall( ( member(D_O, Detections), nth0(0, D_O, Detection),
+% % %                 rdf_triple(knowrob:startTime, Detection, DStT),
+% % %                 rdf_triple(knowrob:temporallySubsumes, knowrob:'holds_tt', DStT) ), % MT: change this line to get rid of asserts?
+% % %               holds(Goal, DStT) ),
+% % % 
+% % %     rdf_retractall(knowrob:'holds_tt', _, _).
 
 
 
