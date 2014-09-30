@@ -102,6 +102,7 @@ public class MongoDBInterface {
 	 * @return Instance of a Designator
 	 */
 	public Designator getDesignatorByID(String designator) {
+		
 		DBCollection coll = db.getCollection("logged_designators");
 		DBObject query = QueryBuilder
 				.start("designator._id").is(designator).get();
@@ -120,6 +121,47 @@ public class MongoDBInterface {
 		cursor.close();
 		
 		return null;
+	}
+	
+	/**
+	 * Read designators based on the given filter pattern. The strings in the
+	 * keys and values lists are AND-joined to form query expressions for MongoDB.
+	 * 
+	 * K = ['designator.TYPE','designator.GOAL.TO','designator.GOAL.OBJ.TYPE']
+	 * V = [NAVIGATION,SEE,PANCAKEMIX].
+	 * 
+	 * @param keys Strings describing fields in a document using the dot notation 
+	 * @param values Strings of values that these fields need to have
+	 * @return List of @Designator data structures that match the query expressions
+	 */
+	public Designator[] getDesignatorsByPattern(ArrayList<String> keys, ArrayList<String> values) {
+		
+		DBCollection coll = db.getCollection("logged_designators");
+		
+		QueryBuilder qb = QueryBuilder.start("designator").exists("_id");
+		for(int i=0; i<keys.size(); i++) {
+			qb = qb.and(keys.get(i)).is(values.get(i));
+		}
+		
+		DBObject query = qb.get();
+		
+		DBObject cols  = new BasicDBObject();
+		cols.put("__recorded", 1 );		
+		cols.put("designator", 1 );
+
+		DBCursor cursor = coll.find(query, cols);
+
+		Designator[] res = new Designator[cursor.size()];
+		int r=0;
+		
+		while(cursor.hasNext()) {
+			DBObject row = cursor.next();
+			Designator desig = new Designator().readFromDBObject((BasicDBObject) row.get("designator"));
+			res[r++]=desig;
+		}
+		cursor.close();
+		
+		return res;
 	}
 
 
@@ -234,8 +276,26 @@ public class MongoDBInterface {
 
 	public static void main(String[] args) {
 
-//		MongoDBInterface m = new MongoDBInterface();
+		MongoDBInterface m = new MongoDBInterface();
 
+		Designator d = m.getDesignatorByID("designator_C4yixt3iPwKHCt");
+		
+		
+		ArrayList<String> k = new ArrayList<String>();
+		ArrayList<String> v = new ArrayList<String>();
+		
+		
+		k.add("designator.TYPE");
+		k.add("designator.GOAL.TO");
+		k.add("designator.GOAL.OBJ.TYPE");
+
+		v.add("NAVIGATION");
+		v.add("SEE");
+		v.add("PANCAKEMIX");
+		
+		Designator[] res = m.getDesignatorsByPattern(k, v);
+		
+		System.out.println(res.length);
 
 		// test transformation lookup based on DB information
 
@@ -246,25 +306,25 @@ public class MongoDBInterface {
 
 
 
-		Time t_st  = new Time(1392799358);
-		Time t_end = new Time(1392799363);
-
-		long t0 = System.nanoTime();
-		TFMemory tf = TFMemory.getInstance();
-		System.out.println(tf.lookupTransform("/base_link", "/l_gripper_palm_link", t_end));
-		long t1 = System.nanoTime();
-		System.out.println(tf.lookupTransform("/base_link", "/l_gripper_palm_link", t_end));
-		long t2 = System.nanoTime();
-		System.out.println(tf.lookupTransform("/base_link", "/l_gripper_palm_link", t_st));
-		long t3 = System.nanoTime();
-
-		double first  = (t1-t0)/ 1E9;
-		double second = (t2-t1)/ 1E9;
-		double third  = (t3-t2)/ 1E9;
-		
-		System.out.println("Time to look up first transform: " + first + "ms");
-		System.out.println("Time to look up second transform: " + second + "ms");
-		System.out.println("Time to look up second transform: " + third + "ms");
+//		Time t_st  = new Time(1392799358);
+//		Time t_end = new Time(1392799363);
+//
+//		long t0 = System.nanoTime();
+//		TFMemory tf = TFMemory.getInstance();
+//		System.out.println(tf.lookupTransform("/base_link", "/l_gripper_palm_link", t_end));
+//		long t1 = System.nanoTime();
+//		System.out.println(tf.lookupTransform("/base_link", "/l_gripper_palm_link", t_end));
+//		long t2 = System.nanoTime();
+//		System.out.println(tf.lookupTransform("/base_link", "/l_gripper_palm_link", t_st));
+//		long t3 = System.nanoTime();
+//
+//		double first  = (t1-t0)/ 1E9;
+//		double second = (t2-t1)/ 1E9;
+//		double third  = (t3-t2)/ 1E9;
+//		
+//		System.out.println("Time to look up first transform: " + first + "ms");
+//		System.out.println("Time to look up second transform: " + second + "ms");
+//		System.out.println("Time to look up second transform: " + third + "ms");
 
 		// test lookupTransform wrapper
 //		trans = m.lookupTransform("/map", "/head_mount_kinect_ir_link", 1377766521);
