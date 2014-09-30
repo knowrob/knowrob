@@ -277,57 +277,57 @@ public class MongoDBInterface {
 
 	public static void main(String[] args) {
 
-		MongoDBInterface m = new MongoDBInterface();
-
-		Designator d = m.getDesignatorByID("designator_C4yixt3iPwKHCt");
-		
-		
-		ArrayList<String> k = new ArrayList<String>();
-		ArrayList<String> v = new ArrayList<String>();
-		
-		
-		k.add("designator.TYPE");
-		k.add("designator.GOAL.TO");
-		k.add("designator.GOAL.OBJ.TYPE");
-
-		v.add("NAVIGATION");
-		v.add("SEE");
-		v.add("PANCAKEMIX");
-		
-		Designator[] res = m.getDesignatorsByPattern(
-				new String[]{"designator.TYPE", "designator.GOAL.TO", "designator.GOAL.OBJ.TYPE"}, 
-				new String[]{"navigation", "see", "PANCAKEMIX"});
-		
-		System.out.println(res.length);
+//		MongoDBInterface m = new MongoDBInterface();
+//
+//		Designator d = m.getDesignatorByID("designator_C4yixt3iPwKHCt");
+//		
+//		
+//		ArrayList<String> k = new ArrayList<String>();
+//		ArrayList<String> v = new ArrayList<String>();
+//		
+//		
+//		k.add("designator.TYPE");
+//		k.add("designator.GOAL.TO");
+//		k.add("designator.GOAL.OBJ.TYPE");
+//
+//		v.add("NAVIGATION");
+//		v.add("SEE");
+//		v.add("PANCAKEMIX");
+//		
+//		Designator[] res = m.getDesignatorsByPattern(
+//				new String[]{"designator.TYPE", "designator.GOAL.TO", "designator.GOAL.OBJ.TYPE"}, 
+//				new String[]{"navigation", "see", "PANCAKEMIX"});
+//		
+//		System.out.println(res.length);
 
 		// test transformation lookup based on DB information
 
 //		Timestamp timestamp = Timestamp.valueOf("2013-07-26 14:27:22.0");
-//		Time t = new Time(1377766521);
-//		Time t = new Time(1383143712); // no
-//		Time t = new Time(1383144279);  //1
+//		Time t = new Time(1396512420);
+//		Time t = new Time(1396512422); // no
+//		Time t = new Time(1396512424);  //1
 
 
 
-//		Time t_st  = new Time(1392799358);
-//		Time t_end = new Time(1392799363);
-//
-//		long t0 = System.nanoTime();
-//		TFMemory tf = TFMemory.getInstance();
-//		System.out.println(tf.lookupTransform("/base_link", "/l_gripper_palm_link", t_end));
-//		long t1 = System.nanoTime();
-//		System.out.println(tf.lookupTransform("/base_link", "/l_gripper_palm_link", t_end));
-//		long t2 = System.nanoTime();
-//		System.out.println(tf.lookupTransform("/base_link", "/l_gripper_palm_link", t_st));
-//		long t3 = System.nanoTime();
-//
-//		double first  = (t1-t0)/ 1E9;
-//		double second = (t2-t1)/ 1E9;
-//		double third  = (t3-t2)/ 1E9;
-//		
-//		System.out.println("Time to look up first transform: " + first + "ms");
-//		System.out.println("Time to look up second transform: " + second + "ms");
-//		System.out.println("Time to look up second transform: " + third + "ms");
+		Time t_st  = new Time(1396512420);
+		Time t_end = new Time(1396512422);
+
+		long t0 = System.nanoTime();
+		TFMemory tf = TFMemory.getInstance();
+		System.out.println(tf.lookupTransform("/base_link", "/l_gripper_palm_link", t_st));
+		long t1 = System.nanoTime();
+		System.out.println(tf.lookupTransform("/base_link", "/l_gripper_palm_link", t_end));
+		long t2 = System.nanoTime();
+		System.out.println(tf.lookupTransform("/base_link", "/l_gripper_palm_link", t_st));
+		long t3 = System.nanoTime();
+
+		double first  = (t1-t0)/ 1E6;
+		double second = (t2-t1)/ 1E6;
+		double third  = (t3-t2)/ 1E6;
+		
+		System.out.println("Time to look up first transform: " + first + "ms");
+		System.out.println("Time to look up second transform: " + second + "ms");
+		System.out.println("Time to look up second transform: " + third + "ms");
 
 		// test lookupTransform wrapper
 //		trans = m.lookupTransform("/map", "/head_mount_kinect_ir_link", 1377766521);
