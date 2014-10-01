@@ -25,6 +25,8 @@
       mng_lookup_transform/4,
       mng_transform_pose/5,
 
+      mng_timestamp/2,
+
       mng_robot_pose/2,
       mng_robot_pose_at_time/4,
       mng_comp_pose/2,
@@ -53,6 +55,8 @@
     mng_robot_pose_at_time(r, +, r, r),
     mng_comp_pose(r, r),
     mng_comp_pose_at_time(r, +, r, r),
+
+    mng_timestamp(r, r),
 
     mng_desig_matches(r, +),
     mng_obj_pose_by_desig(r,r),
@@ -237,6 +241,17 @@ mng_transform_pose(PoseListIn, SourceFrame, TargetFrame, TimePoint, PoseListOut)
   jpl_call(StampedOut, 'getData', [], MatrixOut2),
   knowrob_coordinates:matrix4d_to_list(MatrixOut2, PoseListOut).
 
+%% mng_timestamp(+Date, -Stamp) is nondet.
+%
+% Computes a timestamp that corresponds to the specified date.
+% date format must be as follows: "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+%
+% @param Date        String representation of a date
+% @param Stamp       Floating point timestamp that represents the date
+%
+mng_timestamp(Date, Stamp) :-
+  mongo_interface(DB),
+  jpl_call(DB, 'getMongoTimestamp', [Date], Stamp).
 
 %% mng_robot_pose(+Robot, -Pose) is nondet.
 %

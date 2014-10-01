@@ -2,6 +2,7 @@ package org.knowrob.interfaces.mongo;
 
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,6 +38,8 @@ public class MongoDBInterface {
 
 	TFMemory mem;
 
+	final SimpleDateFormat mongoDateFormat;
+	
 	/**
 	 * Constructor
 	 *
@@ -47,6 +50,10 @@ public class MongoDBInterface {
 
 		String host = "localhost";
 		int port = 27017;
+		
+		// Format of dates as saved in mongo
+		mongoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+		mongoDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 		
 		// check if MONGO_PORT_27017_TCP_ADDR and MONGO_PORT_27017_TCP_PORT 
 		// environment variables are set
@@ -277,6 +284,18 @@ public class MongoDBInterface {
 			cursor.close();
 		}
 		return poseMatrix;
+	}
+
+	/**
+	 * Computes a timestamp that corresponds to the specified date.
+	 * date format must be as follows: "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+	 * @throws ParseException 
+	 */
+	public String getMongoTimestamp(String date) throws ParseException {
+		// Avoid scientific notation
+		DecimalFormat df = new DecimalFormat("#");
+		df.setMaximumFractionDigits(9);
+		return df.format(mongoDateFormat.parse(date).getTime()/1000.0);
 	}
 
 	public static void main(String[] args) {

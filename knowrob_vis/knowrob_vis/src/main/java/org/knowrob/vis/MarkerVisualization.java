@@ -1,17 +1,13 @@
 package org.knowrob.vis;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Quat4d;
@@ -30,7 +26,6 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.knowrob.interfaces.mongo.types.ISODate;
 import org.knowrob.owl.OWLThing;
 import org.knowrob.prolog.PrologInterface;
 import org.knowrob.tfmemory.TFMemory;
