@@ -864,9 +864,6 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * and returns a Time object.
 	 */
 	private Time parseTime(String timepoint) {
-
-		log.error("input time " + timepoint);
-		
 		String x[] = timepoint.split("timepoint_");
 		// Also allow input strings without 'timepoint_' prefix
 		String tsX = (x.length==1 ? x[0] : x[1]);
