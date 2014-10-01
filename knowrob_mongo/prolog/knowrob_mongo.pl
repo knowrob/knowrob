@@ -20,6 +20,7 @@
       mng_latest_designator_before_time/3,
       mng_designator_type/2,
       mng_designator_props/3,
+      mng_desig_matches/2,
       mng_obj_pose_by_desig/2,
 
       mng_lookup_transform/4,
