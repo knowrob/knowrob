@@ -167,9 +167,10 @@ public class TFMemory {
 	protected boolean setTransform(BasicDBObject db_transform) {
 
 		// resolve the frame ID's
-		String childFrameID = assertResolved("", (String) db_transform.get("child_frame_id"));
-		String frameID = assertResolved("", (String) ((BasicDBObject) db_transform.get("header")).get("frame_id"));
-
+		String childFrameID = assertResolved("",
+				getFrameName(db_transform.get("child_frame_id")));
+		String frameID = assertResolved("",
+				getFrameName(((BasicDBObject) db_transform.get("header")).get("frame_id")));
 
 		boolean errorExists = false;
 		if (childFrameID == frameID) {
@@ -194,9 +195,7 @@ public class TFMemory {
 		Frame childFrame  = lookupOrInsertFrame(childFrameID);
 		Frame parentFrame = lookupOrInsertFrame(frameID);
 
-
 		TransformStorage tf = new TransformStorage().readFromDBObject(db_transform, childFrame, parentFrame);
-
 
 		// try to insert tf in corresponding time cache. If result is FALSE, the tf contains old data.
 		if (!childFrame.insertData(tf)) {
@@ -281,21 +280,18 @@ public class TFMemory {
 	 * null if no transformation could be found.
 	 */
 	public StampedTransform lookupTransform(String targetFrameID, String sourceFrameID, Time time) {
-
 		// resolve the source and target IDs
 		String resolvedTargetID = assertResolved("", targetFrameID);
 		String resolvedSourceID = assertResolved("", sourceFrameID);
 
 		// if source and target are the same, return the identity transform
-		if (resolvedSourceID == resolvedTargetID) {
+		if (resolvedSourceID.equals(resolvedTargetID)) {
 			StampedTransform out = StampedTransform.getIdentity();
 			out.timeStamp = time;
 			out.frameID = resolvedSourceID;
 			out.childFrameID = resolvedTargetID;
 			return out;
 		}
-
-
 
 		// load data from DB if the current time point is already in the buffer
 		Frame sourceFrame = verifyDataAvailable(time, resolvedSourceID);
@@ -421,6 +417,7 @@ public class TFMemory {
 		} finally {
 			cursor.close();
 		}
+		
 		return res;
 	}
 
@@ -693,5 +690,16 @@ public class TFMemory {
 		}  else {
 			return "/" + frameID;
 		}
+	}
+	
+	/**
+	 * Makes sure that frame name starts with '/'
+	 */
+	private String getFrameName(Object obj) {
+		String out = obj.toString();
+		if(out.startsWith("/"))
+			return out;
+		else
+			return "/"+out;
 	}
 }

@@ -49,7 +49,8 @@
       clear_diagram_canvas/0,
       add_trajectory/3,
       add_trajectory/4,
-      remove_trajectory/1
+      remove_trajectory/1,
+      add_human_pose/1
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -73,6 +74,7 @@
             highlight_object_with_children(r,?,?),
             add_diagram(+,+,+,+,+,+,+,+,+),
             remove_diagram(+),
+            add_human_pose(r),
             add_trajectory(r,r,r),
             add_trajectory(r,r,r,+).
 

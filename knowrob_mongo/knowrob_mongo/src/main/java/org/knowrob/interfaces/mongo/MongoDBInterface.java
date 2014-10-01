@@ -1,10 +1,14 @@
 package org.knowrob.interfaces.mongo;
 
 import java.net.UnknownHostException;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 import javax.vecmath.Matrix4d;
@@ -307,14 +311,35 @@ public class MongoDBInterface {
 //		Time t = new Time(1396512422); // no
 //		Time t = new Time(1396512424);  //1
 
+		TFMemory tf = TFMemory.getInstance();
+
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+			Date date = sdf.parse("2014-04-30 13:31:51.224");
+			Time t = new Time(date.getTime()/1000.0);
+			System.out.println("UTC " + date + " -> " + date.getTime()/1000.0);
+			sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+			date = sdf.parse("2014-04-30 13:31:51.224");
+			System.out.println("GMT " + date + " -> " + date.getTime()/1000.0);
+			
+			t = new Time(date.getTime()/1000.0);
+			
+			System.out.println(tf.lookupTransform("/map", "/RightHand", t));
+		}
+		catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		Timestamp timestamp = Timestamp.valueOf("2014-08-27 13:30:35.0");
+		Time t = new Time(timestamp.getTime());  //1
+		System.out.println(timestamp.getTime());
 
 
 		Time t_st  = new Time(1396512420);
 		Time t_end = new Time(1396512422);
 
 		long t0 = System.nanoTime();
-		TFMemory tf = TFMemory.getInstance();
-		System.out.println(tf.lookupTransform("/base_link", "/l_gripper_palm_link", t_st));
+		System.out.println(tf.lookupTransform("/base_link", "/l_gripper_palm_link", t_end));
 		long t1 = System.nanoTime();
 		System.out.println(tf.lookupTransform("/base_link", "/l_gripper_palm_link", t_end));
 		long t2 = System.nanoTime();

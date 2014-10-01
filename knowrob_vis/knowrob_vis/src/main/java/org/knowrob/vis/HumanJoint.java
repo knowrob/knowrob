@@ -59,13 +59,12 @@ public class HumanJoint {
 	public StampedTransform lookupPose(Time time) {
 		// Use last transform if time point didn't changed
 		// since last call
+		
 		if(!lastTime.equals(time)) {
 			lastTime = time;
-			
-			TFMemory tf = TFMemory.getInstance();
-			
-			lastTransform = tf.lookupTransform(targetFrame, sourceFrame, time);
+			lastTransform = TFMemory.getInstance().lookupTransform(targetFrame, sourceFrame, time);
 		}
+		
 		return lastTransform;
 	}
 }

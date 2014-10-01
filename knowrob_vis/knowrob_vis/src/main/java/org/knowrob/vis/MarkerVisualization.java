@@ -1,13 +1,17 @@
 package org.knowrob.vis;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Quat4d;
@@ -20,11 +24,13 @@ import org.ros.namespace.GraphName;
 import org.ros.node.AbstractNodeMain;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Publisher;
+import org.apache.commons.logging.Log;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.knowrob.interfaces.mongo.types.ISODate;
 import org.knowrob.owl.OWLThing;
 import org.knowrob.prolog.PrologInterface;
 import org.knowrob.tfmemory.TFMemory;
@@ -90,6 +96,11 @@ public class MarkerVisualization extends AbstractNodeMain {
 	private Map<String,HumanJoint> humanJoints;
 	
 	/**
+	 * Logger of ROS node.
+	 */
+	private Log log;
+	
+	/**
 	 * Constructor. Starts the marker publisher in a parallel thread.
 	 */
 	public MarkerVisualization() {
@@ -114,7 +125,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 		node = connectedNode;
 		pub = connectedNode.newPublisher("/visualization_marker_array", visualization_msgs.MarkerArray._TYPE);
-
+		
+		log = connectedNode.getLog();
 
 	}
 
@@ -376,23 +388,36 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * 		- TF frames named with different prefix
 	 */
 	public void addHumanPose(String timepoint) {
-		final Time time = parseTime(timepoint);
-		
-		int index = 0;
-		
-		for(HumanJoint sourceJoint : humanJoints.values()) {
-			for(String conn : sourceJoint.getConnections()) {
-				final HumanJoint targetJoint = humanJoints.get(conn);
-				addJointMarker(createJointConnectionMarker(
-						sourceJoint,targetJoint,time,index), index);
+		try {
+			final Time time = parseTime(timepoint);
+			
+			int index = 0;
+			
+			for(HumanJoint sourceJoint : humanJoints.values()) {
+				for(String conn : sourceJoint.getConnections()) {
+					final HumanJoint targetJoint = humanJoints.get(conn);
+					if(!addJointMarker(createJointConnectionMarker(
+							sourceJoint,targetJoint,time,index), index)) {
+						log.warn("No human pose found for timepoint '" + timepoint + "'.");
+						return;
+					}
+					index += 1;
+				}
+			}
+			
+			for(HumanJoint joint : humanJoints.values()) {
+				if(!addJointMarker(createJointSphereMarker(
+						joint,time,index), index)) {
+					log.warn("No human pose found for timepoint '" + timepoint + "'.");
+					return;
+				}
 				index += 1;
 			}
+			
+			publishMarkers();
 		}
-		
-		for(HumanJoint joint : humanJoints.values()) {
-			addJointMarker(createJointSphereMarker(
-					joint,time,index), index);
-			index += 1;
+		catch(Exception e) {
+			log.error(e.getMessage(), e);
 		}
 	}
 	
@@ -735,19 +760,26 @@ public class MarkerVisualization extends AbstractNodeMain {
 		humanJoints.put(frame, new HumanJoint(frame, connections, size));
 	}
 	
-	private void addJointMarker(Marker marker, int index) {
-		final StringBuilder identifier = new StringBuilder();
-		identifier.append("human_").append(index);
-		
-		synchronized (markers) {
-			markers.put(identifier.toString(), marker);
+	private boolean addJointMarker(Marker marker, int index) {
+		if(marker!=null) {
+			final StringBuilder identifier = new StringBuilder();
+			identifier.append("human_").append(index);
+			
+			synchronized (markers) {
+				markers.put(identifier.toString(), marker);
+			}
+			return true;
 		}
-		publishMarkers();
+		else {
+			return false;
+		}
 	}
 	
 	private Marker createJointSphereMarker(HumanJoint joint, Time timepoint, int index) {
 		final Marker m = createJointMarker(index);
 		final StampedTransform tf = joint.lookupPose(timepoint);
+		// Frame not available for given timepoint
+		if(tf==null) return null;
 
 		m.setType(Marker.SPHERE);
 		m.getScale().setX(joint.getSize());
@@ -769,8 +801,11 @@ public class MarkerVisualization extends AbstractNodeMain {
 	private Marker createJointConnectionMarker(HumanJoint sourceJoint,
 			HumanJoint targetJoint, Time timepoint, int index) {
 		final Marker m = createJointMarker(index);
+		
 		final StampedTransform sourceTf = sourceJoint.lookupPose(timepoint);
 		final StampedTransform targetTf = targetJoint.lookupPose(timepoint);
+		// Frames not available for given timepoint
+		if(sourceTf==null || targetTf==null) return null;
 		
 		m.setType(Marker.CYLINDER);
 
@@ -793,13 +828,13 @@ public class MarkerVisualization extends AbstractNodeMain {
 		m.getPose().getPosition().setX(center.x);
 		m.getPose().getPosition().setY(center.y);
 		m.getPose().getPosition().setZ(center.z);
-		
+
 		final Vector4d orient = computeOrientation(up,dp);
 		m.getPose().getOrientation().setX(orient.x);
 		m.getPose().getOrientation().setY(orient.y);
 		m.getPose().getOrientation().setZ(orient.z);
 		m.getPose().getOrientation().setW(orient.w);
-		
+
 		return m;
 	}
 	
@@ -834,14 +869,18 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * and returns a Time object.
 	 */
 	private Time parseTime(String timepoint) {
-		
-		String ts = timepoint.split("timepoint_")[1];
-		double posix_ts = Double.valueOf(ts.substring(0, ts.length()-1));
 
+		log.error("input time " + timepoint);
+		
+		String x[] = timepoint.split("timepoint_");
+		// Also allow input strings without 'timepoint_' prefix
+		String tsX = (x.length==1 ? x[0] : x[1]);
+		
+		double posix_ts = Double.valueOf(tsX);
 		Time time = new Time();
 		time.secs = (int)posix_ts;
 		time.nsecs = (int) (1E9 * (posix_ts - ((int) posix_ts)));
-		
+
 		return time;
 	}
 
