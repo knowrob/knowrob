@@ -464,6 +464,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 				arr.getMarkers().add(mrk);
 			}
 			pub.publish(arr);
+			markers.clear();
 		}
 	}
 
