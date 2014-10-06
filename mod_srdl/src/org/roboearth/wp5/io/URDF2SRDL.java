@@ -1006,9 +1006,12 @@ public class URDF2SRDL {
 		}
 
 		usage.append("\n\nExample:\n" +
-				"java -jar URDF2SRDL.jar -u pr2.urdf -s pr2.owl " +
-				"-i http://ias.cs.tum.edu/kb/PR2.owl# " +
-				"-c move_base,move_arm,GraspingCapability\n");
+		"rosrun mod_srdl urdf_to_owl\n" +
+				"  -u ./urdf/pr2.urdf \n" +
+				"  -s PR2.owl \n" +
+				"  -i http://ias.cs.tum.edu/kb/PR2.owl# \n" +
+				"  -c move_base,move_arm \n" +
+  				"  -g ./urdf/pr2_planning_description.yaml\n");
 
 		System.out.println(usage.toString());
 
