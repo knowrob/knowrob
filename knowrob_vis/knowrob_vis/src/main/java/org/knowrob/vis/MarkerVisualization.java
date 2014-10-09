@@ -356,6 +356,47 @@ public class MarkerVisualization extends AbstractNodeMain {
 		}
 		publishMarkers();
 	}
+	
+	/**
+	 * Show hands and base trajectory in visualization.
+	 *
+	 * @param starttime OWL identifier of a timepoint instance
+	 * @param endtime OWL identifier of a timepoint instance
+	 * @param interval in seconds
+	 */
+	public void showSimTrajectory(String tflink, String starttime, String endtime, double interval, int markertype, float markercolred) {
+
+		String identifier;
+		String timepoint;
+
+		removeTrajectory(tflink);
+		trajectories.put(tflink, new ArrayList<String>());
+		
+		System.out.println("starttime: " + starttime);
+		System.out.println("endtime: " + endtime);
+
+		for (double i = Double.parseDouble(starttime.substring(starttime.indexOf("timepoint_") + 10)); i <= Double.parseDouble(endtime.substring(endtime.indexOf("timepoint_") + 10)); i += interval) {
+
+			timepoint = "'" + starttime.substring(0, starttime.indexOf("timepoint_")) + starttime.substring(starttime.indexOf("timepoint_"), starttime.indexOf("timepoint_") + 10) + new DecimalFormat("###.###").format(i) + "'";//String.valueOf(i);
+			System.out.println("timepoint: " + timepoint);
+			System.out.println("i: " + i);
+			System.out.println("end: " + Double.parseDouble(endtime.substring(endtime.indexOf("timepoint_") + 10)));
+			identifier = tflink + new DecimalFormat("###.###").format(i);//String.valueOf(i);
+
+			// read marker from Prolog
+			Marker m = readLinkMarkerFromPrologSim(tflink, timepoint, markertype, markercolred);
+
+			// add marker to map
+			if(m!=null) {
+				trajectories.get(tflink).add(identifier);
+				synchronized (markers) {
+					markers.put(identifier, m);
+				}
+			}
+
+		}
+		publishMarkers();
+	}
 
 	/**
 	 * Remove trajectory markers
@@ -604,6 +645,72 @@ public class MarkerVisualization extends AbstractNodeMain {
 		return m;
 	}
 
+	/**
+	 * Read link transform and create a marker from it
+	 *
+	 * @param link TODO explanation
+	 * @param timepoint  OWL identifier of a timepoint instance
+	 * @return Marker with the object information
+	 */
+	Marker readLinkMarkerFromPrologSim(String link, String timepoint, int marker_type, float marker_color_red) {
+
+		Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
+
+		m.getHeader().setFrameId("/map");
+		m.getHeader().setStamp(node.getCurrentTime());
+		m.setNs("knowrob_vis");
+		m.setId(id++);
+
+		m.setAction(Marker.ADD);
+		m.setLifetime(new Duration());
+
+		m.getScale().setX(0.05);
+		m.getScale().setY(0.05);
+		m.getScale().setZ(0.05);
+		
+		if(marker_type >= 0 && marker_type <= 8)//valid markers
+			m.setType(marker_type);
+		else
+			m.setType(Marker.CYLINDER);
+
+		if(marker_color_red >= 0.0 && marker_color_red < 1.0)
+			m.getColor().setR(marker_color_red);
+		else
+			m.getColor().setR(1.0f);
+		m.getColor().setG(1.0f);
+		m.getColor().setB(0.0f);
+		m.getColor().setA(1.0f);
+
+		try {
+
+			TFMemory tf = TFMemory.getInstance();
+
+			String ts = timepoint.split("timepoint_")[1];
+			double posix_ts = Double.valueOf(ts.substring(0, ts.length()-1));
+
+			Time time = new Time();
+			time.secs = (int)posix_ts/1000;
+			time.nsecs = (int) (1E9 * (posix_ts/1000.0 - ((int) posix_ts/1000)));
+			System.out.println("secs: " + time.secs + ", nsecs: " + time.nsecs);
+
+			StampedTransform tr = tf.lookupSimTransform("/map", link, time);
+			m.getPose().getPosition().setX(tr.getTranslation().x);
+			m.getPose().getPosition().setY(tr.getTranslation().y);
+			m.getPose().getPosition().setZ(tr.getTranslation().z);
+			System.out.println("x:" + m.getPose().getPosition().getX()+"; y:" + m.getPose().getPosition().getY()+"; z:" + m.getPose().getPosition().getZ());
+
+			m.getPose().getOrientation().setW(tr.getRotation().w);
+			m.getPose().getOrientation().setX(tr.getRotation().x);
+			m.getPose().getOrientation().setY(tr.getRotation().y);
+			m.getPose().getOrientation().setZ(tr.getRotation().z);
+			System.out.println("w:" + m.getPose().getOrientation().getW() + "; x:" + m.getPose().getOrientation().getX()+"; y:" + m.getPose().getOrientation().getY()+"; z:" + m.getPose().getOrientation().getZ());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return m;
+	}
+	
 	/**
 	 * Read link transform and create a marker from it
 	 *

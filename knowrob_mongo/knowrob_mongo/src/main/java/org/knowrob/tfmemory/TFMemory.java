@@ -339,6 +339,138 @@ public class TFMemory {
 		return out;
 	}
 
+	/**
+	 * Returns the transform from the specified source frame to the target frame at a given time; returns
+	 * null if no transformation could be found.
+	 */
+	public StampedTransform lookupSimTransform(String targetFrameID, String sourceFrameID, Time time) {
+
+		// resolve the source and target IDs
+		String resolvedTargetID = assertResolved("", targetFrameID);
+		String resolvedSourceID = assertResolved("", sourceFrameID);
+
+		// if source and target are the same, return the identity transform
+		if (resolvedSourceID == resolvedTargetID) {
+			StampedTransform out = StampedTransform.getIdentity();
+			out.timeStamp = time;
+			out.frameID = resolvedSourceID;
+			out.childFrameID = resolvedTargetID;
+			return out;
+		}
+
+		// load data from DB if the current time point is already in the buffer
+		Frame sourceFrame = verifyDataAvailableSim(time, resolvedSourceID);
+		if(sourceFrame==null) {
+			System.err.println("Cannot transform: source frame \"" + resolvedSourceID + "\" does not exist.");
+			return null;
+		}
+
+		Frame targetFrame = verifyDataAvailableSim(time, resolvedTargetID);
+		if(targetFrame==null) {
+			System.err.println("Cannot transform: target frame \"" + resolvedTargetID + "\" does not exist.");
+			return null;
+		}
+
+		// list that will contain transformations from source frame to some frame F
+		LinkedList<TransformStorage> inverseTransforms = new LinkedList<TransformStorage>();
+		// list that will contain transformations from frame F to target frame
+		LinkedList<TransformStorage> forwardTransforms = new LinkedList<TransformStorage>();
+
+		// fill the lists using lookupLists. If it returns FALSE, no transformation could be found.
+		if (!lookupLists(targetFrame, sourceFrame, time.totalNsecs(), inverseTransforms, forwardTransforms)) {
+			System.err.println("Cannot transform: source + \"" + resolvedSourceID + "\" and target \""
+					+ resolvedTargetID + "\" are not connected.");
+			return null;
+		}
+
+		// create an identity transform with the correct time stamp
+		StampedTransform out = StampedTransform.getIdentity();
+		out.timeStamp = time;
+
+		out.frameID = resolvedTargetID;
+		out.childFrameID = resolvedSourceID;
+
+		// multiply all transforms from source frame to frame F
+		for(TransformStorage t : inverseTransforms) {
+			out.mul(StorageToStampedTransform(t));
+		}
+
+		// multiply all transforms from frame F to target frame
+		for(TransformStorage t : forwardTransforms) {
+			out.mul(StorageToStampedTransform(t).invert(), out);
+		}
+
+		// return transform
+		return out;
+	}
+	
+	/**
+	 * Check if there are transforms for this time and this frame in the buffer,
+	 * try to load from DB otherwise (-> use DB only when needed)
+	 *
+	 * @param time
+	 * @param sourceFrame
+	 */
+	private Frame verifyDataAvailableSim(Time time, String frameID) {
+
+		// lookup frame
+		Frame frame = frames.get(frameID);
+
+		// check if frame is inside time cache
+		if(frame!=null && frame.getParentFrames()!=null) {
+			for(Frame f : frame.getParentFrames()) {
+
+				if(frame.getTimeCache(f).timeInBufferRange(new ISODate(time).getMilliSeconds())) {
+					return frame;
+				}
+			}
+
+		}
+
+		// load data from DB if frame is unknown or time not buffered yet
+		loadTransformFromDBSim(frameID, new ISODate(time).getDate());
+		frame = frames.get(frameID);
+		return frame;
+
+	}
+	
+	/**
+	 * Load transforms from the DB and add them to the local tf buffer
+	 *
+	 * @param childFrameID
+	 * @param date
+	 * @return
+	 */
+	private StampedTransform loadTransformFromDBSim(String childFrameID, Date date) {
+
+		DBCollection coll = db.getCollection("tf");
+		
+		// select time slice from BUFFER_SIZE seconds before to half a second after given time
+		Date start = new Date(date.getTime());
+		
+		// read all frames in time slice
+		DBObject query = new BasicDBObject("transforms.header.stamp", start);
+		System.out.println(query);
+
+		// read only transforms and time stamp
+		DBObject cols  = new BasicDBObject();
+		cols.put("transforms",  1 );
+		cols.put("__recorded",  1 );
+
+		DBCursor cursor = coll.find(query, cols );
+		System.out.println("Entry found: " + cursor.hasNext());
+		StampedTransform res = null;
+		try {
+			while(cursor.hasNext()) {
+				BasicDBList doc = (BasicDBList) cursor.next().get("transforms");
+				setTransforms(doc);
+//				System.out.println(doc);
+			}
+		} finally {
+			cursor.close();
+		}
+		return res;
+	}
 
 	/**
 	 * Check if there are transforms for this time and this frame in the buffer,
@@ -668,8 +800,8 @@ public class TFMemory {
 	 * was not fully resolved.
 	 */
 	private String assertResolved(String prefix, String frameID) {
-		if (!frameID.startsWith("/"))
-			System.err.println("TF operating on not fully resolved frame id " + frameID +", resolving using local prefix " + prefix);
+//		if (!frameID.startsWith("/"))
+//			System.err.println("TF operating on not fully resolved frame id " + frameID +", resolving using local prefix " + prefix);
 		return resolve(prefix, frameID);
 	}
 
@@ -688,7 +820,7 @@ public class TFMemory {
 				return "/" + prefix + "/" + frameID;
 			}
 		}  else {
-			return "/" + frameID;
+			return frameID;
 		}
 	}
 	
@@ -700,6 +832,6 @@ public class TFMemory {
 		if(out.startsWith("/"))
 			return out;
 		else
-			return "/"+out;
+			return out;
 	}
 }
