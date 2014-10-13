@@ -187,18 +187,21 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * Remove all objects from the visualization
 	 */
 	public void clear() {
+		final MarkerArray arr = pub.newMessage();
 		synchronized (markers) {
-			final MarkerArray arr = pub.newMessage();
 			for(Marker m : markers.values()) {
 				m.setAction(Marker.DELETE);
 				arr.getMarkers().add(m);
 			}
-			pub.publish(arr);
-		}
-		synchronized (markers) {
 			markers.clear();
 		}
-		publishMarkers();
+		synchronized (trajectories) {
+			trajectories.clear();
+		}
+		synchronized (highlighted) {
+			highlighted.clear();
+		}
+		pub.publish(arr);
 	}
 
 
@@ -724,6 +727,9 @@ public class MarkerVisualization extends AbstractNodeMain {
 			m.setAction(Marker.DELETE);
 			arr.getMarkers().add(m);
 			pub.publish(arr);
+			
+			trajectories.remove(identifier);
+			highlighted.remove(identifier);
 		}
 	}
 
