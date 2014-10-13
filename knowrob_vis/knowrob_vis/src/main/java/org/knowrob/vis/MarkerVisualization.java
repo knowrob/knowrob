@@ -161,14 +161,10 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @param identifier OWL identifier of an object instance
 	 */
 	public void removeObject(String identifier) {
-		// TODO: Send DELETE markers
-
 		// remove the object from the list
 		synchronized (markers) {
-			markers.remove(identifier);
+			eraseMarker(identifier);
 		}
-
-		publishMarkers();
 	}
 
 	/**
@@ -177,24 +173,28 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @param identifier OWL identifier of an object instance
 	 */
 	public void removeObjectWithChildren(String identifier) {
-		// TODO: Send DELETE markers
-		
 		// remove this object
-		markers.remove(identifier);
+		eraseMarker(identifier);
 
 		// remove children and remove them too
 		for(String child : readChildren(identifier))
-			markers.remove(child);
+			eraseMarker(child);
 
 		publishMarkers();
 	}
-
 
 	/**
 	 * Remove all objects from the visualization
 	 */
 	public void clear() {
-		// TODO: Send DELETE markers
+		synchronized (markers) {
+			final MarkerArray arr = pub.newMessage();
+			for(Marker m : markers.values()) {
+				m.setAction(Marker.DELETE);
+				arr.getMarkers().add(m);
+			}
+			pub.publish(arr);
+		}
 		synchronized (markers) {
 			markers.clear();
 		}
@@ -309,8 +309,6 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * Clear all highlights
 	 */
 	public void clearHighlight() {
-		// TODO: Send DELETE markers
-
 		// reset colors to cached original ones
 
 		synchronized (highlighted) {
@@ -363,18 +361,21 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * Remove trajectory markers
 	 */
 	public void removeTrajectory(String tflink) {
-		// TODO: Send DELETE markers
+		final MarkerArray arr = pub.newMessage();
 		
 		if (trajectories.get(tflink) != null){
 			for (int i = 0; i < trajectories.get(tflink).size(); i++) {
 				// remove the object from the list
 				synchronized (markers) {
-					markers.remove(trajectories.get(tflink).get(i));
+					Marker m = markers.remove(trajectories.get(tflink).get(i));
+					m.setAction(Marker.DELETE);
+					arr.getMarkers().add(m);
 				}
 			}
 			trajectories.remove(tflink);
 		}
-		publishMarkers();
+		
+		pub.publish(arr);
 	}
 
 	/**
@@ -709,6 +710,21 @@ public class MarkerVisualization extends AbstractNodeMain {
 			}
 		}
 		return children.toArray(new String[]{});
+	}
+
+	/**
+	 * Delete a single marker from the marker array
+	 * and send the marker once with delete flag set.
+	 * @param identifier Marker identifier
+	 */
+	private void eraseMarker(String identifier) {
+		Marker m = markers.remove(identifier);
+		if(m!=null) {
+			final MarkerArray arr = pub.newMessage();
+			m.setAction(Marker.DELETE);
+			arr.getMarkers().add(m);
+			pub.publish(arr);
+		}
 	}
 
 	/////////////////
