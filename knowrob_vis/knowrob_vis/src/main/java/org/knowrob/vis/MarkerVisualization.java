@@ -2,7 +2,9 @@ package org.knowrob.vis;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
@@ -76,8 +78,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * Counter for marker IDs
 	 */
 	private static int id = 0;
-
-
+	
 	/**
 	 *
 	 */
@@ -108,9 +109,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 		markers =  new ConcurrentHashMap<String, Marker>(8, 0.9f, 1);
 		highlighted = new ConcurrentHashMap<String, ColorRGBA>(8, 0.9f, 1);
 		trajectories = new HashMap<String, List<String>>();
-		
-		humanJoints = new HashMap<String,HumanJoint>();
-		initializeHumanJoints();
+		humanJoints = HumanJoint.initializeHumanJoints();
 
 		startWebServer(1111);
 	}
@@ -122,7 +121,6 @@ public class MarkerVisualization extends AbstractNodeMain {
 		pub = connectedNode.newPublisher("/visualization_marker_array", visualization_msgs.MarkerArray._TYPE);
 		
 		log = connectedNode.getLog();
-
 	}
 
 	/**
@@ -163,6 +161,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @param identifier OWL identifier of an object instance
 	 */
 	public void removeObject(String identifier) {
+		// TODO: Send DELETE markers
 
 		// remove the object from the list
 		synchronized (markers) {
@@ -178,7 +177,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @param identifier OWL identifier of an object instance
 	 */
 	public void removeObjectWithChildren(String identifier) {
-
+		// TODO: Send DELETE markers
+		
 		// remove this object
 		markers.remove(identifier);
 
@@ -194,6 +194,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * Remove all objects from the visualization
 	 */
 	public void clear() {
+		// TODO: Send DELETE markers
 		synchronized (markers) {
 			markers.clear();
 		}
@@ -308,6 +309,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * Clear all highlights
 	 */
 	public void clearHighlight() {
+		// TODO: Send DELETE markers
 
 		// reset colors to cached original ones
 
@@ -361,6 +363,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * Remove trajectory markers
 	 */
 	public void removeTrajectory(String tflink) {
+		// TODO: Send DELETE markers
+		
 		if (trajectories.get(tflink) != null){
 			for (int i = 0; i < trajectories.get(tflink).size(); i++) {
 				// remove the object from the list
@@ -377,67 +381,66 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * Shows the human pose at given time point as
 	 * a stick-man in the visualization canvas.
 	 * The pose is read from the 'roslog' mongo database.
+	 * Note: Make sure to set search index for 'transforms.header.stamp'
+	 * in mongo: db.tf.ensureIndex( { "transforms.header.stamp" : 1 } )
 	 * 
+	 * @param id the id of the stick-man (allows to add multiple stick-mans)
 	 * @param timepoint The time point of interest
-	 * TODO: Support multiple stick-mans!
-	 * 		- TF frames named with different prefix
+	 * @param prefix prefix used for TF frames
 	 */
-	public void addHumanPose(String timepoint) {
-		try {
-			final Time time = parseTime(timepoint);
-			
-			int index = 0;
-			
-			for(HumanJoint sourceJoint : humanJoints.values()) {
-				for(String conn : sourceJoint.getConnections()) {
-					final HumanJoint targetJoint = humanJoints.get(conn);
-					if(!addJointMarker(createJointConnectionMarker(
-							sourceJoint,targetJoint,time,index), index)) {
-						log.warn("No human pose found for timepoint '" + timepoint + "'.");
-						return;
-					}
-					index += 1;
-				}
-			}
-			
-			for(HumanJoint joint : humanJoints.values()) {
-				if(!addJointMarker(createJointSphereMarker(
-						joint,time,index), index)) {
-					log.warn("No human pose found for timepoint '" + timepoint + "'.");
+	public void addHumanPose(int id, String timepoint, String prefix) {
+		final Time time = parseTime(timepoint);
+		final long ms = System.currentTimeMillis();
+		
+		int index = 0;
+
+		// Add cylinder marker between joints
+		for(HumanJoint sourceJoint : humanJoints.values()) {
+			for(String conn : sourceJoint.getConnections()) {
+				final HumanJoint targetJoint = humanJoints.get(conn);
+				if(!addJointMarker(createJointConnectionMarker(
+						sourceJoint,targetJoint,time,index,id,prefix),index,id)) {
+					log.warn("No human pose found for timepoint '" + time + "'.");
 					return;
 				}
 				index += 1;
 			}
-			
-			publishMarkers();
 		}
-		catch(Exception e) {
-			log.error(e.getMessage(), e);
-		}
-	}
-	
-	public void removeHumanPose(String timepoint) {
-		int index = 0;
-		
+		// Add sphere marker for joints
 		for(HumanJoint joint : humanJoints.values()) {
-			removeHumanMarker(index);
-			index += 1;
-			for(@SuppressWarnings("unused") String conn : joint.getConnections()) {
-				removeHumanMarker(index);
-				index += 1;
+			if(!addJointMarker(createJointSphereMarker(
+					joint,time,index,id,prefix),index,id)) {
+				log.warn("No human pose found for timepoint '" + time + "'.");
+				return;
 			}
+			index += 1;
 		}
 		
 		publishMarkers();
+		log.debug("'addHumanPose' took: " + (System.currentTimeMillis()-ms)/1000.0 + " seconds");
 	}
-
-	private void removeHumanMarker(int index) {
-		final StringBuilder identifier = new StringBuilder();
-		identifier.append("human_").append(index);
+	
+	/**
+	 * Removes previously added stick-man markers.
+	 * @param id the id of the stick-man
+	 */
+	public void removeHumanPose(int id) {
+		final String ns = getHumanMarkerNs(id);
+		final List<String> toRemove = new LinkedList<String>();
+		final MarkerArray arr = pub.newMessage();
 		
 		synchronized (markers) {
-			markers.remove(identifier.toString());
+			for(Entry<String, Marker> e : markers.entrySet()) {
+				if(e.getValue().getNs().equals(ns)) {
+					toRemove.add(e.getKey());
+					e.getValue().setAction(Marker.DELETE);
+					arr.getMarkers().add(e.getValue());
+				}
+			}
+			for(String x : toRemove) markers.remove(x);
 		}
+		
+		pub.publish(arr);
 	}
 
 	// // // // // // // // // // // // // // // // // // // // // // // // // // //
@@ -451,7 +454,6 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 */
 	public void publishMarkers() {
 		synchronized (markers) {
-
 			MarkerArray arr = pub.newMessage();
 
 			for(Marker mrk : markers.values()) {
@@ -713,52 +715,10 @@ public class MarkerVisualization extends AbstractNodeMain {
 	////// Human Pose Start
 	/////////////////
 	
-	/**
-	 * Instantiates HumanJoint's based on XSens TF format
-	 * (i.e. the skeletal structure captured by the XSens suite).
-	 */
-	private void initializeHumanJoints() {
-		// TODO: Don't restrict to XSens data format.
-		// Make the skeletal structure configurable.
-		addHumanJoint("/Head", "/Neck", 0.2);
-		addHumanJoint("/Neck", 0.1);
-		addHumanJoint("/RightShoulder", "/RightUpperArm", 0.1);
-		addHumanJoint("/LeftShoulder", "/LeftUpperArm", 0.1);
-		addHumanJoint("/RightUpperArm", "/RightForearm", 0.1);
-		addHumanJoint("/LeftUpperArm", "/LeftForearm", 0.1);
-		addHumanJoint("/RightForearm", "/RightHand", 0.1);
-		addHumanJoint("/LeftForearm", "/LeftHand", 0.1);
-		addHumanJoint("/RightHand", 0.15);
-		addHumanJoint("/LeftHand", 0.15);
-		addHumanJoint("/T8", new String[]{"/RightShoulder","/LeftShoulder"}, 0.1);
-		addHumanJoint("/T12", "/T8", 0.1);
-		addHumanJoint("/L3", "/T12", 0.1);
-		addHumanJoint("/L5", "/L3", 0.1);
-		addHumanJoint("/Pelvis", new String[]{"/RightUpperLeg","/LeftUpperLeg","/L5"}, 0.2);
-		addHumanJoint("/RightUpperLeg", "/RightLowerLeg", 0.1);
-		addHumanJoint("/LeftUpperLeg", "/LeftLowerLeg", 0.1);
-		addHumanJoint("/RightLowerLeg", "/RightFoot", 0.1);
-		addHumanJoint("/LeftLowerLeg", "/LeftFoot", 0.1);
-		addHumanJoint("/RightFoot", "/RightToe", 0.1);
-		addHumanJoint("/LeftFoot", "/LeftToe", 0.1);
-		addHumanJoint("/RightToe", 0.1);
-		addHumanJoint("/LeftToe", 0.1);
-	}
-
-	private void addHumanJoint(String frame, double size) {
-		addHumanJoint(frame, new String[]{}, size);
-	}
-	private void addHumanJoint(String frame, String connection, double size) {
-		addHumanJoint(frame, new String[]{connection}, size);
-	}
-	private void addHumanJoint(String frame, String connections[], double size) {
-		humanJoints.put(frame, new HumanJoint(frame, connections, size));
-	}
-	
-	private boolean addJointMarker(Marker marker, int index) {
+	private boolean addJointMarker(Marker marker, int index, int id) {
 		if(marker!=null) {
 			final StringBuilder identifier = new StringBuilder();
-			identifier.append("human_").append(index);
+			identifier.append("human_").append(id).append('_').append(index);
 			
 			synchronized (markers) {
 				markers.put(identifier.toString(), marker);
@@ -770,9 +730,18 @@ public class MarkerVisualization extends AbstractNodeMain {
 		}
 	}
 	
-	private Marker createJointSphereMarker(HumanJoint joint, Time timepoint, int index) {
-		final Marker m = createJointMarker(index);
-		final StampedTransform tf = joint.lookupPose(timepoint);
+	/**
+	 * Creates a sphere marker psoitioned at a joint of a human.
+	 * @param joint joint of the human
+	 * @param timepoint the timepoint used for looking up the transform
+	 * @param index the marker index in the human skeleton
+	 * @param id human id (to allow multiple humans in parallel)
+	 * @param prefix prefix used for TF frames
+	 * @return the marker created
+	 */
+	private Marker createJointSphereMarker(HumanJoint joint, Time timepoint, int index, int id, String prefix) {
+		final Marker m = createJointMarker(index,id);
+		final StampedTransform tf = joint.lookupPose(timepoint,prefix);
 		// Frame not available for given timepoint
 		if(tf==null) return null;
 
@@ -793,12 +762,23 @@ public class MarkerVisualization extends AbstractNodeMain {
         return m;
 	}
 	
+	/**
+	 * Creates a cylinder marker that lies between two joints.
+	 * @param sourceJoint one of the joints
+	 * @param targetJoint the other joint
+	 * @param timepoint the timepoint used for looking up the transform
+	 * @param index the marker index in the human skeleton
+	 * @param id human id (to allow multiple humans in parallel)
+	 * @param prefix prefix used for TF frames
+	 * @return the marker created
+	 */
 	private Marker createJointConnectionMarker(HumanJoint sourceJoint,
-			HumanJoint targetJoint, Time timepoint, int index) {
-		final Marker m = createJointMarker(index);
+			HumanJoint targetJoint, Time timepoint, int index,
+			int id, String prefix) {
+		final Marker m = createJointMarker(index,id);
 		
-		final StampedTransform sourceTf = sourceJoint.lookupPose(timepoint);
-		final StampedTransform targetTf = targetJoint.lookupPose(timepoint);
+		final StampedTransform sourceTf = sourceJoint.lookupPose(timepoint,prefix);
+		final StampedTransform targetTf = targetJoint.lookupPose(timepoint,prefix);
 		// Frames not available for given timepoint
 		if(sourceTf==null || targetTf==null) return null;
 		
@@ -824,6 +804,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 		m.getPose().getPosition().setY(center.y);
 		m.getPose().getPosition().setZ(center.z);
 
+		// Compute the orientation
 		final Vector4d orient = computeOrientation(up,dp);
 		m.getPose().getOrientation().setX(orient.x);
 		m.getPose().getOrientation().setY(orient.y);
@@ -833,8 +814,13 @@ public class MarkerVisualization extends AbstractNodeMain {
 		return m;
 	}
 	
+	/**
+	 * Computes orientation between two vectors.
+	 * @param u the from vector
+	 * @param v the to vector
+	 * @return quaternion that transforms one vector to the other one
+	 */
 	private Vector4d computeOrientation(Vector3d u, Vector3d v) {
-		
 		final Vector3d uv = new Vector3d();
 		uv.cross(u,v);
 		double w = Math.sqrt(u.lengthSquared()*v.lengthSquared()) + u.dot(v);
@@ -845,11 +831,13 @@ public class MarkerVisualization extends AbstractNodeMain {
         return out;
 	}
 	
-	private Marker createJointMarker(int index) {
+	private Marker createJointMarker(int index, int id) {
 		final Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
 
 		m.getHeader().setFrameId("/map");
-		m.setNs("human_pose");
+		// Use special namespace for XSens data so that the markers don't conflict
+		// with other markers
+		m.setNs(getHumanMarkerNs(id));
 		m.setId(index);
 		m.getColor().setR(1.0f);
 		m.getColor().setG(1.0f);
@@ -857,6 +845,13 @@ public class MarkerVisualization extends AbstractNodeMain {
 		m.getColor().setA(1.0f);
 		
 		return m;
+	}
+	
+	/**
+	 * Special namespace for XSens marker
+	 */
+	private String getHumanMarkerNs(int id) {
+		return "human_pose" + id;
 	}
 	
 	/**

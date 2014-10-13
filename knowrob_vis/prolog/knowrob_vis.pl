@@ -50,7 +50,11 @@
       add_trajectory/3,
       add_trajectory/4,
       remove_trajectory/1,
-      add_human_pose/1
+      add_human_pose/1,
+      add_human_pose/2,
+      add_human_pose/3,
+      remove_human_pose/0,
+      remove_human_pose/1
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -75,6 +79,10 @@
             add_diagram(+,+,+,+,+,+,+,+,+),
             remove_diagram(+),
             add_human_pose(r),
+            add_human_pose(r,r),
+            add_human_pose(r,r,r),
+            remove_human_pose(r),
+            remove_human_pose(r,r),
             add_trajectory(r,r,r),
             add_trajectory(r,r,r,+).
 
@@ -240,15 +248,24 @@ remove_trajectory(Link) :-
 %
 add_human_pose(Timepoint) :-
     v_canvas(Canvas),
-    jpl_call(Canvas, 'addHumanPose', [Timepoint], _).
+    jpl_call(Canvas, 'addHumanPose', [0,Timepoint,''], _).
+add_human_pose(Id, Timepoint) :-
+    v_canvas(Canvas),
+    jpl_call(Canvas, 'addHumanPose', [Id,Timepoint,''], _).
+add_human_pose(Id, Timepoint, Prefix) :-
+    v_canvas(Canvas),
+    jpl_call(Canvas, 'addHumanPose', [Id,Timepoint,Prefix], _).
 
 %% remove_human_pose() is det.
 %
-% Removes all human pose visualizations from the visualization canvas.
+% Removes human pose visualizations from the visualization canvas.
 %
-%remove_human_pose() :-
-%    v_canvas(Canvas),
-%    jpl_call(Canvas, 'removeHumanPose', [], _).
+remove_human_pose :-
+    v_canvas(Canvas),
+    jpl_call(Canvas, 'removeHumanPose', [0], _).
+remove_human_pose(Id) :-
+    v_canvas(Canvas),
+    jpl_call(Canvas, 'removeHumanPose', [Id], _).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
