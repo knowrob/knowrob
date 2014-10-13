@@ -42,6 +42,38 @@
         },
         {
             "q": "",
+            "text": "----- Queries on simulation data -----"
+        },
+        {
+            "q": "load_experiment('/home/yfang/hydro_workspace/sandbox/catkin_ws/src/knowrob_addons/knowrob_sim/example_files/sim_data.owl').",
+            "text": "Load full pancake-making simulation data from local library"
+        },
+        {
+            "q": "simact_contact(T, knowrob_sim:'TouchingSituation', knowrob_sim:'Cup', Obj), simact_start(T,Start), simact_end(T, End).",
+            "text": "In which contact intervals was the Cup involved?"
+        },
+        {
+            "q": "simact(T, knowrob:'GraspingSomething'), rdf_has(T, knowrob:'objectActedOn', Obj), rdf_has(Obj, rdf:type, knowrob_sim:'Cup'), simact_start(T, Start), simact_end(T, End), add_trajectory_sim('Cup', Start, End, 1,3,0.2).",
+            "text": "Visualize trajectory of the Hand while it's holding the Cup"
+        },
+        {
+            "q": "simlift_liftonly(knowrob_sim:'Cup', Start, End), add_trajectory_sim('Cup', Start, End, 100,3,0.5).",
+            "text": "Visualize trajectory of the Cup while it's lifted"
+        },
+        {
+            "q": "simflip_full(knowrob_sim:'LiquidTangibleThing', knowrob_sim:'Spatula', knowrob_sim:'PancakeMaker', Start, End, _, _, _), add_trajectory_sim('Spatula', Start, End, 100,0,0.8).",
+            "text": "Visualize trajectory of the Spatula for the full flipping interval"
+        },
+        {
+            "q": "simflip_fliponly(knowrob_sim:'LiquidTangibleThing', knowrob_sim:'Spatula', knowrob_sim:'PancakeMaker', Start, End, _, _, _), add_trajectory_sim('Spatula', Start, End, 100,0,01.0).",
+            "text": "Visualize trajectory of the Pancake for while it's on the Spatula"
+        },
+        {
+            "q": "",
+            "text": ""
+        },
+        {
+            "q": "",
             "text": "----- Queries on the robot's logged belief state -----"
         },
         {

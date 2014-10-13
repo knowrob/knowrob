@@ -689,21 +689,20 @@ public class MarkerVisualization extends AbstractNodeMain {
 			double posix_ts = Double.valueOf(ts.substring(0, ts.length()-1));
 
 			Time time = new Time();
-			time.secs = (int)posix_ts/1000;
-			time.nsecs = (int) (1E9 * (posix_ts/1000.0 - ((int) posix_ts/1000)));
-			System.out.println("secs: " + time.secs + ", nsecs: " + time.nsecs);
+			time.secs = (int)posix_ts;
+			time.nsecs = (int) (1E9 * (posix_ts - ((int) posix_ts)));
 
 			StampedTransform tr = tf.lookupSimTransform("/map", link, time);
 			m.getPose().getPosition().setX(tr.getTranslation().x);
 			m.getPose().getPosition().setY(tr.getTranslation().y);
 			m.getPose().getPosition().setZ(tr.getTranslation().z);
-			System.out.println("x:" + m.getPose().getPosition().getX()+"; y:" + m.getPose().getPosition().getY()+"; z:" + m.getPose().getPosition().getZ());
+//			System.out.println("x:" + m.getPose().getPosition().getX()+"; y:" + m.getPose().getPosition().getY()+"; z:" + m.getPose().getPosition().getZ());
 
 			m.getPose().getOrientation().setW(tr.getRotation().w);
 			m.getPose().getOrientation().setX(tr.getRotation().x);
 			m.getPose().getOrientation().setY(tr.getRotation().y);
 			m.getPose().getOrientation().setZ(tr.getRotation().z);
-			System.out.println("w:" + m.getPose().getOrientation().getW() + "; x:" + m.getPose().getOrientation().getX()+"; y:" + m.getPose().getOrientation().getY()+"; z:" + m.getPose().getOrientation().getZ());
+//			System.out.println("w:" + m.getPose().getOrientation().getW() + "; x:" + m.getPose().getOrientation().getX()+"; y:" + m.getPose().getOrientation().getY()+"; z:" + m.getPose().getOrientation().getZ());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
