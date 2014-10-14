@@ -73,6 +73,8 @@ public class DiagramVisualization extends AbstractNodeMain {
 			data.setType(DataVis.TYPE_BARCHART);
 		} else if(type.equals("treechart")) {
 			data.setType(DataVis.TYPE_TREECHART);
+		} else if(type.equals("treechart")) {
+			data.setType(DataVis.TYPE_TREECHART);
 		}
 
 		for(String[][] val_list : values) {
