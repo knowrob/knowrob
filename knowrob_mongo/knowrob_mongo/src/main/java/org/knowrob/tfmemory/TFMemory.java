@@ -537,7 +537,6 @@ public class TFMemory {
 		// read only transforms and time stamp
 		DBObject cols  = new BasicDBObject();
 		cols.put("transforms",  1 );
-		cols.put("__recorded",  1 );
 
 		DBCursor cursor = coll.find(query, cols );
 

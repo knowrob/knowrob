@@ -40,14 +40,19 @@ ROS3D.MarkerClient = function(options) {
     });
 
     // remove old marker from Three.Object3D children buffer
-    that.rootObject.remove(that.markers[message.id]);
+    that.rootObject.remove(that.markers[message.ns + message.id]);
 
-    that.markers[message.id] = new ROS3D.SceneNode({
-      frameID : message.header.frame_id,
-      tfClient : that.tfClient,
-      object : newMarker
-    });
-    that.rootObject.add(that.markers[message.id]);
+    if(message.action == 2) {  // 2 => "DELETE"
+        delete that.markers[message.ns + message.id];
+    }
+    else {
+        that.markers[message.ns + message.id] = new ROS3D.SceneNode({
+            frameID : message.header.frame_id,
+            tfClient : that.tfClient,
+            object : newMarker
+        });
+        that.rootObject.add(that.markers[message.ns + message.id]);
+    }
 
     that.emit('change');
   });
@@ -58,14 +63,18 @@ ROS3D.MarkerClient = function(options) {
       message : message
     });
 
-    that.rootObject.remove(that.markers[message.id]);
-
-    that.markers[message.id] = new ROS3D.SceneNode({
-      frameID : message.header.frame_id,
-      tfClient : that.tfClient,
-      object : newMarker
-    });
-    that.rootObject.add(that.markers[message.id]);
+    that.rootObject.remove(that.markers[message.ns + message.id]);
+    if(message.action == 2) {  // 2 => "DELETE"
+        delete that.markers[message.ns + message.id];
+    }
+    else {
+        that.markers[message.ns + message.id] = new ROS3D.SceneNode({
+            frameID : message.header.frame_id,
+            tfClient : that.tfClient,
+            object : newMarker
+        });
+        that.rootObject.add(that.markers[message.ns + message.id]);
+    }
 
     that.emit('change');
   };
