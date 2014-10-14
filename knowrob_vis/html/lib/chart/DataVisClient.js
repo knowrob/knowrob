@@ -31,6 +31,7 @@ function DataVisClient(options) {
         fontsize: message.fontsize//"14px"
       };
 
+      // Pie chart
       if (message.type == 0) {
         chartHandle.push({
           id: message.id,
@@ -42,6 +43,7 @@ function DataVisClient(options) {
           }, this)
           .handle.update(message.values[0]);
 
+      // Bar chart
       } else if (message.type == 1) {
 
         chartHandle.push({
@@ -54,17 +56,31 @@ function DataVisClient(options) {
           }, this)
           .handle.update(message.values[0]);
 
+      // Tree diagram
       } else if (message.type == 2) {
         //console.log("new tree node");
         chartHandle.push({
           id: message.id,
           handle: new TreeDiagram(options)
         });
-
+        
         chartHandle.find(function (element, index, array) {
-            if(element.id == message.id) {return true} else {return false}
-          }, this)
-          .handle.update(message.values);
+          if(element.id == message.id) {return true} else {return false}
+        }, this)
+        .handle.update(message.values);
+
+      // Timeline (Gantt style)
+      } else if (message.type == 3) {
+
+        chartHandle.push({
+          id: message.id,
+          handle: new Timeline(options)
+        });
+        
+        chartHandle.find(function (element, index, array) {
+          if(element.id == message.id) {return true} else {return false}
+        }, this)
+        .handle.update(message.values);
       }
 
     } else if (message.values.length == 0) {//[0].value2.length == 0) {
