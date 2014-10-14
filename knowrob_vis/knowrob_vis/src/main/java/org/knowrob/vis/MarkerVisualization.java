@@ -337,27 +337,30 @@ public class MarkerVisualization extends AbstractNodeMain {
 		String identifier;
 		String timepoint;
 
-		removeTrajectory(tflink);
-		trajectories.put(tflink, new ArrayList<String>());
-
-		for (double i = Double.parseDouble(starttime.substring(starttime.indexOf("timepoint_") + 10)); i <= Double.parseDouble(endtime.substring(endtime.indexOf("timepoint_") + 10)); i += interval) {
-
-			timepoint = "'" + starttime.substring(0, starttime.indexOf("timepoint_")) + starttime.substring(starttime.indexOf("timepoint_"), starttime.indexOf("timepoint_") + 10) + new DecimalFormat("###.###").format(i) + "'";//String.valueOf(i);
-			identifier = tflink + new DecimalFormat("###.###").format(i);//String.valueOf(i);
-
-			// read marker from Prolog
-			Marker m = readLinkMarkerFromProlog(tflink, timepoint);
-
-			// add marker to map
-			if(m!=null) {
-				trajectories.get(tflink).add(identifier);
-				synchronized (markers) {
-					markers.put(identifier, m);
+		try {
+			trajectories.put(tflink, new ArrayList<String>());
+	
+			for (double i = Double.parseDouble(starttime.substring(starttime.indexOf("timepoint_") + 10)); i <= Double.parseDouble(endtime.substring(endtime.indexOf("timepoint_") + 10)); i += interval) {
+	
+				timepoint = "'" + starttime.substring(0, starttime.indexOf("timepoint_")) + starttime.substring(starttime.indexOf("timepoint_"), starttime.indexOf("timepoint_") + 10) + new DecimalFormat("###.###").format(i) + "'";//String.valueOf(i);
+				identifier = tflink + new DecimalFormat("###.###").format(i);//String.valueOf(i);
+	
+				// read marker from Prolog
+				Marker m = readLinkMarkerFromProlog(tflink, timepoint);
+	
+				// add marker to map
+				if(m!=null) {
+					trajectories.get(tflink).add(identifier);
+					synchronized (markers) {
+						markers.put(identifier, m);
+					}
 				}
+	
 			}
-
+			publishMarkers();
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
-		publishMarkers();
 	}
 
 	/**
