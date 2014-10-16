@@ -64,6 +64,10 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * Store the markers to be published
 	 */
 	protected Map<String, Marker> markers;
+	/**
+	 * Store all added markers (for highlighting)
+	 */
+	protected Map<String, Marker> markersCache;
 
 
 	/**
@@ -105,6 +109,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 		//PrologInterface.executeQuery("register_ros_package(mod_srdl)");
 
 		markers =  new ConcurrentHashMap<String, Marker>(8, 0.9f, 1);
+		markersCache =  new ConcurrentHashMap<String, Marker>(8, 0.9f, 1);
 		highlighted = new ConcurrentHashMap<String, ColorRGBA>(8, 0.9f, 1);
 		trajectories = new HashMap<String, List<String>>();
 		humanSkeletons = new HashMap<String, HumanSkeleton>();
@@ -248,26 +253,29 @@ public class MarkerVisualization extends AbstractNodeMain {
 	public void highlight(String identifier, boolean highlight, int r, int g, int b, int a) {
 
 		if(!highlight) {
-			synchronized (markers) {
-				markers.get(identifier).setColor(highlighted.get(identifier));
-			}
+			synchronized (markersCache) { synchronized (markers) {
+				markersCache.get(identifier).setColor(highlighted.get(identifier));
+				markers.put(identifier, markersCache.get(identifier));
+			}}
 
 		} else {
 
 			synchronized (highlighted) {
-				synchronized (markers) {
-					if(markers.get(identifier)!=null) {
-						highlighted.put(identifier, markers.get(identifier).getColor());
+				synchronized (markersCache) { synchronized (markers) {
+					if(markersCache.get(identifier)!=null) {
+						highlighted.put(identifier, markersCache.get(identifier).getColor());
+						markers.put(identifier, markersCache.get(identifier));
 					}
-				}
+				}}
 			}
 
-			synchronized (markers) {
-				if(markers.get(identifier)!=null) {
-					markers.get(identifier).getColor().setR(((float) r)/255);
-					markers.get(identifier).getColor().setG(((float) g)/255);
-					markers.get(identifier).getColor().setB(((float) b)/255);
-					markers.get(identifier).getColor().setA(((float) a)/255);
+			synchronized (markersCache) {
+				if(markersCache.get(identifier)!=null) {
+					markersCache.get(identifier).getColor().setR(((float) r)/255);
+					markersCache.get(identifier).getColor().setG(((float) g)/255);
+					markersCache.get(identifier).getColor().setB(((float) b)/255);
+					markersCache.get(identifier).getColor().setA(((float) a)/255);
+					markers.put(identifier, markersCache.get(identifier));
 				}
 			}
 		}
@@ -313,11 +321,12 @@ public class MarkerVisualization extends AbstractNodeMain {
 		// reset colors to cached original ones
 
 		synchronized (highlighted) {
-			synchronized (markers) {
+			synchronized (markersCache) { synchronized (markers) {
 				for(String obj : highlighted.keySet()) {
-					markers.get(obj).setColor(highlighted.get(obj));
+					markersCache.get(obj).setColor(highlighted.get(obj));
+					markers.put(obj, markersCache.get(obj));
 				}
-			}
+			}}
 		}
 		publishMarkers();
 	}
@@ -505,6 +514,9 @@ public class MarkerVisualization extends AbstractNodeMain {
 		if(m!=null) {
 			synchronized (markers) {
 				markers.put(identifier, m);
+			}
+			synchronized (markersCache) {
+				markersCache.put(identifier, m);
 			}
 		}
 	}

@@ -295,10 +295,6 @@ public class HumanSkeleton {
 		if(frameName.startsWith("'")) {
 			frameName = frameName.substring(1, frameName.length()-1);
 		}
-		// TODO: use strip_literal_type instead, works for floats above!
-		//if(frameName.startsWith("literal('")) {
-		//	frameName = frameName.substring("literal('".length(), frameName.length()-2);
-		//}
 		if(frameName.startsWith("/")) return frameName;
 		else return "/"+frameName;
 	}
