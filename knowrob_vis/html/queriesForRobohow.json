@@ -2,11 +2,23 @@
     "query": [
         {
             "q": "",
-            "text": "----- Initialize Setup -----"
+            "text": "----- init -----"
         },
         {
-            "q": "load_experiment('/home/ros/knowrob_data/logs/simulation/pancakemaking_sim.owl').",
-            "text": "Load full pancake-making simulation data from library"
+            "q": "load_experiment('/home/ros/knowrob_data/logs/robots/cram/pick-and-place/cram_log.owl').",
+            "text": "Load single-arm pick-and-place experiment from 'knowrob_data' library"
+        },
+        {
+            "q": "load_experiment('/home/ros/knowrob_data/logs/robots/cram/dual-arm-pick-and-place/cram_log.owl').",
+            "text": "Load dual-arm pick-and-place experiment"
+        },
+        {
+            "q": "",
+            "text": ""
+        },
+        {
+            "q": "",
+            "text": "----- Queries on the semantic map -----"
         },
         {
             "q": "owl_parse('package://knowrob_sim/owl/simulation_map.owl').",
@@ -17,35 +29,47 @@
             "text": "Visualize semantic map"
         },
         {
+            "q": "owl_subclass_of(T, knowrob:'StorageConstruct'), class_properties(T, knowrob:'typePrimaryFunction-StoragePlaceFor', knowrob:'Perishable'), owl_individual_of(Obj, T), highlight_object_with_children(Obj).",
+            "text": "What is the storage place for perishable items?"
+        },
+        {
+            "q": "owl_individual_of(Obj, knowrob:'ElectricalDevice'), highlight_object_with_children(Obj).",
+            "text": "Which are electrical devices?"
+        },
+        {
             "q": "",
             "text": ""
         },
         {
             "q": "",
-            "text": "----- Queries on Simulation Data -----"
+            "text": "----- Queries on simulation data -----"
+        },
+        {
+            "q": "load_experiment('/home/yfang/hydro_workspace/sandbox/catkin_ws/src/knowrob_addons/knowrob_sim/example_files/sim_data.owl').",
+            "text": "Load full pancake-making simulation data from library"
         },
         {
             "q": "simact_contact(T, knowrob_sim:'TouchingSituation', knowrob:'Cup', Obj), simact_start(T,Start), simact_end(T, End).",
             "text": "In which contact intervals was the Cup involved?"
         },
         {
-            "q": "simlift_liftonly(knowrob:'Cup', Start, End), add_trajectory_sim('Cup', Start, End, 0.1,3,'lime').",
-            "text": "When was the Cup lifted from the KitchenTable? Visualize trajectory."
+            "q": "simlift_liftonly(knowrob:'Cup', Start, End), add_trajectory_sim('Cup', Start, End, 0.1,3,'yellow').",
+            "text": "Visualize trajectory of the Cup while it's lifted"
         },
         {
-            "q": "simflip_full(knowrob:'LiquidTangibleThing', knowrob:'Spatula', knowrob:'PancakeMaker', Start, End, _, _, _), add_trajectory_sim('Spatula', Start, End, 0.1,0,'fuchsia').",
+            "q": "simflip_full(knowrob:'LiquidTangibleThing', knowrob:'Spatula', knowrob:'PancakeMaker', Start, End, _, _, _), add_trajectory_sim('Spatula', Start, End, 0.1,0,'aqua').",
             "text": "Visualize trajectory of the Spatula while flipping the pancake"
         },
         {
-            "q": "simact(T, knowrob:'GraspingSomething'), rdf_has(T, knowrob:'objectActedOn', Obj), rdf_has(Obj, rdf:type, knowrob:'Spatula'), simact_start(T, Start), simact_end(T, End), add_trajectory_sim('Spatula', Start, End, 0.1,0,'maroon').",
-            "text": "When was the Spatula being held in Hand? Visualize trajectory."
+            "q": "simact(T, knowrob:'GraspingSomething'), rdf_has(T, knowrob:'objectActedOn', Obj), rdf_has(Obj, rdf:type, knowrob:'Spatula'), simact_start(T, Start), simact_end(T, End), add_trajectory_sim('Spatula', Start, End, 0.1,0,'blue').",
+            "text": "Visualize trajectory of the Spatula while it's being held"
         },
         {
-            "q": "simflip_fliponly(knowrob:'LiquidTangibleThing', knowrob:'Spatula', knowrob:'PancakeMaker', Start, End, _, _, _), add_trajectory_sim('LiquidTangibleThing', Start, End, 0.1,2,'aqua').",
+            "q": "simflip_fliponly(knowrob:'LiquidTangibleThing', knowrob:'Spatula', knowrob:'PancakeMaker', Start, End, _, _, _), add_trajectory_sim('LiquidTangibleThing', Start, End, 0.1,2,'lime').",
             "text": "Visualize trajectory of the Pancake while it's on the Spatula"
         },
         {
-            "q": "simflip_full(knowrob:'LiquidTangibleThing', knowrob:'Spatula', knowrob:'PancakeMaker', Start, End, _, _, _), add_trajectory_sim('LiquidTangibleThing', Start, End, 0.1,2,'blue').",
+            "q": "simflip_full(knowrob:'LiquidTangibleThing', knowrob:'Spatula', knowrob:'PancakeMaker', Start, End, _, _, _), add_trajectory_sim('LiquidTangibleThing', Start, End, 0.1,2,'yellow').",
             "text": "Visualize trajectory of the Pancake for the whole flipping interval"
         },
         {
@@ -54,11 +78,59 @@
         },
         {
             "q": "",
-            "text": "----- Logfile Statistics -----"
+            "text": "----- Queries on the robot's logged belief state -----"
+        },
+        {
+            "q": "owl_parse('package://knowrob_srdl/owl/PR2.owl').",
+            "text": "Load PR2 robot model"
+        },
+        {
+            "q": "task(T), task_goal(T, '(OBJECT-PLACED-AT ?OBJ ?LOC)'), task_start(T, S), task_end(T, E), add_trajectory('/base_link', S, E, 1.0).",
+            "text": "Which path did the PR2 follow during the pick-and-place task?"
+        },
+        {
+            "q": "findall(E, (task_goal(T,'PUTDOWN'), task_end(T, E)), Es), member(E, Es),  mng_lookup_transform('/base_link', '/map', E, Transform), add_robot_as_basic_semantic_instance(Transform, E, Inst), add_object(Inst), highlight_object(Inst).",
+            "text": "Where did it stand during the PUT-DOWN actions?"
+        },
+        {
+            "q": "findall([Obj, E], \n ((task_end(T,E), task_type(T,knowrob:'UIMAPerception'), rdf_has(T, knowrob:'perceptionResult', Obj))), \n Objs),!, member([Obj, E], Objs), belief_at(loc(Obj,Loc), E), \n add_object_as_semantic_instance(Obj, Loc, E, SemanticMapInstance), \n add_object_with_children(SemanticMapInstance).",
+            "text": "Where have objects been perceived during the task?"
+        },
+        {
+            "q": "successful_tasks_for_goal('PUTDOWN', Tasks), member(T, Tasks), task_end(T,End), !, mng_robot_pose_at_time(pr2:'PR2Robot1','/map',End,Pose), add_object_with_children(pr2:'PR2Robot1',End).",
+            "text": "What was the pose of the PR2 at the end of the PUTDOWN action?"
+        },
+        {
+            "q": "task_goal(T, 'PUTDOWN'), \n subtask_all(T, Sub),\n owl_has(Sub, knowrob:'voluntaryMovementDetails', D),\n mng_designator_props(D, 'LINK', Link),\n task_start(T, St), task_end(T, E),\n atomic_list_concat(['/', Link], TfLink), add_trajectory(TfLink, St, E, 0.1).",
+            "text": "What was the arm trajectory during the PUTDOWN action?"
+        },
+        {
+            "q": "task_goal(T, 'GRASP'),\n subtask_all(T, SubL),\n owl_has(SubL, knowrob:graspDetails, DL),\n mng_designator_props(DL, 'SIDE', 'LEFT'),\n subtask_all(T, SubR),\n owl_has(SubR, knowrob:graspDetails, DR),\n mng_designator_props(DR, 'SIDE', 'RIGHT'),\n task_start(T, S), task_end(T, E),\n add_trajectory('l_wrist_roll_link', S, E, 0.3),\n add_trajectory('r_wrist_roll_link', S, E, 0.3).",
+            "text": "What were the trajectories of both arms in a dual-handed GRASP action?"
+        },
+        {
+            "q": "remove_object_with_children(pr2:'PR2Robot1').",
+            "text": "Stop publishing PR2 markers"
+        },
+        {
+            "q": "remove_trajectory('/base_link'), \n remove_trajectory('/l_wrist_roll_link'), \n remove_trajectory('/r_wrist_roll_link').",
+            "text": "Stop publishing trajectory markers"
+        },
+        {
+            "q": "",
+            "text": ""
+        },
+        {
+            "q": "",
+            "text": "----- Logfile statistics -----"
         },
         {
             "q": "diagram_canvas.",
             "text": "Initialize diagram canvas"
+        },
+        {
+            "q": "findall(Type-Num, (owl_subclass_of(T, knowrob:'CRAMFailure'),\n rdf_split_url(_, Type, T),findall(F, failure_type(F, T), Failures),\n length(Failures, Num)), Distrib),pairs_keys_values(Distrib, Types, Nums),\n add_diagram(errordist, 'Error distribution', piechart, xlabel, ylabel, 350, 350, '11px', [[Types, Nums]]).",
+            "text": "Show occurences of typical error types in the chart"
         },
         {
             "q": "rdf_has(_, knowrob:'experimentName', literal(type(_, Expname))), string_concat(Expname, ' Timeline', Title), findall(Type, (simact(T), rdf_split_url(_,Type,T)), X), sim_timeline_val(X, Times), add_diagram(diagram_id2, 'Title', timeline, 'Time', 'Events', 300, 300, '12px', [[['X'],['Times']]]).",
