@@ -13,8 +13,6 @@ import java.text.DecimalFormat;
 
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Quat4d;
-import javax.vecmath.Vector3d;
-import javax.vecmath.Vector4d;
 
 import org.ros.message.Duration;
 import org.ros.message.Time;
@@ -89,7 +87,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * Stores the set of joints which are available from the XSens motion
 	 * capturing suite.
 	 */
-	private Map<String,HumanJoint> humanJoints;
+	private Map<String, HumanSkeleton> humanSkeletons;
 	
 	/**
 	 * Logger of ROS node.
@@ -109,7 +107,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 		markers =  new ConcurrentHashMap<String, Marker>(8, 0.9f, 1);
 		highlighted = new ConcurrentHashMap<String, ColorRGBA>(8, 0.9f, 1);
 		trajectories = new HashMap<String, List<String>>();
-		humanJoints = HumanJoint.initializeHumanJoints();
+		humanSkeletons = new HashMap<String, HumanSkeleton>();
 
 		startWebServer(1111);
 	}
@@ -388,22 +386,34 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * Note: Make sure to set search index for 'transforms.header.stamp'
 	 * in mongo: db.tf.ensureIndex( { "transforms.header.stamp" : 1 } )
 	 * 
-	 * @param id the id of the stick-man (allows to add multiple stick-mans)
-	 * @param timepoint The time point of interest
-	 * @param prefix prefix used for TF frames
+	 * @param humanIndividual The name of the human individual which defines the skeletal structure
+	 * @param timepoint The timepoint for TF lookup
+	 * @param humanId Allows to add multiple visualizations in the same canvas
+	 * @param tfPrefix Prefix used for TF frames
 	 */
-	public void addHumanPose(int id, String timepoint, String prefix) {
+	public void addHumanPose(String humanIndividual, String timepoint, int humanId, String tfPrefix) {
+		final HumanSkeleton skeleton;
+		try {
+			// ID allows multiple stick-mans for the same individual.
+			skeleton = getHumanSkeleton("'" + humanIndividual + "'");
+		}
+		catch(Exception exc) {
+			log.error("Failed to initialize human skeleton.", exc);
+			return;
+		}
+
 		final Time time = parseTime(timepoint);
-		final long ms = System.currentTimeMillis();
-		
 		int index = 0;
 
 		// Add cylinder marker between joints
-		for(HumanJoint sourceJoint : humanJoints.values()) {
-			for(String conn : sourceJoint.getConnections()) {
-				final HumanJoint targetJoint = humanJoints.get(conn);
-				if(!addJointMarker(createJointConnectionMarker(
-						sourceJoint,targetJoint,time,index,id,prefix),index,id)) {
+		for(HumanSkeleton.Link sourceLink : skeleton.getLinks()) {
+			for(String conn : sourceLink.succeeding) {
+				final HumanSkeleton.Link targetLink = skeleton.getLink(conn);
+				if(targetLink==null) {
+					log.warn("Link not known '" + conn + "'.");
+				}
+				if(!addHumanMarker(skeleton.createCylinderMarker(
+						sourceLink,targetLink,time,humanId,tfPrefix),index,humanId)) {
 					log.warn("No human pose found for timepoint '" + time + "'.");
 					return;
 				}
@@ -411,9 +421,9 @@ public class MarkerVisualization extends AbstractNodeMain {
 			}
 		}
 		// Add sphere marker for joints
-		for(HumanJoint joint : humanJoints.values()) {
-			if(!addJointMarker(createJointSphereMarker(
-					joint,time,index,id,prefix),index,id)) {
+		for(HumanSkeleton.Link link : skeleton.getLinks()) {
+			if(!addHumanMarker(skeleton.createSphereMarker(
+					link,time,humanId,tfPrefix),index,humanId)) {
 				log.warn("No human pose found for timepoint '" + time + "'.");
 				return;
 			}
@@ -421,15 +431,23 @@ public class MarkerVisualization extends AbstractNodeMain {
 		}
 		
 		publishMarkers();
-		log.debug("'addHumanPose' took: " + (System.currentTimeMillis()-ms)/1000.0 + " seconds");
 	}
 	
+	private HumanSkeleton getHumanSkeleton(String humanIndividualName) {
+		HumanSkeleton out = humanSkeletons.get(humanIndividualName);
+		if(out==null) {
+			out = new HumanSkeleton(humanIndividualName, node);
+			humanSkeletons.put(humanIndividualName, out);
+		}
+		return out;
+	}
+
 	/**
 	 * Removes previously added stick-man markers.
 	 * @param id the id of the stick-man
 	 */
 	public void removeHumanPose(int id) {
-		final String ns = getHumanMarkerNs(id);
+		final String ns = HumanSkeleton.getHumanMarkerNs(id);
 		final List<String> toRemove = new LinkedList<String>();
 		final MarkerArray arr = pub.newMessage();
 		
@@ -733,15 +751,12 @@ public class MarkerVisualization extends AbstractNodeMain {
 			highlighted.remove(identifier);
 		}
 	}
-
-	/////////////////
-	////// Human Pose Start
-	/////////////////
 	
-	private boolean addJointMarker(Marker marker, int index, int id) {
+	private boolean addHumanMarker(Marker marker, int index, int id) {
 		if(marker!=null) {
 			final StringBuilder identifier = new StringBuilder();
 			identifier.append("human_").append(id).append('_').append(index);
+			marker.setId(index);
 			
 			synchronized (markers) {
 				markers.put(identifier.toString(), marker);
@@ -751,130 +766,6 @@ public class MarkerVisualization extends AbstractNodeMain {
 		else {
 			return false;
 		}
-	}
-	
-	/**
-	 * Creates a sphere marker psoitioned at a joint of a human.
-	 * @param joint joint of the human
-	 * @param timepoint the timepoint used for looking up the transform
-	 * @param index the marker index in the human skeleton
-	 * @param id human id (to allow multiple humans in parallel)
-	 * @param prefix prefix used for TF frames
-	 * @return the marker created
-	 */
-	private Marker createJointSphereMarker(HumanJoint joint, Time timepoint, int index, int id, String prefix) {
-		final Marker m = createJointMarker(index,id);
-		final StampedTransform tf = joint.lookupPose(timepoint,prefix);
-		// Frame not available for given timepoint
-		if(tf==null) return null;
-
-		m.setType(Marker.SPHERE);
-		m.getScale().setX(joint.getSize());
-		m.getScale().setY(joint.getSize());
-		m.getScale().setZ(joint.getSize());
-
-		m.getPose().getPosition().setX(tf.getTranslation().x);
-		m.getPose().getPosition().setY(tf.getTranslation().y);
-		m.getPose().getPosition().setZ(tf.getTranslation().z);
-
-		m.getPose().getOrientation().setX(0.0);
-		m.getPose().getOrientation().setY(0.0);
-		m.getPose().getOrientation().setZ(0.0);
-		m.getPose().getOrientation().setW(1.0);
-
-        return m;
-	}
-	
-	/**
-	 * Creates a cylinder marker that lies between two joints.
-	 * @param sourceJoint one of the joints
-	 * @param targetJoint the other joint
-	 * @param timepoint the timepoint used for looking up the transform
-	 * @param index the marker index in the human skeleton
-	 * @param id human id (to allow multiple humans in parallel)
-	 * @param prefix prefix used for TF frames
-	 * @return the marker created
-	 */
-	private Marker createJointConnectionMarker(HumanJoint sourceJoint,
-			HumanJoint targetJoint, Time timepoint, int index,
-			int id, String prefix) {
-		final Marker m = createJointMarker(index,id);
-		
-		final StampedTransform sourceTf = sourceJoint.lookupPose(timepoint,prefix);
-		final StampedTransform targetTf = targetJoint.lookupPose(timepoint,prefix);
-		// Frames not available for given timepoint
-		if(sourceTf==null || targetTf==null) return null;
-		
-		m.setType(Marker.CYLINDER);
-
-		// Vector pointing upwards
-		final Vector3d up = new Vector3d(0.0,0.0,1.0);
-		// Vector pointing from target joint to source joint
-		final Vector3d dp = new Vector3d(targetTf.getTranslation());
-		dp.sub(sourceTf.getTranslation());
-
-		// Radius in x/z directions
-		m.getScale().setX(0.1);
-		m.getScale().setY(0.1);
-		// The height of the cylinder
-		m.getScale().setZ(dp.length());
-
-		// Compute point between both joints
-		final Vector3d center = new Vector3d(targetTf.getTranslation());
-		center.add(sourceTf.getTranslation());
-		center.scale(0.5);
-		m.getPose().getPosition().setX(center.x);
-		m.getPose().getPosition().setY(center.y);
-		m.getPose().getPosition().setZ(center.z);
-
-		// Compute the orientation
-		final Vector4d orient = computeOrientation(up,dp);
-		m.getPose().getOrientation().setX(orient.x);
-		m.getPose().getOrientation().setY(orient.y);
-		m.getPose().getOrientation().setZ(orient.z);
-		m.getPose().getOrientation().setW(orient.w);
-
-		return m;
-	}
-	
-	/**
-	 * Computes orientation between two vectors.
-	 * @param u the from vector
-	 * @param v the to vector
-	 * @return quaternion that transforms one vector to the other one
-	 */
-	private Vector4d computeOrientation(Vector3d u, Vector3d v) {
-		final Vector3d uv = new Vector3d();
-		uv.cross(u,v);
-		double w = Math.sqrt(u.lengthSquared()*v.lengthSquared()) + u.dot(v);
-		
-		final Vector4d out = new Vector4d(uv.x, uv.y, uv.z, w);
-		out.normalize();
-		
-        return out;
-	}
-	
-	private Marker createJointMarker(int index, int id) {
-		final Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
-
-		m.getHeader().setFrameId("/map");
-		// Use special namespace for XSens data so that the markers don't conflict
-		// with other markers
-		m.setNs(getHumanMarkerNs(id));
-		m.setId(index);
-		m.getColor().setR(1.0f);
-		m.getColor().setG(1.0f);
-		m.getColor().setB(0.0f);
-		m.getColor().setA(1.0f);
-		
-		return m;
-	}
-	
-	/**
-	 * Special namespace for XSens marker
-	 */
-	private String getHumanMarkerNs(int id) {
-		return "human_pose" + id;
 	}
 	
 	/**
