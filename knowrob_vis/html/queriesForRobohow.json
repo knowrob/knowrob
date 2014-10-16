@@ -46,27 +46,27 @@
         },
         {
             "q": "load_experiment('/home/yfang/hydro_workspace/sandbox/catkin_ws/src/knowrob_addons/knowrob_sim/example_files/sim_data.owl').",
-            "text": "Load full pancake-making simulation data from local library"
+            "text": "Load full pancake-making simulation data from library"
         },
         {
-            "q": "simact_contact(T, knowrob_sim:'TouchingSituation', knowrob_sim:'Cup', Obj), simact_start(T,Start), simact_end(T, End).",
+            "q": "simact_contact(T, knowrob_sim:'TouchingSituation', knowrob:'Cup', Obj), simact_start(T,Start), simact_end(T, End).",
             "text": "In which contact intervals was the Cup involved?"
         },
         {
-            "q": "simact(T, knowrob:'GraspingSomething'), rdf_has(T, knowrob:'objectActedOn', Obj), rdf_has(Obj, rdf:type, knowrob_sim:'Cup'), simact_start(T, Start), simact_end(T, End), add_trajectory_sim('Cup', Start, End, 1,3,0.2).",
+            "q": "simact(T, knowrob:'GraspingSomething'), rdf_has(T, knowrob:'objectActedOn', Obj), rdf_has(Obj, rdf:type, knowrob:'Cup'), simact_start(T, Start), simact_end(T, End), add_trajectory_sim('Cup', Start, End, 0.5,0,0.2).",
             "text": "Visualize trajectory of the Hand while it's holding the Cup"
         },
         {
-            "q": "simlift_liftonly(knowrob_sim:'Cup', Start, End), add_trajectory_sim('Cup', Start, End, 100,3,0.5).",
+            "q": "simlift_liftonly(knowrob:'Cup', Start, End), add_trajectory_sim('Cup', Start, End, 0.5,3,0.5).",
             "text": "Visualize trajectory of the Cup while it's lifted"
         },
         {
-            "q": "simflip_full(knowrob_sim:'LiquidTangibleThing', knowrob_sim:'Spatula', knowrob_sim:'PancakeMaker', Start, End, _, _, _), add_trajectory_sim('Spatula', Start, End, 100,0,0.8).",
+            "q": "simflip_full(knowrob:'LiquidTangibleThing', knowrob:'Spatula', knowrob:'PancakeMaker', Start, End, _, _, _), add_trajectory_sim('Spatula', Start, End, 0.5,0,0.8).",
             "text": "Visualize trajectory of the Spatula for the full flipping interval"
         },
         {
-            "q": "simflip_fliponly(knowrob_sim:'LiquidTangibleThing', knowrob_sim:'Spatula', knowrob_sim:'PancakeMaker', Start, End, _, _, _), add_trajectory_sim('Spatula', Start, End, 100,0,01.0).",
-            "text": "Visualize trajectory of the Pancake for while it's on the Spatula"
+            "q": "simflip_fliponly(knowrob:'LiquidTangibleThing', knowrob:'Spatula', knowrob:'PancakeMaker', Start, End, _, _, _), add_trajectory_sim('Spatula', Start, End, 0.5,0,01.0).",
+            "text": "Visualize trajectory of the Pancake while it's on the Spatula"
         },
         {
             "q": "",
@@ -127,6 +127,10 @@
         {
             "q": "findall(Type-Num, (owl_subclass_of(T, knowrob:'CRAMFailure'),\n rdf_split_url(_, Type, T),findall(F, failure_type(F, T), Failures),\n length(Failures, Num)), Distrib),pairs_keys_values(Distrib, Types, Nums),\n add_diagram(errordist, 'Error distribution', piechart, xlabel, ylabel, 350, 350, '11px', [[Types, Nums]]).",
             "text": "Show occurences of typical error types in the chart"
+        },
+        {
+            "q": "rdf_has(_, knowrob:'experimentName', literal(type(_, Expname))), string_concat(Exp, ' Timeline', Title), findall(Type, (simact(T), rdf_split_url(_,Type,T)), X), sim_timeline_val(X, Times), add_diagram(diagram_id2, Title, timeline, 'Time', 'Events', 300, 300, '12px', [[X,Times]]). ",
+            "text": "Show event timeline in the chart"
         }
     ]
 }

@@ -58,6 +58,7 @@
       add_human_pose/1,
       add_human_pose/2,
       add_human_pose/3,
+      add_human_pose/4,
       remove_human_pose/0,
       remove_human_pose/1
     ]).
@@ -91,6 +92,7 @@
             test_sim(r,r,r,+,+,+),
             add_human_pose(r,r),
             add_human_pose(r,r,r),
+            add_human_pose(r,r,r,r),
             remove_human_pose(r),
             remove_human_pose(r,r),
             add_trajectory(r,r,r),
@@ -274,22 +276,23 @@ remove_trajectory(Link) :-
 % Human pose
 %
 
-%% add_human_pose(+Timepoint) is det.
+%% add_human_pose(+Human, +Timepoint) is det.
 %
 % Reads joint poses of a human from logged tf data and visualizes them in the
 % Web-based canvas using a stick-man model.
 %
+% @param Human  The human individual that defines the skeletal structure
 % @param Timepoint  Time stamp identifier of the pose
 %
-add_human_pose(Timepoint) :-
+add_human_pose(Human, Timepoint) :-
     v_canvas(Canvas),
-    jpl_call(Canvas, 'addHumanPose', [0,Timepoint,''], _).
-add_human_pose(Id, Timepoint) :-
+    jpl_call(Canvas, 'addHumanPose', [Human,Timepoint,0,''], _).
+add_human_pose(Human, Id, Timepoint) :-
     v_canvas(Canvas),
-    jpl_call(Canvas, 'addHumanPose', [Id,Timepoint,''], _).
-add_human_pose(Id, Timepoint, Prefix) :-
+    jpl_call(Canvas, 'addHumanPose', [Human,Timepoint,Id,''], _).
+add_human_pose(Human, Id, Timepoint, Prefix) :-
     v_canvas(Canvas),
-    jpl_call(Canvas, 'addHumanPose', [Id,Timepoint,Prefix], _).
+    jpl_call(Canvas, 'addHumanPose', [Human,Timepoint,Id,Prefix], _).
 
 %% remove_human_pose() is det.
 %

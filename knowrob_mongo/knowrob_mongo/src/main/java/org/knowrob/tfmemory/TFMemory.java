@@ -428,7 +428,7 @@ public class TFMemory {
 		}
 
 		// load data from DB if frame is unknown or time not buffered yet
-		loadTransformFromDBSim(frameID, new ISODate(time).getDate());
+		loadTransformFromDB(frameID, new ISODate(time).getDate());
 		frame = frames.get(frameID);
 		return frame;
 
