@@ -361,13 +361,13 @@ public class TFMemory {
 		// load data from DB if the current time point is already in the buffer
 		Frame sourceFrame = verifyDataAvailableSim(time, resolvedSourceID);
 		if(sourceFrame==null) {
-			System.err.println("Cannot transform: source frame \"" + resolvedSourceID + "\" does not exist.");
+			System.out.println("WARNING: Cannot transform source frame \"" + resolvedSourceID + "\" does not exist for queried time.");
 			return null;
 		}
 
 		Frame targetFrame = verifyDataAvailableSim(time, resolvedTargetID);
 		if(targetFrame==null) {
-			System.err.println("Cannot transform: target frame \"" + resolvedTargetID + "\" does not exist.");
+			System.out.println("WARNING: Cannot transform target frame \"" + resolvedTargetID + "\" does not exist for queried time.");
 			return null;
 		}
 
