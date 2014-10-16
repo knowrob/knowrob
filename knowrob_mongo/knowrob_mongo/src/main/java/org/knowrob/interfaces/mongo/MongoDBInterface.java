@@ -330,48 +330,83 @@ public class MongoDBInterface {
 //		Time t = new Time(1396512422); // no
 //		Time t = new Time(1396512424);  //1
 
-		TFMemory tf = TFMemory.getInstance();
-
+//		TFMemory tf = TFMemory.getInstance();
+//
+//		try {
+//			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+//			Date date = sdf.parse("2014-04-30 13:31:51.224");
+//			Time t = new Time(date.getTime()/1000.0);
+//			System.out.println("UTC " + date + " -> " + date.getTime()/1000.0);
+//			sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+//			date = sdf.parse("2014-04-30 13:31:51.224");
+//			System.out.println("GMT " + date + " -> " + date.getTime()/1000.0);
+//			
+//			t = new Time(date.getTime()/1000.0);
+//			
+//			System.out.println(tf.lookupTransform("/map", "/RightHand", t));
+//		}
+//		catch (ParseException e) {
+//			e.printStackTrace();
+//		}
+//		
+//		Timestamp timestamp = Timestamp.valueOf("2014-08-27 13:30:35.0");
+//		Time t = new Time(timestamp.getTime());  //1
+//		System.out.println(timestamp.getTime());
+//
+//
+//		Time t_st  = new Time(1396512420);
+//		Time t_end = new Time(1396512422);
+//
+//		long t0 = System.nanoTime();
+//		System.out.println(tf.lookupTransform("/base_link", "/l_gripper_palm_link", t_end));
+//		long t1 = System.nanoTime();
+//		System.out.println(tf.lookupTransform("/base_link", "/l_gripper_palm_link", t_end));
+//		long t2 = System.nanoTime();
+//		System.out.println(tf.lookupTransform("/base_link", "/l_gripper_palm_link", t_st));
+//		long t3 = System.nanoTime();
+//
+//		double first  = (t1-t0)/ 1E6;
+//		double second = (t2-t1)/ 1E6;
+//		double third  = (t3-t2)/ 1E6;
+//		
+//		System.out.println("Time to look up first transform: " + first + "ms");
+//		System.out.println("Time to look up second transform: " + second + "ms");
+//		System.out.println("Time to look up second transform: " + third + "ms");
+		
+		SimpleDateFormat sdf_date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 		try {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-			Date date = sdf.parse("2014-04-30 13:31:51.224");
-			Time t = new Time(date.getTime()/1000.0);
-			System.out.println("UTC " + date + " -> " + date.getTime()/1000.0);
-			sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-			date = sdf.parse("2014-04-30 13:31:51.224");
-			System.out.println("GMT " + date + " -> " + date.getTime()/1000.0);
+			sdf_date.setTimeZone(TimeZone.getTimeZone("GMT")); //necessary because MongoDB time is 2 hours behind
+//			Date date = sdf_date.parse("2014-04-03T08:07:00.000Z");
+			Date date = sdf_date.parse("1970-01-01T00:00:03.357Z");
+			System.out.println(date.getTime());
+			Time timestamp_GMT = new Time(date.getTime()/1000.0);
+			System.out.println("Timestamp: " + timestamp_GMT);
 			
-			t = new Time(date.getTime()/1000.0);
-			
-			System.out.println(tf.lookupTransform("/map", "/RightHand", t));
+		
+		TFMemory tf = TFMemory.getInstance();
+		System.out.println(tf.lookupTransform("kitchen_world", "spatula", timestamp_GMT));
 		}
+		
+		
+//		TFMemory tf = TFMemory.getInstance();
+//
+//		try {
+//			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+//			Date date = sdf.parse("2014-04-30 13:31:51.224");
+//			Time t = new Time(date.getTime()/1000.0);
+//			System.out.println("UTC " + date + " -> " + date.getTime()/1000.0);
+//			sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+//			date = sdf.parse("2014-04-30 13:31:51.224");
+//			System.out.println("GMT " + date + " -> " + date.getTime()/1000.0);
+//			
+//			t = new Time(date.getTime()/1000.0);
+//			
+//			System.out.println(tf.lookupTransform("/map", "/RightHand", t));
+//		}
 		catch (ParseException e) {
 			e.printStackTrace();
 		}
-		
-		Timestamp timestamp = Timestamp.valueOf("2014-08-27 13:30:35.0");
-		Time t = new Time(timestamp.getTime());  //1
-		System.out.println(timestamp.getTime());
-
-
-		Time t_st  = new Time(1396512420);
-		Time t_end = new Time(1396512422);
-
-		long t0 = System.nanoTime();
-		System.out.println(tf.lookupTransform("/base_link", "/l_gripper_palm_link", t_end));
-		long t1 = System.nanoTime();
-		System.out.println(tf.lookupTransform("/base_link", "/l_gripper_palm_link", t_end));
-		long t2 = System.nanoTime();
-		System.out.println(tf.lookupTransform("/base_link", "/l_gripper_palm_link", t_st));
-		long t3 = System.nanoTime();
-
-		double first  = (t1-t0)/ 1E6;
-		double second = (t2-t1)/ 1E6;
-		double third  = (t3-t2)/ 1E6;
-		
-		System.out.println("Time to look up first transform: " + first + "ms");
-		System.out.println("Time to look up second transform: " + second + "ms");
-		System.out.println("Time to look up second transform: " + third + "ms");
+//		
 
 		// test lookupTransform wrapper
 //		trans = m.lookupTransform("/map", "/head_mount_kinect_ir_link", 1377766521);
