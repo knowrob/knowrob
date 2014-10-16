@@ -379,7 +379,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @param endtime OWL identifier of a timepoint instance
 	 * @param interval in seconds
 	 */
-	public void showSimTrajectory(String tflink, String starttime, String endtime, double interval, int markertype, float markercolred) {
+	public void showSimTrajectory(String tflink, String starttime, String endtime, double interval, int markertype, String markercol) {
 
 		String identifier;
 		String timepoint;
@@ -400,7 +400,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 				identifier = tflink + new DecimalFormat("###.###").format(i);//String.valueOf(i);
 
 				// read marker from Prolog
-				Marker m = readLinkMarkerFromPrologSim(tflink, timepoint, markertype, markercolred);
+				Marker m = readLinkMarkerFromPrologSim(tflink, timepoint, markertype, markercol);
 
 				// add marker to map
 				if(m!=null) {
@@ -698,7 +698,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @param timepoint  OWL identifier of a timepoint instance
 	 * @return Marker with the object information
 	 */
-	Marker readLinkMarkerFromPrologSim(String link, String timepoint, int marker_type, float marker_color_red) {
+	Marker readLinkMarkerFromPrologSim(String link, String timepoint, int marker_type, String marker_color) {
 
 		Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
 
@@ -718,14 +718,24 @@ public class MarkerVisualization extends AbstractNodeMain {
 			m.setType(marker_type);
 		else
 			m.setType(Marker.CYLINDER);
-
-		if(marker_color_red >= 0.0 && marker_color_red < 1.0)
-			m.getColor().setR(marker_color_red);
-		else
+		
+		//set marker color using stylesheet to convert to rgb
+		StyleSheet s = new StyleSheet();
+		Color color = s.stringToColor(marker_color);
+		if(color == null) //given color is not a HTML3.2 color string
+		{
 			m.getColor().setR(1.0f);
-		m.getColor().setG(1.0f);
-		m.getColor().setB(0.0f);
-		m.getColor().setA(1.0f);
+			m.getColor().setG(1.0f);
+			m.getColor().setB(0.0f);
+			m.getColor().setA(1.0f);
+		}
+		else
+		{
+			m.getColor().setR(color.getRed()/(float)255.0);
+			m.getColor().setG(color.getGreen()/(float)255.0);
+			m.getColor().setB(color.getBlue()/(float)255.0);
+			m.getColor().setA(1.0f);
+		}		
 
 		try {
 
