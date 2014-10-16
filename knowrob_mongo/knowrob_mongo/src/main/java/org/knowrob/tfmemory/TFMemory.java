@@ -416,21 +416,17 @@ public class TFMemory {
 		// lookup frame
 		Frame frame = frames.get(frameID);
 
-		// check if frame is inside time cache
-		if(frame!=null && frame.getParentFrames()!=null) {
-			for(Frame f : frame.getParentFrames()) {
-
-				if(frame.getTimeCache(f).timeInBufferRange(new ISODate(time).getMilliSeconds())) {
-					return frame;
-				}
-			}
-
-		}
-
 		// load data from DB if frame is unknown or time not buffered yet
-		loadTransformFromDB(frameID, new ISODate(time).getDate());
-		frame = frames.get(frameID);
-		return frame;
+		boolean simlookup = loadTransformFromDBSim(frameID, new ISODate(time).getDate());
+		if(simlookup)
+		{
+			frame = frames.get(frameID);
+			return frame;
+		}
+		else
+		{
+			return null;
+		}
 
 	}
 	
@@ -441,16 +437,21 @@ public class TFMemory {
 	 * @param date
 	 * @return
 	 */
-	private StampedTransform loadTransformFromDBSim(String childFrameID, Date date) {
+	private boolean loadTransformFromDBSim(String childFrameID, Date date) {
 
 		DBCollection coll = db.getCollection("tf");
 		
 		// select time slice from BUFFER_SIZE seconds before to half a second after given time
 		Date start = new Date(date.getTime());
 		
-		// read all frames in time slice
+		// read frame from given time, or closest time to the given time in the future
+		//More correct, but way slower
+//		DBObject query = new BasicDBObject();
+//		query = QueryBuilder.start("transforms.header.stamp").greaterThanEquals( start ).get();
+//		System.out.println(query);
+		
 		DBObject query = new BasicDBObject("transforms.header.stamp", start);
-		System.out.println(query);
+//		System.out.println(query);
 
 		// read only transforms and time stamp
 		DBObject cols  = new BasicDBObject();
@@ -458,13 +459,20 @@ public class TFMemory {
 		cols.put("__recorded",  1 );
 
 		DBCursor cursor = coll.find(query, cols );
-		System.out.println("Entry found: " + cursor.hasNext());
-		StampedTransform res = null;
+		boolean res = false;
 		try {
-			while(cursor.hasNext()) {
-				BasicDBList doc = (BasicDBList) cursor.next().get("transforms");
-				setTransforms(doc);
-//				System.out.println(doc);
+			if(cursor.hasNext())
+			{
+				while(cursor.hasNext()) {
+					BasicDBList doc = (BasicDBList) cursor.next().get("transforms");
+					setTransforms(doc);
+					res = true;
+					//System.out.println(doc);
+				}
+			}
+			else
+			{
+				System.out.println("Entry not found");
 			}
 		} finally {
 			cursor.close();
@@ -523,7 +531,8 @@ public class TFMemory {
 		query = QueryBuilder.start("transforms.header.stamp").greaterThanEquals( start )
 							.and("transforms.header.stamp").lessThan( end )
 							.get();
-
+		System.out.println(query);
+		
 		// TODO: check if we can read only the latest transforms for the child frame
 		// -> should be feasible since verifyDataAvailable should load data when needed,
 		//    maybe needs to be made recursive

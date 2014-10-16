@@ -21,7 +21,7 @@
             "text": "----- Queries on the semantic map -----"
         },
         {
-            "q": "owl_parse('package://iai_semantic_maps/owl/room.owl').",
+            "q": "owl_parse('package://knowrob_sim/owl/simulation_map.owl').",
             "text": "Load semantic map"
         },
         {
@@ -53,20 +53,24 @@
             "text": "In which contact intervals was the Cup involved?"
         },
         {
-            "q": "simact(T, knowrob:'GraspingSomething'), rdf_has(T, knowrob:'objectActedOn', Obj), rdf_has(Obj, rdf:type, knowrob:'Cup'), simact_start(T, Start), simact_end(T, End), add_trajectory_sim('Cup', Start, End, 0.5,0,0.2).",
-            "text": "Visualize trajectory of the Hand while it's holding the Cup"
-        },
-        {
-            "q": "simlift_liftonly(knowrob:'Cup', Start, End), add_trajectory_sim('Cup', Start, End, 0.5,3,0.5).",
+            "q": "simlift_liftonly(knowrob:'Cup', Start, End), add_trajectory_sim('Cup', Start, End, 0.1,3,0.5).",
             "text": "Visualize trajectory of the Cup while it's lifted"
         },
         {
-            "q": "simflip_full(knowrob:'LiquidTangibleThing', knowrob:'Spatula', knowrob:'PancakeMaker', Start, End, _, _, _), add_trajectory_sim('Spatula', Start, End, 0.5,0,0.8).",
-            "text": "Visualize trajectory of the Spatula for the full flipping interval"
+            "q": "simflip_full(knowrob:'LiquidTangibleThing', knowrob:'Spatula', knowrob:'PancakeMaker', Start, End, _, _, _), add_trajectory_sim('Spatula', Start, End, 0.1,1,0.8).",
+            "text": "Visualize trajectory of the Spatula while flipping the pancake"
         },
         {
-            "q": "simflip_fliponly(knowrob:'LiquidTangibleThing', knowrob:'Spatula', knowrob:'PancakeMaker', Start, End, _, _, _), add_trajectory_sim('Spatula', Start, End, 0.5,0,01.0).",
+            "q": "simact(T, knowrob:'GraspingSomething'), rdf_has(T, knowrob:'objectActedOn', Obj), rdf_has(Obj, rdf:type, knowrob:'Spatula'), simact_start(T, Start), simact_end(T, End), add_trajectory_sim('Spatula', Start, End, 0.1,1,0.2).",
+            "text": "Visualize trajectory of the Spatula while it's being held"
+        },
+        {
+            "q": "simflip_fliponly(knowrob:'LiquidTangibleThing', knowrob:'Spatula', knowrob:'PancakeMaker', Start, End, _, _, _), add_trajectory_sim('LiquidTangibleThing', Start, End, 0.1,2,01.0).",
             "text": "Visualize trajectory of the Pancake while it's on the Spatula"
+        },
+        {
+            "q": "simflip_full(knowrob:'LiquidTangibleThing', knowrob:'Spatula', knowrob:'PancakeMaker', Start, End, _, _, _), add_trajectory_sim('LiquidTangibleThing', Start, End, 0.1,2,0.8).",
+            "text": "Visualize trajectory of the Pancake for the whole flipping interval"
         },
         {
             "q": "",

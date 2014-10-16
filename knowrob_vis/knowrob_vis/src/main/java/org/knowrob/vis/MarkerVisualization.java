@@ -9,8 +9,10 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.awt.Color;
 import java.text.DecimalFormat;
 
+import javax.swing.text.html.StyleSheet;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Quat4d;
 
@@ -382,35 +384,37 @@ public class MarkerVisualization extends AbstractNodeMain {
 		String identifier;
 		String timepoint;
 		
-		System.out.println("tflink: " + tflink);
-		removeTrajectory(tflink);
-		trajectories.put(tflink, new ArrayList<String>());
-		
-		System.out.println("starttime: " + starttime);
-		System.out.println("endtime: " + endtime);
+		try
+		{
+			trajectories.put(tflink, new ArrayList<String>());
 
-		for (double i = Double.parseDouble(starttime.substring(starttime.indexOf("timepoint_") + 10)); i <= Double.parseDouble(endtime.substring(endtime.indexOf("timepoint_") + 10)); i += interval) {
+			System.out.println("starttime: " + starttime);
+			System.out.println("endtime: " + endtime);
 
-			timepoint = "'" + starttime.substring(0, starttime.indexOf("timepoint_")) + starttime.substring(starttime.indexOf("timepoint_"), starttime.indexOf("timepoint_") + 10) + new DecimalFormat("###.###").format(i) + "'";//String.valueOf(i);
-			System.out.println("timepoint: " + timepoint);
-//			System.out.println("i: " + i);
-//			System.out.println("end: " + Double.parseDouble(endtime.substring(endtime.indexOf("timepoint_") + 10)));
-			identifier = tflink + new DecimalFormat("###.###").format(i);//String.valueOf(i);
+			for (double i = Double.parseDouble(starttime.substring(starttime.indexOf("timepoint_") + 10)); i <= Double.parseDouble(endtime.substring(endtime.indexOf("timepoint_") + 10)); i += interval) {
 
-			// read marker from Prolog
-			Marker m = readLinkMarkerFromPrologSim(tflink, timepoint, markertype, markercolred);
+				timepoint = "'" + starttime.substring(0, starttime.indexOf("timepoint_")) + starttime.substring(starttime.indexOf("timepoint_"), starttime.indexOf("timepoint_") + 10) + new DecimalFormat("###.###").format(i) + "'";//String.valueOf(i);
+				System.out.println("timepoint: " + timepoint);
+				//			System.out.println("i: " + i);
+				//			System.out.println("end: " + Double.parseDouble(endtime.substring(endtime.indexOf("timepoint_") + 10)));
+				identifier = tflink + new DecimalFormat("###.###").format(i);//String.valueOf(i);
 
-			// add marker to map
-			if(m!=null) {
-				trajectories.get(tflink).add(identifier);
-				synchronized (markers) {
-					markers.put(identifier, m);
+				// read marker from Prolog
+				Marker m = readLinkMarkerFromPrologSim(tflink, timepoint, markertype, markercolred);
+
+				// add marker to map
+				if(m!=null) {
+					trajectories.get(tflink).add(identifier);
+					synchronized (markers) {
+						markers.put(identifier, m);
+					}
 				}
-			}
 
+			}
+			publishMarkers();
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
-		System.out.println("Publishing");
-		publishMarkers();
 	}
 
 	/**
@@ -419,7 +423,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	public void removeTrajectory(String tflink) {
 		final MarkerArray arr = pub.newMessage();
 		if (trajectories.get(tflink) != null){
-			System.out.println("tflink trajectories not null: " + trajectories.get(tflink).size());
+//			System.out.println("tflink trajectories not null: " + trajectories.get(tflink).size());
 			for (int i = 0; i < trajectories.get(tflink).size(); i++) {
 				// remove the object from the list
 				synchronized (markers) {
@@ -427,7 +431,6 @@ public class MarkerVisualization extends AbstractNodeMain {
 					m.setAction(Marker.DELETE);
 					arr.getMarkers().add(m);
 				}
-				System.out.println("Gets here");
 			}
 			System.out.println("removing tflink trajectories");
 			trajectories.remove(tflink);
@@ -939,7 +942,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 	}
 	
 	public static void main(String args[]) {
-
+		
+		
 		//		MarkerVisualization vis = new MarkerVisualization();
 		//		vis.addObjectWithChildren("http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0", "http://knowrob.org/kb/knowrob.owl#timepoint_1377766542");
 		//		vis.highlight("http://knowrob.org/kb/knowrob.owl#Refrigerator67", true, 150, 0, 0, 180);

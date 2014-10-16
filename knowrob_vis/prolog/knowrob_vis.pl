@@ -55,7 +55,6 @@
       add_trajectory_sim/5,
       add_trajectory_sim/6,
       test_sim/6,
-      add_human_pose/1,
       add_human_pose/2,
       add_human_pose/3,
       add_human_pose/4,
