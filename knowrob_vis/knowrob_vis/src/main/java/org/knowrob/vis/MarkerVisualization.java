@@ -343,21 +343,22 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 		String identifier;
 		String timepoint;
+		String tflink_ = (tflink.startsWith("/") ? tflink : "/"+tflink);
 
 		try {
-			trajectories.put(tflink, new ArrayList<String>());
+			trajectories.put(tflink_, new ArrayList<String>());
 	
 			for (double i = Double.parseDouble(starttime.substring(starttime.indexOf("timepoint_") + 10)); i <= Double.parseDouble(endtime.substring(endtime.indexOf("timepoint_") + 10)); i += interval) {
 	
 				timepoint = "'" + starttime.substring(0, starttime.indexOf("timepoint_")) + starttime.substring(starttime.indexOf("timepoint_"), starttime.indexOf("timepoint_") + 10) + new DecimalFormat("###.###").format(i) + "'";//String.valueOf(i);
-				identifier = tflink + new DecimalFormat("###.###").format(i);//String.valueOf(i);
+				identifier = tflink_ + new DecimalFormat("###.###").format(i);//String.valueOf(i);
 	
 				// read marker from Prolog
-				Marker m = readLinkMarkerFromProlog(tflink, timepoint);
+				Marker m = readLinkMarkerFromProlog(tflink_, timepoint);
 	
 				// add marker to map
 				if(m!=null) {
-					trajectories.get(tflink).add(identifier);
+					trajectories.get(tflink_).add(identifier);
 					synchronized (markers) {
 						markers.put(identifier, m);
 					}
