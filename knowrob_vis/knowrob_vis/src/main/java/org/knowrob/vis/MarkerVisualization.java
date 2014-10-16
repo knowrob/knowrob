@@ -775,9 +775,10 @@ public class MarkerVisualization extends AbstractNodeMain {
 			identifier.append("human_").append(id).append('_').append(index);
 			marker.setId(index);
 			
-			synchronized (markers) {
+			synchronized (markers) { synchronized (markersCache) {
 				markers.put(identifier.toString(), marker);
-			}
+				markersCache.put(identifier.toString(), marker);
+			}}
 			return true;
 		}
 		else {
