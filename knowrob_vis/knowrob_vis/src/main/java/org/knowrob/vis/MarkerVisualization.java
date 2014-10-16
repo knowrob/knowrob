@@ -359,9 +359,10 @@ public class MarkerVisualization extends AbstractNodeMain {
 				// add marker to map
 				if(m!=null) {
 					trajectories.get(tflink_).add(identifier);
-					synchronized (markers) {
+					synchronized (markers) { synchronized (markersCache) { 
 						markers.put(identifier, m);
-					}
+						markersCache.put(identifier, m);
+					}}
 				}
 	
 			}
