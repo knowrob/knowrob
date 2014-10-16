@@ -473,7 +473,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 				if(targetLink==null) {
 					log.warn("Link not known '" + conn + "'.");
 				}
-				if(!addHumanMarker(skeleton.createCylinderMarker(
+				if(!addHumanMarker(skeleton.createCylinderMarker(node,
 						sourceLink,targetLink,time,humanId,tfPrefix),index,humanId)) {
 					log.warn("No human pose found for timepoint '" + time + "'.");
 					return;
@@ -483,7 +483,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 		}
 		// Add sphere marker for joints
 		for(HumanSkeleton.Link link : skeleton.getLinks()) {
-			if(!addHumanMarker(skeleton.createSphereMarker(
+			if(!addHumanMarker(skeleton.createSphereMarker(node,
 					link,time,humanId,tfPrefix),index,humanId)) {
 				log.warn("No human pose found for timepoint '" + time + "'.");
 				return;
@@ -497,7 +497,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	private HumanSkeleton getHumanSkeleton(String humanIndividualName) {
 		HumanSkeleton out = humanSkeletons.get(humanIndividualName);
 		if(out==null) {
-			out = new HumanSkeleton(humanIndividualName, node);
+			out = new HumanSkeleton(humanIndividualName);
 			humanSkeletons.put(humanIndividualName, out);
 		}
 		return out;
