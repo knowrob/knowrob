@@ -9,8 +9,10 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.awt.Color;
 import java.text.DecimalFormat;
 
+import javax.swing.text.html.StyleSheet;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Quat4d;
 
@@ -371,14 +373,59 @@ public class MarkerVisualization extends AbstractNodeMain {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Show hands and base trajectory in visualization.
+	 *
+	 * @param starttime OWL identifier of a timepoint instance
+	 * @param endtime OWL identifier of a timepoint instance
+	 * @param interval in seconds
+	 */
+	public void showSimTrajectory(String tflink, String starttime, String endtime, double interval, int markertype, String markercol) {
+
+		String identifier;
+		String timepoint;
+		
+		try
+		{
+			trajectories.put(tflink, new ArrayList<String>());
+
+			System.out.println("starttime: " + starttime);
+			System.out.println("endtime: " + endtime);
+
+			for (double i = Double.parseDouble(starttime.substring(starttime.indexOf("timepoint_") + 10)); i <= Double.parseDouble(endtime.substring(endtime.indexOf("timepoint_") + 10)); i += interval) {
+
+				timepoint = "'" + starttime.substring(0, starttime.indexOf("timepoint_")) + starttime.substring(starttime.indexOf("timepoint_"), starttime.indexOf("timepoint_") + 10) + new DecimalFormat("###.###").format(i) + "'";//String.valueOf(i);
+				System.out.println("timepoint: " + timepoint);
+				//			System.out.println("i: " + i);
+				//			System.out.println("end: " + Double.parseDouble(endtime.substring(endtime.indexOf("timepoint_") + 10)));
+				identifier = tflink + new DecimalFormat("###.###").format(i);//String.valueOf(i);
+
+				// read marker from Prolog
+				Marker m = readLinkMarkerFromPrologSim(tflink, timepoint, markertype, markercol);
+
+				// add marker to map
+				if(m!=null) {
+					trajectories.get(tflink).add(identifier);
+					synchronized (markers) {
+						markers.put(identifier, m);
+					}
+				}
+
+			}
+			publishMarkers();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * Remove trajectory markers
 	 */
 	public void removeTrajectory(String tflink) {
 		final MarkerArray arr = pub.newMessage();
-		
 		if (trajectories.get(tflink) != null){
+//			System.out.println("tflink trajectories not null: " + trajectories.get(tflink).size());
 			for (int i = 0; i < trajectories.get(tflink).size(); i++) {
 				// remove the object from the list
 				synchronized (markers) {
@@ -387,9 +434,9 @@ public class MarkerVisualization extends AbstractNodeMain {
 					arr.getMarkers().add(m);
 				}
 			}
+			System.out.println("removing tflink trajectories");
 			trajectories.remove(tflink);
 		}
-		
 		pub.publish(arr);
 	}
 
@@ -653,6 +700,81 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @param timepoint  OWL identifier of a timepoint instance
 	 * @return Marker with the object information
 	 */
+	Marker readLinkMarkerFromPrologSim(String link, String timepoint, int marker_type, String marker_color) {
+
+		Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
+
+		m.getHeader().setFrameId("/map");
+		m.getHeader().setStamp(node.getCurrentTime());
+		m.setNs("knowrob_vis");
+		m.setId(id++);
+
+		m.setAction(Marker.ADD);
+		m.setLifetime(new Duration());
+
+		m.getScale().setX(0.05);
+		m.getScale().setY(0.05);
+		m.getScale().setZ(0.05);
+		
+		if(marker_type >= 0 && marker_type <= 8)//valid markers
+			m.setType(marker_type);
+		else
+			m.setType(Marker.CYLINDER);
+		
+		//set marker color using stylesheet to convert to rgb
+		StyleSheet s = new StyleSheet();
+		Color color = s.stringToColor(marker_color);
+		if(color == null) //given color is not a HTML3.2 color string
+		{
+			m.getColor().setR(1.0f);
+			m.getColor().setG(1.0f);
+			m.getColor().setB(0.0f);
+			m.getColor().setA(1.0f);
+		}
+		else
+		{
+			m.getColor().setR(color.getRed()/(float)255.0);
+			m.getColor().setG(color.getGreen()/(float)255.0);
+			m.getColor().setB(color.getBlue()/(float)255.0);
+			m.getColor().setA(1.0f);
+		}		
+
+		try {
+
+			TFMemory tf = TFMemory.getInstance();
+
+			String ts = timepoint.split("timepoint_")[1];
+			double posix_ts = Double.valueOf(ts.substring(0, ts.length()-1));
+
+			Time time = new Time();
+			time.secs = (int)posix_ts;
+			time.nsecs = (int) (1E9 * (posix_ts - ((int) posix_ts)));
+
+			StampedTransform tr = tf.lookupSimTransform("/map", link, time);
+			m.getPose().getPosition().setX(tr.getTranslation().x);
+			m.getPose().getPosition().setY(tr.getTranslation().y);
+			m.getPose().getPosition().setZ(tr.getTranslation().z);
+//			System.out.println("x:" + m.getPose().getPosition().getX()+"; y:" + m.getPose().getPosition().getY()+"; z:" + m.getPose().getPosition().getZ());
+
+			m.getPose().getOrientation().setW(tr.getRotation().w);
+			m.getPose().getOrientation().setX(tr.getRotation().x);
+			m.getPose().getOrientation().setY(tr.getRotation().y);
+			m.getPose().getOrientation().setZ(tr.getRotation().z);
+//			System.out.println("w:" + m.getPose().getOrientation().getW() + "; x:" + m.getPose().getOrientation().getX()+"; y:" + m.getPose().getOrientation().getY()+"; z:" + m.getPose().getOrientation().getZ());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return m;
+	}
+	
+	/**
+	 * Read link transform and create a marker from it
+	 *
+	 * @param link TODO explanation
+	 * @param timepoint  OWL identifier of a timepoint instance
+	 * @return Marker with the object information
+	 */
 	Marker readLinkMarkerFromProlog(String link, String timepoint) {
 
 		Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
@@ -833,7 +955,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 	}
 	
 	public static void main(String args[]) {
-
+		
+		
 		//		MarkerVisualization vis = new MarkerVisualization();
 		//		vis.addObjectWithChildren("http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0", "http://knowrob.org/kb/knowrob.owl#timepoint_1377766542");
 		//		vis.highlight("http://knowrob.org/kb/knowrob.owl#Refrigerator67", true, 150, 0, 0, 180);

@@ -50,6 +50,11 @@
       add_trajectory/3,
       add_trajectory/4,
       remove_trajectory/1,
+      add_trajectory_sim/3,
+      add_trajectory_sim/4,
+      add_trajectory_sim/5,
+      add_trajectory_sim/6,
+      test_sim/6,
       add_human_pose/2,
       add_human_pose/3,
       add_human_pose/4,
@@ -78,6 +83,12 @@
             highlight_object_with_children(r,?,?),
             add_diagram(+,+,+,+,+,+,+,+,+),
             remove_diagram(+),
+            add_human_pose(r),
+            add_trajectory_sim(r,r,r),
+            add_trajectory_sim(r,r,r,+),
+            add_trajectory_sim(r,r,r,+,+),
+            add_trajectory_sim(r,r,r,+,+,+),
+            test_sim(r,r,r,+,+,+),
             add_human_pose(r,r),
             add_human_pose(r,r,r),
             add_human_pose(r,r,r,r),
@@ -216,7 +227,32 @@ add_trajectory(Link, Starttime, Endtime, Interval) :-
     
     jpl_call(Canvas, 'showTrajectory', [TfLink, Starttime, Endtime, Interval], _).
 
+%% Visualizing simulation data
+%
+% Reads a trajectory from simulation tf data and visualizes it in the
+% Web-based canvas.
+%
+% @param Link       tf identifier of the link for which the trajectory is to be shown
+% @param Starttime  Time stamp identifier for the beginning of the trajectory
+% @param Endtime    Time stamp identifier for the end of the trajectory
+% @param Interval   Sampling interval
+% @param Markertype Which markers are visualized [0, 10]
+% @param Markercolor Amount of red in RGB color (GB are fixed so we won't have an overload of parameters)
+%
+add_trajectory_sim(Link, Starttime, Endtime) :-
+    add_trajectory_sim(Link, Starttime, Endtime, 100.0, 0).
+add_trajectory_sim(Link, Starttime, Endtime, Interval) :-
+    add_trajectory_sim(Link, Starttime, Endtime, Interval, 0).
+add_trajectory_sim(Link, Starttime, Endtime, Interval, Markertype) :-
+    add_trajectory_sim(Link, Starttime, Endtime, Interval, Markertype, 1).
+add_trajectory_sim(Link, Starttime, Endtime, Interval, Markertype, Markercolor) :-
+    v_canvas(Canvas),    
+    jpl_call(Canvas, 'showSimTrajectory', [Link, Starttime, Endtime, Interval, Markertype, Markercolor], _).
 
+test_sim(Link, Starttime, Endtime, Interval, Markertype, Markercolor) :-
+  writeln(Link),
+  writeln(Starttime),
+  writeln(Endtime).
 %% remove_trajectory(+Link) is det.
 %
 % Removes all trajectories for the link 'TfLink' from the visualization. 
