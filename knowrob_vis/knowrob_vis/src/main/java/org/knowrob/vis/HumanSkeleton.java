@@ -75,7 +75,7 @@ public class HumanSkeleton {
 	/**
 	 * Logging backend
 	 */
-	private final Log log;
+//	private final Log log;
 	
 	/**
 	 * @param humanIndividual The name of the human individual as used in OWL
@@ -84,7 +84,7 @@ public class HumanSkeleton {
 		this.humanIndividual = humanIndividual;
 		this.links = new HashMap<String, Link>();
 		
-		log.debug("Initializing skeleton for human individual " + humanIndividual + ".");
+//		log.debug("Initializing skeleton for human individual " + humanIndividual + ".");
 		for(String linkName : queryLinks()) {
 			final String tfFrame = getHumanTfFrame(linkName);
 			links.put(tfFrame, new Link(tfFrame,
@@ -260,12 +260,12 @@ public class HumanSkeleton {
 		final HashMap<String, Vector<String>> res = PrologInterface.executeQuery(
 				"owl_has("+linkName+", knowrob:'radius', RAD_), strip_literal_type(RAD_, RAD)");
 		if(res==null) {
-			log.warn("Radius query failed for human link: " + linkName);
+//			log.warn("Radius query failed for human link: " + linkName);
 			return 0.1;
 		}
 		final Vector<String> vals = res.get("RAD");
 		if(vals==null || vals.isEmpty()) {
-			log.warn("No radius for human link: " + linkName);
+//			log.warn("No radius for human link: " + linkName);
 			return 0.1;
 		}
 		String val = vals.firstElement();
