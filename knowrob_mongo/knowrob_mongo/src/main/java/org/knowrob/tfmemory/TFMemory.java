@@ -531,7 +531,8 @@ public class TFMemory {
 		query = QueryBuilder.start("transforms.header.stamp").greaterThanEquals( start )
 							.and("transforms.header.stamp").lessThan( end )
 							.get();
-
+		System.out.println(query);
+		
 		// TODO: check if we can read only the latest transforms for the child frame
 		// -> should be feasible since verifyDataAvailable should load data when needed,
 		//    maybe needs to be made recursive
@@ -807,8 +808,8 @@ public class TFMemory {
 	 * was not fully resolved.
 	 */
 	private String assertResolved(String prefix, String frameID) {
-		if (!frameID.startsWith("/"))
-			System.err.println("TF operating on not fully resolved frame id " + frameID +", resolving using local prefix " + prefix);
+//		if (!frameID.startsWith("/"))
+//			System.err.println("TF operating on not fully resolved frame id " + frameID +", resolving using local prefix " + prefix);
 		return resolve(prefix, frameID);
 	}
 
@@ -827,7 +828,7 @@ public class TFMemory {
 				return "/" + prefix + "/" + frameID;
 			}
 		}  else {
-			return "/" + frameID;
+			return frameID;
 		}
 	}
 	
@@ -839,6 +840,6 @@ public class TFMemory {
 		if(out.startsWith("/"))
 			return out;
 		else
-			return "/"+out;
+			return out;
 	}
 }
