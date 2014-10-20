@@ -84,23 +84,27 @@
         markerClient : markerClient
       });
 
-      var listener = new ROSLIB.Topic({
+      var desig_listener = new ROSLIB.Topic({
         ros : ros,
         name : '/logged_designators',
         messageType : 'designator_integration_msgs/Designator'
       });
 
-      listener.subscribe(function(message) {
+      desig_listener.subscribe(function(message) {
         document.getElementById("designator").innerHTML=format_designator(message.description, "", 0, 0);
       });
-      
-      var viewer = new MJPEGCANVAS.Viewer({
-        divID : 'mjpeg',
-        host : 'localhost',
-        width : 320,
-        height : 240,
-        topic : '/logged_images'
+
+      var img_listener = new ROSLIB.Topic({
+        ros : ros,
+        name : '/logged_images',
+        messageType : 'std_msgs/String'
       });
+
+      img_listener.subscribe(function(message) {
+        console.log(message);
+        document.getElementById("mjpeg").innerHTML='<img src="/'+message.data+'" />';
+      });
+      
 
       var options = {
         ros: ros,

@@ -60,7 +60,6 @@ public class HumanSkeleton {
 		}
 	}
 	
-	// TODO: Make this configurable ?
 	private static final String targetFrame = "/map";
 
 	/**
@@ -72,28 +71,20 @@ public class HumanSkeleton {
 	 * Maps TF name to human skeleton link.
 	 */
 	private final HashMap<String, Link> links;
-	
-	/**
-	 * The connected ROS node
-	 */
-	private final ConnectedNode node;
 
 	/**
 	 * Logging backend
 	 */
-	private final Log log;
+//	private final Log log;
 	
 	/**
 	 * @param humanIndividual The name of the human individual as used in OWL
-	 * @param node The connected ROS node
 	 */
-	public HumanSkeleton(String humanIndividual, ConnectedNode node) {
+	public HumanSkeleton(String humanIndividual) {
 		this.humanIndividual = humanIndividual;
-		this.node = node;
-		this.log = node.getLog();
 		this.links = new HashMap<String, Link>();
 		
-		log.debug("Initializing skeleton for human individual " + humanIndividual + ".");
+//		log.debug("Initializing skeleton for human individual " + humanIndividual + ".");
 		for(String linkName : queryLinks()) {
 			final String tfFrame = getHumanTfFrame(linkName);
 			links.put(tfFrame, new Link(tfFrame,
@@ -126,12 +117,13 @@ public class HumanSkeleton {
 	 * @return the marker created or null if TF lookup failed
 	 */
 	public Marker createSphereMarker(
+			ConnectedNode node,
 			Link link,
 			Time timepoint,
 			int id,
 			String prefix)
 	{
-		final Marker m = createMarker(id);
+		final Marker m = createMarker(node,id);
 		final StampedTransform tf = lookupPose(link,timepoint,prefix);
 		// Frame not available for given timepoint
 		if(tf==null) return null;
@@ -163,12 +155,13 @@ public class HumanSkeleton {
 	 * @return the marker created or null if TF lookup failed
 	 */
 	public Marker createCylinderMarker(
+			ConnectedNode node,
 			Link source, Link target,
 			Time timepoint,
 			int id,
 			String prefix)
 	{
-		final Marker m = createMarker(id);
+		final Marker m = createMarker(node,id);
 		
 		final StampedTransform sourceTf = lookupPose(source,timepoint,prefix);
 		final StampedTransform targetTf = lookupPose(target,timepoint,prefix);
@@ -207,7 +200,7 @@ public class HumanSkeleton {
 		return m;
 	}
 	
-	private Marker createMarker(int id) {
+	private Marker createMarker(ConnectedNode node, int id) {
 		final Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
 
 		m.getHeader().setFrameId(targetFrame);
@@ -267,12 +260,12 @@ public class HumanSkeleton {
 		final HashMap<String, Vector<String>> res = PrologInterface.executeQuery(
 				"owl_has("+linkName+", knowrob:'radius', RAD_), strip_literal_type(RAD_, RAD)");
 		if(res==null) {
-			log.warn("Radius query failed for human link: " + linkName);
+//			log.warn("Radius query failed for human link: " + linkName);
 			return 0.1;
 		}
 		final Vector<String> vals = res.get("RAD");
 		if(vals==null || vals.isEmpty()) {
-			log.warn("No radius for human link: " + linkName);
+//			log.warn("No radius for human link: " + linkName);
 			return 0.1;
 		}
 		String val = vals.firstElement();
