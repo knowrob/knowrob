@@ -2449,7 +2449,10 @@ ROS3D.Viewer = function(options) {
     that.cameraControls.update();
 
     // put light to the top-left of the camera
-    that.directionalLight.position = that.camera.localToWorld(new THREE.Vector3(-1, 1, 0));
+    // TODO(daniel): Why is the light placed relative to the camera ?
+    // I think it does not look right this way, so i commented the view to world transform out for now.
+    //that.directionalLight.position = that.camera.localToWorld(new THREE.Vector3(-1, 1, 0));
+    that.directionalLight.position = new THREE.Vector3(-1, 0, 1);
     that.directionalLight.position.normalize();
 
     // set the scene
