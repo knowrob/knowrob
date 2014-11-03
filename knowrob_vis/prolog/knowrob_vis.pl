@@ -35,31 +35,27 @@
       remove_object_with_children/1,
       highlight_object/1,
       highlight_object/2,
-      highlight_object/3,
-      highlight_object/6,
+      highlight_object/5,
       highlight_object_with_children/1,
       highlight_object_with_children/2,
-      highlight_object_with_children/3,
+      remove_highlight/1,
+      remove_highlight_with_children/1,
       reset_highlight/0,
-      diagram_canvas/0,
-      add_diagram/9,
-      add_barchart/3,
-      add_piechart/3,
-      remove_diagram/1,
-      clear_diagram_canvas/0,
       add_trajectory/3,
       add_trajectory/4,
+      add_trajectory/5,
       remove_trajectory/1,
-      add_trajectory_sim/3,
-      add_trajectory_sim/4,
-      add_trajectory_sim/5,
-      add_trajectory_sim/6,
-      test_sim/6,
       add_human_pose/2,
       add_human_pose/3,
       add_human_pose/4,
       remove_human_pose/0,
-      remove_human_pose/1
+      remove_human_pose/1,
+      diagram_canvas/0,
+      clear_diagram_canvas/0,
+      add_diagram/9,
+      add_barchart/3,
+      add_piechart/3,
+      remove_diagram/1
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -76,26 +72,23 @@
             remove_object_with_children(r),
             highlight_object(r),
             highlight_object(r,?),
-            highlight_object(r,?,?),
             highlight_object(r,?,?,?,?,?),
             highlight_object_with_children(r),
             highlight_object_with_children(r,?),
-            highlight_object_with_children(r,?,?),
+            remove_highlight(r),
+            remove_highlight_with_children(r),
             add_diagram(+,+,+,+,+,+,+,+,+),
             remove_diagram(+),
             add_human_pose(r),
-            add_trajectory_sim(r,r,r),
-            add_trajectory_sim(r,r,r,+),
-            add_trajectory_sim(r,r,r,+,+),
-            add_trajectory_sim(r,r,r,+,+,+),
-            test_sim(r,r,r,+,+,+),
             add_human_pose(r,r),
             add_human_pose(r,r,r),
             add_human_pose(r,r,r,r),
             remove_human_pose(r),
             remove_human_pose(r,r),
             add_trajectory(r,r,r),
-            add_trajectory(r,r,r,+).
+            add_trajectory(r,r,r,+),
+            add_trajectory(r,r,r,+,+),
+            remove_trajectory(r).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -206,6 +199,7 @@ remove_object_with_children(Identifier) :-
 
 %% add_trajectory(+Link, +Starttime, +Endtime) is det.
 %% add_trajectory(+Link, +Starttime, +Endtime, +Interval) is det.
+%% add_trajectory(+Link, +Starttime, +Endtime, +Interval, +Markertype) is det.
 %
 % Reads a trajectory from logged tf data and visualizes it in the
 % Web-based canvas.
@@ -214,45 +208,23 @@ remove_object_with_children(Identifier) :-
 % @param Starttime  Time stamp identifier for the beginning of the trajectory
 % @param Endtime    Time stamp identifier for the end of the trajectory
 % @param Interval   Sampling interval, describing the 
+% @param Markertype The shape of the markers (see ROS Marker messages)
 %
 add_trajectory(Link, Starttime, Endtime) :-
   add_trajectory(Link, Starttime, Endtime, 1.0).
 
 add_trajectory(Link, Starttime, Endtime, Interval) :-
+  add_trajectory(Link, Starttime, Endtime, Interval, 0).
+
+add_trajectory(Link, Starttime, Endtime, Interval, Markertype) :-
     v_canvas(Canvas),
 
     ((rdf_has(Link, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(Tf)),
       atomic_list_concat(['/', Tf], TfLink)) ;
      (TfLink = Link)),!,
     
-    jpl_call(Canvas, 'showTrajectory', [TfLink, Starttime, Endtime, Interval], _).
+    jpl_call(Canvas, 'showTrajectory', [TfLink, Starttime, Endtime, Interval, Markertype], _).
 
-%% Visualizing simulation data
-%
-% Reads a trajectory from simulation tf data and visualizes it in the
-% Web-based canvas.
-%
-% @param Link       tf identifier of the link for which the trajectory is to be shown
-% @param Starttime  Time stamp identifier for the beginning of the trajectory
-% @param Endtime    Time stamp identifier for the end of the trajectory
-% @param Interval   Sampling interval
-% @param Markertype Which markers are visualized [0, 10]
-% @param Markercolor Amount of red in RGB color (GB are fixed so we won't have an overload of parameters)
-%
-add_trajectory_sim(Link, Starttime, Endtime) :-
-    add_trajectory_sim(Link, Starttime, Endtime, 100.0, 0).
-add_trajectory_sim(Link, Starttime, Endtime, Interval) :-
-    add_trajectory_sim(Link, Starttime, Endtime, Interval, 0).
-add_trajectory_sim(Link, Starttime, Endtime, Interval, Markertype) :-
-    add_trajectory_sim(Link, Starttime, Endtime, Interval, Markertype, 1).
-add_trajectory_sim(Link, Starttime, Endtime, Interval, Markertype, Markercolor) :-
-    v_canvas(Canvas),    
-    jpl_call(Canvas, 'showSimTrajectory', [Link, Starttime, Endtime, Interval, Markertype, Markercolor], _).
-
-test_sim(Link, Starttime, Endtime, Interval, Markertype, Markercolor) :-
-  writeln(Link),
-  writeln(Starttime),
-  writeln(Endtime).
 %% remove_trajectory(+Link) is det.
 %
 % Removes all trajectories for the link 'TfLink' from the visualization. 
@@ -326,34 +298,33 @@ remove_human_pose(Id) :-
 % (ignoring, in this case, the parameters R, B, G).
 %
 % @param Identifier eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
-% @param Highlight  @(true) = highlight; @(false)=remove highlighting
 % @param Color      Color value as integer, e.g. #AARRBBGG
 % @param R          Red color value
 % @param B          Blue color value
 % @param G          Green color value
 % @param Prob       Object existence probability
 %
+
 highlight_object(Identifier) :-
     v_canvas(Canvas),
-    jpl_call(Canvas, 'highlight', [Identifier, @(true)], _).
+    jpl_call(Canvas, 'highlight', [Identifier], _).
 
-highlight_object(Identifier, Highlight) :-
+highlight_object(Identifier, Color) :-
     v_canvas(Canvas),
-    jpl_call(Canvas, 'highlight', [Identifier, Highlight], _).
+    jpl_call(Canvas, 'highlight', [Identifier, Color], _).
 
-highlight_object(Identifier, Highlight, Color) :-
+highlight_object(Identifier, R, B, G, Prob) :-
     v_canvas(Canvas),
-    jpl_call(Canvas, 'highlight', [Identifier, Highlight, Color], _).
+    jpl_call(Canvas, 'highlight', [Identifier, R, B, G, Prob], _).
 
-highlight_object(Identifier, Highlight, R, B, G, Prob) :-
+remove_highlight(Identifier) :-
     v_canvas(Canvas),
-    jpl_call(Canvas, 'highlight', [Identifier, Highlight, R, B, G, Prob], _).
+    jpl_call(Canvas, 'removeHighlight', [Identifier], _).
 
 
-
+%% remove_highlight_with_children(+Identifier) is det.
 %% highlight_object_with_children(+Identifier) is det.
-%% highlight_object_with_children(+Identifier, +Highlight) is det.
-%% highlight_object_with_children(+Identifier, +Highlight, +Color) is det.
+%% highlight_object_with_children(+Identifier, +Color) is det.
 %
 % Highlights an object and everything that is reachable from it via knowrob:properPhysicalPartTypes
 %
@@ -364,17 +335,18 @@ highlight_object(Identifier, Highlight, R, B, G, Prob) :-
 % @param Highlight  @(true) = highlight; @(false)=remove highlighting
 % @param Color      Color value as integer, e.g. #AARRBBGG
 %
+
 highlight_object_with_children(Identifier) :-
     v_canvas(Canvas),
-    jpl_call(Canvas, 'highlightWithChildren', [Identifier, @(true)], _).
+    jpl_call(Canvas, 'highlightWithChildren', [Identifier], _).
 
-highlight_object_with_children(Identifier, Highlight) :-
+highlight_object_with_children(Identifier, Color) :-
     v_canvas(Canvas),
-    jpl_call(Canvas, 'highlightWithChildren', [Identifier, Highlight], _).
+    jpl_call(Canvas, 'highlightWithChildren', [Identifier, Color], _).
 
-highlight_object_with_children(Identifier, Highlight, Color) :-
+remove_highlight_with_children(Identifier) :-
     v_canvas(Canvas),
-    jpl_call(Canvas, 'highlightWithChildren', [Identifier, Highlight, Color], _).
+    jpl_call(Canvas, 'removeHighlightWithChildren', [Identifier], _).
 
 
 

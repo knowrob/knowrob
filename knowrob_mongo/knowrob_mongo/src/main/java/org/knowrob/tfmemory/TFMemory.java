@@ -340,147 +340,6 @@ public class TFMemory {
 	}
 
 	/**
-	 * Returns the transform from the specified source frame to the target frame at a given time; returns
-	 * null if no transformation could be found.
-	 */
-	public StampedTransform lookupSimTransform(String targetFrameID, String sourceFrameID, Time time) {
-
-		// resolve the source and target IDs
-		String resolvedTargetID = assertResolved("", targetFrameID);
-		String resolvedSourceID = assertResolved("", sourceFrameID);
-
-		// if source and target are the same, return the identity transform
-		if (resolvedSourceID == resolvedTargetID) {
-			StampedTransform out = StampedTransform.getIdentity();
-			out.timeStamp = time;
-			out.frameID = resolvedSourceID;
-			out.childFrameID = resolvedTargetID;
-			return out;
-		}
-
-		// load data from DB if the current time point is already in the buffer
-		Frame sourceFrame = verifyDataAvailableSim(time, resolvedSourceID);
-		if(sourceFrame==null) {
-			System.out.println("WARNING: Cannot transform source frame \"" + resolvedSourceID + "\" does not exist for queried time.");
-			return null;
-		}
-
-		Frame targetFrame = verifyDataAvailableSim(time, resolvedTargetID);
-		if(targetFrame==null) {
-			System.out.println("WARNING: Cannot transform target frame \"" + resolvedTargetID + "\" does not exist for queried time.");
-			return null;
-		}
-
-		// list that will contain transformations from source frame to some frame F
-		LinkedList<TransformStorage> inverseTransforms = new LinkedList<TransformStorage>();
-		// list that will contain transformations from frame F to target frame
-		LinkedList<TransformStorage> forwardTransforms = new LinkedList<TransformStorage>();
-
-		// fill the lists using lookupLists. If it returns FALSE, no transformation could be found.
-		if (!lookupLists(targetFrame, sourceFrame, time.totalNsecs(), inverseTransforms, forwardTransforms)) {
-			System.err.println("Cannot transform: source + \"" + resolvedSourceID + "\" and target \""
-					+ resolvedTargetID + "\" are not connected.");
-			return null;
-		}
-
-		// create an identity transform with the correct time stamp
-		StampedTransform out = StampedTransform.getIdentity();
-		out.timeStamp = time;
-
-		out.frameID = resolvedTargetID;
-		out.childFrameID = resolvedSourceID;
-
-		// multiply all transforms from source frame to frame F
-		for(TransformStorage t : inverseTransforms) {
-			out.mul(StorageToStampedTransform(t));
-		}
-
-		// multiply all transforms from frame F to target frame
-		for(TransformStorage t : forwardTransforms) {
-			out.mul(StorageToStampedTransform(t).invert(), out);
-		}
-
-		// return transform
-		return out;
-	}
-	
-	/**
-	 * Check if there are transforms for this time and this frame in the buffer,
-	 * try to load from DB otherwise (-> use DB only when needed)
-	 *
-	 * @param time
-	 * @param sourceFrame
-	 */
-	private Frame verifyDataAvailableSim(Time time, String frameID) {
-
-		// lookup frame
-		Frame frame = frames.get(frameID);
-
-		// load data from DB if frame is unknown or time not buffered yet
-		boolean simlookup = loadTransformFromDBSim(frameID, new ISODate(time).getDate());
-		if(simlookup)
-		{
-			frame = frames.get(frameID);
-			return frame;
-		}
-		else
-		{
-			return null;
-		}
-
-	}
-	
-	/**
-	 * Load transforms from the DB and add them to the local tf buffer
-	 *
-	 * @param childFrameID
-	 * @param date
-	 * @return
-	 */
-	private boolean loadTransformFromDBSim(String childFrameID, Date date) {
-
-		DBCollection coll = db.getCollection("tf");
-		
-		// select time slice from BUFFER_SIZE seconds before to half a second after given time
-		Date start = new Date(date.getTime());
-		
-		// read frame from given time, or closest time to the given time in the future
-		//More correct, but way slower
-//		DBObject query = new BasicDBObject();
-//		query = QueryBuilder.start("transforms.header.stamp").greaterThanEquals( start ).get();
-//		System.out.println(query);
-		
-		DBObject query = new BasicDBObject("transforms.header.stamp", start);
-//		System.out.println(query);
-
-		// read only transforms and time stamp
-		DBObject cols  = new BasicDBObject();
-		cols.put("transforms",  1 );
-		cols.put("__recorded",  1 );
-
-		DBCursor cursor = coll.find(query, cols );
-		boolean res = false;
-		try {
-			if(cursor.hasNext())
-			{
-				while(cursor.hasNext()) {
-					BasicDBList doc = (BasicDBList) cursor.next().get("transforms");
-					setTransforms(doc);
-					res = true;
-					//System.out.println(doc);
-				}
-			}
-			else
-			{
-				System.out.println("Entry not found");
-			}
-		} finally {
-			cursor.close();
-		}
-		return res;
-	}
-
-	/**
 	 * Check if there are transforms for this time and this frame in the buffer,
 	 * try to load from DB otherwise (-> use DB only when needed)
 	 *
@@ -528,9 +387,12 @@ public class TFMemory {
 		Date end   = new Date((long) (date.getTime() + 500));
 
 		// read all frames in time slice
+		// FIXME: Lookup is to slow.
 		query = QueryBuilder.start("transforms.header.stamp").greaterThanEquals( start )
 							.and("transforms.header.stamp").lessThan( end )
 							.get();
+		// TODO: This 'quick' lookup is ok for Yuen's experiment
+		//DBObject query = new BasicDBObject("transforms.header.stamp", start);
 
 		// TODO: check if we can read only the latest transforms for the child frame
 		// -> should be feasible since verifyDataAvailable should load data when needed,
@@ -542,9 +404,9 @@ public class TFMemory {
 		// 		.get();
 
 
-		// read only transforms and time stamp
+		// read only transforms
 		DBObject cols  = new BasicDBObject();
-		cols.put("transforms",  1 );
+		cols.put("transforms",  1);
 
 		DBCursor cursor = coll.find(query, cols );
 

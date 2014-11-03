@@ -8,11 +8,8 @@ import java.util.Map.Entry;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
-import java.util.ArrayList;
-import java.awt.Color;
 import java.text.DecimalFormat;
 
-import javax.swing.text.html.StyleSheet;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Quat4d;
 
@@ -33,12 +30,9 @@ import org.knowrob.prolog.PrologInterface;
 import org.knowrob.tfmemory.TFMemory;
 import org.knowrob.utils.ros.RosUtilities;
 
-import std_msgs.ColorRGBA;
 import tfjava.StampedTransform;
 import visualization_msgs.Marker;
 import visualization_msgs.MarkerArray;
-
-
 
 /**
  * Visualization module for the KnowRob knowledge base
@@ -46,6 +40,9 @@ import visualization_msgs.MarkerArray;
  * The objects to be visualized are published as 'Markers'
  * on the visualization_marker topic and can be visualized
  * in the 'rviz' program.
+ * 
+ * Note: Make sure to set search index for 'transforms.header.stamp'
+ * in mongo: db.tf.ensureIndex( { "transforms.header.stamp" : 1 } )
  *
  * @author tenorth@cs.uni-bremen.de
  * @author danielb@cs.uni-bremen.de
@@ -53,8 +50,12 @@ import visualization_msgs.MarkerArray;
  */
 public class MarkerVisualization extends AbstractNodeMain {
 
+	private static final String HTML_RED = "ff0000";
+	
 	Publisher<MarkerArray> pub;
+	
 	ConnectedNode node;
+	
 	Server server;
 
 	@Override
@@ -71,12 +72,10 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 */
 	protected Map<String, Marker> markersCache;
 
-
 	/**
-	 * Store the highlights and the original colors
+	 * Stores original colors of highlighted objects
 	 */
-	protected Map<String, ColorRGBA> highlighted;
-
+	protected Map<String, float[]> highlighted;
 
 	/**
 	 * Counter for marker IDs
@@ -84,10 +83,10 @@ public class MarkerVisualization extends AbstractNodeMain {
 	private static int id = 0;
 	
 	/**
-	 *
+	 * Mapping of TF name to trajectory marker names.
+	 * E.g., "/RightHand" -> "/RightHand"
 	 */
 	protected Map<String, List<String>> trajectories;
-	//private static List<String> trajectoryIds = new ArrayList<String>();
 	
 	/**
 	 * Stores the set of joints which are available from the XSens motion
@@ -112,7 +111,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 		markers =  new ConcurrentHashMap<String, Marker>(8, 0.9f, 1);
 		markersCache =  new ConcurrentHashMap<String, Marker>(8, 0.9f, 1);
-		highlighted = new ConcurrentHashMap<String, ColorRGBA>(8, 0.9f, 1);
+		highlighted = new ConcurrentHashMap<String, float[]>(8, 0.9f, 1);
 		trajectories = new HashMap<String, List<String>>();
 		humanSkeletons = new HashMap<String, HumanSkeleton>();
 
@@ -121,10 +120,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 	@Override
 	public void onStart(final ConnectedNode connectedNode) {
-
 		node = connectedNode;
 		pub = connectedNode.newPublisher("/visualization_marker_array", visualization_msgs.MarkerArray._TYPE);
-		
 		log = connectedNode.getLog();
 	}
 
@@ -193,11 +190,14 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 */
 	public void clear() {
 		final MarkerArray arr = pub.newMessage();
-		synchronized (markers) {
-			for(Marker m : markers.values()) {
+		synchronized (markersCache) {
+			for(Marker m : markersCache.values()) {
 				m.setAction(Marker.DELETE);
 				arr.getMarkers().add(m);
 			}
+			markersCache.clear();
+		}
+		synchronized (markers) {
 			markers.clear();
 		}
 		synchronized (trajectories) {
@@ -209,20 +209,16 @@ public class MarkerVisualization extends AbstractNodeMain {
 		pub.publish(arr);
 	}
 
-
-
 	/**
 	 * Highlight the object 'identifier' in red
 	 *
 	 * @param identifier OWL identifier of an object instance
 	 * @param highlight True to set, False to remove highlight
 	 */
-	public void highlight(String identifier, boolean highlight) {
-		highlight(identifier, highlight, 200, 0, 0, 255);
+	public void highlight(String identifier) {
+		highlight(identifier, 200, 0, 0, 255);
 	}
-
-
-
+	
 	/**
 	 * Highlight the object 'identifier' in 'color'
 	 *
@@ -230,20 +226,19 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @param highlight True to set, False to remove highlight
 	 * @param color String of the form #RRGGBB
 	 */
-	public void highlight(String identifier, boolean highlight, String color) {
-
+	public void highlight(String identifier, String color) {
 		int col = Integer.valueOf(color, 16);
 		
 		int r = (col & 0xff0000) >> 16;
 		int g = (col & 0x00ff00) >> 8;
 		int b = (col & 0x0000ff);
 		
-		highlight(identifier, highlight, r, g, b, 255);
+		highlight(identifier, r, g, b, 255);
 	}
 
-
 	/**
-	 * Highlight the object 'identifier' with color RGBA
+	 * Highlight the object or trajectory that corresponds to
+	 * the specified identifier with given color.
 	 *
 	 * @param identifier OWL identifier of an object instance
 	 * @param highlight True to set, False to remove highlight
@@ -252,39 +247,129 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @param b Blue value (0--255)
 	 * @param a Alpha value (0--255)
 	 */
-	public void highlight(String identifier, boolean highlight, int r, int g, int b, int a) {
-
-		if(!highlight) {
-			synchronized (markersCache) { synchronized (markers) {
-				markersCache.get(identifier).setColor(highlighted.get(identifier));
-				markers.put(identifier, markersCache.get(identifier));
-			}}
-
-		} else {
-
+	public void highlight(String identifier, int r, int g, int b, int a) {
+		boolean success = __highlight__(identifier, r, g, b, a);
+		// Try to highlight trajectory
+		final List<String> traj = trajectories.get(identifier);
+		if(traj!=null) {
+			for(final String x : traj) {
+				if(__highlight__(x, r, g, b, a)) success = true;
+			}
+		}
+		if(success) {
+			publishMarkers();
+		}
+		else {
+			log.warn("Unable to find marker for identifier '" + identifier + "'.");
+		}
+	}
+	
+	boolean __highlight__(String identifier, int r, int g, int b, int a) {
+		final Marker m = markersCache.get(identifier);
+		if(m==null) return false;
+		// Remember default color
+		if(!highlighted.containsKey(identifier)) {
+			float val[] = new float[4];
+			val[0] = m.getColor().getR();
+			val[1] = m.getColor().getG();
+			val[2] = m.getColor().getB();
+			val[3] = m.getColor().getA();
 			synchronized (highlighted) {
-				synchronized (markersCache) { synchronized (markers) {
-					if(markersCache.get(identifier)!=null) {
-						highlighted.put(identifier, markersCache.get(identifier).getColor());
-						markers.put(identifier, markersCache.get(identifier));
-					}
-				}}
+				highlighted.put(identifier, val);
 			}
+		}
+		// Set highlight color
+		m.getColor().setR(((float) r)/255);
+		m.getColor().setG(((float) g)/255);
+		m.getColor().setB(((float) b)/255);
+		m.getColor().setA(((float) a)/255);
+		synchronized (markers) {
+			markers.put(identifier, m);
+		}
+		return true;
+	}
 
-			synchronized (markersCache) {
-				if(markersCache.get(identifier)!=null) {
-					markersCache.get(identifier).getColor().setR(((float) r)/255);
-					markersCache.get(identifier).getColor().setG(((float) g)/255);
-					markersCache.get(identifier).getColor().setB(((float) b)/255);
-					markersCache.get(identifier).getColor().setA(((float) a)/255);
-					markers.put(identifier, markersCache.get(identifier));
-				}
+	/**
+	 * Remove object highlight.
+	 */
+	public void removeHighlight(String identifier) {
+		boolean success = __removeHighlight__(identifier);
+		// Try to highlight trajectory
+		final List<String> traj = trajectories.get(identifier);
+		if(traj!=null) {
+			for(final String x : traj) {
+				if(__removeHighlight__(x)) success = true;
 			}
+		}
+		if(success) {
+			publishMarkers();
+		}
+		else {
+			log.warn("Unable to find marker for identifier '" + identifier + "'.");
+		}
+	}
+	
+	public boolean __removeHighlight__(String identifier) {
+		final Marker m = markersCache.get(identifier);
+		if(m==null) return false;
+		
+		final float[] col = highlighted.get(identifier);
+		if(col==null) return false;
+		
+		synchronized (markers) {
+			// Set default color
+			m.getColor().setR(col[0]);
+			m.getColor().setG(col[1]);
+			m.getColor().setB(col[2]);
+			m.getColor().setA(col[3]);
+			markers.put(identifier, m);
+		}
+		synchronized (highlighted) {
+			highlighted.remove(identifier);
+		}
+		
+		return true;
+	}
+
+	/**
+	 * Remove highlight of object and children.
+	 */
+	public void removeHighlightWithChildren(String identifier) {
+		// remove this object
+		removeHighlight(identifier);
+		// remove children and highlight them too
+		for(String child : readChildren(identifier)) {
+			removeHighlight(child);
 		}
 		publishMarkers();
 	}
 
-
+	/**
+	 * Clear all highlights
+	 */
+	public void clearHighlight() {
+		// reset colors to cached original ones
+		synchronized (highlighted) {
+			for(String identifier : highlighted.keySet()) {
+				final Marker m = markersCache.get(identifier);
+				if(m==null) {
+					log.warn("Unable to find marker for identifier '" + identifier + "'.");
+					continue;
+				}
+				final float[] col = highlighted.get(identifier);
+				// Set default color
+				m.getColor().setR(col[0]);
+				m.getColor().setG(col[1]);
+				m.getColor().setB(col[2]);
+				m.getColor().setA(col[3]);
+				synchronized (markers) {
+					markers.put(identifier, m);
+				}
+			}
+			highlighted.clear();
+		}
+		publishMarkers();
+	}
 
 	/**
 	 * Highlight the object 'identifier' and its children in red
@@ -292,8 +377,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @param identifier OWL identifier of an object instance
 	 * @param highlight True to set, False to remove highlight
 	 */
-	public void highlightWithChildren(String identifier, boolean highlight) {
-		highlightWithChildren(identifier, highlight, "ff0000");
+	public void highlightWithChildren(String identifier) {
+		highlightWithChildren(identifier, HTML_RED);
 	}
 	
 	/**
@@ -303,140 +388,103 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @param highlight True to set, False to remove highlight
 	 * @param color Integer of the form #AARRGGBB
 	 */
-	public void highlightWithChildren(String identifier, boolean highlight, String color) {
-
+	public void highlightWithChildren(String identifier, String color) {
 		// remove this object
-		highlight(identifier, highlight, color);
+		highlight(identifier, color);
 
 		// remove children and highlight them too
 		for(String child : readChildren(identifier)) {
-			highlight(child, highlight, color);
-		}
-		publishMarkers();
-	}
-
-
-	/**
-	 * Clear all highlights
-	 */
-	public void clearHighlight() {
-		// reset colors to cached original ones
-
-		synchronized (highlighted) {
-			synchronized (markersCache) { synchronized (markers) {
-				for(String obj : highlighted.keySet()) {
-					markersCache.get(obj).setColor(highlighted.get(obj));
-					markers.put(obj, markersCache.get(obj));
-				}
-			}}
+			highlight(child, color);
 		}
 		publishMarkers();
 	}
 	
-	
 	/**
-	 * Show hands and base trajectory in visualization.
+	 * Show trajectory in visualization canvas.
 	 *
+	 * @param tflink TF identifier
+	 * @param starttime OWL identifier of a timepoint instance
+	 * @param endtime OWL identifier of a timepoint instance
+	 * @param interval in seconds
+	 * @param markertype marker type id (see ROS Marker message)
+	 */
+	public void showTrajectory(String tflink, String starttime, String endtime, double interval, int markertype) {
+		String identifier, formattedTime;
+		String tflink_ = (tflink.startsWith("/") ? tflink : "/"+tflink);
+		
+		double t0 = parseTime_d(starttime);
+		double t1 = parseTime_d(endtime);
+
+		final LinkedList<String> out = new LinkedList<String>();
+		for (double i = t0; i <= t1; i += interval) {
+			formattedTime = new DecimalFormat("###.###").format(i);
+			// read marker from Prolog
+			Marker m = null;
+			try {
+				m = readLinkMarkerFromProlog(tflink_, "'timepoint_" + formattedTime + "'", markertype);
+			}
+			catch(Exception e) {
+				log.warn("Unable to read marker for time point '" + formattedTime + "'.", e);
+			}
+			if(m==null) continue;
+
+			// add marker to map
+			identifier = tflink_ + formattedTime;
+			
+			out.add(identifier);
+			synchronized (markers) {
+				markers.put(identifier, m);
+			}
+			synchronized (markersCache) { 
+				markersCache.put(identifier, m);
+			}
+		}
+		synchronized (trajectories) {
+			trajectories.put(tflink_, out);
+		}
+		
+		publishMarkers();
+	}
+	/**
+	 * Show trajectory in visualization canvas.
+	 *
+	 * @param tflink TF identifier
 	 * @param starttime OWL identifier of a timepoint instance
 	 * @param endtime OWL identifier of a timepoint instance
 	 * @param interval in seconds
 	 */
 	public void showTrajectory(String tflink, String starttime, String endtime, double interval) {
-
-		String identifier;
-		String timepoint;
-		String tflink_ = (tflink.startsWith("/") ? tflink : "/"+tflink);
-
-		try {
-			trajectories.put(tflink_, new ArrayList<String>());
-	
-			for (double i = Double.parseDouble(starttime.substring(starttime.indexOf("timepoint_") + 10)); i <= Double.parseDouble(endtime.substring(endtime.indexOf("timepoint_") + 10)); i += interval) {
-	
-				timepoint = "'" + starttime.substring(0, starttime.indexOf("timepoint_")) + starttime.substring(starttime.indexOf("timepoint_"), starttime.indexOf("timepoint_") + 10) + new DecimalFormat("###.###").format(i) + "'";//String.valueOf(i);
-				identifier = tflink_ + new DecimalFormat("###.###").format(i);//String.valueOf(i);
-	
-				// read marker from Prolog
-				Marker m = readLinkMarkerFromProlog(tflink_, timepoint);
-	
-				// add marker to map
-				if(m!=null) {
-					trajectories.get(tflink_).add(identifier);
-					synchronized (markers) { synchronized (markersCache) { 
-						markers.put(identifier, m);
-						markersCache.put(identifier, m);
-					}}
-				}
-	
-			}
-			publishMarkers();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
+		showTrajectory(tflink, starttime, endtime, interval, Marker.ARROW);
 	}
-	
+
 	/**
-	 * Show hands and base trajectory in visualization.
+	 * Remove trajectory markers.
 	 *
-	 * @param starttime OWL identifier of a timepoint instance
-	 * @param endtime OWL identifier of a timepoint instance
-	 * @param interval in seconds
-	 */
-	public void showSimTrajectory(String tflink, String starttime, String endtime, double interval, int markertype, String markercol) {
-
-		String identifier;
-		String timepoint;
-		
-		try
-		{
-			trajectories.put(tflink, new ArrayList<String>());
-
-			System.out.println("starttime: " + starttime);
-			System.out.println("endtime: " + endtime);
-
-			for (double i = Double.parseDouble(starttime.substring(starttime.indexOf("timepoint_") + 10)); i <= Double.parseDouble(endtime.substring(endtime.indexOf("timepoint_") + 10)); i += interval) {
-
-				timepoint = "'" + starttime.substring(0, starttime.indexOf("timepoint_")) + starttime.substring(starttime.indexOf("timepoint_"), starttime.indexOf("timepoint_") + 10) + new DecimalFormat("###.###").format(i) + "'";//String.valueOf(i);
-				System.out.println("timepoint: " + timepoint);
-				//			System.out.println("i: " + i);
-				//			System.out.println("end: " + Double.parseDouble(endtime.substring(endtime.indexOf("timepoint_") + 10)));
-				identifier = tflink + new DecimalFormat("###.###").format(i);//String.valueOf(i);
-
-				// read marker from Prolog
-				Marker m = readLinkMarkerFromPrologSim(tflink, timepoint, markertype, markercol);
-
-				// add marker to map
-				if(m!=null) {
-					trajectories.get(tflink).add(identifier);
-					synchronized (markers) {
-						markers.put(identifier, m);
-					}
-				}
-
-			}
-			publishMarkers();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Remove trajectory markers
+	 * @param tflink TF identifier
 	 */
 	public void removeTrajectory(String tflink) {
+		final List<String> traj = trajectories.get(tflink);
+		if(traj == null) {
+			log.warn("Unable to find trajectory for identifier '" + tflink + "'.");
+			return;
+		}
+		
 		final MarkerArray arr = pub.newMessage();
-		if (trajectories.get(tflink) != null){
-//			System.out.println("tflink trajectories not null: " + trajectories.get(tflink).size());
-			for (int i = 0; i < trajectories.get(tflink).size(); i++) {
-				// remove the object from the list
-				synchronized (markers) {
-					Marker m = markers.remove(trajectories.get(tflink).get(i));
-					m.setAction(Marker.DELETE);
-					arr.getMarkers().add(m);
-				}
+		
+		for(final String identifier : traj) {
+			final Marker m = markersCache.get(identifier);
+			if(m==null) {
+				log.warn("Unable to find marker for identifier '" + identifier + "'.");
+				continue;
 			}
-			System.out.println("removing tflink trajectories");
+			m.setAction(Marker.DELETE);
+			arr.getMarkers().add(m);
+		}
+
+		synchronized (trajectories) {
 			trajectories.remove(tflink);
 		}
+			
 		pub.publish(arr);
 	}
 
@@ -444,57 +492,65 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * Shows the human pose at given time point as
 	 * a stick-man in the visualization canvas.
 	 * The pose is read from the 'roslog' mongo database.
-	 * Note: Make sure to set search index for 'transforms.header.stamp'
-	 * in mongo: db.tf.ensureIndex( { "transforms.header.stamp" : 1 } )
 	 * 
 	 * @param humanIndividual The name of the human individual which defines the skeletal structure
 	 * @param timepoint The timepoint for TF lookup
 	 * @param humanId Allows to add multiple visualizations in the same canvas
-	 * @param tfPrefix Prefix used for TF frames
+	 * @param tfSuffix Suffix used for TF frames
 	 */
-	public void addHumanPose(String humanIndividual, String timepoint, int humanId, String tfPrefix) {
+	public void addHumanPose(String humanIndividual, String timepoint, int humanId, String tfSuffix) {
+		long t0 = System.currentTimeMillis();
+		
+		// Lookup skeletal structure
 		final HumanSkeleton skeleton;
 		try {
-			// ID allows multiple stick-mans for the same individual.
 			skeleton = getHumanSkeleton("'" + humanIndividual + "'");
 		}
 		catch(Exception exc) {
-			log.error("Failed to initialize human skeleton.", exc);
+			log.warn("Failed to initialize human skeleton.", exc);
 			return;
 		}
 
 		final Time time = parseTime(timepoint);
 		int index = 0;
 
-		// Add cylinder marker between joints
-		for(HumanSkeleton.Link sourceLink : skeleton.getLinks()) {
-			for(String conn : sourceLink.succeeding) {
-				final HumanSkeleton.Link targetLink = skeleton.getLink(conn);
-				if(targetLink==null) {
-					log.warn("Link not known '" + conn + "'.");
-				}
-				if(!addHumanMarker(skeleton.createCylinderMarker(node,
-						sourceLink,targetLink,time,humanId,tfPrefix),index,humanId)) {
-					log.warn("No human pose found for timepoint '" + time + "'.");
-					return;
+		try {
+			// Add cylinder marker between links
+			for(HumanSkeleton.Link sourceLink : skeleton.getLinks()) {
+				final HumanSkeleton.StampedLink sl0 = new HumanSkeleton.StampedLink(sourceLink,time,humanId,tfSuffix);
+
+				if(!addHumanMarker(skeleton.createSphereMarker(node,sl0),index,humanId)) {
+					log.warn("Unable to create sphere marker for '" + sourceLink.sourceFrame + "'.");
 				}
 				index += 1;
+				
+				for(String conn : sourceLink.succeeding) {
+					final HumanSkeleton.Link targetLink = skeleton.getLink(conn);
+					if(targetLink==null) {
+						log.warn("Link not known '" + conn + "'.");
+						continue;
+					}
+					final HumanSkeleton.StampedLink sl1 = new HumanSkeleton.StampedLink(targetLink,time,humanId,tfSuffix);
+					
+					if(!addHumanMarker(skeleton.createCylinderMarker(node,sl0,sl1),index,humanId)) {
+						log.warn("Unable to create cylinder marker between '" +
+								sourceLink.sourceFrame + "' and '" + conn + "'.");
+					}
+					index += 1;
+				}
 			}
 		}
-		// Add sphere marker for joints
-		for(HumanSkeleton.Link link : skeleton.getLinks()) {
-			if(!addHumanMarker(skeleton.createSphereMarker(node,
-					link,time,humanId,tfPrefix),index,humanId)) {
-				log.warn("No human pose found for timepoint '" + time + "'.");
-				return;
-			}
-			index += 1;
+		catch(Exception exc) {
+			log.warn("Failed to add markers for human skeleton.", exc);
+			return;
 		}
 		
 		publishMarkers();
+		
+		log.info("addHumanPose took " + (System.currentTimeMillis()-t0) + " ms.");
 	}
 	
-	private HumanSkeleton getHumanSkeleton(String humanIndividualName) {
+	HumanSkeleton getHumanSkeleton(String humanIndividualName) {
 		HumanSkeleton out = humanSkeletons.get(humanIndividualName);
 		if(out==null) {
 			out = new HumanSkeleton(humanIndividualName);
@@ -512,15 +568,15 @@ public class MarkerVisualization extends AbstractNodeMain {
 		final List<String> toRemove = new LinkedList<String>();
 		final MarkerArray arr = pub.newMessage();
 		
-		synchronized (markers) {
-			for(Entry<String, Marker> e : markers.entrySet()) {
+		synchronized (markersCache) {
+			for(Entry<String, Marker> e : markersCache.entrySet()) {
 				if(e.getValue().getNs().equals(ns)) {
 					toRemove.add(e.getKey());
 					e.getValue().setAction(Marker.DELETE);
 					arr.getMarkers().add(e.getValue());
 				}
 			}
-			for(String x : toRemove) markers.remove(x);
+			for(String x : toRemove) markersCache.remove(x);
 		}
 		
 		pub.publish(arr);
@@ -554,20 +610,47 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @param identifier
 	 * @param timepoint
 	 */
-	protected void addMarker(String identifier, String timepoint) {
-
+	boolean addMarker(String identifier, String timepoint) {
 		// read marker from Prolog
-		Marker m = readMarkerFromProlog(identifier, timepoint);
-
+		final Marker m = readMarkerFromProlog(identifier, timepoint);
+		if(m==null) return false;
 		// add marker to map
-		if(m!=null) {
-			synchronized (markers) {
-				markers.put(identifier, m);
-			}
-			synchronized (markersCache) {
-				markersCache.put(identifier, m);
-			}
+		synchronized (markers) {
+			markers.put(identifier, m);
 		}
+		synchronized (markersCache) {
+			markersCache.put(identifier, m);
+		}
+		return true;
+	}
+	
+	/**
+	 * @return a marker that belongs to the 'knowrob_vis' namespace
+	 */
+	Marker createMarker() {
+		Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
+		m.getHeader().setFrameId("/map");
+		m.getHeader().setStamp(node.getCurrentTime());
+		m.setNs("knowrob_vis");
+		m.setId(id++);
+		m.setAction(Marker.ADD);
+		m.setLifetime(new Duration());
+		m.getColor().setR(1.0f);
+		m.getColor().setG(1.0f);
+		m.getColor().setB(0.0f);
+		m.getColor().setA(1.0f);
+		return m;
+	}
+	
+	/**
+	 * @param identifier OWL identifier of an individual
+	 * @return true if blacklisted
+	 */
+	boolean isBlackListed(String identifier) {
+		HashMap<String, Vector<String>> blk = PrologInterface.executeQuery(
+				"owl_individual_of('"+ identifier + "', 'http://knowrob.org/kb/srdl2-comp.owl#UrdfJoint') ;" +
+				"owl_individual_of('"+ identifier + "', 'http://knowrob.org/kb/knowrob.owl#RoomInAConstruction')");
+		return blk!=null;
 	}
 
 	/**
@@ -578,33 +661,22 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @return Marker with the object information
 	 */
 	Marker readMarkerFromProlog(String identifier, String timepoint) {
-
-
-		// check if object is blacklisted
-		HashMap<String, Vector<String>> blk = PrologInterface.executeQuery(
-				"owl_individual_of('"+ identifier + "', 'http://knowrob.org/kb/srdl2-comp.owl#UrdfJoint') ;" +
-						"owl_individual_of('"+ identifier + "', 'http://knowrob.org/kb/knowrob.owl#RoomInAConstruction')");
-
-		if(blk!=null)
-			return null;
-
-		Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
-
-		m.getHeader().setFrameId("/map");
-		m.getHeader().setStamp(node.getCurrentTime());
-		m.setNs("knowrob_vis");
-		m.setId(id++);
-
-		m.setAction(Marker.ADD);
-		m.setLifetime(new Duration());
+		if(isBlackListed(identifier)) return null;
+		final Marker m = createMarker();
+		m.setType(Marker.CUBE);
+		// set light grey color by default
+		m.getColor().setR(0.6f);
+		m.getColor().setG(0.6f);
+		m.getColor().setB(0.6f);
+		m.getColor().setA(1.0f);
 
 		try {
 			// read object pose
 			HashMap<String, Vector<String>> res = PrologInterface.executeQuery(
-					"object_pose_at_time('"+ identifier + "', '"+ timepoint + "', [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33])");
+					"object_pose_at_time('"+ identifier + "', '"+ timepoint +
+					"', [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33])");
 
 			if (res!=null && res.get("M00") != null && res.get("M00").size() > 0 && res.get("M00").get(0)!=null) {
-
 				double[] p = new double[16];
 				Matrix4d poseMat = new Matrix4d(p);
 
@@ -628,23 +700,18 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 				// debug
 				//System.err.println("adding " + identifier + " at pose [" + m.pose.position.x + ", " + m.pose.position.y + ", " + m.pose.position.z + "]");
-
-			} else {
-				m.setType(Marker.CUBE);
 			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
+		}
+		catch (Exception e) {
+			log.warn("Unable to lookup pose for '" + identifier + "'.", e);
 		}
 
-
 		try {
-
-			// read object dimensions if available, default to a 10cm cube
+			// read object dimensions if available
 			HashMap<String, Vector<String>> res = PrologInterface.executeQuery(
 					"rdf_has('"+identifier+"', knowrob:depthOfObject,  literal(type(_, D))), " +
-							"rdf_has('"+identifier+"', knowrob:widthOfObject,  literal(type(_, W))), " +
-							"rdf_has('"+identifier+"', knowrob:heightOfObject, literal(type(_, H)))");
+					"rdf_has('"+identifier+"', knowrob:widthOfObject,  literal(type(_, W))), " +
+					"rdf_has('"+identifier+"', knowrob:heightOfObject, literal(type(_, H)))");
 
 			if (res!=null && res.get("D") != null && res.get("D").size() > 0 && res.get("D").get(0)!=null) {
 				m.getScale().setX(Double.valueOf(OWLThing.removeSingleQuotes(res.get("D").get(0))));
@@ -656,38 +723,46 @@ public class MarkerVisualization extends AbstractNodeMain {
 				m.getScale().setY(0.05);
 				m.getScale().setZ(0.05);
 			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
+		}
+		catch (Exception e) {
+			log.warn("Unable to lookup dimensions for '" + identifier + "'.", e);
 		}
 
+		try {
+			// read object color if available
+			HashMap<String, Vector<String>> res = PrologInterface.executeQuery(
+					"rdf_has('"+identifier+"', knowrob:mainColorOfObject, literal(type(_, COL)))");
+			if(res!=null && res.get("COL")!=null) {
+				String c[] = res.get("COL").get(0).split(" ");
+				if(c.length==4) {
+					m.getColor().setR(Float.valueOf(OWLThing.removeSingleQuotes(c[0])));
+					m.getColor().setG(Float.valueOf(OWLThing.removeSingleQuotes(c[1])));
+					m.getColor().setB(Float.valueOf(OWLThing.removeSingleQuotes(c[2])));
+					m.getColor().setA(Float.valueOf(OWLThing.removeSingleQuotes(c[3])));
+				}
+				else {
+					log.warn("Invalid color for '" + identifier + "'.");
+				}
+			}
+		}
+		catch (Exception e) {
+			log.warn("Unable to lookup color for '" + identifier + "'.", e);
+		}
 
 		try {
-
 			// check if mesh is available for this object
 			HashMap<String, Vector<String>> res = PrologInterface.executeQuery("get_model_path('"+ identifier + "', Path)");
 
 			if (res!=null && res.get("Path") != null && res.get("Path").size() > 0 && res.get("Path").get(0)!=null) {
-
 				m.setType(Marker.MESH_RESOURCE);
 				m.setMeshResource(OWLThing.removeSingleQuotes(res.get("Path").get(0)));
-
 				m.getScale().setX(1.0);
 				m.getScale().setY(1.0);
 				m.getScale().setZ(1.0);
-
-			} else {
-				m.setType(Marker.CUBE);
 			}
-
-			// set light grey color by default
-			m.getColor().setR(0.6f);
-			m.getColor().setG(0.6f);
-			m.getColor().setB(0.6f);
-			m.getColor().setA(1.0f);
-
-		} catch (Exception e) {
-			e.printStackTrace();
+		}
+		catch (Exception e) {
+			log.warn("Unable to lookup mesh for '" + identifier + "'.", e);
 		}
 
 		return m;
@@ -696,138 +771,42 @@ public class MarkerVisualization extends AbstractNodeMain {
 	/**
 	 * Read link transform and create a marker from it
 	 *
-	 * @param link TODO explanation
-	 * @param timepoint  OWL identifier of a timepoint instance
+	 * @param link TF frame name
+	 * @param timepoint OWL identifier of a timepoint instance
 	 * @return Marker with the object information
 	 */
-	Marker readLinkMarkerFromPrologSim(String link, String timepoint, int marker_type, String marker_color) {
-
-		Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
-
-		m.getHeader().setFrameId("/map");
-		m.getHeader().setStamp(node.getCurrentTime());
-		m.setNs("knowrob_vis");
-		m.setId(id++);
-
-		m.setAction(Marker.ADD);
-		m.setLifetime(new Duration());
-
+	Marker readLinkMarkerFromProlog(String link, String timepoint, int marker_type) {
+		final Marker m = createMarker();
+		
+		// Set marker size
 		m.getScale().setX(0.05);
 		m.getScale().setY(0.05);
 		m.getScale().setZ(0.05);
 		
-		if(marker_type >= 0 && marker_type <= 8)//valid markers
+		// Set marker shape
+		if(marker_type >= 0 && marker_type <= 8)//validate markers
 			m.setType(marker_type);
 		else
-			m.setType(Marker.CYLINDER);
+			m.setType(Marker.ARROW);
 		
-		//set marker color using stylesheet to convert to rgb
-		StyleSheet s = new StyleSheet();
-		Color color = s.stringToColor(marker_color);
-		if(color == null) //given color is not a HTML3.2 color string
-		{
-			m.getColor().setR(1.0f);
-			m.getColor().setG(1.0f);
-			m.getColor().setB(0.0f);
-			m.getColor().setA(1.0f);
-		}
-		else
-		{
-			m.getColor().setR(color.getRed()/(float)255.0);
-			m.getColor().setG(color.getGreen()/(float)255.0);
-			m.getColor().setB(color.getBlue()/(float)255.0);
-			m.getColor().setA(1.0f);
-		}		
-
+		// Lookup TF transform that corresponds to specified link
 		try {
-
-			TFMemory tf = TFMemory.getInstance();
-
-			String ts = timepoint.split("timepoint_")[1];
-			double posix_ts = Double.valueOf(ts.substring(0, ts.length()-1));
-
-			Time time = new Time();
-			time.secs = (int)posix_ts;
-			time.nsecs = (int) (1E9 * (posix_ts - ((int) posix_ts)));
-
-			StampedTransform tr = tf.lookupSimTransform("/map", link, time);
+			StampedTransform tr = TFMemory.getInstance().lookupTransform("/map", link, parseTime(timepoint));
 			m.getPose().getPosition().setX(tr.getTranslation().x);
 			m.getPose().getPosition().setY(tr.getTranslation().y);
 			m.getPose().getPosition().setZ(tr.getTranslation().z);
-//			System.out.println("x:" + m.getPose().getPosition().getX()+"; y:" + m.getPose().getPosition().getY()+"; z:" + m.getPose().getPosition().getZ());
-
 			m.getPose().getOrientation().setW(tr.getRotation().w);
 			m.getPose().getOrientation().setX(tr.getRotation().x);
 			m.getPose().getOrientation().setY(tr.getRotation().y);
 			m.getPose().getOrientation().setZ(tr.getRotation().z);
-//			System.out.println("w:" + m.getPose().getOrientation().getW() + "; x:" + m.getPose().getOrientation().getX()+"; y:" + m.getPose().getOrientation().getY()+"; z:" + m.getPose().getOrientation().getZ());
-		} catch (Exception e) {
-			e.printStackTrace();
+		}
+		catch (Exception e) {
+			log.warn("Unable to lookup transform for '" + link + "'.", e);
 		}
 
 		return m;
 	}
 	
-	/**
-	 * Read link transform and create a marker from it
-	 *
-	 * @param link TODO explanation
-	 * @param timepoint  OWL identifier of a timepoint instance
-	 * @return Marker with the object information
-	 */
-	Marker readLinkMarkerFromProlog(String link, String timepoint) {
-
-		Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
-
-		m.getHeader().setFrameId("/map");
-		m.getHeader().setStamp(node.getCurrentTime());
-		m.setNs("knowrob_vis");
-		m.setId(id++);
-
-		m.setAction(Marker.ADD);
-		m.setLifetime(new Duration());
-
-		m.getScale().setX(0.05);
-		m.getScale().setY(0.05);
-		m.getScale().setZ(0.05);
-
-		m.setType(Marker.ARROW);
-
-		m.getColor().setR(1.0f);
-		m.getColor().setG(1.0f);
-		m.getColor().setB(0.0f);
-		m.getColor().setA(1.0f);
-
-		try {
-
-			TFMemory tf = TFMemory.getInstance();
-
-			String ts = timepoint.split("timepoint_")[1];
-			double posix_ts = Double.valueOf(ts.substring(0, ts.length()-1));
-
-			Time time = new Time();
-			time.secs = (int)posix_ts;
-			time.nsecs = (int) (1E9 * (posix_ts - ((int) posix_ts)));
-
-			StampedTransform tr = tf.lookupTransform("/map", link, time);
-			m.getPose().getPosition().setX(tr.getTranslation().x);
-			m.getPose().getPosition().setY(tr.getTranslation().y);
-			m.getPose().getPosition().setZ(tr.getTranslation().z);
-
-			m.getPose().getOrientation().setW(tr.getRotation().w);
-			m.getPose().getOrientation().setX(tr.getRotation().x);
-			m.getPose().getOrientation().setY(tr.getRotation().y);
-			m.getPose().getOrientation().setZ(tr.getRotation().z);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return m;
-	}
-
-
-
 	/**
 	 * Read children of an object instance that are either linked
 	 * by the 'properPhysicalParts' property or (inversely) by the
@@ -836,7 +815,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @param parent The parent whose children are to the returned, as OWL identifier
 	 * @return Array of OWL identifiers of all children
 	 */
-	private String[] readChildren(String parent) {
+	String[] readChildren(String parent) {
 
 		HashSet<String> children = new HashSet<String>();
 
@@ -847,29 +826,28 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 		if(mapParts != null && mapParts.get("PART") != null) {
 			for(int i=0;i<mapParts.get("PART").size();i++) {
-				if(!mapParts.get("PART").get(i).equals(parent)) {
+				final String p_i = mapParts.get("PART").get(i);
+				if(p_i.equals(parent)) continue;
 
-					// add object to children set
-					children.add(OWLThing.removeSingleQuotes(mapParts.get("PART").get(i)));
+				// add object to children set
+				children.add(OWLThing.removeSingleQuotes(p_i));
 
+				// read all physical parts of all child objects
+				HashMap<String, Vector<String>> parts = PrologInterface.executeQuery(
+						"rdf_reachable("+p_i+", knowrob:properPhysicalParts, P);" +
+						"rdf_reachable("+p_i+", 'http://knowrob.org/kb/srdl2-comp.owl#subComponent', P);" +
+						"rdf_reachable("+p_i+", 'http://knowrob.org/kb/srdl2-comp.owl#successorInKinematicChain', P)");
 
-					// read all physical parts of all child objects
-					HashMap<String, Vector<String>> parts = PrologInterface.executeQuery(
-							"rdf_reachable("+mapParts.get("PART").get(i)+", knowrob:properPhysicalParts, P);" +
-									"rdf_reachable("+mapParts.get("PART").get(i)+", 'http://knowrob.org/kb/srdl2-comp.owl#subComponent', P);" +
-									"rdf_reachable("+mapParts.get("PART").get(i)+", 'http://knowrob.org/kb/srdl2-comp.owl#successorInKinematicChain', P)");
-
-					if(parts != null && parts.get("P") != null) {
-
-						for(int j=0;j<parts.get("P").size();j++) {
-							if(!parts.get("P").get(j).toString().equals(mapParts.get("PART").get(i))) {
-								children.add(OWLThing.removeSingleQuotes(parts.get("P").get(j)));
-							}
+				if(parts != null && parts.get("P") != null) {
+					for(int j=0;j<parts.get("P").size();j++) {
+						if(!parts.get("P").get(j).toString().equals(p_i)) {
+							children.add(OWLThing.removeSingleQuotes(parts.get("P").get(j)));
 						}
 					}
 				}
 			}
 		}
+		
 		return children.toArray(new String[]{});
 	}
 
@@ -878,7 +856,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * and send the marker once with delete flag set.
 	 * @param identifier Marker identifier
 	 */
-	private void eraseMarker(String identifier) {
+	void eraseMarker(String identifier) {
 		Marker m = markers.remove(identifier);
 		if(m!=null) {
 			final MarkerArray arr = pub.newMessage();
@@ -888,19 +866,22 @@ public class MarkerVisualization extends AbstractNodeMain {
 			
 			trajectories.remove(identifier);
 			highlighted.remove(identifier);
+			markersCache.remove(identifier);
 		}
 	}
 	
-	private boolean addHumanMarker(Marker marker, int index, int id) {
+	boolean addHumanMarker(Marker marker, int index, int id) {
 		if(marker!=null) {
 			final StringBuilder identifier = new StringBuilder();
 			identifier.append("human_").append(id).append('_').append(index);
 			marker.setId(index);
 			
-			synchronized (markers) { synchronized (markersCache) {
+			synchronized (markers) {
 				markers.put(identifier.toString(), marker);
+			}
+			synchronized (markersCache) {
 				markersCache.put(identifier.toString(), marker);
-			}}
+			}
 			return true;
 		}
 		else {
@@ -912,17 +893,23 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * Parses String with common time format 'timepoint_%d'
 	 * and returns a Time object.
 	 */
-	private Time parseTime(String timepoint) {
-		String x[] = timepoint.split("timepoint_");
-		// Also allow input strings without 'timepoint_' prefix
-		String ts = (x.length==1 ? x[0] : x[1]);
-		
-		double posix_ts = Double.valueOf(ts.replaceAll("[^0-9.]", ""));
+	Time parseTime(String timepoint) {
+		double posix_ts = parseTime_d(timepoint);
 		Time time = new Time();
 		time.secs = (int)posix_ts;
 		time.nsecs = (int) (1E9 * (posix_ts - ((int) posix_ts)));
-
 		return time;
+	}
+	/**
+	 * Parses String with common time format 'timepoint_%d'
+	 * and returns a double precision number that represents
+	 * the time passed since 1970.
+	 */
+	double parseTime_d(String timepoint) {
+		String x[] = timepoint.split("timepoint_");
+		// Also allow input strings without 'timepoint_' prefix
+		String ts = (x.length==1 ? x[0] : x[1]);
+		return Double.valueOf(ts.replaceAll("[^0-9.]", ""));
 	}
 
 	/////////////////
@@ -949,8 +936,9 @@ public class MarkerVisualization extends AbstractNodeMain {
         try {
 			server.start();
 //	        server.join();
-		} catch (Exception e) {
-			e.printStackTrace();
+		}
+        catch (Exception e) {
+			log.warn("Unable to start knowrob_vis server.", e);
 		}
 	}
 	

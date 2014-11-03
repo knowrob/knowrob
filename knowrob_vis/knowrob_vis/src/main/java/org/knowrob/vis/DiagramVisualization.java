@@ -91,7 +91,6 @@ public class DiagramVisualization extends AbstractNodeMain {
 			}
 		}
 		publishDiagrams();
-		publishDiagrams();
 	}
 
 

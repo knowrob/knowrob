@@ -8,7 +8,6 @@ import java.util.Vector;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector4d;
 
-import org.apache.commons.logging.Log;
 import org.knowrob.prolog.PrologInterface;
 import org.knowrob.tfmemory.TFMemory;
 import org.ros.message.Time;
@@ -48,9 +47,18 @@ public class HumanSkeleton {
 		 * Size hint for rendering.
 		 */
 		final double size;
-		
-		private StampedTransform lastTransform = null;
-		private Time lastTime = new Time();
+		/**
+		 * Cached pose
+		 */
+		private StampedTransform lastPose;
+		/**
+		 * Time stamp of cached pose
+		 */
+		private Time lastStamp = null;
+		/**
+		 * TF suffix of cached pose
+		 */
+		private String lastSuffix;
 
 		public Link(String sourceFrame, String[] succeeding, double size) {
 			super();
@@ -58,9 +66,41 @@ public class HumanSkeleton {
 			this.succeeding = succeeding;
 			this.size = size;
 		}
+
+		public StampedTransform lookupTransform(Time stamp, String suffix) {
+			if(lastStamp!=null && stamp.equals(lastStamp)
+					&& lastSuffix.equals(suffix)) return lastPose;
+			lastStamp = stamp;
+			lastSuffix = suffix;
+			lastPose = TFMemory.getInstance().lookupTransform("/map", sourceFrame+suffix, stamp);
+			return lastPose;
+		}
 	}
-	
-	private static final String targetFrame = "/map";
+	/**
+	 * A link in a human skeleton for a particular point in time.
+	 */
+	public static class StampedLink {
+		/**
+		 * The human link.
+		 */
+		final Link link;
+		/**
+		 * The stamped pose of the link or null.
+		 */
+		final StampedTransform pose;
+		/**
+		 * The ID of the human (in order to support different humans
+		 * for the same skeleton).
+		 */
+		final int id;
+		
+		public StampedLink(Link link, Time stamp, int id, String suffix) {
+			super();
+			this.link = link;
+			this.id = id;
+			this.pose = link.lookupTransform(stamp,suffix);
+		}
+	}
 
 	/**
 	 * The name of the human individual as used in OWL.
@@ -71,11 +111,6 @@ public class HumanSkeleton {
 	 * Maps TF name to human skeleton link.
 	 */
 	private final HashMap<String, Link> links;
-
-	/**
-	 * Logging backend
-	 */
-//	private final Log log;
 	
 	/**
 	 * @param humanIndividual The name of the human individual as used in OWL
@@ -84,7 +119,6 @@ public class HumanSkeleton {
 		this.humanIndividual = humanIndividual;
 		this.links = new HashMap<String, Link>();
 		
-//		log.debug("Initializing skeleton for human individual " + humanIndividual + ".");
 		for(String linkName : queryLinks()) {
 			final String tfFrame = getHumanTfFrame(linkName);
 			links.put(tfFrame, new Link(tfFrame,
@@ -116,26 +150,20 @@ public class HumanSkeleton {
 	 * @param prefix prefix used for TF frames
 	 * @return the marker created or null if TF lookup failed
 	 */
-	public Marker createSphereMarker(
-			ConnectedNode node,
-			Link link,
-			Time timepoint,
-			int id,
-			String prefix)
+	public Marker createSphereMarker(ConnectedNode node, StampedLink sl)
 	{
-		final Marker m = createMarker(node,id);
-		final StampedTransform tf = lookupPose(link,timepoint,prefix);
+		final Marker m = createMarker(node,sl.id);
 		// Frame not available for given timepoint
-		if(tf==null) return null;
+		if(sl.pose==null) return null;
 
 		m.setType(Marker.SPHERE);
-		m.getScale().setX(link.size);
-		m.getScale().setY(link.size);
-		m.getScale().setZ(link.size);
+		m.getScale().setX(sl.link.size);
+		m.getScale().setY(sl.link.size);
+		m.getScale().setZ(sl.link.size);
 
-		m.getPose().getPosition().setX(tf.getTranslation().x);
-		m.getPose().getPosition().setY(tf.getTranslation().y);
-		m.getPose().getPosition().setZ(tf.getTranslation().z);
+		m.getPose().getPosition().setX(sl.pose.getTranslation().x);
+		m.getPose().getPosition().setY(sl.pose.getTranslation().y);
+		m.getPose().getPosition().setZ(sl.pose.getTranslation().z);
 
 		m.getPose().getOrientation().setX(0.0);
 		m.getPose().getOrientation().setY(0.0);
@@ -154,27 +182,19 @@ public class HumanSkeleton {
 	 * @param prefix prefix used for TF frames
 	 * @return the marker created or null if TF lookup failed
 	 */
-	public Marker createCylinderMarker(
-			ConnectedNode node,
-			Link source, Link target,
-			Time timepoint,
-			int id,
-			String prefix)
+	public Marker createCylinderMarker(ConnectedNode node, StampedLink sl0, StampedLink sl1)
 	{
-		final Marker m = createMarker(node,id);
-		
-		final StampedTransform sourceTf = lookupPose(source,timepoint,prefix);
-		final StampedTransform targetTf = lookupPose(target,timepoint,prefix);
+		final Marker m = createMarker(node,sl0.id);
 		// Frames not available for given timepoint
-		if(sourceTf==null || targetTf==null) return null;
+		if(sl0.pose==null || sl1.pose==null) return null;
 		
 		m.setType(Marker.CYLINDER);
 
 		// Vector pointing upwards
 		final Vector3d up = new Vector3d(0.0,0.0,1.0);
 		// Vector pointing from target joint to source joint
-		final Vector3d dp = new Vector3d(targetTf.getTranslation());
-		dp.sub(sourceTf.getTranslation());
+		final Vector3d dp = new Vector3d(sl1.pose.getTranslation());
+		dp.sub(sl0.pose.getTranslation());
 
 		// Radius in x/z directions
 		m.getScale().setX(0.1);
@@ -183,8 +203,8 @@ public class HumanSkeleton {
 		m.getScale().setZ(dp.length());
 
 		// Compute point between both joints
-		final Vector3d center = new Vector3d(targetTf.getTranslation());
-		center.add(sourceTf.getTranslation());
+		final Vector3d center = new Vector3d(sl1.pose.getTranslation());
+		center.add(sl0.pose.getTranslation());
 		center.scale(0.5);
 		m.getPose().getPosition().setX(center.x);
 		m.getPose().getPosition().setY(center.y);
@@ -203,8 +223,8 @@ public class HumanSkeleton {
 	private Marker createMarker(ConnectedNode node, int id) {
 		final Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
 
-		m.getHeader().setFrameId(targetFrame);
-		// Use special namespace for XSens data so that the markers don't conflict
+		m.getHeader().setFrameId("/map");
+		// Use special namespace for MOCAP data so that the markers don't conflict
 		// with other markers
 		m.setNs(getHumanMarkerNs(id));
 		m.getColor().setR(1.0f);
@@ -258,21 +278,10 @@ public class HumanSkeleton {
 	 */
 	private double getHumanLinkSize(String linkName) {
 		final HashMap<String, Vector<String>> res = PrologInterface.executeQuery(
-				"owl_has("+linkName+", knowrob:'radius', RAD_), strip_literal_type(RAD_, RAD)");
-		if(res==null) {
-//			log.warn("Radius query failed for human link: " + linkName);
-			return 0.1;
-		}
-		final Vector<String> vals = res.get("RAD");
-		if(vals==null || vals.isEmpty()) {
-//			log.warn("No radius for human link: " + linkName);
-			return 0.1;
-		}
-		String val = vals.firstElement();
-		if(val.startsWith("'")) {
-			val = val.substring(1, val.length()-1);
-		}
-		return Double.parseDouble(val);
+				"owl_has("+linkName+", knowrob:'radius', literal(type(_, RAD)))");
+		if(res==null) return 0.1;
+		
+		return Double.parseDouble(unquote(res.get("RAD").firstElement()));
 	}
 
 	/**
@@ -280,14 +289,10 @@ public class HumanSkeleton {
 	 */
 	private String getHumanTfFrame(String linkName) {
 		final HashMap<String, Vector<String>> res = PrologInterface.executeQuery(
-				"owl_has("+linkName+", srdl2comp:'urdfName', NAME_), strip_literal_type(NAME_, NAME)");
+				"owl_has("+linkName+", srdl2comp:'urdfName', literal(type(_, NAME)))");
 		if(res==null) return null;
-		final Vector<String> names = res.get("NAME");
-		if(names==null || names.isEmpty()) return null;
-		String frameName = names.firstElement();
-		if(frameName.startsWith("'")) {
-			frameName = frameName.substring(1, frameName.length()-1);
-		}
+		
+		final String frameName = unquote(res.get("NAME").firstElement());
 		if(frameName.startsWith("/")) return frameName;
 		else return "/"+frameName;
 	}
@@ -310,26 +315,18 @@ public class HumanSkeleton {
 	}
 	
 	/**
-	 * Lookup pose for user specified point in time.
-	 * @param prefix 
-	 */
-	public StampedTransform lookupPose(Link link, Time time, String prefix) {
-		// Use last transform if time point didn't changed
-		// since last call
-		
-		if(!link.lastTime.equals(time)) {
-			// TODO: Remove caching here. check performance difference
-			link.lastTime = time;
-			link.lastTransform = TFMemory.getInstance().lookupTransform(targetFrame, prefix+link.sourceFrame, time);
-		}
-		
-		return link.lastTransform;
-	}
-	
-	/**
 	 * Special namespace for human skeleton marker messages
 	 */
 	public static String getHumanMarkerNs(int id) {
 		return "human_pose" + id;
+	}
+	
+	String unquote(final String in) {
+		if(in.startsWith("'")) {
+			return in.substring(1, in.length()-1);
+		}
+		else {
+			return in;
+		}
 	}
 }
