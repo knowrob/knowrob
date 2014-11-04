@@ -38,6 +38,7 @@
       highlight_object/5,
       highlight_object_with_children/1,
       highlight_object_with_children/2,
+      highlight_trajectory/4,
       remove_highlight/1,
       remove_highlight_with_children/1,
       reset_highlight/0,
@@ -75,6 +76,7 @@
             highlight_object(r,?,?,?,?,?),
             highlight_object_with_children(r),
             highlight_object_with_children(r,?),
+            highlight_trajectory(r,r,r,?),
             remove_highlight(r),
             remove_highlight_with_children(r),
             add_diagram(+,+,+,+,+,+,+,+,+),
@@ -285,13 +287,12 @@ remove_human_pose(Id) :-
 %% highlight_object(Identifier, Highlight) is det.
 %% highlight_object(Identifier, Highlight, Color) is det.
 %% highlight_object(Identifier, Highlight, R, B, G, Alpha) is det.
+%% highlight_trajectory(+Link, +Starttime, +Endtime, +Color) is det.
+%% remove_highlight(+Identifier) is det.
 %
 % Different methods for highlighting objects. By default, objects are drawn in bright red
 % if they are highlighted, but different colors can be specified using either one integer
 % value (e.g. #00FF00) or separate values for red, green, and blue.
-%
-% The parameter Highlight specifies if the highlighting shall be activated or reset; if
-% it is missing, a value of @(true) is assumed.
 %
 % If the object detection was uncertain, its probability can be visualized using the Prob
 % parameter. This is done e.g. using the alpha channel or the hue value in HSV space
@@ -316,6 +317,21 @@ highlight_object(Identifier, Color) :-
 highlight_object(Identifier, R, B, G, Prob) :-
     v_canvas(Canvas),
     jpl_call(Canvas, 'highlight', [Identifier, R, B, G, Prob], _).
+
+highlight_trajectory(Link, Starttime, Endtime, Color) :-
+    v_canvas(Canvas),
+
+    ((rdf_has(Link, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(Tf)),
+      atomic_list_concat(['/', Tf], TfLink)) ;
+     (TfLink = Link)),!,
+  
+    jpl_call(Canvas, 'getTrajectoryMarker', [TfLink, Starttime, Endtime], MarkersJ),
+     
+    jpl_array_to_list(MarkersJ, Markers),
+    
+    member(Marker, Markers),
+  
+    highlight_object(Marker, Color).
 
 remove_highlight(Identifier) :-
     v_canvas(Canvas),

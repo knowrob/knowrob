@@ -103,12 +103,6 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * Constructor. Starts the marker publisher in a parallel thread.
 	 */
 	public MarkerVisualization() {
-
-		// only needed for testing from Java:
-		//PrologInterface.initJPLProlog("knowrob_vis");
-		//PrologInterface.executeQuery("register_ros_package(knowrob_mongo)");
-		//PrologInterface.executeQuery("register_ros_package(mod_srdl)");
-
 		markers =  new ConcurrentHashMap<String, Marker>(8, 0.9f, 1);
 		markersCache =  new ConcurrentHashMap<String, Marker>(8, 0.9f, 1);
 		highlighted = new ConcurrentHashMap<String, float[]>(8, 0.9f, 1);
@@ -455,6 +449,47 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 */
 	public void showTrajectory(String tflink, String starttime, String endtime, double interval) {
 		showTrajectory(tflink, starttime, endtime, interval, Marker.ARROW);
+	}
+	
+	/**
+	 * @param tflink The name of the TF frame
+	 * @return Array of marker identifier that correspond to a TF frame
+	 */
+	public String[] getTrajectoryMarker(String tflink) {
+		String tflink_ = (tflink.startsWith("/") ? tflink : "/"+tflink);
+		List<String> out = trajectories.get(tflink_);
+		if(out==null) {
+			return new String[]{};
+		}
+		else {
+			return out.toArray(new String[out.size()]);
+		}
+	}
+	
+	/**
+	 * @param tflink The name of the TF frame
+	 * @param starttime Returned marker identifiers must correspond to a later time
+	 * @param endtime Returned marker identifiers must correspond to a earlier time
+	 * @return Array of marker identifier that correspond to a TF frame
+	 */
+	public String[] getTrajectoryMarker(String tflink, String starttime, String endtime) {
+		String tflink_ = (tflink.startsWith("/") ? tflink : "/"+tflink);
+		double t0 = parseTime_d(starttime);
+		double t1 = parseTime_d(endtime);
+		List<String> traj = trajectories.get(tflink_);
+		if(traj==null) {
+			return new String[]{};
+		}
+		else {
+			List<String> out = new LinkedList<String>();
+			for(String x : traj) {
+				double t = Double.parseDouble(x.substring(tflink.length()));
+				if(t0<=t && t<=t1) {
+					out.add(x);
+				}
+			}
+			return out.toArray(new String[out.size()]);
+		}
 	}
 
 	/**
@@ -942,8 +977,18 @@ public class MarkerVisualization extends AbstractNodeMain {
 		}
 	}
 	
+	public static class MarkerVisualizationMain extends MarkerVisualization {
+		public MarkerVisualizationMain() {
+			super();
+			// only needed for testing from Java:
+			PrologInterface.initJPLProlog("knowrob_vis");
+			PrologInterface.executeQuery("register_ros_package(knowrob_mongo)");
+			PrologInterface.executeQuery("register_ros_package(mod_srdl)");
+		}
+	}
+	
 	public static void main(String args[]) {
-		
+		//MarkerVisualization vis = new MarkerVisualizationMain();
 		
 		//		MarkerVisualization vis = new MarkerVisualization();
 		//		vis.addObjectWithChildren("http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0", "http://knowrob.org/kb/knowrob.owl#timepoint_1377766542");
