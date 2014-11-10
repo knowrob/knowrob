@@ -483,7 +483,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 		else {
 			List<String> out = new LinkedList<String>();
 			for(String x : traj) {
-				double t = Double.parseDouble(x.substring(tflink.length()));
+				double t = Double.parseDouble(x.substring(tflink_.length()));
 				if(t0<=t && t<=t1) {
 					out.add(x);
 				}
@@ -704,6 +704,9 @@ public class MarkerVisualization extends AbstractNodeMain {
 		m.getColor().setG(0.6f);
 		m.getColor().setB(0.6f);
 		m.getColor().setA(1.0f);
+		m.getScale().setX(1.0);
+		m.getScale().setY(1.0);
+		m.getScale().setZ(1.0);
 
 		try {
 			// read object pose
@@ -838,13 +841,19 @@ public class MarkerVisualization extends AbstractNodeMain {
 		// Lookup TF transform that corresponds to specified link
 		try {
 			StampedTransform tr = TFMemory.getInstance().lookupTransform("/map", link, parseTime(timepoint));
-			m.getPose().getPosition().setX(tr.getTranslation().x);
-			m.getPose().getPosition().setY(tr.getTranslation().y);
-			m.getPose().getPosition().setZ(tr.getTranslation().z);
-			m.getPose().getOrientation().setW(tr.getRotation().w);
-			m.getPose().getOrientation().setX(tr.getRotation().x);
-			m.getPose().getOrientation().setY(tr.getRotation().y);
-			m.getPose().getOrientation().setZ(tr.getRotation().z);
+			if(tr==null) {
+				log.warn("TF data missing for '" + link + "' " + timepoint + " missing in mongo.");
+				return null;
+			}
+			else {
+				m.getPose().getPosition().setX(tr.getTranslation().x);
+				m.getPose().getPosition().setY(tr.getTranslation().y);
+				m.getPose().getPosition().setZ(tr.getTranslation().z);
+				m.getPose().getOrientation().setW(tr.getRotation().w);
+				m.getPose().getOrientation().setX(tr.getRotation().x);
+				m.getPose().getOrientation().setY(tr.getRotation().y);
+				m.getPose().getOrientation().setZ(tr.getRotation().z);
+			}
 		}
 		catch (Exception e) {
 			log.warn("Unable to lookup transform for '" + link + "'.", e);
