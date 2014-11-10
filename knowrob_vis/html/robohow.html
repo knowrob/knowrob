@@ -7,16 +7,39 @@
 
   <script type="text/javascript" src="lib/ace/ace.js"></script>
   
-  <script type="text/javascript" src="lib/ros/three.min.js"></script>
-  <script type="text/javascript" src="lib/ros/eventemitter2.min.js"></script>
-  <script type="text/javascript" src="lib/ros/ColladaLoader2.min.js"></script>
-  <script type="text/javascript" src="lib/ros/roslib.min.js"></script>
-  <script type="text/javascript" src="lib/ros/mjpegcanvas.min.js"></script>
-  <script type="text/javascript" src="lib/ros/ros3d.js"></script>
+  <script type="text/javascript" src="lib/ros/threejs/three.js"></script>
+  <script type="text/javascript" src="lib/ros/threejs/ColladaLoader.js"></script>
+  <script type="text/javascript" src="lib/ros/threejs/STLLoader.js"></script>
+  
+  <script type="text/javascript" src="lib/ros/Ros3D.js"></script>
+  <script type="text/javascript" src="lib/ros/ColladaAnimationCompress/ColladaLoader2.js"></script>
+  <script type="text/javascript" src="lib/ros/depthcloud/DepthCloud.js"></script>
+  <script type="text/javascript" src="lib/ros/EventEmitter2/eventemitter2.js"></script>
+  <script type="text/javascript" src="lib/ros/models/Arrow.js"></script>
+  <script type="text/javascript" src="lib/ros/models/Axes.js"></script>
+  <script type="text/javascript" src="lib/ros/models/Grid.js"></script>
+  <script type="text/javascript" src="lib/ros/models/MeshResource.js"></script>
+  <script type="text/javascript" src="lib/ros/models/TriangleList.js"></script>
+  <script type="text/javascript" src="lib/ros/interactivemarkers/InteractiveMarkerClient.js"></script>
+  <script type="text/javascript" src="lib/ros/interactivemarkers/InteractiveMarkerControl.js"></script>
+  <script type="text/javascript" src="lib/ros/interactivemarkers/InteractiveMarkerHandle.js"></script>
+  <script type="text/javascript" src="lib/ros/interactivemarkers/InteractiveMarker.js"></script>
+  <script type="text/javascript" src="lib/ros/interactivemarkers/InteractiveMarkerMenu.js"></script>
+  <script type="text/javascript" src="lib/ros/maps/OccupancyGridClient.js"></script>
+  <script type="text/javascript" src="lib/ros/maps/OccupancyGrid.js"></script>
+  <script type="text/javascript" src="lib/ros/markers/MarkerArrayClient.js"></script>
+  <script type="text/javascript" src="lib/ros/markers/MarkerClient.js"></script>
+  <script type="text/javascript" src="lib/ros/markers/Marker.js"></script>
+  <script type="text/javascript" src="lib/ros/roslibjs/roslib.js"></script>
+  <script type="text/javascript" src="lib/ros/urdf/UrdfClient.js"></script>
+  <script type="text/javascript" src="lib/ros/urdf/Urdf.js"></script>
+  <script type="text/javascript" src="lib/ros/visualization/Viewer.js"></script>
+  <script type="text/javascript" src="lib/ros/visualization/SceneNode.js"></script>
+  <script type="text/javascript" src="lib/ros/visualization/interaction/Highlighter.js"></script>
+  <script type="text/javascript" src="lib/ros/visualization/interaction/MouseHandler.js"></script>
+  <script type="text/javascript" src="lib/ros/visualization/interaction/OrbitControls.js"></script>
   <script type="text/javascript" src="lib/ros/json_prolog.js"></script>
-  <script type="text/javascript" src="lib/ros/MarkerClient.js"></script>
-  <script type="text/javascript" src="lib/ros/MarkerArrayClient.js"></script>
-
+  
   <script type="text/javascript" src="lib/d3/d3.v3.min.js"></script>
   <script type="text/javascript" src="lib/d3/d3-tip.js"></script>
   
@@ -81,6 +104,7 @@
         ros : ros,
         tfClient : tfClient,
         topic : '/visualization_marker_array',
+        rootObject : viewer.scene,
         markerClient : markerClient
       });
 
