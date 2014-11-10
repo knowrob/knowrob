@@ -764,7 +764,34 @@ public class MarkerVisualization extends AbstractNodeMain {
 		}
 
 		try {
+			// check if mesh is available for this object
+			HashMap<String, Vector<String>> res = PrologInterface.executeQuery("get_model_path('"+ identifier + "', Path)");
+
+			if (res!=null && res.get("Path") != null && res.get("Path").size() > 0 && res.get("Path").get(0)!=null) {
+				m.setType(Marker.MESH_RESOURCE);
+				m.setMeshResource(OWLThing.removeSingleQuotes(res.get("Path").get(0)));
+				m.getScale().setX(1.0);
+				m.getScale().setY(1.0);
+				m.getScale().setZ(1.0);
+				//if the file is a collada file use the embedded textures
+				//are there any other common file endings/supported formats
+				if(OWLThing.removeSingleQuotes(res.get("Path").get(0)).endsWith(".dae") || 
+						OWLThing.removeSingleQuotes(res.get("Path").get(0)).endsWith(".DAE")){
+				  m.setMeshUseEmbeddedMaterials(true);
+				  m.getColor().setR(0.0f);
+				  m.getColor().setG(0.0f);
+				  m.getColor().setB(0.0f);
+				  m.getColor().setA(0.0f);
+				}
+			}
+		}
+		catch (Exception e) {
+			log.warn("Unable to lookup mesh for '" + identifier + "'.", e);
+		}
+
+		try {
 			// read object color if available
+			// This removes colors from meshes!!
 			HashMap<String, Vector<String>> res = PrologInterface.executeQuery(
 					"rdf_has('"+identifier+"', knowrob:mainColorOfObject, literal(type(_, COL)))");
 			if(res!=null && res.get("COL")!=null) {
@@ -782,22 +809,6 @@ public class MarkerVisualization extends AbstractNodeMain {
 		}
 		catch (Exception e) {
 			log.warn("Unable to lookup color for '" + identifier + "'.", e);
-		}
-
-		try {
-			// check if mesh is available for this object
-			HashMap<String, Vector<String>> res = PrologInterface.executeQuery("get_model_path('"+ identifier + "', Path)");
-
-			if (res!=null && res.get("Path") != null && res.get("Path").size() > 0 && res.get("Path").get(0)!=null) {
-				m.setType(Marker.MESH_RESOURCE);
-				m.setMeshResource(OWLThing.removeSingleQuotes(res.get("Path").get(0)));
-				m.getScale().setX(1.0);
-				m.getScale().setY(1.0);
-				m.getScale().setZ(1.0);
-			}
-		}
-		catch (Exception e) {
-			log.warn("Unable to lookup mesh for '" + identifier + "'.", e);
 		}
 
 		return m;
