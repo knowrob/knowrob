@@ -56,13 +56,22 @@ ROS3D.MeshResource = function(options) {
         collada.scene.scale = new THREE.Vector3(scale, scale, scale);
       }
 
-      if(material !== null && collada.scene.material === null) {
-      //if(material !== null) {
+      if(material !== null) {
         var setMaterial = function(node, material) {
-          node.material = material;
-          if (node.children) {
-            for (var i = 0; i < node.children.length; i++) {
-              setMaterial(node.children[i], material);
+          // Note(daniel): node.material.map is defined even if loading failed.
+          // But texture size is set to zero then.
+          // Don't use the mesh material if this is the case.
+          var hasMap = false;
+          if (node.material && node.material.map) {
+            hasMap = (node.material.map.image.width * node.material.map.image.height) > 0;
+          }
+    
+          if (!hasMap) {
+            node.material = material;
+            if (node.children) {
+                for (var i = 0; i < node.children.length; i++) {
+                setMaterial(node.children[i], material);
+                }
             }
           }
         };
