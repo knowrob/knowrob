@@ -109,7 +109,6 @@ public class MarkerVisualization extends AbstractNodeMain {
 		trajectories = new HashMap<String, List<String>>();
 		humanSkeletons = new HashMap<String, HumanSkeleton>();
 
-		startWebServer(1111);
 	}
 
 	@Override
@@ -117,6 +116,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 		node = connectedNode;
 		pub = connectedNode.newPublisher("/visualization_marker_array", visualization_msgs.MarkerArray._TYPE);
 		log = connectedNode.getLog();
+		startWebServer(1111);
 	}
 
 	/**
@@ -977,10 +977,13 @@ public class MarkerVisualization extends AbstractNodeMain {
         
         ResourceHandler resource_handler = new ResourceHandler();
         
+        String main_package = node.getParameterTree().getString("knowrob_html_package","knowrob_vis");
+        String welcome_file = node.getParameterTree().getString("knowrob_welcome_file","robohow.html");
+        
         resource_handler.setDirectoriesListed(true);
-        resource_handler.setWelcomeFiles(new String[]{ "index.html", "robohow.html" });
-        resource_handler.setResourceBase(RosUtilities.rospackFind("knowrob_vis") + "/html");
- 
+        resource_handler.setWelcomeFiles(new String[]{welcome_file,"index.html"});
+        resource_handler.setResourceBase(RosUtilities.rospackFind(main_package) + "/html");
+        
         DefaultHandler def = new DefaultHandler();
         def.setServeIcon(false);
         
