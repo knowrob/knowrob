@@ -33,7 +33,7 @@ function JsonProlog(ros, options){
       
       // send query
       var request = new ROSLIB.ServiceRequest({
-        mode : 0,
+        mode : 1,
         id : qid,
         query : query
       });
