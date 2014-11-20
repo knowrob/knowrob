@@ -20,7 +20,7 @@ foreach(it ${xacro_files_in})
   xacro_add_xacro_file(${it} ${expanded_file})
   set(xacro_files_out ${xacro_files_out} ${expanded_file})
 endforeach(it)
-add_custom_target(media_files ALL DEPENDS ${xacro_files_out})
+add_custom_target(srdl_media_files ALL DEPENDS ${xacro_files_out})
 
 install(DIRECTORY ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_MAVEN_DESTINATION}/org/knowrob/${PROJECT_NAME}/ 
         DESTINATION ${CATKIN_GLOBAL_MAVEN_DESTINATION}/org/knowrob/${PROJECT_NAME})
