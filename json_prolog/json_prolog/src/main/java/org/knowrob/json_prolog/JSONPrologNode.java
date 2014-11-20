@@ -131,12 +131,15 @@ public class JSONPrologNode extends AbstractNodeMain {
 
 		@Override
 		public void build(json_prolog_msgs.PrologQueryRequest request, json_prolog_msgs.PrologQueryResponse response) {
-
+            
+            /**
 			if (hasIncrementalQuery ) {
 				response.setOk(false);
 				response.setMessage("Already processing an incremental query.");
 
-			} else if ( queries.get(request.getId()) != null ) {
+			} else
+			*/
+			if ( queries.get(request.getId()) != null ) {
 				response.setOk(false);
 				response.setMessage("Already processing a query with id " + request.getId());
 
@@ -188,12 +191,14 @@ public class JSONPrologNode extends AbstractNodeMain {
 			try {
 
 				synchronized(jpl.Query.class) {
-
+                    /**
 					if (hasIncrementalQuery ) {
 						response.setOk(false);
 						response.setMessage("Already processing an incremental query.");
 
-					} else if (queries!=null && queries.get(request.getId()) != null ) {
+					} else
+					*/
+					if (queries!=null && queries.get(request.getId()) != null ) {
 						response.setOk(false);
 						response.setMessage("Already processing a query with id " + request.getId());
 
