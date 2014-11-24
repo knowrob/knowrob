@@ -16,4 +16,4 @@ if [ -n "$1" ] && [ -n "$(rospack find $1)" ]; then
 fi
 
 cd "$(rospack find $1)"
-exec /usr/bin/swipl -f ${PLDOC_INIT_FILE}  ${SCRIPT_FILE} ${PL_ARGS}
+exec /usr/bin/swipl -q -f ${PLDOC_INIT_FILE}  ${SCRIPT_FILE} ${PL_ARGS}
