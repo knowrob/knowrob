@@ -181,7 +181,7 @@
 
       Duration is (End-Start).
 
-%%  Allen's 13 temporal relations for intervals
+% Allen's 13 temporal relations for intervals
 
 comp_equalI(I1,I2):-
    start_time_value(I1,ST),
@@ -251,7 +251,7 @@ comp_finishesI(I1,I2):-
 comp_finishesInvI(I1,I2):-
    comp_finishesI(I2,I1).
 
-%% helper predicates
+% helper predicates
 
 time_point_value(TP, Value) :-
   rdf_split_url(_, StartLocal, TP),
