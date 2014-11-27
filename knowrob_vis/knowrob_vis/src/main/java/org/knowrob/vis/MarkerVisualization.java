@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 import java.util.List;
 import java.text.DecimalFormat;
 
@@ -51,11 +52,11 @@ import visualization_msgs.MarkerArray;
 public class MarkerVisualization extends AbstractNodeMain {
 
 	private static final String HTML_RED = "ff0000";
-	
+
 	Publisher<MarkerArray> pub;
-	
+
 	ConnectedNode node;
-	
+
 	Server server;
 
 	@Override
@@ -81,24 +82,24 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * Counter for marker IDs
 	 */
 	private static int id = 0;
-	
+
 	/**
 	 * Mapping of TF name to trajectory marker names.
 	 * E.g., "/RightHand" -> "/RightHand"
 	 */
 	protected Map<String, List<String>> trajectories;
-	
+
 	/**
 	 * Stores the set of joints which are available from the XSens motion
 	 * capturing suite.
 	 */
 	private Map<String, HumanSkeleton> humanSkeletons;
-	
+
 	/**
 	 * Logger of ROS node.
 	 */
 	private Log log;
-	
+
 	/**
 	 * Constructor. Starts the marker publisher in a parallel thread.
 	 */
@@ -117,6 +118,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 		node = connectedNode;
 		pub = connectedNode.newPublisher("/visualization_marker_array", visualization_msgs.MarkerArray._TYPE);
 		log = connectedNode.getLog();
+
 	}
 
 	/**
@@ -126,8 +128,13 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @param timepoint  OWL identifier of a timepoint instance
 	 */
 	public void addObject(String identifier, String timepoint) {
-		addMarker(identifier, timepoint);
-		publishMarkers();
+		try {
+			addMarker(identifier, timepoint);
+			publishMarkers();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 
@@ -140,14 +147,19 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 */
 	public void addObjectWithChildren(String identifier, String timepoint) {
 
-		// add this object
-		addMarker(identifier, timepoint);
+		try {
+			// add this object
+			addMarker(identifier, timepoint);
 
-		// read children and add them too
-		for(String child : readChildren(identifier))
-			addMarker(child, timepoint);
+			// read children and add them too
+			for(String child : readChildren(identifier))
+				addMarker(child, timepoint);
 
-		publishMarkers();
+			publishMarkers();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 
@@ -157,10 +169,15 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @param identifier OWL identifier of an object instance
 	 */
 	public void removeObject(String identifier) {
-		// remove the object from the list
-		synchronized (markers) {
-			eraseMarker(identifier);
+		try {
+			// remove the object from the list
+			synchronized (markers) {
+				eraseMarker(identifier);
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
+
 	}
 
 	/**
@@ -183,6 +200,11 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * Remove all objects from the visualization
 	 */
 	public void clear() {
+
+		// wait for node to be ready
+		waitForNode();
+		
+		
 		final MarkerArray arr = pub.newMessage();
 		synchronized (markersCache) {
 			for(Marker m : markersCache.values()) {
@@ -212,7 +234,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	public void highlight(String identifier) {
 		highlight(identifier, 200, 0, 0, 255);
 	}
-	
+
 	/**
 	 * Highlight the object 'identifier' in 'color'
 	 *
@@ -222,11 +244,11 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 */
 	public void highlight(String identifier, String color) {
 		int col = Integer.valueOf(color, 16);
-		
+
 		int r = (col & 0xff0000) >> 16;
 		int g = (col & 0x00ff00) >> 8;
 		int b = (col & 0x0000ff);
-		
+
 		highlight(identifier, r, g, b, 255);
 	}
 
@@ -242,6 +264,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @param a Alpha value (0--255)
 	 */
 	public void highlight(String identifier, int r, int g, int b, int a) {
+		try {
 		boolean success = __highlight__(identifier, r, g, b, a);
 		// Try to highlight trajectory
 		final List<String> traj = trajectories.get(identifier);
@@ -256,8 +279,12 @@ public class MarkerVisualization extends AbstractNodeMain {
 		else {
 			log.warn("Unable to find marker for identifier '" + identifier + "'.");
 		}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
 	}
-	
+
 	boolean __highlight__(String identifier, int r, int g, int b, int a) {
 		final Marker m = markersCache.get(identifier);
 		if(m==null) return false;
@@ -302,14 +329,14 @@ public class MarkerVisualization extends AbstractNodeMain {
 			log.warn("Unable to find marker for identifier '" + identifier + "'.");
 		}
 	}
-	
+
 	public boolean __removeHighlight__(String identifier) {
 		final Marker m = markersCache.get(identifier);
 		if(m==null) return false;
-		
+
 		final float[] col = highlighted.get(identifier);
 		if(col==null) return false;
-		
+
 		synchronized (markers) {
 			// Set default color
 			m.getColor().setR(col[0]);
@@ -321,7 +348,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 		synchronized (highlighted) {
 			highlighted.remove(identifier);
 		}
-		
+
 		return true;
 	}
 
@@ -374,7 +401,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	public void highlightWithChildren(String identifier) {
 		highlightWithChildren(identifier, HTML_RED);
 	}
-	
+
 	/**
 	 * Highlight the object 'identifier' and its children in the given color
 	 *
@@ -392,7 +419,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 		}
 		publishMarkers();
 	}
-	
+
 	/**
 	 * Show trajectory in visualization canvas.
 	 *
@@ -405,7 +432,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	public void showTrajectory(String tflink, String starttime, String endtime, double interval, int markertype) {
 		String identifier, formattedTime;
 		String tflink_ = (tflink.startsWith("/") ? tflink : "/"+tflink);
-		
+
 		double t0 = parseTime_d(starttime);
 		double t1 = parseTime_d(endtime);
 
@@ -424,7 +451,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 			// add marker to map
 			identifier = tflink_ + formattedTime;
-			
+
 			out.add(identifier);
 			synchronized (markers) {
 				markers.put(identifier, m);
@@ -436,7 +463,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 		synchronized (trajectories) {
 			trajectories.put(tflink_, out);
 		}
-		
+
 		publishMarkers();
 	}
 	/**
@@ -450,7 +477,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	public void showTrajectory(String tflink, String starttime, String endtime, double interval) {
 		showTrajectory(tflink, starttime, endtime, interval, Marker.ARROW);
 	}
-	
+
 	/**
 	 * @param tflink The name of the TF frame
 	 * @return Array of marker identifier that correspond to a TF frame
@@ -465,7 +492,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 			return out.toArray(new String[out.size()]);
 		}
 	}
-	
+
 	/**
 	 * @param tflink The name of the TF frame
 	 * @param starttime Returned marker identifiers must correspond to a later time
@@ -498,14 +525,18 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @param tflink TF identifier
 	 */
 	public void removeTrajectory(String tflink) {
+		
+		// wait for node to be ready
+		waitForNode();
+		
 		final List<String> traj = trajectories.get(tflink);
 		if(traj == null) {
 			log.warn("Unable to find trajectory for identifier '" + tflink + "'.");
 			return;
 		}
-		
+
 		final MarkerArray arr = pub.newMessage();
-		
+
 		for(final String identifier : traj) {
 			final Marker m = markersCache.get(identifier);
 			if(m==null) {
@@ -519,7 +550,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 		synchronized (trajectories) {
 			trajectories.remove(tflink);
 		}
-			
+
 		pub.publish(arr);
 	}
 
@@ -534,8 +565,12 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @param tfSuffix Suffix used for TF frames
 	 */
 	public void addHumanPose(String humanIndividual, String timepoint, int humanId, String tfSuffix) {
-		long t0 = System.currentTimeMillis();
 		
+		// wait for node to be ready
+		waitForNode();
+		
+		long t0 = System.currentTimeMillis();
+
 		// Lookup skeletal structure
 		final HumanSkeleton skeleton;
 		try {
@@ -558,7 +593,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 					log.warn("Unable to create sphere marker for '" + sourceLink.sourceFrame + "'.");
 				}
 				index += 1;
-				
+
 				for(String conn : sourceLink.succeeding) {
 					final HumanSkeleton.Link targetLink = skeleton.getLink(conn);
 					if(targetLink==null) {
@@ -566,7 +601,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 						continue;
 					}
 					final HumanSkeleton.StampedLink sl1 = new HumanSkeleton.StampedLink(targetLink,time,humanId,tfSuffix);
-					
+
 					if(!addHumanMarker(skeleton.createCylinderMarker(node,sl0,sl1),index,humanId)) {
 						log.warn("Unable to create cylinder marker between '" +
 								sourceLink.sourceFrame + "' and '" + conn + "'.");
@@ -579,12 +614,12 @@ public class MarkerVisualization extends AbstractNodeMain {
 			log.warn("Failed to add markers for human skeleton.", exc);
 			return;
 		}
-		
+
 		publishMarkers();
-		
+
 		log.info("addHumanPose took " + (System.currentTimeMillis()-t0) + " ms.");
 	}
-	
+
 	HumanSkeleton getHumanSkeleton(String humanIndividualName) {
 		HumanSkeleton out = humanSkeletons.get(humanIndividualName);
 		if(out==null) {
@@ -599,10 +634,14 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @param id the id of the stick-man
 	 */
 	public void removeHumanPose(int id) {
+		
+		// wait for node to be ready
+		waitForNode();
+		
 		final String ns = HumanSkeleton.getHumanMarkerNs(id);
 		final List<String> toRemove = new LinkedList<String>();
 		final MarkerArray arr = pub.newMessage();
-		
+
 		synchronized (markersCache) {
 			for(Entry<String, Marker> e : markersCache.entrySet()) {
 				if(e.getValue().getNs().equals(ns)) {
@@ -613,7 +652,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 			}
 			for(String x : toRemove) markersCache.remove(x);
 		}
-		
+
 		pub.publish(arr);
 	}
 
@@ -627,14 +666,21 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * it to the visualization_marker_array topic.
 	 */
 	public void publishMarkers() {
-		synchronized (markers) {
-			MarkerArray arr = pub.newMessage();
+		try {
+			// wait for node to be ready
+			waitForNode();
 
-			for(Marker mrk : markers.values()) {
-				arr.getMarkers().add(mrk);
+			synchronized (markers) {
+				MarkerArray arr = pub.newMessage();
+
+				for(Marker mrk : markers.values()) {
+					arr.getMarkers().add(mrk);
+				}
+				pub.publish(arr);
+				markers.clear();
 			}
-			pub.publish(arr);
-			markers.clear();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -658,11 +704,14 @@ public class MarkerVisualization extends AbstractNodeMain {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * @return a marker that belongs to the 'knowrob_vis' namespace
 	 */
 	Marker createMarker() {
+		
+		waitForNode();
+		
 		Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
 		m.getHeader().setFrameId("/map");
 		m.getHeader().setStamp(node.getCurrentTime());
@@ -676,7 +725,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 		m.getColor().setA(1.0f);
 		return m;
 	}
-	
+
 	/**
 	 * @param identifier OWL identifier of an individual
 	 * @return true if blacklisted
@@ -684,7 +733,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	boolean isBlackListed(String identifier) {
 		HashMap<String, Vector<String>> blk = PrologInterface.executeQuery(
 				"owl_individual_of('"+ identifier + "', 'http://knowrob.org/kb/srdl2-comp.owl#UrdfJoint') ;" +
-				"owl_individual_of('"+ identifier + "', 'http://knowrob.org/kb/knowrob.owl#RoomInAConstruction')");
+						"owl_individual_of('"+ identifier + "', 'http://knowrob.org/kb/knowrob.owl#RoomInAConstruction')");
 		return blk!=null;
 	}
 
@@ -748,8 +797,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 			// read object dimensions if available
 			HashMap<String, Vector<String>> res = PrologInterface.executeQuery(
 					"rdf_has('"+identifier+"', knowrob:depthOfObject,  literal(type(_, D))), " +
-					"rdf_has('"+identifier+"', knowrob:widthOfObject,  literal(type(_, W))), " +
-					"rdf_has('"+identifier+"', knowrob:heightOfObject, literal(type(_, H)))");
+							"rdf_has('"+identifier+"', knowrob:widthOfObject,  literal(type(_, W))), " +
+							"rdf_has('"+identifier+"', knowrob:heightOfObject, literal(type(_, H)))");
 
 			if (res!=null && res.get("D") != null && res.get("D").size() > 0 && res.get("D").get(0)!=null) {
 				m.getScale().setX(Double.valueOf(OWLThing.removeSingleQuotes(res.get("D").get(0))));
@@ -822,18 +871,18 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 */
 	Marker readLinkMarkerFromProlog(String link, String timepoint, int marker_type) {
 		final Marker m = createMarker();
-		
+
 		// Set marker size
 		m.getScale().setX(0.05);
 		m.getScale().setY(0.05);
 		m.getScale().setZ(0.05);
-		
+
 		// Set marker shape
 		if(marker_type >= 0 && marker_type <= 8)//validate markers
 			m.setType(marker_type);
 		else
 			m.setType(Marker.ARROW);
-		
+
 		// Lookup TF transform that corresponds to specified link
 		try {
 			StampedTransform tr = TFMemory.getInstance().lookupTransform("/map", link, parseTime(timepoint));
@@ -857,7 +906,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 		return m;
 	}
-	
+
 	/**
 	 * Read children of an object instance that are either linked
 	 * by the 'properPhysicalParts' property or (inversely) by the
@@ -886,8 +935,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 				// read all physical parts of all child objects
 				HashMap<String, Vector<String>> parts = PrologInterface.executeQuery(
 						"rdf_reachable("+p_i+", knowrob:properPhysicalParts, P);" +
-						"rdf_reachable("+p_i+", 'http://knowrob.org/kb/srdl2-comp.owl#subComponent', P);" +
-						"rdf_reachable("+p_i+", 'http://knowrob.org/kb/srdl2-comp.owl#successorInKinematicChain', P)");
+								"rdf_reachable("+p_i+", 'http://knowrob.org/kb/srdl2-comp.owl#subComponent', P);" +
+								"rdf_reachable("+p_i+", 'http://knowrob.org/kb/srdl2-comp.owl#successorInKinematicChain', P)");
 
 				if(parts != null && parts.get("P") != null) {
 					for(int j=0;j<parts.get("P").size();j++) {
@@ -898,7 +947,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 				}
 			}
 		}
-		
+
 		return children.toArray(new String[]{});
 	}
 
@@ -914,19 +963,19 @@ public class MarkerVisualization extends AbstractNodeMain {
 			m.setAction(Marker.DELETE);
 			arr.getMarkers().add(m);
 			pub.publish(arr);
-			
+
 			trajectories.remove(identifier);
 			highlighted.remove(identifier);
 			markersCache.remove(identifier);
 		}
 	}
-	
+
 	boolean addHumanMarker(Marker marker, int index, int id) {
 		if(marker!=null) {
 			final StringBuilder identifier = new StringBuilder();
 			identifier.append("human_").append(id).append('_').append(index);
 			marker.setId(index);
-			
+
 			synchronized (markers) {
 				markers.put(identifier.toString(), marker);
 			}
@@ -939,7 +988,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Parses String with common time format 'timepoint_%d'
 	 * and returns a Time object.
@@ -968,31 +1017,31 @@ public class MarkerVisualization extends AbstractNodeMain {
 	/////////////////
 
 	public void startWebServer(int port) {
-		
-        server = new Server(port);
-        
-        ResourceHandler resource_handler = new ResourceHandler();
-        
-        resource_handler.setDirectoriesListed(true);
-        resource_handler.setWelcomeFiles(new String[]{ "index.html", "robohow.html" });
-        resource_handler.setResourceBase(RosUtilities.rospackFind("knowrob_vis") + "/html");
- 
-        DefaultHandler def = new DefaultHandler();
-        def.setServeIcon(false);
-        
-        HandlerList handlers = new HandlerList();
-        handlers.setHandlers(new Handler[] { resource_handler,  def});
-        server.setHandler(handlers);
- 
-        try {
+
+		server = new Server(port);
+
+		ResourceHandler resource_handler = new ResourceHandler();
+
+		resource_handler.setDirectoriesListed(true);
+		resource_handler.setWelcomeFiles(new String[]{ "index.html", "robohow.html" });
+		resource_handler.setResourceBase(RosUtilities.rospackFind("knowrob_vis") + "/html");
+
+		DefaultHandler def = new DefaultHandler();
+		def.setServeIcon(false);
+
+		HandlerList handlers = new HandlerList();
+		handlers.setHandlers(new Handler[] { resource_handler,  def});
+		server.setHandler(handlers);
+
+		try {
 			server.start();
-//	        server.join();
+			//	        server.join();
 		}
-        catch (Exception e) {
+		catch (Exception e) {
 			log.warn("Unable to start knowrob_vis server.", e);
 		}
 	}
-	
+
 	public static class MarkerVisualizationMain extends MarkerVisualization {
 		public MarkerVisualizationMain() {
 			super();
@@ -1003,9 +1052,23 @@ public class MarkerVisualization extends AbstractNodeMain {
 		}
 	}
 	
+	
+	private void waitForNode() {
+	
+		// wait for node to be ready
+		try {
+			while(node == null || pub == null) {
+				Thread.sleep(200);
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+
 	public static void main(String args[]) {
 		//MarkerVisualization vis = new MarkerVisualizationMain();
-		
+
 		//		MarkerVisualization vis = new MarkerVisualization();
 		//		vis.addObjectWithChildren("http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0", "http://knowrob.org/kb/knowrob.owl#timepoint_1377766542");
 		//		vis.highlight("http://knowrob.org/kb/knowrob.owl#Refrigerator67", true, 150, 0, 0, 180);
