@@ -102,15 +102,17 @@
 %
 % Launch the visualization canvas
 %
-:- assert(v_canvas(fail)).
 visualisation_canvas :-
-    v_canvas(fail),
+  visualisation_canvas(_).
+  
+visualisation_canvas(Canvas) :-
+    (\+ current_predicate(v_canvas, _)),
     jpl_new('org.knowrob.vis.MarkerVisualization', [], Canvas),
     jpl_list_to_array(['org.knowrob.vis.MarkerVisualization'], Arr),
     jpl_call('org.knowrob.utils.ros.RosUtilities', runRosjavaNode, [Canvas, Arr], _),
-    retract(v_canvas(fail)),
     assert(v_canvas(Canvas)),!.
 visualisation_canvas(Canvas) :-
+    current_predicate(v_canvas, _),
     v_canvas(Canvas).
 
 
@@ -119,7 +121,7 @@ visualisation_canvas(Canvas) :-
 % Completely clears the scene
 %
 clear_canvas :-
-    v_canvas(Canvas),
+    visualisation_canvas(Canvas),
     jpl_call(Canvas, 'clear', [], _).
 
 
@@ -147,7 +149,7 @@ add_object(Identifier) :-
 % @param Identifier Object identifier, eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
 %
 add_object(Identifier, Time) :-
-    v_canvas(Canvas),
+    visualisation_canvas(Canvas),
     jpl_call(Canvas, 'addObject', [Identifier, Time], _).
 
 
@@ -172,7 +174,7 @@ add_object_with_children(Identifier) :-
 % @param Identifier eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
 %
 add_object_with_children(Identifier, Time) :-
-    v_canvas(Canvas),
+    visualisation_canvas(Canvas),
     jpl_call(Canvas, 'addObjectWithChildren', [Identifier, Time], _).
 
 
@@ -183,7 +185,7 @@ add_object_with_children(Identifier, Time) :-
 % @param Identifier Object identifier, eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
 %
 remove_object(Identifier) :-
-    v_canvas(Canvas),
+    visualisation_canvas(Canvas),
     jpl_call(Canvas, 'removeObject', [Identifier], _).
 
 
@@ -195,7 +197,7 @@ remove_object(Identifier) :-
 % @param Identifier eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
 %
 remove_object_with_children(Identifier) :-
-    v_canvas(Canvas),
+    visualisation_canvas(Canvas),
     jpl_call(Canvas, 'removeObjectWithChildren', [Identifier], _).
 
 
@@ -219,7 +221,7 @@ add_trajectory(Link, Starttime, Endtime, Interval) :-
   add_trajectory(Link, Starttime, Endtime, Interval, 0).
 
 add_trajectory(Link, Starttime, Endtime, Interval, Markertype) :-
-    v_canvas(Canvas),
+    visualisation_canvas(Canvas),
 
     ((rdf_has(Link, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(Tf)),
       atomic_list_concat(['/', Tf], TfLink)) ;
@@ -234,7 +236,7 @@ add_trajectory(Link, Starttime, Endtime, Interval, Markertype) :-
 % @param Link     Tf identifier of the link for which the trajectory is to be removed
 % 
 remove_trajectory(Link) :-
-    v_canvas(Canvas),
+    visualisation_canvas(Canvas),
     
     ((rdf_has(Link, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(Tf)),
       atomic_list_concat(['/', Tf], TfLink)) ;
@@ -258,13 +260,13 @@ remove_trajectory(Link) :-
 % @param Timepoint  Time stamp identifier of the pose
 %
 add_human_pose(Human, Timepoint) :-
-    v_canvas(Canvas),
+    visualisation_canvas(Canvas),
     jpl_call(Canvas, 'addHumanPose', [Human,Timepoint,0,''], _).
 add_human_pose(Human, Id, Timepoint) :-
-    v_canvas(Canvas),
+    visualisation_canvas(Canvas),
     jpl_call(Canvas, 'addHumanPose', [Human,Timepoint,Id,''], _).
 add_human_pose(Human, Id, Timepoint, Prefix) :-
-    v_canvas(Canvas),
+    visualisation_canvas(Canvas),
     jpl_call(Canvas, 'addHumanPose', [Human,Timepoint,Id,Prefix], _).
 
 %% remove_human_pose() is det.
@@ -272,10 +274,10 @@ add_human_pose(Human, Id, Timepoint, Prefix) :-
 % Removes human pose visualizations from the visualization canvas.
 %
 remove_human_pose :-
-    v_canvas(Canvas),
+    visualisation_canvas(Canvas),
     jpl_call(Canvas, 'removeHumanPose', [0], _).
 remove_human_pose(Id) :-
-    v_canvas(Canvas),
+    visualisation_canvas(Canvas),
     jpl_call(Canvas, 'removeHumanPose', [Id], _).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -307,19 +309,19 @@ remove_human_pose(Id) :-
 %
 
 highlight_object(Identifier) :-
-    v_canvas(Canvas),
+    visualisation_canvas(Canvas),
     jpl_call(Canvas, 'highlight', [Identifier], _).
 
 highlight_object(Identifier, Color) :-
-    v_canvas(Canvas),
+    visualisation_canvas(Canvas),
     jpl_call(Canvas, 'highlight', [Identifier, Color], _).
 
 highlight_object(Identifier, R, B, G, Prob) :-
-    v_canvas(Canvas),
+    visualisation_canvas(Canvas),
     jpl_call(Canvas, 'highlight', [Identifier, R, B, G, Prob], _).
 
 highlight_trajectory(Link, Starttime, Endtime, Color) :-
-    v_canvas(Canvas),
+    visualisation_canvas(Canvas),
 
     ((rdf_has(Link, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(Tf)),
       atomic_list_concat(['/', Tf], TfLink)) ;
@@ -334,7 +336,7 @@ highlight_trajectory(Link, Starttime, Endtime, Color) :-
     highlight_object(Marker, Color).
 
 remove_highlight(Identifier) :-
-    v_canvas(Canvas),
+    visualisation_canvas(Canvas),
     jpl_call(Canvas, 'removeHighlight', [Identifier], _).
 
 
@@ -353,15 +355,15 @@ remove_highlight(Identifier) :-
 %
 
 highlight_object_with_children(Identifier) :-
-    v_canvas(Canvas),
+    visualisation_canvas(Canvas),
     jpl_call(Canvas, 'highlightWithChildren', [Identifier], _).
 
 highlight_object_with_children(Identifier, Color) :-
-    v_canvas(Canvas),
+    visualisation_canvas(Canvas),
     jpl_call(Canvas, 'highlightWithChildren', [Identifier, Color], _).
 
 remove_highlight_with_children(Identifier) :-
-    v_canvas(Canvas),
+    visualisation_canvas(Canvas),
     jpl_call(Canvas, 'removeHighlightWithChildren', [Identifier], _).
 
 
@@ -371,7 +373,7 @@ remove_highlight_with_children(Identifier) :-
 % Reset all highlighted objects in the canvas.
 %
 reset_highlight :-
-    v_canvas(Canvas),
+    visualisation_canvas(Canvas),
     jpl_call(Canvas, 'clearHighlight', [], _).
 
 
