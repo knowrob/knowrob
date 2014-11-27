@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" media="all" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700|Oswald|Source+Code+Pro" />
+  <link rel="stylesheet" type="text/css" href="screen.css"/>
+
+  <script type="text/javascript" src="lib/ace/ace.js"></script>
+  
+  <script type="text/javascript" src="lib/ros/threejs/three.js"></script>
+  <script type="text/javascript" src="lib/ros/threejs/ColladaLoader.js"></script>
+  <script type="text/javascript" src="lib/ros/threejs/STLLoader.js"></script>
+  
+  <script type="text/javascript" src="lib/ros/Ros3D.js"></script>
+  <script type="text/javascript" src="lib/ros/ColladaAnimationCompress/ColladaLoader2.js"></script>
+  <script type="text/javascript" src="lib/ros/depthcloud/DepthCloud.js"></script>
+  <script type="text/javascript" src="lib/ros/EventEmitter2/eventemitter2.js"></script>
+  <script type="text/javascript" src="lib/ros/models/Arrow.js"></script>
+  <script type="text/javascript" src="lib/ros/models/Axes.js"></script>
+  <script type="text/javascript" src="lib/ros/models/Grid.js"></script>
+  <script type="text/javascript" src="lib/ros/models/MeshResource.js"></script>
+  <script type="text/javascript" src="lib/ros/models/TriangleList.js"></script>
+  <script type="text/javascript" src="lib/ros/interactivemarkers/InteractiveMarkerClient.js"></script>
+  <script type="text/javascript" src="lib/ros/interactivemarkers/InteractiveMarkerControl.js"></script>
+  <script type="text/javascript" src="lib/ros/interactivemarkers/InteractiveMarkerHandle.js"></script>
+  <script type="text/javascript" src="lib/ros/interactivemarkers/InteractiveMarker.js"></script>
+  <script type="text/javascript" src="lib/ros/interactivemarkers/InteractiveMarkerMenu.js"></script>
+  <script type="text/javascript" src="lib/ros/maps/OccupancyGridClient.js"></script>
+  <script type="text/javascript" src="lib/ros/maps/OccupancyGrid.js"></script>
+  <script type="text/javascript" src="lib/ros/markers/MarkerArrayClient.js"></script>
+  <script type="text/javascript" src="lib/ros/markers/MarkerClient.js"></script>
+  <script type="text/javascript" src="lib/ros/markers/Marker.js"></script>
+  <script type="text/javascript" src="lib/ros/roslibjs/roslib.js"></script>
+  <script type="text/javascript" src="lib/ros/urdf/UrdfClient.js"></script>
+  <script type="text/javascript" src="lib/ros/urdf/Urdf.js"></script>
+  <script type="text/javascript" src="lib/ros/visualization/Viewer.js"></script>
+  <script type="text/javascript" src="lib/ros/visualization/SceneNode.js"></script>
+  <script type="text/javascript" src="lib/ros/visualization/interaction/Highlighter.js"></script>
+  <script type="text/javascript" src="lib/ros/visualization/interaction/MouseHandler.js"></script>
+  <script type="text/javascript" src="lib/ros/visualization/interaction/OrbitControls.js"></script>
+  <script type="text/javascript" src="lib/ros/json_prolog.js"></script>
+  
+  <script type="text/javascript" src="lib/d3/d3.v3.min.js"></script>
+  <script type="text/javascript" src="lib/d3/d3-tip.js"></script>
+  
+  <script type="text/javascript" src="lib/chart/google-jsapi.js"></script>
+  
+  <script type="text/javascript" src="lib/chart/DonutChart.js"></script>
+  <script type="text/javascript" src="lib/chart/BarChart.js"></script>
+  <script type="text/javascript" src="lib/chart/TreeDiagram.js"></script>
+  <script type="text/javascript" src="lib/chart/Timeline.js"></script>
+  <script type="text/javascript" src="lib/chart/DataVisClient.js"></script>
+  <script type="text/javascript" src="lib/chart/array-nonstandard.js"></script>
+  <script type="text/javascript" src="lib/chart/Control.js"></script>
+  
+  <script type="text/javascript" src="lib/designator/desig.js"></script>
+
+  <script type="text/javascript" type="text/javascript">
+
+    // global ROS handle
+    var ros;
+    
+    //global jsonprolog handle
+    var prolog;
+    
+    
+    function init() {
+    
+      // Connect to ROS.
+      ros = new ROSLIB.Ros({
+        url : 'ws://localhost:9090'
+      });
+
+      // Create the main viewer.
+      var viewer = new ROS3D.Viewer({
+        divID : 'markers',
+        width : 1000,
+        height : 500,
+        antialias : true,
+        background : '#ffffff'
+      });
+      
+      viewer.addObject(new ROS3D.Grid());
+
+      // Setup a client to listen to TFs.
+      var tfClient = new ROSLIB.TFClient({
+        ros : ros,
+        angularThres : 0.01,
+        transThres : 0.01,
+        rate : 10.0,
+        fixedFrame : '/my_frame'
+      });
+
+      // Setup the marker client.
+      var markerClient = new ROS3D.MarkerClient({
+        ros : ros,
+        tfClient : tfClient,
+        topic : '/visualization_marker',
+        rootObject : viewer.scene
+      });
+      
+      // Setup the marker array client.
+      var markerArrayClient = new ROS3D.MarkerArrayClient({
+        ros : ros,
+        tfClient : tfClient,
+        topic : '/visualization_marker_array',
+        rootObject : viewer.scene,
+        markerClient : markerClient
+      });
+
+      var desig_listener = new ROSLIB.Topic({
+        ros : ros,
+        name : '/logged_designators',
+        messageType : 'designator_integration_msgs/Designator'
+      });
+
+      desig_listener.subscribe(function(message) {
+        document.getElementById("designator").innerHTML=format_designator(message.description, "", 0, 0);
+      });
+
+      var img_listener = new ROSLIB.Topic({
+        ros : ros,
+        name : '/logged_images',
+        messageType : 'std_msgs/String'
+      });
+
+      img_listener.subscribe(function(message) {
+        console.log(message);
+        document.getElementById("mjpeg").innerHTML='<img src="/'+message.data+'" />';
+      });
+      
+
+      var options = {
+        ros: ros,
+        containerId: '#chart',
+        topic: 'data_vis_msgs',
+        //width: 500,//210,
+        //height: 500//210
+      };
+      var dataVisClient = new DataVisClient(options);
+
+      // fill example qurey select
+      populateQuerySelect('examplequery', "queriesForRobohow.json");
+
+      master = new Control({
+        ros: ros,
+        sliderHigh: "slider1",
+        initButton: "controlInitButton",
+        startButton: "startButton",
+        stopButton: "stopButton",
+        timeDisplay: "currentTime"
+      });
+    };
+
+
+    function queryProlog(query) {
+
+      var history = ace.edit("history");
+      var q = query.getValue();
+
+      if (q.substr(q.length - 1) == ".") {
+        q = q.substr(0, q.length - 1);
+
+        if (prolog != null && prolog.finished == false) {
+          prolog.finishClient();
+        }
+
+        prolog = new JsonProlog(ros, {});
+
+
+        history.setValue(history.getValue() + "\n\n?- " + q +  ".\n", -1);
+
+        prolog.jsonQuery(q, function(result) {
+            history.setValue(history.getValue() + result, -1);
+        });
+        history.gotoLine(history.session.getLength());
+
+        query.setValue("");
+
+      } else {
+        if (prolog != null && prolog.finished == false) {
+          prolog.finishClient();
+        }
+      }
+    };
+
+    function nextQueryProlog() {
+
+      var history = ace.edit("history");
+      prolog.nextQuery(function(result) {
+            history.setValue(history.getValue() + result, -1);
+        });
+
+        history.gotoLine(history.session.getLength());
+    };
+
+
+    // example query selection stuff
+    // -------------------------------------
+
+    // fill the select with json data from url
+    function populateQuerySelect(id, url) {
+
+      // url must point to a json-file containing an array named "query" with
+      // the query strings to display in the select
+      var request = new XMLHttpRequest
+      request.open("GET", url, false);
+      request.send(null);
+
+      var querylist = JSON.parse(request.responseText);
+
+      var select = document.getElementById(id);
+
+      for (var i = 0; i < querylist.query.length; i++) {
+        var opt = document.createElement('option');
+        opt.value = querylist.query[i].q;
+        opt.innerHTML = querylist.query[i].text;
+        select.appendChild(opt);
+      }
+    }
+
+    // append the selected query to the user_query form
+    function addSelectedToQueryform(selectid) {
+      var select = document.getElementById(selectid);
+      setQueryValue(select.options[select.selectedIndex].value);
+    }
+
+    // set the value of the query editor and move the cursor to the end
+    function setQueryValue(val){
+      user_query.setValue(val, -1);
+      user_query.focus();
+      session = user_query.getSession();
+      count = session.getLength();
+      user_query.gotoLine(count, session.getLine(count-1).length);
+    }
+
+    // hook for links of class "show_code" that pastes the content of the
+    // previous code block into the query field
+    $( document ).ready(function() {
+      $( "a.show_code" ).click(function( event ) {
+        setQueryValue( $(this).closest("pre + *").prev().find('code').html() );
+        event.preventDefault();
+      });
+    });
+
+    function setupHistoryField() {
+        var history = ace.edit("history");
+        history.setTheme("ace/theme/solarized_light");
+        history.getSession().setMode("ace/mode/prolog");
+        history.getSession().setUseWrapMode(true);
+        history.setOptions({
+            readOnly: true,
+            showGutter: false,
+            printMarginColumn: false,
+            highlightActiveLine: false,
+            highlightGutterLine: false
+        });
+//         history.renderer.$cursorLayer.element.style.opacity=0;
+
+        return history;
+    }
+
+    function setupQueryField() {
+
+        var user_query = ace.edit("user_query");
+        user_query.setTheme("ace/theme/solarized_light");
+        user_query.getSession().setMode("ace/mode/prolog");
+        user_query.getSession().setUseWrapMode(true);
+        user_query.setOptions({
+            showGutter: false,
+            printMarginColumn: false,
+            highlightActiveLine: false,
+            highlightGutterLine: false
+        });
+        user_query.commands.addCommand({
+            name: 'send_query',
+            bindKey: {win: 'Ctrl-Enter',  mac: 'Command-Enter'},
+            exec: function(editor) {
+                queryProlog(user_query);
+            },
+            readOnly: false
+        });
+        user_query.commands.addCommand({
+            name: 'next_result',
+            bindKey: {win: 'Ctrl-;',  mac: 'Command-;'},
+            exec: function(editor) {
+                nextQueryProlog();
+            },
+            readOnly: false
+        });
+
+        return user_query;
+    }
+</script>
+</head>
+
+<body onload="init()" style="position:relative; left:20px;">
+  <h1>KnowRob Web Visualization</h1>
+
+  
+  <div id="markers"    style="position:absolute; left:0px;  top:75px; width:1000px; border: 1px black solid; "></div>
+
+  
+  
+</body>
+</html>
