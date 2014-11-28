@@ -6,5 +6,4 @@
 - git: {local-name: stacks/knowrob, uri: 'https://github.com/knowrob/knowrob.git', version: indigo-devel }
 - git: {local-name: stacks/knowrob_addons, uri: 'https://github.com/knowrob/knowrob_addons.git', version: indigo-devel }
 - git: {local-name: stacks/knowrob_dev, uri: 'https://github.com/code-iai/knowrob_dev.git', version: indigo-devel }
-- git: {local-name: stacks/knowrob_gui, uri: 'https://github.com/knowrob/knowrob_gui.git'}
-- git: {local-name: stacks/knowrob_human, uri: 'https://github.com/knowrob/knowrob_human.git'}
+- git: {local-name: stacks/knowrob_gui, uri: 'https://github.com/knowrob/knowrob_gui.git', version: indigo-devel }
