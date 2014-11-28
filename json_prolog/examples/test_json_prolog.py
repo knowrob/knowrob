@@ -3,7 +3,7 @@
 import roslib; roslib.load_manifest('json_prolog')
 
 import rospy
-import json_prolog
+from json_prolog import json_prolog
 
 if __name__ == '__main__':
     rospy.init_node('test_json_prolog')
