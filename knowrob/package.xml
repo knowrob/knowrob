@@ -19,6 +19,16 @@
   
   <buildtool_depend>catkin</buildtool_depend>
 
+  <build_depend>swi-prolog</build_depend>
+  <build_depend>swi-prolog-java</build_depend>
+  <build_depend>libjson-java</build_depend>
+  <build_depend>libjson-glib</build_depend>
+  
+  <run_depend>swi-prolog</run_depend>
+  <run_depend>swi-prolog-java</run_depend>
+  <run_depend>libjson-java</run_depend>
+  <run_depend>libjson-glib</run_depend>
+  
   <run_depend>comp_orgprinciples</run_depend>
   <run_depend>comp_spatial</run_depend>
   <run_depend>comp_temporal</run_depend>
