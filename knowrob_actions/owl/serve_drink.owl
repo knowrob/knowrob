@@ -11,7 +11,6 @@
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
     <!ENTITY knowrob "http://knowrob.org/kb/knowrob.owl#" >
-    <!ENTITY roboearth "http://www.roboearth.org/kb/roboearth.owl#" >
     <!ENTITY serve_drink "http://www.roboearth.org/kb/serve_drink.owl#" >
 ]>
 
@@ -26,7 +25,7 @@
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#">
     <owl:Ontology rdf:about="">
-      <owl:imports rdf:resource="package://knowrob_common/owl/roboearth.owl"/>
+      <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
     </owl:Ontology>
 
 
@@ -106,7 +105,7 @@
     ##################################################### -->
 
     <owl:Class rdf:ID="ServeADrink">
-        <rdfs:subClassOf rdf:resource="&roboearth;ServingFoodOrDrink"/>
+        <rdfs:subClassOf rdf:resource="&knowrob;ServingFoodOrDrink"/>
         <rdfs:label rdf:datatype="&xsd;string">serve a drink</rdfs:label>
         <rdfs:subClassOf>
             <owl:Class>
@@ -232,7 +231,7 @@
 
 
     <owl:Class rdf:ID="MoveBaseToGraspPose">
-        <rdfs:subClassOf rdf:resource="&roboearth;Translation-LocationChange"/>
+        <rdfs:subClassOf rdf:resource="&knowrob;Translation-LocationChange"/>
 
         <rdfs:subClassOf>
           <owl:Class>
@@ -248,7 +247,7 @@
 
 
     <owl:Class rdf:ID="MoveBaseToHandoverPose">
-        <rdfs:subClassOf rdf:resource="&roboearth;Translation-LocationChange"/>
+        <rdfs:subClassOf rdf:resource="&knowrob;Translation-LocationChange"/>
         <rdfs:subClassOf>
           <owl:Class>
             <owl:intersectionOf rdf:parseType="Collection">
@@ -263,7 +262,7 @@
 
 
     <owl:Class rdf:ID="HandoverObject">
-        <rdfs:subClassOf rdf:resource="&roboearth;Reaching"/>
+        <rdfs:subClassOf rdf:resource="&knowrob;Reaching"/>
         <rdfs:subClassOf>
           <owl:Class>
             <owl:intersectionOf rdf:parseType="Collection">
@@ -277,7 +276,7 @@
     </owl:Class>
 
     <owl:Class rdf:ID="OpenGripperForHandover">
-        <rdfs:subClassOf rdf:resource="&roboearth;OpeningAGripper"/>
+        <rdfs:subClassOf rdf:resource="&knowrob;OpeningAGripper"/>
         <rdfs:subClassOf>
             <owl:Class>
                 <owl:intersectionOf rdf:parseType="Collection">
@@ -298,7 +297,7 @@
 
 
     <owl:Class rdf:ID="GraspObjectWithRightGripper">
-        <rdfs:subClassOf rdf:resource="&roboearth;GraspingSomething"/>
+        <rdfs:subClassOf rdf:resource="&knowrob;GraspingSomething"/>
         <rdfs:label rdf:datatype="&xsd;string">grasping a bottle</rdfs:label>
         <rdfs:subClassOf>
             <owl:Class>
@@ -476,7 +475,7 @@
 
 
     <owl:Class rdf:ID="ReachToApproachPose">
-        <rdfs:subClassOf rdf:resource="&roboearth;Reaching"/>
+        <rdfs:subClassOf rdf:resource="&knowrob;Reaching"/>
         <rdfs:subClassOf>
             <owl:Class>
                 <owl:intersectionOf rdf:parseType="Collection">
@@ -495,7 +494,7 @@
 
 
     <owl:Class rdf:ID="OpenGripperForGrasping">
-        <rdfs:subClassOf rdf:resource="&roboearth;OpeningAGripper"/>
+        <rdfs:subClassOf rdf:resource="&knowrob;OpeningAGripper"/>
         <rdfs:subClassOf>
             <owl:Class>
                 <owl:intersectionOf rdf:parseType="Collection">
@@ -510,7 +509,7 @@
 
 
     <owl:Class rdf:ID="ReachForObjectPose">
-        <rdfs:subClassOf rdf:resource="&roboearth;Reaching"/>
+        <rdfs:subClassOf rdf:resource="&knowrob;Reaching"/>
         <rdfs:subClassOf>
             <owl:Class>
                 <owl:intersectionOf rdf:parseType="Collection">
@@ -525,7 +524,7 @@
 
 
     <owl:Class rdf:ID="CloseGripperForGrasping">
-        <rdfs:subClassOf rdf:resource="&roboearth;ClosingAGripper"/>
+        <rdfs:subClassOf rdf:resource="&knowrob;ClosingAGripper"/>
         <rdfs:subClassOf>
           <owl:Class>
               <owl:intersectionOf rdf:parseType="Collection">
@@ -540,7 +539,7 @@
 
 
     <owl:Class rdf:ID="LiftObjectToApproachPose">
-        <rdfs:subClassOf rdf:resource="&roboearth;Reaching"/>
+        <rdfs:subClassOf rdf:resource="&knowrob;Reaching"/>
         <rdfs:subClassOf>
           <owl:Class>
             <owl:intersectionOf rdf:parseType="Collection">
@@ -555,7 +554,7 @@
 
 
     <owl:Class rdf:ID="ReachToParkingPose">
-        <rdfs:subClassOf rdf:resource="&roboearth;Reaching"/>
+        <rdfs:subClassOf rdf:resource="&knowrob;Reaching"/>
         <rdfs:subClassOf>
             <owl:Class>
                 <owl:intersectionOf rdf:parseType="Collection">

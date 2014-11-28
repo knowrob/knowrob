@@ -72,13 +72,13 @@
     <!-- =========================================== -->
 
 
-    <owl:NamedIndividual rdf:about="&baxter;baxter_robot1">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_baxter1">
         <rdf:type rdf:resource="&baxter;baxter"/>
         <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_base"/>
 
         <!-- Software components -->
-        <srdl2-comp:subComponent rdf:resource="&pr2;LeftArmController"/>
-        <srdl2-comp:subComponent rdf:resource="&pr2;RightArmController"/>
+        <srdl2-comp:subComponent rdf:resource="&baxter;LeftArmController"/>
+        <srdl2-comp:subComponent rdf:resource="&baxter;RightArmController"/>
     </owl:NamedIndividual>
 
 
@@ -88,50 +88,50 @@
     <!-- =========================================== -->
 
 
-    <owl:NamedIndividual rdf:about="&pr2;baxter_left_arm">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_arm">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
         <rdf:type rdf:resource="&srdl2-comp;ArmComponent"/>
         <rdf:type rdf:resource="&knowrob;LeftArm"/>
-        <srdl2-comp:baseLinkOfComposition rdf:resource="&pr2;baxter_left_upper_shoulder"/>
-        <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;baxter_left_wrist"/>
+        <srdl2-comp:baseLinkOfComposition rdf:resource="&baxter;baxter_left_upper_shoulder"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&baxter;baxter_left_wrist"/>
     </owl:NamedIndividual>
 
 
 
-    <owl:NamedIndividual rdf:about="&pr2;baxter_right_arm">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_arm">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
         <rdf:type rdf:resource="&srdl2-comp;ArmComponent"/>
         <rdf:type rdf:resource="&knowrob;RightArm"/>
-        <srdl2-comp:baseLinkOfComposition rdf:resource="&pr2;baxter_right_upper_shoulder"/>
-        <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;baxter_right_wrist"/>
+        <srdl2-comp:baseLinkOfComposition rdf:resource="&baxter;baxter_right_upper_shoulder"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&baxter;baxter_right_wrist"/>
     </owl:NamedIndividual>
 
 
 
-    <owl:NamedIndividual rdf:about="&pr2;baxter_l_gripper">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_l_gripper">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
         <rdf:type rdf:resource="&srdl2-comp;GripperComponent"/>
         <rdf:type rdf:resource="&knowrob;LeftHand"/>
-        <srdl2-comp:baseLinkOfComposition rdf:resource="&pr2;baxter_left_hand"/>
-        <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;baxter_left_gripper"/>
+        <srdl2-comp:baseLinkOfComposition rdf:resource="&baxter;baxter_left_hand"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&baxter;baxter_left_gripper"/>
     </owl:NamedIndividual>
 
 
 
-    <owl:NamedIndividual rdf:about="&pr2;baxter_r_gripper">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_r_gripper">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
         <rdf:type rdf:resource="&srdl2-comp;ArmComponent"/>
         <rdf:type rdf:resource="&knowrob;RightHand"/>
-        <srdl2-comp:baseLinkOfComposition rdf:resource="&pr2;baxter_right_hand"/>
-        <srdl2-comp:endLinkOfComposition rdf:resource="&pr2;baxter_right_gripper"/>
+        <srdl2-comp:baseLinkOfComposition rdf:resource="&baxter;baxter_right_hand"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&baxter;baxter_right_gripper"/>
     </owl:NamedIndividual>
 
 
-    <owl:NamedIndividual rdf:about="&pr2;LeftArmController">
+    <owl:NamedIndividual rdf:about="&baxter;LeftArmController">
         <rdf:type rdf:resource="&srdl2-comp;ArmMotionController"/>
     </owl:NamedIndividual>
 
-    <owl:NamedIndividual rdf:about="&pr2;RightArmController">
+    <owl:NamedIndividual rdf:about="&baxter;RightArmController">
         <rdf:type rdf:resource="&srdl2-comp;ArmMotionController"/>
     </owl:NamedIndividual>
 
@@ -143,29 +143,29 @@
     <!-- =========================================== -->
 
 
-    <!-- &robot;baxter_collision_head_1 -->
+    <!-- &baxter;baxter_collision_head_1 -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_collision_head_1">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_collision_head_1">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>collision_head_1</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_collision_head_link_1"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_collision_head_link_1"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_V2HD3OLu -->
+    <!-- &baxter;Proprioception_V2HD3OLu -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_V2HD3OLu">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_V2HD3OLu">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_9MNvXF3S"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_collision_head_1"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_9MNvXF3S"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_collision_head_1"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_9MNvXF3S -->
+    <!-- &baxter;RotationMatrix3D_9MNvXF3S -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_9MNvXF3S">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_9MNvXF3S">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
@@ -187,29 +187,29 @@
 
 
 
-    <!-- &robot;baxter_collision_head_2 -->
+    <!-- &baxter;baxter_collision_head_2 -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_collision_head_2">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_collision_head_2">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>collision_head_2</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_collision_head_link_2"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_collision_head_link_2"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_kMxuS9I4 -->
+    <!-- &baxter;Proprioception_kMxuS9I4 -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_kMxuS9I4">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_kMxuS9I4">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_4KuEGFjS"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_collision_head_2"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_4KuEGFjS"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_collision_head_2"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_4KuEGFjS -->
+    <!-- &baxter;RotationMatrix3D_4KuEGFjS -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_4KuEGFjS">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_4KuEGFjS">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
@@ -231,31 +231,31 @@
 
 
 
-    <!-- &robot;baxter_dummy -->
+    <!-- &baxter;baxter_dummy -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_dummy">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_dummy">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>dummy</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_dummyhead1"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_dummyhead1"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_gKeDn9Z4 -->
+    <!-- &baxter;Proprioception_gKeDn9Z4 -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_gKeDn9Z4">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_gKeDn9Z4">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_qKm7NDph"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_dummy"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_qKm7NDph"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_dummy"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_qKm7NDph -->
+    <!-- &baxter;RotationMatrix3D_qKm7NDph -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_qKm7NDph">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_qKm7NDph">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_kKXiUEj9"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_kKXiUEj9"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -276,29 +276,29 @@
 
 
 
-    <!-- &robot;baxter_torso_t0 -->
+    <!-- &baxter;baxter_torso_t0 -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_torso_t0">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_torso_t0">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>torso_t0</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_torso"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_torso"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_9ESVR4wZ -->
+    <!-- &baxter;Proprioception_9ESVR4wZ -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_9ESVR4wZ">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_9ESVR4wZ">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_nEhOXBUh"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_torso_t0"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_nEhOXBUh"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_torso_t0"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_nEhOXBUh -->
+    <!-- &baxter;RotationMatrix3D_nEhOXBUh -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_nEhOXBUh">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_nEhOXBUh">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
@@ -320,31 +320,31 @@
 
 
 
-    <!-- &robot;baxter_left_torso_itb_fixed -->
+    <!-- &baxter;baxter_left_torso_itb_fixed -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_torso_itb_fixed">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_torso_itb_fixed">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>left_torso_itb_fixed</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_left_torso_itb"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_left_torso_itb"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_mXtPQdQW -->
+    <!-- &baxter;Proprioception_mXtPQdQW -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_mXtPQdQW">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_mXtPQdQW">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_jSYXGBbf"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_left_torso_itb_fixed"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_jSYXGBbf"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_left_torso_itb_fixed"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_jSYXGBbf -->
+    <!-- &baxter;RotationMatrix3D_jSYXGBbf -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_jSYXGBbf">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_jSYXGBbf">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_nEhOXBUh"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_nEhOXBUh"/>
         <knowrob:m00 rdf:datatype="&xsd;double">-0.9999999957076562</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">9.265358966049026E-5</knowrob:m02>
@@ -365,31 +365,31 @@
 
 
 
-    <!-- &robot;baxter_right_torso_itb_fixed -->
+    <!-- &baxter;baxter_right_torso_itb_fixed -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_torso_itb_fixed">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_torso_itb_fixed">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>right_torso_itb_fixed</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_right_torso_itb"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_right_torso_itb"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_dRT8lbnS -->
+    <!-- &baxter;Proprioception_dRT8lbnS -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_dRT8lbnS">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_dRT8lbnS">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_vSVagAes"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_right_torso_itb_fixed"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_vSVagAes"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_right_torso_itb_fixed"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_vSVagAes -->
+    <!-- &baxter;RotationMatrix3D_vSVagAes -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_vSVagAes">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_vSVagAes">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_nEhOXBUh"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_nEhOXBUh"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -410,31 +410,31 @@
 
 
 
-    <!-- &robot;baxter_pedestal_fixed -->
+    <!-- &baxter;baxter_pedestal_fixed -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_pedestal_fixed">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_pedestal_fixed">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>pedestal_fixed</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_pedestal"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_pedestal"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_AOKzr0vg -->
+    <!-- &baxter;Proprioception_AOKzr0vg -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_AOKzr0vg">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_AOKzr0vg">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_oOd0bG3a"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_pedestal_fixed"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_oOd0bG3a"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_pedestal_fixed"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_oOd0bG3a -->
+    <!-- &baxter;RotationMatrix3D_oOd0bG3a -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_oOd0bG3a">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_oOd0bG3a">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_nEhOXBUh"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_nEhOXBUh"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -455,31 +455,31 @@
 
 
 
-    <!-- &robot;baxter_head_pan -->
+    <!-- &baxter;baxter_head_pan -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_head_pan">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_head_pan">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>head_pan</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_head"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_head"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_tux3JZuu -->
+    <!-- &baxter;Proprioception_tux3JZuu -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_tux3JZuu">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_tux3JZuu">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_kKXiUEj9"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_head_pan"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_kKXiUEj9"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_head_pan"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_kKXiUEj9 -->
+    <!-- &baxter;RotationMatrix3D_kKXiUEj9 -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_kKXiUEj9">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_kKXiUEj9">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_nEhOXBUh"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_nEhOXBUh"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -500,31 +500,31 @@
 
 
 
-    <!-- &robot;baxter_head_nod -->
+    <!-- &baxter;baxter_head_nod -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_head_nod">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_head_nod">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>head_nod</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_screen"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_screen"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_lqVkcW2s -->
+    <!-- &baxter;Proprioception_lqVkcW2s -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_lqVkcW2s">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_lqVkcW2s">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_wKRvuFll"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_head_nod"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_wKRvuFll"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_head_nod"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_wKRvuFll -->
+    <!-- &baxter;RotationMatrix3D_wKRvuFll -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_wKRvuFll">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_wKRvuFll">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_kKXiUEj9"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_kKXiUEj9"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-1.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -545,31 +545,31 @@
 
 
 
-    <!-- &robot;baxter_head_camera -->
+    <!-- &baxter;baxter_head_camera -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_head_camera">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_head_camera">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>head_camera</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_head_camera"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_head_camera"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_xpSAJV4E -->
+    <!-- &baxter;Proprioception_xpSAJV4E -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_xpSAJV4E">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_xpSAJV4E">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_lnlavsDx"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_head_camera"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_lnlavsDx"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_head_camera"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_lnlavsDx -->
+    <!-- &baxter;RotationMatrix3D_lnlavsDx -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_lnlavsDx">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_lnlavsDx">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_kKXiUEj9"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_kKXiUEj9"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-1.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -590,31 +590,31 @@
 
 
 
-    <!-- &robot;baxter_sonar_s0 -->
+    <!-- &baxter;baxter_sonar_s0 -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_sonar_s0">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_sonar_s0">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>sonar_s0</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_sonar_ring"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_sonar_ring"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_qAcwG3Sl -->
+    <!-- &baxter;Proprioception_qAcwG3Sl -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_qAcwG3Sl">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_qAcwG3Sl">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_hj5jesTv"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_sonar_s0"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_hj5jesTv"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_sonar_s0"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_hj5jesTv -->
+    <!-- &baxter;RotationMatrix3D_hj5jesTv -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_hj5jesTv">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_hj5jesTv">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_nEhOXBUh"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_nEhOXBUh"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -635,31 +635,31 @@
 
 
 
-    <!-- &robot;baxter_right_torso_arm_mount -->
+    <!-- &baxter;baxter_right_torso_arm_mount -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_torso_arm_mount">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_torso_arm_mount">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>right_torso_arm_mount</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_right_arm_mount"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_right_arm_mount"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_myTFq39l -->
+    <!-- &baxter;Proprioception_myTFq39l -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_myTFq39l">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_myTFq39l">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_sjZwMrWI"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_right_torso_arm_mount"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_sjZwMrWI"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_right_torso_arm_mount"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_sjZwMrWI -->
+    <!-- &baxter;RotationMatrix3D_sjZwMrWI -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_sjZwMrWI">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_sjZwMrWI">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_nEhOXBUh"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_nEhOXBUh"/>
         <knowrob:m00 rdf:datatype="&xsd;double">0.7071054825112363</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">0.7071080798594735</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -680,31 +680,31 @@
 
 
 
-    <!-- &robot;baxter_right_s0 -->
+    <!-- &baxter;baxter_right_s0 -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_s0">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_s0">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>right_s0</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_right_upper_shoulder"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_right_upper_shoulder"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_JyM0w1gI -->
+    <!-- &baxter;Proprioception_JyM0w1gI -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_JyM0w1gI">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_JyM0w1gI">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_qySkZyuq"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_right_s0"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_qySkZyuq"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_right_s0"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_qySkZyuq -->
+    <!-- &baxter;RotationMatrix3D_qySkZyuq -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_qySkZyuq">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_qySkZyuq">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_sjZwMrWI"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_sjZwMrWI"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -725,31 +725,31 @@
 
 
 
-    <!-- &robot;baxter_right_s1 -->
+    <!-- &baxter;baxter_right_s1 -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_s1">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_s1">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>right_s1</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_right_lower_shoulder"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_right_lower_shoulder"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_y0gLyPvW -->
+    <!-- &baxter;Proprioception_y0gLyPvW -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_y0gLyPvW">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_y0gLyPvW">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_it1Ssw2o"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_right_s1"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_it1Ssw2o"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_right_s1"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_it1Ssw2o -->
+    <!-- &baxter;RotationMatrix3D_it1Ssw2o -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_it1Ssw2o">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_it1Ssw2o">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_qySkZyuq"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_qySkZyuq"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -770,31 +770,31 @@
 
 
 
-    <!-- &robot;baxter_right_e0 -->
+    <!-- &baxter;baxter_right_e0 -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_e0">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_e0">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>right_e0</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_right_upper_elbow"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_right_upper_elbow"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_V09dENBk -->
+    <!-- &baxter;Proprioception_V09dENBk -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_V09dENBk">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_V09dENBk">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_trXR1v5z"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_right_e0"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_trXR1v5z"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_right_e0"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_trXR1v5z -->
+    <!-- &baxter;RotationMatrix3D_trXR1v5z -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_trXR1v5z">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_trXR1v5z">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_it1Ssw2o"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_it1Ssw2o"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-1.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -815,31 +815,31 @@
 
 
 
-    <!-- &robot;baxter_right_e0_fixed -->
+    <!-- &baxter;baxter_right_e0_fixed -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_e0_fixed">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_e0_fixed">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>right_e0_fixed</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_right_upper_elbow_visual"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_right_upper_elbow_visual"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_PlsbzUs3 -->
+    <!-- &baxter;Proprioception_PlsbzUs3 -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_PlsbzUs3">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_PlsbzUs3">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_n0Klhm3N"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_right_e0_fixed"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_n0Klhm3N"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_right_e0_fixed"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_n0Klhm3N -->
+    <!-- &baxter;RotationMatrix3D_n0Klhm3N -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_n0Klhm3N">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_n0Klhm3N">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_it1Ssw2o"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_it1Ssw2o"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-1.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -860,31 +860,31 @@
 
 
 
-    <!-- &robot;baxter_right_e1 -->
+    <!-- &baxter;baxter_right_e1 -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_e1">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_e1">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>right_e1</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_right_lower_elbow"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_right_lower_elbow"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_9h3LpSOo -->
+    <!-- &baxter;Proprioception_9h3LpSOo -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_9h3LpSOo">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_9h3LpSOo">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_e39DMiBL"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_right_e1"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_e39DMiBL"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_right_e1"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_e39DMiBL -->
+    <!-- &baxter;RotationMatrix3D_e39DMiBL -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_e39DMiBL">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_e39DMiBL">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_trXR1v5z"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_trXR1v5z"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">-1.0</knowrob:m02>
@@ -905,31 +905,31 @@
 
 
 
-    <!-- &robot;baxter_right_w0 -->
+    <!-- &baxter;baxter_right_w0 -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_w0">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_w0">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>right_w0</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_right_upper_forearm"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_right_upper_forearm"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_vfUfvSWN -->
+    <!-- &baxter;Proprioception_vfUfvSWN -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_vfUfvSWN">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_vfUfvSWN">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_q35RkjEW"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_right_w0"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_q35RkjEW"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_right_w0"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_q35RkjEW -->
+    <!-- &baxter;RotationMatrix3D_q35RkjEW -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_q35RkjEW">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_q35RkjEW">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_e39DMiBL"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_e39DMiBL"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-1.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -950,31 +950,31 @@
 
 
 
-    <!-- &robot;baxter_right_w0_fixed -->
+    <!-- &baxter;baxter_right_w0_fixed -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_w0_fixed">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_w0_fixed">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>right_w0_fixed</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_right_upper_forearm_visual"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_right_upper_forearm_visual"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_kSnRwFbZ -->
+    <!-- &baxter;Proprioception_kSnRwFbZ -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_kSnRwFbZ">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_kSnRwFbZ">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_ohGGvpcG"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_right_w0_fixed"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_ohGGvpcG"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_right_w0_fixed"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_ohGGvpcG -->
+    <!-- &baxter;RotationMatrix3D_ohGGvpcG -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_ohGGvpcG">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_ohGGvpcG">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_e39DMiBL"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_e39DMiBL"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-1.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -995,31 +995,31 @@
 
 
 
-    <!-- &robot;baxter_right_w0_to_itb_fixed -->
+    <!-- &baxter;baxter_right_w0_to_itb_fixed -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_w0_to_itb_fixed">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_w0_to_itb_fixed">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>right_w0_to_itb_fixed</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_right_arm_itb"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_right_arm_itb"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_TQdzaFjy -->
+    <!-- &baxter;Proprioception_TQdzaFjy -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_TQdzaFjy">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_TQdzaFjy">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_fb7Y1nJS"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_right_w0_to_itb_fixed"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_fb7Y1nJS"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_right_w0_to_itb_fixed"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_fb7Y1nJS -->
+    <!-- &baxter;RotationMatrix3D_fb7Y1nJS -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_fb7Y1nJS">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_fb7Y1nJS">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_q35RkjEW"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_q35RkjEW"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-1.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1040,31 +1040,31 @@
 
 
 
-    <!-- &robot;baxter_right_w1 -->
+    <!-- &baxter;baxter_right_w1 -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_w1">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_w1">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>right_w1</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_right_lower_forearm"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_right_lower_forearm"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_N4yv8Lag -->
+    <!-- &baxter;Proprioception_N4yv8Lag -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_N4yv8Lag">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_N4yv8Lag">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_rb4cymMP"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_right_w1"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_rb4cymMP"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_right_w1"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_rb4cymMP -->
+    <!-- &baxter;RotationMatrix3D_rb4cymMP -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_rb4cymMP">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_rb4cymMP">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_q35RkjEW"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_q35RkjEW"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">-1.0</knowrob:m02>
@@ -1085,31 +1085,31 @@
 
 
 
-    <!-- &robot;baxter_right_w2 -->
+    <!-- &baxter;baxter_right_w2 -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_w2">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_w2">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>right_w2</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_right_wrist"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_right_wrist"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_a4pYdMgE -->
+    <!-- &baxter;Proprioception_a4pYdMgE -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_a4pYdMgE">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_a4pYdMgE">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_kQNFPcL4"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_right_w2"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_kQNFPcL4"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_right_w2"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_kQNFPcL4 -->
+    <!-- &baxter;RotationMatrix3D_kQNFPcL4 -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_kQNFPcL4">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_kQNFPcL4">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_rb4cymMP"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_rb4cymMP"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-1.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1130,31 +1130,31 @@
 
 
 
-    <!-- &robot;baxter_right_hand -->
+    <!-- &baxter;baxter_right_hand -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_hand">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_hand">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>right_hand</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_right_hand"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_right_hand"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_tZZz4IE2 -->
+    <!-- &baxter;Proprioception_tZZz4IE2 -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_tZZz4IE2">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_tZZz4IE2">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_1KhJLafO"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_right_hand"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_1KhJLafO"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_right_hand"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_1KhJLafO -->
+    <!-- &baxter;RotationMatrix3D_1KhJLafO -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_1KhJLafO">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_1KhJLafO">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_kQNFPcL4"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_kQNFPcL4"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1175,31 +1175,31 @@
 
 
 
-    <!-- &robot;baxter_right_hand_camera -->
+    <!-- &baxter;baxter_right_hand_camera -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_hand_camera">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_hand_camera">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>right_hand_camera</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_right_hand_camera"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_right_hand_camera"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_FX9o2JUg -->
+    <!-- &baxter;Proprioception_FX9o2JUg -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_FX9o2JUg">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_FX9o2JUg">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_nK9dS9nc"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_right_hand_camera"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_nK9dS9nc"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_right_hand_camera"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_nK9dS9nc -->
+    <!-- &baxter;RotationMatrix3D_nK9dS9nc -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_nK9dS9nc">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_nK9dS9nc">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_1KhJLafO"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_1KhJLafO"/>
         <knowrob:m00 rdf:datatype="&xsd;double">-3.205103454691839E-9</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">1.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1220,31 +1220,31 @@
 
 
 
-    <!-- &robot;baxter_right_hand_camera_axis -->
+    <!-- &baxter;baxter_right_hand_camera_axis -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_hand_camera_axis">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_hand_camera_axis">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>right_hand_camera_axis</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_right_hand_camera_axis"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_right_hand_camera_axis"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_xRxGuFre -->
+    <!-- &baxter;Proprioception_xRxGuFre -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_xRxGuFre">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_xRxGuFre">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_lYL14hVU"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_right_hand_camera_axis"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_lYL14hVU"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_right_hand_camera_axis"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_lYL14hVU -->
+    <!-- &baxter;RotationMatrix3D_lYL14hVU -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_lYL14hVU">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_lYL14hVU">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_1KhJLafO"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_1KhJLafO"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1265,31 +1265,31 @@
 
 
 
-    <!-- &robot;baxter_right_hand_range -->
+    <!-- &baxter;baxter_right_hand_range -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_hand_range">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_hand_range">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>right_hand_range</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_right_hand_range"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_right_hand_range"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_UPq8AFzS -->
+    <!-- &baxter;Proprioception_UPq8AFzS -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_UPq8AFzS">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_UPq8AFzS">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_2Uf5ZdpH"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_right_hand_range"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_2Uf5ZdpH"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_right_hand_range"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_2Uf5ZdpH -->
+    <!-- &baxter;RotationMatrix3D_2Uf5ZdpH -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_2Uf5ZdpH">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_2Uf5ZdpH">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_1KhJLafO"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_1KhJLafO"/>
         <knowrob:m00 rdf:datatype="&xsd;double">2.3976582465313225E-23</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">-1.0</knowrob:m02>
@@ -1310,31 +1310,31 @@
 
 
 
-    <!-- &robot;baxter_right_endpoint -->
+    <!-- &baxter;baxter_right_endpoint -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_endpoint">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_endpoint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>right_endpoint</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_right_gripper"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_right_gripper"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_O2K6wLni -->
+    <!-- &baxter;Proprioception_O2K6wLni -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_O2K6wLni">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_O2K6wLni">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_pS7w7eu6"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_right_endpoint"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_pS7w7eu6"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_right_endpoint"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_pS7w7eu6 -->
+    <!-- &baxter;RotationMatrix3D_pS7w7eu6 -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_pS7w7eu6">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_pS7w7eu6">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_1KhJLafO"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_1KhJLafO"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1355,31 +1355,31 @@
 
 
 
-    <!-- &robot;baxter_left_torso_arm_mount -->
+    <!-- &baxter;baxter_left_torso_arm_mount -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_torso_arm_mount">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_torso_arm_mount">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>left_torso_arm_mount</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_left_arm_mount"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_left_arm_mount"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_12Hj6Lqw -->
+    <!-- &baxter;Proprioception_12Hj6Lqw -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_12Hj6Lqw">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_12Hj6Lqw">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_BRfk4dNj"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_left_torso_arm_mount"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_BRfk4dNj"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_left_torso_arm_mount"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_BRfk4dNj -->
+    <!-- &baxter;RotationMatrix3D_BRfk4dNj -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_BRfk4dNj">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_BRfk4dNj">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_nEhOXBUh"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_nEhOXBUh"/>
         <knowrob:m00 rdf:datatype="&xsd;double">0.7071054825112363</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.7071080798594735</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1400,31 +1400,31 @@
 
 
 
-    <!-- &robot;baxter_left_s0 -->
+    <!-- &baxter;baxter_left_s0 -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_s0">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_s0">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>left_s0</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_left_upper_shoulder"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_left_upper_shoulder"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_PEbW7AFH -->
+    <!-- &baxter;Proprioception_PEbW7AFH -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_PEbW7AFH">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_PEbW7AFH">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_hMJpZch5"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_left_s0"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_hMJpZch5"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_left_s0"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_hMJpZch5 -->
+    <!-- &baxter;RotationMatrix3D_hMJpZch5 -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_hMJpZch5">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_hMJpZch5">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_BRfk4dNj"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_BRfk4dNj"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1445,31 +1445,31 @@
 
 
 
-    <!-- &robot;baxter_left_s1 -->
+    <!-- &baxter;baxter_left_s1 -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_s1">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_s1">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>left_s1</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_left_lower_shoulder"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_left_lower_shoulder"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_cS3pcyN7 -->
+    <!-- &baxter;Proprioception_cS3pcyN7 -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_cS3pcyN7">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_cS3pcyN7">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_EKAQ7ams"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_left_s1"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_EKAQ7ams"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_left_s1"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_EKAQ7ams -->
+    <!-- &baxter;RotationMatrix3D_EKAQ7ams -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_EKAQ7ams">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_EKAQ7ams">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_hMJpZch5"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_hMJpZch5"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1490,31 +1490,31 @@
 
 
 
-    <!-- &robot;baxter_left_e0 -->
+    <!-- &baxter;baxter_left_e0 -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_e0">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_e0">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>left_e0</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_left_upper_elbow"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_left_upper_elbow"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_8AJyWy45 -->
+    <!-- &baxter;Proprioception_8AJyWy45 -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_8AJyWy45">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_8AJyWy45">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_SZeFhiUc"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_left_e0"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_SZeFhiUc"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_left_e0"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_SZeFhiUc -->
+    <!-- &baxter;RotationMatrix3D_SZeFhiUc -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_SZeFhiUc">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_SZeFhiUc">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_EKAQ7ams"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_EKAQ7ams"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-1.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1535,31 +1535,31 @@
 
 
 
-    <!-- &robot;baxter_left_e0_fixed -->
+    <!-- &baxter;baxter_left_e0_fixed -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_e0_fixed">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_e0_fixed">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>left_e0_fixed</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_left_upper_elbow_visual"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_left_upper_elbow_visual"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_tPgPeFHc -->
+    <!-- &baxter;Proprioception_tPgPeFHc -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_tPgPeFHc">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_tPgPeFHc">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_iVHIdfoX"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_left_e0_fixed"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_iVHIdfoX"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_left_e0_fixed"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_iVHIdfoX -->
+    <!-- &baxter;RotationMatrix3D_iVHIdfoX -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_iVHIdfoX">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_iVHIdfoX">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_EKAQ7ams"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_EKAQ7ams"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-1.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1580,31 +1580,31 @@
 
 
 
-    <!-- &robot;baxter_left_e1 -->
+    <!-- &baxter;baxter_left_e1 -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_e1">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_e1">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>left_e1</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_left_lower_elbow"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_left_lower_elbow"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_kIE8JSe9 -->
+    <!-- &baxter;Proprioception_kIE8JSe9 -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_kIE8JSe9">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_kIE8JSe9">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_FVybkfwl"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_left_e1"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_FVybkfwl"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_left_e1"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_FVybkfwl -->
+    <!-- &baxter;RotationMatrix3D_FVybkfwl -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_FVybkfwl">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_FVybkfwl">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_SZeFhiUc"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_SZeFhiUc"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">-1.0</knowrob:m02>
@@ -1625,31 +1625,31 @@
 
 
 
-    <!-- &robot;baxter_left_w0 -->
+    <!-- &baxter;baxter_left_w0 -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_w0">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_w0">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>left_w0</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_left_upper_forearm"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_left_upper_forearm"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_HGxzNBmw -->
+    <!-- &baxter;Proprioception_HGxzNBmw -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_HGxzNBmw">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_HGxzNBmw">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_zAlEB6vz"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_left_w0"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_zAlEB6vz"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_left_w0"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_zAlEB6vz -->
+    <!-- &baxter;RotationMatrix3D_zAlEB6vz -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_zAlEB6vz">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_zAlEB6vz">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_FVybkfwl"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_FVybkfwl"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-1.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1670,31 +1670,31 @@
 
 
 
-    <!-- &robot;baxter_left_w0_fixed -->
+    <!-- &baxter;baxter_left_w0_fixed -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_w0_fixed">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_w0_fixed">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>left_w0_fixed</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_left_upper_forearm_visual"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_left_upper_forearm_visual"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_wkZbPqBK -->
+    <!-- &baxter;Proprioception_wkZbPqBK -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_wkZbPqBK">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_wkZbPqBK">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_fuNJv2Zk"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_left_w0_fixed"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_fuNJv2Zk"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_left_w0_fixed"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_fuNJv2Zk -->
+    <!-- &baxter;RotationMatrix3D_fuNJv2Zk -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_fuNJv2Zk">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_fuNJv2Zk">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_FVybkfwl"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_FVybkfwl"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-1.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1715,31 +1715,31 @@
 
 
 
-    <!-- &robot;baxter_left_w0_to_itb_fixed -->
+    <!-- &baxter;baxter_left_w0_to_itb_fixed -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_w0_to_itb_fixed">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_w0_to_itb_fixed">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>left_w0_to_itb_fixed</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_left_arm_itb"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_left_arm_itb"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_UiSEVoH0 -->
+    <!-- &baxter;Proprioception_UiSEVoH0 -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_UiSEVoH0">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_UiSEVoH0">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_SuGaS26I"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_left_w0_to_itb_fixed"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_SuGaS26I"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_left_w0_to_itb_fixed"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_SuGaS26I -->
+    <!-- &baxter;RotationMatrix3D_SuGaS26I -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_SuGaS26I">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_SuGaS26I">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_zAlEB6vz"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_zAlEB6vz"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-1.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1760,31 +1760,31 @@
 
 
 
-    <!-- &robot;baxter_left_w1 -->
+    <!-- &baxter;baxter_left_w1 -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_w1">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_w1">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>left_w1</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_left_lower_forearm"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_left_lower_forearm"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_NudBSvxO -->
+    <!-- &baxter;Proprioception_NudBSvxO -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_NudBSvxO">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_NudBSvxO">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_AIjZPaDs"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_left_w1"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_AIjZPaDs"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_left_w1"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_AIjZPaDs -->
+    <!-- &baxter;RotationMatrix3D_AIjZPaDs -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_AIjZPaDs">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_AIjZPaDs">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_zAlEB6vz"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_zAlEB6vz"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">-1.0</knowrob:m02>
@@ -1805,31 +1805,31 @@
 
 
 
-    <!-- &robot;baxter_left_w2 -->
+    <!-- &baxter;baxter_left_w2 -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_w2">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_w2">
         <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
         <srdl2-comp:urdfName>left_w2</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_left_wrist"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_left_wrist"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_bu55YvDd -->
+    <!-- &baxter;Proprioception_bu55YvDd -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_bu55YvDd">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_bu55YvDd">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_gSL5L78d"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_left_w2"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_gSL5L78d"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_left_w2"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_gSL5L78d -->
+    <!-- &baxter;RotationMatrix3D_gSL5L78d -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_gSL5L78d">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_gSL5L78d">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_AIjZPaDs"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_AIjZPaDs"/>
         <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-1.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1850,31 +1850,31 @@
 
 
 
-    <!-- &robot;baxter_left_hand -->
+    <!-- &baxter;baxter_left_hand -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_hand">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_hand">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>left_hand</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_left_hand"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_left_hand"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_3oumsrab -->
+    <!-- &baxter;Proprioception_3oumsrab -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_3oumsrab">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_3oumsrab">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_cAsdv5nb"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_left_hand"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_cAsdv5nb"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_left_hand"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_cAsdv5nb -->
+    <!-- &baxter;RotationMatrix3D_cAsdv5nb -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_cAsdv5nb">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_cAsdv5nb">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_gSL5L78d"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_gSL5L78d"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1895,31 +1895,31 @@
 
 
 
-    <!-- &robot;baxter_left_hand_camera -->
+    <!-- &baxter;baxter_left_hand_camera -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_hand_camera">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_hand_camera">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>left_hand_camera</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_left_hand_camera"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_left_hand_camera"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_n6r97i1P -->
+    <!-- &baxter;Proprioception_n6r97i1P -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_n6r97i1P">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_n6r97i1P">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_whp18WdN"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_left_hand_camera"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_whp18WdN"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_left_hand_camera"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_whp18WdN -->
+    <!-- &baxter;RotationMatrix3D_whp18WdN -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_whp18WdN">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_whp18WdN">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_cAsdv5nb"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_cAsdv5nb"/>
         <knowrob:m00 rdf:datatype="&xsd;double">-3.205103454691839E-9</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">1.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1940,31 +1940,31 @@
 
 
 
-    <!-- &robot;baxter_left_hand_camera_axis -->
+    <!-- &baxter;baxter_left_hand_camera_axis -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_hand_camera_axis">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_hand_camera_axis">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>left_hand_camera_axis</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_left_hand_camera_axis"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_left_hand_camera_axis"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_i49hPghN -->
+    <!-- &baxter;Proprioception_i49hPghN -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_i49hPghN">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_i49hPghN">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_cdS44THA"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_left_hand_camera_axis"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_cdS44THA"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_left_hand_camera_axis"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_cdS44THA -->
+    <!-- &baxter;RotationMatrix3D_cdS44THA -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_cdS44THA">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_cdS44THA">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_cAsdv5nb"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_cAsdv5nb"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -1985,31 +1985,31 @@
 
 
 
-    <!-- &robot;baxter_left_hand_range -->
+    <!-- &baxter;baxter_left_hand_range -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_hand_range">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_hand_range">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>left_hand_range</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_left_hand_range"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_left_hand_range"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_aXwzjeNJ -->
+    <!-- &baxter;Proprioception_aXwzjeNJ -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_aXwzjeNJ">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_aXwzjeNJ">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_90zcNQYy"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_left_hand_range"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_90zcNQYy"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_left_hand_range"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_90zcNQYy -->
+    <!-- &baxter;RotationMatrix3D_90zcNQYy -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_90zcNQYy">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_90zcNQYy">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_cAsdv5nb"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_cAsdv5nb"/>
         <knowrob:m00 rdf:datatype="&xsd;double">2.3976582465313225E-23</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">-1.0</knowrob:m02>
@@ -2030,31 +2030,31 @@
 
 
 
-    <!-- &robot;baxter_left_endpoint -->
+    <!-- &baxter;baxter_left_endpoint -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_endpoint">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_endpoint">
         <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
         <srdl2-comp:urdfName>left_endpoint</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;baxter_left_gripper"/>
+        <srdl2-comp:succeedingLink rdf:resource="&baxter;baxter_left_gripper"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;Proprioception_zdmHRnbT -->
+    <!-- &baxter;Proprioception_zdmHRnbT -->
 
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_zdmHRnbT">
+    <owl:NamedIndividual rdf:about="&baxter;Proprioception_zdmHRnbT">
         <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_yqnjlZlG"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;baxter_left_endpoint"/>
+        <knowrob:eventOccursAt rdf:resource="&baxter;RotationMatrix3D_yqnjlZlG"/>
+        <knowrob:startTime rdf:resource="&baxter;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&baxter;baxter_left_endpoint"/>
     </owl:NamedIndividual>
 
 
 
-    <!-- &robot;RotationMatrix3D_yqnjlZlG -->
+    <!-- &baxter;RotationMatrix3D_yqnjlZlG -->
 
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_yqnjlZlG">
+    <owl:NamedIndividual rdf:about="&baxter;RotationMatrix3D_yqnjlZlG">
         <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_cAsdv5nb"/>
+        <knowrob:relativeTo rdf:resource="&baxter;RotationMatrix3D_cAsdv5nb"/>
         <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
         <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
         <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
@@ -2080,9 +2080,9 @@
     <!-- =========================================== -->
 
 
-    <!-- &robot;baxter_base -->
+    <!-- &baxter;baxter_base -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_base">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_base">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>base</srdl2-comp:urdfName>
         <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.00094542</srdl2-comp:mass_value>
@@ -2092,15 +2092,15 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">3e-08</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">2e-08</srdl2-comp:inertia_izz>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_collision_head_1"/>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_collision_head_2"/>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_torso_t0"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_collision_head_1"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_collision_head_2"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_torso_t0"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_torso -->
+    <!-- &baxter;baxter_torso -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_torso">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_torso">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>torso</srdl2-comp:urdfName>
         <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://baxter_description/meshes/torso/base_link.DAE</srdl2-comp:mesh_filename>
@@ -2114,19 +2114,19 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">1.662671</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.003292</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.802239</srdl2-comp:inertia_izz>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_left_torso_itb_fixed"/>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_right_torso_itb_fixed"/>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_pedestal_fixed"/>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_head_pan"/>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_sonar_s0"/>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_right_torso_arm_mount"/>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_left_torso_arm_mount"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_left_torso_itb_fixed"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_right_torso_itb_fixed"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_pedestal_fixed"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_head_pan"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_sonar_s0"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_right_torso_arm_mount"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_left_torso_arm_mount"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_left_torso_itb -->
+    <!-- &baxter;baxter_left_torso_itb -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_torso_itb">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_torso_itb">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>left_torso_itb</srdl2-comp:urdfName>
         <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.00094542</srdl2-comp:mass_value>
@@ -2139,9 +2139,9 @@
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_right_torso_itb -->
+    <!-- &baxter;baxter_right_torso_itb -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_torso_itb">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_torso_itb">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>right_torso_itb</srdl2-comp:urdfName>
         <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.00094542</srdl2-comp:mass_value>
@@ -2154,9 +2154,9 @@
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_pedestal -->
+    <!-- &baxter;baxter_pedestal -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_pedestal">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_pedestal">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>pedestal</srdl2-comp:urdfName>
         <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://baxter_description/meshes/base/PEDESTAL.DAE</srdl2-comp:mesh_filename>
@@ -2172,9 +2172,9 @@
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_head -->
+    <!-- &baxter;baxter_head -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_head">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_head">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>head</srdl2-comp:urdfName>
         <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://baxter_description/meshes/head/H0.DAE</srdl2-comp:mesh_filename>
@@ -2187,15 +2187,15 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.003295</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">-0.001324</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.003415</srdl2-comp:inertia_izz>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_dummy"/>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_head_nod"/>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_head_camera"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_dummy"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_head_nod"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_head_camera"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_sonar_ring -->
+    <!-- &baxter;baxter_sonar_ring -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_sonar_ring">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_sonar_ring">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>sonar_ring</srdl2-comp:urdfName>
         <srdl2-comp:cylinder_length rdf:datatype="&qudt-unit;Unitless">0.01</srdl2-comp:cylinder_length>
@@ -2212,9 +2212,9 @@
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_screen -->
+    <!-- &baxter;baxter_screen -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_screen">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_screen">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>screen</srdl2-comp:urdfName>
         <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://baxter_description/meshes/head/H1.DAE</srdl2-comp:mesh_filename>
@@ -2230,9 +2230,9 @@
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_head_camera -->
+    <!-- &baxter;baxter_head_camera -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_head_camera">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_head_camera">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>head_camera</srdl2-comp:urdfName>
         <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.00094542</srdl2-comp:mass_value>
@@ -2245,9 +2245,9 @@
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_dummyhead1 -->
+    <!-- &baxter;baxter_dummyhead1 -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_dummyhead1">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_dummyhead1">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>dummyhead1</srdl2-comp:urdfName>
         <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.00094542</srdl2-comp:mass_value>
@@ -2260,9 +2260,9 @@
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_collision_head_link_1 -->
+    <!-- &baxter;baxter_collision_head_link_1 -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_collision_head_link_1">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_collision_head_link_1">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>collision_head_link_1</srdl2-comp:urdfName>
         <srdl2-comp:sphere_radius rdf:datatype="&qudt-unit;Unitless">0.001</srdl2-comp:sphere_radius>
@@ -2278,9 +2278,9 @@
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_collision_head_link_2 -->
+    <!-- &baxter;baxter_collision_head_link_2 -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_collision_head_link_2">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_collision_head_link_2">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>collision_head_link_2</srdl2-comp:urdfName>
         <srdl2-comp:sphere_radius rdf:datatype="&qudt-unit;Unitless">0.001</srdl2-comp:sphere_radius>
@@ -2296,9 +2296,9 @@
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_right_arm_mount -->
+    <!-- &baxter;baxter_right_arm_mount -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_arm_mount">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_arm_mount">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>right_arm_mount</srdl2-comp:urdfName>
         <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.00094542</srdl2-comp:mass_value>
@@ -2308,13 +2308,13 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">3e-08</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">2e-08</srdl2-comp:inertia_izz>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_right_s0"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_right_s0"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_right_upper_shoulder -->
+    <!-- &baxter;baxter_right_upper_shoulder -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_upper_shoulder">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_upper_shoulder">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>right_upper_shoulder</srdl2-comp:urdfName>
         <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://baxter_description/meshes/upper_shoulder/S0.DAE</srdl2-comp:mesh_filename>
@@ -2328,13 +2328,13 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.03766976455</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.00078086899</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.03595988478</srdl2-comp:inertia_izz>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_right_s1"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_right_s1"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_right_lower_shoulder -->
+    <!-- &baxter;baxter_right_lower_shoulder -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_lower_shoulder">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_lower_shoulder">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>right_lower_shoulder</srdl2-comp:urdfName>
         <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://baxter_description/meshes/lower_shoulder/S1.DAE</srdl2-comp:mesh_filename>
@@ -2348,14 +2348,14 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.0278859752</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">-0.00018821993</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.02078749298</srdl2-comp:inertia_izz>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_right_e0"/>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_right_e0_fixed"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_right_e0"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_right_e0_fixed"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_right_upper_elbow -->
+    <!-- &baxter;baxter_right_upper_elbow -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_upper_elbow">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_upper_elbow">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>right_upper_elbow</srdl2-comp:urdfName>
         <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://baxter_description/meshes/upper_elbow/E0.DAE</srdl2-comp:mesh_filename>
@@ -2369,13 +2369,13 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.02844355207</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.0010838933</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.01248008322</srdl2-comp:inertia_izz>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_right_e1"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_right_e1"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_right_upper_elbow_visual -->
+    <!-- &baxter;baxter_right_upper_elbow_visual -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_upper_elbow_visual">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_upper_elbow_visual">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>right_upper_elbow_visual</srdl2-comp:urdfName>
         <srdl2-comp:cylinder_length rdf:datatype="&qudt-unit;Unitless">0.273</srdl2-comp:cylinder_length>
@@ -2390,9 +2390,9 @@
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_right_lower_elbow -->
+    <!-- &baxter;baxter_right_lower_elbow -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_lower_elbow">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_lower_elbow">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>right_lower_elbow</srdl2-comp:urdfName>
         <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://baxter_description/meshes/lower_elbow/E1.DAE</srdl2-comp:mesh_filename>
@@ -2406,14 +2406,14 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.01318227876</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">-0.00019663418</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.00926852064</srdl2-comp:inertia_izz>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_right_w0"/>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_right_w0_fixed"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_right_w0"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_right_w0_fixed"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_right_upper_forearm -->
+    <!-- &baxter;baxter_right_upper_forearm -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_upper_forearm">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_upper_forearm">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>right_upper_forearm</srdl2-comp:urdfName>
         <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://baxter_description/meshes/upper_forearm/W0.DAE</srdl2-comp:mesh_filename>
@@ -2427,14 +2427,14 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.01675457264</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">-0.00064732352</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0037463115</srdl2-comp:inertia_izz>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_right_w0_to_itb_fixed"/>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_right_w1"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_right_w0_to_itb_fixed"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_right_w1"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_right_upper_forearm_visual -->
+    <!-- &baxter;baxter_right_upper_forearm_visual -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_upper_forearm_visual">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_upper_forearm_visual">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>right_upper_forearm_visual</srdl2-comp:urdfName>
         <srdl2-comp:cylinder_length rdf:datatype="&qudt-unit;Unitless">0.272</srdl2-comp:cylinder_length>
@@ -2449,9 +2449,9 @@
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_right_arm_itb -->
+    <!-- &baxter;baxter_right_arm_itb -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_arm_itb">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_arm_itb">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>right_arm_itb</srdl2-comp:urdfName>
         <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.00094542</srdl2-comp:mass_value>
@@ -2464,9 +2464,9 @@
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_right_lower_forearm -->
+    <!-- &baxter;baxter_right_lower_forearm -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_lower_forearm">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_lower_forearm">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>right_lower_forearm</srdl2-comp:urdfName>
         <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://baxter_description/meshes/lower_forearm/W1.DAE</srdl2-comp:mesh_filename>
@@ -2480,13 +2480,13 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.00700537914</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.00015348067</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0055275524</srdl2-comp:inertia_izz>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_right_w2"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_right_w2"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_right_wrist -->
+    <!-- &baxter;baxter_right_wrist -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_wrist">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_wrist">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>right_wrist</srdl2-comp:urdfName>
         <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://baxter_description/meshes/wrist/W2.DAE</srdl2-comp:mesh_filename>
@@ -2500,13 +2500,13 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.0002688601</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">-0.00000519818</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0003074118</srdl2-comp:inertia_izz>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_right_hand"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_right_hand"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_right_hand -->
+    <!-- &baxter;baxter_right_hand -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_hand">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_hand">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>right_hand</srdl2-comp:urdfName>
         <srdl2-comp:cylinder_length rdf:datatype="&qudt-unit;Unitless">0.0464</srdl2-comp:cylinder_length>
@@ -2518,16 +2518,16 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.00021166377</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.00000172689</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.00023745397</srdl2-comp:inertia_izz>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_right_hand_camera"/>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_right_hand_camera_axis"/>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_right_hand_range"/>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_right_endpoint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_right_hand_camera"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_right_hand_camera_axis"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_right_hand_range"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_right_endpoint"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_right_hand_camera -->
+    <!-- &baxter;baxter_right_hand_camera -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_hand_camera">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_hand_camera">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>right_hand_camera</srdl2-comp:urdfName>
         <srdl2-comp:cylinder_length rdf:datatype="&qudt-unit;Unitless">0.01</srdl2-comp:cylinder_length>
@@ -2543,9 +2543,9 @@
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_right_hand_camera_axis -->
+    <!-- &baxter;baxter_right_hand_camera_axis -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_hand_camera_axis">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_hand_camera_axis">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>right_hand_camera_axis</srdl2-comp:urdfName>
         <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.00094542</srdl2-comp:mass_value>
@@ -2558,9 +2558,9 @@
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_right_hand_range -->
+    <!-- &baxter;baxter_right_hand_range -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_hand_range">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_hand_range">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>right_hand_range</srdl2-comp:urdfName>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.005 .02 .005</srdl2-comp:box_size>
@@ -2575,9 +2575,9 @@
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_right_gripper -->
+    <!-- &baxter;baxter_right_gripper -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_right_gripper">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_right_gripper">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>right_gripper</srdl2-comp:urdfName>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.025 0.075 0.035</srdl2-comp:box_size>
@@ -2592,9 +2592,9 @@
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_left_arm_mount -->
+    <!-- &baxter;baxter_left_arm_mount -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_arm_mount">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_arm_mount">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>left_arm_mount</srdl2-comp:urdfName>
         <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.00094542</srdl2-comp:mass_value>
@@ -2604,13 +2604,13 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">3e-08</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">2e-08</srdl2-comp:inertia_izz>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_left_s0"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_left_s0"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_left_upper_shoulder -->
+    <!-- &baxter;baxter_left_upper_shoulder -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_upper_shoulder">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_upper_shoulder">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>left_upper_shoulder</srdl2-comp:urdfName>
         <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://baxter_description/meshes/upper_shoulder/S0.DAE</srdl2-comp:mesh_filename>
@@ -2624,13 +2624,13 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.03766976455</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.00078086899</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.03595988478</srdl2-comp:inertia_izz>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_left_s1"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_left_s1"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_left_lower_shoulder -->
+    <!-- &baxter;baxter_left_lower_shoulder -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_lower_shoulder">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_lower_shoulder">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>left_lower_shoulder</srdl2-comp:urdfName>
         <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://baxter_description/meshes/lower_shoulder/S1.DAE</srdl2-comp:mesh_filename>
@@ -2644,14 +2644,14 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.0278859752</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">-0.00018821993</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.02078749298</srdl2-comp:inertia_izz>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_left_e0"/>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_left_e0_fixed"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_left_e0"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_left_e0_fixed"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_left_upper_elbow -->
+    <!-- &baxter;baxter_left_upper_elbow -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_upper_elbow">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_upper_elbow">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>left_upper_elbow</srdl2-comp:urdfName>
         <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://baxter_description/meshes/upper_elbow/E0.DAE</srdl2-comp:mesh_filename>
@@ -2665,13 +2665,13 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.02844355207</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.0010838933</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.01248008322</srdl2-comp:inertia_izz>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_left_e1"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_left_e1"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_left_upper_elbow_visual -->
+    <!-- &baxter;baxter_left_upper_elbow_visual -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_upper_elbow_visual">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_upper_elbow_visual">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>left_upper_elbow_visual</srdl2-comp:urdfName>
         <srdl2-comp:cylinder_length rdf:datatype="&qudt-unit;Unitless">0.273</srdl2-comp:cylinder_length>
@@ -2686,9 +2686,9 @@
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_left_lower_elbow -->
+    <!-- &baxter;baxter_left_lower_elbow -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_lower_elbow">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_lower_elbow">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>left_lower_elbow</srdl2-comp:urdfName>
         <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://baxter_description/meshes/lower_elbow/E1.DAE</srdl2-comp:mesh_filename>
@@ -2702,14 +2702,14 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.01318227876</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">-0.00019663418</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.00926852064</srdl2-comp:inertia_izz>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_left_w0"/>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_left_w0_fixed"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_left_w0"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_left_w0_fixed"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_left_upper_forearm -->
+    <!-- &baxter;baxter_left_upper_forearm -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_upper_forearm">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_upper_forearm">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>left_upper_forearm</srdl2-comp:urdfName>
         <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://baxter_description/meshes/upper_forearm/W0.DAE</srdl2-comp:mesh_filename>
@@ -2723,14 +2723,14 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.01675457264</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">-0.00064732352</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0037463115</srdl2-comp:inertia_izz>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_left_w0_to_itb_fixed"/>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_left_w1"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_left_w0_to_itb_fixed"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_left_w1"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_left_upper_forearm_visual -->
+    <!-- &baxter;baxter_left_upper_forearm_visual -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_upper_forearm_visual">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_upper_forearm_visual">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>left_upper_forearm_visual</srdl2-comp:urdfName>
         <srdl2-comp:cylinder_length rdf:datatype="&qudt-unit;Unitless">0.272</srdl2-comp:cylinder_length>
@@ -2745,9 +2745,9 @@
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_left_arm_itb -->
+    <!-- &baxter;baxter_left_arm_itb -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_arm_itb">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_arm_itb">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>left_arm_itb</srdl2-comp:urdfName>
         <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.00094542</srdl2-comp:mass_value>
@@ -2760,9 +2760,9 @@
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_left_lower_forearm -->
+    <!-- &baxter;baxter_left_lower_forearm -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_lower_forearm">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_lower_forearm">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>left_lower_forearm</srdl2-comp:urdfName>
         <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://baxter_description/meshes/lower_forearm/W1.DAE</srdl2-comp:mesh_filename>
@@ -2776,13 +2776,13 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.00700537914</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.00015348067</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0055275524</srdl2-comp:inertia_izz>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_left_w2"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_left_w2"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_left_wrist -->
+    <!-- &baxter;baxter_left_wrist -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_wrist">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_wrist">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>left_wrist</srdl2-comp:urdfName>
         <srdl2-comp:mesh_filename rdf:datatype="&xsd;string">package://baxter_description/meshes/wrist/W2.DAE</srdl2-comp:mesh_filename>
@@ -2796,13 +2796,13 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.0002688601</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">-0.00000519818</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0003074118</srdl2-comp:inertia_izz>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_left_hand"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_left_hand"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_left_hand -->
+    <!-- &baxter;baxter_left_hand -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_hand">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_hand">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>left_hand</srdl2-comp:urdfName>
         <srdl2-comp:cylinder_length rdf:datatype="&qudt-unit;Unitless">0.0464</srdl2-comp:cylinder_length>
@@ -2814,16 +2814,16 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.00021166377</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.00000172689</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.00023745397</srdl2-comp:inertia_izz>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_left_hand_camera"/>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_left_hand_camera_axis"/>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_left_hand_range"/>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;baxter_left_endpoint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_left_hand_camera"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_left_hand_camera_axis"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_left_hand_range"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&baxter;baxter_left_endpoint"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_left_hand_camera -->
+    <!-- &baxter;baxter_left_hand_camera -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_hand_camera">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_hand_camera">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>left_hand_camera</srdl2-comp:urdfName>
         <srdl2-comp:cylinder_length rdf:datatype="&qudt-unit;Unitless">0.01</srdl2-comp:cylinder_length>
@@ -2839,9 +2839,9 @@
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_left_hand_camera_axis -->
+    <!-- &baxter;baxter_left_hand_camera_axis -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_hand_camera_axis">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_hand_camera_axis">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>left_hand_camera_axis</srdl2-comp:urdfName>
         <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.00094542</srdl2-comp:mass_value>
@@ -2854,9 +2854,9 @@
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_left_hand_range -->
+    <!-- &baxter;baxter_left_hand_range -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_hand_range">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_hand_range">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>left_hand_range</srdl2-comp:urdfName>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.005 .02 .005</srdl2-comp:box_size>
@@ -2871,9 +2871,9 @@
     </owl:NamedIndividual>
 
 
-    <!-- &robot;baxter_left_gripper -->
+    <!-- &baxter;baxter_left_gripper -->
 
-    <owl:NamedIndividual rdf:about="&robot;baxter_left_gripper">
+    <owl:NamedIndividual rdf:about="&baxter;baxter_left_gripper">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>left_gripper</srdl2-comp:urdfName>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.025 0.075 0.035</srdl2-comp:box_size>
