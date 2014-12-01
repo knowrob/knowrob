@@ -4172,7 +4172,10 @@
       var texture;
       texture = this._imageCache[imageURL];
       if (texture != null) return texture;
-      if (this.options.localImageMode) texture = this._loadImageLocal(imageURL);
+                    
+      var isTif = /\.tif$/i.test( imageURL );
+      if (isTif) texture = THREE.ImageUtils.loadTifTexture(imageURL);
+      else if (this.options.localImageMode) texture = this._loadImageLocal(imageURL);
       if (!(texture != null)) texture = this._loadImageSimple(imageURL);
       if (texture != null) {
         this._imageCache[imageURL] = texture;

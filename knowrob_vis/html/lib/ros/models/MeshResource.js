@@ -26,6 +26,8 @@ ROS3D.MeshResource = function(options) {
   this.warnings = options.warnings;
   var loaderType = options.loader || ROS3D.COLLADA_LOADER_2;
 
+console.info('MeshResource()');
+console.info(loaderType);
   THREE.Object3D.call(this);
 
   // check for a trailing '/'
@@ -49,6 +51,7 @@ ROS3D.MeshResource = function(options) {
         console.warn(message);
       }
     };
+console.info('MeshResource() load');
     loader.load(uri, function colladaReady(collada) {
       // check for a scale factor in ColladaLoader2
       if(loaderType === ROS3D.COLLADA_LOADER_2 && collada.dae.asset.unit) {

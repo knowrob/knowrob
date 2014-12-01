@@ -1,0 +1,3 @@
+[submodule "knowrob_vis/html/lib"]
+	path = knowrob_vis/html/lib
+	url = git@github.com:code-iai/knowrob_webtools.git

@@ -3200,8 +3200,16 @@ THREE.ColladaLoader = function () {
 								var image = images[surface.init_from];
 
 								if (image) {
-
-									var texture = THREE.ImageUtils.loadTexture(baseUrl + image.init_from);
+console.info('COLLADA loadTexture');
+									var texture;
+   var isTif = /\.tif$/i.test( image.init_from );
+   if(isTif) {
+console.info('TIF');
+                                    texture = THREE.ImageUtils.loadTifTexture(baseUrl + image.init_from);
+   }
+   else {
+                                    texture = THREE.ImageUtils.loadTexture(baseUrl + image.init_from);
+   }
 									texture.wrapS = cot.texOpts.wrapU ? THREE.RepeatWrapping : THREE.ClampToEdgeWrapping;
 									texture.wrapT = cot.texOpts.wrapV ? THREE.RepeatWrapping : THREE.ClampToEdgeWrapping;
 									texture.offset.x = cot.texOpts.offsetU;
