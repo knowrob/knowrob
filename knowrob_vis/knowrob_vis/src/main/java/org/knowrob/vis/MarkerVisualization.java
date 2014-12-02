@@ -245,10 +245,22 @@ public class MarkerVisualization extends AbstractNodeMain {
 	public void highlight(String identifier, String color) {
 		int col = Integer.valueOf(color, 16);
 
+		highlight(identifier, col);
+	}
+	
+	/**
+	 * Highlight the object 'identifier' in 'color'
+	 *
+	 * @param identifier OWL identifier of an object instance
+	 * @param highlight True to set, False to remove highlight
+	 * @param col integer representation of ##RRGGBB
+	 */
+	public void highlight(String identifier, int col) {
+		
 		int r = (col & 0xff0000) >> 16;
 		int g = (col & 0x00ff00) >> 8;
 		int b = (col & 0x0000ff);
-
+		
 		highlight(identifier, r, g, b, 255);
 	}
 
