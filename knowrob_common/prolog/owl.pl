@@ -526,6 +526,7 @@ owl_individual_of(Resource, Class) :-
 	member(C, Cs),
 	owl_subclass_of(C, Class).
 owl_individual_of(Resource, Class) :-
+        nonvar(Class), % MT 03122014 -- does not allow generic classification of instances any more, but avoids search through all equivalents of all classes whenever Class is unbound
 	rdfs_individual_of(Class, owl:'Class'),
 	(   rdf_has(Class, owl:equivalentClass, EQ)
 	->  owl_individual_of(Resource, EQ)
