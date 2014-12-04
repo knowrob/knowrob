@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
 import java.util.List;
 import java.text.DecimalFormat;
 
@@ -130,6 +129,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	public void addObject(String identifier, String timepoint) {
 		try {
 			addMarker(identifier, timepoint);
+
 			publishMarkers();
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -581,8 +581,6 @@ public class MarkerVisualization extends AbstractNodeMain {
 		// wait for node to be ready
 		waitForNode();
 		
-		long t0 = System.currentTimeMillis();
-
 		// Lookup skeletal structure
 		final HumanSkeleton skeleton;
 		try {
@@ -629,7 +627,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 		publishMarkers();
 
-		log.info("addHumanPose took " + (System.currentTimeMillis()-t0) + " ms.");
+		//log.info("addHumanPose took " + (System.currentTimeMillis()-t0) + " ms.");
 	}
 
 	HumanSkeleton getHumanSkeleton(String humanIndividualName) {
@@ -704,9 +702,11 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @param timepoint
 	 */
 	boolean addMarker(String identifier, String timepoint) {
+		
 		// read marker from Prolog
 		final Marker m = readMarkerFromProlog(identifier, timepoint);
 		if(m==null) return false;
+		
 		// add marker to map
 		synchronized (markers) {
 			markers.put(identifier, m);
@@ -757,7 +757,12 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @return Marker with the object information
 	 */
 	Marker readMarkerFromProlog(String identifier, String timepoint) {
+
+		// wait for node to be ready
+		waitForNode();
+		
 		if(isBlackListed(identifier)) return null;
+		
 		final Marker m = createMarker();
 		m.setType(Marker.CUBE);
 		// set light grey color by default
@@ -770,10 +775,12 @@ public class MarkerVisualization extends AbstractNodeMain {
 		m.getScale().setZ(1.0);
 
 		try {
+			
 			// read object pose
-			HashMap<String, Vector<String>> res = PrologInterface.executeQuery(
-					"object_pose_at_time('"+ identifier + "', '"+ timepoint +
-					"', [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33])");
+			String query = "object_pose_at_time('"+ identifier + "', '"+ timepoint +
+					"', [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33])";
+			//log.info(query);
+			HashMap<String, Vector<String>> res = PrologInterface.executeQuery(query);
 
 			if (res!=null && res.get("M00") != null && res.get("M00").size() > 0 && res.get("M00").get(0)!=null) {
 				double[] p = new double[16];
@@ -785,20 +792,20 @@ public class MarkerVisualization extends AbstractNodeMain {
 					}
 				}
 
-				Quat4d q = new Quat4d();
-				q.set(poseMat);
+				Quat4d quat = new Quat4d();
+				quat.set(poseMat);
 
-				m.getPose().getOrientation().setW(q.w);
-				m.getPose().getOrientation().setX(q.x);
-				m.getPose().getOrientation().setY(q.y);
-				m.getPose().getOrientation().setZ(q.z);
+				m.getPose().getOrientation().setW(quat.w);
+				m.getPose().getOrientation().setX(quat.x);
+				m.getPose().getOrientation().setY(quat.y);
+				m.getPose().getOrientation().setZ(quat.z);
 
 				m.getPose().getPosition().setX(poseMat.m03);
 				m.getPose().getPosition().setY(poseMat.m13);
 				m.getPose().getPosition().setZ(poseMat.m23);
 
 				// debug
-				//System.err.println("adding " + identifier + " at pose [" + m.pose.position.x + ", " + m.pose.position.y + ", " + m.pose.position.z + "]");
+//				log.info("adding " + identifier + " at pose [" + m.getPose().getPosition().getX() + ", " + m.getPose().getPosition().getY() + ", " + m.getPose().getPosition().getZ() + "]");
 			}
 		}
 		catch (Exception e) {
@@ -807,10 +814,9 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 		try {
 			// read object dimensions if available
-			HashMap<String, Vector<String>> res = PrologInterface.executeQuery(
-					"rdf_has('"+identifier+"', knowrob:depthOfObject,  literal(type(_, D))), " +
-							"rdf_has('"+identifier+"', knowrob:widthOfObject,  literal(type(_, W))), " +
-							"rdf_has('"+identifier+"', knowrob:heightOfObject, literal(type(_, H)))");
+			String query = "object_dimensions('"+identifier+"', D, W, H)";
+			//log.info(query);
+			HashMap<String, Vector<String>> res = PrologInterface.executeQuery(query);
 
 			if (res!=null && res.get("D") != null && res.get("D").size() > 0 && res.get("D").get(0)!=null) {
 				m.getScale().setX(Double.valueOf(OWLThing.removeSingleQuotes(res.get("D").get(0))));
@@ -829,7 +835,9 @@ public class MarkerVisualization extends AbstractNodeMain {
 		
 		try {
 			// check if mesh is available for this object
-			HashMap<String, Vector<String>> res = PrologInterface.executeQuery("get_model_path('"+ identifier + "', Path)");
+			String query = "get_model_path('"+ identifier + "', Path)";
+			//log.info(query);
+			HashMap<String, Vector<String>> res = PrologInterface.executeQuery(query);
 			
 			if (res!=null && res.get("Path") != null && res.get("Path").size() > 0 && res.get("Path").get(0)!=null) {
 				m.setType(Marker.MESH_RESOURCE);
@@ -855,8 +863,10 @@ public class MarkerVisualization extends AbstractNodeMain {
 		try {
 			// read object color if available
 			// This removes colors from meshes!!
-			HashMap<String, Vector<String>> res = PrologInterface.executeQuery(
-					"rdf_has('"+identifier+"', knowrob:mainColorOfObject, literal(type(_, COL)))");
+			String query = "object_color('"+identifier+"', COL)";
+			//log.info(query);
+			HashMap<String, Vector<String>> res = PrologInterface.executeQuery(query);
+			
 			if(res!=null && res.get("COL")!=null) {
 				String c[] = res.get("COL").get(0).split(" ");
 				if(c.length==4) {
@@ -885,6 +895,11 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @return Marker with the object information
 	 */
 	Marker readLinkMarkerFromProlog(String link, String timepoint, int marker_type) {
+
+		// wait for node to be ready
+		waitForNode();
+		
+		
 		final Marker m = createMarker();
 
 		// Set marker size
@@ -986,6 +1001,10 @@ public class MarkerVisualization extends AbstractNodeMain {
 	}
 
 	boolean addHumanMarker(Marker marker, int index, int id) {
+
+		// wait for node to be ready
+		waitForNode();
+		
 		if(marker!=null) {
 			final StringBuilder identifier = new StringBuilder();
 			identifier.append("human_").append(id).append('_').append(index);
@@ -1085,11 +1104,11 @@ public class MarkerVisualization extends AbstractNodeMain {
 	
 
 	public static void main(String args[]) {
-		//MarkerVisualization vis = new MarkerVisualizationMain();
+//		MarkerVisualization vis = new MarkerVissualizationMain();
 
-		//		MarkerVisualization vis = new MarkerVisualization();
-		//		vis.addObjectWithChildren("http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0", "http://knowrob.org/kb/knowrob.owl#timepoint_1377766542");
-		//		vis.highlight("http://knowrob.org/kb/knowrob.owl#Refrigerator67", true, 150, 0, 0, 180);
+//				MarkerVisualization vis = new MarkerVisualization();
+//				vis.addObjectWithChildren("http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0", "http://knowrob.org/kb/knowrob.owl#timepoint_1377766542");
+//				vis.highlight("http://knowrob.org/kb/knowrob.owl#Refrigerator67", true, 150, 0, 0, 180);
 
 		//		PrologInterface.executeQuery("mng_robot_pose_at_time(pr2:'PR2Robot1', '/map', knowrob:timepoint_1392799360, Pose)");
 		//		PrologInterface.executeQuery("add_object_with_children(pr2:'PR2Robot1', knowrob:timepoint_1392799360)");
