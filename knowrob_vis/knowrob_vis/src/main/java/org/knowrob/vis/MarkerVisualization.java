@@ -109,8 +109,6 @@ public class MarkerVisualization extends AbstractNodeMain {
 		highlighted = new ConcurrentHashMap<String, float[]>(8, 0.9f, 1);
 		trajectories = new HashMap<String, List<String>>();
 		humanSkeletons = new HashMap<String, HumanSkeleton>();
-
-		startWebServer(1111);
 	}
 
 	@Override
@@ -118,7 +116,9 @@ public class MarkerVisualization extends AbstractNodeMain {
 		node = connectedNode;
 		pub = connectedNode.newPublisher("/visualization_marker_array", visualization_msgs.MarkerArray._TYPE);
 		log = connectedNode.getLog();
-
+		// Need to start the webserver after node in order to able to use
+		// ROS parameters for server configuration.
+		startWebServer(1111);
 	}
 
 	/**
@@ -826,9 +826,35 @@ public class MarkerVisualization extends AbstractNodeMain {
 		catch (Exception e) {
 			log.warn("Unable to lookup dimensions for '" + identifier + "'.", e);
 		}
-
+		
+		try {
+			// check if mesh is available for this object
+			HashMap<String, Vector<String>> res = PrologInterface.executeQuery("get_model_path('"+ identifier + "', Path)");
+			
+			if (res!=null && res.get("Path") != null && res.get("Path").size() > 0 && res.get("Path").get(0)!=null) {
+				m.setType(Marker.MESH_RESOURCE);
+				m.setMeshResource(OWLThing.removeSingleQuotes(res.get("Path").get(0)));
+				m.getScale().setX(1.0);
+				m.getScale().setY(1.0);
+				m.getScale().setZ(1.0);
+				if(OWLThing.removeSingleQuotes(res.get("Path").get(0)).endsWith(".dae") ||
+				   OWLThing.removeSingleQuotes(res.get("Path").get(0)).endsWith(".DAE")){
+					m.setMeshUseEmbeddedMaterials(true);
+					// Color must be set to zero for mesh textures
+					m.getColor().setR(0.0f);
+					m.getColor().setG(0.0f);
+					m.getColor().setB(0.0f);
+					m.getColor().setA(0.0f);
+				}
+			}
+		}
+		catch (Exception e) {
+			log.warn("Unable to lookup mesh for '" + identifier + "'.", e);
+		}
+		
 		try {
 			// read object color if available
+			// This removes colors from meshes!!
 			HashMap<String, Vector<String>> res = PrologInterface.executeQuery(
 					"rdf_has('"+identifier+"', knowrob:mainColorOfObject, literal(type(_, COL)))");
 			if(res!=null && res.get("COL")!=null) {
@@ -846,29 +872,6 @@ public class MarkerVisualization extends AbstractNodeMain {
 		}
 		catch (Exception e) {
 			log.warn("Unable to lookup color for '" + identifier + "'.", e);
-		}
-
-		try {
-			// check if mesh is available for this object
-			HashMap<String, Vector<String>> res = PrologInterface.executeQuery("get_model_path('"+ identifier + "', Path)");
-
-			if (res!=null && res.get("Path") != null && res.get("Path").size() > 0 && res.get("Path").get(0)!=null) {
-				m.setType(Marker.MESH_RESOURCE);
-				m.setMeshResource(OWLThing.removeSingleQuotes(res.get("Path").get(0)));
-				//Note(daniel): as far as i can see the flag is ignored in robot web tools <= 0.11.0-SNAPSHOT
-				m.setMeshUseEmbeddedMaterials(true);
-				m.getScale().setX(1.0);
-				m.getScale().setY(1.0);
-				m.getScale().setZ(1.0);
-				// Color must be set to zero for mesh textures
-				m.getColor().setR(0.0f);
-				m.getColor().setG(0.0f);
-				m.getColor().setB(0.0f);
-				m.getColor().setA(0.0f);
-			}
-		}
-		catch (Exception e) {
-			log.warn("Unable to lookup mesh for '" + identifier + "'.", e);
 		}
 
 		return m;
@@ -1033,10 +1036,13 @@ public class MarkerVisualization extends AbstractNodeMain {
 		server = new Server(port);
 
 		ResourceHandler resource_handler = new ResourceHandler();
+		
+		String main_package = node.getParameterTree().getString("knowrob_html_package","knowrob_vis");
+		String welcome_file = node.getParameterTree().getString("knowrob_welcome_file","robohow.html");
 
 		resource_handler.setDirectoriesListed(true);
-		resource_handler.setWelcomeFiles(new String[]{ "index.html", "robohow.html" });
-		resource_handler.setResourceBase(RosUtilities.rospackFind("knowrob_vis") + "/html");
+		resource_handler.setWelcomeFiles(new String[]{ "index.html", welcome_file });
+		resource_handler.setResourceBase(RosUtilities.rospackFind(main_package) + "/html");
 
 		DefaultHandler def = new DefaultHandler();
 		def.setServeIcon(false);
