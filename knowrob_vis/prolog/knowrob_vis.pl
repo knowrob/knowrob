@@ -1,28 +1,25 @@
-/** <module> knowrob_vis
-
-  Description:
-    Module providing visualisation capabilities
-
-  Copyright (C) 2013 by Moritz Tenorth
-
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 3 of the License, or
-  (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-@author Moritz Tenorth
-@author Daniel Beßler
-@license GPL
-*/
-
+%   Description:
+%     Module providing visualisation capabilities
+% 
+%   Copyright (C) 2013 by Moritz Tenorth
+% 
+%   This program is free software; you can redistribute it and/or modify
+%   it under the terms of the GNU General Public License as published by
+%   the Free Software Foundation; either version 3 of the License, or
+%   (at your option) any later version.
+% 
+%   This program is distributed in the hope that it will be useful,
+%   but WITHOUT ANY WARRANTY; without even the implied warranty of
+%   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%   GNU General Public License for more details.
+% 
+%   You should have received a copy of the GNU General Public License
+%   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+% 
+% @author Moritz Tenorth
+% @author Daniel Beßler
+% @license GPL
+% 
 :- module(knowrob_vis,
     [
       visualisation_canvas/0,
@@ -269,7 +266,7 @@ add_human_pose(Human, Id, Timepoint, Prefix) :-
     visualisation_canvas(Canvas),
     jpl_call(Canvas, 'addHumanPose', [Human,Timepoint,Id,Prefix], _).
 
-%% remove_human_pose() is det.
+%% remove_human_pose is det.
 %
 % Removes human pose visualizations from the visualization canvas.
 %

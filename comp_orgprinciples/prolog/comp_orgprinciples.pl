@@ -1,31 +1,28 @@
-/** <module> comp_orgprinciples
-
-  This module contains all computables that compute the location where
-  an object should be placed given other objects at different locations
-  in the environment. Can also be used to infer where an object could
-  probably be found, given earlier (outdated) observations of other
-  objects in the environment. Uses the WUP similartiy from
-  comp_similartiy module.
-
-
-  Copyright (C) 2011 Martin Schuster
-
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 3 of the License, or
-  (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-@author Martin Schuster
-@license GPL
-*/
+%   This module contains all computables that compute the location where
+%   an object should be placed given other objects at different locations
+%   in the environment. Can also be used to infer where an object could
+%   probably be found, given earlier (outdated) observations of other
+%   objects in the environment. Uses the WUP similartiy from
+%   comp_similartiy module.
+% 
+% 
+%   Copyright (C) 2011 Martin Schuster
+% 
+%   This program is free software; you can redistribute it and/or modify
+%   it under the terms of the GNU General Public License as published by
+%   the Free Software Foundation; either version 3 of the License, or
+%   (at your option) any later version.
+% 
+%   This program is distributed in the hope that it will be useful,
+%   but WITHOUT ANY WARRANTY; without even the implied warranty of
+%   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%   GNU General Public License for more details.
+% 
+%   You should have received a copy of the GNU General Public License
+%   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+% 
+% @author Martin Schuster
+% @license GPL
 
 :- module(comp_orgprinciples,
     [

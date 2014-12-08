@@ -1,30 +1,27 @@
-
-/** <module> comp_spatial
-
-  This module contains all computables that calculate qualitative spatial relations
-  between objects to allow for spatial reasoning. In addition, there are computables
-  to extract components of a matrix or position vector.
-
-
-  Copyright (C) 2010 by Moritz Tenorth, Lars Kunze
-
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 3 of the License, or
-  (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-@author Moritz Tenorth, Lars Kunze
-@license GPL
-*/
-
+% 
+%   Description:
+%     This module contains all computables that calculate qualitative spatial relations
+%     between objects to allow for spatial reasoning. In addition, there are computables
+%     to extract components of a matrix or position vector.
+% 
+%   Copyright (C) 2010 by Moritz Tenorth, Lars Kunze
+% 
+%   This program is free software; you can redistribute it and/or modify
+%   it under the terms of the GNU General Public License as published by
+%   the Free Software Foundation; either version 3 of the License, or
+%   (at your option) any later version.
+% 
+%   This program is distributed in the hope that it will be useful,
+%   but WITHOUT ANY WARRANTY; without even the implied warranty of
+%   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%   GNU General Public License for more details.
+% 
+%   You should have received a copy of the GNU General Public License
+%   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+% 
+% @author Moritz Tenorth, Lars Kunze
+% @license GPL
+% 
 :- module(comp_spatial,
     [
       holds/2,
@@ -105,6 +102,31 @@ on_Physical(Top, Bottom) :-
 % @param Bottom Identifier of the lower Object
 % @param T      TimePoint or Event for which the relations is supposed to hold
 %
+holds(on_Physical(Top, Bottom),T) :-
+
+    % get object center for Top
+    object_detection(Top, T, VPT),
+    rdf_triple(knowrob:eventOccursAt, VPT,    TopMatrix),
+    rdf_triple(knowrob:m03, TopMatrix, TCxx),strip_literal_type(TCxx, TCx),atom_to_term(TCx,TX,_),
+    rdf_triple(knowrob:m13, TopMatrix, TCyy),strip_literal_type(TCyy, TCy),atom_to_term(TCy,TY,_),
+    rdf_triple(knowrob:m23, TopMatrix, TCzz),strip_literal_type(TCzz, TCz),atom_to_term(TCz,TZ,_),
+
+%     rdf_triple(knowrob:heightOfObject, Top, literal(type(_,Th))),atom_to_term(Th,TH,_),
+
+    % query for objects at center point
+    objectAtPoint2D(TX,TY,Bottom),
+
+    % get height of objects at center point
+    object_detection(Bottom, T, VPB),
+    rdf_triple(knowrob:eventOccursAt, VPB, BottomMatrix),
+    rdf_triple(knowrob:m23, BottomMatrix, BCzz), strip_literal_type(BCzz, BCz),atom_to_term(BCz,BZ,_),
+%     rdf_triple(knowrob:heightOfObject, Bottom, literal(type(_,Bh))),atom_to_term(Bh,BH,_),
+
+%     print('bottom height:'), print(BH),
+
+    % the criterion is if the difference between them is less than epsilon=5cm
+    <( BZ, TZ),
+    Top \= Bottom.
 
 %%% holds(on_Physical(Top, Bottom), T) :-
 %%%
@@ -134,32 +156,6 @@ on_Physical(Top, Bottom) :-
 %%%     =<( (BX - 0.5*BD), TX ), >=( (BX + 0.5*BD), TX ),
 %%%     =<( (BY - 0.5*BW), TY ), >=( (BY + 0.5*BW), TY ),
 %%%     Top \= Bottom.
-holds(on_Physical(Top, Bottom),T) :-
-
-    % get object center for Top
-    object_detection(Top, T, VPT),
-    rdf_triple(knowrob:eventOccursAt, VPT,    TopMatrix),
-    rdf_triple(knowrob:m03, TopMatrix, TCxx),strip_literal_type(TCxx, TCx),atom_to_term(TCx,TX,_),
-    rdf_triple(knowrob:m13, TopMatrix, TCyy),strip_literal_type(TCyy, TCy),atom_to_term(TCy,TY,_),
-    rdf_triple(knowrob:m23, TopMatrix, TCzz),strip_literal_type(TCzz, TCz),atom_to_term(TCz,TZ,_),
-
-%     rdf_triple(knowrob:heightOfObject, Top, literal(type(_,Th))),atom_to_term(Th,TH,_),
-
-    % query for objects at center point
-    objectAtPoint2D(TX,TY,Bottom),
-
-    % get height of objects at center point
-    object_detection(Bottom, T, VPB),
-    rdf_triple(knowrob:eventOccursAt, VPB, BottomMatrix),
-    rdf_triple(knowrob:m23, BottomMatrix, BCzz), strip_literal_type(BCzz, BCz),atom_to_term(BCz,BZ,_),
-%     rdf_triple(knowrob:heightOfObject, Bottom, literal(type(_,Bh))),atom_to_term(Bh,BH,_),
-
-%     print('bottom height:'), print(BH),
-
-    % the criterion is if the difference between them is less than epsilon=5cm
-    <( BZ, TZ),
-    Top \= Bottom.
-
 
 
 
@@ -192,7 +188,6 @@ comp_above_of(Top, Bottom) :-
 % @param Bottom Identifier of the lower Object
 % @param T      TimePoint or Event for which the relations is supposed to hold
 %
-
 holds(comp_above_of(Top, Bottom),T) :-
 
 
@@ -486,33 +481,6 @@ in_ContGeneric(InnerObj, OuterObj) :-
 % @param OuterObj Identifier of the outer Object
 % @param T TimePoint or Event for which the relations is supposed to hold
 %
-
-
-% MT: tried to use matrix transformation library to perform easier computation of 'inside'
-% using bounding box. Problem; does not work as long as not both objects are bound
-%
-% holds(in_ContGeneric(InnerObj, OuterObj), T) :-
-%
-%
-% % TODO: take time into account
-%
-%     nonvar(InnerObj), nonvar(OuterObj),
-%     transform_relative_to(InnerObj, OuterObj, [_,_,_,IrelOX,_,_,_,IrelOY,_,_,_,IrelOZ,_,_,_,_]),
-%
-%     % read the dimensions of the outer entity
-%     rdf_triple(knowrob:widthOfObject, OuterObj, LOW),strip_literal_type(LOW,Ow),atom_to_term(Ow,OW,_),
-%     rdf_triple(knowrob:heightOfObject,OuterObj, LOH),strip_literal_type(LOH,Oh),atom_to_term(Oh,OH,_),
-%     rdf_triple(knowrob:depthOfObject, OuterObj, LOD),strip_literal_type(LOD,Od),atom_to_term(Od,OD,_),
-%
-%
-%     % is InnerInOuterCoordList inside bounding box of outer object?
-%
-%     >=( OD, IrelOX),
-%     >=( OW, IrelOY),
-%     >=( OH, IrelOZ),
-%
-%     InnerObj \= OuterObj.
-
 holds(in_ContGeneric(InnerObj, OuterObj), T) :-
 
 %     (var(InnerObj); var(OuterObj)),
@@ -553,6 +521,32 @@ holds(in_ContGeneric(InnerObj, OuterObj), T) :-
 
 
 
+% MT: tried to use matrix transformation library to perform easier computation of 'inside'
+% using bounding box. Problem; does not work as long as not both objects are bound
+%
+% holds(in_ContGeneric(InnerObj, OuterObj), T) :-
+%
+%
+% TODO: take time into account
+%
+%     nonvar(InnerObj), nonvar(OuterObj),
+%     transform_relative_to(InnerObj, OuterObj, [_,_,_,IrelOX,_,_,_,IrelOY,_,_,_,IrelOZ,_,_,_,_]),
+%
+%     % read the dimensions of the outer entity
+%     rdf_triple(knowrob:widthOfObject, OuterObj, LOW),strip_literal_type(LOW,Ow),atom_to_term(Ow,OW,_),
+%     rdf_triple(knowrob:heightOfObject,OuterObj, LOH),strip_literal_type(LOH,Oh),atom_to_term(Oh,OH,_),
+%     rdf_triple(knowrob:depthOfObject, OuterObj, LOD),strip_literal_type(LOD,Od),atom_to_term(Od,OD,_),
+%
+%
+%     % is InnerInOuterCoordList inside bounding box of outer object?
+%
+%     >=( OD, IrelOX),
+%     >=( OW, IrelOY),
+%     >=( OH, IrelOZ),
+%
+%     InnerObj \= OuterObj.
+
+
 
 % % % % % % % % % % % % % % % % % % % %
 % matrix and vector computations (relating the homography-based
@@ -573,7 +567,14 @@ holds(in_ContGeneric(InnerObj, OuterObj), T) :-
 
 
 
-% todo: generalize projection to floor. polygon instead of rectangle.
+      
+%% objectAtPoint2D(+Point2D, ?Obj) is nondet.
+%
+% Compute which objects are positioned at the (x,y) coordinate of Point2D
+%
+% @param Point2D  Instance of a knowrob:Point2D for which the xCoord and yCoord can be computed
+% @param Obj      Objects whose bounding boxes overlap this point in x,y direction
+% 
 objectAtPoint2D(Point2D, Obj) :-
     % get coordinates of point of interest
     rdf_triple(knowrob:xCoord, Point2D, PCxx), strip_literal_type(PCxx, PCx), atom_to_term(PCx,PX,_),
@@ -581,9 +582,17 @@ objectAtPoint2D(Point2D, Obj) :-
     objectAtPoint2D(PX,PY,Obj).
 
 %
-% FIXME: THIS IS BROKEN FOR ALL NON-STANDARD ROTATIONS if the upper left matrix is partly zero
 %
 
+%% objectAtPoint2D(+PX, +PY, ?Obj) is nondet.
+%
+% Compute which objects are positioned at the given (x,y) coordinate 
+%
+% @param PX   X coordinate to be considered    
+% @param PY   Y  coordinate to be considered
+% @param Obj  Objects whose bounding boxes overlap this point in x,y direction
+% @bug        THIS IS BROKEN FOR ALL NON-STANDARD ROTATIONS if the upper left matrix is partly zero
+%
 objectAtPoint2D(PX,PY,Obj) :-
 
     % get information of potential objects at positon point2d (x/y)
