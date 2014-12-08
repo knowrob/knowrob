@@ -29,9 +29,8 @@
 		best_location_maxMaxWup/2,
 		best_location_maxMaxWup/3,
 		best_location_dtree/2,
-		highlight_best_location_maxMaxWup/2,
-		highlight_best_location_dtree/2,
-		display_object_images_at_location/2
+		avg_similarity_object_location/4,
+		max_similarity_object_location/4
     ]).
 
 :- use_module(library('semweb/rdf_db')).
@@ -50,17 +49,20 @@
 
 :- rdf_db:rdf_register_ns(germandeli, 'http://knowrob.org/kb/germandeli.owl#', [keep(true)]).
 
-	  
+
 %% best_location_maxMaxWup(+Object, -BestLocation).
+%% best_location_maxMaxWup(+Object, -BestLocation, -MaxMaxSim).
 %
-% computes the best location where to place a certain object
+% Computes the best location where to place a certain object
 % may give multiple possible solutions in case there is a tie
 %
 % Example: best_location_maxMaxWup(orgprinciples_demo:'Muesli_Schoko_1', L).
+% 
 % Example: best_location_maxMaxWup(knowrob:'Knife', L).
 %
 % @param Object Object or Class
-% @param BestLocation accoring to max. maxWup similarity
+% @param BestLocation according to max. maxWup similarity
+% 
 best_location_maxMaxWup(Object, BestLocation)	:-
   best_location_maxMaxWup(Object, BestLocation, _).
 
@@ -82,14 +84,16 @@ best_location_maxMaxWup(Object, BestLocation, MaxMaxSim)   :-
 
 %% best_location_dtree(+Object, -BestLocation)
 %
-% computes the best location where to place a certain object
+% Computes the best location where to place a certain object
 %
 % Example: best_location_dtree(orgprinciples_demo:'Muesli_Schoko_1', L).
+% 
 % Example: best_location_dtree(knowrob:'Knife', L).
 %
 % @param Object Object or Class
-% @param BestLocation accoring to Decision Trees, features are maxWup and avgWup similaritites
-% uses the WEKA C4.5 Decision Tree (J48) classifier (unpruned, min. number of instances per leaf = 0)
+% @param BestLocation according to Decision Trees, features are maxWup and avgWup similaritites. 
+% Uses the WEKA C4.5 Decision Tree (J48) classifier (unpruned, min. number of instances per leaf = 0)
+% 
 best_location_dtree(Object, BestLocation) :-
     to_global(Object, ObjectGlobal),
     (class_of_object(Class1, ObjectGlobal) -> Class = Class1 ; Class = ObjectGlobal),
@@ -141,12 +145,13 @@ best_location_dtree(Object, BestLocation) :-
 
 %% classes_of_objects(-Classes, +Objects)
 %
-% get all classes, one for each object for a list of objects
+% Get all classes, one for each object for a list of objects
 % in case of multiple classes per object, return first (random?)
 % only returns classes that are subclasses of knowrob:'SpatialThing'
 %
 % @param Classes List of classes
 % @param Objects List of instances
+% 
 classes_of_objects(Classes, Objects) :-
     findall(Class, (
 	    member(Object, Objects),
@@ -156,9 +161,10 @@ classes_of_objects(Classes, Objects) :-
 
 %% class_of_object(-Class, +Object)
 %
-% get all class for object (instance)
+% Get all class for object (instance)
 % in case of multiple classes, return first (random?)
 % only returns classes that are subclasses of knowrob:'SpatialThing'
+% 
 class_of_object(Class, Object) :-
 	owl_has(Object, rdf:type, Class),
 	owl_subclass_of(Class, 'http://knowrob.org/kb/knowrob.owl#SpatialThing'), %only consider relevant object classes
@@ -168,6 +174,7 @@ class_of_object(Class, Object) :-
 %% all_locations(-Locations)
 %
 % get all locations defined in the environment through in-ContGeneric relations
+% 
 all_locations(Locations) :-
     findall(L, rdfs_individual_of(L, knowrob:'ContainerArtifact'), Ls),
     list_to_set(Ls, Locations).
@@ -176,6 +183,7 @@ all_locations(Locations) :-
 %% objects_at_location(+Location, -Objects)
 %
 % get all objects at a location
+% 
 objects_at_location(Location, Objects) :-
     findall(O, (rdf_triple(knowrob:'in-ContGeneric', O, Location) ;
                 rdf_triple(knowrob:'on-Physical', O, Location)), ObjectsD),
@@ -190,6 +198,7 @@ objects_at_location(Location, Objects) :-
 % @param Class class to compute similiarities with location
 % @param List list of classes that define the location
 % @param Average similarity of Class with List
+% 
 avg_similarity_object_location(SimFct, Class, List, Average) :-
     (List = [] -> Average is 0 ; (
 	similarities(SimFct, Class, List, Similarities),
@@ -260,7 +269,7 @@ to_local(Class, Local) :-
 
 %% highlight_best_location_maxMaxWup(+Object, +Canvas)
 %
-% infer best location using maxMaxWup and highlight it in 3d visualization
+% Infer best location using maxMaxWup and highlight it in 3d visualization
 highlight_best_location_maxMaxWup(Object, Canvas) :-
  mod_vis:reset_highlighting(Canvas),
  forall(best_location_maxMaxWup(Object, L),(
@@ -273,7 +282,8 @@ highlight_best_location_maxMaxWup(Object, Canvas) :-
 
 %% highlight_best_location_dtree(+Object, +Canvas)
 %
-% infer best location using dtree and highlight it in 3d visualization
+% Infer best location using dtree and highlight it in 3d visualization
+% 
 highlight_best_location_dtree(Object, Canvas) :-
  mod_vis:reset_highlighting(Canvas),
  forall(best_location_dtree(Object, L), (
@@ -285,8 +295,8 @@ highlight_best_location_dtree(Object, Canvas) :-
 	 )).
 
 
-%display image of object:
-%get a single product ID, read it from the ontology
+% Display image of object:
+% get a single product ID, read it from the ontology
 get_class_product_ID_ontology(Class, PID) :-
 		rdf_has(Class,_,O),
 		rdf_has(O, rdf:type, 'http://www.w3.org/2002/07/owl#Restriction'),
@@ -298,7 +308,7 @@ get_image_filename(Class, Filename) :-
     get_class_product_ID_ontology(Class, PID),
     sformat(Filename,'~w.jpg', [PID]).
 
-% display image for object class if available in  (image name is $germandeli_product_id.jpg)
+% Display image for object class if available in  (image name is $germandeli_product_id.jpg)
 show_object_images(Classes, ImageDir) :-
     working_directory(CWD, CWD),
     findall(PathAtom, (member(Class, Classes),
@@ -312,8 +322,11 @@ show_object_images(Classes, ImageDir) :-
     write(PathAtomListFlat),nl,
     mod_vis:show_images(PathAtomListFlat, _).
 
-% display all objects at a location in canvas for which images are available in ImageDir
+%% display_object_images_at_location(+Location, +ImageDir).
+% 
+% Display all objects at a location in canvas for which images are available in ImageDir
 % display_object_images_at_location(knowrob:'Refrigerator67').
+% 
 display_object_images_at_location(Location, ImageDir) :-
     to_global(Location, LocationGlobal),
     objects_at_location(LocationGlobal, ObjectsAtLocation),
@@ -323,7 +336,7 @@ display_object_images_at_location(Location, ImageDir) :-
 
 %% print_objects_at_location(+Location, +Object)
 %
-% print all objects and their classes at the given location, print similarities to Object
+% Print all objects and their classes at the given location, print similarities to Object
 print_objects_at_location(Location, Object) :-
     to_global(Object, ObjectGlobal),
     (class_of_object(Class1, ObjectGlobal) -> Class = Class1 ; Class = ObjectGlobal),
