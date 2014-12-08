@@ -3,6 +3,4 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % dependencies
 
-:- register_ros_package(jpl).
-
 :- use_module(library('tf_prolog')).
