@@ -1,31 +1,30 @@
-/** <module> classifiers
+% 
+%   Interface between Prolog and the Weka and Mallet machine learning libraries.
+% 
+%   This module provides predicates for training, applying, loading and saving
+%   classifiers and clusterers. It provides access to all routines implemented
+%   in Weka (several classifiers and clusterers) and Mallet (esp. Conditional
+%   Random Fields).
+% 
+%   Copyright (C) 2010 by Jakob Engel, Moritz Tenorth
+% 
+%   This program is free software; you can redistribute it and/or modify
+%   it under the terms of the GNU General Public License as published by
+%   the Free Software Foundation; either version 3 of the License, or
+%   (at your option) any later version.
+% 
+%   This program is distributed in the hope that it will be useful,
+%   but WITHOUT ANY WARRANTY; without even the implied warranty of
+%   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%   GNU General Public License for more details.
+% 
+%   You should have received a copy of the GNU General Public License
+%   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+% 
+% 
+% @author Jakob Engel, Moritz Tenorth
+% @license GPL
 
-  Interface between Prolog and the Weka and Mallet machine learning libraries.
-
-  This module provides predicates for training, applying, loading and saving
-  classifiers and clusterers. It provides access to all routines implemented
-  in Weka (several classifiers and clusterers) and Mallet (esp. Conditional
-  Random Fields).
-
-  Copyright (C) 2010 by Jakob Engel, Moritz Tenorth
-
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 3 of the License, or
-  (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
-@author Jakob Engel, Moritz Tenorth
-@license GPL
-*/
 
 :- module(classifiers,
     [

@@ -11,6 +11,17 @@
 
 
 
+%% owl_parse(+URL)
+%
+% Parse an OWL file and load it into the local RDF database.
+% 
+% Resolves owl:imports and supports both the common URL formats
+% (file paths, file:// or http://) and the package:// URLs used
+% in ROS to reference files with respect to the surrounding ROS
+% package.
+%
+% @param URL Local or global file path or URL of the forms file://, http:// or package://
+% 
 owl_parse(URL) :-
   owl_parse_1(URL,[URL]).
   

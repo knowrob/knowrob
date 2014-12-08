@@ -57,8 +57,7 @@
 %
 % Read all sub-event classes of the imported plan, i.e. single actions that need to be taken
 %
-% TODO: unify with plan_subevents_recursive (return list or single instances)
-%
+% @tbd  Unify with plan_subevents_recursive (return list or single instances)
 % @param Plan Plan identifier
 % @param SubEvents List of sub-events of the plan
 %
@@ -91,6 +90,7 @@ plan_subevents_recursive(Plan, SubAction) :-
 %
 % @param Plan Plan identifier
 % @param SubEvents List of objects of the plan
+% 
 plan_objects(Plan, Objects) :-
   plan_subevents(Plan, SubEvents),
   findall(Obj,
@@ -102,6 +102,9 @@ plan_objects(Plan, Objects) :-
 %
 % Reads the objectActedOn for a TBOX action description
 %
+% @param Action  Action class with a restriction on the objectActedOn
+% @param Object  Value set as objectActedOn for this action
+% 
 action_objectActedOn(Action, Object) :-
         owl_direct_subclass_of(Action, Sup),
         owl_direct_subclass_of(Sup, Sup2),
@@ -114,6 +117,9 @@ action_objectActedOn(Action, Object) :-
 %
 % Reads the toLocation for a TBOX action description
 %
+% @param Action Action class with a restriction on the toLocation
+% @param Loc    Value set as toLocation for this action
+% 
 action_toLocation(Action, Loc) :-
         owl_direct_subclass_of(Action, Sup),
         owl_direct_subclass_of(Sup, Sup2),
@@ -126,6 +132,9 @@ action_toLocation(Action, Loc) :-
 %
 % Reads the fromLocation for a TBOX action description
 %
+% @param Action Action class with a restriction on the fromLocation
+% @param Loc    Value set as fromLocation for this action
+% 
 action_fromLocation(Action, Loc) :-
         owl_direct_subclass_of(Action, Sup),
         owl_direct_subclass_of(Sup, Sup2),
@@ -142,6 +151,7 @@ action_fromLocation(Action, Loc) :-
 %
 % @param Plan Plan identifier
 % @param Act Matching actions
+% 
 matching_actions(Plan, Act) :-
   plan_subevents(Plan, SubEvents),
   rdf_has(Act, rdf:type, knowrob:'PuttingSomethingSomewhere'),
@@ -152,11 +162,14 @@ matching_actions(Plan, Act) :-
 %% compare_actions_partial_order(-Rel, +Act1, +Act2) is semidet.
 %
 % Compare predicate to be used in predsort for sorting a list of actions
-% based on partial-order constraints
-%
-% Checks if there is an ordering constraint that has these two actions as before/after
-% TODO: can we check if these constraints belong to the current task?
-%
+% based on partial-order constraints. Checks if there is an ordering
+% constraint that has these two actions as before/after
+% 
+% @tbd can we check if these constraints belong to the current task?
+% @param Rel   Relation operator, i.e. either '<' or '>'
+% @param Act1  Action class
+% @param Act2  Action class
+% 
 compare_actions_partial_order('<', Act1, Act2) :-
   owl_has(Constraint, knowrob:occursBeforeInOrdering, Act1),
   owl_has(Constraint, knowrob:occursAfterInOrdering, Act2),!.

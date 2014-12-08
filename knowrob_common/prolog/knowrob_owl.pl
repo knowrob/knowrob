@@ -234,7 +234,7 @@ class_properties_1_some(Class, Prop, Val) :-       % read all values for some_va
 
 
 
-%% class_properties_some(?Class, ?Prop, ?Val) is nondet.
+%% class_properties_all(?Class, ?Prop, ?Val) is nondet.
 %
 % Collect all property values of someValuesFrom-restrictions of a class
 %
@@ -260,7 +260,7 @@ class_properties_1_all(Class, Prop, Val) :-       % read all values for all_valu
 
 
 
-%% class_properties_some(?Class, ?Prop, ?Val) is nondet.
+%% class_properties_value(?Class, ?Prop, ?Val) is nondet.
 %
 % Collect all property values of someValuesFrom-restrictions of a class
 %
@@ -284,9 +284,14 @@ class_properties_1_value(Class, Prop, Val) :-       % read all values for has_va
   owl_restriction(Sup,restriction(SubProp, has_value(Val))) .
 
 
-
-% forked class_properties to get rid of export of super-classes
-
+%% class_properties_nosup(?Class, ?Prop, ?Val) is nondet.
+%
+% Version of class_properties without considering super classes
+%
+% @param Class Class whose restrictions are being considered
+% @param Prop  Property whose restrictions in Class are being considered
+% @param Val   Values that appear in a restriction of a superclass of Class on Property
+%
 class_properties_nosup(Class, Prop, Val) :-         % read directly asserted properties
   class_properties_nosup_1(Class, Prop, Val).
 
@@ -301,7 +306,14 @@ class_properties_nosup_1(Class, Prop, Val) :-
   ( owl_restriction(Sup,restriction(SubProp, some_values_from(Val))) ;
     owl_restriction(Sup,restriction(SubProp, has_value(Val))) ).
 
-
+%% class_properties_transitive_nosup(?Class, ?Prop, ?Val) is nondet.
+%
+% Transitive cersion of class_properties without considering super classes
+%
+% @param Class Class whose restrictions are being considered
+% @param Prop  Property whose restrictions in Class are being considered
+% @param Val   Values that appear in a restriction of a superclass of Class on Property
+%
 class_properties_transitive_nosup(Class, Prop, SubComp) :-
     class_properties_nosup(Class, Prop, SubComp).
 class_properties_transitive_nosup(Class, Prop, SubComp) :-

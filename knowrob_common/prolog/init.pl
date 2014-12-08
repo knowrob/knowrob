@@ -19,6 +19,8 @@
 
 
 :- use_module(library('util')).
+:- use_module(library('classifiers')).
+:- use_module(library('comp_similarity')).
 :- use_module(library('knowrob_owl')).
 % :- use_module(library('knowrob_units')).
 :- use_module(library('owl_export')).

@@ -1,30 +1,29 @@
-/** <module> comp_temporal
+% 
+%   Description:
+%     Contains all computables that calculate temporal relations between events
+%     to allow for temporal reasoning.
+% 
+%     Now extended with predicates for reasoning on other relations over time (esp.
+%     holds/holds_tt)
+% 
+%   Copyright (C) 2010 by Moritz Tenorth, Lars Kunze
+% 
+%   This program is free software; you can redistribute it and/or modify
+%   it under the terms of the GNU General Public License as published by
+%   the Free Software Foundation; either version 3 of the License, or
+%   (at your option) any later version.
+% 
+%   This program is distributed in the hope that it will be useful,
+%   but WITHOUT ANY WARRANTY; without even the implied warranty of
+%   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%   GNU General Public License for more details.
+% 
+%   You should have received a copy of the GNU General Public License
+%   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+% 
+% @author Moritz Tenorth, Lars Kunze
+% @license GPL
 
-  Description:
-    Contains all computables that calculate temporal relations between events
-    to allow for temporal reasoning.
-
-    Now extended with predicates for reasoning on other relations over time (esp.
-    holds/holds_tt)
-
-  Copyright (C) 2010 by Moritz Tenorth, Lars Kunze
-
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 3 of the License, or
-  (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-@author Moritz Tenorth, Lars Kunze
-@license GPL
-*/
 :- module(comp_temporal,
     [
      comp_temporallySubsumes/2,
@@ -181,25 +180,63 @@ comp_duration(Event, Duration) :-
 
   Duration is (End-Start).
 
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % Allen's 13 temporal relations for intervals
 
-comp_equalI(I1,I2):-
+
+
+%% comp_equalI(?I1,?I2) is semidet.
+%
+% Interval I1 is equal to I2
+%
+% @param I1 Instance of a knowrob:TimeInterval
+% @param I2 Instance of a knowrob:TimeInterval
+% 
+comp_equalI(I1,I2) :-
    start_time_value(I1,ST),
    end_time_value(I1,ET),
    start_time_value(I2,ST),
    end_time_value(I2,ET).
    %I1 \= I2.
 
-comp_beforeI(I1,I2):-
+
+   
+%% comp_beforeI(I1,I2) is semidet.
+%
+%  Interval I1 takes place before Y
+%
+% @param I1 Instance of a knowrob:TimeInterval
+% @param I2 Instance of a knowrob:TimeInterval
+% 
+comp_beforeI(I1,I2) :-
    end_time_value(I1,ET),
    start_time_value(I2,ST),
    %I1 \= I2,
    ET < ST.
 
-comp_afterI(I1,I2):-
+   
+
+%% comp_afterI(I1,I2) is semidet.
+%
+% Interval I1 takes place after I2
+%
+% @param I1 Instance of a knowrob:TimeInterval
+% @param I2 Instance of a knowrob:TimeInterval
+% 
+comp_afterI(I1,I2) :-
    comp_beforeI(I2,I1).
 
-comp_overlapsI(I1,I2):-
+
+   
+%% comp_overlapsI(I1,I2) is semidet.
+%
+% Interval I1  overlaps temporally with I2
+%
+% @param I1 Instance of a knowrob:TimeInterval
+% @param I2 Instance of a knowrob:TimeInterval
+% 
+comp_overlapsI(I1,I2) :-
    start_time_value(I1,ST1),
    end_time_value(I1,ET1),
    start_time_value(I2,ST2),
@@ -208,17 +245,53 @@ comp_overlapsI(I1,I2):-
    (ET1 > ST2),
    (ET1 < ET2).
 
-comp_overlapsInvI(I1,I2):-
+
+   
+%% comp_overlapsInvI(I1,I2) is semidet.
+%
+% Interval I2  overlaps temporally with I1
+%
+% @param I1 Instance of a knowrob:TimeInterval
+% @param I2 Instance of a knowrob:TimeInterval
+% 
+comp_overlapsInvI(I1,I2) :-
    comp_overlapsI(I2,I1).
 
-comp_meetsI(I1,I2):-
+
+   
+%% comp_meetsI(I1,I2) is semidet.
+%
+% Intervals I1 and I2 meet, i.e. the end time of I1 is equal to the start time of I2
+%
+% @param I1 Instance of a knowrob:TimeInterval
+% @param I2 Instance of a knowrob:TimeInterval
+% 
+comp_meetsI(I1,I2) :-
    end_time_value(I1,T),
    start_time_value(I2,T).
 
-comp_meetsInvI(I1,I2):-
+
+   
+%% comp_meetsInvI(I1,I2) is semidet.
+%
+% Intervals I1 and I2 meet, i.e. the end time of I2 is equal to the start time of I1
+%
+% @param I1 Instance of a knowrob:TimeInterval
+% @param I2 Instance of a knowrob:TimeInterval
+% 
+comp_meetsInvI(I1,I2) :-
    comp_meetsI(I2,I1).
 
-comp_duringI(I1,I2):-
+
+   
+%% comp_duringI(I1,I2) is semidet.
+%
+% Interval I1 is inside interval I2, i.e. it starts later and finishes earlier than I2.
+%
+% @param I1 Instance of a knowrob:TimeInterval
+% @param I2 Instance of a knowrob:TimeInterval
+% 
+comp_duringI(I1,I2) :-
    start_time_value(I1,ST1),
    end_time_value(I1,ET1),
    start_time_value(I2,ST2),
@@ -226,10 +299,28 @@ comp_duringI(I1,I2):-
    ST1 > ST2,
    ET1 < ET2.
 
-comp_duringInvI(I1,I2):-
+
+   
+%% comp_duringInvI(I1,I2) is semidet.
+%
+% Interval I2 is inside interval I1, i.e. it starts later and finishes earlier than I1.
+%
+% @param I1 Instance of a knowrob:TimeInterval
+% @param I2 Instance of a knowrob:TimeInterval
+% 
+comp_duringInvI(I1,I2) :-
    comp_duringI(I2,I1).
 
-comp_startsI(I1,I2):-
+
+   
+%% comp_startsI(I1,I2) is semidet.
+%
+% Interval I1 starts interval I2, i.e. both have the same start time, but I1 finishes earlier
+%
+% @param I1 Instance of a knowrob:TimeInterval
+% @param I2 Instance of a knowrob:TimeInterval
+% 
+comp_startsI(I1,I2) :-
    start_time_value(I1,ST1),
    end_time_value(I1,ET1),
    start_time_value(I2,ST2),
@@ -237,10 +328,28 @@ comp_startsI(I1,I2):-
    ST1 = ST2,
    ET1 < ET2.
 
-comp_startsInvI(I1,I2):-
+
+   
+%% comp_startsInvI(I1,I2) is semidet.
+%
+% Interval I2 starts interval I1, i.e. both have the same start time, but I2 finishes earlier
+%
+% @param I1 Instance of a knowrob:TimeInterval
+% @param I2 Instance of a knowrob:TimeInterval
+% 
+comp_startsInvI(I1,I2) :-
    comp_startsI(I2,I1).
 
-comp_finishesI(I1,I2):-
+
+   
+%% comp_finishesI(I1,I2) is semidet.
+%
+% Interval I1 finishes interval I2, i.e. both have the same end time, but I1 starts later
+%
+% @param I1 Instance of a knowrob:TimeInterval
+% @param I2 Instance of a knowrob:TimeInterval
+% 
+comp_finishesI(I1,I2) :-
    start_time_value(I1,ST1),
    end_time_value(I1,ET1),
    start_time_value(I2,ST2),
@@ -248,21 +357,62 @@ comp_finishesI(I1,I2):-
    ST1 > ST2,
    ET1 = ET2.
 
+
+   
+%% comp_finishesInvI(I1,I2) is semidet.
+%
+% Interval I2 finishes interval I1, i.e. both have the same end time, but I2 starts later
+%
+% @param I1 Instance of a knowrob:TimeInterval
+% @param I2 Instance of a knowrob:TimeInterval
+% 
 comp_finishesInvI(I1,I2):-
    comp_finishesI(I2,I1).
 
+
+   
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % helper predicates
 
+%% time_point_value(TP, Value) is semidet.
+%
+% Extracts the numeric time stamp value from a knowrob:TimePoint
+%
+% @param TP    Instance of a knowrob:TimePoint
+% @param Value Numeric value of the time stamp of TP
+% 
 time_point_value(TP, Value) :-
   rdf_split_url(_, StartLocal, TP),
   atom_concat('timepoint_', StartAtom, StartLocal),
   term_to_atom(Value, StartAtom).
 
+
+  
+%% start_time_value(I,Value) is semidet.
+%
+% Extracts the numeric value of the knowrob:startTime of a knowrob:TimeInterval
+%
+% @param I     Instance of a knowrob:TimeInterval
+% @param Value Numeric value of the startTime time stamp of I
+% 
 start_time_value(I,Value) :-
   rdf_has(I, knowrob:startTime, TP),
   time_point_value(TP, Value).
 
+
+  
+%% end_time_value(I, Value) is semidet.
+%
+% Extracts the numeric value of the knowrob:endTime of a knowrob:TimeInterval
+%
+% @param I     Instance of a knowrob:TimeInterval
+% @param Value Numeric value of the endTime time stamp of I
+% 
 end_time_value(I, Value) :-
   ( rdf_has(I, knowrob:endTime, TP),
     time_point_value(TP, Value), ! ) ;
   start_time_value(I,Value).
+
+
+

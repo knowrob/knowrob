@@ -205,6 +205,9 @@ mng_desig_get_value(_Designator, DesigJava, Prop, Value) :-
 
 %% mng_lookup_transform(+Target, +Source, +TimePoint, -Transform) is nondet.
 %
+% Determine the transform from Source to Target at TimePoint based on the logged
+% tf data.
+% 
 % @param Target     Target frame ID
 % @param Source     Source frame ID
 % @param TimePoint  Instance of knowrob:TimePoint
@@ -223,6 +226,16 @@ mng_lookup_transform(Target, Source, TimePoint, Transform) :-
   knowrob_coordinates:matrix4d_to_list(TransformMatrix4d, Transform).
 
 
+%% mng_transform_pose(+PoseListIn, +SourceFrame, +TargetFrame, +TimePoint, -PoseListOut) is nondet.
+% 
+% Transform PoseListIn from SourceFrame into TargetFrame based on the logged tf data.
+% 
+% @param PoseListIn    Pose matrix in SourceFrame to be transformed into TargetFrame, as row-based list[16]
+% @param SourceFrame   Source frame ID
+% @param TargetFrame   Target frame ID
+% @param TimePoint     Instance of knowrob:TimePoint
+% @param PoseListOut   Pose matrix as row-based list[16]
+%
 mng_transform_pose(PoseListIn, SourceFrame, TargetFrame, TimePoint, PoseListOut) :-
 
   rdf_split_url(_, TimePointLocal, TimePoint),
