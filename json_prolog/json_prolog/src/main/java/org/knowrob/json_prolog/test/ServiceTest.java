@@ -1,4 +1,4 @@
-package org.knowrob.json_prolog;
+package org.knowrob.json_prolog.test;
 
 import org.ros.namespace.GraphName;
 import org.ros.node.AbstractNodeMain;

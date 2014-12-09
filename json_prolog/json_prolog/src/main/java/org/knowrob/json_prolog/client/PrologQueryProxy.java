@@ -27,7 +27,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.knowrob.json_prolog;
+package org.knowrob.json_prolog.client;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,6 +35,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import org.knowrob.json_prolog.PrologBindings;
 import org.ros.exception.RemoteException;
 import org.ros.exception.RosRuntimeException;
 import org.ros.node.service.ServiceResponseListener;
@@ -47,7 +48,7 @@ import org.ros.node.service.ServiceResponseListener;
 public class PrologQueryProxy implements Iterable<PrologBindings> {
 
 	boolean finished_;
-	Prolog prolog_;
+	PrologClient prolog_;
 	String query_id_;
 	ArrayList<PrologBindings> bindings_;
 	QueryIterator q_it;
@@ -63,7 +64,7 @@ public class PrologQueryProxy implements Iterable<PrologBindings> {
 	 * @param prolog Instance of the Prolog client class
 	 * @param query_str Query as Prolog query string
 	 */
-	public PrologQueryProxy(final Prolog prolog, String query_str) {
+	public PrologQueryProxy(final PrologClient prolog, String query_str) {
 
 		this.query_id_ = makeQueryID();
 		this.prolog_ = prolog;

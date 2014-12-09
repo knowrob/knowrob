@@ -27,9 +27,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.knowrob.json_prolog;
+package org.knowrob.json_prolog.solutions;
 
 import java.util.Hashtable;
+
+import org.knowrob.json_prolog.query.ThreadedQuery;
 
 import jpl.Term;
 
@@ -38,9 +40,9 @@ public final class PrologAllSolutions implements PrologSolutions {
   private int currentIndex = 0;
   Hashtable<String, jpl.Term>[] solutions;
   
-  @SuppressWarnings("unchecked")
-  PrologAllSolutions(jpl.Query query) {
-    solutions = (Hashtable<String, jpl.Term>[])query.allSolutions();
+  public PrologAllSolutions(ThreadedQuery query) {
+    solutions = query.allSolutions();
+    query.close();
   }
   
   @Override

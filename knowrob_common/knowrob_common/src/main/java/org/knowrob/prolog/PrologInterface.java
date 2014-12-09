@@ -10,6 +10,7 @@ import com.google.common.base.Joiner;
 
 import org.knowrob.owl.OWLThing;
 import org.knowrob.utils.ros.RosUtilities;
+
 import jpl.*;
 
 
@@ -87,18 +88,14 @@ public class PrologInterface {
 	 */
     
 	public static HashMap<String, Vector<String>> executeQuery(String query) {
-		
 		HashMap<String, Vector<String>> result = new HashMap< String, Vector<String> >();
-		@SuppressWarnings("rawtypes")
 		Hashtable[] solutions;
 
-		synchronized(jpl.Query.class) {
-		
+		synchronized(PrologInterface.class) {
     		Query q = new Query( "expand_goal(("+query+"),_9), call(_9)" );
 
     		if(!q.hasSolution())
     			return null;
-    		
     		
     		solutions = q.allSolutions();
     		
@@ -108,7 +105,7 @@ public class PrologInterface {
     		for (Object key: solutions[0].keySet()) {
     			result.put(key.toString(), new Vector<String>());
     		}
-    		
+
     		// Build the result
     		for (int i=0; i<solutions.length; i++) {
     			@SuppressWarnings("rawtypes")
@@ -129,6 +126,7 @@ public class PrologInterface {
     			}
     		}
 		}
+		
 		// Generate the final QueryResult and return
 		return result;
 	}

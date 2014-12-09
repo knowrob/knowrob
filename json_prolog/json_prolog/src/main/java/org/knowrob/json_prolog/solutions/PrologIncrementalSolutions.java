@@ -27,13 +27,39 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.knowrob.json_prolog;
+package org.knowrob.json_prolog.solutions;
 
 import java.util.Hashtable;
 
-public interface PrologSolutions {
-  boolean hasMoreSolutions();
-  Hashtable<String, jpl.Term> nextSolution();
-  void close();
-  void reset();
+import org.knowrob.json_prolog.query.ThreadedQuery;
+
+import jpl.Term;
+
+public class PrologIncrementalSolutions implements PrologSolutions {
+  private ThreadedQuery query;
+
+  public PrologIncrementalSolutions(ThreadedQuery query) {
+    this.query = query;
+  }
+  
+  @Override
+  public void close() {
+    query.close();
+  }
+
+  @Override
+  public Hashtable<String, Term> nextSolution() {
+    return query.nextSolution();
+  }
+
+  @Override
+  public void reset() {
+    query.reset();
+  }
+
+  @Override
+  public boolean hasMoreSolutions() {
+    return query.hasMoreSolutions();
+  }
+
 }

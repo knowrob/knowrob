@@ -146,7 +146,6 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @param timepoint  OWL identifier of a timepoint instance
 	 */
 	public void addObjectWithChildren(String identifier, String timepoint) {
-
 		try {
 			// add this object
 			addMarker(identifier, timepoint);
@@ -156,7 +155,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 				addMarker(child, timepoint);
 
 			publishMarkers();
-		} catch(Exception e) {
+		}
+		catch(Exception e) {
 			e.printStackTrace();
 		}
 
@@ -721,9 +721,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @return a marker that belongs to the 'knowrob_vis' namespace
 	 */
 	Marker createMarker() {
-		
 		waitForNode();
-		
+
 		Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
 		m.getHeader().setFrameId("/map");
 		m.getHeader().setStamp(node.getCurrentTime());

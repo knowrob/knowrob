@@ -27,8 +27,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.knowrob.json_prolog;
+package org.knowrob.json_prolog.client;
 
+import org.knowrob.json_prolog.PrologBindings;
 import org.ros.exception.RosRuntimeException;
 import org.ros.exception.ServiceNotFoundException;
 import org.ros.namespace.GraphName;
@@ -45,7 +46,7 @@ import org.ros.node.service.ServiceClient;
  * @author Moritz Tenorth
  *
  */
-public class Prolog extends AbstractNodeMain {
+public class PrologClient extends AbstractNodeMain {
 
 	public ServiceClient<json_prolog_msgs.PrologQueryRequest, json_prolog_msgs.PrologQueryResponse> query_client;
 	public ServiceClient<json_prolog_msgs.PrologNextSolutionRequest, json_prolog_msgs.PrologNextSolutionResponse> next_solution_client;

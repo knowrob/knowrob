@@ -34,7 +34,8 @@ import java.util.Vector;
 
 import jpl.Term;
 
-import org.knowrob.json_prolog.JSONQuery.InvalidJSONQuery;
+import org.knowrob.json_prolog.query.JSONQuery;
+import org.knowrob.json_prolog.query.JSONQuery.InvalidJSONQuery;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;

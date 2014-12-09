@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2010, Lorenz Moesenlechner
+ * Copyright (c) 2010, Moritz Tenorth
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -27,38 +27,30 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.knowrob.json_prolog;
+package org.knowrob.json_prolog.test;
 
-import java.util.Hashtable;
+import org.knowrob.json_prolog.PrologBindings;
+import org.knowrob.json_prolog.client.PrologClient;
+import org.knowrob.json_prolog.client.PrologQueryProxy;
+import org.knowrob.utils.ros.RosUtilities;
 
-import jpl.Term;
 
-public class PrologIncrementalSolutions implements PrologSolutions {
-  private jpl.Query query;
+public class JSONPrologTestClient {
 
-  public PrologIncrementalSolutions(jpl.Query query) {
-    this.query = query;
+	public static void main(String args[]) {
+
+	 PrologClient pl = new PrologClient();
+	 RosUtilities.runRosjavaNode(pl, new String[]{"org.knowrob.json_prolog.Prolog"});
+	 
+	 PrologQueryProxy bdgs = pl.query("member(A, [1, 2, 3, 4]), B = ['x', A], C = foo(bar, A, B)");
+
+	 
+	 for(PrologBindings bdg : bdgs) {
+
+      System.out.println("Found solution: ");
+      System.out.println("A = " + bdg.getBdgs_().get("A") );
+      System.out.println("B = " + bdg.getBdgs_().get("B") );
+      System.out.println("C = " + bdg.getBdgs_().get("C") );
+    }
   }
-  
-  @Override
-  public void close() {
-    query.rewind();
-  }
-
-  @SuppressWarnings("unchecked")
-  @Override
-  public Hashtable<String, Term> nextSolution() {
-    return (Hashtable<String, Term>) query.nextElement();
-  }
-
-  @Override
-  public void reset() {
-    query.rewind();
-  }
-
-  @Override
-  public boolean hasMoreSolutions() {
-    return query.hasMoreElements();
-  }
-
 }

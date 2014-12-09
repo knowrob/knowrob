@@ -30,8 +30,18 @@
 package org.knowrob.json_prolog;
 
 import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.io.*;
 
+import json_prolog_msgs.PrologQueryResponse;
+
+import org.knowrob.json_prolog.query.JSONQuery;
+import org.knowrob.json_prolog.query.ThreadedQuery;
+import org.knowrob.json_prolog.solutions.PrologAllSolutions;
+import org.knowrob.json_prolog.solutions.PrologIncrementalSolutions;
+import org.knowrob.json_prolog.solutions.PrologSolutions;
 import org.ros.namespace.GraphName;
 import org.ros.node.AbstractNodeMain;
 import org.ros.node.ConnectedNode;
@@ -47,9 +57,13 @@ import org.ros.node.service.ServiceResponseBuilder;
  */
 
 public class JSONPrologNode extends AbstractNodeMain {
+	
+	private ExecutorService queryThreadPool = Executors.newFixedThreadPool(10);
 
 	private Hashtable<String, PrologSolutions> queries;
-	private boolean hasIncrementalQuery = false; 
+	
+	private boolean hasIncrementalQuery = false;
+	
 	private String initPackage="";
 
 	public JSONPrologNode() {
@@ -131,14 +145,13 @@ public class JSONPrologNode extends AbstractNodeMain {
 
 		@Override
 		public void build(json_prolog_msgs.PrologQueryRequest request, json_prolog_msgs.PrologQueryResponse response) {
-            
-            /**
-			if (hasIncrementalQuery ) {
-				response.setOk(false);
-				response.setMessage("Already processing an incremental query.");
 
-			} else
-			*/
+			if(!closeIncrementalQuery(response)) {
+				response.setOk(false);
+				response.setMessage("Failed to close incremental query.");
+				return;
+			}
+			
 			if ( queries.get(request.getId()) != null ) {
 				response.setOk(false);
 				response.setMessage("Already processing a query with id " + request.getId());
@@ -148,8 +161,11 @@ public class JSONPrologNode extends AbstractNodeMain {
 
 					synchronized(jpl.Query.class) {
 
-						jpl.Query currentQuery = JSONQuery.makeQuery(request.getQuery());
+						ThreadedQuery currentQuery = JSONQuery.makeQuery(request.getQuery());
 						String currentQueryId = request.getId();
+						
+						// Add the query to the thread pool
+						queryThreadPool.submit(currentQuery);
 
 						if(request.getMode() == json_prolog_msgs.PrologQueryRequest.INCREMENTAL) {
 							queries.put(currentQueryId, new PrologIncrementalSolutions(currentQuery));
@@ -191,13 +207,12 @@ public class JSONPrologNode extends AbstractNodeMain {
 			try {
 
 				synchronized(jpl.Query.class) {
-                    /**
-					if (hasIncrementalQuery ) {
+					if(!closeIncrementalQuery(response)) {
 						response.setOk(false);
-						response.setMessage("Already processing an incremental query.");
-
-					} else
-					*/
+						response.setMessage("Failed to close incremental query.");
+						return;
+					}
+					
 					if (queries!=null && queries.get(request.getId()) != null ) {
 						response.setOk(false);
 						response.setMessage("Already processing a query with id " + request.getId());
@@ -205,8 +220,12 @@ public class JSONPrologNode extends AbstractNodeMain {
 					} else {
 						try {
 
-							jpl.Query currentQuery = new jpl.Query("expand_goal(("+request.getQuery()+"),_Q), call(_Q)");
+							ThreadedQuery currentQuery = new ThreadedQuery(
+									"expand_goal(("+request.getQuery()+"),_Q), call(_Q)");
 							String currentQueryId = request.getId();
+							
+							// Add the query to the thread pool
+							queryThreadPool.submit(currentQuery);
 
 							if(request.getMode() == json_prolog_msgs.PrologQueryRequest.INCREMENTAL) {
 								queries.put(currentQueryId, new PrologIncrementalSolutions(currentQuery));
@@ -229,6 +248,31 @@ public class JSONPrologNode extends AbstractNodeMain {
 		}
 	}
 
+	private boolean closeIncrementalQuery(PrologQueryResponse response) {
+		// If there is an incremental query active, just close it
+		if (hasIncrementalQuery) {
+			String queryId = null;
+			
+			for(Entry<String, PrologSolutions> e : queries.entrySet()) {
+				if(e.getValue() instanceof PrologIncrementalSolutions) {
+					queryId = e.getKey();
+					break;
+				}
+			}
+			
+			if(queryId==null) {
+				return false;
+			}
+			else {
+				removeQuery(queryId);
+				return true;
+			}
+		}
+		else {
+			return true;
+		}
+	}
+
 
 	/**
 	 * Callback for the NextSolution service
@@ -245,22 +289,22 @@ public class JSONPrologNode extends AbstractNodeMain {
 
 		@Override
 		public void build(json_prolog_msgs.PrologNextSolutionRequest request, json_prolog_msgs.PrologNextSolutionResponse response) {
-
 			try {
 				synchronized(jpl.Query.class) {
 
 					PrologSolutions currentQuery = queries.get(request.getId());
-					if (currentQuery == null)
+					if (currentQuery == null) {
 						response.setStatus(json_prolog_msgs.PrologNextSolutionResponse.WRONG_ID);
-
-					else if (!currentQuery.hasMoreSolutions()){
-						response.setStatus(json_prolog_msgs.PrologNextSolutionResponse.NO_SOLUTION);
-						removeQuery(request.getId());
-
-					} else {
-						Hashtable<String, jpl.Term> solution = (Hashtable<String, jpl.Term>) currentQuery.nextSolution();
-						response.setSolution(JSONQuery.encodeResult(solution).toString());
-						response.setStatus(json_prolog_msgs.PrologNextSolutionResponse.OK);
+					}
+					else {
+						if (!currentQuery.hasMoreSolutions()){
+							response.setStatus(json_prolog_msgs.PrologNextSolutionResponse.NO_SOLUTION);
+							removeQuery(request.getId());
+						} else {
+							Hashtable<String, jpl.Term> solution = (Hashtable<String, jpl.Term>) currentQuery.nextSolution();
+							response.setSolution(JSONQuery.encodeResult(solution).toString());
+							response.setStatus(json_prolog_msgs.PrologNextSolutionResponse.OK);
+						}
 					}
 				}
 
