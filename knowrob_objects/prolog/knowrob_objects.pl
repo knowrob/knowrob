@@ -217,8 +217,8 @@ rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23
 % 
 object_dimensions(Obj, Depth, Width, Height) :-
 
-  rdf_has(Obj, knowrob:widthOfObject,  literal(type(_, Depth))),
-  rdf_has(Obj, knowrob:depthOfObject,  literal(type(_, Width))),
+  rdf_has(Obj, knowrob:depthOfObject,  literal(type(_, Depth))),
+  rdf_has(Obj, knowrob:widthOfObject,  literal(type(_, Width))),
   rdf_has(Obj, knowrob:heightOfObject, literal(type(_, Height))).
 
 
