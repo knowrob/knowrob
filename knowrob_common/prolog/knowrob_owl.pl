@@ -32,7 +32,8 @@
       rdf_instance_from_class/3,
       get_timepoint/1,
       get_timepoint/2,
-      create_timepoint/2
+      create_timepoint/2,
+      inspect/3
     ]).
 
 :- use_module(library('crypt')).
@@ -53,14 +54,43 @@
             create_timepoint(+,r),
             get_timepoint(r),
             get_timepoint(+,r),
-            create_restr(r, r, r, r, +, r).
+            create_restr(r, r, r, r, +, r),
+            inspect(r,r,r).
 
 :- rdf_db:rdf_register_ns(owl,    'http://www.w3.org/2002/07/owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(rdfs,   'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob,'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% experimental: inspect() predicate for reading information about things
 
+
+%% inspect(?Thing, ?P, ?O).
+%
+% Read information stored for Thing. Basically a wrapper around owl_has and
+% class_properties that aggregates their results. The normal use case is to
+% have Thing bound and ask for all property/object pairs for this class or
+% individual.
+%
+% @param Thing  RDF identifier, either an OWL class or an individual
+% @param P      OWL property identifier 
+% @param O      OWL class, individual or literal value specified as property P of Thing
+% 
+inspect(Thing, P, O) :-
+  (rdf_has(Thing, rdf:type, owl:'namedIndividual');
+   rdf_has(Thing, rdf:type, owl:'NamedIndividual')),
+  owl_has(Thing, P, Olit),
+  strip_literal_type(Olit, O).
+  
+inspect(Thing, P, O) :-
+  rdf_has(Thing, rdf:type, owl:'Class'),
+  class_properties(Thing, P, Olit),
+  strip_literal_type(Olit, O).
+  
+
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 %% rdf_instance_from_class(+Class, -Inst) is nondet.
 %
