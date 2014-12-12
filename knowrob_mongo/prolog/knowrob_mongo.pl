@@ -95,6 +95,8 @@ mongo_interface(DB) :-
 
 %% mng_latest_designator_before_time(+TimePoint, -Type, -Pose) is nondet.
 %
+% Read the pose of the latest designator of type 'Type' before 'TimePoint'
+%
 % @param TimePoint  Instance of knowrob:TimePoint
 % @param Type       'Type' property of the designator
 % @param PoseList   Object pose from designator as list[16]
@@ -116,7 +118,14 @@ mng_latest_designator_before_time(TimePoint, Type, PoseList) :-
   knowrob_coordinates:matrix4d_to_list(PoseMatrix4d, PoseList).
 
 
-% Computable: determine object pose based on designator
+
+%% mng_obj_pose_by_desig(+Obj, -Pose) is nondet.
+% 
+% Determine object pose based on the POSE property of a linked designator
+%
+% @param Obj   Object instance
+% @param Pose  Instance of a Perception
+% 
 mng_obj_pose_by_desig(Obj, Pose) :-
 
   % TODO: avoid multiple creation of pose instances
@@ -124,6 +133,14 @@ mng_obj_pose_by_desig(Obj, Pose) :-
   mng_designator_props(Designator, 'POSE', Pose).
 
 
+
+%% mng_designator_type(+Designator, ?Type) is nondet.
+%
+% Read the type of a logged designator by its ID
+% 
+% @param Designator  Instance of a designator, having its ID as local part of the IRI
+% @param Type        Type of the designator
+% 
 mng_designator_type(Designator, Type) :-
 
   rdf_split_url(_, DesigID, Designator),
@@ -134,6 +151,14 @@ mng_designator_type(Designator, Type) :-
   jpl_call(DesigJava, 'getType', [], Type).
 
 
+%% mng_designator_props(+Designator, ?Prop, ?Value) is nondet.
+%
+% Read the properties of a logged designator by its ID
+%
+% @param Designator  Instance of a designator, having its ID as local part of the IRI
+% @param Prop        Property slot of the designator
+% @param Value       Value slot of the designator
+% 
 mng_designator_props(Designator, Prop, Value) :-
 
   rdf_split_url(_, DesigID, Designator),
@@ -147,14 +172,24 @@ mng_designator_props(Designator, Prop, Value) :-
   once(mng_desig_get_value(Designator, DesigJava, Prop, Value)).
 
 
+
+%% mng_desig_get_value(?Designator, +DesigJava, +Prop, -Value).
+% 
 % Internal helper method: handle the different kinds of designator values
+%
+% @param Designator  Designator instance
+% @param DesigJava   Java handle of a org.knowrob.mongo.types.Designator object
+% @param Prop        Designator property
+% @param Value       Value extracted from the designator, e.g. a primitive value
+%                    (string, float etc), the handle of a nested designator object,
+%                    or an instance of a RotationMatrix3D of an object pose
+%
 
 % create designator instance for child-designators
 mng_desig_get_value(_Designator, DesigJava, Prop, Value) :-
   jpl_call(DesigJava, 'get', [Prop], ValIn),
   jpl_ref_to_type(ValIn,  class([org,knowrob,interfaces,mongo,types],['Designator'])),
   Value=ValIn. % TODO
-
 
 % create observation of the object to which the designator is attached
 mng_desig_get_value(Designator, DesigJava, Prop, Pose) :-
@@ -267,6 +302,8 @@ mng_timestamp(Date, Stamp) :-
   mongo_interface(DB),
   jpl_call(DB, 'getMongoTimestamp', [Date], Stamp).
 
+
+
 %% mng_robot_pose(+Robot, -Pose) is nondet.
 %
 % Compute the pose of all components of the robot at the current point in time.
@@ -377,8 +414,14 @@ mng_obj_pose_at_time(Obj, SourceFrame, TargetFrame, TimePoint, Pose) :-
 
 %% obj_visible_in_camera(+Obj, ?Camera, +TimePoint) is nondet.
 %
-% Check if Obj is visible by Camera at time TimePoint.
+% Check if Obj is visible by Camera at time TimePoint by reading the camera
+% properties from the robot's SRDL description and computing whether the
+% object center is inside the view frustrum.
 %
+% @param Obj        Instance of an object in the scene
+% @param Camera     Instance of an srdl2comp:Camera
+% @param TimePoint  Instance of a knowrob:TimePoint at which the scene is to be evaluated
+% 
 obj_visible_in_camera(Obj, Camera, TimePoint) :-
 
   findall(Camera, owl_individual_of(Camera, srdl2comp:'Camera'), Cameras),
@@ -416,7 +459,18 @@ obj_visible_in_camera(Obj, Camera, TimePoint) :-
 
 
 
-
+%% obj_blocked_by_in_camera(?Obj, ?Blocker, ?Camera, +TimePoint) is nondet.
+% 
+% Check if the view on Obj from Camera at time TimePoint is blocked by object
+% Blocker by reading the camera properties from the robot's SRDL description
+% and by computing whether the difference in bearing between the two objects'
+% center points from the camera viewpoint is less than ten degrees.
+%
+% @param Obj        Instance of an object in the scene
+% @param Blocker    Instance of an object in the scene
+% @param Camera     Instance of an srdl2comp:Camera
+% @param TimePoint  Instance of a knowrob:TimePoint at which the scene is to be evaluated
+% 
 obj_blocked_by_in_camera(Obj, Blocker, Camera, TimePoint) :-
 
   findall(Camera, owl_individual_of(Camera, srdl2comp:'Camera'), Cameras),
