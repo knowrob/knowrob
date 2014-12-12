@@ -249,6 +249,8 @@ remove_trajectory(Link) :-
 %
 
 %% add_human_pose(+Human, +Timepoint) is det.
+%% add_human_pose(+Human, +Id, +Timepoint) is det.
+%% add_human_pose(+Human, +Id, +Timepoint, +Prefix) is det.
 %
 % Reads joint poses of a human from logged tf data and visualizes them in the
 % Web-based canvas using a stick-man model.
@@ -267,6 +269,7 @@ add_human_pose(Human, Id, Timepoint, Prefix) :-
     jpl_call(Canvas, 'addHumanPose', [Human,Timepoint,Id,Prefix], _).
 
 %% remove_human_pose is det.
+%% remove_human_pose(+Id) is det.
 %
 % Removes human pose visualizations from the visualization canvas.
 %
@@ -283,9 +286,9 @@ remove_human_pose(Id) :-
 %
 
 %% highlight_object(+Identifier) is det.
-%% highlight_object(Identifier, Highlight) is det.
-%% highlight_object(Identifier, Highlight, Color) is det.
-%% highlight_object(Identifier, Highlight, R, B, G, Alpha) is det.
+%% highlight_object(Identifier) is det.
+%% highlight_object(Identifier, Color) is det.
+%% highlight_object(Identifier, R, B, G, Alpha) is det.
 %% highlight_trajectory(+Link, +Starttime, +Endtime, +Color) is det.
 %% remove_highlight(+Identifier) is det.
 %
@@ -304,7 +307,6 @@ remove_human_pose(Id) :-
 % @param G          Green color value
 % @param Prob       Object existence probability
 %
-
 highlight_object(Identifier) :-
     visualisation_canvas(Canvas),
     jpl_call(Canvas, 'highlight', [Identifier], _).
@@ -313,9 +315,9 @@ highlight_object(Identifier, Color) :-
     visualisation_canvas(Canvas),
     jpl_call(Canvas, 'highlight', [Identifier, Color], _).
 
-highlight_object(Identifier, R, B, G, Prob) :-
+highlight_object(Identifier, R, B, G, Alpha) :-
     visualisation_canvas(Canvas),
-    jpl_call(Canvas, 'highlight', [Identifier, R, B, G, Prob], _).
+    jpl_call(Canvas, 'highlight', [Identifier, R, B, G, Alpha], _).
 
 highlight_trajectory(Link, Starttime, Endtime, Color) :-
     visualisation_canvas(Canvas),
@@ -365,7 +367,7 @@ remove_highlight_with_children(Identifier) :-
 
 
 
-%% reset_highlighting is det.
+%% reset_highlight is det.
 %
 % Reset all highlighted objects in the canvas.
 %
