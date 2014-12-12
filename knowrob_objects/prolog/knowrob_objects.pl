@@ -125,9 +125,35 @@
 :- rdf_db:rdf_register_ns(xsd, 'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
 
 
-
+%% storagePlaceFor(St, ObjT) is nondet.
+%
+% Computes the nominal storage location of an object based on assertions for
+% typePrimaryFunction-StoragePlaceFor for any of its superclasses. For example,
+% a Refrigerator is asserted as ...-StoragePlaceFor perishable items, so
+% instances of Refrigerator will therefore be returned for e.g. dairy products
+% or meat products.
+%
+% @param St       Instance of a knowrob:'StorageConstruct'
+% @param Obj      Object class or instance
+% 
 storagePlaceFor(St, ObjT) :-
   storagePlaceForBecause(St, ObjT, _).
+
+%% storagePlaceForBecause(St, ObjType, ObjT) is nondet.
+%
+% Computes the nominal storage location of an object based on assertions for
+% typePrimaryFunction-StoragePlaceFor for any of its superclasses. For example,
+% a Refrigerator is asserted as ...-StoragePlaceFor perishable items, so
+% instances of Refrigerator will therefore be returned for e.g. dairy products
+% or meat products.
+%
+% In addition to the storage place, this predicate further returns the superclass
+% of Obj for which this information is asserted (e.g. Perishable)
+%
+% @param St       Instance of a knowrob:'StorageConstruct'
+% @param Obj      Object class or instance
+% @param ObjType  Class for which information about the storage place has been asserted
+%
 
 % two instances
 storagePlaceForBecause(St, Obj, ObjT) :-
