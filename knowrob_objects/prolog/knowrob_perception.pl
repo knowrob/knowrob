@@ -157,7 +157,7 @@ set_perception_pose(Perception, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M2
 % Set the pose of an object perception to the value given as PoseList
 %
 % @param Perception  Instance of a RotationMatrix3D with all elements asserted as datatype properties
-% @param PoseList    Pose as row-based list containing the 4x4 rotation matrix
+% @param PoseList    Pose of the perceived object as row-based list containing the 4x4 rotation matrix
 % 
 create_pose([M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33], PoseInst) :-
 
@@ -191,7 +191,7 @@ create_pose([M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M3
 % Set the covariance of an object perception
 %
 % @param Perception  Instance of a CovarianceMatrix with all elements asserted as datatype properties
-% @param PoseList    Row-based list containing the 6x6 covariance matrix
+% @param PoseList    Pose of the perceived object as row-based list containing the 6x6 covariance matrix
 % 
 set_perception_cov(Perception, [M00, M01, M02, M03, M04, M05, M10, M11, M12, M13, M14, M15, M20, M21, M22, M23, M24, M25, M30, M31, M32, M33, M34, M35, M40, M41, M42, M43, M44, M45, M50, M51, M52, M53, M54, M55]) :-
 
