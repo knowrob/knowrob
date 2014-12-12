@@ -60,11 +60,26 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % Actions
 
+%% action_feasible_on_robot(?Action, ?Robot).
+%
+% Verifies that an action is feasible on the given robot by making
+% sure that neither capabilites nor components are missing.
+%
+% @param Action   Action class to be checked
+% @param Robot   Robot instance to be checked
+% 
 action_feasible_on_robot(Action, Robot) :-
   \+ missing_cap_for_action(Action, Robot, _),
   \+ missing_comp_for_action(Action, Robot, _).
 
-
+%% missing_for_action(Action, Robot, MissingCaps, MissingComps).
+%
+% Determines all components and capabilites that are required by an action,
+% but are not available on the given robot.
+%
+% @param Action   Action class to be checked
+% @param Robot   Robot instance to be checked
+% 
 missing_for_action(Action, Robot, MissingCaps, MissingComps) :-
   missing_cap_for_action(Action, Robot, MissingCaps);
   missing_comp_for_action(Action, Robot, MissingComps).
@@ -76,7 +91,7 @@ missing_for_action(Action, Robot, MissingCaps, MissingComps) :-
 
 %% missing_cap_for_action(Action, Robot, Cap) is nondet.
 %
-% missing capabilites are required, but not available on the robot
+% Missing capabilites are required, but not available on the robot
 %
 % @param Action   Action class to be checked
 % @param Robot   Robot instance to be checked
@@ -90,7 +105,7 @@ missing_cap_for_action(Action, Robot, Cap) :-
 
 %% required_cap_for_action(Action, Cap) is nondet.
 %
-% capabilities required by an action and all of its sub-actions
+% Capabilities required by an action and all of its sub-actions
 %
 % @param Action   Action class to be checked
 % @param Cap     Capability required to perform the action
@@ -113,7 +128,9 @@ required_cap_for_action(Action, Cap) :-
 % Check if a capability is available on a robot. This is the case if the capability
 %
 % 1) is asserted for this robot class
+% 
 % 2) is asserted for this robot instance
+% 
 % 3) depends only on available components and sub-capabilites
 %
 % @param Cap   Capability class to be checked
@@ -158,7 +175,7 @@ cap_available_on_robot(Cap, Robot) :-
 
 %% missing_comp_for_action(Action, Robot, Comp) is nondet.
 %
-% missing components are required, but not available on the robot
+% Missing components are required, but not available on the robot
 %
 % @param Action  Action class to be checked
 % @param Robot   Robot instance to be checked
