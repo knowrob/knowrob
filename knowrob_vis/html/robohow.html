@@ -270,10 +270,9 @@
         history.gotoLine(history.session.getLength());
 
         prolog.jsonQuery(q, function(result) {
-            history.setValue(history.getValue() + prolog.format(result), -1);
-            history.gotoLine(history.session.getLength());
+            history.setValue(history.getValue() + result, -1);
         }, 1);
-
+        history.gotoLine(history.session.getLength());
         query.setValue("");
 
       } else {
@@ -365,18 +364,17 @@
         
         // Query for predicates/modules and collect all results
         pl.jsonQuery("findall(X, current_predicate(X/_);current_module(X), L)", function(x) {
-          if (x.value) {
-            // Parse each value
-            var lines = x.value.split("\n");
-            for(i=1; i<lines.length-1; ++i) {
-              var tmp = lines[i].split(" = ");
-              if(tmp.length==2) {
-                prologNames.push(tmp[1].trim());
-              }
+          // Parse each value
+          var lines = x.split("\n");
+          for(i=1; i<lines.length-1; ++i) {
+            var tmp = lines[i].split(" = ");
+            if(tmp.length==2) {
+              prologNames.push(tmp[1].trim());
             }
-            prologNames.sort();
-          });
-        }
+          }
+          
+          prologNames.sort();
+        });
     }
     
     function getPrologNames() {
