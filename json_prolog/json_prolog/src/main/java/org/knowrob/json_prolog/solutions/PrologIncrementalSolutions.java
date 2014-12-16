@@ -43,22 +43,22 @@ public class PrologIncrementalSolutions implements PrologSolutions {
   }
   
   @Override
-  public void close() {
+  public void close() throws Exception {
     query.close();
   }
 
   @Override
-  public Hashtable<String, Term> nextSolution() {
+  public Hashtable<String, Term> nextSolution() throws Exception {
     return query.nextSolution();
   }
 
   @Override
-  public void reset() {
+  public void reset() throws Exception {
     query.reset();
   }
 
   @Override
-  public boolean hasMoreSolutions() {
+  public boolean hasMoreSolutions() throws Exception {
     return query.hasMoreSolutions();
   }
 

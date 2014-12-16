@@ -32,8 +32,8 @@ package org.knowrob.json_prolog.solutions;
 import java.util.Hashtable;
 
 public interface PrologSolutions {
-  boolean hasMoreSolutions();
-  Hashtable<String, jpl.Term> nextSolution();
-  void close();
-  void reset();
+  boolean hasMoreSolutions() throws Exception;
+  Hashtable<String, jpl.Term> nextSolution() throws Exception;
+  void close() throws Exception;
+  void reset() throws Exception;
 }

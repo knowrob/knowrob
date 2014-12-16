@@ -83,8 +83,9 @@ public class ThreadedQuery implements Runnable {
 			query = null;
 			return;
 		}
+		System.out.println(query.toString());
 		
-		QueryCommand cmd;
+		QueryCommand cmd = null;
 		
 		try {
 			while(isRunning) {
@@ -98,7 +99,7 @@ public class ThreadedQuery implements Runnable {
 					}
 				}
 				else {
-					synchronized (this) {
+					synchronized (commadQueue) {
 						cmd = commadQueue.poll();
 					}
 					cmd.result = cmd.execute(query);
@@ -110,7 +111,14 @@ public class ThreadedQuery implements Runnable {
 			}
 		}
 		catch(Exception exc) {
-			// TODO: pass exception to ROS service
+			exc.printStackTrace();
+			if(cmd!=null) {
+				cmd.result = exc;
+			}
+			synchronized (cmd) {
+				// Notify caller that command finished
+				cmd.notifyAll();
+			}
 		}
 		
 		query.close();
@@ -135,8 +143,9 @@ public class ThreadedQuery implements Runnable {
 		}
 	}
 
-	private Object runCommand(QueryCommand cmd) {
-		synchronized (this) {
+	private Object runCommand(QueryCommand cmd) throws Exception {
+		cmd.result = null;
+		synchronized (commadQueue) {
 			commadQueue.push(cmd);
 		}
 		if(commadQueue.size()==1) {
@@ -145,31 +154,35 @@ public class ThreadedQuery implements Runnable {
 				this.notifyAll();
 			}
 		}
-		synchronized (cmd) {
-			try {
-				// Wait until query completed
-				cmd.wait();
+		if(cmd.result==null) {
+			synchronized (cmd) {
+				try {
+					// Wait until query completed
+					cmd.wait();
+				}
+				catch (InterruptedException e) {}
 			}
-			catch (InterruptedException e) {}
 		}
+		if(cmd.result instanceof Exception)
+		  throw (Exception)cmd.result;
 		return cmd.result;
 	}
 
-	public boolean hasMoreSolutions() {
+	public boolean hasMoreSolutions() throws Exception {
 		return ((Boolean)runCommand(new HasMoreSolutionsCommand())).booleanValue();
 	}
 
-	public void reset() {
+	public void reset() throws Exception {
 		runCommand(new ResetCommand());
 	}
 
 	@SuppressWarnings("unchecked")
-	public Hashtable<String, Term> nextSolution() {
+	public Hashtable<String, Term> nextSolution() throws Exception {
 		return (Hashtable<String, Term>)runCommand(new NextSolutionCommand());
 	}
 
 	@SuppressWarnings("unchecked")
-	public Hashtable<String, Term>[] allSolutions() {
+	public Hashtable<String, Term>[] allSolutions() throws Exception {
 		return (Hashtable<String, Term>[])runCommand(new AllSolutionsCommand());
 	}
 }

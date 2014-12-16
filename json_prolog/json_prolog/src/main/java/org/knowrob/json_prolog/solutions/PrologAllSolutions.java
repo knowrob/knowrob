@@ -40,30 +40,30 @@ public final class PrologAllSolutions implements PrologSolutions {
   private int currentIndex = 0;
   Hashtable<String, jpl.Term>[] solutions;
   
-  public PrologAllSolutions(ThreadedQuery query) {
+  public PrologAllSolutions(ThreadedQuery query) throws Exception {
     solutions = query.allSolutions();
     query.close();
   }
   
   @Override
-  public void close() {
+  public void close() throws Exception {
     // This method doesn't need to do anything here. We already closed the query. 
   }  
   
   @Override
-  public void reset() {
+  public void reset() throws Exception {
     currentIndex = 0;
   }
 
   @Override
-  public Hashtable<String, Term> nextSolution() {
+  public Hashtable<String, Term> nextSolution() throws Exception {
     Hashtable<String, jpl.Term> result = solutions[currentIndex];
     currentIndex++;
     return result;
   }
 
   @Override
-  public boolean hasMoreSolutions() {
+  public boolean hasMoreSolutions() throws Exception {
     return currentIndex < solutions.length;
   }
 
