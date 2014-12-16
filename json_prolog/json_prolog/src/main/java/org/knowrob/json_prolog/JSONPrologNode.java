@@ -193,13 +193,13 @@ public class JSONPrologNode extends AbstractNodeMain {
 		public void build(json_prolog_msgs.PrologQueryRequest request,
 						json_prolog_msgs.PrologQueryResponse response) {
 			try {
+				if(!closeIncrementalQuery(response)) {
+					response.setOk(false);
+					response.setMessage("Failed to close incremental query.");
+					return;
+				}
+				
 				synchronized(jpl.Query.class) {
-					if(!closeIncrementalQuery(response)) {
-						response.setOk(false);
-						response.setMessage("Failed to close incremental query.");
-						return;
-					}
-					
 					if (queries!=null && queries.get(request.getId()) != null ) {
 						response.setOk(false);
 						response.setMessage("Already processing a query with id " + request.getId());
@@ -221,6 +221,9 @@ public class JSONPrologNode extends AbstractNodeMain {
 						response.setOk(true);
 					}
 				}
+			}
+			catch (InterruptedException e) {
+				// Query was closed externally, do nothing here
 			}
 			catch (Exception e) {
 				response.setOk(false);
@@ -277,17 +280,24 @@ public class JSONPrologNode extends AbstractNodeMain {
 					}
 					else {
 						if (!currentQuery.hasMoreSolutions()){
-							response.setStatus(json_prolog_msgs.PrologNextSolutionResponse.NO_SOLUTION);
-							removeQuery(request.getId());
+							if(isQueryThreadValid(currentQuery)) {
+								response.setStatus(json_prolog_msgs.PrologNextSolutionResponse.NO_SOLUTION);
+								removeQuery(request.getId());
+							}
 						}
-						else {
+						else if(isQueryThreadValid(currentQuery)) {
 							Hashtable<String, jpl.Term> solution = (Hashtable<String, jpl.Term>) currentQuery.nextSolution();
-							response.setSolution(JSONQuery.encodeResult(solution).toString());
-							response.setStatus(json_prolog_msgs.PrologNextSolutionResponse.OK);
+							if(isQueryThreadValid(currentQuery)) {
+								response.setSolution(JSONQuery.encodeResult(solution).toString());
+								response.setStatus(json_prolog_msgs.PrologNextSolutionResponse.OK);
+							}
 						}
 					}
 				}
 
+			}
+			catch (InterruptedException e) {
+				// Query was closed externally, do nothing here
 			}
 			catch (Exception e) {
 				response.setSolution(e.getMessage());
@@ -297,8 +307,17 @@ public class JSONPrologNode extends AbstractNodeMain {
 			}
 		}
 	}
-
-
+	
+	public boolean isQueryThreadValid(PrologSolutions query) {
+		if(query instanceof PrologIncrementalSolutions) {
+			ThreadedQuery q = ((PrologIncrementalSolutions)query).getQuery();
+			return q.getIsRunning();
+		}
+		else {
+			return true;
+		}
+	}
+	
 	/**
 	 * Finish a query or all open queries if the request is '*' instead of a specific query ID.
 	 * 

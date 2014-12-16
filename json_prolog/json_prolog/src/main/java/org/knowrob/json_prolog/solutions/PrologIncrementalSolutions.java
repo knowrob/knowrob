@@ -42,6 +42,10 @@ public class PrologIncrementalSolutions implements PrologSolutions {
     this.query = query;
   }
   
+  public ThreadedQuery getQuery() {
+    return query;
+  }
+  
   @Override
   public void close() throws Exception {
     query.close();
