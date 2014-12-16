@@ -330,9 +330,7 @@ highlight_trajectory(Link, Starttime, Endtime, Color) :-
      
     jpl_array_to_list(MarkersJ, Markers),
     
-    member(Marker, Markers),
-  
-    highlight_object(Marker, Color).
+    foreach(member(Marker, Markers), highlight_object(Marker, Color)).
 
 remove_highlight(Identifier) :-
     visualisation_canvas(Canvas),
