@@ -45,8 +45,12 @@
             "text": "Which instances of Cups being lifted are available?"
         },
         {
+            "q": "findall(StartTime, simlift_liftonly(Exp,knowrob:'Cup',StartTime,EndTime), Starts), findall(EndTime, simlift_liftonly(Exp,knowrob:'Cup',StartTime,EndTime), Ends), add_avg_trajectory('Cup', Starts, Ends, 10, 1).",
+            "text": "Show the average trajectory of Cups being lifted for all available experiments"
+        },
+        {
             "q": "nb_setval(counter,0x0000ff), simlift_liftonly(Exp, knowrob:'Cup', Start, End), add_count(0x404000), add_trajectory('Cup', Start, End, 0.5,3), nb_getval(counter,Val), highlight_trajectory('Cup', Start, End, Val).",
-            "text": "Show the trajectories of Cups being lifted for all available experiments"
+            "text": "Show the individual trajectories of Cups being lifted for all available experiments"
         },
         {
             "q": "simflipping(Exp, Object,Tool,Target,_,_,_,_,_).",
@@ -66,7 +70,7 @@
         },
         {
             "q": "remove_highlight('Spatula'), remove_highlight('Cup'), simlift_liftonly('Pancake4', knowrob:'Cup', Start, End), highlight_trajectory('Cup', Start, End, '0080ff').",
-            "text": "Highlight the trajectory of the Cup in experiment 4 and remove highlighting of the Spatula"
+            "text": "Highlight the trajectory of the Cup in experiment 4\nand remove highlighting of the Spatula"
         },
         {
             "q": "simflip_full('Pancake1', knowrob:'LiquidTangibleThing', knowrob:'Spatula', knowrob:'PancakeMaker', Start, End, _, _, _), add_trajectory('LiquidTangibleThing', Start, End, 0.2,2).",
