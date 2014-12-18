@@ -3,15 +3,17 @@
 <head>
   <meta charset="utf-8" />
   <link rel="stylesheet" media="all" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700|Oswald|Source+Code+Pro" />
-  <link rel="stylesheet" type="text/css" href="screen.css"/>
+  <link rel="stylesheet" type="text/css" href="lib/screen.css"/>
   <link rel="stylesheet" type="text/css" href="lib/layout/layout-default-1.4.0.css" />
-  <link rel="stylesheet" type="text/css" href="user.css"/>
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="lib/user.css"/>
 
   <script type="text/javascript" src="lib/ace/ace.js"></script>
   <script type="text/javascript" src="lib/ace/ext-language_tools.js"></script>
   
-  <script type="text/javascript" src="jquery-1.11.1.min.js"></script>
+  <script type="text/javascript" src="lib/jquery-1.11.1.min.js"></script>
   <script type="text/javascript" src="lib/jquery.ui.js"></script>
+  <script type="text/javascript" src="lib/layout/jquery.layout-1.4.0.js"></script>
   
   <script type="text/javascript" src="lib/ros/threejs/three.js"></script>
   <script type="text/javascript" src="lib/ros/threejs/ColladaLoader.js"></script>
@@ -45,6 +47,7 @@
   <script type="text/javascript" src="lib/ros/visualization/interaction/MouseHandler.js"></script>
   <script type="text/javascript" src="lib/ros/visualization/interaction/OrbitControls.js"></script>
   <script type="text/javascript" src="lib/ros/json_prolog.js"></script>
+  <script type="text/javascript" src="lib/ros/KeepAlivePublisher.js"></script>
   
   <script type="text/javascript" src="lib/d3/d3.v3.min.js"></script>
   <script type="text/javascript" src="lib/d3/d3-tip.js"></script>
@@ -61,14 +64,20 @@
   
   <script type="text/javascript" src="lib/designator/desig.js"></script>
   
-  <script type="text/javascript" src="lib/layout/jquery.layout-1.4.0.js"></script>
+  <script type="text/javascript" src="lib/knowrob.js"></script>
+  
   <script type="text/javascript">
+    // global knowrob handle
+    var knowrob;
+    
     $(document).ready(function () {
-      var history = setupHistoryField();
-      var user_query = setupQueryField();
+      knowrob = new Knowrob({});
+      knowrob.init();
+      
       $('#container').layout({
+        stateManagement__enabled: true,
         south: {
-          minSize: 75
+          minSize: 60
         },
         west: {
           minSize: 250,
@@ -86,7 +95,7 @@
             },
             south: {
               paneSelector: "#library",
-              minSize: 250
+              minSize: 150
             }
           }
         },
@@ -95,12 +104,15 @@
           childOptions: {
             center: {
               paneSelector: "#markers",
-              onresize: resize_canvas,
+              onresize: function() {
+               if( knowrob ) knowrob.resize_canvas();
+              },
               minSize: 250
             },
             south: {
               paneSelector: "#chart",
-              minSize: 250
+              initClosed: true,
+              minSize: 150
             }
           }
         },
@@ -108,6 +120,7 @@
           minSize: 250,
           maxSize: 750,
           size: 500,
+          initClosed: true,
           // INNER-LAYOUT
           childOptions: {
             center: {
@@ -116,343 +129,19 @@
             },
             south: {
               paneSelector: "#mjpeg",
-              minSize: 250
+              minSize: 150
             }
           }
         }
       });
+      knowrob.resize_canvas();
     });
   </script>
-
-  <script type="text/javascript" type="text/javascript">
-
-    // global ROS handle
-    var ros;
-    
-    //global jsonprolog handle
-    var prolog;
-    
-    // the 3d canvas
-    var ros_viewer;
-    
-    // Names of prolog predicates and modules for auto completion
-    var prologNames = [];
-    
-    function get_ros_viewer() {
-      return ros_viewer;
-    }
-    
-    function resize_canvas() {
-      var w = $('#markers').width()-8.0;
-      var h = $('#markers').height()-8.0;
-      var viewer = get_ros_viewer();
-      
-      viewer.renderer.setSize(w, h);
-      viewer.camera.aspect = w/h;
-      viewer.camera.updateProjectionMatrix();
-    }
-    
-    function init() {
-    
-      // Connect to ROS.
-      ros = new ROSLIB.Ros({
-        url : 'ws://localhost:9090'
-      });
-
-      // Create the main viewer.
-      ros_viewer = new ROS3D.Viewer({
-        divID : 'markers',
-        width : 950,
-        height : 495,
-        antialias : true,
-        background : '#ffffff'
-      });
-      
-      ros_viewer.addObject(new ROS3D.Grid());
-
-      // Setup a client to listen to TFs.
-      var tfClient = new ROSLIB.TFClient({
-        ros : ros,
-        angularThres : 0.01,
-        transThres : 0.01,
-        rate : 10.0,
-        fixedFrame : '/my_frame'
-      });
-
-      // Setup the marker client.
-      var markerClient = new ROS3D.MarkerClient({
-        ros : ros,
-        tfClient : tfClient,
-        topic : '/visualization_marker',
-        rootObject : ros_viewer.scene
-      });
-      
-      // Setup the marker array client.
-      var markerArrayClient = new ROS3D.MarkerArrayClient({
-        ros : ros,
-        tfClient : tfClient,
-        topic : '/visualization_marker_array',
-        rootObject : ros_viewer.scene,
-        markerClient : markerClient
-      });
-
-      var desig_listener = new ROSLIB.Topic({
-        ros : ros,
-        name : '/logged_designators',
-        messageType : 'designator_integration_msgs/Designator'
-      });
-
-      desig_listener.subscribe(function(message) {
-        document.getElementById("designator").innerHTML=format_designator(message.description, "", 0, 0);
-      });
-
-      var img_listener = new ROSLIB.Topic({
-        ros : ros,
-        name : '/logged_images',
-        messageType : 'std_msgs/String'
-      });
-
-      img_listener.subscribe(function(message) {
-        document.getElementById("mjpeg").innerHTML='<img src="/'+message.data+'" />';
-      });
-      
-
-      var options = {
-        ros: ros,
-        containerId: '#chart',
-        topic: 'data_vis_msgs',
-        //width: 500,//210,
-        //height: 500//210
-      };
-      var dataVisClient = new DataVisClient(options);
-      
-      updatePrologNames();
-      ace.require("ace/ext/language_tools").addCompleter({
-          getCompletions: function(editor, session, pos, prefix, callback) {
-              callback(null, getPrologNames().map(function(x) {
-                  return {name: x, value: x, score: 100, meta: "pl"};
-              }));
-          }
-      });
-      
-      resize_canvas();
-
-      // fill example qurey select
-      populateQuerySelect('examplequery', "queriesForRobohow.json");
-
-      master = new Control({
-        ros: ros,
-        sliderHigh: "slider1",
-        initButton: "controlInitButton",
-        startButton: "startButton",
-        stopButton: "stopButton",
-        timeDisplay: "currentTime"
-      });
-    };
-
-
-    function queryProlog(query) {
-
-      var history = ace.edit("history");
-      var q = query.getValue();
-
-      if (q.substr(q.length - 1) == ".") {
-        q = q.substr(0, q.length - 1);
-
-        if (prolog != null && prolog.finished == false) {
-          prolog.finishClient();
-        }
-
-        prolog = new JsonProlog(ros, {});
-
-
-        history.setValue(history.getValue() + "\n\n?- " + q +  ".\n", -1);
-        history.gotoLine(history.session.getLength());
-
-        prolog.jsonQuery(q, function(result) {
-            history.setValue(history.getValue() + prolog.format(result), -1);
-            history.gotoLine(history.session.getLength());
-        }, 1);
-
-        query.setValue("");
-
-      } else {
-        if (prolog != null && prolog.finished == false) {
-          prolog.finishClient();
-        }
-      }
-    };
-
-    function nextQueryProlog() {
-      var history = ace.edit("history");
-      prolog.nextQuery(function(result) {
-          history.setValue(history.getValue() + prolog.format(result), -1);
-      });
-      history.gotoLine(history.session.getLength());
-    };
-
-
-    // example query selection stuff
-    // -------------------------------------
-
-    // fill the select with json data from url
-    function populateQuerySelect(id, url) {
-
-      // url must point to a json-file containing an array named "query" with
-      // the query strings to display in the select
-      var request = new XMLHttpRequest
-      request.open("GET", url, false);
-      request.send(null);
-
-      var querylist = JSON.parse(request.responseText);
-
-      var select = document.getElementById(id);
-
-      for (var i = 0; i < querylist.query.length; i++) {
-        var opt = document.createElement('option');
-        opt.value = querylist.query[i].q;
-        opt.innerHTML = querylist.query[i].text;
-        select.appendChild(opt);
-      }
-    }
-
-    // append the selected query to the user_query form
-    function addSelectedToQueryform(selectid) {
-      var select = document.getElementById(selectid);
-      setQueryValue(select.options[select.selectedIndex].value);
-    }
-
-    // set the value of the query editor and move the cursor to the end
-    function setQueryValue(val){
-      var user_query = ace.edit("user_query");
-      user_query.setValue(val, -1);
-      user_query.focus();
-      session = user_query.getSession();
-      count = session.getLength();
-      user_query.gotoLine(count, session.getLine(count-1).length);
-    }
-
-    // hook for links of class "show_code" that pastes the content of the
-    // previous code block into the query field
-    $( document ).ready(function() {
-      $( "a.show_code" ).click(function( event ) {
-        setQueryValue( $(this).closest("pre + *").prev().find('code').html() );
-        event.preventDefault();
-      });
-    });
-
-    function setupHistoryField() {
-        var history = ace.edit("history");
-        history.setTheme("ace/theme/solarized_light");
-        history.getSession().setMode("ace/mode/prolog");
-        history.getSession().setUseWrapMode(true);
-        history.setOptions({
-            readOnly: true,
-            showGutter: false,
-            printMarginColumn: false,
-            highlightActiveLine: false,
-            highlightGutterLine: false
-        });
-//         history.renderer.$cursorLayer.element.style.opacity=0;
-
-        return history;
-    }
-    
-    function updatePrologNames() {
-        var pl = new JsonProlog(ros, {});
-        
-        prologNames.length = 0;
-        
-        // Query for predicates/modules and collect all results
-        pl.jsonQuery("findall(X, current_predicate(X/_);current_module(X), L)", function(x) {
-          if (x.value) {
-            // Parse each value
-            var lines = x.value.split("\n");
-            for(i=1; i<lines.length-1; ++i) {
-              var tmp = lines[i].split(" = ");
-              if(tmp.length==2) {
-                prologNames.push(tmp[1].trim());
-              }
-            }
-            prologNames.sort();
-          }
-        });
-    }
-    
-    function getPrologNames() {
-        return prologNames;
-    }
-
-    function setupQueryField() {
-
-        var user_query = ace.edit("user_query");
-        user_query.setTheme("ace/theme/solarized_light");
-        user_query.getSession().setMode("ace/mode/prolog");
-        user_query.getSession().setUseWrapMode(true);
-        user_query.setOptions({
-            showGutter: false,
-            printMarginColumn: false,
-            highlightActiveLine: false,
-            highlightGutterLine: false,
-            enableBasicAutocompletion: true
-        });
-        
-        user_query.commands.addCommand({
-            name: 'send_query',
-            bindKey: {win: 'Enter',  mac: 'Enter'},
-            exec: function(editor) {
-                queryProlog(user_query);
-            },
-            readOnly: false
-        });
-        user_query.commands.addCommand({
-            name: 'new_line',
-            bindKey: {win: 'Ctrl-Enter',  mac: 'Command-Enter'},
-            exec: function(editor) {
-                setQueryValue(user_query.getValue()+"\n");
-            },
-            readOnly: false
-        });
-        user_query.commands.addCommand({
-            name: 'next_result',
-            bindKey: {win: 'Ctrl-;',  mac: 'Command-;'},
-            exec: function(editor) {
-                nextQueryProlog();
-            },
-            readOnly: false
-        });
-        user_query.commands.addCommand({
-            name: 'next_result',
-            bindKey: {win: 'Ctrl-n',  mac: 'Command-n'},
-            exec: function(editor) {
-                nextQueryProlog();
-            },
-            readOnly: false
-        });
-        user_query.commands.addCommand({
-            name: 'next_history',
-            bindKey: {win: 'Up',  mac: 'Up'},
-            exec: function(editor) {
-                setNextHistoryItem();
-            },
-            readOnly: false
-        });
-        user_query.commands.addCommand({
-            name: 'previous_history',
-            bindKey: {win: 'Down',  mac: 'Down'},
-            exec: function(editor) {
-                setPreviousHistoryItem();
-            },
-            readOnly: false
-        });
-
-        return user_query;
-    }
-</script>
 </head>
 
-<body onload="init()" >
+<body>
   <div class="container" id="container" style="padding-left:15px; margin-top: 9px;">
+  
     <div class="ui-layout-center" id="editor-container">
       <div id="markers"></div>
       <div id="chart"></div>	
@@ -460,11 +149,21 @@
 
     <div class="ui-layout-west">
       <div id="console">
-        <div id="history"></div>
-        <div id="user_query">member(A, [a,b,c]).</div>
+        <div id="console_top">
+          <div id="history"></div>
+          <div id="user_query">member(A, [a,b,c]).</div>
+        </div>
+        <div id="console_bottom">
+          <div id="query_buttons">
+            <ul class="query_button_group">
+              <li><a href="#" class="query_button" id="btn_query"  onclick="knowrob.query()">Query</a></li>
+              <li><a href="#" class="query_button" id="btn_query_next" onclick="knowrob.next_solution()">Next Solution</a></li>
+            </ul>
+          </div>
+        </div>
       </div>
       <div id="library">
-        <select onclick="addSelectedToQueryform('examplequery')" 
+        <select onclick="knowrob.add_selected_to_queryform('examplequery')" 
           size="20" name="examplequery" id="examplequery"><option value=0></option>
         </select>
       </div>
@@ -478,26 +177,27 @@
     <div class="ui-layout-north">
       <img src="logos/robohow-logo.svg" width="180">
     </div>
-  
-    <div class="ui-layout-south">
-      The development of this system has received funding from the following projects:
-      <br/>
-      <a href="http://www.robohow.eu" class="media" title="http://www.robohow.eu"  rel="nofollow">
-        <img src="logos/robohow-logo.png" class="media" alt="" />
-      </a>
-      <a href="http://www.roboearth.org" class="media" title="http://www.roboearth.org"  rel="nofollow">
-        <img src="logos/roboearth-logo.png" class="media" alt="" />
-      </a>
-      <a href="http://www.sherpa-project.eu" class="media" title="http://www.sherpa-project.eu"  rel="nofollow">
-        <img src="logos/sherpa-logo.png" class="media" alt="" />
-      </a>
-      <a href="http://www.saphari.eu" class="media" title="http://www.saphari.eu"  rel="nofollow">
-        <img src="logos/saphari-logo.png" class="media" alt="" />
-      </a>
-      <a href="http://cordis.europa.eu/fp7/ict/programme/challenge2_en.html" class="media" title="http://cordis.europa.eu/fp7/ict/programme/challenge2_en.html"  rel="nofollow">
-        <img src="logos/fp7-logo.png" class="media" alt="" />
-      </a>
+    
+    <div class="pane ui-layout-south">
+      <div id="logo_container">
+        <a href="http://www.robohow.eu" class="media" title="http://www.robohow.eu"  rel="nofollow">
+          <img src="logos/robohow-logo.png" class="media" alt="" />
+        </a>
+        <a href="http://www.roboearth.org" class="media" title="http://www.roboearth.org"  rel="nofollow">
+          <img src="logos/roboearth-logo.png" class="media" alt="" />
+        </a>
+        <a href="http://www.sherpa-project.eu" class="media" title="http://www.sherpa-project.eu"  rel="nofollow">
+          <img src="logos/sherpa-logo.png" class="media" alt="" />
+        </a>
+        <a href="http://www.saphari.eu" class="media" title="http://www.saphari.eu"  rel="nofollow">
+          <img src="logos/saphari-logo.png" class="media" alt="" />
+        </a>
+        <a href="http://cordis.europa.eu/fp7/ict/programme/challenge2_en.html" class="media" title="http://cordis.europa.eu/fp7/ict/programme/challenge2_en.html"  rel="nofollow">
+          <img src="logos/fp7-logo.png" class="media" alt="" />
+        </a>
+      <div>
     </div>
+    
   </div>
 
 </body>
