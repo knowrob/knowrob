@@ -66,11 +66,11 @@
     <qudt:dimensionVector rdf:resource="http://qudt.org/vocab/dimension#Vector_L1"/>
   </rdf:Description>
   <rdf:Description rdf:about="">
-    <owl:imports rdf:resource="http://qudt.org/1.1/schema/dimension"/>
+    <owl:imports rdf:resource="package://knowrob_common/owl/dimension.owl"/>
     <vaem:usesNonImportedResource rdf:resource="http://purl.org/dc/elements/1.1/rights"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">QUDT Dimensions Vocabulary</rdfs:label>
     <vaem:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://qudt.org/vocab/dimension</vaem:namespace>
-    <owl:imports rdf:resource="http://qudt.org/1.1/schema/qudt"/>
+    <owl:imports rdf:resource="package://knowrob_common/owl/qudt.owl"/>
     <vaem:revisionNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.1</vaem:revisionNumber>
     <vaem:namespacePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">qudt-dimension</vaem:namespacePrefix>
     <voag:hasLicenseType rdf:resource="voag:CC-SHAREALIKE_3PT0-US"/>
@@ -80,7 +80,7 @@
     <vaem:lastUpdated rdf:datatype="http://www.w3.org/2001/XMLSchema#string">$LastChangedDate: 2011-06-01 13:34:19 -0700 (Wed, 01 Jun 2011) $</vaem:lastUpdated>
     <vaem:hasAspectScope rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Basic treatment of quantities and units. No dimensional treatment in this graph.</vaem:hasAspectScope>
     <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">James E. Masters</dc:creator>
-    <owl:imports rdf:resource="http://qudt.org/1.1/vocab/quantity"/>
+    <owl:imports rdf:resource="package://knowrob_common/owl/quantity.owl"/>
     <vaem:usesNonImportedResource rdf:resource="http://purl.org/dc/elements/1.1/title"/>
     <vaem:hasRole rdf:resource="http://www.linkedmodel.org/schema/vaem#SchemaGraph"/>
     <vaem:usesNonImportedResource rdf:resource="http://purl.org/dc/elements/1.1/contributor"/>
@@ -89,8 +89,8 @@
     <dc:title rdf:datatype="http://www.w3.org/2001/XMLSchema#string">QUDT Dimensions Vocabulary Version 1.1</dc:title>
     <vaem:usesNonImportedResource rdf:resource="http://purl.org/dc/elements/1.1/creator"/>
     <owl:versionIRI rdf:resource=""/>
-    <owl:imports rdf:resource="http://qudt.org/1.1/schema/quantity"/>
-    <owl:imports rdf:resource="http://qudt.org/1.1/vocab/unit"/>
+    <owl:imports rdf:resource="package://knowrob_common/owl/quantity.owl"/>
+    <owl:imports rdf:resource="package://knowrob_common/owl/unit.owl"/>
     <vaem:usesNonImportedResource rdf:resource="voag:CC-SHAREALIKE_3PT0-US"/>
     <voag:withAttributionTo rdf:resource="http://qudt.org/schema/qudt#NASA-ARC-Attribution"/>
     <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ralph Hodgson</dc:creator>

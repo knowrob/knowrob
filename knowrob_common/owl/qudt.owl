@@ -22,7 +22,7 @@
     >Sidney Bailin</dc:contributor>
     <dc:title rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >The NASA Quantity - Unit - Dimension Ontology</dc:title>
-    <owl:imports rdf:resource="http://purl.org/dc/elements/1.1/"/>
+<!--     <owl:imports rdf:resource="http://purl.org/dc/elements/1.1/"/> -->
     <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >$Date: 2010-02-16 10:59:30 -0500 (Tue, 16 Feb 2010) $</dc:date>
     <dc:contributor rdf:datatype="http://www.w3.org/2001/XMLSchema#string"

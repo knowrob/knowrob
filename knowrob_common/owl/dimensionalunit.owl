@@ -16,11 +16,11 @@
     <vaem:revisionNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.1</vaem:revisionNumber>
     <voag:hasLicenseType rdf:resource="voag:CC-SHAREALIKE_3PT0-US"/>
     <vaem:usesNonImportedResource rdf:resource="http://purl.org/dc/elements/1.1/contributor"/>
-    <owl:imports rdf:resource="http://qudt.org/1.1/vocab/quantity"/>
+    <owl:imports rdf:resource="package://knowrob_common/owl/quantity.owl"/>
     <dc:contributor rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Irene Polikoff</dc:contributor>
     <dc:subject rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Units of Measure with Dimensional Analysis</dc:subject>
     <vaem:usesNonImportedResource rdf:resource="http://www.w3.org/2004/02/skos/core#exactMatch"/>
-    <owl:imports rdf:resource="http://qudt.org/1.1/schema/qudt"/>
+    <owl:imports rdf:resource="package://knowrob_common/owl/qudt.owl"/>
     <vaem:hasRole rdf:resource="http://www.linkedmodel.org/schema/vaem#VocabularyGraph"/>
     <owl:versionIRI rdf:resource=""/>
     <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">James E. Masters</dc:creator>
@@ -37,7 +37,7 @@
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
     <vaem:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://qudt.org/vocab/dimensionalunit</vaem:namespace>
     <vaem:usesNonImportedResource rdf:resource="http://purl.org/dc/elements/1.1/author"/>
-    <owl:imports rdf:resource="http://qudt.org/1.1/vocab/unit"/>
+    <owl:imports rdf:resource="package://knowrob_common/owl/unit.owl"/>
     <vaem:intent rdf:datatype="http://www.w3.org/2001/XMLSchema#string">To provide the dimension vectors for all QUDT units</vaem:intent>
     <dc:title rdf:datatype="http://www.w3.org/2001/XMLSchema#string">QUDT Dimensional Units Version 1.1</dc:title>
     <vaem:usesNonImportedResource rdf:resource="http://purl.org/dc/elements/1.1/description"/>
@@ -48,7 +48,7 @@
     <vaem:usesNonImportedResource rdf:resource="http://www.w3.org/2004/02/skos/core#closeMatch"/>
     <vaem:usesNonImportedResource rdf:resource="voag:CC-SHAREALIKE_3PT0-US"/>
     <vaem:usesNonImportedResource rdf:resource="http://purl.org/dc/elements/1.1/title"/>
-    <owl:imports rdf:resource="http://qudt.org/1.1/schema/dimension"/>
+    <owl:imports rdf:resource="package://knowrob_common/owl/dimension.owl"/>
     <voag:hasCatalogEntry rdf:resource="http://qudt.org/catalog/qudt#QUDT-DIMENSIONALUNITS-VocabCatalogEntry"/>
     <dc:rights rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The QUDT Ontologies are issued under a Creative Commons Attribution Share Alike 3.0 United States License. Attribution should be made to NASA Ames Research Center and TopQuadrant, Inc.</dc:rights>
     <voag:withAttributionTo rdf:resource="http://voag.linkedmodel.org/schema/voag#TopQuadrantAttribution"/>

@@ -1939,7 +1939,7 @@ In physics, the angular momentum of an object rotating about some reference poin
     <vaem:acronym rdf:datatype="http://www.w3.org/2001/XMLSchema#string">QUDT</vaem:acronym>
     <vaem:usesNonImportedResource rdf:resource="http://purl.org/dc/elements/1.1/creator"/>
     <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">$Id: OVG_quantities-qudt-(v1.1).ttl 4988 2011-06-01 20:34:19Z RalphHodgson $</owl:versionInfo>
-    <owl:imports rdf:resource="http://qudt.org/1.1/schema/quantity"/>
+    <owl:imports rdf:resource="package://knowrob_common/owl/quantity.owl"/>
     <vaem:dateCreated rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2010-12-30T21:26:38</vaem:dateCreated>
     <vaem:usesNonImportedResource rdf:resource="http://purl.org/dc/elements/1.1/author"/>
     <vaem:lastUpdated rdf:datatype="http://www.w3.org/2001/XMLSchema#string">$LastChangedDate: 2011-06-01 13:34:19 -0700 (Wed, 01 Jun 2011) $</vaem:lastUpdated>
@@ -1959,13 +1959,13 @@ In physics, the angular momentum of an object rotating about some reference poin
     <vaem:usesNonImportedResource rdf:resource="http://www.w3.org/2004/02/skos/core#exactMatch"/>
     <dc:subject rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measurable Quantities</dc:subject>
     <vaem:usesNonImportedResource rdf:resource="voag:CC-SHAREALIKE_3PT0-US"/>
-    <owl:imports rdf:resource="http://qudt.org/1.1/vocab/unit"/>
+    <owl:imports rdf:resource="package://knowrob_common/owl/unit.owl"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">QUDT Quantity</rdfs:label>
     <vaem:usesNonImportedResource rdf:resource="http://purl.org/dc/elements/1.1/title"/>
     <vaem:usesNonImportedResource rdf:resource="http://www.w3.org/2004/02/skos/core#closeMatch"/>
     <vaem:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://qudt.org/vocab/quantity</vaem:namespace>
     <vaem:usesNonImportedResource rdf:resource="http://purl.org/dc/elements/1.1/contributor"/>
-    <owl:imports rdf:resource="http://qudt.org/1.1/schema/qudt"/>
+    <owl:imports rdf:resource="package://knowrob_common/owl/qudt.owl"/>
     <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">James E. Masters</dc:creator>
     <voag:withAttributionTo rdf:resource="http://voag.linkedmodel.org/schema/voag#TopQuadrantAttribution"/>
   </rdf:Description>

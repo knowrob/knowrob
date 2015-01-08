@@ -1267,8 +1267,8 @@
     <vaem:usesNonImportedResource rdf:resource="voag:CC-SHAREALIKE_3PT0-US"/>
     <dc:title rdf:datatype="http://www.w3.org/2001/XMLSchema#string">QUDT Units Vocabulary (without dimensions) Version 1.1</dc:title>
     <vaem:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The QUDT Units Vocabulary is an RDF/OWL specifications of common units of measure in the science and engineering domains. All SI Units are included. Links, where possible, have been made to dbpedia using 'skos:closeMatch' and 'skos:exactMatch'.</vaem:description>
-    <owl:imports rdf:resource="http://www.linkedmodel.org/schema/vaem"/>
-    <owl:imports rdf:resource="http://qudt.org/schema/qudt"/>
+<!--     <owl:imports rdf:resource="http://www.linkedmodel.org/schema/vaem"/> -->
+  <owl:imports rdf:resource="package://knowrob_common/owl/qudt.owl"/>
   </rdf:Description>
   <rdf:Description rdf:about="#CordobaOro">
     <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Nicaraguan_c%C3%B3rdoba"/>
