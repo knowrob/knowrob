@@ -171,8 +171,11 @@ public class MarkerVisualization extends AbstractNodeMain {
 	public void removeObject(String identifier) {
 		try {
 			// remove the object from the list
-			synchronized (markers) {
-				eraseMarker(identifier);
+			Marker m = eraseMarker(identifier);
+			if(m!=null) {
+				final MarkerArray arr = pub.newMessage();
+				arr.getMarkers().add(m);
+				pub.publish(arr);
 			}
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -186,43 +189,55 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @param identifier OWL identifier of an object instance
 	 */
 	public void removeObjectWithChildren(String identifier) {
-		// remove this object
-		eraseMarker(identifier);
+		try {
+			final MarkerArray arr = pub.newMessage();
+			// remove this object
+			Marker m = eraseMarker(identifier);
+			if(m!=null) arr.getMarkers().add(m);
 
-		// remove children and remove them too
-		for(String child : readChildren(identifier))
-			eraseMarker(child);
+			// remove children and remove them too
+			for(String child : readChildren(identifier)) {
+				Marker c = eraseMarker(child);
+				if(c!=null) arr.getMarkers().add(c);
+			}
 
-		publishMarkers();
+			pub.publish(arr);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
 	 * Remove all objects from the visualization
 	 */
 	public void clear() {
-
-		// wait for node to be ready
-		waitForNode();
-		
-		
-		final MarkerArray arr = pub.newMessage();
-		synchronized (markersCache) {
-			for(Marker m : markersCache.values()) {
-				m.setAction(Marker.DELETE);
-				arr.getMarkers().add(m);
+		try {
+			// wait for node to be ready
+			waitForNode();
+			
+			final MarkerArray arr = pub.newMessage();
+			synchronized (markersCache) {
+				for(Marker m : markersCache.values()) {
+					m.setAction(Marker.DELETE);
+					arr.getMarkers().add(m);
+				}
+				markersCache.clear();
 			}
-			markersCache.clear();
+			synchronized (markers) {
+				markers.clear();
+			}
+			synchronized (trajectories) {
+				trajectories.clear();
+			}
+			synchronized (highlighted) {
+				highlighted.clear();
+			}
+			pub.publish(arr);
 		}
-		synchronized (markers) {
-			markers.clear();
+		catch(Exception e) {
+			e.printStackTrace();
 		}
-		synchronized (trajectories) {
-			trajectories.clear();
-		}
-		synchronized (highlighted) {
-			highlighted.clear();
-		}
-		pub.publish(arr);
 	}
 
 	/**
@@ -985,18 +1000,15 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * and send the marker once with delete flag set.
 	 * @param identifier Marker identifier
 	 */
-	void eraseMarker(String identifier) {
-		Marker m = markers.remove(identifier);
+	Marker eraseMarker(String identifier) {
+		Marker m = markersCache.remove(identifier);
 		if(m!=null) {
-			final MarkerArray arr = pub.newMessage();
 			m.setAction(Marker.DELETE);
-			arr.getMarkers().add(m);
-			pub.publish(arr);
-
 			trajectories.remove(identifier);
 			highlighted.remove(identifier);
-			markersCache.remove(identifier);
+			markers.remove(identifier);
 		}
+		return m;
 	}
 
 	boolean addHumanMarker(Marker marker, int index, int id) {
