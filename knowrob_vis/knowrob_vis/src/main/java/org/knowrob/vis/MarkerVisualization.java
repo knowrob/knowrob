@@ -126,7 +126,10 @@ public class MarkerVisualization extends AbstractNodeMain {
 		log = connectedNode.getLog();
 		// Need to start the webserver after node in order to able to use
 		// ROS parameters for server configuration.
-		startWebServer(1111);
+		if(node.getParameterTree().getBoolean("knowrob_vis/webserver_start", true)) {
+			int port = node.getParameterTree().getInteger("knowrob_vis/webserver_port", 1111);
+			startWebServer(port);
+		}
 	}
 	
 	public void setCameraPose(final String[] positions, final String[] orientations) {
