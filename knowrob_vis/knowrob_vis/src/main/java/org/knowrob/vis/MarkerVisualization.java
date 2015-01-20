@@ -164,7 +164,6 @@ public class MarkerVisualization extends AbstractNodeMain {
 	}
 
 
-
 	/**
 	 * Add object 'identifier' and all its parts to the visualization.
 	 *
@@ -179,6 +178,46 @@ public class MarkerVisualization extends AbstractNodeMain {
 			// read children and add them too
 			for(String child : readChildren(identifier))
 				addMarker(child, timepoint);
+
+			publishMarkers();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	/**
+	 * Update object 'identifier' in the visualization.
+	 *
+	 * @param identifier OWL identifier of an object instance
+	 * @param timepoint  OWL identifier of a timepoint instance
+	 */
+	public void updateObject(String identifier, String timepoint) {
+		try {
+			updateMarker(identifier, timepoint);
+
+			publishMarkers();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+	
+	/**
+	 * Update object 'identifier' and all its parts in the visualization.
+	 *
+	 * @param identifier OWL identifier of an object instance
+	 * @param timepoint  OWL identifier of a timepoint instance
+	 */
+	public void updateObjectWithChildren(String identifier, String timepoint) {
+		try {
+			// update this object
+			updateMarker(identifier, timepoint);
+
+			// read children and update them too
+			for(String child : readChildren(identifier))
+				updateMarker(child, timepoint);
 
 			publishMarkers();
 		}
@@ -757,6 +796,18 @@ public class MarkerVisualization extends AbstractNodeMain {
 		}
 		return true;
 	}
+	
+	boolean updateMarker(String identifier, String timepoint) {
+		Marker m = markersCache.get(identifier);
+		if(m!=null) {
+			setMarkerPose(m, identifier, timepoint);
+			markers.put(identifier, m);
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 
 	/**
 	 * @return a marker that belongs to the 'knowrob_vis' namespace
@@ -789,31 +840,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 		return blk!=null;
 	}
 
-	/**
-	 * Read object information from Prolog and create a marker from it
-	 *
-	 * @param identifier OWL identifier of an object instance
-	 * @param timepoint  OWL identifier of a timepoint instance
-	 * @return Marker with the object information
-	 */
-	Marker readMarkerFromProlog(String identifier, String timepoint) {
-
-		// wait for node to be ready
-		waitForNode();
-		
-		if(isBlackListed(identifier)) return null;
-		
-		final Marker m = createMarker();
-		m.setType(Marker.CUBE);
-		// set light grey color by default
-		m.getColor().setR(0.6f);
-		m.getColor().setG(0.6f);
-		m.getColor().setB(0.6f);
-		m.getColor().setA(1.0f);
-		m.getScale().setX(1.0);
-		m.getScale().setY(1.0);
-		m.getScale().setZ(1.0);
-
+	boolean setMarkerPose(Marker m, String identifier, String timepoint) {
 		try {
 			
 			// read object pose
@@ -846,11 +873,42 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 				// debug
 //				log.info("adding " + identifier + " at pose [" + m.getPose().getPosition().getX() + ", " + m.getPose().getPosition().getY() + ", " + m.getPose().getPosition().getZ() + "]");
+				
+				return true;
 			}
 		}
 		catch (Exception e) {
 			log.warn("Unable to lookup pose for '" + identifier + "'.", e);
 		}
+		return false;
+	}
+	
+	/**
+	 * Read object information from Prolog and create a marker from it
+	 *
+	 * @param identifier OWL identifier of an object instance
+	 * @param timepoint  OWL identifier of a timepoint instance
+	 * @return Marker with the object information
+	 */
+	Marker readMarkerFromProlog(String identifier, String timepoint) {
+
+		// wait for node to be ready
+		waitForNode();
+		
+		if(isBlackListed(identifier)) return null;
+		
+		final Marker m = createMarker();
+		m.setType(Marker.CUBE);
+		// set light grey color by default
+		m.getColor().setR(0.6f);
+		m.getColor().setG(0.6f);
+		m.getColor().setB(0.6f);
+		m.getColor().setA(1.0f);
+		m.getScale().setX(1.0);
+		m.getScale().setY(1.0);
+		m.getScale().setZ(1.0);
+		
+		setMarkerPose(m, identifier, timepoint);
 
 		try {
 			// read object dimensions if available
