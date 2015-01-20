@@ -24,6 +24,7 @@
     [
       visualisation_canvas/0,
       clear_canvas/0,
+      camera_pose/2,
       add_object/1,
       add_object/2,
       add_object_with_children/1,
@@ -63,6 +64,7 @@
 
 
 :- rdf_meta add_object(r),
+            camera_pose(r,r),
             add_object(r,r),
             add_object_with_children(r),
             add_object_with_children(r,r),
@@ -122,6 +124,17 @@ clear_canvas :-
     jpl_call(Canvas, 'clear', [], _).
 
 
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%
+% Camera
+%
+
+camera_pose(Position, Orientation) :-
+    visualisation_canvas(Canvas),
+    lists_to_arrays(Position, PositionArr),
+    lists_to_arrays(Orientation, OrientationArr),
+    jpl_call(Canvas, 'setCameraPose', [PositionArr, OrientationArr], _).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %

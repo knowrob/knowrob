@@ -33,6 +33,9 @@ import org.knowrob.utils.ros.RosUtilities;
 import tfjava.StampedTransform;
 import visualization_msgs.Marker;
 import visualization_msgs.MarkerArray;
+import geometry_msgs.Pose;
+import geometry_msgs.Point;
+import geometry_msgs.Quaternion;
 
 /**
  * Visualization module for the KnowRob knowledge base
@@ -53,6 +56,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 	private static final String HTML_RED = "ff0000";
 
 	Publisher<MarkerArray> pub;
+	
+	Publisher<Pose> cam_pub;
 
 	ConnectedNode node;
 
@@ -114,11 +119,32 @@ public class MarkerVisualization extends AbstractNodeMain {
 	public void onStart(final ConnectedNode connectedNode) {
 		node = connectedNode;
 		pub = connectedNode.newPublisher("/visualization_marker_array", visualization_msgs.MarkerArray._TYPE);
+        cam_pub = connectedNode.newPublisher("/camera/pose", geometry_msgs.Pose._TYPE);
 		log = connectedNode.getLog();
 		// Need to start the webserver after node in order to able to use
 		// ROS parameters for server configuration.
 		startWebServer(1111);
 	}
+	
+    public void setCameraPose(final String[] positions, final String[] orientations) {
+        try {
+            final Pose pose = cam_pub.newMessage();
+            
+            pose.getPosition().setX(Float.parseFloat(positions[0]));
+            pose.getPosition().setY(Float.parseFloat(positions[1]));
+            pose.getPosition().setZ(Float.parseFloat(positions[2]));
+            
+            pose.getOrientation().setX(Float.parseFloat(orientations[0]));
+            pose.getOrientation().setY(Float.parseFloat(orientations[1]));
+            pose.getOrientation().setZ(Float.parseFloat(orientations[2]));
+            pose.getOrientation().setW(Float.parseFloat(orientations[3]));
+            
+            cam_pub.publish(pose);
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 	/**
 	 * Add object 'identifier' to the visualization.
