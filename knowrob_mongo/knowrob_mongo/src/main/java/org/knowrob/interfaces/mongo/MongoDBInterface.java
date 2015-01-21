@@ -33,9 +33,6 @@ import com.mongodb.QueryBuilder;
 
 public class MongoDBInterface {
 
-	MongoClient mongoClient;
-	DB db;
-
 	TFMemory mem;
 
 	final SimpleDateFormat mongoDateFormat;
@@ -67,14 +64,16 @@ public class MongoDBInterface {
         	port = Integer.valueOf(env.get("MONGO_PORT_27017_TCP_PORT"));
         }
         
-		try {
-			mongoClient = new MongoClient(host, port);
-			db = mongoClient.getDB("roslog");
-
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
 		mem = TFMemory.getInstance();
+	}
+	
+	public DB getDatabase() {
+		return mem.getDatabase();
+	}
+	
+	public DB setDatabase(String name) {
+		mem.setDatabase(name);
+		return getDatabase();
 	}
 
 
@@ -115,7 +114,7 @@ public class MongoDBInterface {
 	 */
 	public Designator getDesignatorByID(String designator) {
 		
-		DBCollection coll = db.getCollection("logged_designators");
+		DBCollection coll = getDatabase().getCollection("logged_designators");
 		DBObject query = QueryBuilder
 				.start("designator._id").is(designator).get();
 
@@ -148,7 +147,7 @@ public class MongoDBInterface {
 	 */
 	public Designator[] getDesignatorsByPattern(String[] keys, String[] values) {
 		
-		DBCollection coll = db.getCollection("logged_designators");
+		DBCollection coll = getDatabase().getCollection("logged_designators");
 		
 		QueryBuilder qb = QueryBuilder.start("designator").exists("_id");
 		for(int i=0; i<keys.length; i++) {
@@ -186,7 +185,7 @@ public class MongoDBInterface {
 	public Designator latestUIMAPerceptionBefore(int posix_ts) {
 
 		Designator desig = null;
-		DBCollection coll = db.getCollection("logged_designators");
+		DBCollection coll = getDatabase().getCollection("logged_designators");
 
 		// read all events up to one minute before the time
 		Date start = new ISODate((long) 1000 * (posix_ts - 60) ).getDate();
@@ -226,7 +225,7 @@ public class MongoDBInterface {
 	public List<Date> getUIMAPerceptionTimes(String object) {
 
 		List<Date> times = new ArrayList<Date>();
-		DBCollection coll = db.getCollection("logged_designators");
+		DBCollection coll = getDatabase().getCollection("logged_designators");
 
 		// TODO: This will always return a single result since the ID is unique
 		DBObject query = QueryBuilder
@@ -258,7 +257,7 @@ public class MongoDBInterface {
 	@SuppressWarnings("unchecked")
 	public Matrix4d getDesignatorLocation(String id) {
 		Matrix4d poseMatrix = null;
-		DBCollection coll = db.getCollection("logged_designators");
+		DBCollection coll = getDatabase().getCollection("logged_designators");
 		DBObject query = QueryBuilder
 				.start("designator._id").is(id).get();
 

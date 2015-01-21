@@ -147,7 +147,16 @@ public class TFMemory {
 		frames = new HashMap<String, Frame>();
 
 	}
-
+	
+	public DB getDatabase() {
+		return db;
+	}
+	
+	public DB setDatabase(String name) {
+		db = mongoClient.getDB(name);
+		frames = new HashMap<String, Frame>();
+		return db;
+	}
 
 	/* **********************************************************************
 	 * *                            TF LISTENER                             *

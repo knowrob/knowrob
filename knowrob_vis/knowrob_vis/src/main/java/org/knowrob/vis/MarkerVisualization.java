@@ -33,6 +33,9 @@ import org.knowrob.utils.ros.RosUtilities;
 import tfjava.StampedTransform;
 import visualization_msgs.Marker;
 import visualization_msgs.MarkerArray;
+import geometry_msgs.Pose;
+import geometry_msgs.Point;
+import geometry_msgs.Quaternion;
 
 /**
  * Visualization module for the KnowRob knowledge base
@@ -53,6 +56,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 	private static final String HTML_RED = "ff0000";
 
 	Publisher<MarkerArray> pub;
+	
+	Publisher<Pose> cam_pub;
 
 	ConnectedNode node;
 
@@ -114,11 +119,32 @@ public class MarkerVisualization extends AbstractNodeMain {
 	public void onStart(final ConnectedNode connectedNode) {
 		node = connectedNode;
 		pub = connectedNode.newPublisher("/visualization_marker_array", visualization_msgs.MarkerArray._TYPE);
+        cam_pub = connectedNode.newPublisher("/camera/pose", geometry_msgs.Pose._TYPE);
 		log = connectedNode.getLog();
 		// Need to start the webserver after node in order to able to use
 		// ROS parameters for server configuration.
 		startWebServer(1111);
 	}
+	
+    public void setCameraPose(final String[] positions, final String[] orientations) {
+        try {
+            final Pose pose = cam_pub.newMessage();
+            
+            pose.getPosition().setX(Float.parseFloat(positions[0]));
+            pose.getPosition().setY(Float.parseFloat(positions[1]));
+            pose.getPosition().setZ(Float.parseFloat(positions[2]));
+            
+            pose.getOrientation().setX(Float.parseFloat(orientations[0]));
+            pose.getOrientation().setY(Float.parseFloat(orientations[1]));
+            pose.getOrientation().setZ(Float.parseFloat(orientations[2]));
+            pose.getOrientation().setW(Float.parseFloat(orientations[3]));
+            
+            cam_pub.publish(pose);
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 	/**
 	 * Add object 'identifier' to the visualization.
@@ -136,7 +162,6 @@ public class MarkerVisualization extends AbstractNodeMain {
 		}
 
 	}
-
 
 
 	/**
@@ -162,6 +187,46 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 	}
 
+	/**
+	 * Update object 'identifier' in the visualization.
+	 *
+	 * @param identifier OWL identifier of an object instance
+	 * @param timepoint  OWL identifier of a timepoint instance
+	 */
+	public void updateObject(String identifier, String timepoint) {
+		try {
+			updateMarker(identifier, timepoint);
+
+			publishMarkers();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+	
+	/**
+	 * Update object 'identifier' and all its parts in the visualization.
+	 *
+	 * @param identifier OWL identifier of an object instance
+	 * @param timepoint  OWL identifier of a timepoint instance
+	 */
+	public void updateObjectWithChildren(String identifier, String timepoint) {
+		try {
+			// update this object
+			updateMarker(identifier, timepoint);
+
+			// read children and update them too
+			for(String child : readChildren(identifier))
+				updateMarker(child, timepoint);
+
+			publishMarkers();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
 
 	/**
 	 * Remove object 'identifier' from the visualization.
@@ -171,8 +236,11 @@ public class MarkerVisualization extends AbstractNodeMain {
 	public void removeObject(String identifier) {
 		try {
 			// remove the object from the list
-			synchronized (markers) {
-				eraseMarker(identifier);
+			Marker m = eraseMarker(identifier);
+			if(m!=null) {
+				final MarkerArray arr = pub.newMessage();
+				arr.getMarkers().add(m);
+				pub.publish(arr);
 			}
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -186,43 +254,55 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @param identifier OWL identifier of an object instance
 	 */
 	public void removeObjectWithChildren(String identifier) {
-		// remove this object
-		eraseMarker(identifier);
+		try {
+			final MarkerArray arr = pub.newMessage();
+			// remove this object
+			Marker m = eraseMarker(identifier);
+			if(m!=null) arr.getMarkers().add(m);
 
-		// remove children and remove them too
-		for(String child : readChildren(identifier))
-			eraseMarker(child);
+			// remove children and remove them too
+			for(String child : readChildren(identifier)) {
+				Marker c = eraseMarker(child);
+				if(c!=null) arr.getMarkers().add(c);
+			}
 
-		publishMarkers();
+			pub.publish(arr);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
 	 * Remove all objects from the visualization
 	 */
 	public void clear() {
-
-		// wait for node to be ready
-		waitForNode();
-		
-		
-		final MarkerArray arr = pub.newMessage();
-		synchronized (markersCache) {
-			for(Marker m : markersCache.values()) {
-				m.setAction(Marker.DELETE);
-				arr.getMarkers().add(m);
+		try {
+			// wait for node to be ready
+			waitForNode();
+			
+			final MarkerArray arr = pub.newMessage();
+			synchronized (markersCache) {
+				for(Marker m : markersCache.values()) {
+					m.setAction(Marker.DELETE);
+					arr.getMarkers().add(m);
+				}
+				markersCache.clear();
 			}
-			markersCache.clear();
+			synchronized (markers) {
+				markers.clear();
+			}
+			synchronized (trajectories) {
+				trajectories.clear();
+			}
+			synchronized (highlighted) {
+				highlighted.clear();
+			}
+			pub.publish(arr);
 		}
-		synchronized (markers) {
-			markers.clear();
+		catch(Exception e) {
+			e.printStackTrace();
 		}
-		synchronized (trajectories) {
-			trajectories.clear();
-		}
-		synchronized (highlighted) {
-			highlighted.clear();
-		}
-		pub.publish(arr);
 	}
 
 	/**
@@ -445,14 +525,14 @@ public class MarkerVisualization extends AbstractNodeMain {
 	public void showAverageTrajectory(String tflink, String[] starttimes, String[] endtimes, int intervalsegments, int markertype) {
 		String identifier, formattedTime;
 		String tflink_ = (tflink.startsWith("/") ? tflink : "/"+tflink);
-		for(String test : starttimes)
-		{
-			System.out.println(test);
-		}
-		for(String test : endtimes)
-		{
-			System.out.println(test);
-		}
+//		for(String test : starttimes)
+//		{
+//			System.out.println(test);
+//		}
+//		for(String test : endtimes)
+//		{
+//			System.out.println(test);
+//		}
 		if(starttimes.length != endtimes.length)
 		{
 			System.out.println("Specified start and endtimes of intervals are of different length");
@@ -463,7 +543,6 @@ public class MarkerVisualization extends AbstractNodeMain {
 			//for every timepoint of interest in the interval
 			for(int isegment=0; isegment<=intervalsegments; isegment++)
 			{
-//				System.out.println("isegment: " + isegment);
 				//initialize marker
 				Marker m = null;
 				//for every exp/trajectory to be taken into account for the average
@@ -508,7 +587,6 @@ public class MarkerVisualization extends AbstractNodeMain {
 						m.getPose().getOrientation().setY(avgyr);
 						m.getPose().getOrientation().setZ(avgzr);
 					}
-//					System.out.println("itraj: " + itraj);
 				}
 				// add marker to map
 				identifier = tflink_ + "_avg_" +isegment;
@@ -523,10 +601,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 			}
 			synchronized (trajectories) {
 				trajectories.put(tflink_, out);
-//				System.out.println(out);
 			}
 			publishMarkers();
-
 		}
 	}
 
@@ -814,6 +890,18 @@ public class MarkerVisualization extends AbstractNodeMain {
 		}
 		return true;
 	}
+	
+	boolean updateMarker(String identifier, String timepoint) {
+		Marker m = markersCache.get(identifier);
+		if(m!=null) {
+			setMarkerPose(m, identifier, timepoint);
+			markers.put(identifier, m);
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 
 	/**
 	 * @return a marker that belongs to the 'knowrob_vis' namespace
@@ -846,31 +934,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 		return blk!=null;
 	}
 
-	/**
-	 * Read object information from Prolog and create a marker from it
-	 *
-	 * @param identifier OWL identifier of an object instance
-	 * @param timepoint  OWL identifier of a timepoint instance
-	 * @return Marker with the object information
-	 */
-	Marker readMarkerFromProlog(String identifier, String timepoint) {
-
-		// wait for node to be ready
-		waitForNode();
-		
-		if(isBlackListed(identifier)) return null;
-		
-		final Marker m = createMarker();
-		m.setType(Marker.CUBE);
-		// set light grey color by default
-		m.getColor().setR(0.6f);
-		m.getColor().setG(0.6f);
-		m.getColor().setB(0.6f);
-		m.getColor().setA(1.0f);
-		m.getScale().setX(1.0);
-		m.getScale().setY(1.0);
-		m.getScale().setZ(1.0);
-
+	boolean setMarkerPose(Marker m, String identifier, String timepoint) {
 		try {
 			
 			// read object pose
@@ -903,11 +967,42 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 				// debug
 //				log.info("adding " + identifier + " at pose [" + m.getPose().getPosition().getX() + ", " + m.getPose().getPosition().getY() + ", " + m.getPose().getPosition().getZ() + "]");
+				
+				return true;
 			}
 		}
 		catch (Exception e) {
 			log.warn("Unable to lookup pose for '" + identifier + "'.", e);
 		}
+		return false;
+	}
+	
+	/**
+	 * Read object information from Prolog and create a marker from it
+	 *
+	 * @param identifier OWL identifier of an object instance
+	 * @param timepoint  OWL identifier of a timepoint instance
+	 * @return Marker with the object information
+	 */
+	Marker readMarkerFromProlog(String identifier, String timepoint) {
+
+		// wait for node to be ready
+		waitForNode();
+		
+		if(isBlackListed(identifier)) return null;
+		
+		final Marker m = createMarker();
+		m.setType(Marker.CUBE);
+		// set light grey color by default
+		m.getColor().setR(0.6f);
+		m.getColor().setG(0.6f);
+		m.getColor().setB(0.6f);
+		m.getColor().setA(1.0f);
+		m.getScale().setX(1.0);
+		m.getScale().setY(1.0);
+		m.getScale().setZ(1.0);
+		
+		setMarkerPose(m, identifier, timepoint);
 
 		try {
 			// read object dimensions if available
@@ -1083,18 +1178,15 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * and send the marker once with delete flag set.
 	 * @param identifier Marker identifier
 	 */
-	void eraseMarker(String identifier) {
-		Marker m = markers.remove(identifier);
+	Marker eraseMarker(String identifier) {
+		Marker m = markersCache.remove(identifier);
 		if(m!=null) {
-			final MarkerArray arr = pub.newMessage();
 			m.setAction(Marker.DELETE);
-			arr.getMarkers().add(m);
-			pub.publish(arr);
-
 			trajectories.remove(identifier);
 			highlighted.remove(identifier);
-			markersCache.remove(identifier);
+			markers.remove(identifier);
 		}
+		return m;
 	}
 
 	boolean addHumanMarker(Marker marker, int index, int id) {

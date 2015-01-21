@@ -24,10 +24,15 @@
     [
       visualisation_canvas/0,
       clear_canvas/0,
+      camera_pose/2,
       add_object/1,
       add_object/2,
       add_object_with_children/1,
       add_object_with_children/2,
+      update_object/1,
+      update_object/2,
+      update_object_with_children/1,
+      update_object_with_children/2,
       remove_object/1,
       remove_object_with_children/1,
       highlight_object/1,
@@ -64,9 +69,13 @@
 
 
 :- rdf_meta add_object(r),
+            camera_pose(r,r),
             add_object(r,r),
             add_object_with_children(r),
             add_object_with_children(r,r),
+            update_object(r,r),
+            update_object_with_children(r),
+            update_object_with_children(r,r),
             remove_object(r),
             remove_object_with_children(r),
             highlight_object(r),
@@ -127,7 +136,18 @@ clear_canvas :-
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
-% Add / remove objects and trajectories
+% Camera
+%
+
+camera_pose(Position, Orientation) :-
+    visualisation_canvas(Canvas),
+    lists_to_arrays(Position, PositionArr),
+    lists_to_arrays(Orientation, OrientationArr),
+    jpl_call(Canvas, 'setCameraPose', [PositionArr, OrientationArr], _).
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%
+% Add / update / remove objects and trajectories
 %
 
 %% add_object(+Identifier) is nondet.
@@ -176,6 +196,54 @@ add_object_with_children(Identifier, Time) :-
     visualisation_canvas(Canvas),
     jpl_call(Canvas, 'addObjectWithChildren', [Identifier, Time], _).
 
+
+
+%% update_object(+Identifier) is nondet.
+%
+% Update object in the scene
+%
+% @param Identifier Object identifier, eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
+%
+update_object(Identifier) :-
+    get_timepoint(Time),
+    update_object(Identifier, Time).
+
+
+%% update_object(+Identifier, +Time) is nondet.
+%
+% Update object in the scene with its position at time 'Time'
+%
+% @param Identifier Object identifier, eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
+%
+update_object(Identifier, Time) :-
+    visualisation_canvas(Canvas),
+    jpl_call(Canvas, 'updateObject', [Identifier, Time], _).
+
+
+
+%% update_object_with_children(+Identifier)
+%
+% Updates object in the scene, including all items that are reachable via knowrob:properPhysicalPartTypes
+% or via knowrob:describedInMap
+%
+% @param Identifier eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
+%
+update_object_with_children(Identifier) :-
+    get_timepoint(Time),
+    update_object_with_children(Identifier, Time).
+
+
+%% update_object_with_children(+Identifier, +Time)
+%
+% Updates object in the scene, including all items that are reachable via knowrob:properPhysicalPartTypes
+% or via knowrob:describedInMap, with their positions at time 'Time'
+%
+% @param Identifier eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
+%
+update_object_with_children(Identifier, Time) :-
+    visualisation_canvas(Canvas),
+    jpl_call(Canvas, 'updateObjectWithChildren', [Identifier, Time], _).
+    
 
 %% remove_object(+Identifier) is det.
 %

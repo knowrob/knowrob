@@ -45,19 +45,17 @@ import jpl.Term;
  */
 public class ThreadedQuery implements Runnable {
 
-	private static final long IDLE_SLEEP = 100;
-
 	private String queryString = null;
 
 	private Term queryTerm = null;
 	
 	private jpl.Query query = null;
 	
-	private boolean isRunning = false;
+	private boolean isStarted = false;
+	
+	private boolean isRunning = true;
 	
 	private boolean isClosed = true;
-	
-	private Thread currentThread;
 	
 	private LinkedList<QueryCommand> commadQueue = new LinkedList<QueryCommand>();
 
@@ -71,9 +69,8 @@ public class ThreadedQuery implements Runnable {
 
 	@Override
 	public void run() {
-		isRunning = true;
+		isStarted = true;
 		isClosed = false;
-		currentThread = Thread.currentThread();
 		
 		// Create a query (bound to this thread)
 		if(queryString!=null) {
@@ -106,7 +103,7 @@ public class ThreadedQuery implements Runnable {
 					}
 					cmd.result = cmd.execute(query);
 					if(cmd.result == null) {
-						cmd.result = new String("");
+						cmd.result = new String("Result is null.");
 					}
 				}
 			}
@@ -121,25 +118,22 @@ public class ThreadedQuery implements Runnable {
 				cmd.result = exc;
 			}
 		}
-		
+
 		isClosed = true;
 		isRunning = false;
-		currentThread = null;
 		query.close();
 	}
 
 	public void close() {
 		if(!isClosed && isRunning) {
 			isRunning = false;
-			// wake up query thread
-			synchronized (this) { this.notifyAll(); }
 			// Notify caller that command finished
 			for(QueryCommand cmd : commadQueue) {
-				cmd.result = new String("");
+				if(cmd.result==null)
+					cmd.result = new String("Query was closed.");
 			}
-			if (currentThread != null) {
-				currentThread.interrupt();
-			}
+			// wake up query thread
+			synchronized (this) { this.notifyAll(); }
 		}
 	}
 
@@ -150,10 +144,9 @@ public class ThreadedQuery implements Runnable {
 		
 		cmd.result = null;
 		synchronized (commadQueue) { commadQueue.push(cmd); }
-		if(commadQueue.size()==1) {
-			// wake up query thread
-			synchronized (this) { this.notifyAll(); }
-		}
+		// wake up query thread
+		synchronized (this) { this.notifyAll(); }
+		
 		while(cmd.result==null) {
 			try {
 				Thread.sleep(100);
@@ -165,8 +158,12 @@ public class ThreadedQuery implements Runnable {
 		return cmd.result;
 	}
 	
-	public boolean getIsRunning() {
+	public boolean isRunning() {
 		return isRunning;
+	}
+
+	public boolean isStarted() {
+		return isStarted;
 	}
 
 	public boolean hasMoreSolutions() throws Exception {
