@@ -35,6 +35,7 @@
       update_object_with_children/2,
       remove_object/1,
       remove_object_with_children/1,
+      add_text/3,
       highlight_object/1,
       highlight_object/2,
       highlight_object/5,
@@ -77,6 +78,7 @@
             update_object_with_children(r,r),
             remove_object(r),
             remove_object_with_children(r),
+            add_text(r,r,r),
             highlight_object(r),
             highlight_object(r,?),
             highlight_object(r,?,?,?,?,?),
@@ -265,6 +267,18 @@ remove_object_with_children(Identifier) :-
     visualisation_canvas(Canvas),
     jpl_call(Canvas, 'removeObjectWithChildren', [Identifier], _).
 
+%% add_text(+Identifier, +Text, +Position) is nondet.
+%
+% Add view aligned text object to the scene
+%
+% @param Identifier Object identifier, eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
+% @param Text The text that should be displayed
+% @param Position The position of the text object.
+%
+add_text(Identifier, Text, Position) :-
+    visualisation_canvas(Canvas),
+    lists_to_arrays(Position, PositionArr),
+    jpl_call(Canvas, 'addText', [Identifier, Text, PositionArr], _).
 
 %% add_trajectory(+Link, +Starttime, +Endtime) is det.
 %% add_trajectory(+Link, +Starttime, +Endtime, +Interval) is det.

@@ -709,6 +709,43 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 		//log.info("addHumanPose took " + (System.currentTimeMillis()-t0) + " ms.");
 	}
+	
+	public void addText(String identifier, String text, String position[]) {
+		try {
+			Marker m = markersCache.get(identifier);
+			if(m==null) {
+				m = createMarker();
+				
+				m.setType(Marker.TEXT_VIEW_FACING);
+				m.getColor().setR(0.6f);
+				m.getColor().setG(0.9f);
+				m.getColor().setB(0.6f);
+				m.getColor().setA(1.0f);
+			}
+			
+			m.setText(text);
+			// The height of an uppercase 'A'
+			m.getScale().setZ(1.0);
+			
+			m.getPose().getPosition().setX(Float.parseFloat(position[0]));
+			m.getPose().getPosition().setY(Float.parseFloat(position[1]));
+			m.getPose().getPosition().setZ(Float.parseFloat(position[2]));
+			
+			// add marker to map
+			synchronized (markers) {
+				markers.put(identifier, m);
+			}
+			synchronized (markersCache) {
+				markersCache.put(identifier, m);
+			}
+			
+			publishMarkers();
+		}
+		catch(Exception exc) {
+			log.warn("Failed to add text marker.", exc);
+			return;
+		}
+	}
 
 	HumanSkeleton getHumanSkeleton(String humanIndividualName) {
 		HumanSkeleton out = humanSkeletons.get(humanIndividualName);
