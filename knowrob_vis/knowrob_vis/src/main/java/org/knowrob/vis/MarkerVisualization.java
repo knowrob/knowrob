@@ -445,7 +445,14 @@ public class MarkerVisualization extends AbstractNodeMain {
 	public void showAverageTrajectory(String tflink, String[] starttimes, String[] endtimes, int intervalsegments, int markertype) {
 		String identifier, formattedTime;
 		String tflink_ = (tflink.startsWith("/") ? tflink : "/"+tflink);
-
+		for(String test : starttimes)
+		{
+			System.out.println(test);
+		}
+		for(String test : endtimes)
+		{
+			System.out.println(test);
+		}
 		if(starttimes.length != endtimes.length)
 		{
 			System.out.println("Specified start and endtimes of intervals are of different length");
@@ -454,13 +461,13 @@ public class MarkerVisualization extends AbstractNodeMain {
 		{
 			final LinkedList<String> out = new LinkedList<String>();
 			//for every timepoint of interest in the interval
-			for(int isegment=0; isegment<intervalsegments; isegment++)
+			for(int isegment=0; isegment<=intervalsegments; isegment++)
 			{
-				System.out.println(isegment);
+//				System.out.println("isegment: " + isegment);
 				//initialize marker
 				Marker m = null;
 				//for every exp/trajectory to be taken into account for the average
-				for(int itraj=0; itraj<=starttimes.length; itraj++)
+				for(int itraj=0; itraj<starttimes.length; itraj++)
 				{
 					double t0 = parseTime_d(starttimes[itraj]);
 					double t1 = parseTime_d(endtimes[itraj]);
@@ -501,9 +508,10 @@ public class MarkerVisualization extends AbstractNodeMain {
 						m.getPose().getOrientation().setY(avgyr);
 						m.getPose().getOrientation().setZ(avgzr);
 					}
+//					System.out.println("itraj: " + itraj);
 				}
 				// add marker to map
-				identifier = tflink_ + "_avg";
+				identifier = tflink_ + "_avg_" +isegment;
 
 				out.add(identifier);
 				synchronized (markers) {
@@ -515,6 +523,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 			}
 			synchronized (trajectories) {
 				trajectories.put(tflink_, out);
+//				System.out.println(out);
 			}
 			publishMarkers();
 

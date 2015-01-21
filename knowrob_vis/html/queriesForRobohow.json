@@ -5,27 +5,19 @@
             "text": "----- Initialize Setup -----"
         },
         {
-            "q": "load_experiment('/home/ros/knowrob_data/logs/simulation/pancakemaking_full/sim_exp1.owl').",
-            "text": "Load data from one pancake-making simulation from library"
+            "q": "experiment_file(Exp).",
+            "text": "Which sim experiments can be loaded?"
         },
         {
-            "q": "load_experiment('/home/ros/knowrob_data/logs/simulation/pancakemaking_full/sim_exp2.owl').",
-            "text": "Load data from Experiment 2"
-        },
-         {
-            "q": "load_experiment('/home/ros/knowrob_data/logs/simulation/pancakemaking_full/sim_exp3.owl').",
-            "text": "Load data from Experiment 3"
-        },
-         {
-            "q": "load_experiment('/home/ros/knowrob_data/logs/simulation/pancakemaking_full/sim_exp4.owl').",
-            "text": "Load data from Experiment 4"
+            "q": "load_experiments('/home/ros/knowrob_data/logs/simulation/pancakemaking_full/', ['sim_exp1.owl','sim_exp2.owl','sim_exp6.owl','sim_exp4.owl']).",
+            "text": "Load data from Experiments 1, 2, 3 and 4"
         },
         {
             "q": "owl_parse('package://knowrob_sim/owl/simulation_map.owl').",
             "text": "Load semantic map"
         },
         {
-            "q": "owl_individual_of(A, knowrob:'SemanticEnvironmentMap'), !, add_object_with_children(A).",
+            "q": "add_object_with_children('http://knowrob.org/kb/simulation_map.owl#SemanticEnvironmentMap_SAsdfs').",
             "text": "Visualize semantic map"
         },
         {
@@ -69,8 +61,8 @@
             "text": "Highlight the trajectory of the Spatula after flipping the Pancake "
         },
         {
-            "q": "remove_highlight('Spatula'), remove_highlight('Cup'), simlift_liftonly('Pancake4', knowrob:'Cup', Start, End), highlight_trajectory('Cup', Start, End, '0080ff').",
-            "text": "Highlight the trajectory of the Cup in experiment 4\nand remove highlighting of the Spatula"
+            "q": "simlift_liftonly('Pancake4', knowrob:'Cup', Start, End), highlight_trajectory('Cup', Start, End, '0080ff').",
+            "text": "Highlight the trajectory of the Cup in experiment 4"
         },
         {
             "q": "simflip_full('Pancake1', knowrob:'LiquidTangibleThing', knowrob:'Spatula', knowrob:'PancakeMaker', Start, End, _, _, _), add_trajectory('LiquidTangibleThing', Start, End, 0.2,2).",
