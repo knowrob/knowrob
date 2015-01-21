@@ -511,6 +511,100 @@ public class MarkerVisualization extends AbstractNodeMain {
 		}
 		publishMarkers();
 	}
+	
+	/**
+	 * Show average trajectory in visualization canvas.
+	 * Averages by dividing each trajectory in equal segments and averaging the positions at each point of interest
+	 *
+	 * @param tflink TF identifier
+	 * @param array of starttime OWL identifiers of a timepoint instance
+	 * @param array of endtime OWL identifiers of a timepoint instance
+	 * @param interval in how many segments the trajectory should be segmented (i.e. basically says how many markers there will be). For multiple trajectories this makes more sense, because trajectories will differ in length 
+	 * @param markertype marker type id (see ROS Marker message)
+	 */
+	public void showAverageTrajectory(String tflink, String[] starttimes, String[] endtimes, int intervalsegments, int markertype) {
+		String identifier, formattedTime;
+		String tflink_ = (tflink.startsWith("/") ? tflink : "/"+tflink);
+//		for(String test : starttimes)
+//		{
+//			System.out.println(test);
+//		}
+//		for(String test : endtimes)
+//		{
+//			System.out.println(test);
+//		}
+		if(starttimes.length != endtimes.length)
+		{
+			System.out.println("Specified start and endtimes of intervals are of different length");
+		}
+		else
+		{
+			final LinkedList<String> out = new LinkedList<String>();
+			//for every timepoint of interest in the interval
+			for(int isegment=0; isegment<=intervalsegments; isegment++)
+			{
+				//initialize marker
+				Marker m = null;
+				//for every exp/trajectory to be taken into account for the average
+				for(int itraj=0; itraj<starttimes.length; itraj++)
+				{
+					double t0 = parseTime_d(starttimes[itraj]);
+					double t1 = parseTime_d(endtimes[itraj]);
+					//how long is one segment in the current trajectory?
+					double segment_length = (t1-t0)/intervalsegments;
+					//the time we'd like to currently request from every trajectory:
+					double itime = t0+isegment*segment_length;
+					formattedTime = new DecimalFormat("###.###").format(itime);
+					// read marker from Prolog
+					Marker tempm = null;
+					try {
+						tempm = readLinkMarkerFromProlog(tflink_, "'timepoint_" + formattedTime + "'", markertype);
+					}
+					catch(Exception e) {
+						log.warn("Unable to read marker for time point '" + formattedTime + "'.", e);
+					}
+					if(tempm==null) continue;
+					else if(itraj==0) //the current marker is the first in line
+					{
+						assert m==null;
+						m = tempm;
+					}
+					else //average positions
+					{
+						double avgx = (m.getPose().getPosition().getX()*itraj+tempm.getPose().getPosition().getX())/(itraj+1);
+						double avgy = (m.getPose().getPosition().getY()*itraj+tempm.getPose().getPosition().getY())/(itraj+1);
+						double avgz = (m.getPose().getPosition().getZ()*itraj+tempm.getPose().getPosition().getZ())/(itraj+1);
+						double avgw = (m.getPose().getOrientation().getW()*itraj+tempm.getPose().getOrientation().getW())/(itraj+1);
+						double avgxr = (m.getPose().getOrientation().getX()*itraj+tempm.getPose().getOrientation().getX())/(itraj+1);
+						double avgyr = (m.getPose().getOrientation().getY()*itraj+tempm.getPose().getOrientation().getY())/(itraj+1);
+						double avgzr = (m.getPose().getOrientation().getZ()*itraj+tempm.getPose().getOrientation().getZ())/(itraj+1);
+
+						m.getPose().getPosition().setX(avgx);
+						m.getPose().getPosition().setY(avgy);
+						m.getPose().getPosition().setZ(avgz);
+						m.getPose().getOrientation().setW(avgw);
+						m.getPose().getOrientation().setX(avgxr);
+						m.getPose().getOrientation().setY(avgyr);
+						m.getPose().getOrientation().setZ(avgzr);
+					}
+				}
+				// add marker to map
+				identifier = tflink_ + "_avg_" +isegment;
+
+				out.add(identifier);
+				synchronized (markers) {
+					markers.put(identifier, m);
+				}
+				synchronized (markersCache) { 
+					markersCache.put(identifier, m);
+				}
+			}
+			synchronized (trajectories) {
+				trajectories.put(tflink_, out);
+			}
+			publishMarkers();
+		}
+	}
 
 	/**
 	 * Show trajectory in visualization canvas.

@@ -45,6 +45,7 @@
       remove_highlight/1,
       remove_highlight_with_children/1,
       reset_highlight/0,
+      add_avg_trajectory/5,
       add_trajectory/3,
       add_trajectory/4,
       add_trajectory/5,
@@ -95,6 +96,7 @@
             add_human_pose(r,r,r,r),
             remove_human_pose(r),
             remove_human_pose(r,r),
+            add_avg_trajectory(r,r,r,r,r),
             add_trajectory(r,r,r),
             add_trajectory(r,r,r,+),
             add_trajectory(r,r,r,+,+),
@@ -279,6 +281,21 @@ add_text(Identifier, Text, Position) :-
     visualisation_canvas(Canvas),
     lists_to_arrays(Position, PositionArr),
     jpl_call(Canvas, 'addText', [Identifier, Text, PositionArr], _).
+
+%%
+%   Reads all trajectories described by start- and endtimes from logged tf data 
+%   and visualizes the average of those trajectories in the Web-based canvas.
+%   Note that start and endtimes should be lists of the same length
+add_avg_trajectory(Link, Starttimes, Endtimes, IntervalParts, Markertype) :-
+  visualisation_canvas(Canvas),
+  
+  ((rdf_has(Link, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(Tf)),
+      atomic_list_concat(['/', Tf], TfLink)) ;
+      (TfLink = Link)),!,
+
+  jpl_list_to_array(Starttimes, ArrStart),
+  jpl_list_to_array(Endtimes, ArrEnd),
+  jpl_call(Canvas, 'showAverageTrajectory', [TfLink, ArrStart, ArrEnd, IntervalParts, Markertype], _).
 
 %% add_trajectory(+Link, +Starttime, +Endtime) is det.
 %% add_trajectory(+Link, +Starttime, +Endtime, +Interval) is det.
