@@ -27,6 +27,7 @@
       camera_pose/2,
       add_object/1,
       add_object/2,
+      add_objects/1,
       add_object_with_children/1,
       add_object_with_children/2,
       update_object/1,
@@ -174,6 +175,21 @@ add_object(Identifier) :-
 add_object(Identifier, Time) :-
     visualisation_canvas(Canvas),
     jpl_call(Canvas, 'addObject', [Identifier, Time], _).
+
+
+%% add_objects(+Identifiers) is nondet.
+%
+% Add all elements of the list 'objects' to the scene
+%
+% @param Identifier Object identifier, eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
+%
+add_objects(Identifiers) :-
+
+    get_timepoint(Time),
+    jpl_list_to_array(Identifiers, IdArray),
+
+    visualisation_canvas(Canvas),
+    jpl_call(Canvas, 'addObjects', [IdArray, Time], _).
 
 
 
@@ -544,7 +560,7 @@ add_diagram(Id, Title, Type, Xlabel, Ylabel, Width, Height, Fontsize, ValueList)
 % @param ValueList  List of data ranges, each of the form [[a,b],['1','2']]
 %
 add_piechart(Id, Title, ValueList) :-
-    add_diagram(Id, Title, 'piechart', '', '', 300, 300, '12px', ValueList).
+    add_diagram(Id, Title, 'piechart', '', '', 250, 250, '9px', ValueList).
 
 
 %% add_barchart(+Id, +Title, +ValueList) is nondet.
@@ -556,7 +572,7 @@ add_piechart(Id, Title, ValueList) :-
 % @param ValueList  List of data ranges, each of the form [[a,b],['1','2']]
 %
 add_barchart(Id, Title, ValueList) :-
-    add_diagram(Id, Title, 'barchart', '', '', 300, 300, '12px', ValueList).
+    add_diagram(Id, Title, 'barchart', '', '', 250, 250, '9px', ValueList).
 
     
 %% remove_diagram(+Id) is det.

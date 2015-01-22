@@ -162,6 +162,24 @@ public class MarkerVisualization extends AbstractNodeMain {
 		}
 
 	}
+	/**
+	 * Add each object in 'identifiers' to the visualization.
+	 *
+	 * @param identifiers  Array of OWL identifier of an object instance
+	 * @param timepoint    OWL identifier of a timepoint instance
+	 */
+	public void addObjects(String[] identifiers, String timepoint) {
+		try {
+			for(String i : identifiers) {
+				addMarker(i, timepoint);	
+			}
+			
+			publishMarkers();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
+	}
 
 
 	/**
