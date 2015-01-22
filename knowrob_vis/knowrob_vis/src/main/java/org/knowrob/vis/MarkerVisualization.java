@@ -1101,6 +1101,34 @@ public class MarkerVisualization extends AbstractNodeMain {
 		}
 	}
 	
+	public double getTrajectoryLength(String link, String start_timepoint, String end_timepoint, double interval) 
+	{
+		String tflink_ = (link.startsWith("/") ? link : "/"+link);
+
+		double t0 = parseTime_d(start_timepoint);
+		double t1 = parseTime_d(end_timepoint);
+
+		double length = 0;
+
+		Marker prev = null;
+		for (double i = t0; i <= t1; i += interval) {
+			String timepoint = "timepoint_" + new DecimalFormat("###.###").format(i);
+			
+			Marker m = readLinkMarkerFromProlog(tflink_, timepoint, 0);
+
+			if(prev !=null)
+			{
+				length += java.lang.Math.pow(
+					java.lang.Math.pow(m.getPose().getPosition().getX() - prev.getPose().getPosition().getX(),2)
+					+ java.lang.Math.pow(m.getPose().getPosition().getY() - prev.getPose().getPosition().getY(),2)
+					+ java.lang.Math.pow(m.getPose().getPosition().getZ() - prev.getPose().getPosition().getZ(),2), 0.5);
+			}
+			
+			prev = m;
+		}
+		
+		return length;
+	}
 
 	public static void main(String args[]) {
 //		MarkerVisualization vis = new MarkerVissualizationMain();

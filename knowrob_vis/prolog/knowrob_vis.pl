@@ -53,7 +53,8 @@
       add_diagram/9,
       add_barchart/3,
       add_piechart/3,
-      remove_diagram/1
+      remove_diagram/1,
+      trajectory_length/4
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -87,7 +88,8 @@
             add_trajectory(r,r,r),
             add_trajectory(r,r,r,+),
             add_trajectory(r,r,r,+,+),
-            remove_trajectory(r).
+            remove_trajectory(r),
+            trajectory_length(r,r,r,+).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -241,7 +243,14 @@ remove_trajectory(Link) :-
      
     jpl_call(Canvas, 'removeTrajectory', [TfLink], _).
 
-
+trajectory_length(Link, Starttime, Endtime, Length) :-
+    visualisation_canvas(Canvas),
+    
+    ((rdf_has(Link, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(Tf)),
+      atomic_list_concat(['/', Tf], TfLink)) ;
+     (TfLink = Link)),!,
+     
+    jpl_call(Canvas, 'getTrajectoryLength', [TfLink, Starttime, Endtime, 5.0], Length).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
