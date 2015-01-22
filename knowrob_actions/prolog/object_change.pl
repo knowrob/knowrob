@@ -9,7 +9,7 @@
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
-:- use_module(library('semweb/rdfs_computable')).
+:- use_module(library('rdfs_computable')).
 :- use_module(library('owl_parser')).
 :- use_module(library('knowrob_owl')).
 
@@ -288,7 +288,8 @@ action_missing_inputs(Action, Missing) :-
 % @param Output   Output linked via a postActors restriction
 %
 action_outputs(Action, Output) :-
-  class_properties(Action, knowrob:'postActors', Output).
+  class_properties(A, knowrob:'postActors', Output),
+  owl_subclass_of(Action, A).
 %TODO: check class subsumption (allow more complex requirements)
 
 
