@@ -24,10 +24,10 @@
      xmlns:qudt="http://qudt.org/schema/qudt#"
      xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/knowrob_units.owl">
-        <owl:imports rdf:resource="package://knowrob_common/owl//knowrob.owl"/>
-        <owl:imports rdf:resource="http://qudt.org/1.1/vocab/dimension"/>
-        <owl:imports rdf:resource="http://qudt.org/1.1/vocab/dimensionalunit"/>
-        <owl:imports rdf:resource="http://qudt.org/1.1/vocab/unit"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/dimension.owl"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/dimensionalunit.owl"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/unit.owl"/>
     </owl:Ontology>
 
 

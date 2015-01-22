@@ -1,0 +1,2460 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:qudt="http://data.nasa.gov/qudt/owl/qudt#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xml:base="http://data.qudt.org/qudt/owl/1.0.0/qudt.owl">
+  <owl:Ontology rdf:about="">
+    <dc:contributor rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >David Price</dc:contributor>
+    <dc:contributor rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Daniel Mekonnen</dc:contributor>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >QUDT</rdfs:label>
+    <dc:rights rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The QUDT Ontologies are issued under a Creative Commons Attribution Share Alike 3.0 United States License. Attribution should be made to NASA AMES Research Center and TopQuadrant, Inc.</dc:rights>
+    <dc:contributor rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Irene Polikoff</dc:contributor>
+    <dc:contributor rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Sidney Bailin</dc:contributor>
+    <dc:title rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The NASA Quantity - Unit - Dimension Ontology</dc:title>
+<!--     <owl:imports rdf:resource="http://purl.org/dc/elements/1.1/"/> -->
+    <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >$Date: 2010-02-16 10:59:30 -0500 (Tue, 16 Feb 2010) $</dc:date>
+    <dc:contributor rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Ralph Hodgson</dc:contributor>
+    <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >James E. Masters</dc:creator>
+    <dc:subject rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Quantities, Units, and Dimensions</dc:subject>
+    <dc:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The qud, or quantity-unit-dimension ontology defines the base classes properties, and restrictions used for modeling physical quantities, units of measure, and their dimensions in various measurement systems.</dc:description>
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >$Id: n1qud.n3 85 2010-02-16 15:59:30Z dmekonnen $</owl:versionInfo>
+  </owl:Ontology>
+  <rdfs:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#QuantityKindCategory">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Quantity Kind Category</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdfs:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#EnergyAndWorkPerMassAmountOfSubstance">
+    <rdfs:label>Energy and work per mass amount of substance</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ChemistryUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#LuminanceUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Luminance Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#PhotometryUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#LuminousEnergyUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Luminous Energy Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#PhotometryUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#LinearEnergyTransferUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Linear Energy Transfer Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#AtomicPhysicsUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MassAmountOfSubstanceTemperatureUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Mass Amount Of Substance Temperature Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ChemistryUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MassTemperatureUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Mass Temperature Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MagneticFieldStrengthUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Magnetic Field Strength Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismUnit"/>
+    </rdfs:subClassOf>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A magnetic field is a vector field that permeates space and which can exert a magnetic force on moving electric charges and on magnetic dipoles (such as permanent magnets). [Wikipedia] The strength of a magnetic field at a point in space is the magnitude of the field vector at that point.
+
+This class contains the following instance(s): "Ampere per meter", "Ampere turn per inch", "Ampere turn per meter", "Oersted".</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectricChargeAreaDensityUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Electric Charge Area Density Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectricChargeDensityUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#PhotometryUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Photometry Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#OpticsUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#CommunicationsUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Communications Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ScienceAndEngineeringUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#SystemOfUnits">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A system of units is a set of units which are chosen as the reference scales for some set of quantity kinds together with the definitions of each unit. Units may be defined by experimental observation or by proportion to another unit not included in the system. If the unit system is explicitly associated with a quantity kind system, then the unit system must define at least one unit for each quantity kind.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >System of Units</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#Thing"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#Unit"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#systemUnit"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:minCardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#systemUnit"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#VolumePerTimeUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Volume Per Time Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeUnit"/>
+    </rdfs:subClassOf>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A "Space And Time" Unit with the following instance(s): "Cubic foot per minute", "Cubic foot per second", "Cubic inch per minute", "Cubic meter per second", "Cubic yard per minute", "Gallon per day", "Gallon per minute".</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#LogarithmicUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Logarithmic Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#PhysicalUnit"/>
+    </rdfs:subClassOf>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Logarithmic units are abstract mathematical units that can be used to express any quantities (physical or mathematical) that are defined on a logarithmic scale, that is, as being proportional to the value of a logarithm function. Examples of logarithmic units include common units of information and entropy, such as the bit, and the byte, as well as units of relative signal strength magnitude such as the decibel.</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ExposureUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Exposure Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#RadiologyUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectricFluxUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Electric Flux Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ThermalEnergyUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Thermal Energy Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#AreaThermalExpansionUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Area Thermal Expansion Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ThermalExpansionUnit"/>
+    </rdfs:subClassOf>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >When the temperature of a substance changes, the energy that is stored in the intermolecular bonds between atoms changes. When the stored energy increases, so does the length of the molecular bonds. As a result, solids typically expand in response to heating and contract on cooling; this dimensional response to temperature change is expressed by its coefficient of thermal expansion.
+
+Different coefficients of thermal expansion can be defined for a substance depending on whether the expansion is measured by:
+
+    * linear thermal expansion
+    * area thermal expansion
+    * volumetric thermal expansion
+
+These characteristics are closely related. The volumetric thermal expansion coefficient can be defined for both liquids and solids. The linear thermal expansion can only be defined for solids, and is common in engineering applications.
+
+Some substances expand when cooled, such as freezing water, so they have negative thermal expansion coefficients.
+
+For exactly isotropic materials, the area thermal expansion coefficient is very closely approximated as twice the linear coefficient.</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ScienceAndEngineeringUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Science And Engineering Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#Unit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#CurrentPerAngleUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Current Per Angle Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#CurvatureUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Curvature Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeUnit"/>
+    </rdfs:subClassOf>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The canonicall example of extrinsic curvature is that of a circle, which has curvature equal to the inverse of its radius everywhere. Smaller circles bend more sharply, and hence have higher curvature. The curvature of a smooth curve is defined as the curvature of its osculating circle at each point. The osculating circle of a sufficiently smooth plane curve at a given point on the curve is the circle whose center lies on the inner normal line and whose curvature is the same as that of the given curve at that point. This circle is tangent to the curve at the given point.
+
+That is, given a point P on a smooth curve C, the curvature of C at P is defined to be 1/R where R is the radius of the osculating circle of C at P. The magnitude of curvature at points on physical curves can be measured in diopters (also spelled dioptre) — this is the convention in optics. [Wikipedia]</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ContinuumMechanicsQuantityKind">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Continuum Mechanics Quantity Kind</rdfs:label>
+    <rdfs:subClassOf>
+      <qudt:QuantityKindCategory rdf:about="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind">
+        <rdfs:label>Mechanics</rdfs:label>
+        <rdfs:subClassOf>
+          <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#QuantityKind"/>
+        </rdfs:subClassOf>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+      </qudt:QuantityKindCategory>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#LinearVelocityUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Linear Velocity Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#VelocityUnit"/>
+    </rdfs:subClassOf>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Linear Velocity units measure change of length per unit time. Examples include meters per second, miles per hour, knots, etc. </qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#AreaAngleUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Area Angle Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#CurrencyUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Currency Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#FinancialUnit"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#currencyExponent"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ConcentrationUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Concentration Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ChemistryUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectricFluxDensityUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Electric Flux Density Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectricChargeDensityUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#BinaryPrefixUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Binary Prefix Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#PrefixUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#HumanUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Human Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ResourceUnit"/>
+    </rdfs:subClassOf>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >units for measuring human resources</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#LuminousIntensityUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Luminous Intensity Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#PhotometryUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#SpecificHeatPressureUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Specific Heat Pressure Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsUnit"/>
+    </rdfs:subClassOf>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >This class contains units of measure for specific heat capacity at a constant pressure.</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#AngularMomentumUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Angular Momentum Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MomentumUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectricCurrentDensityUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Electric Current Density Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismUnit"/>
+    </rdfs:subClassOf>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Electric current density is a measure of the density of flow of a conserved charge. Usually the charge is the electric charge, in which case the associated current density is the electric current per unit area of cross section, but the term current density can also be applied to other conserved quantities. It is defined as a vector whose magnitude is the current per cross-sectional area. [Wikipedia]
+
+In SI units, the electric current density is measured in amperes per square metre. This class contains the following instance(s): "Ampere per square meter".</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#AngleUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Angle Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeUnit"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#DimensionlessUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#LengthTemperatureUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Length Temperature Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MagneticFluxUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Magnetic Flux Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismUnit"/>
+    </rdfs:subClassOf>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Magnetic flux is a measure of quantity of magnetism, taking into account the strength and the extent of a magnetic field. The SI unit of magnetic flux is the weber (in derived units: volt-seconds), and the unit of magnetic field is the weber per square meter, or tesla. [Wikipedia]
+
+This class contains the following instance(s): "Maxwell", "Unit pole", "Weber".</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#Dimension">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A dimension is a relationship between a quantity system, a quantity kind of that system, and one or more dimension vectors. There is one dimension vector for each of the system's base quantity kinds. The vector's magnitude determines the exponent of the base dimension for the referenced quantity kind.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Dimension</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#EnumerationElement"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:minCardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#referenceQuantity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#QuantityKind"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#referenceQuantity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:minCardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#dimensionVector"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#DimensionVector"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#dimensionVector"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#PowerPerAreaUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Power Per Area Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MechanicsUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#PermittivityUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Permittivity Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#DoseEquivalentUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Dose Equivalent Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#RadiologyUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#RadianceUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Radiance Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#RadiometryUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#PhysicalUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Physical Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ScienceAndEngineeringUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#VolumePerTimeSquaredUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Volume per Time Squared Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MechanicsUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#AreaTimeTemperatureUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Area Time Temperature Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectricDipoleMomentUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Electric Dipole Moment Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismUnit"/>
+    </rdfs:subClassOf>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The electric dipole moment (or electric dipole for short) is a measure of the polarity of a system of electric charges. [Wikipedia]
+
+This class has the following instance(s): "Coulomb meter", "Debye".</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MolarHeatCapacityUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Molar Heat Capacity Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ResourceUnit">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A Resource Unit is a unit for measuring the amount of various types of resources.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Resource Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#Unit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#QuantityKind">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A Quantity Kind is an aspect common to mutually comparable quantities.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Quantity Kind</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#Thing"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://data.nasa.gov/qudt/owl/qudt#QuantityKind"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#generalization"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:maxCardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#generalization"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Thermodynamics Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#PhysicalUnit"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <qudt:QuantityKindCategory rdf:about="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind">
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Thermodynamics</rdfs:label>
+            <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#QuantityKind"/>
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+          </qudt:QuantityKindCategory>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#quantityKind"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Thermodynamics units are units that provide reference scales for quantifying the conversion of energy into work, as well as heat and its relation to macroscopic variables such as temperature and pressure.</qudt:description>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsQuantityKind"/>
+        <owl:onProperty rdf:resource="http://data.nasa.gov/qudt/owl/qudt#quantityKind"/>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#PowerUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Power Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MechanicsUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#AreaUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Area Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MicrobialFormationUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Microbial Formation Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#BioAndMedicalUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ConductanceUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Conductance Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismUnit"/>
+    </rdfs:subClassOf>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Electrical conductance is the inverse of electrical resistance. It measures the ease with which electricity flows along a path through an electrical element.
+
+This class contains the following instance(s): "Abmho", "Mho", "Siemens", "Statmho".</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#VolumeUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Volume Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ThermalEnergyLengthUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Thermal Energy Length Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#LinearAccelerationUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Linear Acceleration Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#AccelerationUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ThermalExpansionUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Thermal Expansion Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsUnit"/>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >When the temperature of a substance changes, the energy that is stored in the intermolecular bonds between atoms changes. When the stored energy increases, so does the length of the molecular bonds. As a result, solids typically expand in response to heating and contract on cooling; this dimensional response to temperature change is expressed by its coefficient of thermal expansion.
+
+Different coefficients of thermal expansion can be defined for a substance depending on whether the expansion is measured by:
+
+    * linear thermal expansion
+    * area thermal expansion
+    * volumetric thermal expansion
+
+These characteristics are closely related. The volumetric thermal expansion coefficient can be defined for both liquids and solids. The linear thermal expansion can only be defined for solids, and is common in engineering applications.
+
+Some substances expand when cooled, such as freezing water, so they have negative thermal expansion coefficients. [Wikipedia]</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#Enumeration">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >This class contains enumerations of the base dimensions for quantity systems. Each quantity kind system that defines a base set has a corresponding ordered enumeration whose elements are the dimension objects for the base quantity kinds. The order of the dimensions in the enumeration determines the canonical order of the basis elements in the corresponding abstract vector space.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Enumeration</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#Thing"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger"
+        >1</owl:minCardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#element"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#EnumerationElement"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#element"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger"
+        >1</owl:maxCardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#default"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#EnumerationElement"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#default"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#VelocityUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Velocity Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#HeatCapacityAndEntropyUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Heat Capacity And Entropy Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#VolumePerMassUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Volume per mass unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MechanicsUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#TimeAreaUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Time Area Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#EnergyDensityUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Energy Density Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MechanicsUnit"/>
+    </rdfs:subClassOf>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Units that measure energy density, i.e. energy per unit volume.</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ThermalResistivityUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Thermal Resistivity Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#AngularVelocityUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Angular Velocity Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#VelocityUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#Thing">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Thing</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:maxCardinality>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#description"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:maxCardinality>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#abbreviation"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:maxCardinality>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#symbol"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectricFieldStrengthUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Electric Field Strength Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismUnit"/>
+    </rdfs:subClassOf>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The strength of the electric field at a given point is defined as the force that would be exerted on a positive test charge of +1 coulomb placed at that point; the direction of the field is given by the direction of that force. Electric fields contain electrical energy with energy density proportional to the square of the field intensity. The electric field is to charge as gravitational acceleration is to mass and force density is to volume.</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectricChargePerAmountOfSubstanceUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Electric Charge Per Amount Of Substance Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectrochemistryUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#CatalyticActivityUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Catalytic Activity Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ChemistryUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#BendingMomentOrTorqueUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Bending Moment Or Torque Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MechanicsUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#DynamicViscosityUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Dynamic Viscosity Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MechanicsUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#QuantumMechanicsQuantityKind">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Quantum Mechanics Quantity Kind</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#EnergyPerAreaUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Energy Per Area Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MechanicsUnit"/>
+    </rdfs:subClassOf>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Units that quantify energy per unit area.</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MagneticFluxDensityUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Magnetic Flux Density Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MassAmountOfSubstanceUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Mass Amount Of Substance Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ChemistryUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#LuminousEfficacyUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Luminous Efficacy Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#PhotometryUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MolarConcentrationUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Molar Concentration Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ConcentrationUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#VideoFrameRateUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Video Frame Rate Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ComputingUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#LengthTemperatureTimeUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Length Temperature Time Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Electricity And Magnetism Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#PhysicalUnit"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <qudt:QuantityKindCategory rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind">
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Electricity and Magnetism</rdfs:label>
+            <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#QuantityKind"/>
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+          </qudt:QuantityKindCategory>
+        </owl:allValuesFrom>
+        <owl:onProperty rdf:resource="http://data.nasa.gov/qudt/owl/qudt#quantityKind"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The class of units used to measure the properties of electricity and magnetism.</qudt:description>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
+        <owl:onProperty rdf:resource="http://data.nasa.gov/qudt/owl/qudt#quantityKind"/>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ThermalConductivityUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Thermal Conductivity Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#OpticsUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Light Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismUnit"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <qudt:QuantityKindCategory rdf:about="http://data.nasa.gov/qudt/owl/qudt#OpticsQuantityKind">
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Optics</rdfs:label>
+            <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismQuantityKind"/>
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+          </qudt:QuantityKindCategory>
+        </owl:allValuesFrom>
+        <owl:onProperty rdf:resource="http://data.nasa.gov/qudt/owl/qudt#quantityKind"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://data.nasa.gov/qudt/owl/qudt#OpticsQuantityKind"/>
+        <owl:onProperty rdf:resource="http://data.nasa.gov/qudt/owl/qudt#quantityKind"/>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#BioAndMedicalUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Bio And Medical Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ScienceAndEngineeringUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#SpecificHeatVolumeUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Specific Heat Volume Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsUnit"/>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >This class contains units of measure for specific heat capacity at a constant volume.</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectricCurrentUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Electric Current Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismUnit"/>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Electric current is the flow (movement) of electric charge. The SI unit of electric current is the ampere, and electric current is measured using an ammeter. This class contains the following instance(s): "Abampere", "Ampere", "Biot", "Statampere".</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#DataRateUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Data Rate Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ComputingUnit"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ResourceUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#AreaTemperatureUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Area Temperature Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MassUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Mass Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MechanicsUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#TimeSquaredUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Time Squared Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#RespiratoryRateUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Respiratory Rate Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#BioAndMedicalUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MomentumUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Momentum Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MechanicsUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#RadiologyUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Radiology Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#PhysicalUnit"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <qudt:QuantityKindCategory rdf:about="http://data.nasa.gov/qudt/owl/qudt#RadiologyQuantityKind">
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Radiology</rdfs:label>
+            <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#QuantityKind"/>
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+          </qudt:QuantityKindCategory>
+        </owl:allValuesFrom>
+        <owl:onProperty rdf:resource="http://data.nasa.gov/qudt/owl/qudt#quantityKind"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://data.nasa.gov/qudt/owl/qudt#RadiologyQuantityKind"/>
+        <owl:onProperty rdf:resource="http://data.nasa.gov/qudt/owl/qudt#quantityKind"/>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#RateOfReturnUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Rate Of Return Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#FinancialUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#AbsorbedDoseRateUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Absorbed Dose Rate Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#RadiologyUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#TemperaturePerTimeUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Temperature per time unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectrochemistryUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Electrochemistry Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismUnit"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ChemistryUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#FluidMechanicsQuantityKind">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Fluid Dynamics Quantity Kind</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ContinuumMechanicsQuantityKind"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#RF-PowerUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >RF-Power Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#CommunicationsUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#PressureOrStressRateUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Pressure or stress rate</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MechanicsUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#PrefixUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Prefix Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#DimensionlessUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#AmountOfSubstanceUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Amount Of Substance Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ChemistryUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectricChargeDensityUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Electric Charge Density Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismUnit"/>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The linear, surface, or volume charge density is the amount of electric charge in a line, surface, or volume. It is measured in coulombs per metre (C/m), square metre (C/m^2), or cubic metre (C/m^3), respectively. Since there are positive as well as negative charges, the charge density can take on negative values. [Wikipedia]</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#Unit">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for measuring other quantities the same kind (more generally of equivalent dimension). For example, the meter is a quantity of length that has been rigorously defined and standardized by the BIPM (International Board of Weights and Measures). Any measurement of the length can be expressed as a number multiplied by the unit meter.&#xD;
+&#xD;
+More formally, the value of a physical quantity Q with respect to a unit (U) is expressed as the scalar multiple of a real number (n) and U:&#xD;
+Q = nU</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#Thing"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#EnumerationElement"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://data.nasa.gov/qudt/owl/qudt#QuantityKind"/>
+        <owl:onProperty rdf:resource="http://data.nasa.gov/qudt/owl/qudt#quantityKind"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:maxCardinality>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#conversionOffset"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:maxCardinality>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#conversionMultiplier"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ForcePerLengthUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Force Per Length Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MechanicsUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ThermalInsulanceUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Thermal Insulance Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#PhysicalConstant">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A physical constant is a physical quantity that is generally believed to be both universal in nature and constant in time. It can be contrasted with a mathematical constant, which is a fixed numerical value but does not directly involve any physical measurement.
+
+There are many physical constants in science, some of the most widely recognized being the speed of light in vacuum c, Newton's gravitational constant G, Planck's constant h, the electric permittivity of free space ε0, and the elementary charge e. Physical constants can take many dimensional forms, or may be dimensionless depending on the system of quantities and units used.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Physical Constant</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#Quantity"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#SystemOfQuantities">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:minCardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#systemQuantityKind"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:maxCardinality>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#baseDimensionEnumeration"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://data.nasa.gov/qudt/owl/qudt#Enumeration"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#baseDimensionEnumeration"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A system of quantity kinds is a set of one or more quantity kinds together with a set of zero or more algebraic equations that define relationships between quantity kinds in the set. In the physical sciences, the equations relating quantity kinds are typically physical laws and definitional relations, and constants of proportionality. Examples include Newton’s First Law of Motion, Coulomb’s Law, and the definition of velocity as the instantaneous change in position. 
+
+In almost all cases, the system identifies a subset of base quantity kinds. The base set is chosen so that all other quantity kinds of interest can be derived from the base quantity kinds and the algebraic equations.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SystemOfUnits"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#unitSystem"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://data.nasa.gov/qudt/owl/qudt#QuantityKind"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#systemQuantityKind"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#Thing"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://data.nasa.gov/qudt/owl/qudt#Dimension"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#systemDimension"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >System of Quantity Kinds</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#TimeUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Time Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeUnit"/>
+    </rdfs:subClassOf>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Units that measure time.</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ThrustToMassRatioUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Thrust To Mass Ratio Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MechanicsUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#IlluminanceUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Illuminance Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#PhotometryUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#Quantity">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A quantity is the measurement of an observable property of a particular object, event, or physical system. A quantity is always associated with the context of measurement (i.e. the thing measured, the measured value, the accuracy of measurement, etc.) whereas the underlying quantity kind is independent of any particular measurement. Thus, length is a quantity kind while the height of the Ares I rocket is a specific quantity of length; its magnitude that may be expressed in meters, feet, inches, etc. Examples of physical quantities include physical constants, such as the speed of light in a vacuum, Planck's constant, the electric permittivity of free space, and the fine structure constant.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Quantity</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#Thing"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:minCardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#quantityValue"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >a reference to the dimension that quantifies the property</rdfs:comment>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#QuantityValue"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#quantityValue"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://data.nasa.gov/qudt/owl/qudt#QuantityKind"/>
+        <owl:onProperty rdf:resource="http://data.nasa.gov/qudt/owl/qudt#quantityKind"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MassPerLengthUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Mass Per Length Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MechanicsUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#DimensionlessUnit">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A Dimensionless Unit is a quantity for which all the exponents of the factors corresponding to the base quantities in its quantity dimension are zero.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Dimensionless Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#Unit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#SolidAngleUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Solid Angle Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#AngleUnit"/>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The solid angle subtended by a surface S is defined as the surface area of a unit sphere covered by the surface S's projection onto the sphere. A solid angle is related to the surface of a sphere in the same way an ordinary angle is related to the circumference of a circle. Since the total surface area of the unit sphere is 4*pi, the measure of solid angle will always be between 0 and 4*pi.</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#TemperatureUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Temperature Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectricChargeVolumeDensityUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Electric Charge Volume Density Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricChargeDensityUnit"/>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The volume charge density is the amount of electric charge in a volume. It is measured in coulombs per cubic metre (C/m^3).  Since there are positive as well as negative charges, the charge density can take on negative values. [Wikipedia]</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#HeartRateUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Heart Rate Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#BioAndMedicalUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ProportionalityConstant">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Two quantities proportional if they vary in such a way that one of the quantities is a constant multiple of the other. The multiple is the constant of proportionality between the two quantities. Constants of proportionality may be dimensioned in some quantity systems and dimensionless in others. For example, in the SI system, the permittivity of a vacuum has the dimensions L^-3 M^-1 T^4 I^2 and is measured in Farads per Meter; in the CGS-EMU system it has dimensions L^-2T^2 and is measured in Abfarads per Centimeter; in the CGS-ESU system it is dimensionless.
+
+Constants of proportionality are important in the definition of systems of natural units, where units are chosen in order to make certain constants of proportionality dimensionless and equal to 1.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Constant of Proportionality</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#Quantity"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#CountingUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Counting Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ResourceUnit"/>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#DimensionlessUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#SolidMechanicsQuantityKind">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Solid Mechanics Quantity Kind</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ContinuumMechanicsQuantityKind"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#SystemOfNaturalUnits">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >System of natural units</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SystemOfUnits"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#PowerPerElectricChargeUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Energy per Electric Charge Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismUnit"/>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The ratio of power to electric charge is proportional to the rate of change of electric potential.</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MassPerVolumeUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Mass Per Volume Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MechanicsUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#GravitationalAttractionUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Gravitational Attraction Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MechanicsUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MassPerTimeUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Mass Per Time Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MechanicsUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#HeatFlowRateUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Heat Flow Rate Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ForceUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Force Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MechanicsUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#AccelerationUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Acceleration Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#EnergyAndWorkUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Energy And Work Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MechanicsUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#LinearMomentumUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Linear Momentum Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MomentumUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Space And Time Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#PhysicalUnit"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <qudt:QuantityKindCategory rdf:about="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind">
+            <rdfs:label>Space and Time</rdfs:label>
+            <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#QuantityKind"/>
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+          </qudt:QuantityKindCategory>
+        </owl:allValuesFrom>
+        <owl:onProperty rdf:resource="http://data.nasa.gov/qudt/owl/qudt#quantityKind"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeQuantityKind"/>
+        <owl:onProperty rdf:resource="http://data.nasa.gov/qudt/owl/qudt#quantityKind"/>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#QuantityType">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A quantity type is an enumeration of units that are measures of the same quantity kind.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Quantity type</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#Enumeration"/>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#Thing"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#elementKind"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://data.nasa.gov/qudt/owl/qudt#Unit"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#element"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://data.nasa.gov/qudt/owl/qudt#Unit"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#default"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://data.nasa.gov/qudt/owl/qudt#QuantityKind"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#elementKind"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#AngularAccelerationUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Angular Acceleration Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#AccelerationUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ChemistryUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Chemistry Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#PhysicalUnit"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <qudt:QuantityKindCategory rdf:about="http://data.nasa.gov/qudt/owl/qudt#ChemistryQuantityKind">
+            <rdfs:label>Chemistry</rdfs:label>
+            <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#QuantityKind"/>
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+          </qudt:QuantityKindCategory>
+        </owl:allValuesFrom>
+        <owl:onProperty rdf:resource="http://data.nasa.gov/qudt/owl/qudt#quantityKind"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ChemistryQuantityKind"/>
+        <owl:onProperty rdf:resource="http://data.nasa.gov/qudt/owl/qudt#quantityKind"/>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#AngularMassUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Angular Mass Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MechanicsUnit"/>
+    </rdfs:subClassOf>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The units of angular mass have dimensions of mass * area. They are used to measure the moment of inertia.</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectricChargeLineDensityUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Electric Charge Line Density Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricChargeDensityUnit"/>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The linear charge density is the amount of electric charge in a line. It is measured in coulombs per metre (C/m). Since there are positive as well as negative charges, the charge density can take on negative values. [Wikipedia]</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#PressureOrStressUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Pressure Or Stress Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MechanicsUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MagnetomotiveForceUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Magnetomotive Force Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismUnit"/>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Magnetomotive force is any physical cause that produces magnetic flux. In other words, it is a field of magnetism (measured in tesla) that has area (measured in square meters), so that (Tesla)(Area)= Flux. It is analogous to electromotive force or voltage in electricity. MMF usually describes electric wire coils in a way so scientists can measure or predict the actual force a wire coil can generate. [Wikipedia]
+
+This class contains the following instance(s): "Ampere turn", "Gilbert", "Oersted centimeter", "Unit pole".</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#LengthUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Length Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#CapacitanceUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Capacitance Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismUnit"/>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Capacitance is a measure of the amount of electric charge stored (or separated) for a given electric potential.
+
+This class contains the following instance(s): "Abfarad", "Farad", "MicroFarad", "NanoFarad", "PicoFarad", "Statfarad".</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#AtomicChargeUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Atomic Charge Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#AtomicPhysicsUnit"/>
+    </rdfs:subClassOf>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The electric charge of an ion, equal to the number of electrons the atom has gained or lost in its ionization multiplied by the charge on one electron.  This class contains the following instance(s): "atomic number".</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#AmountOfSubstanceTemperatureUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Amount Of Substance Temperature Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ChemistryUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ThermalResistanceUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Thermal Resistance Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#DecimalPrefixUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Decimal Prefix Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#PrefixUnit"/>
+    <rdfs:subClassOf>
+      <owl:DeprecatedClass rdf:about="http://data.nasa.gov/qudt/owl/qudt#SIUnit">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >SI Unit</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#PhysicalUnit"/>
+        <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >An SI unit</qudt:description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+      </owl:DeprecatedClass>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ForcePerElectricChargeUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Force Per Electric Charge Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#SerumOrPlasmaLevelUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Serum Or Plasma Level Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#BioAndMedicalUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#PhotometryQuantityKind">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Photometry quantity kind</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#OpticsQuantityKind"/>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Photometry is the science of the measurement of light, in terms of its perceived brightness to the human eye. It is distinct from radiometry, which is the science of measurement of radiant energy (including light) in terms of absolute power.</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#RadiometryQuantityKind">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Radiometry quantity kind</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#OpticsQuantityKind"/>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Photometry is the field that studies the measurement of electromagnetic radiation, including visible light. Note that light is also measured using the techniques of photometry, which deal with brightness as perceived by the human eye, rather than absolute power.</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#SpecificEnergyUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Specific Energy Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MechanicsUnit"/>
+    </rdfs:subClassOf>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Units which quantify specific energy, i.e. energy per unit mass.</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#EnergyPerElectricChargeUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Energy per Electric Charge Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismUnit"/>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The ratio of energy to electric charge arises repeatedly in electrodynamics. It is the dimensional equivalent to the electrostatic potential and electromotive force. In both cases, the SI unit is the volt, or newton meters per coulomb.</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#EnumerationElement">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >This class contains the dimension objects that are the basis elements in some abstract vector space associated with a quantity kind system.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Enumeration element</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#Thing"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#literal"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:maxCardinality>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#order"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MechanicsUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Mechanics Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#PhysicalUnit"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
+        <owl:onProperty rdf:resource="http://data.nasa.gov/qudt/owl/qudt#quantityKind"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsQuantityKind"/>
+        <owl:onProperty rdf:resource="http://data.nasa.gov/qudt/owl/qudt#quantityKind"/>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#VolumeThermalExpansionUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Volume Thermal Expansion Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermalExpansionUnit"/>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >When the temperature of a substance changes, the energy that is stored in the intermolecular bonds between atoms changes. When the stored energy increases, so does the length of the molecular bonds. As a result, solids typically expand in response to heating and contract on cooling; this dimensional response to temperature change is expressed by its coefficient of thermal expansion.
+
+Different coefficients of thermal expansion can be defined for a substance depending on whether the expansion is measured by:
+
+    * linear thermal expansion
+    * area thermal expansion
+    * volumetric thermal expansion
+
+These characteristics are closely related. The volumetric thermal expansion coefficient can be defined for both liquids and solids. The linear thermal expansion can only be defined for solids, and is common in engineering applications.
+
+Some substances expand when cooled, such as freezing water, so they have negative thermal expansion coefficients. 
+
+For exactly isotropic materials, the volumetric thermal expansion coefficient is very closely approximated as three times the linear coefficient. [Wikipedia]</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ActivityUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Activity Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#RadiologyUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#RadiantIntensityUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Radiant Intensity Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#RadiometryUnit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#AtomicPhysicsUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Atomic Physics Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#PhysicalUnit"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <qudt:QuantityKindCategory rdf:about="http://data.nasa.gov/qudt/owl/qudt#AtomicPhysicsQuantityKind">
+            <rdfs:label>Atomic Physics</rdfs:label>
+            <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#QuantityKind"/>
+          </qudt:QuantityKindCategory>
+        </owl:allValuesFrom>
+        <owl:onProperty rdf:resource="http://data.nasa.gov/qudt/owl/qudt#quantityKind"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://data.nasa.gov/qudt/owl/qudt#AtomicPhysicsQuantityKind"/>
+        <owl:onProperty rdf:resource="http://data.nasa.gov/qudt/owl/qudt#quantityKind"/>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#TurbidityUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Turbidity Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#BioAndMedicalUnit"/>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Turbidity is the cloudiness or haziness of a fluid caused by individual particles (suspended solids) that are generally invisible to the naked eye, similar to smoke in air.</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#SignalDetectionThresholdUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Signal Detection Threshold Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#CommunicationsUnit"/>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Signal relative to an underlying signal</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#InverseAmountOfSubstanceUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Inverse Amount Of Substance Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ChemistryUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#QuantityValue">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:maxCardinality>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#relativeStandardUncertainty"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:maxCardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#valueQuantity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#numericValue"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#Thing"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://data.nasa.gov/qudt/owl/qudt#Unit"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#unit"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://data.nasa.gov/qudt/owl/qudt#Quantity"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#valueQuantity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Quantity value</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A quantity value expresses the numerical value of a quantity with respect to a chosen unit of measure. For example, the value of Planck's constant in Joule-Seconds (J s) is approximately 6.62606896E-34, whereas the value in Erg-Seconds (erg s) is approximately 6.62606896E-27.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#numericValue"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#unit"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#relativeStandardUncertainty"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:maxCardinality>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#standardUncertainty"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#standardUncertainty"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ResistanceUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Resistance Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismUnit"/>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Electrical resistance is a ratio of the degree to which an object opposes an electric current through it, measured in ohms. Its reciprocal quantity is electrical conductance measured in siemens.
+
+This class contains the following instance(s): "Abohm", "Ohm", "Statohm".</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#LuminousFluxUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Luminous Flux Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#PhotometryUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#EventUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Event Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ResourceUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#CoefficientOfHeatTransferUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Coefficient Of Heat Transfer Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MolarEnergyUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Molar Energy Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ChemistryUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#PlaneAngleUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Plane Angle Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#AngleUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ElectricChargeUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Electric Charge Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismUnit"/>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Electric charge is a fundamental conserved property of some subatomic particles, which determines their electromagnetic interaction. Electrically charged matter is influenced by, and produces, electromagnetic fields. The interaction between a moving charge and an electromagnetic field is the source of the electromagnetic force, which is one of the four fundamental forces.</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ComputingUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Computing Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ScienceAndEngineeringUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#RadiometryUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Radiometry Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#OpticsUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#FinancialUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Financial Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ResourceUnit"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <qudt:QuantityKindCategory rdf:about="http://data.nasa.gov/qudt/owl/qudt#FinancialQuantityKind">
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Financial</rdfs:label>
+            <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#QuantityKind"/>
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+          </qudt:QuantityKindCategory>
+        </owl:allValuesFrom>
+        <owl:onProperty rdf:resource="http://data.nasa.gov/qudt/owl/qudt#quantityKind"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >This class contains units that measure financial quantities, such as currency, transactions, rates of return, etc.</qudt:description>
+    <owl:equivalentClass>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://data.nasa.gov/qudt/owl/qudt#FinancialQuantityKind"/>
+        <owl:onProperty rdf:resource="http://data.nasa.gov/qudt/owl/qudt#quantityKind"/>
+      </owl:Restriction>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#InformationEntropyUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Information Entropy Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#LogarithmicUnit"/>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ComputingUnit"/>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ResourceUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#InductanceUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Inductance Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismUnit"/>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >An electric current flowing around a circuit produces a magnetic field and hence a magnetic flux through the circuit. The ratio of the magnetic flux to the current is called the inductance, or more accurately self-inductance of the circuit. [Wikipedia]
+
+This class contains the following instance(s): "Abhenry", "Henry", "Micro Henry", "Milli Henry", "Stathenry".</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#SpecificHeatCapacityUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Specific Heat Capacity Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#KinematicViscosityUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Kinematic Viscosity Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#ThermalDiffusivityUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Thermal Diffusivity Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermodynamicsUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#LinearThermalExpansionUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Linear Thermal Expansion Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ThermalExpansionUnit"/>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >When the temperature of a substance changes, the energy that is stored in the intermolecular bonds between atoms changes. When the stored energy increases, so does the length of the molecular bonds. As a result, solids typically expand in response to heating and contract on cooling; this dimensional response to temperature change is expressed by its coefficient of thermal expansion.
+
+Different coefficients of thermal expansion can be defined for a substance depending on whether the expansion is measured by:
+
+    * linear thermal expansion
+    * area thermal expansion
+    * volumetric thermal expansion
+
+These characteristics are closely related. The volumetric thermal expansion coefficient can be defined for both liquids and solids. The linear thermal expansion can only be defined for solids, and is common in engineering applications.
+
+Some substances expand when cooled, such as freezing water, so they have negative thermal expansion coefficients. [Wikipedia]</qudt:description>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MassPerAreaUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Mass Per Area Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#MechanicsUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#AbsorbedDoseUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Absorbed Dose Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#RadiologyUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#FrequencyUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Frequency Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SpaceAndTimeUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#DimensionVector">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A dimension vector is an association between a quantity kind and a rational number. The quantity kind serves as the basis vector in an abstract vector space, and the rational number is the vector magnitude. The abstract vector space is determined by the chosen set of base quantity kinds for a quantity system.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Dimension Vector</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#Thing"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#basisElement"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://data.nasa.gov/qudt/owl/qudt#QuantityKind"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#basisElement"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#vectorMagnitude"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <owl:onProperty>
+          <owl:FunctionalProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#vectorMagnitude"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#MolalConcentrationUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Molal Concentration Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ConcentrationUnit"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/qudt#PermeabilityUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Permeability Unit</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#ElectricityAndMagnetismUnit"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#coherentDerivedUnitOfSystem">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >This property relates a unit of measure to the unit system in which the unit is derived from the system's base units with a proportionality constant of one.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >derived unit of system</rdfs:label>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#coherentUnitOfSystem"/>
+    </rdfs:subPropertyOf>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#derivedUnitOfSystem"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#systemCoherentDerivedUnit"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#systemBaseUnit">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >This property relates a system of units to a base unit defined within the system. The base units of a system are used to define the derived units of the system by expressing the derived units as products of the base units raised to a rational power.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >base unit</rdfs:label>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#systemCoherentUnit"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#baseUnitOfSystem"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#systemUnit">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >This property relates a system of units with a unit of measure that is either a) defined by the system, or b) accepted for use by the system and is convertible to a unit of equivalent dimension that is defined by the system. Systems of units may distinguish between base and derived units. Base units are the units which measure the base quantities for the corresponding system of quantities. The base units are used to define units for all other quantities as products of powers of the base units. Such units are called derived units for the system.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >system unit</rdfs:label>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#unitOfSystem"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#systemPrefixUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >prefix unit</rdfs:label>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#systemDefinedUnit"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#prefixUnitOfSystem"/>
+    </owl:inverseOf>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DeprecatedProperty"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#systemCoherentDerivedUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >coherent derived unit</rdfs:label>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#systemCoherentUnit"/>
+    </rdfs:subPropertyOf>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#systemDerivedUnit"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#coherentDerivedUnitOfSystem"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#systemCoherentUnit">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A coherent unit of measurement for a unit system is a defined unit that may be expressed as a product of powers of the system's base units with the proportionality factor of one.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >coherent unit</rdfs:label>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#systemDefinedUnit"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#coherentUnitOfSystem"/>
+    </owl:inverseOf>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DeprecatedProperty"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#generalization">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >This property relates a quantity kind to its generalization. A quantity kind, PARENT, is a generalization of the quantity kind CHILD only if
+
+1. PARENT and CHILD have the same dimensions in every system of quantities;
+2. Every unit that is a measure of quantities of kind CHILD is also a valid measure of quantities of kind PARENT.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >generalization</rdfs:label>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#specialization"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#systemAllowedUnit">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >This property relates a unit system with a unit of measure that is not defined by or part of the system, but is allowed for use within the system. An allowed unit must be convertible to some dimensionally eqiuvalent unit that is defined by the system.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >allowed unit</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#systemUnit"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#allowedUnitOfSystem"/>
+    </owl:inverseOf>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DeprecatedProperty"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#quantity">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >a property to relate an observable thing with a quantity (qud:Quantity)</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >quantity</rdfs:label>
+    <rdfs:range rdf:resource="http://data.nasa.gov/qudt/owl/qudt#Quantity"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#elementKind">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >element kind</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#systemQuantityKind">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >system quantity kind</rdfs:label>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#quantityKindOfSystem"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#prefixUnitOfSystem">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >prefix unit of system</rdfs:label>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#definedUnitOfSystem"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#systemPrefixUnit"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DeprecatedProperty"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#referenceQuantity">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >reference quantity</rdfs:label>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#referenceThing"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#default">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The default element in an enumeration</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >default</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#value">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >a property to relate an observable thing with a quantity value (qud:QuantityValue)</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >value</rdfs:label>
+    <rdfs:range rdf:resource="http://data.nasa.gov/qudt/owl/qudt#QuantityValue"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#systemBaseQuantityKind">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >system base quantity kind</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#systemQuantityKind"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#baseQuantityKindOfSystem"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#valueQuantity">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >value for quantity</rdfs:label>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#quantityValue"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#allowedUnitOfSystem">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >This property relates a unit of measure with a unit system that does not define the unit, but allows its use within the system. An allowed unit must be convertible to some dimensionally eqiuvalent unit that is defined by the system.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >allowed unit of system</rdfs:label>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#unitOfSystem"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#systemAllowedUnit"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#baseUnitOfSystem">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >This property relates a unit of measure to the system of units in which it is defined as a base unit for the system. The base units of a system are used to define the derived units of the system by expressing the derived units as products of the base units raised to a rational power.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >base unit of system</rdfs:label>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#coherentUnitOfSystem"/>
+    </rdfs:subPropertyOf>
+    <owl:inverseOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#systemBaseUnit"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#unitOfSystem">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >This property relates a unit of measure with a system of units that either a) defines the unit or b) allows the unit to be used within the system.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >unit of system</rdfs:label>
+    <owl:inverseOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#systemUnit"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#definedUnitOfSystem">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >This property relates a unit of measure with the unit system that defines the unit.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >defined unit of system</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#unitOfSystem"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#systemDefinedUnit"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#dimensionVector">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >dimension vector</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#quantityKindOfSystem">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >quantity kind of system</rdfs:label>
+    <owl:inverseOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#systemQuantityKind"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#element">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >An element of an enumeration</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >element</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#derivedQuantityKindOfSystem">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >derived quantity kind of system</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#quantityKindOfSystem"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#systemDerivedQuantityKind"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#unit">
+    <rdfs:comment>A reference to the unit of measure of a quantity (variable or constant) of interest.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >unit</rdfs:label>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#unitFor"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#baseQuantityKindOfSystem">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >base quantity kind of system</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#quantityKindOfSystem"/>
+    <owl:inverseOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#systemBaseQuantityKind"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#systemDimension">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >system dimension</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#systemDerivedQuantityKind">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >system derived quantity kind</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#systemQuantityKind"/>
+    <owl:inverseOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#derivedQuantityKindOfSystem"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#derivedUnitOfSystem">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >This property relates a unit of measure to the system of units in which it is defined as a derived unit. That is, the derived unit is defined as a product of the base units for the system raised to some rational power.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >derived unit of system</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#definedUnitOfSystem"/>
+    <owl:inverseOf>
+      <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#systemDerivedUnit"/>
+    </owl:inverseOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#systemDefinedUnit">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >This property relates a unit system with a unit of measure that is defined by the system.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >defined unit</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#systemUnit"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#referenceThing">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >reference thing</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#quantityValue">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >quantity value</rdfs:label>
+    <owl:inverseOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#valueQuantity"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#systemDerivedUnit">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >This property relates a system of units to a unit of measure that is defined within the system in terms of the base units for the system. That is, the derived unit is defined as a product of the base units for the system raised to some rational power.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >derived unit</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#systemDefinedUnit"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#coherentUnitOfSystem">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A coherent unit of measurement for a unit system is a defined unit that may be expressed as a product of powers of the system's base units with the proportionality factor of one.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >coherent unit of system</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#definedUnitOfSystem"/>
+    <owl:inverseOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#systemCoherentUnit"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DeprecatedProperty"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#specialization">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >This property relates a quantity kind to its specialization(s). For example, linear velocity and angular velocity are both specializations of velocity.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >specialization</rdfs:label>
+    <owl:inverseOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#generalization"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#unitFor">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >unit for</rdfs:label>
+    <owl:inverseOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#unit"/>
+  </owl:ObjectProperty>
+  <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#numericValue">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >numeric value</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#symbol">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The symbol for a unit is a glyph that is used to represent the unit in a compact form. For example, the symbol for the US Dollar is $. This contrasts with unit:abbreviation, which gives a short alphanumeric abbreviation for the unit. (I.e. USD for US Dollar).</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >symbol</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:subPropertyOf>
+      <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#literal"/>
+    </rdfs:subPropertyOf>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#standardUncertainty">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The standard uncertainty of a quantity is the estimated standard deviation of the mean taken from a series of measurements.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >standard uncertainty</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#relativeStandardUncertainty">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The relative standard uncertainty of a measurement is the (absolute) standard uncertainty divided by the magnitude of the exact value.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >relative standard uncertainty</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#code">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A unit code is a numeric string that uniquely identifies a unit </rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >code</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#order">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >order</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#nonNegativeInteger"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#conversionCoefficient">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >conversion coefficient</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#literal">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >literal</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#description">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >description</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#negativeDeltaLimit">
+    <rdfs:comment>A negative change limit between consecutive sample values for a parameter. The Negative Delta may be the encoded value or engineering units value depending on whether or not a Calibrator is defined.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >negative delta limit</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#abbreviation">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >An abbreviation for a unit is a short (usually 5 characters or less) string that is used in place of the full name for the unit in contexts where space is limited, or where using the abbreviation will enhance readability.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >abbreviation</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#positiveDeltaLimit">
+    <rdfs:comment>A positive change limit between consecutive sample values for a parameter. The Positive Delta may be the encoded value or engineering units value depending on whether or not a Calibrator is defined.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Positive delta limit</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:TransitiveProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#exactMatch">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >exact match</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+  </owl:TransitiveProperty>
+  <owl:FunctionalProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#currencyExponent">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The currency exponent indicates the number of decimal places between a major currency unit and its minor currency unit. For example, the US dollar is the major currency unit of the United States, and the US cent is the minor currency unit. Since one cent is 1/100 of a dollar, the US dollar has a currency exponent of 2. However, the Japanese Yen has no minor currency units, so the yen has a currency exponent of 0.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >currency exponent</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#coherentUnitSystem">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A system of units is coherent with respect to a system of quantities and equations if the system of units is chosen in such a way that the equations between numerical values have exactly the same form (including the numerical factors) as the corresponding equations between the quantities. In such a coherent system, no numerical factor other than the number 1 ever occurs in the expressions for the derived units in terms of the base units.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >coherent unit system</rdfs:label>
+    <rdfs:subPropertyOf>
+      <owl:FunctionalProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#unitSystem"/>
+    </rdfs:subPropertyOf>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#baseDimensionEnumeration">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >This property associates a system of quantities with an enumeration that enumerates the base dimensions of the system in canonical order.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >base dimension enumeration</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#unitSystem">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >unit system</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#vectorMagnitude">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >vector magnitude</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#basisElement">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >basis element</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#conversionOffset">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >conversion offset</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#conversionMultiplier">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >conversion multiplier</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#dimensionInverse">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#InverseFunctionalProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >dimension inverse</rdfs:label>
+    <owl:inverseOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#dimensionInverse"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:about="http://data.nasa.gov/qudt/owl/qudt#referenceUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >reference unit</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#referenceThing"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:FunctionalProperty>
+  <qudt:QuantityKindCategory rdf:about="http://data.nasa.gov/qudt/owl/qudt#CommunicationsQuantityKind">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Communications</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#QuantityKind"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </qudt:QuantityKindCategory>
+  <qudt:QuantityKindCategory rdf:about="http://data.nasa.gov/qudt/owl/qudt#BiologyQuantityKind">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Biology</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#QuantityKind"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </qudt:QuantityKindCategory>
+  <qudt:QuantityKindCategory rdf:about="http://data.nasa.gov/qudt/owl/qudt#InformationQuantityKind">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Information</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#QuantityKind"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </qudt:QuantityKindCategory>
+  <owl:Restriction>
+    <owl:allValuesFrom rdf:resource="http://data.nasa.gov/qudt/owl/qudt#QuantityKind"/>
+    <owl:onProperty rdf:resource="http://data.nasa.gov/qudt/owl/qudt#quantityKind"/>
+  </owl:Restriction>
+  <owl:Restriction>
+    <owl:allValuesFrom rdf:resource="http://data.nasa.gov/qudt/owl/qudt#Enumeration"/>
+    <owl:onProperty rdf:resource="http://data.nasa.gov/qudt/owl/qudt#baseDimensionEnumeration"/>
+  </owl:Restriction>
+  <owl:DeprecatedClass rdf:about="http://data.nasa.gov/qudt/owl/qudt#NotUsedWithSIUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Not Used With SI Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:DeprecatedClass rdf:about="http://data.nasa.gov/qudt/owl/qudt#NonSIUnit">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Non SI Unit</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#PhysicalUnit"/>
+        <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >A Non-SI unit. Typically an imperial measure.</qudt:description>
+        <owl:disjointWith rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SIUnit"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+      </owl:DeprecatedClass>
+    </rdfs:subClassOf>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A type specification for all units that are not used in the SI standard.</qudt:description>
+    <owl:disjointWith>
+      <owl:DeprecatedClass rdf:about="http://data.nasa.gov/qudt/owl/qudt#UsedWithSIUnit">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Used With SI Unit</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#NonSIUnit"/>
+        <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >A type specification for all units that are used in the SI standard.</qudt:description>
+        <owl:disjointWith rdf:resource="http://data.nasa.gov/qudt/owl/qudt#NotUsedWithSIUnit"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+      </owl:DeprecatedClass>
+    </owl:disjointWith>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </owl:DeprecatedClass>
+  <owl:DeprecatedClass rdf:about="http://data.nasa.gov/qudt/owl/qudt#SIBaseUnit">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >SI Base Unit</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:DeprecatedClass rdf:about="http://data.nasa.gov/qudt/owl/qudt#BaseUnit">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >A Base Unit is a unit adopted by convention for a base quantity.</rdfs:comment>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >Base Unit</rdfs:label>
+        <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#Unit"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+      </owl:DeprecatedClass>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SIUnit"/>
+    <qudt:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >All SI units are derived from the SI Base units</qudt:description>
+    <owl:disjointWith>
+      <owl:DeprecatedClass rdf:about="http://data.nasa.gov/qudt/owl/qudt#SIDerivedUnit">
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >SI Derived Unit</rdfs:label>
+        <rdfs:subClassOf>
+          <owl:DeprecatedClass rdf:about="http://data.nasa.gov/qudt/owl/qudt#DerivedUnit">
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >A DerivedUnit is a type specification for units that are derived from other units.</rdfs:comment>
+            <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >Derived Unit</rdfs:label>
+            <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#Unit"/>
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+          </owl:DeprecatedClass>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SIUnit"/>
+        <owl:disjointWith rdf:resource="http://data.nasa.gov/qudt/owl/qudt#SIBaseUnit"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+      </owl:DeprecatedClass>
+    </owl:disjointWith>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </owl:DeprecatedClass>
+</rdf:RDF>
+
+<!-- Created with TopBraid -->

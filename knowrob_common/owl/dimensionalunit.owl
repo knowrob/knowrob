@@ -1,0 +1,535 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+    xmlns:qudt="http://qudt.org/schema/qudt#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:qudt-dimensionalunit-1.1="http://qudt.org/1.1/vocab/dimensionalunit#"
+    xmlns:vaem="http://www.linkedmodel.org/schema/vaem#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:voag="http://voag.linkedmodel.org/schema/voag#"
+    xmlns:unit="http://qudt.org/vocab/unit#"
+  xml:base="http://qudt.org/1.1/vocab/dimensionalunit" > 
+  <rdf:Description rdf:about="">
+    <vaem:revisionNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.1</vaem:revisionNumber>
+    <voag:hasLicenseType rdf:resource="voag:CC-SHAREALIKE_3PT0-US"/>
+    <vaem:usesNonImportedResource rdf:resource="http://purl.org/dc/elements/1.1/contributor"/>
+    <owl:imports rdf:resource="package://knowrob_common/owl/quantity.owl"/>
+    <dc:contributor rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Irene Polikoff</dc:contributor>
+    <dc:subject rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Units of Measure with Dimensional Analysis</dc:subject>
+    <vaem:usesNonImportedResource rdf:resource="http://www.w3.org/2004/02/skos/core#exactMatch"/>
+    <owl:imports rdf:resource="package://knowrob_common/owl/qudt.owl"/>
+    <vaem:hasRole rdf:resource="http://www.linkedmodel.org/schema/vaem#VocabularyGraph"/>
+    <owl:versionIRI rdf:resource=""/>
+    <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string">James E. Masters</dc:creator>
+    <dc:contributor rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ralph Hodgson</dc:contributor>
+    <vaem:hasDomainScope rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Science, Medicine and Engineering</vaem:hasDomainScope>
+    <vaem:usesNonImportedResource rdf:resource="http://purl.org/dc/elements/1.1/subject"/>
+    <vaem:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The QUDT Dimensional Units is a vocabulary that extens the basic treatment of units with quantities and their dimensions. A quantity is the measurement of an observable property of a particular object, event, or physical system. A quantity is always associated with the context of measurement (i.e. the thing measured, the measured value, the accuracy of measurement, etc.) whereas the underlying quantity kind is independent of any particular measurement. A dimension is a relationship between a quantity system, a quantity kind of that system, and one or more dimension vectors. There is one dimension vector for each of the system's base quantity kinds. The vector's magnitude determines the exponent of the base dimension for the referenced quantity kind.</vaem:description>
+    <vaem:hasDisciplineScope rdf:datatype="http://www.w3.org/2001/XMLSchema#string">All disciplines</vaem:hasDisciplineScope>
+    <dc:contributor rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Daniel Mekonnen</dc:contributor>
+    <vaem:specificity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</vaem:specificity>
+    <vaem:lastUpdated rdf:datatype="http://www.w3.org/2001/XMLSchema#string">$LastChangedDate: 2011-06-01 13:34:19 -0700 (Wed, 01 Jun 2011) $</vaem:lastUpdated>
+    <vaem:hasAspectScope rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Full treatment of quantities and units including support for dimensional analysis over quantities.</vaem:hasAspectScope>
+    <vaem:acronym rdf:datatype="http://www.w3.org/2001/XMLSchema#string">QUDT</vaem:acronym>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+    <vaem:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://qudt.org/vocab/dimensionalunit</vaem:namespace>
+    <vaem:usesNonImportedResource rdf:resource="http://purl.org/dc/elements/1.1/author"/>
+    <owl:imports rdf:resource="package://knowrob_common/owl/unit.owl"/>
+    <vaem:intent rdf:datatype="http://www.w3.org/2001/XMLSchema#string">To provide the dimension vectors for all QUDT units</vaem:intent>
+    <dc:title rdf:datatype="http://www.w3.org/2001/XMLSchema#string">QUDT Dimensional Units Version 1.1</dc:title>
+    <vaem:usesNonImportedResource rdf:resource="http://purl.org/dc/elements/1.1/description"/>
+    <vaem:dateCreated rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2011-01-02T01:16:11</vaem:dateCreated>
+    <vaem:namespacePrefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string">qudt-dimensionalunit</vaem:namespacePrefix>
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">$Id: OVG_dimensionalunits-qudt-(v1.1).ttl 4988 2011-06-01 20:34:19Z RalphHodgson $</owl:versionInfo>
+    <vaem:usesNonImportedResource rdf:resource="http://purl.org/dc/elements/1.1/creator"/>
+    <vaem:usesNonImportedResource rdf:resource="http://www.w3.org/2004/02/skos/core#closeMatch"/>
+    <vaem:usesNonImportedResource rdf:resource="voag:CC-SHAREALIKE_3PT0-US"/>
+    <vaem:usesNonImportedResource rdf:resource="http://purl.org/dc/elements/1.1/title"/>
+    <owl:imports rdf:resource="package://knowrob_common/owl/dimension.owl"/>
+    <voag:hasCatalogEntry rdf:resource="http://qudt.org/catalog/qudt#QUDT-DIMENSIONALUNITS-VocabCatalogEntry"/>
+    <dc:rights rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The QUDT Ontologies are issued under a Creative Commons Attribution Share Alike 3.0 United States License. Attribution should be made to NASA Ames Research Center and TopQuadrant, Inc.</dc:rights>
+    <voag:withAttributionTo rdf:resource="http://voag.linkedmodel.org/schema/voag#TopQuadrantAttribution"/>
+    <voag:withAttributionTo rdf:resource="http://qudt.org/schema/qudt#NASA-ARC-Attribution"/>
+    <vaem:usesNonImportedResource rdf:resource="http://purl.org/dc/elements/1.1/rights"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">QUDT Dimensional Units</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Pascal">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PAL</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Rem">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">D91</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Lux">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LUX</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Candela">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CDL</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#AstronomicalUnit">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A12</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#SquareMile">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MIK</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Gal">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A76</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Decibel">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2N</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#DegreeRankinePerHour">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">J28</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Yard">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">YRD</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Sievert">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">D13</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#CubicFootPerMinute">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2L</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#InchOfMercury">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">F79</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Rad">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C80</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#JoulePerMole">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">B15</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#GrayPerSecond">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A96</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Katal">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">KAT</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#PicoFarad">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">4T</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#CoulombPerMole">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A32</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Tesla">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">D33</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Gray">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A95</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Volt">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">VLT</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#SquareYard">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">YDK</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#GallonUSPerMinute">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">G2</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#KelvinPerMinute">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">F11</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Foot">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FOT</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#FootPerSecond">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FS</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#MicroSecond">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">B98</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#FootPerSecondSquared">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A73</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#NauticalMile">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NMI</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#RadianPerSecondSquared">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2B</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#DegreeFahrenheitPerHour">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">J23</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Hertz">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">HTZ</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#PoundPerSquareFoot">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FP</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#JoulePerKilogramKelvin">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">B11</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Mole">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C34</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#JoulePerKilogram">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">J2</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Day">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">DAY</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#DegreeRankinePerMinute">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">J29</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#MicroFarad">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">4O</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#SquareFootPerSecond">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">S3</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Mho">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NQ</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#PoundPerFootHour">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">K67</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Joule">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">JOU</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#PascalSecond">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C65</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#PoundPerCubicFoot">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">87</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#WattPerSteradian">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">D57</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#CubicYard">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">YDQ</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#InchPerSecondSquared">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">IV</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#OuncePerSquareYard">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ON</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#RadianPerSecond">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2A</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#FootPerMinute">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FR</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Inch">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">INH</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#KilogramPerSecond">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">KGS</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Kilogram">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">KGM</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#MolePerKilogram">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C19</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#LightYear">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">B57</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#FootOfWater">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">K24</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#CoulombPerKilogram">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CKG</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Grain">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">GRN</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#LumenSecond">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">B62</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Millibar">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MBR</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Radian">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C81</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#DegreeCelsiusPerSecond">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">H14</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Coulomb">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">COU</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Watt">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">WTT</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Lumen">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LUM</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#RadianPerMinute">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2A</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#PoundPerFootSecond">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">K68</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#DegreeRankine">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A48</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#DegreeCelsiusPerHour">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">H12</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Clo">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">J83</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Erg">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A57</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Grade">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A91</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Newton">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NEW</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#KelvinPerSecond">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">F12</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Kelvin">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">KEL</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Farad">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FAR</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Stere">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">G26</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Fathom">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AK</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Kilowatt">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">KWT</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Centipoise">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C7</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Ohm">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OHM</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#KiloHertz">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">KHZ</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#JoulePerMoleKelvin">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">B16</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#DegreeRankinePerSecond">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">J30</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Becquerel">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">BQL</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#DegreeCelsiusPerMinute">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">H13</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#PoundPerCubicInch">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LA</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Barn">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A14</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#AmpereHour">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AMH</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#DegreeCelsius">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CEL</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#GigaHertz">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A86</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#KelvinPerHour">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">F10</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#MilliHenry">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C14</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#JoulePerKelvin">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">JE</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#ErgPerSecond">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A63</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Dyne">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">DU</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Are">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ARE</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Acre">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ACR</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Weber">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">WEB</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#KilogramPerMole">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">D74</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#KiloPond">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">B51</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#SlugPerFootSecond">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">L64</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#DegreeFahrenheitPerMinute">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">J24</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#OuncePerSquareFoot">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">37</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#SlugPerCubicFoot">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">L65</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Henry">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">81</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#KiloPascal">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">KPA</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Steradian">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">D27</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Stokes">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">91</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Gon">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A91</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#KelvinPerWatt">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">B21</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#CubicInchPerMinute">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">G57</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Angstrom">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A11</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#PoundPerFoot">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">P2</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#InchPerSecond">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">IU</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#ErgPerGram">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A61</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#CubicInch">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">INQ</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#JouleSecond">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">B18</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Roentgen">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2C</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#SquareFoot">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FTK</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#FootPerHour">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">K14</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#SlugPerSecond">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">L68</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#LumenPerWatt">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">B61</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#MicroHenry">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">B90</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Siemens">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SIE</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Slug">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">F13</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Knot">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">KNT</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#PoundPerCubicYard">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">K84</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#AtmosphereTechnical">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ATT</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#DegreeFahrenheitPerSecond">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">J25</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#MilliSecond">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C26</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#CubicFoot">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FTQ</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#KilogramPerHour">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">E93</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#InchOfWater">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">F78</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#SystemOfUnits_CGS-ESU">
+    <dc:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The electrostatic system of units is a system of units used to measure electrical quantities of electric charge, current, and voltage, within the centimeter gram second (or "CGS") metric system of units. In electrostatic units, electrical charge is defined via the force it exerts on other charges.</dc:description>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#VoltPerSecond">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">H46</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#UnifiedAtomicMassUnit">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">D43</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Hectare">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">HAR</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#CubicYardPerMinute">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">M15</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Centistokes">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">4C</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Parsec">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C63</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#DegreeFahrenheit">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FAH</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Curie">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CUR</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#AtomicMassUnit">
+    <qudt:quantityKind rdf:resource="http://qudt.org/vocab/quantity#MolecularMass"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Poise">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">89</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#PoundPerHour">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">4U</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#NanoFarad">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C41</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#SquareInch">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">INK</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Hour">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">HUR</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#MegaHertz">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MHZ</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Ampere">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AMP</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Gram">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">GRM</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#AtmosphereStandard">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ATM</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#Torr">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">UA</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#DegreePerSecond">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">E96</qudt:uneceCommonCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://qudt.org/vocab/unit#MilePerHour">
+    <qudt:uneceCommonCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">HM</qudt:uneceCommonCode>
+  </rdf:Description>
+</rdf:RDF>
+
+<!-- Created with TopBraid -->
