@@ -26,8 +26,8 @@
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('owl_parser')).
-:- use_module(library('semweb/owl')).
-:- use_module(library('semweb/rdfs_computable')).
+:- use_module(library('owl')).
+:- use_module(library('rdfs_computable')).
 
 :- rdf_meta(convert_to_unit(r,r,r)).
 
