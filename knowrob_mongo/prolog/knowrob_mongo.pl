@@ -17,6 +17,7 @@
 
 :- module(knowrob_mongo,
     [
+      mng_db/1,
       mng_latest_designator_before_time/3,
       mng_designator_type/2,
       mng_designator_props/3,
@@ -49,6 +50,7 @@
 
 
 :-  rdf_meta
+    mng_db(+),
     mng_lookup_transform(+,+,r,-),
     mng_latest_designator_before_time(r,-,-),
 
@@ -87,6 +89,16 @@ mongo_interface(DB) :-
     assert(mng_interface(DB)),!.
 mongo_interface(DB) :-
     mng_interface(DB).
+
+%% mng_db(+DBName) is nondet.
+%
+% Change mongo database used for future queries
+%
+% @param DBName  The name of the db (e.g., 'roslog')
+%
+mng_db(DBName) :-
+    mongo_interface(Mongo),
+    jpl_call(Mongo, setDatabase, [DBName], _).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

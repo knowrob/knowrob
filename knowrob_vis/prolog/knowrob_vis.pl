@@ -24,12 +24,18 @@
     [
       visualisation_canvas/0,
       clear_canvas/0,
+      camera_pose/2,
       add_object/1,
       add_object/2,
       add_object_with_children/1,
       add_object_with_children/2,
+      update_object/1,
+      update_object/2,
+      update_object_with_children/1,
+      update_object_with_children/2,
       remove_object/1,
       remove_object_with_children/1,
+      add_text/3,
       highlight_object/1,
       highlight_object/2,
       highlight_object/5,
@@ -39,6 +45,7 @@
       remove_highlight/1,
       remove_highlight_with_children/1,
       reset_highlight/0,
+      add_avg_trajectory/5,
       add_trajectory/3,
       add_trajectory/4,
       add_trajectory/5,
@@ -64,11 +71,16 @@
 
 
 :- rdf_meta add_object(r),
+            camera_pose(r,r),
             add_object(r,r),
             add_object_with_children(r),
             add_object_with_children(r,r),
+            update_object(r,r),
+            update_object_with_children(r),
+            update_object_with_children(r,r),
             remove_object(r),
             remove_object_with_children(r),
+            add_text(r,r,r),
             highlight_object(r),
             highlight_object(r,?),
             highlight_object(r,?,?,?,?,?),
@@ -85,6 +97,7 @@
             add_human_pose(r,r,r,r),
             remove_human_pose(r),
             remove_human_pose(r,r),
+            add_avg_trajectory(r,r,r,r,r),
             add_trajectory(r,r,r),
             add_trajectory(r,r,r,+),
             add_trajectory(r,r,r,+,+),
@@ -127,7 +140,18 @@ clear_canvas :-
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
-% Add / remove objects and trajectories
+% Camera
+%
+
+camera_pose(Position, Orientation) :-
+    visualisation_canvas(Canvas),
+    lists_to_arrays(Position, PositionArr),
+    lists_to_arrays(Orientation, OrientationArr),
+    jpl_call(Canvas, 'setCameraPose', [PositionArr, OrientationArr], _).
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%
+% Add / update / remove objects and trajectories
 %
 
 %% add_object(+Identifier) is nondet.
@@ -177,6 +201,54 @@ add_object_with_children(Identifier, Time) :-
     jpl_call(Canvas, 'addObjectWithChildren', [Identifier, Time], _).
 
 
+
+%% update_object(+Identifier) is nondet.
+%
+% Update object in the scene
+%
+% @param Identifier Object identifier, eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
+%
+update_object(Identifier) :-
+    get_timepoint(Time),
+    update_object(Identifier, Time).
+
+
+%% update_object(+Identifier, +Time) is nondet.
+%
+% Update object in the scene with its position at time 'Time'
+%
+% @param Identifier Object identifier, eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
+%
+update_object(Identifier, Time) :-
+    visualisation_canvas(Canvas),
+    jpl_call(Canvas, 'updateObject', [Identifier, Time], _).
+
+
+
+%% update_object_with_children(+Identifier)
+%
+% Updates object in the scene, including all items that are reachable via knowrob:properPhysicalPartTypes
+% or via knowrob:describedInMap
+%
+% @param Identifier eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
+%
+update_object_with_children(Identifier) :-
+    get_timepoint(Time),
+    update_object_with_children(Identifier, Time).
+
+
+%% update_object_with_children(+Identifier, +Time)
+%
+% Updates object in the scene, including all items that are reachable via knowrob:properPhysicalPartTypes
+% or via knowrob:describedInMap, with their positions at time 'Time'
+%
+% @param Identifier eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
+%
+update_object_with_children(Identifier, Time) :-
+    visualisation_canvas(Canvas),
+    jpl_call(Canvas, 'updateObjectWithChildren', [Identifier, Time], _).
+    
+
 %% remove_object(+Identifier) is det.
 %
 % Remove object from the scene
@@ -199,6 +271,33 @@ remove_object_with_children(Identifier) :-
     visualisation_canvas(Canvas),
     jpl_call(Canvas, 'removeObjectWithChildren', [Identifier], _).
 
+%% add_text(+Identifier, +Text, +Position) is nondet.
+%
+% Add view aligned text object to the scene
+%
+% @param Identifier Object identifier, eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
+% @param Text The text that should be displayed
+% @param Position The position of the text object.
+%
+add_text(Identifier, Text, Position) :-
+    visualisation_canvas(Canvas),
+    lists_to_arrays(Position, PositionArr),
+    jpl_call(Canvas, 'addText', [Identifier, Text, PositionArr], _).
+
+%%
+%   Reads all trajectories described by start- and endtimes from logged tf data 
+%   and visualizes the average of those trajectories in the Web-based canvas.
+%   Note that start and endtimes should be lists of the same length
+add_avg_trajectory(Link, Starttimes, Endtimes, IntervalParts, Markertype) :-
+  visualisation_canvas(Canvas),
+  
+  ((rdf_has(Link, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(Tf)),
+      atomic_list_concat(['/', Tf], TfLink)) ;
+      (TfLink = Link)),!,
+
+  jpl_list_to_array(Starttimes, ArrStart),
+  jpl_list_to_array(Endtimes, ArrEnd),
+  jpl_call(Canvas, 'showAverageTrajectory', [TfLink, ArrStart, ArrEnd, IntervalParts, Markertype], _).
 
 %% add_trajectory(+Link, +Starttime, +Endtime) is det.
 %% add_trajectory(+Link, +Starttime, +Endtime, +Interval) is det.
