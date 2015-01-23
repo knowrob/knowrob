@@ -114,11 +114,7 @@ mng_db(DBName) :-
 % @param PoseList   Object pose from designator as list[16]
 %
 mng_latest_designator_before_time(TimePoint, Type, PoseList) :-
-
-  rdf_split_url(_, TimePointLocal, TimePoint),
-  atom_concat('timepoint_', TimeAtom, TimePointLocal),
-  term_to_atom(Time, TimeAtom),
-
+  time_term(TimePoint, Time),
   mongo_interface(DB),
   jpl_call(DB, 'latestUIMAPerceptionBefore', [Time], Designator),
   jpl_call(Designator, 'get', ['_designator_type'], Type),
@@ -128,7 +124,6 @@ mng_latest_designator_before_time(TimePoint, Type, PoseList) :-
   jpl_call(StampedPose, readFromDBObject, [StampedPoseParsed], StampedPose), 
   jpl_call(StampedPose, 'getMatrix4d', [], PoseMatrix4d),  
   knowrob_coordinates:matrix4d_to_list(PoseMatrix4d, PoseList).
-
 
 
 %% mng_obj_pose_by_desig(+Obj, -Pose) is nondet.

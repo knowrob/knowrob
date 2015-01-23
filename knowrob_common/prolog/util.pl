@@ -35,8 +35,19 @@
       extract_values/3,
       print_info/2,
       string_tokens/2,
-      lists_equal/2
+      lists_equal/2,
+      time_term/2
 ]).
+
+time_term(Timepoint, Time) :-
+  (  rdf_split_url(_, TimePointLocal, Timepoint),
+     atom_concat('timepoint_', TimeAtom, TimePointLocal)
+  -> term_to_atom(Time, TimeAtom)
+  ;  (  atom_concat('timepoint_', TimepointAtom, Timepoint)
+     -> term_to_atom(Time, TimepointAtom)
+     ;  term_to_atom(Time, Timepoint)
+     )
+  ).
 
 %% reduce(+Predicate, +List, +StartValue, -Result).
 % The predicate is first called for the first element of the list, the start value and an intermediate result.
