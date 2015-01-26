@@ -37,6 +37,7 @@
       remove_object/1,
       remove_object_with_children/1,
       add_text/3,
+      add_text/1,
       highlight_object/1,
       highlight_object/2,
       highlight_object/5,
@@ -82,6 +83,7 @@
             remove_object(r),
             remove_object_with_children(r),
             add_text(r,r,r),
+            add_text(r),
             highlight_object(r),
             highlight_object(r,?),
             highlight_object(r,?,?,?,?,?),
@@ -300,6 +302,16 @@ add_text(Identifier, Text, Position) :-
     lists_to_arrays(Position, PositionArr),
     jpl_call(Canvas, 'addText', [Identifier, Text, PositionArr], _).
 
+%% add_text(+Text) is nondet.
+%
+% Add HUD text ontop of canvas
+%
+% @param Text The text that should be displayed
+%
+add_text(Text) :-
+    visualisation_canvas(Canvas),
+    jpl_call(Canvas, 'addHUDText', [Identifier, Text], _).
+    
 %%
 %   Reads all trajectories described by start- and endtimes from logged tf data 
 %   and visualizes the average of those trajectories in the Web-based canvas.

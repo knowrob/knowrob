@@ -58,6 +58,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 	Publisher<MarkerArray> pub;
 	
 	Publisher<Pose> cam_pub;
+	
+	Publisher<std_msgs.String> text_pub;
 
 	ConnectedNode node;
 
@@ -119,33 +121,34 @@ public class MarkerVisualization extends AbstractNodeMain {
 	public void onStart(final ConnectedNode connectedNode) {
 		node = connectedNode;
 		pub = connectedNode.newPublisher("/visualization_marker_array", visualization_msgs.MarkerArray._TYPE);
-        cam_pub = connectedNode.newPublisher("/camera/pose", geometry_msgs.Pose._TYPE);
+		cam_pub = connectedNode.newPublisher("/camera/pose", geometry_msgs.Pose._TYPE);
+		text_pub = connectedNode.newPublisher("/canvas/text", std_msgs.String._TYPE);
 		log = connectedNode.getLog();
 		// Need to start the webserver after node in order to able to use
 		// ROS parameters for server configuration.
 		startWebServer(1111);
 	}
 	
-    public void setCameraPose(final String[] positions, final String[] orientations) {
-        try {
-            final Pose pose = cam_pub.newMessage();
-            
-            pose.getPosition().setX(Float.parseFloat(positions[0]));
-            pose.getPosition().setY(Float.parseFloat(positions[1]));
-            pose.getPosition().setZ(Float.parseFloat(positions[2]));
-            
-            pose.getOrientation().setX(Float.parseFloat(orientations[0]));
-            pose.getOrientation().setY(Float.parseFloat(orientations[1]));
-            pose.getOrientation().setZ(Float.parseFloat(orientations[2]));
-            pose.getOrientation().setW(Float.parseFloat(orientations[3]));
-            
-            cam_pub.publish(pose);
-        }
-        catch(Exception e) {
-            e.printStackTrace();
-        }
-    }
-
+	public void setCameraPose(final String[] positions, final String[] orientations) {
+		try {
+			final Pose pose = cam_pub.newMessage();
+			
+			pose.getPosition().setX(Float.parseFloat(positions[0]));
+			pose.getPosition().setY(Float.parseFloat(positions[1]));
+			pose.getPosition().setZ(Float.parseFloat(positions[2]));
+			
+			pose.getOrientation().setX(Float.parseFloat(orientations[0]));
+			pose.getOrientation().setY(Float.parseFloat(orientations[1]));
+			pose.getOrientation().setZ(Float.parseFloat(orientations[2]));
+			pose.getOrientation().setW(Float.parseFloat(orientations[3]));
+			
+			cam_pub.publish(pose);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * Add object 'identifier' to the visualization.
 	 *
@@ -858,7 +861,19 @@ public class MarkerVisualization extends AbstractNodeMain {
 			return;
 		}
 	}
-
+	
+	public void addHUDText(String identifier, String text) {
+		try {
+			final std_msgs.String msg = text_pub.newMessage();
+			msg.setData(text);
+			text_pub.publish(msg);
+		}
+		catch(Exception exc) {
+			log.warn("Failed to add HUD text.", exc);
+			return;
+		}
+	}
+	
 	HumanSkeleton getHumanSkeleton(String humanIndividualName) {
 		HumanSkeleton out = humanSkeletons.get(humanIndividualName);
 		if(out==null) {
