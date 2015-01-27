@@ -78,8 +78,6 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
-
 
     <!-- http://knowrob.org/kb/knowrob.owl#aboveOf -->
 
@@ -920,7 +918,14 @@ Note that locatedAtPoint-Spatial is irreflexive; in order to locate points in sp
     <owl:ObjectProperty rdf:about="&knowrob;objectRightSide">
         <rdfs:subPropertyOf rdf:resource="&knowrob;objectSides"/>
     </owl:ObjectProperty>
+
     
+    <!-- http://knowrob.org/kb/knowrob.owl#objectsInContact -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;objectsInContact">
+        <rdfs:domain rdf:resource="&knowrob;PhysicalContactSituation"/>
+        <rdfs:range rdf:resource="&knowrob;SpatialThing-Localized"/>
+    </owl:ObjectProperty>
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#objectShapeType -->
@@ -1330,6 +1335,13 @@ Note that locatedAtPoint-Spatial is irreflexive; in order to locate points in sp
         <rdfs:subPropertyOf rdf:resource="&owl;topObjectProperty"/>
     </owl:ObjectProperty>
     
+
+    <!-- http://knowrob.org/kb/knowrob.owl#reaction -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;reaction">
+        <rdfs:range rdf:resource="&knowrob;Action"/>
+        <rdfs:domain rdf:resource="&knowrob;Situation"/>
+    </owl:ObjectProperty>
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#relativeTo -->
@@ -4352,6 +4364,14 @@ Cf. PolarCoordinateSystem.</rdfs:comment>
     </owl:Class>
     
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Collision -->
+
+    <owl:Class rdf:about="&knowrob;Collision">
+        <rdfs:subClassOf rdf:resource="&knowrob;ContinuousPhysicalContactSituation"/>
+        <rdfs:subClassOf rdf:resource="&knowrob;Translation-LocationChange"/>
+        <rdfs:comment>An instance of TemporalObjectType and a specialization of ContinuousPhysicalContactSituation and Translation_LocationChange. Each instance of Collision is an event in which two or more PartiallyTangibles bump into each other. Each instance of Collision is immediately preceded by an Approaching, during which at least one of the objectsInContact during the Collision is moving toward the location at which the collision takes place. (Some of the objects in contact during the colliding may already be occupying that location immediately before contact.) The Collision begins once the objects begin to be in contact, and ends once they are no longer in contact (think of two billiard balls bouncing off each other), or when the objects have come to rest in a stable contact position (think of an asteroid smashing into the earth and coming to rest at the bottom of the crater it has created).</rdfs:comment>
+    </owl:Class>
+
 
     <!-- http://knowrob.org/kb/knowrob.owl#CollidingWithAnObstacle -->
 
@@ -4646,6 +4666,13 @@ Cf. PolarCoordinateSystem.</rdfs:comment>
         </rdfs:subClassOf>
     </owl:Class>
     
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ContinuousPhysicalContactSituation -->
+
+    <owl:Class rdf:about="&knowrob;ContinuousPhysicalContactSituation">
+        <rdfs:subClassOf rdf:resource="&knowrob;PhysicalContactSituation"/>
+        <rdfs:comment>A specialization of PhysicalContactSituation each instance of which involves two or more tangible objects touching (see touches) continuously throughout the entire duration of the situation. Every PhysicalContactSituation has a ContinuousPhysicalContactSituation as a (proper or improper) sub-situation (see subSituations).</rdfs:comment>
+    </owl:Class>
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#Cooked -->
