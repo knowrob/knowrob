@@ -127,6 +127,15 @@ public class DiagramVisualization extends AbstractNodeMain {
 		}*/
 		for(String mrk : diagrams.keySet()) {
 			removeDiagram(mrk);
+			
+			// Workaround: send messages more slowly to avoid race conditions 
+			// of the asynchronous message handles. Should be fixed in the JS 
+			// client to properly update the diagrams buffer.
+			try {
+				Thread.sleep(80);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
