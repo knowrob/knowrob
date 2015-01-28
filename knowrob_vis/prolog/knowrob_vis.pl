@@ -310,7 +310,7 @@ add_text(Identifier, Text, Position) :-
 %
 add_text(Text) :-
     visualisation_canvas(Canvas),
-    jpl_call(Canvas, 'addHUDText', [Identifier, Text], _).
+    jpl_call(Canvas, 'addHUDText', [_Identifier, Text], _).
     
 %%
 %   Reads all trajectories described by start- and endtimes from logged tf data 
