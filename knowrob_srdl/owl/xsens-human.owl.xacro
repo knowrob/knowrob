@@ -40,8 +40,10 @@
   <xacro:macro name="link_with_joint" params="link_name joint_name urdf_name">
     <owl:NamedIndividual rdf:about="${link_name}">
       <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
-      <knowrob:radius rdf:datatype="&xsd;double">0.1</knowrob:radius>
-      <srdl2-comp:urdfName rdf:datatype="&xsd;string">${urdf_name}</srdl2-comp:urdfName>
+      <knowrob:depthOfObject rdf:datatype="&xsd;double">0.1</knowrob:depthOfObject>
+      <knowrob:widthOfObject rdf:datatype="&xsd;double">0.1</knowrob:widthOfObject>
+      <knowrob:heightOfObject rdf:datatype="&xsd;double">0.1</knowrob:heightOfObject>
+      <srdl2-comp:urdfName>${urdf_name}</srdl2-comp:urdfName>
       <srdl2-comp:succeedingJoint rdf:resource="${joint_name}"/>
     </owl:NamedIndividual>
   </xacro:macro>
@@ -87,9 +89,11 @@
     
     <owl:NamedIndividual rdf:about="&robot;${prefix}Hand">
       <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
-      <knowrob:radius rdf:datatype="&xsd;double">0.15</knowrob:radius>
+      <knowrob:depthOfObject rdf:datatype="&xsd;double">0.15</knowrob:depthOfObject>
+      <knowrob:widthOfObject rdf:datatype="&xsd;double">0.15</knowrob:widthOfObject>
+      <knowrob:heightOfObject rdf:datatype="&xsd;double">0.15</knowrob:heightOfObject>
       <rdf:type rdf:resource="&knowrob;${prefix}Hand"/>
-      <srdl2-comp:urdfName rdf:datatype="&xsd;string">${prefix}Hand</srdl2-comp:urdfName>
+      <srdl2-comp:urdfName>${prefix}Hand</srdl2-comp:urdfName>
     </owl:NamedIndividual>
   </xacro:macro>
 
@@ -127,8 +131,10 @@
 
     <owl:NamedIndividual rdf:about="&robot;${prefix}Toe">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
-        <knowrob:radius rdf:datatype="&xsd;double">0.1</knowrob:radius>
-        <srdl2-comp:urdfName rdf:datatype="&xsd;string">${prefix}Toe</srdl2-comp:urdfName>
+      <knowrob:depthOfObject rdf:datatype="&xsd;double">0.1</knowrob:depthOfObject>
+      <knowrob:widthOfObject rdf:datatype="&xsd;double">0.1</knowrob:widthOfObject>
+      <knowrob:heightOfObject rdf:datatype="&xsd;double">0.1</knowrob:heightOfObject>
+        <srdl2-comp:urdfName>${prefix}Toe</srdl2-comp:urdfName>
     </owl:NamedIndividual>
   </xacro:macro> 
  
@@ -140,8 +146,10 @@
   <xacro:macro name="body_meridian">
     <owl:NamedIndividual rdf:about="&robot;T8">
       <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
-      <knowrob:radius rdf:datatype="&xsd;double">0.1</knowrob:radius>
-      <srdl2-comp:urdfName rdf:datatype="&xsd;string">T8</srdl2-comp:urdfName>
+      <knowrob:depthOfObject rdf:datatype="&xsd;double">0.1</knowrob:depthOfObject>
+      <knowrob:widthOfObject rdf:datatype="&xsd;double">0.1</knowrob:widthOfObject>
+      <knowrob:heightOfObject rdf:datatype="&xsd;double">0.1</knowrob:heightOfObject>
+      <srdl2-comp:urdfName>T8</srdl2-comp:urdfName>
       <srdl2-comp:succeedingJoint rdf:resource="&robot;T8_To_T12" />
       <srdl2-comp:succeedingJoint rdf:resource="&robot;T8_To_Neck" />
       <srdl2-comp:succeedingJoint rdf:resource="&robot;T8_To_RightShoulder" />
@@ -150,8 +158,10 @@
     
     <owl:NamedIndividual rdf:about="&robot;Pelvis">
       <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
-      <knowrob:radius rdf:datatype="&xsd;double">0.2</knowrob:radius>
-      <srdl2-comp:urdfName rdf:datatype="&xsd;string">Pelvis</srdl2-comp:urdfName>
+      <knowrob:depthOfObject rdf:datatype="&xsd;double">0.2</knowrob:depthOfObject>
+      <knowrob:widthOfObject rdf:datatype="&xsd;double">0.2</knowrob:widthOfObject>
+      <knowrob:heightOfObject rdf:datatype="&xsd;double">0.2</knowrob:heightOfObject>
+      <srdl2-comp:urdfName>Pelvis</srdl2-comp:urdfName>
       <srdl2-comp:succeedingJoint rdf:resource="&robot;Pelvis_To_RightLeg" />
       <srdl2-comp:succeedingJoint rdf:resource="&robot;Pelvis_To_LeftLeg" />
     </owl:NamedIndividual>
@@ -212,8 +222,10 @@
                            
     <owl:NamedIndividual rdf:about="&robot;Head">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
-        <srdl2-comp:urdfName rdf:datatype="&xsd;string">Head</srdl2-comp:urdfName>
-        <knowrob:radius rdf:datatype="&xsd;double">0.2</knowrob:radius>
+        <srdl2-comp:urdfName>Head</srdl2-comp:urdfName>
+      <knowrob:depthOfObject rdf:datatype="&xsd;double">0.2</knowrob:depthOfObject>
+      <knowrob:widthOfObject rdf:datatype="&xsd;double">0.2</knowrob:widthOfObject>
+      <knowrob:heightOfObject rdf:datatype="&xsd;double">0.2</knowrob:heightOfObject>
     </owl:NamedIndividual>
   </xacro:macro>
 
