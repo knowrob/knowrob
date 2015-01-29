@@ -99,7 +99,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * Stores the set of joints which are available from the XSens motion
 	 * capturing suite.
 	 */
-	private Map<String, HumanSkeleton> humanSkeletons;
+	private Map<String, Skeleton> agentSkeletons;
 
 	/**
 	 * Logger of ROS node.
@@ -114,7 +114,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 		markersCache =  new ConcurrentHashMap<String, Marker>(8, 0.9f, 1);
 		highlighted = new ConcurrentHashMap<String, float[]>(8, 0.9f, 1);
 		trajectories = new HashMap<String, List<String>>();
-		humanSkeletons = new HashMap<String, HumanSkeleton>();
+		agentSkeletons = new HashMap<String, Skeleton>();
 	}
 
 	@Override
@@ -761,28 +761,32 @@ public class MarkerVisualization extends AbstractNodeMain {
 		pub.publish(arr);
 	}
 
-	/**
-	 * Shows the human pose at given time point as
-	 * a stick-man in the visualization canvas.
-	 * The pose is read from the 'roslog' mongo database.
-	 * 
-	 * @param humanIndividual The name of the human individual which defines the skeletal structure
-	 * @param timepoint The timepoint for TF lookup
-	 * @param humanId Allows to add multiple visualizations in the same canvas
-	 * @param tfSuffix Suffix used for TF frames
-	 */
-	public void addHumanPose(String humanIndividual, String timepoint, int humanId, String tfSuffix) {
-		
+	// // // // // // // // // // // // // // // // // // // // // // // // // // //
+	//
+	// Agent visualization
+	//
+
+	public void visualizeAgent(
+			String identifier, String individualName,
+			String timepoint, String tfSuffix,
+			int creatCylindersBetweenLinks)
+	{
 		// wait for node to be ready
 		waitForNode();
 		
 		// Lookup skeletal structure
-		final HumanSkeleton skeleton;
+		final Skeleton skeleton;
 		try {
-			skeleton = getHumanSkeleton("'" + humanIndividual + "'");
+			skeleton = getIndividualSkeleton("'" + individualName + "'");
+			if(creatCylindersBetweenLinks!=0) {
+				skeleton.setDefaultColor(1.0f, 1.0f, 0.0f, 1.0f);
+				skeleton.setMarkerType(Marker.SPHERE);
+			}
 		}
 		catch(Exception exc) {
-			log.warn("Failed to initialize human skeleton.", exc);
+			// TODO: Why is log.error() not printed to console? And where is it printed to?
+			System.err.println("Failed to initialize skeleton.");
+			System.err.println(exc.getMessage());
 			return;
 		}
 
@@ -790,40 +794,102 @@ public class MarkerVisualization extends AbstractNodeMain {
 		int index = 0;
 
 		try {
-			// Add cylinder marker between links
-			for(HumanSkeleton.Link sourceLink : skeleton.getLinks()) {
-				final HumanSkeleton.StampedLink sl0 = new HumanSkeleton.StampedLink(sourceLink,time,humanId,tfSuffix);
+			for(Skeleton.Link sourceLink : skeleton.getLinks()) {
+				final Skeleton.StampedLink sl0 = new Skeleton.StampedLink(identifier,sourceLink,time,tfSuffix);
 
-				if(!addHumanMarker(skeleton.createSphereMarker(node,sl0),index,humanId)) {
-					log.warn("Unable to create sphere marker for '" + sourceLink.sourceFrame + "'.");
+				if(!addAgentMarker(skeleton.updateLinkMarker(node,sl0,index))) {
+					log.warn("Unable to create marker for '" + sourceLink.sourceFrame + "'.");
 				}
 				index += 1;
 
-				for(String conn : sourceLink.succeeding) {
-					final HumanSkeleton.Link targetLink = skeleton.getLink(conn);
-					if(targetLink==null) {
-						log.warn("Link not known '" + conn + "'.");
-						continue;
+				if(creatCylindersBetweenLinks!=0) {
+					for(String conn : sourceLink.succeeding) {
+						final Skeleton.Link targetLink = skeleton.getLink(conn);
+						if(targetLink==null) {
+							log.warn("Link not known '" + conn + "'.");
+							continue;
+						}
+						final Skeleton.StampedLink sl1 = new Skeleton.StampedLink(identifier,targetLink,time,tfSuffix);
+	
+						if(!addAgentMarker(skeleton.createCylinderMarker(node,sl0,sl1,index))) {
+							System.err.println("Unable to create cylinder marker between '" +
+									sourceLink.sourceFrame + "' and '" + conn + "'.");
+						}
+						index += 1;
 					}
-					final HumanSkeleton.StampedLink sl1 = new HumanSkeleton.StampedLink(targetLink,time,humanId,tfSuffix);
-
-					if(!addHumanMarker(skeleton.createCylinderMarker(node,sl0,sl1),index,humanId)) {
-						log.warn("Unable to create cylinder marker between '" +
-								sourceLink.sourceFrame + "' and '" + conn + "'.");
-					}
-					index += 1;
 				}
 			}
 		}
 		catch(Exception exc) {
-			log.warn("Failed to add markers for human skeleton.", exc);
+			// TODO: Why is log.error() not printed to console? And where is it printed to?
+			System.err.println("Failed to add markers for skeleton.");
+			System.err.println(exc.getMessage());
 			return;
 		}
 
 		publishMarkers();
-
-		//log.info("addHumanPose took " + (System.currentTimeMillis()-t0) + " ms.");
 	}
+
+	boolean addAgentMarker(Marker marker) {
+		// wait for node to be ready
+		waitForNode();
+		
+		if(marker!=null) {
+			final StringBuilder identifier = new StringBuilder();
+			identifier.append(marker.getNs()).append('_').append(marker.getId());
+
+			synchronized (markers) {
+				markers.put(identifier.toString(), marker);
+			}
+			synchronized (markersCache) {
+				markersCache.put(identifier.toString(), marker);
+			}
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	/**
+	 * Removes markers that belong to an agent individual.
+	 */
+	public void removeAgent(String identifier, String individual) {
+		
+		// wait for node to be ready
+		waitForNode();
+		
+		final String ns = individual + "_" + identifier;
+		final List<String> toRemove = new LinkedList<String>();
+		final MarkerArray arr = pub.newMessage();
+
+		synchronized (markersCache) {
+			for(Entry<String, Marker> e : markersCache.entrySet()) {
+				if(e.getValue().getNs().equals(ns)) {
+					toRemove.add(e.getKey());
+					e.getValue().setAction(Marker.DELETE);
+					arr.getMarkers().add(e.getValue());
+				}
+			}
+			for(String x : toRemove) markersCache.remove(x);
+		}
+
+		pub.publish(arr);
+	}
+	
+	Skeleton getIndividualSkeleton(String individualName) {
+		Skeleton out = agentSkeletons.get(individualName);
+		if(out==null) {
+			out = new Skeleton(individualName, markersCache);
+			agentSkeletons.put(individualName, out);
+		}
+		return out;
+	}
+
+	// // // // // // // // // // // // // // // // // // // // // // // // // // //
+	//
+	// Text rendering
+	//
 	
 	public void addText(String identifier, String text, String position[]) {
 		try {
@@ -872,42 +938,6 @@ public class MarkerVisualization extends AbstractNodeMain {
 			log.warn("Failed to add HUD text.", exc);
 			return;
 		}
-	}
-	
-	HumanSkeleton getHumanSkeleton(String humanIndividualName) {
-		HumanSkeleton out = humanSkeletons.get(humanIndividualName);
-		if(out==null) {
-			out = new HumanSkeleton(humanIndividualName);
-			humanSkeletons.put(humanIndividualName, out);
-		}
-		return out;
-	}
-
-	/**
-	 * Removes previously added stick-man markers.
-	 * @param id the id of the stick-man
-	 */
-	public void removeHumanPose(int id) {
-		
-		// wait for node to be ready
-		waitForNode();
-		
-		final String ns = HumanSkeleton.getHumanMarkerNs(id);
-		final List<String> toRemove = new LinkedList<String>();
-		final MarkerArray arr = pub.newMessage();
-
-		synchronized (markersCache) {
-			for(Entry<String, Marker> e : markersCache.entrySet()) {
-				if(e.getValue().getNs().equals(ns)) {
-					toRemove.add(e.getKey());
-					e.getValue().setAction(Marker.DELETE);
-					arr.getMarkers().add(e.getValue());
-				}
-			}
-			for(String x : toRemove) markersCache.remove(x);
-		}
-
-		pub.publish(arr);
 	}
 
 	// // // // // // // // // // // // // // // // // // // // // // // // // // //
@@ -1257,29 +1287,6 @@ public class MarkerVisualization extends AbstractNodeMain {
 			markers.remove(identifier);
 		}
 		return m;
-	}
-
-	boolean addHumanMarker(Marker marker, int index, int id) {
-
-		// wait for node to be ready
-		waitForNode();
-		
-		if(marker!=null) {
-			final StringBuilder identifier = new StringBuilder();
-			identifier.append("human_").append(id).append('_').append(index);
-			marker.setId(index);
-
-			synchronized (markers) {
-				markers.put(identifier.toString(), marker);
-			}
-			synchronized (markersCache) {
-				markersCache.put(identifier.toString(), marker);
-			}
-			return true;
-		}
-		else {
-			return false;
-		}
 	}
 
 	/**

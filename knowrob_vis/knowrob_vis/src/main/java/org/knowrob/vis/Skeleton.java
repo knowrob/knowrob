@@ -3,11 +3,13 @@ package org.knowrob.vis;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector4d;
 
+import org.knowrob.owl.OWLThing;
 import org.knowrob.prolog.PrologInterface;
 import org.knowrob.tfmemory.TFMemory;
 import org.ros.message.Time;
@@ -17,7 +19,7 @@ import tfjava.StampedTransform;
 import visualization_msgs.Marker;
 
 /**
- * Represents the skeleton of a human.
+ * Represents the skeleton of an agent.
  * The skeleton is given by a collection of links and connections
  * between them.
  * Each link has an associated TF frame that is used to lookup
@@ -28,9 +30,9 @@ import visualization_msgs.Marker;
  * 
  * @author danielb@cs.uni-bremen.de
  */
-public class HumanSkeleton {
+public class Skeleton {
 	/**
-	 * A link in the skeleton of a human.
+	 * A link in the skeleton of an agent.
 	 * Each link has an associated TF frame and a set of succeeding TF frames.
 	 * Furthermore each link defines a radius that is used for visualization.
 	 */
@@ -44,9 +46,13 @@ public class HumanSkeleton {
 		 */
 		final String succeeding[];
 		/**
-		 * Size hint for rendering.
+		 * Scale hint for rendering.
 		 */
-		final double size;
+		double scale[] = new double[] {1.0, 1.0, 1.0};
+		/**
+		 * Color hint for rendering.
+		 */
+		public float[] color = null;
 		/**
 		 * Cached pose
 		 */
@@ -59,12 +65,15 @@ public class HumanSkeleton {
 		 * TF suffix of cached pose
 		 */
 		private String lastSuffix;
+		/**
+		 * Path to CAD model.
+		 */
+		public String modelPath = null;
 
-		public Link(String sourceFrame, String[] succeeding, double size) {
+		public Link(String sourceFrame, String[] succeeding) {
 			super();
 			this.sourceFrame = sourceFrame;
 			this.succeeding = succeeding;
-			this.size = size;
 		}
 
 		public StampedTransform lookupTransform(Time stamp, String suffix) {
@@ -77,11 +86,11 @@ public class HumanSkeleton {
 		}
 	}
 	/**
-	 * A link in a human skeleton for a particular point in time.
+	 * A link in a skeleton for a particular point in time.
 	 */
 	public static class StampedLink {
 		/**
-		 * The human link.
+		 * The link.
 		 */
 		final Link link;
 		/**
@@ -89,12 +98,11 @@ public class HumanSkeleton {
 		 */
 		final StampedTransform pose;
 		/**
-		 * The ID of the human (in order to support different humans
-		 * for the same skeleton).
+		 * The ID of the individual.
 		 */
-		final int id;
+		final String id;
 		
-		public StampedLink(Link link, Time stamp, int id, String suffix) {
+		public StampedLink(String id, Link link, Time stamp, String suffix) {
 			super();
 			this.link = link;
 			this.id = id;
@@ -103,28 +111,74 @@ public class HumanSkeleton {
 	}
 
 	/**
-	 * The name of the human individual as used in OWL.
+	 * The name of the individual as used in OWL.
 	 */
-	private final String humanIndividual;
+	private final String individualName;
 	
 	/**
-	 * Maps TF name to human skeleton link.
+	 * Maps TF name to skeleton link.
 	 */
-	private final HashMap<String, Link> links;
+	private final Map<String, Link> links;
+
+	/**
+	 * Maps marker identifier to marker.
+	 */
+	private final Map<String, Marker> markers;
+
+	/**
+	 * The marker type that is used for links when no CAD model is defined.
+	 */
+	private int linkMarkerType = Marker.CUBE;
+
+	/**
+	 * The default marker color.
+	 */
+	private float[] defaultColor = new float[] {0.6f, 0.6f, 0.6f, 1.0f};
 	
 	/**
-	 * @param humanIndividual The name of the human individual as used in OWL
+	 * @param individualName The name of the individual as used in OWL
 	 */
-	public HumanSkeleton(String humanIndividual) {
-		this.humanIndividual = humanIndividual;
+	public Skeleton(String individualName, Map<String, Marker> markerCache) {
+		this.individualName = individualName;
 		this.links = new HashMap<String, Link>();
+		this.markers = markerCache;
 		
 		for(String linkName : queryLinks()) {
-			final String tfFrame = getHumanTfFrame(linkName);
-			links.put(tfFrame, new Link(tfFrame,
-					querySucceedingLinks(linkName),
-					getHumanLinkSize(linkName)));
+			final String tfFrame = getURDFName(linkName);
+			if(tfFrame==null) { continue; }
+			
+			final String[] succ = querySucceedingLinks(linkName);
+			final Link link = new Link(tfFrame, succ);
+			
+			final double[] scale = getLinkScale(linkName);
+			link.scale[0] = scale[0];
+			link.scale[1] = scale[1];
+			link.scale[2] = scale[2];
+			
+			final float[] color = getLinkColor(linkName);
+			if(color!=null) {
+				link.color = new float[4];
+				link.color[0] = color[0];
+				link.color[1] = color[1];
+				link.color[2] = color[2];
+				link.color[3] = color[3];
+			}
+			
+			link.modelPath = getModelPath(linkName);
+			
+			links.put(tfFrame, link);
 		}
+	}
+	
+	public void setDefaultColor(float r, float g, float b, float a) {
+		defaultColor[0] = r;
+		defaultColor[1] = g;
+		defaultColor[2] = b;
+		defaultColor[3] = a;
+	}
+	
+	public void setMarkerType(int markerType) {
+		this.linkMarkerType = markerType;
 	}
 
 	/**
@@ -144,47 +198,68 @@ public class HumanSkeleton {
 	
 	/**
 	 * Creates a sphere marker based on TF transformation of given skeleton link.
-	 * @param link link of the human skeleton
-	 * @param timepoint the timepoint used for looking up the transform
-	 * @param id human id (to allow multiple humans in parallel)
-	 * @param prefix prefix used for TF frames
+	 * @param node
+	 * @param sl
+	 * @param markerIndex
 	 * @return the marker created or null if TF lookup failed
 	 */
-	public Marker createSphereMarker(ConnectedNode node, StampedLink sl)
+	public Marker updateLinkMarker(ConnectedNode node, StampedLink sl, int markerIndex)
 	{
-		final Marker m = createMarker(node,sl.id);
+		final Marker m = getMarker(node,sl.id,markerIndex);
 		// Frame not available for given timepoint
 		if(sl.pose==null) return null;
 
-		m.setType(Marker.SPHERE);
-		m.getScale().setX(sl.link.size);
-		m.getScale().setY(sl.link.size);
-		m.getScale().setZ(sl.link.size);
+		m.setType(linkMarkerType);
 
 		m.getPose().getPosition().setX(sl.pose.getTranslation().x);
 		m.getPose().getPosition().setY(sl.pose.getTranslation().y);
 		m.getPose().getPosition().setZ(sl.pose.getTranslation().z);
+		m.getPose().getOrientation().setX(sl.pose.getRotation().x);
+		m.getPose().getOrientation().setY(sl.pose.getRotation().y);
+		m.getPose().getOrientation().setZ(sl.pose.getRotation().z);
+		m.getPose().getOrientation().setW(sl.pose.getRotation().w);
 
-		m.getPose().getOrientation().setX(0.0);
-		m.getPose().getOrientation().setY(0.0);
-		m.getPose().getOrientation().setZ(0.0);
-		m.getPose().getOrientation().setW(1.0);
+		m.getScale().setX(sl.link.scale[0]);
+		m.getScale().setY(sl.link.scale[1]);
+		m.getScale().setZ(sl.link.scale[2]);
+		
+		if(sl.link.modelPath != null && !sl.link.modelPath.isEmpty()) {
+			m.setType(Marker.MESH_RESOURCE);
+			m.setMeshResource(sl.link.modelPath);
+			m.getScale().setX(1.0);
+			m.getScale().setY(1.0);
+			m.getScale().setZ(1.0);
+			if(sl.link.modelPath.endsWith(".dae") || sl.link.modelPath.endsWith(".DAE")) {
+				m.setMeshUseEmbeddedMaterials(true);
+				// Color must be set to zero for mesh textures
+				m.getColor().setR(0.0f);
+				m.getColor().setG(0.0f);
+				m.getColor().setB(0.0f);
+				m.getColor().setA(0.0f);
+			}
+		}
+		
+		if(sl.link.color != null) {
+			m.getColor().setR(sl.link.color[0]);
+			m.getColor().setG(sl.link.color[1]);
+			m.getColor().setB(sl.link.color[2]);
+			m.getColor().setA(sl.link.color[3]);
+		}
 
         return m;
 	}
 	
 	/**
-	 * Creates a cylinder marker between two points.
-	 * @param source one of the links
-	 * @param target the other link
-	 * @param timepoint the timepoint used for looking up the transform
-	 * @param id human id (to allow multiple humans in parallel)
-	 * @param prefix prefix used for TF frames
+	 * Creates a cylinder marker between two links.
+	 * @param node
+	 * @param sl0
+	 * @param sl1
+	 * @param markerIndex
 	 * @return the marker created or null if TF lookup failed
 	 */
-	public Marker createCylinderMarker(ConnectedNode node, StampedLink sl0, StampedLink sl1)
+	public Marker createCylinderMarker(ConnectedNode node, StampedLink sl0, StampedLink sl1, int markerIndex)
 	{
-		final Marker m = createMarker(node,sl0.id);
+		final Marker m = getMarker(node,sl0.id,markerIndex);
 		// Frames not available for given timepoint
 		if(sl0.pose==null || sl1.pose==null) return null;
 		
@@ -220,17 +295,24 @@ public class HumanSkeleton {
 		return m;
 	}
 	
-	private Marker createMarker(ConnectedNode node, int id) {
-		final Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
-
-		m.getHeader().setFrameId("/map");
-		// Use special namespace for MOCAP data so that the markers don't conflict
-		// with other markers
-		m.setNs(getHumanMarkerNs(id));
-		m.getColor().setR(1.0f);
-		m.getColor().setG(1.0f);
-		m.getColor().setB(0.0f);
-		m.getColor().setA(1.0f);
+	private Marker getMarker(ConnectedNode node, String id, int index) {
+		final String ns = getMarkerNamespace(id);
+		final String identifier = new StringBuilder().append(ns).append("_").append(index).toString();
+		
+		Marker m = markers.get(identifier);
+		if(m==null) {
+			m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
+			m.getHeader().setFrameId("/map");
+			m.setId(index);
+			// Use special namespace for MOCAP data so that the markers don't conflict
+			// with other markers
+			m.setNs(getMarkerNamespace(id));
+			m.getColor().setR(defaultColor[0]);
+			m.getColor().setG(defaultColor[1]);
+			m.getColor().setB(defaultColor[2]);
+			m.getColor().setA(defaultColor[3]);
+			markers.put(identifier,m);
+		}
 		
 		return m;
 	}
@@ -240,7 +322,7 @@ public class HumanSkeleton {
 	 */
 	private Collection<String> queryLinks() {
 		HashMap<String, Vector<String>> res = PrologInterface.executeQuery(
-				"sub_component("+humanIndividual+", COMP), " +
+				"sub_component("+individualName+", COMP), " +
 				"owl_has(COMP, srdl2comp:'baseLinkOfComposition', LINK) ; " +
 				"owl_has(COMP, srdl2comp:'endLinkOfComposition', LINK) ; " +
 				"(sub_component(COMP, LINK), owl_individual_of(LINK, srdl2comp:'UrdfLink'))");
@@ -263,7 +345,7 @@ public class HumanSkeleton {
 			succeeding = new String[succSet.size()];
 			int i=0;
 			for(String succ : succSet) {
-				succeeding[i] = getHumanTfFrame(succ);
+				succeeding[i] = getURDFName(succ);
 				i += 1;
 			}
 		}
@@ -274,27 +356,69 @@ public class HumanSkeleton {
 	}
 
 	/**
-	 * Query knowrob for the size hint of a human link.
+	 * Query knowrob for the size hint of a link.
 	 */
-	private double getHumanLinkSize(String linkName) {
-		final HashMap<String, Vector<String>> res = PrologInterface.executeQuery(
-				"owl_has("+linkName+", knowrob:'radius', literal(type(_, RAD)))");
-		if(res==null) return 0.1;
+	private double[] getLinkScale(String linkName) {
+
+		// read object dimensions if available
+		String query = "object_dimensions("+linkName+", D, W, H)";
+		//log.info(query);
+		HashMap<String, Vector<String>> res = PrologInterface.executeQuery(query);
+
+		double[] out = new double[3];
+		if (res!=null && res.get("D") != null && res.get("D").size() > 0 && res.get("D").get(0)!=null) {
+			out[0] = Double.valueOf(OWLThing.removeSingleQuotes(res.get("D").get(0)));
+			out[1] = Double.valueOf(OWLThing.removeSingleQuotes(res.get("W").get(0)));
+			out[2] = Double.valueOf(OWLThing.removeSingleQuotes(res.get("H").get(0)));
+
+		} else {
+			out[0] = 0.05;
+			out[1] = 0.05;
+			out[2] = 0.05;
+		}
 		
-		return Double.parseDouble(unquote(res.get("RAD").firstElement()));
+		return out;
 	}
 
 	/**
-	 * Query knowrob for the TF frame of a human link.
+	 * Query knowrob for the color of a link.
 	 */
-	private String getHumanTfFrame(String linkName) {
+	private float[] getLinkColor(String linkName) {
 		final HashMap<String, Vector<String>> res = PrologInterface.executeQuery(
-				"owl_has("+linkName+", srdl2comp:'urdfName', literal(type(_, NAME)))");
+				"owl_has("+linkName+", knowrob:'mainColorOfObject', literal(type(_, COL)))");
+		if(res==null) return null;
+		String c[] = res.get("COL").get(0).split(" ");
+		if(c.length!=4) return null;
+		
+		float[] out = new float[4];
+		for(int i=0; i<4; ++i) {
+			out[i] = Float.parseFloat(c[i]);
+		}
+		
+		return out;
+	}
+
+	/**
+	 * Query knowrob for the TF frame of a link.
+	 */
+	private String getURDFName(String linkName) {
+		final HashMap<String, Vector<String>> res = PrologInterface.executeQuery(
+				"owl_has("+linkName+", srdl2comp:'urdfName', literal(NAME))");
 		if(res==null) return null;
 		
 		final String frameName = unquote(res.get("NAME").firstElement());
 		if(frameName.startsWith("/")) return frameName;
 		else return "/"+frameName;
+	}
+
+	/**
+	 * Query knowrob for the model path of a link.
+	 */
+	private String getModelPath(String linkName) {
+		final HashMap<String, Vector<String>> res = PrologInterface.executeQuery(
+				"owl_has("+linkName+", knowrob:'pathToCadModel', literal(type(_, MODEL)))");
+		if(res==null) return null;
+		else return unquote(res.get("MODEL").firstElement());
 	}
 	
 	/**
@@ -317,8 +441,8 @@ public class HumanSkeleton {
 	/**
 	 * Special namespace for human skeleton marker messages
 	 */
-	public static String getHumanMarkerNs(int id) {
-		return "human_pose" + id;
+	public String getMarkerNamespace(String id) {
+		return individualName + "_" + id;
 	}
 	
 	String unquote(final String in) {

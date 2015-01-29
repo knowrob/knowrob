@@ -25,6 +25,16 @@
       visualisation_canvas/0,
       clear_canvas/0,
       camera_pose/2,
+      add_agent_visualization/1,
+      add_agent_visualization/2,
+      add_agent_visualization/3,
+      add_agent_visualization/4,
+      add_stickman_visualization/1,
+      add_stickman_visualization/2,
+      add_stickman_visualization/3,
+      add_stickman_visualization/4,
+      remove_agent_visualization/1,
+      remove_agent_visualization/2,
       add_object/1,
       add_object/2,
       add_objects/1,
@@ -52,11 +62,6 @@
       add_trajectory/4,
       add_trajectory/5,
       remove_trajectory/1,
-      add_human_pose/2,
-      add_human_pose/3,
-      add_human_pose/4,
-      remove_human_pose/0,
-      remove_human_pose/1,
       diagram_canvas/0,
       clear_diagram_canvas/0,
       add_diagram/9,
@@ -74,6 +79,16 @@
 
 :- rdf_meta add_object(r),
             camera_pose(r,r),
+            add_agent_visualization(r),
+            add_agent_visualization(r,r),
+            add_agent_visualization(r,r,r),
+            add_agent_visualization(r,r,r,r),
+            add_stickman_visualization(r),
+            add_stickman_visualization(r,r),
+            add_stickman_visualization(r,r,r),
+            add_stickman_visualization(r,r,r,r),
+            remove_agent_visualization(r),
+            remove_agent_visualization(r,r),
             add_object(r,r),
             add_object_with_children(r),
             add_object_with_children(r,r),
@@ -94,12 +109,6 @@
             remove_highlight_with_children(r),
             add_diagram(+,+,+,+,+,+,+,+,+),
             remove_diagram(+),
-            add_human_pose(r),
-            add_human_pose(r,r),
-            add_human_pose(r,r,r),
-            add_human_pose(r,r,r,r),
-            remove_human_pose(r),
-            remove_human_pose(r,r),
             add_avg_trajectory(r,r,r,r,r),
             add_trajectory(r,r,r),
             add_trajectory(r,r,r,+),
@@ -151,6 +160,69 @@ camera_pose(Position, Orientation) :-
     lists_to_arrays(Position, PositionArr),
     lists_to_arrays(Orientation, OrientationArr),
     jpl_call(Canvas, 'setCameraPose', [PositionArr, OrientationArr], _).
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%
+% Agents
+%
+
+%% add_agent_visualization(+Individual) is det.
+%% add_agent_visualization(+Individual, +Timepoint) is det.
+%% add_agent_visualization(+Identifier, +Individual, +Timepoint) is det.
+%% add_agent_visualization(+Identifier, +Individual, +Timepoint, +Prefix) is det.
+%
+% Reads joint poses from logged tf data and visualizes them in the
+% Web-based canvas.
+%
+
+add_agent_visualization(Individual) :-
+    get_timepoint(Timepoint),
+    add_agent_visualization('_', Individual, Timepoint, '').
+
+add_agent_visualization(Individual, Timepoint) :-
+    add_agent_visualization('_', Individual, Timepoint, '').
+
+add_agent_visualization(Identifier, Individual, Timepoint) :-
+    add_agent_visualization(Identifier, Individual, Timepoint, '').
+    
+add_agent_visualization(Identifier, Individual, Timepoint, Prefix) :-
+    visualisation_canvas(Canvas),
+    jpl_call(Canvas, 'visualizeAgent', [Identifier,Individual,Timepoint,Prefix,0], _).
+
+%% add_stickman_visualization(+Individual) is det.
+%% add_stickman_visualization(+Individual, +Timepoint) is det.
+%% add_stickman_visualization(+Identifier, +Individual, +Timepoint) is det.
+%% add_stickman_visualization(+Identifier, +Individual, +Timepoint, +Prefix) is det.
+%
+% Reads joint poses from logged tf data and visualizes them in the
+% Web-based canvas.
+%
+
+add_stickman_visualization(Individual) :-
+    get_timepoint(Timepoint),
+    add_stickman_visualization('_', Individual, Timepoint, '').
+
+add_stickman_visualization(Individual, Timepoint) :-
+    add_stickman_visualization('_', Individual, Timepoint, '').
+
+add_stickman_visualization(Identifier, Individual, Timepoint) :-
+    add_stickman_visualization(Identifier, Individual, Timepoint, '').
+    
+add_stickman_visualization(Identifier, Individual, Timepoint, Prefix) :-
+    visualisation_canvas(Canvas),
+    jpl_call(Canvas, 'visualizeAgent', [Identifier,Individual,Timepoint,Prefix,1], _).
+
+%% remove_agent_visualization(+Individual) is det.
+%% remove_agent_visualization(+Identifier, +Individual) is det.
+%
+% Removes agent pose visualizations from the visualization canvas.
+%
+remove_agent_visualization(Individual) :-
+    remove_agent('_', Individual).
+remove_agent_visualization(Identifier, Individual) :-
+    visualisation_canvas(Canvas),
+    jpl_call(Canvas, 'removeAgent', [Identifier,Individual], _).
+
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
@@ -378,43 +450,6 @@ trajectory_length(Link, Starttime, Endtime, Length) :-
      (TfLink = Link)),!,
      
     jpl_call(Canvas, 'getTrajectoryLength', [TfLink, Starttime, Endtime, 5.0], Length).
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-%
-% Human pose
-%
-
-%% add_human_pose(+Human, +Timepoint) is det.
-%% add_human_pose(+Human, +Id, +Timepoint) is det.
-%% add_human_pose(+Human, +Id, +Timepoint, +Prefix) is det.
-%
-% Reads joint poses of a human from logged tf data and visualizes them in the
-% Web-based canvas using a stick-man model.
-%
-% @param Human  The human individual that defines the skeletal structure
-% @param Timepoint  Time stamp identifier of the pose
-%
-add_human_pose(Human, Timepoint) :-
-    visualisation_canvas(Canvas),
-    jpl_call(Canvas, 'addHumanPose', [Human,Timepoint,0,''], _).
-add_human_pose(Human, Id, Timepoint) :-
-    visualisation_canvas(Canvas),
-    jpl_call(Canvas, 'addHumanPose', [Human,Timepoint,Id,''], _).
-add_human_pose(Human, Id, Timepoint, Prefix) :-
-    visualisation_canvas(Canvas),
-    jpl_call(Canvas, 'addHumanPose', [Human,Timepoint,Id,Prefix], _).
-
-%% remove_human_pose is det.
-%% remove_human_pose(+Id) is det.
-%
-% Removes human pose visualizations from the visualization canvas.
-%
-remove_human_pose :-
-    visualisation_canvas(Canvas),
-    jpl_call(Canvas, 'removeHumanPose', [0], _).
-remove_human_pose(Id) :-
-    visualisation_canvas(Canvas),
-    jpl_call(Canvas, 'removeHumanPose', [Id], _).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
