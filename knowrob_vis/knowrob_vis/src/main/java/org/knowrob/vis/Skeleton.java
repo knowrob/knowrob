@@ -322,12 +322,13 @@ public class Skeleton {
 	 */
 	private Collection<String> queryLinks() {
 		HashMap<String, Vector<String>> res = PrologInterface.executeQuery(
-				"sub_component("+individualName+", COMP), " +
-				"owl_has(COMP, srdl2comp:'baseLinkOfComposition', LINK) ; " +
-				"owl_has(COMP, srdl2comp:'endLinkOfComposition', LINK) ; " +
-				"(sub_component(COMP, LINK), owl_individual_of(LINK, srdl2comp:'UrdfLink'))");
+				"owl_has("+individualName+", srdl2comp:'subComponent', _Component), " +
+				"owl_has(_Component, srdl2comp:'baseLinkOfComposition', _BaseLink), " +
+				"rdf_reachable(_BaseLink, srdl2comp:'successorInKinematicChain', Link), " +
+				"owl_individual_of(Link, srdl2comp:'UrdfLink')");
+		
 		final HashSet<String> linkSet = new HashSet<String>();
-		linkSet.addAll(res.get("LINK"));
+		linkSet.addAll(res.get("Link"));
 		return linkSet;
 	}
 
