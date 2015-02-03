@@ -11,6 +11,13 @@ import org.ros.namespace.GraphName;
 import org.ros.node.AbstractNodeMain;
 import org.ros.node.ConnectedNode;
 
+/**
+ * A web server for the visualization module of the KnowRob knowledge base.
+ * The server is accessible on port 1111.
+ * 
+ * @author tenorth@cs.uni-bremen.de
+ * @author danielb@cs.uni-bremen.de
+ */
 public class WebServer extends AbstractNodeMain {
 
 	private Server server;
