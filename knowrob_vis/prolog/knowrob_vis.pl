@@ -23,6 +23,7 @@
 :- module(knowrob_vis,
     [
       visualisation_canvas/0,
+      visualisation_server/0,
       clear_canvas/0,
       camera_pose/2,
       add_agent_visualization/1,
@@ -116,6 +117,27 @@
             remove_trajectory(r),
             trajectory_length(r,r,r,+).
 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%
+% Visualization server management
+%
+
+%% visualisation_server is det.
+%
+% Launch the visualization server
+%
+visualisation_server :-
+  visualisation_server(_).
+  
+visualisation_server(WebServer) :-
+    (\+ current_predicate(v_server, _)),
+    jpl_new('org.knowrob.vis.WebServer', [], WebServer),
+    jpl_list_to_array(['org.knowrob.vis.WebServer'], Arr),
+    jpl_call('org.knowrob.utils.ros.RosUtilities', runRosjavaNode, [WebServer, Arr], _),
+    assert(v_server(WebServer)),!.
+visualisation_server(WebServer) :-
+    current_predicate(v_server, _),
+    v_server(WebServer).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
