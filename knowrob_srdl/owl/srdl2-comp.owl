@@ -1055,6 +1055,13 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
     </owl:DatatypeProperty>
     
 
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#urdfName -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#tfPrefix">
+        <rdfs:comment>TF Prefix to use for TF lookups</rdfs:comment>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#AgentGeneric"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
 
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////

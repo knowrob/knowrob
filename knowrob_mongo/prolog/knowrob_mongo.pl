@@ -30,8 +30,10 @@
       mng_timestamp/2,
 
       mng_robot_pose/2,
+      mng_robot_pose/3,
       mng_robot_pose_at_time/4,
       mng_comp_pose/2,
+      mng_comp_pose/3,
       mng_comp_pose_at_time/4,
 
       obj_blocked_by_in_camera/4,
@@ -55,8 +57,10 @@
     mng_latest_designator_before_time(r,-,-),
 
     mng_robot_pose(r, r),
+    mng_robot_pose(r, r,r),
     mng_robot_pose_at_time(r, +, r, r),
     mng_comp_pose(r, r),
+    mng_comp_pose(r, r,r),
     mng_comp_pose_at_time(r, +, r, r),
 
     mng_timestamp(r, r),
@@ -319,8 +323,12 @@ mng_timestamp(Date, Stamp) :-
 % @param Pose         Instance of a knowrob:RotationMatrix3D with the pose data
 %
 mng_robot_pose(Robot, Pose) :-
+  mng_robot_pose(Robot, Pose, 'map').
+  
+mng_robot_pose(Robot, Pose, Target) :-
+  %Fixme at a a function mng_robot_pose(RobotPart, Pose, TargetFrame) Map is NOT a std id
   get_timepoint(TimePoint),
-  mng_robot_pose_at_time(Robot, '/map', TimePoint, Pose).
+  mng_robot_pose_at_time(Robot, Target, TimePoint, Pose).
 
 
 %% mng_robot_pose_at_time(Robot, TargetFrame, TimePoint, Pose) is nondet.
@@ -352,11 +360,15 @@ mng_robot_pose_at_time(Robot, TargetFrame, TimePoint, Pose) :-
 % @param Pose       Instance of a knowrob:RotationMatrix3D with the pose data
 %
 mng_comp_pose(RobotPart, Pose) :-
+  %Fixme at a a function mng_comp_pose(RobotPart, Pose, TargetFrame) Map is NOT a std id
+  mng_comp_pose(RobotPart,  Pose , '/map' ).
 
+mng_comp_pose(RobotPart, Pose, Target) :-
+  %Fixme at a a function mng_comp_pose(RobotPart, Pose, TargetFrame) Map is NOT a std id
   get_timepoint(TimePoint),
-  mng_comp_pose_at_time(RobotPart, '/map', TimePoint, Pose).
+  mng_comp_pose_at_time(RobotPart, Target, TimePoint, Pose).
 
-
+  
 %% mng_comp_pose_at_time(+RobotPart, +TargetFrame, +TimePoint, -Pose) is nondet.
 %
 % Read the pose of RobotPart in the given coordinate frame from logged tf data
@@ -369,11 +381,18 @@ mng_comp_pose(RobotPart, Pose) :-
 mng_comp_pose_at_time(RobotPart, TargetFrame, TimePoint, Pose) :-
 
   owl_has(RobotPart, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(SourceFrameID)),
-  atom_concat('/', SourceFrameID, SourceFrame),
-
+  ( robot_part_tf_prefix(RobotPart, TfPrefix) ->
+    atom_concat('/',TfPrefix, TmpFrame),  
+    atom_concat(TmpFrame, '/', TmpFrame2),  
+    atom_concat(TmpFrame2, SourceFrameID, SourceFrame)  
+  ; atom_concat('/', SourceFrameID, SourceFrame)
+  ),
+  
+  %%FIXME @Bender this should be replaced with the tfPrefix SPEED THIS UP
   mng_obj_pose_at_time(RobotPart, SourceFrame, TargetFrame, TimePoint, Pose).
 
-
+  
+  
 
 %% mng_obj_pose_at_time(+Obj, +SourceFrame, +TargetFrame, +TimePoint, -Pose) is nondet.
 %
@@ -498,7 +517,8 @@ obj_blocked_by_in_camera(Obj, Blocker, Camera, TimePoint) :-
   % debug
 %   ObjXDeg is ObjBearingX /2 /pi * 360,
 %   ObjYDeg is ObjBearingY /2 /pi * 360,
-
+%%% PR2 ???? what is this doing here???
+%%% 
   % Read poses of blocking robot parts w.r.t. camera
   sub_component('http://knowrob.org/kb/PR2.owl#PR2Robot1', Blocker),
   rdfs_individual_of(Blocker, 'http://knowrob.org/kb/srdl2-comp.owl#UrdfLink'),

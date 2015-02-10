@@ -81,7 +81,7 @@ public class Skeleton {
 					&& lastSuffix.equals(suffix)) return lastPose;
 			lastStamp = stamp;
 			lastSuffix = suffix;
-			lastPose = TFMemory.getInstance().lookupTransform("/map", sourceFrame+suffix, stamp);
+			lastPose = TFMemory.getInstance().lookupTransform(MarkerVisualization.getReferenceFrame(), sourceFrame+suffix, stamp);
 			return lastPose;
 		}
 	}
@@ -302,7 +302,7 @@ public class Skeleton {
 		Marker m = markers.get(identifier);
 		if(m==null) {
 			m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
-			m.getHeader().setFrameId("/map");
+			m.getHeader().setFrameId(MarkerVisualization.getReferenceFrame());
 			m.setId(index);
 			// Use special namespace for MOCAP data so that the markers don't conflict
 			// with other markers
@@ -399,6 +399,16 @@ public class Skeleton {
 		return out;
 	}
 
+	private String resolveURDFName(String linkName) {
+		//this.individualName;
+		final HashMap<String, Vector<String>> res = PrologInterface.executeQuery(
+				"resolve_urdf_name("+this.individualName+", " + linkName+", literal(NAME))");
+		if(res==null) return null;
+		
+		final String frameName = unquote(res.get("NAME").firstElement());
+		if(frameName.startsWith("/")) return frameName;
+		else return "/"+frameName;
+	}
 	/**
 	 * Query knowrob for the TF frame of a link.
 	 */

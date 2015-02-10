@@ -55,6 +55,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 	private static final String HTML_RED = "ff0000";
 
+	
 	Publisher<MarkerArray> pub;
 	
 	Publisher<Pose> cam_pub;
@@ -65,6 +66,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 	Server server;
 
+	static String reference_frame = null; 
+	
 	@Override
 	public GraphName getDefaultNodeName() {
 		return GraphName.of("knowrob_vis");
@@ -124,6 +127,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 		cam_pub = connectedNode.newPublisher("/camera/pose", geometry_msgs.Pose._TYPE);
 		text_pub = connectedNode.newPublisher("/canvas/text", std_msgs.String._TYPE);
 		log = connectedNode.getLog();
+		reference_frame = node.getParameterTree().getString("knowrob_reference_frame","/map");
 		// Need to start the webserver after node in order to able to use
 		// ROS parameters for server configuration.
 		startWebServer(1111);
@@ -1010,7 +1014,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 		waitForNode();
 
 		Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
-		m.getHeader().setFrameId("/map");
+		m.getHeader().setFrameId(reference_frame);
 		m.getHeader().setStamp(node.getCurrentTime());
 		m.setNs("knowrob_vis");
 		m.setId(id++);
@@ -1207,7 +1211,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 		// Lookup TF transform that corresponds to specified link
 		try {
-			StampedTransform tr = TFMemory.getInstance().lookupTransform("/map", link, parseTime(timepoint));
+			StampedTransform tr = TFMemory.getInstance().lookupTransform(reference_frame, link, parseTime(timepoint));
 			if(tr==null) {
 				log.warn("TF data missing for '" + link + "' " + timepoint + " missing in mongo.");
 				return null;
@@ -1324,6 +1328,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 		
 		String main_package = node.getParameterTree().getString("knowrob_html_package","knowrob_vis");
 		String welcome_file = node.getParameterTree().getString("knowrob_welcome_file","robohow.html");
+		
+		
 
 		resource_handler.setDirectoriesListed(true);
 		resource_handler.setWelcomeFiles(new String[]{ "index.html", welcome_file });
@@ -1412,5 +1418,9 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 		//		vis.addObjectWithChildren("pr2:'PR2Robot1'", "http://knowrob.org/kb/knowrob.owl#timepoint_1377766542");
 
+	}
+
+	public static String getReferenceFrame() {
+		return reference_frame;
 	}
 }
