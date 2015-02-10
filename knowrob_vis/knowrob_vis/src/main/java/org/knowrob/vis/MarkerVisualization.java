@@ -55,7 +55,6 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 	private static final String HTML_RED = "ff0000";
 
-	
 	Publisher<MarkerArray> pub;
 	
 	Publisher<Pose> cam_pub;
@@ -64,14 +63,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 	ConnectedNode node;
 
-	Server server;
-
 	static String reference_frame = null; 
 	
-	@Override
-	public GraphName getDefaultNodeName() {
-		return GraphName.of("knowrob_vis");
-	}
 
 	/**
 	 * Store the markers to be published
@@ -128,9 +121,11 @@ public class MarkerVisualization extends AbstractNodeMain {
 		text_pub = connectedNode.newPublisher("/canvas/text", std_msgs.String._TYPE);
 		log = connectedNode.getLog();
 		reference_frame = node.getParameterTree().getString("knowrob_reference_frame","/map");
-		// Need to start the webserver after node in order to able to use
-		// ROS parameters for server configuration.
-		startWebServer(1111);
+	}
+
+	@Override
+	public GraphName getDefaultNodeName() {
+		return GraphName.of("knowrob_vis");
 	}
 	
 	public void setCameraPose(final String[] positions, final String[] orientations) {
@@ -1315,41 +1310,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 		String ts = (x.length==1 ? x[0] : x[1]);
 		return Double.valueOf(ts.replaceAll("[^0-9.]", ""));
 	}
-
-	/////////////////
-	////// Human Pose Stop
-	/////////////////
-
-	public void startWebServer(int port) {
-
-		server = new Server(port);
-
-		ResourceHandler resource_handler = new ResourceHandler();
-		
-		String main_package = node.getParameterTree().getString("knowrob_html_package","knowrob_vis");
-		String welcome_file = node.getParameterTree().getString("knowrob_welcome_file","robohow.html");
-		
-		
-
-		resource_handler.setDirectoriesListed(true);
-		resource_handler.setWelcomeFiles(new String[]{ "index.html", welcome_file });
-		resource_handler.setResourceBase(RosUtilities.rospackFind(main_package) + "/html");
-
-		DefaultHandler def = new DefaultHandler();
-		def.setServeIcon(false);
-
-		HandlerList handlers = new HandlerList();
-		handlers.setHandlers(new Handler[] { resource_handler,  def});
-		server.setHandler(handlers);
-
-		try {
-			server.start();
-			//	        server.join();
-		}
-		catch (Exception e) {
-			log.warn("Unable to start knowrob_vis server.", e);
-		}
-	}
+	
 
 	public static class MarkerVisualizationMain extends MarkerVisualization {
 		public MarkerVisualizationMain() {
