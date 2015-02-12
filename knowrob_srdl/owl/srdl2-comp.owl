@@ -1055,7 +1055,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
     </owl:DatatypeProperty>
     
 
-    <!-- http://knowrob.org/kb/srdl2-comp.owl#urdfName -->
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#tfPrefix -->
 
     <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#tfPrefix">
         <rdfs:comment>TF Prefix to use for TF lookups</rdfs:comment>

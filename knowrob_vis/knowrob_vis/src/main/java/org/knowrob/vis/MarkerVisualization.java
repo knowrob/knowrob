@@ -20,23 +20,13 @@ import org.ros.node.AbstractNodeMain;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Publisher;
 import org.apache.commons.logging.Log;
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.DefaultHandler;
-import org.eclipse.jetty.server.handler.HandlerList;
-import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.knowrob.owl.OWLThing;
 import org.knowrob.prolog.PrologInterface;
 import org.knowrob.tfmemory.TFMemory;
-import org.knowrob.utils.ros.RosUtilities;
-
 import tfjava.StampedTransform;
 import visualization_msgs.Marker;
 import visualization_msgs.MarkerArray;
 import geometry_msgs.Pose;
-import geometry_msgs.Point;
-import geometry_msgs.Quaternion;
-
 /**
  * Visualization module for the KnowRob knowledge base
  *
@@ -764,15 +754,15 @@ public class MarkerVisualization extends AbstractNodeMain {
 	//
 	// Agent visualization
 	//
-
+	// TODO: bbrieber: do we really need tfSuffixes. I have never seen something like this in the ROS world...
 	public void visualizeAgent(
 			String identifier, String individualName,
-			String timepoint, String tfSuffix,
+			String timepoint, String tfSuffix,String tfPrefix,
 			int creatCylindersBetweenLinks)
 	{
 		// wait for node to be ready
 		waitForNode();
-		
+		tfPrefix = tfPrefix.startsWith("/")?tfPrefix:"/"+tfPrefix;//add the leading '/' if needed
 		// Lookup skeletal structure
 		final Skeleton skeleton;
 		try {
@@ -794,7 +784,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 		try {
 			for(Skeleton.Link sourceLink : skeleton.getLinks()) {
-				final Skeleton.StampedLink sl0 = new Skeleton.StampedLink(identifier,sourceLink,time,tfSuffix);
+				final Skeleton.StampedLink sl0 = new Skeleton.StampedLink(identifier,sourceLink,time,tfSuffix,tfPrefix);
 
 				if(!addAgentMarker(skeleton.updateLinkMarker(node,sl0,index))) {
 					log.warn("Unable to create marker for '" + sourceLink.sourceFrame + "'.");
@@ -805,10 +795,10 @@ public class MarkerVisualization extends AbstractNodeMain {
 					for(String conn : sourceLink.succeeding) {
 						final Skeleton.Link targetLink = skeleton.getLink(conn);
 						if(targetLink==null) {
-							log.warn("Link not known '" + conn + "'.");
+							log.warn("Link not known '" + conn + "'. Source Link: " + sourceLink.sourceFrame);
 							continue;
 						}
-						final Skeleton.StampedLink sl1 = new Skeleton.StampedLink(identifier,targetLink,time,tfSuffix);
+						final Skeleton.StampedLink sl1 = new Skeleton.StampedLink(identifier,targetLink,time,tfSuffix,tfPrefix);
 	
 						if(!addAgentMarker(skeleton.createCylinderMarker(node,sl0,sl1,index))) {
 							System.err.println("Unable to create cylinder marker between '" +

@@ -76,12 +76,12 @@ public class Skeleton {
 			this.succeeding = succeeding;
 		}
 
-		public StampedTransform lookupTransform(Time stamp, String suffix) {
+		public StampedTransform lookupTransform(Time stamp, String suffix,String tfPrefix) {
 			if(lastStamp!=null && stamp.equals(lastStamp)
 					&& lastSuffix.equals(suffix)) return lastPose;
 			lastStamp = stamp;
 			lastSuffix = suffix;
-			lastPose = TFMemory.getInstance().lookupTransform(MarkerVisualization.getReferenceFrame(), sourceFrame+suffix, stamp);
+			lastPose = TFMemory.getInstance().lookupTransform(MarkerVisualization.getReferenceFrame(), tfPrefix + sourceFrame + suffix, stamp);
 			return lastPose;
 		}
 	}
@@ -102,11 +102,11 @@ public class Skeleton {
 		 */
 		final String id;
 		
-		public StampedLink(String id, Link link, Time stamp, String suffix) {
+		public StampedLink(String id, Link link, Time stamp, String suffix,String tfPrefix) {
 			super();
 			this.link = link;
 			this.id = id;
-			this.pose = link.lookupTransform(stamp,suffix);
+			this.pose = link.lookupTransform(stamp,suffix,tfPrefix);
 		}
 	}
 
@@ -134,6 +134,7 @@ public class Skeleton {
 	 * The default marker color.
 	 */
 	private float[] defaultColor = new float[] {0.6f, 0.6f, 0.6f, 1.0f};
+
 	
 	/**
 	 * @param individualName The name of the individual as used in OWL
@@ -142,7 +143,6 @@ public class Skeleton {
 		this.individualName = individualName;
 		this.links = new HashMap<String, Link>();
 		this.markers = markerCache;
-		
 		for(String linkName : queryLinks()) {
 			final String tfFrame = getURDFName(linkName);
 			if(tfFrame==null) { continue; }
@@ -399,16 +399,6 @@ public class Skeleton {
 		return out;
 	}
 
-	private String resolveURDFName(String linkName) {
-		//this.individualName;
-		final HashMap<String, Vector<String>> res = PrologInterface.executeQuery(
-				"resolve_urdf_name("+this.individualName+", " + linkName+", literal(NAME))");
-		if(res==null) return null;
-		
-		final String frameName = unquote(res.get("NAME").firstElement());
-		if(frameName.startsWith("/")) return frameName;
-		else return "/"+frameName;
-	}
 	/**
 	 * Query knowrob for the TF frame of a link.
 	 */

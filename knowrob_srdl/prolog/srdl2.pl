@@ -62,19 +62,40 @@
 
 
         
+  
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% TfPrefix
+
+%% robot_part_tf_prefix(?RobotPart, ?TfPrefix).
+%
+% Checks if the Agent individual that belongs to this Part (URDF Link) has a tf Prefix assigned 
+% TfPrefix defaults to '/'
+%
+% @param RobotPart   The part of the robot that should be checked(URDF Link)
+% @param TfPrefix The TfPrefix
+%       
+        
 robot_part_tf_prefix(RobotPart, TfPrefix) :-
   owl_individual_of(RobotPart,srdl2comp:'UrdfLink'),
   owl_individual_of(Robot, knowrob:'Agent-Generic'),
   sub_component(Robot, RobotPart),
   owl_has(Robot, 'http://knowrob.org/kb/srdl2-comp.owl#tfPrefix', literal(TfPrefix)). 
   
+robot_part_tf_prefix(_, '/').
+%% robot_tf_prefix(?Robot, ?TfPrefix).
+%
+% Checks if an Agent individual  has a tf Prefix assigned 
+% TfPrefix defaults to '/'
+%
+% @param RobotPart   The robot individual 
+% @param TfPrefix The TfPrefix
+%       
+  
 robot_tf_prefix(Robot, TfPrefix) :-
   owl_has(Robot, 'http://knowrob.org/kb/srdl2-comp.owl#tfPrefix', literal(TfPrefix)).
   
-%robot_tf_prefix(Robot, TfPrefix) :-
-%  owl_individual_of(Robot, knowrob:'Agent-Generic'),
-%  TfPrefix = "/".
-        
+robot_tf_prefix(_, '/').
+
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % Actions
 
