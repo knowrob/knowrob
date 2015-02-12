@@ -79,7 +79,7 @@ robot_part_tf_prefix(RobotPart, TfPrefix) :-
   owl_individual_of(RobotPart,srdl2comp:'UrdfLink'),
   owl_individual_of(Robot, knowrob:'Agent-Generic'),
   sub_component(Robot, RobotPart),
-  owl_has(Robot, 'http://knowrob.org/kb/srdl2-comp.owl#tfPrefix', literal(TfPrefix)). 
+  owl_has(Robot, srdl2comp:'tfPrefix', literal(TfPrefix)). 
   
 robot_part_tf_prefix(_, '/').
 %% robot_tf_prefix(?Robot, ?TfPrefix).
@@ -92,7 +92,7 @@ robot_part_tf_prefix(_, '/').
 %       
   
 robot_tf_prefix(Robot, TfPrefix) :-
-  owl_has(Robot, 'http://knowrob.org/kb/srdl2-comp.owl#tfPrefix', literal(TfPrefix)).
+  owl_has(Robot, srdl2comp:'tfPrefix', literal(TfPrefix)).
   
 robot_tf_prefix(_, '/').
 

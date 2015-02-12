@@ -381,11 +381,20 @@ mng_comp_pose(RobotPart, Pose, Target) :-
 mng_comp_pose_at_time(RobotPart, TargetFrame, TimePoint, Pose) :-
 
   owl_has(RobotPart, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(SourceFrameID)),
+  ( atom_prefix(SourceFrameID,'/') ->
+    SourceResolved = SourceFrameID      
+    ; atom_concat('/',SourceFrameID, SourceResolved) 
+  ),    
   ( robot_part_tf_prefix(RobotPart, TfPrefix) ->
-    atom_concat('/',TfPrefix, TmpFrame),  
-    atom_concat(TmpFrame, '/', TmpFrame2),  
-    atom_concat(TmpFrame2, SourceFrameID, SourceFrame)  
-  ; atom_concat('/', SourceFrameID, SourceFrame)
+    ( atom_prefix(TfPrefix,'/') ->
+      ( TfPrefix == '/' ->
+	TfResolved = ''
+	;TfResolved = TfPrefix      
+      )
+      ; atom_concat('/',TfPrefix, TfResolved) 
+    ),
+    atom_concat(TfResolved, SourceResolved,SourceFrame)
+    ;SourceFrame = SourceResolved
   ),
   
   %%FIXME @Bender this should be replaced with the tfPrefix SPEED THIS UP
