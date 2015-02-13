@@ -168,6 +168,13 @@ public class JSONPrologNode extends AbstractNodeMain {
 						}
 
 						else {
+							// Wait for the query thread to be started
+							while(!currentQuery.isStarted()) {
+								try {
+									Thread.sleep(100);
+								}
+								catch (InterruptedException e) {}
+							}
 							queries.put(currentQueryId, new PrologAllSolutions(currentQuery));
 						}
 					}
