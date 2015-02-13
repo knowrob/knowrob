@@ -30,10 +30,12 @@
       add_agent_visualization/2,
       add_agent_visualization/3,
       add_agent_visualization/4,
+      add_agent_visualization/5,
       add_stickman_visualization/1,
       add_stickman_visualization/2,
       add_stickman_visualization/3,
       add_stickman_visualization/4,
+      add_stickman_visualization/5,
       remove_agent_visualization/1,
       remove_agent_visualization/2,
       add_object/1,
@@ -84,10 +86,12 @@
             add_agent_visualization(r,r),
             add_agent_visualization(r,r,r),
             add_agent_visualization(r,r,r,r),
+            add_agent_visualization(r,r,r,r,r),
             add_stickman_visualization(r),
             add_stickman_visualization(r,r),
             add_stickman_visualization(r,r,r),
             add_stickman_visualization(r,r,r,r),
+            add_stickman_visualization(r,r,r,r,r),
             remove_agent_visualization(r),
             remove_agent_visualization(r,r),
             add_object(r,r),
@@ -191,7 +195,8 @@ camera_pose(Position, Orientation) :-
 %% add_agent_visualization(+Individual) is det.
 %% add_agent_visualization(+Individual, +Timepoint) is det.
 %% add_agent_visualization(+Identifier, +Individual, +Timepoint) is det.
-%% add_agent_visualization(+Identifier, +Individual, +Timepoint, +Prefix) is det.
+%% add_agent_visualization(+Identifier, +Individual, +Timepoint, +Suffix) is det.
+%% add_agent_visualization(+Identifier, +Individual, +Timepoint, +Suffix, +TfPrefix) is det.
 %
 % Reads joint poses from logged tf data and visualizes them in the
 % Web-based canvas.
@@ -207,14 +212,20 @@ add_agent_visualization(Individual, Timepoint) :-
 add_agent_visualization(Identifier, Individual, Timepoint) :-
     add_agent_visualization(Identifier, Individual, Timepoint, '').
     
-add_agent_visualization(Identifier, Individual, Timepoint, Prefix) :-
+add_agent_visualization(Identifier, Individual, Timepoint, Suffix) :-    
+    robot_tf_prefix(Individual,TfPrefix),
+    jpl_call(Canvas, 'visualizeAgent', [Identifier,Individual,Timepoint,Suffix,TfPrefix,0], _).
+    
+add_agent_visualization(Identifier, Individual, Timepoint, Suffix, TfPrefix) :-
     visualisation_canvas(Canvas),
-    jpl_call(Canvas, 'visualizeAgent', [Identifier,Individual,Timepoint,Prefix,0], _).
+    robot_tf_prefix(Individual,TfPrefix),
+    jpl_call(Canvas, 'visualizeAgent', [Identifier,Individual,Timepoint,Prefix,TfPrefix,0], _).
 
 %% add_stickman_visualization(+Individual) is det.
 %% add_stickman_visualization(+Individual, +Timepoint) is det.
 %% add_stickman_visualization(+Identifier, +Individual, +Timepoint) is det.
-%% add_stickman_visualization(+Identifier, +Individual, +Timepoint, +Prefix) is det.
+%% add_stickman_visualization(+Identifier, +Individual, +Timepoint, +Suffix) is det.
+%% add_stickman_visualization(+Identifier, +Individual, +Timepoint, +Suffix, +Prefix) is det.
 %
 % Reads joint poses from logged tf data and visualizes them in the
 % Web-based canvas.
@@ -230,10 +241,16 @@ add_stickman_visualization(Individual, Timepoint) :-
 add_stickman_visualization(Identifier, Individual, Timepoint) :-
     add_stickman_visualization(Identifier, Individual, Timepoint, '').
     
-add_stickman_visualization(Identifier, Individual, Timepoint, Prefix) :-
-    visualisation_canvas(Canvas),
-    jpl_call(Canvas, 'visualizeAgent', [Identifier,Individual,Timepoint,Prefix,1], _).
+add_stickman_visualization(Identifier, Individual, Timepoint, Suffix) :-
+    robot_tf_prefix(Individual,TfPrefix),
+    add_stickman_visualization(Identifier, Individual, Timepoint, Suffix,TfPrefix).
 
+    
+add_stickman_visualization(Identifier, Individual, Timepoint, Suffix, TfPrefix) :-
+    visualisation_canvas(Canvas),
+    jpl_call(Canvas, 'visualizeAgent', [Identifier,Individual,Timepoint,Suffix,TfPrefix,1], _).
+
+    
 %% remove_agent_visualization(+Individual) is det.
 %% remove_agent_visualization(+Identifier, +Individual) is det.
 %

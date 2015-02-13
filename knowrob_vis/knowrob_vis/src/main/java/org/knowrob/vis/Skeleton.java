@@ -76,12 +76,12 @@ public class Skeleton {
 			this.succeeding = succeeding;
 		}
 
-		public StampedTransform lookupTransform(Time stamp, String suffix) {
+		public StampedTransform lookupTransform(Time stamp, String suffix,String tfPrefix) {
 			if(lastStamp!=null && stamp.equals(lastStamp)
 					&& lastSuffix.equals(suffix)) return lastPose;
 			lastStamp = stamp;
 			lastSuffix = suffix;
-			lastPose = TFMemory.getInstance().lookupTransform("/map", sourceFrame+suffix, stamp);
+			lastPose = TFMemory.getInstance().lookupTransform(MarkerVisualization.getReferenceFrame(), tfPrefix + sourceFrame + suffix, stamp);
 			return lastPose;
 		}
 	}
@@ -102,11 +102,11 @@ public class Skeleton {
 		 */
 		final String id;
 		
-		public StampedLink(String id, Link link, Time stamp, String suffix) {
+		public StampedLink(String id, Link link, Time stamp, String suffix,String tfPrefix) {
 			super();
 			this.link = link;
 			this.id = id;
-			this.pose = link.lookupTransform(stamp,suffix);
+			this.pose = link.lookupTransform(stamp,suffix,tfPrefix);
 		}
 	}
 
@@ -134,6 +134,7 @@ public class Skeleton {
 	 * The default marker color.
 	 */
 	private float[] defaultColor = new float[] {0.6f, 0.6f, 0.6f, 1.0f};
+
 	
 	/**
 	 * @param individualName The name of the individual as used in OWL
@@ -142,7 +143,6 @@ public class Skeleton {
 		this.individualName = individualName;
 		this.links = new HashMap<String, Link>();
 		this.markers = markerCache;
-		
 		for(String linkName : queryLinks()) {
 			final String tfFrame = getURDFName(linkName);
 			if(tfFrame==null) { continue; }
@@ -302,7 +302,7 @@ public class Skeleton {
 		Marker m = markers.get(identifier);
 		if(m==null) {
 			m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
-			m.getHeader().setFrameId("/map");
+			m.getHeader().setFrameId(MarkerVisualization.getReferenceFrame());
 			m.setId(index);
 			// Use special namespace for MOCAP data so that the markers don't conflict
 			// with other markers

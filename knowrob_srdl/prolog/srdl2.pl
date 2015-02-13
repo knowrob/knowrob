@@ -26,6 +26,8 @@
         required_cap_for_action/2,
         missing_comp_for_action/3,
         required_comp_for_action/2,
+        robot_tf_prefix/2,
+        robot_part_tf_prefix/2,
         cap_available_on_robot/2,
         comp_type_available/2,
         sub_component/2
@@ -52,10 +54,47 @@
         required_cap_for_action(r,r),
         missing_comp_for_action(r,r,r),
         required_comp_for_action(r,r),
+        robot_tf_prefix(r,r),
+        robot_part_tf_prefix(r,r),
         cap_available_on_robot(r,r),
         comp_type_available(r,r),
         sub_component(r,r).
 
+
+        
+  
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% TfPrefix
+
+%% robot_part_tf_prefix(?RobotPart, ?TfPrefix).
+%
+% Checks if the Agent individual that belongs to this Part (URDF Link) has a tf Prefix assigned 
+% TfPrefix defaults to '/'
+%
+% @param RobotPart   The part of the robot that should be checked(URDF Link)
+% @param TfPrefix The TfPrefix
+%       
+        
+robot_part_tf_prefix(RobotPart, TfPrefix) :-
+  owl_individual_of(RobotPart,srdl2comp:'UrdfLink'),
+  owl_individual_of(Robot, knowrob:'Agent-Generic'),
+  sub_component(Robot, RobotPart),
+  owl_has(Robot, srdl2comp:'tfPrefix', literal(TfPrefix)). 
+  
+robot_part_tf_prefix(_, '/').
+%% robot_tf_prefix(?Robot, ?TfPrefix).
+%
+% Checks if an Agent individual  has a tf Prefix assigned 
+% TfPrefix defaults to '/'
+%
+% @param RobotPart   The robot individual 
+% @param TfPrefix The TfPrefix
+%       
+  
+robot_tf_prefix(Robot, TfPrefix) :-
+  owl_has(Robot, srdl2comp:'tfPrefix', literal(TfPrefix)).
+  
+robot_tf_prefix(_, '/').
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % Actions
@@ -265,6 +304,7 @@ sub_component(Super, Sub) :-
 % OWL/ DL Predicates
 
 
+  
 %% plan_subevents_recursive(+Plan, ?SubEvents) is semidet.
 %
 % Recursively read all sub-action classes of the imported plan, i.e. single actions that need to be taken

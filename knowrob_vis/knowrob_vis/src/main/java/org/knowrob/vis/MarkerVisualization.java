@@ -23,12 +23,10 @@ import org.apache.commons.logging.Log;
 import org.knowrob.owl.OWLThing;
 import org.knowrob.prolog.PrologInterface;
 import org.knowrob.tfmemory.TFMemory;
-
 import tfjava.StampedTransform;
 import visualization_msgs.Marker;
 import visualization_msgs.MarkerArray;
 import geometry_msgs.Pose;
-
 /**
  * Visualization module for the KnowRob knowledge base
  *
@@ -54,6 +52,9 @@ public class MarkerVisualization extends AbstractNodeMain {
 	Publisher<std_msgs.String> text_pub;
 
 	ConnectedNode node;
+
+	static String reference_frame = null; 
+	
 
 	/**
 	 * Store the markers to be published
@@ -109,6 +110,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 		cam_pub = connectedNode.newPublisher("/camera/pose", geometry_msgs.Pose._TYPE);
 		text_pub = connectedNode.newPublisher("/canvas/text", std_msgs.String._TYPE);
 		log = connectedNode.getLog();
+		reference_frame = node.getParameterTree().getString("knowrob_reference_frame","/map");
 	}
 
 	@Override
@@ -752,15 +754,15 @@ public class MarkerVisualization extends AbstractNodeMain {
 	//
 	// Agent visualization
 	//
-
+	// TODO: bbrieber: do we really need tfSuffixes. I have never seen something like this in the ROS world...
 	public void visualizeAgent(
 			String identifier, String individualName,
-			String timepoint, String tfSuffix,
+			String timepoint, String tfSuffix,String tfPrefix,
 			int creatCylindersBetweenLinks)
 	{
 		// wait for node to be ready
 		waitForNode();
-		
+		tfPrefix = tfPrefix.startsWith("/")?tfPrefix:"/"+tfPrefix;//add the leading '/' if needed
 		// Lookup skeletal structure
 		final Skeleton skeleton;
 		try {
@@ -782,7 +784,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 		try {
 			for(Skeleton.Link sourceLink : skeleton.getLinks()) {
-				final Skeleton.StampedLink sl0 = new Skeleton.StampedLink(identifier,sourceLink,time,tfSuffix);
+				final Skeleton.StampedLink sl0 = new Skeleton.StampedLink(identifier,sourceLink,time,tfSuffix,tfPrefix);
 
 				if(!addAgentMarker(skeleton.updateLinkMarker(node,sl0,index))) {
 					log.warn("Unable to create marker for '" + sourceLink.sourceFrame + "'.");
@@ -793,10 +795,10 @@ public class MarkerVisualization extends AbstractNodeMain {
 					for(String conn : sourceLink.succeeding) {
 						final Skeleton.Link targetLink = skeleton.getLink(conn);
 						if(targetLink==null) {
-							log.warn("Link not known '" + conn + "'.");
+							log.warn("Link not known '" + conn + "'. Source Link: " + sourceLink.sourceFrame);
 							continue;
 						}
-						final Skeleton.StampedLink sl1 = new Skeleton.StampedLink(identifier,targetLink,time,tfSuffix);
+						final Skeleton.StampedLink sl1 = new Skeleton.StampedLink(identifier,targetLink,time,tfSuffix,tfPrefix);
 	
 						if(!addAgentMarker(skeleton.createCylinderMarker(node,sl0,sl1,index))) {
 							System.err.println("Unable to create cylinder marker between '" +
@@ -997,7 +999,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 		waitForNode();
 
 		Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
-		m.getHeader().setFrameId("/map");
+		m.getHeader().setFrameId(reference_frame);
 		m.getHeader().setStamp(node.getCurrentTime());
 		m.setNs("knowrob_vis");
 		m.setId(id++);
@@ -1194,7 +1196,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 		// Lookup TF transform that corresponds to specified link
 		try {
-			StampedTransform tr = TFMemory.getInstance().lookupTransform("/map", link, parseTime(timepoint));
+			StampedTransform tr = TFMemory.getInstance().lookupTransform(reference_frame, link, parseTime(timepoint));
 			if(tr==null) {
 				log.warn("TF data missing for '" + link + "' " + timepoint + " missing in mongo.");
 				return null;
@@ -1367,5 +1369,9 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 		//		vis.addObjectWithChildren("pr2:'PR2Robot1'", "http://knowrob.org/kb/knowrob.owl#timepoint_1377766542");
 
+	}
+
+	public static String getReferenceFrame() {
+		return reference_frame;
 	}
 }
