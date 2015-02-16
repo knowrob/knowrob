@@ -747,6 +747,9 @@
     <owl:NamedIndividual rdf:about="&robot;iai_human_torso">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>torso</srdl2-comp:urdfName>
+        <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:heightOfObject>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;iai_human_torso_neck_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;iai_human_righttorso_hip_joint"/>
@@ -759,6 +762,9 @@
     <owl:NamedIndividual rdf:about="&robot;iai_human_neck">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>neck</srdl2-comp:urdfName>
+        <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:heightOfObject>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;iai_human_neck_head_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;iai_human_rightneck_shoulder_joint"/>
@@ -771,9 +777,9 @@
     <owl:NamedIndividual rdf:about="&robot;iai_human_head">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>head</srdl2-comp:urdfName>
-	<knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.25</knowrob:depthOfObject>
-	<knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.25</knowrob:widthOfObject>
-	<knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.25</knowrob:heightOfObject>
+        <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.25</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.25</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.25</knowrob:heightOfObject>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
     </owl:NamedIndividual>
 
@@ -783,6 +789,9 @@
     <owl:NamedIndividual rdf:about="&robot;iai_human_rightshoulder">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>rightshoulder</srdl2-comp:urdfName>
+        <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:heightOfObject>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;iai_human_rightshoulder_elbow_joint"/>
     </owl:NamedIndividual>
@@ -793,6 +802,9 @@
     <owl:NamedIndividual rdf:about="&robot;iai_human_rightelbow">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>rightelbow</srdl2-comp:urdfName>
+        <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:heightOfObject>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;iai_human_rightelbow_hand_joint"/>
     </owl:NamedIndividual>
@@ -803,6 +815,9 @@
     <owl:NamedIndividual rdf:about="&robot;iai_human_righthand">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>righthand</srdl2-comp:urdfName>
+        <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.15</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.15</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.15</knowrob:heightOfObject>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
     </owl:NamedIndividual>
 
@@ -812,6 +827,9 @@
     <owl:NamedIndividual rdf:about="&robot;iai_human_leftshoulder">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>leftshoulder</srdl2-comp:urdfName>
+        <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:heightOfObject>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;iai_human_leftshoulder_elbow_joint"/>
     </owl:NamedIndividual>
@@ -822,6 +840,9 @@
     <owl:NamedIndividual rdf:about="&robot;iai_human_leftelbow">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>leftelbow</srdl2-comp:urdfName>
+        <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:heightOfObject>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;iai_human_leftelbow_hand_joint"/>
     </owl:NamedIndividual>
@@ -832,6 +853,9 @@
     <owl:NamedIndividual rdf:about="&robot;iai_human_lefthand">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>lefthand</srdl2-comp:urdfName>
+        <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.15</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.15</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.15</knowrob:heightOfObject>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
     </owl:NamedIndividual>
 
@@ -841,6 +865,9 @@
     <owl:NamedIndividual rdf:about="&robot;iai_human_righthip">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>righthip</srdl2-comp:urdfName>
+        <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:heightOfObject>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
 	<srdl2-comp:succeedingJoint rdf:resource="&robot;iai_human_righthip_knee_joint"/>
     </owl:NamedIndividual>
@@ -851,6 +878,9 @@
     <owl:NamedIndividual rdf:about="&robot;iai_human_rightknee">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>rightknee</srdl2-comp:urdfName>
+        <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:heightOfObject>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;iai_human_rightknee_foot_joint"/>
     </owl:NamedIndividual>
@@ -861,6 +891,9 @@
     <owl:NamedIndividual rdf:about="&robot;iai_human_rightfoot">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>rightfoot</srdl2-comp:urdfName>
+        <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.15</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.15</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.15</knowrob:heightOfObject>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
     </owl:NamedIndividual>
 
@@ -870,6 +903,9 @@
     <owl:NamedIndividual rdf:about="&robot;iai_human_lefthip">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>lefthip</srdl2-comp:urdfName>
+        <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:heightOfObject>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
 	<srdl2-comp:succeedingJoint rdf:resource="&robot;iai_human_lefthip_knee_joint"/>
     </owl:NamedIndividual>
@@ -880,6 +916,9 @@
     <owl:NamedIndividual rdf:about="&robot;iai_human_leftknee">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>leftknee</srdl2-comp:urdfName>
+        <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</knowrob:heightOfObject>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;iai_human_leftknee_foot_joint"/>
     </owl:NamedIndividual>
@@ -890,6 +929,9 @@
     <owl:NamedIndividual rdf:about="&robot;iai_human_leftfoot">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>leftfoot</srdl2-comp:urdfName>
+        <knowrob:depthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.15</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.15</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.15</knowrob:heightOfObject>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
     </owl:NamedIndividual>
 
