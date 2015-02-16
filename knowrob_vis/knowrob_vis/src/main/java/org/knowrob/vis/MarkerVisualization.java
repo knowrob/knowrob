@@ -762,7 +762,12 @@ public class MarkerVisualization extends AbstractNodeMain {
 	{
 		// wait for node to be ready
 		waitForNode();
-		tfPrefix = tfPrefix.startsWith("/")?tfPrefix:"/"+tfPrefix;//add the leading '/' if needed
+		if(!tfPrefix.startsWith("/")) {
+			tfPrefix = "/"+tfPrefix;//add the leading '/' if needed
+		}
+		if(tfPrefix.endsWith("/")) {
+			tfPrefix = tfPrefix.substring(0, tfPrefix.length()-1);//remove the trailing '/' if needed
+		}
 		// Lookup skeletal structure
 		final Skeleton skeleton;
 		try {
