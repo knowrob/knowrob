@@ -218,8 +218,7 @@ add_agent_visualization(Identifier, Individual, Timepoint, Suffix) :-
     
 add_agent_visualization(Identifier, Individual, Timepoint, Suffix, TfPrefix) :-
     visualisation_canvas(Canvas),
-    robot_tf_prefix(Individual,TfPrefix),
-    jpl_call(Canvas, 'visualizeAgent', [Identifier,Individual,Timepoint,Prefix,TfPrefix,0], _).
+    jpl_call(Canvas, 'visualizeAgent', [Identifier,Individual,Timepoint,Suffix,TfPrefix,0], _).
 
 %% add_stickman_visualization(+Individual) is det.
 %% add_stickman_visualization(+Individual, +Timepoint) is det.
