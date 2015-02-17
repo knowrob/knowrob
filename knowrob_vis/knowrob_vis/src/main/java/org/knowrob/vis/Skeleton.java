@@ -218,17 +218,13 @@ public class Skeleton {
 		m.getPose().getOrientation().setY(sl.pose.getRotation().y);
 		m.getPose().getOrientation().setZ(sl.pose.getRotation().z);
 		m.getPose().getOrientation().setW(sl.pose.getRotation().w);
-
-		m.getScale().setX(sl.link.scale[0]);
-		m.getScale().setY(sl.link.scale[1]);
-		m.getScale().setZ(sl.link.scale[2]);
 		
 		if(sl.link.modelPath != null && !sl.link.modelPath.isEmpty()) {
 			m.setType(Marker.MESH_RESOURCE);
 			m.setMeshResource(sl.link.modelPath);
-			m.getScale().setX(1.0);
-			m.getScale().setY(1.0);
-			m.getScale().setZ(1.0);
+			m.getScale().setX(sl.link.scale[0]>0.0 ? sl.link.scale[0] : 1.0);
+			m.getScale().setY(sl.link.scale[1]>0.0 ? sl.link.scale[1] : 1.0);
+			m.getScale().setZ(sl.link.scale[2]>0.0 ? sl.link.scale[2] : 1.0);
 			if(sl.link.modelPath.endsWith(".dae") || sl.link.modelPath.endsWith(".DAE")) {
 				m.setMeshUseEmbeddedMaterials(true);
 				// Color must be set to zero for mesh textures
@@ -237,6 +233,12 @@ public class Skeleton {
 				m.getColor().setB(0.0f);
 				m.getColor().setA(0.0f);
 			}
+		}
+		else {
+			// Scale down primitive geometry such as boxes if no scale is defined in OWL file
+			m.getScale().setX(sl.link.scale[0]>0.0 ? sl.link.scale[0] : 0.05);
+			m.getScale().setY(sl.link.scale[1]>0.0 ? sl.link.scale[1] : 0.05);
+			m.getScale().setZ(sl.link.scale[2]>0.0 ? sl.link.scale[2] : 0.05);
 		}
 		
 		if(sl.link.color != null) {
@@ -373,9 +375,9 @@ public class Skeleton {
 			out[2] = Double.valueOf(OWLThing.removeSingleQuotes(res.get("H").get(0)));
 
 		} else {
-			out[0] = 0.05;
-			out[1] = 0.05;
-			out[2] = 0.05;
+			out[0] = -1.0;
+			out[1] = -1.0;
+			out[2] = -1.0;
 		}
 		
 		return out;
