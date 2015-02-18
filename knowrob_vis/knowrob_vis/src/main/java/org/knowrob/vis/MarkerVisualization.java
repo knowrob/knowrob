@@ -785,16 +785,14 @@ public class MarkerVisualization extends AbstractNodeMain {
 		}
 
 		final Time time = parseTime(timepoint);
-		int index = 0;
 
 		try {
 			for(Skeleton.Link sourceLink : skeleton.getLinks()) {
 				final Skeleton.StampedLink sl0 = new Skeleton.StampedLink(identifier,sourceLink,time,tfSuffix,tfPrefix);
 
-				if(!addAgentMarker(skeleton.updateLinkMarker(node,sl0,index))) {
+				if(!addAgentMarker(skeleton.updateLinkMarker(node,sl0))) {
 					log.warn("Unable to create marker for '" + sourceLink.sourceFrame + "'.");
 				}
-				index += 1;
 
 				if(creatCylindersBetweenLinks!=0) {
 					for(String conn : sourceLink.succeeding) {
@@ -805,11 +803,10 @@ public class MarkerVisualization extends AbstractNodeMain {
 						}
 						final Skeleton.StampedLink sl1 = new Skeleton.StampedLink(identifier,targetLink,time,tfSuffix,tfPrefix);
 	
-						if(!addAgentMarker(skeleton.createCylinderMarker(node,sl0,sl1,index))) {
+						if(!addAgentMarker(skeleton.createCylinderMarker(node,sl0,sl1))) {
 							System.err.println("Unable to create cylinder marker between '" +
 									sourceLink.sourceFrame + "' and '" + conn + "'.");
 						}
-						index += 1;
 					}
 				}
 			}

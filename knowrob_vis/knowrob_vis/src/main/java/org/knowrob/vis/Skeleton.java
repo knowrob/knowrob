@@ -54,18 +54,6 @@ public class Skeleton {
 		 */
 		public float[] color = null;
 		/**
-		 * Cached pose
-		 */
-		private StampedTransform lastPose;
-		/**
-		 * Time stamp of cached pose
-		 */
-		private Time lastStamp = null;
-		/**
-		 * TF suffix of cached pose
-		 */
-		private String lastSuffix;
-		/**
 		 * Path to CAD model.
 		 */
 		public String modelPath = null;
@@ -77,12 +65,9 @@ public class Skeleton {
 		}
 
 		public StampedTransform lookupTransform(Time stamp, String suffix,String tfPrefix) {
-			if(lastStamp!=null && stamp.equals(lastStamp)
-					&& lastSuffix.equals(suffix)) return lastPose;
-			lastStamp = stamp;
-			lastSuffix = suffix;
-			lastPose = TFMemory.getInstance().lookupTransform(MarkerVisualization.getReferenceFrame(), tfPrefix + sourceFrame + suffix, stamp);
-			return lastPose;
+			return TFMemory.getInstance().lookupTransform(
+					MarkerVisualization.getReferenceFrame(),
+					tfPrefix + sourceFrame + suffix, stamp);
 		}
 	}
 	/**
@@ -98,14 +83,19 @@ public class Skeleton {
 		 */
 		final StampedTransform pose;
 		/**
-		 * The ID of the individual.
+		 * The ID of the visualized agent.
 		 */
-		final String id;
+		final String identifier;
+		/**
+		 * The prefix of TF frames.
+		 */
+		final String tfPrefix;
 		
-		public StampedLink(String id, Link link, Time stamp, String suffix,String tfPrefix) {
+		public StampedLink(String identifier, Link link, Time stamp, String suffix,String tfPrefix) {
 			super();
 			this.link = link;
-			this.id = id;
+			this.identifier = identifier;
+			this.tfPrefix = tfPrefix;
 			this.pose = link.lookupTransform(stamp,suffix,tfPrefix);
 		}
 	}
@@ -203,9 +193,18 @@ public class Skeleton {
 	 * @param markerIndex
 	 * @return the marker created or null if TF lookup failed
 	 */
-	public Marker updateLinkMarker(ConnectedNode node, StampedLink sl, int markerIndex)
+	public Marker updateLinkMarker(ConnectedNode node, StampedLink sl)
 	{
-		final Marker m = getMarker(node,sl.id,markerIndex);
+		// Marker id is a concatenation of prefixed TF frame and
+		// identifier of visualized agent.
+		// E.g., the ID is "/human1/neck_human1" when TF prefix is "/human1",
+		// the TF frame is "neck_human1" and identifier of the agent is "human1".
+		StringBuilder markerId = new StringBuilder();
+		markerId.append(sl.tfPrefix).append("/").append(sl.link.sourceFrame);
+		markerId.append("_");
+		markerId.append(sl.identifier);
+		
+		final Marker m = getMarker(node,markerId.toString());
 		// Frame not available for given timepoint
 		if(sl.pose==null) return null;
 
@@ -259,9 +258,20 @@ public class Skeleton {
 	 * @param markerIndex
 	 * @return the marker created or null if TF lookup failed
 	 */
-	public Marker createCylinderMarker(ConnectedNode node, StampedLink sl0, StampedLink sl1, int markerIndex)
+	public Marker createCylinderMarker(ConnectedNode node, StampedLink sl0, StampedLink sl1)
 	{
-		final Marker m = getMarker(node,sl0.id,markerIndex);
+		// Marker id is a concatenation of prefixed TF frames and
+		// identifier of visualized agent.
+		// E.g., the ID is "/human1/neck_/human1/head_human1"
+		// For cylinder between "/human1/neck" and "/human1/head" for agent with id "human1".
+		StringBuilder markerId = new StringBuilder();
+		markerId.append(sl0.tfPrefix).append("/").append(sl0.link.sourceFrame);
+		markerId.append("_");
+		markerId.append(sl1.tfPrefix).append("/").append(sl1.link.sourceFrame);
+		markerId.append("_");
+		markerId.append(sl0.identifier);
+		
+		final Marker m = getMarker(node,markerId.toString());
 		// Frames not available for given timepoint
 		if(sl0.pose==null || sl1.pose==null) return null;
 		
@@ -297,18 +307,14 @@ public class Skeleton {
 		return m;
 	}
 	
-	private Marker getMarker(ConnectedNode node, String id, int index) {
-		final String ns = getMarkerNamespace(id);
-		final String identifier = new StringBuilder().append(ns).append("_").append(index).toString();
-		
+	private Marker getMarker(ConnectedNode node, String identifier) {
 		Marker m = markers.get(identifier);
+		
 		if(m==null) {
 			m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
 			m.getHeader().setFrameId(MarkerVisualization.getReferenceFrame());
-			m.setId(index);
-			// Use special namespace for MOCAP data so that the markers don't conflict
-			// with other markers
-			m.setNs(getMarkerNamespace(id));
+			m.setId(0);
+			m.setNs(identifier);
 			m.getColor().setR(defaultColor[0]);
 			m.getColor().setG(defaultColor[1]);
 			m.getColor().setB(defaultColor[2]);
@@ -439,13 +445,6 @@ public class Skeleton {
 		out.normalize();
 		
         return out;
-	}
-	
-	/**
-	 * Special namespace for human skeleton marker messages
-	 */
-	public String getMarkerNamespace(String id) {
-		return individualName + "_" + id;
 	}
 	
 	String unquote(final String in) {
