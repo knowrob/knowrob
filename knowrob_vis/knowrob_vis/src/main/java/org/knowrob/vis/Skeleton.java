@@ -200,7 +200,7 @@ public class Skeleton {
 		// E.g., the ID is "/human1/neck_human1" when TF prefix is "/human1",
 		// the TF frame is "neck_human1" and identifier of the agent is "human1".
 		StringBuilder markerId = new StringBuilder();
-		markerId.append(sl.tfPrefix).append("/").append(sl.link.sourceFrame);
+		markerId.append(sl.tfPrefix).append(sl.link.sourceFrame);
 		markerId.append("_");
 		markerId.append(sl.identifier);
 		
@@ -265,9 +265,9 @@ public class Skeleton {
 		// E.g., the ID is "/human1/neck_/human1/head_human1"
 		// For cylinder between "/human1/neck" and "/human1/head" for agent with id "human1".
 		StringBuilder markerId = new StringBuilder();
-		markerId.append(sl0.tfPrefix).append("/").append(sl0.link.sourceFrame);
+		markerId.append(sl0.tfPrefix).append(sl0.link.sourceFrame);
 		markerId.append("_");
-		markerId.append(sl1.tfPrefix).append("/").append(sl1.link.sourceFrame);
+		markerId.append(sl1.tfPrefix).append(sl1.link.sourceFrame);
 		markerId.append("_");
 		markerId.append(sl0.identifier);
 		

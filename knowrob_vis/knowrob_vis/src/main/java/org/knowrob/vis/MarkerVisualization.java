@@ -379,6 +379,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 			publishMarkers();
 		}
 		else {
+			// XXX logging to console
+			System.err.println("Unable to find marker for identifier '" + identifier + "'.");
 			log.warn("Unable to find marker for identifier '" + identifier + "'.");
 		}
 		} catch(Exception e) {
