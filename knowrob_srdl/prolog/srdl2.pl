@@ -30,7 +30,8 @@
         robot_part_tf_prefix/2,
         cap_available_on_robot/2,
         comp_type_available/2,
-        sub_component/2
+        sub_component/2,
+        succeeding_link/2
   ]).
 
 :- use_module(library('semweb/rdf_db')).
@@ -58,7 +59,8 @@
         robot_part_tf_prefix(r,r),
         cap_available_on_robot(r,r),
         comp_type_available(r,r),
-        sub_component(r,r).
+        sub_component(r,r),
+        succeeding_link(r,r).
 
 
         
@@ -298,6 +300,17 @@ sub_component(Super, Sub) :-
   owl_has(Super, srdl2comp:'endLinkOfComposition', End),
   sub_component(Base, Sub),
   sub_component(Sub, End).
+
+%% succeeding_link(+BaseLink, +SucceedingLink) is nondet.
+%
+% Check if SucceedingLink is successor link of BaseLink
+%
+% @param BaseLink         The base UrdfLink
+% @param SucceedingLink   The succeeding UrdfLink
+%
+succeeding_link(BaseLink, SucceedingLink) :-
+  owl_has(BaseLink, srdl2comp:'succeedingJoint', ConnectionJoint),
+  owl_has(ConnectionJoint, srdl2comp:'succeedingLink', SucceedingLink).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
