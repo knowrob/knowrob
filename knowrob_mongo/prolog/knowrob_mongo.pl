@@ -25,6 +25,7 @@
       mng_obj_pose_by_desig/2,
 
       mng_lookup_transform/4,
+      mng_lookup_position/4,
       mng_transform_pose/5,
 
       mng_timestamp/2,
@@ -54,6 +55,7 @@
 :-  rdf_meta
     mng_db(+),
     mng_lookup_transform(+,+,r,-),
+    mng_lookup_position(+,+,r,-),
     mng_latest_designator_before_time(r,-,-),
 
     mng_robot_pose(r, r),
@@ -271,6 +273,23 @@ mng_lookup_transform(Target, Source, TimePoint, Transform) :-
 
   jpl_call(StampedTransform, 'getMatrix4', [], TransformMatrix4d),
   knowrob_coordinates:matrix4d_to_list(TransformMatrix4d, Transform).
+
+%% mng_lookup_position(+Target, +Source, +TimePoint, -Position) is nondet.
+%
+% Determine the position from Source to Target at TimePoint based on the logged
+% tf data.
+% 
+% @param Target     Target frame ID
+% @param Source     Source frame ID
+% @param TimePoint  Instance of knowrob:TimePoint
+% @param Position   Position as list[3]
+%
+mng_lookup_position(Target, Source, TimePoint, Position) :-
+  mng_lookup_transform(Target, Source, TimePoint, _Transform),
+  nth0( 3, _Transform, _X),
+  nth0( 7, _Transform, _Y),
+  nth0(11, _Transform, _Z),
+  Position = [ _X, _Y, _Z ].
 
 %% mng_transform_pose(+PoseListIn, +SourceFrame, +TargetFrame, +TimePoint, -PoseListOut) is nondet.
 % 
