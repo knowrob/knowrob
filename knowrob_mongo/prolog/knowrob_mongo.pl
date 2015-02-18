@@ -248,7 +248,6 @@ mng_desig_get_value(_Designator, DesigJava, Prop, Value) :-
 % Tf integration
 %
 
-
 %% mng_lookup_transform(+Target, +Source, +TimePoint, -Transform) is nondet.
 %
 % Determine the transform from Source to Target at TimePoint based on the logged
@@ -267,10 +266,11 @@ mng_lookup_transform(Target, Source, TimePoint, Transform) :-
 
   mongo_interface(DB),
   jpl_call(DB, 'lookupTransform', [Target, Source, Time], StampedTransform),
+  % Make sure transform is not null!
+  not( jpl_null(StampedTransform) ),
 
   jpl_call(StampedTransform, 'getMatrix4', [], TransformMatrix4d),
   knowrob_coordinates:matrix4d_to_list(TransformMatrix4d, Transform).
-
 
 %% mng_transform_pose(+PoseListIn, +SourceFrame, +TargetFrame, +TimePoint, -PoseListOut) is nondet.
 % 
