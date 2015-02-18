@@ -207,6 +207,11 @@ public class Skeleton {
 		final Marker m = getMarker(node,markerId.toString());
 		// Frame not available for given timepoint
 		if(sl.pose==null) return null;
+		
+		m.getColor().setR(defaultColor[0]);
+		m.getColor().setG(defaultColor[1]);
+		m.getColor().setB(defaultColor[2]);
+		m.getColor().setA(defaultColor[3]);
 
 		m.setType(linkMarkerType);
 
