@@ -266,15 +266,26 @@ public class MongoDBInterface {
 		cols.put("designator", 1 );
 
 		DBCursor cursor = coll.find(query, cols);
-		cursor.sort(new BasicDBObject("__recorded", -1));
 		try {
+			cursor.sort(new BasicDBObject("__recorded", -1));
+			
 			while(cursor.hasNext()) {
 
 				DBObject row = cursor.next();
 				Designator res = new Designator().readFromDBObject((BasicDBObject) row.get("designator"));
 				Designator res2 = (Designator)res.get("AT");
-				poseMatrix = ((Stamped<Matrix4d>)res2.get("POSE")).getData();
-				break;
+				
+				Object mat = null;
+				if(res2!=null) {
+					mat = res2.get("POSE");
+				}
+				if(mat==null) {
+					mat = res.get("POSE");
+				}
+				if(mat!=null) {
+					poseMatrix = ((Stamped<Matrix4d>)mat).getData();
+					break;
+				}
 
 			}
 		} catch(Exception e){
