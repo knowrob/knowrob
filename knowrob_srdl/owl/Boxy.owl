@@ -2814,8 +2814,8 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">12.5350462868938</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.00262520723302998</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">7.44839974564544</srdl2-comp:inertia_izz>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_boxy_base/meshes/base_link.STL</knowrob:pathToCadModel>
-        <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0.792156862745098 0.819607843137255 0.933333333333333 1</srdl2-comp:color_rgba>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_boxy_base/meshes/base_link.dae</knowrob:pathToCadModel>
+        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.792156862745098 0.819607843137255 0.933333333333333 1</knowrob:mainColorOfObject>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_laser_reference_front_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_laser_reference_back_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_head_joint"/>
@@ -2867,7 +2867,7 @@
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">-1.05221078652886E-21</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">5.93634422539094E-05</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_schunk_pw070_v6//meshes/pw070_base_link.STL</knowrob:pathToCadModel>
-        <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0.501960784313725 0.501960784313725 0.250980392156863 1</srdl2-comp:color_rgba>
+        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.501960784313725 0.501960784313725 0.250980392156863 1</knowrob:mainColorOfObject>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_head_pan_joint"/>
     </owl:NamedIndividual>
 
@@ -2885,7 +2885,7 @@
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">-1.66255748362911E-08</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.00115077124113952</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_schunk_pw070_v6//meshes/pw070_box.STL</knowrob:pathToCadModel>
-        <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0.501960784313725 0.501960784313725 0.250980392156863 1</srdl2-comp:color_rgba>
+        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.501960784313725 0.501960784313725 0.250980392156863 1</knowrob:mainColorOfObject>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_head_tilt_joint"/>
     </owl:NamedIndividual>
 
@@ -2903,7 +2903,7 @@
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">2.09169636982284E-20</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.000546047259750224</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_schunk_pw070_v6//meshes/pw070_plate.STL</knowrob:pathToCadModel>
-        <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0.501960784313725 0.501960784313725 0.250980392156863 1</srdl2-comp:color_rgba>
+        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.501960784313725 0.501960784313725 0.250980392156863 1</knowrob:mainColorOfObject>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_trans_frame_out"/>
     </owl:NamedIndividual>
 
@@ -2934,9 +2934,9 @@
     <owl:NamedIndividual rdf:about="&robot;boxy_shoulder_kinect_link">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>shoulder_kinect_link</srdl2-comp:urdfName>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_boxy/meshes/sensors/68-04546_Kinect_Sensor--coarse.STL</knowrob:pathToCadModel>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_boxy_description/meshes/sensors/68-04546_Kinect_Sensor--coarse.STL</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
-        <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0.5 0.5 0.5 1</srdl2-comp:color_rgba>
+        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.5 0.5 0.5 1</knowrob:mainColorOfObject>
         <srdl2-comp:sphere_radius rdf:datatype="&qudt-unit;Unitless">0.0005</srdl2-comp:sphere_radius>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_shoulder_kinect_rgb_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_shoulder_kinect_depth_joint"/>
@@ -2993,8 +2993,8 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.338648611077492</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">-1.04080029390922E-16</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.239577094605918</srdl2-comp:inertia_izz>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_boxy_torso/meshes/torso_base_link.STL</knowrob:pathToCadModel>
-        <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0.792156862745098 0.819607843137255 0.933333333333333 1</srdl2-comp:color_rgba>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_boxy_torso/meshes/torso_base_link.dae</knowrob:pathToCadModel>
+        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.792156862745098 0.819607843137255 0.933333333333333 1</knowrob:mainColorOfObject>
     </owl:NamedIndividual>
 
 
@@ -3010,8 +3010,8 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.280518816650801</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">-0.00910948982082533</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.330070759835274</srdl2-comp:inertia_izz>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_boxy_torso/meshes/triangle_base_link.STL</knowrob:pathToCadModel>
-        <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0.792156862745098 0.819607843137255 0.933333333333333 1</srdl2-comp:color_rgba>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_boxy_torso/meshes/triangle_base_link.dae</knowrob:pathToCadModel>
+        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.792156862745098 0.819607843137255 0.933333333333333 1</knowrob:mainColorOfObject>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_triangle_left_arm_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_triangle_right_arm_joint"/>
     </owl:NamedIndividual>
@@ -3239,7 +3239,7 @@
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">1.0</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_wsg_50_description/meshes/WSG50_110.stl</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">1 1 1</srdl2-comp:mesh_scale>
-        <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0.5 0.5 0.5 1</srdl2-comp:color_rgba>
+        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.5 0.5 0.5 1</knowrob:mainColorOfObject>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_gripper_base_gripper_left_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_gripper_base_gripper_right_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_gripper_tool_frame_joint"/>
@@ -3262,7 +3262,7 @@
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">1.0</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_wsg_50_description/meshes/GUIDE_WSG50_110.stl</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
-        <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0 0 0 1</srdl2-comp:color_rgba>
+        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0 0 0 1</knowrob:mainColorOfObject>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
         <srdl2-comp:contact_coefficients_kd rdf:datatype="&qudt-unit;Unitless">1.0</srdl2-comp:contact_coefficients_kd>
         <srdl2-comp:contact_coefficients_kp rdf:datatype="&qudt-unit;Unitless">1000.0</srdl2-comp:contact_coefficients_kp>
@@ -3287,7 +3287,7 @@
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">1.0</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_wsg_50_description/meshes/WSG-FMF.stl</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
-        <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0 0 0 1</srdl2-comp:color_rgba>
+        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0 0 0 1</knowrob:mainColorOfObject>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
         <srdl2-comp:contact_coefficients_kd rdf:datatype="&qudt-unit;Unitless">1.0</srdl2-comp:contact_coefficients_kd>
         <srdl2-comp:contact_coefficients_kp rdf:datatype="&qudt-unit;Unitless">1000.0</srdl2-comp:contact_coefficients_kp>
@@ -3309,7 +3309,7 @@
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">1.0</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_wsg_50_description/meshes/GUIDE_WSG50_110.stl</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
-        <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0 0 0 1</srdl2-comp:color_rgba>
+        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0 0 0 1</knowrob:mainColorOfObject>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
         <srdl2-comp:contact_coefficients_kd rdf:datatype="&qudt-unit;Unitless">1.0</srdl2-comp:contact_coefficients_kd>
         <srdl2-comp:contact_coefficients_kp rdf:datatype="&qudt-unit;Unitless">1000.0</srdl2-comp:contact_coefficients_kp>
@@ -3332,7 +3332,7 @@
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">1.0</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_wsg_50_description/meshes/WSG-FMF.stl</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
-        <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0 0 0 1</srdl2-comp:color_rgba>
+        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0 0 0 1</knowrob:mainColorOfObject>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
         <srdl2-comp:contact_coefficients_kd rdf:datatype="&qudt-unit;Unitless">1.0</srdl2-comp:contact_coefficients_kd>
         <srdl2-comp:contact_coefficients_kp rdf:datatype="&qudt-unit;Unitless">1000.0</srdl2-comp:contact_coefficients_kp>
@@ -3661,7 +3661,7 @@
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">1.0</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_wsg_50_description/meshes/WSG50_110.stl</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">1 1 1</srdl2-comp:mesh_scale>
-        <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0.5 0.5 0.5 1</srdl2-comp:color_rgba>
+        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.5 0.5 0.5 1</knowrob:mainColorOfObject>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">1 1 1</srdl2-comp:mesh_scale>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_right_gripper_base_gripper_left_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_right_gripper_base_gripper_right_joint"/>
@@ -3685,7 +3685,7 @@
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">1.0</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_wsg_50_description/meshes/GUIDE_WSG50_110.stl</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
-        <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0 0 0 1</srdl2-comp:color_rgba>
+        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0 0 0 1</knowrob:mainColorOfObject>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
         <srdl2-comp:contact_coefficients_kd rdf:datatype="&qudt-unit;Unitless">1.0</srdl2-comp:contact_coefficients_kd>
         <srdl2-comp:contact_coefficients_kp rdf:datatype="&qudt-unit;Unitless">1000.0</srdl2-comp:contact_coefficients_kp>
@@ -3710,7 +3710,7 @@
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">1.0</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_wsg_50_description/meshes/WSG-FMF.stl</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
-        <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0 0 0 1</srdl2-comp:color_rgba>
+        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0 0 0 1</knowrob:mainColorOfObject>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
         <srdl2-comp:contact_coefficients_kd rdf:datatype="&qudt-unit;Unitless">1.0</srdl2-comp:contact_coefficients_kd>
         <srdl2-comp:contact_coefficients_kp rdf:datatype="&qudt-unit;Unitless">1000.0</srdl2-comp:contact_coefficients_kp>
@@ -3732,7 +3732,7 @@
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">1.0</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_wsg_50_description/meshes/GUIDE_WSG50_110.stl</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
-        <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0 0 0 1</srdl2-comp:color_rgba>
+        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0 0 0 1</knowrob:mainColorOfObject>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
         <srdl2-comp:contact_coefficients_kd rdf:datatype="&qudt-unit;Unitless">1.0</srdl2-comp:contact_coefficients_kd>
         <srdl2-comp:contact_coefficients_kp rdf:datatype="&qudt-unit;Unitless">1000.0</srdl2-comp:contact_coefficients_kp>
@@ -3755,7 +3755,7 @@
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">1.0</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_wsg_50_description/meshes/WSG-FMF.stl</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
-        <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0 0 0 1</srdl2-comp:color_rgba>
+        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0 0 0 1</knowrob:mainColorOfObject>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
         <srdl2-comp:contact_coefficients_kd rdf:datatype="&qudt-unit;Unitless">1.0</srdl2-comp:contact_coefficients_kd>
         <srdl2-comp:contact_coefficients_kp rdf:datatype="&qudt-unit;Unitless">1000.0</srdl2-comp:contact_coefficients_kp>
