@@ -783,6 +783,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 			// TODO: Why is log.error() not printed to console? And where is it printed to?
 			System.err.println("Failed to initialize skeleton.");
 			System.err.println(exc.getMessage());
+			exc.printStackTrace();
 			return;
 		}
 

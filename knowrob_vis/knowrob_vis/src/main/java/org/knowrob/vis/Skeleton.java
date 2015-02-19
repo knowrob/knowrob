@@ -223,6 +223,13 @@ public class Skeleton {
 		m.getPose().getOrientation().setZ(sl.pose.getRotation().z);
 		m.getPose().getOrientation().setW(sl.pose.getRotation().w);
 		
+		if(sl.link.color != null) {
+			m.getColor().setR(sl.link.color[0]);
+			m.getColor().setG(sl.link.color[1]);
+			m.getColor().setB(sl.link.color[2]);
+			m.getColor().setA(sl.link.color[3]);
+		}
+		
 		if(sl.link.modelPath != null && !sl.link.modelPath.isEmpty()) {
 			m.setType(Marker.MESH_RESOURCE);
 			m.setMeshResource(sl.link.modelPath);
@@ -243,13 +250,6 @@ public class Skeleton {
 			m.getScale().setX(sl.link.scale[0]>0.0 ? sl.link.scale[0] : 0.05);
 			m.getScale().setY(sl.link.scale[1]>0.0 ? sl.link.scale[1] : 0.05);
 			m.getScale().setZ(sl.link.scale[2]>0.0 ? sl.link.scale[2] : 0.05);
-		}
-		
-		if(sl.link.color != null) {
-			m.getColor().setR(sl.link.color[0]);
-			m.getColor().setG(sl.link.color[1]);
-			m.getColor().setB(sl.link.color[2]);
-			m.getColor().setA(sl.link.color[3]);
 		}
 
         return m;
@@ -398,15 +398,14 @@ public class Skeleton {
 	 * Query knowrob for the color of a link.
 	 */
 	private float[] getLinkColor(String linkName) {
-		final HashMap<String, Vector<String>> res = PrologInterface.executeQuery(
-				"owl_has("+linkName+", knowrob:'mainColorOfObject', literal(type(_, COL)))");
+		final HashMap<String, Vector<String>> res = PrologInterface.executeQuery("object_color("+linkName+", COL)");
 		if(res==null) return null;
 		String c[] = res.get("COL").get(0).split(" ");
 		if(c.length!=4) return null;
 		
 		float[] out = new float[4];
 		for(int i=0; i<4; ++i) {
-			out[i] = Float.parseFloat(c[i]);
+			out[i] = Float.parseFloat(OWLThing.removeSingleQuotes(c[i]));
 		}
 		
 		return out;
