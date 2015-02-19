@@ -256,7 +256,10 @@ public class MongoDBInterface {
 
 	@SuppressWarnings("unchecked")
 	public Matrix4d getDesignatorLocation(String id) {
-		Matrix4d poseMatrix = null;
+		// FIXME: bad assumption
+		final String targetFrame = "/map";
+		
+		Stamped<Matrix4d> poseMatrix = null;
 		DBCollection coll = getDatabase().getCollection("logged_designators");
 		DBObject query = QueryBuilder
 				.start("designator._id").is(id).get();
@@ -272,18 +275,28 @@ public class MongoDBInterface {
 			while(cursor.hasNext()) {
 
 				DBObject row = cursor.next();
-				Designator res = new Designator().readFromDBObject((BasicDBObject) row.get("designator"));
-				Designator res2 = (Designator)res.get("AT");
-				
+				Designator d;
 				Object mat = null;
-				if(res2!=null) {
-					mat = res2.get("POSE");
+				
+				d = new Designator().readFromDBObject((BasicDBObject) row.get("designator"));
+				mat = d.get("POSE");
+				if(mat == null) {
+					d = (Designator)d.get("AT");
+					if(d!=null) {
+						mat = d.get("POSE");
+					}
 				}
-				if(mat==null) {
-					mat = res.get("POSE");
-				}
+				
 				if(mat!=null) {
-					poseMatrix = ((Stamped<Matrix4d>)mat).getData();
+					poseMatrix = (Stamped<Matrix4d>)mat;
+					
+					// Tranform pose to target frame if required
+					if(poseMatrix.frameID!=null && !targetFrame.equals(poseMatrix.frameID)) {
+						Stamped<Matrix4d> worldFrame = new Stamped<Matrix4d>();
+						if(transformPose(targetFrame, poseMatrix, worldFrame))
+							poseMatrix = worldFrame;
+					}
+					
 					break;
 				}
 
@@ -293,7 +306,10 @@ public class MongoDBInterface {
 		} finally {
 			cursor.close();
 		}
-		return poseMatrix;
+		if(poseMatrix == null)
+			return null;
+		else
+			return poseMatrix.getData();
 	}
 
 	/**

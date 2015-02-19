@@ -136,7 +136,7 @@ public class Designator {
 			}
 
 			if(val!=null)
-				values.put(key, val);
+				values.put(key.toUpperCase(), val);
 		}
 		return this;
 	}
