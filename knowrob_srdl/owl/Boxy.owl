@@ -2934,7 +2934,7 @@
     <owl:NamedIndividual rdf:about="&robot;boxy_shoulder_kinect_link">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>shoulder_kinect_link</srdl2-comp:urdfName>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_boxy_description/meshes/sensors/68-04546_Kinect_Sensor--coarse.STL</knowrob:pathToCadModel>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_boxy_description/meshes/sensors/68-04546_Kinect_Sensor-coarse.dae</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
         <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.5 0.5 0.5 1</knowrob:mainColorOfObject>
         <srdl2-comp:sphere_radius rdf:datatype="&qudt-unit;Unitless">0.0005</srdl2-comp:sphere_radius>
@@ -3069,7 +3069,7 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.003</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0118666666667</srdl2-comp:inertia_izz>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_segment_a.dae</knowrob:pathToCadModel>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_1.dae</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale>
         <srdl2-comp:material_name rdf:datatype="&xsd;string">UniHB-Red</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_arm_1_joint"/>
@@ -3089,7 +3089,7 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.003</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0118666666667</srdl2-comp:inertia_izz>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_segment_b.dae</knowrob:pathToCadModel>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_2.dae</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale>
         <srdl2-comp:material_name rdf:datatype="&xsd;string">UniHB-Red</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_arm_2_joint"/>
@@ -3109,7 +3109,7 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.003</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0118666666667</srdl2-comp:inertia_izz>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_segment_a.dae</knowrob:pathToCadModel>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_3.dae</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale>
         <srdl2-comp:material_name rdf:datatype="&xsd;string">UniHB-Red</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_arm_3_joint"/>
@@ -3129,7 +3129,7 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.003</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0118666666667</srdl2-comp:inertia_izz>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_segment_b.dae</knowrob:pathToCadModel>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_4.dae</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale>
         <srdl2-comp:material_name rdf:datatype="&xsd;string">UniHB-Red</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_arm_4_joint"/>
@@ -3149,7 +3149,7 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.003</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0108506666667</srdl2-comp:inertia_izz>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_segment_last.dae</knowrob:pathToCadModel>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_last.dae</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale>
         <srdl2-comp:material_name rdf:datatype="&xsd;string">UniHB-Red</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_arm_5_joint"/>
@@ -3169,7 +3169,7 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.00520833333333</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.00520833333333</srdl2-comp:inertia_izz>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_wrist.dae</knowrob:pathToCadModel>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_wrist.dae</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale>
         <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_arm_6_joint"/>
@@ -3381,7 +3381,7 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.003</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0118666666667</srdl2-comp:inertia_izz>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_segment_a.dae</knowrob:pathToCadModel>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_1.dae</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale>
         <srdl2-comp:material_name rdf:datatype="&xsd;string">UniHB-Red</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_right_arm_1_joint"/>
@@ -3401,7 +3401,7 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.003</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0118666666667</srdl2-comp:inertia_izz>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_segment_b.dae</knowrob:pathToCadModel>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_2.dae</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale>
         <srdl2-comp:material_name rdf:datatype="&xsd;string">UniHB-Red</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_right_arm_2_joint"/>
@@ -3421,7 +3421,7 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.003</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0118666666667</srdl2-comp:inertia_izz>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_segment_a.dae</knowrob:pathToCadModel>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_3.dae</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale>
         <srdl2-comp:material_name rdf:datatype="&xsd;string">UniHB-Red</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_right_arm_3_joint"/>
@@ -3441,7 +3441,7 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.003</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0118666666667</srdl2-comp:inertia_izz>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_segment_b.dae</knowrob:pathToCadModel>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_4.dae</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale>
         <srdl2-comp:material_name rdf:datatype="&xsd;string">UniHB-Red</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_right_arm_4_joint"/>
@@ -3461,7 +3461,7 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.003</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0108506666667</srdl2-comp:inertia_izz>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_segment_last.dae</knowrob:pathToCadModel>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_last.dae</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale>
         <srdl2-comp:material_name rdf:datatype="&xsd;string">UniHB-Red</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_right_arm_5_joint"/>
@@ -3481,7 +3481,7 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.00520833333333</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.00520833333333</srdl2-comp:inertia_izz>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_wrist.dae</knowrob:pathToCadModel>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_wrist.dae</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale>
         <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_right_arm_6_joint"/>
