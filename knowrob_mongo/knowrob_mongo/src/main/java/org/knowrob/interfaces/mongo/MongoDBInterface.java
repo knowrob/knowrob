@@ -275,24 +275,28 @@ public class MongoDBInterface {
 			while(cursor.hasNext()) {
 
 				DBObject row = cursor.next();
-				Designator d;
 				Object mat = null;
 				
-				d = new Designator().readFromDBObject((BasicDBObject) row.get("designator"));
-				mat = d.get("POSE");
+				Designator d = new Designator().readFromDBObject((BasicDBObject) row.get("designator"));
+				Designator loc = (Designator)d.get("AT");
+				if(loc != null) {
+					mat = loc.get("POSE");
+				}
 				if(mat == null) {
-					d = (Designator)d.get("AT");
-					if(d!=null) {
-						mat = d.get("POSE");
-					}
+					mat = d.get("POSE");
 				}
 				
 				if(mat!=null) {
 					poseMatrix = (Stamped<Matrix4d>)mat;
+					if(!poseMatrix.frameID.startsWith("/"))
+						poseMatrix.frameID = "/"+poseMatrix.frameID;
 					
-					// Tranform pose to target frame if required
+					// Transform pose to target frame if required
 					if(poseMatrix.frameID!=null && !targetFrame.equals(poseMatrix.frameID)) {
-						Stamped<Matrix4d> worldFrame = new Stamped<Matrix4d>();
+						final Stamped<Matrix4d> worldFrame = new Stamped<Matrix4d>();
+						worldFrame.setData(new Matrix4d());
+						worldFrame.getData().setIdentity();
+						
 						if(transformPose(targetFrame, poseMatrix, worldFrame))
 							poseMatrix = worldFrame;
 					}

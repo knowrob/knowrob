@@ -207,11 +207,6 @@ public class Skeleton {
 		final Marker m = getMarker(node,markerId.toString());
 		// Frame not available for given timepoint
 		if(sl.pose==null) return null;
-		
-		m.getColor().setR(defaultColor[0]);
-		m.getColor().setG(defaultColor[1]);
-		m.getColor().setB(defaultColor[2]);
-		m.getColor().setA(defaultColor[3]);
 
 		m.setType(linkMarkerType);
 
@@ -228,6 +223,12 @@ public class Skeleton {
 			m.getColor().setG(sl.link.color[1]);
 			m.getColor().setB(sl.link.color[2]);
 			m.getColor().setA(sl.link.color[3]);
+		}
+		else {
+			m.getColor().setR(defaultColor[0]);
+			m.getColor().setG(defaultColor[1]);
+			m.getColor().setB(defaultColor[2]);
+			m.getColor().setA(defaultColor[3]);
 		}
 		
 		if(sl.link.modelPath != null && !sl.link.modelPath.isEmpty()) {
@@ -279,6 +280,11 @@ public class Skeleton {
 		final Marker m = getMarker(node,markerId.toString());
 		// Frames not available for given timepoint
 		if(sl0.pose==null || sl1.pose==null) return null;
+
+		m.getColor().setR(defaultColor[0]);
+		m.getColor().setG(defaultColor[1]);
+		m.getColor().setB(defaultColor[2]);
+		m.getColor().setA(defaultColor[3]);
 		
 		m.setType(Marker.CYLINDER);
 
