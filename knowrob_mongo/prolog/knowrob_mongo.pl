@@ -23,6 +23,9 @@
       mng_designator_props/3,
       mng_desig_matches/2,
       mng_obj_pose_by_desig/2,
+      
+      mng_designator/2,
+      mng_designator_property/4,
 
       mng_lookup_transform/4,
       mng_lookup_position/4,
@@ -57,6 +60,8 @@
     mng_lookup_transform(+,+,r,-),
     mng_lookup_position(+,+,r,-),
     mng_latest_designator_before_time(r,-,-),
+    mng_designator(r,?),
+    mng_designator_propery(r,+,+,?),
 
     mng_robot_pose(r, r),
     mng_robot_pose(r, r,r),
@@ -145,6 +150,15 @@ mng_obj_pose_by_desig(Obj, Pose) :-
   rdf_has(Obj, knowrob:designator, Designator),
   mng_designator_props(Designator, 'POSE', Pose).
 
+%% mng_designator(+Designator, -DesigJava) is nondet.
+% 
+% Read object that corresponds to Designator into
+% a JAVA object DesigJava.
+% 
+mng_designator(Designator, DesigJava) :-
+  rdf_split_url(_, DesigID, Designator),
+  mongo_interface(DB),
+  jpl_call(DB, 'getDesignatorByID', [DesigID], DesigJava).
 
 
 %% mng_designator_type(+Designator, ?Type) is nondet.
@@ -162,6 +176,31 @@ mng_designator_type(Designator, Type) :-
   jpl_call(DB, 'getDesignatorByID', [DesigID], DesigJava),
 
   jpl_call(DesigJava, 'getType', [], Type).
+
+%% mng_designator_property(+Designator, +DesigJava, +PropertyPath, ?Value) is nondet.
+% 
+% Read the properties of a logged designator.
+% 
+% @param Designator   Instance of a designator, having its ID as local part of the IRI
+% @param DesigJava    JAVA instance of the designator
+% @param PropertyPath Sequence of property keys for nested designators
+% @param Value       Value slot of the designator
+% 
+mng_designator_property(Designator, DesigJava, [Prop|Tail], Value) :-
+  jpl_call(DesigJava, 'keySet', [], PropsSet),
+  jpl_set_element(PropsSet, Prop),
+  jpl_call(DesigJava, 'get', [Prop], ChildDesigJava),
+  jpl_ref_to_type(ChildDesigJava,  class([org,knowrob,interfaces,mongo,types],['Designator'])),
+  mng_designator_property(Designator, ChildDesigJava, Tail, Value).
+  
+mng_designator_property(Designator, DesigJava, [Prop], Value) :-
+  mng_designator_property_value(Designator, DesigJava, Prop, Value).
+  
+mng_designator_property_value(Designator, DesigJava, Prop, Value) :-
+  jpl_call(DesigJava, 'keySet', [], PropsSet),
+  jpl_set_element(PropsSet, Prop),
+  jpl_call(DesigJava, 'get', [Prop], ValIn),
+  once(mng_desig_get_value(Designator, DesigJava, ValIn, Value)).
 
 
 %% mng_designator_props(+Designator, ?Prop, ?Value) is nondet.
@@ -181,8 +220,9 @@ mng_designator_props(Designator, Prop, Value) :-
 
   jpl_call(DesigJava, 'keySet', [], PropsSet),
   jpl_set_element(PropsSet, Prop),
+  jpl_call(DesigJava, 'get', [Prop], ValIn),
 
-  once(mng_desig_get_value(Designator, DesigJava, Prop, Value)).
+  once(mng_desig_get_value(Designator, DesigJava, ValIn, Value)).
 
 
 
@@ -199,15 +239,14 @@ mng_designator_props(Designator, Prop, Value) :-
 %
 
 % create designator instance for child-designators
-mng_desig_get_value(_Designator, DesigJava, Prop, Value) :-
-  jpl_call(DesigJava, 'get', [Prop], ValIn),
-  jpl_ref_to_type(ValIn,  class([org,knowrob,interfaces,mongo,types],['Designator'])),
-  Value=ValIn. % TODO
+%mng_desig_get_value(_Designator, DesigJava, ValIn, Value) :-
+%  jpl_ref_to_type(ValIn,  class([org,knowrob,interfaces,mongo,types],['Designator'])),
+%  Value=ValIn. % TODO
 
+% TODO(daniel): Is this used somewhere? In knowrob_cram `belief_at` is used to assert pose!
 % create observation of the object to which the designator is attached
-mng_desig_get_value(Designator, DesigJava, Prop, Pose) :-
+mng_desig_get_value(Designator, DesigJava, PoseStamped, Pose) :-
 
-  jpl_call(DesigJava, 'get', [Prop], PoseStamped),
   jpl_ref_to_type(PoseStamped,  class([org,knowrob,interfaces,mongo,types],['PoseStamped'])),
 
   % find out which object we are talking about
@@ -239,11 +278,14 @@ mng_desig_get_value(Designator, DesigJava, Prop, Pose) :-
   rdf_assert(PoseTimePoint, rdf:type, 'http://knowrob.org/kb/knowrob.owl#TimePoint'),
   rdf_assert(Detection, knowrob:startTime, PoseTimePoint).
 
+mng_desig_get_value(_Designator, _DesigJava, Vec, Vector) :-
+  jpl_ref_to_type(Vec,  class([javax,vecmath],['Vector3d'])),
+  jpl_get(Vec, x, X), jpl_get(Vec, y, Y), jpl_get(Vec, z, Z),
+  Vector = [X, Y, Z].
+
 % just return the value for other properties
-mng_desig_get_value(_Designator, DesigJava, Prop, Value) :-
-  jpl_call(DesigJava, 'get', [Prop], Value).
-
-
+mng_desig_get_value(_Designator, _DesigJava, ValIn, Value) :-
+  Value = ValIn.
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -285,11 +327,11 @@ mng_lookup_transform(Target, Source, TimePoint, Transform) :-
 % @param Position   Position as list[3]
 %
 mng_lookup_position(Target, Source, TimePoint, Position) :-
-  mng_lookup_transform(Target, Source, TimePoint, _Transform),
-  nth0( 3, _Transform, _X),
-  nth0( 7, _Transform, _Y),
-  nth0(11, _Transform, _Z),
-  Position = [ _X, _Y, _Z ].
+  mng_lookup_transform(Target, Source, TimePoint, Transform),
+  nth0( 3, Transform, X),
+  nth0( 7, Transform, Y),
+  nth0(11, Transform, Z),
+  Position = [ X, Y, Z ].
 
 %% mng_transform_pose(+PoseListIn, +SourceFrame, +TargetFrame, +TimePoint, -PoseListOut) is nondet.
 % 
@@ -312,6 +354,7 @@ mng_transform_pose(PoseListIn, SourceFrame, TargetFrame, TimePoint, PoseListOut)
   jpl_new('tfjava.Stamped', [MatrixIn, SourceFrame, TimeInt], StampedIn),
 
   knowrob_coordinates:list_to_matrix4d([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1], MatrixOut),
+  % TODO: What is /base_link doing here?
   jpl_new('tfjava.Stamped', [MatrixOut, '/base_link', TimeInt], StampedOut),
 
   mongo_interface(DB),
@@ -345,7 +388,6 @@ mng_robot_pose(Robot, Pose) :-
   mng_robot_pose(Robot, Pose, 'map').
   
 mng_robot_pose(Robot, Pose, Target) :-
-  %Fixme at a a function mng_robot_pose(RobotPart, Pose, TargetFrame) Map is NOT a std id
   get_timepoint(TimePoint),
   mng_robot_pose_at_time(Robot, Target, TimePoint, Pose).
 
@@ -379,11 +421,9 @@ mng_robot_pose_at_time(Robot, TargetFrame, TimePoint, Pose) :-
 % @param Pose       Instance of a knowrob:RotationMatrix3D with the pose data
 %
 mng_comp_pose(RobotPart, Pose) :-
-  %Fixme at a a function mng_comp_pose(RobotPart, Pose, TargetFrame) Map is NOT a std id
   mng_comp_pose(RobotPart,  Pose , '/map' ).
 
 mng_comp_pose(RobotPart, Pose, Target) :-
-  %Fixme at a a function mng_comp_pose(RobotPart, Pose, TargetFrame) Map is NOT a std id
   get_timepoint(TimePoint),
   mng_comp_pose_at_time(RobotPart, Target, TimePoint, Pose).
 
