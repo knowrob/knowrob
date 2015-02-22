@@ -98,46 +98,96 @@ public class Designator {
 	public Designator readFromDBObject(BasicDBObject row) {
 
 		for(String key : row.keySet()) {
-			Object val = null;
+			Object val = row.get(key);
+			Object valAccepted = null;
 			
 			// Pose properties
 			if(key.equalsIgnoreCase("pose") || key.equalsIgnoreCase("goal-pose")) {
-				val = PoseStampedFactory.readFromDBObject((BasicDBObject) row.get(key));
-				if(val == null)
-					val = PoseFactory.readFromDBObject((BasicDBObject) row.get(key));
+				valAccepted = PoseStampedFactory.readFromDBObject((BasicDBObject) val);
+				if(valAccepted == null)
+					valAccepted = PoseFactory.readFromDBObject((BasicDBObject) val);
 
 			// Dimension properties
 			} else if(key.equalsIgnoreCase("dimensions")) {
-				val = new Vector3d();
 				
-				if(row.get(key) instanceof BasicDBList) {
-					BasicDBList dim = ((BasicDBList) row.get(key));
-					if(dim!=null) {
-						((Vector3d) val).x = Double.valueOf(dim.get(0).toString());
-						((Vector3d) val).y = Double.valueOf(dim.get(1).toString());
-						((Vector3d) val).z = Double.valueOf(dim.get(2).toString());
+				if(val instanceof BasicDBList) {
+					BasicDBList dim = ((BasicDBList) val);
+					
+					valAccepted = new Vector3d();
+					((Vector3d) valAccepted).x = Double.valueOf(dim.get(0).toString());
+					((Vector3d) valAccepted).y = Double.valueOf(dim.get(1).toString());
+					((Vector3d) valAccepted).z = Double.valueOf(dim.get(2).toString());
+				}
+			
+			} else if(key.equalsIgnoreCase("dimensions-3d")) {
+				
+				if(val instanceof BasicDBObject) {
+					BasicDBObject dimRow = (BasicDBObject)val;
+					valAccepted = new Vector3d();
+					
+					((Vector3d) valAccepted).x = Double.valueOf(dimRow.get("DEPTH").toString());
+					((Vector3d) valAccepted).y = Double.valueOf(dimRow.get("WIDTH").toString());
+					((Vector3d) valAccepted).z = Double.valueOf(dimRow.get("HEIGHT").toString());
+				}
+
+			// Color properties
+			} else if(key.equalsIgnoreCase("color")) {
+				if(val instanceof BasicDBObject) {
+					BasicDBObject colRow = (BasicDBObject)val;
+					valAccepted = new Vector3d();
+					((Vector3d) valAccepted).x = Double.valueOf(colRow.get("RED").toString());
+					((Vector3d) valAccepted).y = Double.valueOf(colRow.get("GREEN").toString());
+					((Vector3d) valAccepted).z = Double.valueOf(colRow.get("BLUE").toString());
+				}
+				else {
+					String colorString = row.getString(key);
+					if("RED".equals(colorString)) {
+						valAccepted = new Vector3d(0.75,0.0,0.0);
+					}
+					else if("GREEN".equals(colorString)) {
+						valAccepted = new Vector3d(0.0,0.75,0.0);
+					}
+					else if("BLUE".equals(colorString)) {
+						valAccepted = new Vector3d(0.0,0.0,0.75);
+					}
+					else if("YELLOW".equals(colorString)) {
+						valAccepted = new Vector3d(0.75,0.75,0.0);
 					}
 				}
 				
-			// Designator properties
-			} else if(key.equalsIgnoreCase("at") || 
-					  key.equalsIgnoreCase("handle") || 
-					  key.equalsIgnoreCase("obj") || 
-					  key.equalsIgnoreCase("phases")) {
-				val = new Designator().readFromDBObject((BasicDBObject) row.get(key));
-				
-				// Numerical properties
+			// Numerical properties
 			} else if(key.equalsIgnoreCase("z-offset")) {
-				val = row.getDouble(key);
+				valAccepted = row.getDouble(key);
 
 			// String properties
-			} else {
-				val = row.getString(key);
+			} else if(key.equalsIgnoreCase("response")) {
+				// Convert perception response to knowrob class name
+				valAccepted = toCamelCase(row.getString(key));
 			}
-
-			if(val!=null)
-				values.put(key.toUpperCase(), val);
+			
+			if(valAccepted == null) {
+				// Designator properties
+				if(val instanceof BasicDBObject) {
+					valAccepted = new Designator().readFromDBObject((BasicDBObject) val);
+				
+				} else {
+					valAccepted = row.getString(key);
+				}
+			}
+			
+			if(valAccepted!=null)
+				values.put(key.toUpperCase(), valAccepted);
 		}
 		return this;
+	}
+	
+	static String toCamelCase(String s){
+		String[] parts = s.split("_");
+		String camelCaseString = "";
+		for (String part : parts){
+			camelCaseString += camelCaseString +
+				part.substring(0, 1).toUpperCase() + part.substring(1);
+		}
+		return camelCaseString;
 	}
 }

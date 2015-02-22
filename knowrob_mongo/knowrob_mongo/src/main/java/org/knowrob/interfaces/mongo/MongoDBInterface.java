@@ -113,7 +113,7 @@ public class MongoDBInterface {
 	 * @return Instance of a Designator
 	 */
 	public Designator getDesignatorByID(String designator) {
-		
+	
 		DBCollection coll = getDatabase().getCollection("logged_designators");
 		DBObject query = QueryBuilder
 				.start("designator._id").is(designator).get();
@@ -127,8 +127,10 @@ public class MongoDBInterface {
 		while(cursor.hasNext()) {
 			DBObject row = cursor.next();
 			Designator desig = new Designator().readFromDBObject((BasicDBObject) row.get("designator"));
+			if(cursor.hasNext()) cursor.close();
 			return desig;
 		}
+		
 		cursor.close();
 		
 		return null;
