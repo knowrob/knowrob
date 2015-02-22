@@ -793,7 +793,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 			for(Skeleton.Link sourceLink : skeleton.getLinks()) {
 				final Skeleton.StampedLink sl0 = new Skeleton.StampedLink(identifier,sourceLink,time,tfSuffix,tfPrefix);
 
-				if(!addAgentMarker(skeleton.updateLinkMarker(node,sl0))) {
+				if(sl0.link.hasVisual && !addAgentMarker(skeleton.updateLinkMarker(node,sl0))) {
 					log.warn("Unable to create marker for '" + sourceLink.sourceFrame + "'.");
 				}
 
@@ -806,7 +806,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 						}
 						final Skeleton.StampedLink sl1 = new Skeleton.StampedLink(identifier,targetLink,time,tfSuffix,tfPrefix);
 	
-						if(!addAgentMarker(skeleton.createCylinderMarker(node,sl0,sl1))) {
+						if(sl0.link.hasVisual && sl1.link.hasVisual &&
+						  !addAgentMarker(skeleton.createCylinderMarker(node,sl0,sl1))) {
 							System.err.println("Unable to create cylinder marker between '" +
 									sourceLink.sourceFrame + "' and '" + conn + "'.");
 						}
@@ -1084,6 +1085,21 @@ public class MarkerVisualization extends AbstractNodeMain {
 		waitForNode();
 		
 		if(isBlackListed(identifier)) return null;
+		
+		try {
+			String query = "rdf_has('"+identifier+"', knowrob:'hasVisual', literal(type(_,Value)))";
+			HashMap<String, Vector<String>> res = PrologInterface.executeQuery(query);
+			
+			if (res!=null && res.get("Value") != null) {
+				String val = res.get("Value").toString();
+				if("[false]".equals(val) || "false".equals(val)) {
+					// Object has no visual
+					return null;
+				}
+			}
+		}
+		catch (Exception e)
+		{}
 		
 		final Marker m = createMarker();
 		m.setType(Marker.CUBE);

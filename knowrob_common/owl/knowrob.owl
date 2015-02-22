@@ -1921,6 +1921,15 @@ There are various specializations of coordinateValuePredicateOfSystem currently 
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#hasVisual -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;hasVisual">
+        <rdfs:domain rdf:resource="&knowrob;SpatialThing-Localized"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#heightOfObject -->
 
     <owl:DatatypeProperty rdf:about="&knowrob;heightOfObject">

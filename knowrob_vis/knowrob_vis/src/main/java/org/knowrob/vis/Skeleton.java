@@ -57,6 +57,10 @@ public class Skeleton {
 		 * Path to CAD model.
 		 */
 		public String modelPath = null;
+		/**
+		 * Flag that indicates if this link should be visualized.
+		 */
+		public boolean hasVisual = true;
 
 		public Link(String sourceFrame, String[] succeeding) {
 			super();
@@ -140,6 +144,8 @@ public class Skeleton {
 			final String[] succ = querySucceedingLinks(linkName);
 			final Link link = new Link(tfFrame, succ);
 			
+			link.hasVisual = hasLinkVisual(linkName);
+			
 			final double[] scale = getLinkScale(linkName);
 			link.scale[0] = scale[0];
 			link.scale[1] = scale[1];
@@ -195,6 +201,8 @@ public class Skeleton {
 	 */
 	public Marker updateLinkMarker(ConnectedNode node, StampedLink sl)
 	{
+		if(!sl.link.hasVisual) return null;
+		
 		// Marker id is a concatenation of prefixed TF frame and
 		// identifier of visualized agent.
 		// E.g., the ID is "/human1/neck_human1" when TF prefix is "/human1",
@@ -266,6 +274,9 @@ public class Skeleton {
 	 */
 	public Marker createCylinderMarker(ConnectedNode node, StampedLink sl0, StampedLink sl1)
 	{
+		if(!sl0.link.hasVisual) return null;
+		if(!sl1.link.hasVisual) return null;
+		
 		// Marker id is a concatenation of prefixed TF frames and
 		// identifier of visualized agent.
 		// E.g., the ID is "/human1/neck_/human1/head_human1"
@@ -373,6 +384,21 @@ public class Skeleton {
 			succeeding = new String[]{};
 		}
 		return succeeding;
+	}
+	
+	private boolean hasLinkVisual(String linkName) {
+		String query = "rdf_has("+linkName+", knowrob:'hasVisual', literal(type(_,Value)))";
+		HashMap<String, Vector<String>> res = PrologInterface.executeQuery(query);
+		
+		if (res!=null && res.get("Value") != null) {
+			String val = res.get("Value").toString();
+			if("[false]".equals(val) || "false".equals(val)) {
+				// Object has no visual
+				return false;
+			}
+		}
+		
+		return true;
 	}
 
 	/**
