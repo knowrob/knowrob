@@ -152,7 +152,8 @@ mng_latest_designator_before_time(TimePoint, Type, PoseList) :-
 mng_latest_designator(TimePoint, [], DesigJava) :-
   mongo_interface(DB),
   time_term(TimePoint, Time),
-  jpl_call(DB, 'getLatestDesignatorBefore', [Time], DesigJava).
+  jpl_call(DB, 'getLatestDesignatorBefore', [Time], DesigJava),
+  not(DesigJava = @(null)).
 
 mng_latest_designator(TimePoint, MongoPattern, DesigJava) :-
   mongo_interface(DB),
@@ -160,7 +161,10 @@ mng_latest_designator(TimePoint, MongoPattern, DesigJava) :-
   
   findall(Key, member([Key,_,_],MongoPattern), Keys),
   findall(Rel, member([_,Rel,_],MongoPattern), Relations),
-  findall(Val, member([_,_,Val],MongoPattern), Values),
+  findall(Obj, (
+      member([_,_,Val], MongoPattern),
+      once(mng_value_object(DB, Val, Obj))
+  ), Values),
   
   jpl_list_to_array(Keys, KeysArray),
   jpl_list_to_array(Relations, RelationsArray),
@@ -169,6 +173,15 @@ mng_latest_designator(TimePoint, MongoPattern, DesigJava) :-
   jpl_call(DB, 'getLatestDesignatorBefore', [Time, KeysArray, RelationsArray, ValuesArray], DesigJava),
   not(DesigJava = @(null)).
 
+mng_value_object(DB, date(Val), ObjJava) :-
+  jpl_call(DB, 'getDateObject', [Val], ObjJava),
+  not(ObjJava = @(null)).
+  
+mng_value_object(DB, Val, ObjJava) :-
+  jpl_call(DB, 'getValueObject', [Val], ObjJava),
+  not(ObjJava = @(null)).
+  
+  
 %% mng_designator_distinct_values( +Key, -Values) is nondet.
 % 
 % Determine distinct field values of designators

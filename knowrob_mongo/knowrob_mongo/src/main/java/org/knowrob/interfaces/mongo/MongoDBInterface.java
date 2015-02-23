@@ -217,16 +217,50 @@ public class MongoDBInterface {
 		return desig;
 	}
 	
+	public Object getValueObject(int v) {
+		return new Integer(v);
+	}
+	public Object getValueObject(double v) {
+		return new Double(v);
+	}
+	public Object getValueObject(float v) {
+		return new Float(v);
+	}
+	public Object getValueObject(long v) {
+		return new Long(v);
+	}
+	public Object getValueObject(Object v) {
+		return v;
+	}
+	
+	public Object getDateObject(int posix_ts) {
+		return new ISODate((long) (1000 * posix_ts) ).getDate();
+	}
+	public Object getDateObject(double posix_ts) {
+		return new ISODate((long) (1000.0 * posix_ts) ).getDate();
+	}
+	public Object getDateObject(float posix_ts) {
+		return new ISODate((long) (1000.0f * posix_ts) ).getDate();
+	}
+	
 	public Designator getLatestDesignatorBefore(int posix_ts) {
+		return getLatestDesignatorBefore((double)posix_ts, null, null, null);
+	}
+	
+	public Designator getLatestDesignatorBefore(double posix_ts) {
 		return getLatestDesignatorBefore(posix_ts, null, null, null);
 	}
 	
-	public Designator getLatestDesignatorBefore(int posix_ts, String[] keys, String[] relations, String[] values) {
+	public Designator getLatestDesignatorBefore(int posix_ts, String[] keys, String[] relations, Object[] values) {
+		return getLatestDesignatorBefore((double)posix_ts, keys, relations, values);
+	}
+	
+	public Designator getLatestDesignatorBefore(double posix_ts, String[] keys, String[] relations, Object[] values) {
 		Designator desig = null;
 		DBCollection coll = getDatabase().getCollection("logged_designators");
 
 		// read all events up to one minute before the time
-		Date t = new ISODate((long) 1000 * posix_ts ).getDate();
+		Object t = getDateObject(posix_ts);
 
 		QueryBuilder query = QueryBuilder.start("__recorded").lessThan( t );
 		
@@ -234,10 +268,10 @@ public class MongoDBInterface {
 			for(int i=0; i<relations.length && i<keys.length && i<values.length; ++i) {
 				String rel = relations[i];
 				String key = keys[i];
-				String val = values[i];
+				Object val = values[i];
 				
 				if("==".equals(rel) || "=".equals(rel) || "is".equals(rel))
-					query = query.and(key).is(Pattern.compile(values[i],Pattern.CASE_INSENSITIVE));
+					query = query.and(key).is(val);
 				else if("!=".equals(rel))
 					query = query.and(key).notEquals(val);
 				else if("<".equals(rel))
