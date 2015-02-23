@@ -233,16 +233,34 @@ public class MongoDBInterface {
 		return v;
 	}
 	
+	public Date getDateObject(int posix_ts) {
+		return new ISODate((long) (1000 * posix_ts) ).getDate();
+	}
+	public Date getDateObject(double posix_ts) {
+		return new ISODate((long) (1000.0 * posix_ts) ).getDate();
+	}
+	public Date getDateObject(float posix_ts) {
+		return new ISODate((long) (1000.0f * posix_ts) ).getDate();
+	}
+	
 	public Designator getLatestDesignatorBefore(int posix_ts) {
+		return getLatestDesignatorBefore((double)posix_ts, null, null, null);
+	}
+	
+	public Designator getLatestDesignatorBefore(double posix_ts) {
 		return getLatestDesignatorBefore(posix_ts, null, null, null);
 	}
 	
 	public Designator getLatestDesignatorBefore(int posix_ts, String[] keys, String[] relations, Object[] values) {
+		return getLatestDesignatorBefore((double)posix_ts, keys, relations, value);
+	}
+	
+	public Designator getLatestDesignatorBefore(double posix_ts, String[] keys, String[] relations, Object[] values) {
 		Designator desig = null;
 		DBCollection coll = getDatabase().getCollection("logged_designators");
 
 		// read all events up to one minute before the time
-		Date t = new ISODate((long) 1000 * posix_ts ).getDate();
+		Date t = getDateObject(posix_ts);
 
 		QueryBuilder query = QueryBuilder.start("__recorded").lessThan( t );
 		
