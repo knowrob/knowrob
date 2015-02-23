@@ -233,13 +233,13 @@ public class MongoDBInterface {
 		return v;
 	}
 	
-	public Date getDateObject(int posix_ts) {
+	public Object getDateObject(int posix_ts) {
 		return new ISODate((long) (1000 * posix_ts) ).getDate();
 	}
-	public Date getDateObject(double posix_ts) {
+	public Object getDateObject(double posix_ts) {
 		return new ISODate((long) (1000.0 * posix_ts) ).getDate();
 	}
-	public Date getDateObject(float posix_ts) {
+	public Object getDateObject(float posix_ts) {
 		return new ISODate((long) (1000.0f * posix_ts) ).getDate();
 	}
 	
@@ -252,7 +252,7 @@ public class MongoDBInterface {
 	}
 	
 	public Designator getLatestDesignatorBefore(int posix_ts, String[] keys, String[] relations, Object[] values) {
-		return getLatestDesignatorBefore((double)posix_ts, keys, relations, value);
+		return getLatestDesignatorBefore((double)posix_ts, keys, relations, values);
 	}
 	
 	public Designator getLatestDesignatorBefore(double posix_ts, String[] keys, String[] relations, Object[] values) {
