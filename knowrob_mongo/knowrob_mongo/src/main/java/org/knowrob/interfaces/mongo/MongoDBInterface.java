@@ -217,11 +217,27 @@ public class MongoDBInterface {
 		return desig;
 	}
 	
+	public Object getValueObject(int v) {
+		return new Integer(v);
+	}
+	public Object getValueObject(double v) {
+		return new Double(v);
+	}
+	public Object getValueObject(float v) {
+		return new Float(v);
+	}
+	public Object getValueObject(long v) {
+		return new Long(v);
+	}
+	public Object getValueObject(Object v) {
+		return v;
+	}
+	
 	public Designator getLatestDesignatorBefore(int posix_ts) {
 		return getLatestDesignatorBefore(posix_ts, null, null, null);
 	}
 	
-	public Designator getLatestDesignatorBefore(int posix_ts, String[] keys, String[] relations, String[] values) {
+	public Designator getLatestDesignatorBefore(int posix_ts, String[] keys, String[] relations, Object[] values) {
 		Designator desig = null;
 		DBCollection coll = getDatabase().getCollection("logged_designators");
 
@@ -234,10 +250,10 @@ public class MongoDBInterface {
 			for(int i=0; i<relations.length && i<keys.length && i<values.length; ++i) {
 				String rel = relations[i];
 				String key = keys[i];
-				String val = values[i];
+				Object val = values[i];
 				
 				if("==".equals(rel) || "=".equals(rel) || "is".equals(rel))
-					query = query.and(key).is(Pattern.compile(values[i],Pattern.CASE_INSENSITIVE));
+					query = query.and(key).is(val);
 				else if("!=".equals(rel))
 					query = query.and(key).notEquals(val);
 				else if("<".equals(rel))
