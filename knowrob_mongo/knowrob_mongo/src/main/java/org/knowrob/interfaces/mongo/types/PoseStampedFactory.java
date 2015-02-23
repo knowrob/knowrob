@@ -1,7 +1,5 @@
 package org.knowrob.interfaces.mongo.types;
 
-import geometry_msgs.PoseStamped;
-
 import java.util.Date;
 
 import javax.vecmath.Matrix4d;
@@ -34,7 +32,24 @@ public class PoseStampedFactory {
 			return null;
 		
 		p.frameID = header.getString("frame_id");
-		p.timeStamp = new ISODate((Date) header.get("stamp")).toROSTime();
+		
+		Object stamp = header.get("stamp");
+		if(stamp instanceof Date) {
+			p.timeStamp = new ISODate((Date)stamp).toROSTime();
+		}
+		else if(stamp instanceof Double) {
+			Double miliSeconds = ((Double)stamp)*1000.0;
+			p.timeStamp = new ISODate(miliSeconds.longValue()).toROSTime();
+			
+		}
+		else if(stamp instanceof Long) {
+			p.timeStamp = new ISODate(((Long)stamp).longValue()).toROSTime();
+		}
+		else {
+			System.err.println("Unknown date type: " + stamp.getClass().getName());
+			p.timeStamp = new ISODate(0l).toROSTime();
+		}
+		
 
 		Vector3d v = new Vector3d();
 		v.x = ((BasicDBObject) pose.get("position")).getDouble("x");

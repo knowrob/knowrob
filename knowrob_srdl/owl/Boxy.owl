@@ -2950,6 +2950,7 @@
         <srdl2-comp:urdfName>shoulder_kinect_rgb_frame</srdl2-comp:urdfName>
         <srdl2-comp:link_name rdf:datatype="&xsd;string">shoulder_kinect_rgb_frame</srdl2-comp:link_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_shoulder_kinect_rgb_optical_joint"/>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -2959,6 +2960,7 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>shoulder_kinect_rgb_optical_frame</srdl2-comp:urdfName>
         <srdl2-comp:link_name rdf:datatype="&xsd;string">shoulder_kinect_rgb_optical_frame</srdl2-comp:link_name>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -2969,6 +2971,7 @@
         <srdl2-comp:urdfName>shoulder_kinect_depth_frame</srdl2-comp:urdfName>
         <srdl2-comp:link_name rdf:datatype="&xsd;string">shoulder_kinect_depth_frame</srdl2-comp:link_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_shoulder_kinect_depth_optical_joint"/>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -2978,6 +2981,7 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>shoulder_kinect_depth_optical_frame</srdl2-comp:urdfName>
         <srdl2-comp:link_name rdf:datatype="&xsd;string">shoulder_kinect_depth_optical_frame</srdl2-comp:link_name>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -3346,6 +3350,7 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>left_gripper_tool_frame</srdl2-comp:urdfName>
         <srdl2-comp:link_name rdf:datatype="&xsd;string">left_gripper_tool_frame</srdl2-comp:link_name>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -3769,6 +3774,7 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>right_gripper_tool_frame</srdl2-comp:urdfName>
         <srdl2-comp:link_name rdf:datatype="&xsd;string">right_gripper_tool_frame</srdl2-comp:link_name>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 

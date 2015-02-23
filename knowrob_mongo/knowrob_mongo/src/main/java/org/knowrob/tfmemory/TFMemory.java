@@ -468,7 +468,7 @@ public class TFMemory {
 	 */
 	protected boolean lookupLists(Frame targetFrame, Frame sourceFrame, long time,
 			LinkedList<TransformStorage> inverseTransforms, LinkedList<TransformStorage> forwardTransforms) {
-
+		
 		// wrap the source and target frames in search nodes
 		SearchNode<Frame> sourceNode = new SearchNode<Frame>(sourceFrame);
 		SearchNode<Frame> targetNode = new SearchNode<Frame>(targetFrame);

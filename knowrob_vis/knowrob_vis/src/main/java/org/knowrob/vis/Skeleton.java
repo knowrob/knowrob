@@ -57,6 +57,10 @@ public class Skeleton {
 		 * Path to CAD model.
 		 */
 		public String modelPath = null;
+		/**
+		 * Flag that indicates if this link should be visualized.
+		 */
+		public boolean hasVisual = true;
 
 		public Link(String sourceFrame, String[] succeeding) {
 			super();
@@ -140,6 +144,8 @@ public class Skeleton {
 			final String[] succ = querySucceedingLinks(linkName);
 			final Link link = new Link(tfFrame, succ);
 			
+			link.hasVisual = hasLinkVisual(linkName);
+			
 			final double[] scale = getLinkScale(linkName);
 			link.scale[0] = scale[0];
 			link.scale[1] = scale[1];
@@ -195,6 +201,8 @@ public class Skeleton {
 	 */
 	public Marker updateLinkMarker(ConnectedNode node, StampedLink sl)
 	{
+		if(!sl.link.hasVisual) return null;
+		
 		// Marker id is a concatenation of prefixed TF frame and
 		// identifier of visualized agent.
 		// E.g., the ID is "/human1/neck_human1" when TF prefix is "/human1",
@@ -207,11 +215,6 @@ public class Skeleton {
 		final Marker m = getMarker(node,markerId.toString());
 		// Frame not available for given timepoint
 		if(sl.pose==null) return null;
-		
-		m.getColor().setR(defaultColor[0]);
-		m.getColor().setG(defaultColor[1]);
-		m.getColor().setB(defaultColor[2]);
-		m.getColor().setA(defaultColor[3]);
 
 		m.setType(linkMarkerType);
 
@@ -228,6 +231,12 @@ public class Skeleton {
 			m.getColor().setG(sl.link.color[1]);
 			m.getColor().setB(sl.link.color[2]);
 			m.getColor().setA(sl.link.color[3]);
+		}
+		else {
+			m.getColor().setR(defaultColor[0]);
+			m.getColor().setG(defaultColor[1]);
+			m.getColor().setB(defaultColor[2]);
+			m.getColor().setA(defaultColor[3]);
 		}
 		
 		if(sl.link.modelPath != null && !sl.link.modelPath.isEmpty()) {
@@ -265,6 +274,9 @@ public class Skeleton {
 	 */
 	public Marker createCylinderMarker(ConnectedNode node, StampedLink sl0, StampedLink sl1)
 	{
+		if(!sl0.link.hasVisual) return null;
+		if(!sl1.link.hasVisual) return null;
+		
 		// Marker id is a concatenation of prefixed TF frames and
 		// identifier of visualized agent.
 		// E.g., the ID is "/human1/neck_/human1/head_human1"
@@ -279,6 +291,11 @@ public class Skeleton {
 		final Marker m = getMarker(node,markerId.toString());
 		// Frames not available for given timepoint
 		if(sl0.pose==null || sl1.pose==null) return null;
+
+		m.getColor().setR(defaultColor[0]);
+		m.getColor().setG(defaultColor[1]);
+		m.getColor().setB(defaultColor[2]);
+		m.getColor().setA(defaultColor[3]);
 		
 		m.setType(Marker.CYLINDER);
 
@@ -367,6 +384,20 @@ public class Skeleton {
 			succeeding = new String[]{};
 		}
 		return succeeding;
+	}
+	
+	private boolean hasLinkVisual(String linkName) {
+		HashMap<String, Vector<String>> res = PrologInterface.executeQuery(
+			"rdf_has("+linkName+", knowrob:'hasVisual', literal(type(_,Value)))");
+		
+		if (res!=null && res.get("Value") != null) {
+			if("false".equals(OWLThing.removeSingleQuotes(res.get("Value").get(0)))) {
+				// Object has no visual
+				return false;
+			}
+		}
+		
+		return true;
 	}
 
 	/**

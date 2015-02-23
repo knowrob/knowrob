@@ -36,7 +36,10 @@
       print_info/2,
       string_tokens/2,
       lists_equal/2,
-      time_term/2
+      time_term/2,
+      time_between/3,
+      time_later_then/2,
+      time_earlier_then/2
 ]).
 
 time_term(Timepoint, Time) :-
@@ -48,6 +51,31 @@ time_term(Timepoint, Time) :-
      ;  term_to_atom(Time, Timepoint)
      )
   ).
+
+%% time_between(+T, +T0, +T1)
+% True iff T0 <= T <= T1
+%
+time_between(T, T0, T1) :-
+  time_term(T0, T0_term),
+  time_term(T1, T1_term),
+  time_term(T , T_term),
+  T0_term =< T_term, T_term =< T1_term.
+
+%% time_later_then(+T0, +T1)
+% True iff T0 >= T1
+%
+time_later_then(T0, T1) :-
+  time_term(T0, T0_term),
+  time_term(T1, T1_term),
+  T1_term =< T0_term.
+
+%% time_earlier_then(+T0, +T1)
+% True iff T0 <= T1
+%
+time_earlier_then(T0, T1) :-
+  time_term(T0, T0_term),
+  time_term(T1, T1_term),
+  T0_term =< T1_term.
 
 %% reduce(+Predicate, +List, +StartValue, -Result).
 % The predicate is first called for the first element of the list, the start value and an intermediate result.

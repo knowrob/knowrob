@@ -793,7 +793,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 			for(Skeleton.Link sourceLink : skeleton.getLinks()) {
 				final Skeleton.StampedLink sl0 = new Skeleton.StampedLink(identifier,sourceLink,time,tfSuffix,tfPrefix);
 
-				if(!addAgentMarker(skeleton.updateLinkMarker(node,sl0))) {
+				if(sl0.link.hasVisual && !addAgentMarker(skeleton.updateLinkMarker(node,sl0))) {
 					log.warn("Unable to create marker for '" + sourceLink.sourceFrame + "'.");
 				}
 
@@ -806,7 +806,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 						}
 						final Skeleton.StampedLink sl1 = new Skeleton.StampedLink(identifier,targetLink,time,tfSuffix,tfPrefix);
 	
-						if(!addAgentMarker(skeleton.createCylinderMarker(node,sl0,sl1))) {
+						if(sl0.link.hasVisual && sl1.link.hasVisual &&
+						  !addAgentMarker(skeleton.createCylinderMarker(node,sl0,sl1))) {
 							System.err.println("Unable to create cylinder marker between '" +
 									sourceLink.sourceFrame + "' and '" + conn + "'.");
 						}
@@ -1029,6 +1030,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 	}
 
 	boolean setMarkerPose(Marker m, String identifier, String timepoint) {
+		boolean hasPose = false;
+		
 		try {
 			
 			// read object pose
@@ -1058,17 +1061,39 @@ public class MarkerVisualization extends AbstractNodeMain {
 				m.getPose().getPosition().setX(poseMat.m03);
 				m.getPose().getPosition().setY(poseMat.m13);
 				m.getPose().getPosition().setZ(poseMat.m23);
+				
+				
 
 				// debug
 //				log.info("adding " + identifier + " at pose [" + m.getPose().getPosition().getX() + ", " + m.getPose().getPosition().getY() + ", " + m.getPose().getPosition().getZ() + "]");
 				
-				return true;
+				hasPose = true;
 			}
 		}
 		catch (Exception e) {
 			log.warn("Unable to lookup pose for '" + identifier + "'.", e);
 		}
-		return false;
+		
+		if(hasPose) {
+			try {
+				HashMap<String, Vector<String>> res = PrologInterface.executeQuery(
+					"rdf_has('"+identifier+"', knowrob:'visuallyAbove', literal(type(_,Value)))");
+				
+				// HACK: Force object to be visually above given Z value
+				if (res!=null && res.get("Value") != null) {
+					double val = Double.valueOf(OWLThing.removeSingleQuotes(res.get("Value").get(0))).doubleValue();
+					if(val > m.getPose().getPosition().getZ()) {
+						m.getPose().getPosition().setZ(val);
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				log.warn("Failed to read property.", e);
+			}
+		}
+		
+		return hasPose;
 	}
 	
 	/**
@@ -1084,6 +1109,20 @@ public class MarkerVisualization extends AbstractNodeMain {
 		waitForNode();
 		
 		if(isBlackListed(identifier)) return null;
+		
+		try {
+			String query = "rdf_has('"+identifier+"', knowrob:'hasVisual', literal(type(_,Value)))";
+			HashMap<String, Vector<String>> res = PrologInterface.executeQuery(query);
+			
+			if (res!=null && res.get("Value") != null) {
+				if("false".equals(OWLThing.removeSingleQuotes(res.get("Value").get(0)))) {
+					// Object has no visual
+					return null;
+				}
+			}
+		}
+		catch (Exception e)
+		{}
 		
 		final Marker m = createMarker();
 		m.setType(Marker.CUBE);
