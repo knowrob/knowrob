@@ -1925,6 +1925,7 @@ There are various specializations of coordinateValuePredicateOfSystem currently 
 
     <owl:DatatypeProperty rdf:about="&knowrob;hasVisual">
         <rdfs:domain rdf:resource="&knowrob;SpatialThing-Localized"/>
+        <rdfs:subPropertyOf rdf:resource="&knowrob;visualHint"/>
         <rdfs:range rdf:resource="&xsd;boolean"/>
     </owl:DatatypeProperty>
     
@@ -2896,6 +2897,22 @@ sizeParameterOfObject is the common generalization of all those PhysicalAmountSl
         <rdfs:domain rdf:resource="&knowrob;Vector"/>
         <rdfs:subPropertyOf rdf:resource="&knowrob;vectorElement"/>
         <rdfs:range rdf:resource="&xsd;float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#visualHint -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;visualHint"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#visuallyAbove -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;visuallyAbove">
+        <rdfs:domain rdf:resource="&knowrob;SpatialThing-Localized"/>
+        <rdfs:subPropertyOf rdf:resource="&knowrob;visualHint"/>
+        <rdfs:range rdf:resource="&xsd;double"/>
     </owl:DatatypeProperty>
     
 

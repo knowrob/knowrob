@@ -387,12 +387,11 @@ public class Skeleton {
 	}
 	
 	private boolean hasLinkVisual(String linkName) {
-		String query = "rdf_has("+linkName+", knowrob:'hasVisual', literal(type(_,Value)))";
-		HashMap<String, Vector<String>> res = PrologInterface.executeQuery(query);
+		HashMap<String, Vector<String>> res = PrologInterface.executeQuery(
+			"rdf_has("+linkName+", knowrob:'hasVisual', literal(type(_,Value)))");
 		
 		if (res!=null && res.get("Value") != null) {
-			String val = res.get("Value").toString();
-			if("[false]".equals(val) || "false".equals(val)) {
+			if("false".equals(OWLThing.removeSingleQuotes(res.get("Value").get(0)))) {
 				// Object has no visual
 				return false;
 			}
