@@ -18,14 +18,16 @@
 :- module(knowrob_mongo,
     [
       mng_db/1,
+      
       mng_latest_designator_before_time/3,
+      mng_latest_designator/3,
       mng_designator_type/2,
       mng_designator_props/3,
       mng_desig_matches/2,
       mng_obj_pose_by_desig/2,
-      
       mng_designator/2,
       mng_designator_property/4,
+      mng_designator_distinct_values/2,
 
       mng_lookup_transform/4,
       mng_lookup_position/4,
@@ -59,9 +61,12 @@
     mng_db(+),
     mng_lookup_transform(+,+,r,-),
     mng_lookup_position(+,+,r,-),
+    
     mng_latest_designator_before_time(r,-,-),
+    mng_latest_designator(r,+,-),
     mng_designator(r,?),
     mng_designator_propery(r,+,+,?),
+    mng_designator_distinct_values(+,-),
 
     mng_robot_pose(r, r),
     mng_robot_pose(r, r,r),
@@ -136,6 +141,45 @@ mng_latest_designator_before_time(TimePoint, Type, PoseList) :-
   jpl_call(StampedPose, 'getMatrix4d', [], PoseMatrix4d),  
   knowrob_coordinates:matrix4d_to_list(PoseMatrix4d, PoseList).
 
+%% mng_latest_designator(+TimePoint, +MongoPattern, -DesigJava) is nondet.
+%
+% Read the latest designator that matches given pattern
+%
+% @param TimePoint    Instance of knowrob:TimePoint
+% @param MongoPattern Nested list of command,field,value triples.
+% @param DesigJava    The latest JAVA designator object
+%
+mng_latest_designator(TimePoint, [], DesigJava) :-
+  mongo_interface(DB),
+  time_term(TimePoint, Time),
+  jpl_call(DB, 'getLatestDesignatorBefore', [Time], DesigJava).
+
+mng_latest_designator(TimePoint, MongoPattern, DesigJava) :-
+  mongo_interface(DB),
+  time_term(TimePoint, Time),
+  
+  findall(Key, member([Key,_,_],MongoPattern), Keys),
+  findall(Rel, member([_,Rel,_],MongoPattern), Relations),
+  findall(Val, member([_,_,Val],MongoPattern), Values),
+  
+  jpl_list_to_array(Keys, KeysArray),
+  jpl_list_to_array(Relations, RelationsArray),
+  jpl_list_to_array(Values, ValuesArray),
+  
+  jpl_call(DB, 'getLatestDesignatorBefore', [Time, KeysArray, RelationsArray, ValuesArray], DesigJava),
+  not(DesigJava = @(null)).
+
+%% mng_designator_distinct_values( +Key, -Values) is nondet.
+% 
+% Determine distinct field values of designators
+%
+% @param Key    The field key
+% @param Values List of distinct values
+% 
+mng_designator_distinct_values(Key, Values) :-
+  mongo_interface(DB),
+  jpl_call(DB, 'getDistinctDesignatorValues', [Key], ValuesArr),
+  jpl_array_to_list(ValuesArr, Values).
 
 %% mng_obj_pose_by_desig(+Obj, -Pose) is nondet.
 % 

@@ -216,6 +216,72 @@ public class MongoDBInterface {
 		}
 		return desig;
 	}
+	
+	public Designator getLatestDesignatorBefore(int posix_ts) {
+		return getLatestDesignatorBefore(posix_ts, null, null, null);
+	}
+	
+	public Designator getLatestDesignatorBefore(int posix_ts, String[] keys, String[] relations, String[] values) {
+		Designator desig = null;
+		DBCollection coll = getDatabase().getCollection("logged_designators");
+
+		// read all events up to one minute before the time
+		Date t = new ISODate((long) 1000 * posix_ts ).getDate();
+
+		QueryBuilder query = QueryBuilder.start("__recorded").lessThan( t );
+		
+		if(relations!=null&&keys!=null&&values!=null) {
+			for(int i=0; i<relations.length && i<keys.length && i<values.length; ++i) {
+				String rel = relations[i];
+				String key = keys[i];
+				String val = values[i];
+				
+				if("==".equals(rel) || "=".equals(rel) || "is".equals(rel))
+					query = query.and(key).is(Pattern.compile(values[i],Pattern.CASE_INSENSITIVE));
+				else if("!=".equals(rel))
+					query = query.and(key).notEquals(val);
+				else if("<".equals(rel))
+					query = query.and(key).lessThan(val);
+				else if("<=".equals(rel))
+					query = query.and(key).lessThanEquals(val);
+				else if(">".equals(rel))
+					query = query.and(key).greaterThan(val);
+				else if(">=".equals(rel))
+					query = query.and(key).greaterThanEquals(val);
+				else {
+					System.err.println("Unknown mongo relation: " + rel);
+				}
+			}
+		}
+		
+		DBObject queryInstance = null;
+		try {
+			queryInstance = query.get();
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+		
+		DBObject cols  = new BasicDBObject();
+		cols.put("designator", 1 );
+
+		DBCursor cursor = coll.find(queryInstance, cols);
+		cursor.sort(new BasicDBObject("__recorded", -1));
+		try {
+			if(cursor.hasNext()) {
+				desig = new Designator().readFromDBObject(
+					(BasicDBObject) cursor.next().get("designator"));
+			}
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+		finally {
+			cursor.close();
+		}
+		return desig;
+	}
 
 
 	/**
@@ -253,6 +319,20 @@ public class MongoDBInterface {
 			cursor.close();
 		}
 		return times;
+	}
+	
+	public String[] getDistinctDesignatorValues(String key) {
+		DBCollection coll = getDatabase().getCollection("logged_designators");
+		
+		List<?> l = coll.distinct(key);
+		String[] out = new String[l.size()];
+		int index = 0;
+		for(Object v : l) {
+			out[index] = v.toString();
+			index += 1;
+		}
+		
+		return out;
 	}
 
 
