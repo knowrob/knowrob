@@ -260,7 +260,7 @@ public class MongoDBInterface {
 		DBCollection coll = getDatabase().getCollection("logged_designators");
 
 		// read all events up to one minute before the time
-		Date t = getDateObject(posix_ts);
+		Object t = getDateObject(posix_ts);
 
 		QueryBuilder query = QueryBuilder.start("__recorded").lessThan( t );
 		
