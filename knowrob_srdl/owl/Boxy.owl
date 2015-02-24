@@ -3193,7 +3193,7 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.333333333333</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.333333333333</srdl2-comp:inertia_izz>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_flanche.dae</knowrob:pathToCadModel>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_flanche.dae</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale>
         <srdl2-comp:material_name rdf:datatype="&xsd;string">Black</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_arm_flange_joint"/>

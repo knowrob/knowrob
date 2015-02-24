@@ -354,6 +354,48 @@ public class MarkerVisualization extends AbstractNodeMain {
 		highlight(identifier, r, g, b, 255);
 	}
 
+
+	public void highlightMesh(String identifier) {
+		float r = 1.0f;
+		float g = 0;
+		float b = 0;
+		float a = 0.5f;
+		
+		final Marker ref_marker = markersCache.get(identifier);
+		if(ref_marker==null){
+			System.out.println("Refmarker "+identifier+"does not exist");
+			return;
+		}
+		String m_id = identifier +"_highlight";
+		Marker m = markers.get(m_id);
+		
+		if(m==null) {
+			m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
+		}
+		m.getHeader().setFrameId(MarkerVisualization.getReferenceFrame());
+		m.setId(ref_marker.getId()+100000);//FIXME This should be safe as long as there are less then 100000 markers. But it should be fixed
+		m.setNs(ref_marker.getNs());
+		m.setMeshResource(ref_marker.getMeshResource());
+		m.setMeshUseEmbeddedMaterials(false);
+		m.setAction(0);//Add or change object...
+		m.getColor().setR(r);
+		m.getColor().setG(g);
+		m.getColor().setB(b);
+		m.getColor().setA(a);
+		m.setPose(ref_marker.getPose());
+		m.setScale(ref_marker.getScale());
+		m.setType(ref_marker.getType());
+		synchronized (markers) {
+				markers.put(m_id,m);
+		}
+		synchronized (markersCache) {
+			markersCache.put(m_id,m);
+		}
+		publishMarkers();
+		
+		
+	}
+	
 	/**
 	 * Highlight the object or trajectory that corresponds to
 	 * the specified identifier with given color.
@@ -390,7 +432,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	}
 
 	boolean __highlight__(String identifier, int r, int g, int b, int a) {
-		final Marker m = markersCache.get(identifier);
+		final Marker m = markersCache.get(identifier);//add special case for mesh...
 		if(m==null) return false;
 		// Remember default color
 		if(!highlighted.containsKey(identifier)) {
@@ -414,6 +456,57 @@ public class MarkerVisualization extends AbstractNodeMain {
 		return true;
 	}
 
+	
+
+	public void __highlightMesh__(Marker ref_marker,float r , float g ,float b ,float a) {
+		
+		//final Marker ref_marker = markersCache.get(identifier);
+		if(ref_marker==null){
+			System.out.println("Refmarker does not exist");
+			return;
+		}
+		String m_id = ref_marker.getId() +"_highlight";
+		Marker m = markers.get(m_id);
+		
+		if(m==null) {
+			m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
+		}
+		m.getHeader().setFrameId(MarkerVisualization.getReferenceFrame());
+		m.setId(ref_marker.getId()+100000);//FIXME This should be safe as long as there are less then 100000 markers. But it should be fixed
+		m.setNs(ref_marker.getNs());
+		m.setMeshResource(ref_marker.getMeshResource());
+		m.setMeshUseEmbeddedMaterials(false);
+		m.setAction(0);//Add or change object...
+		m.getColor().setR(r);
+		m.getColor().setG(g);
+		m.getColor().setB(b);
+		m.getColor().setA(a);
+		m.setPose(ref_marker.getPose());
+		m.setScale(ref_marker.getScale());
+		m.setType(ref_marker.getType());
+		synchronized (markers) {
+				markers.put(m_id,m);
+		}
+		synchronized (markersCache) {
+			markersCache.put(m_id,m);
+		}
+		publishMarkers();
+		
+		
+	}
+	
+	public void removeMeshHighlight(String identifier) {
+		String m_id = identifier +"_highlight";
+		Marker m = markersCache.remove(m_id);
+		if(m !=null){
+			
+			m.setAction(2);//REMOVE Marker
+			markers.put(m_id, m);
+			publishMarkers();
+		}
+		
+	}
+	
 	/**
 	 * Remove object highlight.
 	 */
