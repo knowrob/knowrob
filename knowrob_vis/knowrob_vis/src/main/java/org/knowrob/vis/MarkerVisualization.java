@@ -822,7 +822,6 @@ public class MarkerVisualization extends AbstractNodeMain {
 		
 		final List<String> traj = trajectories.get(tflink);
 		if(traj == null) {
-			log.warn("Unable to find trajectory for identifier '" + tflink + "'.");
 			return;
 		}
 
@@ -831,7 +830,6 @@ public class MarkerVisualization extends AbstractNodeMain {
 		for(final String identifier : traj) {
 			final Marker m = markersCache.get(identifier);
 			if(m==null) {
-				log.warn("Unable to find marker for identifier '" + identifier + "'.");
 				continue;
 			}
 			m.setAction(Marker.DELETE);
@@ -843,6 +841,14 @@ public class MarkerVisualization extends AbstractNodeMain {
 		}
 
 		pub.publish(arr);
+	}
+	
+	public void clearTrajectories() {
+		List<String> keys = new LinkedList<String>();
+		keys.addAll(trajectories.keySet());
+		for(String link : keys) {
+			removeTrajectory(link);
+		}
 	}
 
 	// // // // // // // // // // // // // // // // // // // // // // // // // // //

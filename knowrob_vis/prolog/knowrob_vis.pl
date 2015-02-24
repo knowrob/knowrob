@@ -25,6 +25,7 @@
       visualisation_canvas/0,
       visualisation_server/0,
       clear_canvas/0,
+      clear_trajectories/0,
       camera_pose/2,
       add_agent_visualization/1,
       add_agent_visualization/2,
@@ -493,6 +494,10 @@ trajectory_length(Link, Starttime, Endtime, Length) :-
      (TfLink = Link)),!,
      
     jpl_call(Canvas, 'getTrajectoryLength', [TfLink, Starttime, Endtime, 5.0], Length).
+
+clear_trajectories :-
+    visualisation_canvas(Canvas),
+    jpl_call(Canvas, 'clearTrajectories', [], _).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
