@@ -168,7 +168,7 @@ mng_latest_designator(Time, MongoPattern, DesigJava) :-
   findall(Rel, member([_,Rel,_],MongoPattern), Relations),
   findall(Obj, (
       member([_,_,Val], MongoPattern),
-      once(mng_value_object(DB, Val, Obj))
+      once(mng_value_object(Val, Obj))
   ), Values),
   
   jpl_list_to_array(Keys, KeysArray),
@@ -178,22 +178,22 @@ mng_latest_designator(Time, MongoPattern, DesigJava) :-
   jpl_call(DB, 'getLatestDesignatorBefore', [Time, KeysArray, RelationsArray, ValuesArray], DesigJava),
   not(DesigJava = @(null)).
 
-mng_value_object(DB, date(Val), Date) :-
+mng_value_object(date(Val), Date) :-
   Miliseconds is Val * 1000.0,
   jpl_new('java.lang.Double', [Miliseconds], MilisecondsDouble), 
   jpl_call(MilisecondsDouble, 'longValue', [], MilisecondsLong),
   jpl_new('org.knowrob.interfaces.mongo.types.ISODate', [MilisecondsLong], ISODate),
   jpl_call(ISODate, 'getDate', [], Date).
 
-mng_value_object(DB, Val, ObjJava) :-
+mng_value_object(Val, ObjJava) :-
   integer(Val),
   jpl_new('java.lang.Long', [Val], ObjJava).
 
-mng_value_object(DB, Val, ObjJava) :-
+mng_value_object(Val, ObjJava) :-
   float(Val),
   jpl_new('java.lang.Double', [Val], ObjJava).
 
-mng_value_object(DB, Val, ObjJava) :-
+mng_value_object(Val, ObjJava) :-
   atom(Val),
   jpl_new('java.lang.String', [Val], ObjJava).
 
