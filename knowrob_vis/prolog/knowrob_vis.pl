@@ -52,12 +52,14 @@
       add_text/3,
       add_text/1,
       highlight_object/1,
+      highlight_object_mesh/1,
       highlight_object/2,
       highlight_object/5,
       highlight_object_with_children/1,
       highlight_object_with_children/2,
       highlight_trajectory/4,
       remove_highlight/1,
+      remove_mesh_highlight/1,
       remove_highlight_with_children/1,
       reset_highlight/0,
       add_avg_trajectory/5,
@@ -105,12 +107,14 @@
             add_text(r,r,r),
             add_text(r),
             highlight_object(r),
+            highlight_object_mesh(r),
             highlight_object(r,?),
             highlight_object(r,?,?,?,?,?),
             highlight_object_with_children(r),
             highlight_object_with_children(r,?),
             highlight_trajectory(r,r,r,?),
             remove_highlight(r),
+            remove_mesh_highlight(r),
             remove_highlight_with_children(r),
             add_diagram(+,+,+,+,+,+,+,+,+),
             remove_diagram(+),
@@ -542,6 +546,16 @@ highlight_trajectory(Link, Starttime, Endtime, Color) :-
     
     foreach(member(Marker, Markers), highlight_object(Marker, Color)).
 
+    
+%%%%Tmporray merge into rest...
+highlight_object_mesh(Identifier) :-
+    visualisation_canvas(Canvas),
+    jpl_call(Canvas, 'highlightMesh', [Identifier], _).
+    
+remove_mesh_highlight(Identifier) :-
+    visualisation_canvas(Canvas),
+    jpl_call(Canvas, 'removeMeshHighlight', [Identifier], _).
+    
 remove_highlight(Identifier) :-
     visualisation_canvas(Canvas),
     jpl_call(Canvas, 'removeHighlight', [Identifier], _).

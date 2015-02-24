@@ -33,6 +33,19 @@
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
 
 
+  <!-- THIS SHOULD MOVE TO KONWROB SRDL_COMP -->  
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#AnimalInspiredBase">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#MobileBase"/>
+    </owl:Class>
+    
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#HumanoidBase">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#AnimalInspiredBase"/>
+    </owl:Class>
+    
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#HumanBase">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#HumanoidBase"/>
+    </owl:Class>
+  
     <!-- =========================================== -->
     <!-- |   Ontology Imports                      | -->
     <!-- =========================================== -->
@@ -47,6 +60,8 @@
     <!-- |   SRDL2 Robot Capabilities              | -->
     <!-- =========================================== -->
 
+    
+    
 
     <owl:Class rdf:about="&robot;iai_human">
         <rdfs:subClassOf rdf:resource="&knowrob;Person"/>
@@ -65,6 +80,10 @@
                         <owl:onProperty rdf:resource="&srdl2-cap;hasCapability"/>
                         <owl:someValuesFrom rdf:resource="&srdl2-cap;move_base"/>
                     </owl:Restriction>
+		    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&srdl2-cap;hasCapability"/>
+                        <owl:someValuesFrom rdf:resource="&srdl2-cap;ObjectRecognitionCapability"/>
+                    </owl:Restriction>
                 </owl:intersectionOf>
             </owl:Class>
         </rdfs:subClassOf>
@@ -79,11 +98,91 @@
     <owl:NamedIndividual rdf:about="&robot;iai_human_robot1">
         <rdf:type rdf:resource="&robot;iai_human"/>
         <srdl2-comp:succeedingLink rdf:resource="&robot;iai_human_torso"/>
-	<srdl2-comp:subComponent rdf:resource="&robot;human_body"/>
+	<srdl2-comp:subComponent rdf:resource="&robot;human_legs"/>
+	<srdl2-comp:subComponent rdf:resource="&robot;human_left_arm"/>
+	<srdl2-comp:subComponent rdf:resource="&robot;human_right_arm"/>
+	<srdl2-comp:subComponent rdf:resource="&robot;human_head"/>
+	<srdl2-comp:subComponent rdf:resource="&robot;human_torso"/>
 	<srdl2-comp:tfPrefix>human1</srdl2-comp:tfPrefix>
     </owl:NamedIndividual>
 
     
+    
+    <owl:NamedIndividual rdf:about="&robot;human_object_recognition_model">
+        <rdf:type rdf:resource="&knowrob;ObjectRecognitionModel"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="&robot;human_object_recognition_component">
+        <rdf:type rdf:resource="&srdl2-comp;ObjectRecognitionComponent"/>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="&robot;human_legs">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
+        <rdf:type rdf:resource="&srdl2-comp;MobileBase"/>
+	<srdl2-comp:subComponent rdf:resource="&robot;iai_human_right_leg"/>
+	<srdl2-comp:subComponent rdf:resource="&robot;iai_human_left_leg"/>
+
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="&robot;human_right_leg">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
+	<rdf:type rdf:resource="&knowrob;RightLeg"/>
+        <srdl2-comp:baseLinkOfComposition rdf:resource="&robot;iai_human_right_hips"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&robot;iai_human_right_foot"/>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="&robot;human_left_leg">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
+	<rdf:type rdf:resource="&knowrob;LeftLeg"/>
+        <srdl2-comp:baseLinkOfComposition rdf:resource="&robot;iai_human_left_hips"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&robot;iai_human_left_foot"/>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="&robot;human_torso">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
+	<rdf:type rdf:resource="&knowrob;Torso"/>
+        <srdl2-comp:baseLinkOfComposition rdf:resource="&robot;iai_human_torso"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&robot;iai_human_neck"/>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="&robot;human_left_arm">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
+	<rdf:type rdf:resource="&knowrob;LeftArm"/>
+	<rdf:type rdf:resource="&srdl2-comp;ArmComponent"/>
+        <srdl2-comp:baseLinkOfComposition rdf:resource="&robot;iai_human_left_shoulder"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&robot;iai_human_left_elbow"/>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="&robot;human_left_hand">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
+	<rdf:type rdf:resource="&knowrob;LeftHand"/>
+	<rdf:type rdf:resource="&srdl2-comp;HandComponent"/>
+        <srdl2-comp:baseLinkOfComposition rdf:resource="&robot;iai_human_left_hand"/>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="&robot;human_right_arm">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
+	<rdf:type rdf:resource="&knowrob;RightArm"/>
+	<rdf:type rdf:resource="&srdl2-comp;ArmComponent"/>
+        <srdl2-comp:baseLinkOfComposition rdf:resource="&robot;iai_human_right_shoulder"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&robot;iai_human_right_elbow"/>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="&robot;human_right_hand">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
+	<rdf:type rdf:resource="&knowrob;RightHand"/>
+	<rdf:type rdf:resource="&srdl2-comp;HandComponent"/>
+        <srdl2-comp:baseLinkOfComposition rdf:resource="&robot;iai_human_right_hand"/>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="&robot;human_head">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
+        <srdl2-comp:baseLinkOfComposition rdf:resource="&robot;iai_human_head"/>
+    </owl:NamedIndividual>
+    
+    <!--
+    
+    replaced by specialiced version 
     
     <owl:NamedIndividual rdf:about="&robot;human_body">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
@@ -96,7 +195,7 @@
         <srdl2-comp:endLinkOfComposition rdf:resource="&robot;iai_human_rightfoot"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&robot;iai_human_righthand"/>
     </owl:NamedIndividual>
-
+    -->
 
     <owl:NamedIndividual rdf:about="&robot;timepoint_1357020000">
         <rdf:type rdf:resource="&knowrob;TimePoint"/>
