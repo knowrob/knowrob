@@ -217,33 +217,7 @@ public class MongoDBInterface {
 		return desig;
 	}
 	
-	public Object getValueObject(int v) {
-		return new Integer(v);
-	}
-	public Object getValueObject(double v) {
-		return new Double(v);
-	}
-	public Object getValueObject(float v) {
-		return new Float(v);
-	}
-	public Object getValueObject(long v) {
-		return new Long(v);
-	}
-	public Object getValueObject(Object v) {
-		return v;
-	}
-	
-	public Object getDateObject(int posix_ts) {
-		return new ISODate((long) (1000 * posix_ts) ).getDate();
-	}
-	public Object getDateObject(double posix_ts) {
-		return new ISODate((long) (1000.0 * posix_ts) ).getDate();
-	}
-	public Object getDateObject(float posix_ts) {
-		return new ISODate((long) (1000.0f * posix_ts) ).getDate();
-	}
-	
-	public Designator getLatestDesignatorBefore(int posix_ts) {
+	public Designator getLatestDesignatorBefore(long posix_ts) {
 		return getLatestDesignatorBefore((double)posix_ts, null, null, null);
 	}
 	
@@ -251,7 +225,7 @@ public class MongoDBInterface {
 		return getLatestDesignatorBefore(posix_ts, null, null, null);
 	}
 	
-	public Designator getLatestDesignatorBefore(int posix_ts, String[] keys, String[] relations, Object[] values) {
+	public Designator getLatestDesignatorBefore(long posix_ts, String[] keys, String[] relations, Object[] values) {
 		return getLatestDesignatorBefore((double)posix_ts, keys, relations, values);
 	}
 	
@@ -260,7 +234,7 @@ public class MongoDBInterface {
 		DBCollection coll = getDatabase().getCollection("logged_designators");
 
 		// read all events up to one minute before the time
-		Object t = getDateObject(posix_ts);
+		Object t = new ISODate((long) (1000.0 * posix_ts) ).getDate();
 
 		QueryBuilder query = QueryBuilder.start("__recorded").lessThan( t );
 		
@@ -355,14 +329,14 @@ public class MongoDBInterface {
 		return times;
 	}
 	
-	public String[] getDistinctDesignatorValues(String key) {
+	public Object[] getDistinctDesignatorValues(String key) {
 		DBCollection coll = getDatabase().getCollection("logged_designators");
 		
 		List<?> l = coll.distinct(key);
-		String[] out = new String[l.size()];
+		Object[] out = new Object[l.size()];
 		int index = 0;
 		for(Object v : l) {
-			out[index] = v.toString();
+			out[index] = v;
 			index += 1;
 		}
 		

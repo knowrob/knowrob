@@ -70,7 +70,7 @@ public class JSONQuery {
       Map.Entry<String, Term> e = it.next();
 
       if (e.getValue().isFloat())
-        result.put(e.getKey(), e.getValue().floatValue());
+        result.put(e.getKey(), e.getValue().doubleValue());
       else if (e.getValue().isInteger())
         result.put(e.getKey(), e.getValue().intValue());
       else if (e.getValue().isCompound() && !e.getValue().isAtom()) {

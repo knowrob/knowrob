@@ -149,21 +149,26 @@ mng_latest_designator_before_time(TimePoint, Type, PoseList) :-
 % @param MongoPattern Nested list of command,field,value triples.
 % @param DesigJava    The latest JAVA designator object
 %
-mng_latest_designator(TimePoint, [], DesigJava) :-
+mng_latest_designator(Timepoint, X, DesigJava) :-
+  atom(Timepoint),
+  time_term(Timepoint, Time),
+  mng_latest_designator(Time, X, DesigJava).
+
+mng_latest_designator(Time, [], DesigJava) :-
+  number(Time),
   mongo_interface(DB),
-  time_term(TimePoint, Time),
   jpl_call(DB, 'getLatestDesignatorBefore', [Time], DesigJava),
   not(DesigJava = @(null)).
 
-mng_latest_designator(TimePoint, MongoPattern, DesigJava) :-
+mng_latest_designator(Time, MongoPattern, DesigJava) :-
+  number(Time),
   mongo_interface(DB),
-  time_term(TimePoint, Time),
   
   findall(Key, member([Key,_,_],MongoPattern), Keys),
   findall(Rel, member([_,Rel,_],MongoPattern), Relations),
   findall(Obj, (
       member([_,_,Val], MongoPattern),
-      once(mng_value_object(DB, Val, Obj))
+      once(mng_value_object(Val, Obj))
   ), Values),
   
   jpl_list_to_array(Keys, KeysArray),
@@ -173,15 +178,25 @@ mng_latest_designator(TimePoint, MongoPattern, DesigJava) :-
   jpl_call(DB, 'getLatestDesignatorBefore', [Time, KeysArray, RelationsArray, ValuesArray], DesigJava),
   not(DesigJava = @(null)).
 
-mng_value_object(DB, date(Val), ObjJava) :-
-  jpl_call(DB, 'getDateObject', [Val], ObjJava),
-  not(ObjJava = @(null)).
-  
-mng_value_object(DB, Val, ObjJava) :-
-  jpl_call(DB, 'getValueObject', [Val], ObjJava),
-  not(ObjJava = @(null)).
-  
-  
+mng_value_object(date(Val), Date) :-
+  Miliseconds is Val * 1000.0,
+  jpl_new('java.lang.Double', [Miliseconds], MilisecondsDouble), 
+  jpl_call(MilisecondsDouble, 'longValue', [], MilisecondsLong),
+  jpl_new('org.knowrob.interfaces.mongo.types.ISODate', [MilisecondsLong], ISODate),
+  jpl_call(ISODate, 'getDate', [], Date).
+
+mng_value_object(Val, ObjJava) :-
+  integer(Val),
+  jpl_new('java.lang.Long', [Val], ObjJava).
+
+mng_value_object(Val, ObjJava) :-
+  float(Val),
+  jpl_new('java.lang.Double', [Val], ObjJava).
+
+mng_value_object(Val, ObjJava) :-
+  atom(Val),
+  jpl_new('java.lang.String', [Val], ObjJava).
+
 %% mng_designator_distinct_values( +Key, -Values) is nondet.
 % 
 % Determine distinct field values of designators

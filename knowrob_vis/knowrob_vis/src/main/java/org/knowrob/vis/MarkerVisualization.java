@@ -1082,7 +1082,12 @@ public class MarkerVisualization extends AbstractNodeMain {
 	boolean updateMarker(String identifier, String timepoint) {
 		Marker m = markersCache.get(identifier);
 		if(m!=null) {
-			setMarkerPose(m, identifier, timepoint);
+			if(setMarkerPose(m, identifier, timepoint)) {
+				m.setAction(Marker.ADD);
+			}
+			else {
+				m.setAction(Marker.DELETE);
+			}
 			markers.put(identifier, m);
 			return true;
 		}
@@ -1228,7 +1233,9 @@ public class MarkerVisualization extends AbstractNodeMain {
 		m.getScale().setY(1.0);
 		m.getScale().setZ(1.0);
 		
-		setMarkerPose(m, identifier, timepoint);
+		if(!setMarkerPose(m, identifier, timepoint)) {
+			return null;
+		}
 
 		try {
 			// read object dimensions if available
