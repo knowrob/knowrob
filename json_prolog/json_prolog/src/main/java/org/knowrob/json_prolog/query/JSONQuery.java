@@ -205,7 +205,7 @@ public class JSONQuery {
     JSONArray result = new JSONArray();
     for (int i = 0; i < term_list.length; i++) {
       if (term_list[i].isFloat())
-        result.element(term_list[i].floatValue());
+        result.element(term_list[i].doubleValue());
       else if (term_list[i].isInteger())
         result.element(term_list[i].intValue());
       else if (term_list[i].isAtom())
