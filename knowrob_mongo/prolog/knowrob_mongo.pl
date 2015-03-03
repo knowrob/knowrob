@@ -23,10 +23,10 @@
       mng_latest_designator/3,
       mng_designator_type/2,
       mng_designator_props/3,
+      mng_designator_props/4,
       mng_desig_matches/2,
       mng_obj_pose_by_desig/2,
       mng_designator/2,
-      mng_designator_property/4,
       mng_designator_distinct_values/2,
       mng_designator_location/2,
 
@@ -66,7 +66,6 @@
     mng_latest_designator_before_time(r,-,-),
     mng_latest_designator(r,+,-),
     mng_designator(r,?),
-    mng_designator_propery(r,+,+,?),
     mng_designator_distinct_values(+,-),
     mng_designator_location(r,?),
 
@@ -82,6 +81,7 @@
     mng_desig_matches(r, +),
     mng_obj_pose_by_desig(r,r),
     mng_designator_props(r,?),
+    mng_designator_props(r,+,+,?),
     mng_designator_type(r,?),
 
     obj_blocked_by_in_camera(r, r, r, r),
@@ -251,57 +251,51 @@ mng_designator_type(Designator, Type) :-
 
   jpl_call(DesigJava, 'getType', [], Type).
 
-%% mng_designator_property(+Designator, +DesigJava, +PropertyPath, ?Value) is nondet.
+
+%% mng_designator_props(+Designator, ?PropertyPath, ?Value) is nondet.
+%
+% Read the properties of a logged designator by its ID
+%
+% @param Designator   Instance of a designator, having its ID as local part of the IRI
+% @param PropertyPath Sequence of property keys for nested designators
+% @param Value        Value slot of the designator
+% 
+mng_designator_props(Designator, Prop, Value) :-
+  rdf_split_url(_, DesigID, Designator),
+  mongo_interface(DB),
+  jpl_call(DB, 'getDesignatorByID', [DesigID], DesigJava),
+  
+  mng_designator_props(Designator, DesigJava, Prop, Value).
+
+%% mng_designator_props(+Designator, +DesigJava, +PropertyPath, ?Value) is nondet.
 % 
 % Read the properties of a logged designator.
 % 
 % @param Designator   Instance of a designator, having its ID as local part of the IRI
 % @param DesigJava    JAVA instance of the designator
 % @param PropertyPath Sequence of property keys for nested designators
-% @param Value       Value slot of the designator
+% @param Value        Value slot of the designator
 % 
 
-mng_designator_property(Designator, DesigJava, PropertyPath, Value) :-
+mng_designator_props(Designator, DesigJava, PropertyPath, Value) :-
   atom(PropertyPath),
   atomic_list_concat(PropertyPathList,'.',PropertyPath),
-  mng_designator_property(Designator, DesigJava, PropertyPathList, Value).
+  mng_designator_props(Designator, DesigJava, PropertyPathList, Value).
 
-mng_designator_property(Designator, DesigJava, [Prop|Tail], Value) :-
+mng_designator_props(Designator, DesigJava, [Prop|Tail], Value) :-
   jpl_call(DesigJava, 'keySet', [], PropsSet),
   jpl_set_element(PropsSet, Prop),
   jpl_call(DesigJava, 'get', [Prop], ChildDesigJava),
   jpl_ref_to_type(ChildDesigJava,  class([org,knowrob,interfaces,mongo,types],['Designator'])),
-  mng_designator_property(Designator, ChildDesigJava, Tail, Value).
+  mng_designator_props(Designator, ChildDesigJava, Tail, Value).
   
-mng_designator_property(Designator, DesigJava, [Prop], Value) :-
-  mng_designator_property_value(Designator, DesigJava, Prop, Value).
+mng_designator_props(Designator, DesigJava, [Prop], Value) :-
+  mng_designator_props_value(Designator, DesigJava, Prop, Value).
   
-mng_designator_property_value(Designator, DesigJava, Prop, Value) :-
+mng_designator_props_value(Designator, DesigJava, Prop, Value) :-
   jpl_call(DesigJava, 'keySet', [], PropsSet),
   jpl_set_element(PropsSet, Prop),
   jpl_call(DesigJava, 'get', [Prop], ValIn),
-  once(mng_desig_get_value(Designator, DesigJava, ValIn, Value)).
-
-
-%% mng_designator_props(+Designator, ?Prop, ?Value) is nondet.
-%
-% Read the properties of a logged designator by its ID
-%
-% @param Designator  Instance of a designator, having its ID as local part of the IRI
-% @param Prop        Property slot of the designator
-% @param Value       Value slot of the designator
-% 
-mng_designator_props(Designator, Prop, Value) :-
-
-  rdf_split_url(_, DesigID, Designator),
-
-  mongo_interface(DB),
-  jpl_call(DB, 'getDesignatorByID', [DesigID], DesigJava),
-
-  jpl_call(DesigJava, 'keySet', [], PropsSet),
-  jpl_set_element(PropsSet, Prop),
-  jpl_call(DesigJava, 'get', [Prop], ValIn),
-
   once(mng_desig_get_value(Designator, DesigJava, ValIn, Value)).
 
 %% mng_designator_location(+Designator, ?Matrix) is nondet.
