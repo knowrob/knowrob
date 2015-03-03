@@ -1242,27 +1242,6 @@ public class MarkerVisualization extends AbstractNodeMain {
 		if(!setMarkerPose(m, identifier, timepoint)) {
 			return null;
 		}
-
-		try {
-			// read object dimensions if available
-			String query = "object_dimensions('"+identifier+"', D, W, H)";
-			//log.info(query);
-			HashMap<String, Vector<String>> res = PrologInterface.executeQuery(query);
-
-			if (res!=null && res.get("D") != null && res.get("D").size() > 0 && res.get("D").get(0)!=null) {
-				m.getScale().setX(Double.valueOf(OWLThing.removeSingleQuotes(res.get("D").get(0))));
-				m.getScale().setY(Double.valueOf(OWLThing.removeSingleQuotes(res.get("W").get(0))));
-				m.getScale().setZ(Double.valueOf(OWLThing.removeSingleQuotes(res.get("H").get(0))));
-
-			} else {
-				m.getScale().setX(0.05);
-				m.getScale().setY(0.05);
-				m.getScale().setZ(0.05);
-			}
-		}
-		catch (Exception e) {
-			log.warn("Unable to lookup dimensions for '" + identifier + "'.", e);
-		}
 		
 		try {
 			// check if mesh is available for this object
@@ -1273,9 +1252,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 			if (res!=null && res.get("Path") != null && res.get("Path").size() > 0 && res.get("Path").get(0)!=null) {
 				m.setType(Marker.MESH_RESOURCE);
 				m.setMeshResource(OWLThing.removeSingleQuotes(res.get("Path").get(0)));
-				m.getScale().setX(1.0);
-				m.getScale().setY(1.0);
-				m.getScale().setZ(1.0);
+				
 				if(OWLThing.removeSingleQuotes(res.get("Path").get(0)).endsWith(".dae") ||
 				   OWLThing.removeSingleQuotes(res.get("Path").get(0)).endsWith(".DAE")){
 					m.setMeshUseEmbeddedMaterials(true);
@@ -1289,6 +1266,26 @@ public class MarkerVisualization extends AbstractNodeMain {
 		}
 		catch (Exception e) {
 			log.warn("Unable to lookup mesh for '" + identifier + "'.", e);
+		}
+
+		try {
+			// read object dimensions if available
+			String query = "object_dimensions('"+identifier+"', D, W, H)";
+			//log.info(query);
+			HashMap<String, Vector<String>> res = PrologInterface.executeQuery(query);
+
+			if (res!=null && res.get("D") != null && res.get("D").size() > 0 && res.get("D").get(0)!=null) {
+				m.getScale().setX(Double.valueOf(OWLThing.removeSingleQuotes(res.get("D").get(0))));
+				m.getScale().setY(Double.valueOf(OWLThing.removeSingleQuotes(res.get("W").get(0))));
+				m.getScale().setZ(Double.valueOf(OWLThing.removeSingleQuotes(res.get("H").get(0))));
+			} else if(m.getType() != Marker.MESH_RESOURCE) {
+				m.getScale().setX(0.05);
+				m.getScale().setY(0.05);
+				m.getScale().setZ(0.05);
+			}
+		}
+		catch (Exception e) {
+			log.warn("Unable to lookup dimensions for '" + identifier + "'.", e);
 		}
 		
 		try {
