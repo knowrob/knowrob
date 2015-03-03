@@ -27,6 +27,8 @@
       object_pose_at_time/3,
       object_color/2,
       object_dimensions/4,
+      object_assert_dimensions/4,
+      object_assert_color/2,
       rotmat_to_list/2,
       create_joint_information/9,
       update_joint_information/7,
@@ -99,6 +101,8 @@
     object_pose_at_time(r,r,?),
     object_color(r, ?),
     object_dimensions(r, ?, ?, ?),
+    object_assert_dimensions(r, +, +, +),
+    object_assert_color(r, +),
     rotmat_to_list(r,-),
     comp_orientation(r, r),
     instantiate_at_position(r,+,r),
@@ -247,6 +251,19 @@ object_dimensions(Obj, Depth, Width, Height) :-
   rdf_has(Obj, knowrob:widthOfObject,  literal(type(_, Width))),
   rdf_has(Obj, knowrob:heightOfObject, literal(type(_, Height))).
 
+%% object_assert_dimensions(+Obj, +H, +W, +D) is nondet.
+%
+% Assert object dimension properties.
+%
+% @param Obj    Instance of a subclass of EnduringThing-Localized
+% @param Depth  Depth of the bounding box (x-dimension)
+% @param Width  Width of the bounding box (y-dimension)
+% @param Height Height of the bounding box (z-dimension)
+% 
+object_assert_dimensions(Obj, H, W, D) :-
+    rdf_assert(Obj,knowrob:'depthOfObject',literal(type(xsd:float, D))),
+    rdf_assert(Obj,knowrob:'widthOfObject',literal(type(xsd:float, W))),
+    rdf_assert(Obj,knowrob:'heightOfObject',literal(type(xsd:float, H))).
 
 %% object_color(?Obj, ?Col) is nondet.
 %
@@ -257,7 +274,24 @@ object_dimensions(Obj, Depth, Width, Height) :-
 % 
 object_color(Obj, Col) :-
   rdf_has(Obj, knowrob:mainColorOfObject, literal(type(_, Col))).
-  
+
+%% object_color(?Obj, ?Col) is nondet.
+%
+% Assert object main color property.
+%
+% @param Obj  Instance of a subclass of EnduringThing-Localized
+% @param Col  Main color of the object
+% 
+object_assert_color(ObjInstance, [R,G,B]) :-
+  object_assert_color(ObjInstance, [R,G,B,1.0]).
+
+object_assert_color(ObjInstance, [R,G,B,A]) :-
+  atomic_list_concat([R,G,B,A], ' ', ColRGBA),
+  object_assert_color(ObjInstance, ColRGBA).
+    
+object_assert_color(ObjInstance, Col) :-
+   atom(Col),
+   rdf_assert(ObjInstance, knowrob:'mainColorOfObject',literal(type(xsd:string, Col))).
 
 %% instantiate_at_position(+ObjClassDef, +PoseList, -ObjInst) is det.
 %
