@@ -28,6 +28,7 @@
       mng_designator/2,
       mng_designator_property/4,
       mng_designator_distinct_values/2,
+      mng_designator_location/2,
 
       mng_lookup_transform/4,
       mng_lookup_position/4,
@@ -67,6 +68,7 @@
     mng_designator(r,?),
     mng_designator_propery(r,+,+,?),
     mng_designator_distinct_values(+,-),
+    mng_designator_location(r,?),
 
     mng_robot_pose(r, r),
     mng_robot_pose(r, r,r),
@@ -258,6 +260,12 @@ mng_designator_type(Designator, Type) :-
 % @param PropertyPath Sequence of property keys for nested designators
 % @param Value       Value slot of the designator
 % 
+
+mng_designator_property(Designator, DesigJava, PropertyPath, Value) :-
+  atom(PropertyPath),
+  atomic_list_concat(PropertyPathList,'.',PropertyPath),
+  mng_designator_property(Designator, DesigJava, PropertyPathList, Value).
+
 mng_designator_property(Designator, DesigJava, [Prop|Tail], Value) :-
   jpl_call(DesigJava, 'keySet', [], PropsSet),
   jpl_set_element(PropsSet, Prop),
@@ -296,6 +304,40 @@ mng_designator_props(Designator, Prop, Value) :-
 
   once(mng_desig_get_value(Designator, DesigJava, ValIn, Value)).
 
+%% mng_designator_location(+Designator, ?Matrix) is nondet.
+%
+% Check designator transformation matrix
+%
+% @param Designator  Instance of a designator, having its ID as local part of the IRI
+% @param Matrix      4x4 matrix that represents the designator transformation
+% 
+mng_designator_location(Designator, [X00, X01, X02, X03,
+                                     X10, X11, X12, X13,
+                                     X20, X21, X22, X23,
+                                     X30, X31, X32, X33]) :-
+
+  rdf_split_url(_, DesigID, Designator),
+  
+  mongo_interface(DB),
+  jpl_call(DB, 'getDesignatorLocation', [DesigID], Mat4d),
+  jpl_is_object(Mat4d),
+  
+  jpl_call(Mat4d, 'getElement', [0,0], X00),
+  jpl_call(Mat4d, 'getElement', [0,1], X01),
+  jpl_call(Mat4d, 'getElement', [0,2], X02),
+  jpl_call(Mat4d, 'getElement', [0,3], X03),
+  jpl_call(Mat4d, 'getElement', [1,0], X10),
+  jpl_call(Mat4d, 'getElement', [1,1], X11),
+  jpl_call(Mat4d, 'getElement', [1,2], X12),
+  jpl_call(Mat4d, 'getElement', [1,3], X13),
+  jpl_call(Mat4d, 'getElement', [2,0], X20),
+  jpl_call(Mat4d, 'getElement', [2,1], X21),
+  jpl_call(Mat4d, 'getElement', [2,2], X22),
+  jpl_call(Mat4d, 'getElement', [2,3], X23),
+  jpl_call(Mat4d, 'getElement', [3,0], X30),
+  jpl_call(Mat4d, 'getElement', [3,1], X31),
+  jpl_call(Mat4d, 'getElement', [3,2], X32),
+  jpl_call(Mat4d, 'getElement', [3,3], X33).
 
 
 %% mng_desig_get_value(?Designator, +DesigJava, +Prop, -Value).
@@ -315,40 +357,42 @@ mng_designator_props(Designator, Prop, Value) :-
 %  jpl_ref_to_type(ValIn,  class([org,knowrob,interfaces,mongo,types],['Designator'])),
 %  Value=ValIn. % TODO
 
-% TODO(daniel): Is this used somewhere? In knowrob_cram `belief_at` is used to assert pose!
-% create observation of the object to which the designator is attached
-mng_desig_get_value(Designator, DesigJava, PoseStamped, Pose) :-
-
-  jpl_ref_to_type(PoseStamped,  class([org,knowrob,interfaces,mongo,types],['PoseStamped'])),
-
-  % find out which object we are talking about
-  rdf_has(Obj, knowrob:designator, Designator),
-
-  % get pose time
-  jpl_get(PoseStamped, 'header', Header),
-  jpl_get(Header, 'stamp', Stamp),
-  jpl_get(Stamp,  'secs', TimeSecs),
-  term_to_atom(TimeSecs, TimeSecsAtom),
-  atom_concat('http://knowrob.org/kb/knowrob_mongo.owl#timepoint_', TimeSecsAtom, PoseTimePoint),
-
-  % transform into /map
-  jpl_call(PoseStamped, 'getMatrix4d', [], PoseMatrix4d),
-  jpl_get(Header, 'frame_id', SourceFrame),
-  knowrob_coordinates:matrix4d_to_list(PoseMatrix4d, PoseListIn),
-  mng_transform_pose(PoseListIn, SourceFrame, '/map', PoseTimePoint, PoseListOut),
-  create_pose(PoseListOut, Pose),
-
-  % determine detection type (e.g. perception)
-  jpl_call(DesigJava, 'getDetectionType', [], DetectionType),
-
-  % create perception instance attached to the object this designator belongs to
-  atom_concat('http://knowrob.org/kb/knowrob.owl#', DetectionType, DClass),
-  rdf_instance_from_class(DClass, Detection),
-  set_object_perception(Obj, Detection),
-  rdf_assert(Detection, knowrob:eventOccursAt, Pose),
-
-  rdf_assert(PoseTimePoint, rdf:type, 'http://knowrob.org/kb/knowrob.owl#TimePoint'),
-  rdf_assert(Detection, knowrob:startTime, PoseTimePoint).
+% NOTE(daniel): Commented because
+%    - PoseStamp is not used anymore in Designator class, so this will never be the case
+%    - A getter function should not assert anything
+% create observation of the object to which the designator is attached.
+%mng_desig_get_value(Designator, DesigJava, PoseStamped, Pose) :-
+%
+%  jpl_ref_to_type(PoseStamped,  class([org,knowrob,interfaces,mongo,types],['PoseStamped'])),
+%
+%  % find out which object we are talking about
+%  rdf_has(Obj, knowrob:designator, Designator),
+%
+%  % get pose time
+%  jpl_get(PoseStamped, 'header', Header),
+%  jpl_get(Header, 'stamp', Stamp),
+%  jpl_get(Stamp,  'secs', TimeSecs),
+%  term_to_atom(TimeSecs, TimeSecsAtom),
+%  atom_concat('http://knowrob.org/kb/knowrob_mongo.owl#timepoint_', TimeSecsAtom, PoseTimePoint),
+%
+%  % transform into /map
+%  jpl_call(PoseStamped, 'getMatrix4d', [], PoseMatrix4d),
+%  jpl_get(Header, 'frame_id', SourceFrame),
+%  knowrob_coordinates:matrix4d_to_list(PoseMatrix4d, PoseListIn),
+%  mng_transform_pose(PoseListIn, SourceFrame, '/map', PoseTimePoint, PoseListOut),
+%  create_pose(PoseListOut, Pose),
+%
+%  % determine detection type (e.g. perception)
+%  jpl_call(DesigJava, 'getDetectionType', [], DetectionType),
+%
+%  % create perception instance attached to the object this designator belongs to
+%  atom_concat('http://knowrob.org/kb/knowrob.owl#', DetectionType, DClass),
+%  rdf_instance_from_class(DClass, Detection),
+%  set_object_perception(Obj, Detection),
+%  rdf_assert(Detection, knowrob:eventOccursAt, Pose),
+%
+%  rdf_assert(PoseTimePoint, rdf:type, 'http://knowrob.org/kb/knowrob.owl#TimePoint'),
+%  rdf_assert(Detection, knowrob:startTime, PoseTimePoint).
 
 mng_desig_get_value(_Designator, _DesigJava, Vec, Vector) :-
   jpl_ref_to_type(Vec,  class([javax,vecmath],['Vector3d'])),
