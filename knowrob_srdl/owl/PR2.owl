@@ -4542,6 +4542,7 @@
         <srdl2-comp:material_name rdf:datatype="&xsd;string">White</srdl2-comp:material_name>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:box_size>
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_base_footprint_joint"/>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -4561,6 +4562,7 @@
         <srdl2-comp:material_name rdf:datatype="&xsd;string">Black</srdl2-comp:material_name>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.05 0.37 0.3</srdl2-comp:box_size>
         <srdl2-comp:material rdf:datatype="&xsd;string">PR2/Black</srdl2-comp:material>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -4592,6 +4594,7 @@
         <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">20</srdl2-comp:updateRate>
         <srdl2-comp:topicName rdf:datatype="&xsd;string">base_scan</srdl2-comp:topicName>
         <srdl2-comp:frameName rdf:datatype="&xsd;string">base_laser_link</srdl2-comp:frameName>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -4916,6 +4919,7 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:inertia_izz>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -4931,6 +4935,7 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:inertia_izz>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -4946,6 +4951,7 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:inertia_izz>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -4961,6 +4967,7 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.000001</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0001</srdl2-comp:inertia_izz>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5019,6 +5026,7 @@
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_projector_wg6802418_frame_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_head_mount_joint"/>
         <srdl2-comp:material rdf:datatype="&xsd;string">Gazebo/Grey</srdl2-comp:material>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5038,6 +5046,7 @@
         <srdl2-comp:material_name rdf:datatype="&xsd;string">Blue</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_high_def_frame_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_double_stereo_frame_joint"/>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5079,6 +5088,7 @@
         <srdl2-comp:distortionT1 rdf:datatype="&xsd;string">0.0</srdl2-comp:distortionT1>
         <srdl2-comp:distortionT2 rdf:datatype="&xsd;string">0.0</srdl2-comp:distortionT2>
         <srdl2-comp:material rdf:datatype="&xsd;string">Gazebo/Black</srdl2-comp:material>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5094,6 +5104,7 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:inertia_izz>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5113,6 +5124,7 @@
         <srdl2-comp:material_name rdf:datatype="&xsd;string">Blue</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_wide_stereo_frame_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_narrow_stereo_frame_joint"/>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5132,6 +5144,7 @@
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_wide_stereo_l_stereo_camera_frame_joint"/>
         <srdl2-comp:material rdf:datatype="&xsd;string">PR2/Blue</srdl2-comp:material>
         <srdl2-comp:turnGravityOff rdf:datatype="&xsd;boolean">true</srdl2-comp:turnGravityOff>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5144,6 +5157,7 @@
         <srdl2-comp:link_type rdf:datatype="&xsd;string">camera</srdl2-comp:link_type>
         <srdl2-comp:material rdf:datatype="&xsd;string">Gazebo/White</srdl2-comp:material>
         <srdl2-comp:turnGravityOff rdf:datatype="&xsd;boolean">true</srdl2-comp:turnGravityOff>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5188,6 +5202,7 @@
         <srdl2-comp:distortionT2 rdf:datatype="&xsd;string">0.0</srdl2-comp:distortionT2>
         <srdl2-comp:turnGravityOff rdf:datatype="&xsd;boolean">true</srdl2-comp:turnGravityOff>
         <srdl2-comp:material rdf:datatype="&xsd;string">PR2/Blue</srdl2-comp:material>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5197,6 +5212,7 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>wide_stereo_l_stereo_camera_optical_frame</srdl2-comp:urdfName>
         <srdl2-comp:link_name rdf:datatype="&xsd;string">wide_stereo_l_stereo_camera_optical_frame</srdl2-comp:link_name>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5240,6 +5256,7 @@
         <srdl2-comp:distortionT2 rdf:datatype="&xsd;string">0.0</srdl2-comp:distortionT2>
         <srdl2-comp:turnGravityOff rdf:datatype="&xsd;boolean">true</srdl2-comp:turnGravityOff>
         <srdl2-comp:material rdf:datatype="&xsd;string">PR2/Blue</srdl2-comp:material>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5249,6 +5266,7 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>wide_stereo_r_stereo_camera_optical_frame</srdl2-comp:urdfName>
         <srdl2-comp:link_name rdf:datatype="&xsd;string">wide_stereo_r_stereo_camera_optical_frame</srdl2-comp:link_name>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5268,6 +5286,7 @@
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_narrow_stereo_l_stereo_camera_frame_joint"/>
         <srdl2-comp:material rdf:datatype="&xsd;string">PR2/Blue</srdl2-comp:material>
         <srdl2-comp:turnGravityOff rdf:datatype="&xsd;boolean">true</srdl2-comp:turnGravityOff>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5280,6 +5299,7 @@
         <srdl2-comp:link_type rdf:datatype="&xsd;string">camera</srdl2-comp:link_type>
         <srdl2-comp:material rdf:datatype="&xsd;string">Gazebo/White</srdl2-comp:material>
         <srdl2-comp:turnGravityOff rdf:datatype="&xsd;boolean">true</srdl2-comp:turnGravityOff>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5324,6 +5344,7 @@
         <srdl2-comp:distortionT2 rdf:datatype="&xsd;string">0.0</srdl2-comp:distortionT2>
         <srdl2-comp:turnGravityOff rdf:datatype="&xsd;boolean">true</srdl2-comp:turnGravityOff>
         <srdl2-comp:material rdf:datatype="&xsd;string">PR2/Blue</srdl2-comp:material>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5333,6 +5354,7 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>narrow_stereo_l_stereo_camera_optical_frame</srdl2-comp:urdfName>
         <srdl2-comp:link_name rdf:datatype="&xsd;string">narrow_stereo_l_stereo_camera_optical_frame</srdl2-comp:link_name>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5376,6 +5398,7 @@
         <srdl2-comp:distortionT2 rdf:datatype="&xsd;string">0.0</srdl2-comp:distortionT2>
         <srdl2-comp:turnGravityOff rdf:datatype="&xsd;boolean">true</srdl2-comp:turnGravityOff>
         <srdl2-comp:material rdf:datatype="&xsd;string">PR2/Blue</srdl2-comp:material>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5385,6 +5408,7 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>narrow_stereo_r_stereo_camera_optical_frame</srdl2-comp:urdfName>
         <srdl2-comp:link_name rdf:datatype="&xsd;string">narrow_stereo_r_stereo_camera_optical_frame</srdl2-comp:link_name>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5401,6 +5425,7 @@
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:inertia_izz>
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_projector_wg6802418_child_frame_joint"/>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5421,6 +5446,7 @@
         <srdl2-comp:fov rdf:datatype="&xsd;string">0.959931088597</srdl2-comp:fov>
         <srdl2-comp:near_clip rdf:datatype="&xsd;string">0.1</srdl2-comp:near_clip>
         <srdl2-comp:far_clip rdf:datatype="&xsd;string">10</srdl2-comp:far_clip>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5441,6 +5467,7 @@
         <srdl2-comp:sphere_radius rdf:datatype="&xsd;string">0.0005</srdl2-comp:sphere_radius>
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_head_mount_kinect_ir_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_head_mount_prosilica_joint"/>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5486,6 +5513,7 @@
         <srdl2-comp:distortionT1 rdf:datatype="&xsd;string">0.00000001</srdl2-comp:distortionT1>
         <srdl2-comp:distortionT2 rdf:datatype="&xsd;string">0.00000001</srdl2-comp:distortionT2>
         <srdl2-comp:material rdf:datatype="&xsd;string">Gazebo/Red</srdl2-comp:material>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5495,6 +5523,7 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>head_mount_kinect_ir_optical_frame</srdl2-comp:urdfName>
         <srdl2-comp:link_name rdf:datatype="&xsd;string">head_mount_kinect_ir_optical_frame</srdl2-comp:link_name>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5536,6 +5565,7 @@
         <srdl2-comp:distortionT1 rdf:datatype="&xsd;string">0.00000001</srdl2-comp:distortionT1>
         <srdl2-comp:distortionT2 rdf:datatype="&xsd;string">0.00000001</srdl2-comp:distortionT2>
         <srdl2-comp:material rdf:datatype="&xsd;string">Gazebo/Red</srdl2-comp:material>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5545,6 +5575,10 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>head_mount_kinect_rgb_optical_frame</srdl2-comp:urdfName>
         <srdl2-comp:link_name rdf:datatype="&xsd;string">head_mount_kinect_rgb_optical_frame</srdl2-comp:link_name>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
+<!--
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kinect2_description/meshes/kinect2_origin_on_rgb_optical_frame.stl</knowrob:pathToCadModel>
+-->
     </owl:NamedIndividual>
 
 
@@ -5599,6 +5633,7 @@
         <srdl2-comp:cameraInfoTopicName rdf:datatype="&xsd;string">camera_info</srdl2-comp:cameraInfoTopicName>
         <srdl2-comp:frameName rdf:datatype="&xsd;string">head_mount_prosilica_optical_frame</srdl2-comp:frameName>
         <srdl2-comp:material rdf:datatype="&xsd;string">Gazebo/Red</srdl2-comp:material>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5608,6 +5643,7 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>head_mount_prosilica_optical_frame</srdl2-comp:urdfName>
         <srdl2-comp:link_name rdf:datatype="&xsd;string">head_mount_prosilica_optical_frame</srdl2-comp:link_name>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5659,6 +5695,7 @@
         <srdl2-comp:updateRate rdf:datatype="&qudt-unit;Hertz">40</srdl2-comp:updateRate>
         <srdl2-comp:topicName rdf:datatype="&xsd;string">tilt_scan</srdl2-comp:topicName>
         <srdl2-comp:frameName rdf:datatype="&xsd;string">laser_tilt_link</srdl2-comp:frameName>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5813,6 +5850,7 @@
         <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_r_wrist_roll_joint"/>
         <srdl2-comp:turnGravityOff rdf:datatype="&xsd;boolean">true</srdl2-comp:turnGravityOff>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5866,6 +5904,7 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>r_gripper_led_frame</srdl2-comp:urdfName>
         <srdl2-comp:link_name rdf:datatype="&xsd;string">r_gripper_led_frame</srdl2-comp:link_name>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5883,6 +5922,7 @@
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:inertia_izz>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:box_size>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:box_size>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5892,6 +5932,7 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>r_gripper_tool_frame</srdl2-comp:urdfName>
         <srdl2-comp:link_name rdf:datatype="&xsd;string">r_gripper_tool_frame</srdl2-comp:link_name>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5910,6 +5951,7 @@
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_r_gripper_motor_screw_joint"/>
         <srdl2-comp:turnGravityOff rdf:datatype="&xsd;boolean">true</srdl2-comp:turnGravityOff>
         <srdl2-comp:material rdf:datatype="&xsd;string">PR2/Red</srdl2-comp:material>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -5927,6 +5969,7 @@
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0001</srdl2-comp:inertia_izz>
         <srdl2-comp:turnGravityOff rdf:datatype="&xsd;boolean">true</srdl2-comp:turnGravityOff>
         <srdl2-comp:material rdf:datatype="&xsd;string">PR2/Red</srdl2-comp:material>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -6041,6 +6084,7 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>r_gripper_l_finger_tip_frame</srdl2-comp:urdfName>
         <srdl2-comp:link_name rdf:datatype="&xsd;string">r_gripper_l_finger_tip_frame</srdl2-comp:link_name>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -6195,6 +6239,7 @@
         <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_l_wrist_roll_joint"/>
         <srdl2-comp:turnGravityOff rdf:datatype="&xsd;boolean">true</srdl2-comp:turnGravityOff>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -6248,6 +6293,7 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>l_gripper_led_frame</srdl2-comp:urdfName>
         <srdl2-comp:link_name rdf:datatype="&xsd;string">l_gripper_led_frame</srdl2-comp:link_name>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -6265,6 +6311,7 @@
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:inertia_izz>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:box_size>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:box_size>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -6274,6 +6321,7 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>l_gripper_tool_frame</srdl2-comp:urdfName>
         <srdl2-comp:link_name rdf:datatype="&xsd;string">l_gripper_tool_frame</srdl2-comp:link_name>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -6292,6 +6340,7 @@
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_l_gripper_motor_screw_joint"/>
         <srdl2-comp:turnGravityOff rdf:datatype="&xsd;boolean">true</srdl2-comp:turnGravityOff>
         <srdl2-comp:material rdf:datatype="&xsd;string">PR2/Red</srdl2-comp:material>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -6309,6 +6358,7 @@
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0001</srdl2-comp:inertia_izz>
         <srdl2-comp:turnGravityOff rdf:datatype="&xsd;boolean">true</srdl2-comp:turnGravityOff>
         <srdl2-comp:material rdf:datatype="&xsd;string">PR2/Red</srdl2-comp:material>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -6423,6 +6473,7 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>l_gripper_l_finger_tip_frame</srdl2-comp:urdfName>
         <srdl2-comp:link_name rdf:datatype="&xsd;string">l_gripper_l_finger_tip_frame</srdl2-comp:link_name>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -6466,6 +6517,7 @@
         <srdl2-comp:distortionT2 rdf:datatype="&xsd;string">0.0</srdl2-comp:distortionT2>
         <srdl2-comp:turnGravityOff rdf:datatype="&xsd;boolean">true</srdl2-comp:turnGravityOff>
         <srdl2-comp:material rdf:datatype="&xsd;string">PR2/Blue</srdl2-comp:material>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -6475,6 +6527,7 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>l_forearm_cam_optical_frame</srdl2-comp:urdfName>
         <srdl2-comp:link_name rdf:datatype="&xsd;string">l_forearm_cam_optical_frame</srdl2-comp:link_name>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -6518,6 +6571,7 @@
         <srdl2-comp:distortionT2 rdf:datatype="&xsd;string">0.0</srdl2-comp:distortionT2>
         <srdl2-comp:turnGravityOff rdf:datatype="&xsd;boolean">true</srdl2-comp:turnGravityOff>
         <srdl2-comp:material rdf:datatype="&xsd;string">PR2/Blue</srdl2-comp:material>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
@@ -6527,6 +6581,7 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>r_forearm_cam_optical_frame</srdl2-comp:urdfName>
         <srdl2-comp:link_name rdf:datatype="&xsd;string">r_forearm_cam_optical_frame</srdl2-comp:link_name>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
 
 
