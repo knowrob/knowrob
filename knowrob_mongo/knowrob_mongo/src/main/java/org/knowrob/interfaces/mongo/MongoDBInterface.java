@@ -1,6 +1,36 @@
+/*
+ * Copyright (c) 2013 Moritz Tenorth, 2015 Daniel Beßler
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the Technische Universiteit Eindhoven nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
 package org.knowrob.interfaces.mongo;
 
-import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -8,7 +38,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
@@ -28,7 +57,6 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.MongoClient;
 import com.mongodb.QueryBuilder;
 
 
@@ -45,33 +73,25 @@ public class MongoDBInterface {
 	 *
 	 */
 	public MongoDBInterface() {
-
-		String host = "localhost";
-		int port = 27017;
-		
 		// Format of dates as saved in mongo
 		mongoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 		mongoDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-		
-		// check if MONGO_PORT_27017_TCP_ADDR and MONGO_PORT_27017_TCP_PORT 
-		// environment variables are set
-		
-        Map<String, String> env = System.getenv();
-        if(env.containsKey("MONGO_PORT_27017_TCP_ADDR")) {
-        	host = env.get("MONGO_PORT_27017_TCP_ADDR");
-        }
-        
-        if(env.containsKey("MONGO_PORT_27017_TCP_PORT")) {
-        	port = Integer.valueOf(env.get("MONGO_PORT_27017_TCP_PORT"));
-        }
         
 		mem = TFMemory.getInstance();
 	}
 	
+	/**
+	 * @return DB handle of currently active DB
+	 */
 	public DB getDatabase() {
 		return mem.getDatabase();
 	}
 	
+	/**
+	 * Set the DB name that is used for mongo queries.
+	 * @param name The DB name
+	 * @return DB handle
+	 */
 	public DB setDatabase(String name) {
 		mem.setDatabase(name);
 		return getDatabase();
@@ -245,19 +265,46 @@ public class MongoDBInterface {
 		}
 		return desig;
 	}
-	
+
+	/**
+	 * Find latest designator before given timepoint.
+	 * @param posix_ts Time stamp in POSIX format (seconds since 1.1.1970)
+	 * @return The matching designator or null
+	 */
 	public Designator getLatestDesignatorBefore(long posix_ts) {
 		return getLatestDesignatorBefore((double)posix_ts, null, null, null);
 	}
-	
+
+	/**
+	 * Find latest designator before given timepoint.
+	 * @param posix_ts Time stamp in POSIX format (seconds since 1.1.1970)
+	 * @return The matching designator or null
+	 */
 	public Designator getLatestDesignatorBefore(double posix_ts) {
 		return getLatestDesignatorBefore(posix_ts, null, null, null);
 	}
-	
+
+	/**
+	 * Find latest designator that matches given key-value pairs.
+	 * @param posix_ts Time stamp in POSIX format (seconds since 1.1.1970)
+	 * @param keys DB keys
+	 * @param relations Pointwise relations between key and value
+	 * @param values DB values
+	 * @return The matching designator or null
+	 */
 	public Designator getLatestDesignatorBefore(long posix_ts, String[] keys, String[] relations, Object[] values) {
 		return getLatestDesignatorBefore((double)posix_ts, keys, relations, values);
 	}
 	
+	/**
+	 * Find latest designator that matches given key-value pairs.
+	 * @param posix_ts Time stamp in POSIX format (seconds since 1.1.1970)
+	 * @param keys DB keys
+	 * @param relations Pointwise relations between key and value
+	 * @param values DB values
+	 * @return The matching designator or null
+	 */
+	// TODO: merge with latestUIMAPerceptionBefore & getDesignatorsByPattern
 	public Designator getLatestDesignatorBefore(double posix_ts, String[] keys, String[] relations, Object[] values) {
 		Designator desig = null;
 		DBCollection coll = getDatabase().getCollection("logged_designators");
@@ -358,6 +405,11 @@ public class MongoDBInterface {
 		return times;
 	}
 	
+	/**
+	 * Find distinct designator values for given DB key.
+	 * @param key The DB key
+	 * @return Array of different values
+	 */
 	public Object[] getDistinctDesignatorValues(String key) {
 		DBCollection coll = getDatabase().getCollection("logged_designators");
 		
@@ -371,8 +423,13 @@ public class MongoDBInterface {
 		
 		return out;
 	}
-
-
+	
+	/**
+	 * Compute world transformation matrix that represents the pose
+	 * of a designator.
+	 * @param id The designator id
+	 * @return The transformation matrix
+	 */
 	@SuppressWarnings("unchecked")
 	public Matrix4d getDesignatorLocation(String id) {
 		// FIXME: bad assumption
@@ -405,7 +462,7 @@ public class MongoDBInterface {
 					mat = d.get("POSE");
 				}
 				
-				if(mat!=null) {
+				if(mat!=null && mat instanceof Stamped<?>) {
 					poseMatrix = (Stamped<Matrix4d>)mat;
 					if(!poseMatrix.frameID.startsWith("/"))
 						poseMatrix.frameID = "/"+poseMatrix.frameID;
@@ -499,7 +556,7 @@ public class MongoDBInterface {
 		}
 		
 		Timestamp timestamp = Timestamp.valueOf("2014-08-27 13:30:35.0");
-		Time t = new Time(timestamp.getTime());  //1
+		//Time t = new Time(timestamp.getTime());  //1
 		System.out.println(timestamp.getTime());
 
 

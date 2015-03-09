@@ -133,13 +133,10 @@ public class TimeCache {
     		   (time - storage.floorEntry(time).getKey() > maxExtrapolationTime))
         		return null;
         	
-        	
             // interpolate: low = newest transform older than time,
             //              high = oldest transform newer than time
             high = (TransformStorage) storage.ceilingEntry(time).getValue();
             low = (TransformStorage) storage.floorEntry(time).getValue();
-
-
         }
 
         return TransformStorage.interpolate(low, high, time);
