@@ -87,6 +87,22 @@ public class Designator {
 		this.detectionType = type;
 	}
 
+	public Designator readFromDBList(BasicDBList l) {
+		Integer count = 0;
+		for(Object val : l) {
+			Object valAccepted = null;
+			if(val instanceof BasicDBObject) {
+				valAccepted = new Designator().readFromDBObject((BasicDBObject)val);
+			}
+			else {
+				valAccepted = val.toString();
+			}
+			if(valAccepted!=null)
+				values.put(count.toString(), valAccepted);
+			count += 1;
+		}
+		return this;
+	}
 	
 	
 	/**
@@ -169,6 +185,9 @@ public class Designator {
 				// Designator properties
 				if(val instanceof BasicDBObject) {
 					valAccepted = new Designator().readFromDBObject((BasicDBObject) val);
+				
+				} else if(val instanceof BasicDBList) {
+					valAccepted = new Designator().readFromDBList((BasicDBList) val);
 				
 				} else {
 					valAccepted = row.getString(key);

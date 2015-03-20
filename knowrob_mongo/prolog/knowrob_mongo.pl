@@ -30,6 +30,7 @@
       mng_designator/3,
       mng_designator_distinct_values/2,
       mng_designator_location/2,
+      mng_decision_tree/1,
 
       mng_lookup_transform/4,
       mng_lookup_position/4,
@@ -70,6 +71,8 @@
     mng_designator(r,+,?),
     mng_designator_distinct_values(+,-),
     mng_designator_location(r,?),
+    
+    mng_decision_tree(-),
 
     mng_robot_pose(r, r),
     mng_robot_pose(r, r,r),
@@ -241,6 +244,10 @@ mng_designator(Designator, IDKey, DesigJava) :-
   rdf_split_url(_, DesigID, Designator),
   mongo_interface(DB),
   jpl_call(DB, 'getDesignatorByID', [DesigID, IDKey], DesigJava).
+
+mng_decision_tree(DesigJava) :-
+  mongo_interface(DB),
+  jpl_call(DB, 'getDecisionTree', [], DesigJava).
 
 
 %% mng_designator_type(+Designator, ?Type) is nondet.
