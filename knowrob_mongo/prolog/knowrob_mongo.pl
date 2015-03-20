@@ -27,6 +27,7 @@
       mng_desig_matches/2,
       mng_obj_pose_by_desig/2,
       mng_designator/2,
+      mng_designator/3,
       mng_designator_distinct_values/2,
       mng_designator_location/2,
 
@@ -66,6 +67,7 @@
     mng_latest_designator_before_time(r,-,-),
     mng_latest_designator(r,+,-),
     mng_designator(r,?),
+    mng_designator(r,+,?),
     mng_designator_distinct_values(+,-),
     mng_designator_location(r,?),
 
@@ -225,6 +227,7 @@ mng_obj_pose_by_desig(Obj, Pose) :-
   mng_designator_props(Designator, 'POSE', Pose).
 
 %% mng_designator(+Designator, -DesigJava) is nondet.
+%% mng_designator(+Designator, +IDKey, -DesigJava) is nondet.
 % 
 % Read object that corresponds to Designator into
 % a JAVA object DesigJava.
@@ -233,6 +236,11 @@ mng_designator(Designator, DesigJava) :-
   rdf_split_url(_, DesigID, Designator),
   mongo_interface(DB),
   jpl_call(DB, 'getDesignatorByID', [DesigID], DesigJava).
+
+mng_designator(Designator, IDKey, DesigJava) :-
+  rdf_split_url(_, DesigID, Designator),
+  mongo_interface(DB),
+  jpl_call(DB, 'getDesignatorByID', [DesigID, IDKey], DesigJava).
 
 
 %% mng_designator_type(+Designator, ?Type) is nondet.

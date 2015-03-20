@@ -114,27 +114,40 @@ public class MongoDBInterface {
 	 */
 	public Designator getDesignatorByID(String designator) {
 	
-		DBCollection coll = getDatabase().getCollection("logged_designators");
-		DBObject query = QueryBuilder
-				.start("designator._id").is(designator).get();
-
-		DBObject cols  = new BasicDBObject();
-		cols.put("__recorded", 1 );		
-		cols.put("designator", 1 );
-
-		DBCursor cursor = coll.find(query, cols);
-
-		while(cursor.hasNext()) {
-			DBObject row = cursor.next();
-			Designator desig = new Designator().readFromDBObject((BasicDBObject) row.get("designator"));
-			if(cursor.hasNext()) cursor.close();
-			return desig;
-		}
-		
-		cursor.close();
-		
-		return null;
+		return getDesignatorByID(designator, "designator._id");
 	}
+	
+    /**
+     * Read designator value from either the uima_uima_results collection
+     * or the logged_designators collection.
+     *
+     * @param designator Designator ID to be read
+     * @param idKey The ID key in mongo DB
+     * @return Instance of a Designator
+     */
+    public Designator getDesignatorByID(String designator, String idKey) {
+    
+        DBCollection coll = getDatabase().getCollection("logged_designators");
+        DBObject query = QueryBuilder
+                .start(idKey).is(designator).get();
+
+        DBObject cols  = new BasicDBObject();
+        cols.put("__recorded", 1 );     
+        cols.put("designator", 1 );
+
+        DBCursor cursor = coll.find(query, cols);
+
+        while(cursor.hasNext()) {
+            DBObject row = cursor.next();
+            Designator desig = new Designator().readFromDBObject((BasicDBObject) row.get("designator"));
+            if(cursor.hasNext()) cursor.close();
+            return desig;
+        }
+        
+        cursor.close();
+        
+        return null;
+    }
 	
 	/**
 	 * Read designators based on the given filter pattern. The strings in the
