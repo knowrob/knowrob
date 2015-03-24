@@ -52,6 +52,10 @@
       remove_object_with_children/1,
       add_text/3,
       add_text/1,
+      add_mesh/1,
+      add_mesh/2,
+      add_mesh/3,
+      add_mesh/4,
       highlight_object/1,
       highlight_object_mesh/1,
       highlight_object/2,
@@ -107,6 +111,10 @@
             remove_object_with_children(r),
             add_text(r,r,r),
             add_text(r),
+            add_mesh(+),
+            add_mesh(+,+),
+            add_mesh(+,+,+),
+            add_mesh(+,+,+,+),
             highlight_object(r),
             highlight_object_mesh(r),
             highlight_object(r,?),
@@ -427,6 +435,52 @@ add_text(Identifier, Text, Position) :-
 add_text(Text) :-
     visualisation_canvas(Canvas),
     jpl_call(Canvas, 'addHUDText', [_Identifier, Text], _).
+
+%% add_mesh(+MeshPath) is nondet.
+%
+% Add mesh to visualization canvas
+%
+% @param MeshPath Mesh resource file
+%
+add_mesh(MeshPath) :-
+    add_mesh(MeshPath, [0.0,0.0,0.0]).
+
+%% add_mesh(+MeshPath, +Position) is nondet.
+%
+% Add mesh to visualization canvas
+%
+% @param MeshPath Mesh resource file
+% @param Position Position of mesh in scene
+%
+add_mesh(MeshPath, Position) :-
+    add_mesh(MeshPath, Position, [0.0,0.0,0.0,1.0]).
+
+%% add_mesh(+MeshPath, +Translation, +Rotation) is nondet.
+%
+% Add mesh to visualization canvas
+%
+% @param MeshPath Mesh resource file
+% @param Position Position of mesh in scene
+% @param Rotation Rotation of mesh
+%
+add_mesh(MeshPath, Position, Rotation) :-
+    add_mesh(MeshPath, Position, Rotation, [1.0,1.0,1.0]).
+
+%% add_mesh(+MeshPath, +Position, +Rotation, +Scale) is nondet.
+%
+% Add mesh to visualization canvas
+%
+% @param MeshPath Mesh resource file
+% @param Position Position of mesh in scene
+% @param Rotation Rotation of mesh
+% @param Scale Scale of mesh
+%
+add_mesh(MeshPath, Position, Rotation, Scale) :-
+    visualisation_canvas(Canvas),
+    lists_to_arrays(Position, PositionArr),
+    lists_to_arrays(Rotation, RotationArr),
+    lists_to_arrays(Scale, ScaleArr),
+    jpl_call(Canvas, 'addMeshMarker', [MeshPath, PositionArr, RotationArr, ScaleArr], _).
     
 %%
 %   Reads all trajectories described by start- and endtimes from logged tf data 

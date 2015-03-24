@@ -982,6 +982,55 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 	// // // // // // // // // // // // // // // // // // // // // // // // // // //
 	//
+	// Mesh rendering
+	//
+	
+	public void addMeshMarker(String meshPath, String position[], String rotation[], String scale[]) {
+		try {
+			Marker m = markersCache.get(meshPath);
+			if(m==null) {
+				m = createMarker();
+				m.setType(Marker.MESH_RESOURCE);
+				m.setMeshResource(OWLThing.removeSingleQuotes(meshPath));
+				m.setMeshUseEmbeddedMaterials(true);
+				// Color must be set to zero for mesh textures
+				m.getColor().setR(0.0f);
+				m.getColor().setG(0.0f);
+				m.getColor().setB(0.0f);
+				m.getColor().setA(0.0f);
+			}
+	
+			m.getPose().getPosition().setX(Float.parseFloat(position[0]));
+			m.getPose().getPosition().setY(Float.parseFloat(position[1]));
+			m.getPose().getPosition().setZ(Float.parseFloat(position[2]));
+			
+			m.getPose().getOrientation().setX(Float.parseFloat(rotation[0]));
+			m.getPose().getOrientation().setY(Float.parseFloat(rotation[1]));
+			m.getPose().getOrientation().setZ(Float.parseFloat(rotation[2]));
+			m.getPose().getOrientation().setW(Float.parseFloat(rotation[3]));
+			
+			m.getScale().setX(Float.parseFloat(scale[0]));
+			m.getScale().setY(Float.parseFloat(scale[1]));
+			m.getScale().setZ(Float.parseFloat(scale[2]));
+	
+			// add marker to map
+			synchronized (markers) {
+				markers.put(meshPath, m);
+			}
+			synchronized (markersCache) {
+				markersCache.put(meshPath, m);
+			}
+			
+			publishMarkers();
+		}
+		catch(Exception exc) {
+			log.warn("Failed to add text marker.", exc);
+			return;
+		}
+	}
+
+	// // // // // // // // // // // // // // // // // // // // // // // // // // //
+	//
 	// Text rendering
 	//
 	
