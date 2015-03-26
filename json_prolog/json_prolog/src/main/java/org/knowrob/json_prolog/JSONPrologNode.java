@@ -212,8 +212,11 @@ public class JSONPrologNode extends AbstractNodeMain {
 						response.setMessage("Already processing a query with id " + request.getId());
 					}
 					else {
+						String userQuery = request.getQuery();
+						if(userQuery.endsWith(".")) userQuery = userQuery.substring(0, userQuery.length() - 1);
+						
 						ThreadedQuery currentQuery = new ThreadedQuery(
-								"expand_goal(("+request.getQuery()+"),_Q), call(_Q)");
+								"expand_goal(("+userQuery+"),_Q), call(_Q)");
 						String currentQueryId = request.getId();
 						
 						// Add the query to the thread pool
