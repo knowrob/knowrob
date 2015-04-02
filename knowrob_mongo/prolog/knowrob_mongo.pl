@@ -298,6 +298,7 @@ mng_designator_props(Designator, DesigJava, PropertyPath, Value) :-
   mng_designator_props(Designator, DesigJava, PropertyPathList, Value).
 
 mng_designator_props(Designator, DesigJava, [Prop|Tail], Value) :-
+  not( jpl_null(DesigJava) ),
   jpl_call(DesigJava, 'keySet', [], PropsSet),
   jpl_set_element(PropsSet, Prop),
   jpl_call(DesigJava, 'get', [Prop], ChildDesigJava),
@@ -308,6 +309,7 @@ mng_designator_props(Designator, DesigJava, [Prop], Value) :-
   mng_designator_props_value(Designator, DesigJava, Prop, Value).
   
 mng_designator_props_value(Designator, DesigJava, Prop, Value) :-
+  not( jpl_null(DesigJava) ),
   jpl_call(DesigJava, 'keySet', [], PropsSet),
   jpl_set_element(PropsSet, Prop),
   jpl_call(DesigJava, 'get', [Prop], ValIn),
@@ -752,7 +754,6 @@ obj_blocked_by_in_camera(Obj, Blocker, Camera, TimePoint) :-
 % @param QueryPattern  Query pattern as nested lists
 % 
 mng_desig_matches(Designator, QueryPattern) :-
-
   % convert query pattern into list of query strings suitable for MongoDB queries
   desig_list_to_query(QueryPattern, 'designator', QueryStrings),
   pairs_keys_values(QueryStrings, QueryKeys, QueryValues),
@@ -763,11 +764,14 @@ mng_desig_matches(Designator, QueryPattern) :-
   % send MongoDB query:
   mongo_interface(DB),
   jpl_call(DB, 'getDesignatorsByPattern', [QueryKeysArr, QueryValuesArr], DesigJavaArr),
+  not(DesigJavaArr = @(null)),
 
   jpl_array_to_list(DesigJavaArr, DesigJavaList),
   
   member(DesigJava, DesigJavaList),
-  jpl_call(DesigJava, 'get', ['_id'], DesigID),
+  not(DesigJava = @(null)),
+  jpl_call(DesigJava, 'get', ['_ID'], DesigID),
+  not(DesigID = @(null)),
   rdf_split_url('http://knowrob.org/kb/cram_log.owl#', DesigID, Designator).
 
 

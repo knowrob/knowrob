@@ -690,6 +690,8 @@ diagram_canvas :-
 diagram_canvas(Canvas) :-
     d_canvas(Canvas).
 
+:- diagram_canvas.
+
 
 %% add_diagram(+Id, +Title, +Type, +Xlabel, +Ylabel, +Width, +Height, +Fontsize, +ValueList) is nondet.
 %
@@ -706,9 +708,11 @@ diagram_canvas(Canvas) :-
 % @param ValueList  List of data ranges, each of the form [[a,b],['1','2']]
 %
 add_diagram(Id, Title, Type, Xlabel, Ylabel, Width, Height, Fontsize, ValueList) :-
+  once((
     d_canvas(Canvas),
     lists_to_arrays(ValueList, ValueArr),
-    jpl_call(Canvas, 'addDiagram', [Id, Title, Type, Xlabel, Ylabel, Width, Height, Fontsize, ValueArr], _),!.
+    jpl_call(Canvas, 'addDiagram', [Id, Title, Type, Xlabel, Ylabel, Width, Height, Fontsize, ValueArr], _)
+  )).
 
 %% add_piechart(+Id, +Title, +ValueList) is nondet.
 %
