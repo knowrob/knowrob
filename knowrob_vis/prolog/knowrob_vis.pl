@@ -52,6 +52,12 @@
       remove_object_with_children/1,
       add_text/3,
       add_text/1,
+      add_speech_bubble/2,
+      add_speech_bubble/3,
+      add_speech_bubble/4,
+      add_agent_speech_bubble/3,
+      add_agent_speech_bubble/4,
+      add_agent_speech_bubble/5,
       add_mesh/1,
       add_mesh/2,
       add_mesh/3,
@@ -111,6 +117,12 @@
             remove_object_with_children(r),
             add_text(r,r,r),
             add_text(r),
+            add_speech_bubble(+,+),
+            add_speech_bubble(+,+,+),
+            add_speech_bubble(+,+,+,+),
+            add_agent_speech_bubble(+,+,+),
+            add_agent_speech_bubble(+,+,+,+),
+            add_agent_speech_bubble(+,+,+,+,+),
             add_mesh(+),
             add_mesh(+,+),
             add_mesh(+,+,+),
@@ -435,6 +447,84 @@ add_text(Identifier, Text, Position) :-
 add_text(Text) :-
     visualisation_canvas(Canvas),
     jpl_call(Canvas, 'addHUDText', [_Identifier, Text], _).
+ 
+%% add_agent_speech_bubble(+Link, +Text, +TimePoint) is nondet.
+%
+% Add speech bubble sprite to the scene using the link as identifier
+%
+% @param Link A TF link that corresponds to the speech
+% @param Text The text that should be displayed
+% @param TimePoint The timepoint of the speech.
+%
+add_agent_speech_bubble(Link, Text, TimePoint) :-
+    add_agent_speech_bubble(Link, Link, Text, TimePoint).
+
+%% add_agent_speech_bubble(+Identifier, +Link, +Text, +TimePoint) is nondet.
+%
+% Add speech bubble sprite to the scene
+%
+% @param Identifier Object identifier, eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
+% @param Link A TF link that corresponds to the speech
+% @param Text The text that should be displayed
+% @param TimePoint The timepoint of the speech.
+%
+add_agent_speech_bubble(Identifier, Link, Text, TimePoint) :-
+    add_agent_speech_bubble(Identifier, Link, Text, TimePoint, -1).
+
+%% add_agent_speech_bubble(+Identifier, +Link, +Text, +TimePoint, +Duration) is nondet.
+%
+% Add speech bubble sprite to the scene
+%
+% @param Identifier Object identifier, eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
+% @param Link A TF link that corresponds to the speech
+% @param Text The text that should be displayed
+% @param TimePoint The timepoint of the speech.
+% @param Duration The duration that defines how long the bubble should be displayed.
+%
+add_agent_speech_bubble(Identifier, Link, Text, TimePoint, Duration) :-
+    ((rdf_has(Link, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(Tf)),
+      atomic_list_concat(['/', Tf], TfLink)) ;
+     (TfLink = Link)),!,
+    % FIXME: don't assume /map as source frame
+    mng_lookup_position(TfLink, '/map', TimePoint, Position),
+    % TODO: probably need an offset here so that the bubble does not intersect with robot,
+    % or disable depth test and render bubble after agent
+    add_speech_bubble(Identifier, Text, Position, Duration).
+
+%% add_speech_bubble(+Text, +Position) is nondet.
+%
+% Add speech bubble sprite to the scene using a default identifier
+%
+% @param Text The text that should be displayed
+% @param Position The position of the text object.
+%
+add_speech_bubble(Text, Position) :-
+    add_speech_bubble('SPEECH', Text, Position).
+
+%% add_speech_bubble(+Identifier, +Text, +Position) is nondet.
+%
+% Add speech bubble sprite to the scene
+%
+% @param Identifier Object identifier, eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
+% @param Text The text that should be displayed
+% @param Position The position of the text object.
+%
+add_speech_bubble(Identifier, Text, Position) :-
+    add_speech_bubble(Identifier, Text, Position, -1).
+
+%% add_speech_bubble(+Identifier, +Text, +Position, +Duration) is nondet.
+%
+% Add speech bubble sprite to the scene
+%
+% @param Identifier Object identifier, eg. "http://knowrob.org/kb/ias_semantic_map.owl#F360-Containers-revised-walls"
+% @param Text The text that should be displayed
+% @param Position The position of the text object.
+% @param Duration The duration that defines how long the bubble should be displayed.
+%
+add_speech_bubble(Identifier, Text, Position, Duration) :-
+    visualisation_canvas(Canvas),
+    lists_to_arrays(Position, PositionArr),
+    jpl_call(Canvas, 'addSpeechBubble', [Identifier, Text, PositionArr, Duration], _).
 
 %% add_mesh(+MeshPath) is nondet.
 %

@@ -27,6 +27,7 @@ import tfjava.StampedTransform;
 import visualization_msgs.Marker;
 import visualization_msgs.MarkerArray;
 import geometry_msgs.Pose;
+
 /**
  * Visualization module for the KnowRob knowledge base
  *
@@ -50,6 +51,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 	Publisher<Pose> cam_pub;
 	
 	Publisher<std_msgs.String> text_pub;
+	
+	Publisher<data_vis_msgs.Speech> speech_pub;
 
 	ConnectedNode node;
 
@@ -109,6 +112,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 		pub = connectedNode.newPublisher("/visualization_marker_array", visualization_msgs.MarkerArray._TYPE);
 		cam_pub = connectedNode.newPublisher("/camera/pose", geometry_msgs.Pose._TYPE);
 		text_pub = connectedNode.newPublisher("/canvas/text", std_msgs.String._TYPE);
+		speech_pub = connectedNode.newPublisher("/canvas/speech", data_vis_msgs.Speech._TYPE);
 		log = connectedNode.getLog();
 		reference_frame = node.getParameterTree().getString("knowrob_reference_frame","/map");
 	}
@@ -1067,6 +1071,26 @@ public class MarkerVisualization extends AbstractNodeMain {
 		}
 		catch(Exception exc) {
 			log.warn("Failed to add text marker.", exc);
+			return;
+		}
+	}
+	
+	public void addSpeechBubble(String identifier, String text, String position[], int duration) {
+		try {
+			final data_vis_msgs.Speech msg = speech_pub.newMessage();
+			
+			msg.setId(identifier);
+			msg.setDuration(duration);
+			msg.setText(text);
+			
+			msg.getPosition().setX(Float.parseFloat(position[0]));
+			msg.getPosition().setY(Float.parseFloat(position[1]));
+			msg.getPosition().setZ(Float.parseFloat(position[2]));
+			
+			speech_pub.publish(msg);
+		}
+		catch(Exception exc) {
+			log.warn("Failed to add speech bubble.", exc);
 			return;
 		}
 	}
