@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.knowrob.owl.OWLThing;
 import org.knowrob.prolog.PrologInterface;
 import org.knowrob.tfmemory.TFMemory;
+
 import tfjava.StampedTransform;
 import visualization_msgs.Marker;
 import visualization_msgs.MarkerArray;
@@ -1208,42 +1209,21 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 	boolean setMarkerPose(Marker m, String identifier, String timepoint) {
 		boolean hasPose = false;
-		
+
 		try {
-			
 			// read object pose
-			String query = "object_pose_at_time('"+ identifier + "', '"+ timepoint +
-					"', [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33])";
+			String query = "object_pose_at_time('"+ identifier + "', '"+ timepoint + "', [X,Y,Z], [QW,QX,QY,QZ])";
 			//log.info(query);
 			HashMap<String, Vector<String>> res = PrologInterface.executeQuery(query);
 
-			if (res!=null && res.get("M00") != null && res.get("M00").size() > 0 && res.get("M00").get(0)!=null) {
-				double[] p = new double[16];
-				Matrix4d poseMat = new Matrix4d(p);
-
-				for(int i=0;i<4;i++) {
-					for(int j=0;j<4;j++) {
-						poseMat.setElement(i, j, Double.valueOf(res.get("M"+i+j).get(0)));
-					}
-				}
-
-				Quat4d quat = new Quat4d();
-				quat.set(poseMat);
-
-				m.getPose().getOrientation().setW(quat.w);
-				m.getPose().getOrientation().setX(quat.x);
-				m.getPose().getOrientation().setY(quat.y);
-				m.getPose().getOrientation().setZ(quat.z);
-
-				m.getPose().getPosition().setX(poseMat.m03);
-				m.getPose().getPosition().setY(poseMat.m13);
-				m.getPose().getPosition().setZ(poseMat.m23);
-				
-				
-
-				// debug
-//				log.info("adding " + identifier + " at pose [" + m.getPose().getPosition().getX() + ", " + m.getPose().getPosition().getY() + ", " + m.getPose().getPosition().getZ() + "]");
-				
+			if (res!=null && res.get("X") != null && res.get("X").size() > 0 && res.get("X").get(0)!=null) {
+				m.getPose().getOrientation().setW(Double.valueOf(res.get("QW").get(0)));
+				m.getPose().getOrientation().setX(Double.valueOf(res.get("QX").get(0)));
+				m.getPose().getOrientation().setY(Double.valueOf(res.get("QY").get(0)));
+				m.getPose().getOrientation().setZ(Double.valueOf(res.get("QZ").get(0)));
+				m.getPose().getPosition().setX(Double.valueOf(res.get("X").get(0)));
+				m.getPose().getPosition().setY(Double.valueOf(res.get("Y").get(0)));
+				m.getPose().getPosition().setZ(Double.valueOf(res.get("Z").get(0)));
 				hasPose = true;
 			}
 		}

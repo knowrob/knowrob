@@ -25,11 +25,14 @@
       storagePlaceForBecause/3,
       current_object_pose/2,
       object_pose_at_time/3,
+      object_pose_at_time/4,
       object_color/2,
       object_dimensions/4,
       object_assert_dimensions/4,
       object_assert_color/2,
       rotmat_to_list/2,
+      position_to_list/2,
+      quaternion_to_list/2,
       create_joint_information/9,
       update_joint_information/7,
       read_joint_information/9,
@@ -173,8 +176,6 @@ storagePlaceForBecause(St, ObjType, ObjT) :-
   owl_individual_of(St, StT),
   owl_subclass_of(ObjType, ObjT).
 
-
-
 %% current_object_pose(+ObjInstance, -PoseList) is nondet.
 %
 % Get the pose of an object based on the latest perception
@@ -187,6 +188,30 @@ current_object_pose(Obj, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22,
   rdf_triple('http://knowrob.org/kb/knowrob.owl#orientation',Obj,Pose),!,
   rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]).
 
+% Quaternion and position
+object_pose(Pose, [X,Y,Z], [QW,QX,QY,QZ]) :-
+  position_to_list(Pose, [X,Y,Z]),
+  quaternion_to_list(Pose, [QW,QX,QY,QZ]).
+
+% TransformationMatrix
+object_pose(Pose, [X,Y,Z], [QW,QX,QY,QZ]) :-
+  rotmat_to_list(Pose, Matrix),
+  matrix_rotation(Matrix, [QW,QX,QY,QZ]),
+  matrix_translation(Matrix, [X,Y,Z]).
+
+%% object_pose_at_time(+ObjInstance, +Time, -Position, -Quaternion) is nondet.
+%
+% Get the pose of an object based on the latest perception before Time
+%
+% @param Obj         Instance of a subclass of SpatialThing-Localized
+% @param Time        Instance of a TimePoint
+% @param Position    list[3] that represents the position of the object
+% @param Quaternion  list[4] that represents the rotation of the object
+% 
+object_pose_at_time(Obj, Time, [X,Y,Z], [QW,QX,QY,QZ]) :-
+  object_detection(Obj, Time, Detection),
+  rdf_triple(knowrob:eventOccursAt, Detection, Pose),!,
+  object_pose(Pose, [X,Y,Z], [QW,QX,QY,QZ]).
 
 %% object_pose_at_time(+ObjInstance, +Time, -PoseList) is nondet.
 %
@@ -203,6 +228,42 @@ object_pose_at_time(Obj, Time, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21
   
   rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]).
 
+parse_vector(In, Out) :-
+  jpl_call('org.knowrob.utils.MathUtil', 'parseVector', [In, ' '], OutArr),
+  not(OutArr = @(null)),
+  jpl_array_to_list(OutArr, Out).
+
+%% position_to_list(+Pose, -PositionList) is nondet.
+%
+% Read the translation values for an instance of a transformation
+%
+% @param Pose          Instance of a subclass of Transformation
+% @param PositionList  list[3] that represents translation of an object
+% 
+position_to_list(Pose, [X,Y,Z]) :-
+  rdf_triple('http://knowrob.org/kb/knowrob.owl#translation', Pose, literal(type(_,Translation))),
+  parse_vector(Translation, [X,Y,Z]).
+
+%% quaternion_to_list(+Pose, -QuaternionList) is nondet.
+%
+% Read the rotation values for an instance of a transformation
+%
+% @param Pose          Instance of a subclass of Transformation
+% @param PositionList  list[4] that represents rotation of an object. First list element is the w component of the quaternion.
+% 
+quaternion_to_list(Pose, [QW,QX,QY,QZ]) :-
+  rdf_triple('http://knowrob.org/kb/knowrob.owl#quaternion', Pose, literal(type(_,Quaternion))),
+  parse_vector(Quaternion, [QW,QX,QY,QZ]).
+
+matrix_rotation(Matrix, [QW,QX,QY,QZ]) :-
+  jpl_list_to_array(Matrix, MatrixArr),
+  jpl_call('org.knowrob.utils.MathUtil', 'matrixToQuaternion', [MatrixArr], QuaternionArr),
+  jpl_array_to_list(QuaternionArr, [QW,QX,QY,QZ]).
+
+matrix_translation(Matrix, [X,Y,Z]) :-
+  nth0( 3, Matrix, X),
+  nth0( 7, Matrix, Y),
+  nth0(11, Matrix, Z).
 
 %% rotmat_to_list(+RotMatInstance, -PoseList) is nondet.
 %
@@ -232,9 +293,6 @@ rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23
     rdf_triple('http://knowrob.org/kb/knowrob.owl#m31',Pose,M31literal), strip_literal_type(M31literal, M31a), term_to_atom(M31, M31a),
     rdf_triple('http://knowrob.org/kb/knowrob.owl#m32',Pose,M32literal), strip_literal_type(M32literal, M32a), term_to_atom(M32, M32a),
     rdf_triple('http://knowrob.org/kb/knowrob.owl#m33',Pose,M33literal), strip_literal_type(M33literal, M33a), term_to_atom(M33, M33a),!.
-
-
-
 
 %% object_dimensions(?Obj, ?Depth, ?Width, ?Height) is nondet.
 %
