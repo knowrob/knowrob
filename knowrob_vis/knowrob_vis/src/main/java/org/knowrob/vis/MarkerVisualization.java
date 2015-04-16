@@ -10,9 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 import java.text.DecimalFormat;
 
-import javax.vecmath.Matrix4d;
-import javax.vecmath.Quat4d;
-
 import org.ros.message.Duration;
 import org.ros.message.Time;
 import org.ros.namespace.GraphName;
