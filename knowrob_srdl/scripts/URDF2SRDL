@@ -5,4 +5,4 @@ export LD_PRELOAD=libswipl.so
 
 echo "`rospack find knowrob_srdl`/knowrob_srdl/build/install/knowrob_srdl/bin/knowrob_srdl org.knowrob.knowrob_srdl.URDF2SRDL"
 
-`rospack find knowrob_srdl`/knowrob_srdl/build/install/knowrob_srdl/bin/knowrob_srdl $@ 2>&1
+`rospack find knowrob_srdl`/knowrob_srdl/build/install/knowrob_srdl/bin/knowrob_srdl $@
