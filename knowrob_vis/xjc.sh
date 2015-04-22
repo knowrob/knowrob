@@ -3,7 +3,7 @@
 
 SCRIPT=`readlink -f "$0"`
 DIR=`dirname $SCRIPT`
-DST=$BASEDIR/knowrob_vis/src/main/java/org/knowrob/vis/collada
+DST=$DIR/knowrob_vis/src/main/java/org/knowrob/vis/collada
 
 if [ ! -d "$DST" ]; then
   echo "Generating COLLADA JAVA classes (please ignore GConf errors)...."
