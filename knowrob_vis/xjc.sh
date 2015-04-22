@@ -5,8 +5,6 @@ SCRIPT=`readlink -f "$0"`
 DIR=`dirname $SCRIPT`
 DST=$BASEDIR/knowrob_vis/src/main/java/org/knowrob/vis/collada
 
-echo "$DST"
-
 if [ ! -d "$DST" ]; then
   echo "Generating COLLADA JAVA classes (please ignore GConf errors)...."
   xjc $DIR/schema/collada/collada-schema-1.5.xsd \
