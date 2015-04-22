@@ -8,7 +8,10 @@ import java.util.Map.Entry;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
+import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
+
+import javax.xml.bind.JAXBException;
 
 import org.ros.message.Duration;
 import org.ros.message.Time;
@@ -987,12 +990,30 @@ public class MarkerVisualization extends AbstractNodeMain {
 	// Mesh rendering
 	//
 	
+	// TODO: remove this
+	public void addBlueBoxMarker(String position[], String rotation[], String scale[]) {
+		try {
+			ColladaMesh m = ColladaMesh.createCube();
+			m.setPhongMaterial(
+					new double[] {0.0, 0.0, 0.0, 1.0},
+					new double[] {0.137255, 0.403922, 0.870588, 1},
+					new double[] {0.5, 0.5, 0.5, 1});
+			String meshPath = m.marshal("blue-cube-" + new Long(System.currentTimeMillis()).toString());
+			
+			addMeshMarker("'"+meshPath+"'", position, rotation, scale);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void addMeshMarker(String meshPath, String position[], String rotation[], String scale[]) {
 		try {
 			Marker m = markersCache.get(meshPath);
 			if(m==null) {
 				m = createMarker();
 				m.setType(Marker.MESH_RESOURCE);
+				System.err.println(OWLThing.removeSingleQuotes(meshPath));
 				m.setMeshResource(OWLThing.removeSingleQuotes(meshPath));
 				m.setMeshUseEmbeddedMaterials(true);
 				// Color must be set to zero for mesh textures

@@ -62,6 +62,10 @@
       add_mesh/2,
       add_mesh/3,
       add_mesh/4,
+      add_blue_box_mesh/0,
+      add_blue_box_mesh/1,
+      add_blue_box_mesh/2,
+      add_blue_box_mesh/3,
       highlight_object/1,
       highlight_object_mesh/1,
       highlight_object/2,
@@ -571,6 +575,20 @@ add_mesh(MeshPath, Position, Rotation, Scale) :-
     lists_to_arrays(Rotation, RotationArr),
     lists_to_arrays(Scale, ScaleArr),
     jpl_call(Canvas, 'addMeshMarker', [MeshPath, PositionArr, RotationArr, ScaleArr], _).
+
+% TODO: remove
+add_blue_box_mesh :-
+    add_blue_box_mesh([0.0,0.0,0.0]).
+add_blue_box_mesh(Position) :-
+    add_blue_box_mesh(Position, [0.0,0.0,0.0,1.0]).
+add_blue_box_mesh(Position, Rotation) :-
+    add_blue_box_mesh(Position, Rotation, [1.0,1.0,1.0]).
+add_blue_box_mesh(Position, Rotation, Scale) :-
+    visualisation_canvas(Canvas),
+    lists_to_arrays(Position, PositionArr),
+    lists_to_arrays(Rotation, RotationArr),
+    lists_to_arrays(Scale, ScaleArr),
+    jpl_call(Canvas, 'addBlueBoxMarker', [PositionArr, RotationArr, ScaleArr], _).
     
 %%
 %   Reads all trajectories described by start- and endtimes from logged tf data 

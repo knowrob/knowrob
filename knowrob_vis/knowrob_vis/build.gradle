@@ -40,6 +40,14 @@ dependencies {
   compile 'jpl:jpl:3.1.4-alpha'
 }
 
+// TODO: use gradle plugin instead!
+//      - Seems there is a bug with remote schemata using the plugin :/
+task xjc(type:Exec) {
+  workingDir '../'
+  commandLine './xjc.sh'
+}
+compileJava.dependsOn(xjc)
+
 task writeClasspath << {
     buildDir.mkdirs()
     new File(buildDir, "classpath.txt").text = configurations.runtime.asPath +
