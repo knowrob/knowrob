@@ -1,8 +1,9 @@
 package org.knowrob.vis;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
 
@@ -140,17 +141,24 @@ public class ColladaMesh {
 	///////////// Marshaling
 	//////////////////////////////
 
-	public void marshal(OutputStream out, boolean pretty) throws JAXBException {
+	public void marshal(OutputStream out, boolean pretty) throws JAXBException, IOException {
 		JAXBContext jc = JAXBContext.newInstance( "org.knowrob.vis.collada" );
 		Marshaller m = jc.createMarshaller();
 		if(pretty) {
 			m.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 		}
-		m.marshal(rootElement, out);
+		
+		// HACK: OpenJDK inserts strange namespace and JS COLLADA parser does not like
+		// it (with SUN JDK this does not happen). The hack is not nice but it works for now...
+		ByteArrayOutputStream proxyStream = new ByteArrayOutputStream();
+		m.marshal(rootElement, proxyStream);
+		String colladaString = proxyStream.toString();
+		String fixedCollada = colladaString.replaceAll("ns3:", "");
+		out.write(fixedCollada.getBytes());
 	}
 	
-	public String marshal(String meshName) throws JAXBException, FileNotFoundException {
+	public String marshal(String meshName) throws JAXBException, IOException {
 		// The user name of the docker user
 		String userName = System.getenv("VIRTUAL_HOST");
 		if(userName==null) {
@@ -437,7 +445,7 @@ public class ColladaMesh {
 					new double[] {0.5, 0.5, 0.5, 1});
 			m.marshal(System.out, true);
 		}
-		catch (JAXBException e) {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
