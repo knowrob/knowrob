@@ -852,6 +852,68 @@ public class MarkerVisualization extends AbstractNodeMain {
 			removeTrajectory(link);
 		}
 	}
+         /**
+	 * Show pointer in visualization canvas.
+	 *
+	 * @param tfSlink TF identifier, source link
+	 * @param tfElink TF identifier, target link
+	 * @param starttime OWL identifier of a timepoint instance
+	 * @param markertype marker type id (see ROS Marker message)
+	 */
+         public void addPointer(String tfSlink, String tfElink, String timepoint) {
+	     try {
+		 StampedTransform tr = TFMemory.getInstance().lookupTransform(tfSlink, tfElink, parseTime(timepoint));
+		 Marker m = null;
+		 if(m == null) {
+		     m = createMarker();
+		     m.setType(Marker.ARROW);
+		     m.setMeshUseEmbeddedMaterials(true);
+		 }
+
+		 if(tr==null) {
+		     log.warn("TF data missing for '" + tfSlink + "' "+ " and '" + tfElink + "' " + timepoint + " missing in mongo.");
+		     return;
+		 }
+		 else {
+		     m.getPose().getPosition().setX(tr.getTranslation().x);
+		     m.getPose().getPosition().setY(tr.getTranslation().y);
+		     m.getPose().getPosition().setZ(tr.getTranslation().z);
+		     m.getPose().getOrientation().setW(tr.getRotation().w);
+		     m.getPose().getOrientation().setX(tr.getRotation().x);
+		     m.getPose().getOrientation().setY(tr.getRotation().y);
+		     m.getPose().getOrientation().setZ(tr.getRotation().z);
+		     
+		     m.getScale().setX(0);
+		     m.getScale().setY(0);
+		     m.getScale().setZ(1.0);
+		     
+		     m.getColor().setR(0.5f);
+		     m.getColor().setG(0.5f);
+		     m.getColor().setB(1.0f);
+		     m.getColor().setA(1.0f);
+		 }
+		 //add marker to map
+		 final StringBuilder identifier = new StringBuilder();
+		 identifier.append(m.getNs()).append('_').append(m.getId());
+		 
+		 synchronized(markers) {
+		     markers.put(identifier.toString(),m);
+		 }
+		 
+		 synchronized(markersCache) {
+		     markersCache.put(identifier.toString(),m);
+		 }
+		 
+		 publishMarkers();
+	     }
+	     catch(Exception e){
+		 e.printStackTrace();
+		 return;
+	     }
+	 }
+
+    
+
 
 	// // // // // // // // // // // // // // // // // // // // // // // // // // //
 	//

@@ -83,6 +83,7 @@
       add_trajectory/4,
       add_trajectory/5,
       remove_trajectory/1,
+      add_pointer/3,
       diagram_canvas/0,
       clear_diagram_canvas/0,
       add_diagram/9,
@@ -151,6 +152,7 @@
             add_trajectory(r,r,r),
             add_trajectory(r,r,r,+),
             add_trajectory(r,r,r,+,+),
+            add_pointer(r,r,r),
             remove_trajectory(r),
             trajectory_length(r,r,r,+).
 
@@ -660,6 +662,25 @@ trajectory_length(Link, Starttime, Endtime, Length) :-
      (TfLink = Link)),!,
      
     jpl_call(Canvas, 'getTrajectoryLength', [TfLink, Starttime, Endtime, 5.0], Length).
+
+%% add_pointer(+SLink, +ELink, +Timepoint) is det
+%
+% Read a pointer from logged tf data and visualizes it in the
+% Web-based canvas
+%
+% @param SLink OWL individual or tf identifier of the link for which the start of pointer is to be shown
+% @param ELink OWL individual or tf identifier of the link for which the end of pointer is to be shown
+% @param Timepoint Timepoint identifier for the beginning of the pointer
+%
+add_pointer(SLink, ELink, Timepoint) :-
+   visualisation_canvas(Canvas),  
+  ((rdf_has(SLink, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(Tf)),
+    atomic_list_concat(['/', Tf], TfSLink));
+(TfSLink = SLink)),
+    ((rdf_has(ELink, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(Tf)),
+      atomic_list_concat(['/', Tf], TfELink)) ;
+     (TfELink = ELink)),!,
+    jpl_call(Canvas, 'addPointer', [TfSLink, TfELink, Timepoint], _).
 
 clear_trajectories :-
     visualisation_canvas(Canvas),
