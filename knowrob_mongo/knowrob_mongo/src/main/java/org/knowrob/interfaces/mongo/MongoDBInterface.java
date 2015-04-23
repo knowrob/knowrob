@@ -151,7 +151,7 @@ public class MongoDBInterface {
 	 * @param designator Designator ID to be read
 	 * @return Instance of a Designator
 	 */
-	public Designator getDesignatorByID(String designator) {
+	public Designator getDesignatorByID(Object designator) {
 	
 		return getDesignatorByID(designator, "designator._id");
 	}
@@ -164,7 +164,7 @@ public class MongoDBInterface {
 	 * @param idKey The ID key in mongo DB
 	 * @return Instance of a Designator
 	 */
-	 public Designator getDesignatorByID(String designator, String idKey) {
+	 public Designator getDesignatorByID(Object designator, String idKey) {
 		DBCollection coll = getDatabase().getCollection("logged_designators");
 		DBObject query = QueryBuilder.start(idKey).is(designator).get();
 		

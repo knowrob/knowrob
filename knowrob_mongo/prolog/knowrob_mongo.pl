@@ -236,14 +236,24 @@ mng_obj_pose_by_desig(Obj, Pose) :-
 % a JAVA object DesigJava.
 % 
 mng_designator(Designator, DesigJava) :-
-  rdf_split_url(_, DesigID, Designator),
-  mongo_interface(DB),
-  jpl_call(DB, 'getDesignatorByID', [DesigID], DesigJava).
+  mng_designator(Designator, 'designator._id', DesigJava).
 
 mng_designator(Designator, IDKey, DesigJava) :-
+  atom(Designator),
+  rdf_url_namespace(Designator, Ns), not( Ns = '' ),
   rdf_split_url(_, DesigID, Designator),
   mongo_interface(DB),
   jpl_call(DB, 'getDesignatorByID', [DesigID, IDKey], DesigJava).
+
+mng_designator(Designator, IDKey, DesigJava) :-
+  number(Designator),
+  jpl_new('java.lang.Double', [Designator], NumberValue), 
+  mongo_interface(DB),
+  jpl_call(DB, 'getDesignatorByID', [NumberValue, IDKey], DesigJava).
+
+mng_designator(Designator, IDKey, DesigJava) :-
+  mongo_interface(DB),
+  jpl_call(DB, 'getDesignatorByID', [Designator, IDKey], DesigJava).
 
 mng_decision_tree(DesigJava) :-
   mongo_interface(DB),
