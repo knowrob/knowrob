@@ -18,7 +18,8 @@
 % 
 % @author Moritz Tenorth
 % @author Daniel Beßler
-% @license GPL
+% @author Asil Kaan Bozcuoğlu
+% @license BSD
 % 
 :- module(knowrob_vis,
     [
@@ -78,7 +79,10 @@
       add_barchart/3,
       add_piechart/3,
       remove_diagram/1,
-      trajectory_length/4
+      trajectory_length/4,
+      task_tree_canvas/0,
+      update_task_tree/3,
+      remove_task_tree/0
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -752,3 +756,44 @@ clear_diagram_canvas :-
     d_canvas(Canvas),
     jpl_call(Canvas, 'clear', [], _).
 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%
+% Task tree canvas management
+%
+
+
+%% task_tree_canvas is det.
+%
+% Launch the task tree data publisher
+%
+
+:- assert(t_t_canvas(fail)).
+task_tree_canvas :-
+    t_t_canvas(fail),
+    jpl_new('org.knowrob.vis.TaskTreeVisualization', [], Canvas),
+    jpl_list_to_array(['org.knowrob.vis.TaskTreeVisualization'], Arr),
+    jpl_call('org.knowrob.utils.ros.RosUtilities', runRosjavaNode, [Canvas, Arr], _),
+    retract(t_t_canvas(fail)),
+    assert(t_t_canvas(Canvas)),!.
+task_tree_canvas(Canvas) :-
+    t_t_canvas(Canvas).
+
+%% update_task_tree(+ListOfTasks, +ListOfHighlightedTask, +ListOfTypesShowed) is nondet.
+%
+% Simplified predicate for adding a barchart with default values
+%
+% @param ListOfTasks All of the tasks in a certain plan log 
+% @param ListOfHighlightedTask  The tasks that should be highlighted in the task tree
+% @param ListOfTypesShowed  Which task types should be appear in the visualized tree (i.e. in order to simplyfy the shown task tree)
+%
+update_task_tree(ListOfTasks, ListOfHighlightedTask, ListOfTypesShowed) :-
+    t_t_canvas(Canvas),
+    jpl_call(Canvas, 'addTaskTree', [ListOfTasks, ListOfHighlightedTask, ListOfTypesShowed], _R).
+
+%% clear_diagram_canvas is det.
+%
+% Remove existing task tree from the canvas.
+% 
+remove_task_tree :-
+    t_t_canvas(Canvas),
+    jpl_call(Canvas, 'removeTaskTree', [], _R).
