@@ -1035,16 +1035,7 @@ public class URDF2SRDL {
 
 		URDF2SRDL ui = new URDF2SRDL();
 		
-	    CmdLineParser parser = new CmdLineParser(ui);
-
-	    try {
-	        parser.parseArgument(args);
-	    } catch (CmdLineException e) {
-	        System.exit(1);
-	    }
-		
-
-		System.out.println();
+		CmdLineParser parser = new CmdLineParser(ui);
 
 		try {
 			 parser.parseArgument(args);

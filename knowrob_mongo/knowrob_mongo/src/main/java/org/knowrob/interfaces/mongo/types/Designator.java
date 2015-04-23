@@ -56,7 +56,10 @@ public class Designator {
 	}
 
 	public Object get(Object arg0) {
-		return values.get(arg0);
+		Object out = values.get(arg0.toString().toLowerCase());
+		if(out==null)
+			out = values.get(arg0.toString().toUpperCase());
+		return out;
 	}
 
 	public boolean isEmpty() {

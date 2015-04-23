@@ -10,9 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 import java.text.DecimalFormat;
 
-import javax.vecmath.Matrix4d;
-import javax.vecmath.Quat4d;
-
 import org.ros.message.Duration;
 import org.ros.message.Time;
 import org.ros.namespace.GraphName;
@@ -23,10 +20,12 @@ import org.apache.commons.logging.Log;
 import org.knowrob.owl.OWLThing;
 import org.knowrob.prolog.PrologInterface;
 import org.knowrob.tfmemory.TFMemory;
+
 import tfjava.StampedTransform;
 import visualization_msgs.Marker;
 import visualization_msgs.MarkerArray;
 import geometry_msgs.Pose;
+
 /**
  * Visualization module for the KnowRob knowledge base
  *
@@ -50,6 +49,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 	Publisher<Pose> cam_pub;
 	
 	Publisher<std_msgs.String> text_pub;
+	
+	Publisher<data_vis_msgs.Speech> speech_pub;
 
 	ConnectedNode node;
 
@@ -109,6 +110,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 		pub = connectedNode.newPublisher("/visualization_marker_array", visualization_msgs.MarkerArray._TYPE);
 		cam_pub = connectedNode.newPublisher("/camera/pose", geometry_msgs.Pose._TYPE);
 		text_pub = connectedNode.newPublisher("/canvas/text", std_msgs.String._TYPE);
+		speech_pub = connectedNode.newPublisher("/canvas/speech", data_vis_msgs.Speech._TYPE);
 		log = connectedNode.getLog();
 		reference_frame = node.getParameterTree().getString("knowrob_reference_frame","/map");
 	}
@@ -985,12 +987,30 @@ public class MarkerVisualization extends AbstractNodeMain {
 	// Mesh rendering
 	//
 	
+	// TODO: remove this
+	public void addBlueBoxMarker(String position[], String rotation[], String scale[]) {
+		try {
+			ColladaMesh m = ColladaMesh.createCube();
+			m.setPhongMaterial(
+					new double[] {0.0, 0.0, 0.0, 1.0},
+					new double[] {0.137255, 0.403922, 0.870588, 1},
+					new double[] {0.5, 0.5, 0.5, 1});
+			String meshPath = m.marshal("blue-cube-" + new Long(System.currentTimeMillis()).toString());
+			
+			addMeshMarker("'"+meshPath+"'", position, rotation, scale);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void addMeshMarker(String meshPath, String position[], String rotation[], String scale[]) {
 		try {
 			Marker m = markersCache.get(meshPath);
 			if(m==null) {
 				m = createMarker();
 				m.setType(Marker.MESH_RESOURCE);
+				System.err.println(OWLThing.removeSingleQuotes(meshPath));
 				m.setMeshResource(OWLThing.removeSingleQuotes(meshPath));
 				m.setMeshUseEmbeddedMaterials(true);
 				// Color must be set to zero for mesh textures
@@ -1067,6 +1087,26 @@ public class MarkerVisualization extends AbstractNodeMain {
 		}
 		catch(Exception exc) {
 			log.warn("Failed to add text marker.", exc);
+			return;
+		}
+	}
+	
+	public void addSpeechBubble(String identifier, String text, String position[], int duration) {
+		try {
+			final data_vis_msgs.Speech msg = speech_pub.newMessage();
+			
+			msg.setId(identifier);
+			msg.setDuration(duration);
+			msg.setText(text);
+			
+			msg.getPosition().setX(Float.parseFloat(position[0]));
+			msg.getPosition().setY(Float.parseFloat(position[1]));
+			msg.getPosition().setZ(Float.parseFloat(position[2]));
+			
+			speech_pub.publish(msg);
+		}
+		catch(Exception exc) {
+			log.warn("Failed to add speech bubble.", exc);
 			return;
 		}
 	}
@@ -1184,42 +1224,21 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 	boolean setMarkerPose(Marker m, String identifier, String timepoint) {
 		boolean hasPose = false;
-		
+
 		try {
-			
 			// read object pose
-			String query = "object_pose_at_time('"+ identifier + "', '"+ timepoint +
-					"', [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33])";
+			String query = "object_pose_at_time('"+ identifier + "', '"+ timepoint + "', [X,Y,Z], [QW,QX,QY,QZ])";
 			//log.info(query);
 			HashMap<String, Vector<String>> res = PrologInterface.executeQuery(query);
 
-			if (res!=null && res.get("M00") != null && res.get("M00").size() > 0 && res.get("M00").get(0)!=null) {
-				double[] p = new double[16];
-				Matrix4d poseMat = new Matrix4d(p);
-
-				for(int i=0;i<4;i++) {
-					for(int j=0;j<4;j++) {
-						poseMat.setElement(i, j, Double.valueOf(res.get("M"+i+j).get(0)));
-					}
-				}
-
-				Quat4d quat = new Quat4d();
-				quat.set(poseMat);
-
-				m.getPose().getOrientation().setW(quat.w);
-				m.getPose().getOrientation().setX(quat.x);
-				m.getPose().getOrientation().setY(quat.y);
-				m.getPose().getOrientation().setZ(quat.z);
-
-				m.getPose().getPosition().setX(poseMat.m03);
-				m.getPose().getPosition().setY(poseMat.m13);
-				m.getPose().getPosition().setZ(poseMat.m23);
-				
-				
-
-				// debug
-//				log.info("adding " + identifier + " at pose [" + m.getPose().getPosition().getX() + ", " + m.getPose().getPosition().getY() + ", " + m.getPose().getPosition().getZ() + "]");
-				
+			if (res!=null && res.get("X") != null && res.get("X").size() > 0 && res.get("X").get(0)!=null) {
+				m.getPose().getOrientation().setW(Double.valueOf(res.get("QW").get(0)));
+				m.getPose().getOrientation().setX(Double.valueOf(res.get("QX").get(0)));
+				m.getPose().getOrientation().setY(Double.valueOf(res.get("QY").get(0)));
+				m.getPose().getOrientation().setZ(Double.valueOf(res.get("QZ").get(0)));
+				m.getPose().getPosition().setX(Double.valueOf(res.get("X").get(0)));
+				m.getPose().getPosition().setY(Double.valueOf(res.get("Y").get(0)));
+				m.getPose().getPosition().setZ(Double.valueOf(res.get("Z").get(0)));
 				hasPose = true;
 			}
 		}
