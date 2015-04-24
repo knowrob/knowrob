@@ -20,6 +20,8 @@ import org.apache.commons.logging.Log;
 import org.knowrob.owl.OWLThing;
 import org.knowrob.prolog.PrologInterface;
 import org.knowrob.tfmemory.TFMemory;
+import org.knowrob.vis.meshes.CheckerBoardMesh;
+import org.knowrob.vis.meshes.ColladaMesh;
 
 import tfjava.StampedTransform;
 import visualization_msgs.Marker;
@@ -1053,6 +1055,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	public void addBlueBoxMarker(String position[], String rotation[], String scale[]) {
 		try {
 			ColladaMesh m = ColladaMesh.createCube();
+			//ColladaMesh m = CheckerBoardMesh.createCheckerBoardMesh();
 			m.setPhongMaterial(
 					new double[] {0.0, 0.0, 0.0, 1.0},
 					new double[] {0.137255, 0.403922, 0.870588, 1},

@@ -1,4 +1,4 @@
-package org.knowrob.vis;
+package org.knowrob.vis.meshes;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -424,7 +424,7 @@ public class ColladaMesh {
 			1, 4, 7, 5, 6,  5, 4,  5, 0,  6, 2,  6, 1,  6,
 			0, 7, 1, 7, 4,  7, 6,  8, 7,  8, 2,  8, 0,  9,
 			4, 9, 2, 9, 3, 10, 7, 10, 1, 10, 5, 11, 7, 11,
-			4, 11 // 72 indices
+			4, 11 // 72 indices (6 per face for normals and positions)
 		});
 		return m;
 	}
