@@ -607,7 +607,6 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>torso</srdl2-comp:urdfName>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
-        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;forth_human_torso_neck_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;forth_human_torso_hip_joint"/>
     </owl:NamedIndividual>
@@ -618,7 +617,6 @@
     <owl:NamedIndividual rdf:about="&robot;forth_human_neck">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>neck</srdl2-comp:urdfName>
-        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;forth_human_neck_head_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;forth_human_right_neck_shoulder_joint"/>
@@ -631,8 +629,7 @@
     <owl:NamedIndividual rdf:about="&robot;forth_human_head">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>head</srdl2-comp:urdfName>
-        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
-        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.2 0.2 0.2</srdl2-comp:box_size>
     </owl:NamedIndividual>
 
 
@@ -641,7 +638,6 @@
     <owl:NamedIndividual rdf:about="&robot;forth_human_right_shoulder">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>right_shoulder</srdl2-comp:urdfName>
-        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;forth_human_right_shoulder_elbow_joint"/>
     </owl:NamedIndividual>
@@ -653,7 +649,6 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>right_elbow</srdl2-comp:urdfName>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
-        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;forth_human_right_elbow_hand_joint"/>
     </owl:NamedIndividual>
 
@@ -663,8 +658,7 @@
     <owl:NamedIndividual rdf:about="&robot;forth_human_right_hand">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>right_hand</srdl2-comp:urdfName>
-        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
-        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.15 0.15 0.15</srdl2-comp:box_size>
     </owl:NamedIndividual>
 
 
@@ -673,7 +667,6 @@
     <owl:NamedIndividual rdf:about="&robot;forth_human_left_shoulder">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>left_shoulder</srdl2-comp:urdfName>
-        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;forth_human_left_shoulder_elbow_joint"/>
     </owl:NamedIndividual>
@@ -685,7 +678,6 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>left_elbow</srdl2-comp:urdfName>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
-        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;forth_human_left_elbow_hand_joint"/>
     </owl:NamedIndividual>
 
@@ -695,8 +687,7 @@
     <owl:NamedIndividual rdf:about="&robot;forth_human_left_hand">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>left_hand</srdl2-comp:urdfName>
-        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
-        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.15 0.15 0.15</srdl2-comp:box_size>
     </owl:NamedIndividual>
 
 
@@ -705,7 +696,6 @@
     <owl:NamedIndividual rdf:about="&robot;forth_human_hip">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>hip</srdl2-comp:urdfName>
-        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;forth_human_hip_right_hip_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;forth_human_hip_left_hip_joint"/>
@@ -718,7 +708,6 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>right_hip</srdl2-comp:urdfName>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
-        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
     </owl:NamedIndividual>
 
 
@@ -727,7 +716,6 @@
     <owl:NamedIndividual rdf:about="&robot;forth_human_left_hip">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>left_hip</srdl2-comp:urdfName>
-        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.1 0.1</srdl2-comp:box_size>
     </owl:NamedIndividual>
 
