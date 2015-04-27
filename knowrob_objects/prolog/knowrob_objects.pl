@@ -130,6 +130,7 @@
 :- rdf_db:rdf_register_ns(owl, 'http://www.w3.org/2002/07/owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(xsd, 'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
+:- rdf_db:rdf_register_ns(srdl2comp, 'http://knowrob.org/kb/srdl2-comp.owl#', [keep(true)]).
 
 
 %% storagePlaceFor(St, ObjT) is nondet.
@@ -304,10 +305,13 @@ rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23
 % @param Height Height of the bounding box (z-dimension)
 % 
 object_dimensions(Obj, Depth, Width, Height) :-
-
   rdf_has(Obj, knowrob:depthOfObject,  literal(type(_, Depth))),
   rdf_has(Obj, knowrob:widthOfObject,  literal(type(_, Width))),
   rdf_has(Obj, knowrob:heightOfObject, literal(type(_, Height))).
+
+object_dimensions(Obj, Depth, Width, Height) :-
+  rdf_has(Obj, srdl2comp:'box_size', literal(type(_, ScaleVector))),
+  parse_vector(ScaleVector, [Depth, Width, Height]).
 
 %% object_assert_dimensions(+Obj, +H, +W, +D) is nondet.
 %
