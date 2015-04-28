@@ -167,7 +167,14 @@ public class ThreadedQuery implements Runnable {
 	}
 
 	public boolean hasMoreSolutions() throws Exception {
-		return ((Boolean)runCommand(new HasMoreSolutionsCommand())).booleanValue();
+		Object val = runCommand(new HasMoreSolutionsCommand());
+		if(val instanceof Boolean) {
+			return ((Boolean)val).booleanValue();
+		}
+		else {
+			System.err.println(val.toString());
+			return false;
+		}
 	}
 
 	public void reset() throws Exception {
