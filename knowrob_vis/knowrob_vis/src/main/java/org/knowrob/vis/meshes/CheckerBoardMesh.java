@@ -9,6 +9,9 @@ import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 
 import org.knowrob.interfaces.mongo.types.Designator;
+import org.knowrob.vis.collada.Polylist;
+import org.knowrob.vis.collada.ProfileCOMMON;
+import org.knowrob.vis.collada.Source;
 
 public class CheckerBoardMesh extends ColladaMesh {
 	
@@ -69,10 +72,13 @@ public class CheckerBoardMesh extends ColladaMesh {
 	}
 	
 	CheckerBoard board = null;
+	Source cellTexcoSource = new Source();
 
 	public CheckerBoardMesh(Vector3d position, Quat4d orientation, Vector2d boardSize, Vector2d cellSize) {
 		super();
 		board = new CheckerBoard(position, orientation, boardSize, cellSize);
+		
+		//mesh.getSources().add(cellTexcoSource);
 	}
 	
 	public void addCell(Vector3d position, String[] ingredients) {
@@ -80,6 +86,13 @@ public class CheckerBoardMesh extends ColladaMesh {
 		CheckerBoardCell cell = new CheckerBoardCell(position);
 		for(String x : ingredients) cell.ingredients.add(x);
 		board.cells.add(cell);
+	}
+	
+	public void setCellTexco(double[] uv) {
+		cellTexcoSource.setId("cell-texco");
+		cellTexcoSource.setName("cell-texco");
+		cellTexcoSource.setFloatArray(createFloatArray("cell-texco", uv));
+		cellTexcoSource.setTechniqueCommon(createAccessorUV("cell-texco", uv));
 	}
 	
 	public void updateCheckerBoardGeometry() {
@@ -95,8 +108,15 @@ public class CheckerBoardMesh extends ColladaMesh {
 		double[] positions = new double[board.cells.size()*4*3];
 		// use same normal for each vertex
 		double[] normals = new double[] {board.normal.x, board.normal.y, board.normal.z};
+		// use same normal for each cell
+		double[] uv = new double[] {
+				0.0, 0.0,
+				0.0, 1.0,
+				1.0, 1.0,
+				1.0, 0.0
+		};
 		// 6 indices per cell (2 triangles)
-		int[] indices = new int[board.cells.size()*6*2];
+		int[] indices = new int[board.cells.size()*6*3];
 		
 		Vector3d dx = new Vector3d(board.xVector); dx.scale(0.5*board.cellSize.x);
 		Vector3d dy = new Vector3d(board.yVector); dy.scale(0.5*board.cellSize.y);
@@ -114,26 +134,35 @@ public class CheckerBoardMesh extends ColladaMesh {
 			positions[i+9]=p3.x; positions[i+10]=p3.y; positions[i+11]=p3.z;
 			
 			// 2 triangle faces (the 0 is for the normal)
-			indices[j] = k;
-			indices[j+1] = 0;
-			indices[j+2] = k+1;
-			indices[j+3] = 0;
-			indices[j+4] = k+2;
-			indices[j+5] = 0;
+			indices[j] = k; j+=1;
+			indices[j] = 0; j+=1;
+			//indices[j] = 0; j+=1;
+			indices[j] = k+1; j+=1;
+			indices[j] = 0;   j+=1;
+			//indices[j] = 1;   j+=1;
+			indices[j] = k+2; j+=1;
+			indices[j] = 0;   j+=1;
+			//indices[j] = 3;   j+=1;
 			
-			indices[j+6] = k;
-			indices[j+7] = 0;
-			indices[j+8] = k+2;
-			indices[j+9] = 0;
-			indices[j+10] = k+3;
-			indices[j+11] = 0;
+			indices[j] = k; j+=1;
+			indices[j] = 0; j+=1;
+			//indices[j] = 1; j+=1;
+			indices[j] = k+2; j+=1;
+			indices[j] = 0;   j+=1;
+			//indices[j] = 2;   j+=1;
+			indices[j] = k+3; j+=1;
+			indices[j] = 0;   j+=1;
+			//indices[j] = 3;   j+=1;
 			
-			i += 12; j += 12; k += 4;
+			i += 12; k += 4;
 		}
 		
 		setPositions(positions);
 		setNormals(normals);
-		setTrianglePolyList(indices);
+		//setCellTexco(uv);
+		
+		Polylist polyList = setTrianglePolyList(indices);
+		//polyList.getInputs().add(createOffsetType(2, "TEXCO", "#cell-texco"));
 	}
 	
 	//////////////////////////////
@@ -189,10 +218,15 @@ public class CheckerBoardMesh extends ColladaMesh {
 		System.out.println("----------------------------------");
 		try {
 			ColladaMesh m = createCheckerBoardMesh();
-			m.setPhongMaterial(
+			
+			ProfileCOMMON profile = m.setPhongMaterial(
 					new double[] {0.0, 0.0, 0.0, 1.0},
 					new double[] {0.137255, 0.403922, 0.870588, 1},
 					new double[] {0.5, 0.5, 0.5, 1});
+			
+			String imgPath = "../kitchen/food-drinks/pizza/pizza_sauce_DIFF.png";
+			m.addDiffuseTexturePhong(profile, "tomato-sauce-diff", "cell-texco", imgPath);
+			
 			m.marshal(System.out, true);
 		}
 		catch (Exception e) {

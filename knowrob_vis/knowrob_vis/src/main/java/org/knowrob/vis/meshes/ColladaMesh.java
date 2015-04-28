@@ -12,39 +12,43 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import org.knowrob.vis.collada.AccessorType;
-import org.knowrob.vis.collada.AssetType;
-import org.knowrob.vis.collada.BindMaterialType;
+import org.knowrob.vis.collada.Accessor;
+import org.knowrob.vis.collada.Asset;
+import org.knowrob.vis.collada.BindMaterial;
 import org.knowrob.vis.collada.COLLADA;
-import org.knowrob.vis.collada.EffectType;
-import org.knowrob.vis.collada.FloatArrayType;
-import org.knowrob.vis.collada.FxCommonColorOrTextureType;
-import org.knowrob.vis.collada.FxCommonColorOrTextureType.Color;
-import org.knowrob.vis.collada.FxCommonFloatOrParamType;
-import org.knowrob.vis.collada.GeometryType;
-import org.knowrob.vis.collada.InputLocalOffsetType;
-import org.knowrob.vis.collada.InputLocalType;
-import org.knowrob.vis.collada.InstanceEffectType;
-import org.knowrob.vis.collada.InstanceGeometryType;
-import org.knowrob.vis.collada.InstanceMaterialType;
-import org.knowrob.vis.collada.InstanceWithExtraType;
-import org.knowrob.vis.collada.LibraryEffectsType;
-import org.knowrob.vis.collada.LibraryGeometriesType;
-import org.knowrob.vis.collada.LibraryMaterialsType;
-import org.knowrob.vis.collada.LibraryVisualScenesType;
-import org.knowrob.vis.collada.MaterialType;
-import org.knowrob.vis.collada.MatrixType;
-import org.knowrob.vis.collada.MeshType;
-import org.knowrob.vis.collada.NodeType;
-import org.knowrob.vis.collada.PType;
-import org.knowrob.vis.collada.ParamType;
-import org.knowrob.vis.collada.PolylistType;
-import org.knowrob.vis.collada.ProfileCommonType;
-import org.knowrob.vis.collada.SourceType;
-import org.knowrob.vis.collada.UpAxisEnum;
-import org.knowrob.vis.collada.SourceType.TechniqueCommon;
-import org.knowrob.vis.collada.VerticesType;
-import org.knowrob.vis.collada.VisualSceneType;
+import org.knowrob.vis.collada.CommonColorOrTextureType;
+import org.knowrob.vis.collada.CommonFloatOrParamType;
+import org.knowrob.vis.collada.CommonNewparamType;
+import org.knowrob.vis.collada.Effect;
+import org.knowrob.vis.collada.FloatArray;
+import org.knowrob.vis.collada.FxSampler2DCommon;
+import org.knowrob.vis.collada.FxSurfaceCommon;
+import org.knowrob.vis.collada.FxSurfaceInitFromCommon;
+import org.knowrob.vis.collada.Geometry;
+import org.knowrob.vis.collada.Image;
+import org.knowrob.vis.collada.InputLocal;
+import org.knowrob.vis.collada.InputLocalOffset;
+import org.knowrob.vis.collada.InstanceEffect;
+import org.knowrob.vis.collada.InstanceGeometry;
+import org.knowrob.vis.collada.InstanceMaterial;
+import org.knowrob.vis.collada.InstanceWithExtra;
+import org.knowrob.vis.collada.LibraryEffects;
+import org.knowrob.vis.collada.LibraryGeometries;
+import org.knowrob.vis.collada.LibraryImages;
+import org.knowrob.vis.collada.LibraryMaterials;
+import org.knowrob.vis.collada.LibraryVisualScenes;
+import org.knowrob.vis.collada.Material;
+import org.knowrob.vis.collada.Matrix;
+import org.knowrob.vis.collada.Mesh;
+import org.knowrob.vis.collada.Node;
+import org.knowrob.vis.collada.ObjectFactory;
+import org.knowrob.vis.collada.Param;
+import org.knowrob.vis.collada.Polylist;
+import org.knowrob.vis.collada.ProfileCOMMON;
+import org.knowrob.vis.collada.Source;
+import org.knowrob.vis.collada.Vertices;
+import org.knowrob.vis.collada.UpAxisType;
+import org.knowrob.vis.collada.VisualScene;
 
 /**
  * @author Daniel Beßler <danielb@cs.uni-bremen.de>
@@ -52,49 +56,57 @@ import org.knowrob.vis.collada.VisualSceneType;
 public class ColladaMesh {
 	COLLADA rootElement = new COLLADA();
 
-	MeshType mesh = new MeshType();
-	SourceType posSource = new SourceType();
-	SourceType norSource = new SourceType();
+	Mesh mesh = new Mesh();
+	Source posSource = new Source();
+	Source norSource = new Source();
 	Object indicesObj = null;
 
-	LibraryMaterialsType mat_lib;
-	LibraryEffectsType effects_lib;
-	EffectType phong_material = null;
+	LibraryMaterials mat_lib;
+	LibraryImages img_lib;
+	LibraryEffects effects_lib;
+	Effect phong_material = null;
 	
-	LibraryVisualScenesType visual_scene_lib;
-	VisualSceneType visual_scene;
-	NodeType mesh_node;
-	MatrixType mesh_transform = null;
+	LibraryVisualScenes visual_scene_lib;
+	VisualScene visual_scene;
+	Node mesh_node;
+	Matrix mesh_transform = null;
 
+	ObjectFactory colladaFactory = new ObjectFactory();
+	
 	public ColladaMesh() {
 		rootElement.setVersion("1.4.1");
 		
 		/////////////////////////////
 		/////////// Asset
-		AssetType asset = new AssetType();
-		AssetType.Unit unit = new AssetType.Unit();
+		Asset asset = new Asset();
+		Asset.Unit unit = new Asset.Unit();
 		unit.setMeter(1.0);
 		unit.setName("meter");
 		asset.setUnit(unit);
-		asset.setUpAxis(UpAxisEnum.Z_UP);
+		asset.setUpAxis(UpAxisType.Z_UP);
 		rootElement.setAsset(asset);
 		
 		/////////////////////////////
 		/////////// Material
-		mat_lib = new LibraryMaterialsType();
+		mat_lib = new LibraryMaterials();
 		mat_lib.getMaterials().add(createMaterial());
 		rootElement.getLibraryAnimationsAndLibraryAnimationClipsAndLibraryCameras().add(mat_lib);
+		
+		/////////////////////////////
+		/////////// Images
+		img_lib = new LibraryImages();
+		rootElement.getLibraryAnimationsAndLibraryAnimationClipsAndLibraryCameras().add(img_lib);
 
 		/////////////////////////////
 		/////////// Effects
-		effects_lib = new LibraryEffectsType();
+		effects_lib = new LibraryEffects();
 		rootElement.getLibraryAnimationsAndLibraryAnimationClipsAndLibraryCameras().add(effects_lib);
 		
 		/////////////////////////////
 		/////////// Geometry
-		LibraryGeometriesType geom_lib = new LibraryGeometriesType();
+		LibraryGeometries geom_lib = new LibraryGeometries();
 		
-		GeometryType geom = new GeometryType();
+		Geometry geom = new Geometry();
 		geom.setId("mesh");
 		geom.setName("mesh");
 		
@@ -104,9 +116,9 @@ public class ColladaMesh {
 		// <source id="normals" name="normal">...</source>
 		mesh.getSources().add(norSource);
 		// <vertices id="vertices">...</vertices>
-		VerticesType vType = new VerticesType();
+		Vertices vType = new Vertices();
 		vType.setId("vertices");
-		InputLocalType vInput = new InputLocalType();
+		InputLocal vInput = new InputLocal();
 		vInput.setSource("#positions");
 		vInput.setSemantic("POSITION");
 		vType.getInputs().add(vInput);
@@ -119,8 +131,8 @@ public class ColladaMesh {
 		
 		/////////////////////////////
 		/////////// Visual Scene
-		visual_scene_lib = new LibraryVisualScenesType();
-		visual_scene = new VisualSceneType();
+		visual_scene_lib = new LibraryVisualScenes();
+		visual_scene = new VisualScene();
 		visual_scene.setId("VisualSceneNode");
 		visual_scene.setName("untitled");
 		mesh_node = createMeshNode();
@@ -131,7 +143,7 @@ public class ColladaMesh {
 		/////////////////////////////
 		/////////// Scene
 		COLLADA.Scene scene = new COLLADA.Scene();
-		InstanceWithExtraType instanceVisualScene = new InstanceWithExtraType();
+		InstanceWithExtra instanceVisualScene = new InstanceWithExtra();
 		instanceVisualScene.setUrl("#VisualSceneNode");
 		scene.setInstanceVisualScene(instanceVisualScene);
 		rootElement.setScene(scene);
@@ -188,17 +200,17 @@ public class ColladaMesh {
 	///////////// Material
 	//////////////////////////////
 	
-	public ProfileCommonType.Technique.Phong setPhongMaterial(double[] ambient, double[] diffuse, double[] specular) {
+	public ProfileCOMMON setPhongMaterial(double[] ambient, double[] diffuse, double[] specular) {
 		if(phong_material != null) {
 			effects_lib.getEffects().remove(phong_material);
 		}
-		phong_material = new EffectType();
+		phong_material = new Effect();
 		phong_material.setId("Material-fx");
 		
-		ProfileCommonType matProfile = new ProfileCommonType();
-		ProfileCommonType.Technique matTechnique = new ProfileCommonType.Technique();
+		ProfileCOMMON matProfile = new ProfileCOMMON();
+		ProfileCOMMON.Technique matTechnique = new ProfileCOMMON.Technique();
 		matTechnique.setSid("common");
-		ProfileCommonType.Technique.Phong phongShading = new ProfileCommonType.Technique.Phong();
+		ProfileCOMMON.Technique.Phong phongShading = new ProfileCOMMON.Technique.Phong();
 		phongShading.setEmission(createColor(new double[] {0.0, 0.0, 0.0, 1.0}));
 		phongShading.setAmbient(createColor(ambient));
 		phongShading.setDiffuse(createColor(diffuse));
@@ -207,10 +219,13 @@ public class ColladaMesh {
 		phongShading.setIndexOfRefraction(createFloat(1.0));
 		matTechnique.setPhong(phongShading);
 		matProfile.setTechnique(matTechnique);
-		phong_material.getProfileCOMMONsAndProfileBRIDGEsAndProfileGLES2s().add(matProfile);
+		
+		phong_material.getFxProfileAbstracts().add(
+				colladaFactory .createProfileCOMMON(matProfile));
+		
 		effects_lib.getEffects().add(phong_material);
 		
-		return phongShading;
+		return matProfile;
 	}
 	
 	//////////////////////////////
@@ -221,7 +236,7 @@ public class ColladaMesh {
 		if(mesh_transform!=null) {
 			mesh_node.getLookatsAndMatrixesAndRotates().remove(mesh_transform);
 		}
-		mesh_transform = new MatrixType();
+		mesh_transform = new Matrix();
 		
 		mesh_transform.getValues().add(transformationMatrix.m00);
 		mesh_transform.getValues().add(transformationMatrix.m01);
@@ -264,12 +279,12 @@ public class ColladaMesh {
 	///////////// Vertex Data Access
 	//////////////////////////////
 	
-	public void setTrianglePolyList(int[] indices) {
+	public Polylist setTrianglePolyList(int[] indices) {
 		// 3 vertices per face and 2 components (position and normal)
 		int[] faces = new int[indices.length/(3*2)];
 		for(int i=0; i<faces.length; ++i) faces[i]=3;
 		
-		PolylistType polyList = new PolylistType();
+		Polylist polyList = new Polylist();
 		polyList.setCount(createBigInt(faces.length));
 		polyList.setMaterial("MaterialSG");
 		// position, normal input
@@ -278,10 +293,9 @@ public class ColladaMesh {
 		// vertices per face
 		for(int f : faces) polyList.getVcount().add(createBigInt(f));
 		// indices
-		PType pType = new PType();
-		for(int i : indices) pType.getValues().add(createBigInt(i));
-		polyList.setP(pType);
+		for(int i : indices) polyList.getP().add(createBigInt(i));
 		setIndices(polyList);
+		return polyList;
 	}
 	
     // TODO: support other primitives.
@@ -296,7 +310,7 @@ public class ColladaMesh {
 	///////////// Helper
 	//////////////////////////////
 
-	private void setIndices(PolylistType polyList) {
+	private void setIndices(Polylist polyList) {
 		if(indicesObj!=null) {
 	        mesh.getLinesAndLinestripsAndPolygons().remove(indicesObj);
 		}
@@ -304,24 +318,24 @@ public class ColladaMesh {
         mesh.getLinesAndLinestripsAndPolygons().add(indicesObj);
 	}
 
-	private InputLocalOffsetType createOffsetType(int offset, String sem, String sourceUrl) {
-		InputLocalOffsetType offsetType = new InputLocalOffsetType();
+	protected InputLocalOffset createOffsetType(int offset, String sem, String sourceUrl) {
+		InputLocalOffset offsetType = new InputLocalOffset();
 		offsetType.setOffset(createBigInt(offset));
 		offsetType.setSemantic(sem);
 		offsetType.setSource(sourceUrl);
 		return offsetType;
 	}
 
-	private TechniqueCommon createAccessorXYZ(String id, double[] values) {
-		SourceType.TechniqueCommon posTechnique = new SourceType.TechniqueCommon();
-		AccessorType posAccessor = new AccessorType();
+	private Source.TechniqueCommon createAccessorXYZ(String id, double[] values) {
+		Source.TechniqueCommon posTechnique = new Source.TechniqueCommon();
+		Accessor posAccessor = new Accessor();
 		posAccessor.setCount(createBigInt(values.length/3));
 		posAccessor.setOffset(createBigInt(0));
 		posAccessor.setStride(createBigInt(3));
 		posAccessor.setSource("#"+id+"-array");
 		String[] elems = new String[] { "X", "Y", "Z" };
 		for(String name : elems) {
-			ParamType param = new ParamType();
+			Param param = new Param();
 			param.setName(name);
 			param.setType("float");
 			posAccessor.getParams().add(param);
@@ -330,32 +344,111 @@ public class ColladaMesh {
 		return posTechnique;
 	}
 
-	private FloatArrayType createFloatArray(String id, double[] values) {
-		FloatArrayType floatArray = new FloatArrayType();
+	protected Source.TechniqueCommon createAccessorUV(String id, double[] values) {
+		Source.TechniqueCommon posTechnique = new Source.TechniqueCommon();
+		Accessor posAccessor = new Accessor();
+		posAccessor.setCount(createBigInt(values.length/2));
+		posAccessor.setOffset(createBigInt(0));
+		posAccessor.setStride(createBigInt(3));
+		posAccessor.setSource("#"+id+"-array");
+		String[] elems = new String[] { "U", "V" };
+		for(String name : elems) {
+			Param param = new Param();
+			param.setName(name);
+			param.setType("float");
+			posAccessor.getParams().add(param);
+		}
+		posTechnique.setAccessor(posAccessor);
+		return posTechnique;
+	}
+
+	protected FloatArray createFloatArray(String id, double[] values) {
+		FloatArray floatArray = new FloatArray();
 		floatArray.setId(id+"-array");
 		floatArray.setCount(createBigInt(values.length));
 		for(double v : values) floatArray.getValues().add(v);
 		return floatArray;
 	}
 
-	private FxCommonColorOrTextureType createColor(double[] values) {
-		FxCommonColorOrTextureType e = new FxCommonColorOrTextureType();
-		Color c = new Color();
+	private CommonColorOrTextureType createColor(double[] values) {
+		CommonColorOrTextureType e = new CommonColorOrTextureType();
+		CommonColorOrTextureType.Color c = new CommonColorOrTextureType.Color();
 		for(double v : values) c.getValues().add(v);
 		e.setColor(c);
 		return e;
 	}
 
-	private NodeType createMeshNode() {
-		NodeType meshNode = new NodeType();
+	public void addDiffuseTexturePhong(
+			ProfileCOMMON effectProfile,
+			String id, String texcoId, String path) {
+		////////////////////////////
+		// Add texture to image library
+		////////////////////////////
+		Image imgType = new Image(); {
+			// <library_images>    
+			//  <image id="$id">
+			//    <init_from>$path</init_from>
+			//  </image>
+			// </library_images>
+			imgType.setId(id);
+			imgType.setInitFrom(path);
+			img_lib.getImages().add(imgType);
+		}
+
+		////////////////////////////
+		// Add texture to effects library
+		////////////////////////////
+		CommonNewparamType texSurfaceParam = new CommonNewparamType(); {
+			// <newparam sid="$id-surface">  
+			//  <surface type="2D">
+			//    <init_from>$id</init_from>
+			//  </surface>
+			// </newparam>
+			texSurfaceParam.setSid(id+"-surface");
+			FxSurfaceCommon surface = new FxSurfaceCommon();
+			surface.setType("2D");
+			FxSurfaceInitFromCommon initFrom = new FxSurfaceInitFromCommon();
+			initFrom.setValue(imgType);
+			surface.getInitFroms().add(initFrom);
+			texSurfaceParam.setSurface(surface);
+			effectProfile.getImagesAndNewparams().add(texSurfaceParam);
+		}
+		
+		CommonNewparamType texSamplerParam = new CommonNewparamType(); {
+			// <newparam sid="$id-sampler">  
+			//  <sampler2D>
+			//    <source>$id-surface</source>
+			//  <sampler2D>
+			// </newparam>
+			texSamplerParam.setSid(id+"-sampler");
+			FxSampler2DCommon texSampler = new FxSampler2DCommon();
+			texSampler.setSource(id + "-surface");
+			texSamplerParam.setSampler2D(texSampler);
+			effectProfile.getImagesAndNewparams().add(texSamplerParam);
+		}
+		
+		CommonColorOrTextureType e = new CommonColorOrTextureType(); {
+            // <diffuse>
+            //   <texture texture="$id-sampler" texcoord="$id-texco"/>
+            // </diffuse>
+			CommonColorOrTextureType.Texture tex = new CommonColorOrTextureType.Texture();
+			tex.setTexcoord(texcoId);
+			tex.setTexture(id + "-sampler");
+			e.setTexture(tex);
+			effectProfile.getTechnique().getPhong().setDiffuse(e);
+		}
+	}
+
+	private Node createMeshNode() {
+		Node meshNode = new Node();
 		meshNode.setId("Mesh");
 		meshNode.setName("Mesh");
 		
-		InstanceGeometryType meshGeom = new InstanceGeometryType();
+		InstanceGeometry meshGeom = new InstanceGeometry();
 		meshGeom.setUrl("#mesh");
-		BindMaterialType meshBindMatetrial = new BindMaterialType();
-		BindMaterialType.TechniqueCommon meshBindMaterialTechnique = new BindMaterialType.TechniqueCommon();
-		InstanceMaterialType matType = new InstanceMaterialType();
+		BindMaterial meshBindMatetrial = new BindMaterial();
+		BindMaterial.TechniqueCommon meshBindMaterialTechnique = new BindMaterial.TechniqueCommon();
+		InstanceMaterial matType = new InstanceMaterial();
 		matType.setSymbol("MaterialSG");
 		matType.setTarget("#Material");
 		meshBindMaterialTechnique.getInstanceMaterials().add(matType);
@@ -366,11 +459,11 @@ public class ColladaMesh {
 		return meshNode;
 	}
 
-	private MaterialType createMaterial() {
-		MaterialType material = new MaterialType();
+	private Material createMaterial() {
+		Material material = new Material();
 		material.setId("Material");
 		material.setName("Material");
-		InstanceEffectType matEffectRef = new InstanceEffectType();
+		InstanceEffect matEffectRef = new InstanceEffect();
 		matEffectRef.setUrl("#Material-fx");
 		material.setInstanceEffect(matEffectRef);
 		return material;
@@ -380,9 +473,9 @@ public class ColladaMesh {
 		return new BigInteger(new Integer(i).toString());
 	}
 
-	private FxCommonFloatOrParamType createFloat(double d) {
-		FxCommonFloatOrParamType e = new FxCommonFloatOrParamType();
-		FxCommonFloatOrParamType.Float v = new FxCommonFloatOrParamType.Float();
+	private CommonFloatOrParamType createFloat(double d) {
+		CommonFloatOrParamType e = new CommonFloatOrParamType();
+		CommonFloatOrParamType.Float v = new CommonFloatOrParamType.Float();
 		v.setValue(d);
 		e.setFloat(v);
 		return e;
@@ -439,10 +532,12 @@ public class ColladaMesh {
 		System.out.println("----------------------------------");
 		try {
 			ColladaMesh m = createCube();
+			
 			m.setPhongMaterial(
 					new double[] {0.0, 0.0, 0.0, 1.0},
 					new double[] {0.137255, 0.403922, 0.870588, 1},
 					new double[] {0.5, 0.5, 0.5, 1});
+			
 			m.marshal(System.out, true);
 		}
 		catch (Exception e) {

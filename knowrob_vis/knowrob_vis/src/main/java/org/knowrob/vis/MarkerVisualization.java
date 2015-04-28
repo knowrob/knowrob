@@ -20,6 +20,7 @@ import org.apache.commons.logging.Log;
 import org.knowrob.owl.OWLThing;
 import org.knowrob.prolog.PrologInterface;
 import org.knowrob.tfmemory.TFMemory;
+import org.knowrob.vis.collada.ProfileCOMMON;
 import org.knowrob.vis.meshes.CheckerBoardMesh;
 import org.knowrob.vis.meshes.ColladaMesh;
 
@@ -1054,12 +1055,16 @@ public class MarkerVisualization extends AbstractNodeMain {
 	// TODO: remove this
 	public void addBlueBoxMarker(String position[], String rotation[], String scale[]) {
 		try {
-			ColladaMesh m = ColladaMesh.createCube();
-			//ColladaMesh m = CheckerBoardMesh.createCheckerBoardMesh();
-			m.setPhongMaterial(
+			//ColladaMesh m = ColladaMesh.createCube();
+			ColladaMesh m = CheckerBoardMesh.createCheckerBoardMesh();
+			ProfileCOMMON profile = m.setPhongMaterial(
 					new double[] {0.0, 0.0, 0.0, 1.0},
 					new double[] {0.137255, 0.403922, 0.870588, 1},
 					new double[] {0.5, 0.5, 0.5, 1});
+			
+			//String imgPath = "../kitchen/food-drinks/pizza/pizza_sauce_DIFF.png";
+			//m.addDiffuseTexturePhong(profile, "tomato-sauce-diff", "cell-texco", imgPath);
+			
 			String meshPath = m.marshal("blue-cube-" + new Long(System.currentTimeMillis()).toString());
 			
 			addMeshMarker("'"+meshPath+"'", position, rotation, scale);
