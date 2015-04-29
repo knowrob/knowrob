@@ -20,7 +20,7 @@ import org.apache.commons.logging.Log;
 import org.knowrob.owl.OWLThing;
 import org.knowrob.prolog.PrologInterface;
 import org.knowrob.tfmemory.TFMemory;
-import org.knowrob.vis.collada.ProfileCOMMON;
+import org.knowrob.vis.collada_1_4_1.ProfileCOMMON;
 import org.knowrob.vis.meshes.CheckerBoardMesh;
 import org.knowrob.vis.meshes.ColladaMesh;
 

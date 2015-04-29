@@ -9,9 +9,9 @@ import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 
 import org.knowrob.interfaces.mongo.types.Designator;
-import org.knowrob.vis.collada.Polylist;
-import org.knowrob.vis.collada.ProfileCOMMON;
-import org.knowrob.vis.collada.Source;
+import org.knowrob.vis.collada_1_4_1.Polylist;
+import org.knowrob.vis.collada_1_4_1.ProfileCOMMON;
+import org.knowrob.vis.collada_1_4_1.Source;
 
 public class CheckerBoardMesh extends ColladaMesh {
 	
