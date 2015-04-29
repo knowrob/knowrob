@@ -6,8 +6,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.vecmath.Matrix4d;
+import javax.vecmath.Vector2d;
+import javax.vecmath.Vector3d;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -59,7 +63,12 @@ public class ColladaMesh {
 	Mesh mesh = new Mesh();
 	Source posSource = new Source();
 	Source norSource = new Source();
+	Source uvSource = new Source();
 	Object indicesObj = null;
+	List<Double> posArray = new LinkedList<Double>();
+	List<Double> norArray = new LinkedList<Double>();
+	List<Double> uvArray = new LinkedList<Double>();
+	List<Integer> indexArray = new LinkedList<Integer>();
 
 	LibraryMaterials mat_lib;
 	LibraryImages img_lib;
@@ -73,6 +82,8 @@ public class ColladaMesh {
 	Matrix mesh_transform = null;
 
 	ObjectFactory colladaFactory = new ObjectFactory();
+
+	private int numSources = 1;
 
 	public ColladaMesh() {
 		rootElement.setVersion("1.4.1");
@@ -113,9 +124,14 @@ public class ColladaMesh {
 		
 		//<mesh>
 		// <source id="positions" name="position">...</source>
-		mesh.getSources().add(posSource);
+		posSource.setId("positions");
+		posSource.setName("position");
 		// <source id="normals" name="normal">...</source>
-		mesh.getSources().add(norSource);
+		norSource.setId("normals");
+		norSource.setName("normal");
+		// <source id="uv" name="texco">...</source>
+		uvSource.setId("uv");
+		uvSource.setName("texco");
 		// <vertices id="vertices">...</vertices>
 		Vertices vType = new Vertices();
 		vType.setId("vertices");
@@ -262,27 +278,45 @@ public class ColladaMesh {
 		mesh_node.getLookatsAndMatrixesAndRotates().add(mesh_transform);
 	}
 	
-	public void setPositions(double[] positions) {
-		posSource.setId("positions");
-		posSource.setName("position");
-		posSource.setFloatArray(createFloatArray("positions", positions));
-		posSource.setTechniqueCommon(createAccessorXYZ("positions", positions));
+	public void updateGeometry() {
+		updateVertexData();
+		updateIndexData();
 	}
 	
-	public void setNormals(double[] normals) {
-		norSource.setId("normals");
-		norSource.setName("normal");
-		norSource.setFloatArray(createFloatArray("normals", normals));
-		norSource.setTechniqueCommon(createAccessorXYZ("normals", normals));
+	private void updateVertexData() {
+		if(posArray.size()==0) return;
+		{
+			double _posArray[] = listToArray(posArray);
+			posSource.setFloatArray(createFloatArray("positions", _posArray));
+			posSource.setTechniqueCommon(createAccessorXYZ("positions", _posArray));
+			if(!mesh.getSources().contains(posSource))
+				mesh.getSources().add(posSource);
+		}
+		if(norArray.size()>0) {
+			double _norArray[] = listToArray(norArray);
+			norSource.setFloatArray(createFloatArray("normals", _norArray));
+			norSource.setTechniqueCommon(createAccessorXYZ("normals", _norArray));
+			if(!mesh.getSources().contains(norSource))
+				mesh.getSources().add(norSource);
+		}
+		if(uvArray.size()>0) {
+			double _uvArray[] = listToArray(uvArray);
+			uvSource.setFloatArray(createFloatArray("uv", _uvArray));
+			uvSource.setTechniqueCommon(createAccessorUV("uv", _uvArray));
+			if(!mesh.getSources().contains(uvSource))
+				mesh.getSources().add(uvSource);
+			
+			InstanceMaterial.BindVertexInput uvVertexInput = new InstanceMaterial.BindVertexInput();
+			uvVertexInput.setSemantic("UVMap");
+			uvVertexInput.setInputSemantic("TEXCOORD");
+			uvVertexInput.setInputSet(createBigInt(0));
+			instanceMaterial.getBindVertexInputs().add(uvVertexInput);
+		}
 	}
 	
-	//////////////////////////////
-	///////////// Vertex Data Access
-	//////////////////////////////
-	
-	public Polylist setTrianglePolyList(int[] indices) {
-		// 3 vertices per face and 2 components (position and normal)
-		int[] faces = new int[indices.length/(3*mesh.getSources().size())];
+	private void updateIndexData() {
+		// 3 vertices per face and numSources components (position, normal, uv, ...)
+		int[] faces = new int[indexArray.size()/(3*numSources)];
 		for(int i=0; i<faces.length; ++i) faces[i]=3;
 		
 		Polylist polyList = new Polylist();
@@ -290,32 +324,121 @@ public class ColladaMesh {
 		polyList.setMaterial("MaterialSG");
 		// position, normal input
 		polyList.getInputs().add(createOffsetType(0, "VERTEX", "#vertices"));
-		polyList.getInputs().add(createOffsetType(1, "NORMAL", "#normals"));
+		int offset=1;
+		if(norArray.size()>0) {
+			polyList.getInputs().add(createOffsetType(offset, "NORMAL", "#normals"));
+			offset += 1;
+		}
+		if(uvArray.size()>0) {
+			polyList.getInputs().add(createOffsetType(offset, "TEXCOORD", "#uv", 0));
+			offset += 1;
+		}
 		// vertices per face
 		for(int f : faces) polyList.getVcount().add(createBigInt(f));
 		// indices
-		for(int i : indices) polyList.getP().add(createBigInt(i));
+		for(int i : indexArray) polyList.getP().add(createBigInt(i));
 		setIndices(polyList);
-		return polyList;
 	}
 	
-    // TODO: support other primitives.
-    //@XmlElement(name = "lines", type = LinesType.class),
-    //@XmlElement(name = "tristrips", type = TristripsType.class),
-    //@XmlElement(name = "linestrips", type = LinestripsType.class),
-    //@XmlElement(name = "polygons", type = PolygonsType.class),
-    //@XmlElement(name = "triangles", type = TrianglesType.class),
-    //@XmlElement(name = "trifans", type = TrifansType.class)
+	private void addPosition(Vector3d p) {
+		posArray.add(p.x);
+		posArray.add(p.y);
+		posArray.add(p.z);
+	}
+	
+	private void addNormal(Vector3d n) {
+		norArray.add(n.x);
+		norArray.add(n.y);
+		norArray.add(n.z);
+	}
+	
+	private void addUV(Vector2d uv) {
+		uvArray.add(uv.x);
+		uvArray.add(uv.y);
+	}
+
+	private void addIndices(int[] indices) {
+		for(int i : indices) indexArray.add(i);
+	}
+	
+	private double[] listToArray(List<Double> arr) {
+		double out[] = new double[arr.size()];
+		int i=0;
+		for(Double v : arr)  {
+			out[i] = v.doubleValue();
+			i += 1;
+		}
+		return out;
+	}
+	
+	//////////////////////////////
+	///////////// Box primitive
+	//////////////////////////////
+	// TODO
+	
+	//////////////////////////////
+	///////////// Quad primitive
+	//////////////////////////////
+	
+	public void addQuad(Vector3d pos, Vector3d dx, Vector3d dy, Vector3d nor) {
+		// lookup index offset
+		int offsetPos = posArray.size()/3;
+		int offsetNor = norArray.size()/3;
+		// add vertex data
+		addQuadVertexData(pos,dx,dy,nor);
+		// add index data (2 triangle faces)
+		addIndices(new int[] {
+				offsetPos,   offsetNor,
+				offsetPos+1, offsetNor,
+				offsetPos+2, offsetNor,
+				offsetPos,   offsetNor,
+				offsetPos+2, offsetNor,
+				offsetPos+3, offsetNor,
+		});
+		numSources = 2;
+	}
+
+	public void addQuad(Vector3d pos, Vector3d dx, Vector3d dy, Vector3d nor, Vector2d uv[]) {
+		// lookup index offset
+		int offsetPos = posArray.size()/3;
+		int offsetNor = norArray.size()/3;
+		int offsetUV = uvArray.size()/2;
+		// add vertex data
+		addQuadVertexData(pos,dx,dy,nor,uv);
+		// add index data (2 triangle faces)
+		addIndices(new int[] {
+				offsetPos,   offsetNor, offsetUV,
+				offsetPos+1, offsetNor, offsetUV+1,
+				offsetPos+2, offsetNor, offsetUV+3,
+				offsetPos,   offsetNor, offsetUV+1,
+				offsetPos+2, offsetNor, offsetUV+2,
+				offsetPos+3, offsetNor, offsetUV+3
+		});
+		numSources = 3;
+	}
+	
+	public void addQuadVertexData(Vector3d pos, Vector3d dx, Vector3d dy, Vector3d nor) {
+		Vector3d p0 = new Vector3d(pos); p0.sub(dx); p0.sub(dy); addPosition(p0);
+		Vector3d p1 = new Vector3d(pos); p1.sub(dx); p1.add(dy); addPosition(p1);
+		Vector3d p2 = new Vector3d(pos); p2.add(dx); p2.add(dy); addPosition(p2);
+		Vector3d p3 = new Vector3d(pos); p3.add(dx); p3.sub(dy); addPosition(p3);
+		addNormal(nor);
+	}
+
+	public void addQuadVertexData(Vector3d pos, Vector3d dx, Vector3d dy, Vector3d nor, Vector2d uv[]) {
+		addQuadVertexData(pos,dx,dy,nor);
+		for(Vector2d v : uv) addUV(v);
+	}
 
 	//////////////////////////////
 	///////////// Helper
 	//////////////////////////////
 
-	private void setIndices(Polylist polyList) {
+	private void setIndices(Object indices) {
 		if(indicesObj!=null) {
 	        mesh.getLinesAndLinestripsAndPolygons().remove(indicesObj);
 		}
-		indicesObj = polyList;
+		indicesObj = indices;
         mesh.getLinesAndLinestripsAndPolygons().add(indicesObj);
 	}
 
@@ -328,10 +451,7 @@ public class ColladaMesh {
 	}
 
 	protected InputLocalOffset createOffsetType(int offset, String sem, String sourceUrl, int set) {
-		InputLocalOffset offsetType = new InputLocalOffset();
-		offsetType.setOffset(createBigInt(offset));
-		offsetType.setSemantic(sem);
-		offsetType.setSource(sourceUrl);
+		InputLocalOffset offsetType = createOffsetType(offset,sem,sourceUrl);
 		offsetType.setSet(createBigInt(set));
 		return offsetType;
 	}
@@ -495,6 +615,7 @@ public class ColladaMesh {
 	///////////// Factory
 	//////////////////////////////
 	
+	/*
 	public static ColladaMesh createCube() {
 		ColladaMesh m = new ColladaMesh();
 		m.setPositions(new double[] {
@@ -531,11 +652,13 @@ public class ColladaMesh {
 		});
 		return m;
 	}
+	*/
 	
 	//////////////////////////////
 	///////////// Testing
 	//////////////////////////////
 
+	/*
 	public static void main(String[] args) {
 		System.out.println("----------------------------------");
 		System.out.println("------------ WRITE ----------------");
@@ -554,4 +677,5 @@ public class ColladaMesh {
 			e.printStackTrace();
 		}
 	}
+	*/
 }

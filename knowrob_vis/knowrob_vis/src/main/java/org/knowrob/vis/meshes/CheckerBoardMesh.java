@@ -9,8 +9,6 @@ import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 
 import org.knowrob.interfaces.mongo.types.Designator;
-import org.knowrob.vis.collada_1_4_1.InstanceMaterial;
-import org.knowrob.vis.collada_1_4_1.Polylist;
 import org.knowrob.vis.collada_1_4_1.ProfileCOMMON;
 import org.knowrob.vis.collada_1_4_1.Source;
 
@@ -89,87 +87,22 @@ public class CheckerBoardMesh extends ColladaMesh {
 		board.cells.add(cell);
 	}
 	
-	public void setCellTexco(double[] uv) {
-		cellTexcoSource.setId("cell-texcos");
-		cellTexcoSource.setName("cell-texco");
-		cellTexcoSource.setFloatArray(createFloatArray("cell-texcos", uv));
-		cellTexcoSource.setTechniqueCommon(createAccessorUV("cell-texcos", uv));
-	}
-	
 	public void updateCheckerBoardGeometry() {
-		// TODO: Highly inefficient....
-		//		- Share vertices between cells
-		//		- Simplify by spanning faces over more faces
-		// TODO: Howto handle ingredients
-		//	    - Textures: need additional UV coordinates
-		//      - Colors: need per vertex color attribute,
-		//             would make sharing of vertices impossible in case of different colors in neighbor cell 
-		
-		// 4 vertices per cell with each having 3 components (x,y,z)
-		double[] positions = new double[board.cells.size()*4*3];
-		// use same normal for each vertex
-		double[] normals = new double[] {board.normal.x, board.normal.y, board.normal.z};
-		// use same normal for each cell
-		double[] uv = new double[] {
-				0.0, 0.0,
-				0.0, 1.0,
-				1.0, 1.0,
-				1.0, 0.0
-		};
-		// 6 indices per cell (2 triangles)
-		int[] indices = new int[board.cells.size()*6*3];
-		
+		Vector3d nor = new Vector3d(board.normal.x, board.normal.y, board.normal.z);
 		Vector3d dx = new Vector3d(board.xVector); dx.scale(0.5*board.cellSize.x);
 		Vector3d dy = new Vector3d(board.yVector); dy.scale(0.5*board.cellSize.y);
+		Vector2d uv[] = new Vector2d[] {
+				new Vector2d(0.0, 0.0),
+				new Vector2d(0.0, 1.0),
+				new Vector2d(1.0, 1.0),
+				new Vector2d(1.0, 0.0)
+		};
 		
-		int i=0, j=0, k=0;
 		for(CheckerBoardCell cell : board.cells) {
-			// quad points
-			Vector3d p0 = new Vector3d(cell.position); p0.sub(dx); p0.sub(dy);
-			Vector3d p1 = new Vector3d(cell.position); p1.sub(dx); p1.add(dy);
-			Vector3d p2 = new Vector3d(cell.position); p2.add(dx); p2.add(dy);
-			Vector3d p3 = new Vector3d(cell.position); p3.add(dx); p3.sub(dy);
-			positions[i]=p0.x;   positions[i+1]=p0.y;  positions[i+2]=p0.z;
-			positions[i+3]=p1.x; positions[i+4]=p1.y;  positions[i+5]=p1.z;
-			positions[i+6]=p2.x; positions[i+7]=p2.y;  positions[i+8]=p2.z;
-			positions[i+9]=p3.x; positions[i+10]=p3.y; positions[i+11]=p3.z;
-			
-			// 2 triangle faces (the 0 is for the normal)
-			indices[j] = k; j+=1;
-			indices[j] = 0; j+=1;
-			indices[j] = 0; j+=1;
-			indices[j] = k+1; j+=1;
-			indices[j] = 0;   j+=1;
-			indices[j] = 1;   j+=1;
-			indices[j] = k+2; j+=1;
-			indices[j] = 0;   j+=1;
-			indices[j] = 3;   j+=1;
-			
-			indices[j] = k; j+=1;
-			indices[j] = 0; j+=1;
-			indices[j] = 1; j+=1;
-			indices[j] = k+2; j+=1;
-			indices[j] = 0;   j+=1;
-			indices[j] = 2;   j+=1;
-			indices[j] = k+3; j+=1;
-			indices[j] = 0;   j+=1;
-			indices[j] = 3;   j+=1;
-			
-			i += 12; k += 4;
+			addQuad(cell.position, dx, dy, nor, uv);
 		}
 		
-		setPositions(positions);
-		setNormals(normals);
-		setCellTexco(uv);
-		
-		Polylist polyList = setTrianglePolyList(indices);
-		polyList.getInputs().add(createOffsetType(2, "TEXCOORD", "#cell-texcos", 0));
-		
-		InstanceMaterial.BindVertexInput uvVertexInput = new InstanceMaterial.BindVertexInput();
-		uvVertexInput.setSemantic("UVMap");
-		uvVertexInput.setInputSemantic("TEXCOORD");
-		uvVertexInput.setInputSet(createBigInt(0));
-		instanceMaterial.getBindVertexInputs().add(uvVertexInput);
+		updateGeometry();
 	}
 	
 	//////////////////////////////
@@ -198,7 +131,7 @@ public class CheckerBoardMesh extends ColladaMesh {
 	public static CheckerBoardMesh createCheckerBoardMesh() {
 		Vector3d position = new Vector3d(0.0,0.0,0.0);
 		Quat4d orientation = new Quat4d(1.0,0.0,0.0,0.0);
-		Vector2d boardSize = new Vector2d(0.50, 0.50);
+		Vector2d boardSize = new Vector2d(0.10, 0.10);
 		Vector2d cellSize = new Vector2d(0.05, 0.05);
 		CheckerBoardMesh mesh = new CheckerBoardMesh(position, orientation, boardSize, cellSize);
 		
@@ -234,7 +167,7 @@ public class CheckerBoardMesh extends ColladaMesh {
 					new double[] {0.137255, 0.403922, 0.870588, 1},
 					new double[] {0.5, 0.5, 0.5, 1});
 			
-			String imgPath = "../kitchen/food-drinks/pizza/pizza_sauce_DIFF.png";
+			String imgPath = "pizza_sauce_DIFF.png";
 			m.addDiffuseTexturePhong(profile, "tomato-sauce-diff", "UVMap", imgPath);
 			
 			m.marshal(System.out, true);
