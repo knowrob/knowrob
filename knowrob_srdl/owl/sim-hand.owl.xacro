@@ -174,7 +174,7 @@
   <owl:NamedIndividual rdf:about="&simhand;SimulationHand">
     <rdf:type rdf:resource="&knowrob;Hand"/>
 
-    <srdl2-comp:subComponent rdf:resource="&simhand;ForeFinger_SIMHAND"/>
+    <srdl2-comp:subComponent rdf:resource="&simhand;IndexFinger_SIMHAND"/>
     <srdl2-comp:subComponent rdf:resource="&simhand;MiddleFinger_SIMHAND"/>
     <srdl2-comp:subComponent rdf:resource="&simhand;RingFinger_SIMHAND"/>
     <srdl2-comp:subComponent rdf:resource="&simhand;Thumb_SIMHAND"/>
