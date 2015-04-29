@@ -90,10 +90,10 @@ public class CheckerBoardMesh extends ColladaMesh {
 	}
 	
 	public void setCellTexco(double[] uv) {
-		cellTexcoSource.setId("cell-texco");
+		cellTexcoSource.setId("cell-texcos");
 		cellTexcoSource.setName("cell-texco");
-		cellTexcoSource.setFloatArray(createFloatArray("cell-texco", uv));
-		cellTexcoSource.setTechniqueCommon(createAccessorUV("cell-texco", uv));
+		cellTexcoSource.setFloatArray(createFloatArray("cell-texcos", uv));
+		cellTexcoSource.setTechniqueCommon(createAccessorUV("cell-texcos", uv));
 	}
 	
 	public void updateCheckerBoardGeometry() {
@@ -163,7 +163,7 @@ public class CheckerBoardMesh extends ColladaMesh {
 		setCellTexco(uv);
 		
 		Polylist polyList = setTrianglePolyList(indices);
-		polyList.getInputs().add(createOffsetType(2, "TEXCOORD", "#cell-texco", 0));
+		polyList.getInputs().add(createOffsetType(2, "TEXCOORD", "#cell-texcos", 0));
 		
 		InstanceMaterial.BindVertexInput uvVertexInput = new InstanceMaterial.BindVertexInput();
 		uvVertexInput.setSemantic("UVMap");
@@ -198,14 +198,17 @@ public class CheckerBoardMesh extends ColladaMesh {
 	public static CheckerBoardMesh createCheckerBoardMesh() {
 		Vector3d position = new Vector3d(0.0,0.0,0.0);
 		Quat4d orientation = new Quat4d(1.0,0.0,0.0,0.0);
-		Vector2d boardSize = new Vector2d(0.5, 0.5);
+		Vector2d boardSize = new Vector2d(0.50, 0.50);
 		Vector2d cellSize = new Vector2d(0.05, 0.05);
 		CheckerBoardMesh mesh = new CheckerBoardMesh(position, orientation, boardSize, cellSize);
 		
+		double startX = boardSize.x*0.5 - cellSize.x*0.5;
+		double startY = boardSize.y*0.5 - cellSize.y*0.5;
+		
 		Vector3d p = new Vector3d(position);
-		for(p.x = -0.475; p.x <= 0.475; p.x += 0.05) {
-			for(p.y = -0.475; p.y <= 0.475; p.y += 0.05) {
-				if(Math.abs(p.x)<0.2 && Math.abs(p.y)<0.2) continue;
+		for(p.x = -startX; p.x <= boardSize.x*0.5; p.x += cellSize.x) {
+			for(p.y = -startY; p.y <= boardSize.y*0.5; p.y += cellSize.y) {
+				//if(Math.abs(p.x)<0.2 && Math.abs(p.y)<0.2) continue;
 				mesh.addCell(new Vector3d(p), new String[] {"Dough"});
 			}
 		}
@@ -232,7 +235,7 @@ public class CheckerBoardMesh extends ColladaMesh {
 					new double[] {0.5, 0.5, 0.5, 1});
 			
 			String imgPath = "../kitchen/food-drinks/pizza/pizza_sauce_DIFF.png";
-			m.addDiffuseTexturePhong(profile, "tomato-sauce-diff", "cell-texco", imgPath);
+			m.addDiffuseTexturePhong(profile, "tomato-sauce-diff", "UVMap", imgPath);
 			
 			m.marshal(System.out, true);
 		}

@@ -282,7 +282,7 @@ public class ColladaMesh {
 	
 	public Polylist setTrianglePolyList(int[] indices) {
 		// 3 vertices per face and 2 components (position and normal)
-		int[] faces = new int[indices.length/(3*2)];
+		int[] faces = new int[indices.length/(3*mesh.getSources().size())];
 		for(int i=0; i<faces.length; ++i) faces[i]=3;
 		
 		Polylist polyList = new Polylist();

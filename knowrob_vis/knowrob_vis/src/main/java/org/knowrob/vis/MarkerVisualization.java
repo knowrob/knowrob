@@ -1062,8 +1062,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 					new double[] {0.137255, 0.403922, 0.870588, 1},
 					new double[] {0.5, 0.5, 0.5, 1});
 			
-			//String imgPath = "../kitchen/food-drinks/pizza/pizza_sauce_DIFF.png";
-			//m.addDiffuseTexturePhong(profile, "tomato-sauce-diff", "cell-texco", imgPath);
+			String imgPath = "../kitchen/food-drinks/pizza/pizza_sauce_DIFF.png";
+			m.addDiffuseTexturePhong(profile, "tomato-sauce-diff", "UVMap", imgPath);
 			
 			String meshPath = m.marshal("blue-cube-" + new Long(System.currentTimeMillis()).toString());
 			
