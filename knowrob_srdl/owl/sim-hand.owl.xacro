@@ -39,7 +39,7 @@
       <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
       <srdl2-comp:urdfName>${urdf_name}</srdl2-comp:urdfName>
       <srdl2-comp:succeedingJoint rdf:resource="${joint_name}_SIMHAND"/>
-      <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://hit_hand/meshes/hand/${mesh_name}.dae</knowrob:pathToCadModel>
+      <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://robot_parts/hit_hand/meshes/hand/${mesh_name}.dae</knowrob:pathToCadModel>
     </owl:NamedIndividual>
   </xacro:macro>
 
@@ -92,7 +92,7 @@
     <owl:NamedIndividual rdf:about="&simhand;${prefix}Distal_SIMHAND">
       <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
       <srdl2-comp:urdfName>${urdf_prefix}_distal_link</srdl2-comp:urdfName>
-      <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://hit_hand/meshes/hand/finger_distal.dae</knowrob:pathToCadModel>
+      <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://robot_parts/hit_hand/meshes/hand/finger_distal.dae</knowrob:pathToCadModel>
     </owl:NamedIndividual>
   </xacro:macro>
   
@@ -145,7 +145,7 @@
   <owl:NamedIndividual rdf:about="&simhand;ThumbDistal_SIMHAND">
     <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
     <srdl2-comp:urdfName>thumb_distal_link</srdl2-comp:urdfName>
-    <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://hit_hand/meshes/hand/finger_distal.dae</knowrob:pathToCadModel>
+    <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://robot_parts/hit_hand/meshes/hand/finger_distal.dae</knowrob:pathToCadModel>
   </owl:NamedIndividual>
 
   <!-- =========================================== -->
@@ -155,7 +155,7 @@
   <owl:NamedIndividual rdf:about="&simhand;Carpus_SIMHAND">
     <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
     <srdl2-comp:urdfName>palm_link</srdl2-comp:urdfName>
-    <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://hit_hand/meshes/hand/right_palm.dae</knowrob:pathToCadModel>
+    <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://robot_parts/hit_hand/meshes/hand/right_palm.dae</knowrob:pathToCadModel>
       
     <srdl2-comp:succeedingJoint rdf:resource="&simhand;Carpus_To_IndexFingerBase_SIMHAND" />
     <srdl2-comp:succeedingJoint rdf:resource="&simhand;Carpus_To_MiddleFingerBase_SIMHAND" />

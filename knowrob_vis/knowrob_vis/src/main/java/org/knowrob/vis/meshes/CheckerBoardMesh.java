@@ -9,6 +9,7 @@ import javax.vecmath.Vector2d;
 import javax.vecmath.Vector3d;
 
 import org.knowrob.interfaces.mongo.types.Designator;
+import org.knowrob.vis.collada_1_4_1.InstanceMaterial;
 import org.knowrob.vis.collada_1_4_1.Polylist;
 import org.knowrob.vis.collada_1_4_1.ProfileCOMMON;
 import org.knowrob.vis.collada_1_4_1.Source;
@@ -78,7 +79,7 @@ public class CheckerBoardMesh extends ColladaMesh {
 		super();
 		board = new CheckerBoard(position, orientation, boardSize, cellSize);
 		
-		//mesh.getSources().add(cellTexcoSource);
+		mesh.getSources().add(cellTexcoSource);
 	}
 	
 	public void addCell(Vector3d position, String[] ingredients) {
@@ -136,33 +137,39 @@ public class CheckerBoardMesh extends ColladaMesh {
 			// 2 triangle faces (the 0 is for the normal)
 			indices[j] = k; j+=1;
 			indices[j] = 0; j+=1;
-			//indices[j] = 0; j+=1;
+			indices[j] = 0; j+=1;
 			indices[j] = k+1; j+=1;
 			indices[j] = 0;   j+=1;
-			//indices[j] = 1;   j+=1;
+			indices[j] = 1;   j+=1;
 			indices[j] = k+2; j+=1;
 			indices[j] = 0;   j+=1;
-			//indices[j] = 3;   j+=1;
+			indices[j] = 3;   j+=1;
 			
 			indices[j] = k; j+=1;
 			indices[j] = 0; j+=1;
-			//indices[j] = 1; j+=1;
+			indices[j] = 1; j+=1;
 			indices[j] = k+2; j+=1;
 			indices[j] = 0;   j+=1;
-			//indices[j] = 2;   j+=1;
+			indices[j] = 2;   j+=1;
 			indices[j] = k+3; j+=1;
 			indices[j] = 0;   j+=1;
-			//indices[j] = 3;   j+=1;
+			indices[j] = 3;   j+=1;
 			
 			i += 12; k += 4;
 		}
 		
 		setPositions(positions);
 		setNormals(normals);
-		//setCellTexco(uv);
+		setCellTexco(uv);
 		
 		Polylist polyList = setTrianglePolyList(indices);
-		//polyList.getInputs().add(createOffsetType(2, "TEXCO", "#cell-texco"));
+		polyList.getInputs().add(createOffsetType(2, "TEXCOORD", "#cell-texco", 0));
+		
+		InstanceMaterial.BindVertexInput uvVertexInput = new InstanceMaterial.BindVertexInput();
+		uvVertexInput.setSemantic("UVMap");
+		uvVertexInput.setInputSemantic("TEXCOORD");
+		uvVertexInput.setInputSet(createBigInt(0));
+		instanceMaterial.getBindVertexInputs().add(uvVertexInput);
 	}
 	
 	//////////////////////////////

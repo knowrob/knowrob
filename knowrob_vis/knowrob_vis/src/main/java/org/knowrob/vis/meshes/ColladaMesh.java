@@ -69,10 +69,11 @@ public class ColladaMesh {
 	LibraryVisualScenes visual_scene_lib;
 	VisualScene visual_scene;
 	Node mesh_node;
+	InstanceMaterial instanceMaterial;
 	Matrix mesh_transform = null;
 
 	ObjectFactory colladaFactory = new ObjectFactory();
-	
+
 	public ColladaMesh() {
 		rootElement.setVersion("1.4.1");
 		
@@ -154,7 +155,7 @@ public class ColladaMesh {
 	//////////////////////////////
 
 	public void marshal(OutputStream out, boolean pretty) throws JAXBException, IOException {
-		JAXBContext jc = JAXBContext.newInstance( "org.knowrob.vis.collada" );
+		JAXBContext jc = JAXBContext.newInstance( "org.knowrob.vis.collada_1_4_1" );
 		Marshaller m = jc.createMarshaller();
 		if(pretty) {
 			m.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
@@ -326,6 +327,15 @@ public class ColladaMesh {
 		return offsetType;
 	}
 
+	protected InputLocalOffset createOffsetType(int offset, String sem, String sourceUrl, int set) {
+		InputLocalOffset offsetType = new InputLocalOffset();
+		offsetType.setOffset(createBigInt(offset));
+		offsetType.setSemantic(sem);
+		offsetType.setSource(sourceUrl);
+		offsetType.setSet(createBigInt(set));
+		return offsetType;
+	}
+
 	private Source.TechniqueCommon createAccessorXYZ(String id, double[] values) {
 		Source.TechniqueCommon posTechnique = new Source.TechniqueCommon();
 		Accessor posAccessor = new Accessor();
@@ -349,9 +359,9 @@ public class ColladaMesh {
 		Accessor posAccessor = new Accessor();
 		posAccessor.setCount(createBigInt(values.length/2));
 		posAccessor.setOffset(createBigInt(0));
-		posAccessor.setStride(createBigInt(3));
+		posAccessor.setStride(createBigInt(2));
 		posAccessor.setSource("#"+id+"-array");
-		String[] elems = new String[] { "U", "V" };
+		String[] elems = new String[] { "S", "T" };
 		for(String name : elems) {
 			Param param = new Param();
 			param.setName(name);
@@ -370,7 +380,7 @@ public class ColladaMesh {
 		return floatArray;
 	}
 
-	private CommonColorOrTextureType createColor(double[] values) {
+	protected CommonColorOrTextureType createColor(double[] values) {
 		CommonColorOrTextureType e = new CommonColorOrTextureType();
 		CommonColorOrTextureType.Color c = new CommonColorOrTextureType.Color();
 		for(double v : values) c.getValues().add(v);
@@ -429,7 +439,7 @@ public class ColladaMesh {
 		
 		CommonColorOrTextureType e = new CommonColorOrTextureType(); {
             // <diffuse>
-            //   <texture texture="$id-sampler" texcoord="$id-texco"/>
+            //   <texture texture="$id-sampler" texcoord="$texcoId"/>
             // </diffuse>
 			CommonColorOrTextureType.Texture tex = new CommonColorOrTextureType.Texture();
 			tex.setTexcoord(texcoId);
@@ -439,7 +449,7 @@ public class ColladaMesh {
 		}
 	}
 
-	private Node createMeshNode() {
+	protected Node createMeshNode() {
 		Node meshNode = new Node();
 		meshNode.setId("Mesh");
 		meshNode.setName("Mesh");
@@ -448,10 +458,10 @@ public class ColladaMesh {
 		meshGeom.setUrl("#mesh");
 		BindMaterial meshBindMatetrial = new BindMaterial();
 		BindMaterial.TechniqueCommon meshBindMaterialTechnique = new BindMaterial.TechniqueCommon();
-		InstanceMaterial matType = new InstanceMaterial();
-		matType.setSymbol("MaterialSG");
-		matType.setTarget("#Material");
-		meshBindMaterialTechnique.getInstanceMaterials().add(matType);
+		instanceMaterial = new InstanceMaterial();
+		instanceMaterial.setSymbol("MaterialSG");
+		instanceMaterial.setTarget("#Material");
+		meshBindMaterialTechnique.getInstanceMaterials().add(instanceMaterial);
 		meshBindMatetrial.setTechniqueCommon(meshBindMaterialTechnique);
 		meshGeom.setBindMaterial(meshBindMatetrial);
 		meshNode.getInstanceGeometries().add(meshGeom);
@@ -459,7 +469,7 @@ public class ColladaMesh {
 		return meshNode;
 	}
 
-	private Material createMaterial() {
+	protected Material createMaterial() {
 		Material material = new Material();
 		material.setId("Material");
 		material.setName("Material");
@@ -469,11 +479,11 @@ public class ColladaMesh {
 		return material;
 	}
 	
-	private BigInteger createBigInt(int i) {
+	protected BigInteger createBigInt(int i) {
 		return new BigInteger(new Integer(i).toString());
 	}
 
-	private CommonFloatOrParamType createFloat(double d) {
+	protected CommonFloatOrParamType createFloat(double d) {
 		CommonFloatOrParamType e = new CommonFloatOrParamType();
 		CommonFloatOrParamType.Float v = new CommonFloatOrParamType.Float();
 		v.setValue(d);
