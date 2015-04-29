@@ -10,7 +10,7 @@ if [ -d "$OLD_DST" ]; then
   rm -rf $OLD_DST
 fi
 
-DST=$DIR/knowrob_vis/src/main/java/org/knowrob/vis/collada-1.4.1
+DST=$DIR/knowrob_vis/src/main/java/org/knowrob/vis/collada_1_4_1
 if [ ! -d "$DST" ]; then
   echo "Generating COLLADA JAVA classes (please ignore GConf errors)...."
   xjc $DIR/schema/collada/collada-schema-1.4.1.xsd \
