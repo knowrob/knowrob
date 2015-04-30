@@ -1067,20 +1067,19 @@ public class MarkerVisualization extends AbstractNodeMain {
 			
 			String meshPath = m.marshal("blue-cube-" + new Long(System.currentTimeMillis()).toString());
 			
-			addMeshMarker("'"+meshPath+"'", position, rotation, scale);
+			addMeshMarker(meshPath, "'"+meshPath+"'", position, rotation, scale);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public void addMeshMarker(String meshPath, String position[], String rotation[], String scale[]) {
+	public void addMeshMarker(String markerId, String meshPath, String position[], String rotation[], String scale[]) {
 		try {
-			Marker m = markersCache.get(meshPath);
+			Marker m = markersCache.get(markerId);
 			if(m==null) {
 				m = createMarker();
 				m.setType(Marker.MESH_RESOURCE);
-				System.err.println(OWLThing.removeSingleQuotes(meshPath));
 				m.setMeshResource(OWLThing.removeSingleQuotes(meshPath));
 				m.setMeshUseEmbeddedMaterials(true);
 				// Color must be set to zero for mesh textures
@@ -1093,11 +1092,11 @@ public class MarkerVisualization extends AbstractNodeMain {
 			m.getPose().getPosition().setX(Float.parseFloat(position[0]));
 			m.getPose().getPosition().setY(Float.parseFloat(position[1]));
 			m.getPose().getPosition().setZ(Float.parseFloat(position[2]));
-			
-			m.getPose().getOrientation().setX(Float.parseFloat(rotation[0]));
-			m.getPose().getOrientation().setY(Float.parseFloat(rotation[1]));
-			m.getPose().getOrientation().setZ(Float.parseFloat(rotation[2]));
-			m.getPose().getOrientation().setW(Float.parseFloat(rotation[3]));
+
+			m.getPose().getOrientation().setW(Float.parseFloat(rotation[0]));
+			m.getPose().getOrientation().setX(Float.parseFloat(rotation[1]));
+			m.getPose().getOrientation().setY(Float.parseFloat(rotation[2]));
+			m.getPose().getOrientation().setZ(Float.parseFloat(rotation[3]));
 			
 			m.getScale().setX(Float.parseFloat(scale[0]));
 			m.getScale().setY(Float.parseFloat(scale[1]));
@@ -1105,10 +1104,10 @@ public class MarkerVisualization extends AbstractNodeMain {
 	
 			// add marker to map
 			synchronized (markers) {
-				markers.put(meshPath, m);
+				markers.put(markerId, m);
 			}
 			synchronized (markersCache) {
-				markersCache.put(meshPath, m);
+				markersCache.put(markerId, m);
 			}
 			
 			publishMarkers();

@@ -374,7 +374,95 @@ public class ColladaMesh {
 	//////////////////////////////
 	///////////// Box primitive
 	//////////////////////////////
-	// TODO
+	
+	public void addBox(Vector3d pos, Vector3d dx, Vector3d dy, Vector3d dz) {
+		// lookup index offset
+		int offsetPos = posArray.size()/3;
+		int offsetNor = norArray.size()/3;
+		// add vertex data
+		addBoxVertexData(pos,dx,dy,dz);
+		// add index data (2 triangle faces)
+		for(int i=0; i<6; ++i) {
+			addIndices(new int[] {
+					offsetPos,   offsetNor,
+					offsetPos+1, offsetNor,
+					offsetPos+2, offsetNor,
+					offsetPos,   offsetNor,
+					offsetPos+2, offsetNor,
+					offsetPos+3, offsetNor });
+			offsetPos += 4;
+			offsetNor += 1;
+		}
+		numSources = 2;
+	}
+	
+	public void addBox(Vector3d pos, Vector3d dx, Vector3d dy, Vector3d dz, Vector2d uv[]) {
+		// lookup index offset
+		int offsetPos = posArray.size()/3;
+		int offsetNor = norArray.size()/3;
+		int offsetUV = uvArray.size()/2;
+		// add vertex data
+		addBoxVertexData(pos,dx,dy,dz,uv);
+		// add index data (2*6 triangle faces)
+		for(int i=0; i<6; ++i) {
+			addIndices(new int[] {
+					offsetPos,   offsetNor, offsetUV,
+					offsetPos+1, offsetNor, offsetUV+1,
+					offsetPos+2, offsetNor, offsetUV+3,
+					offsetPos,   offsetNor, offsetUV+1,
+					offsetPos+2, offsetNor, offsetUV+2,
+					offsetPos+3, offsetNor, offsetUV+3 });
+			offsetPos += 4;
+			if(uv.length>4) offsetUV += 4;
+			offsetNor += 1;
+		}
+		numSources = 3;
+	}
+	
+	public void addBoxVertexData(Vector3d pos, Vector3d dx, Vector3d dy, Vector3d dz) {
+		Vector3d p0, p1, p2, p3;
+		// Top face
+		p0 = new Vector3d(pos); p0.sub(dx); p0.sub(dy); p0.add(dz); addPosition(p0);
+		p1 = new Vector3d(pos); p1.sub(dx); p1.add(dy); p0.add(dz); addPosition(p1);
+		p2 = new Vector3d(pos); p2.add(dx); p2.add(dy); p0.add(dz); addPosition(p2);
+		p3 = new Vector3d(pos); p3.add(dx); p3.sub(dy); p0.add(dz); addPosition(p3);
+		addNormal(new Vector3d(dz.x, dz.y, dz.z));
+		// Front face
+		p0 = new Vector3d(pos); p0.sub(dx); p0.sub(dy); p0.sub(dz); addPosition(p0);
+		p1 = new Vector3d(pos); p1.sub(dx); p1.sub(dy); p0.add(dz); addPosition(p1);
+		p2 = new Vector3d(pos); p2.add(dx); p2.sub(dy); p0.add(dz); addPosition(p2);
+		p3 = new Vector3d(pos); p3.add(dx); p3.sub(dy); p0.sub(dz); addPosition(p3);
+		addNormal(new Vector3d(-dy.x, -dy.y, -dy.z));
+		// Left face
+		p0 = new Vector3d(pos); p0.sub(dx); p0.sub(dy); p0.sub(dz); addPosition(p0);
+		p1 = new Vector3d(pos); p1.sub(dx); p1.add(dy); p0.sub(dz); addPosition(p1);
+		p2 = new Vector3d(pos); p2.sub(dx); p2.add(dy); p0.add(dz); addPosition(p2);
+		p3 = new Vector3d(pos); p3.sub(dx); p3.sub(dy); p0.add(dz); addPosition(p3);
+		addNormal(new Vector3d(-dx.x, -dx.y, -dx.z));
+		// Back face
+		p0 = new Vector3d(pos); p0.sub(dx); p0.add(dy); p0.add(dz); addPosition(p0);
+		p1 = new Vector3d(pos); p1.sub(dx); p1.add(dy); p0.sub(dz); addPosition(p1);
+		p2 = new Vector3d(pos); p2.add(dx); p2.add(dy); p0.sub(dz); addPosition(p2);
+		p3 = new Vector3d(pos); p3.add(dx); p3.add(dy); p0.add(dz); addPosition(p3);
+		addNormal(new Vector3d(dy.x, dy.y, dy.z));
+		// Right face
+		p0 = new Vector3d(pos); p0.sub(dx); p0.sub(dy); p0.add(dz); addPosition(p0);
+		p1 = new Vector3d(pos); p1.sub(dx); p1.add(dy); p0.add(dz); addPosition(p1);
+		p2 = new Vector3d(pos); p2.sub(dx); p2.add(dy); p0.sub(dz); addPosition(p2);
+		p3 = new Vector3d(pos); p3.sub(dx); p3.sub(dy); p0.sub(dz); addPosition(p3);
+		addNormal(new Vector3d(dx.x, dx.y, dx.z));
+		// Bottom face
+		p0 = new Vector3d(pos); p0.sub(dx); p0.sub(dy); p0.sub(dz); addPosition(p0);
+		p1 = new Vector3d(pos); p1.sub(dx); p1.add(dy); p0.sub(dz); addPosition(p1);
+		p2 = new Vector3d(pos); p2.add(dx); p2.add(dy); p0.sub(dz); addPosition(p2);
+		p3 = new Vector3d(pos); p3.add(dx); p3.sub(dy); p0.sub(dz); addPosition(p3);
+		addNormal(new Vector3d(-dz.x, -dz.y, -dz.z));
+	}
+
+	public void addBoxVertexData(Vector3d pos, Vector3d dx, Vector3d dy, Vector3d dz, Vector2d uv[]) {
+		addBoxVertexData(pos,dx,dy,dz);
+		for(Vector2d v : uv) addUV(v);
+	}
 	
 	//////////////////////////////
 	///////////// Quad primitive
@@ -393,7 +481,7 @@ public class ColladaMesh {
 				offsetPos+2, offsetNor,
 				offsetPos,   offsetNor,
 				offsetPos+2, offsetNor,
-				offsetPos+3, offsetNor,
+				offsetPos+3, offsetNor
 		});
 		numSources = 2;
 	}
