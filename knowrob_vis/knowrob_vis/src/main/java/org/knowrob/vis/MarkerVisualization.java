@@ -1122,24 +1122,17 @@ public class MarkerVisualization extends AbstractNodeMain {
 	//
 	
 	public void addDesignatorContourMesh(String markerId, Designator designator, String colorStr[]) {
-		// TODO
-		//mng_designator_props('object_C5B84i1pcHhyw3', _D, ['DOUGH', 'CONTOUR', '11', 'X'], Val)
 		try {
-			//ColladaMesh m = ColladaMesh.createCube();
 			Vector3d color = new Vector3d(
 				Double.valueOf(colorStr[0]),
 				Double.valueOf(colorStr[1]),
 				Double.valueOf(colorStr[2])
 			);
 			ColladaMesh m = ContourMesh.createContourMesh(designator,color);
-			//ProfileCOMMON profile = m.setPhongMaterial(
-			//		new double[] {0.0, 0.0, 0.0, 1.0},
-			//		new double[] {0.137255, 0.403922, 0.870588, 1},
-			//		new double[] {0.5, 0.5, 0.5, 1});
 			
-			//String meshPath = m.marshal(markerId + new Long(System.currentTimeMillis()).toString());
+			String meshPath = m.marshal(markerId + new Long(System.currentTimeMillis()).toString());
 			
-			//addMeshMarker(meshPath, "'"+meshPath+"'", position, rotation, scale);
+			addMeshMarker(meshPath, "'"+meshPath+"'");
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -1190,6 +1183,13 @@ public class MarkerVisualization extends AbstractNodeMain {
 		}
 	}
 	*/
+	
+	public void addMeshMarker(String markerId, String meshPath) {
+		addMeshMarker(markerId, meshPath,
+				new String[] {"0", "0", "0"},
+				new String[] {"1", "0", "0", "0"},
+				new String[] {"0", "0", "0"});
+	}
 	
 	public void addMeshMarker(String markerId, String meshPath, String position[], String rotation[], String scale[]) {
 		try {
