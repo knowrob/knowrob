@@ -28,6 +28,7 @@
       clear_canvas/0,
       clear_trajectories/0,
       camera_pose/2,
+      camera_transform/1,
       add_agent_visualization/1,
       add_agent_visualization/2,
       add_agent_visualization/3,
@@ -104,6 +105,7 @@
 
 :- rdf_meta add_object(r),
             camera_pose(r,r),
+            camera_transform(r),
             add_agent_visualization(r),
             add_agent_visualization(r,r),
             add_agent_visualization(r,r,r),
@@ -213,14 +215,20 @@ clear_canvas :-
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
-% Camera
+% Setting camera pose in canvas
 %
-
+% Accepts Position and quartenion 
 camera_pose(Position, Orientation) :-
     visualisation_canvas(Canvas),
     lists_to_arrays(Position, PositionArr),
     lists_to_arrays(Orientation, OrientationArr),
     jpl_call(Canvas, 'setCameraPose', [PositionArr, OrientationArr], _).
+
+% Accepts transform matrix
+camera_transform(Transform) :-
+    visualisation_canvas(Canvas),
+    lists_to_arrays(Transform, TransformArr),
+    jpl_call(Canvas, 'setCameraTransform', [TransformArr], _).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
