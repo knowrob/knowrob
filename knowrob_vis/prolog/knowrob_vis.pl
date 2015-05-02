@@ -64,10 +64,8 @@
       add_mesh/3,
       add_mesh/4,
       add_mesh/5,
-      add_blue_box_mesh/0,
-      add_blue_box_mesh/1,
-      add_blue_box_mesh/2,
-      add_blue_box_mesh/3,
+      add_designator_contour_mesh/2,
+      add_designator_checkerboard_mesh/2,
       highlight_object/1,
       highlight_object_mesh/1,
       highlight_object/2,
@@ -138,6 +136,8 @@
             add_mesh(+,+,+),
             add_mesh(+,+,+,+),
             add_mesh(+,+,+,+,+),
+            add_designator_contour_mesh(r,r),
+            add_designator_checkerboard_mesh(r,r),
             highlight_object(r),
             highlight_object_mesh(r),
             highlight_object(r,?),
@@ -590,19 +590,13 @@ add_mesh(MarkerId, MeshPath, Position, Rotation, Scale) :-
     lists_to_arrays(Scale, ScaleArr),
     jpl_call(Canvas, 'addMeshMarker', [MarkerId, MeshPath, PositionArr, RotationArr, ScaleArr], _).
 
-% TODO: remove
-add_blue_box_mesh :-
-    add_blue_box_mesh([0.0,0.0,0.0]).
-add_blue_box_mesh(Position) :-
-    add_blue_box_mesh(Position, [0.0,0.0,0.0,1.0]).
-add_blue_box_mesh(Position, Rotation) :-
-    add_blue_box_mesh(Position, Rotation, [1.0,1.0,1.0]).
-add_blue_box_mesh(Position, Rotation, Scale) :-
+add_designator_contour_mesh(MarkerId, DesignatorId) :-
     visualisation_canvas(Canvas),
-    lists_to_arrays(Position, PositionArr),
-    lists_to_arrays(Rotation, RotationArr),
-    lists_to_arrays(Scale, ScaleArr),
-    jpl_call(Canvas, 'addBlueBoxMarker', [PositionArr, RotationArr, ScaleArr], _).
+    jpl_call(Canvas, 'addDesignatorContourMesh', [MarkerId, DesignatorId], _).
+
+add_designator_checkerboard_mesh(MarkerId, DesignatorId) :-
+    visualisation_canvas(Canvas),
+    jpl_call(Canvas, 'addDesignatorCheckerboardMesh', [MarkerId, DesignatorId], _).
     
 %%
 %   Reads all trajectories described by start- and endtimes from logged tf data 

@@ -1118,7 +1118,17 @@ public class MarkerVisualization extends AbstractNodeMain {
 	// Mesh rendering
 	//
 	
+	public void addDesignatorContourMesh(String markerId, String designatorId) {
+		// TODO
+		//mng_designator_props('object_C5B84i1pcHhyw3', _D, ['DOUGH', 'CONTOUR', '11', 'X'], Val)
+	}
+	
+	public void addDesignatorCheckerboardMesh(String markerId, String designatorId) {
+		// TODO
+	}
+	
 	// TODO: remove this
+	/*
 	public void addBlueBoxMarker(String position[], String rotation[], String scale[]) {
 		try {
 			//ColladaMesh m = ColladaMesh.createCube();
@@ -1139,6 +1149,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 			e.printStackTrace();
 		}
 	}
+	*/
 	
 	public void addMeshMarker(String markerId, String meshPath, String position[], String rotation[], String scale[]) {
 		try {
