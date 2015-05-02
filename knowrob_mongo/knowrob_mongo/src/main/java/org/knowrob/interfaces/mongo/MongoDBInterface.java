@@ -165,24 +165,29 @@ public class MongoDBInterface {
 	 * @return Instance of a Designator
 	 */
 	 public Designator getDesignatorByID(Object designator, String idKey) {
-		DBCollection coll = getDatabase().getCollection("logged_designators");
-		DBObject query = QueryBuilder.start(idKey).is(designator).get();
-		
-		DBObject cols  = new BasicDBObject();
-		cols.put("__recorded", 1 );
-		cols.put("designator", 1 );
-		
-		DBCursor cursor = coll.find(query, cols);
-		while(cursor.hasNext()) {
-			DBObject row = cursor.next();
-			Designator desig = new Designator().readFromDBObject((BasicDBObject) row.get("designator"));
-			if(cursor.hasNext()) cursor.close();
-			return desig;
-		}
-		
-		cursor.close();
-		
-		return null;
+		 try {
+			 DBCollection coll = getDatabase().getCollection("logged_designators");
+			 DBObject query = QueryBuilder.start(idKey).is(designator).get();
+			 
+			 DBObject cols  = new BasicDBObject();
+			 cols.put("__recorded", 1 );
+			 cols.put("designator", 1 );
+			 
+			 DBCursor cursor = coll.find(query, cols);
+			 while(cursor.hasNext()) {
+				 DBObject row = cursor.next();
+				 Designator desig = new Designator().readFromDBObject((BasicDBObject) row.get("designator"));
+				 if(cursor.hasNext()) cursor.close();
+				 return desig;
+			 }
+			 cursor.close();
+		 }
+		 catch(Exception e) {
+			 System.err.println(e.getMessage());
+			 e.printStackTrace();
+		 }
+		 
+		 return null;
     }
 	
 	/**

@@ -173,11 +173,13 @@ public class Designator {
 				
 				if(val instanceof BasicDBObject) {
 					BasicDBObject dimRow = (BasicDBObject)val;
-					valAccepted = new Vector3d();
 					
-					((Vector3d) valAccepted).x = Double.valueOf(dimRow.get("DEPTH").toString());
-					((Vector3d) valAccepted).y = Double.valueOf(dimRow.get("WIDTH").toString());
-					((Vector3d) valAccepted).z = Double.valueOf(dimRow.get("HEIGHT").toString());
+					if(dimRow.containsField("DEPTH") && dimRow.containsField("WIDTH") && dimRow.containsField("HEIGHT")) {
+						valAccepted = new Vector3d();
+						((Vector3d) valAccepted).x = Double.valueOf(dimRow.get("DEPTH").toString());
+						((Vector3d) valAccepted).y = Double.valueOf(dimRow.get("WIDTH").toString());
+						((Vector3d) valAccepted).z = Double.valueOf(dimRow.get("HEIGHT").toString());
+					}
 				}
 
 			// Color properties
