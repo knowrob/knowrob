@@ -592,11 +592,13 @@ add_mesh(MarkerId, MeshPath, Position, Rotation, Scale) :-
 
 add_designator_contour_mesh(MarkerId, DesignatorId) :-
     visualisation_canvas(Canvas),
-    jpl_call(Canvas, 'addDesignatorContourMesh', [MarkerId, DesignatorId], _).
+    mng_designator(DesignatorId, DesigJava),
+    jpl_call(Canvas, 'addDesignatorContourMesh', [MarkerId, DesigJava], _).
 
 add_designator_checkerboard_mesh(MarkerId, DesignatorId) :-
     visualisation_canvas(Canvas),
-    jpl_call(Canvas, 'addDesignatorCheckerboardMesh', [MarkerId, DesignatorId], _).
+    mng_designator(DesignatorId, DesigJava),
+    jpl_call(Canvas, 'addDesignatorCheckerboardMesh', [MarkerId, DesigJava], _).
     
 %%
 %   Reads all trajectories described by start- and endtimes from logged tf data 

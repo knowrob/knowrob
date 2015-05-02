@@ -17,12 +17,13 @@ import org.ros.node.AbstractNodeMain;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Publisher;
 import org.apache.commons.logging.Log;
+import org.knowrob.interfaces.mongo.types.Designator;
 import org.knowrob.owl.OWLThing;
 import org.knowrob.prolog.PrologInterface;
 import org.knowrob.tfmemory.TFMemory;
-import org.knowrob.vis.collada_1_4_1.ProfileCOMMON;
 import org.knowrob.vis.meshes.CheckerBoardMesh;
 import org.knowrob.vis.meshes.ColladaMesh;
+import org.knowrob.vis.meshes.ContourMesh;
 
 import tfjava.StampedTransform;
 import visualization_msgs.Marker;
@@ -1118,13 +1119,45 @@ public class MarkerVisualization extends AbstractNodeMain {
 	// Mesh rendering
 	//
 	
-	public void addDesignatorContourMesh(String markerId, String designatorId) {
+	public void addDesignatorContourMesh(String markerId, Designator designator) {
 		// TODO
 		//mng_designator_props('object_C5B84i1pcHhyw3', _D, ['DOUGH', 'CONTOUR', '11', 'X'], Val)
+		try {
+			//ColladaMesh m = ColladaMesh.createCube();
+			ColladaMesh m = ContourMesh.createContourMesh(designator);
+			//ProfileCOMMON profile = m.setPhongMaterial(
+			//		new double[] {0.0, 0.0, 0.0, 1.0},
+			//		new double[] {0.137255, 0.403922, 0.870588, 1},
+			//		new double[] {0.5, 0.5, 0.5, 1});
+			
+			//String meshPath = m.marshal(markerId + new Long(System.currentTimeMillis()).toString());
+			
+			//addMeshMarker(meshPath, "'"+meshPath+"'", position, rotation, scale);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
-	public void addDesignatorCheckerboardMesh(String markerId, String designatorId) {
+	public void addDesignatorCheckerboardMesh(String markerId, Designator designator) {
 		// TODO
+		try {
+			ColladaMesh m = CheckerBoardMesh.createCheckerBoardMesh(designator);
+			//ProfileCOMMON profile = m.setPhongMaterial(
+			//		new double[] {0.0, 0.0, 0.0, 1.0},
+			//		new double[] {0.137255, 0.403922, 0.870588, 1},
+			//		new double[] {0.5, 0.5, 0.5, 1});
+			
+			//String imgPath = "../kitchen/food-drinks/pizza/pizza_sauce_DIFF.png";
+			//m.addDiffuseTexturePhong(profile, "tomato-sauce-diff", "UVMap", imgPath);
+			
+			//String meshPath = m.marshal("blue-cube-" + new Long(System.currentTimeMillis()).toString());
+			
+			//addMeshMarker(meshPath, "'"+meshPath+"'", position, rotation, scale);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	// TODO: remove this
