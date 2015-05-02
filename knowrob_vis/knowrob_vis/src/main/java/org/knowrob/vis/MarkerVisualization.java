@@ -1132,7 +1132,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 			
 			String meshPath = m.marshal(markerId + new Long(System.currentTimeMillis()).toString());
 			
-			addMeshMarker(meshPath, "'"+meshPath+"'");
+			addMeshMarker(markerId, "'"+meshPath+"'");
 		}
 		catch (Exception e) {
 			e.printStackTrace();
