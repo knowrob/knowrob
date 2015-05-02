@@ -10,6 +10,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 import java.text.DecimalFormat;
 
+import javax.vecmath.Vector3d;
+
 import org.ros.message.Duration;
 import org.ros.message.Time;
 import org.ros.namespace.GraphName;
@@ -1119,12 +1121,17 @@ public class MarkerVisualization extends AbstractNodeMain {
 	// Mesh rendering
 	//
 	
-	public void addDesignatorContourMesh(String markerId, Designator designator) {
+	public void addDesignatorContourMesh(String markerId, Designator designator, String colorStr[]) {
 		// TODO
 		//mng_designator_props('object_C5B84i1pcHhyw3', _D, ['DOUGH', 'CONTOUR', '11', 'X'], Val)
 		try {
 			//ColladaMesh m = ColladaMesh.createCube();
-			ColladaMesh m = ContourMesh.createContourMesh(designator);
+			Vector3d color = new Vector3d(
+				Double.valueOf(colorStr[0]),
+				Double.valueOf(colorStr[1]),
+				Double.valueOf(colorStr[2])
+			);
+			ColladaMesh m = ContourMesh.createContourMesh(designator,color);
 			//ProfileCOMMON profile = m.setPhongMaterial(
 			//		new double[] {0.0, 0.0, 0.0, 1.0},
 			//		new double[] {0.137255, 0.403922, 0.870588, 1},

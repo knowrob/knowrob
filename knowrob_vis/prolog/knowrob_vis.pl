@@ -65,6 +65,7 @@
       add_mesh/4,
       add_mesh/5,
       add_designator_contour_mesh/2,
+      add_designator_contour_mesh/3,
       add_designator_checkerboard_mesh/2,
       highlight_object/1,
       highlight_object_mesh/1,
@@ -136,7 +137,8 @@
             add_mesh(+,+,+),
             add_mesh(+,+,+,+),
             add_mesh(+,+,+,+,+),
-            add_designator_contour_mesh(r,r),
+            add_designator_contour_mesh(r,r,+),
+            add_designator_contour_mesh(r,r,+,+),
             add_designator_checkerboard_mesh(r,r),
             highlight_object(r),
             highlight_object_mesh(r),
@@ -590,10 +592,21 @@ add_mesh(MarkerId, MeshPath, Position, Rotation, Scale) :-
     lists_to_arrays(Scale, ScaleArr),
     jpl_call(Canvas, 'addMeshMarker', [MarkerId, MeshPath, PositionArr, RotationArr, ScaleArr], _).
 
-add_designator_contour_mesh(MarkerId, DesignatorId) :-
+add_designator_contour_mesh(MarkerId, DesignatorId, Color) :-
+    add_designator_contour_mesh(MarkerId, DesignatorId, Color, []).
+
+add_designator_contour_mesh(MarkerId, DesignatorId, Color, []) :-
     visualisation_canvas(Canvas),
     mng_designator(DesignatorId, DesigJava),
-    jpl_call(Canvas, 'addDesignatorContourMesh', [MarkerId, DesigJava], _).
+    lists_to_arrays(Color, ColorArr),
+    jpl_call(Canvas, 'addDesignatorContourMesh', [MarkerId, DesigJava, ColorArr], _).
+
+add_designator_contour_mesh(MarkerId, DesignatorId, Color, ContourPath) :-
+    visualisation_canvas(Canvas),
+    mng_designator(DesignatorId, DesigJava),
+    mng_designator_props(DesigJava, ContourPath, ContourDesig),
+    lists_to_arrays(Color, ColorArr),
+    jpl_call(Canvas, 'addDesignatorContourMesh', [MarkerId, ContourDesig, ColorArr], _).
 
 add_designator_checkerboard_mesh(MarkerId, DesignatorId) :-
     visualisation_canvas(Canvas),
