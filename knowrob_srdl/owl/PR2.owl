@@ -6008,7 +6008,7 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.00019847383</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.00000246110</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.00018106988</srdl2-comp:inertia_izz>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://pr2_description/meshes/gripper_v0/l_finger.dae</knowrob:pathToCadModel>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://robots/pr2/r_finger.dae</knowrob:pathToCadModel>
         <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_r_gripper_r_finger_tip_joint"/>
         <srdl2-comp:turnGravityOff rdf:datatype="&xsd;boolean">true</srdl2-comp:turnGravityOff>
@@ -6060,7 +6060,7 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.00000987067</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.00001541768</srdl2-comp:inertia_izz>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://pr2_description/meshes/gripper_v0/l_finger_tip.dae</knowrob:pathToCadModel>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://robots/pr2/r_finger_tip.dae</knowrob:pathToCadModel>
         <srdl2-comp:material_name rdf:datatype="&xsd;string">Green</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_r_gripper_joint"/>
         <srdl2-comp:turnGravityOff rdf:datatype="&xsd;boolean">true</srdl2-comp:turnGravityOff>
@@ -6397,7 +6397,7 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.00019847383</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.00000246110</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.00018106988</srdl2-comp:inertia_izz>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://pr2_description/meshes/gripper_v0/l_finger.dae</knowrob:pathToCadModel>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://robots/pr2/r_finger.dae</knowrob:pathToCadModel>
         <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_l_gripper_r_finger_tip_joint"/>
         <srdl2-comp:turnGravityOff rdf:datatype="&xsd;boolean">true</srdl2-comp:turnGravityOff>
@@ -6449,7 +6449,7 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.00000987067</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.00001541768</srdl2-comp:inertia_izz>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://pr2_description/meshes/gripper_v0/l_finger_tip.dae</knowrob:pathToCadModel>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://robots/pr2/r_finger_tip.dae</knowrob:pathToCadModel>
         <srdl2-comp:material_name rdf:datatype="&xsd;string">Green</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_l_gripper_joint"/>
         <srdl2-comp:turnGravityOff rdf:datatype="&xsd;boolean">true</srdl2-comp:turnGravityOff>
