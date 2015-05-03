@@ -83,7 +83,7 @@ public class ColladaMesh {
 
 	ObjectFactory colladaFactory = new ObjectFactory();
 
-	private int numSources = 1;
+	protected int numSources = 1;
 
 	public ColladaMesh() {
 		rootElement.setVersion("1.4.1");
@@ -340,24 +340,24 @@ public class ColladaMesh {
 		setIndices(polyList);
 	}
 	
-	private void addPosition(Vector3d p) {
+	void addPosition(Vector3d p) {
 		posArray.add(p.x);
 		posArray.add(p.y);
 		posArray.add(p.z);
 	}
 	
-	private void addNormal(Vector3d n) {
+	void addNormal(Vector3d n) {
 		norArray.add(n.x);
 		norArray.add(n.y);
 		norArray.add(n.z);
 	}
 	
-	private void addUV(Vector2d uv) {
+	void addUV(Vector2d uv) {
 		uvArray.add(uv.x);
 		uvArray.add(uv.y);
 	}
 
-	private void addIndices(int[] indices) {
+	protected void addIndices(int[] indices) {
 		for(int i : indices) indexArray.add(i);
 	}
 	

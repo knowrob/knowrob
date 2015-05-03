@@ -28,6 +28,7 @@
       clear_canvas/0,
       clear_trajectories/0,
       camera_pose/2,
+      camera_transform/1,
       add_agent_visualization/1,
       add_agent_visualization/2,
       add_agent_visualization/3,
@@ -63,10 +64,9 @@
       add_mesh/3,
       add_mesh/4,
       add_mesh/5,
-      add_blue_box_mesh/0,
-      add_blue_box_mesh/1,
-      add_blue_box_mesh/2,
-      add_blue_box_mesh/3,
+      add_designator_contour_mesh/2,
+      add_designator_contour_mesh/3,
+      add_designator_checkerboard_mesh/2,
       highlight_object/1,
       highlight_object_mesh/1,
       highlight_object/2,
@@ -104,6 +104,7 @@
 
 :- rdf_meta add_object(r),
             camera_pose(r,r),
+            camera_transform(r),
             add_agent_visualization(r),
             add_agent_visualization(r,r),
             add_agent_visualization(r,r,r),
@@ -136,6 +137,9 @@
             add_mesh(+,+,+),
             add_mesh(+,+,+,+),
             add_mesh(+,+,+,+,+),
+            add_designator_contour_mesh(r,r,+),
+            add_designator_contour_mesh(r,r,+,+),
+            add_designator_checkerboard_mesh(r,r),
             highlight_object(r),
             highlight_object_mesh(r),
             highlight_object(r,?),
@@ -213,14 +217,20 @@ clear_canvas :-
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
-% Camera
+% Setting camera pose in canvas
 %
-
+% Accepts Position and quartenion 
 camera_pose(Position, Orientation) :-
     visualisation_canvas(Canvas),
     lists_to_arrays(Position, PositionArr),
     lists_to_arrays(Orientation, OrientationArr),
     jpl_call(Canvas, 'setCameraPose', [PositionArr, OrientationArr], _).
+
+% Accepts transform matrix
+camera_transform(Transform) :-
+    visualisation_canvas(Canvas),
+    lists_to_arrays(Transform, TransformArr),
+    jpl_call(Canvas, 'setCameraTransform', [TransformArr], _).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
@@ -582,19 +592,26 @@ add_mesh(MarkerId, MeshPath, Position, Rotation, Scale) :-
     lists_to_arrays(Scale, ScaleArr),
     jpl_call(Canvas, 'addMeshMarker', [MarkerId, MeshPath, PositionArr, RotationArr, ScaleArr], _).
 
-% TODO: remove
-add_blue_box_mesh :-
-    add_blue_box_mesh([0.0,0.0,0.0]).
-add_blue_box_mesh(Position) :-
-    add_blue_box_mesh(Position, [0.0,0.0,0.0,1.0]).
-add_blue_box_mesh(Position, Rotation) :-
-    add_blue_box_mesh(Position, Rotation, [1.0,1.0,1.0]).
-add_blue_box_mesh(Position, Rotation, Scale) :-
+add_designator_contour_mesh(MarkerId, DesignatorId, Color) :-
+    add_designator_contour_mesh(MarkerId, DesignatorId, Color, []).
+
+add_designator_contour_mesh(MarkerId, DesignatorId, Color, []) :-
     visualisation_canvas(Canvas),
-    lists_to_arrays(Position, PositionArr),
-    lists_to_arrays(Rotation, RotationArr),
-    lists_to_arrays(Scale, ScaleArr),
-    jpl_call(Canvas, 'addBlueBoxMarker', [PositionArr, RotationArr, ScaleArr], _).
+    mng_designator(DesignatorId, DesigJava),
+    lists_to_arrays(Color, ColorArr),
+    jpl_call(Canvas, 'addDesignatorContourMesh', [MarkerId, DesigJava, ColorArr], _).
+
+add_designator_contour_mesh(MarkerId, DesignatorId, Color, ContourPath) :-
+    visualisation_canvas(Canvas),
+    mng_designator(DesignatorId, DesigJava),
+    mng_designator_props(DesigJava, ContourPath, ContourDesig),
+    lists_to_arrays(Color, ColorArr),
+    jpl_call(Canvas, 'addDesignatorContourMesh', [MarkerId, ContourDesig, ColorArr], _).
+
+add_designator_checkerboard_mesh(MarkerId, DesignatorId) :-
+    visualisation_canvas(Canvas),
+    mng_designator(DesignatorId, DesigJava),
+    jpl_call(Canvas, 'addDesignatorCheckerboardMesh', [MarkerId, DesigJava], _).
     
 %%
 %   Reads all trajectories described by start- and endtimes from logged tf data 
