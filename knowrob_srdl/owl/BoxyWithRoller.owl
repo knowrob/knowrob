@@ -98,7 +98,7 @@
         <rdf:type rdf:resource="&knowrob;RightArm"/>
 
         <srdl2-comp:baseLinkOfComposition rdf:resource="&robot;boxy2_triangle_right_arm_link"/>
-        <srdl2-comp:endLinkOfComposition rdf:resource="&robot;boxy2_right_arm_fwk_fwa_050_frame_out"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&robot;boxy2_right_arm_adapter_kms40_fwk050_frame_out"/>
     </owl:NamedIndividual>
     
     <owl:NamedIndividual rdf:about="&robot;boxy2_left_arm">
@@ -2596,6 +2596,9 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>right_arm_adapter_kms40_fwk050_frame_out</srdl2-comp:urdfName>
         <srdl2-comp:link_name rdf:datatype="&xsd;string">right_arm_adapter_kms40_fwk050_frame_out</srdl2-comp:link_name>
+	
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_roller_description/meshes/iai_roller.stl</knowrob:pathToCadModel>
+	
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy2_right_arm_fwk_fwa_050_in_joint"/>
     </owl:NamedIndividual>
 
