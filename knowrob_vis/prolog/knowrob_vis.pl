@@ -64,8 +64,8 @@
       add_mesh/3,
       add_mesh/4,
       add_mesh/5,
-      add_designator_contour_mesh/2,
       add_designator_contour_mesh/3,
+      add_designator_contour_mesh/4,
       add_designator_checkerboard_mesh/2,
       highlight_object/1,
       highlight_object_mesh/1,
@@ -604,7 +604,7 @@ add_designator_contour_mesh(MarkerId, DesignatorId, Color, []) :-
 add_designator_contour_mesh(MarkerId, DesignatorId, Color, ContourPath) :-
     visualisation_canvas(Canvas),
     mng_designator(DesignatorId, DesigJava),
-    mng_designator_props(DesigJava, ContourPath, ContourDesig),
+    mng_designator_props(DesignatorId, DesigJava, ContourPath, ContourDesig),
     lists_to_arrays(Color, ColorArr),
     jpl_call(Canvas, 'addDesignatorContourMesh', [MarkerId, ContourDesig, ColorArr], _).
 

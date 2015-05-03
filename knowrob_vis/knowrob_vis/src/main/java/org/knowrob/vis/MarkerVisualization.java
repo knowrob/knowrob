@@ -1129,6 +1129,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 				Double.valueOf(colorStr[2])
 			);
 			ColladaMesh m = ContourMesh.createContourMesh(designator,color);
+
+			m.marshal(System.err, true);
 			
 			String meshPath = m.marshal(markerId + new Long(System.currentTimeMillis()).toString());
 			
