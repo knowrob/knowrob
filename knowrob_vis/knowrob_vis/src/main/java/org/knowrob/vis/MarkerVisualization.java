@@ -396,7 +396,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * @param highlight True to set, False to remove highlight
 	 */
 	public void highlight(String identifier) {
-		highlight(identifier, 200, 0, 0, 255);
+		highlight(identifier, 255, 0, 0, 122);
 	}
 
 	/**
@@ -506,7 +506,16 @@ public class MarkerVisualization extends AbstractNodeMain {
 	}
 
 	boolean __highlight__(String identifier, int r, int g, int b, int a) {
+		
+		//Asil: using Ben's way temporarily
 		final Marker m = markersCache.get(identifier);//add special case for mesh...
+		if(m==null) return false;
+		__highlightMesh__(m, ((float) r/255), ((float) g/255) ,((float) b/255) ,((float) a/255));
+		return true;
+		
+
+		//todo(Asil): Investigate what turns the canvas into a white space in the good old highlighting way down below
+		/*final Marker m = markersCache.get(identifier);//add special case for mesh...
 		if(m==null) return false;
 		// Remember default color
 		if(!highlighted.containsKey(identifier)) {
@@ -527,7 +536,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 		synchronized (markers) {
 			markers.put(identifier, m);
 		}
-		return true;
+		return true;*/
 	}
 
 	
