@@ -2668,7 +2668,10 @@
 
     <owl:NamedIndividual rdf:about="&robot;boxy2_right_arm_roller_base_link">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>right_arm_fwk_fwa_050_frame_in</srdl2-comp:urdfName>
+	<!--
         <srdl2-comp:urdfName>right_arm_roller_base_link</srdl2-comp:urdfName>
+	-->
         <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.5</srdl2-comp:mass_value>
         <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.1</srdl2-comp:inertia_ixx>
         <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixy>
