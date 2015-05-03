@@ -13,6 +13,7 @@ import org.knowrob.interfaces.mongo.types.Designator;
 
 /**
  * @author Daniel Beßler
+ * FIXME: not displayed by threejs :/ strange errors.... blender can display generated mesh
  */
 public class ContourMesh extends ColladaMesh {
 	/**
@@ -115,15 +116,7 @@ public class ContourMesh extends ColladaMesh {
 		return sum;
 	}
 
-	/**
-	 * Create a contour mesh from designator.
-	 * The designator is expected to contain only a set of points
-	 * with X/Y/Z coordinates.
-	 * @param designator The contour designator
-	 * @param diffuseColor The color of the mesh
-	 * @return Generated mesh
-	 */
-	public static ColladaMesh createContourMesh(Designator designator, Vector3d diffuseColor) {
+	public static List<Vector3d> getContourPoints(Designator designator) {
 		List<Vector3d> contourPoints = new LinkedList<Vector3d>();
 		
 		for(Entry<String,Object> entry : designator.entrySet()) {
@@ -147,7 +140,19 @@ public class ContourMesh extends ColladaMesh {
 			}
 		}
 		
-		return new ContourMesh(contourPoints, diffuseColor);
+		return contourPoints;
+	}
+	
+	/**
+	 * Create a contour mesh from designator.
+	 * The designator is expected to contain only a set of points
+	 * with X/Y/Z coordinates.
+	 * @param designator The contour designator
+	 * @param diffuseColor The color of the mesh
+	 * @return Generated mesh
+	 */
+	public static ColladaMesh createContourMesh(Designator designator, Vector3d diffuseColor) {
+		return new ContourMesh(getContourPoints(designator), diffuseColor);
 	}
 	
 	public static void main(String[] args) {

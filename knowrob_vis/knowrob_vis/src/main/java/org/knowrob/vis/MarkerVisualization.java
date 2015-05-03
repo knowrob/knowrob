@@ -1130,20 +1130,78 @@ public class MarkerVisualization extends AbstractNodeMain {
 	// Mesh rendering
 	//
 	
-	public void addDesignatorContourMesh(String markerId, Designator designator, String colorStr[]) {
+	public void addDesignatorContourMesh(String markerId, Designator designator, String timepoint, String colorStr[]) {
 		try {
 			Vector3d color = new Vector3d(
 				Double.valueOf(colorStr[0]),
 				Double.valueOf(colorStr[1]),
 				Double.valueOf(colorStr[2])
 			);
-			ColladaMesh m = ContourMesh.createContourMesh(designator,color);
+			List<Vector3d> contourPointsCamRel = ContourMesh.getContourPoints(designator);
+			List<Vector3d> contourPoints = new LinkedList<Vector3d>();
+			
+			Time time = parseTime(timepoint);
+			// FIXME: use parameter instead
+			// FIXME: not connected to map ?!?
+			String sourceFrame = "/head_mount_kinect2_rgb_optical_frame";
+			//String sourceFrame = "/shoulder_kinect_link";
+			
+			// transform to /map
+			for(Vector3d camP : contourPointsCamRel) {
+				StampedTransform tr = TFMemory.getInstance().lookupTransform(sourceFrame, reference_frame, time);
+				if(tr==null) {
+					log.warn("TF data missing for '" + sourceFrame + "' " + timepoint + " missing in mongo.");
+					return;
+				}
+				Vector3d p_out = new Vector3d();
+				tr.transformVector(camP, p_out);
+				contourPoints.add(p_out);
+			}
+			
+			// compute extends
+			Vector3d min = new Vector3d(contourPoints.get(0));
+			Vector3d max = new Vector3d(contourPoints.get(0));
+			for(Vector3d p : contourPoints) {
+				if(p.x<min.x) min.x=p.x;
+				else if(p.x>max.x) max.x=p.x;
+				if(p.y<min.y) min.y=p.y;
+				else if(p.y>max.y) max.y=p.y;
+				if(p.z<min.z) min.z=p.z;
+				else if(p.z>max.z) max.z=p.z;
+			}
 
-			m.marshal(System.err, true);
+			Marker m = markersCache.get(markerId);
+			if(m==null) {
+				m = createMarker();
+				m.setType(Marker.CUBE);
+				m.getColor().setR(new Double(color.x).floatValue());
+				m.getColor().setG(new Double(color.y).floatValue());
+				m.getColor().setB(new Double(color.z).floatValue());
+				m.getColor().setA(1.0f);
+			}
+	
+			m.getPose().getPosition().setX(0.5*(min.x+max.x));
+			m.getPose().getPosition().setY(0.5*(min.y+max.y));
+			m.getPose().getPosition().setZ(0.5*(min.z+max.z));
+
+			m.getPose().getOrientation().setW(1.0);
+			m.getPose().getOrientation().setX(0.0);
+			m.getPose().getOrientation().setY(0.0);
+			m.getPose().getOrientation().setZ(0.0);
 			
-			String meshPath = m.marshal(markerId + new Long(System.currentTimeMillis()).toString());
+			m.getScale().setX(max.x-min.x);
+			m.getScale().setY(max.y-min.y);
+			m.getScale().setZ(max.z-min.z);
+	
+			// add marker to map
+			synchronized (markers) {
+				markers.put(markerId, m);
+			}
+			synchronized (markersCache) {
+				markersCache.put(markerId, m);
+			}
 			
-			addMeshMarker(markerId, "'"+meshPath+"'");
+			publishMarkers();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
