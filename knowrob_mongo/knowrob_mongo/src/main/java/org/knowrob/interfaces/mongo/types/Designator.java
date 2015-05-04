@@ -163,18 +163,26 @@ public class Designator {
 				if(val instanceof BasicDBList) {
 					BasicDBList dim = ((BasicDBList) val);
 					
-					valAccepted = new Vector3d();
-					((Vector3d) valAccepted).x = Double.valueOf(dim.get(0).toString());
-					((Vector3d) valAccepted).y = Double.valueOf(dim.get(1).toString());
-					((Vector3d) valAccepted).z = Double.valueOf(dim.get(2).toString());
+					if(dim.size()!=3) {
+						System.err.println("Invalid designator: Expecting 3 values in 'dimensions' array!");
+					}
+					else {
+						valAccepted = new Vector3d();
+						((Vector3d) valAccepted).x = Double.valueOf(dim.get(0).toString());
+						((Vector3d) valAccepted).y = Double.valueOf(dim.get(1).toString());
+						((Vector3d) valAccepted).z = Double.valueOf(dim.get(2).toString());
+					}
 				}
 			
 			} else if(key.equalsIgnoreCase("dimensions-3d")) {
 				
 				if(val instanceof BasicDBObject) {
 					BasicDBObject dimRow = (BasicDBObject)val;
-					
-					if(dimRow.containsField("DEPTH") && dimRow.containsField("WIDTH") && dimRow.containsField("HEIGHT")) {
+
+					if(!dimRow.containsField("DEPTH") || !dimRow.containsField("WIDTH") || !dimRow.containsField("HEIGHT")) {
+						System.err.println("Invalid designator: Expecting WIDTH,HEIGHT and DEPTH keys in 'dimensions-3d'!");
+					}
+					else {
 						valAccepted = new Vector3d();
 						((Vector3d) valAccepted).x = Double.valueOf(dimRow.get("DEPTH").toString());
 						((Vector3d) valAccepted).y = Double.valueOf(dimRow.get("WIDTH").toString());
@@ -186,10 +194,15 @@ public class Designator {
 			} else if(key.equalsIgnoreCase("color")) {
 				if(val instanceof BasicDBObject) {
 					BasicDBObject colRow = (BasicDBObject)val;
-					valAccepted = new Vector3d();
-					((Vector3d) valAccepted).x = Double.valueOf(colRow.get("RED").toString());
-					((Vector3d) valAccepted).y = Double.valueOf(colRow.get("GREEN").toString());
-					((Vector3d) valAccepted).z = Double.valueOf(colRow.get("BLUE").toString());
+					if(!colRow.containsField("RED") || !colRow.containsField("GREEN") || !colRow.containsField("BLUE")) {
+						System.err.println("Invalid designator: Expecting RED,GREEN and BLUE keys in 'dimensions-3d'!");
+					}
+					else {
+						valAccepted = new Vector3d();
+						((Vector3d) valAccepted).x = Double.valueOf(colRow.get("RED").toString());
+						((Vector3d) valAccepted).y = Double.valueOf(colRow.get("GREEN").toString());
+						((Vector3d) valAccepted).z = Double.valueOf(colRow.get("BLUE").toString());
+					}
 				}
 				else {
 					String colorString = row.getString(key);
@@ -209,7 +222,12 @@ public class Designator {
 				
 			// Numerical properties
 			} else if(key.equalsIgnoreCase("z-offset")) {
-				valAccepted = row.getDouble(key);
+				try {
+					valAccepted = row.getDouble(key);
+				}
+				catch(Exception exc) {
+					System.err.println("Invalid designator: Number as value of z-offset!");
+				}
 
 			// String properties
 			} else if(key.equalsIgnoreCase("response")) {
