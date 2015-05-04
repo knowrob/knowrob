@@ -1209,6 +1209,32 @@ public class MarkerVisualization extends AbstractNodeMain {
 		}
 	}
 	
+	
+	public double getDesignatorContourSize(Designator designator) {
+		try {
+			List<Vector3d> contourPointsCamRel = ContourMesh.getContourPoints(designator);
+			
+			Vector3d min = new Vector3d(contourPointsCamRel.get(0));
+			Vector3d max = new Vector3d(contourPointsCamRel.get(0));
+			for(Vector3d p : contourPointsCamRel) {
+				if(p.x<min.x) min.x=p.x;
+				else if(p.x>max.x) max.x=p.x;
+				if(p.y<min.y) min.y=p.y;
+				else if(p.y>max.y) max.y=p.y;
+				if(p.z<min.z) min.z=p.z;
+				else if(p.z>max.z) max.z=p.z;
+			}
+			
+			double size = abs(max.x - min.x) *abs( max.y - min.y) * abs(max.z - min.z);
+			return size;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return 0.0;
+	}
+	
 	public void addDesignatorCheckerboardMesh(String markerId, Designator designator) {
 		// TODO
 		try {

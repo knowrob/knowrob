@@ -65,6 +65,7 @@
       add_mesh/4,
       add_mesh/5,
       add_designator_contour_mesh/4,
+      get_designator_contour_size/3,
       add_designator_checkerboard_mesh/2,
       highlight_object/1,
       highlight_object_mesh/1,
@@ -137,6 +138,7 @@
             add_mesh(+,+,+,+),
             add_mesh(+,+,+,+,+),
             add_designator_contour_mesh(r,r,+,+),
+            get_designator_contour_size(r,r,+),
             add_designator_checkerboard_mesh(r,r),
             highlight_object(r),
             highlight_object_mesh(r),
@@ -597,6 +599,15 @@ add_designator_contour_mesh(MarkerId, DesignatorId, Color, ContourPath) :-
     mng_designator_props(DesignatorId, DesigJava, ['TIMESTAMP'], Timestamp),
     lists_to_arrays(Color, ColorArr),
     jpl_call(Canvas, 'addDesignatorContourMesh', [MarkerId, ContourDesig, Timestamp, ColorArr], _).
+    
+    
+get_designator_contour_size(DesignatorId, ContourPath, Size) :-
+    visualisation_canvas(Canvas),
+    mng_designator(DesignatorId, DesigJava),
+    mng_designator_props(DesignatorId, DesigJava, ContourPath, ContourDesig),
+    mng_designator_props(DesignatorId, DesigJava, ['TIMESTAMP'], Timestamp),
+    lists_to_arrays(Color, ColorArr),
+    jpl_call(Canvas, 'getDesignatorContourSize', [ContourDesig], Size).
 
 add_designator_checkerboard_mesh(MarkerId, DesignatorId) :-
     visualisation_canvas(Canvas),
