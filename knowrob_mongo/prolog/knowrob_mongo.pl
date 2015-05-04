@@ -21,6 +21,7 @@
       
       mng_latest_designator_before_time/3,
       mng_latest_designator/3,
+      mng_latest_designator_with_values/5,
       mng_designator_type/2,
       mng_designator_props/3,
       mng_designator_props/4,
@@ -67,6 +68,7 @@
     
     mng_latest_designator_before_time(r,-,-),
     mng_latest_designator(r,+,-),
+    mng_latest_designator_with_values(r,+,+,+,-),
     mng_designator(r,?),
     mng_designator(r,+,?),
     mng_designator_distinct_values(+,-),
@@ -141,6 +143,7 @@ mng_latest_designator_before_time(TimePoint, Type, PoseList) :-
   mongo_interface(DB),
   jpl_call(DB, 'latestUIMAPerceptionBefore', [Time], Designator),
   jpl_call(Designator, 'get', ['_designator_type'], Type),
+  % TODO(daniel): Is this used at all?
   jpl_call(Designator, 'get', ['POSE-ON-PLANE'], StampedPoseString),
   jpl_call('com.mongodb.util.JSON', parse, [StampedPoseString], StampedPoseParsed), 
   jpl_new('org.knowrob.interfaces.mongo.types.PoseStamped', [], StampedPose), 
@@ -182,6 +185,15 @@ mng_latest_designator(Time, MongoPattern, DesigJava) :-
   jpl_list_to_array(Relations, RelationsArray),
   jpl_list_to_array(Values, ValuesArray),
   
+  jpl_call(DB, 'getLatestDesignatorBefore', [Time, KeysArray, RelationsArray, ValuesArray], DesigJava),
+  not(DesigJava = @(null)).
+
+mng_latest_designator_with_values(Time, Keys, Relations, Values, DesigJava) :-
+  number(Time),
+  mongo_interface(DB),
+  jpl_list_to_array(Keys, KeysArray),
+  jpl_list_to_array(Relations, RelationsArray),
+  jpl_list_to_array(Values, ValuesArray),
   jpl_call(DB, 'getLatestDesignatorBefore', [Time, KeysArray, RelationsArray, ValuesArray], DesigJava),
   not(DesigJava = @(null)).
 

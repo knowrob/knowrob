@@ -1145,6 +1145,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 			// FIXME: not connected to map ?!?
 			String sourceFrame = "/head_mount_kinect2_rgb_optical_frame";
 			//String sourceFrame = "/shoulder_kinect_link";
+			System.err.println("Displaying contour mesh for timepoint: " + timepoint);
 			
 			// transform to /map
 			for(Vector3d camP : contourPointsCamRel) {
