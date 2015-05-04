@@ -311,65 +311,72 @@ public class MongoDBInterface {
 	 */
 	// TODO: merge with latestUIMAPerceptionBefore & getDesignatorsByPattern
 	public Designator getLatestDesignatorBefore(double posix_ts, String[] keys, String[] relations, Object[] values) {
-		Designator desig = null;
-		DBCollection coll = getDatabase().getCollection("logged_designators");
+		try {
+			Designator desig = null;
+			DBCollection coll = getDatabase().getCollection("logged_designators");
 
-		// read all events up to one minute before the time
-		Object t = new ISODate((long) (1000.0 * posix_ts) ).getDate();
-
-		QueryBuilder query = QueryBuilder.start("__recorded").lessThan( t );
-		
-		if(relations!=null&&keys!=null&&values!=null) {
-			for(int i=0; i<relations.length && i<keys.length && i<values.length; ++i) {
-				String rel = relations[i];
-				String key = keys[i];
-				Object val = values[i];
-				
-				if("==".equals(rel) || "=".equals(rel) || "is".equals(rel))
-					query = query.and(key).is(val);
-				else if("!=".equals(rel))
-					query = query.and(key).notEquals(val);
-				else if("<".equals(rel))
-					query = query.and(key).lessThan(val);
-				else if("<=".equals(rel))
-					query = query.and(key).lessThanEquals(val);
-				else if(">".equals(rel))
-					query = query.and(key).greaterThan(val);
-				else if(">=".equals(rel))
-					query = query.and(key).greaterThanEquals(val);
-				else {
-					System.err.println("Unknown mongo relation: " + rel);
+			// read all events up to one minute before the time
+			Date t = new ISODate((long) (1000.0 * posix_ts) ).getDate();
+			QueryBuilder query = QueryBuilder.start("__recorded").lessThan( t );
+			
+			if(relations!=null&&keys!=null&&values!=null) {
+				for(int i=0; i<relations.length && i<keys.length && i<values.length; ++i) {
+					String rel = relations[i];
+					String key = keys[i];
+					Object val = values[i];
+					
+					if("==".equals(rel) || "=".equals(rel) || "is".equals(rel))
+						query = query.and(key).is(val);
+					else if("!=".equals(rel))
+						query = query.and(key).notEquals(val);
+					else if("<".equals(rel))
+						query = query.and(key).lessThan(val);
+					else if("<=".equals(rel))
+						query = query.and(key).lessThanEquals(val);
+					else if(">".equals(rel))
+						query = query.and(key).greaterThan(val);
+					else if(">=".equals(rel))
+						query = query.and(key).greaterThanEquals(val);
+					else {
+						System.err.println("Unknown mongo relation: " + rel);
+					}
 				}
 			}
-		}
-		
-		DBObject queryInstance = null;
-		try {
-			queryInstance = query.get();
-		}
-		catch(Exception e){
-			e.printStackTrace();
-			return null;
-		}
-		
-		DBObject cols  = new BasicDBObject();
-		cols.put("designator", 1 );
-
-		DBCursor cursor = coll.find(queryInstance, cols);
-		cursor.sort(new BasicDBObject("__recorded", -1));
-		try {
-			if(cursor.hasNext()) {
-				desig = new Designator().readFromDBObject(
-					(BasicDBObject) cursor.next().get("designator"));
+			
+			DBObject queryInstance = null;
+			try {
+				queryInstance = query.get();
 			}
+			catch(Exception e){
+				e.printStackTrace();
+				return null;
+			}
+			
+			DBObject cols  = new BasicDBObject();
+			cols.put("designator", 1 );
+
+			DBCursor cursor = coll.find(queryInstance, cols);
+			cursor.sort(new BasicDBObject("__recorded", -1));
+			try {
+				if(cursor.hasNext()) {
+					desig = new Designator().readFromDBObject(
+						(BasicDBObject) cursor.next().get("designator"));
+				}
+			}
+			catch(Exception e){
+				e.printStackTrace();
+			}
+			finally {
+				cursor.close();
+			}
+			return desig;
 		}
-		catch(Exception e){
+		catch (Exception e) {
+			System.err.println("getLatestDesignatorBefore failed: " + e.getMessage());
 			e.printStackTrace();
+			// TODO: handle exception
 		}
-		finally {
-			cursor.close();
-		}
-		return desig;
+		return null;
 	}
 
 
@@ -455,6 +462,72 @@ public class MongoDBInterface {
 			
 			while(cursor.hasNext()) {
 
+				DBObject row = cursor.next();
+				Object mat = null;
+				
+				Designator d = new Designator().readFromDBObject((BasicDBObject) row.get("designator"));
+				Designator loc = (Designator)d.get("AT");
+				if(loc != null) {
+					mat = loc.get("POSE");
+				}
+				if(mat == null) {
+					mat = d.get("POSE");
+				}
+				
+				if(mat!=null && mat instanceof Stamped<?>) {
+					poseMatrix = (Stamped<Matrix4d>)mat;
+					if(!poseMatrix.frameID.startsWith("/"))
+						poseMatrix.frameID = "/"+poseMatrix.frameID;
+					
+					// Transform pose to target frame if required
+					if(poseMatrix.frameID!=null && !targetFrame.equals(poseMatrix.frameID)) {
+						final Stamped<Matrix4d> worldFrame = new Stamped<Matrix4d>();
+						worldFrame.setData(new Matrix4d());
+						worldFrame.getData().setIdentity();
+						
+						if(transformPose(targetFrame, poseMatrix, worldFrame))
+							poseMatrix = worldFrame;
+					}
+					
+					break;
+				}
+
+			}
+		} catch(Exception e){
+			e.printStackTrace();
+		} finally {
+			cursor.close();
+		}
+		if(poseMatrix == null)
+			return null;
+		else
+			return poseMatrix.getData();
+	}
+
+	// TODO: merge with above
+	@SuppressWarnings("unchecked")
+	public Matrix4d getDesignatorLocation(String id, double posix_ts) {
+		// FIXME: bad assumption
+		final String targetFrame = "/map";
+
+		// read all events up to one minute before the time
+		Object t = new ISODate((long) (1000.0 * posix_ts) ).getDate();
+		Stamped<Matrix4d> poseMatrix = null;
+
+		DBCollection coll = getDatabase().getCollection("logged_designators");
+		DBObject query = QueryBuilder
+				.start("designator._id").is(id).and("__recorded").lessThan( t ).get();
+		
+
+		DBObject cols  = new BasicDBObject();
+		cols.put("__recorded", 1 );
+		cols.put("designator", 1 );
+
+		DBCursor cursor = coll.find(query, cols);
+		try {
+			cursor.sort(new BasicDBObject("__recorded", -1));
+			
+			while(cursor.hasNext()) {
 				DBObject row = cursor.next();
 				Object mat = null;
 				

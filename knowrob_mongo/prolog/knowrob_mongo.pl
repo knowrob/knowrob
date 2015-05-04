@@ -31,6 +31,7 @@
       mng_designator/3,
       mng_designator_distinct_values/2,
       mng_designator_location/2,
+      mng_designator_location/3,
       mng_decision_tree/1,
 
       mng_lookup_transform/4,
@@ -188,8 +189,9 @@ mng_latest_designator(Time, MongoPattern, DesigJava) :-
   jpl_call(DB, 'getLatestDesignatorBefore', [Time, KeysArray, RelationsArray, ValuesArray], DesigJava),
   not(DesigJava = @(null)).
 
-mng_latest_designator_with_values(Time, Keys, Relations, Values, DesigJava) :-
-  number(Time),
+mng_latest_designator_with_values(Timepoint, Keys, Relations, Values, DesigJava) :-
+  atom(Timepoint),
+  time_term(Timepoint, Time),
   mongo_interface(DB),
   jpl_list_to_array(Keys, KeysArray),
   jpl_list_to_array(Relations, RelationsArray),
@@ -353,6 +355,35 @@ mng_designator_location(Designator, [X00, X01, X02, X03,
   
   mongo_interface(DB),
   jpl_call(DB, 'getDesignatorLocation', [DesigID], Mat4d),
+  jpl_is_object(Mat4d),
+  
+  jpl_call(Mat4d, 'getElement', [0,0], X00),
+  jpl_call(Mat4d, 'getElement', [0,1], X01),
+  jpl_call(Mat4d, 'getElement', [0,2], X02),
+  jpl_call(Mat4d, 'getElement', [0,3], X03),
+  jpl_call(Mat4d, 'getElement', [1,0], X10),
+  jpl_call(Mat4d, 'getElement', [1,1], X11),
+  jpl_call(Mat4d, 'getElement', [1,2], X12),
+  jpl_call(Mat4d, 'getElement', [1,3], X13),
+  jpl_call(Mat4d, 'getElement', [2,0], X20),
+  jpl_call(Mat4d, 'getElement', [2,1], X21),
+  jpl_call(Mat4d, 'getElement', [2,2], X22),
+  jpl_call(Mat4d, 'getElement', [2,3], X23),
+  jpl_call(Mat4d, 'getElement', [3,0], X30),
+  jpl_call(Mat4d, 'getElement', [3,1], X31),
+  jpl_call(Mat4d, 'getElement', [3,2], X32),
+  jpl_call(Mat4d, 'getElement', [3,3], X33).
+
+% TODO: Merge with above
+mng_designator_location(Designator, [X00, X01, X02, X03,
+                                     X10, X11, X12, X13,
+                                     X20, X21, X22, X23,
+                                     X30, X31, X32, X33], T) :-
+  rdf_split_url(_, DesigID, Designator),
+  
+  mongo_interface(DB),
+  time_term(T, Time),
+  jpl_call(DB, 'getDesignatorLocation', [DesigID, Time], Mat4d),
   jpl_is_object(Mat4d),
   
   jpl_call(Mat4d, 'getElement', [0,0], X00),
