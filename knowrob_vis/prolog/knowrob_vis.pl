@@ -605,8 +605,6 @@ get_designator_contour_size(DesignatorId, ContourPath, Size) :-
     visualisation_canvas(Canvas),
     mng_designator(DesignatorId, DesigJava),
     mng_designator_props(DesignatorId, DesigJava, ContourPath, ContourDesig),
-    mng_designator_props(DesignatorId, DesigJava, ['TIMESTAMP'], Timestamp),
-    lists_to_arrays(Color, ColorArr),
     jpl_call(Canvas, 'getDesignatorContourSize', [ContourDesig], Size).
 
 add_designator_checkerboard_mesh(MarkerId, DesignatorId) :-

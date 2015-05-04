@@ -1236,8 +1236,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 				else if(p.z>max.z) max.z=p.z;
 			}
 			
-			double size = abs(max.x - min.x) *abs( max.y - min.y) * abs(max.z - min.z);
-			return size;
+			double size = Math.abs(max.x - min.x) * Math.abs( max.y - min.y);// * Math.abs(max.z - min.z);
+			return size *10000;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
