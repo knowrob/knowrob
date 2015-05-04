@@ -300,7 +300,7 @@ add_stickman_visualization(Identifier, Individual, Timepoint, Suffix, TfPrefix) 
 % Removes agent pose visualizations from the visualization canvas.
 %
 remove_agent_visualization(Individual) :-
-    remove_agent('_', Individual).
+    remove_agent_visualization('_', Individual).
 remove_agent_visualization(Identifier, Individual) :-
     visualisation_canvas(Canvas),
     jpl_call(Canvas, 'removeAgent', [Identifier,Individual], _).

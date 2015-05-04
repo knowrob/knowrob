@@ -1094,26 +1094,31 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * Removes markers that belong to an agent individual.
 	 */
 	public void removeAgent(String identifier, String individual) {
-		
-		// wait for node to be ready
-		waitForNode();
-		
-		final String ns = individual + "_" + identifier;
-		final List<String> toRemove = new LinkedList<String>();
-		final MarkerArray arr = pub.newMessage();
-
-		synchronized (markersCache) {
-			for(Entry<String, Marker> e : markersCache.entrySet()) {
-				if(e.getValue().getNs().equals(ns)) {
-					toRemove.add(e.getKey());
-					e.getValue().setAction(Marker.DELETE);
-					arr.getMarkers().add(e.getValue());
-				}
+		try {
+			// wait for node to be ready
+			waitForNode();
+			
+			Skeleton skel = agentSkeletons.get(individual);
+			if(skel == null) {
+				System.err.println("No agent known: " + individual);
+				return;
 			}
-			for(String x : toRemove) markersCache.remove(x);
-		}
 
-		pub.publish(arr);
+			final List<String> toRemove = new LinkedList<String>();
+			final MarkerArray arr = pub.newMessage();
+			
+			for(Entry<String, Marker> e : skel.getMarkers()) {
+				toRemove.add(e.getKey());
+				e.getValue().setAction(Marker.DELETE);
+				arr.getMarkers().add(e.getValue());
+			}
+
+			pub.publish(arr);
+		}
+		catch (Exception e) {
+			System.err.println("Failed to remove agent: " + e.getMessage());
+			e.printStackTrace();
+		}
 	}
 	
 	Skeleton getIndividualSkeleton(String individualName) {

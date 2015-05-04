@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.vecmath.Vector3d;
@@ -182,6 +184,10 @@ public class Skeleton {
 	 */
 	public Collection<Link> getLinks() {
 		return links.values();
+	}
+
+	public Set<Entry<String, Marker>> getMarkers() {
+		return markers.entrySet();
 	}
 	
 	/**
