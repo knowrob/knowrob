@@ -1140,12 +1140,16 @@ public class MarkerVisualization extends AbstractNodeMain {
 			List<Vector3d> contourPointsCamRel = ContourMesh.getContourPoints(designator);
 			List<Vector3d> contourPoints = new LinkedList<Vector3d>();
 			
-			Time time = parseTime(timepoint);
+			// FIXME: Hacky method for getting time since TF data recorded that way for pizza rolling
+			double posix_ts = parseTime_d(timepoint)*1000000000;
+			Time time = new Time();
+			time.secs = (int)posix_ts;
+			time.nsecs = (int) (1E9 * (posix_ts - ((int) posix_ts)));
+
 			// FIXME: use parameter instead
-			// FIXME: not connected to map ?!?
 			String sourceFrame = "/head_mount_kinect2_rgb_optical_frame";
-			//String sourceFrame = "/shoulder_kinect_link";
 			System.err.println("Displaying contour mesh for timepoint: " + timepoint);
+                        System.err.println(time);
 			
 			// transform to /map
 			for(Vector3d camP : contourPointsCamRel) {
@@ -1155,7 +1159,14 @@ public class MarkerVisualization extends AbstractNodeMain {
 					return;
 				}
 				Vector3d p_out = new Vector3d();
+				double[] middleTransform = new double[3];
+				 
 				tr.transformVector(camP, p_out);
+				p_out.get(middleTransform);
+				middleTransform[0] = -1 * middleTransform[0] - 1.02;
+				middleTransform[1] = -1 * middleTransform[1] + 0.27;
+				middleTransform[2] = -1 * middleTransform[2] + 0.1;
+				p_out.set(middleTransform);
 				contourPoints.add(p_out);
 			}
 			
