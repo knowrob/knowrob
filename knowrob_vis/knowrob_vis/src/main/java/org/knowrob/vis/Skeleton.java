@@ -122,6 +122,11 @@ public class Skeleton {
 	private final Map<String, Marker> markers;
 
 	/**
+	 * Maps marker identifier to marker.
+	 */
+	private final Map<String, Marker> agentMarkers;
+
+	/**
 	 * The marker type that is used for links when no CAD model is defined.
 	 */
 	private int linkMarkerType = Marker.CUBE;
@@ -139,6 +144,7 @@ public class Skeleton {
 		this.individualName = individualName;
 		this.links = new HashMap<String, Link>();
 		this.markers = markerCache;
+		this.agentMarkers = new HashMap<String, Marker>();
 		for(String linkName : queryLinks()) {
 			final String tfFrame = getURDFName(linkName);
 			if(tfFrame==null) { continue; }
@@ -187,7 +193,7 @@ public class Skeleton {
 	}
 
 	public Set<Entry<String, Marker>> getMarkers() {
-		return markers.entrySet();
+		return agentMarkers.entrySet();
 	}
 	
 	/**
@@ -348,6 +354,7 @@ public class Skeleton {
 			m.getColor().setB(defaultColor[2]);
 			m.getColor().setA(defaultColor[3]);
 			markers.put(identifier,m);
+			agentMarkers.put(identifier,m);
 		}
 		
 		return m;

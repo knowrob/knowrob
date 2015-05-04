@@ -1098,17 +1098,16 @@ public class MarkerVisualization extends AbstractNodeMain {
 			// wait for node to be ready
 			waitForNode();
 			
-			Skeleton skel = agentSkeletons.get(individual);
+			Skeleton skel = agentSkeletons.get("'" + individual + "'");
 			if(skel == null) {
 				System.err.println("No agent known: " + individual);
 				return;
 			}
 
-			final List<String> toRemove = new LinkedList<String>();
 			final MarkerArray arr = pub.newMessage();
 			
 			for(Entry<String, Marker> e : skel.getMarkers()) {
-				toRemove.add(e.getKey());
+				System.err.println("Removing " + e.getKey());
 				e.getValue().setAction(Marker.DELETE);
 				arr.getMarkers().add(e.getValue());
 			}
