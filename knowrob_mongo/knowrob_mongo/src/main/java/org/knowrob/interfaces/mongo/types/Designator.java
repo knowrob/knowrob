@@ -43,7 +43,6 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 
 public class Designator {
-
 	protected Map<String, Object> values;
 	protected String detectionType = "";
 	
@@ -148,6 +147,8 @@ public class Designator {
 	public Designator readFromDBObject(BasicDBObject row) {
 
 		for(String key : row.keySet()) {
+			if(key.isEmpty()) continue;
+			
 			Object val = row.get(key);
 			Object valAccepted = null;
 			

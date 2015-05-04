@@ -593,10 +593,14 @@ add_mesh(MarkerId, MeshPath, Position, Rotation, Scale) :-
     jpl_call(Canvas, 'addMeshMarker', [MarkerId, MeshPath, PositionArr, RotationArr, ScaleArr], _).
 
 add_designator_contour_mesh(MarkerId, DesignatorId, Color, ContourPath) :-
-    visualisation_canvas(Canvas),
+    atom(DesignatorId),
     mng_designator(DesignatorId, DesigJava),
-    mng_designator_props(DesignatorId, DesigJava, ContourPath, ContourDesig),
-    mng_designator_props(DesignatorId, DesigJava, ['TIMESTAMP'], Timestamp),
+    add_designator_contour_mesh(MarkerId, DesigJava, Color, ContourPath).
+
+add_designator_contour_mesh(MarkerId, DesigJava, Color, ContourPath) :-
+    visualisation_canvas(Canvas),
+    mng_designator_props('CONTOUR', DesigJava, ContourPath, ContourDesig),
+    mng_designator_props('CONTOUR', DesigJava, ['TIMESTAMP'], Timestamp),
     lists_to_arrays(Color, ColorArr),
     jpl_call(Canvas, 'addDesignatorContourMesh', [MarkerId, ContourDesig, Timestamp, ColorArr], _).
     

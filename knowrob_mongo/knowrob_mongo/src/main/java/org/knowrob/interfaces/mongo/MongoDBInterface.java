@@ -337,6 +337,8 @@ public class MongoDBInterface {
 						query = query.and(key).greaterThan(val);
 					else if(">=".equals(rel))
 						query = query.and(key).greaterThanEquals(val);
+					else if("exist".equals(rel) || "exists".equals(rel))
+						query = query.and(key).exists(val);
 					else {
 						System.err.println("Unknown mongo relation: " + rel);
 					}
