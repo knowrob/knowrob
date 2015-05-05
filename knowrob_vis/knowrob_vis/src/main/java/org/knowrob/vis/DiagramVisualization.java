@@ -73,8 +73,10 @@ public class DiagramVisualization extends AbstractNodeMain {
 			data.setType(DataVis.TYPE_BARCHART);
 		} else if(type.equals("treechart")) {
 			data.setType(DataVis.TYPE_TREECHART);
-		} else if(type.equals("timeline")) {
-			data.setType(DataVis.TYPE_TIMELINE);
+                } else if(type.equals("timeline")) {
+                        data.setType(DataVis.TYPE_TIMELINE);
+                } else if(type.equals("linechart")) {
+                        data.setType(DataVis.TYPE_LINECHART);
 		}
 
 		for(String[][] val_list : values) {
@@ -89,8 +91,8 @@ public class DiagramVisualization extends AbstractNodeMain {
 			synchronized (diagrams) {
 				diagrams.put(id, data);
 			}
+			pub.publish(data);
 		}
-		publishDiagrams();
 	}
 
 
@@ -105,12 +107,8 @@ public class DiagramVisualization extends AbstractNodeMain {
 		DataVis data =  node.getTopicMessageFactory().newFromType(data_vis_msgs.DataVis._TYPE);
 		data.setId(id);
 
-		
 		// publish empty message
-		synchronized (diagrams) {
-			diagrams.put(id, data);
-		}
-		publishDiagrams();
+		pub.publish(data);
 		
 		// remove the object from the list		
 		synchronized (diagrams) {
@@ -122,20 +120,8 @@ public class DiagramVisualization extends AbstractNodeMain {
 	 * Remove all objects from the visualization
 	 */
 	public void clear() {
-		/*synchronized (diagrams) {
-			diagrams.clear();
-		}*/
 		for(String mrk : diagrams.keySet()) {
 			removeDiagram(mrk);
-			
-			// Workaround: send messages more slowly to avoid race conditions 
-			// of the asynchronous message handles. Should be fixed in the JS 
-			// client to properly update the diagrams buffer.
-			try {
-				Thread.sleep(80);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 
@@ -146,18 +132,6 @@ public class DiagramVisualization extends AbstractNodeMain {
 	//
 	// Helper methods
 	//
-
-	public void publishDiagrams() {
-
-		synchronized (diagrams) {
-
-			synchronized (diagrams) {
-				for(String mrk : diagrams.keySet())
-					pub.publish(diagrams.get(mrk));
-			}
-		}
-	}
-
 
 
 	@Override
