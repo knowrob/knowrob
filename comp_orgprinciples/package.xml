@@ -7,9 +7,9 @@
      should be placed (or searched for), given a knowledge base containing an Ontology
      including the object's class and information about the locations of other objects
      in the environment.</description>
-  <maintainer email="tenorth@cs.uni-bremen.de">Moritz Tenorth</maintainer>
+  <maintainer email="knowrob@tenorth.de">Moritz Tenorth</maintainer>
 
-  <license>LGPL</license>
+  <license>BSD</license>
 
   <url type="website">http://ros.org/wiki/comp_orgprinciples</url>
   <url type="bugtracker">https://github.com/knowrob/knowrob/issues</url>

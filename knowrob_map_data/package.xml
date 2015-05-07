@@ -2,9 +2,9 @@
   <name>knowrob_map_data</name>
   <version>1.0.0</version>
   <description>Semantic maps of different kitchens</description>
-  <maintainer email="tenorth@cs.uni-bremen.de">Moritz Tenorth</maintainer>
+  <maintainer email="knowrob@tenorth.de">Moritz Tenorth</maintainer>
 
-  <license>LGPL</license>
+  <license>BSD</license>
 
   <url type="website">http://www.ros.org/wiki/knowrob_map_data</url>
   <url type="bugtracker">https://github.com/knowrob/knowrob/issues</url>

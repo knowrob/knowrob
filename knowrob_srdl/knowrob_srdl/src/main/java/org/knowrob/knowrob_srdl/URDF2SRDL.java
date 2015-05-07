@@ -7,9 +7,7 @@
  * European Union Seventh Framework Programme FP7/2007-2013 
  * under grant agreement no248942 RoboEarth.
  *
- * Copyright (C) 2011 by 
- * <a href=" mailto:perzylo@cs.tum.edu">Alexander Perzylo</a>
- * Technische Universitaet Muenchen
+ * Copyright (C) 2011-13 by Alexander Perzylo, Moritz Tenorth
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -37,9 +35,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * \author Alexander Perzylo
+ * \author Alexander Perzylo, Moritz Tenorth
  * \version 1.0
- * \date 2011
  */
 
 package org.knowrob.knowrob_srdl;

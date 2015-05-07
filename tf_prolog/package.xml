@@ -7,12 +7,12 @@
     tf system.
   </description>
 
-  <maintainer email="tenorth@cs.uni-bremen.de">Moritz Tenorth</maintainer>
+  <maintainer email="knowrob@tenorth.de">Moritz Tenorth</maintainer>
 
   <author>Moritz Tenorth</author>
   <author>Sjoerd van den Dries</author>
   
-  <license>LGPL, BSD</license>
+  <license>BSD</license>
   
   <url type="bugtracker">https://github.com/knowrob/knowrob/issues</url>
 

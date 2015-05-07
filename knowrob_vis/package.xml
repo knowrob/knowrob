@@ -8,9 +8,9 @@
   </description>
 
 
-  <maintainer email="tenorth@cs.uni-bremen.de">Moritz Tenorth</maintainer>
+  <maintainer email="knowrob@tenorth.de">Moritz Tenorth</maintainer>
 
-  <license>LGPL</license>
+  <license>BSD</license>
 
   <url type="bugtracker">https://github.com/knowrob/knowrob/issues</url>
 

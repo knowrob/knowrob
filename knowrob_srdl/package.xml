@@ -8,14 +8,14 @@
     to the capabilities of a robot.
   </description>
 
-  <maintainer email="tenorth@cs.uni-bremen.de">Moritz Tenorth</maintainer>
+  <maintainer email="knowrob@tenorth.de">Moritz Tenorth</maintainer>
 
   <author>Moritz Tenorth</author>
   <author>Tobias Roehm</author>
   
   <url type="bugtracker">https://github.com/knowrob/knowrob/issues</url>
 
-  <license>LGPL</license>
+  <license>BSD</license>
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>rosjava_build_tools</build_depend>

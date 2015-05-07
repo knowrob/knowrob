@@ -4,9 +4,9 @@
   <description>Additional predicates for manipulating semantic maps and
                reasoning about them
   </description>
-  <maintainer email="tenorth@cs.uni-bremen.de">Moritz Tenorth</maintainer>
+  <maintainer email="knowrob@tenorth.de">Moritz Tenorth</maintainer>
 
-  <license>GPL</license>
+  <license>BSD</license>
 
   <url type="website">http://www.ros.org/wiki/knowrob_map_tools</url>
   <url type="bugtracker">https://github.com/knowrob/knowrob/issues</url>

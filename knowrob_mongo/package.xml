@@ -4,12 +4,12 @@
   <version>0.1.0</version>
   <description>The knowrob_mongo package</description>
 
-  <maintainer email="tenorth@cs.uni-bremen.de">Moritz Tenorth</maintainer>
+  <maintainer email="knowrob@tenorth.de">Moritz Tenorth</maintainer>
 
   <author>Asil Bozcuoglu</author>
   <author>Moritz Tenorth</author>
   
-  <license>LGPL, Apache</license>
+  <license>BSD</license>
   
   <url type="bugtracker">https://github.com/knowrob/knowrob/issues</url>
 

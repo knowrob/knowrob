@@ -6,9 +6,9 @@
      Time points and intervals are supported, and the system can
      calculate if one interval subsumes another one, happens before
      or after another, and how long it takes.</description>
-  <maintainer email="tenorth@cs.uni-bremen.de">Moritz Tenorth</maintainer>
+   <maintainer email="knowrob@tenorth.de">Moritz Tenorth</maintainer>
 
-  <license>LGPL</license>
+  <license>BSD</license>
 
   <url type="website">http://ros.org/wiki/comp_temporal</url>
   <url type="bugtracker">https://github.com/knowrob/knowrob/issues</url>

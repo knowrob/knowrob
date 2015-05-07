@@ -5,9 +5,9 @@
     Script to execute Prolog and set the Prolog library paths
     to other ROS Prolog packages.
   </description>
-  <maintainer email="tenorth@cs.uni-bremen.de">Moritz Tenorth</maintainer>
+  <maintainer email="knowrob@tenorth.de">Moritz Tenorth</maintainer>
 
-  <license>BSD</license>
+  <license>BSD, GPL</license>
 
   <url type="website">http://www.ros.org/wiki/rosprolog</url>
   <url type="bugtracker">https://github.com/knowrob/knowrob/issues</url>

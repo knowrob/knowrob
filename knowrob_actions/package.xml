@@ -2,9 +2,9 @@
   <name>knowrob_actions</name>
   <version>1.0.0</version>
   <description>knowrob_actions</description>
-  <maintainer email="tenorth@cs.uni-bremen.de">Moritz Tenorth</maintainer>
+  <maintainer email="knowrob@tenorth.de">Moritz Tenorth</maintainer>
 
-  <license>LGPL</license>
+  <license>BSD</license>
 
   <url type="website">http://ros.org/wiki/knowrob_actions</url>
   <url type="bugtracker">https://github.com/knowrob/knowrob/issues</url>

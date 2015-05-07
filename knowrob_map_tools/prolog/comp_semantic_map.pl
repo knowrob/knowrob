@@ -1,6 +1,4 @@
-/** <module> comp_semantic_map
-
-This module contains computables related to a semantic map.
+/** <module> Computables related to a semantic map.
 
 Copyright (c) 2011, Lars Kunze <kunzel@cs.tum.edu>
 All rights reserved.
