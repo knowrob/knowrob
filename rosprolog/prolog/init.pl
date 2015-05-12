@@ -80,7 +80,8 @@ register_ros_package(Package, AbsoluteDirectory) :-
   asserta(library_directory(AbsoluteDirectory)),
   assert(user:file_search_path(ros, AbsoluteDirectory)),
   assert( ros_package_initialized(Package) ),
-  add_ros_package_to_classpath(Package),
+  init_classpath,
+  %add_ros_package_to_classpath(Package),
   init_ros_package( AbsoluteDirectory ).
 
 
@@ -92,7 +93,27 @@ use_ros_module(Package, FilePath) :-
   atom_concat(AbsoluteDirectory, FilePath, AbsoluteFilePath),
   use_module( AbsoluteFilePath ).
 
+:- assert(classpath_initialized(false)).
+init_classpath :-
+  classpath_initialized(true).
+init_classpath :-
+  classpath_initialized(false),
+  retract(classpath_initialized(false)),
+  assert(classpath_initialized(true)),
+  rosprolog_classpaths(Paths),
+  setenv("CLASSPATH",Paths).
 
+%% rosprolog_classpaths(+Paths) is nondet.
+% 
+% Read all classpath files from workspaces referenced in ROS_PACKAGE_PATH
+%
+% @param Paths The CLASSPATH environment variable
+% 
+rosprolog_classpaths(Paths) :-
+  process_create(path('rosrun'), ['rosprolog', 'get_classpaths'], [stdout(pipe(Out)), process(PID)]),
+  read_line_to_codes(Out, C),
+  string_to_list(Paths, C),
+  process_wait(PID, _).
 
 %% add_ros_package_to_classpath(+Package) is nondet.
 % 
@@ -100,10 +121,11 @@ use_ros_module(Package, FilePath) :-
 %
 % @param Package Name of a ROS package
 % 
-add_ros_package_to_classpath(Package):-
-	rospack_package_classpath(Package, Path),
-	atom_concat(':',Path,PackagePath),
-	setenv("CLASSPATH",PackagePath).
+% TODO(daniel): Remove, it's not needed with `rosprolog_classpaths`
+%add_ros_package_to_classpath(Package):-
+%  rospack_package_classpath(Package, Path),
+%  atom_concat(':',Path,PackagePath),
+%  setenv("CLASSPATH",PackagePath).
 
 %% rospack_package_classpath(+Package, -Path) is nondet.
 % 
@@ -112,18 +134,19 @@ add_ros_package_to_classpath(Package):-
 % @param Package  Name of a ROS package
 % @param Path     String with the dependencies to be added to the CLASSPATH
 % 
-rospack_package_classpath(Package, Path) :-
-  nonvar(Package),
-  process_create(path('rosrun'), ['rosprolog', 'get_pkg_classpath', Package], [stdout(pipe(RospackOutput)), process(PID)]),
-  read_line_to_codes(RospackOutput, C),
-  string_to_list(Path, C),
-  process_wait(PID, _).
+% TODO(daniel): Remove, it's not needed with `rosprolog_classpaths`
+%rospack_package_classpath(Package, Path) :-
+%  nonvar(Package),
+%  process_create(path('rosrun'), ['rosprolog', 'get_pkg_classpath', Package], [stdout(pipe(RospackOutput)), process(PID)]),
+%  read_line_to_codes(RospackOutput, C),
+%  string_to_list(Path, C),
+%  process_wait(PID, _).
 
 % concat a value to an environment varible
 % please note: delimiters have to be set within Val, e.g.:
 % ':/path/to/lib:/path/to/lib2'
 concat_env(Var,Val):-
-	(getenv(Var,OldVal)
-	->  (atom_concat(OldVal,Val,NewVal)) ;
-        (NewVal = Val)),
-	setenv(Var,NewVal).
+  (getenv(Var,OldVal)
+  ->  (atom_concat(OldVal,Val,NewVal))
+  ;   (NewVal = Val)),
+  setenv(Var,NewVal).

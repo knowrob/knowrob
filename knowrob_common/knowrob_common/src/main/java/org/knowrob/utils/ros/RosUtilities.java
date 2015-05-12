@@ -91,7 +91,6 @@ public class RosUtilities {
         return path;
     }
     
-
     /**
      * Finds a ROS package using rospack and returns its path. 
      * @param pkg name of the ROS package
