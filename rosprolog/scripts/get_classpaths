@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# search for files 'classpath.txt' in all packages
+
+is_first=1
+for ROS_PATH in `echo $ROS_PACKAGE_PATH | tr ":" "\n"`
+do
+    for CLASS_PATH_FILE in `ls $ROS_PATH/*/*/*/build/classpath.txt 2> /dev/null`; do
+        CONTENT=
+        if [ $is_first -eq 0 ]; then
+            echo -n ":"
+        fi
+        echo -n `cat $CLASS_PATH_FILE`
+        is_first=0
+    done
+done
+echo ""
