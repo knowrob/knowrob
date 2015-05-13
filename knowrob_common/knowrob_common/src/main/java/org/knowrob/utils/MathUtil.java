@@ -33,6 +33,7 @@ package org.knowrob.utils;
 
 import java.util.LinkedList;
 
+import javax.vecmath.AxisAngle4d;
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Quat4d;
@@ -67,6 +68,52 @@ public class MathUtil {
 		return new double[] { quat.w, quat.x, quat.y, quat.z };
 	}
 
+	public static float[] quaternionDifference(float[] q0, float[] q1) {
+		Quat4d diff = quaternionDifference(
+				new Quat4d(q0[0], q0[1], q0[2], q0[3]),
+				new Quat4d(q1[0], q1[1], q1[2], q1[3])
+		);
+		return new float[] { (float)diff.w, (float)diff.x, (float)diff.y, (float)diff.z };
+	}
+
+	public static double[] quaternionDifference(double[] q0, double[] q1) {
+		Quat4d diff = quaternionDifference(
+				new Quat4d(q0[0], q0[1], q0[2], q0[3]),
+				new Quat4d(q1[0], q1[1], q1[2], q1[3])
+		);
+		return new double[] { diff.w, diff.x, diff.y, diff.z };
+	}
+
+	public static Quat4d quaternionDifference(Quat4d q0, Quat4d q1) {
+		Quat4d inv = new Quat4d(q0);
+		inv.inverse();
+		Quat4d diff = new Quat4d(inv);
+		diff.mul(q1);
+		return diff;
+	}
+
+	public static float[] quaternionMultiply(float[] q0, float[] q1) {
+		Quat4d diff = quaternionMultiply(
+				new Quat4d(q0[0], q0[1], q0[2], q0[3]),
+				new Quat4d(q1[0], q1[1], q1[2], q1[3])
+		);
+		return new float[] { (float)diff.w, (float)diff.x, (float)diff.y, (float)diff.z };
+	}
+
+	public static double[] quaternionMultiply(double[] q0, double[] q1) {
+		Quat4d diff = quaternionMultiply(
+				new Quat4d(q0[0], q0[1], q0[2], q0[3]),
+				new Quat4d(q1[0], q1[1], q1[2], q1[3])
+		);
+		return new double[] { diff.w, diff.x, diff.y, diff.z };
+	}
+
+	public static Quat4d quaternionMultiply(Quat4d q0, Quat4d q1) {
+		Quat4d mul = new Quat4d();
+		mul.mul(q0, q1);
+		return mul;
+	}
+
 	public static double[] orientationToQuaternion(float[] dir) {
 		return orientationToQuaternion(new Vector3d(dir[0], dir[1], dir[2]));
 	}
@@ -76,66 +123,18 @@ public class MathUtil {
 	}
 
 	public static double[] orientationToQuaternion(Vector3d dir) {
-		/*
-		Vector3d up = new Vector3d(0.0, -1.0, 0.0);
-
-		Vector3d bz = new Vector3d();
-		bz.normalize(dir);
-
-		Vector3d bx = new Vector3d();
-		bx.cross(up, bz);
-		bx.normalize();
-
-		Vector3d by = new Vector3d();
-		by.cross(bx, bz);
-		by.normalize();
-
-		Matrix3d mat = new Matrix3d(
-			bx.x, bx.y, bx.z,
-			by.x, by.y, by.z,
-			bz.x, bz.y, bz.z
-		);
-		*/
-
-		Vector3d up = new Vector3d(0.0, 1.0, 0.0);
-
-		Vector3d bz = new Vector3d();
-		bz.normalize(dir);
-
-		Vector3d bx = new Vector3d();
-		bx.cross(up, bz);
-		bx.normalize();
-
-		Vector3d by = new Vector3d();
-		by.cross(bx, bz);
-		by.normalize();
-
-		Matrix3d mat = new Matrix3d(
-			bz.x, bz.y, bz.z,
-			bx.x, bx.y, bx.z,
-			by.x, by.y, by.z
-		);
+		Vector3d up = new Vector3d(0.0,0.0,1.0);
 		
-		Matrix3d rotXMat = new Matrix3d();
-		rotXMat.setIdentity();
-		rotXMat.rotY(Math.PI);
-		//rotXMat.mul(mat);
-		mat.mul(rotXMat);
-		
-		/*
-		Matrix3d mat = new Matrix3d(
-			bx.x, by.x, bz.x, 
-			bx.y, by.y, bz.y, 
-			bx.z, by.z, bz.z
-		);
-		*/
+		// Rotation Axis and angle that rotates `dir` to the `up` vector.
+		Vector3d axis = new Vector3d();
+		axis.cross(dir, up);
+		double angle = dir.angle(up);
 		
 		Quat4d q = new Quat4d();
+		Matrix3d mat = new Matrix3d();
+		mat.set(new AxisAngle4d(axis, angle));
 		q.set(mat);
-		
-		return new double[] {
-			q.w, q.x, q.y, q.z
-		};
+		return new double[] { q.w, q.x, q.y, q.z };
 	}
 	
 	/**
