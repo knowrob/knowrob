@@ -1,0 +1,211 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY knowrob "http://knowrob.org/kb/knowrob.owl#" >
+    <!ENTITY xml "http://www.w3.org/XML/1998/namespace" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY test "http://knowrob.org/kb/test_knowrob_objects.owl#" >
+]>
+
+
+<rdf:RDF xmlns="http://knowrob.org/kb/test_knowrob_objects.owl#"
+     xml:base="http://knowrob.org/kb/test_knowrob_objects.owl"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:test="http://knowrob.org/kb/test_knowrob_objects.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/test_knowrob_objects.owl#">
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#mainColorOfObject -->
+
+    <owl:AnnotationProperty rdf:about="&knowrob;mainColorOfObject"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/test_knowrob_objects.owl#Cup1 -->
+
+    <owl:NamedIndividual rdf:about="&test;Cup1">
+        <rdf:type rdf:resource="&knowrob;Cup"/>
+        <knowrob:widthOfObject rdf:datatype="&xsd;double">0.03</knowrob:widthOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;double">0.03</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;double">0.1</knowrob:heightOfObject>
+        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.4 0.5 0.6 1</knowrob:mainColorOfObject>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_knowrob_objects.owl#Cup2 -->
+
+    <owl:NamedIndividual rdf:about="&test;Cup2">
+        <rdf:type rdf:resource="&knowrob;Cup"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_knowrob_objects.owl#Dishwasher1 -->
+
+    <owl:NamedIndividual rdf:about="&test;Dishwasher1">
+        <rdf:type rdf:resource="&knowrob;Dishwasher"/>
+        <knowrob:depthOfObject rdf:datatype="&xsd;double">0.580982</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;double">0.59053993</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;double">0.723777</knowrob:heightOfObject>
+        <knowrob:properPhysicalParts rdf:resource="&test;Door1"/>
+        <knowrob:hingedTo rdf:resource="&test;Door1"/>
+        <knowrob:properPhysicalParts rdf:resource="&test;Hinge1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_knowrob_objects.owl#Door1 -->
+
+    <owl:NamedIndividual rdf:about="&test;Door1">
+        <rdf:type rdf:resource="&knowrob;Door"/>
+        <knowrob:depthOfObject rdf:datatype="&xsd;double">0.01</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;double">0.59053993</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;double">0.723777</knowrob:heightOfObject>
+        <knowrob:properPhysicalParts rdf:resource="&test;Handle1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_knowrob_objects.owl#Handle1 -->
+
+    <owl:NamedIndividual rdf:about="&test;Handle1">
+        <rdf:type rdf:resource="&knowrob;Handle"/>
+        <knowrob:widthOfObject rdf:datatype="&xsd;double">0.015</knowrob:widthOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;double">0.015</knowrob:depthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;double">0.015</knowrob:heightOfObject>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_knowrob_objects.owl#Hinge1 -->
+
+    <owl:NamedIndividual rdf:about="&test;Hinge1">
+        <rdf:type rdf:resource="&knowrob;HingedJoint"/>
+        <knowrob:widthOfObject rdf:datatype="&xsd;double">0.0</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;double">0.0</knowrob:heightOfObject>
+        <knowrob:depthOfObject rdf:datatype="&xsd;double">0.0</knowrob:depthOfObject>
+        <knowrob:turnRadius rdf:datatype="&xsd;double">0.0</knowrob:turnRadius>
+        <knowrob:minJointValue rdf:datatype="&xsd;double">0.0</knowrob:minJointValue>
+        <knowrob:maxJointValue rdf:datatype="&xsd;double">2.2</knowrob:maxJointValue>
+        <knowrob:connectedTo-Rigidly rdf:resource="&test;Dishwasher1"/>
+        <knowrob:connectedTo-Rigidly rdf:resource="&test;Door1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_knowrob_objects.owl#RotationMatrix3D_1 -->
+
+    <owl:NamedIndividual rdf:about="&test;RotationMatrix3D_1">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.08847681</knowrob:m01>
+        <knowrob:m12 rdf:datatype="&xsd;double">0.0</knowrob:m12>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.08847681</knowrob:m10>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.44037533</knowrob:m13>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.4702375</knowrob:m23>
+        <knowrob:m00 rdf:datatype="&xsd;double">0.99607825</knowrob:m00>
+        <knowrob:m11 rdf:datatype="&xsd;double">0.99607825</knowrob:m11>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m03 rdf:datatype="&xsd;double">1.1171718</knowrob:m03>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_knowrob_objects.owl#RotationMatrix3D_2 -->
+
+    <owl:NamedIndividual rdf:about="&test;RotationMatrix3D_2">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.08847681</knowrob:m01>
+        <knowrob:m12 rdf:datatype="&xsd;double">0.0</knowrob:m12>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.08847681</knowrob:m10>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.816479</knowrob:m23>
+        <knowrob:m11 rdf:datatype="&xsd;double">0.99607825</knowrob:m11>
+        <knowrob:m00 rdf:datatype="&xsd;double">0.99607825</knowrob:m00>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m03 rdf:datatype="&xsd;double">1.1277804</knowrob:m03>
+        <knowrob:m13 rdf:datatype="&xsd;double">2.6304414</knowrob:m13>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_knowrob_objects.owl#SemanticMapPerception1 -->
+
+    <owl:NamedIndividual rdf:about="&test;SemanticMapPerception1">
+        <rdf:type rdf:resource="&knowrob;SemanticMapPerception"/>
+        <knowrob:objectActedOn rdf:resource="&test;Cup1"/>
+        <knowrob:eventOccursAt rdf:resource="&test;RotationMatrix3D_2"/>
+        <knowrob:startTime rdf:resource="&test;timepoint_1331040458"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_knowrob_objects.owl#SemanticMapPerception2 -->
+
+    <owl:NamedIndividual rdf:about="&test;SemanticMapPerception2">
+        <rdf:type rdf:resource="&knowrob;SemanticMapPerception"/>
+        <knowrob:objectActedOn rdf:resource="&test;Dishwasher1"/>
+        <knowrob:eventOccursAt rdf:resource="&test;RotationMatrix3D_1"/>
+        <knowrob:startTime rdf:resource="&test;timepoint_1331040458"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/test_knowrob_objects.owl#timepoint_1331040458 -->
+
+    <owl:NamedIndividual rdf:about="&test;timepoint_1331040458">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.5.0) http://owlapi.sourceforge.net -->
+
