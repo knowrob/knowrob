@@ -245,7 +245,7 @@ begin_tests(Unit, Name, File:Line, Options) :-
 	    assert(current_unit(Unit, Name, Context, Options))
 	),
 	'$set_source_module'(Old, Name),
-	'$declare_module'(Name, Context, File, Line, false),
+  '$declare_module'(Name, test, Context, File, Line, false),
 	discontiguous(Name:'unit test'/4),
 	'$set_predicate_attribute'(Name:'unit test'/4, trace, 0),
 	discontiguous(Name:'unit body'/2),
