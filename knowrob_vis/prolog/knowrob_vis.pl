@@ -77,6 +77,7 @@
       add_designator_checkerboard_mesh/2,
       highlight_object/1,
       highlight_object_mesh/1,
+      highlight_object_mesh/2,
       highlight_object/2,
       highlight_object/5,
       highlight_object_with_children/1,
@@ -150,6 +151,7 @@
             add_designator_checkerboard_mesh(r,r),
             highlight_object(r),
             highlight_object_mesh(r),
+            highlight_object_mesh(r,+),
             highlight_object(r,?),
             highlight_object(r,?,?,?,?,?),
             highlight_object_with_children(r),
@@ -771,6 +773,12 @@ highlight_trajectory(Link, Starttime, Endtime, Color) :-
 highlight_object_mesh(Identifier) :-
     visualisation_canvas(Canvas),
     jpl_call(Canvas, 'highlightMesh', [Identifier], _).
+
+highlight_object_mesh(Identifier, Color) :-
+    visualisation_canvas(Canvas),
+    length(Color, 4),
+    jpl_list_to_array(Color, ColorArr),
+    jpl_call(Canvas, 'highlightMesh', [Identifier, ColorArr], _).
     
 remove_mesh_highlight(Identifier) :-
     visualisation_canvas(Canvas),

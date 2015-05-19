@@ -465,7 +465,28 @@ public class MarkerVisualization extends AbstractNodeMain {
 		float g = 0;
 		float b = 0;
 		float a = 0.5f;
-		
+		highlightMesh(identifier, new float[] {r,g,b,a});
+	}
+
+	public void highlightMesh(String identifier, String []rgba) {
+		highlightMesh(identifier, new float[] {
+			Float.parseFloat(rgba[0]),
+			Float.parseFloat(rgba[1]),
+			Float.parseFloat(rgba[2]),
+			Float.parseFloat(rgba[3])
+		});
+	}
+
+	public void highlightMesh(String identifier, double []rgba) {
+		highlightMesh(identifier, new float[] {
+			new Double(rgba[0]).floatValue(),
+			new Double(rgba[1]).floatValue(),
+			new Double(rgba[2]).floatValue(),
+			new Double(rgba[3]).floatValue()
+		});
+	}
+
+	public void highlightMesh(String identifier, float []rgba) {
 		final Marker ref_marker = markersCache.get(identifier);
 		if(ref_marker==null){
 			System.out.println("Refmarker "+identifier+"does not exist");
@@ -483,10 +504,10 @@ public class MarkerVisualization extends AbstractNodeMain {
 		m.setMeshResource(ref_marker.getMeshResource());
 		m.setMeshUseEmbeddedMaterials(false);
 		m.setAction(0);//Add or change object...
-		m.getColor().setR(r);
-		m.getColor().setG(g);
-		m.getColor().setB(b);
-		m.getColor().setA(a);
+		m.getColor().setR(rgba[0]);
+		m.getColor().setG(rgba[1]);
+		m.getColor().setB(rgba[2]);
+		m.getColor().setA(rgba[3]);
 		m.setPose(ref_marker.getPose());
 		m.setScale(ref_marker.getScale());
 		m.setType(ref_marker.getType());
@@ -497,8 +518,6 @@ public class MarkerVisualization extends AbstractNodeMain {
 			markersCache.put(m_id,m);
 		}
 		publishMarkers();
-		
-		
 	}
 	
 	/**
