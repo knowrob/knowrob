@@ -461,7 +461,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 
 	public void highlightMesh(String identifier) {
-		highlightMesh(identifier, "#FF0000");
+		highlightMesh(identifier, "FF0000");
 	}
 
 	public void highlightMesh(String identifier, String color) {
