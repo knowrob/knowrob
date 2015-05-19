@@ -776,9 +776,7 @@ highlight_object_mesh(Identifier) :-
 
 highlight_object_mesh(Identifier, Color) :-
     visualisation_canvas(Canvas),
-    length(Color, 4),
-    jpl_list_to_array(Color, ColorArr),
-    jpl_call(Canvas, 'highlightMesh', [Identifier, ColorArr], _).
+    jpl_call(Canvas, 'highlightMesh', [Identifier, Color], _).
     
 remove_mesh_highlight(Identifier) :-
     visualisation_canvas(Canvas),

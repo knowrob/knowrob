@@ -461,32 +461,19 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 
 	public void highlightMesh(String identifier) {
-		float r = 1.0f;
-		float g = 0;
-		float b = 0;
-		float a = 0.5f;
-		highlightMesh(identifier, new float[] {r,g,b,a});
+		highlightMesh(identifier, "#FF0000");
 	}
 
-	public void highlightMesh(String identifier, String []rgba) {
-		highlightMesh(identifier, new float[] {
-			Float.parseFloat(rgba[0]),
-			Float.parseFloat(rgba[1]),
-			Float.parseFloat(rgba[2]),
-			Float.parseFloat(rgba[3])
-		});
+	public void highlightMesh(String identifier, String color) {
+		int col = Integer.valueOf(color, 16);
+		int r = (col & 0xff0000) >> 16;
+		int g = (col & 0x00ff00) >> 8;
+		int b = (col & 0x0000ff);
+		int a = 125;
+		highlightMesh(identifier,  r, g, b, a);
 	}
 
-	public void highlightMesh(String identifier, double []rgba) {
-		highlightMesh(identifier, new float[] {
-			new Double(rgba[0]).floatValue(),
-			new Double(rgba[1]).floatValue(),
-			new Double(rgba[2]).floatValue(),
-			new Double(rgba[3]).floatValue()
-		});
-	}
-
-	public void highlightMesh(String identifier, float []rgba) {
+	public void highlightMesh(String identifier, int r, int g, int b, int a) {
 		final Marker ref_marker = markersCache.get(identifier);
 		if(ref_marker==null){
 			System.out.println("Refmarker "+identifier+"does not exist");
@@ -504,10 +491,10 @@ public class MarkerVisualization extends AbstractNodeMain {
 		m.setMeshResource(ref_marker.getMeshResource());
 		m.setMeshUseEmbeddedMaterials(false);
 		m.setAction(0);//Add or change object...
-		m.getColor().setR(rgba[0]);
-		m.getColor().setG(rgba[1]);
-		m.getColor().setB(rgba[2]);
-		m.getColor().setA(rgba[3]);
+		m.getColor().setR(((float)r)/255.0f);
+		m.getColor().setG(((float)g)/255.0f);
+		m.getColor().setB(((float)b)/255.0f);
+		m.getColor().setA(((float)a)/255.0f);
 		m.setPose(ref_marker.getPose());
 		m.setScale(ref_marker.getScale());
 		m.setType(ref_marker.getType());
