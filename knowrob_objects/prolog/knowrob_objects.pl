@@ -94,7 +94,8 @@
       comp_zCoord/2,
       comp_orientation/2,
       instantiate_at_position/3,
-      update_instance_from_class_def/2
+      update_instance_from_class_def/2,
+      parse_vector/2
     ]).
 
 :- use_module(library('semweb/rdf_db')).
