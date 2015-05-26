@@ -2,16 +2,17 @@
 
 # search for files 'classpath.txt' in all packages
 
+output=""
 is_first=1
 for ROS_PATH in `echo $ROS_PACKAGE_PATH | tr ":" "\n"`
 do
     for CLASS_PATH_FILE in `ls $ROS_PATH/*/*/*/build/classpath.txt 2> /dev/null`; do
-        CONTENT=
         if [ $is_first -eq 0 ]; then
-            echo -n ":"
+            output="$output:"
         fi
-        echo -n `cat $CLASS_PATH_FILE`
+        clp=`cat $CLASS_PATH_FILE`
+        output="$output$clp"
         is_first=0
     done
 done
-echo ""
+echo $output | tr -d '\n' | tr ':' '\n' | sort -u | tr '\n' ':'
