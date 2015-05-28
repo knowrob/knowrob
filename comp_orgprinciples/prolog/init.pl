@@ -1,5 +1,4 @@
-/** 
-
+/*
   Copyright (C) 2011 Martin Schuster
   All rights reserved.
 

@@ -1,5 +1,4 @@
-/** 
-
+/*
   Copyright (C) 2009-2014 Lars Kunze, Lorenz Moesenlechner, Moritz Tenorth
   All rights reserved.
 

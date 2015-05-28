@@ -1,5 +1,4 @@
-/** 
-
+/*
   Copyright (C) 2009-14 Lorenz Mösenlechner, Moritz Tenorth
   All rights reserved.
 

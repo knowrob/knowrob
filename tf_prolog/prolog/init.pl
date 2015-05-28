@@ -1,5 +1,4 @@
-/** 
-
+/*
   Copyright (C) 2011 Sjoerd van den Dries, Moritz Tenorth
   All rights reserved.
 
