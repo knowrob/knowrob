@@ -312,66 +312,8 @@ public class MongoDBInterface {
 	// TODO: merge with latestUIMAPerceptionBefore & getDesignatorsByPattern
 	public Designator getLatestDesignatorBefore(double posix_ts, String[] keys, String[] relations, Object[] values) {
 		try {
-			Designator desig = null;
-			DBCollection coll = getDatabase().getCollection("logged_designators");
-
-			// read all events up to one minute before the time
-			Date t = new ISODate((long) (1000.0 * posix_ts) ).getDate();
-			QueryBuilder query = QueryBuilder.start("__recorded").lessThan( t );
-			
-			if(relations!=null&&keys!=null&&values!=null) {
-				for(int i=0; i<relations.length && i<keys.length && i<values.length; ++i) {
-					String rel = relations[i];
-					String key = keys[i];
-					Object val = values[i];
-					
-					if("==".equals(rel) || "=".equals(rel) || "is".equals(rel))
-						query = query.and(key).is(val);
-					else if("!=".equals(rel))
-						query = query.and(key).notEquals(val);
-					else if("<".equals(rel))
-						query = query.and(key).lessThan(val);
-					else if("<=".equals(rel))
-						query = query.and(key).lessThanEquals(val);
-					else if(">".equals(rel))
-						query = query.and(key).greaterThan(val);
-					else if(">=".equals(rel))
-						query = query.and(key).greaterThanEquals(val);
-					else if("exist".equals(rel) || "exists".equals(rel))
-						query = query.and(key).exists(val);
-					else {
-						System.err.println("Unknown mongo relation: " + rel);
-					}
-				}
-			}
-			
-			DBObject queryInstance = null;
-			try {
-				queryInstance = query.get();
-			}
-			catch(Exception e){
-				e.printStackTrace();
-				return null;
-			}
-			
-			DBObject cols  = new BasicDBObject();
-			cols.put("designator", 1 );
-
-			DBCursor cursor = coll.find(queryInstance, cols);
-			cursor.sort(new BasicDBObject("__recorded", -1));
-			try {
-				if(cursor.hasNext()) {
-					desig = new Designator().readFromDBObject(
-						(BasicDBObject) cursor.next().get("designator"));
-				}
-			}
-			catch(Exception e){
-				e.printStackTrace();
-			}
-			finally {
-				cursor.close();
-			}
-			return desig;
+			BasicDBObject val = getLatestEntry("logged_designators", "__recorded", posix_ts, keys, relations, values);
+			return val==null ? null : new Designator().readFromDBObject((BasicDBObject)val.get("designator"));
 		}
 		catch (Exception e) {
 			System.err.println("getLatestDesignatorBefore failed: " + e.getMessage());
@@ -381,6 +323,75 @@ public class MongoDBInterface {
 		return null;
 	}
 
+	public BasicDBObject getLatestKinectFrame(double posix_ts) {
+		return getLatestEntry("kinect_head_rgb_image_color", "header.stamp", posix_ts);
+	}
+
+	public BasicDBObject getLatestEntry(String collection, String timeKey, double posix_ts) {
+		return getLatestEntry(collection, timeKey, posix_ts, new String[]{}, new String[]{}, new String[]{});
+	}
+	
+	// TODO: merge with above
+	public BasicDBObject getLatestEntry(String collection, String timeKey, double posix_ts,
+			String[] keys, String[] relations, Object[] values) {
+		try {
+			DBCollection coll = getDatabase().getCollection(collection);
+
+			Date t = new ISODate((long) (1000.0 * posix_ts) ).getDate();
+			QueryBuilder query = QueryBuilder.start(timeKey).lessThan( t );
+			createQuery(query, keys, relations, values);
+			
+			DBObject queryInstance = query.get();
+			DBObject cols  = new BasicDBObject();
+			DBCursor cursor = coll.find(queryInstance, cols);
+			cursor.sort(new BasicDBObject(timeKey, -1));
+			try {
+				if(cursor.hasNext()) {
+					return (BasicDBObject) cursor.next();
+				}
+			}
+			catch(Exception e){
+				e.printStackTrace();
+			}
+			finally {
+				cursor.close();
+			}
+		}
+		catch (Exception e) {
+			System.err.println("getLatestEntry failed: " + e.getMessage());
+			e.printStackTrace();
+			// TODO: handle exception
+		}
+		return null;
+	}
+
+	private void createQuery(QueryBuilder query, String[] keys, String[] relations, Object[] values) {
+		if(relations!=null&&keys!=null&&values!=null) {
+			for(int i=0; i<relations.length && i<keys.length && i<values.length; ++i) {
+				String rel = relations[i];
+				String key = keys[i];
+				Object val = values[i];
+				
+				if("==".equals(rel) || "=".equals(rel) || "is".equals(rel))
+					query = query.and(key).is(val);
+				else if("!=".equals(rel))
+					query = query.and(key).notEquals(val);
+				else if("<".equals(rel))
+					query = query.and(key).lessThan(val);
+				else if("<=".equals(rel))
+					query = query.and(key).lessThanEquals(val);
+				else if(">".equals(rel))
+					query = query.and(key).greaterThan(val);
+				else if(">=".equals(rel))
+					query = query.and(key).greaterThanEquals(val);
+				else if("exist".equals(rel) || "exists".equals(rel))
+					query = query.and(key).exists(val);
+				else {
+					System.err.println("Unknown mongo relation: " + rel);
+				}
+			}
+		}
+	}
 
 	/**
 	 * Get all times when an object has been detected

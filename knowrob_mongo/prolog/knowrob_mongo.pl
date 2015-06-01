@@ -33,6 +33,10 @@
     [
       mng_db/1,
       
+      mng_latest_entry/4,
+      mng_latest_entry/7,
+      mng_latest_kinect_frame/2,
+
       mng_latest_designator_before_time/3,
       mng_latest_designator/3,
       mng_latest_designator_with_values/5,
@@ -140,6 +144,49 @@ mng_db(DBName) :-
     mongo_interface(Mongo),
     jpl_call(Mongo, setDatabase, [DBName], _).
 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% DB queries
+%
+
+mng_latest_kinect_frame(T, DBObj) :-
+  mng_latest_entry('kinect_head_rgb_image_color', 'header.stamp', T, DBObj).
+
+mng_latest_entry(Collection, TimeKey, TimeAtom, DBObj) :-
+  atom(TimeAtom),
+  time_term(TimeAtom, TimeValue),
+  mng_latest_entry(Collection, TimeKey, TimeValue, DBObj).
+
+mng_latest_entry(Collection, TimeKey, TimeValue, DBObj) :-
+  number(TimeValue),
+  mongo_interface(DB),
+  
+  jpl_call(DB, 'getLatestEntry', [Collection, TimeKey, TimeValue], DBObj),
+  
+  not(DBObj = @(null)).
+
+mng_latest_entry(Collection, TimeKey, TimeAtom, Keys, Relations, Values, DBObj) :-
+  atom(TimeAtom),
+  time_term(TimeAtom, TimeValue),
+  mng_latest_entry(Collection, TimeKey, TimeValue, Keys, Relations, Values, DBObj).
+
+mng_latest_entry(Collection, TimeKey, TimeValue, Keys, Relations, Values, DBObj) :-
+  number(TimeValue),
+  mongo_interface(DB),
+  
+  jpl_list_to_array(Keys, KeysArray),
+  jpl_list_to_array(Relations, RelationsArray),
+  jpl_list_to_array(Values, ValuesArray),
+  
+  jpl_call(DB, 'getLatestEntry', [Collection, TimeKey, TimeValue,
+      KeysArray, RelationsArray, ValuesArray], DBObj),
+  
+  not(DBObj = @(null)).
+
+%mng_latest_tf(TimeValue, Keys, Relations, Values, DBObj) :-
+%  mng_latest_entry('tf', '__recorded', TimeValue, Keys, Relations, Values, DBObj).
+
+%mng_latest_designator(TimeValue, Keys, Relations, Values, DBObj) :-
+%  mng_latest_entry('logged_designators', '__recorded', TimeValue, Keys, Relations, Values, DBObj).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % Designator integration
@@ -211,6 +258,17 @@ mng_latest_designator_with_values(Timepoint, Keys, Relations, Values, DesigJava)
   jpl_list_to_array(Relations, RelationsArray),
   jpl_list_to_array(Values, ValuesArray),
   jpl_call(DB, 'getLatestDesignatorBefore', [Time, KeysArray, RelationsArray, ValuesArray], DesigJava),
+  not(DesigJava = @(null)).
+
+mng_latest_image(Timepoint, DesigJava) :-
+  atom(Timepoint),
+  time_term(Timepoint, Time),
+  mng_latest_image(Time, DesigJava).
+
+mng_latest_image(Time, DesigJava) :-
+  number(Time),
+  mongo_interface(DB),
+  jpl_call(DB, 'getLatestImageBefore', [Time], DesigJava),
   not(DesigJava = @(null)).
 
 mng_value_object(date(Val), Date) :-
@@ -902,5 +960,4 @@ lispify_desig('object_acted_on', 'OBJ').
 % default: do not modify value
 lispify_desig(A, CapA) :-
   upcase_atom(A, CapA).
-
 
