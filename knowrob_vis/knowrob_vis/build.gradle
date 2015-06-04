@@ -55,3 +55,5 @@ task writeClasspath << {
                                                project.name + "-" +
                                                project.version + ".jar" + "\n"
 }
+
+compileJava.options.encoding = 'utf-8'
