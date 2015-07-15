@@ -7,3 +7,12 @@ find_package(catkin REQUIRED COMPONENTS rosprolog knowrob_common)
 catkin_package(
     DEPENDS rosprolog knowrob_common
 )
+
+install(DIRECTORY launch/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch)
+  
+install(DIRECTORY owl/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/owl)
+  
+install(DIRECTORY prolog/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/prolog)

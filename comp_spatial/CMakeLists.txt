@@ -6,3 +6,9 @@ find_package(catkin REQUIRED COMPONENTS knowrob_common comp_temporal)
 catkin_package(
     DEPENDS knowrob_common comp_temporal
 )
+
+install(DIRECTORY owl/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/owl)
+  
+install(DIRECTORY prolog/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/prolog)
