@@ -6,10 +6,6 @@ find_package(catkin REQUIRED rosjava_build_tools roscpp rospy json_prolog_msgs)
 
 catkin_rosjava_setup(installApp publishMavenJavaPublicationToMavenRepository writeClasspath)
 
-install(DIRECTORY ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_MAVEN_DESTINATION}/org/knowrob/${PROJECT_NAME}/
-        DESTINATION ${CATKIN_GLOBAL_MAVEN_DESTINATION}/org/knowrob/${PROJECT_NAME})
-
-
 catkin_package(INCLUDE_DIRS include
   LIBRARIES json_prolog
   CATKIN_DEPENDS json_prolog_msgs
@@ -46,3 +42,21 @@ add_executable(object_positions examples/object_positions.cpp)
 target_link_libraries(object_positions json_prolog ${catkin_LIBRARIES})
 add_dependencies(object_positions ${catkin_EXPORTED_TARGETS})
 
+
+install(DIRECTORY ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_MAVEN_DESTINATION}/org/knowrob/${PROJECT_NAME}/
+        DESTINATION ${CATKIN_GLOBAL_MAVEN_DESTINATION}/org/knowrob/${PROJECT_NAME})
+
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  PATTERN ".svn" EXCLUDE
+)
+
+FILE(GLOB sh_files "scripts/*")
+install(PROGRAMS ${sh_files}
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/scripts/)
+  
+install(DIRECTORY launch/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch )
+  
+install(FILES json_prolog/build/classpath.txt
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/build/classpath.txt )

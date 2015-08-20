@@ -25,8 +25,9 @@ add_custom_target(srdl_media_files ALL DEPENDS ${xacro_files_out})
 install(DIRECTORY ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_MAVEN_DESTINATION}/org/knowrob/${PROJECT_NAME}/ 
         DESTINATION ${CATKIN_GLOBAL_MAVEN_DESTINATION}/org/knowrob/${PROJECT_NAME})
 
-install(DIRECTORY scripts/
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch )
+FILE(GLOB sh_files "scripts/*")
+install(PROGRAMS ${sh_files}
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/scripts/)
         
 install(DIRECTORY owl/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/owl)
