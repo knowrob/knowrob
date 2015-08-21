@@ -54,9 +54,6 @@ import org.knowrob.interfaces.mongo.types.Designator;
 import org.knowrob.owl.OWLThing;
 import org.knowrob.prolog.PrologInterface;
 import org.knowrob.tfmemory.TFMemory;
-import org.knowrob.vis.meshes.CheckerBoardMesh;
-import org.knowrob.vis.meshes.ColladaMesh;
-import org.knowrob.vis.meshes.ContourMesh;
 
 import tfjava.StampedTransform;
 import visualization_msgs.Marker;
@@ -1170,7 +1167,8 @@ public class MarkerVisualization extends AbstractNodeMain {
 	//
 	// Mesh rendering
 	//
-	
+	// TODO: move to knowrob_meshes
+	/*
 	public void addDesignatorContourMesh(String markerId, Designator designator, String timepoint, String colorStr[]) {
 		try {
 			Vector3d color = new Vector3d(
@@ -1307,6 +1305,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 			e.printStackTrace();
 		}
 	}
+	*/
 	
 	// TODO: remove this
 	/*
