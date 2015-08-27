@@ -126,15 +126,13 @@ public class TFMemory {
 		
 		// check if MONGO_PORT_27017_TCP_ADDR and MONGO_PORT_27017_TCP_PORT 
 		// environment variables are set
-		
-        Map<String, String> env = System.getenv();
-        if(env.containsKey("MONGO_PORT_27017_TCP_ADDR")) {
-        	host = env.get("MONGO_PORT_27017_TCP_ADDR");
-        }
-        
-        if(env.containsKey("MONGO_PORT_27017_TCP_PORT")) {
-        	port = Integer.valueOf(env.get("MONGO_PORT_27017_TCP_PORT"));
-        }
+		Map<String, String> env = System.getenv();
+		if(env.containsKey("MONGO_PORT_27017_TCP_ADDR")) {
+			host = env.get("MONGO_PORT_27017_TCP_ADDR");
+		}
+		if(env.containsKey("MONGO_PORT_27017_TCP_PORT")) {
+			port = Integer.valueOf(env.get("MONGO_PORT_27017_TCP_PORT"));
+		}
         
 		try {
 			mongoClient = new MongoClient(host, port);
