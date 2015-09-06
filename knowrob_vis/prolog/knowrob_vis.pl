@@ -72,9 +72,6 @@
       add_mesh/3,
       add_mesh/4,
       add_mesh/5,
-      add_designator_contour_mesh/4,
-      get_designator_contour_size/3,
-      add_designator_checkerboard_mesh/2,
       highlight_object/1,
       highlight_object_mesh/1,
       highlight_object_mesh/2,
@@ -146,9 +143,6 @@
             add_mesh(+,+,+),
             add_mesh(+,+,+,+),
             add_mesh(+,+,+,+,+),
-            add_designator_contour_mesh(r,r,+,+),
-            get_designator_contour_size(r,r,+),
-            add_designator_checkerboard_mesh(r,r),
             highlight_object(r),
             highlight_object_mesh(r),
             highlight_object_mesh(r,+),
@@ -206,7 +200,7 @@ visualisation_canvas :-
   
 visualisation_canvas(Canvas) :-
     (\+ current_predicate(v_canvas, _)),
-    jpl_new('org.knowrob.vis.MarkerVisualization', [], Canvas),
+    jpl_call('org.knowrob.vis.MarkerVisualization', get, [], Canvas),
     jpl_list_to_array(['org.knowrob.vis.MarkerVisualization'], Arr),
     jpl_call('org.knowrob.utils.ros.RosUtilities', runRosjavaNode, [Canvas, Arr], _),
     assert(v_canvas(Canvas)),!.
@@ -601,30 +595,6 @@ add_mesh(MarkerId, MeshPath, Position, Rotation, Scale) :-
     lists_to_arrays(Rotation, RotationArr),
     lists_to_arrays(Scale, ScaleArr),
     jpl_call(Canvas, 'addMeshMarker', [MarkerId, MeshPath, PositionArr, RotationArr, ScaleArr], _).
-
-add_designator_contour_mesh(MarkerId, DesignatorId, Color, ContourPath) :-
-    atom(DesignatorId),
-    mng_designator(DesignatorId, DesigJava),
-    add_designator_contour_mesh(MarkerId, DesigJava, Color, ContourPath).
-
-add_designator_contour_mesh(MarkerId, DesigJava, Color, ContourPath) :-
-    visualisation_canvas(Canvas),
-    mng_designator_props('CONTOUR', DesigJava, ContourPath, ContourDesig),
-    mng_designator_props('CONTOUR', DesigJava, ['TIMESTAMP'], Timestamp),
-    lists_to_arrays(Color, ColorArr),
-    jpl_call(Canvas, 'addDesignatorContourMesh', [MarkerId, ContourDesig, Timestamp, ColorArr], _).
-    
-    
-get_designator_contour_size(DesignatorId, ContourPath, Size) :-
-    visualisation_canvas(Canvas),
-    mng_designator(DesignatorId, DesigJava),
-    mng_designator_props(DesignatorId, DesigJava, ContourPath, ContourDesig),
-    jpl_call(Canvas, 'getDesignatorContourSize', [ContourDesig], Size).
-
-add_designator_checkerboard_mesh(MarkerId, DesignatorId) :-
-    visualisation_canvas(Canvas),
-    mng_designator(DesignatorId, DesigJava),
-    jpl_call(Canvas, 'addDesignatorCheckerboardMesh', [MarkerId, DesigJava], _).
     
 %%
 %   Reads all trajectories described by start- and endtimes from logged tf data 
