@@ -127,10 +127,17 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 */
 	private Log log;
 
+	private static MarkerVisualization instance = null;
+	
+	public static MarkerVisualization get() {
+		if(instance==null) instance = new MarkerVisualization();
+		return instance;
+	}
+
 	/**
 	 * Constructor. Starts the marker publisher in a parallel thread.
 	 */
-	public MarkerVisualization() {
+	private MarkerVisualization() {
 		markers =  new ConcurrentHashMap<String, Marker>(8, 0.9f, 1);
 		markersCache =  new ConcurrentHashMap<String, Marker>(8, 0.9f, 1);
 		highlighted = new ConcurrentHashMap<String, float[]>(8, 0.9f, 1);
@@ -1162,174 +1169,6 @@ public class MarkerVisualization extends AbstractNodeMain {
 		}
 		return out;
 	}
-
-	// // // // // // // // // // // // // // // // // // // // // // // // // // //
-	//
-	// Mesh rendering
-	//
-	// TODO: move to knowrob_meshes
-	/*
-	public void addDesignatorContourMesh(String markerId, Designator designator, String timepoint, String colorStr[]) {
-		try {
-			Vector3d color = new Vector3d(
-				Double.valueOf(colorStr[0]),
-				Double.valueOf(colorStr[1]),
-				Double.valueOf(colorStr[2])
-			);
-			List<Vector3d> contourPointsCamRel = ContourMesh.getContourPoints(designator);
-			List<Vector3d> contourPoints = new LinkedList<Vector3d>();
-			
-			// FIXME: Hacky method for getting time since TF data recorded that way for pizza rolling
-			double posix_ts = parseTime_d(timepoint)*1000000000;
-			Time time = new Time();
-			time.secs = (int)posix_ts;
-			time.nsecs = (int) (1E9 * (posix_ts - ((int) posix_ts)));
-
-			// FIXME: use parameter instead
-			String sourceFrame = "/head_mount_kinect2_rgb_optical_frame";
-			System.err.println("Displaying contour mesh for timepoint: " + timepoint);
-                        System.err.println(time);
-			
-			// transform to /map
-			for(Vector3d camP : contourPointsCamRel) {
-				StampedTransform tr = TFMemory.getInstance().lookupTransform(sourceFrame, reference_frame, time);
-				if(tr==null) {
-					log.warn("TF data missing for '" + sourceFrame + "' " + timepoint + " missing in mongo.");
-					return;
-				}
-				Vector3d p_out = new Vector3d();
-				double[] middleTransform = new double[3];
-				 
-				tr.transformVector(camP, p_out);
-				p_out.get(middleTransform);
-				middleTransform[0] = -1 * middleTransform[0] - 1.02;
-				middleTransform[1] = -1 * middleTransform[1] + 0.27;
-				middleTransform[2] = -1 * middleTransform[2] + 0.1;
-				p_out.set(middleTransform);
-				contourPoints.add(p_out);
-			}
-			
-			// compute extends
-			Vector3d min = new Vector3d(contourPoints.get(0));
-			Vector3d max = new Vector3d(contourPoints.get(0));
-			for(Vector3d p : contourPoints) {
-				if(p.x<min.x) min.x=p.x;
-				else if(p.x>max.x) max.x=p.x;
-				if(p.y<min.y) min.y=p.y;
-				else if(p.y>max.y) max.y=p.y;
-				if(p.z<min.z) min.z=p.z;
-				else if(p.z>max.z) max.z=p.z;
-			}
-
-			Marker m = markersCache.get(markerId);
-			if(m==null) {
-				m = createMarker();
-				m.setType(Marker.CUBE);
-				m.getColor().setR(new Double(color.x).floatValue());
-				m.getColor().setG(new Double(color.y).floatValue());
-				m.getColor().setB(new Double(color.z).floatValue());
-				m.getColor().setA(1.0f);
-			}
-	
-			m.getPose().getPosition().setX(0.5*(min.x+max.x));
-			m.getPose().getPosition().setY(0.5*(min.y+max.y));
-			m.getPose().getPosition().setZ(0.5*(min.z+max.z));
-
-			m.getPose().getOrientation().setW(1.0);
-			m.getPose().getOrientation().setX(0.0);
-			m.getPose().getOrientation().setY(0.0);
-			m.getPose().getOrientation().setZ(0.0);
-			
-			m.getScale().setX(max.x-min.x);
-			m.getScale().setY(max.y-min.y);
-			m.getScale().setZ(max.z-min.z);
-	
-			// add marker to map
-			synchronized (markers) {
-				markers.put(markerId, m);
-			}
-			synchronized (markersCache) {
-				markersCache.put(markerId, m);
-			}
-			
-			publishMarkers();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	
-	public double getDesignatorContourSize(Designator designator) {
-		try {
-			List<Vector3d> contourPointsCamRel = ContourMesh.getContourPoints(designator);
-			
-			Vector3d min = new Vector3d(contourPointsCamRel.get(0));
-			Vector3d max = new Vector3d(contourPointsCamRel.get(0));
-			for(Vector3d p : contourPointsCamRel) {
-				if(p.x<min.x) min.x=p.x;
-				else if(p.x>max.x) max.x=p.x;
-				if(p.y<min.y) min.y=p.y;
-				else if(p.y>max.y) max.y=p.y;
-				if(p.z<min.z) min.z=p.z;
-				else if(p.z>max.z) max.z=p.z;
-			}
-			
-			double size = Math.abs(max.x - min.x) * Math.abs( max.y - min.y);// * Math.abs(max.z - min.z);
-			return size *10000;
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		return 0.0;
-	}
-	
-	public void addDesignatorCheckerboardMesh(String markerId, Designator designator) {
-		// TODO
-		try {
-			ColladaMesh m = CheckerBoardMesh.createCheckerBoardMesh(designator);
-			//ProfileCOMMON profile = m.setPhongMaterial(
-			//		new double[] {0.0, 0.0, 0.0, 1.0},
-			//		new double[] {0.137255, 0.403922, 0.870588, 1},
-			//		new double[] {0.5, 0.5, 0.5, 1});
-			
-			//String imgPath = "../kitchen/food-drinks/pizza/pizza_sauce_DIFF.png";
-			//m.addDiffuseTexturePhong(profile, "tomato-sauce-diff", "UVMap", imgPath);
-			
-			//String meshPath = m.marshal("blue-cube-" + new Long(System.currentTimeMillis()).toString());
-			
-			//addMeshMarker(meshPath, "'"+meshPath+"'", position, rotation, scale);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	*/
-	
-	// TODO: remove this
-	/*
-	public void addBlueBoxMarker(String position[], String rotation[], String scale[]) {
-		try {
-			//ColladaMesh m = ColladaMesh.createCube();
-			ColladaMesh m = CheckerBoardMesh.createCheckerBoardMesh();
-			ProfileCOMMON profile = m.setPhongMaterial(
-					new double[] {0.0, 0.0, 0.0, 1.0},
-					new double[] {0.137255, 0.403922, 0.870588, 1},
-					new double[] {0.5, 0.5, 0.5, 1});
-			
-			String imgPath = "../kitchen/food-drinks/pizza/pizza_sauce_DIFF.png";
-			m.addDiffuseTexturePhong(profile, "tomato-sauce-diff", "UVMap", imgPath);
-			
-			String meshPath = m.marshal("blue-cube-" + new Long(System.currentTimeMillis()).toString());
-			
-			addMeshMarker(meshPath, "'"+meshPath+"'", position, rotation, scale);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	*/
 	
 	public void addMeshMarker(String markerId, String meshPath) {
 		addMeshMarker(markerId, meshPath,
@@ -1527,7 +1366,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	/**
 	 * @return a marker that belongs to the 'knowrob_vis' namespace
 	 */
-	Marker createMarker() {
+	public Marker createMarker() {
 		waitForNode();
 
 		Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
@@ -1542,6 +1381,10 @@ public class MarkerVisualization extends AbstractNodeMain {
 		m.getColor().setB(0.0f);
 		m.getColor().setA(1.0f);
 		return m;
+	}
+
+	public Marker getMarker(String identifier) {
+		return markersCache.get(identifier);
 	}
 
 	/**
@@ -1830,7 +1673,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * Parses String with common time format 'timepoint_%d'
 	 * and returns a Time object.
 	 */
-	Time parseTime(String timepoint) {
+	public Time parseTime(String timepoint) {
 		double posix_ts = parseTime_d(timepoint);
 		Time time = new Time();
 		time.secs = (int)posix_ts;
@@ -1842,13 +1685,21 @@ public class MarkerVisualization extends AbstractNodeMain {
 	 * and returns a double precision number that represents
 	 * the time passed since 1970.
 	 */
-	double parseTime_d(String timepoint) {
+	public double parseTime_d(String timepoint) {
 		String x[] = timepoint.split("timepoint_");
 		// Also allow input strings without 'timepoint_' prefix
 		String ts = (x.length==1 ? x[0] : x[1]);
 		return Double.valueOf(ts.replaceAll("[^0-9.]", ""));
 	}
 	
+	public void putMarker(String markerId, Marker m) {
+		synchronized (markers) {
+			markers.put(markerId, m);
+		}
+		synchronized (markersCache) {
+			markersCache.put(markerId, m);
+		}
+	}
 
 	public static class MarkerVisualizationMain extends MarkerVisualization {
 		public MarkerVisualizationMain() {

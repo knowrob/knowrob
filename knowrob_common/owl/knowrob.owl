@@ -413,6 +413,15 @@
         <rdfs:domain rdf:resource="&knowrob;Event"/>
         <rdfs:range rdf:resource="&knowrob;Place"/>
     </owl:ObjectProperty>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#experiment -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;experiment">
+        <rdfs:domain rdf:resource="&knowrob;Event"/>
+        <rdfs:range rdf:resource="&knowrob;RobotExperiment"/>
+    </owl:ObjectProperty>
     
 
 
@@ -9131,6 +9140,14 @@ Examples include the location of the center of mass of the Milky Way galaxy at t
     <!-- http://knowrob.org/kb/knowrob.owl#RobotExperiment -->
 
     <owl:Class rdf:about="&knowrob;RobotExperiment">
+        <rdfs:subClassOf rdf:resource="&knowrob;Event"/>
+    </owl:Class>
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RobotExperimentDirectory -->
+
+    <owl:Class rdf:about="&knowrob;RobotExperimentDirectory">
+        <rdfs:subClassOf rdf:resource="&knowrob;DirectoryName"/>
         <rdfs:subClassOf rdf:resource="&knowrob;Event"/>
     </owl:Class>
     
