@@ -419,8 +419,8 @@ marker_pose(Marker, pose(Position,Orientation)) :-
 marker_pose(Marker, Position, Orientation) :-
   marker_call(Marker, pose(Position,Orientation), (get_marker_pose,set_marker_pose)).
 
-marker_translation(Marker, Position) :-
-  marker_call(Marker, Position, (get_marker_translation,set_marker_translation)).
+marker_orientation(Marker, Orientation) :-
+  marker_call(Marker, Orientation, (get_marker_orientation,set_marker_orientation)).
 
 marker_translation(Marker, Position) :-
   marker_call(Marker, Position, (get_marker_translation,set_marker_translation)).
@@ -529,6 +529,22 @@ set_marker_translation(MarkerObj, [X,Y,Z]) :-
   jpl_call(Position, 'setX', [X], _),
   jpl_call(Position, 'setY', [Y], _),
   jpl_call(Position, 'setZ', [Z], _).
+
+get_marker_orientation(MarkerObj, [QW,QX,QY,QZ]) :-
+  jpl_call(MarkerObj, 'getPose', [], Pose),
+  jpl_call(Pose, 'getOrientation', [], Orientation),
+  jpl_call(Orientation, 'getW', [], QW),
+  jpl_call(Orientation, 'getX', [], QX),
+  jpl_call(Orientation, 'getY', [], QY),
+  jpl_call(Orientation, 'getZ', [], QZ).
+
+set_marker_orientation(MarkerObj, [QW,QX,QY,QZ]) :-
+  jpl_call(MarkerObj, 'getPose', [], Pose),
+  jpl_call(Pose, 'getOrientation', [], Orientation),
+  jpl_call(Orientation, 'setW', [QW], _),
+  jpl_call(Orientation, 'setX', [QX], _),
+  jpl_call(Orientation, 'setY', [QY], _),
+  jpl_call(Orientation, 'setZ', [QZ], _).
 
 get_marker_pose(MarkerObj, pose([X,Y,Z],[QW,QX,QY,QZ])) :-
   jpl_call(MarkerObj, 'getPose', [], Pose),
