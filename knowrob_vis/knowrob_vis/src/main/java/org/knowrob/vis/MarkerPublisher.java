@@ -52,7 +52,6 @@ public class MarkerPublisher extends AbstractNodeMain {
 	}
 
 	private MarkerPublisher() {
-		System.err.println("MarkerPublisher()");
 		markers =  new ConcurrentHashMap<String, MarkerObject>(8, 0.9f, 1);
 		markersCache =  new ConcurrentHashMap<String, MarkerObject>(8, 0.9f, 1);
 		highlighted = new ConcurrentHashMap<String, float[]>(8, 0.9f, 1);
@@ -71,7 +70,6 @@ public class MarkerPublisher extends AbstractNodeMain {
 	}
 	
 	public MarkerObject createMarker(String identifier) {
-		System.err.println("createMarker() " + identifier);
 		waitForNode();
 
 		Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
@@ -96,12 +94,10 @@ public class MarkerPublisher extends AbstractNodeMain {
 	}
 	
 	public MarkerObject getMarker(String identifier) {
-		System.err.println("getMarker() " + identifier);
 		return markersCache.get(identifier);
 	}
 	
 	public void eraseMarker(String identifier) {
-		System.err.println("eraseMarker() " + identifier);
 		try {
 			MarkerObject m = markersCache.remove(identifier);
 			if(m!=null) {
@@ -120,8 +116,10 @@ public class MarkerPublisher extends AbstractNodeMain {
 	}
 	
 	public void eraseAllMarker() {
-		while(!markersCache.keySet().isEmpty())
-			eraseMarker(markersCache.keySet().iterator().next());
+		synchronized (markersCache) {
+			while(!markersCache.keySet().isEmpty())
+				eraseMarker(markersCache.keySet().iterator().next());
+		}
 	}
 	
 	public void publishMarker() {
