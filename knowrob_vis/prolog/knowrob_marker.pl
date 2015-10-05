@@ -5,6 +5,7 @@
       marker_publish/0,
       
       marker/2,
+      marker_update/1,
       marker_update/2,
       
       marker_properties/2,
@@ -14,7 +15,7 @@
       marker_mesh_resource/2,
       marker_pose/2,
       marker_translation/2,
-      marker_text/2
+      marker_text/2,
       
       marker_remove_trajectories/0,
       marker_remove_all/0,
@@ -27,12 +28,12 @@
 :- use_module(library('jpl')).
 
 
-trajectory_sample(Frame, T, T_end, Inteval, [Pose|Rest]) :-
-  T =< T_end, T_next is T + Inteval,
+trajectory_sample(Frame, T, T_end, Interval, [Pose|Rest]) :-
+  T =< T_end, T_next is T + Interval,
   object_lookup_transform(Frame, T, Pose),
   trajectory_sample(Frame, T_next, T_end, Rest).
 
-trajectory_sample(Frame, T, T_end, Inteval, [Pose]) :-
+trajectory_sample(Frame, _, T_end, _, [Pose]) :-
   T >= T_end, object_lookup_transform(Frame, T_end, Pose).
 
 
@@ -120,7 +121,7 @@ marker_visualisation(MarkerVis) :-
 
 marker_publish :-
   marker_visualisation(MarkerVis),
-  jpl_call(MarkerVis, 'publishMarker', [], _).
+  jpl_call(MarkerVis, 'publishMarker', [], @void).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -132,19 +133,27 @@ marker_create(Identifier, null, MarkerObject) :-
   marker_create(Identifier, MarkerObject).
 
 marker_create(Identifier, Parent, MarkerObject) :-
+  compound(Identifier),
+  % ensure no unbound variables
+  numbervars(Identifier,0,0),
+  term_to_atom(Identifier,IdentifierAtom),
+  marker_create(IdentifierAtom, Parent, MarkerObject).
+
+marker_create(Identifier, Parent, MarkerObject) :-
+  compound(Identifier),
+  numbervars(Identifier,0,N),  N >= 0,
+  % FIXME: handle case where compound has unbound variables
+  false.
+
+marker_create(Identifier, Parent, MarkerObject) :-
+  atom(Identifier),
   jpl_call(Parent, 'createMarker', [Identifier], MarkerObject),
   not(MarkerObject = @(null)).
 
 marker_create(Identifier, MarkerObject) :-
   marker_visualisation(MarkerVis),
-  jpl_call(MarkerVis, 'createMarker', [Identifier], MarkerObject),
-  not(MarkerObject = @(null)).
+  marker_create(Identifier, MarkerVis, MarkerObject).
 
-
-marker(Identifier, MarkerObject) :-
-  not(Identifier = @(null)),
-  jpl_is_object(Identifier),
-  MarkerObject = Identifier.
 
 marker(Identifier, MarkerObject) :-
   var(Identifier),
@@ -152,13 +161,27 @@ marker(Identifier, MarkerObject) :-
   jpl_call(MarkerVis, 'getMarkerNames', [], IdentifierArray),
   jpl_list_to_array(IdentifierList, IdentifierArray),
   member(Identifier, IdentifierList),
-  marker(Identifier, MarkerObject).
+  term_to_atom(IdentifierCompound,Identifier),
+  marker(IdentifierCompound, MarkerObject).
 
 marker(Identifier, MarkerObject) :-
   atom(Identifier),
   marker_visualisation(MarkerVis),
   jpl_call(MarkerVis, 'getMarker', [Identifier], MarkerObject),
   not(MarkerObject = @(null)).
+
+marker(Identifier, MarkerObject) :-
+  compound(Identifier),
+  % ensure no unbound variables
+  numbervars(Identifier,0,0),
+  term_to_atom(Identifier,IdentifierAtom),
+  marker(IdentifierAtom, MarkerObject).
+
+marker(Identifier, MarkerObject) :-
+  compound(Identifier),
+  numbervars(Identifier,0,N),  N >= 0,
+  % FIXME: handle case where compound has unbound variables
+  false.
 
 marker(primitive(Type,Name), MarkerObject) :-
   marker_create(Name, MarkerObject),
@@ -194,8 +217,8 @@ marker(object(Identifier), MarkerObject) :-
 marker(object(Identifier,Parent), MarkerObject) :-
   marker(cube(object(Identifier)), MarkerObject),
   (  object_has_visual(Identifier)
-  -> jpl_call(MarkerObject, 'setHasVisual', [true], _)
-  ;  jpl_call(MarkerObject, 'setHasVisual', [false], _)
+  -> jpl_call(MarkerObject, 'setHasVisual', [@(true)], @void)
+  ;  jpl_call(MarkerObject, 'setHasVisual', [@(false)], @void)
   ),
   ignore((
     get_model_path(Marker, Path),
@@ -204,7 +227,7 @@ marker(object(Identifier,Parent), MarkerObject) :-
     marker_color(MarkerObject, [0.0,0.0,0.0,0.0]),
     marker_scale(MarkerObject, [1.0,1.0,1.0])
   )),
-  ignore(( object_dimensions(Identifier, Scale), marker_scale(MarkerObject, Scale) ))
+  ignore(( object_dimensions(Identifier, Scale), marker_scale(MarkerObject, Scale) )),
   ignore(( object_color(Identifier, Color), marker_color(MarkerObject, Color) )).
 
 marker(object_with_children(Identifier), MarkerObject) :-
@@ -266,17 +289,21 @@ marker(text(Id,Text), MarkerObject) :-
 
 marker_remove_all :-
   marker_visualisation(MarkerVis),
-  jpl_call(MarkerVis, 'eraseAllMarker', [], _).
+  jpl_call(MarkerVis, 'eraseAllMarker', [], @void).
 
 marker_remove(Identifier) :-
   atom(Identifier),
   marker_visualisation(MarkerVis),
-  jpl_call(MarkerVis, 'eraseMarker', [Identifier], _).
+  jpl_call(MarkerVis, 'eraseMarker', [Identifier], @void).
+
+marker_remove(Identifier) :-
+  compund(Identifier),
+  term_to_atom(Identifier,IdentifierAtom),
+  marker_remove(IdentifierAtom).
 
 marker_remove_trajectories :-
   forall(
-    % FIXME: query with name pattern
-    marker(trajectory(Link), MarkerObj),
+    marker(trajectory(Link), _),
     marker_remove(trajectory(Link))
   ).
 
@@ -294,7 +321,7 @@ marker_update(T) :-
 
 marker_update(Identifier, T) :-
   marker(Identifier, MarkerObject),
-  (  get_marker_timestamp(MarkerObject,T) ;
+  (  get_marker_timestamp(MarkerObject,T)
   -> true
   ;  (
     marker_timestamp(MarkerObject, T),
@@ -330,7 +357,7 @@ marker_update(trajectory(Link), MarkerObject, T) :-
   false. % TODO
 
 marker_update(trajectory(Link), MarkerObject, (T0,T1,Interval)) :-
-  jpl_call(MarkerObject, 'clear', [], _),
+  jpl_call(MarkerObject, 'clear', [], @void),
   trajectory_sample(Link,T0,T1,Interval,Samples),
   forall( member((Translation,Orientation),Samples), (
     jpl_call(MarkerObject, 'createMaker', [], Maker),
@@ -338,16 +365,16 @@ marker_update(trajectory(Link), MarkerObject, (T0,T1,Interval)) :-
   )).
 
 marker_update(average_trajectory(Link), MarkerObject, (T0,T1,Interval)) :-
-  jpl_call(MarkerObject, 'clear', [], _),
+  jpl_call(MarkerObject, 'clear', [], @void),
   false. % TODO
 
 marker_update(stickman(Id), MarkerObject, T) :-
   false. % TODO
 
-marker_update(text(Id), MarkerObject, translation(Translation)) :-
+marker_update(_, MarkerObject, translation(Translation)) :-
   marker_translation(MarkerObject, Translation).
 
-marker_update(MarkerName, MarkerObject, T) :-
+marker_update(_, MarkerObject, T) :-
   jpl_call(MarkerObject, 'getChildrenNames', [], ChildrenArray),
   jpl_list_to_array(Children, ChildrenArray),
   forall(member(Child,Children), (
@@ -369,8 +396,7 @@ marker_properties(Marker, Props) :-
 marker_properties(Marker, [X|Args]) :-
   marker_property(Marker, X),
   marker_properties(Marker, Args).
-
-marker_properties(Marker, []).
+marker_properties(_, []).
 
 
 marker_property(Marker, type(Type)) :-
@@ -380,7 +406,7 @@ marker_property(Marker, color(Color)) :-
   marker_color(Marker, Color).
 
 marker_property(Marker, scale(Scale)) :-
-  marker_scale(Marker, Color).
+  marker_scale(Marker, Scale).
 
 marker_property(Marker, pose(Position,Orientation)) :-
   marker_pose(Marker, Position, Orientation).
@@ -408,7 +434,7 @@ marker_scale(Marker, Scale) :-
   marker_call(Marker,Scale,(get_marker_scale,set_marker_scale)).
 
 marker_color(Marker, Color) :-
-  marker_call(Marker,Scale,(get_marker_color,set_marker_color)).
+  marker_call(Marker,Color,(get_marker_color,set_marker_color)).
 
 marker_mesh_resource(Marker, Mesh) :-
   marker_call(Marker,Mesh,(get_marker_mesh,set_marker_mesh)).
@@ -430,7 +456,7 @@ marker_text(Marker, Text) :-
 
 
 marker_call([Marker|Rest], Value, (Get,Set)) :-
-  (  marker(Marker,MarkerObj),
+  (  marker(Marker,MarkerObj)
   -> call(Set, MarkerObj, Value)
   ;  true
   ),
@@ -456,13 +482,13 @@ get_marker_timestamp(MarkerObj, T) :-
   jpl_call(MarkerObj, 'getTimestamp', [], T).
 
 set_marker_timestamp(MarkerObj, T) :-
-  jpl_call(MarkerObj, 'setTimestamp', [T], _).
+  jpl_call(MarkerObj, 'setTimestamp', [T], @void).
   
 get_marker_duration(MarkerObj, T) :-
   jpl_call(MarkerObj, 'getDuration', [], T).
 
 set_marker_duration(MarkerObj, T) :-
-  jpl_call(MarkerObj, 'setDuration', [T], _).
+  jpl_call(MarkerObj, 'setDuration', [T], @void).
 
 get_marker_type(MarkerObj, Type) :-
   jpl_call(MarkerObj, 'getType', [], TypeId),
@@ -470,19 +496,19 @@ get_marker_type(MarkerObj, Type) :-
 
 set_marker_type(MarkerObj, Type) :-
   marker_prop_type(Type, TypeId),
-  jpl_call(MarkerObj, 'setType', [TypeId], _).
+  jpl_call(MarkerObj, 'setType', [TypeId], @void).
 
 get_marker_mesh(MarkerObj, Mesh) :-
   jpl_call(MarkerObj, 'getMeshResource', [], Mesh).
 
 set_marker_mesh(MarkerObj, Mesh) :-
-  jpl_call(MarkerObj, 'setMeshResource', [Mesh], _).
+  jpl_call(MarkerObj, 'setMeshResource', [Mesh], @void).
 
 get_marker_text(MarkerObj, Text) :-
   jpl_call(MarkerObj, 'getText', [], Text).
 
 set_marker_text(MarkerObj, Text) :-
-  jpl_call(MarkerObj, 'setText', [Text], _).
+  jpl_call(MarkerObj, 'setText', [Text], @void).
 
 get_marker_scale(MarkerObj, [X,Y,Z]) :-
   jpl_call(MarkerObj, 'getScale', [], Scale),
@@ -492,9 +518,9 @@ get_marker_scale(MarkerObj, [X,Y,Z]) :-
 
 set_marker_scale(MarkerObj, [X,Y,Z]) :-
   jpl_call(MarkerObj, 'getScale', [], Scale),
-  jpl_call(Scale, 'setX', [X], _),
-  jpl_call(Scale, 'setY', [Y], _),
-  jpl_call(Scale, 'setZ', [Z], _).
+  jpl_call(Scale, 'setX', [X], @void),
+  jpl_call(Scale, 'setY', [Y], @void),
+  jpl_call(Scale, 'setZ', [Z], @void).
 
 set_marker_scale(MarkerObj, Scale) :-
   number(Scale), set_marker_scale(MarkerObj, [Scale,Scale,Scale]).
@@ -508,10 +534,10 @@ get_marker_color(MarkerObj, [R,G,B,A]) :-
 
 set_marker_color(MarkerObj, [R,G,B,A]) :-
   jpl_call(MarkerObj, 'getColor', [], Color),
-  jpl_call(Color, 'setR', [R], _),
-  jpl_call(Color, 'setG', [G], _),
-  jpl_call(Color, 'setB', [B], _),
-  jpl_call(Color, 'setA', [A], _).
+  jpl_call(Color, 'setR', [R], @void),
+  jpl_call(Color, 'setG', [G], @void),
+  jpl_call(Color, 'setB', [B], @void),
+  jpl_call(Color, 'setA', [A], @void).
 
 set_marker_color(MarkerObj, Color) :-
   number(Color), set_marker_color(MarkerObj, [Color,Color,Color,1.0]).
@@ -526,9 +552,9 @@ get_marker_translation(MarkerObj, [X,Y,Z]) :-
 set_marker_translation(MarkerObj, [X,Y,Z]) :-
   jpl_call(MarkerObj, 'getPose', [], Pose),
   jpl_call(Pose, 'getPosition', [], Position),
-  jpl_call(Position, 'setX', [X], _),
-  jpl_call(Position, 'setY', [Y], _),
-  jpl_call(Position, 'setZ', [Z], _).
+  jpl_call(Position, 'setX', [X], @void),
+  jpl_call(Position, 'setY', [Y], @void),
+  jpl_call(Position, 'setZ', [Z], @void).
 
 get_marker_orientation(MarkerObj, [QW,QX,QY,QZ]) :-
   jpl_call(MarkerObj, 'getPose', [], Pose),
@@ -541,10 +567,10 @@ get_marker_orientation(MarkerObj, [QW,QX,QY,QZ]) :-
 set_marker_orientation(MarkerObj, [QW,QX,QY,QZ]) :-
   jpl_call(MarkerObj, 'getPose', [], Pose),
   jpl_call(Pose, 'getOrientation', [], Orientation),
-  jpl_call(Orientation, 'setW', [QW], _),
-  jpl_call(Orientation, 'setX', [QX], _),
-  jpl_call(Orientation, 'setY', [QY], _),
-  jpl_call(Orientation, 'setZ', [QZ], _).
+  jpl_call(Orientation, 'setW', [QW], @void),
+  jpl_call(Orientation, 'setX', [QX], @void),
+  jpl_call(Orientation, 'setY', [QY], @void),
+  jpl_call(Orientation, 'setZ', [QZ], @void).
 
 get_marker_pose(MarkerObj, pose([X,Y,Z],[QW,QX,QY,QZ])) :-
   jpl_call(MarkerObj, 'getPose', [], Pose),
@@ -561,11 +587,11 @@ get_marker_pose(MarkerObj, pose([X,Y,Z],[QW,QX,QY,QZ])) :-
 set_marker_pose(MarkerObj, pose([X,Y,Z],[QW,QX,QY,QZ])) :-
   jpl_call(MarkerObj, 'getPose', [], Pose),
   jpl_call(Pose, 'getOrientation', [], Orientation),
-  jpl_call(Orientation, 'setW', [QW], _),
-  jpl_call(Orientation, 'setX', [QX], _),
-  jpl_call(Orientation, 'setY', [QY], _),
-  jpl_call(Orientation, 'setZ', [QZ], _),
+  jpl_call(Orientation, 'setW', [QW], @void),
+  jpl_call(Orientation, 'setX', [QX], @void),
+  jpl_call(Orientation, 'setY', [QY], @void),
+  jpl_call(Orientation, 'setZ', [QZ], @void),
   jpl_call(Pose, 'getPosition', [], Position),
-  jpl_call(Position, 'setX', [X], _),
-  jpl_call(Position, 'setY', [Y], _),
-  jpl_call(Position, 'setZ', [Z], _).
+  jpl_call(Position, 'setX', [X], @void),
+  jpl_call(Position, 'setY', [Y], @void),
+  jpl_call(Position, 'setZ', [Z], @void).
