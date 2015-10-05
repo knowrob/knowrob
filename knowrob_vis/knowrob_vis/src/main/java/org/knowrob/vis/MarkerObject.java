@@ -71,6 +71,7 @@ public class MarkerObject {
 	
 	public void setType(int value) {
 		markerMsg.setType(value);
+		queueRepublish();
 	}
 	
 	public String getMeshResource() {
@@ -79,6 +80,7 @@ public class MarkerObject {
 	
 	public void setMeshResource(String value) {
 		markerMsg.setMeshResource(value);
+		queueRepublish();
 	}
 	
 	public String getText() {
@@ -87,29 +89,41 @@ public class MarkerObject {
 	
 	public void setText(String value) {
 		markerMsg.setText(value);
+		queueRepublish();
 	}
 	
-	public Vector3 getScale() {
-		return markerMsg.getScale();
+	public double[] getScale() {
+		return new double[] {
+			markerMsg.getScale().getX(),
+			markerMsg.getScale().getY(),
+			markerMsg.getScale().getZ()
+		};
 	}
 	
-	public void setScale(Vector3 value) {
-		markerMsg.getScale().setX(value.getX());
-		markerMsg.getScale().setY(value.getY());
-		markerMsg.getScale().setZ(value.getZ());
+	public void setScale(double value[]) {
+		markerMsg.getScale().setX(value[0]);
+		markerMsg.getScale().setY(value[1]);
+		markerMsg.getScale().setZ(value[2]);
 		for(MarkerObject child : children) child.setScale(value);
+		queueRepublish();
 	}
 
-	public ColorRGBA getColor() {
-		return markerMsg.getColor();
+	public float[] getColor() {
+		return new float[] {
+				markerMsg.getColor().getR(),
+				markerMsg.getColor().getG(),
+				markerMsg.getColor().getB(),
+				markerMsg.getColor().getA()
+			};
 	}
 	
-	public void setColor(ColorRGBA value) {
-		markerMsg.getColor().setA(value.getA());
-		markerMsg.getColor().setR(value.getR());
-		markerMsg.getColor().setG(value.getG());
-		markerMsg.getColor().setB(value.getB());
+	public void setColor(float value[]) {
+		markerMsg.getColor().setR(value[0]);
+		markerMsg.getColor().setG(value[1]);
+		markerMsg.getColor().setB(value[2]);
+		markerMsg.getColor().setA(value[3]);
 		for(MarkerObject child : children) child.setColor(value);
+		queueRepublish();
 	}
 	
 	public Pose getPose() {
@@ -138,5 +152,10 @@ public class MarkerObject {
 	public void setLifetime(double value) {
 		markerMsg.setLifetime(new Duration(value));
 		for(MarkerObject child : children) child.setLifetime(value);
+		queueRepublish();
+	}
+
+	private void queueRepublish() {
+		publisher.queueRepublish(this);
 	}
 }

@@ -184,10 +184,17 @@ marker(Identifier, MarkerObject) :-
   false.
 
 marker(primitive(Type,Name), MarkerObject) :-
-  marker_create(Name, MarkerObject),
-  marker_type(MarkerObject, Type),
-  marker_color(MarkerObject, [0.6,0.6,0.6,1.0]),
-  marker_scale(MarkerObject, [0.05,0.05,0.05]).
+  marker(Name, MarkerObject) ; (
+    write('__marker_create\n'),
+    marker_create(Name, MarkerObject),
+    write('~marker_create\n'),
+    marker_type(MarkerObject, Type),
+    write('~marker_type\n'),
+    marker_color(MarkerObject, [0.6,0.6,0.6,1.0]),
+    write('~marker_color\n'),
+    marker_scale(MarkerObject, [0.05,0.05,0.05]),
+    write('~marker_scale\n')
+  ).
 
 marker(cube(Name), MarkerObject) :-
   marker(primitive(cube,Name), MarkerObject).
@@ -456,21 +463,31 @@ marker_text(Marker, Text) :-
 
 
 marker_call([Marker|Rest], Value, (Get,Set)) :-
-  (  marker(Marker,MarkerObj)
-  -> call(Set, MarkerObj, Value)
-  ;  true
-  ),
+  jpl_is_object(Marker),
+  call(Set, Marker, Value),
   marker_call(Rest, Value, (Get,Set)).
+
+marker_call([Marker|Rest], Value, (Get,Set)) :-
+  marker(Marker,MarkerObj),
+  marker_call([MarkerObj|Rest], Value, (Get,Set)).
+
 marker_call([], _, _) :- true.
 
 marker_call(Marker, Value, (Get,Set)) :-
-  atom(Marker), nonvar(Value),
-  marker_call([Marker], Value, (Get,Set)).
+  nonvar(Value), marker_call([Marker], Value, (Get,Set)).
 
 marker_call(Marker, Value, (Get,_)) :-
   atom(Marker), var(Value),
-  marker_object(Marker,MarkerObj),
+  marker(Marker,MarkerObj),
   call(Get, MarkerObj, Value).
+
+marker_call(Marker, Value, (Get,Set)) :-
+  compund(Marker), term_to_atom(Marker, MarkerAtom),
+  marker_call(MarkerAtom, Value, (Get,Set)).
+
+marker_call(Marker, Value, (Get,_)) :-
+  jpl_is_object(Marker), var(Value),
+  call(Get, Marker, Value).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -511,33 +528,23 @@ set_marker_text(MarkerObj, Text) :-
   jpl_call(MarkerObj, 'setText', [Text], @void).
 
 get_marker_scale(MarkerObj, [X,Y,Z]) :-
-  jpl_call(MarkerObj, 'getScale', [], Scale),
-  jpl_call(Scale, 'getX', [], X),
-  jpl_call(Scale, 'getY', [], Y),
-  jpl_call(Scale, 'getZ', [], Z).
+  jpl_call(MarkerObj, 'getScale', [], ScaleArray),
+  jpl_list_to_array([X,Y,Z], ScaleArray).
 
 set_marker_scale(MarkerObj, [X,Y,Z]) :-
-  jpl_call(MarkerObj, 'getScale', [], Scale),
-  jpl_call(Scale, 'setX', [X], @void),
-  jpl_call(Scale, 'setY', [Y], @void),
-  jpl_call(Scale, 'setZ', [Z], @void).
+  jpl_list_to_array([X,Y,Z], ScaleArray),
+  jpl_call(MarkerObj, 'setScale', [ScaleArray], _).
 
 set_marker_scale(MarkerObj, Scale) :-
   number(Scale), set_marker_scale(MarkerObj, [Scale,Scale,Scale]).
 
 get_marker_color(MarkerObj, [R,G,B,A]) :-
-  jpl_call(MarkerObj, 'getColor', [], Color),
-  jpl_call(Color, 'getR', [], R),
-  jpl_call(Color, 'getG', [], G),
-  jpl_call(Color, 'getB', [], B),
-  jpl_call(Color, 'getA', [], A).
+  jpl_call(MarkerObj, 'getColor', [], ColorArray),
+  jpl_list_to_array([R,G,B,A], ColorArray).
 
 set_marker_color(MarkerObj, [R,G,B,A]) :-
-  jpl_call(MarkerObj, 'getColor', [], Color),
-  jpl_call(Color, 'setR', [R], @void),
-  jpl_call(Color, 'setG', [G], @void),
-  jpl_call(Color, 'setB', [B], @void),
-  jpl_call(Color, 'setA', [A], @void).
+  jpl_list_to_array([R,G,B,A], ColorArray),
+  jpl_call(MarkerObj, 'setColor', [ColorArray], _).
 
 set_marker_color(MarkerObj, Color) :-
   number(Color), set_marker_color(MarkerObj, [Color,Color,Color,1.0]).
