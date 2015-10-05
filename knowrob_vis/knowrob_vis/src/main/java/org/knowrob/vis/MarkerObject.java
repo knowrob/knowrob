@@ -92,15 +92,15 @@ public class MarkerObject {
 		queueRepublish();
 	}
 	
-	public double[] getScale() {
-		return new double[] {
-			markerMsg.getScale().getX(),
-			markerMsg.getScale().getY(),
-			markerMsg.getScale().getZ()
+	public float[] getScale() {
+		return new float[] {
+			(float)markerMsg.getScale().getX(),
+			(float)markerMsg.getScale().getY(),
+			(float)markerMsg.getScale().getZ()
 		};
 	}
 	
-	public void setScale(double value[]) {
+	public void setScale(float value[]) {
 		markerMsg.getScale().setX(value[0]);
 		markerMsg.getScale().setY(value[1]);
 		markerMsg.getScale().setZ(value[2]);
