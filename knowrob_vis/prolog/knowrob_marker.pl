@@ -227,6 +227,16 @@ marker(trajectory(Link), MarkerObject, Parent) :-
   marker_color(MarkerObject, [1.0,1.0,0.0,1.0]),
   marker_has_visual(MarkerObject, false).
 
+%marker(trajectory(Link), MarkerObject, Parent) :-
+%  marker(trajectory(Link,8), MarkerObject, Parent).
+
+marker(trajectory(Link,Count), MarkerObject, Parent) :-
+  marker_primitive(arrow, trajectory(Link), MarkerObject, Parent),
+  marker_color(MarkerObject, [1.0,1.0,0.0,1.0]),
+  marker_has_visual(MarkerObject, false),
+  % TODO: Create Count trajectory markers
+  false.
+
 marker(trail(Link), MarkerObject, Parent) :-
   marker_primitive(sphere, trail(Link), MarkerObject, Parent),
   marker_color(MarkerObject, [1.0,0.0,0.0,1.0]),
@@ -425,14 +435,26 @@ marker_update(cylinder_tf(From,To), MarkerObject, T) :-
   marker_pose(MarkerObject, [X,Y,Z], [QW,QX,QY,QZ]).
 
 marker_update(trail(Link), MarkerObject, T) :-
-  false. % TODO
+  marker_update(trail(Link), MarkerObject, (T,0.5)).
 
-marker_update(trail(Link), MarkerObject, (T0,T1,Interval)) :-
-  false. % TODO
+marker_update(trail(Link), MarkerObject, (T,DT)) :-
+  marker_update(trajectory(Link), MarkerObject, (T,DT)).
 
 marker_update(trajectory(Link), MarkerObject, T) :-
-  false. % TODO
+  marker_update(trajectory(Link), MarkerObject, (T,0.5)).
 
+marker_update(trajectory(Link), MarkerObject, (T0,DT)) :-
+  jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
+  jpl_array_to_list(ChildrenArray,Children),
+  T is T0 + DT,
+  forall( member(ChildObject,Children), ignore((
+    T is T - DT,
+    v_marker_object(ChildTerm, ChildObject),
+    object_lookup_transform(Frame, T, (Translation,Orientation)),
+    marker_pose(MarkerObject, Translation, Orientation)
+  ))).
+
+% TODO: remove this, use above with DT arg
 marker_update(trajectory(Link), MarkerObject, (T0,T1,Interval)) :-
   jpl_call(MarkerObject, 'clear', [], _),
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
