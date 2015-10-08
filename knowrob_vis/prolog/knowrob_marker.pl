@@ -5,8 +5,10 @@
       marker_publish/0,
       
       marker/2,
+      marker_update/0,
       marker_update/1,
       marker_update/2,
+      marker_remove/1,
       
       marker_properties/2,
       marker_type/2,
@@ -15,42 +17,59 @@
       marker_mesh_resource/2,
       marker_pose/2,
       marker_translation/2,
-      marker_text/2,
-      
-      marker_remove_trajectories/0,
-      marker_remove_all/0,
-      marker_remove/1
+      marker_text/2
     ]).
-
+    
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('rdfs_computable')).
 :- use_module(library('jpl')).
 
+:- rdf_meta marker(t,?),
+            marker_update(t),
+            marker_update(t,r),
+            marker_remove(t),
+            marker_type(t,?),
+            marker_scale(t,?),
+            marker_color(t,?),
+            marker_mesh_resource(t,?),
+            marker_pose(t,?),
+            marker_translation(t,?),
+            marker_text(t,?),
+            marker_properties(t,?).
 
-trajectory_sample(Frame, T, T_end, Interval, [Pose|Rest]) :-
+trajectory_sample(Frame, T, T_end, Interval, X) :-
+  atom(T), time_term(T, T_Term), time_term(T_end, T_end_Term),
+  trajectory_sample(Frame, T_Term, T_end_Term, Interval, X) .
+
+trajectory_sample(Frame, T, T_end, Interval, [(Translation,Orientation,T)|Rest]) :-
+  number(T), number(T_end),
   T =< T_end, T_next is T + Interval,
-  object_lookup_transform(Frame, T, Pose),
-  trajectory_sample(Frame, T_next, T_end, Rest).
+  object_lookup_transform(Frame, T, (Translation,Orientation)),
+  trajectory_sample(Frame, T_next, T_end, Interval, Rest).
 
-trajectory_sample(Frame, _, T_end, _, [Pose]) :-
-  T >= T_end, object_lookup_transform(Frame, T_end, Pose).
+trajectory_sample(Frame, T, T_end, _, [(Translation,Orientation,T)]) :-
+  number(T), number(T_end),
+  T >= T_end, object_lookup_transform(Frame, T_end, (Translation,Orientation)).
 
 
 object_has_visual(Identifier) :-
-  not(owl_individual_of(Identifier, 'http://knowrob.org/kb/srdl2-comp.owl#UrdfJoint')),
-  not(owl_individual_of(Identifier, 'http://knowrob.org/kb/knowrob.owl#RoomInAConstruction')),
+  not(owl_individual_of(Identifier, srdl2comp:'UrdfJoint')),
+  not(owl_individual_of(Identifier, knowrob:'Agent-Generic')),
+  not(owl_individual_of(Identifier, knowrob:'RoomInAConstruction')),
   not(rdf_has(Identifier, knowrob:'hasVisual', literal(type(_,false)))).
 
 object_children(Parent, Children) :-
   findall(Child, (
     rdf_reachable(Part, knowrob:describedInMap, Parent),
     (
-      rdf_reachable(Part, knowrob:properPhysicalParts, Child);
+      rdf_reachable(Part, knowrob:'properPhysicalParts', Child);
       rdf_reachable(Part, srdl2comp:'subComponent', Child);
       rdf_reachable(Part, srdl2comp:'successorInKinematicChain', Child)
-    )
-  ), Children).
+    ),
+    not(Child = Parent)
+  ), ChildrenList),
+  list_to_set(ChildrenList, Children).
 
 object_links(Identifier, Links) :-
   findall(Link, (
@@ -58,10 +77,17 @@ object_links(Identifier, Links) :-
     owl_has(Component, srdl2comp:'baseLinkOfComposition', BaseLink),
     rdf_reachable(BaseLink, srdl2comp:'successorInKinematicChain', Link),
     owl_individual_of(Link, srdl2comp:'UrdfLink')
+  ), LinksList),
+  list_to_set(LinksList, Links).
+
+succeeding_links(Link0, Links) :-
+  findall(Link1, (
+    rdf_has(Link0, srdl2comp:'successorInKinematicChain', Joint),
+    rdf_has(Joint, srdl2comp:'successorInKinematicChain', Link1)
   ), Links).
 
 object_frame(Identifier, UrdfName) :-
-  rdf_has(Identifier, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(Tf)),
+  rdf_has(Identifier, srdl2comp:'urdfName', literal(Tf)),
   atomic_list_concat(['/', Tf], UrdfName).
 
 object_frame(UrdfName, UrdfName).
@@ -75,7 +101,8 @@ object_lookup_transform(Identifier, T, (Translation,Orientation)) :-
 
 object_lookup_transform(Identifier, TargetFrame, T, (Translation,Orientation)) :-
   object_frame(Identifier, TfFrame),
-  mng_lookup_transform(TfFrame, TargetFrame, T, Pose),
+  not( atom_prefix(TfFrame, 'http') ),
+  mng_lookup_transform(TargetFrame, TfFrame, T, Pose),
   matrix_rotation(Pose, Orientation),
   matrix_translation(Pose, Translation).
 
@@ -129,192 +156,180 @@ marker_publish :-
 % Marker factory
 %
 
-marker_create(Identifier, null, MarkerObject) :-
-  marker_create(Identifier, MarkerObject).
 
-marker_create(Identifier, Parent, MarkerObject) :-
-  compound(Identifier),
-  % ensure no unbound variables
-  numbervars(Identifier,0,0),
-  term_to_atom(Identifier,IdentifierAtom),
-  marker_create(IdentifierAtom, Parent, MarkerObject).
+marker_create(MarkerTerm, MarkerObject, Parent) :-
+  compound(MarkerTerm),
+  % Ensures that there are no unbound variables in compound term
+  numbervars(MarkerTerm,0,0),
+  term_to_atom(MarkerTerm, MarkerAtom),
+  jpl_call(Parent, 'createMarker', [MarkerAtom], MarkerObject),
+  not(MarkerObject = @(null)),
+  assert( v_marker_object(MarkerTerm, MarkerObject) ).
 
-marker_create(Identifier, Parent, MarkerObject) :-
-  atom(Identifier),
-  jpl_call(Parent, 'createMarker', [Identifier], MarkerObject),
-  not(MarkerObject = @(null)).
-
-marker_create(Identifier, MarkerObject) :-
-  marker_visualisation(MarkerVis),
-  marker_create(Identifier, MarkerVis, MarkerObject).
+marker_object(Term,Object) :-
+  current_predicate(v_marker_object,_),
+  v_marker_object(Term,Object).
 
 
-marker(Identifier, MarkerObject) :-
-  var(Identifier),
-  marker_visualisation(MarkerVis),
-  jpl_call(MarkerVis, 'getMarkerNames', [], IdentifierArray),
-  jpl_list_to_array(IdentifierList, IdentifierArray),
-  member(Identifier, IdentifierList),
-  term_to_atom(IdentifierCompound,Identifier),
-  marker(IdentifierCompound, MarkerObject).
+marker_remove(all) :-
+  marker_object(Term, _),
+  marker_remove(Term).
 
-marker(Identifier, MarkerObject) :-
-  atom(Identifier),
-  marker_visualisation(MarkerVis),
-  jpl_call(MarkerVis, 'getMarker', [Identifier], MarkerObject),
-  not(MarkerObject = @(null)).
-
-marker(Identifier, MarkerObject) :-
-  compound(Identifier),
-  % ensure no unbound variables
-  numbervars(Identifier,0,0),
-  term_to_atom(Identifier,IdentifierAtom),
-  marker(IdentifierAtom, MarkerObject).
-
-marker(Pattern, MarkerObject) :-
-  % Identifier is a pattern that can match many markers
-  compound(Pattern),
-  numbervars(Pattern,0,N),  N >= 0,
-  jpl_call(MarkerVis, 'getMarkerNames', [], IdentifierArray),
-  jpl_list_to_array(IdentifierList, IdentifierArray),
-  member(Identifier, IdentifierList),
-  % Match the pattern term using prolog
-  term_to_atom(MarkerTerm, Identifier),
-  MarkerTerm = Pattern.
-
-marker(primitive(Type,Name), MarkerObject) :-
-  marker(Name, MarkerObject) ; (
-    write('__marker_create\n'),
-    marker_create(Name, MarkerObject),
-    write('~marker_create\n'),
-    marker_type(MarkerObject, Type),
-    write('~marker_type\n'),
-    marker_color(MarkerObject, [0.6,0.6,0.6,1.0]),
-    write('~marker_color\n'),
-    marker_scale(MarkerObject, [0.05,0.05,0.05]),
-    write('~marker_scale\n')
+marker_remove(trajectories) :-
+  forall(
+    marker_object(trajectory(Link), _),
+    marker_remove(trajectory(Link))
   ).
 
-marker(cube(Name), MarkerObject) :-
-  marker(primitive(cube,Name), MarkerObject).
+marker_remove(Term) :-
+  compound(Term),
+  marker_visualisation(MarkerVis),
+  term_to_atom(Term, Atom),
+  jpl_call(MarkerVis, 'eraseMarker', [Atom], _),
+  v_marker_object(Term, MarkerObj),
+  retract( v_marker_object(Term, _) ),
+  
+  jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
+  jpl_array_to_list(ChildrenArray,Children),
+  forall( member(ChildObject,Children), ignore((
+    v_marker_object(ChildTerm, ChildObject),
+    marker_remove(ChildTerm)
+  ))).
 
-marker(sphere(Name), MarkerObject) :-
-  marker(primitive(sphere,Name), MarkerObject).
 
-marker(arrow(Name), MarkerObject) :-
-  marker(primitive(arrow,Name), MarkerObject).
+marker(MarkerTerm, MarkerObject) :-
+  marker_visualisation(MarkerVis),
+  marker(MarkerTerm, MarkerObject, MarkerVis).
 
-marker(cylinder(Name), MarkerObject) :-
-  marker(primitive(cylinder,Name), MarkerObject).
+marker(MarkerTerm, MarkerObject, _) :-
+  marker_object(MarkerTerm, MarkerObject).
 
-marker(mesh(Name), MarkerObject) :-
-  marker_create(Name, MarkerObject),
+marker(cube(Name), MarkerObject, Parent) :-
+  marker_primitive(cube, cube(Name), MarkerObject, Parent).
+
+marker(sphere(Name), MarkerObject, Parent) :-
+  marker_primitive(sphere, sphere(Name), MarkerObject, Parent).
+
+marker(arrow(Name), MarkerObject, Parent) :-
+  marker_primitive(arrow, arrow(Name), MarkerObject, Parent).
+
+marker(cylinder(Name), MarkerObject, Parent) :-
+  marker_primitive(cylinder, cylinder(Name), MarkerObject, Parent).
+
+marker(cylinder_tf(From,To), MarkerObject, Parent) :-
+  marker_primitive(cylinder, cylinder_tf(From,To), MarkerObject, Parent).
+
+marker(link(Link), MarkerObject, Parent) :-
+  marker_primitive(arrow, link(Link), MarkerObject, Parent).
+
+marker(trajectory(Link), MarkerObject, Parent) :-
+  marker_primitive(arrow, trajectory(Link), MarkerObject, Parent),
+  marker_color(MarkerObject, [1.0,1.0,0.0,1.0]),
+  marker_has_visual(MarkerObject, false).
+
+marker(trail(Link), MarkerObject, Parent) :-
+  marker_primitive(sphere, trail(Link), MarkerObject, Parent),
+  marker_color(MarkerObject, [1.0,0.0,0.0,1.0]),
+  marker_has_visual(MarkerObject, false).
+
+marker(average_trajectory(Link), MarkerObject, Parent) :-
+  marker_primitive(arrow, average_trajectory(Link), MarkerObject, Parent),
+  marker_has_visual(MarkerObject, false).
+
+marker(pointer(From,To), MarkerObject, Parent) :-
+  marker_primitive(arrow, pointer(From,To), MarkerObject, Parent).
+
+marker(mesh(Name), MarkerObject, Parent) :-
+  marker_create(mesh(Name), MarkerObject, Parent),
   marker_type(MarkerObject, mesh_resource),
   marker_color(MarkerObject, [0.0,0.0,0.0,0.0]),
   marker_scale(MarkerObject, [1.0,1.0,1.0]).
 
-marker(mesh(Name,MeshFile), MarkerObject) :-
-  marker(mesh(Name), MarkerObject),
+marker(mesh(Name,MeshFile), MarkerObject, Parent) :-
+  marker(mesh(Name), MarkerObject, Parent),
   marker_mesh_resource(MarkerObject, MeshFile).
 
-marker(object(Identifier), MarkerObject) :-
-  marker(object(Identifier,null), MarkerObject).
+marker(object(Identifier), MarkerObject, Parent) :-
+  marker_primitive(cube, object(Identifier), MarkerObject, Parent),
+  marker_initialize_object(Identifier, MarkerObject).
 
-marker(object(Identifier,Parent), MarkerObject) :-
-  marker(cube(object(Identifier)), MarkerObject),
+marker(object_with_children(Identifier), MarkerObject, Parent) :-
+  marker_primitive(cube, object_with_children(Identifier), MarkerObject, Parent),
+  marker_initialize_object(Identifier, MarkerObject),
+  object_children(Identifier,Children),
+  forall(
+    member( Child,Children ), ignore((
+      marker( object_with_children(Child), _, MarkerObject )
+    ))
+  ).
+
+marker(agent(Identifier), MarkerObject, Parent) :-
+  marker(kinematic_chain(Identifier,agent(Identifier)), MarkerObject, Parent).
+
+marker(kinematic_chain(Identifier), MarkerObject, Parent) :-
+  marker(kinematic_chain(Identifier,kinematic_chain(Identifier)), MarkerObject, Parent).
+
+marker(kinematic_chain(Identifier,Name), MarkerObject, Parent) :-
+  marker_primitive(arrow, Name, MarkerObject, Parent),
+  marker_initialize_object(Identifier,MarkerObject),
+  
+  object_links(Identifier, Links),
+  forall( member( Link,Links ), ignore((
+    object_has_visual( Link ),
+    marker( object(Link), _, MarkerObject )
+  ))).
+
+marker(stickman(Identifier), MarkerObject, Parent) :-
+  marker_primitive(sphere, stickman(Identifier), MarkerObject, Parent),
+  marker_initialize_object(Identifier,MarkerObject),
+  marker_color(MarkerObject, [1.0,1.0,0.0,1.0]),
+  
+  object_links(Identifier, Links),
+  forall( member( Link,Links ), ignore((
+    marker( object(Link), LinkMarker, MarkerObject ),
+    marker_type(LinkMarker, sphere),
+    
+    succeeding_links(Link, SucceedingLinks),
+    forall(
+      member( SucceedingLink,SucceedingLinks ),
+      once( marker( cylinder_tf(Link,SucceedingLink), _, MarkerObject) )
+    )
+  ))).
+
+marker(text(Id), MarkerObject, Parent) :-
+  marker_primitive(text_view_facing, text(Id), MarkerObject, Parent),
+  marker_color(MarkerObject, [0.6,0.9,0.6,1.0]),
+  marker_scale(MarkerObject, [1.0,1.0,1.0]).
+
+marker(text(Id,Text), MarkerObject, Parent) :-
+  marker(text(Id), MarkerObject, Parent),
+  marker_text(MarkerObject, Text).
+
+
+marker_initialize_object(Identifier,MarkerObject) :-
   (  object_has_visual(Identifier)
-  -> jpl_call(MarkerObject, 'setHasVisual', [@(true)], _)
-  ;  jpl_call(MarkerObject, 'setHasVisual', [@(false)], _)
+  -> marker_has_visual(MarkerObject,true)
+  ;  marker_has_visual(MarkerObject,false)
   ),
   ignore((
-    get_model_path(Marker, Path),
+    get_model_path(Identifier, Path),
     marker_type(MarkerObject, mesh_resource),
     marker_mesh_resource(MarkerObject, Path),
     marker_color(MarkerObject, [0.0,0.0,0.0,0.0]),
     marker_scale(MarkerObject, [1.0,1.0,1.0])
   )),
-  ignore(( object_dimensions(Identifier, Scale), marker_scale(MarkerObject, Scale) )),
-  ignore(( object_color(Identifier, Color), marker_color(MarkerObject, Color) )).
+  ignore(( object_dimensions(Identifier, X, Y, Z), marker_scale(MarkerObject, [X, Y, Z]) )),
+  ignore((
+    object_color(Identifier, Color),
+    parse_vector(Color, ColorList),
+    marker_color(MarkerObject, ColorList)
+  )).
 
-marker(object_with_children(Identifier), MarkerObject) :-
-  marker(object_with_children(Identifier,null), MarkerObject).
-
-marker(object_with_children(Identifier,Parent), MarkerObject) :-
-  marker(object(Identifier,Parent), MarkerObject),
-  object_children(Identifier,Children),
-  forall(
-    member( Child,Children ),
-    marker( object_with_children(Child,MarkerObject), _ )
-  ).
-
-marker(agent(Identifier), MarkerObject) :-
-  marker(kinematic_chain(Identifier), MarkerObject).
-
-marker(kinematic_chain(Identifier), MarkerObject) :-
-  marker(object(kinematic_chain(Identifier)), MarkerObject),
-  object_links(Identifier, Links),
-  forall(
-    member( Link,Links ),
-    marker( object(Link,MarkerObject), _ )
-  ).
-
-marker(stickman(Identifier), MarkerObject) :-
-  marker( object(stickman(Identifier)), MarkerObject ),
-  object_links(Identifier, Links),
-  forall(
-    member( Link,Links ),
-    marker( object(Link,MarkerObject), LinkMarker ),
-    marker_type(LinkMarker, sphere),
-    marker_color(LinkMarker, [1.0,1.0,0.0,1.0]),
-    succeeding_links(Link, SucceedingLinks),
-    forall(
-      member( SucceedingLink,SucceedingLinks ),
-      false % TODO
-    )
-  ).
-
-marker(link(Link), MarkerObject) :-
-  marker(arrow(link(Link), MarkerObject)).
-
-marker(trajectory(Link), MarkerObject) :-
-  marker(arrow(trajectory(Link), MarkerObject)).
-
-marker(average_trajectory(Link), MarkerObject) :-
-  marker(arrow(average_trajectory(Link), MarkerObject)).
-
-marker(pointer(From,To), MarkerObject) :-
-  marker(arrow(pointer(From,To), MarkerObject)).
-
-marker(text(Id), MarkerObject) :-
-  marker_create(text(Id), MarkerObject),
-  marker_type(MarkerObject, text_view_facing),
-  marker_color(MarkerObject, [0.6,0.9,0.6,1.0]),
-  marker_scale(MarkerObject, [1.0,1.0,1.0]).
-
-marker(text(Id,Text), MarkerObject) :-
-  marker(text(Id), MarkerObject),
-  marker_text(MarkerObject, Text).
-
-
-marker_remove_all :-
-  marker_visualisation(MarkerVis),
-  jpl_call(MarkerVis, 'eraseAllMarker', [], _).
-
-marker_remove(Identifier) :-
-  atom(Identifier),
-  marker_visualisation(MarkerVis),
-  jpl_call(MarkerVis, 'eraseMarker', [Identifier], _).
-
-marker_remove(Identifier) :-
-  compund(Identifier),
-  term_to_atom(Identifier,IdentifierAtom),
-  marker_remove(IdentifierAtom).
-
-marker_remove_trajectories :-
-  forall(
-    marker(trajectory(Link), _),
-    marker_remove(trajectory(Link))
-  ).
+marker_primitive(Type, MarkerTerm, MarkerObject, Parent) :-
+  marker_create(MarkerTerm, MarkerObject, Parent),
+  marker_type(MarkerObject, Type),
+  marker_color(MarkerObject, [0.6,0.6,0.6,1.0]),
+  marker_scale(MarkerObject, [0.05,0.05,0.05]).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -322,26 +337,52 @@ marker_remove_trajectories :-
 % Updating marker
 %
 
+marker_update :-
+  get_timepoint(T),
+  marker_update(T).
+
+marker_update(Identifier) :-
+  compound(Identifier),
+  get_timepoint(T),
+  marker_update(Identifier,T).
+
 marker_update(T) :-
-  forall(marker(Identifier, MarkerObject), (
-    marker_update(Identifier, MarkerObject, T),
-    marker_timestamp(MarkerObject, T)
-  )).
+  ( atom(T) ; number(T) ),
+  forall(
+    marker(Identifier, _),
+    ignore(marker_update(Identifier, T))
+  ).
 
 marker_update(Identifier, T) :-
-  atom(T),
-  false. % TODO: parse time value (type double unit seconds)
+  atom(T), time_term(T, T_Term),
+  marker_update(Identifier, T_Term).
+
+marker_update(Identifier, (T0,T1,Interval)) :-
+  atom(T0), time_term(T0, T0_Term),
+  atom(T1), time_term(T1, T1_Term),
+  marker_update(Identifier, (T0_Term,T1_Term,Interval)).
 
 marker_update(Identifier, T) :-
   number(T),
+  T_float is float(T),
   marker(Identifier, MarkerObject),
+  marker_timestamp(MarkerObject, Last_T),
   % Only update once for given timestamp
-  (  get_marker_timestamp(MarkerObject,T)
-  -> true
-  ;  (
-    marker_timestamp(MarkerObject, T),
-    marker_update(Identifier, MarkerObject, T)
-  )).
+  ( Last_T is T_float ; once((
+    marker_timestamp(MarkerObject, T_float),
+    marker_update(Identifier, MarkerObject, T_float)
+  ))).
+
+marker_update(Identifier, (T0,T1,Interval)) :-
+  number(T0), number(T1),
+  T0_float is float(T0),
+  marker(Identifier, MarkerObject),
+  marker_timestamp(MarkerObject, Last_T),
+  % Only update once for given timestamp
+  ( Last_T is T0_float ; once((
+    marker_timestamp(MarkerObject, T0_float),
+    marker_update(Identifier, MarkerObject, (T0,T1,Interval))
+  ))).
 
 marker_update(object_with_children(Identifier), MarkerObject, T) :-
   marker_update(object(Identifier), MarkerObject, T).
@@ -351,12 +392,13 @@ marker_update(object(Identifier), MarkerObject, T) :-
     object_lookup_transform(Identifier,T,(Translation,Orientation)),
     marker_pose(MarkerObject,Translation,Orientation)
   )),
-  jpl_call(MarkerObject, 'getChildrenNames', [], ChildrenArray),
-  jpl_list_to_array(Children, ChildrenArray),
-  forall(member(Child,Children), (
-    atom(Child,ChildAtom),
-    marker_update(ChildAtom, T)
-  )).
+  jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
+  jpl_array_to_list(ChildrenArray,Children),
+  forall(member(ChildObject,Children), once((
+    marker_object(ChildTerm, ChildObject),
+    marker_update(ChildTerm, ChildObject, T),
+    marker_timestamp(MarkerObject, T)
+  ))).
 
 marker_update(link(Link), MarkerObject, T) :-
   object_lookup_transform(Link,T,(Translation,Orientation)),
@@ -368,44 +410,76 @@ marker_update(pointer(From,To), MarkerObject, T) :-
   matrix_translation(Pose, Translation),
   marker_pose(MarkerObject,Translation,Orientation).
 
+marker_update(cylinder_tf(From,To), MarkerObject, T) :-
+  object_frame(From, FromFrame),
+  object_frame(To, ToFrame),
+  mng_lookup_transform('/map', FromFrame, T, Pose0),
+  mng_lookup_transform('/map', ToFrame, T, Pose1),
+  matrix_translation(Pose0, [X0,Y0,Z0]),
+  matrix_translation(Pose1, [X1,Y1,Z1]),
+  DX is X1-X0, DY is Y1-Y0, DZ is Z1-Z0,
+  Distance is sqrt(DX*DX + DY*DY + DZ*DZ),
+  QX is -DY, QY is DX, QZ is 0.0, QW is Distance + DZ,
+  X is 0.5*(X0+X1), Y is 0.5*(Y0+Y1), Z is 0.5*(Z0+Z1),
+  marker_scale(MarkerObject, [0.1,0.1,Distance]),
+  marker_pose(MarkerObject, [X,Y,Z], [QW,QX,QY,QZ]).
+
+marker_update(trail(Link), MarkerObject, T) :-
+  false. % TODO
+
+marker_update(trail(Link), MarkerObject, (T0,T1,Interval)) :-
+  false. % TODO
+
 marker_update(trajectory(Link), MarkerObject, T) :-
   false. % TODO
 
 marker_update(trajectory(Link), MarkerObject, (T0,T1,Interval)) :-
   jpl_call(MarkerObject, 'clear', [], _),
+  jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
+  jpl_array_to_list(ChildrenArray,Children),
+  forall( member(ChildObject,Children), ignore((
+    v_marker_object(ChildTerm, ChildObject),
+    marker_remove(ChildTerm)
+  ))),
+  
   trajectory_sample(Link,T0,T1,Interval,Samples),
-  forall( member((Translation,Orientation),Samples), (
-    jpl_call(MarkerObject, 'createMaker', [], Maker),
-    marker_pose(Maker,Translation,Orientation)
+  forall( member((Translation,Orientation,T),Samples), (
+    atom_concat(Link, T, MarkerName),
+    jpl_call(MarkerObject, 'createMarker', [MarkerName], ChildMarker),
+    marker_pose(ChildMarker,Translation,Orientation),
+    marker_timestamp(ChildMarker, T)
   )).
 
-marker_update(average_trajectory(Link), MarkerObject, (T0,T1,Interval)) :-
-  jpl_call(MarkerObject, 'clear', [], _),
-  false. % TODO
-
-marker_update(stickman(Id), MarkerObject, T) :-
-  false. % TODO
-
-marker_update(_, MarkerObject, translation(Translation)) :-
-  marker_translation(MarkerObject, Translation).
+%marker_update(average_trajectory(Link), MarkerObject, (T0,T1,Interval)) :-
+%  jpl_call(MarkerObject, 'clear', [], _),
+%  false. % TODO
 
 marker_update(_, MarkerObject, T) :-
-  jpl_call(MarkerObject, 'getChildrenNames', [], ChildrenArray),
-  jpl_list_to_array(Children, ChildrenArray),
-  forall(member(Child,Children), (
-    atom(Child, ChildAtom),
-    marker_update(ChildAtom, T)
-  )).
+  jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
+  jpl_array_to_list(ChildrenArray,Children),
+  forall(member(ChildObject,Children), ignore((
+    marker(ChildTerm, ChildObject),
+    marker_update(ChildTerm, ChildObject, T),
+    marker_timestamp(ChildObject, T)
+  ))).
 
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%
+% Highlighting marker
+%
+
+%marker_highlight(Marker, Color) :-
+%  false. % TODO
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
 % Marker properties
 %
 
-marker_properties(Marker, Props) :-
-  var(Props),
-  false. % TODO: read all properties
+%marker_properties(Marker, Props) :-
+%  var(Props),
+%  false. % TODO: read all properties
 
 
 marker_properties(Marker, [X|Args]) :-
@@ -469,6 +543,9 @@ marker_translation(Marker, Position) :-
 marker_text(Marker, Text) :-
   marker_call(Marker,Text,(get_marker_text,set_marker_text)).
 
+marker_has_visual(Marker, V) :-
+  marker_call(Marker,V,(get_marker_has_visual,set_marker_has_visual)).
+
 
 marker_call([Marker|Rest], Value, (Get,Set)) :-
   jpl_is_object(Marker),
@@ -485,13 +562,9 @@ marker_call(Marker, Value, (Get,Set)) :-
   nonvar(Value), marker_call([Marker], Value, (Get,Set)).
 
 marker_call(Marker, Value, (Get,_)) :-
-  atom(Marker), var(Value),
+  compound(Marker), var(Value),
   marker(Marker,MarkerObj),
   call(Get, MarkerObj, Value).
-
-marker_call(Marker, Value, (Get,Set)) :-
-  compund(Marker), term_to_atom(Marker, MarkerAtom),
-  marker_call(MarkerAtom, Value, (Get,Set)).
 
 marker_call(Marker, Value, (Get,_)) :-
   jpl_is_object(Marker), var(Value),
@@ -515,6 +588,18 @@ get_marker_duration(MarkerObj, T) :-
 set_marker_duration(MarkerObj, T) :-
   jpl_call(MarkerObj, 'setDuration', [T], _).
 
+get_marker_has_visual(MarkerObj, true) :-
+  jpl_call(MarkerObj, 'getHasVisual', [], @(true)).
+
+get_marker_has_visual(MarkerObj, false) :-
+  jpl_call(MarkerObj, 'getHasVisual', [], @(false)).
+
+set_marker_has_visual(MarkerObj, true) :-
+  jpl_call(MarkerObj, 'setHasVisual', [@(true)], _).
+
+set_marker_has_visual(MarkerObj, false) :-
+  jpl_call(MarkerObj, 'setHasVisual', [@(false)], _).
+
 get_marker_type(MarkerObj, Type) :-
   jpl_call(MarkerObj, 'getType', [], TypeId),
   marker_type(Type, TypeId).
@@ -537,9 +622,17 @@ set_marker_text(MarkerObj, Text) :-
 
 get_marker_scale(MarkerObj, [X,Y,Z]) :-
   jpl_call(MarkerObj, 'getScale', [], ScaleArray),
-  jpl_list_to_array([X,Y,Z], ScaleArray).
+  jpl_array_to_list(ScaleArray, [X,Y,Z]).
 
 set_marker_scale(MarkerObj, [X,Y,Z]) :-
+  atom(X),atom(Y),atom(Z),
+  atom_number(X,X_N),
+  atom_number(Y,Y_N),
+  atom_number(Z,Z_N),
+  set_marker_scale(MarkerObj, [X_N,Y_N,Z_N]).
+
+set_marker_scale(MarkerObj, [X,Y,Z]) :-
+  number(X),number(Y),number(Z),
   jpl_list_to_array([X,Y,Z], ScaleArray),
   jpl_call(MarkerObj, 'setScale', [ScaleArray], _).
 
@@ -548,9 +641,18 @@ set_marker_scale(MarkerObj, Scale) :-
 
 get_marker_color(MarkerObj, [R,G,B,A]) :-
   jpl_call(MarkerObj, 'getColor', [], ColorArray),
-  jpl_list_to_array([R,G,B,A], ColorArray).
+  jpl_array_to_list(ColorArray,[R,G,B,A]).
 
 set_marker_color(MarkerObj, [R,G,B,A]) :-
+  atom(R),atom(G),atom(B),atom(A),
+  atom_number(R,R_N),
+  atom_number(G,G_N),
+  atom_number(B,B_N),
+  atom_number(A,A_N),
+  set_marker_color(MarkerObj, [R_N,G_N,B_N,A_N]).
+
+set_marker_color(MarkerObj, [R,G,B,A]) :-
+  number(R),number(G),number(B),number(A),
   jpl_list_to_array([R,G,B,A], ColorArray),
   jpl_call(MarkerObj, 'setColor', [ColorArray], _).
 
@@ -558,55 +660,25 @@ set_marker_color(MarkerObj, Color) :-
   number(Color), set_marker_color(MarkerObj, [Color,Color,Color,1.0]).
 
 get_marker_translation(MarkerObj, [X,Y,Z]) :-
-  jpl_call(MarkerObj, 'getPose', [], Pose),
-  jpl_call(Pose, 'getPosition', [], Position),
-  jpl_call(Position, 'getX', [], X),
-  jpl_call(Position, 'getY', [], Y),
-  jpl_call(Position, 'getZ', [], Z).
-
-set_marker_translation(MarkerObj, [X,Y,Z]) :-
-  jpl_call(MarkerObj, 'getPose', [], Pose),
-  jpl_call(Pose, 'getPosition', [], Position),
-  jpl_call(Position, 'setX', [X], _),
-  jpl_call(Position, 'setY', [Y], _),
-  jpl_call(Position, 'setZ', [Z], _).
+  jpl_call(MarkerObj, 'getTranslation', [], TranslationArray),
+  jpl_array_to_list(TranslationArray,[X,Y,Z]).
 
 get_marker_orientation(MarkerObj, [QW,QX,QY,QZ]) :-
-  jpl_call(MarkerObj, 'getPose', [], Pose),
-  jpl_call(Pose, 'getOrientation', [], Orientation),
-  jpl_call(Orientation, 'getW', [], QW),
-  jpl_call(Orientation, 'getX', [], QX),
-  jpl_call(Orientation, 'getY', [], QY),
-  jpl_call(Orientation, 'getZ', [], QZ).
+  jpl_call(MarkerObj, 'getOrientation', [], OrientationArray),
+  jpl_array_to_list(OrientationArray,[QW,QX,QY,QZ]).
+
+get_marker_pose(MarkerObj, pose(Translation,Orientation)) :-
+  get_marker_translation(MarkerObj, Translation),
+  get_marker_orientation(MarkerObj, Orientation).
+
+set_marker_translation(MarkerObj, [X,Y,Z]) :-
+  jpl_list_to_array([X,Y,Z], Array),
+  jpl_call(MarkerObj, 'setTranslation', [Array], _).
 
 set_marker_orientation(MarkerObj, [QW,QX,QY,QZ]) :-
-  jpl_call(MarkerObj, 'getPose', [], Pose),
-  jpl_call(Pose, 'getOrientation', [], Orientation),
-  jpl_call(Orientation, 'setW', [QW], _),
-  jpl_call(Orientation, 'setX', [QX], _),
-  jpl_call(Orientation, 'setY', [QY], _),
-  jpl_call(Orientation, 'setZ', [QZ], _).
+  jpl_list_to_array([QW,QX,QY,QZ], Array),
+  jpl_call(MarkerObj, 'setOrientation', [Array], _).
 
-get_marker_pose(MarkerObj, pose([X,Y,Z],[QW,QX,QY,QZ])) :-
-  jpl_call(MarkerObj, 'getPose', [], Pose),
-  jpl_call(Pose, 'getOrientation', [], Orientation),
-  jpl_call(Orientation, 'getW', [], QW),
-  jpl_call(Orientation, 'getX', [], QX),
-  jpl_call(Orientation, 'getY', [], QY),
-  jpl_call(Orientation, 'getZ', [], QZ),
-  jpl_call(Pose, 'getPosition', [], Position),
-  jpl_call(Position, 'getX', [], X),
-  jpl_call(Position, 'getY', [], Y),
-  jpl_call(Position, 'getZ', [], Z).
-
-set_marker_pose(MarkerObj, pose([X,Y,Z],[QW,QX,QY,QZ])) :-
-  jpl_call(MarkerObj, 'getPose', [], Pose),
-  jpl_call(Pose, 'getOrientation', [], Orientation),
-  jpl_call(Orientation, 'setW', [QW], _),
-  jpl_call(Orientation, 'setX', [QX], _),
-  jpl_call(Orientation, 'setY', [QY], _),
-  jpl_call(Orientation, 'setZ', [QZ], _),
-  jpl_call(Pose, 'getPosition', [], Position),
-  jpl_call(Position, 'setX', [X], _),
-  jpl_call(Position, 'setY', [Y], _),
-  jpl_call(Position, 'setZ', [Z], _).
+set_marker_pose(MarkerObj, pose(Translation,Orientation)) :-
+  set_marker_translation(MarkerObj, Translation),
+  set_marker_orientation(MarkerObj, Orientation).

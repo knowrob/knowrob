@@ -1,7 +1,6 @@
 package org.knowrob.vis;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
@@ -70,6 +69,7 @@ public class MarkerPublisher extends AbstractNodeMain {
 	}
 	
 	public MarkerObject createMarker(String identifier) {
+		System.err.println("CREATE MARKER: " + identifier);
 		waitForNode();
 
 		Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
@@ -141,16 +141,18 @@ public class MarkerPublisher extends AbstractNodeMain {
 	}
 
 	public void queueRepublish(MarkerObject markerObject) {
-		synchronized (markers) {
-			markers.put(markerObject.getIdentifier(), markerObject);
+		if(markerObject.getHasVisual()) {
+			synchronized (markers) {
+				markers.put(markerObject.getIdentifier(), markerObject);
+			}
 		}
 	}
-	
-	public String[] getMarkerNames() {
-		Set<String> keys = markersCache.keySet();
-		return keys.toArray(new String[keys.size()]);
+
+	public void unqueueRepublish(MarkerObject markerObject) {
+		synchronized (markers) {
+			markers.remove(markerObject.getIdentifier());
+		}
 	}
-	
 	
 	private void waitForNode() {
 		try {

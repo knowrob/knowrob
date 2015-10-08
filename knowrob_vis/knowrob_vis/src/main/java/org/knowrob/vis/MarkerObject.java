@@ -1,7 +1,6 @@
 package org.knowrob.vis;
 
 import geometry_msgs.Pose;
-import geometry_msgs.Vector3;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -9,7 +8,6 @@ import java.util.List;
 import org.ros.message.Duration;
 import org.ros.message.Time;
 
-import std_msgs.ColorRGBA;
 import visualization_msgs.Marker;
 
 public class MarkerObject {
@@ -47,21 +45,25 @@ public class MarkerObject {
 	}
 	
 	public void setHasVisual(boolean value) {
-		hasVisual  = value;
+		hasVisual = value;
+		if(value) {
+			queueRepublish();
+		}
+		else {
+			unqueueRepublish();
+		}
+	}
+	
+	public boolean getHasVisual() {
+		return hasVisual;
 	}
 
 	public boolean hasVisual() {
 		return this.hasVisual;
 	}
 	
-	public String[] getChildrenNames() {
-		String out[] = new String[children.size()];
-		int i = 0;
-		for(MarkerObject child : children) {
-			out[i] = child.identifier;
-			i += 1;
-		}
-		return out;
+	public MarkerObject[] getChildren() {
+		return children.toArray(new MarkerObject[children.size()]);
 	}
 	
 	
@@ -92,15 +94,23 @@ public class MarkerObject {
 		queueRepublish();
 	}
 	
-	public float[] getScale() {
-		return new float[] {
-			(float)markerMsg.getScale().getX(),
-			(float)markerMsg.getScale().getY(),
-			(float)markerMsg.getScale().getZ()
+	public double[] getScale() {
+		return new double[] {
+			markerMsg.getScale().getX(),
+			markerMsg.getScale().getY(),
+			markerMsg.getScale().getZ()
 		};
 	}
 	
 	public void setScale(float value[]) {
+		markerMsg.getScale().setX((double)value[0]);
+		markerMsg.getScale().setY((double)value[1]);
+		markerMsg.getScale().setZ((double)value[2]);
+		for(MarkerObject child : children) child.setScale(value);
+		queueRepublish();
+	}
+	
+	public void setScale(double value[]) {
 		markerMsg.getScale().setX(value[0]);
 		markerMsg.getScale().setY(value[1]);
 		markerMsg.getScale().setZ(value[2]);
@@ -126,8 +136,60 @@ public class MarkerObject {
 		queueRepublish();
 	}
 	
-	public Pose getPose() {
-		return markerMsg.getPose();
+	public void setColor(double value[]) {
+		markerMsg.getColor().setR((float)value[0]);
+		markerMsg.getColor().setG((float)value[1]);
+		markerMsg.getColor().setB((float)value[2]);
+		markerMsg.getColor().setA((float)value[3]);
+		for(MarkerObject child : children) child.setColor(value);
+		queueRepublish();
+	}
+	
+	public double[] getTranslation() {
+		return new double[] {
+			markerMsg.getPose().getPosition().getX(),
+			markerMsg.getPose().getPosition().getY(),
+			markerMsg.getPose().getPosition().getZ()
+		};
+	}
+	
+	public double[] getOrientation() {
+		return new double[] {
+			markerMsg.getPose().getOrientation().getW(),
+			markerMsg.getPose().getOrientation().getX(),
+			markerMsg.getPose().getOrientation().getY(),
+			markerMsg.getPose().getOrientation().getZ()
+		};
+	}
+	
+	public void setTranslation(double []translation) {
+		markerMsg.getPose().getPosition().setX(translation[0]);
+		markerMsg.getPose().getPosition().setY(translation[1]);
+		markerMsg.getPose().getPosition().setZ(translation[2]);
+		queueRepublish();
+	}
+	
+	public void setOrientation(double []orientation) {
+		markerMsg.getPose().getOrientation().setW(orientation[0]);
+		markerMsg.getPose().getOrientation().setX(orientation[1]);
+		markerMsg.getPose().getOrientation().setY(orientation[2]);
+		markerMsg.getPose().getOrientation().setZ(orientation[3]);
+		queueRepublish();
+	}
+	
+	public void setTranslation(float []translation) {
+		markerMsg.getPose().getPosition().setX(translation[0]);
+		markerMsg.getPose().getPosition().setY(translation[1]);
+		markerMsg.getPose().getPosition().setZ(translation[2]);
+		queueRepublish();
+	}
+	
+	public void setOrientation(float []orientation) {
+		markerMsg.getPose().getOrientation().setW(orientation[0]);
+		markerMsg.getPose().getOrientation().setX(orientation[1]);
+		markerMsg.getPose().getOrientation().setY(orientation[2]);
+		markerMsg.getPose().getOrientation().setZ(orientation[3]);
+		queueRepublish();
 	}
 
 	public Marker getMessage() {
@@ -157,5 +219,9 @@ public class MarkerObject {
 
 	private void queueRepublish() {
 		publisher.queueRepublish(this);
+	}
+
+	private void unqueueRepublish() {
+		publisher.unqueueRepublish(this);
 	}
 }

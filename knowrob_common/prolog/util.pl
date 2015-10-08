@@ -58,6 +58,10 @@
       time_earlier_then/2
 ]).
 
+% Use identity if first argument is a number
+time_term(Timepoint, Timepoint) :-
+  number(Timepoint).
+
 time_term(Timepoint, Time) :-
   (  rdf_split_url(_, TimePointLocal, Timepoint),
      atom_concat('timepoint_', TimeAtom, TimePointLocal)
