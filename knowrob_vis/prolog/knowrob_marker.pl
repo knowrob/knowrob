@@ -527,7 +527,7 @@ marker_highlight(MarkerTerm, [R,G,B,A]) :-
   marker_highlight(MarkerTerm, ColorArray).
 
 marker_highlight(MarkerTerm, ColorArg) :-
-  compund(MarkerTerm),
+  compound(MarkerTerm),
   marker(MarkerTerm, MarkerObject),
   term_to_atom(MarkerTerm, MarkerAtom),
   marker_visualisation(MarkerVis),
@@ -536,12 +536,13 @@ marker_highlight(MarkerTerm, ColorArg) :-
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
   jpl_array_to_list(ChildrenArray,Children),
   forall(member(ChildObject,Children), ignore((
+    % FIXME: not defined for trajectory childs ?!?
     marker(ChildTerm, ChildObject),
     marker_highlight(ChildTerm, ColorArg)
   ))).
 
 marker_remove_highlight(MarkerTerm) :-
-  compund(MarkerTerm),
+  compound(MarkerTerm),
   marker(MarkerTerm, _),
   term_to_atom(MarkerTerm, MarkerAtom),
   marker_visualisation(MarkerVis),
