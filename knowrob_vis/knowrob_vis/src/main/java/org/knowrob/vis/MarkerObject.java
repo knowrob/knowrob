@@ -1,7 +1,5 @@
 package org.knowrob.vis;
 
-import geometry_msgs.Pose;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -142,6 +140,22 @@ public class MarkerObject {
 		markerMsg.getColor().setB((float)value[2]);
 		markerMsg.getColor().setA((float)value[3]);
 		for(MarkerObject child : children) child.setColor(value);
+		queueRepublish();
+	}
+
+	public float getAlpha() {
+		return markerMsg.getColor().getA();
+	}
+	
+	public void setAlpha(float value) {
+		markerMsg.getColor().setA(value);
+		for(MarkerObject child : children) child.setAlpha(value);
+		queueRepublish();
+	}
+	
+	public void setAlpha(double value) {
+		markerMsg.getColor().setA((float)value);
+		for(MarkerObject child : children) child.setAlpha(value);
 		queueRepublish();
 	}
 	

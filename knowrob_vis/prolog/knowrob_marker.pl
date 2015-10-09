@@ -13,11 +13,12 @@
       marker_properties/2,
       marker_type/2,
       marker_scale/2,
-      marker_color/2,
       marker_mesh_resource/2,
       marker_pose/2,
       marker_translation/2,
-      marker_text/2
+      marker_text/2,
+      marker_color/2,
+      marker_highlight/2
     ]).
     
 :- use_module(library('semweb/rdfs')).
@@ -166,6 +167,16 @@ marker_create(MarkerTerm, MarkerObject, Parent) :-
   not(MarkerObject = @(null)),
   assert( v_marker_object(MarkerTerm, MarkerObject) ).
 
+
+marker_create_n(_, _, 0, []).
+marker_create_n(Prefix, Parent, Count, [X|Xs]) :-
+  Count > 0,
+  atom_concat(Prefix, Count, MarkerName),
+  jpl_call(Parent, 'createMarker', [MarkerName], X),
+  Count_next is Count - 1,
+  marker_create_n(Prefix, Parent, Count_next, Xs).
+
+
 marker_object(Term,Object) :-
   current_predicate(v_marker_object,_),
   v_marker_object(Term,Object).
@@ -186,7 +197,7 @@ marker_remove(Term) :-
   marker_visualisation(MarkerVis),
   term_to_atom(Term, Atom),
   jpl_call(MarkerVis, 'eraseMarker', [Atom], _),
-  v_marker_object(Term, MarkerObj),
+  v_marker_object(Term, MarkerObject),
   retract( v_marker_object(Term, _) ),
   
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
@@ -222,25 +233,35 @@ marker(cylinder_tf(From,To), MarkerObject, Parent) :-
 marker(link(Link), MarkerObject, Parent) :-
   marker_primitive(arrow, link(Link), MarkerObject, Parent).
 
-marker(trajectory(Link), MarkerObject, Parent) :-
-  marker_primitive(arrow, trajectory(Link), MarkerObject, Parent),
-  marker_color(MarkerObject, [1.0,1.0,0.0,1.0]),
-  marker_has_visual(MarkerObject, false).
-
-%marker(trajectory(Link), MarkerObject, Parent) :-
-%  marker(trajectory(Link,8), MarkerObject, Parent).
-
-marker(trajectory(Link,Count), MarkerObject, Parent) :-
-  marker_primitive(arrow, trajectory(Link), MarkerObject, Parent),
+marker(path(Link,Name,Count), MarkerObject, Parent) :-
+  marker_primitive(arrow, Name, MarkerObject, Parent),
   marker_color(MarkerObject, [1.0,1.0,0.0,1.0]),
   marker_has_visual(MarkerObject, false),
-  % TODO: Create Count trajectory markers
-  false.
+  marker_create_n(Link, MarkerObject, Count, _).
+
+marker(trajectory(Link), MarkerObject, Parent) :-
+  marker(trajectory(Link,8), MarkerObject, Parent).
+
+marker(trajectory(Link,Count), MarkerObject, Parent) :-
+  marker(path(Link,trajectory(Link),Count), MarkerObject, Parent).
 
 marker(trail(Link), MarkerObject, Parent) :-
-  marker_primitive(sphere, trail(Link), MarkerObject, Parent),
-  marker_color(MarkerObject, [1.0,0.0,0.0,1.0]),
-  marker_has_visual(MarkerObject, false).
+  marker(trail(Link,8), MarkerObject, Parent).
+
+marker(trail(Link,Count), MarkerObject, Parent) :-
+  marker(path(Link,trail(Link),Count), MarkerObject, Parent),
+  AlphaStep is 1.0 / Count,
+  Alpha is 1.0,
+  jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
+  jpl_array_to_list(ChildrenArray,Children),
+  marker(trail(Link,Alpha,AlphaStep,Children), MarkerObject, Parent).
+
+marker(trail(_,_,_,[]), _, _).
+
+marker(trail(Link,Alpha,AlphaStep,[Child|Rest]), _, _) :-
+  marker_alpha(Child, Alpha),
+  Alpha_next is Alpha - AlphaStep,
+  marker(trail(Link,Alpha_next,AlphaStep,Rest), _, _).
 
 marker(average_trajectory(Link), MarkerObject, Parent) :-
   marker_primitive(arrow, average_trajectory(Link), MarkerObject, Parent),
@@ -335,6 +356,7 @@ marker_initialize_object(Identifier,MarkerObject) :-
     marker_color(MarkerObject, ColorList)
   )).
 
+
 marker_primitive(Type, MarkerTerm, MarkerObject, Parent) :-
   marker_create(MarkerTerm, MarkerObject, Parent),
   marker_type(MarkerObject, Type),
@@ -367,12 +389,28 @@ marker_update(Identifier, T) :-
   atom(T), time_term(T, T_Term),
   marker_update(Identifier, T_Term).
 
-marker_update(Identifier, (T0,T1,Interval)) :-
+marker_update(Identifier, dt(T0,DT)) :-
+  atom(T0), time_term(T0, T0_Term),
+  marker_update(Identifier, dt(T0_Term,DT)).
+
+marker_update(Identifier, interval(T0,T1)) :-
   atom(T0), time_term(T0, T0_Term),
   atom(T1), time_term(T1, T1_Term),
-  marker_update(Identifier, (T0_Term,T1_Term,Interval)).
+  marker_update(Identifier, interval(T0_Term,T1_Term)).
 
 marker_update(Identifier, T) :-
+  number(T),
+  marker_update(Identifier, time(T,T)).
+
+marker_update(Identifier, dt(T0,DT)) :-
+  number(T0), number(DT),
+  marker_update(Identifier, time(T0,dt(T0,DT))).
+
+marker_update(Identifier, interval(T0,T1)) :-
+  number(T0), number(T1),
+  marker_update(Identifier, time(T0,interval(T0,T1))).
+
+marker_update(Identifier, time(T,Arg)) :-
   number(T),
   T_float is float(T),
   marker(Identifier, MarkerObject),
@@ -380,18 +418,7 @@ marker_update(Identifier, T) :-
   % Only update once for given timestamp
   ( Last_T is T_float ; once((
     marker_timestamp(MarkerObject, T_float),
-    marker_update(Identifier, MarkerObject, T_float)
-  ))).
-
-marker_update(Identifier, (T0,T1,Interval)) :-
-  number(T0), number(T1),
-  T0_float is float(T0),
-  marker(Identifier, MarkerObject),
-  marker_timestamp(MarkerObject, Last_T),
-  % Only update once for given timestamp
-  ( Last_T is T0_float ; once((
-    marker_timestamp(MarkerObject, T0_float),
-    marker_update(Identifier, MarkerObject, (T0,T1,Interval))
+    marker_update(Identifier, MarkerObject, Arg)
   ))).
 
 marker_update(object_with_children(Identifier), MarkerObject, T) :-
@@ -435,42 +462,39 @@ marker_update(cylinder_tf(From,To), MarkerObject, T) :-
   marker_pose(MarkerObject, [X,Y,Z], [QW,QX,QY,QZ]).
 
 marker_update(trail(Link), MarkerObject, T) :-
-  marker_update(trail(Link), MarkerObject, (T,0.5)).
+  ( atom(T) ; number(T) ),
+  marker_update(trail(Link), MarkerObject, dt(T,0.5)).
 
-marker_update(trail(Link), MarkerObject, (T,DT)) :-
-  marker_update(trajectory(Link), MarkerObject, (T,DT)).
+marker_update(trail(Link), MarkerObject, dt(T,DT)) :-
+  marker_update(trajectory(Link), MarkerObject, dt(T,DT)).
+
+marker_update(trail(Link), MarkerObject, interval(T0,T1)) :-
+  marker_update(trajectory(Link), MarkerObject, interval(T0,T1)).
 
 marker_update(trajectory(Link), MarkerObject, T) :-
-  marker_update(trajectory(Link), MarkerObject, (T,0.5)).
+  ( atom(T) ; number(T) ),
+  marker_update(trajectory(Link), MarkerObject, dt(T,0.5)).
 
-marker_update(trajectory(Link), MarkerObject, (T0,DT)) :-
+marker_update(trajectory(Link), MarkerObject, dt(T0,DT)) :-
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
   jpl_array_to_list(ChildrenArray,Children),
-  T is T0 + DT,
-  forall( member(ChildObject,Children), ignore((
-    T is T - DT,
-    v_marker_object(ChildTerm, ChildObject),
-    object_lookup_transform(Frame, T, (Translation,Orientation)),
-    marker_pose(MarkerObject, Translation, Orientation)
-  ))).
+  marker_update(trajectory(Link), MarkerObject, dt(T0,DT,T0,Children)).
 
-% TODO: remove this, use above with DT arg
-marker_update(trajectory(Link), MarkerObject, (T0,T1,Interval)) :-
-  jpl_call(MarkerObject, 'clear', [], _),
+marker_update(trajectory(_), _, dt(_,_,_,[])).
+
+marker_update(trajectory(Link), MarkerObject, dt(T0,DT,T,[ChildObject|Rest])) :-
+  object_lookup_transform(Link, T, (Translation,Orientation)),
+  marker_pose(ChildObject, Translation, Orientation),
+  T_next is T + DT,
+  marker_update(trajectory(Link), MarkerObject, dt(T0,DT,T_next,Rest)).
+
+marker_update(trajectory(Name), MarkerObject, interval(T0,T1)) :-
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
   jpl_array_to_list(ChildrenArray,Children),
-  forall( member(ChildObject,Children), ignore((
-    v_marker_object(ChildTerm, ChildObject),
-    marker_remove(ChildTerm)
-  ))),
-  
-  trajectory_sample(Link,T0,T1,Interval,Samples),
-  forall( member((Translation,Orientation,T),Samples), (
-    atom_concat(Link, T, MarkerName),
-    jpl_call(MarkerObject, 'createMarker', [MarkerName], ChildMarker),
-    marker_pose(ChildMarker,Translation,Orientation),
-    marker_timestamp(ChildMarker, T)
-  )).
+  length(Children, NumSamples),
+  T_diff is T1 - T0,
+  DT is T_diff / NumSamples,
+  marker_update(trajectory(Name), MarkerObject, dt(T0,DT)).
 
 %marker_update(average_trajectory(Link), MarkerObject, (T0,T1,Interval)) :-
 %  jpl_call(MarkerObject, 'clear', [], _),
@@ -485,14 +509,52 @@ marker_update(_, MarkerObject, T) :-
     marker_timestamp(ChildObject, T)
   ))).
 
-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
 % Highlighting marker
 %
 
-%marker_highlight(Marker, Color) :-
-%  false. % TODO
+marker_highlight(MarkerTerm) :-
+  jpl_list_to_array([1.0,0.0,0.0,1.0], ColorArray),
+  marker_highlight(MarkerTerm, ColorArray).
+
+marker_highlight(MarkerTerm, [R,G,B]) :-
+  jpl_list_to_array([R,G,B,1.0], ColorArray),
+  marker_highlight(MarkerTerm, ColorArray).
+
+marker_highlight(MarkerTerm, [R,G,B,A]) :-
+  jpl_list_to_array([R,G,B,A], ColorArray),
+  marker_highlight(MarkerTerm, ColorArray).
+
+marker_highlight(MarkerTerm, ColorArg) :-
+  compund(MarkerTerm),
+  marker(MarkerTerm, MarkerObject),
+  term_to_atom(MarkerTerm, MarkerAtom),
+  marker_visualisation(MarkerVis),
+  jpl_call(MarkerVis, 'highlight', [MarkerAtom, ColorArg], _),
+  
+  jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
+  jpl_array_to_list(ChildrenArray,Children),
+  forall(member(ChildObject,Children), ignore((
+    marker(ChildTerm, ChildObject),
+    marker_highlight(ChildTerm, ColorArg)
+  ))).
+
+marker_remove_highlight(MarkerTerm) :-
+  compund(MarkerTerm),
+  marker(MarkerTerm, _),
+  term_to_atom(MarkerTerm, MarkerAtom),
+  marker_visualisation(MarkerVis),
+  jpl_call(MarkerVis, 'removeHighlight', [MarkerAtom], _),
+  
+  jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
+  jpl_array_to_list(ChildrenArray,Children),
+  forall(member(ChildObject,Children), ignore((
+    marker(ChildTerm, ChildObject),
+    marker_remove_highlight(ChildTerm)
+  ))).
+  
+  
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
@@ -546,6 +608,9 @@ marker_scale(Marker, Scale) :-
 
 marker_color(Marker, Color) :-
   marker_call(Marker,Color,(get_marker_color,set_marker_color)).
+
+marker_alpha(Marker, Alpha) :-
+  marker_call(Marker,Alpha,(get_marker_alpha,set_marker_alpha)).
 
 marker_mesh_resource(Marker, Mesh) :-
   marker_call(Marker,Mesh,(get_marker_mesh,set_marker_mesh)).
@@ -680,6 +745,17 @@ set_marker_color(MarkerObj, [R,G,B,A]) :-
 
 set_marker_color(MarkerObj, Color) :-
   number(Color), set_marker_color(MarkerObj, [Color,Color,Color,1.0]).
+
+get_marker_alpha(MarkerObj, A) :-
+  jpl_call(MarkerObj, 'getAlpha', [], A).
+
+set_marker_alpha(MarkerObj, A) :-
+  atom(A), atom_number(A,A_N),
+  set_marker_alpha(MarkerObj, A_N).
+
+set_marker_alpha(MarkerObj, A) :-
+  number(A),
+  jpl_call(MarkerObj, 'setAlpha', [A], _).
 
 get_marker_translation(MarkerObj, [X,Y,Z]) :-
   jpl_call(MarkerObj, 'getTranslation', [], TranslationArray),
