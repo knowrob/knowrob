@@ -3,7 +3,7 @@
 #       access. Please contact the KnowRob developers if you think you
 #       should have access to those.
 #
-- git: {local-name: stacks/knowrob, uri: 'https://github.com/knowrob/knowrob.git', version: indigo-devel }
-- git: {local-name: stacks/knowrob_addons, uri: 'https://github.com/knowrob/knowrob_addons.git', version: indigo-devel }
+- git: {local-name: stacks/knowrob, uri: 'https://github.com/knowrob/knowrob.git', version: master }
+- git: {local-name: stacks/knowrob_addons, uri: 'https://github.com/knowrob/knowrob_addons.git', version: master }
 - git: {local-name: stacks/knowrob_dev, uri: 'https://github.com/code-iai/knowrob_dev.git', version: indigo-devel }
 - git: {local-name: stacks/knowrob_gui, uri: 'https://github.com/knowrob/knowrob_gui.git', version: indigo-devel }
