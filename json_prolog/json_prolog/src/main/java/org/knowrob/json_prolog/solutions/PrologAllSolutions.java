@@ -66,5 +66,4 @@ public final class PrologAllSolutions implements PrologSolutions {
   public boolean hasMoreSolutions() throws Exception {
     return currentIndex < solutions.length;
   }
-
 }

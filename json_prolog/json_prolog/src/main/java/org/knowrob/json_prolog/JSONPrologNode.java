@@ -35,6 +35,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.io.*;
 
+import jpl.Term;
+import json_prolog_msgs.PrologNextSolutionRequest;
 import json_prolog_msgs.PrologQueryResponse;
 
 import org.knowrob.json_prolog.query.JSONQuery;
@@ -65,6 +67,10 @@ public class JSONPrologNode extends AbstractNodeMain {
 	private boolean hasIncrementalQuery = false;
 	
 	private String initPackage="";
+	
+	private ConnectedNode connectedNode = null;
+
+	private Map<String,String> loggedQueries = new HashMap<String,String>();
 
 	public JSONPrologNode() {
 		this("");
@@ -82,6 +88,7 @@ public class JSONPrologNode extends AbstractNodeMain {
 
 	@Override
 	public void onStart(ConnectedNode connectedNode) {
+		this.connectedNode = connectedNode;
 
 		// initialize the Prolog environment
 		synchronized(jpl.Query.class) {
@@ -128,6 +135,7 @@ public class JSONPrologNode extends AbstractNodeMain {
 		// create services
 		connectedNode.newServiceServer(getDefaultNodeName() + "/query", json_prolog_msgs.PrologQuery._TYPE, new QueryCallback() );
 		connectedNode.newServiceServer(getDefaultNodeName() + "/simple_query", json_prolog_msgs.PrologQuery._TYPE, new SimpleQueryCallback() );
+		connectedNode.newServiceServer(getDefaultNodeName() + "/logged_query", json_prolog_msgs.PrologQuery._TYPE, new LoggedQueryCallback() );
 		connectedNode.newServiceServer(getDefaultNodeName() + "/next_solution", json_prolog_msgs.PrologNextSolution._TYPE, new NextSolutionCallback() );
 		connectedNode.newServiceServer(getDefaultNodeName() + "/finish", json_prolog_msgs.PrologFinish._TYPE, new FinishCallback() );
 		connectedNode.getLog().info("json_prolog initialized and waiting for queries.");
@@ -247,6 +255,29 @@ public class JSONPrologNode extends AbstractNodeMain {
 		}
 	}
 
+
+	/**
+	 * Callback class to handle SimpleQuery requests (i.e. those sending a single string in Prolog syntax).
+	 * Additionally the query event and the solutions are asserted into the knowledge base
+	 * for later analysis.
+	 * 
+	 * @author Daniel Beßler
+	 *
+	 */
+	private class LoggedQueryCallback extends SimpleQueryCallback {
+		@Override
+		public void build(json_prolog_msgs.PrologQueryRequest request,
+						json_prolog_msgs.PrologQueryResponse response) {
+			super.build(request, response);
+			if(response.getOk()) {
+				String individualName = "Querying_"+
+					new Long(System.currentTimeMillis()/1000).toString();
+				logQuery(individualName, request.getQuery());
+				loggedQueries.put(request.getId(), individualName);
+			}
+		}
+	}
+
 	private boolean closeIncrementalQuery(PrologQueryResponse response) {
 		// If there is an incremental query active, just close it
 		if (hasIncrementalQuery) {
@@ -304,6 +335,8 @@ public class JSONPrologNode extends AbstractNodeMain {
 							if(isQueryThreadValid(currentQuery)) {
 								response.setSolution(JSONQuery.encodeResult(solution).toString());
 								response.setStatus(json_prolog_msgs.PrologNextSolutionResponse.OK);
+								if(loggedQueries.get(request.getId())!=null)
+									logQueryBinding(request.getId(), solution);
 							}
 						}
 					}
@@ -328,7 +361,7 @@ public class JSONPrologNode extends AbstractNodeMain {
 			return true;
 		}
 	}
-	
+
 	/**
 	 * Finish a query or all open queries if the request is '*' instead of a specific query ID.
 	 * 
@@ -367,6 +400,62 @@ public class JSONPrologNode extends AbstractNodeMain {
 			queries.remove(id);
 			if(query instanceof PrologIncrementalSolutions)
 				hasIncrementalQuery = false;
+		}
+	}
+	
+	/**
+	 * Assert individual that represents a user query.
+	 * @param individualName The name of the query individual
+	 * @param queryText The query term
+	 */
+	private void logQuery(String individualName, String queryText) {
+		String individual = "'http://knowrob.org/kb/knowrob.owl#" + individualName + "'";
+		StringBuilder sb = new StringBuilder();
+		sb.append("rdf_assert(" + individual + ", rdf:type, "
+				+ "'http://knowrob.org/kb/knowrob.owl#Querying'))");
+		sb.append(',');
+		sb.append("rdf_assert(" + individual + ", knowrob:queryText, " + queryText);
+		query(sb.toString());
+	}
+
+	/**
+	 * Asserts individual that represents variable bindings of a logged query.
+	 * @param is The query id
+	 * @param solution One solution for the query
+	 */
+	private void logQueryBinding(String id, Hashtable<String, Term> solution) {
+		String individualName = loggedQueries.get(id);
+		String queryIndividual = "'http://knowrob.org/kb/knowrob.owl#" + individualName + "'";
+		String bindingIndividual = "'http://knowrob.org/kb/knowrob.owl#QueryBinding_" + 
+				new Long(System.currentTimeMillis()/1000).toString() + "'";
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("rdf_assert(" + bindingIndividual + ", rdf:type, 'http://knowrob.org/kb/knowrob.owl#QueryBinding'), ");
+		for(String varName : solution.keySet()) {
+			String varIndividual = "'http://knowrob.org/kb/knowrob.owl#VariableBinding_" + 
+					new Long(System.currentTimeMillis()/1000).toString() + "'";
+			sb.append("rdf_assert(" + varIndividual + ", knowrob:nameString, " + varName + "), ");
+			sb.append("rdf_assert(" + varIndividual + ", knowrob:variableValue, " + solution.get(varName).toString() + "), ");
+			sb.append("rdf_assert(" + bindingIndividual + ", knowrob:variableBinding, " + varIndividual + "), ");
+		}
+		sb.append("rdf_assert(" + queryIndividual + ", knowrob:queryBinding, " + bindingIndividual + ")");
+		query(sb.toString());
+	}
+	
+	/**
+	 * Call a query.
+	 * @param queryString The query term.
+	 */
+	private void query(String queryString) {
+		ThreadedQuery currentQuery = new ThreadedQuery(
+				"expand_goal(("+queryString+"),_Q), call(_Q)");
+		// Add the query to the thread pool
+		queryThreadPool.submit(currentQuery);
+		try {
+			currentQuery.nextSolution();
+		}
+		catch (Exception e) {
+			connectedNode.getLog().error("Unable to assert logged query.", e);
 		}
 	}
 
