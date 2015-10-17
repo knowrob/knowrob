@@ -121,38 +121,6 @@ public class MarkerPublisher extends AbstractNodeMain {
 				eraseMarker(markersCache.keySet().iterator().next());
 		}
 	}
-
-	public void highlight(String identifier, String color) {
-		highlight(identifier, Integer.valueOf(color, 16));
-	}
-
-	public void highlight(String identifier, int col) {
-		int r = (col & 0xff0000) >> 16;
-		int g = (col & 0x00ff00) >> 8;
-		int b = (col & 0x0000ff);
-		int a = 125;
-		highlight(identifier, new float[] {
-			r/255.0f, g/255.0f, b/255.0f, a/255.0f
-		});
-	}
-	
-	public void highlight(String identifier, float color[]) {
-		MarkerObject obj = getMarker(identifier);
-		if(obj==null) return;
-		if(!highlighted.containsKey(identifier)) {
-			highlighted.put(identifier, obj.getColor());
-		}
-		obj.setColor(color);
-	}
-	
-	public void removeHighlight(String identifier) {
-		if(highlighted.containsKey(identifier)) {
-			MarkerObject obj = getMarker(identifier);
-			if(obj==null) return;
-			obj.setColor(highlighted.get(identifier));
-			highlighted.remove(identifier);
-		}
-	}
 	
 	public void publishMarker() {
 		try {
@@ -165,6 +133,23 @@ public class MarkerPublisher extends AbstractNodeMain {
 				}
 				pub.publish(arr);
 				markers.clear();
+			}
+		}
+		catch (Exception exc) {
+			log.error("Failed to publish marker.", exc);
+		}
+	}
+	
+	public void republishMarker() {
+		try {
+			waitForNode();
+
+			synchronized (markersCache) {
+				MarkerArray arr = pub.newMessage();
+				for(MarkerObject mrk : markersCache.values()) {
+					arr.getMarkers().add(mrk.getMessage());
+				}
+				pub.publish(arr);
 			}
 		}
 		catch (Exception exc) {

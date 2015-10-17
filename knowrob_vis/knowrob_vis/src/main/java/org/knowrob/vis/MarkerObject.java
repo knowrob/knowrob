@@ -16,6 +16,8 @@ public class MarkerObject {
 	private final List<MarkerObject> children = new LinkedList<MarkerObject>();
 	private boolean hasVisual = true;
 	
+	private float[] highlighted;
+	
 	public MarkerObject(String identifier, Marker markerMsg, MarkerPublisher publisher) {
 		this.markerMsg = markerMsg;
 		this.publisher = publisher;
@@ -229,6 +231,34 @@ public class MarkerObject {
 		markerMsg.setLifetime(new Duration(value));
 		for(MarkerObject child : children) child.setLifetime(value);
 		queueRepublish();
+	}
+
+	public void highlight(String color) {
+		highlight(Integer.valueOf(color, 16));
+	}
+
+	public void highlight(int col) {
+		int r = (col & 0xff0000) >> 16;
+		int g = (col & 0x00ff00) >> 8;
+		int b = (col & 0x0000ff);
+		int a = 125;
+		highlight(new float[] {
+			r/255.0f, g/255.0f, b/255.0f, a/255.0f
+		});
+	}
+	
+	public void highlight(float color[]) {
+		if(highlighted==null) {
+			highlighted = getColor();
+		}
+		setColor(color);
+	}
+	
+	public void removeHighlight() {
+		if(highlighted != null) {
+			setColor(highlighted);
+			highlighted = null;
+		}
 	}
 
 	private void queueRepublish() {

@@ -3,6 +3,7 @@
 :- module(knowrob_marker,
     [
       marker_publish/0,
+      marker_republish/0,
       
       marker/2,
       marker_update/0,
@@ -18,7 +19,8 @@
       marker_translation/2,
       marker_text/2,
       marker_color/2,
-      marker_highlight/2
+      marker_highlight/2,
+      marker_highlight_remove/1
     ]).
     
 :- use_module(library('semweb/rdfs')).
@@ -33,6 +35,8 @@
             marker_type(t,?),
             marker_scale(t,?),
             marker_color(t,?),
+            marker_highlight(t,?),
+            marker_highlight_remove(t),
             marker_mesh_resource(t,?),
             marker_pose(t,?),
             marker_translation(t,?),
@@ -146,10 +150,13 @@ marker_visualisation(MarkerVis) :-
   current_predicate(v_marker_vis, _),
   v_marker_vis(MarkerVis).
 
-
 marker_publish :-
   marker_visualisation(MarkerVis),
   jpl_call(MarkerVis, 'publishMarker', [], _).
+
+marker_republish :-
+  marker_visualisation(MarkerVis),
+  jpl_call(MarkerVis, 'republishMarker', [], _).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -164,22 +171,52 @@ marker_create(MarkerTerm, MarkerObject, Parent) :-
   numbervars(MarkerTerm,0,0),
   term_to_atom(MarkerTerm, MarkerAtom),
   jpl_call(Parent, 'createMarker', [MarkerAtom], MarkerObject),
-  not(MarkerObject = @(null)),
   assert( v_marker_object(MarkerTerm, MarkerObject) ).
 
+marker_create(_, _, 0, []).
 
-marker_create_n(_, _, 0, []).
-marker_create_n(Prefix, Parent, Count, [X|Xs]) :-
+marker_create(Prefix, Parent, Count, [X|Xs]) :-
   Count > 0,
   atom_concat(Prefix, Count, MarkerName),
   jpl_call(Parent, 'createMarker', [MarkerName], X),
+  assert( v_marker_object(MarkerName, X) ),
   Count_next is Count - 1,
-  marker_create_n(Prefix, Parent, Count_next, Xs).
+  marker_create(Prefix, Parent, Count_next, Xs).
 
 
 marker_object(Term,Object) :-
   current_predicate(v_marker_object,_),
   v_marker_object(Term,Object).
+
+
+marker_initialize_object(Identifier,MarkerObject) :-
+  (  object_has_visual(Identifier)
+  -> marker_has_visual(MarkerObject,true)
+  ;  marker_has_visual(MarkerObject,false)
+  ),
+  ignore((
+    get_model_path(Identifier, Path),
+    marker_type(MarkerObject, mesh_resource),
+    marker_mesh_resource(MarkerObject, Path),
+    marker_color(MarkerObject, [0.0,0.0,0.0,0.0]),
+    marker_scale(MarkerObject, [1.0,1.0,1.0])
+  )),
+  ignore((
+    object_dimensions(Identifier, X, Y, Z),
+    marker_scale(MarkerObject, [X, Y, Z])
+  )),
+  ignore((
+    object_color(Identifier, Color),
+    parse_vector(Color, ColorList),
+    marker_color(MarkerObject, ColorList)
+  )).
+
+
+marker_primitive(Type, MarkerTerm, MarkerObject, Parent) :-
+  marker_create(MarkerTerm, MarkerObject, Parent),
+  marker_type(MarkerObject, Type),
+  marker_color(MarkerObject, [0.6,0.6,0.6,1.0]),
+  marker_scale(MarkerObject, [0.05,0.05,0.05]).
 
 
 marker_remove(all) :-
@@ -237,7 +274,7 @@ marker(path(Link,Name,Count), MarkerObject, Parent) :-
   marker_primitive(arrow, Name, MarkerObject, Parent),
   marker_color(MarkerObject, [1.0,1.0,0.0,1.0]),
   marker_has_visual(MarkerObject, false),
-  marker_create_n(Link, MarkerObject, Count, _).
+  marker_create(Link, MarkerObject, Count, _).
 
 marker(trajectory(Link), MarkerObject, Parent) :-
   marker(trajectory(Link,8), MarkerObject, Parent).
@@ -335,33 +372,6 @@ marker(text(Id), MarkerObject, Parent) :-
 marker(text(Id,Text), MarkerObject, Parent) :-
   marker(text(Id), MarkerObject, Parent),
   marker_text(MarkerObject, Text).
-
-
-marker_initialize_object(Identifier,MarkerObject) :-
-  (  object_has_visual(Identifier)
-  -> marker_has_visual(MarkerObject,true)
-  ;  marker_has_visual(MarkerObject,false)
-  ),
-  ignore((
-    get_model_path(Identifier, Path),
-    marker_type(MarkerObject, mesh_resource),
-    marker_mesh_resource(MarkerObject, Path),
-    marker_color(MarkerObject, [0.0,0.0,0.0,0.0]),
-    marker_scale(MarkerObject, [1.0,1.0,1.0])
-  )),
-  ignore(( object_dimensions(Identifier, X, Y, Z), marker_scale(MarkerObject, [X, Y, Z]) )),
-  ignore((
-    object_color(Identifier, Color),
-    parse_vector(Color, ColorList),
-    marker_color(MarkerObject, ColorList)
-  )).
-
-
-marker_primitive(Type, MarkerTerm, MarkerObject, Parent) :-
-  marker_create(MarkerTerm, MarkerObject, Parent),
-  marker_type(MarkerObject, Type),
-  marker_color(MarkerObject, [0.6,0.6,0.6,1.0]),
-  marker_scale(MarkerObject, [0.05,0.05,0.05]).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -518,41 +528,43 @@ marker_highlight(MarkerTerm) :-
   jpl_list_to_array([1.0,0.0,0.0,1.0], ColorArray),
   marker_highlight(MarkerTerm, ColorArray).
 
-marker_highlight(MarkerTerm, [R,G,B]) :-
-  jpl_list_to_array([R,G,B,1.0], ColorArray),
-  marker_highlight(MarkerTerm, ColorArray).
-
-marker_highlight(MarkerTerm, [R,G,B,A]) :-
-  jpl_list_to_array([R,G,B,A], ColorArray),
-  marker_highlight(MarkerTerm, ColorArray).
-
 marker_highlight(MarkerTerm, ColorArg) :-
   compound(MarkerTerm),
   marker(MarkerTerm, MarkerObject),
-  term_to_atom(MarkerTerm, MarkerAtom),
-  marker_visualisation(MarkerVis),
-  jpl_call(MarkerVis, 'highlight', [MarkerAtom, ColorArg], _),
-  
+  marker_highlight(MarkerObject, ColorArg).
+
+marker_highlight(MarkerObject, [R,G,B]) :-
+  jpl_is_object(MarkerObject),
+  jpl_list_to_array([R,G,B,1.0], ColorArray),
+  marker_highlight(MarkerObject, ColorArray).
+
+marker_highlight(MarkerObject, [R,G,B,A]) :-
+  jpl_is_object(MarkerObject),
+  jpl_list_to_array([R,G,B,A], ColorArray),
+  marker_highlight(MarkerObject, ColorArray).
+
+marker_highlight(MarkerObject, ColorArg) :-
+  jpl_is_object(MarkerObject),
+  ( jpl_is_object(MarkerObject) ; number(ColorArg) ; atom(ColorArg) ),
+  jpl_call(MarkerObject, 'highlight', [ColorArg], _),
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
   jpl_array_to_list(ChildrenArray,Children),
   forall(member(ChildObject,Children), ignore((
-    % FIXME: not defined for trajectory childs ?!?
-    marker(ChildTerm, ChildObject),
-    marker_highlight(ChildTerm, ColorArg)
+    marker_highlight(ChildObject, ColorArg)
   ))).
 
-marker_remove_highlight(MarkerTerm) :-
+marker_highlight_remove(MarkerTerm) :-
   compound(MarkerTerm),
-  marker(MarkerTerm, _),
-  term_to_atom(MarkerTerm, MarkerAtom),
-  marker_visualisation(MarkerVis),
-  jpl_call(MarkerVis, 'removeHighlight', [MarkerAtom], _),
-  
+  marker(MarkerTerm, MarkerObject),
+  marker_highlight_remove(MarkerObject).
+
+marker_highlight_remove(MarkerObject) :-
+  jpl_is_object(MarkerObject),
+  jpl_call(MarkerObject, 'removeHighlight', [MarkerAtom], _),
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
   jpl_array_to_list(ChildrenArray,Children),
   forall(member(ChildObject,Children), ignore((
-    marker(ChildTerm, ChildObject),
-    marker_remove_highlight(ChildTerm)
+    marker_highlight_remove(ChildObject)
   ))).
   
   
@@ -561,10 +573,6 @@ marker_remove_highlight(MarkerTerm) :-
 %
 % Marker properties
 %
-
-%marker_properties(Marker, Props) :-
-%  var(Props),
-%  false. % TODO: read all properties
 
 
 marker_properties(Marker, [X|Args]) :-
