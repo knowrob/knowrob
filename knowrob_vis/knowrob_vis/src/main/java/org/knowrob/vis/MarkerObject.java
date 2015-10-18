@@ -106,6 +106,7 @@ public class MarkerObject {
 		markerMsg.getScale().setX((double)value[0]);
 		markerMsg.getScale().setY((double)value[1]);
 		markerMsg.getScale().setZ((double)value[2]);
+		// TODO: better do this in prolog
 		for(MarkerObject child : children) child.setScale(value);
 		queueRepublish();
 	}
@@ -114,6 +115,7 @@ public class MarkerObject {
 		markerMsg.getScale().setX(value[0]);
 		markerMsg.getScale().setY(value[1]);
 		markerMsg.getScale().setZ(value[2]);
+		// TODO: better do this in prolog
 		for(MarkerObject child : children) child.setScale(value);
 		queueRepublish();
 	}
@@ -132,6 +134,7 @@ public class MarkerObject {
 		markerMsg.getColor().setG(value[1]);
 		markerMsg.getColor().setB(value[2]);
 		markerMsg.getColor().setA(value[3]);
+		// TODO: better do this in prolog
 		for(MarkerObject child : children) child.setColor(value);
 		queueRepublish();
 	}
@@ -141,6 +144,7 @@ public class MarkerObject {
 		markerMsg.getColor().setG((float)value[1]);
 		markerMsg.getColor().setB((float)value[2]);
 		markerMsg.getColor().setA((float)value[3]);
+		// TODO: better do this in prolog
 		for(MarkerObject child : children) child.setColor(value);
 		queueRepublish();
 	}
@@ -151,12 +155,14 @@ public class MarkerObject {
 	
 	public void setAlpha(float value) {
 		markerMsg.getColor().setA(value);
+		// TODO: better do this in prolog
 		for(MarkerObject child : children) child.setAlpha(value);
 		queueRepublish();
 	}
 	
 	public void setAlpha(double value) {
 		markerMsg.getColor().setA((float)value);
+		// TODO: better do this in prolog
 		for(MarkerObject child : children) child.setAlpha(value);
 		queueRepublish();
 	}
@@ -251,7 +257,11 @@ public class MarkerObject {
 		if(highlighted==null) {
 			highlighted = getColor();
 		}
-		setColor(color);
+		markerMsg.getColor().setR(color[0]);
+		markerMsg.getColor().setG(color[1]);
+		markerMsg.getColor().setB(color[2]);
+		markerMsg.getColor().setA(color[3]);
+		queueRepublish();
 	}
 	
 	public void removeHighlight() {
@@ -259,6 +269,10 @@ public class MarkerObject {
 			setColor(highlighted);
 			highlighted = null;
 		}
+	}
+	
+	public boolean hasHighlight() {
+		return highlighted != null;
 	}
 
 	private void queueRepublish() {

@@ -147,7 +147,7 @@ public class MarkerPublisher extends AbstractNodeMain {
 			synchronized (markersCache) {
 				MarkerArray arr = pub.newMessage();
 				for(MarkerObject mrk : markersCache.values()) {
-					arr.getMarkers().add(mrk.getMessage());
+					if(mrk.hasVisual()) arr.getMarkers().add(mrk.getMessage());
 				}
 				pub.publish(arr);
 			}
