@@ -570,7 +570,6 @@ mng_lookup_transform(Target, Source, TimePoint, Transform) :-
 
   rdf_split_url(_, TimePointLocal, TimePoint),
   atom_concat('timepoint_', TimeAtom, TimePointLocal),
-  term_to_atom(Time, TimeAtom),
   
   mng_lookup_transform(Target, Source, TimeAtom, Transform).
 
