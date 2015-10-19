@@ -13,15 +13,24 @@ import org.ros.node.topic.Publisher;
 import visualization_msgs.Marker;
 import visualization_msgs.MarkerArray;
 
+/**
+ * Visualization marker node. Used for generating and publishing marker messages
+ * on the topic "/visualization_marker_array".
+ * The messages can be displayed by visualization tools such as openEASE or RViz.
+ * 
+ * @author Daniel Beßler
+ */
 public class MarkerPublisher extends AbstractNodeMain {
 	/**
+	 * The ROS message publisher if connected, else null
 	 */
 	private Publisher<MarkerArray> pub = null;
 	/**
+	 * The ROS node if connected, else null
 	 */
 	private ConnectedNode node = null;
 	/**
-	 * Logger of ROS node.
+	 * Logger of ROS node if connected, else null
 	 */
 	private Log log = null;
 	
@@ -69,7 +78,6 @@ public class MarkerPublisher extends AbstractNodeMain {
 	}
 	
 	public MarkerObject createMarker(String identifier) {
-		System.err.println("CREATE MARKER: " + identifier);
 		waitForNode();
 
 		Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);

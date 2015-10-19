@@ -8,6 +8,16 @@ import org.ros.message.Time;
 
 import visualization_msgs.Marker;
 
+/**
+ * Wrapper class for marker messages.
+ * MarkerObject's have an identifier, a list of child markers
+ * and provide an interface to getter/setter methods of the message.
+ * Note: JPL has a bug using the getter/setter methods of the message in Prolog
+ * (see: https://groups.google.com/forum/#!topic/swi-prolog/0ZH-eTDadh8),
+ * using this wrapper class this problem can be avoided.
+ * 
+ * @author Daniel Beßler
+ */
 public class MarkerObject {
 	private final String identifier;
 	private final Marker markerMsg;
@@ -106,8 +116,6 @@ public class MarkerObject {
 		markerMsg.getScale().setX((double)value[0]);
 		markerMsg.getScale().setY((double)value[1]);
 		markerMsg.getScale().setZ((double)value[2]);
-		// TODO: better do this in prolog
-		for(MarkerObject child : children) child.setScale(value);
 		queueRepublish();
 	}
 	
@@ -115,8 +123,6 @@ public class MarkerObject {
 		markerMsg.getScale().setX(value[0]);
 		markerMsg.getScale().setY(value[1]);
 		markerMsg.getScale().setZ(value[2]);
-		// TODO: better do this in prolog
-		for(MarkerObject child : children) child.setScale(value);
 		queueRepublish();
 	}
 
@@ -134,8 +140,6 @@ public class MarkerObject {
 		markerMsg.getColor().setG(value[1]);
 		markerMsg.getColor().setB(value[2]);
 		markerMsg.getColor().setA(value[3]);
-		// TODO: better do this in prolog
-		for(MarkerObject child : children) child.setColor(value);
 		queueRepublish();
 	}
 	
@@ -144,8 +148,6 @@ public class MarkerObject {
 		markerMsg.getColor().setG((float)value[1]);
 		markerMsg.getColor().setB((float)value[2]);
 		markerMsg.getColor().setA((float)value[3]);
-		// TODO: better do this in prolog
-		for(MarkerObject child : children) child.setColor(value);
 		queueRepublish();
 	}
 
@@ -155,15 +157,11 @@ public class MarkerObject {
 	
 	public void setAlpha(float value) {
 		markerMsg.getColor().setA(value);
-		// TODO: better do this in prolog
-		for(MarkerObject child : children) child.setAlpha(value);
 		queueRepublish();
 	}
 	
 	public void setAlpha(double value) {
 		markerMsg.getColor().setA((float)value);
-		// TODO: better do this in prolog
-		for(MarkerObject child : children) child.setAlpha(value);
 		queueRepublish();
 	}
 	
