@@ -179,7 +179,7 @@ public class JSONPrologNode extends AbstractNodeMain {
 							// Wait for the query thread to be started
 							while(!currentQuery.isStarted()) {
 								try {
-									Thread.sleep(100);
+									Thread.sleep(1);
 								}
 								catch (InterruptedException e) {}
 							}
@@ -237,7 +237,7 @@ public class JSONPrologNode extends AbstractNodeMain {
 							// Wait for the query thread to be started
 							while(!currentQuery.isStarted()) {
 								try {
-									Thread.sleep(100);
+									Thread.sleep(1);
 								}
 								catch (InterruptedException e) {}
 							}

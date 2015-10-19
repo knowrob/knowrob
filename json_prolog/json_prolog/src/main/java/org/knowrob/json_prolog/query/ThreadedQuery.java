@@ -149,7 +149,7 @@ public class ThreadedQuery implements Runnable {
 		
 		while(cmd.result==null) {
 			try {
-				Thread.sleep(100);
+				Thread.sleep(1);
 			}
 			catch (InterruptedException e) {}
 		}
