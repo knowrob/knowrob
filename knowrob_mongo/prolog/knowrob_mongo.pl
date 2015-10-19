@@ -555,18 +555,23 @@ mng_desig_get_value(_Designator, _DesigJava, ValIn, Value) :-
 % @param Transform  Transformation matrix as list[16]
 %
 mng_lookup_transform(Target, Source, TimePoint, Transform) :-
-
-  rdf_split_url(_, TimePointLocal, TimePoint),
-  atom_concat('timepoint_', TimeAtom, TimePointLocal),
-  term_to_atom(Time, TimeAtom),
+  number(TimePoint),
 
   mongo_interface(DB),
-  jpl_call(DB, 'lookupTransform', [Target, Source, Time], StampedTransform),
+  jpl_call(DB, 'lookupTransform', [Target, Source, TimePoint], StampedTransform),
   % Make sure transform is not null!
   not( jpl_null(StampedTransform) ),
 
   jpl_call(StampedTransform, 'getMatrix4', [], TransformMatrix4d),
   knowrob_coordinates:matrix4d_to_list(TransformMatrix4d, Transform).
+
+mng_lookup_transform(Target, Source, TimePoint, Transform) :-
+  atom(TimePoint),
+
+  rdf_split_url(_, TimePointLocal, TimePoint),
+  atom_concat('timepoint_', TimeAtom, TimePointLocal),
+  
+  mng_lookup_transform(Target, Source, TimeAtom, Transform).
 
 %% mng_lookup_position(+Target, +Source, +TimePoint, -Position) is nondet.
 %

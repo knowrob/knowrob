@@ -246,6 +246,8 @@ object_pose_at_time(Obj, Time, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21
   
   rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]).
 
+parse_vector([X|Y], [X|Y]).
+
 parse_vector(In, Out) :-
   jpl_call('org.knowrob.utils.MathUtil', 'parseVector', [In, ' '], OutArr),
   not(OutArr = @(null)),
@@ -1168,7 +1170,8 @@ temporally_subsumes(Long, Short) :-
 % @param StartTime  Numeric value describing the start time
 %
 detection_starttime(Detection, StartTime) :-
-
+  number(Detection), StartTime = Detection ;
+  
   % start time is asserted
   rdf_triple(knowrob:startTime, Detection, StartTtG),
   rdf_split_url(_, StartTt, StartTtG),
@@ -1195,6 +1198,7 @@ detection_starttime(Detection, StartTime) :-
 % @param EndTime    Numeric value describing the ent time
 %
 detection_endtime(Detection, EndTime) :-
+  number(Detection), EndTime = Detection ;
 
   % end time is asserted
   rdf_triple(knowrob:endTime, Detection, EndTtG),
