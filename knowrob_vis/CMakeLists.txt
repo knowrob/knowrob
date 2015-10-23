@@ -21,3 +21,6 @@ install(DIRECTORY launch/
   
 install(DIRECTORY prolog/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/prolog)
+
+install(FILES knowrob_vis/build/classpath.txt
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/build )

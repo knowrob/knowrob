@@ -37,3 +37,6 @@ install(DIRECTORY prolog/
   
 install(DIRECTORY urdf/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/urdf)
+
+install(FILES knowrob_srdl/build/classpath.txt
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/build )
