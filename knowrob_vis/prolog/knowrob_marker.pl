@@ -154,6 +154,7 @@ marker_prop_type(points,8).
 marker_prop_type(text_view_facing,9).
 marker_prop_type(mesh_resource,10).
 marker_prop_type(triangle_list,11).
+marker_prop_type(speech,999999).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -212,7 +213,7 @@ marker_create(MarkerTerm, MarkerObject, Parent) :-
   numbervars(MarkerTerm,0,0),
   term_to_atom(MarkerTerm, MarkerAtom),
   jpl_call(Parent, 'createMarker', [MarkerAtom], MarkerObject),
-  assert( v_marker_object(MarkerTerm, MarkerObject) ).
+  assert( v_marker_object(MarkerTerm, MarkerObject, Parent) ).
 
 %% marker_create(+Prefix, +Parent, +Count, -MarkerObjects) is det.
 %
@@ -227,21 +228,26 @@ marker_create(Prefix, Parent, Count, [X|Xs]) :-
   Count > 0,
   atom_concat(Prefix, Count, MarkerName),
   jpl_call(Parent, 'createMarker', [MarkerName], X),
-  assert( v_marker_object(MarkerName, X) ),
+  assert( v_marker_object(MarkerName, X, Parent) ),
   Count_next is Count - 1,
   marker_create(Prefix, Parent, Count_next, Xs).
 marker_create(_, _, 0, []).
 
+%% marker_object(?Term,?Object,?Parent) is nondet.
 %% marker_object(?Term,?Object) is nondet.
 %
 % Maps marker identification term to MarkerObject instance.
 %
 % @param Term The marker identification term
 % @param Object The MarkerObject instance
+% @param Parent The MarkerObject parent instance
 %
-marker_object(Term,Object) :-
+marker_object(Term,Object,Parent) :-
   current_predicate(v_marker_object,_),
-  v_marker_object(Term,Object).
+  v_marker_object(Term,Object,Parent).
+
+marker_object(Term,Object) :-
+  marker_object(Term,Object,_).
 
 %% marker_initialize_object(+Identifier,+MarkerObject) is det.
 %
@@ -312,7 +318,7 @@ marker_remove(trajectories) :-
 
 marker_remove(Term) :-
   compound(Term),
-  v_marker_object(Term, MarkerObject),
+  v_marker_object(Term, MarkerObject,_),
   marker_remove(MarkerObject).
 
 marker_remove(MarkerObject) :-
@@ -320,8 +326,8 @@ marker_remove(MarkerObject) :-
   marker_visualisation(MarkerVis),
   jpl_call(MarkerVis, 'eraseMarker', [MarkerObject], _),
   ignore(( % using ignore because trajectory markers not asserted
-    v_marker_object(Term, MarkerObject),
-    retract( v_marker_object(Term, _) )
+    v_marker_object(Term, MarkerObject,_),
+    retract( v_marker_object(Term, _, _) )
   )),
   
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
@@ -339,7 +345,7 @@ marker_child(MarkerTerm, MarkerChildTerm) :-
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
   jpl_array_to_list(ChildrenArray,Children),
   member(ChildObject,Children),
-  v_marker_object(MarkerChildTerm, ChildObject).
+  v_marker_object(MarkerChildTerm, ChildObject, _).
 
 %% marker(?MarkerTerm,?MarkerObject) is det.
 %
@@ -467,6 +473,15 @@ marker(text(Id), MarkerObject, Parent) :-
 
 marker(text(Id,Text), MarkerObject, Parent) :-
   marker(text(Id), MarkerObject, Parent),
+  marker_text(MarkerObject, Text).
+
+marker(speech(Id), MarkerObject, Parent) :-
+  marker_primitive(speech, speech(Id), MarkerObject, Parent),
+  marker_color(MarkerObject, [0.0,0.0,0.0,1.0]),
+  marker_scale(MarkerObject, [1.0,1.0,1.0]).
+
+marker(speech(Id,Text), MarkerObject, Parent) :-
+  marker(speech(Id), MarkerObject, Parent),
   marker_text(MarkerObject, Text).
 
 
@@ -618,7 +633,7 @@ marker_update(trajectory(Link), MarkerObject, interval(T0,T1,Interval)) :-
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
   jpl_array_to_list(ChildrenArray,Children),
   forall( member(ChildObject,Children), ignore((
-    v_marker_object(ChildTerm, ChildObject),
+    v_marker_object(ChildTerm, ChildObject, _),
     marker_remove(ChildTerm)
   ))),
   marker_update_trajectory(trajectory(Link), MarkerObject, interval(T0,T1,Interval)).
@@ -640,10 +655,17 @@ marker_update(average_trajectory(Link), MarkerObject, interval(T0,T1,Interval)) 
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
   jpl_array_to_list(ChildrenArray,Children),
   forall( member(ChildObject,Children), ignore((
-    v_marker_object(ChildTerm, ChildObject),
+    v_marker_object(ChildTerm, ChildObject, _),
     marker_remove(ChildTerm)
   ))),
   marker_update_trajectory(average_trajectory(Link), MarkerObject, interval(T0,T1,Interval)).
+
+marker_update(speech(Id), MarkerObject, T) :-
+  marker_object(_, MarkerObject, Parent),
+  marker_visualisation(MarkerVis),
+  not( Parent = MarkerVis ),
+  marker_translation(Parent, [X,Y,Z]),
+  marker_translation(MarkerObject, [X,Y,Z]).
 
 marker_update(_, MarkerObject, T) :-
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
@@ -736,6 +758,7 @@ marker_position_average(PoseList, [X_Avg,Y_Avg,Z_Avg]) :-
   sum_list(Zs, Z_Sum), Z_Avg is Z_Sum / NumSamples.
 
 % TODO: Should be moved to another module
+% FIXME: Use lerp for finding average orientation
 marker_orientation_average(PoseList, [W_Avg,X_Avg,Y_Avg,Z_Avg]) :-
   findall(W, member((_,[W,_,_,_]), PoseList), Ws),
   findall(X, member((_,[_,X,_,_]), PoseList), Xs),
