@@ -154,10 +154,11 @@ marker_prop_type(points,8).
 marker_prop_type(text_view_facing,9).
 marker_prop_type(mesh_resource,10).
 marker_prop_type(triangle_list,11).
+marker_prop_type(background_image,999995).
 marker_prop_type(hud_image,999996).
 marker_prop_type(hud_text,999997).
 marker_prop_type(sprite,999998).
-marker_prop_type(text_sprite,999999).
+marker_prop_type(sprite_text,999999).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -505,13 +506,22 @@ marker(sprite(Id,Text), MarkerObject, Parent) :-
   marker(sprite(Id), MarkerObject, Parent),
   marker_text(MarkerObject, Text).
 
-marker(text_sprite(Id), MarkerObject, Parent) :-
-  marker_primitive(text_sprite, text_sprite(Id), MarkerObject, Parent),
+marker(sprite_text(Id), MarkerObject, Parent) :-
+  marker_primitive(sprite_text, sprite_text(Id), MarkerObject, Parent),
   marker_color(MarkerObject, [0.0,0.0,0.0,1.0]),
   marker_scale(MarkerObject, [1.0,1.0,1.0]).
 
-marker(text_sprite(Id,Text), MarkerObject, Parent) :-
-  marker(text_sprite(Id), MarkerObject, Parent),
+marker(sprite_text(Id,Text), MarkerObject, Parent) :-
+  marker(sprite_text(Id), MarkerObject, Parent),
+  marker_text(MarkerObject, Text).
+
+marker(background_image(Id), MarkerObject, Parent) :-
+  marker_primitive(background_image, background_image(Id), MarkerObject, Parent),
+  marker_color(MarkerObject, [0.0,0.0,0.0,1.0]),
+  marker_scale(MarkerObject, [1.0,1.0,2.0]).
+
+marker(background_image(Id,Text), MarkerObject, Parent) :-
+  marker(background_image(Id), MarkerObject, Parent),
   marker_text(MarkerObject, Text).
 
 
