@@ -470,59 +470,28 @@ marker(stickman(Identifier), MarkerObject, Parent) :-
     )
   ))).
 
-marker(text(Id), MarkerObject, Parent) :-
-  marker_primitive(text_view_facing, text(Id), MarkerObject, Parent),
+marker(black(Primitive,Term), MarkerObject, Parent) :-
+  marker_primitive(Primitive, Term, MarkerObject, Parent),
   marker_color(MarkerObject, [0.0,0.0,0.0,1.0]),
   marker_scale(MarkerObject, [1.0,1.0,1.0]).
 
-marker(text(Id,Text), MarkerObject, Parent) :-
-  marker(text(Id), MarkerObject, Parent),
-  marker_text(MarkerObject, Text).
+marker(text(Id), MarkerObject, Parent) :-
+  marker(black(text_view_facing,text(Id)), MarkerObject, Parent).
 
 marker(hud_text(Id), MarkerObject, Parent) :-
-  marker_primitive(hud_text, hud_text(Id), MarkerObject, Parent),
-  marker_color(MarkerObject, [0.0,0.0,0.0,1.0]),
-  marker_scale(MarkerObject, [1.0,1.0,2.0]).
-
-marker(hud_text(Id,Text), MarkerObject, Parent) :-
-  marker(hud_text(Id), MarkerObject, Parent),
-  marker_text(MarkerObject, Text).
+  marker(black(hud_text,hud_text(Id)), MarkerObject, Parent).
 
 marker(hud_image(Id), MarkerObject, Parent) :-
-  marker_primitive(hud_image, hud_image(Id), MarkerObject, Parent),
-  marker_color(MarkerObject, [0.0,0.0,0.0,1.0]),
-  marker_scale(MarkerObject, [1.0,1.0,2.0]).
-
-marker(hud_image(Id,Text), MarkerObject, Parent) :-
-  marker(hud_image(Id), MarkerObject, Parent),
-  marker_text(MarkerObject, Text).
+  marker(black(hud_image,hud_image(Id)), MarkerObject, Parent).
 
 marker(sprite(Name), MarkerObject, Parent) :-
-  marker_primitive(sprite, sprite(Name), MarkerObject, Parent),
-  marker_color(MarkerObject, [0.0,0.0,0.0,1.0]),
-  marker_scale(MarkerObject, [1.0,1.0,1.0]).
-
-marker(sprite(Id,Text), MarkerObject, Parent) :-
-  marker(sprite(Id), MarkerObject, Parent),
-  marker_text(MarkerObject, Text).
+  marker(black(sprite,sprite(Id)), MarkerObject, Parent).
 
 marker(sprite_text(Id), MarkerObject, Parent) :-
-  marker_primitive(sprite_text, sprite_text(Id), MarkerObject, Parent),
-  marker_color(MarkerObject, [0.0,0.0,0.0,1.0]),
-  marker_scale(MarkerObject, [1.0,1.0,1.0]).
-
-marker(sprite_text(Id,Text), MarkerObject, Parent) :-
-  marker(sprite_text(Id), MarkerObject, Parent),
-  marker_text(MarkerObject, Text).
+  marker(black(sprite_text,sprite_text(Id)), MarkerObject, Parent).
 
 marker(background_image(Id), MarkerObject, Parent) :-
-  marker_primitive(background_image, background_image(Id), MarkerObject, Parent),
-  marker_color(MarkerObject, [0.0,0.0,0.0,1.0]),
-  marker_scale(MarkerObject, [1.0,1.0,2.0]).
-
-marker(background_image(Id,Text), MarkerObject, Parent) :-
-  marker(background_image(Id), MarkerObject, Parent),
-  marker_text(MarkerObject, Text).
+  marker(black(background_image,background_image(Id)), MarkerObject, Parent).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

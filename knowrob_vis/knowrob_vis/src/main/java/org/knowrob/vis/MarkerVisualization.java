@@ -72,6 +72,7 @@ import geometry_msgs.Pose;
  *
  * @author tenorth@cs.uni-bremen.de
  * @author danielb@cs.uni-bremen.de
+ * @deprecated
  *
  */
 public class MarkerVisualization extends AbstractNodeMain {

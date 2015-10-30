@@ -62,6 +62,7 @@ import visualization_msgs.Marker;
  * querying the skeletal structure).
  * 
  * @author danielb@cs.uni-bremen.de
+ * @deprecated
  */
 public class Skeleton {
 	/**
