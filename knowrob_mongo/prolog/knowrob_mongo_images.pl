@@ -26,3 +26,14 @@ mng_image_before(Time, DesigJava) :-
   mongo_interface(DB),
   jpl_call(DB, 'getLatestImageBefore', [Time], DesigJava),
   not(DesigJava = @(null)).
+
+%mng_latest_image(Timepoint, DesigJava) :-
+%  atom(Timepoint),
+%  time_term(Timepoint, Time),
+%  mng_latest_image(Time, DesigJava).
+
+%mng_latest_image(Time, DesigJava) :-
+%  number(Time),
+%  mongo_interface(DB),
+%  jpl_call(DB, 'getLatestImageBefore', [Time], DesigJava),
+%  not(DesigJava = @(null)).

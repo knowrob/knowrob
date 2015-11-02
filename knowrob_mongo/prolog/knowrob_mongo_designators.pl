@@ -12,7 +12,8 @@
       mng_designator_props/4,
       mng_desig_matches/2,
       mng_obj_pose_by_desig/2,
-      mng_designator_distinct_values/2
+      mng_designator_distinct_values/2,
+      mng_decision_tree/1
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -40,7 +41,8 @@
     mng_obj_pose_by_desig(r,r),
     mng_designator_props(r,?),
     mng_designator_props(r,+,+,?),
-    mng_designator_type(r,?).
+    mng_designator_type(r,?),
+    mng_decision_tree(-).
 
 mng_db_call(Method, Args, Result) :-
   mongo_interface(DB),
@@ -185,6 +187,10 @@ mng_designator_location(Designator, Mat, T) :-
   mng_designator(Designator, DesigJava, T),
   mng_designator_location(DesigJava, Mat).
 
+
+mng_decision_tree(DesigJava) :-
+  mng_query('resulting_decision_tree', one(DBObj)),
+  mng_designator(DBObj, DesigJava).
 
 %% mng_desig_get_value(?Designator, +DesigJava, +Prop, -Value).
 % 
