@@ -1,6 +1,6 @@
 /** 
 
-  Copyright (C) 2013 Moritz Tenorth
+  Copyright (C) 2013 Moritz Tenorth, 2015 Daniel Beßler
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -26,6 +26,7 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 @author Moritz Tenorth
+@author Daniel Beßler
 @license BSD
 
 */
