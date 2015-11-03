@@ -485,7 +485,7 @@ marker(hud_image(Id), MarkerObject, Parent) :-
   marker(black(hud_image,hud_image(Id)), MarkerObject, Parent).
 
 marker(sprite(Name), MarkerObject, Parent) :-
-  marker(black(sprite,sprite(Id)), MarkerObject, Parent).
+  marker(black(sprite,sprite(Name)), MarkerObject, Parent).
 
 marker(sprite_text(Id), MarkerObject, Parent) :-
   marker(black(sprite_text,sprite_text(Id)), MarkerObject, Parent).
@@ -669,12 +669,12 @@ marker_update(average_trajectory(Link), MarkerObject, interval(T0,T1,Interval)) 
   ))),
   marker_update_trajectory(average_trajectory(Link), MarkerObject, interval(T0,T1,Interval)).
 
-marker_update(speech(Id), MarkerObject, T) :-
-  marker_object(_, MarkerObject, Parent),
-  marker_visualisation(MarkerVis),
-  not( Parent = MarkerVis ),
-  marker_translation(Parent, [X,Y,Z]),
-  marker_translation(MarkerObject, [X,Y,Z]).
+%marker_update(speech(Id), MarkerObject, T) :-
+%  marker_object(_, MarkerObject, Parent),
+%  marker_visualisation(MarkerVis),
+%  not( Parent = MarkerVis ),
+%  marker_translation(Parent, [X,Y,Z]),
+%  marker_translation(MarkerObject, [X,Y,Z]).
 
 marker_update(_, MarkerObject, T) :-
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),

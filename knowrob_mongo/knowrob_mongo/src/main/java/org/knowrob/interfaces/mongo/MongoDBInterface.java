@@ -62,6 +62,9 @@ public class MongoDBInterface {
 
 	final SimpleDateFormat mongoDateFormat;
 	
+	public static final String COLLECTION_TF = "tf";
+	public static final String COLLECTION_LOGGED_DESIGNATORS = "logged_designators";
+	
 	/**
 	 * Constructor
 	 *
@@ -179,6 +182,21 @@ public class MongoDBInterface {
 		}
 	}
 	
+	public DBCursor query(String collection, QueryBuilder query) {
+		try {
+			DBCollection coll = getDatabase().getCollection(collection);
+			DBObject queryInstance = query.get();
+			DBObject cols  = new BasicDBObject();
+			return coll.find(queryInstance, cols);
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+			System.err.println("MONGO query failed: " + e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	public void ascending(DBCursor cursor, String key) {
 		cursor.sort(new BasicDBObject(key, 1));
 	}
@@ -234,7 +252,7 @@ public class MongoDBInterface {
 	 */
 	public Designator[] queryDesignatorsByPattern(String[] keys, String[] values) {
 		
-		DBCollection coll = getDatabase().getCollection("logged_designators");
+		DBCollection coll = getDatabase().getCollection(COLLECTION_LOGGED_DESIGNATORS);
 		
 		QueryBuilder qb = QueryBuilder.start("designator").exists("_id");
 		for(int i=0; i<keys.length; i++) {
@@ -282,7 +300,12 @@ public class MongoDBInterface {
 	}
 
 	public Designator designator(BasicDBObject obj) {
-		return new Designator().readFromDBObject(obj);
+		Designator d = new Designator().readFromDBObject(obj);
+		Object x = d.get("DESIGNATOR");
+		if(x!=null && x instanceof Designator)
+			return (Designator)x;
+		else
+			return d;
 	}
 
 	@SuppressWarnings("unchecked")

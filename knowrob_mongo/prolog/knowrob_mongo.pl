@@ -83,8 +83,8 @@
 % @param DBName  The name of the db (e.g., 'roslog')
 %
 mng_db(DBName) :-
-    mongo_interface(Mongo),
-    jpl_call(Mongo, 'setDatabase', [DBName], _).
+  mongo_interface(Mongo),
+  jpl_call(Mongo, 'setDatabase', [DBName], _).
 
 %% mng_timestamp(+Date, -Stamp) is nondet.
 %
@@ -188,10 +188,12 @@ mng_ascending(DBCursor, Key) :-
 %
 mng_read_cursor(DBCursor, DBObj) :-
   (  mng_db_object(DBCursor, DBObj)
-  -> jpl_call(DB, 'close', [DBCursor], _)
-  ; ( % close cursor and fail
-     jpl_call(DB, 'close', [DBCursor], _), false
-  ).
+  -> ( % close cursor and succeed
+    jpl_call(DBCursor, 'close', [], _)
+  ) ; ( % close cursor and fail
+     jpl_call(DBCursor, 'close', [], _),
+     fail
+  )).
 
 %% mng_read_cursor(+DBCursor, one(-DBObj))
 %% mng_read_cursor(+DBCursor, all(-DBObj))
@@ -205,7 +207,7 @@ mng_read_cursor(DBCursor, DBObj) :-
 mng_db_object(DBCursor, one(DBObj)) :-
   mongo_interface(DB),
   jpl_call(DB, 'one', [DBCursor], DBObj),
-  not(DBObj = @(null)),
+  not(DBObj = @(null)).
 
 mng_db_object(DBCursor, some(DBObjs, Count)) :-
   mongo_interface(DB),
@@ -242,9 +244,7 @@ mng_value_object(Val, ObjJava) :-
   float(Val),
   jpl_new('java.lang.Double', [Val], ObjJava).
 
-mng_value_object(Val, ObjJava) :-
-  atom(Val),
-  jpl_new('java.lang.String', [Val], ObjJava).
+mng_value_object(Val, Val) :- atom(Val).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
