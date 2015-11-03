@@ -33,6 +33,7 @@
 :- module(knowrob_mongo,
     [
       mng_db/1,
+      mng_republisher/1,
       mng_timestamp/2,
       mng_query_latest/4,
       mng_query_latest/5,
@@ -58,6 +59,7 @@
 
 :-  rdf_meta
     mng_db(+),
+    mng_republisher(-),
     mng_timestamp(r,r),
     mng_query_latest(+,?,+,r),
     mng_query_latest(+,?,+,r,+),
@@ -75,6 +77,16 @@
 :- rdf_db:rdf_register_ns(xsd, 'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
 :- rdf_db:rdf_register_ns(srdl2comp, 'http://knowrob.org/kb/srdl2-comp.owl#', [keep(true)]).
 
+
+mng_republisher(Republisher) :-
+    (\+ current_predicate(v_mng_republisher, _)),
+    jpl_new('org.knowrob.interfaces.mongo.MongoRepublisher', [], Republisher),
+    jpl_list_to_array(['org.knowrob.interfaces.mongo.MongoRepublisher'], Arr),
+    jpl_call('org.knowrob.utils.ros.RosUtilities', runRosjavaNode, [Republisher, Arr], _),
+    assert(v_mng_republisher(Republisher)),!.
+mng_republisher(Republisher) :-
+    current_predicate(v_mng_republisher, _),
+    v_mng_republisher(Republisher).
 
 %% mng_db(+DBName) is nondet.
 %
@@ -157,7 +169,10 @@ mng_query_earliest(Collection, DBObj, TimeKey, TimeValue, Pattern) :-
   mng_read_cursor(DBCursor, DBObj).
 
 mng_query(Collection, DBObj) :-
-  mng_query(Collection, DBObj, []).
+  mongo_interface(DB),
+  jpl_call(DB, 'query', [Collection], DBCursor),
+  not(DBCursor = @(null)),
+  mng_read_cursor(DBCursor, DBObj).
 
 mng_query(Collection, DBObj, Pattern) :-
   mng_db_cursor(Collection, Pattern, DBCursor),

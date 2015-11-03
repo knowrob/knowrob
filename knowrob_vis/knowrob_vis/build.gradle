@@ -18,6 +18,12 @@
 apply plugin: 'application'
 mainClassName = 'org.ros.RosRun'
 
+repositories {
+  maven {
+      url "http://maven2.javacv.googlecode.com/git/"
+  }
+}
+
 /* 
  Dependencies can be on external maven artifacts (such as rosjava_core
  here) or on sibling subprojects. Fpr external maven artifact dependencies
@@ -36,6 +42,9 @@ dependencies {
   
   compile 'org.ros.rosjava_messages:visualization_msgs:1.10.+'
   compile 'org.eclipse.jetty:jetty-server:8.1.15.v20140411'
+  
+  compile group: 'com.googlecode.javacpp', name: 'javacpp', version: '0.7'
+  compile group: 'com.googlecode.javacv', name: 'javacv', version: '0.7'
   
   compile 'jpl:jpl:3.1.4-alpha'
 }

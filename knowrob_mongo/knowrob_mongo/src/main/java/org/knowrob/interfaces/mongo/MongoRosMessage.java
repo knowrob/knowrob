@@ -1,11 +1,7 @@
 package org.knowrob.interfaces.mongo;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.GregorianCalendar;
 
@@ -28,8 +24,27 @@ public class MongoRosMessage<RosType> {
 		this.topic = topic;
 	}
 
+	public MongoRosMessage(ConnectedNode node, String typeName, String topic) {
+		this.typeName = typeName;
+		this.topic = topic;
+		connect(node);
+	}
+
 	public void connect(final ConnectedNode node) {
 		this.pub = node.newPublisher(topic, typeName);
+	}
+
+	public RosType createMessgae(BasicDBObject mngObj) {
+		try {
+			final RosType msg = pub.newMessage();
+			createMessage(msg, mngObj);
+			return msg;
+		}
+		catch (Exception e) {
+			System.err.println("Failed to create message: " + e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	public boolean publish(BasicDBObject mngObj) {

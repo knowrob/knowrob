@@ -178,7 +178,7 @@ mng_designator_props(Designator, DesigJava, PropertyPath, Value) :-
   mng_designator_props(Designator, DesigJava, PropertyPathList, Value).
 
 mng_designator_props(Designator, DesigJava, [Prop|Tail], Value) :-
-  not( jpl_null(DesigJava) ),,
+  not( jpl_null(DesigJava) ),
   jpl_call(DesigJava, 'keySet', [], PropsSet),
   jpl_set_element(PropsSet, Prop),
   jpl_call(DesigJava, 'get', [Prop], ChildDesigJava),

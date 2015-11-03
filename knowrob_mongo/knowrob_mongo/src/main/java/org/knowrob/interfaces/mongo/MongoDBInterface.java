@@ -138,7 +138,6 @@ public class MongoDBInterface {
 	
 	public DBCursor query(String collection, String[] keys, String[] relations, Object[] values) {
 		try {
-			DBCollection coll = getDatabase().getCollection(collection);
 			QueryBuilder query = QueryBuilder.start();
 			// Parse the query
 			if(relations!=null && keys!=null && values!=null &&
@@ -170,9 +169,7 @@ public class MongoDBInterface {
 				}
 			}
 			
-			DBObject queryInstance = query.get();
-			DBObject cols  = new BasicDBObject();
-			return coll.find(queryInstance, cols);
+			return query(collection, query);
 		}
 		catch (Exception e) {
 			// TODO: handle exception
@@ -182,12 +179,18 @@ public class MongoDBInterface {
 		}
 	}
 	
+	public DBCursor query(String collection) {
+		return query(collection, QueryBuilder.start());
+	}
+	
 	public DBCursor query(String collection, QueryBuilder query) {
 		try {
 			DBCollection coll = getDatabase().getCollection(collection);
 			DBObject queryInstance = query.get();
 			DBObject cols  = new BasicDBObject();
-			return coll.find(queryInstance, cols);
+			DBCursor cursor = coll.find(queryInstance, cols);
+			if(cursor.hasNext()) return cursor;
+			else return null;
 		}
 		catch (Exception e) {
 			// TODO: handle exception
@@ -206,7 +209,10 @@ public class MongoDBInterface {
 	}
 	
 	public BasicDBObject one(DBCursor cursor) {
-		return (BasicDBObject) cursor.next();
+		if(cursor.hasNext())
+			return (BasicDBObject) cursor.next();
+		else
+			return null;
 	}
 	
 	public BasicDBObject[] some(DBCursor cursor, int count) {
