@@ -1,32 +1,27 @@
 package org.knowrob.vis;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.ComponentSampleModel;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
+import java.awt.image.Raster;
+import java.awt.image.SampleModel;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.codec.binary.Base64;
-import org.knowrob.interfaces.mongo.MongoRepublisher;
-
-import com.googlecode.javacpp.Loader;
-import com.googlecode.javacv.cpp.opencv_core.CvMat;
-import com.googlecode.javacv.cpp.opencv_objdetect;
 import com.mongodb.BasicDBObject;
+
+import org.apache.commons.codec.binary.Base64;
+import org.knowrob.interfaces.mongo.MongoMessages;
 
 /**
  * Constants and Macros related to encoding of ROS Image messages.
  * @author Daniel Beßler
  */
 public class ImageEncoding {
-	static{
-		// Preload the opencv_objdetect module to work around a known bug.
-		// Without UnsattisfiedLink exceptions are thrown in some bundles
-		// which use opencv (not in all of them oO).
-		Loader.load(opencv_objdetect.class);
-	}
-	
 	public static final String RGB8 = "rgb8";
     public static final String RGBA8 = "rgba8";
     public static final String RGB16 = "rgb16";
@@ -172,18 +167,6 @@ public class ImageEncoding {
         return 16;
       return -1;
     }
-    
-	public static String encodeBase64(String imagePath) {
-        try {
-    		BufferedImage img = ImageIO.read(new File(imagePath));
-    		return encodeBase64(img, "png");
-		}
-        catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        return null;
-	}
 	
 	public static String encodeBase64(BufferedImage image, String type) throws IOException {
 		String imageString = null;
@@ -192,25 +175,31 @@ public class ImageEncoding {
 		byte[] imageBytes = bos.toByteArray();
 		imageString = new String(Base64.encodeBase64(imageBytes));
 		bos.close();
-		return imageString;
+		return "data:image/"+type+";base64,"+imageString;
+	}
+
+	public static String encodeBase64(String imagePath) {
+    	return encodeBase64(ImageIO.read(new File(imagePath)), "png");
 	}
 	
 	public static String encodeBase64(sensor_msgs.Image rosImgMsg) throws Exception {
-		return encodeBase64(CVBridge.getMappedCvMat(rosImgMsg));
+		return encodeBase64(messageToBufferedImage(rosImgMsg), "png");
 	}
 	
-	public static String encodeBase64(CvMat cvMat) throws Exception {
-		return encodeBase64(cvMat.asIplImage().getBufferedImage(), "png");
+	public static String encodeBase64(BasicDBObject mngObj) {
+		return encodeBase64(MongoMessages.get().create(mngObj, sensor_msgs.Image.class, "sensor_msgs/Image"));
 	}
 	
-	public static String encodeBase64(MongoRepublisher republisher, BasicDBObject mngObj) {
-		try {
-			return encodeBase64(republisher.getImageMessage(mngObj));
-		}
-		catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
-	}
+    public static BufferedImage messageToBufferedImage(sensor_msgs.Image imgMsg){
+    	// TODO(daniel): support other message formats
+    	DataBufferByte buffer = new DataBufferByte(imgMsg.getData().array(), imgMsg.getWidth()*imgMsg.getHeight());
+        SampleModel sampleModel = new ComponentSampleModel(DataBuffer.TYPE_BYTE,
+        		imgMsg.getWidth(), imgMsg.getHeight(), 3, imgMsg.getWidth()*3, new int[]{2,1,0});
+        Raster raster = Raster.createRaster(sampleModel, buffer, null);
+        BufferedImage image = new BufferedImage(imgMsg.getWidth(),
+        		imgMsg.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+        image.setData(raster);
+        return image;
+    }
+	
 }

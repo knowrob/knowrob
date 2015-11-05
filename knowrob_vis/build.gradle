@@ -31,9 +31,6 @@ buildscript {
         maven {
             url rosMavenRepository
         }
-        maven {
-            url "http://maven2.javacv.googlecode.com/git/"
-        }
     }
     dependencies {
         classpath group: 'org.ros.rosjava_bootstrap', name: 'gradle_plugins', version: '[0.1,0.2)'

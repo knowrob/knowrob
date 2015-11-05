@@ -41,8 +41,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 import java.text.DecimalFormat;
 
-import javax.vecmath.Vector3d;
-
 import org.ros.message.Duration;
 import org.ros.message.Time;
 import org.ros.namespace.GraphName;
@@ -50,7 +48,6 @@ import org.ros.node.AbstractNodeMain;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Publisher;
 import org.apache.commons.logging.Log;
-import org.knowrob.interfaces.mongo.types.Designator;
 import org.knowrob.owl.OWLThing;
 import org.knowrob.prolog.PrologInterface;
 import org.knowrob.tfmemory.TFMemory;

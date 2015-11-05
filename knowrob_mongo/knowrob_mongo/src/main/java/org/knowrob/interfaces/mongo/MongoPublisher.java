@@ -13,18 +13,24 @@ import org.ros.node.topic.Publisher;
 
 import com.mongodb.BasicDBObject;
 
-public class MongoRosMessage<RosType> {
+/**
+ * A typed publisher of ROS messages generated from mongo DB objects.
+ * @author Daniel Beßler
+ *
+ * @param <RosType> The ROS message type (e.g., sensor_msgs.Image)
+ */
+public class MongoPublisher<RosType> {
 	Publisher<RosType> pub = null;
 	// e.g. "std_msgs/String"
 	final String typeName;
 	final String topic;
 	
-	public MongoRosMessage(final String typeName, final String topic) {
+	public MongoPublisher(final String topic, final String typeName) {
 		this.typeName = typeName;
 		this.topic = topic;
 	}
 
-	public MongoRosMessage(ConnectedNode node, String typeName, String topic) {
+	public MongoPublisher(final ConnectedNode node, final String topic, final String typeName) {
 		this.typeName = typeName;
 		this.topic = topic;
 		connect(node);
@@ -34,7 +40,7 @@ public class MongoRosMessage<RosType> {
 		this.pub = node.newPublisher(topic, typeName);
 	}
 
-	public RosType createMessgae(BasicDBObject mngObj) {
+	public RosType create(BasicDBObject mngObj) {
 		try {
 			final RosType msg = pub.newMessage();
 			createMessage(msg, mngObj);
@@ -47,22 +53,21 @@ public class MongoRosMessage<RosType> {
 		}
 	}
 
-	public boolean publish(BasicDBObject mngObj) {
+	public RosType publish(BasicDBObject mngObj) {
 		if(pub==null) {
 			System.err.println("Not connected.");
-			return false;
+			return null;
 		}
 		try {
 			final RosType msg = pub.newMessage();
 			createMessage(msg, mngObj);
 			pub.publish(msg);
-	
-			return true;
+			return msg;
 		}
 		catch (Exception e) {
 			System.err.println("Failed to publish message: " + e.getMessage());
 			e.printStackTrace();
-			return false;
+			return null;
 		}
 	}
 

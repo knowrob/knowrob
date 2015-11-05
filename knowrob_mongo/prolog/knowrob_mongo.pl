@@ -41,6 +41,10 @@
       mng_query_earliest/5,
       mng_query/2,
       mng_query/3,
+      mng_ros_message/2,
+      mng_ros_message/4,
+      mng_republish/3,
+      mng_republish/5,
       obj_blocked_by_in_camera/4,
       obj_visible_in_camera/3
     ]).
@@ -67,6 +71,10 @@
     mng_query_earliest(+,?,+,r,+),
     mng_query(+,?),
     mng_query(+,?,+),
+    mng_ros_message(t,-),
+    mng_ros_message(+,+,+,-),
+    mng_republish(t,+,-),
+    mng_republish(+,+,+,+,-),
     obj_blocked_by_in_camera(r, r, r, r),
     obj_visible_in_camera(r, r, r).
 
@@ -80,8 +88,8 @@
 
 mng_republisher(Republisher) :-
     (\+ current_predicate(v_mng_republisher, _)),
-    jpl_new('org.knowrob.interfaces.mongo.MongoRepublisher', [], Republisher),
-    jpl_list_to_array(['org.knowrob.interfaces.mongo.MongoRepublisher'], Arr),
+    jpl_call('org.knowrob.interfaces.mongo.MongoMessages', get, [], Republisher),
+    jpl_list_to_array(['org.knowrob.interfaces.mongo.MongoMessages'], Arr),
     jpl_call('org.knowrob.utils.ros.RosUtilities', runRosjavaNode, [Republisher, Arr], _),
     assert(v_mng_republisher(Republisher)),!.
 mng_republisher(Republisher) :-
@@ -224,17 +232,19 @@ mng_db_object(DBCursor, one(DBObj)) :-
   jpl_call(DB, 'one', [DBCursor], DBObj),
   not(DBObj = @(null)).
 
-mng_db_object(DBCursor, some(DBObjs, Count)) :-
+mng_db_object(DBCursor, some(DBObj, Count)) :-
   mongo_interface(DB),
   jpl_call(DB, 'some', [DBCursor, Count], DBObjsArray),
   not(DBObjsArray = @(null)),
-  jpl_list_to_array(DBObjs, DBObjsArray).
+  jpl_list_to_array(DBObjs, DBObjsArray),
+  member(DBObj, DBObjs).
 
-mng_db_object(DBCursor, all(DBObjs)) :-
+mng_db_object(DBCursor, all(DBObj)) :-
   mongo_interface(DB),
   jpl_call(DB, 'all', [DBCursor], DBObjsArray),
   not(DBObjsArray = @(null)),
-  jpl_list_to_array(DBObjs, DBObjsArray).
+  jpl_list_to_array(DBObjs, DBObjsArray),
+  member(DBObj, DBObjs).
 
 %% mng_value_object(date(+Val), ObjJava)
 %% mng_value_object(+Val, ObjJava)
@@ -260,6 +270,83 @@ mng_value_object(Val, ObjJava) :-
   jpl_new('java.lang.Double', [Val], ObjJava).
 
 mng_value_object(Val, Val) :- atom(Val).
+
+%% mng_ros_message(+DBObj, -Msg)
+%% mng_ros_message(+DBObj, +TypeJava, +TypeString, -Msg)
+%
+% Generate a ROS message based on Mongo DB object.
+%
+% @param DBObj The DB object (result of a query)
+% @param TypeJava The Java class of the message
+% @param TypeString The message type identifier
+% @param Msg The generated message
+%
+mng_ros_message(DBObj, Msg) :-
+  mng_republish(DBObj, '', Msg).
+
+mng_ros_message(DBObj, TypeJava, TypeString, Msg) :-
+  mng_republish(DBObj, TypeJava, TypeString, '', Msg).
+
+%% mng_republish(bool(+DBObj), +Topic, -Msg)
+%% mng_republish(str(+DBObj), +Topic, -Msg)
+%% mng_republish(float32(+DBObj), +Topic, -Msg)
+%% mng_republish(float64(+DBObj), +Topic, -Msg)
+%% mng_republish(int32(+DBObj), +Topic, -Msg)
+%% mng_republish(int64(+DBObj), +Topic, -Msg)
+%% mng_republish(image(+DBObj), +Topic, -Msg)
+%% mng_republish(pcl(+DBObj), +Topic, -Msg)
+%% mng_republish(camera(+DBObj), +Topic, -Msg)
+%% mng_republish(tf(+DBObj), +Topic, -Msg)
+%% mng_republish(+DBObj, +TypeJava, +TypeString, +Topic, -Msg)
+%
+% Generate a ROS message based on Mongo DB object
+% and publishes the message on specified topic.
+%
+% @param DBObj The DB object (result of a query)
+% @param Topic The message topic
+% @param TypeJava The Java class of the message
+% @param TypeString The message type identifier
+% @param Msg The generated message
+%
+mng_republish(bool(DBObj), Topic, Msg) :-
+  mng_republish(DBObj, 'std_msgs.Bool', 'std_msgs/Bool', Topic, Msg).
+
+mng_republish(str(DBObj), Topic, Msg) :-
+  mng_republish(DBObj, 'std_msgs.String', 'std_msgs/String', Topic, Msg).
+
+mng_republish(float32(DBObj), Topic, Msg) :-
+  mng_republish(DBObj, 'std_msgs.Float32', 'std_msgs/Float32', Topic, Msg).
+
+mng_republish(float64(DBObj), Topic, Msg) :-
+  mng_republish(DBObj, 'std_msgs.Float64', 'std_msgs/Float64', Topic, Msg).
+
+mng_republish(int32(DBObj), Topic, Msg) :-
+  mng_republish(DBObj, 'std_msgs.Int32', 'std_msgs/Int32', Topic, Msg).
+
+mng_republish(int64(DBObj), Topic, Msg) :-
+  mng_republish(DBObj, 'std_msgs.Int64', 'std_msgs/Int64', Topic, Msg).
+
+mng_republish(image(DBObj), Topic, Msg) :-
+  mng_republish(DBObj, 'sensor_msgs.Image', 'sensor_msgs/Image', Topic, Msg).
+
+mng_republish(pcl(DBObj), Topic, Msg) :-
+  mng_republish(DBObj, 'sensor_msgs.PointCloud', 'sensor_msgs/PointCloud', Topic, Msg).
+
+mng_republish(camera(DBObj), Topic, Msg) :-
+  mng_republish(DBObj, 'sensor_msgs.CameraInfo', 'sensor_msgs/CameraInfo', Topic, Msg).
+
+mng_republish(tf(DBObj), Topic, Msg) :-
+  mng_republish(DBObj, 'tf.tfMessage', 'tf/tfMessage', Topic, Msg).
+
+mng_republish(DBObj, TypeJava, TypeString, Topic, Msg) :-
+  mng_republisher(Republisher),
+  jpl_classname_to_class(TypeJava, MsgClass),
+  jpl_call(Republisher, 'publish', [DBObj,MsgClass,TypeString,Topic], Msg).
+
+mng_republish(DBObj, TypeJava, TypeString, '', Msg) :-
+  mng_republisher(Republisher),
+  jpl_classname_to_class(TypeJava, MsgClass),
+  jpl_call(Republisher, 'create', [DBObj,MsgClass,TypeString], Msg).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

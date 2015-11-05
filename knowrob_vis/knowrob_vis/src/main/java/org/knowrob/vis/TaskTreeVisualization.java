@@ -31,10 +31,6 @@
 
 package org.knowrob.vis;
 
-import java.util.List;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.ArrayList;
 
 import org.ros.namespace.GraphName;
