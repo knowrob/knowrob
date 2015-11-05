@@ -168,29 +168,53 @@ public class ImageEncoding {
       return -1;
     }
 	
-	public static String encodeBase64(BufferedImage image, String type) throws IOException {
-		String imageString = null;
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		ImageIO.write(image, type, bos);
-		byte[] imageBytes = bos.toByteArray();
-		imageString = new String(Base64.encodeBase64(imageBytes));
-		bos.close();
-		return "data:image/"+type+";base64,"+imageString;
+	public static String encodeBase64(BufferedImage image, String type) {
+		try {
+			String imageString = null;
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			ImageIO.write(image, type, bos);
+			byte[] imageBytes = bos.toByteArray();
+			imageString = new String(Base64.encodeBase64(imageBytes));
+			bos.close();
+			return "data:image/"+type+";base64,"+imageString;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	public static String encodeBase64(String imagePath) {
-    	return encodeBase64(ImageIO.read(new File(imagePath)), "png");
+		try {
+			return encodeBase64(ImageIO.read(new File(imagePath)), "png");
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
-	public static String encodeBase64(sensor_msgs.Image rosImgMsg) throws Exception {
-		return encodeBase64(messageToBufferedImage(rosImgMsg), "png");
+	public static String encodeBase64(sensor_msgs.Image rosImgMsg) {
+		try {
+			return encodeBase64(messageToBufferedImage(rosImgMsg), "png");
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	public static String encodeBase64(BasicDBObject mngObj) {
-		return encodeBase64(MongoMessages.get().create(mngObj, sensor_msgs.Image.class, "sensor_msgs/Image"));
+		try {
+			return encodeBase64(MongoMessages.get().create(mngObj, sensor_msgs.Image.class, "sensor_msgs/Image"));
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
-    public static BufferedImage messageToBufferedImage(sensor_msgs.Image imgMsg){
+    public static BufferedImage messageToBufferedImage(sensor_msgs.Image imgMsg) {
     	// TODO(daniel): support other message formats
     	DataBufferByte buffer = new DataBufferByte(imgMsg.getData().array(), imgMsg.getWidth()*imgMsg.getHeight());
         SampleModel sampleModel = new ComponentSampleModel(DataBuffer.TYPE_BYTE,

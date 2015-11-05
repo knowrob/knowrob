@@ -16,9 +16,9 @@ import com.mongodb.BasicDBObject;
 public class MongoMessages extends AbstractNodeMain {
 	private ConnectedNode node = null;
 	private Map<String,MongoPublisher<?>> publisher = new HashMap<String,MongoPublisher<?>>();
-	private MongoMessages instance = null;
+	private static MongoMessages instance = null;
 	
-	public MongoMessages get() {
+	public static MongoMessages get() {
 		if(instance==null) {
 			instance = new MongoMessages();
 		}
@@ -45,7 +45,7 @@ public class MongoMessages extends AbstractNodeMain {
 	 * @return The ROS message created
 	 * @throws InterruptedException
 	 */
-	public <T> T create(BasicDBObject mngObj, Class<T> cls, String type) throws InterruptedException {
+	public <T> T create(BasicDBObject mngObj, Class<T> cls, String type) {
 		MongoPublisher<T> publisher = getPublisher(type+"_factory", type);
 		return publisher.create(mngObj);
 	}
@@ -59,15 +59,21 @@ public class MongoMessages extends AbstractNodeMain {
 	 * @return The ROS message created
 	 * @throws InterruptedException
 	 */
-	public <T> T publish(BasicDBObject mngObj, Class<T> cls, String type, String topic) throws InterruptedException {
+	public <T> T publish(BasicDBObject mngObj, Class<T> cls, String type, String topic) {
 		MongoPublisher<T> publisher = getPublisher(topic, type);
 		return publisher.publish(mngObj);
 	}
 	
 	@SuppressWarnings("unchecked")
-	private <T> MongoPublisher<T> getPublisher(String topic, String type) throws InterruptedException {
+	private <T> MongoPublisher<T> getPublisher(String topic, String type) {
 		// wait for node to be ready
-		while(node == null) Thread.sleep(200);
+		try {
+			while(node == null) Thread.sleep(200);
+		}
+		catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		if(!publisher.containsKey(topic)) {
 			publisher.put(topic, new MongoPublisher<T>(this.node, topic, type));

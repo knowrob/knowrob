@@ -61,6 +61,7 @@ mng_image_before(Time, DesigJava) :-
   not(DesigJava = @(null)).
 
 mng_image_base64(DBObj, Base64) :-
+  mng_republisher(_),
   jpl_call('org.knowrob.vis.ImageEncoding', 'encodeBase64', [DBObj], Base64).
 
 %  mng_designator_props('IMAGE', Desig, 'HEIGHT', H),
