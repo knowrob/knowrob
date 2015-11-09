@@ -169,7 +169,7 @@ mng_query_latest(Collection, DBObj, TimeKey, TimeValue, Pattern) :-
   mng_read_cursor(DBCursor, DBObj).
 
 mng_query_earliest(Collection, DBObj, TimeKey, TimeValue) :-
-  mng_query_latest(Collection, DBObj, TimeKey, TimeValue, []).
+  mng_query_earliest(Collection, DBObj, TimeKey, TimeValue, []).
 
 mng_query_earliest(Collection, DBObj, TimeKey, TimeValue, Pattern) :-
   mng_db_cursor(Collection, [[TimeKey, '>', date(TimeValue)]|Pattern], DBCursor),
@@ -255,6 +255,11 @@ mng_db_object(DBCursor, all(DBObj)) :-
 % @param ObjJava Java value compatible with MONGO queries
 %
 mng_value_object(date(Val), ObjJava) :-
+  atom(Val), time_term(Val,T),
+  mng_value_object(date(T), ObjJava).
+
+mng_value_object(date(Val), ObjJava) :-
+  number(Val),
   Miliseconds is Val * 1000.0,
   jpl_new('java.lang.Double', [Miliseconds], MilisecondsDouble), 
   jpl_call(MilisecondsDouble, 'longValue', [], MilisecondsLong),

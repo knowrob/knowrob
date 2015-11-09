@@ -311,8 +311,10 @@ marker_primitive(Type, MarkerTerm, MarkerObject, Parent) :-
 % @param Term Marker identification term.
 %
 marker_remove(all) :-
-  marker_object(Term, _),
-  marker_remove(Term).
+  forall(
+    marker_object(Term, _),
+    marker_remove(Term)
+  ).
 
 marker_remove(trajectories) :-
   forall(

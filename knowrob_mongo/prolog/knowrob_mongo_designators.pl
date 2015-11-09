@@ -34,6 +34,7 @@
     [
       mng_designator/2,
       mng_designator/3,
+      mng_designator/4,
       mng_designator_before/3,
       mng_designator_before/4,
       mng_designator_type/2,
@@ -63,6 +64,7 @@
 :-  rdf_meta
     mng_designator(r,?),
     mng_designator(r,+,?),
+    mng_designator(r,+,?,+),
     mng_designator_before(r,-,r),
     mng_designator_before(r,-,r,+),
     mng_designator_distinct_values(+,-),
@@ -86,6 +88,8 @@ mng_designator_id(Designator, DesigID) :-
 
 %% mng_designator(+Designator, -DesigJava) is nondet.
 %% mng_designator(+DBObj, -DesigJava) is nondet.
+%% mng_designator(+DBObj, -DesigJava, +Pattern) is nondet.
+%% mng_designator(+DBObj, -DesigJava, +Pattern, +IdKey) is nondet.
 % 
 % Read object that corresponds to Designator into
 % a JAVA object DesigJava.
@@ -98,8 +102,11 @@ mng_designator(Designator, DesigJava) :-
   mng_designator(Designator, DesigJava, []).
 
 mng_designator(Designator, DesigJava, Pattern) :-
+  mng_designator(Designator, DesigJava, Pattern, 'designator._id').
+
+mng_designator(Designator, DesigJava, Pattern, IdKey) :-
   mng_designator_id(Designator, DesigID),
-  mng_query('logged_designators', one(DBObj), [['designator._id', 'is', DesigID]|Pattern]),
+  mng_query('logged_designators', one(DBObj), [[IdKey, 'is', DesigID]|Pattern]),
   mng_designator(DBObj, DesigJava).
 
 mng_designator_before(Designator, DesigJava, Time) :-
@@ -312,7 +319,7 @@ mng_desig_matches(Designator, QueryPattern) :-
   jpl_list_to_array(QueryValues, QueryValuesArr),
   
   % send MongoDB query:
-  mongo_db_call('queryDesignatorsByPattern', [QueryKeysArr, QueryValuesArr], DesigJavaArr),
+  mng_db_call('queryDesignatorsByPattern', [QueryKeysArr, QueryValuesArr], DesigJavaArr),
   not(DesigJavaArr = @(null)),
 
   jpl_array_to_list(DesigJavaArr, DesigJavaList),
@@ -321,7 +328,7 @@ mng_desig_matches(Designator, QueryPattern) :-
   not(DesigJava = @(null)),
   jpl_call(DesigJava, 'get', ['_ID'], DesigID),
   not(DesigID = @(null)),
-  rdf_split_url('http://knowrob.org/kb/cram_log.owl#', DesigID, Designator).
+  rdf_split_url(_, DesigID, Designator).
 
 
 %% desig_list_to_query(+ConstrList, +Prefix, -QueryStringList)

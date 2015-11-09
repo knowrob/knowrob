@@ -32,8 +32,7 @@
 
 :- module(knowrob_mongo_images,
     [
-        mng_kinect_frame_before/2,
-        mng_image_before/2,
+        mng_image_latest/2,
         mng_image_base64/2
     ]).
 
@@ -42,42 +41,12 @@
 :- use_module(library('knowrob_mongo_interface')).
 
 :-  rdf_meta
-    mng_kinect_frame_before(r, ?),
-    mng_image_before(r, -),
+    mng_image_latest(r,-),
     mng_image_base64(+,-).
 
-mng_kinect_frame_before(Time, DBObj) :-
-  mng_latest('kinect_head_rgb_image_color', DBObj, 'header.stamp', Time).
-
-mng_image_before(Timepoint, DesigJava) :-
-  atom(Timepoint),
-  time_term(Timepoint, Time),
-  mng_image_before(Time, DesigJava).
-
-mng_image_before(Time, DesigJava) :-
-  number(Time),
-  mongo_interface(DB),
-  jpl_call(DB, 'getLatestImageBefore', [Time], DesigJava),
-  not(DesigJava = @(null)).
+mng_image_latest(Time, DBObj) :-
+  mng_query_latest('kinect_head_rgb_image_color', one(DBObj), 'header.stamp', Time)
 
 mng_image_base64(DBObj, Base64) :-
   mng_republisher(_),
   jpl_call('org.knowrob.vis.ImageEncoding', 'encodeBase64', [DBObj], Base64).
-
-%  mng_designator_props('IMAGE', Desig, 'HEIGHT', H),
-%  mng_designator_props('IMAGE', Desig, 'WIDTH', W),
-%  mng_designator_props('IMAGE', Desig, 'ENCODING', Enc),
-%  mng_designator_props('IMAGE', Desig, 'IS_BIGENDIAN', BigEndian),
-%  mng_designator_props('IMAGE', Desig, 'STEP', Step),
-%  mng_designator_props('IMAGE', Desig, 'DATA', Data).
-
-%mng_latest_image(Timepoint, DesigJava) :-
-%  atom(Timepoint),
-%  time_term(Timepoint, Time),
-%  mng_latest_image(Time, DesigJava).
-
-%mng_latest_image(Time, DesigJava) :-
-%  number(Time),
-%  mongo_interface(DB),
-%  jpl_call(DB, 'getLatestImageBefore', [Time], DesigJava),
-%  not(DesigJava = @(null)).

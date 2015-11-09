@@ -189,8 +189,7 @@ public class MongoDBInterface {
 			DBObject queryInstance = query.get();
 			DBObject cols  = new BasicDBObject();
 			DBCursor cursor = coll.find(queryInstance, cols);
-			if(cursor.hasNext()) return cursor;
-			else return null;
+			return cursor;
 		}
 		catch (Exception e) {
 			// TODO: handle exception
@@ -201,11 +200,23 @@ public class MongoDBInterface {
 	}
 	
 	public void ascending(DBCursor cursor, String key) {
-		cursor.sort(new BasicDBObject(key, 1));
+		try {
+			cursor.sort(new BasicDBObject(key, 1));
+		}
+		catch(Exception e) {
+			System.err.println("Failed to sort cursor: " + e.getMessage());
+			e.printStackTrace();
+		}
 	}
 	
 	public void descending(DBCursor cursor, String key) {
-		cursor.sort(new BasicDBObject(key, -1));
+		try {
+			cursor.sort(new BasicDBObject(key, -1));
+		}
+		catch(Exception e) {
+			System.err.println("Failed to sort cursor: " + e.getMessage());
+			e.printStackTrace();
+		}
 	}
 	
 	public BasicDBObject one(DBCursor cursor) {
