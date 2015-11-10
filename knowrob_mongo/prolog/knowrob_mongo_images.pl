@@ -45,7 +45,7 @@
     mng_image_base64(+,-).
 
 mng_image_latest(Time, DBObj) :-
-  mng_query_latest('kinect_head_rgb_image_color', one(DBObj), 'header.stamp', Time)
+  mng_query_latest('kinect_head_rgb_image_color', one(DBObj), 'header.stamp', Time).
 
 mng_image_base64(DBObj, Base64) :-
   mng_republisher(_),

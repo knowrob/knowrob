@@ -242,16 +242,17 @@ public class MarkerObject {
 	}
 
 	public void highlight(int col) {
+		// TODO: What about the alpha channel?
 		int r = (col & 0xff0000) >> 16;
 		int g = (col & 0x00ff00) >> 8;
 		int b = (col & 0x0000ff);
-		int a = 125;
 		highlight(new float[] {
-			r/255.0f, g/255.0f, b/255.0f, a/255.0f
+			r/255.0f, g/255.0f, b/255.0f, 1.0f
 		});
 	}
 	
 	public void highlight(float color[]) {
+		System.err.println("HIGHLIGHT " + this.identifier);
 		if(highlighted==null) {
 			highlighted = getColor();
 		}
@@ -264,6 +265,7 @@ public class MarkerObject {
 	
 	public void removeHighlight() {
 		if(highlighted != null) {
+			System.err.println("REMOVE HIGHLIGHT " + this.identifier);
 			setColor(highlighted);
 			highlighted = null;
 		}

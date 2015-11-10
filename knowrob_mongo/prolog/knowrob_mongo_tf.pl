@@ -79,13 +79,14 @@
 % @param Transform  Transformation matrix as list[16]
 %
 mng_lookup_transform(Target, Source, TimePoint, Transform) :-
+  atom(TimePoint), time_term(TimePoint, T),
+  mng_lookup_transform(Target, Source, T, Transform).
 
-  rdf_split_url(_, TimePointLocal, TimePoint),
-  atom_concat('timepoint_', TimeAtom, TimePointLocal),
-  term_to_atom(Time, TimeAtom),
+mng_lookup_transform(Target, Source, TimePoint, Transform) :-
+  number(TimePoint),
 
   mongo_interface(DB),
-  jpl_call(DB, 'lookupTransform', [Target, Source, Time], StampedTransform),
+  jpl_call(DB, 'lookupTransform', [Target, Source, TimePoint], StampedTransform),
   % Make sure transform is not null!
   not( jpl_null(StampedTransform) ),
 
