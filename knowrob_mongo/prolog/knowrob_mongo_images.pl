@@ -1,5 +1,6 @@
-/*
-  Copyright (C) 2013 Moritz Tenorth
+/** 
+
+  Copyright (C) 2013 Moritz Tenorth, 2015 Daniel Beßler
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -25,25 +26,27 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 @author Moritz Tenorth
+@author Daniel Beßler
 @license BSD
-
 */
 
-:- register_ros_package(knowrob_common).
-:- register_ros_package(knowrob_objects).
-:- register_ros_package(knowrob_srdl).
-:- register_ros_package(knowrob_mongo).
+:- module(knowrob_mongo_images,
+    [
+        mng_image_latest/2,
+        mng_image_base64/2
+    ]).
 
-:- use_module(library(knowrob_mongo_interface)).
-:- use_module(library(knowrob_mongo)).
-:- use_module(library(knowrob_mongo_designators)).
-:- use_module(library(knowrob_mongo_images)).
-:- use_module(library(knowrob_mongo_tf)).
+:- use_module(library('jpl')).
+:- use_module(library('knowrob_mongo')).
+:- use_module(library('knowrob_mongo_interface')).
 
-:- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(srdl2, 'http://knowrob.org/kb/srdl2.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(srdl2comp, 'http://knowrob.org/kb/srdl2-comp.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(srdl2cap, 'http://knowrob.org/kb/srdl2-cap.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(pr2, 'http://knowrob.org/kb/PR2.owl#', [keep(true)]).
+:-  rdf_meta
+    mng_image_latest(r,-),
+    mng_image_base64(+,-).
 
-:- rdf_db:rdf_register_ns(log, 'http://knowrob.org/kb/cram_log.owl#', [keep(true)]).
+mng_image_latest(Time, DBObj) :-
+  mng_query_latest('kinect_head_rgb_image_color', one(DBObj), 'header.stamp', Time).
+
+mng_image_base64(DBObj, Base64) :-
+  mng_republisher(_),
+  jpl_call('org.knowrob.vis.ImageEncoding', 'encodeBase64', [DBObj], Base64).

@@ -137,7 +137,7 @@ public class MarkerPublisher extends AbstractNodeMain {
 			synchronized (markers) {
 				MarkerArray arr = pub.newMessage();
 				for(MarkerObject mrk : markers.values()) {
-					arr.getMarkers().add(mrk.getMessage());
+					if(mrk.hasVisual()) arr.getMarkers().add(mrk.getMessage());
 				}
 				pub.publish(arr);
 				markers.clear();
@@ -152,13 +152,13 @@ public class MarkerPublisher extends AbstractNodeMain {
 		try {
 			waitForNode();
 
+			MarkerArray arr = pub.newMessage();
 			synchronized (markersCache) {
-				MarkerArray arr = pub.newMessage();
 				for(MarkerObject mrk : markersCache.values()) {
 					if(mrk.hasVisual()) arr.getMarkers().add(mrk.getMessage());
 				}
-				pub.publish(arr);
 			}
+			pub.publish(arr);
 		}
 		catch (Exception exc) {
 			log.error("Failed to publish marker.", exc);

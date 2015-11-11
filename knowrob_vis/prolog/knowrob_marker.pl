@@ -154,6 +154,11 @@ marker_prop_type(points,8).
 marker_prop_type(text_view_facing,9).
 marker_prop_type(mesh_resource,10).
 marker_prop_type(triangle_list,11).
+marker_prop_type(background_image,999995).
+marker_prop_type(hud_image,999996).
+marker_prop_type(hud_text,999997).
+marker_prop_type(sprite,999998).
+marker_prop_type(sprite_text,999999).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -212,7 +217,7 @@ marker_create(MarkerTerm, MarkerObject, Parent) :-
   numbervars(MarkerTerm,0,0),
   term_to_atom(MarkerTerm, MarkerAtom),
   jpl_call(Parent, 'createMarker', [MarkerAtom], MarkerObject),
-  assert( v_marker_object(MarkerTerm, MarkerObject) ).
+  assert( v_marker_object(MarkerTerm, MarkerObject, Parent) ).
 
 %% marker_create(+Prefix, +Parent, +Count, -MarkerObjects) is det.
 %
@@ -227,21 +232,26 @@ marker_create(Prefix, Parent, Count, [X|Xs]) :-
   Count > 0,
   atom_concat(Prefix, Count, MarkerName),
   jpl_call(Parent, 'createMarker', [MarkerName], X),
-  assert( v_marker_object(MarkerName, X) ),
+  assert( v_marker_object(MarkerName, X, Parent) ),
   Count_next is Count - 1,
   marker_create(Prefix, Parent, Count_next, Xs).
 marker_create(_, _, 0, []).
 
+%% marker_object(?Term,?Object,?Parent) is nondet.
 %% marker_object(?Term,?Object) is nondet.
 %
 % Maps marker identification term to MarkerObject instance.
 %
 % @param Term The marker identification term
 % @param Object The MarkerObject instance
+% @param Parent The MarkerObject parent instance
 %
-marker_object(Term,Object) :-
+marker_object(Term,Object,Parent) :-
   current_predicate(v_marker_object,_),
-  v_marker_object(Term,Object).
+  v_marker_object(Term,Object,Parent).
+
+marker_object(Term,Object) :-
+  marker_object(Term,Object,_).
 
 %% marker_initialize_object(+Identifier,+MarkerObject) is det.
 %
@@ -301,8 +311,10 @@ marker_primitive(Type, MarkerTerm, MarkerObject, Parent) :-
 % @param Term Marker identification term.
 %
 marker_remove(all) :-
-  marker_object(Term, _),
-  marker_remove(Term).
+  forall(
+    marker_object(Term, _),
+    marker_remove(Term)
+  ).
 
 marker_remove(trajectories) :-
   forall(
@@ -312,7 +324,7 @@ marker_remove(trajectories) :-
 
 marker_remove(Term) :-
   compound(Term),
-  v_marker_object(Term, MarkerObject),
+  v_marker_object(Term, MarkerObject,_),
   marker_remove(MarkerObject).
 
 marker_remove(MarkerObject) :-
@@ -320,8 +332,8 @@ marker_remove(MarkerObject) :-
   marker_visualisation(MarkerVis),
   jpl_call(MarkerVis, 'eraseMarker', [MarkerObject], _),
   ignore(( % using ignore because trajectory markers not asserted
-    v_marker_object(Term, MarkerObject),
-    retract( v_marker_object(Term, _) )
+    v_marker_object(Term, MarkerObject,_),
+    retract( v_marker_object(Term, _, _) )
   )),
   
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
@@ -339,7 +351,7 @@ marker_child(MarkerTerm, MarkerChildTerm) :-
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
   jpl_array_to_list(ChildrenArray,Children),
   member(ChildObject,Children),
-  v_marker_object(MarkerChildTerm, ChildObject).
+  v_marker_object(MarkerChildTerm, ChildObject, _).
 
 %% marker(?MarkerTerm,?MarkerObject) is det.
 %
@@ -364,60 +376,62 @@ marker(MarkerTerm, MarkerObject) :-
 % @param MarkerObject The MarkerObject instance
 % @param Parent The parent of MarkerObject instance
 %
-marker(MarkerTerm, MarkerObject, _) :-
-  % Cache lookup, ! avoids the solution where a new object is created
-  marker_object(MarkerTerm, MarkerObject), !.
+marker(MarkerTerm, MarkerObject, Parent) :-
+  once((
+    marker_object(MarkerTerm, MarkerObject) ;
+    marker_new(MarkerTerm, MarkerObject, Parent)
+  )).
 
-marker(cube(Name), MarkerObject, Parent) :-
+marker_new(cube(Name), MarkerObject, Parent) :-
   marker_primitive(cube, cube(Name), MarkerObject, Parent).
 
-marker(sphere(Name), MarkerObject, Parent) :-
+marker_new(sphere(Name), MarkerObject, Parent) :-
   marker_primitive(sphere, sphere(Name), MarkerObject, Parent).
 
-marker(arrow(Name), MarkerObject, Parent) :-
+marker_new(arrow(Name), MarkerObject, Parent) :-
   marker_primitive(arrow, arrow(Name), MarkerObject, Parent).
 
-marker(cylinder(Name), MarkerObject, Parent) :-
+marker_new(cylinder(Name), MarkerObject, Parent) :-
   marker_primitive(cylinder, cylinder(Name), MarkerObject, Parent).
 
-marker(cylinder_tf(From,To), MarkerObject, Parent) :-
+marker_new(cylinder_tf(From,To), MarkerObject, Parent) :-
   marker_primitive(cylinder, cylinder_tf(From,To), MarkerObject, Parent).
 
-marker(link(Link), MarkerObject, Parent) :-
+marker_new(link(Link), MarkerObject, Parent) :-
   marker_primitive(arrow, link(Link), MarkerObject, Parent).
 
-marker(trajectory(Link), MarkerObject, Parent) :-
+marker_new(trajectory(Link), MarkerObject, Parent) :-
   marker_primitive(arrow, trajectory(Link), MarkerObject, Parent),
   marker_color(MarkerObject, [1.0,1.0,0.0,1.0]),
   marker_has_visual(MarkerObject, false).
 
-marker(trail(Link), MarkerObject, Parent) :-
+marker_new(trail(Link), MarkerObject, Parent) :-
   marker_primitive(sphere, trajectory(Link), MarkerObject, Parent),
   marker_color(MarkerObject, [1.0,1.0,0.0,1.0]),
   marker_has_visual(MarkerObject, false).
 
-marker(average_trajectory(Link), MarkerObject, Parent) :-
+marker_new(average_trajectory(Link), MarkerObject, Parent) :-
   marker_primitive(arrow, average_trajectory(Link), MarkerObject, Parent),
   marker_has_visual(MarkerObject, false).
 
-marker(pointer(From,To), MarkerObject, Parent) :-
+marker_new(pointer(From,To), MarkerObject, Parent) :-
   marker_primitive(arrow, pointer(From,To), MarkerObject, Parent).
 
-marker(mesh(Name), MarkerObject, Parent) :-
+marker_new(mesh(Name), MarkerObject, Parent) :-
   marker_create(mesh(Name), MarkerObject, Parent),
   marker_type(MarkerObject, mesh_resource),
   marker_color(MarkerObject, [0.0,0.0,0.0,0.0]),
   marker_scale(MarkerObject, [1.0,1.0,1.0]).
 
-marker(mesh(Name,MeshFile), MarkerObject, Parent) :-
-  marker(mesh(Name), MarkerObject, Parent),
+marker_new(mesh(Name,MeshFile), MarkerObject, Parent) :-
+  marker_new(mesh(Name), MarkerObject, Parent),
   marker_mesh_resource(MarkerObject, MeshFile).
 
-marker(object_without_children(Identifier), MarkerObject, Parent) :-
+marker_new(object_without_children(Identifier), MarkerObject, Parent) :-
   marker_primitive(cube, object_without_children(Identifier), MarkerObject, Parent),
   marker_initialize_object(Identifier, MarkerObject).
 
-marker(object(Identifier), MarkerObject, Parent) :-
+marker_new(object(Identifier), MarkerObject, Parent) :-
   marker_primitive(cube, object(Identifier), MarkerObject, Parent),
   marker_initialize_object(Identifier, MarkerObject),
   marker_children(Identifier,Children),
@@ -427,13 +441,13 @@ marker(object(Identifier), MarkerObject, Parent) :-
     ))
   ).
 
-marker(agent(Identifier), MarkerObject, Parent) :-
-  marker(kinematic_chain(Identifier,agent(Identifier)), MarkerObject, Parent).
+marker_new(agent(Identifier), MarkerObject, Parent) :-
+  marker_new(kinematic_chain(Identifier,agent(Identifier)), MarkerObject, Parent).
 
-marker(kinematic_chain(Identifier), MarkerObject, Parent) :-
-  marker(kinematic_chain(Identifier,kinematic_chain(Identifier)), MarkerObject, Parent).
+marker_new(kinematic_chain(Identifier), MarkerObject, Parent) :-
+  marker_new(kinematic_chain(Identifier,kinematic_chain(Identifier)), MarkerObject, Parent).
 
-marker(kinematic_chain(Identifier,Name), MarkerObject, Parent) :-
+marker_new(kinematic_chain(Identifier,Name), MarkerObject, Parent) :-
   marker_primitive(arrow, Name, MarkerObject, Parent),
   marker_initialize_object(Identifier,MarkerObject),
   
@@ -443,7 +457,7 @@ marker(kinematic_chain(Identifier,Name), MarkerObject, Parent) :-
     marker( object_without_children(Link), _, MarkerObject )
   ))).
 
-marker(stickman(Identifier), MarkerObject, Parent) :-
+marker_new(stickman(Identifier), MarkerObject, Parent) :-
   marker_primitive(sphere, stickman(Identifier), MarkerObject, Parent),
   marker_initialize_object(Identifier,MarkerObject),
   marker_color(MarkerObject, [1.0,1.0,0.0,1.0]),
@@ -460,14 +474,28 @@ marker(stickman(Identifier), MarkerObject, Parent) :-
     )
   ))).
 
-marker(text(Id), MarkerObject, Parent) :-
-  marker_primitive(text_view_facing, text(Id), MarkerObject, Parent),
-  marker_color(MarkerObject, [0.6,0.9,0.6,1.0]),
+marker_new(black(Primitive,Term), MarkerObject, Parent) :-
+  marker_primitive(Primitive, Term, MarkerObject, Parent),
+  marker_color(MarkerObject, [0.0,0.0,0.0,1.0]),
   marker_scale(MarkerObject, [1.0,1.0,1.0]).
 
-marker(text(Id,Text), MarkerObject, Parent) :-
-  marker(text(Id), MarkerObject, Parent),
-  marker_text(MarkerObject, Text).
+marker_new(text(Id), MarkerObject, Parent) :-
+  marker_new(black(text_view_facing,text(Id)), MarkerObject, Parent).
+
+marker_new(hud_text(Id), MarkerObject, Parent) :-
+  marker_new(black(hud_text,hud_text(Id)), MarkerObject, Parent).
+
+marker_new(hud_image(Id), MarkerObject, Parent) :-
+  marker_new(black(hud_image,hud_image(Id)), MarkerObject, Parent).
+
+marker_new(sprite(Name), MarkerObject, Parent) :-
+  marker_new(black(sprite,sprite(Name)), MarkerObject, Parent).
+
+marker_new(sprite_text(Id), MarkerObject, Parent) :-
+  marker_new(black(sprite_text,sprite_text(Id)), MarkerObject, Parent).
+
+marker_new(background_image(Id), MarkerObject, Parent) :-
+  marker_new(black(background_image,background_image(Id)), MarkerObject, Parent).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -541,7 +569,7 @@ marker_update(MarkerTerm, time(T,Arg)) :-
   ( Last_T is T_float ; once((
     marker_timestamp(MarkerObject, T_float),
     marker_update(MarkerTerm, MarkerObject, Arg)
-  ))).
+  ))), !.
 
 %% marker_update(+MarkerTerm, +MarkerObject, +T) is det.
 %
@@ -556,10 +584,10 @@ marker_update(object_without_children(Identifier), MarkerObject, T) :-
   marker_update(object(Identifier), MarkerObject, T).
 
 marker_update(object(Identifier), MarkerObject, T) :-
-  ignore((
+  ignore(once((
     marker_lookup_transform(Identifier,T,(Translation,Orientation)),
     marker_pose(MarkerObject,Translation,Orientation)
-  )),
+  ))),
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
   jpl_array_to_list(ChildrenArray,Children),
   forall(member(ChildObject,Children), once((
@@ -618,7 +646,7 @@ marker_update(trajectory(Link), MarkerObject, interval(T0,T1,Interval)) :-
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
   jpl_array_to_list(ChildrenArray,Children),
   forall( member(ChildObject,Children), ignore((
-    v_marker_object(ChildTerm, ChildObject),
+    v_marker_object(ChildTerm, ChildObject, _),
     marker_remove(ChildTerm)
   ))),
   marker_update_trajectory(trajectory(Link), MarkerObject, interval(T0,T1,Interval)).
@@ -640,10 +668,17 @@ marker_update(average_trajectory(Link), MarkerObject, interval(T0,T1,Interval)) 
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
   jpl_array_to_list(ChildrenArray,Children),
   forall( member(ChildObject,Children), ignore((
-    v_marker_object(ChildTerm, ChildObject),
+    v_marker_object(ChildTerm, ChildObject, _),
     marker_remove(ChildTerm)
   ))),
   marker_update_trajectory(average_trajectory(Link), MarkerObject, interval(T0,T1,Interval)).
+
+%marker_update(speech(Id), MarkerObject, T) :-
+%  marker_object(_, MarkerObject, Parent),
+%  marker_visualisation(MarkerVis),
+%  not( Parent = MarkerVis ),
+%  marker_translation(Parent, [X,Y,Z]),
+%  marker_translation(MarkerObject, [X,Y,Z]).
 
 marker_update(_, MarkerObject, T) :-
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
@@ -736,6 +771,7 @@ marker_position_average(PoseList, [X_Avg,Y_Avg,Z_Avg]) :-
   sum_list(Zs, Z_Sum), Z_Avg is Z_Sum / NumSamples.
 
 % TODO: Should be moved to another module
+% FIXME: Use lerp for finding average orientation
 marker_orientation_average(PoseList, [W_Avg,X_Avg,Y_Avg,Z_Avg]) :-
   findall(W, member((_,[W,_,_,_]), PoseList), Ws),
   findall(X, member((_,[_,X,_,_]), PoseList), Xs),
@@ -813,7 +849,7 @@ marker_highlight(MarkerObject, ColorArg) :-
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
   jpl_array_to_list(ChildrenArray,Children),
   forall(
-    member(ChildObject,Children),
+    member(ChildObject,Children), 
     marker_highlight(ChildObject,ColorArg)
   ).
 
@@ -827,6 +863,12 @@ marker_highlight_remove(MarkerTerm) :-
   not( jpl_is_object(MarkerTerm) ),
   marker(MarkerTerm, MarkerObject),
   marker_highlight_remove(MarkerObject).
+
+marker_highlight_remove(all) :-
+  forall(
+    marker_object(_, MarkerObject),
+    ignore( marker_highlight_remove(MarkerObject) )
+  ).
 
 marker_highlight_remove(MarkerObject) :-
   jpl_is_object(MarkerObject),

@@ -1,11 +1,7 @@
 package org.knowrob.interfaces.mongo;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.GregorianCalendar;
 
@@ -17,37 +13,61 @@ import org.ros.node.topic.Publisher;
 
 import com.mongodb.BasicDBObject;
 
-public class MongoRosMessage<RosType> {
+/**
+ * A typed publisher of ROS messages generated from mongo DB objects.
+ * @author Daniel Beßler
+ *
+ * @param <RosType> The ROS message type (e.g., sensor_msgs.Image)
+ */
+public class MongoPublisher<RosType> {
 	Publisher<RosType> pub = null;
 	// e.g. "std_msgs/String"
 	final String typeName;
 	final String topic;
 	
-	public MongoRosMessage(final String typeName, final String topic) {
+	public MongoPublisher(final String topic, final String typeName) {
 		this.typeName = typeName;
 		this.topic = topic;
+	}
+
+	public MongoPublisher(final ConnectedNode node, final String topic, final String typeName) {
+		this.typeName = typeName;
+		this.topic = topic;
+		connect(node);
 	}
 
 	public void connect(final ConnectedNode node) {
 		this.pub = node.newPublisher(topic, typeName);
 	}
 
-	public boolean publish(BasicDBObject mngObj) {
+	public RosType create(BasicDBObject mngObj) {
+		try {
+			final RosType msg = pub.newMessage();
+			createMessage(msg, mngObj);
+			return msg;
+		}
+		catch (Exception e) {
+			System.err.println("Failed to create message: " + e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public RosType publish(BasicDBObject mngObj) {
 		if(pub==null) {
 			System.err.println("Not connected.");
-			return false;
+			return null;
 		}
 		try {
 			final RosType msg = pub.newMessage();
 			createMessage(msg, mngObj);
 			pub.publish(msg);
-	
-			return true;
+			return msg;
 		}
 		catch (Exception e) {
 			System.err.println("Failed to publish message: " + e.getMessage());
 			e.printStackTrace();
-			return false;
+			return null;
 		}
 	}
 

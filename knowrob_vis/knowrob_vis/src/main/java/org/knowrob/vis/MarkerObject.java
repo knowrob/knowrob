@@ -242,12 +242,12 @@ public class MarkerObject {
 	}
 
 	public void highlight(int col) {
+		// TODO: What about the alpha channel?
 		int r = (col & 0xff0000) >> 16;
 		int g = (col & 0x00ff00) >> 8;
 		int b = (col & 0x0000ff);
-		int a = 125;
 		highlight(new float[] {
-			r/255.0f, g/255.0f, b/255.0f, a/255.0f
+			r/255.0f, g/255.0f, b/255.0f, 1.0f
 		});
 	}
 	
