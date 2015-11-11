@@ -331,7 +331,7 @@ marker_remove(MarkerObject) :-
   jpl_is_object(MarkerObject),
   marker_visualisation(MarkerVis),
   jpl_call(MarkerVis, 'eraseMarker', [MarkerObject], _),
-  ignore(( % using ignore because trajectory markers not asserted
+  ignore((
     v_marker_object(Term, MarkerObject,_),
     retract( v_marker_object(Term, _, _) )
   )),
@@ -642,9 +642,9 @@ marker_update(trajectory(Link), MarkerObject, interval(T0,T1)) :-
   marker_update(trajectory(Link), MarkerObject, (T0,T1,dt(0.5))).
 
 marker_update(trajectory(Link), MarkerObject, interval(T0,T1,Interval)) :-
-  jpl_call(MarkerObject, 'clear', [], _),
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
   jpl_array_to_list(ChildrenArray,Children),
+  jpl_call(MarkerObject, 'clear', [], _),
   forall( member(ChildObject,Children), ignore((
     v_marker_object(ChildTerm, ChildObject, _),
     marker_remove(ChildTerm)
@@ -705,6 +705,7 @@ marker_update_trajectory(trajectory(Link), MarkerObject, interval(T0,T1,dt(Inter
   T0 =< T1,
   atom_concat(Link, T0, MarkerName),
   jpl_call(MarkerObject, 'createMarker', [MarkerName], ChildMarker),
+  assert( v_marker_object(MarkerName, ChildMarker, MarkerObject) ),
   marker_lookup_transform(Link, T0, (Translation,Orientation)),
   marker_pose(ChildMarker, Translation, Orientation),
   T_next is T0 + Interval,
