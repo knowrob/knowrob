@@ -252,7 +252,6 @@ public class MarkerObject {
 	}
 	
 	public void highlight(float color[]) {
-		System.err.println("HIGHLIGHT " + this.identifier);
 		if(highlighted==null) {
 			highlighted = getColor();
 		}
@@ -265,7 +264,6 @@ public class MarkerObject {
 	
 	public void removeHighlight() {
 		if(highlighted != null) {
-			System.err.println("REMOVE HIGHLIGHT " + this.identifier);
 			setColor(highlighted);
 			highlighted = null;
 		}
