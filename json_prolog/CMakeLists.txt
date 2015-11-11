@@ -59,4 +59,4 @@ install(DIRECTORY launch/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch )
   
 install(FILES json_prolog/build/classpath.txt
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/build/classpath.txt )
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/build )
