@@ -348,6 +348,9 @@ marker_remove(MarkerObject) :-
 % @param MarkerChildTerm A term that identifies the marker child
 marker_child(MarkerTerm, MarkerChildTerm) :-
   marker(MarkerTerm, MarkerObject),
+  marker_child(MarkerObject, MarkerChildTerm).
+
+marker_child(MarkerObject, MarkerChildTerm) :-
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
   jpl_array_to_list(ChildrenArray,Children),
   member(ChildObject,Children),
@@ -1077,10 +1080,25 @@ marker_has_visual(Marker, V) :-
 % @param Get The getter method
 % @param Set The setter method
 %
+marker_call([recursive(Marker)|Rest], Value, (Get,Set)) :-
+  jpl_is_object(Marker),
+  call(Set, Marker, Value),
+  % recursively for all children
+  forall(
+    marker_child(Marker, MarkerChild), (
+    marker_call([recursive(MarkerChild)], Value, (Get,Set))
+  )),
+  % and for the list tail
+  marker_call(Rest, Value, (Get,Set)).
+
 marker_call([Marker|Rest], Value, (Get,Set)) :-
   jpl_is_object(Marker),
   call(Set, Marker, Value),
   marker_call(Rest, Value, (Get,Set)).
+
+marker_call([recursive(Marker)|Rest], Value, (Get,Set)) :-
+  marker(Marker,MarkerObj),
+  marker_call([recursive(MarkerObj)|Rest], Value, (Get,Set)).
 
 marker_call([Marker|Rest], Value, (Get,Set)) :-
   marker(Marker,MarkerObj),
@@ -1088,17 +1106,26 @@ marker_call([Marker|Rest], Value, (Get,Set)) :-
 
 marker_call([], _, _) :- true.
 
+marker_call(recursive(Marker), Value, (Get,Set)) :-
+  compound(Marker),
+  marker(Marker,MarkerObj),
+  marker_call(recursive(MarkerObj), Value, (Get,Set)).
+
 marker_call(Marker, Value, (Get,Set)) :-
   compound(Marker),
   marker(Marker,MarkerObj),
   marker_call(MarkerObj, Value, (Get,Set)).
 
+marker_call(recursive(Marker), Value, (Get,Set)) :-
+  jpl_is_object(Marker), ground(Value),
+  marker_call([recursive(Marker)], Value, (Get,Set)).
+
 marker_call(Marker, Value, (Get,Set)) :-
-  ground(Value),
+  jpl_is_object(Marker), ground(Value),
   marker_call([Marker], Value, (Get,Set)).
 
 marker_call(Marker, Value, (Get,_)) :-
-  not(ground(Value)), jpl_is_object(Marker),
+  jpl_is_object(Marker), not(ground(Value)),
   call(Get, Marker, Value).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
