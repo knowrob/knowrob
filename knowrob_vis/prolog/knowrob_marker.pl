@@ -33,7 +33,6 @@
     [
       marker_publish/0,
       marker_republish/0,
-      
       marker/2,
       marker_update/0,
       marker_update/1,
@@ -63,6 +62,7 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('rdfs_computable')).
 :- use_module(library('jpl')).
+:- use_module(library('lists')). % for sum_list
 
 :- rdf_meta marker(t,?),
             marker_update(t),
@@ -82,7 +82,6 @@
             marker_properties(t,?),
             marker_trajectory_length(t,?),
             marker_distance(t,t,?).
-
 
 marker_has_visual(Identifier) :-
   not(owl_individual_of(Identifier, srdl2comp:'UrdfJoint')),
@@ -313,13 +312,13 @@ marker_primitive(Type, MarkerTerm, MarkerObject, Parent) :-
 marker_remove(all) :-
   forall(
     marker_object(Term, _),
-    marker_remove(Term)
+    ignore(marker_remove(Term))
   ).
 
 marker_remove(trajectories) :-
   forall(
     marker_object(trajectory(Link), _),
-    marker_remove(trajectory(Link))
+    ignore(marker_remove(trajectory(Link)))
   ).
 
 marker_remove(Term) :-
@@ -335,7 +334,6 @@ marker_remove(MarkerObject) :-
     v_marker_object(Term, MarkerObject,_),
     retract( v_marker_object(Term, _, _) )
   )),
-  
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
   jpl_array_to_list(ChildrenArray,Children),
   forall( member(ChildObject,Children), marker_remove(ChildObject) ).
@@ -380,10 +378,11 @@ marker(MarkerTerm, MarkerObject) :-
 % @param Parent The parent of MarkerObject instance
 %
 marker(MarkerTerm, MarkerObject, Parent) :-
-  once((
-    marker_object(MarkerTerm, MarkerObject) ;
-    marker_new(MarkerTerm, MarkerObject, Parent)
-  )).
+  findall(X, marker_object(MarkerTerm, X), MarkerObjects),
+  (  length(MarkerObjects,0)
+  -> marker_new(MarkerTerm, MarkerObject, Parent)
+  ;  marker_object(MarkerTerm, MarkerObject)
+  ).
 
 marker_new(cube(Name), MarkerObject, Parent) :-
   marker_primitive(cube, cube(Name), MarkerObject, Parent).
@@ -405,6 +404,11 @@ marker_new(link(Link), MarkerObject, Parent) :-
 
 marker_new(trajectory(Link), MarkerObject, Parent) :-
   marker_primitive(arrow, trajectory(Link), MarkerObject, Parent),
+  marker_color(MarkerObject, [1.0,1.0,0.0,1.0]),
+  marker_has_visual(MarkerObject, false).
+
+marker_new(average_trajectory(Link), MarkerObject, Parent) :-
+  marker_primitive(sphere, average_trajectory(Link), MarkerObject, Parent),
   marker_color(MarkerObject, [1.0,1.0,0.0,1.0]),
   marker_has_visual(MarkerObject, false).
 
@@ -551,8 +555,8 @@ marker_update(MarkerTerm, T) :-
   marker_update(MarkerTerm, T_Term).
 
 marker_update(MarkerTerm, interval(T0,T1,Interval)) :-
-  atom(T0), time_term(T0, T0_Term),
-  atom(T1), time_term(T1, T1_Term),
+  atom(T0), not(is_list(T0)), time_term(T0, T0_Term),
+  atom(T1), not(is_list(T1)), time_term(T1, T1_Term),
   marker_update(MarkerTerm, interval(T0_Term,T1_Term,Interval)).
 
 marker_update(MarkerTerm, T) :-
@@ -562,6 +566,14 @@ marker_update(MarkerTerm, T) :-
 marker_update(MarkerTerm, interval(T0,T1,Interval)) :-
   number(T0), number(T1),
   marker_update(MarkerTerm, time(T0,interval(T0,T1,Interval))).
+
+marker_update(MarkerTerm, interval(T0,T1,Interval)) :-
+  is_list(T0), is_list(T1),
+  findall(T_Term, (member(T,T0), time_term(T, T_Term)), T0_Terms),
+  findall(T_Term, (member(T,T1), time_term(T, T_Term)), T1_Terms),
+  % Use no caching if list of start/end times provided
+  marker(MarkerTerm, MarkerObject),
+  marker_update(MarkerTerm, MarkerObject, interval(T0_Terms,T1_Terms,Interval)).
 
 marker_update(MarkerTerm, time(T,Arg)) :-
   number(T),
@@ -584,7 +596,10 @@ marker_update(MarkerTerm, time(T,Arg)) :-
 % @param T A time atom (e.g., 'timepoint_1396512604'), time number (e.g., 1396512604) or an interval (e.g., interval(1396512604, 1396512608, 0.5)).
 %
 marker_update(object_without_children(Identifier), MarkerObject, T) :-
-  marker_update(object(Identifier), MarkerObject, T).
+  ignore(once((
+    marker_lookup_transform(Identifier,T,(Translation,Orientation)),
+    marker_pose(MarkerObject,Translation,Orientation)
+  ))).
 
 marker_update(object(Identifier), MarkerObject, T) :-
   ignore(once((
@@ -667,9 +682,9 @@ marker_update(trail(Link), MarkerObject, T) :-
   )).
 
 marker_update(average_trajectory(Link), MarkerObject, interval(T0,T1,Interval)) :-
-  jpl_call(MarkerObject, 'clear', [], _),
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
   jpl_array_to_list(ChildrenArray,Children),
+  jpl_call(MarkerObject, 'clear', [], _),
   forall( member(ChildObject,Children), ignore((
     v_marker_object(ChildTerm, ChildObject, _),
     marker_remove(ChildTerm)
@@ -713,11 +728,11 @@ marker_update_trajectory(trajectory(Link), MarkerObject, interval(T0,T1,dt(Inter
   marker_pose(ChildMarker, Translation, Orientation),
   T_next is T0 + Interval,
   marker_update_trajectory(trajectory(Link), MarkerObject, interval(T_next,T1,dt(Interval))).
-marker_update_trajectory(_, _, interval(T0,T1,_)) :- T0 > T1.
+marker_update_trajectory(trajectory(_), _, interval(T0,T1,_)) :- T0 > T1.
 
-marker_update_trajectory(average_trajectory(Link), MarkerObject, interval(T0,T1,Interval)) :-
-  marker_trajectories_sample(Link, interval(T0,T1,Interval), TrajectoryList),
-  marker_trajectory_average(TrajectoryList, AverageTrajectory),
+marker_update_trajectory(average_trajectory(Link), MarkerObject, interval(T0,T1,count(N))) :-
+  marker_trajectories_sample(Link, interval(T0,T1,count(N)), TrajectoryList),
+  marker_trajectory_average(TrajectoryList, AverageTrajectory, 0, N),
   marker_update_trajectory(average_trajectory(Link), MarkerObject, 0, AverageTrajectory).
 
 marker_update_trajectory(average_trajectory(_), _, _, []).
@@ -747,9 +762,9 @@ marker_trajectory_sample(Link, interval(T0,T1,dt(Interval)), [Pose|Rest]) :-
   marker_trajectory_sample(Link, interval(T0_next,T1,dt(Interval)), Rest).
 
 % TODO: Should be moved to another module
-marker_trajectory_average(TrajectoryList, AverageTrajectory) :-
-  marker_trajectory_average(TrajectoryList, AverageTrajectory, 0).
-marker_trajectory_average(TrajectoryList, [AvgPose,Rest], Index) :-
+marker_trajectory_average(_, [], Index, Index).
+marker_trajectory_average(TrajectoryList, [AvgPose|Rest], Index, N) :-
+  Index < N,
   findall(Pose, (
     member(Trajectory, TrajectoryList),
     nth0(Index, Trajectory, Pose)
@@ -757,7 +772,7 @@ marker_trajectory_average(TrajectoryList, [AvgPose,Rest], Index) :-
   length(Poses,NumSamples), NumSamples > 0,
   marker_pose_average(Poses, AvgPose),
   Index_Next is Index + 1,
-  marker_trajectory_average(TrajectoryList, Rest, Index_Next).
+  marker_trajectory_average(TrajectoryList, Rest, Index_Next, N).
 
 % TODO: Should be moved to another module
 marker_pose_average(PoseList, (AvgPos,AvgOrientation)) :-
@@ -770,9 +785,9 @@ marker_position_average(PoseList, [X_Avg,Y_Avg,Z_Avg]) :-
   findall(Y, member(([_,Y,_],_), PoseList), Ys),
   findall(Z, member(([_,_,Z],_), PoseList), Zs),
   length(PoseList, NumSamples),
-  sum_list(Xs, X_Sum), X_Avg is X_Sum / NumSamples,
-  sum_list(Ys, Y_Sum), Y_Avg is Y_Sum / NumSamples,
-  sum_list(Zs, Z_Sum), Z_Avg is Z_Sum / NumSamples.
+  sumlist(Xs, X_Sum), X_Avg is X_Sum / NumSamples,
+  sumlist(Ys, Y_Sum), Y_Avg is Y_Sum / NumSamples,
+  sumlist(Zs, Z_Sum), Z_Avg is Z_Sum / NumSamples.
 
 % TODO: Should be moved to another module
 % FIXME: Use lerp for finding average orientation
@@ -782,10 +797,10 @@ marker_orientation_average(PoseList, [W_Avg,X_Avg,Y_Avg,Z_Avg]) :-
   findall(Y, member((_,[_,_,Y,_]), PoseList), Ys),
   findall(Z, member((_,[_,_,_,Z]), PoseList), Zs),
   length(PoseList, NumSamples),
-  sum_list(Ws, W_Sum), W_Avg is W_Sum / NumSamples,
-  sum_list(Xs, X_Sum), X_Avg is X_Sum / NumSamples,
-  sum_list(Ys, Y_Sum), Y_Avg is Y_Sum / NumSamples,
-  sum_list(Zs, Z_Sum), Z_Avg is Z_Sum / NumSamples.
+  sumlist(Ws, W_Sum), W_Avg is W_Sum / NumSamples,
+  sumlist(Xs, X_Sum), X_Avg is X_Sum / NumSamples,
+  sumlist(Ys, Y_Sum), Y_Avg is Y_Sum / NumSamples,
+  sumlist(Zs, Z_Sum), Z_Avg is Z_Sum / NumSamples.
 
 marker_trajectory_length(MarkerTerm, Length) :-
   marker(MarkerTerm, MarkerObject),
