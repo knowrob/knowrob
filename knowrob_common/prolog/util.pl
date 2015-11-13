@@ -60,7 +60,7 @@
 
 % Use identity if first argument is a number
 time_term(Timepoint, Timepoint) :-
-  number(Timepoint).
+  number(Timepoint), !.
 
 time_term(Timepoint, Time) :-
   (  rdf_split_url(_, TimePointLocal, Timepoint),

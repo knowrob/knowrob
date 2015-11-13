@@ -726,6 +726,7 @@ marker_update_trajectory(trajectory(Link), MarkerObject, interval(T0,T1,dt(Inter
   assert( v_marker_object(MarkerName, ChildMarker, MarkerObject) ),
   marker_lookup_transform(Link, T0, (Translation,Orientation)),
   marker_pose(ChildMarker, Translation, Orientation),
+  marker_timestamp(ChildMarker, T0),
   T_next is T0 + Interval,
   marker_update_trajectory(trajectory(Link), MarkerObject, interval(T_next,T1,dt(Interval))).
 marker_update_trajectory(trajectory(_), _, interval(T0,T1,_)) :- T0 > T1.
@@ -860,6 +861,25 @@ marker_highlight(MarkerTerm, ColorArg) :-
   compound(MarkerTerm),
   marker(MarkerTerm, MarkerObject),
   marker_highlight(MarkerObject, ColorArg).
+
+marker_highlight(interval(MarkerTerm,Start,Stop), ColorArg) :-
+  compound(MarkerTerm),
+  marker(MarkerTerm, MarkerObject),
+  marker_highlight(interval(MarkerObject,Start,Stop), ColorArg).
+
+marker_highlight(interval(MarkerObject,Start,Stop), ColorArg) :-
+  jpl_is_object(MarkerObject),
+  jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
+  jpl_array_to_list(ChildrenArray,Children),
+  forall(
+    member(ChildObject,Children), (
+      marker_timestamp(ChildObject, MarkerTime),
+      T is MarkerTime/1000000.0,
+      (  time_between(T,Start,Stop)
+      -> marker_highlight(ChildObject,ColorArg)
+      ;  true
+      )
+  )).
 
 marker_highlight(MarkerObject, ColorArg) :-
   jpl_is_object(MarkerObject),
