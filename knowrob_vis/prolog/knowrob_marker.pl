@@ -811,8 +811,9 @@ marker_update_trajectory(average_trajectory(Link), MarkerObject, interval(T0,T1,
 marker_update_trajectory(average_trajectory(_), _, _, []).
 marker_update_trajectory(average_trajectory(Link), MarkerObject, Index, [(Translation,Orientation)|Rest]) :-
   atom_concat(Link, Index, MarkerName),
-  jpl_call(MarkerObject, 'createMarker', [MarkerName], ChildMarker),
-  marker_pose(ChildMarker, Translation, Orientation),
+  jpl_call(MarkerObject, 'createMarker', [MarkerName], ChildMarker), !,
+  assert( v_marker_object(MarkerName, MarkerName, ChildMarker, MarkerObject) ),
+  marker_pose(ChildMarker, pose(Translation,Orientation)),
   Index_Next is Index + 1,
   marker_update_trajectory(average_trajectory(Link), MarkerObject, Index_Next, Rest).
 

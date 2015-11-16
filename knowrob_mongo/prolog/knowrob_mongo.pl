@@ -175,7 +175,7 @@ mng_query_earliest(Collection, DBObj, TimeKey, TimeValue, Pattern) :-
   mng_db_cursor(Collection, [[TimeKey, '>', date(TimeValue)]|Pattern], DBCursor),
   mng_ascending(DBCursor, TimeKey),
   mng_read_cursor(DBCursor, DBObj).
-
+  
 mng_query(Collection, DBObj) :-
   mongo_interface(DB),
   jpl_call(DB, 'query', [Collection], DBCursor),
