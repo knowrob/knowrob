@@ -543,21 +543,24 @@ marker_new(MarkerName, kinematic_chain(Identifier,Term), MarkerObject, Parent) :
   ))).
 
 marker_new(MarkerName, stickman(Identifier), MarkerObject, Parent) :-
+  StickManColor = [1.0,1.0,0.0,1.0],
   marker_primitive(sphere, MarkerName, stickman(Identifier), MarkerObject, Parent),
   marker_initialize_object(Identifier,MarkerObject),
-  marker_color(MarkerObject, [1.0,1.0,0.0,1.0]),
+  marker_color(MarkerObject, StickManColor),
   
   marker_links(Identifier, Links),
   forall( member( Link,Links ), ignore((
     marker_child_name(stickman(Identifier), MarkerName, object_without_children(Link), ChildName0),
     marker( ChildName0, object_without_children(Link), LinkMarker, MarkerObject ),
     marker_type(LinkMarker, sphere),
+    marker_color(LinkMarker, StickManColor),
     
     marker_succeeding_links(Link, SucceedingLinks),
     forall(
       member( SucceedingLink,SucceedingLinks ), (
       marker_child_name(stickman(Identifier), MarkerName, cylinder_tf(Link,SucceedingLink), ChildName1),
-      once( marker( ChildName1, cylinder_tf(Link,SucceedingLink), _, MarkerObject) )
+      once( marker( ChildName1, cylinder_tf(Link,SucceedingLink), CylinderMarker, MarkerObject) ),
+      marker_color(CylinderMarker, StickManColor)
     ))
   ))).
 
