@@ -328,7 +328,7 @@ mng_desig_matches(Designator, QueryPattern) :-
   not(DesigJava = @(null)),
   jpl_call(DesigJava, 'get', ['_ID'], DesigID),
   not(DesigID = @(null)),
-  rdf_split_url(_, DesigID, Designator).
+  rdf_split_url('http://knowrob.org/kb/cram_log.owl#', DesigID, Designator).
 
 
 %% desig_list_to_query(+ConstrList, +Prefix, -QueryStringList)

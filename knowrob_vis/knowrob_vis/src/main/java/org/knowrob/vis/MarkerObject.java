@@ -27,6 +27,7 @@ public class MarkerObject {
 	private boolean hasVisual = true;
 	
 	private float[] highlighted;
+	private String tfPrefix = "/";
 	
 	public MarkerObject(String identifier, Marker markerMsg, MarkerPublisher publisher) {
 		this.markerMsg = markerMsg;
@@ -50,6 +51,7 @@ public class MarkerObject {
 		obj.setType(getType());
 		obj.setScale(getScale());
 		obj.setColor(getColor());
+		obj.setTfPrefix(tfPrefix);
 		children.add(obj);
 		return obj;
 	}
@@ -102,6 +104,15 @@ public class MarkerObject {
 	public void setText(String value) {
 		markerMsg.setText(value);
 		queueRepublish();
+	}
+	
+	public String getTfPrefix() {
+		return tfPrefix;
+	}
+	
+	public void setTfPrefix(String value) {
+		this.tfPrefix  = value;
+		for(MarkerObject child : children) child.setTfPrefix(value);
 	}
 	
 	public double[] getScale() {

@@ -204,9 +204,30 @@ public class ImageEncoding {
 		}
 	}
 	
+	public static String encodeBase64(sensor_msgs.CompressedImage rosImgMsg) {
+		try {
+			String imageString = new String(Base64.encodeBase64(rosImgMsg.getData().array()));
+			return "data:image/"+rosImgMsg.getFormat()+";base64,"+imageString;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	public static String encodeBase64(BasicDBObject mngObj) {
 		try {
 			return encodeBase64(MongoMessages.get().create(mngObj, sensor_msgs.Image.class, "sensor_msgs/Image"));
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public static String encodeBase64_compressed(BasicDBObject mngObj) {
+		try {
+			return encodeBase64(MongoMessages.get().create(mngObj, sensor_msgs.CompressedImage.class, "sensor_msgs/CompressedImage"));
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -225,5 +246,4 @@ public class ImageEncoding {
         image.setData(raster);
         return image;
     }
-	
 }
