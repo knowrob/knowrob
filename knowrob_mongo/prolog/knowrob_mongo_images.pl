@@ -50,3 +50,7 @@ mng_image_latest(Time, DBObj) :-
 mng_image_base64(DBObj, Base64) :-
   mng_republisher(_),
   jpl_call('org.knowrob.vis.ImageEncoding', 'encodeBase64', [DBObj], Base64).
+
+mng_compresssed_image_base64(DBObj, Base64) :-
+  mng_republisher(_),
+  jpl_call('org.knowrob.vis.ImageEncoding', 'encodeBase64_compressed', [DBObj], Base64).
