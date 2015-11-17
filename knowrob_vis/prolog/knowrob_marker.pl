@@ -124,7 +124,9 @@ marker_succeeding_links(Link0, Links) :-
 
 marker_srdl_tf_frame(Identifier, UrdfName) :-
   rdf_has(Identifier, srdl2comp:'urdfName', literal(UrdfName)), !.
-marker_srdl_tf_frame(UrdfName, UrdfName).
+marker_srdl_tf_frame(Identifier, UrdfName) :-
+  not( rdf_has(Identifier, rdf:'type', _) ),
+  UrdfName = Identifier.
 
 marker_tf_frame(MarkerObject, Identifier, TfFrame) :-
   marker_srdl_tf_frame(Identifier, UrdfName),
@@ -147,6 +149,24 @@ marker_lookup_transform(MarkerObject, Identifier, TargetFrame, T, (Translation,O
   matrix_rotation(Pose, Orientation),
   matrix_translation(Pose, Translation).
 
+% HACK: Force object to be visually above given Z value
+marker_push_visually_above(Identifier, _, ([X0,Y0,Z0],R), ([X0,Y0,Z1],R)) :-
+  rdf_has(Identifier, knowrob:'visuallyAbove', literal(type(_,ValueAtom))),
+  atom_number(ValueAtom, Value),
+  Value > Z0, Z1 is Value.
+
+marker_transform_estimate(Identifier, T, Pose_in, Pose_out) :-
+  marker_transform_estimate(Identifier, T, Pose_in, Pose_out, [
+      marker_push_visually_above
+  ]).
+marker_transform_estimate(Identifier, T, Pose_in, Pose_out, [Method|Rest]) :-
+  ( call(Method, Identifier, T, Pose_in, Pose0) ; Pose0 = Pose_in ),
+  marker_transform_estimate(Identifier, T, Pose0, Pose_out, Rest).
+marker_transform_estimate(_, _, Pose_in, Pose_in, []).
+
+marker_estimate_transform(MarkerObject, Identifier, T, Pose_out) :-
+  marker_lookup_transform(MarkerObject, Identifier, T, Pose0),
+  marker_transform_estimate(Identifier, T, Pose0, Pose_out).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
@@ -523,21 +543,24 @@ marker_new(MarkerName, kinematic_chain(Identifier,Term), MarkerObject, Parent) :
   ))).
 
 marker_new(MarkerName, stickman(Identifier), MarkerObject, Parent) :-
+  StickManColor = [1.0,1.0,0.0,1.0],
   marker_primitive(sphere, MarkerName, stickman(Identifier), MarkerObject, Parent),
   marker_initialize_object(Identifier,MarkerObject),
-  marker_color(MarkerObject, [1.0,1.0,0.0,1.0]),
+  marker_color(MarkerObject, StickManColor),
   
   marker_links(Identifier, Links),
   forall( member( Link,Links ), ignore((
     marker_child_name(stickman(Identifier), MarkerName, object_without_children(Link), ChildName0),
     marker( ChildName0, object_without_children(Link), LinkMarker, MarkerObject ),
     marker_type(LinkMarker, sphere),
+    marker_color(LinkMarker, StickManColor),
     
     marker_succeeding_links(Link, SucceedingLinks),
     forall(
       member( SucceedingLink,SucceedingLinks ), (
       marker_child_name(stickman(Identifier), MarkerName, cylinder_tf(Link,SucceedingLink), ChildName1),
-      once( marker( ChildName1, cylinder_tf(Link,SucceedingLink), _, MarkerObject) )
+      once( marker( ChildName1, cylinder_tf(Link,SucceedingLink), CylinderMarker, MarkerObject) ),
+      marker_color(CylinderMarker, StickManColor)
     ))
   ))).
 
@@ -559,7 +582,8 @@ marker_new(MarkerName, sprite(Name), MarkerObject, Parent) :-
   marker_new(MarkerName, black(sprite,sprite(Name)), MarkerObject, Parent).
 
 marker_new(MarkerName, sprite_text(Id), MarkerObject, Parent) :-
-  marker_new(MarkerName, black(sprite_text,sprite_text(Id)), MarkerObject, Parent).
+  marker_new(MarkerName, black(sprite_text,sprite_text(Id)), MarkerObject, Parent),
+  marker_scale(MarkerObject, [0.5,0.5,0.5]).
 
 marker_new(MarkerName, background_image(Id), MarkerObject, Parent) :-
   marker_new(MarkerName, black(background_image,background_image(Id)), MarkerObject, Parent).
@@ -671,13 +695,13 @@ marker_update(MarkerTerm, time(T,Arg)) :-
 %
 marker_update(object_without_children(Identifier), MarkerObject, T) :-
   ignore(once((
-    marker_lookup_transform(MarkerObject,Identifier,T,(Translation,Orientation)),
+    marker_estimate_transform(MarkerObject,Identifier,T,(Translation,Orientation)),
     marker_pose(MarkerObject,Translation,Orientation)
   ))).
 
 marker_update(object(Identifier), MarkerObject, T) :-
   ignore(once((
-    marker_lookup_transform(MarkerObject,Identifier,T,(Translation,Orientation)),
+    marker_estimate_transform(MarkerObject,Identifier,T,(Translation,Orientation)),
     marker_pose(MarkerObject,Translation,Orientation)
   ))),
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
@@ -689,7 +713,7 @@ marker_update(object(Identifier), MarkerObject, T) :-
   ))).
 
 marker_update(link(Link), MarkerObject, T) :-
-  marker_lookup_transform(MarkerObject,Link,T,(Translation,Orientation)),
+  marker_estimate_transform(MarkerObject,Link,T,(Translation,Orientation)),
   marker_pose(MarkerObject,Translation,Orientation).
 
 marker_update(pointer(From,To), MarkerObject, T) :-
@@ -796,7 +820,7 @@ marker_update_trajectory(trajectory(Link), MarkerObject, interval(T0,T1,dt(Inter
   atom_concat(MarkerName, SampleId, SampleName),
   jpl_call(MarkerObject, 'createMarker', [SampleName], ChildMarker),
   assert( v_marker_object(SampleName, SampleName, ChildMarker, MarkerObject) ),
-  marker_lookup_transform(ChildMarker, Link, T0, (Translation,Orientation)),
+  marker_estimate_transform(ChildMarker, Link, T0, (Translation,Orientation)),
   marker_pose(ChildMarker, Translation, Orientation),
   marker_timestamp(ChildMarker, T0),
   T_next is T0 + Interval,
@@ -811,8 +835,9 @@ marker_update_trajectory(average_trajectory(Link), MarkerObject, interval(T0,T1,
 marker_update_trajectory(average_trajectory(_), _, _, []).
 marker_update_trajectory(average_trajectory(Link), MarkerObject, Index, [(Translation,Orientation)|Rest]) :-
   atom_concat(Link, Index, MarkerName),
-  jpl_call(MarkerObject, 'createMarker', [MarkerName], ChildMarker),
-  marker_pose(ChildMarker, Translation, Orientation),
+  jpl_call(MarkerObject, 'createMarker', [MarkerName], ChildMarker), !,
+  assert( v_marker_object(MarkerName, MarkerName, ChildMarker, MarkerObject) ),
+  marker_pose(ChildMarker, pose(Translation,Orientation)),
   Index_Next is Index + 1,
   marker_update_trajectory(average_trajectory(Link), MarkerObject, Index_Next, Rest).
 
@@ -830,7 +855,7 @@ marker_trajectory_sample(MarkerObject, Link, interval(T0,T1,count(Count)), Traje
   marker_trajectory_sample(MarkerObject, Link, interval(T0,T1,dt(Interval)), Trajectory).
 marker_trajectory_sample(MarkerObject, Link, interval(T0,T1,dt(Interval)), [Pose|Rest]) :-
   T0 =< T1,
-  marker_lookup_transform(MarkerObject, Link, T0, Pose),
+  marker_estimate_transform(MarkerObject, Link, T0, Pose),
   T0_next is T0 + Interval,
   marker_trajectory_sample(MarkerObject, Link, interval(T0_next,T1,dt(Interval)), Rest).
 
