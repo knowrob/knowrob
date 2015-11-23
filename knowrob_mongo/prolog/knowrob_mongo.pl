@@ -222,7 +222,7 @@ mng_read_cursor(DBCursor, DBObj) :-
 
 %% mng_read_cursor(+DBCursor, one(-DBObj))
 %% mng_read_cursor(+DBCursor, all(-DBObj))
-%% mng_read_cursor(+DBCursor, some(-DBObj))
+%% mng_read_cursor(+DBCursor, some(-DBObj,-Count))
 %
 % Read DB objects from cursor.
 %
@@ -234,19 +234,17 @@ mng_db_object(DBCursor, one(DBObj)) :-
   jpl_call(DB, 'one', [DBCursor], DBObj),
   not(DBObj = @(null)).
 
-mng_db_object(DBCursor, some(DBObj, Count)) :-
+mng_db_object(DBCursor, some(DBObjs, Count)) :-
   mongo_interface(DB),
   jpl_call(DB, 'some', [DBCursor, Count], DBObjsArray),
   not(DBObjsArray = @(null)),
-  jpl_list_to_array(DBObjs, DBObjsArray),
-  member(DBObj, DBObjs).
+  jpl_array_to_list(DBObjsArray, DBObjs).
 
-mng_db_object(DBCursor, all(DBObj)) :-
+mng_db_object(DBCursor, all(DBObjs)) :-
   mongo_interface(DB),
   jpl_call(DB, 'all', [DBCursor], DBObjsArray),
   not(DBObjsArray = @(null)),
-  jpl_list_to_array(DBObjs, DBObjsArray),
-  member(DBObj, DBObjs).
+  jpl_array_to_list(DBObjsArray, DBObjs).
 
 %% mng_value_object(date(+Val), ObjJava)
 %% mng_value_object(+Val, ObjJava)
