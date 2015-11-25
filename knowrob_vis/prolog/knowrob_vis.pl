@@ -93,6 +93,7 @@
       diagram_canvas/0,
       clear_diagram_canvas/0,
       add_diagram/9,
+      add_diagram/10,
       add_barchart/3,
       add_piechart/3,
       remove_diagram/1,
@@ -842,13 +843,18 @@ diagram_canvas(Canvas) :-
 % @param Width      Width of the diagram in px
 % @param Height     Height of the diagram in px
 % @param Fontsize   Fontsize for the labels
+% @param RowLabels  List of labels for the data rows (optional)
 % @param ValueList  List of data ranges, each of the form [[a,b],['1','2']]
 %
 add_diagram(Id, Title, Type, Xlabel, Ylabel, Width, Height, Fontsize, ValueList) :-
+  add_diagram(Id, Title, Type, Xlabel, Ylabel, Width, Height, Fontsize, @(null), ValueList).
+  
+add_diagram(Id, Title, Type, Xlabel, Ylabel, Width, Height, Fontsize, RowLabels, ValueList) :-
   once((
     d_canvas(Canvas),
     lists_to_arrays(ValueList, ValueArr),
-    jpl_call(Canvas, 'addDiagram', [Id, Title, Type, Xlabel, Ylabel, Width, Height, Fontsize, ValueArr], _)
+    lists_to_arrays(RowLabels, RowLabelArr),
+    jpl_call(Canvas, 'addDiagram', [Id, Title, Type, Xlabel, Ylabel, Width, Height, Fontsize, RowLabelArr, ValueArr], _)
   )).
 
 %% add_piechart(+Id, +Title, +ValueList) is nondet.

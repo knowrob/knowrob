@@ -86,6 +86,10 @@ public class DiagramVisualization extends AbstractNodeMain {
 	 *
 	 */
 	public void addDiagram(String id, String title, String type, String xlabel, String ylabel, int width, int height, String fontsize, String[][][] values) {
+		this.addDiagram(id, title, type, xlabel, ylabel, width, height, fontsize, null, values);
+	}
+
+	public void addDiagram(String id, String title, String type, String xlabel, String ylabel, int width, int height, String fontsize, String[] labels, String[][][] values) {
 
 		DataVis data = node.getTopicMessageFactory().newFromType(data_vis_msgs.DataVis._TYPE);
 
@@ -103,14 +107,26 @@ public class DiagramVisualization extends AbstractNodeMain {
 			data.setType(DataVis.TYPE_BARCHART);
 		} else if(type.equals("treechart")) {
 			data.setType(DataVis.TYPE_TREECHART);
-                } else if(type.equals("timeline")) {
-                        data.setType(DataVis.TYPE_TIMELINE);
-                } else if(type.equals("linechart")) {
-                        data.setType(DataVis.TYPE_LINECHART);
+		} else if(type.equals("timeline")) {
+			data.setType(DataVis.TYPE_TIMELINE);
+		} else if(type.equals("linechart")) {
+			data.setType(DataVis.TYPE_LINECHART);
 		}
 
-		for(String[][] val_list : values) {
+		if(labels.length != values.length) {
+			System.err.println("ERROR: Number of labels and data rows differs.");
+		}
+
+		for(int i =0; i< values.length; i++) {
+			
+			String[][] val_list = values[i];
+
 			ValueList v = node.getTopicMessageFactory().newFromType(data_vis_msgs.ValueList._TYPE);
+
+			if(labels != null) {
+				v.setLabel(labels[i]);
+			}
+
 			v.setValue1(new ArrayList<String>(Arrays.asList(val_list[0])));
 			v.setValue2(new ArrayList<String>(Arrays.asList(val_list[1])));
 			data.getValues().add(v);
