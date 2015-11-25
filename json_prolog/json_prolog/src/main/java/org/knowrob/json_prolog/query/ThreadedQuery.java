@@ -69,6 +69,19 @@ public class ThreadedQuery implements Runnable {
 		this.queryTerm = term;
 	}
 
+	public Object getQueryObject() {
+		return queryString!=null ? queryString : queryTerm;
+	}
+	
+	public void waitOnThread() {
+		  while(!isStarted()) {
+				synchronized (getQueryObject()) {
+					try { getQueryObject().wait(); }
+					catch (Exception e) {}
+				}
+		  }
+	}
+
 	@Override
 	public void run() {
 		isStarted = true;
@@ -86,6 +99,11 @@ public class ThreadedQuery implements Runnable {
 			isClosed = true;
 			isRunning = false;
 			return;
+		}
+		// Wake up caller waiting on the thread to be started
+		synchronized (getQueryObject()) {
+			try { getQueryObject().notifyAll(); }
+			catch (Exception e) {}
 		}
 		
 		QueryCommand cmd = null;
@@ -147,6 +165,7 @@ public class ThreadedQuery implements Runnable {
 	}
 
 	private Object runCommand(QueryCommand cmd) throws Exception {
+		waitOnThread();
 		if(isClosed || !isRunning) {
 		  throw new InterruptedException("Thread not running for query.");
 		}

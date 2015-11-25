@@ -35,7 +35,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.io.*;
 
-import jpl.Term;
 import json_prolog_msgs.PrologQueryResponse;
 
 import org.knowrob.json_prolog.query.JSONQuery;
@@ -46,7 +45,6 @@ import org.knowrob.json_prolog.solutions.PrologSolutions;
 import org.ros.namespace.GraphName;
 import org.ros.node.AbstractNodeMain;
 import org.ros.node.ConnectedNode;
-import org.ros.node.Node;
 import org.ros.node.parameter.ParameterTree;
 import org.ros.node.service.ServiceResponseBuilder;
 
@@ -170,15 +168,7 @@ public class JSONPrologNode extends AbstractNodeMain {
 							queries.put(currentQueryId, new PrologIncrementalSolutions(currentQuery));
 							hasIncrementalQuery = true;
 						}
-
 						else {
-							// Wait for the query thread to be started
-							while(!currentQuery.isStarted()) {
-								try {
-									Thread.sleep(1);
-								}
-								catch (InterruptedException e) {}
-							}
 							queries.put(currentQueryId, new PrologAllSolutions(currentQuery));
 						}
 					}
@@ -230,13 +220,6 @@ public class JSONPrologNode extends AbstractNodeMain {
 							queries.put(currentQueryId, new PrologIncrementalSolutions(currentQuery));
 							hasIncrementalQuery = true;
 						} else {
-							// Wait for the query thread to be started
-							while(!currentQuery.isStarted()) {
-								try {
-									Thread.sleep(1);
-								}
-								catch (InterruptedException e) {}
-							}
 							queries.put(currentQueryId, new PrologAllSolutions(currentQuery));
 						}
 						response.setOk(true);
