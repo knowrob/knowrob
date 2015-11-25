@@ -5,7 +5,7 @@ project(comp_orgprinciples)
 find_package(catkin REQUIRED COMPONENTS rosprolog knowrob_common)
 
 catkin_package(
-    DEPENDS rosprolog knowrob_common
+    CATKIN_DEPENDS rosprolog knowrob_common
 )
 
 install(DIRECTORY launch/

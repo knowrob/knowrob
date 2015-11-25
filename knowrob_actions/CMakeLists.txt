@@ -6,7 +6,7 @@ find_package(catkin REQUIRED COMPONENTS knowrob_common knowrob_objects)
 
 
 catkin_package(
-    DEPENDS knowrob_common knowrob_objects
+    CATKIN_DEPENDS knowrob_common knowrob_objects
 )
   
 install(DIRECTORY etc/

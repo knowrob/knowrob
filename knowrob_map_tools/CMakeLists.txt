@@ -7,7 +7,7 @@ find_package(catkin REQUIRED COMPONENTS comp_spatial)
 
 
 catkin_package(
-    DEPENDS comp_spatial
+    CATKIN_DEPENDS comp_spatial
 )
 
 install(DIRECTORY owl/

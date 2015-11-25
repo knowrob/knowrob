@@ -4,7 +4,7 @@ project(comp_spatial)
 find_package(catkin REQUIRED COMPONENTS knowrob_common comp_temporal)
 
 catkin_package(
-    DEPENDS knowrob_common comp_temporal
+    CATKIN_DEPENDS knowrob_common comp_temporal
 )
 
 install(DIRECTORY owl/
