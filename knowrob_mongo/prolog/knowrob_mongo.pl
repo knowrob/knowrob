@@ -39,6 +39,10 @@
       mng_query_latest/5,
       mng_query_earliest/4,
       mng_query_earliest/5,
+      mng_query_latest_n/5,
+      mng_query_latest_n/6,
+      mng_query_earliest_n/5,
+      mng_query_earliest_n/6,
       mng_query/2,
       mng_query/3,
       mng_ros_message/2,
@@ -69,6 +73,10 @@
     mng_query_latest(+,?,+,r,+),
     mng_query_earliest(+,?,+,r),
     mng_query_earliest(+,?,+,r,+),
+    mng_query_latest_n(+,?,+,r,+),
+    mng_query_latest_n(+,?,+,r,+,+),
+    mng_query_earliest_n(+,?,+,r,+),
+    mng_query_earliest_n(+,?,+,r,+,+),
     mng_query(+,?),
     mng_query(+,?,+),
     mng_ros_message(t,-),
@@ -165,17 +173,35 @@ mng_query_latest(Collection, DBObj, TimeKey, TimeValue) :-
 
 mng_query_latest(Collection, DBObj, TimeKey, TimeValue, Pattern) :-
   mng_db_cursor(Collection, [[TimeKey, '<', date(TimeValue)]|Pattern], DBCursor),
-  mng_descending(DBCursor, TimeKey),
-  mng_read_cursor(DBCursor, DBObj).
+  mng_descending(DBCursor, TimeKey, DBCursorDescending),
+  mng_read_cursor(DBCursorDescending, DBObj).
 
 mng_query_earliest(Collection, DBObj, TimeKey, TimeValue) :-
   mng_query_earliest(Collection, DBObj, TimeKey, TimeValue, []).
 
 mng_query_earliest(Collection, DBObj, TimeKey, TimeValue, Pattern) :-
   mng_db_cursor(Collection, [[TimeKey, '>', date(TimeValue)]|Pattern], DBCursor),
-  mng_ascending(DBCursor, TimeKey),
-  mng_read_cursor(DBCursor, DBObj).
-  
+  mng_ascending(DBCursor, TimeKey, DBCursorAscending),
+  mng_read_cursor(DBCursorAscending, DBObj).
+
+mng_query_latest_n(Collection, DBObj, TimeKey, TimeValue, N) :-
+  mng_query_latest_n(Collection, DBObj, TimeKey, TimeValue, [], N).
+
+mng_query_latest_n(Collection, DBObj, TimeKey, TimeValue, Pattern, N) :-
+  mng_db_cursor(Collection, [[TimeKey, '<', date(TimeValue)]|Pattern], DBCursor),
+  mng_descending(DBCursor, TimeKey, DBCursorDescending),
+  mng_limit(DBCursorDescending, N, DBCursorLimited),
+  mng_read_cursor(DBCursorLimited, DBObj).
+
+mng_query_earliest_n(Collection, DBObj, TimeKey, TimeValue, N) :-
+  mng_query_earliest_n(Collection, DBObj, TimeKey, TimeValue, [], N).
+
+mng_query_earliest_n(Collection, DBObj, TimeKey, TimeValue, Pattern, N) :-
+  mng_db_cursor(Collection, [[TimeKey, '>', date(TimeValue)]|Pattern], DBCursor),
+  mng_ascending(DBCursor, TimeKey, DBCursorAscending),
+  mng_limit(DBCursorAscending, N, DBCursorLimited),
+  mng_read_cursor(DBCursorLimited, DBObj).
+
 mng_query(Collection, DBObj) :-
   mongo_interface(DB),
   jpl_call(DB, 'query', [Collection], DBCursor),
@@ -194,13 +220,17 @@ mng_query(Collection, DBObj, Pattern) :-
 % @param DBCursor The DB cursor
 % @param Key The sort key
 %
-mng_descending(DBCursor, Key) :-
+mng_descending(DBCursor, Key, DBCursorDescending) :-
   mongo_interface(DB),
-  jpl_call(DB, 'descending', [DBCursor, Key], _).
+  jpl_call(DB, 'descending', [DBCursor, Key], DBCursorDescending).
 
-mng_ascending(DBCursor, Key) :-
+mng_ascending(DBCursor, Key, DBCursorAscending) :-
   mongo_interface(DB),
-  jpl_call(DB, 'ascending', [DBCursor, Key], _).
+  jpl_call(DB, 'ascending', [DBCursor, Key], DBCursorAscending).
+
+mng_limit(DBCursor, N, DBCursorLimited) :-
+  mongo_interface(DB),
+  jpl_call(DB, 'limit', [DBCursor, N], DBCursorLimited).
 
 %% mng_read_cursor(+DBCursor, -DBObj)
 %
