@@ -83,7 +83,7 @@ public class MarkerPublisher extends AbstractNodeMain {
 		Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
 		m.getHeader().setFrameId("/map"); // FIXME: set in prolog
 		m.getHeader().setStamp(node.getCurrentTime());
-		m.setNs("knowrob_vis");
+		m.setNs(identifier);
 		m.setId(id++);
 		m.setAction(Marker.ADD);
 		m.setLifetime(new Duration());

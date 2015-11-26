@@ -56,6 +56,7 @@
       marker_highlight/1,
       marker_highlight/2,
       marker_highlight_remove/1,
+      marker_highlight_toggle/1,
       
       marker_distance/3,
       marker_trajectory_length/2
@@ -79,6 +80,7 @@
             marker_has_visual(t,?),
             marker_highlight(t,?),
             marker_highlight_remove(t),
+            marker_highlight_toggle(t),
             marker_mesh_resource(t,?),
             marker_pose(t,?),
             marker_translation(t,?),
@@ -995,7 +997,6 @@ marker_highlight(MarkerObject, ColorArg) :-
 %
 % @param MarkerObject MarkerObject instance or a term that identifies the marker (e.g., trajectory('/base_link'))
 %
-
 marker_highlight_remove(all) :-
   ignore( forall(
     v_marker_object(_, _, MarkerObject, _),
@@ -1020,6 +1021,18 @@ marker_highlight_remove(MarkerObject) :-
     marker_highlight_remove(ChildObject)
   ))).
 
+%% marker_highlight_toggle(+MarkerName) is det.
+%
+% Toggles marker highlighted state.
+%
+% @param MarkerObject MarkerObject instance or a term that identifies the marker (e.g., trajectory('/base_link'))
+%
+marker_highlight_toggle(MarkerName) :-
+  v_marker_object(MarkerName, _, MarkerObject, _),
+  (  jpl_call(MarkerObject, 'hasHighlight', [], @(true))
+  -> marker_highlight_remove(MarkerObject)
+  ;  marker_highlight(MarkerObject)
+  ).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
