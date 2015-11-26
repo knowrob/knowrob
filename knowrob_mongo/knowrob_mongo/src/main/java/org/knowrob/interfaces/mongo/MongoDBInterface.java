@@ -147,7 +147,6 @@ public class MongoDBInterface {
 					String rel = relations[i];
 					String key = keys[i];
 					Object val = values[i];
-					
 					if("==".equals(rel) || "=".equals(rel) || "is".equals(rel))
 						query = query.and(key).is(val);
 					else if("!=".equals(rel))
@@ -199,23 +198,36 @@ public class MongoDBInterface {
 		}
 	}
 	
-	public void ascending(DBCursor cursor, String key) {
+	public DBCursor ascending(DBCursor cursor, String key) {
 		try {
-			cursor.sort(new BasicDBObject(key, 1));
+			return cursor.sort(new BasicDBObject(key, 1));
 		}
 		catch(Exception e) {
 			System.err.println("Failed to sort cursor: " + e.getMessage());
 			e.printStackTrace();
+			return null;
 		}
 	}
 	
-	public void descending(DBCursor cursor, String key) {
+	public DBCursor descending(DBCursor cursor, String key) {
 		try {
-			cursor.sort(new BasicDBObject(key, -1));
+			return cursor.sort(new BasicDBObject(key, -1));
 		}
 		catch(Exception e) {
 			System.err.println("Failed to sort cursor: " + e.getMessage());
 			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public DBCursor limit(DBCursor cursor, int number) {
+		try {
+			return cursor.limit(number);
+		}
+		catch(Exception e) {
+			System.err.println("Failed to limit cursor: " + e.getMessage());
+			e.printStackTrace();
+			return null;
 		}
 	}
 	

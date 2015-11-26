@@ -4,9 +4,7 @@ project(rosprolog)
 
 find_package(catkin REQUIRED COMPONENTS catkin)
 
-catkin_package(
-    DEPENDS swi-prolog swi-prolog-semweb swi-prolog-java
-)
+catkin_package()
 
 install(DIRECTORY prolog/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/prolog)

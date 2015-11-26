@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(json_prolog)
 
-find_package(catkin REQUIRED rosjava_build_tools roscpp rospy json_prolog_msgs)
+find_package(catkin REQUIRED COMPONENTS rosjava_build_tools  rosjava_bootstrap knowrob_common json_prolog_msgs rosjava_messages rosprolog rosjava_build_tools rospy roscpp
+)
 
 
 catkin_rosjava_setup(installApp publishMavenJavaPublicationToMavenRepository writeClasspath)
@@ -11,8 +12,9 @@ catkin_package(INCLUDE_DIRS include
   CATKIN_DEPENDS json_prolog_msgs
 )
 
+
 # find SWI Prolog libraries
-include(FindPkgConfig)
+find_package(PkgConfig)
 pkg_check_modules(SWIPL REQUIRED swipl)
 include_directories(${SWIPL_INCLUDE_DIRS})
 link_directories(${SWIPL_LIBRARY_DIRS})
@@ -25,7 +27,6 @@ catkin_python_setup()
 # C++ client library
 include_directories(include ${catkin_INCLUDE_DIRS})
 
-find_package(PkgConfig)
 pkg_check_modules(JSON_GLIB REQUIRED json-glib-1.0)
 add_definitions(${JSON_GLIB_CFLAGS})
 link_directories(${JSON_GLIB_LIBRARIY_DIRS})
