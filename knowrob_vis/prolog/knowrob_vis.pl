@@ -96,6 +96,7 @@
       add_diagram/10,
       add_barchart/3,
       add_piechart/3,
+      add_timeline/5,
       remove_diagram/1,
       trajectory_length/4,
       task_tree_canvas/0,
@@ -856,6 +857,28 @@ add_diagram(Id, Title, Type, Xlabel, Ylabel, Width, Height, Fontsize, RowLabels,
     lists_to_arrays(RowLabels, RowLabelArr),
     jpl_call(Canvas, 'addDiagram', [Id, Title, Type, Xlabel, Ylabel, Width, Height, Fontsize, RowLabelArr, ValueArr], _)
   )).
+
+
+%% help_timeline(+SVal, +EVal, -Res)
+%
+% Helpfunction for add_timeline that concatenates Start and End time to one atom so it can be passed to add_diagram in the same fashion as the other data types
+help_timeline(SVal, EVal, Res) :-
+  atom_concat(SVal, '_', Tmp),
+  atom_concat(Tmp, EVal, Res).
+
+%% add_timeline(+Id, +Title, +EventsList, +StartList, +EndList) is nondet.
+%
+% Simplified predicate for adding a timeline with default values
+%
+% @param Identifier Unique string identifier for this diagram
+% @param Title      Title of this chart
+% @param ValueList  List of data ranges, each of the form [[a,b],['1','2']]
+%
+add_timeline(Id, Title, EventsList, StartList, EndList) :-
+  %Concatenate Start and endtimes so they can be given to add_diagram as one value
+  maplist(help_timeline,StartList,EndList, TimeList),
+  %Call add_diagram with the appropriate settings
+  add_diagram(Id, Title, 'timeline', 'Time', 'Events', 250, 250, '12px', [[EventsList,TimeList]]).
 
 %% add_piechart(+Id, +Title, +ValueList) is nondet.
 %
