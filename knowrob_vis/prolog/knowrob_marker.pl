@@ -58,6 +58,8 @@
       marker_highlight_remove/1,
       marker_highlight_toggle/1,
       
+      marker_queries/2,
+      
       marker_distance/3,
       marker_trajectory_length/2
     ]).
@@ -87,6 +89,7 @@
             marker_tf_prefix(t,?),
             marker_text(t,?),
             marker_properties(t,?),
+            marker_queries(+,-),
             marker_trajectory_length(t,?),
             marker_distance(t,t,?).
 
@@ -1033,6 +1036,26 @@ marker_highlight_toggle(MarkerName) :-
   -> marker_highlight_remove(MarkerObject)
   ;  marker_highlight(MarkerObject)
   ).
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%
+% Marker queries
+%
+
+marker_queries(MarkerName, Queries) :-
+  v_marker_object(MarkerName, MarkerTerm, _, _),
+  findall([Category,Title,Query], marker_query(MarkerName,MarkerTerm,Category,Title,Query), Queries).
+
+marker_query(MarkerName, _, 'Visualization', 'Toggle highlight', (
+    term_to_atom(MarkerName,MarkerAtom),
+    marker_highlight_toggle(MarkerAtom),
+    marker_publish
+)).
+marker_query(MarkerName, _, 'Visualization', 'Remove visual', (
+    term_to_atom(MarkerName,MarkerAtom),
+    marker_remove(MarkerAtom),
+    marker_publish
+)).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
