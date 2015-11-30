@@ -1056,7 +1056,7 @@ marker_query(MarkerName, _, 'Visualization', 'Remove visual', (
     marker_remove(MarkerAtom),
     marker_publish
 )).
-
+  
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
 % Marker properties
