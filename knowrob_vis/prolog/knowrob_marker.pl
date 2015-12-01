@@ -140,6 +140,13 @@ marker_tf_frame(MarkerObject, Identifier, TfFrame) :-
   -> atom_concat(Prefix, UrdfNameResolved, TfFrame)
   ;  atom_concat(Prefix, UrdfName, TfFrame)
   ).
+  
+marker_lookup_transform(MarkerObject, Identifier, T, (Translation,Orientation)) :-
+  rdfs_individual_of(Identifier, knowrob:'CRAMDesignator'),
+  rdf_split_url(Prefix, ObjName, Identifier),
+  atomic_list_concat([Prefix,'Object_',ObjName], Object),
+  rdfs_individual_of(Object, knowrob:'SpatialThing-Localized'),
+  marker_lookup_transform(MarkerObject, Object, T, (Translation,Orientation)).
 
 marker_lookup_transform(_, Identifier, T, (Translation,Orientation)) :-
   object_pose_at_time(Identifier, T, Translation, Orientation).
@@ -153,6 +160,12 @@ marker_lookup_transform(MarkerObject, Identifier, TargetFrame, T, (Translation,O
   mng_lookup_transform(TargetFrame, TfFrame, T, Pose),
   matrix_rotation(Pose, Orientation),
   matrix_translation(Pose, Translation).
+
+%marker_lookup_transform(MarkerObject, Identifier, TargetFrame, T, (Translation,Orientation)) :-
+%  rdfs_individual_of(Identifier, knowrob:'CRAMDesignator'),
+%  mng_designator_location(Identifier, PoseMatrix),
+%  matrix_translation(PoseMatrix, Translation),
+%  matrix_rotation(PoseMatrix, Orientation).
 
 % HACK: Force object to be visually above given Z value
 marker_push_visually_above(Identifier, _, ([X0,Y0,Z0],R), ([X0,Y0,Z1],R)) :-
@@ -311,12 +324,23 @@ marker_initialize_object(Identifier,MarkerObject) :-
   ;  marker_has_visual(MarkerObject,false)
   ),
   ignore((
+    rdfs_individual_of(Identifier, knowrob:'CRAMDesignator'),
+    % TODO: use existing instance if available
+    mng_designator_timestamp(Identifier, T),
+    mng_designator_location(Identifier, LocList),
+    create_timepoint(T, Timepoint),
+    create_pose(LocList, Loc),
+    add_object_as_semantic_instance(Identifier, Loc, Timepoint, Instance),
+    marker_initialize_object(Instance,MarkerObject)
+  )),
+  ignore((
     get_model_path(Identifier, Path),
     marker_type(MarkerObject, mesh_resource),
     marker_mesh_resource(MarkerObject, Path),
     marker_color(MarkerObject, [0.0,0.0,0.0,0.0]),
     marker_scale(MarkerObject, [1.0,1.0,1.0])
   )),
+  % TODO: object_dimensions should not change mesh scale, use mesh_scale property for mesh scaling
   ignore((
     object_dimensions(Identifier, X, Y, Z),
     marker_scale(MarkerObject, [X, Y, Z])
@@ -1056,8 +1080,7 @@ marker_query(MarkerName, object_without_children(Individual), QueryGroup, QueryT
 % marker_query(MarkerName, individual(Individual), QueryGroup, 'Relations (recursive)', ()).
 
 marker_query(MarkerName, _, 'Marker Visualization', 'What is the name of this marker?', QueryAtom) :-
-  QueryTerm=(Name = MarkerName)
-  term_to_atom(QueryTerm,QueryAtom).
+  atom_concat('Name = ', MarkerName, QueryAtom).
 
 marker_query(MarkerName, _, 'Marker Visualization', 'Toggle marker highlight.', QueryAtom) :-
   QueryTerm=(marker_highlight_toggle(MarkerName), marker_publish),
@@ -1067,21 +1090,21 @@ marker_query(MarkerName, _, 'Marker Visualization', 'Remove this marker.', Query
   QueryTerm=(marker_remove(MarkerName), marker_publish),
   term_to_atom(QueryTerm,QueryAtom).
 
-marker_query_individual(MarkerName, individual(Individual), QueryGroup, QueryTitle, Query) :-
+marker_query_individual(_, individual(Individual), QueryGroup, QueryTitle, Query) :-
   rdf_has(QueryIndividual, knowrob:'queryAbout', Individual),
   rdf_has(QueryIndividual, knowrob:'groupName', literal(type(_,QueryGroup))),
   rdf_has(QueryIndividual, knowrob:'queryName', literal(type(_,QueryTitle))),
   rdf_has(QueryIndividual, knowrob:'queryString', literal(type(_,QueryTail))),
-  atomic_list_concat(['Individual=''', IndividualName, ''''], '', QueryHead),
+  atomic_list_concat(['Individual=''', Individual, ''''], '', QueryHead),
   atomic_list_concat([QueryHead,QueryTail], ', ', Query).
 
-marker_query_individual(MarkerName, individual(IndividualName), QueryGroup, QueryTitle, Query) :-
-  rdfs_individual_of(IndividualName, IndividualClass),
+marker_query_individual(_, individual(Individual), QueryGroup, QueryTitle, Query) :-
+  rdfs_individual_of(Individual, IndividualClass),
   rdf_has(QueryIndividual, knowrob:'queryAbout', IndividualClass),
   rdf_has(QueryIndividual, knowrob:'groupName', literal(type(_,QueryGroup))),
   rdf_has(QueryIndividual, knowrob:'queryName', literal(type(_,QueryTitle))),
   rdf_has(QueryIndividual, knowrob:'queryString', literal(type(_,QueryTail))),
-  atomic_list_concat(['Individual=''', IndividualName, ''''], '', QueryHead),
+  atomic_list_concat(['Individual=''', Individual, ''''], '', QueryHead),
   atomic_list_concat([QueryHead,QueryTail], ', ', Query).
   
   
