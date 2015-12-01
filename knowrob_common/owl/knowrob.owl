@@ -11476,7 +11476,7 @@ Cf. Surface, whose instances are two-dimensional, intangible regions of space.</
     <owl:NamedIndividual rdf:about="&knowrob;Query_GDBHFHRK6S75R">
         <rdf:type rdf:resource="&knowrob;Query"/>
         <knowrob:groupName rdf:datatype="&xsd;string">OWL Properties</knowrob:groupName>
-        <knowrob:queryName rdf:datatype="&xsd;string">JWhat are the object properties?</knowrob:queryName>
+        <knowrob:queryName rdf:datatype="&xsd;string">What are the object properties?</knowrob:queryName>
         <knowrob:queryAbout rdf:resource="&owl;Thing"/>
         <knowrob:queryString rdf:datatype="&xsd;string">findall(_X, (owl_has(Individual, _Relation, _Related), property_name(_Relation, _RelationName), property_value(_Related, _RelationValue), atomic_list_concat(['   ',_RelationName,_RelationValue], ' ', _X) ), _RelationNames), atomic_list_concat([''|_RelationNames], '\n', Relations)</knowrob:queryString>
     </owl:NamedIndividual>
