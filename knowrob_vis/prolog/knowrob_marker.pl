@@ -1055,32 +1055,34 @@ marker_query(MarkerName, object_without_children(Individual), QueryGroup, QueryT
 % TODO: recursive relations with intendation
 % marker_query(MarkerName, individual(Individual), QueryGroup, 'Relations (recursive)', ()).
 
-marker_query(MarkerName, _, 'Marker Visualization', 'Toggle marker highlight', (
-    marker_highlight_toggle(MarkerName), marker_publish)).
+marker_query(MarkerName, _, 'Marker Visualization', 'What is the name of this marker?', QueryAtom) :-
+  QueryTerm=(Name = MarkerName)
+  term_to_atom(QueryTerm,QueryAtom).
 
-marker_query(MarkerName, _, 'Marker Visualization', 'Remove the marker', (
-    marker_remove(MarkerName), marker_publish)).
+marker_query(MarkerName, _, 'Marker Visualization', 'Toggle marker highlight.', QueryAtom) :-
+  QueryTerm=(marker_highlight_toggle(MarkerName), marker_publish),
+  term_to_atom(QueryTerm,QueryAtom).
 
-marker_query_individual(MarkerName, individual(Individual),
-  'Object properties',
-  'What are the object properties?', (
-  findall(query_var('_X'), (
-    owl_has(Individual, query_var('_Relation'), query_var('_Related')),
-    once((
-      rdf_split_url(_,query_var('_RelationName'),query_var('_Relation')) ;
-      query_var('_RelationName') = query_var('_Relation')
-    )),
-    relation_value(query_var('_Related'), query_var('_RelationValue')),
-    atomic_list_concat(['   ',query_var('_RelationName'),query_var('_RelationValue')], ' ', query_var('_X'))
-  ), query_var('_RelationNames')),
-  atomic_list_concat([''|query_var('_RelationNames')], '\n', query_var('Relations'))
-)).
+marker_query(MarkerName, _, 'Marker Visualization', 'Remove this marker.', QueryAtom) :-
+  QueryTerm=(marker_remove(MarkerName), marker_publish),
+  term_to_atom(QueryTerm,QueryAtom).
 
 marker_query_individual(MarkerName, individual(Individual), QueryGroup, QueryTitle, Query) :-
   rdf_has(QueryIndividual, knowrob:'queryAbout', Individual),
   rdf_has(QueryIndividual, knowrob:'groupName', literal(type(_,QueryGroup))),
   rdf_has(QueryIndividual, knowrob:'queryName', literal(type(_,QueryTitle))),
-  rdf_has(QueryIndividual, knowrob:'queryString', literal(type(_,Query))).
+  rdf_has(QueryIndividual, knowrob:'queryString', literal(type(_,QueryTail))),
+  atomic_list_concat(['Individual=''', IndividualName, ''''], '', QueryHead),
+  atomic_list_concat([QueryHead,QueryTail], ', ', Query).
+
+marker_query_individual(MarkerName, individual(IndividualName), QueryGroup, QueryTitle, Query) :-
+  rdfs_individual_of(IndividualName, IndividualClass),
+  rdf_has(QueryIndividual, knowrob:'queryAbout', IndividualClass),
+  rdf_has(QueryIndividual, knowrob:'groupName', literal(type(_,QueryGroup))),
+  rdf_has(QueryIndividual, knowrob:'queryName', literal(type(_,QueryTitle))),
+  rdf_has(QueryIndividual, knowrob:'queryString', literal(type(_,QueryTail))),
+  atomic_list_concat(['Individual=''', IndividualName, ''''], '', QueryHead),
+  atomic_list_concat([QueryHead,QueryTail], ', ', Query).
   
   
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
