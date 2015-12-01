@@ -55,7 +55,8 @@
       time_term/2,
       time_between/3,
       time_later_then/2,
-      time_earlier_then/2
+      time_earlier_then/2,
+      relation_value/2
 ]).
 
 % Use identity if first argument is a number
@@ -373,3 +374,9 @@ max_list1([A|Arest], OldMax ,Max) :-
 %
 strip_literal_type(literal(type(_, Value)), Value) :- !.
 strip_literal_type(Value, Value).
+
+relation_value(literal(type(_,RelationValue)), RelationValue) :- !.
+relation_value(literal(RelationValue), RelationValue) :- !.
+relation_value(Related, RelationValue) :-
+  atom(Related), rdf_split_url(_,RelationValue,Related), !.
+relation_value(Related, Related).
