@@ -2098,6 +2098,8 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>map</srdl2-comp:urdfName>
         <srdl2-comp:link_name rdf:datatype="&xsd;string">map</srdl2-comp:link_name>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
+
         <srdl2-comp:succeedingJoint rdf:resource="&robot;saphari_robot_base_to_wall_offset"/>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;saphari_robot_ground_plane_to_table_offset"/>
     </owl:NamedIndividual>
@@ -2181,7 +2183,7 @@
     <owl:NamedIndividual rdf:about="&robot;saphari_robot_kinect_link">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>kinect_link</srdl2-comp:urdfName>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kinect_description/meshes/68-04546_Kinect_Sensor--coarse.STL</knowrob:pathToCadModel>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_boxy_description/meshes/sensors/68-04546_Kinect_Sensor--coarse.dae</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:box_size>
         <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.5 0.5 0.5 1</knowrob:mainColorOfObject>
@@ -2196,6 +2198,8 @@
     <owl:NamedIndividual rdf:about="&robot;saphari_robot_kinect_rgb_frame">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>kinect_rgb_frame</srdl2-comp:urdfName>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
+
         <srdl2-comp:link_name rdf:datatype="&xsd;string">kinect_rgb_frame</srdl2-comp:link_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;saphari_robot_kinect_rgb_optical_joint"/>
     </owl:NamedIndividual>
@@ -2206,6 +2210,8 @@
     <owl:NamedIndividual rdf:about="&robot;saphari_robot_kinect_rgb_optical_frame">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>kinect_rgb_optical_frame</srdl2-comp:urdfName>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
+
         <srdl2-comp:link_name rdf:datatype="&xsd;string">kinect_rgb_optical_frame</srdl2-comp:link_name>
     </owl:NamedIndividual>
 
@@ -2215,6 +2221,8 @@
     <owl:NamedIndividual rdf:about="&robot;saphari_robot_kinect_depth_frame">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>kinect_depth_frame</srdl2-comp:urdfName>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
+
         <srdl2-comp:link_name rdf:datatype="&xsd;string">kinect_depth_frame</srdl2-comp:link_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;saphari_robot_kinect_depth_optical_joint"/>
     </owl:NamedIndividual>
@@ -2225,6 +2233,8 @@
     <owl:NamedIndividual rdf:about="&robot;saphari_robot_kinect_depth_optical_frame">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>kinect_depth_optical_frame</srdl2-comp:urdfName>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
+
         <srdl2-comp:link_name rdf:datatype="&xsd;string">kinect_depth_optical_frame</srdl2-comp:link_name>
     </owl:NamedIndividual>
 
@@ -2234,6 +2244,8 @@
     <owl:NamedIndividual rdf:about="&robot;saphari_robot_openni_depth_frame">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>openni_depth_frame</srdl2-comp:urdfName>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
+
         <srdl2-comp:link_name rdf:datatype="&xsd;string">openni_depth_frame</srdl2-comp:link_name>
     </owl:NamedIndividual>
 
@@ -2337,6 +2349,8 @@
     <owl:NamedIndividual rdf:about="&robot;saphari_robot_arm_base_link">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>arm_base_link</srdl2-comp:urdfName>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
+
         <srdl2-comp:link_name rdf:datatype="&xsd;string">arm_base_link</srdl2-comp:link_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;saphari_robot_kinect_calibration"/>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;saphari_robot_arm_base_link_arm_base_joint"/>
@@ -2529,6 +2543,8 @@
     <owl:NamedIndividual rdf:about="&robot;saphari_robot_arm_flange_link">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>arm_flange_link</srdl2-comp:urdfName>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
+
         <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.5</srdl2-comp:mass_value>
         <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.0833333333333</srdl2-comp:inertia_ixx>
         <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_ixy>
@@ -2558,6 +2574,8 @@
     <owl:NamedIndividual rdf:about="&robot;saphari_robot_arm_fwk_fwa_050_frame_out">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>arm_fwk_fwa_050_frame_out</srdl2-comp:urdfName>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
+
         <srdl2-comp:link_name rdf:datatype="&xsd;string">arm_fwk_fwa_050_frame_out</srdl2-comp:link_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;saphari_robot_gripper_anterior_gripper_joint"/>
     </owl:NamedIndividual>
@@ -2691,6 +2709,8 @@
     <owl:NamedIndividual rdf:about="&robot;saphari_robot_gripper_tool_frame">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>gripper_tool_frame</srdl2-comp:urdfName>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
+
         <srdl2-comp:link_name rdf:datatype="&xsd;string">gripper_tool_frame</srdl2-comp:link_name>
     </owl:NamedIndividual>
 
@@ -2724,7 +2744,7 @@
     <owl:NamedIndividual rdf:about="&robot;saphari_robot_blackfly_holder">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>blackfly_holder</srdl2-comp:urdfName>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://saphari_robot_description/meshes/camera_mount_blackfly.stl</knowrob:pathToCadModel>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://saphari_robot_description/meshes/camera_mount_blackfly.dae</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:box_size>
         <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.0 0.0 1.0 1.0</knowrob:mainColorOfObject>
@@ -2746,6 +2766,8 @@
     <owl:NamedIndividual rdf:about="&robot;saphari_robot_optical_frame_x">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>optical_frame_x</srdl2-comp:urdfName>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
+
         <srdl2-comp:link_name rdf:datatype="&xsd;string">optical_frame_x</srdl2-comp:link_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;saphari_robot_optical_joint"/>
     </owl:NamedIndividual>
@@ -2756,6 +2778,8 @@
     <owl:NamedIndividual rdf:about="&robot;saphari_robot_optical_frame">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>optical_frame</srdl2-comp:urdfName>
+        <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
+
         <srdl2-comp:link_name rdf:datatype="&xsd;string">optical_frame</srdl2-comp:link_name>
     </owl:NamedIndividual>
 
