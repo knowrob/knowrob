@@ -78,7 +78,7 @@
 
     <owl:NamedIndividual rdf:about="&robot;saphari_robot1">
         <rdf:type rdf:resource="&robot;saphari_robot"/>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;saphari_robot_wall"/>
+    <srdl2-comp:subComponent rdf:resource="&robot;saphari_robot_wall_component"/>
     <srdl2-comp:subComponent rdf:resource="&robot;saphari_robot_arm"/>
     <srdl2-comp:subComponent rdf:resource="&robot;saphari_robot_gripper"/>
     <srdl2-comp:subComponent rdf:resource="&robot;saphari_robot_desk"/>
@@ -2106,10 +2106,16 @@
 
 
     <!-- &robot;saphari_robot_wall -->
+    
+    <owl:NamedIndividual rdf:about="&robot;saphari_robot_wall_component">
+        <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
+        <srdl2-comp:baseLinkOfComposition rdf:resource="&robot;saphari_robot_wall"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&robot;saphari_robot_wall"/>
+    </owl:NamedIndividual>
 
     <owl:NamedIndividual rdf:about="&robot;saphari_robot_wall">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
-        <srdl2-comp:urdfName>map</srdl2-comp:urdfName>
+        <srdl2-comp:urdfName>wall</srdl2-comp:urdfName>
         <srdl2-comp:box_size rdf:datatype="&xsd;string">4 0.2 3</srdl2-comp:box_size>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://saphari_robot_description/meshes/saphari_wall.dae</knowrob:pathToCadModel>
         
@@ -2269,7 +2275,6 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>screenholder_1_link</srdl2-comp:urdfName>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://saphari_robot_description/meshes/screenholder_1_link.dae</knowrob:pathToCadModel>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://saphari_robot_description/meshes/screenholder_1_link.dae</knowrob:pathToCadModel>
     <!--
         <srdl2-comp:box_size rdf:datatype="&xsd;string">0.08 0.325 0.04</srdl2-comp:box_size>
         
@@ -2282,6 +2287,7 @@
 
     <owl:NamedIndividual rdf:about="&robot;saphari_robot_screenholder_2_link">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>screenholder_2_link</srdl2-comp:urdfName>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://saphari_robot_description/meshes/screenholder_2_link.dae</knowrob:pathToCadModel>
     <!--
         <srdl2-comp:urdfName>screenholder_2_link</srdl2-comp:urdfName>
@@ -2374,7 +2380,9 @@
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_base_blue.dae</knowrob:pathToCadModel>
     -->
     <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">1 1 1</srdl2-comp:mesh_scale>
+        <!-- TODO: use this one?
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/convex/arm_base_convex.stl</knowrob:pathToCadModel>
+        -->
         <srdl2-comp:succeedingJoint rdf:resource="&robot;saphari_robot_arm_0_joint"/>
         
     </owl:NamedIndividual>
@@ -2397,7 +2405,9 @@
     <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_segment_a_blue.dae</knowrob:pathToCadModel>
     -->
     <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">1 1 1</srdl2-comp:mesh_scale>
+        <!-- TODO: use this one?
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/convex/arm_segment_a_convex.stl</knowrob:pathToCadModel>
+        -->
         <srdl2-comp:succeedingJoint rdf:resource="&robot;saphari_robot_arm_1_joint"/>
         
     </owl:NamedIndividual>
@@ -2510,7 +2520,9 @@
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_wrist.dae</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">1 1 1</srdl2-comp:mesh_scale>
         
+        <!-- TODO: use this one?
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/convex/arm_wrist_convex.stl</knowrob:pathToCadModel>
+        -->
         <srdl2-comp:succeedingJoint rdf:resource="&robot;saphari_robot_arm_6_joint"/>
         
     </owl:NamedIndividual>
@@ -2530,8 +2542,9 @@
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.333333333333</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_flanche.dae</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">1 1 1</srdl2-comp:mesh_scale>
-        
+        <!-- TODO: use this one?
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/convex/arm_flanche_convex.stl</knowrob:pathToCadModel>
+        -->
         <srdl2-comp:succeedingJoint rdf:resource="&robot;saphari_robot_arm_flange_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;saphari_robot_optical_joint_x"/>
         
@@ -2596,8 +2609,6 @@
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_wsg_50_description/meshes/WSG50_110.stl</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">1 1 1</srdl2-comp:mesh_scale>
         
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_wsg_50_description/meshes/WSG50_110.stl</knowrob:pathToCadModel>
-        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">1 1 1</srdl2-comp:mesh_scale>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;saphari_robot_gripper_base_gripper_left_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;saphari_robot_gripper_base_gripper_right_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;saphari_robot_gripper_tool_frame_joint"/>
