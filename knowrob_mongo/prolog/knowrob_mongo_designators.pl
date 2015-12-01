@@ -40,6 +40,7 @@
       mng_designator_type/2,
       mng_designator_location/2,
       mng_designator_location/3,
+      mng_designator_timestamp/2,
       mng_designator_props/3,
       mng_designator_props/4,
       mng_desig_matches/2,
@@ -225,6 +226,22 @@ mng_designator_location(Designator, Mat, T) :-
   mng_designator(Designator, DesigJava, T),
   mng_designator_location(DesigJava, Mat).
 
+%% mng_designator_timestamp(+Designator, ?Timestamp) is nondet.
+%
+% Check designator timestamp
+%
+% @param Designator  Instance of a designator, having its ID as local part of the IRI
+% @param Timestamp   Floating point value representing the time
+% 
+mng_designator_timestamp(Designator, Timestamp) :-
+  atom(Designator),
+  mng_designator(Designator, DesigJava),
+  mng_designator_timestamp(DesigJava, Timestamp).
+  
+mng_designator_timestamp(DesigJava, Timestamp) :-
+  jpl_is_object(DesigJava),
+  jpl_call(DesigJava, 'get', ['_time_created'], TimestampAtom),
+  atom_number(TimestampAtom, Timestamp).
 
 mng_decision_tree(DesigJava) :-
   mng_query('resulting_decision_tree', one(DBObj)),
