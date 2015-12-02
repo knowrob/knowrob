@@ -11478,7 +11478,15 @@ Cf. Surface, whose instances are two-dimensional, intangible regions of space.</
         <knowrob:groupName rdf:datatype="&xsd;string">OWL Properties</knowrob:groupName>
         <knowrob:queryName rdf:datatype="&xsd;string">What are the object properties?</knowrob:queryName>
         <knowrob:queryAbout rdf:resource="&owl;Thing"/>
-        <knowrob:queryString rdf:datatype="&xsd;string">findall(_X, (owl_has(Individual, _Relation, _Related), property_name(_Relation, _RelationName), property_value(_Related, _RelationValue), atomic_list_concat(['   ',_RelationName,_RelationValue], ' ', _X) ), _RelationNames), atomic_list_concat([''|_RelationNames], '\n', Relations)</knowrob:queryString>
+        <knowrob:queryString rdf:datatype="&xsd;string">findall(_X, (owl_has(Individual, _Property, _Value), property_name(_Property, _PropertyName), property_value(_Value, _PropertyValue), atomic_list_concat(['   ',_PropertyName,_PropertyValue], ' ', _X) ), _PropertyNames), atomic_list_concat([''|_PropertyNames], '\n', Properties)</knowrob:queryString>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="&knowrob;Query_RBNU745gvFSVG">
+        <rdf:type rdf:resource="&knowrob;Query"/>
+        <knowrob:groupName rdf:datatype="&xsd;string">Designator Properties</knowrob:groupName>
+        <knowrob:queryName rdf:datatype="&xsd;string">What are the designator properties?</knowrob:queryName>
+        <knowrob:queryAbout rdf:resource="&knowrob;CRAMDesignator"/>
+        <knowrob:queryString rdf:datatype="&xsd;string">mng_designator(Individual, ObjDesignator), findall(_X, (mng_designator_props(ObjDesignator, _Property, _Value), atomic_list_concat(['   ',_Property,_Value], ' ', _X) ), _PropertyNames), atomic_list_concat([''|_PropertyNames], '\n', Properties)</knowrob:queryString>
     </owl:NamedIndividual>
 
     <!-- 

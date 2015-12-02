@@ -1090,6 +1090,13 @@ marker_query(MarkerName, _, 'Marker Visualization', 'Remove this marker.', Query
   QueryTerm=(marker_remove(MarkerName), marker_publish),
   term_to_atom(QueryTerm,QueryAtom).
 
+marker_query_individual(MarkerName, individual(Individual), QueryGroup, QueryTitle, Query) :-
+  rdfs_individual_of(Individual, knowrob:'CRAMDesignator'),
+  rdf_split_url(Prefix, ObjName, Individual),
+  atomic_list_concat([Prefix,'Object_',ObjName], Object),
+  rdfs_individual_of(Object, knowrob:'SpatialThing-Localized'),
+  marker_query_individual(MarkerName, individual(Object), QueryGroup, QueryTitle, Query).
+
 marker_query_individual(_, individual(Individual), QueryGroup, QueryTitle, Query) :-
   rdf_has(QueryIndividual, knowrob:'queryAbout', Individual),
   rdf_has(QueryIndividual, knowrob:'groupName', literal(type(_,QueryGroup))),
