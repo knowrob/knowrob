@@ -2347,6 +2347,7 @@
 
     <owl:NamedIndividual rdf:about="&robot;saphari_robot_sorting_basket">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <rdf:type rdf:resource="&robot;Basket"/>
         <srdl2-comp:urdfName>sorting_basket</srdl2-comp:urdfName>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://saphari_robot_description/meshes/saphari_basket.dae</knowrob:pathToCadModel>
         
