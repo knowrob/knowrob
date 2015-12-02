@@ -167,16 +167,23 @@ marker_lookup_transform(MarkerObject, Identifier, TargetFrame, T, (Translation,O
 %  matrix_translation(PoseMatrix, Translation),
 %  matrix_rotation(PoseMatrix, Orientation).
 
+marker_transform_estimation_add(Predicate) :-
+  assert(v_marker_transform_estimate(Predicate)).
+
+marker_transform_estimation_remove(Predicate) :-
+  retract(v_marker_transform_estimate(Predicate)).
+
 % HACK: Force object to be visually above given Z value
 marker_push_visually_above(Identifier, _, ([X0,Y0,Z0],R), ([X0,Y0,Z1],R)) :-
   rdf_has(Identifier, knowrob:'visuallyAbove', literal(type(_,ValueAtom))),
   atom_number(ValueAtom, Value),
   Value > Z0, Z1 is Value.
 
+:- marker_transform_estimation_add(marker_push_visually_above).
+
 marker_transform_estimate(Identifier, T, Pose_in, Pose_out) :-
-  marker_transform_estimate(Identifier, T, Pose_in, Pose_out, [
-      marker_push_visually_above
-  ]).
+  findall(P, v_marker_transform_estimate(P), EstimateMethods),
+  marker_transform_estimate(Identifier, T, Pose_in, Pose_out, EstimateMethods).
 marker_transform_estimate(Identifier, T, Pose_in, Pose_out, [Method|Rest]) :-
   ( call(Method, Identifier, T, Pose_in, Pose0) ; Pose0 = Pose_in ),
   marker_transform_estimate(Identifier, T, Pose0, Pose_out, Rest).
