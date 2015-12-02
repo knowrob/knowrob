@@ -106,6 +106,11 @@ public class ThreadedQuery implements Runnable {
 			isClosed = true;
 			isRunning = false;
 			exception  = exc;
+			// Wake up caller waiting on the thread to be started
+			synchronized (getQueryObject()) {
+				try { getQueryObject().notifyAll(); }
+				catch (Exception e) {}
+			}
 			return;
 		}
 		
@@ -141,14 +146,14 @@ public class ThreadedQuery implements Runnable {
 			}
 		}
 		catch(Exception exc) {
-			exc.printStackTrace();
-			
 			// Notify caller that command finished
 			for(QueryCommand x : commadQueue) {
 				x.result = exc;
+				synchronized(x) { x.notifyAll(); }
 			}
 			if(cmd != null) {
 				cmd.result = exc;
+				synchronized(cmd) { cmd.notifyAll(); }
 			}
 		}
 
