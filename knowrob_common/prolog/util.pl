@@ -56,6 +56,7 @@
       time_between/3,
       time_later_then/2,
       time_earlier_then/2,
+      current_time/1,
       property_name/2,
       property_value/2
 ]).
@@ -393,3 +394,7 @@ property_value(literal(RelationValue), RelationValue) :- !.
 property_value(Related, RelationValue) :-
   atom(Related), rdf_split_url(_,RelationValue,Related), !.
 property_value(Related, Related).
+
+current_time(T) :-
+  set_prolog_flag(float_format, '%.12g'),
+  get_time(T).
