@@ -178,6 +178,13 @@ marker_push_visually_above(Identifier, _, ([X0,Y0,Z0],R), ([X0,Y0,Z1],R)) :-
   rdf_has(Identifier, knowrob:'visuallyAbove', literal(type(_,ValueAtom))),
   atom_number(ValueAtom, Value),
   Value > Z0, Z1 is Value.
+  
+marker_push_visually_above(Identifier, T, PoseIn, PoseOut) :-
+  rdfs_individual_of(Identifier, knowrob:'CRAMDesignator'),
+  rdf_split_url(Prefix, ObjName, Identifier),
+  atomic_list_concat([Prefix,'Object_',ObjName], Object),
+  rdfs_individual_of(Object, knowrob:'SpatialThing-Localized'),
+  marker_push_visually_above(Object, T, PoseIn, PoseOut).
 
 :- marker_transform_estimation_add(marker_push_visually_above).
 
@@ -185,7 +192,7 @@ marker_transform_estimate(Identifier, T, Pose_in, Pose_out) :-
   findall(P, v_marker_transform_estimate(P), EstimateMethods),
   marker_transform_estimate(Identifier, T, Pose_in, Pose_out, EstimateMethods).
 marker_transform_estimate(Identifier, T, Pose_in, Pose_out, [Method|Rest]) :-
-  ( call(Method, Identifier, T, Pose_in, Pose0) ; Pose0 = Pose_in ),
+  once(( call(Method, Identifier, T, Pose_in, Pose0) ; Pose0 = Pose_in )),
   marker_transform_estimate(Identifier, T, Pose0, Pose_out, Rest).
 marker_transform_estimate(_, _, Pose_in, Pose_in, []).
 
