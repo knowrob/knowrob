@@ -11486,7 +11486,7 @@ Cf. Surface, whose instances are two-dimensional, intangible regions of space.</
         <knowrob:groupName rdf:datatype="&xsd;string">Designator Properties</knowrob:groupName>
         <knowrob:queryName rdf:datatype="&xsd;string">What are the designator properties?</knowrob:queryName>
         <knowrob:queryAbout rdf:resource="&knowrob;CRAMDesignator"/>
-        <knowrob:queryString rdf:datatype="&xsd;string">mng_designator(Individual, ObjDesignator), findall(_X, (mng_designator_props(ObjDesignator, _Property, _Value), atomic_list_concat(['   ',_Property,_Value], ' ', _X) ), _PropertyNames), atomic_list_concat([''|_PropertyNames], '\n', Properties)</knowrob:queryString>
+        <knowrob:queryString rdf:datatype="&xsd;string">designator_publish(Individual)</knowrob:queryString>
     </owl:NamedIndividual>
 
     <!-- 

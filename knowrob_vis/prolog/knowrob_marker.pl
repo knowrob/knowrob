@@ -568,6 +568,12 @@ marker_new(MarkerName, object(Identifier), MarkerObject, Parent) :-
     ))
   ).
 
+marker_new(MarkerName, attached(MarkerTerm,AttachedTo), MarkerObject, Parent) :-
+  marker_primitive(cube, MarkerName, attached(MarkerTerm,AttachedTo), MarkerObject, Parent),
+  marker_has_visual(MarkerObject, false),
+  term_to_atom(MarkerTerm, MarkerAtom),
+  marker(MarkerAtom, MarkerTerm, _, MarkerObject).
+
 marker_new(MarkerName, agent(Identifier), MarkerObject, Parent) :-
   marker_new(MarkerName, kinematic_chain(Identifier,agent(Identifier)), MarkerObject, Parent).
 
@@ -754,6 +760,11 @@ marker_update(object(Identifier), MarkerObject, T) :-
     marker_update(ChildTerm, ChildObject, T),
     marker_timestamp(MarkerObject, T)
   ))).
+
+marker_update(attached(Marker,AttachedTo), _, T) :-
+  marker_update(AttachedTo,T),
+  marker_pose(AttachedTo,Translation,Orientation),
+  marker_pose(Marker,Translation,Orientation).
 
 marker_update(link(Link), MarkerObject, T) :-
   marker_estimate_transform(MarkerObject,Link,T,(Translation,Orientation)),
