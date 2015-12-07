@@ -854,7 +854,7 @@ add_diagram(Id, Title, Type, Xlabel, Ylabel, Width, Height, Fontsize, RowLabels,
   once((
     d_canvas(Canvas),
     lists_to_arrays(ValueList, ValueArr),
-    lists_to_arrays(RowLabels, RowLabelArr),
+    once((lists_to_arrays(RowLabels, RowLabelArr) ; RowLabelArr = @(null))),
     jpl_call(Canvas, 'addDiagram', [Id, Title, Type, Xlabel, Ylabel, Width, Height, Fontsize, RowLabelArr, ValueArr], _)
   )).
 

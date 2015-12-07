@@ -113,7 +113,7 @@ public class DiagramVisualization extends AbstractNodeMain {
 			data.setType(DataVis.TYPE_LINECHART);
 		}
 
-		if(labels.length != values.length) {
+		if(labels!=null && labels.length != values.length) {
 			System.err.println("ERROR: Number of labels and data rows differs.");
 		}
 

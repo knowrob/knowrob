@@ -55,7 +55,10 @@
       time_term/2,
       time_between/3,
       time_later_then/2,
-      time_earlier_then/2
+      time_earlier_then/2,
+      current_time/1,
+      property_name/2,
+      property_value/2
 ]).
 
 % Use identity if first argument is a number
@@ -373,3 +376,25 @@ max_list1([A|Arest], OldMax ,Max) :-
 %
 strip_literal_type(literal(type(_, Value)), Value) :- !.
 strip_literal_type(Value, Value).
+
+%% property_name(+Relation,-RelationName)
+%
+% Strips rdf url prefix from relation identifier.
+%
+property_name(Relation, RelationName) :-
+  atom(Relation), rdf_split_url(_,RelationName,Relation), !.
+property_name(Relation, Relation).
+
+%% property_value(+Related,-RelationValue)
+%
+% Strips literal or rdf url prefix from related identifier.
+%
+property_value(literal(type(_,RelationValue)), RelationValue) :- !.
+property_value(literal(RelationValue), RelationValue) :- !.
+property_value(Related, RelationValue) :-
+  atom(Related), rdf_split_url(_,RelationValue,Related), !.
+property_value(Related, Related).
+
+current_time(T) :-
+  set_prolog_flag(float_format, '%.12g'),
+  get_time(T).

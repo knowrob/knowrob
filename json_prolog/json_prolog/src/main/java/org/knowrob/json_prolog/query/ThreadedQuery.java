@@ -59,6 +59,10 @@ public class ThreadedQuery implements Runnable {
 	
 	private LinkedList<QueryCommand> commadQueue = new LinkedList<QueryCommand>();
 
+	private QueryCommand currentCommand = null;
+
+	private Exception exception = null;
+
 	public ThreadedQuery(String queryString) {
 		this.queryString = queryString;
 	}
@@ -67,21 +71,53 @@ public class ThreadedQuery implements Runnable {
 		this.queryTerm = term;
 	}
 
+	public Object getQueryObject() {
+		return queryString!=null ? queryString : queryTerm;
+	}
+	
+	public void waitOnThread() {
+		  while(!isStarted()) {
+				synchronized (getQueryObject()) {
+					try { getQueryObject().wait(); }
+					catch (Exception e) {}
+				}
+		  }
+	}
+
 	@Override
 	public void run() {
 		isStarted = true;
 		isClosed = false;
 		
 		// Create a query (bound to this thread)
-		if(queryString!=null) {
-			query = new jpl.Query(queryString);
+		try {
+			if(queryString!=null) {
+				query = new jpl.Query(queryString);
+			}
+			else if(queryTerm!=null) {
+				query = new jpl.Query(queryTerm);
+			}
+			else {
+				throw new RuntimeException("No query defined!");
+			}
 		}
-		else if(queryTerm!=null) {
-			query = new jpl.Query(queryTerm);
-		}
-		else {
+		catch(Exception exc) {
 			query = null;
+			isClosed = true;
+			isRunning = false;
+			exception  = exc;
+			// Wake up caller waiting on the thread to be started
+			synchronized (getQueryObject()) {
+				try { getQueryObject().notifyAll(); }
+				catch (Exception e) {}
+			}
 			return;
+		}
+		
+		// Wake up caller waiting on the thread to be started
+		synchronized (getQueryObject()) {
+			try { getQueryObject().notifyAll(); }
+			catch (Exception e) {}
 		}
 		
 		QueryCommand cmd = null;
@@ -91,9 +127,7 @@ public class ThreadedQuery implements Runnable {
 				if(commadQueue.isEmpty()) {
 					// Wait for command to be pushed
 					synchronized (this) {
-						try {
-							this.wait();
-						}
+						try { this.wait(); }
 						catch (Exception e) {}
 					}
 				}
@@ -101,21 +135,25 @@ public class ThreadedQuery implements Runnable {
 					synchronized (commadQueue) {
 						cmd = commadQueue.poll();
 					}
+					currentCommand  = cmd;
 					cmd.result = cmd.execute(query);
+					currentCommand = null;
 					if(cmd.result == null) {
-						cmd.result = new String("Result is null.");
+						cmd.result = new QueryYieldsNullException(query);
 					}
+					synchronized(cmd) { cmd.notifyAll(); }
 				}
 			}
 		}
 		catch(Exception exc) {
-			exc.printStackTrace();
 			// Notify caller that command finished
 			for(QueryCommand x : commadQueue) {
 				x.result = exc;
+				synchronized(x) { x.notifyAll(); }
 			}
 			if(cmd != null) {
 				cmd.result = exc;
+				synchronized(cmd) { cmd.notifyAll(); }
 			}
 		}
 
@@ -129,8 +167,13 @@ public class ThreadedQuery implements Runnable {
 			isRunning = false;
 			// Notify caller that command finished
 			for(QueryCommand cmd : commadQueue) {
-				if(cmd.result==null)
-					cmd.result = new String("Query was closed.");
+				if(cmd.result==null) cmd.result = new QueryClosedException(query);
+				synchronized(cmd) { cmd.notifyAll(); }
+			}
+			if(currentCommand!=null) {
+				currentCommand.result = new QueryClosedException(query);
+				synchronized(currentCommand) { currentCommand.notifyAll(); }
+				currentCommand = null;
 			}
 			// wake up query thread
 			synchronized (this) { this.notifyAll(); }
@@ -138,6 +181,10 @@ public class ThreadedQuery implements Runnable {
 	}
 
 	private Object runCommand(QueryCommand cmd) throws Exception {
+		waitOnThread();
+		if(exception!= null) {
+			throw exception;
+		}
 		if(isClosed || !isRunning) {
 		  throw new InterruptedException("Thread not running for query.");
 		}
@@ -146,12 +193,11 @@ public class ThreadedQuery implements Runnable {
 		synchronized (commadQueue) { commadQueue.push(cmd); }
 		// wake up query thread
 		synchronized (this) { this.notifyAll(); }
-		
-		while(cmd.result==null) {
-			try {
-				Thread.sleep(1);
+		if(cmd.result==null) {
+			synchronized(cmd) {
+				try { cmd.wait(); }
+				catch (Exception e) {}
 			}
-			catch (InterruptedException e) {}
 		}
 		if(cmd.result instanceof Exception)
 		  throw (Exception)cmd.result;
@@ -166,19 +212,12 @@ public class ThreadedQuery implements Runnable {
 		return isStarted;
 	}
 
-	public boolean hasMoreSolutions() throws Exception {
-		Object val = runCommand(new HasMoreSolutionsCommand());
-		if(val instanceof Boolean) {
-			return ((Boolean)val).booleanValue();
-		}
-		else {
-			System.err.println(val.toString());
-			return false;
-		}
-	}
-
 	public void reset() throws Exception {
 		runCommand(new ResetCommand());
+	}
+
+	public boolean hasMoreSolutions() throws Exception {
+		return ((Boolean)runCommand(new HasMoreSolutionsCommand())).booleanValue();
 	}
 
 	@SuppressWarnings("unchecked")

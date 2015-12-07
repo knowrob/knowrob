@@ -41,6 +41,7 @@
       mng_query_earliest/5,
       mng_query/2,
       mng_query/3,
+      mng_value_object/2,
       mng_ros_message/2,
       mng_ros_message/4,
       mng_republish/3,
@@ -71,6 +72,7 @@
     mng_query_earliest(+,?,+,r,+),
     mng_query(+,?),
     mng_query(+,?,+),
+    mng_value_object(+,-),
     mng_ros_message(t,-),
     mng_ros_message(+,+,+,-),
     mng_republish(t,+,-),
@@ -224,7 +226,7 @@ mng_read_cursor(DBCursor, DBObj) :-
 
 %% mng_read_cursor(+DBCursor, one(-DBObj))
 %% mng_read_cursor(+DBCursor, all(-DBObj))
-%% mng_read_cursor(+DBCursor, some(-DBObj))
+%% mng_read_cursor(+DBCursor, some(-DBObj,-Count))
 %
 % Read DB objects from cursor.
 %
@@ -237,20 +239,18 @@ mng_db_object(DBCursor, one(DBObj)) :-
   jpl_call(DB, 'one', [DBCursorLimited], DBObj),
   not(DBObj = @(null)).
 
-mng_db_object(DBCursor, some(DBObj, Count)) :-
+mng_db_object(DBCursor, some(DBObjs, Count)) :-
   mongo_interface(DB),
   mng_limit(DBCursor, Count, DBCursorLimited),
   jpl_call(DB, 'some', [DBCursorLimited, Count], DBObjsArray),
   not(DBObjsArray = @(null)),
-  jpl_list_to_array(DBObjs, DBObjsArray),
-  member(DBObj, DBObjs).
+  jpl_array_to_list(DBObjsArray, DBObjs).
 
-mng_db_object(DBCursor, all(DBObj)) :-
+mng_db_object(DBCursor, all(DBObjs)) :-
   mongo_interface(DB),
   jpl_call(DB, 'all', [DBCursor], DBObjsArray),
   not(DBObjsArray = @(null)),
-  jpl_list_to_array(DBObjs, DBObjsArray),
-  member(DBObj, DBObjs).
+  jpl_array_to_list(DBObjsArray, DBObjs).
 
 %% mng_value_object(date(+Val), ObjJava)
 %% mng_value_object(+Val, ObjJava)
@@ -262,7 +262,7 @@ mng_db_object(DBCursor, all(DBObj)) :-
 %
 mng_value_object(date(Val), ObjJava) :-
   atom(Val), time_term(Val,T),
-  mng_value_object(date(T), ObjJava).
+  mng_value_object(date(T), ObjJava), !.
 
 mng_value_object(date(Val), ObjJava) :-
   number(Val),
@@ -270,17 +270,21 @@ mng_value_object(date(Val), ObjJava) :-
   jpl_new('java.lang.Double', [Miliseconds], MilisecondsDouble), 
   jpl_call(MilisecondsDouble, 'longValue', [], MilisecondsLong),
   jpl_new('org.knowrob.interfaces.mongo.types.ISODate', [MilisecondsLong], ISODate),
-  jpl_call(ISODate, 'getDate', [], ObjJava).
+  jpl_call(ISODate, 'getDate', [], ObjJava), !.
 
 mng_value_object(Val, ObjJava) :-
   integer(Val),
-  jpl_new('java.lang.Long', [Val], ObjJava).
+  jpl_new('java.lang.Long', [Val], ObjJava), !.
 
 mng_value_object(Val, ObjJava) :-
-  float(Val),
-  jpl_new('java.lang.Double', [Val], ObjJava).
+  number(Val),
+  jpl_new('java.lang.Double', [Val], ObjJava), !.
 
-mng_value_object(Val, Val) :- atom(Val).
+mng_value_object(Val, Val) :-
+  (atom(Val) ; jpl_is_object(Val)), !.
+
+mng_value_object(Val, _) :-
+  print_message(warning, domain_error(mng_value_object, [Val])), fail.
 
 %% mng_ros_message(+DBObj, -Msg)
 %% mng_ros_message(+DBObj, +TypeJava, +TypeString, -Msg)

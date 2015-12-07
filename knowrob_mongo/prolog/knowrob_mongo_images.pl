@@ -33,7 +33,8 @@
 :- module(knowrob_mongo_images,
     [
         mng_image_latest/2,
-        mng_image_base64/2
+        mng_image_base64/2,
+        mng_compresssed_image_base64/2
     ]).
 
 :- use_module(library('jpl')).

@@ -56,6 +56,9 @@
       marker_highlight/1,
       marker_highlight/2,
       marker_highlight_remove/1,
+      marker_highlight_toggle/1,
+      
+      marker_queries/2,
       
       marker_distance/3,
       marker_trajectory_length/2
@@ -79,12 +82,14 @@
             marker_has_visual(t,?),
             marker_highlight(t,?),
             marker_highlight_remove(t),
+            marker_highlight_toggle(t),
             marker_mesh_resource(t,?),
             marker_pose(t,?),
             marker_translation(t,?),
             marker_tf_prefix(t,?),
             marker_text(t,?),
             marker_properties(t,?),
+            marker_queries(+,-),
             marker_trajectory_length(t,?),
             marker_distance(t,t,?).
 
@@ -135,6 +140,13 @@ marker_tf_frame(MarkerObject, Identifier, TfFrame) :-
   -> atom_concat(Prefix, UrdfNameResolved, TfFrame)
   ;  atom_concat(Prefix, UrdfName, TfFrame)
   ).
+  
+marker_lookup_transform(MarkerObject, Identifier, T, (Translation,Orientation)) :-
+  rdfs_individual_of(Identifier, knowrob:'CRAMDesignator'),
+  rdf_split_url(Prefix, ObjName, Identifier),
+  atomic_list_concat([Prefix,'Object_',ObjName], Object),
+  rdfs_individual_of(Object, knowrob:'SpatialThing-Localized'),
+  marker_lookup_transform(MarkerObject, Object, T, (Translation,Orientation)).
 
 marker_lookup_transform(_, Identifier, T, (Translation,Orientation)) :-
   object_pose_at_time(Identifier, T, Translation, Orientation).
@@ -149,18 +161,38 @@ marker_lookup_transform(MarkerObject, Identifier, TargetFrame, T, (Translation,O
   matrix_rotation(Pose, Orientation),
   matrix_translation(Pose, Translation).
 
+%marker_lookup_transform(MarkerObject, Identifier, TargetFrame, T, (Translation,Orientation)) :-
+%  rdfs_individual_of(Identifier, knowrob:'CRAMDesignator'),
+%  mng_designator_location(Identifier, PoseMatrix),
+%  matrix_translation(PoseMatrix, Translation),
+%  matrix_rotation(PoseMatrix, Orientation).
+
+marker_transform_estimation_add(Predicate) :-
+  assert(v_marker_transform_estimate(Predicate)).
+
+marker_transform_estimation_remove(Predicate) :-
+  retract(v_marker_transform_estimate(Predicate)).
+
 % HACK: Force object to be visually above given Z value
 marker_push_visually_above(Identifier, _, ([X0,Y0,Z0],R), ([X0,Y0,Z1],R)) :-
   rdf_has(Identifier, knowrob:'visuallyAbove', literal(type(_,ValueAtom))),
   atom_number(ValueAtom, Value),
   Value > Z0, Z1 is Value.
+  
+marker_push_visually_above(Identifier, T, PoseIn, PoseOut) :-
+  rdfs_individual_of(Identifier, knowrob:'CRAMDesignator'),
+  rdf_split_url(Prefix, ObjName, Identifier),
+  atomic_list_concat([Prefix,'Object_',ObjName], Object),
+  rdfs_individual_of(Object, knowrob:'SpatialThing-Localized'),
+  marker_push_visually_above(Object, T, PoseIn, PoseOut).
+
+:- marker_transform_estimation_add(marker_push_visually_above).
 
 marker_transform_estimate(Identifier, T, Pose_in, Pose_out) :-
-  marker_transform_estimate(Identifier, T, Pose_in, Pose_out, [
-      marker_push_visually_above
-  ]).
+  findall(P, v_marker_transform_estimate(P), EstimateMethods),
+  marker_transform_estimate(Identifier, T, Pose_in, Pose_out, EstimateMethods).
 marker_transform_estimate(Identifier, T, Pose_in, Pose_out, [Method|Rest]) :-
-  ( call(Method, Identifier, T, Pose_in, Pose0) ; Pose0 = Pose_in ),
+  once(( call(Method, Identifier, T, Pose_in, Pose0) ; Pose0 = Pose_in )),
   marker_transform_estimate(Identifier, T, Pose0, Pose_out, Rest).
 marker_transform_estimate(_, _, Pose_in, Pose_in, []).
 
@@ -306,12 +338,23 @@ marker_initialize_object(Identifier,MarkerObject) :-
   ;  marker_has_visual(MarkerObject,false)
   ),
   ignore((
+    rdfs_individual_of(Identifier, knowrob:'CRAMDesignator'),
+    % TODO: use existing instance if available
+    mng_designator_timestamp(Identifier, T),
+    mng_designator_location(Identifier, LocList),
+    create_timepoint(T, Timepoint),
+    create_pose(LocList, Loc),
+    add_object_as_semantic_instance(Identifier, Loc, Timepoint, Instance),
+    marker_initialize_object(Instance,MarkerObject)
+  )),
+  ignore((
     get_model_path(Identifier, Path),
     marker_type(MarkerObject, mesh_resource),
     marker_mesh_resource(MarkerObject, Path),
     marker_color(MarkerObject, [0.0,0.0,0.0,0.0]),
     marker_scale(MarkerObject, [1.0,1.0,1.0])
   )),
+  % TODO: object_dimensions should not change mesh scale, use mesh_scale property for mesh scaling
   ignore((
     object_dimensions(Identifier, X, Y, Z),
     marker_scale(MarkerObject, [X, Y, Z])
@@ -525,6 +568,12 @@ marker_new(MarkerName, object(Identifier), MarkerObject, Parent) :-
     ))
   ).
 
+marker_new(MarkerName, attached(MarkerTerm,AttachedTo), MarkerObject, Parent) :-
+  marker_primitive(cube, MarkerName, attached(MarkerTerm,AttachedTo), MarkerObject, Parent),
+  marker_has_visual(MarkerObject, false),
+  term_to_atom(MarkerTerm, MarkerAtom),
+  marker(MarkerAtom, MarkerTerm, _, MarkerObject).
+
 marker_new(MarkerName, agent(Identifier), MarkerObject, Parent) :-
   marker_new(MarkerName, kinematic_chain(Identifier,agent(Identifier)), MarkerObject, Parent).
 
@@ -711,6 +760,11 @@ marker_update(object(Identifier), MarkerObject, T) :-
     marker_update(ChildTerm, ChildObject, T),
     marker_timestamp(MarkerObject, T)
   ))).
+
+marker_update(attached(Marker,AttachedTo), _, T) :-
+  marker_update(AttachedTo,T),
+  marker_pose(AttachedTo,Translation,Orientation),
+  marker_pose(Marker,Translation,Orientation).
 
 marker_update(link(Link), MarkerObject, T) :-
   marker_estimate_transform(MarkerObject,Link,T,(Translation,Orientation)),
@@ -995,7 +1049,6 @@ marker_highlight(MarkerObject, ColorArg) :-
 %
 % @param MarkerObject MarkerObject instance or a term that identifies the marker (e.g., trajectory('/base_link'))
 %
-
 marker_highlight_remove(all) :-
   ignore( forall(
     v_marker_object(_, _, MarkerObject, _),
@@ -1020,7 +1073,73 @@ marker_highlight_remove(MarkerObject) :-
     marker_highlight_remove(ChildObject)
   ))).
 
+%% marker_highlight_toggle(+MarkerName) is det.
+%
+% Toggles marker highlighted state.
+%
+% @param MarkerObject MarkerObject instance or a term that identifies the marker (e.g., trajectory('/base_link'))
+%
+marker_highlight_toggle(MarkerName) :-
+  v_marker_object(MarkerName, _, MarkerObject, _),
+  (  jpl_call(MarkerObject, 'hasHighlight', [], @(true))
+  -> marker_highlight_remove(MarkerObject)
+  ;  marker_highlight(MarkerObject)
+  ).
 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%
+% Marker queries
+%
+
+marker_queries(MarkerName, Queries) :-
+  v_marker_object(MarkerName, MarkerTerm, _, _),
+  findall([Category,Title,Query], marker_query(MarkerName,MarkerTerm,Category,Title,Query), Queries).
+
+marker_query(MarkerName, object(Individual), QueryGroup, QueryTitle, Query) :-
+  marker_query_individual(MarkerName, individual(Individual), QueryGroup, QueryTitle, Query).
+
+marker_query(MarkerName, object_without_children(Individual), QueryGroup, QueryTitle, Query) :-
+  marker_query_individual(MarkerName, individual(Individual), QueryGroup, QueryTitle, Query).
+
+% TODO: recursive relations with intendation
+% marker_query(MarkerName, individual(Individual), QueryGroup, 'Relations (recursive)', ()).
+
+marker_query(MarkerName, _, 'Marker Visualization', 'What is the name of this marker?', QueryAtom) :-
+  atom_concat('Name = ', MarkerName, QueryAtom).
+
+marker_query(MarkerName, _, 'Marker Visualization', 'Toggle marker highlight.', QueryAtom) :-
+  QueryTerm=(marker_highlight_toggle(MarkerName), marker_publish),
+  term_to_atom(QueryTerm,QueryAtom).
+
+marker_query(MarkerName, _, 'Marker Visualization', 'Remove this marker.', QueryAtom) :-
+  QueryTerm=(marker_remove(MarkerName), marker_publish),
+  term_to_atom(QueryTerm,QueryAtom).
+
+marker_query_individual(MarkerName, individual(Individual), QueryGroup, QueryTitle, Query) :-
+  rdfs_individual_of(Individual, knowrob:'CRAMDesignator'),
+  rdf_split_url(Prefix, ObjName, Individual),
+  atomic_list_concat([Prefix,'Object_',ObjName], Object),
+  rdfs_individual_of(Object, knowrob:'SpatialThing-Localized'),
+  marker_query_individual(MarkerName, individual(Object), QueryGroup, QueryTitle, Query).
+
+marker_query_individual(_, individual(Individual), QueryGroup, QueryTitle, Query) :-
+  rdf_has(QueryIndividual, knowrob:'queryAbout', Individual),
+  rdf_has(QueryIndividual, knowrob:'groupName', literal(type(_,QueryGroup))),
+  rdf_has(QueryIndividual, knowrob:'queryName', literal(type(_,QueryTitle))),
+  rdf_has(QueryIndividual, knowrob:'queryString', literal(type(_,QueryTail))),
+  atomic_list_concat(['Individual=''', Individual, ''''], '', QueryHead),
+  atomic_list_concat([QueryHead,QueryTail], ', ', Query).
+
+marker_query_individual(_, individual(Individual), QueryGroup, QueryTitle, Query) :-
+  rdfs_individual_of(Individual, IndividualClass),
+  rdf_has(QueryIndividual, knowrob:'queryAbout', IndividualClass),
+  rdf_has(QueryIndividual, knowrob:'groupName', literal(type(_,QueryGroup))),
+  rdf_has(QueryIndividual, knowrob:'queryName', literal(type(_,QueryTitle))),
+  rdf_has(QueryIndividual, knowrob:'queryString', literal(type(_,QueryTail))),
+  atomic_list_concat(['Individual=''', Individual, ''''], '', QueryHead),
+  atomic_list_concat([QueryHead,QueryTail], ', ', Query).
+  
+  
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
 % Marker properties

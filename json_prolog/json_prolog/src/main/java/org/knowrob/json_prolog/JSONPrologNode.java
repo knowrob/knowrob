@@ -35,7 +35,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.io.*;
 
-import jpl.Term;
 import json_prolog_msgs.PrologQueryResponse;
 
 import org.knowrob.json_prolog.query.JSONQuery;
@@ -67,8 +66,6 @@ public class JSONPrologNode extends AbstractNodeMain {
 	private String initPackage="";
 	
 	private ConnectedNode connectedNode = null;
-
-	private Map<String,String> loggedQueries = new HashMap<String,String>();
 
 	public JSONPrologNode() {
 		this("");
@@ -133,7 +130,6 @@ public class JSONPrologNode extends AbstractNodeMain {
 		// create services
 		connectedNode.newServiceServer(getDefaultNodeName() + "/query", json_prolog_msgs.PrologQuery._TYPE, new QueryCallback() );
 		connectedNode.newServiceServer(getDefaultNodeName() + "/simple_query", json_prolog_msgs.PrologQuery._TYPE, new SimpleQueryCallback() );
-		connectedNode.newServiceServer(getDefaultNodeName() + "/logged_query", json_prolog_msgs.PrologQuery._TYPE, new LoggedQueryCallback() );
 		connectedNode.newServiceServer(getDefaultNodeName() + "/next_solution", json_prolog_msgs.PrologNextSolution._TYPE, new NextSolutionCallback() );
 		connectedNode.newServiceServer(getDefaultNodeName() + "/finish", json_prolog_msgs.PrologFinish._TYPE, new FinishCallback() );
 		connectedNode.getLog().info("json_prolog initialized and waiting for queries.");
@@ -172,15 +168,7 @@ public class JSONPrologNode extends AbstractNodeMain {
 							queries.put(currentQueryId, new PrologIncrementalSolutions(currentQuery));
 							hasIncrementalQuery = true;
 						}
-
 						else {
-							// Wait for the query thread to be started
-							while(!currentQuery.isStarted()) {
-								try {
-									Thread.sleep(1);
-								}
-								catch (InterruptedException e) {}
-							}
 							queries.put(currentQueryId, new PrologAllSolutions(currentQuery));
 						}
 					}
@@ -232,13 +220,6 @@ public class JSONPrologNode extends AbstractNodeMain {
 							queries.put(currentQueryId, new PrologIncrementalSolutions(currentQuery));
 							hasIncrementalQuery = true;
 						} else {
-							// Wait for the query thread to be started
-							while(!currentQuery.isStarted()) {
-								try {
-									Thread.sleep(1);
-								}
-								catch (InterruptedException e) {}
-							}
 							queries.put(currentQueryId, new PrologAllSolutions(currentQuery));
 						}
 						response.setOk(true);
@@ -249,35 +230,6 @@ public class JSONPrologNode extends AbstractNodeMain {
 				response.setOk(false);
 				response.setMessage(e.getMessage());
 				new Exception(e).printStackTrace();
-			}
-		}
-	}
-
-
-	/**
-	 * Callback class to handle SimpleQuery requests (i.e. those sending a single string in Prolog syntax).
-	 * Additionally the query event and the solutions are asserted into the knowledge base
-	 * for later analysis.
-	 * 
-	 * @author Daniel Beßler
-	 */
-	private class LoggedQueryCallback extends SimpleQueryCallback {
-		@Override
-		public void build(json_prolog_msgs.PrologQueryRequest request,
-						json_prolog_msgs.PrologQueryResponse response) {
-			super.build(request, response);
-			if(response.getOk()) {
-				// FIXME(daniel): I don't like having this here. Move it to prolog!
-				//    Could be done by a wrapper predicate (e.g., `call_and_assert/1`).
-				//    But it turns out term serialization is not that easy in prolog...
-				String name = "Querying_"+new Long(System.currentTimeMillis()/1000).toString();
-				String i = "'http://knowrob.org/kb/knowrob.owl#" + name + "'";
-				// TODO(daniel): assert timestamp
-				query(new StringBuilder().
-				    append(rdf_assert(i, "rdf:type", "knowrob:'Querying'")).
-					append(rdf_assert(i, "knowrob:'queryText'", request.getQuery())).
-					toString());
-				loggedQueries.put(request.getId(), name);
 			}
 		}
 	}
@@ -339,24 +291,6 @@ public class JSONPrologNode extends AbstractNodeMain {
 							if(isQueryThreadValid(currentQuery)) {
 								response.setSolution(JSONQuery.encodeResult(solution).toString());
 								response.setStatus(json_prolog_msgs.PrologNextSolutionResponse.OK);
-								
-								if(loggedQueries.get(request.getId())!=null) {
-									// Log query bindings
-									String individualName = loggedQueries.get(request.getId());
-									String qi = "knowrob:'" + individualName + "'";
-									String bi = "knowrob:'QueryBinding_" + new Long(System.currentTimeMillis()/1000).toString() + "'";
-									
-									StringBuilder sb = new StringBuilder().append(rdf_assert(bi,"rdf:type", "knowrob:'QueryBinding'"));
-									for(String var : solution.keySet()) {
-										String vi = "knowrob:'VariableBinding_" + new Long(System.currentTimeMillis()/1000).toString() + "'";
-										sb.append(rdf_assert(vi, "knowrob:nameString",      var)).
-										   append(rdf_assert(vi, "knowrob:variableValue",   solution.get(var).toString())).
-										   append(rdf_assert(bi, "knowrob:variableBinding", vi));
-									}
-									sb.append(rdf_assert(qi,"knowrob:queryBinding",bi));
-									
-									query(sb.toString());
-								}
 							}
 						}
 					}
@@ -438,10 +372,6 @@ public class JSONPrologNode extends AbstractNodeMain {
 		catch (Exception e) {
 			connectedNode.getLog().error("Unable to assert logged query.", e);
 		}
-	}
-	
-	private String rdf_assert(String key, String prop, String val) {
-		return "rdf_assert("+key+","+prop+","+val+")";
 	}
 
 
