@@ -39,10 +39,6 @@
       mng_query_latest/5,
       mng_query_earliest/4,
       mng_query_earliest/5,
-      mng_query_latest_n/5,
-      mng_query_latest_n/6,
-      mng_query_earliest_n/5,
-      mng_query_earliest_n/6,
       mng_query/2,
       mng_query/3,
       mng_value_object/2,
@@ -74,10 +70,6 @@
     mng_query_latest(+,?,+,r,+),
     mng_query_earliest(+,?,+,r),
     mng_query_earliest(+,?,+,r,+),
-    mng_query_latest_n(+,?,+,r,+),
-    mng_query_latest_n(+,?,+,r,+,+),
-    mng_query_earliest_n(+,?,+,r,+),
-    mng_query_earliest_n(+,?,+,r,+,+),
     mng_query(+,?),
     mng_query(+,?,+),
     mng_value_object(+,-),
@@ -186,24 +178,6 @@ mng_query_earliest(Collection, DBObj, TimeKey, TimeValue, Pattern) :-
   mng_ascending(DBCursor, TimeKey, DBCursorAscending),
   mng_read_cursor(DBCursorAscending, DBObj).
 
-mng_query_latest_n(Collection, DBObj, TimeKey, TimeValue, N) :-
-  mng_query_latest_n(Collection, DBObj, TimeKey, TimeValue, [], N).
-
-mng_query_latest_n(Collection, DBObj, TimeKey, TimeValue, Pattern, N) :-
-  mng_db_cursor(Collection, [[TimeKey, '<', date(TimeValue)]|Pattern], DBCursor),
-  mng_descending(DBCursor, TimeKey, DBCursorDescending),
-  mng_limit(DBCursorDescending, N, DBCursorLimited),
-  mng_read_cursor(DBCursorLimited, DBObj).
-
-mng_query_earliest_n(Collection, DBObj, TimeKey, TimeValue, N) :-
-  mng_query_earliest_n(Collection, DBObj, TimeKey, TimeValue, [], N).
-
-mng_query_earliest_n(Collection, DBObj, TimeKey, TimeValue, Pattern, N) :-
-  mng_db_cursor(Collection, [[TimeKey, '>', date(TimeValue)]|Pattern], DBCursor),
-  mng_ascending(DBCursor, TimeKey, DBCursorAscending),
-  mng_limit(DBCursorAscending, N, DBCursorLimited),
-  mng_read_cursor(DBCursorLimited, DBObj).
-
 mng_query(Collection, DBObj) :-
   mongo_interface(DB),
   jpl_call(DB, 'query', [Collection], DBCursor),
@@ -261,12 +235,14 @@ mng_read_cursor(DBCursor, DBObj) :-
 %
 mng_db_object(DBCursor, one(DBObj)) :-
   mongo_interface(DB),
-  jpl_call(DB, 'one', [DBCursor], DBObj),
+  mng_limit(DBCursor, 1, DBCursorLimited),
+  jpl_call(DB, 'one', [DBCursorLimited], DBObj),
   not(DBObj = @(null)).
 
 mng_db_object(DBCursor, some(DBObjs, Count)) :-
   mongo_interface(DB),
-  jpl_call(DB, 'some', [DBCursor, Count], DBObjsArray),
+  mng_limit(DBCursor, Count, DBCursorLimited),
+  jpl_call(DB, 'some', [DBCursorLimited, Count], DBObjsArray),
   not(DBObjsArray = @(null)),
   jpl_array_to_list(DBObjsArray, DBObjs).
 
