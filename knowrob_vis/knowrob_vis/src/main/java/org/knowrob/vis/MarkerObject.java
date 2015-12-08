@@ -24,10 +24,13 @@ public class MarkerObject {
 	private final MarkerPublisher publisher;
 	
 	private final List<MarkerObject> children = new LinkedList<MarkerObject>();
-	private boolean hasVisual = true;
 	
 	private float[] highlighted;
 	private String tfPrefix = "/";
+	
+	boolean isHidden = false;
+	boolean hasVisual = true;
+	boolean isPublished = false;
 	
 	public MarkerObject(String identifier, Marker markerMsg, MarkerPublisher publisher) {
 		this.markerMsg = markerMsg;
@@ -54,6 +57,35 @@ public class MarkerObject {
 		obj.setTfPrefix(tfPrefix);
 		children.add(obj);
 		return obj;
+	}
+	
+	public void hide() {
+		setHidden(true);
+	}
+	
+	public void show() {
+		setHidden(false);
+	}
+	
+	public void setHidden(boolean value) {
+		if(isHidden==value) return;
+		
+		isHidden  = value;
+		if(value) {
+			unqueueRepublish();
+			
+			if(isPublished) {
+				markerMsg.setAction(Marker.DELETE);
+				publisher.markers.put(identifier, this);
+			}
+		}
+		else {
+			queueRepublish();
+		}
+	}
+
+	public boolean isHidden() {
+		return isHidden;
 	}
 	
 	public void setHasVisual(boolean value) {
@@ -285,6 +317,13 @@ public class MarkerObject {
 	}
 
 	private void queueRepublish() {
+		if(isHidden)
+			markerMsg.setAction(Marker.DELETE);
+		else if(isPublished)
+			markerMsg.setAction(Marker.MODIFY);
+		else
+			markerMsg.setAction(Marker.ADD);
+		
 		publisher.queueRepublish(this);
 	}
 
