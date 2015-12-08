@@ -145,10 +145,14 @@ atom_ensure_prefix(Atom, Prefix, AtomResolved) :-
 
 marker_tf_frame(MarkerObject, Identifier, TfFrame) :-
   marker_srdl_tf_frame(Identifier, UrdfName),
-  marker_tf_prefix(MarkerObject, Prefix),
-  atom_ensure_prefix(Prefix, '/', PrefixResolved),
   atom_ensure_prefix(UrdfName, '/', UrdfNameResolved),
-  atom_concat(PrefixResolved, UrdfNameResolved, TfFrame).
+  marker_tf_prefix(MarkerObject, Prefix),
+  (  Prefix = '/'
+  -> TfFrame = UrdfNameResolved
+  ;  (
+   atom_ensure_prefix(Prefix, '/', PrefixResolved),
+   atom_concat(PrefixResolved, UrdfNameResolved, TfFrame)
+  )).
   
 marker_lookup_transform(MarkerObject, Identifier, T, (Translation,Orientation)) :-
   rdfs_individual_of(Identifier, knowrob:'CRAMDesignator'),
