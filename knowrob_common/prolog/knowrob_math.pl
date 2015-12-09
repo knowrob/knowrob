@@ -32,7 +32,9 @@
 
 :- module(knowrob_math,
     [
-      eval_owl_term/2
+      eval_owl_term/2,
+      quaternion_multiply/3,
+      parse_vector/2
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -100,5 +102,14 @@ eval_owl_term(OWL, Val) :-
     
     Val is Val1 / Val2.
 
+parse_vector([X|Y], [X|Y]).
+parse_vector(In, Out) :-
+  jpl_call('org.knowrob.utils.MathUtil', 'parseVector', [In, ' '], OutArr),
+  not(OutArr = @(null)),
+  jpl_array_to_list(OutArr, Out).
 
-
+quaternion_multiply(Q0,Q1,Multiplied) :-
+  jpl_list_to_array(Q0, Q0_array),
+  jpl_list_to_array(Q1, Q1_array),
+  jpl_call('org.knowrob.utils.MathUtil', 'quaternionMultiply', [Q0_array, Q1_array], Out_array),
+  jpl_array_to_list(Out_array, Multiplied).

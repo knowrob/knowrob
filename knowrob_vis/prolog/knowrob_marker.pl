@@ -839,7 +839,7 @@ marker_update(cylinder_tf(From,To), MarkerObject, T) :-
   marker_pose(MarkerObject, [X,Y,Z], [QW,QX,QY,QZ]),
   marker_show(MarkerObject), !.
 
-marker_update(cylinder_tf(From,To), MarkerObject, _) :-
+marker_update(cylinder_tf(_,_), MarkerObject, _) :-
   marker_hide(MarkerObject).
 
 marker_update(trajectory(Link), MarkerObject, T1) :-

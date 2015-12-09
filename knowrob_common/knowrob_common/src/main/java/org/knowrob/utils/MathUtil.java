@@ -70,16 +70,16 @@ public class MathUtil {
 
 	public static float[] quaternionDifference(float[] q0, float[] q1) {
 		Quat4d diff = quaternionDifference(
-				new Quat4d(q0[0], q0[1], q0[2], q0[3]),
-				new Quat4d(q1[0], q1[1], q1[2], q1[3])
+				new Quat4d(q0[1], q0[2], q0[3], q0[0]),
+				new Quat4d(q1[1], q1[2], q1[3], q1[0])
 		);
 		return new float[] { (float)diff.w, (float)diff.x, (float)diff.y, (float)diff.z };
 	}
 
 	public static double[] quaternionDifference(double[] q0, double[] q1) {
 		Quat4d diff = quaternionDifference(
-				new Quat4d(q0[0], q0[1], q0[2], q0[3]),
-				new Quat4d(q1[0], q1[1], q1[2], q1[3])
+				new Quat4d(q0[1], q0[2], q0[3], q0[0]),
+				new Quat4d(q1[1], q1[2], q1[3], q1[0])
 		);
 		return new double[] { diff.w, diff.x, diff.y, diff.z };
 	}
@@ -94,16 +94,16 @@ public class MathUtil {
 
 	public static float[] quaternionMultiply(float[] q0, float[] q1) {
 		Quat4d diff = quaternionMultiply(
-				new Quat4d(q0[0], q0[1], q0[2], q0[3]),
-				new Quat4d(q1[0], q1[1], q1[2], q1[3])
+				new Quat4d(q0[1], q0[2], q0[3], q0[0]),
+				new Quat4d(q1[1], q1[2], q1[3], q1[0])
 		);
 		return new float[] { (float)diff.w, (float)diff.x, (float)diff.y, (float)diff.z };
 	}
 
 	public static double[] quaternionMultiply(double[] q0, double[] q1) {
 		Quat4d diff = quaternionMultiply(
-				new Quat4d(q0[0], q0[1], q0[2], q0[3]),
-				new Quat4d(q1[0], q1[1], q1[2], q1[3])
+				new Quat4d(q0[1], q0[2], q0[3], q0[0]),
+				new Quat4d(q1[1], q1[2], q1[3], q1[0])
 		);
 		return new double[] { diff.w, diff.x, diff.y, diff.z };
 	}
