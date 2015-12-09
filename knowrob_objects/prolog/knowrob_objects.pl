@@ -94,8 +94,7 @@
       comp_zCoord/2,
       comp_orientation/2,
       instantiate_at_position/3,
-      update_instance_from_class_def/2,
-      parse_vector/2
+      update_instance_from_class_def/2
     ]).
 
 :- use_module(library('semweb/rdf_db')).
@@ -103,6 +102,7 @@
 :- use_module(library('owl')).
 :- use_module(library('rdfs_computable')).
 :- use_module(library('knowrob_owl')).
+:- use_module(library('knowrob_math')).
 :- use_module(library('knowrob_perception')).
 :- use_module(library('owl_parser')).
 
@@ -245,13 +245,6 @@ object_pose_at_time(Obj, Time, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21
   rdf_triple(knowrob:eventOccursAt, Detection, Pose),!,
   
   rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]).
-
-parse_vector([X|Y], [X|Y]).
-
-parse_vector(In, Out) :-
-  jpl_call('org.knowrob.utils.MathUtil', 'parseVector', [In, ' '], OutArr),
-  not(OutArr = @(null)),
-  jpl_array_to_list(OutArr, Out).
 
 %% position_to_list(+Pose, -PositionList) is nondet.
 %
