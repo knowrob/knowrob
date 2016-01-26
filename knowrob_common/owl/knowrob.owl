@@ -11475,7 +11475,7 @@ Cf. Surface, whose instances are two-dimensional, intangible regions of space.</
     
     <owl:NamedIndividual rdf:about="&knowrob;Query_GDBHFHRK6S75R">
         <rdf:type rdf:resource="&knowrob;Query"/>
-        <knowrob:groupName rdf:datatype="&xsd;string">OWL Properties</knowrob:groupName>
+        <knowrob:groupName rdf:datatype="&xsd;string">Object Queries</knowrob:groupName>
         <knowrob:queryName rdf:datatype="&xsd;string">What are the object properties?</knowrob:queryName>
         <knowrob:queryAbout rdf:resource="&owl;Thing"/>
         <knowrob:queryString rdf:datatype="&xsd;string">findall(_X, (owl_has(Individual, _Property, _Value), property_name(_Property, _PropertyName), property_value(_Value, _PropertyValue), atomic_list_concat(['   ',_PropertyName,_PropertyValue], ' ', _X) ), _PropertyNames), atomic_list_concat([''|_PropertyNames], '\n', Properties)</knowrob:queryString>
@@ -11483,7 +11483,7 @@ Cf. Surface, whose instances are two-dimensional, intangible regions of space.</
     
     <owl:NamedIndividual rdf:about="&knowrob;Query_RBNU745gvFSVG">
         <rdf:type rdf:resource="&knowrob;Query"/>
-        <knowrob:groupName rdf:datatype="&xsd;string">Designator Properties</knowrob:groupName>
+        <knowrob:groupName rdf:datatype="&xsd;string">Designator Queries</knowrob:groupName>
         <knowrob:queryName rdf:datatype="&xsd;string">What are the designator properties?</knowrob:queryName>
         <knowrob:queryAbout rdf:resource="&knowrob;CRAMDesignator"/>
         <knowrob:queryString rdf:datatype="&xsd;string">designator_publish(Individual)</knowrob:queryString>

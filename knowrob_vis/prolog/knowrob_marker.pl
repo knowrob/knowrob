@@ -53,6 +53,9 @@
       marker_color/2,
       marker_has_visual/2,
       
+      marker_hide/1,
+      marker_show/1,
+      
       marker_highlight/1,
       marker_highlight/2,
       marker_highlight_remove/1,
@@ -68,10 +71,13 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('rdfs_computable')).
 :- use_module(library('jpl')).
+:- use_module(library('knowrob_math')).
 :- use_module(library('lists')). % for sum_list
 
 :- rdf_meta marker(t,?),
             marker(t,?,?),
+            marker_hide(t),
+            marker_show(t),
             marker_update(t),
             marker_update(t,r),
             marker_remove(t),
@@ -114,7 +120,7 @@ marker_children(Parent, Children) :-
 
 marker_links(Identifier, Links) :-
   findall(Link, (
-    owl_has(Identifier, srdl2comp:'subComponent', Component),
+    rdf_reachable(Identifier, srdl2comp:'subComponent', Component),
     owl_has(Component, srdl2comp:'baseLinkOfComposition', BaseLink),
     rdf_reachable(BaseLink, srdl2comp:'successorInKinematicChain', Link),
     owl_individual_of(Link, srdl2comp:'UrdfLink')
@@ -133,13 +139,21 @@ marker_srdl_tf_frame(Identifier, UrdfName) :-
   not( rdf_has(Identifier, rdf:'type', _) ),
   UrdfName = Identifier.
 
+atom_ensure_prefix(Atom, Prefix, Atom) :-
+  sub_atom(Atom, 0, _, _, Prefix), !.
+atom_ensure_prefix(Atom, Prefix, AtomResolved) :-
+  atom_concat(Prefix, Atom, AtomResolved).
+
 marker_tf_frame(MarkerObject, Identifier, TfFrame) :-
   marker_srdl_tf_frame(Identifier, UrdfName),
-  marker_tf_prefix(MarkerObject, Prefix), % TODO: make sure prefix has trailing slash
-  (  atom_concat('/', UrdfNameResolved, UrdfName)
-  -> atom_concat(Prefix, UrdfNameResolved, TfFrame)
-  ;  atom_concat(Prefix, UrdfName, TfFrame)
-  ).
+  atom_ensure_prefix(UrdfName, '/', UrdfNameResolved),
+  marker_tf_prefix(MarkerObject, Prefix),
+  (  Prefix = '/'
+  -> TfFrame = UrdfNameResolved
+  ;  (
+   atom_ensure_prefix(Prefix, '/', PrefixResolved),
+   atom_concat(PrefixResolved, UrdfNameResolved, TfFrame)
+  )).
   
 marker_lookup_transform(MarkerObject, Identifier, T, (Translation,Orientation)) :-
   rdfs_individual_of(Identifier, knowrob:'CRAMDesignator'),
@@ -197,8 +211,13 @@ marker_transform_estimate(Identifier, T, Pose_in, Pose_out, [Method|Rest]) :-
 marker_transform_estimate(_, _, Pose_in, Pose_in, []).
 
 marker_estimate_transform(MarkerObject, Identifier, T, Pose_out) :-
-  marker_lookup_transform(MarkerObject, Identifier, T, Pose0),
-  marker_transform_estimate(Identifier, T, Pose0, Pose_out).
+  (  marker_lookup_transform(MarkerObject, Identifier, T, Pose0)
+  -> (
+    marker_transform_estimate(Identifier, T, Pose0, Pose_out),
+    marker_show(MarkerObject)
+  ) ; (
+    marker_hide(MarkerObject)
+  )).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
@@ -644,6 +663,34 @@ marker_child_name(_, ParentName, ChildTerm, ChildName) :-
   term_to_atom(ChildTerm, ChildAtom),
   atom_concat(ParentName, '_', Buf),
   atom_concat(Buf, ChildAtom, ChildName).
+  
+%% marker_hide(+Marker) is det.
+%
+% Hides marker if it was shown before.
+%
+% @param Marker A marker object / name / update term.
+%
+marker_hide(MarkerObject) :-
+  jpl_is_object(MarkerObject),
+  jpl_call(MarkerObject, 'hide', [], _).
+
+marker_hide(Marker) :-
+  marker(Marker, MarkerObject),
+  marker_hide(MarkerObject).
+  
+%% marker_show(+Marker) is det.
+%
+% Shows marker again if it was hidden before.
+%
+% @param Marker A marker object / name / update term.
+%
+marker_show(MarkerObject) :-
+  jpl_is_object(MarkerObject),
+  jpl_call(MarkerObject, 'show', [], _).
+
+marker_show(Marker) :-
+  marker(Marker, MarkerObject),
+  marker_show(MarkerObject).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
@@ -790,7 +837,11 @@ marker_update(cylinder_tf(From,To), MarkerObject, T) :-
   QX is -DY, QY is DX, QZ is 0.0, QW is Distance + DZ,
   X is 0.5*(X0+X1), Y is 0.5*(Y0+Y1), Z is 0.5*(Z0+Z1),
   marker_scale(MarkerObject, [0.1,0.1,Distance]),
-  marker_pose(MarkerObject, [X,Y,Z], [QW,QX,QY,QZ]).
+  marker_pose(MarkerObject, [X,Y,Z], [QW,QX,QY,QZ]),
+  marker_show(MarkerObject), !.
+
+marker_update(cylinder_tf(_,_), MarkerObject, _) :-
+  marker_hide(MarkerObject).
 
 marker_update(trajectory(Link), MarkerObject, T1) :-
   number(T1),

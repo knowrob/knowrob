@@ -137,7 +137,11 @@ public class MarkerPublisher extends AbstractNodeMain {
 			synchronized (markers) {
 				MarkerArray arr = pub.newMessage();
 				for(MarkerObject mrk : markers.values()) {
-					if(mrk.hasVisual()) arr.getMarkers().add(mrk.getMessage());
+					if(mrk.hasVisual()) {
+						arr.getMarkers().add(mrk.getMessage());
+						if(mrk.getMessage().getAction()==Marker.DELETE) mrk.isPublished=false;
+						else mrk.isPublished=true;
+					}
 				}
 				pub.publish(arr);
 				markers.clear();
@@ -166,7 +170,7 @@ public class MarkerPublisher extends AbstractNodeMain {
 	}
 
 	public void queueRepublish(MarkerObject markerObject) {
-		if(markerObject.getHasVisual()) {
+		if(markerObject.getHasVisual() && !markerObject.isHidden()) {
 			synchronized (markers) {
 				markers.put(markerObject.getIdentifier(), markerObject);
 			}
