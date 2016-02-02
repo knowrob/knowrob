@@ -183,6 +183,11 @@ public class MarkerPublisher extends AbstractNodeMain {
 		}
 	}
 	
+	public ConnectedNode getNode(){
+		waitForNode();
+		return this.node;
+	}
+
 	private void waitForNode() {
 		try {
 			while(node == null || pub == null) Thread.sleep(200);
