@@ -55,7 +55,7 @@ public class MarkerObject {
 		obj.setScale(getScale());
 		obj.setColor(getColor());
 		obj.setTfPrefix(tfPrefix);
-		children.add(obj);
+		if(!children.contains(obj)) children.add(obj);
 		return obj;
 	}
 	

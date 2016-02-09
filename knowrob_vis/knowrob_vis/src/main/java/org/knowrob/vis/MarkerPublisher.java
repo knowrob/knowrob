@@ -79,6 +79,10 @@ public class MarkerPublisher extends AbstractNodeMain {
 	
 	public MarkerObject createMarker(String identifier) {
 		waitForNode();
+		MarkerObject marker = getMarker(identifier);
+		if(marker!=null) return marker;
+		marker = markers.get(identifier);
+		if(marker!=null) return marker;
 
 		Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
 		m.getHeader().setFrameId("/map"); // FIXME: set in prolog
@@ -88,7 +92,7 @@ public class MarkerPublisher extends AbstractNodeMain {
 		m.setAction(Marker.ADD);
 		m.setLifetime(new Duration());
 		
-		MarkerObject marker = new MarkerObject(identifier, m, this);
+		marker = new MarkerObject(identifier, m, this);
 		if(marker.hasVisual()) {
 			synchronized (markers) {
 				markers.put(identifier, marker);
