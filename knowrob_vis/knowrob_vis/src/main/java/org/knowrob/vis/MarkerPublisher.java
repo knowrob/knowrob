@@ -82,7 +82,12 @@ public class MarkerPublisher extends AbstractNodeMain {
 		MarkerObject marker = getMarker(identifier);
 		if(marker!=null) return marker;
 		marker = markers.get(identifier);
-		if(marker!=null) return marker;
+		if(marker!=null) {
+			// marker was removed and re-added before marker remove message was send,
+			// just ignore the remove message in this case
+			markersCache.put(identifier, marker);
+			return marker;
+		}
 
 		Marker m = node.getTopicMessageFactory().newFromType(visualization_msgs.Marker._TYPE);
 		m.getHeader().setFrameId("/map"); // FIXME: set in prolog
