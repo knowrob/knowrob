@@ -99,11 +99,7 @@ map_root_objects(Map, Objs) :-
 % @param Objs Instance of a root object in the map
 % 
 map_root_object(Map, Obj) :-
-    owl_has(Obj, knowrob:describedInMap, Map),
-    (owl_individual_of(Obj, knowrob:'StorageConstruct');
-    owl_individual_of(Obj, knowrob:'WallOfAConstruction');
-    owl_individual_of(Obj, knowrob:'FurniturePiece');
-    owl_individual_of(Obj, knowrob:'CounterTop')).
+    owl_has(Obj, knowrob:describedInMap, Map).
 
     
 %% map_child_objects(+Parent, -Children) is nondet.
@@ -172,7 +168,7 @@ map_object_type(Obj, Type) :-
 % @param Label  Value of the rdfs:label annotation
 %  
 map_object_label(Obj, Label) :-
-    owl_has(Obj, rdfs:label, literal(type('http://www.w3.org/2001/XMLSchema#string', Label)) ).
+    owl_has(Obj, rdfs:label, label ).
 
 
 
@@ -186,18 +182,18 @@ map_object_label(Obj, Label) :-
 % @param H      Object height (z dimension)
 %  
 map_object_dimensions(Obj, W, D, H) :-
-    rdf_has(Obj, knowrob:'widthOfObject', literal(type(_, W_))),
+    owl_has(Obj, knowrob:'widthOfObject', literal(type(_, W_))),
     atom_number(W_, W),
-    rdf_has(Obj, knowrob:'depthOfObject', literal(type(_, D_))),
+    owl_has(Obj, knowrob:'depthOfObject', literal(type(_, D_))),
     atom_number(D_, D),
-    rdf_has(Obj, knowrob:'heightOfObject', literal(type(_, H_))),
+    owl_has(Obj, knowrob:'heightOfObject', literal(type(_, H_))),
     atom_number(H_, H).
 
 map_object_dimensions( Obj, W, D, H ) :-
     % The depth of a knob defaults to 3cm here. This information
     % should either be asserted somewhere else or be set as a property
     % when importing the semantic map.
-    rdf_has( Obj, knowrob:'radius', literal(type(_, Radius_)) ),
+    owl_has( Obj, knowrob:'radius', literal(type(_, Radius_)) ),
     atom_number(Radius_, Radius),
     W is 2 * Radius,
     H is 2 * Radius,
