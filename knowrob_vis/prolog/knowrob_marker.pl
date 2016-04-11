@@ -241,7 +241,7 @@ marker_prop_type(hud_image,999996).
 marker_prop_type(hud_text,999997).
 marker_prop_type(sprite,999998).
 marker_prop_type(sprite_text,999999).
-
+marker_prop_type(sprite_text_scaled,1000000).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
@@ -641,7 +641,8 @@ marker_new(MarkerName, text(Id), MarkerObject, Parent) :-
   marker_new(MarkerName, black(text_view_facing,text(Id)), MarkerObject, Parent).
 
 marker_new(MarkerName, hud_text(Id), MarkerObject, Parent) :-
-  marker_new(MarkerName, black(hud_text,hud_text(Id)), MarkerObject, Parent).
+  marker_new(MarkerName, black(hud_text,hud_text(Id)), MarkerObject, Parent),
+  set_marker_translation(MarkerObject, [2.0,34.0,0]).
 
 marker_new(MarkerName, hud_image(Id), MarkerObject, Parent) :-
   marker_new(MarkerName, black(hud_image,hud_image(Id)), MarkerObject, Parent).
@@ -651,6 +652,10 @@ marker_new(MarkerName, sprite(Name), MarkerObject, Parent) :-
 
 marker_new(MarkerName, sprite_text(Id), MarkerObject, Parent) :-
   marker_new(MarkerName, black(sprite_text,sprite_text(Id)), MarkerObject, Parent),
+  marker_scale(MarkerObject, [0.5,0.5,0.5]).
+
+marker_new(MarkerName, sprite_text_scaled(Id), MarkerObject, Parent) :-
+  marker_new(MarkerName, black(sprite_text_scaled,sprite_text_scaled(Id)), MarkerObject, Parent),
   marker_scale(MarkerObject, [0.5,0.5,0.5]).
 
 marker_new(MarkerName, background_image(Id), MarkerObject, Parent) :-
