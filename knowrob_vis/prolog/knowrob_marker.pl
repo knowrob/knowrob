@@ -236,12 +236,12 @@ marker_prop_type(points,8).
 marker_prop_type(text_view_facing,9).
 marker_prop_type(mesh_resource,10).
 marker_prop_type(triangle_list,11).
+marker_prop_type(sprite_scaled,999994).
 marker_prop_type(background_image,999995).
 marker_prop_type(hud_image,999996).
 marker_prop_type(hud_text,999997).
 marker_prop_type(sprite,999998).
 marker_prop_type(sprite_text,999999).
-marker_prop_type(sprite_text_scaled,1000000).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
@@ -654,8 +654,8 @@ marker_new(MarkerName, sprite_text(Id), MarkerObject, Parent) :-
   marker_new(MarkerName, black(sprite_text,sprite_text(Id)), MarkerObject, Parent),
   marker_scale(MarkerObject, [0.5,0.5,0.5]).
 
-marker_new(MarkerName, sprite_text_scaled(Id), MarkerObject, Parent) :-
-  marker_new(MarkerName, black(sprite_text_scaled,sprite_text_scaled(Id)), MarkerObject, Parent),
+marker_new(MarkerName, sprite_scaled(Id), MarkerObject, Parent) :-
+  marker_new(MarkerName, black(sprite_scaled,sprite_scaled(Id)), MarkerObject, Parent),
   marker_scale(MarkerObject, [0.5,0.5,0.5]).
 
 marker_new(MarkerName, background_image(Id), MarkerObject, Parent) :-
