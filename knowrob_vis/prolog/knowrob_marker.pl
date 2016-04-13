@@ -652,11 +652,11 @@ marker_new(MarkerName, sprite(Name), MarkerObject, Parent) :-
 
 marker_new(MarkerName, sprite_text(Id), MarkerObject, Parent) :-
   marker_new(MarkerName, black(sprite_text,sprite_text(Id)), MarkerObject, Parent),
-  marker_scale(MarkerObject, [0.5,0.5,0.5]).
+  marker_scale(MarkerObject, [200.0,150.0,1.0]).
 
 marker_new(MarkerName, sprite_scaled(Id), MarkerObject, Parent) :-
   marker_new(MarkerName, black(sprite_scaled,sprite_scaled(Id)), MarkerObject, Parent),
-  marker_scale(MarkerObject, [0.5,0.5,0.5]).
+  marker_scale(MarkerObject, [200.0,150.0,1.0]).
 
 marker_new(MarkerName, background_image(Id), MarkerObject, Parent) :-
   marker_new(MarkerName, black(background_image,background_image(Id)), MarkerObject, Parent).
