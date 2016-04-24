@@ -2715,7 +2715,6 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:inertia_izz>
-        <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_high_def_optical_frame_joint"/>
         <srdl2-comp:always_on rdf:datatype="&xsd;boolean">false</srdl2-comp:always_on>
         <srdl2-comp:update_rate rdf:datatype="&qudt-unit;Hertz">20.0</srdl2-comp:update_rate>
         <srdl2-comp:hfov rdf:datatype="&xsd;string">0.785398163397</srdl2-comp:hfov>
