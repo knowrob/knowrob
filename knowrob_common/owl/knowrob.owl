@@ -10984,8 +10984,21 @@ Cf. Surface, whose instances are two-dimensional, intangible regions of space.</
     <owl:Class rdf:about="&knowrob;VideoScreen">
         <rdfs:subClassOf rdf:resource="&knowrob;ElectricalComponent"/>
     </owl:Class>
-    
 
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Monitor -->
+
+    <owl:Class rdf:about="&knowrob;Monitor">
+        <rdfs:subClassOf rdf:resource="&knowrob;VideoScreen"/>
+    </owl:Class>
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FlatScreenMonitor -->
+
+    <owl:Class rdf:about="&knowrob;FlatScreenMonitor">
+        <rdfs:subClassOf rdf:resource="&knowrob;Monitor"/>
+    </owl:Class>
+    
 
     <!-- http://knowrob.org/kb/knowrob.owl#VisibleThing -->
 
