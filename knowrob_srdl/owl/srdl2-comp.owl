@@ -1240,7 +1240,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
         <knowrob:groupName rdf:datatype="&xsd;string">Semantic Robot Description Language (SRDL)</knowrob:groupName>
         <knowrob:queryName rdf:datatype="&xsd;string">What is the camera resolution?</knowrob:queryName>
         <knowrob:queryAbout rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Camera"/>
-        <knowrob:queryString rdf:datatype="&xsd;string">rdf_has(Individual, srdl2comp:'imageSizeX', literal(type(_,Width))),\nrdf_has(Individual, srdl2comp:'imageSizeY', literal(type(_,Height))).</knowrob:queryString>
+        <knowrob:queryString rdf:datatype="&xsd;string">rdf_has(Individual, srdl2comp:'imageSizeX', literal(type(_,Width))),rdf_has(Individual, srdl2comp:'imageSizeY', literal(type(_,Height))).</knowrob:queryString>
     </owl:NamedIndividual>
     
     <owl:NamedIndividual rdf:about="&knowrob;Query_CS9jret09436bds">
@@ -1264,7 +1264,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
         <knowrob:groupName rdf:datatype="&xsd;string">Semantic Robot Description Language (SRDL)</knowrob:groupName>
         <knowrob:queryName rdf:datatype="&xsd;string">What are the frustum parameters?</knowrob:queryName>
         <knowrob:queryAbout rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Camera"/>
-        <knowrob:queryString rdf:datatype="&xsd;string">rdf_has(Individual, srdl2comp:'hfov', literal(type(_,FOV))),\nrdf_has(Individual, srdl2comp:'near', literal(type(_,Near)))\nrdf_has(Individual, srdl2comp:'far', literal(type(_,Far))).</knowrob:queryString>
+        <knowrob:queryString rdf:datatype="&xsd;string">rdf_has(Individual, srdl2comp:'hfov', literal(type(_,FOV))), rdf_has(Individual, srdl2comp:'near', literal(type(_,Near))), rdf_has(Individual, srdl2comp:'far', literal(type(_,Far))).</knowrob:queryString>
     </owl:NamedIndividual>
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Clock -->

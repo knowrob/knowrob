@@ -2181,12 +2181,9 @@
 
     <owl:NamedIndividual rdf:about="&robot;saphari_robot_kinect_link">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
-		<!-- FIXME
         <rdf:type rdf:resource="&srdl2-comp;Camera"/>
-		-->
         <srdl2-comp:urdfName>kinect_link</srdl2-comp:urdfName>
         <!-- FIXME(daniel): camera info might be wrong. -->
-		<!-- FIXME
         <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.01</srdl2-comp:mass_value>
         <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:inertia_ixx>
         <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixy>
@@ -2218,7 +2215,6 @@
         <srdl2-comp:distortionT1 rdf:datatype="&xsd;string">0.0</srdl2-comp:distortionT1>
         <srdl2-comp:distortionT2 rdf:datatype="&xsd;string">0.0</srdl2-comp:distortionT2>
         <srdl2-comp:material rdf:datatype="&xsd;string">Gazebo/Black</srdl2-comp:material>
-		-->
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_boxy_description/meshes/sensors/68-04546_Kinect_Sensor-coarse.dae</knowrob:pathToCadModel>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;saphari_robot_kinect_rgb_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;saphari_robot_kinect_depth_joint"/>
@@ -2286,9 +2282,7 @@
 
     <owl:NamedIndividual rdf:about="&robot;saphari_robot_table_link">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
-		<!-- FIXME
         <rdf:type rdf:resource="&knowrob;Table-PieceOfFurniture"/>
-		-->
         <srdl2-comp:urdfName>table_link</srdl2-comp:urdfName>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://saphari_robot_description/meshes/table.dae</knowrob:pathToCadModel>
         
@@ -2712,13 +2706,10 @@
 
     <owl:NamedIndividual rdf:about="&robot;saphari_robot_blackfly_camera">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
-		<!-- FIXME
         <rdf:type rdf:resource="&srdl2-comp;Camera"/>
-		-->
         <srdl2-comp:urdfName>blackfly_camera</srdl2-comp:urdfName>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://saphari_robot_description/meshes/blackfly_camera.stl</knowrob:pathToCadModel>
         <!-- FIXME(daniel): camera info wrong. -->
-		<!-- FIXME
         <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.01</srdl2-comp:mass_value>
         <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:inertia_ixx>
         <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixy>
@@ -2750,7 +2741,6 @@
         <srdl2-comp:distortionT1 rdf:datatype="&xsd;string">0.0</srdl2-comp:distortionT1>
         <srdl2-comp:distortionT2 rdf:datatype="&xsd;string">0.0</srdl2-comp:distortionT2>
         <srdl2-comp:material rdf:datatype="&xsd;string">Gazebo/Black</srdl2-comp:material>
-		-->
         
     </owl:NamedIndividual>
 
