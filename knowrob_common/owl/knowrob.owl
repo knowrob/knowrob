@@ -3326,6 +3326,15 @@ See also xAxisPredicateOfSystem and yAxisPredicateOfSystem.</rdfs:comment>
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Air -->
+
+    <owl:Class rdf:about="&knowrob;Air">
+        <rdfs:subClassOf rdf:resource="&knowrob;GaseousTangibleThing"/>
+        <rdfs:comment>A specialization of GaseousTangibleThing. Each instance of Air is one &apos;piece&apos; among all the portions of the atmosphere of the Earth, considered as a substance present in various places, in various quantities, under various pressures, etc. Examples: the AirInAustin; the stuffy air in my office; the thin air atop Annapurna. See also TheEarthsAtmosphere, which is all ambient Air on the planet taken as a single object.</rdfs:comment>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#AirCoolingDevice -->
 
     <owl:Class rdf:about="&knowrob;AirCoolingDevice">
