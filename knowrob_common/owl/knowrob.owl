@@ -3287,7 +3287,7 @@ See also xAxisPredicateOfSystem and yAxisPredicateOfSystem.</rdfs:comment>
     <!-- http://knowrob.org/kb/knowrob.owl#AddingAnEgg -->
 
     <owl:Class rdf:about="&knowrob;AddingAnEgg">
-        <rdfs:subClassOf rdf:resource="&knowrob;AddingSth"/>
+        <rdfs:subClassOf rdf:resource="&knowrob;AddingSomething"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;subAction"/>
@@ -3298,6 +3298,20 @@ See also xAxisPredicateOfSystem and yAxisPredicateOfSystem.</rdfs:comment>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;subAction"/>
                 <owl:someValuesFrom rdf:resource="&knowrob;Pouring-PourFromOneContainerIntoAnother"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#AddingSomething -->
+
+    <owl:Class rdf:about="&knowrob;AddingSomething">
+        <rdfs:subClassOf rdf:resource="&knowrob;Incorporation-Physical"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;subAction"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;PickingUpAnObject"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
