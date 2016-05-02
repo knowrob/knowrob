@@ -94,7 +94,9 @@
       comp_zCoord/2,
       comp_orientation/2,
       instantiate_at_position/3,
-      update_instance_from_class_def/2
+      update_instance_from_class_def/2,
+      object_queries/2,
+      object_query/4
     ]).
 
 :- use_module(library('semweb/rdf_db')).
@@ -134,6 +136,8 @@
     delete_joint_information(r),
     delete_object_information(r),
     delete_object_information_recursive(r),
+    object_query(r,?,?,?),
+    object_queries(r,?),
     comp_xCoord(r, r), comp_yCoord(r, r), comp_zCoord(r, r),
     comp_m00(r, r),    comp_m01(r, r),    comp_m02(r, r),    comp_m03(r, r),    comp_m04(r, r),    comp_m05(r, r),
     comp_m10(r, r),    comp_m11(r, r),    comp_m12(r, r),    comp_m13(r, r),    comp_m14(r, r),    comp_m15(r, r),
@@ -1222,7 +1226,37 @@ detection_endtime(Detection, EndTime) :-
   ( get_time(ET), EndTime is ET + 1.0).
 
 
+object_queries(Individual, Queries) :-
+  findall([Category,Title,Query], object_query(Individual,Category,Title,Query), Queries).
 
+object_query(Individual, QueryGroup, QueryTitle, Query) :-
+  atom(Individual),
+  rdf_has(QueryIndividual, knowrob:'queryAbout', Individual),
+  rdf_has(QueryIndividual, knowrob:'groupName', literal(type(_,QueryGroup))),
+  rdf_has(QueryIndividual, knowrob:'queryName', literal(type(_,QueryTitle))),
+  rdf_has(QueryIndividual, knowrob:'queryString', literal(type(_,QueryTail))),
+  atomic_list_concat(['Individual=''', Individual, ''''], '', QueryHead),
+  atomic_list_concat([QueryHead,QueryTail], ', ', Query).
+
+object_query(Individual, QueryGroup, QueryTitle, Query) :-
+  atom(Individual),
+  rdfs_individual_of(Individual, IndividualClass),
+  rdf_has(QueryIndividual, knowrob:'queryAbout', IndividualClass),
+  rdf_has(QueryIndividual, knowrob:'groupName', literal(type(_,QueryGroup))),
+  rdf_has(QueryIndividual, knowrob:'queryName', literal(type(_,QueryTitle))),
+  rdf_has(QueryIndividual, knowrob:'queryString', literal(type(_,QueryTail))),
+  atomic_list_concat(['Individual=''', Individual, ''''], '', QueryHead),
+  atomic_list_concat([QueryHead,QueryTail], ', ', Query).
+
+% TODO: time intervals should be entities in the KB instead.
+% then this can be removed.
+%object_query(interval(T0,T1), 'Episodic Memory', 'Which actions occurred during this interval?', QueryAtom) :-
+%  QueryTerm=(
+%    rdfs_individual_of(Event, knowrob:'PurposeFullAction'),
+%    event_interval(Event, Ev0, Ev1),
+%    ( time_between(Ev0,T0,T1) ; time_between(Ev1,T0,T1) )
+%  ),
+%  term_to_atom(QueryTerm,QueryAtom).
 
 %% compare_object_detections(-Delta, +P1, +P2) is det.
 %
