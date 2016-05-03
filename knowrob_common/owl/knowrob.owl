@@ -11605,7 +11605,6 @@ As the above examples illustrate, it is not the case that everthing that has a t
     <owl:NamedIndividual rdf:about="&knowrob;Query_GDBHFHRK6S75R">
         <rdf:type rdf:resource="&knowrob;Query"/>
         <groupName rdf:datatype="&xsd;string">OWL Properties</groupName>
-        <groupName rdf:datatype="&xsd;string">Object Queries</groupName>
         <queryName rdf:datatype="&xsd;string">What are the object properties?</queryName>
         <queryString rdf:datatype="&xsd;string">findall(_X, (owl_has(Individual, _Property, _Value), property_name(_Property, _PropertyName), property_value(_Value, _PropertyValue), atomic_list_concat([&apos;   &apos;,_PropertyName,_PropertyValue], &apos; &apos;, _X) ), _PropertyNames), atomic_list_concat([&apos;&apos;|_PropertyNames], &apos;\n&apos;, Properties)</queryString>
         <queryAbout rdf:resource="&owl;Thing"/>
@@ -11618,11 +11617,33 @@ As the above examples illustrate, it is not the case that everthing that has a t
     <owl:NamedIndividual rdf:about="&knowrob;Query_RBNU745gvFSVG">
         <rdf:type rdf:resource="&knowrob;Query"/>
         <groupName rdf:datatype="&xsd;string">Designator Properties</groupName>
-        <groupName rdf:datatype="&xsd;string">Designator Queries</groupName>
         <queryName rdf:datatype="&xsd;string">What are the designator properties?</queryName>
-        <queryString rdf:datatype="&xsd;string">designator_publish(Individual)</queryString>
         <queryString rdf:datatype="&xsd;string">mng_designator(Individual, ObjDesignator), findall(_X, (mng_designator_props(ObjDesignator, _Property, _Value), atomic_list_concat([&apos;   &apos;,_Property,_Value], &apos; &apos;, _X) ), _PropertyNames), atomic_list_concat([&apos;&apos;|_PropertyNames], &apos;\n&apos;, Properties)</queryString>
         <queryAbout rdf:resource="&knowrob;CRAMDesignator"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="&knowrob;Query_FSDno48956">
+        <rdf:type rdf:resource="&knowrob;Query"/>
+        <knowrob:groupName rdf:datatype="&xsd;string">Episodic Memory</knowrob:groupName>
+        <knowrob:queryName rdf:datatype="&xsd;string">What are the subactions of this action?</knowrob:queryName>
+        <knowrob:queryString rdf:datatype="&xsd;string">subtask_all(Individual, Subtasks).</knowrob:queryString>
+        <knowrob:queryAbout rdf:resource="&knowrob;PurposefulAction"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="&knowrob;Query_DFGnk49ngdsb">
+        <rdf:type rdf:resource="&knowrob;Query"/>
+        <knowrob:groupName rdf:datatype="&xsd;string">Episodic Memory</knowrob:groupName>
+        <knowrob:queryName rdf:datatype="&xsd;string">In which time interval did this action occur?</knowrob:queryName>
+        <knowrob:queryString rdf:datatype="&xsd;string">event_interval(Individual, T0, T1).</knowrob:queryString>
+        <knowrob:queryAbout rdf:resource="&knowrob;PurposefulAction"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="&knowrob;Query_AFDjpriotj643">
+        <rdf:type rdf:resource="&knowrob;Query"/>
+        <knowrob:groupName rdf:datatype="&xsd;string">Episodic Memory</knowrob:groupName>
+        <knowrob:queryName rdf:datatype="&xsd;string">What was the goal of this action?</knowrob:queryName>
+        <knowrob:queryString rdf:datatype="&xsd;string">task_goal(Individual, Goal).</knowrob:queryString>
+        <knowrob:queryAbout rdf:resource="&knowrob;PurposefulAction"/>
     </owl:NamedIndividual>
     
 

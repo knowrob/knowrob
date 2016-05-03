@@ -1253,7 +1253,7 @@ object_query(Individual, QueryGroup, QueryTitle, Query) :-
 % then this can be removed.
 %object_query(interval(T0,T1), 'Episodic Memory', 'Which actions occurred during this interval?', QueryAtom) :-
 %  QueryTerm=(
-%    rdfs_individual_of(Event, knowrob:'PurposeFullAction'),
+%    rdfs_individual_of(Event, knowrob:'PurposefulAction'),
 %    event_interval(Event, Ev0, Ev1),
 %    ( time_between(Ev0,T0,T1) ; time_between(Ev1,T0,T1) )
 %  ),
