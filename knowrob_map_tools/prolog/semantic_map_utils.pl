@@ -33,6 +33,7 @@
 :- module(semantic_map_utils,
     [
       map_instance/1,
+      map_name/1,
       map_read_all/1,
       map_read_all/2,
       map_object_info/1,
@@ -59,6 +60,7 @@
 
 :-  rdf_meta
       map_instance(r),
+      map_name(r),
       map_read_all(-),
       map_read_all(-,r),
       map_root_object(r,r),
@@ -257,6 +259,15 @@ map_joint_name( Parent, Child, Name ) :-
 % 
 map_instance(Map) :-
     rdf_has(Map, rdf:type, knowrob:'SemanticEnvironmentMap').
+
+%% map_name(Map) is nondet.
+%
+% Read the 'map_name' out of the map,
+% 
+% @param Map  Instance of a knowrob:SemanticEnvironmentMap
+% 
+map_name(Map) :-
+  rdf_has(Map,rdf:type,knowrob:'SemanticEnvironmentMap').
 
 %% map_read_all(-MapElems) is nondet.
 %

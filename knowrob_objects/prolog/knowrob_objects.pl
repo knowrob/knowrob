@@ -34,6 +34,7 @@
       storagePlaceFor/2,
       storagePlaceForBecause/3,
       current_object_pose/2,
+      map_object_pose/2,
       object_pose_at_time/3,
       object_pose_at_time/4,
       object_pose/3,
@@ -117,6 +118,7 @@
     storagePlaceForBecause(r,r,r),
     current_object_pose(r,-),
     current_object_pose(r,r,-),
+    map_object_pose(r,-),
     object_pose_at_time(r,r,?),
     object_pose(+,-,-),
     object_color(r, ?),
@@ -209,6 +211,19 @@ current_object_pose(Obj, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22,
 
   rdf_triple('http://knowrob.org/kb/knowrob.owl#orientation',Obj,Pose),!,
   rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]).
+
+%% map_object_pose(+ObjInstance, -PoseList) is nondet.
+%
+% Get the pose of an object based on the latest perception
+%
+% @param Obj       Instance of a subclass of SpatialThing-Localized
+% @param PoseList  Row-based representation of the object by translation and quaternion list[7]
+% 
+map_object_pose(Obj, [TX,TY,TZ,QX,QY,QZ,QW]) :-
+  rdf_triple('http://knowrob.org/kb/knowrob.owl#translation', Obj, literal(type(_,Translation))),
+  rdf_triple('http://knowrob.org/kb/knowrob.owl#quaternion', Obj, literal(type(_,Quaternion))),!,
+  parse_vector(Translation,[TX,TY,TZ]), parse_vector(Quaternion,[QX,QY,QZ,QW]).
+
 
 % Quaternion and position
 object_pose(Pose, [X,Y,Z], [QW,QX,QY,QZ]) :-
