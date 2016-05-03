@@ -1226,8 +1226,9 @@ detection_endtime(Detection, EndTime) :-
   ( get_time(ET), EndTime is ET + 1.0).
 
 
-object_queries(Individual, Queries) :-
-  findall([Category,Title,Query], object_query(Individual,Category,Title,Query), Queries).
+object_queries(Individual, QueriesSorted) :-
+  findall([Category,Title,Query], object_query(Individual,Category,Title,Query), Queries),
+  sort(Queries, QueriesSorted).
 
 object_query(Individual, QueryGroup, QueryTitle, Query) :-
   atom(Individual),
