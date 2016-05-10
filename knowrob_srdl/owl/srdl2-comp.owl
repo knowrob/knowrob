@@ -1232,9 +1232,40 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Camera">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#VisualSensor"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalDevice"/>
     </owl:Class>
     
-
+    <owl:NamedIndividual rdf:about="&knowrob;Query_SDFn4483bdR">
+        <rdf:type rdf:resource="&knowrob;Query"/>
+        <knowrob:groupName rdf:datatype="&xsd;string">Semantic Robot Description Language (SRDL)</knowrob:groupName>
+        <knowrob:queryName rdf:datatype="&xsd;string">What is the camera resolution?</knowrob:queryName>
+        <knowrob:queryAbout rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Camera"/>
+        <knowrob:queryString rdf:datatype="&xsd;string">rdf_has(Individual, srdl2comp:'imageSizeX', literal(type(_,Width))),rdf_has(Individual, srdl2comp:'imageSizeY', literal(type(_,Height))).</knowrob:queryString>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="&knowrob;Query_CS9jret09436bds">
+        <rdf:type rdf:resource="&knowrob;Query"/>
+        <knowrob:groupName rdf:datatype="&xsd;string">Semantic Robot Description Language (SRDL)</knowrob:groupName>
+        <knowrob:queryName rdf:datatype="&xsd;string">Is the camera always active?</knowrob:queryName>
+        <knowrob:queryAbout rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Camera"/>
+        <knowrob:queryString rdf:datatype="&xsd;string">rdf_has(Individual, srdl2comp:'always_on', literal(type(_,true))).</knowrob:queryString>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="&knowrob;Query_CMdogt45HVDSr3">
+        <rdf:type rdf:resource="&knowrob;Query"/>
+        <knowrob:groupName rdf:datatype="&xsd;string">Semantic Robot Description Language (SRDL)</knowrob:groupName>
+        <knowrob:queryName rdf:datatype="&xsd;string">What is the update rate?</knowrob:queryName>
+        <knowrob:queryAbout rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Camera"/>
+        <knowrob:queryString rdf:datatype="&xsd;string">rdf_has(Individual, srdl2comp:'update_rate', literal(type(Unit,Rate))).</knowrob:queryString>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="&knowrob;Query_VBWURGFsdNF0d">
+        <rdf:type rdf:resource="&knowrob;Query"/>
+        <knowrob:groupName rdf:datatype="&xsd;string">Semantic Robot Description Language (SRDL)</knowrob:groupName>
+        <knowrob:queryName rdf:datatype="&xsd;string">What are the frustum parameters?</knowrob:queryName>
+        <knowrob:queryAbout rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Camera"/>
+        <knowrob:queryString rdf:datatype="&xsd;string">rdf_has(Individual, srdl2comp:'hfov', literal(type(_,FOV))), rdf_has(Individual, srdl2comp:'near', literal(type(_,Near))), rdf_has(Individual, srdl2comp:'far', literal(type(_,Far))).</knowrob:queryString>
+    </owl:NamedIndividual>
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Clock -->
 
