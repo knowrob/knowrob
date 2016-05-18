@@ -203,6 +203,18 @@ storagePlaceForBecause(St, ObjType, ObjT) :-
 % Get the pose of an object based on the latest perception
 %
 % @param Obj       Instance of a subclass of SpatialThing-Localized
+% @param PoseList  Row-based representation of the object by translation and quaternion list[7]
+% 
+current_object_pose(Obj, [TX,TY,TZ,QX,QY,QZ,QW]) :-
+  rdf_triple('http://knowrob.org/kb/knowrob.owl#translation', Obj, literal(type(_,Translation))),
+  rdf_triple('http://knowrob.org/kb/knowrob.owl#quaternion', Obj, literal(type(_,Quaternion))),
+  parse_vector(Translation,[TX,TY,TZ]), parse_vector(Quaternion,[QX,QY,QZ,QW]),!.
+
+%% current_object_pose(+ObjInstance, -PoseList) is nondet.
+%
+% Get the pose of an object based on the latest perception
+%
+% @param Obj       Instance of a subclass of SpatialThing-Localized
 % @param PoseList  Row-based representation of the object's 4x4 pose matrix as list[16]
 % 
 current_object_pose(Obj, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]) :-
