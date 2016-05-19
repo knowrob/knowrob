@@ -206,9 +206,7 @@ storagePlaceForBecause(St, ObjType, ObjT) :-
 % @param PoseList  Row-based representation of the object by translation and quaternion list[7]
 % 
 current_object_pose(Obj, [TX,TY,TZ,QX,QY,QZ,QW]) :-
-  rdf_triple('http://knowrob.org/kb/knowrob.owl#translation', Obj, literal(type(_,Translation))),
-  rdf_triple('http://knowrob.org/kb/knowrob.owl#quaternion', Obj, literal(type(_,Quaternion))),
-  parse_vector(Translation,[TX,TY,TZ]), parse_vector(Quaternion,[QX,QY,QZ,QW]),!.
+  object_pose_at_time(Obj,_,[TX, TY, TZ],[QW,QX,QY,QZ]),!.
 
 %% current_object_pose(+ObjInstance, -PoseList) is nondet.
 %
