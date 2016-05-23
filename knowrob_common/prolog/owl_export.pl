@@ -35,6 +35,9 @@
 
 :- module(owl_export,
     [
+      export_tbox/1,
+      export_abox/1,
+      export_abox/2,
       export_object/2,
       export_object_class/2,
       export_map/2,
@@ -46,6 +49,7 @@
 :- use_module(library('owl')).
 :- use_module(library('rdfs_computable')).
 :- use_module(library('knowrob_owl')).
+:- use_module(library('knowrob_actions')).
 % :- use_module(library('knowrob_coordinates')).
 
 
@@ -86,7 +90,8 @@ rdf_unique_class_id(BaseClass, SourceRef, ID) :-
 
 %% export_object(+Obj, -File)
 %
-% Export the perception of an object to an OWL file
+% Export the perception of an object to an OWL file.
+% Not-existing directories will be created.
 %
 % @param Obj  Object instance to be exported (including the perception instances)
 % @param File Filename for the exported OWL file
@@ -98,7 +103,8 @@ export_object(Obj, File) :-
 
 %% export_object_class(+Obj, -File)
 %
-% Export the definition of an object class to an OWL file
+% Export the definition of an object class to an OWL file.
+% Not-existing directories will be created.
 %
 % @param Obj  Object class to be exported
 % @param File Filename for the exported OWL file
@@ -109,7 +115,8 @@ export_object_class(Obj, File) :-
 
 %% export_map(+Map, -File)
 %
-% Export the map as the set of all perceptions of objects to an OWL file
+% Export the map as the set of all perceptions of objects to an OWL file.
+% Not-existing directories will be created.
 %
 % @param Map  Map instance to be exported (including the perception instances for all objects)
 % @param File Filename for the exported OWL file
@@ -121,7 +128,8 @@ export_map(Map, File) :-
 
 %% export_action(+Action, -File)
 %
-% Export an action specification (TBOX) to an OWL file
+% Export an action specification (TBOX) to an OWL file.
+% Not-existing directories will be created.
 %
 % @param Action Action specification to be exported
 % @param File   Filename for the exported OWL file
@@ -130,7 +138,97 @@ export_action(Action, File) :-
   read_action_info(Action, ActionInfos),
   export_to_owl(ActionInfos, File).
 
+%% export_tbox(+File)
+%% export_tbox(+Dir)
+%
+% Export the TBOX to the OWL file @File
+% or create OWL files based on individual names
+% and save multiple OWL files in the directory @Dir.
+% Not-existing directories will be created.
+%
+% @param File The target file with ".owl" extension
+% @param Dir The target directory.
+%
+export_tbox(File) :-
+  file_name_extension(_, 'owl', File),
+  findall( Concept, rdfs_subclass_of(Concept, owl:'Thing'), Concepts ),
+  sort([Concepts], Sorted),
+  export_to_owl(Sorted, File), !.
 
+export_tbox(Dir) :-
+  % query TBOX
+  findall( (Concept,PathAbsolute), (
+    rdfs_subclass_of(Concept, owl:'Thing'),
+    rdf_split_url(Prefix, _, Concept),
+    atomic_list_concat([URL|_], #, Prefix),
+    atomic_list_concat([_,_|PathList], /, URL),
+    path_split(PathRelative, PathList),
+    path_concat(Dir, PathRelative, PathAbsolute)
+  ), AboxInfo ),
+  % find set of file paths to be exported
+  findall( PathAbsolute, member((_,PathAbsolute), AboxInfo), Paths ),
+  sort(Paths, PathsSorted),
+  % export owl file for each of the paths
+  forall( member(Path, PathsSorted), (
+    findall( Concept, member((Concept,Path),AboxInfo), Concepts ),
+    sort(Concepts, Sorted),
+    export_to_owl(Sorted, Path)
+  )).
+
+%% export_abox(+File)
+%% export_abox(+Dir)
+%% export_abox(+Individual,+File)
+%% export_abox(+Individual,+Dir)
+%
+% Export the ABOX to the OWL file @File
+% or create OWL files based on individual names
+% and save multiple OWL files in the directory @Dir.
+% Not-existing directories will be created.
+% If @Individual is specified, then only individuals
+% related to @Individual will be exported.
+%
+% @param File The target file with ".owl" extension
+% @param Dir The target directory.
+% @param Individual The OWL individual that should be exported recursively.
+%
+export_abox(File) :-
+  file_name_extension(_, 'owl', File),
+  findall( Instance, rdf_has(Instance, rdf:type, owl:'NamedIndividual'), Individuals ),
+  sort([Individuals], Sorted),
+  export_to_owl(Sorted, File), !.
+
+export_abox(Dir) :- export_abox_separated(Dir, all).
+
+export_abox(Individual, File) :-
+  file_name_extension(_, 'owl', File),
+  findall( Related, owl_has(Individual, _, Related), RelatedInstances ),
+  sort([Individual|RelatedInstances], Sorted),
+  export_to_owl(Sorted, File), !.
+
+export_abox(Dir, Instance) :- export_abox_separated_(Dir, Instance).
+
+export_abox_separated(Dir, Individual) :-
+  % query ABOX
+  findall( (Instance,PathAbsolute), (
+    (  Individual=all
+    -> rdf_has(Instance, rdf:type, owl:'NamedIndividual')
+    ;  owl_has(Individual, _, Instance)
+    ),
+    rdf_split_url(Prefix, _, Instance),
+    atomic_list_concat([URL|_], #, Prefix),
+    atomic_list_concat([_,_|PathList], /, URL),
+    path_split(PathRelative, PathList),
+    path_concat(Dir, PathRelative, PathAbsolute)
+  ), AboxInfo ),
+  % find set of file paths to be exported
+  findall( PathAbsolute, member((_,PathAbsolute), AboxInfo), Paths ),
+  sort(Paths, PathsSorted),
+  % export owl file for each of the paths
+  forall( member(Path, PathsSorted), (
+    findall( Instance, member((Instance,Path),AboxInfo), Instances ),
+    sort(Instances, InstancesSorted),
+    export_to_owl(InstancesSorted, Path)
+  )).
 
 %% export_to_owl(+Atoms, -File)
 %
@@ -142,6 +240,8 @@ export_action(Action, File) :-
 % @param File   Filename for the exported OWL file
 %
 export_to_owl(Atoms, File) :-
+
+  file_directory_name(File, Dir), mkdir(Dir),
 
   open(File, write, Stream, [encoding('ascii')]),
   rdf_save_header(Stream, [write_xml_base(true)]),
