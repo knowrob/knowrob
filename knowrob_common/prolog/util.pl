@@ -69,6 +69,18 @@
 time_term(Timepoint, Timepoint) :-
   number(Timepoint), !.
 
+time_term([T0,T1], [T0,T1]) :-
+  number(T0),
+  number(T1), !.
+
+time_term(Timeinterval, [T0,T1]) :-
+  atom(Timeinterval),
+  owl_individual_of(Timeinterval, knowrob:'TimeInterval'),
+  rdf_has(Timeinterval, knowrob:'startTime', Timepoint0),
+  rdf_has(Timeinterval, knowrob:'endTime', Timepoint1),
+  time_term(Timepoint0, T0),
+  time_term(Timepoint1, T1), !.
+
 time_term(Timepoint, Time) :-
   (  rdf_split_url(_, TimePointLocal, Timepoint),
      atom_concat('timepoint_', TimeAtom, TimePointLocal)
@@ -82,7 +94,19 @@ time_term(Timepoint, Time) :-
 %% time_between(+T, +T0, +T1)
 % True iff T0 <= T <= T1
 %
+time_between(Timeinterval, T0, T1) :-
+  atom(Timeinterval),
+  owl_individual_of(Timeinterval, knowrob:'TimeInterval'),
+  time_term(Timeinterval , [T2,T3]),
+  time_between(T2, T0, T1),
+  time_between(T3, T0, T1), !.
+
+time_between([T2,T3], T0, T1) :-
+  time_between(T2, T0, T1),
+  time_between(T3, T0, T1), !.
+
 time_between(T, T0, T1) :-
+  not(is_list(T)), 
   time_term(T0, T0_term),
   time_term(T1, T1_term),
   time_term(T , T_term),

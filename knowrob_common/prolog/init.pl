@@ -55,6 +55,8 @@
 :- use_module(library('knowrob_cad_parser')).
 :- use_module(library('knowrob_actions')).
 
+:- use_module(library('knowrob_language')).
+
 
 % parse OWL files, register name spaces
 :- owl_parser:owl_parse('package://knowrob_common/owl/owl.owl').

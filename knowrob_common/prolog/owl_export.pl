@@ -4,6 +4,7 @@
   for instance object definitions, environment maps, or task specifications.
 
   Copyright (C) 2011 Moritz Tenorth
+  Copyright (C) 2016 Daniel Beßler
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -28,7 +29,7 @@
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@author Moritz Tenorth
+@author Moritz Tenorth, Daniel Beßler
 @license BSD
 
 */
