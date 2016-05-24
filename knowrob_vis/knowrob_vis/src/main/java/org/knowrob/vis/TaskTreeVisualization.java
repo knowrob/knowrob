@@ -170,6 +170,11 @@ public class TaskTreeVisualization extends AbstractNodeMain {
 	public void removeTaskTree() 
 	{
 		data = null;
+		data = node.getTopicMessageFactory().newFromType(data_vis_msgs.TaskTree._TYPE);
+
+		data.setWidth(0);
+		data.setHeight(0);
+		publishTree();
 	}
 
 	public void publishTree() 
