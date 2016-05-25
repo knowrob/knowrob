@@ -36,6 +36,31 @@
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#volumeOfObject -->
+
+    <rdf:Description rdf:about="&knowrob;volumeOfObject">
+        <rdfs:domain rdf:resource="&knowrob;TemporalPart"/>
+        <rdfs:domain>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;temporalPartOf"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;SpatialThing"/>
+            </owl:Restriction>
+        </rdfs:domain>
+    </rdf:Description>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
     // Individuals
     //
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -65,9 +90,22 @@
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/temporal-part-example.owl#TemporalPart_D49875h4">
         <rdf:type rdf:resource="&knowrob;DinnerPlate"/>
         <rdf:type rdf:resource="&knowrob;TemporalPart"/>
+        <knowrob:volumeOfObject rdf:datatype="&xsd;float">10.0</knowrob:volumeOfObject>
         <knowrob:temporalPartOf rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#DinnerPlate_fdigh245"/>
         <knowrob:insideOf rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#TemporalPart_SFiuh454"/>
         <knowrob:temporalExtend rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#TimeInterval_fdgu4389ds"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/temporal-part-example.owl#TemporalPart_SFUH235zgds -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/temporal-part-example.owl#TemporalPart_SFUH235zgds">
+        <rdf:type rdf:resource="&knowrob;DinnerPlate"/>
+        <rdf:type rdf:resource="&knowrob;TemporalPart"/>
+        <knowrob:volumeOfObject rdf:datatype="&xsd;float">33.0</knowrob:volumeOfObject>
+        <knowrob:temporalPartOf rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#DinnerPlate_fdigh245"/>
+        <knowrob:temporalExtend rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#TimeInterval_SDPFOMKe4ru5"/>
     </owl:NamedIndividual>
     
 
@@ -83,6 +121,16 @@
     
 
 
+    <!-- http://knowrob.org/kb/temporal-part-example.owl#TimeInterval_SDPFOMKe4ru5 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/temporal-part-example.owl#TimeInterval_SDPFOMKe4ru5">
+        <rdf:type rdf:resource="&knowrob;TimeInterval"/>
+        <knowrob:startTime rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#timepoint_10000"/>
+        <knowrob:endTime rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#timepoint_99999"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://knowrob.org/kb/temporal-part-example.owl#TimeInterval_fdgu4389ds -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/temporal-part-example.owl#TimeInterval_fdgu4389ds">
@@ -93,7 +141,7 @@
     
 
 
-    <!-- http://knowrob.org/kb/temporal-part-example.owl#TimePoint_0 -->
+    <!-- http://knowrob.org/kb/temporal-part-example.owl#timepoint_0 -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/temporal-part-example.owl#timepoint_0">
         <rdf:type rdf:resource="&knowrob;TimePoint"/>
@@ -101,9 +149,25 @@
     
 
 
-    <!-- http://knowrob.org/kb/temporal-part-example.owl#TimePoint_9999 -->
+    <!-- http://knowrob.org/kb/temporal-part-example.owl#timepoint_10000 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/temporal-part-example.owl#timepoint_10000">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/temporal-part-example.owl#timepoint_9999 -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/temporal-part-example.owl#timepoint_9999">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/temporal-part-example.owl#timepoint_99999 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/temporal-part-example.owl#timepoint_99999">
         <rdf:type rdf:resource="&knowrob;TimePoint"/>
     </owl:NamedIndividual>
 </rdf:RDF>

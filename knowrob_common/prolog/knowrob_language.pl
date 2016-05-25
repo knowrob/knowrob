@@ -43,7 +43,6 @@
 %% holds(+Term, ?T)
 %
 % True iff @Term holds during @T.
-% The term must be of the form: "PROPERTY(SUBJECT, OBJECT)".
 % 
 % @T can be TimeInterval or TimePoint individual, a number or a list of two numbers
 % representing an time interval.
@@ -67,14 +66,36 @@ holds(Term, T) :-
   )).
 
 holds(Property, Subject, Object, T) :-
-  once(rdf_triple(Subject, Property, Object)) ; (
-    rdf_has(SubjectPart, knowrob:'temporalPartOf', Subject),
-    once(rdf_triple(Property, SubjectPart, ObjectPart)),
-    rdf_has(ObjectPart, knowrob:'temporalPartOf', Object),
-    rdf_has(SubjectPart, knowrob:'temporalExtend', TimeInterval),
-    time_term(TimeInterval, [T0,T1]),
-    (  var(T)
-    -> T = [T0,T1]
-    ;  time_between(T, T0, T1)
-    )
+  once(rdf_triple(Subject, Property, Object)),
+  (  var(T)
+  -> T = [0.0,inf]
+  ;  true
+  ), !.
+  
+holds(Property, Subject, Object, T) :-
+  rdfs_individual_of(Property, owl:'DatatypeProperty'),
+  % query temporal part that declares '@Property = @Object'
+  rdf_has(SubjectPart, knowrob:'temporalPartOf', Subject),
+  once(rdf_triple(Property, SubjectPart, Object)),
+  % match time interval with @T
+  rdf_has(SubjectPart, knowrob:'temporalExtend', TimeInterval),
+  time_term(TimeInterval, [T0,T1]),
+  (  var(T)
+  -> T = [T0,T1]
+  ;  time_between(T, T0, T1)
+  ).
+  
+holds(Property, Subject, Object, T) :-
+  rdfs_individual_of(Property, owl:'ObjectProperty'),
+  % query temporal part that declares '@Property = ObjectPart'
+  % where ObjectPart is a temporal part of @Object
+  rdf_has(SubjectPart, knowrob:'temporalPartOf', Subject),
+  once(rdf_triple(Property, SubjectPart, ObjectPart)),
+  rdf_has(ObjectPart, knowrob:'temporalPartOf', Object),
+  % match time interval with @T
+  rdf_has(SubjectPart, knowrob:'temporalExtend', TimeInterval),
+  time_term(TimeInterval, [T0,T1]),
+  (  var(T)
+  -> T = [T0,T1]
+  ;  time_between(T, T0, T1)
   ).

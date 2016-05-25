@@ -2942,6 +2942,12 @@ sizeParameterOfObject is the common generalization of all those PhysicalAmountSl
     <owl:DatatypeProperty rdf:about="&knowrob;temperatureOfObject">
         <rdfs:domain rdf:resource="&knowrob;EnduringThing-Localized"/>
         <rdfs:range rdf:resource="&xsd;float"/>
+        <rdfs:domain>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;temporalPartOf"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;EnduringThing-Localized"/>
+            </owl:Restriction>
+        </rdfs:domain>
     </owl:DatatypeProperty>
     
 
@@ -3147,6 +3153,12 @@ sizeParameterOfObject is the common generalization of all those PhysicalAmountSl
         <rdfs:domain rdf:resource="&knowrob;SpatialThing"/>
         <rdfs:subPropertyOf rdf:resource="&knowrob;sizeParameterOfObject"/>
         <rdfs:range rdf:resource="&xsd;float"/>
+        <rdfs:domain>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;temporalPartOf"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;SpatialThing"/>
+            </owl:Restriction>
+        </rdfs:domain>
     </owl:DatatypeProperty>
     
 
