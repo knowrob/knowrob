@@ -115,9 +115,8 @@ time_between(T, T0, T1) :-
 %% time_later_then(+T0, +T1)
 % True iff T0 >= T1
 %
-time_later_then(T, inf)   :- false, !.
-time_later_then(inf, T)   :- true,  !.
-
+time_later_then(_, inf)   :- false, !.
+time_later_then(inf, _)   :- true,  !.
 time_later_then(T0, T1) :-
   time_term(T0, T0_term), number(T0_term),
   time_term(T1, T1_term), number(T1_term),
@@ -126,9 +125,8 @@ time_later_then(T0, T1) :-
 %% time_earlier_then(+T0, +T1)
 % True iff T0 <= T1
 %
-time_earlier_then(inf, T)   :- false, !.
-time_earlier_then(T, inf)   :- true,  !.
-
+time_earlier_then(inf, _)   :- false, !.
+time_earlier_then(_, inf)   :- true,  !.
 time_earlier_then(T0, T1) :-
   time_term(T0, T0_term), number(T0_term),
   time_term(T1, T1_term), number(T1_term),
