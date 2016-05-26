@@ -31,6 +31,7 @@
 
 :- module(knowrob_language,
     [
+      holds/1,
       holds/2
     ]).
 
@@ -38,9 +39,11 @@
 :- use_module(library('owl')).
 :- use_module(library('rdfs_computable')).
 
-:- rdf_meta holds(t,?).
+:- rdf_meta holds(t),
+            holds(t,?).
 
 %% holds(+Term, ?T)
+%% holds(+Term)
 %
 % True iff @Term holds during @T.
 % 
@@ -52,6 +55,10 @@
 % @param T Can be TimeInterval or TimePoint individual, a number or a list of two numbers
 %          representing a time interval.
 %
+holds(Term) :-
+  current_time(T),
+  holds(Term,T).
+
 holds(Term, T) :-
   (  Term =.. [':', Namespace, Tail]
   -> (
@@ -66,7 +73,8 @@ holds(Term, T) :-
   )).
 
 holds(Property, Subject, Object, T) :-
-  once(rdf_triple(Subject, Property, Object)),
+  rdf_triple(Property, Subject, Object),
+  not( rdfs_individual_of(Subject, knowrob:'TemporalPart') ),
   (  var(T)
   -> T = [0.0,inf]
   ;  true

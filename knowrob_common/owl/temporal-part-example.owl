@@ -40,21 +40,6 @@
     //
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
-
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#volumeOfObject -->
-
-    <rdf:Description rdf:about="&knowrob;volumeOfObject">
-        <rdfs:domain rdf:resource="&knowrob;TemporalPart"/>
-        <rdfs:domain>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;temporalPartOf"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;SpatialThing"/>
-            </owl:Restriction>
-        </rdfs:domain>
-    </rdf:Description>
     
 
 
@@ -126,7 +111,6 @@
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/temporal-part-example.owl#TimeInterval_SDPFOMKe4ru5">
         <rdf:type rdf:resource="&knowrob;TimeInterval"/>
         <knowrob:startTime rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#timepoint_10000"/>
-        <knowrob:endTime rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#timepoint_99999"/>
     </owl:NamedIndividual>
     
 
