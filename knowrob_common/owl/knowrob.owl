@@ -1885,10 +1885,6 @@ Note that locatedAtPoint-Spatial is irreflexive; in order to locate points in sp
     <owl:ObjectProperty rdf:about="&owl;topObjectProperty"/>
     
 
-    <owl:ObjectProperty rdf:about="&knowrob;boundingBoxSize">
-        <rdfs:domain rdf:resource="&knowrob;SpatialThing-Localized"/>
-        <rdfs:range rdf:resource="&xsd;string"/>
-    </owl:ObjectProperty>
 
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -2777,6 +2773,10 @@ There are various specializations of coordinateValuePredicateOfSystem currently 
         <rdfs:subPropertyOf rdf:resource="&knowrob;vector"/>
     </owl:DatatypeProperty>
     
+    <owl:DataProperty rdf:about="&knowrob;boundingBoxSize">
+        <rdfs:domain rdf:resource="&knowrob;SpatialThing-Localized"/>
+        <rdfs:subPropertyOf rdf:resource="&knowrob;vector"/>
+    </owl:DataProperty>
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#probability -->
