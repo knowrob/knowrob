@@ -184,12 +184,15 @@ map_object_label(Obj, Label) :-
 % @param H      Object height (z dimension)
 %  
 map_object_dimensions(Obj, W, D, H) :-
-    owl_has(Obj, knowrob:'widthOfObject', literal(type(_, W_))),
-    atom_number(W_, W),
-    owl_has(Obj, knowrob:'depthOfObject', literal(type(_, D_))),
-    atom_number(D_, D),
-    owl_has(Obj, knowrob:'heightOfObject', literal(type(_, H_))),
-    atom_number(H_, H).
+    object_dimensions(Obj, W, D, H).
+
+%map_object_dimensions(Obj, W, D, H) :-
+%    owl_has(Obj, knowrob:'widthOfObject', literal(type(_, W_))),
+%    atom_number(W_, W),
+%    owl_has(Obj, knowrob:'depthOfObject', literal(type(_, D_))),
+%    atom_number(D_, D),
+%    owl_has(Obj, knowrob:'heightOfObject', literal(type(_, H_))),
+%    atom_number(H_, H).
 
 map_object_dimensions( Obj, W, D, H ) :-
     % The depth of a knob defaults to 3cm here. This information
