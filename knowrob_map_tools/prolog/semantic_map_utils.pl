@@ -184,7 +184,7 @@ map_object_label(Obj, Label) :-
 % @param H      Object height (z dimension)
 %  
 map_object_dimensions(Obj, W, D, H) :-
-    object_dimensions(Obj, W, D, H).
+    object_dimensions(Obj, D, W, H).
 
 %map_object_dimensions(Obj, W, D, H) :-
 %    owl_has(Obj, knowrob:'widthOfObject', literal(type(_, W_))),
