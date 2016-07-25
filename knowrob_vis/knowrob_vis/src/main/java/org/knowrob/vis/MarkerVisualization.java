@@ -233,10 +233,10 @@ public class MarkerVisualization extends AbstractNodeMain {
 			pose.getPosition().setY(Float.parseFloat(positions[1]));
 			pose.getPosition().setZ(Float.parseFloat(positions[2]));
 			
-			pose.getOrientation().setX(Float.parseFloat(orientations[0]));
-			pose.getOrientation().setY(Float.parseFloat(orientations[1]));
-			pose.getOrientation().setZ(Float.parseFloat(orientations[2]));
-			pose.getOrientation().setW(Float.parseFloat(orientations[3]));
+			pose.getOrientation().setX(Float.parseFloat(orientations[1]));
+			pose.getOrientation().setY(Float.parseFloat(orientations[2]));
+			pose.getOrientation().setZ(Float.parseFloat(orientations[3]));
+			pose.getOrientation().setW(Float.parseFloat(orientations[0]));
 			
 			cam_pub.publish(pose);
 		}
