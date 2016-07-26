@@ -1,5 +1,6 @@
-/*
-  Copyright (C) 2010-2014 Moritz Tenorth
+/** <module> Reusable fluent ontology
+
+  Copyright (C) 2016 Daniel Beßler
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -24,20 +25,31 @@
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@author Moritz Tenorth
+@author Daniel Beßler
 @license BSD
-
 */
 
-:- register_ros_package(knowrob_common).
-:- register_ros_package(knowrob_objects).
-:- register_ros_package(knowrob_actions).
+:- module(fluents,
+    [
+      assert_fluent_begin/3,
+      assert_fluent_end/3,
+      assert_fluent_end/2
+    ]).
 
-:- use_module(library('knowrob_actions')).
-:- use_module(library('action_effects')).
+:- use_module(library('semweb/rdfs')).
+:- use_module(library('semweb/rdf_db')).
+:- use_module(library('owl')).
+:- use_module(library('rdfs_computable')).
 
-:- owl_parser:owl_parse('package://knowrob_actions/owl/action-effects.owl').
+:- rdf_meta assert_fluent_begin(r,r,r),
+            assert_fluent_end(r,r,r),
+            assert_fluent_end(r,r).
 
-:- rdf_db:rdf_register_ns(make_pancakes, 'http://knowrob.org/kb/pancake-making.owl#',    [keep(true)]).
-:- rdf_db:rdf_register_ns(action_effects, 'http://knowrob.org/kb/action-effects.owl#',    [keep(true)]).
+assert_fluent_begin(Subject, Predicate, Object) :-
+  true.
 
+assert_fluent_end(Subject, Predicate) :-
+  true.
+
+assert_fluent_end(Subject, Predicate, Object) :-
+  true.

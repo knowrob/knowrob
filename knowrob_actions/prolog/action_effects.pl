@@ -1,6 +1,6 @@
 /** <module> Prediction of action effects
 
-  Copyright (C) 2011 Moritz Tenorth
+  Copyright (C) 2011 Moritz Tenorth, 2016 Daniel Beßler
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -25,39 +25,133 @@
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@author Moritz Tenorth
+@author Moritz Tenorth, Daniel Beßler
 @license BSD
 
 */
 :- module(action_effects,
     [
       project_action_effects/1,
-      action_project/1,
-      action_project/2
+      action_check_preconditions/1,
+      action_check_preconditions/3,
+      action_project_effects/1,
+      action_project_effects/2
     ]).
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('rdfs_computable')).
 :- use_module(library('knowrob_owl')).
-
+:- use_module(library('fluents')).
 
 
 :- rdf_db:rdf_register_ns(knowrob,       'http://knowrob.org/kb/knowrob.owl#',      [keep(true)]).
-:- rdf_db:rdf_register_ns(effects,       'http://knowrob.org/kb/action-effects.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(action_effects,       'http://knowrob.org/kb/action-effects.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(object_change, 'http://knowrob.org/kb/object-change.owl#', [keep(true)]).
 
 :-  rdf_meta
     project_action_effects(r),
-    action_project(r),
+    action_project_effects(r),
+    action_project_effects(r,?),
+    action_check_preconditions(r),
+    action_check_preconditions(r,?,?),
     unlink_object(r),
     remove_object_properties(r,r).
 
-    
-action_project(Action) :- action_project(Action, _).
 
-action_project(Action, Effects) :-
-  false. % TODO: implement
+action_check_preconditions(Action) :- action_check_preconditions(Action, _, _).
+
+action_check_preconditions(Action, Fulfilled, Unfulfilled) :-
+  true. % TODO: implement
+
+
+action_project_effects(Action) :- action_project_effects(Action, _).
+
+action_project_effects(Action, Effects) :-
+  % TODO(daniel): Support ordering constraints of effects?
+  action_check_preconditions(Action),
+  
+  findall(EffectDescription, (
+    rdf_has(Action, knowrob:'hasEffect', Effect),
+    action_project_effect(Action, Effect, EffectDescription)
+  ), Effects).
+
+
+action_project_effect(Action, Effect, integrate(Entity,Property,Domain)) :-
+  once(owl_individual_of(Effect, action_effects:'Integrate')),
+  action_effect_entity(Action, Effect, action_effects:'effectEntity', Entity),
+  action_effect_entity(Action, Effect, action_effects:'effectValue', Domain),
+  action_effect_property(Action, Effect, action_effects:'effectProperty', Property),
+  % Assert temporal parts and link via @Property
+  assert_fluent_begin(Entity, Property, Domain), !.
+
+action_project_effect(Action, Effect, decompose(Entity,Property)) :-
+  once(owl_individual_of(Effect, action_effects:'Decompose')),
+  action_effect_entity(Action, Effect, action_effects:'effectEntity', Entity),
+  action_effect_property(Action, Effect, action_effects:'effectProperty', Property),
+  % Read domain type and create new instance
+  rdf_has(Property, rdfs:range, DomainClass),
+  rdf_instance_from_class(DomainClass, DomainEntity),
+  % Assert temporal parts and link via @Property
+  assert_fluent_begin(Entity, Property, DomainEntity), !.
+
+action_project_effect(Action, Effect, parametrize(Entity,Property,Value)) :-
+  once(owl_individual_of(Effect, action_effects:'Parametrize')),
+  action_effect_entity(Action, Effect, action_effects:'effectEntity', Entity),
+  action_effect_property(Action, Effect, action_effects:'effectProperty', Property),
+  % Read the data value
+  rdf_has(Effect, action_effects:'effectValue', literal(type(_,Value))),
+  % Assert temporal parts and link via @Property
+  assert_fluent_begin(Entity, Property, Value), !.
+  
+action_project_effect(Action, Effect, create(Value)) :-
+  once(owl_individual_of(Effect, action_effects:'Create')),
+  action_effect_entity(Action, Effect, action_effects:'effectValue', DomainClass),
+  rdf_instance_from_class(DomainClass, Value), !.
+
+action_project_effect(Action, Effect, clear(Entity,Property)) :-
+  once(owl_individual_of(Effect, action_effects:'ClearProperty')),
+  action_effect_entity(Action, Effect, action_effects:'effectEntity', Entity),
+  action_effect_property(Action, Effect, action_effects:'effectProperty', Property),
+  % Assert temporal parts and link via @Property
+  assert_fluent_end(Entity, Property), !.
+
+action_project_effect(Action, Effect, separate(Entity,Property)) :-
+  once(owl_individual_of(Effect, action_effects:'Separate')),
+  action_effect_entity(Action, Effect, action_effects:'effectEntity', Entity),
+  action_effect_entity(Action, Effect, action_effects:'effectValue', Domain),
+  action_effect_property(Action, Effect, action_effects:'effectProperty', Property),
+  % Assert temporal parts and link via @Property
+  assert_fluent_end(Entity, Property, Domain), !.
+
+action_project_effect(_, Effect, noop) :-
+  write('Unable to project unknown effect class "'), write(Effect), writeln(''), !.
+
+
+action_effect_entity(Action, Effect, Property, Entity) :-
+  rdf_has(Effect, Property, literal(type(_,EntityQuery))),
+  atomic_list_concat(EntityQueryList, ' ', EntityQuery),
+  action_parse_entity(Action, Action, EntityQueryList, Entity).
+
+
+action_parse_entity(_, Entity, [], Entity).
+
+action_parse_entity(Action, null, ['?action'|Rest], Entity) :-
+  action_parse_entity(Action, Action, Rest, Entity).
+
+action_parse_entity(Action, null, [Head|Rest], Entity) :-
+  action_parse_entity(Action, Head, Rest, Entity).
+
+action_parse_entity(Action, Parent, [Prop|Rest], Entity) :-
+  % TODO(daniel): What if cardinality > 1 ?
+  once( rdf_has(Parent, Prop, Child) ),
+  action_parse_entity(Action, Child, Rest, Entity).
+
+
+action_effect_property(_, Effect, Property, Relation) :-
+  rdf_has(Effect, Property, literal(type(_,RelationQuery))),
+  % TODO(daniel): Support queries for relations?
+  Relation = RelationQuery.
 
 
 % utility predicate: remove reference to an object (e.g. if it has been destroyed)

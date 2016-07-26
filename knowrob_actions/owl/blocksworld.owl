@@ -91,17 +91,16 @@
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&action-effects;hasEffect"/>
-                <owl:allValuesFrom>
-                    <owl:Class>
-                        <owl:oneOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="&blocksworld;StackEffect_0"/>
-                            <rdf:Description rdf:about="&blocksworld;StackEffect_1"/>
-                        </owl:oneOf>blockworld
-                    </owl:Class>
-                </owl:allValuesFrom>
-            </owl:Restriction>
+          <owl:Restriction>
+              <owl:onProperty rdf:resource="&action-effects;hasEffect"/>
+              <owl:hasValue rdf:resource="&blocksworld;StackEffect_0"/>
+          </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+          <owl:Restriction>
+              <owl:onProperty rdf:resource="&action-effects;hasEffect"/>
+              <owl:hasValue rdf:resource="&blocksworld;StackEffect_1"/>
+          </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
 
@@ -119,7 +118,7 @@
     <owl:NamedIndividual rdf:about="&blocksworld;StackEffect_0">
         <rdf:type rdf:resource="&action-effects;Integrate"/>
         <action-effects:effectEntity rdf:datatype="&xsd;string">?action &knowrob;objectActedOn</action-effects:effectEntity>
-        <action-effects:effectRelated rdf:datatype="&xsd;string">?action &knowrob;targetLocation</action-effects:effectRelated>
+        <action-effects:effectValue rdf:datatype="&xsd;string">?action &knowrob;targetLocation</action-effects:effectValue>
         <action-effects:effectProperty rdf:datatype="&xsd;string">&knowrob;on-Physical</action-effects:effectProperty>
     </owl:NamedIndividual>
     
@@ -150,10 +149,10 @@
     
     <owl:NamedIndividual rdf:about="&blocksworld;Stack_test0">
         <rdf:type rdf:resource="&blocksworld;Stack"/>
-        <knowrob:objectActedOn rdf:resource="&blocksworlds;BlockRed_test0"/>
-        <knowrob:targetLocation rdf:resource="&blocksworlds;BlockBlue_test0"/>
-        <knowrob:hasEffect rdf:resource="&blocksworlds;StackEffect_0"/>
-        <knowrob:hasEffect rdf:resource="&blocksworlds;StackEffect_1"/>
+        <knowrob:objectActedOn rdf:resource="&blocksworld;BlockRed_test0"/>
+        <knowrob:targetLocation rdf:resource="&blocksworld;BlockBlue_test0"/>
+        <knowrob:hasEffect rdf:resource="&blocksworld;StackEffect_0"/>
+        <knowrob:hasEffect rdf:resource="&blocksworld;StackEffect_1"/>
     </owl:NamedIndividual>
 
     <owl:NamedIndividual rdf:about="&blocksworld;BlockRed_test0">
@@ -200,10 +199,10 @@
     
     <owl:NamedIndividual rdf:about="&blocksworld;Stack_test1">
         <rdf:type rdf:resource="&blocksworld;Stack"/>
-        <knowrob:objectActedOn rdf:resource="&blocksworlds;BlockRed_test1"/>
-        <knowrob:targetLocation rdf:resource="&blocksworlds;BlockBlue_test1"/>
-        <knowrob:hasEffect rdf:resource="&blocksworlds;StackEffect_0"/>
-        <knowrob:hasEffect rdf:resource="&blocksworlds;StackEffect_1"/>
+        <knowrob:objectActedOn rdf:resource="&blocksworld;BlockRed_test1"/>
+        <knowrob:targetLocation rdf:resource="&blocksworld;BlockBlue_test1"/>
+        <knowrob:hasEffect rdf:resource="&blocksworld;StackEffect_0"/>
+        <knowrob:hasEffect rdf:resource="&blocksworld;StackEffect_1"/>
     </owl:NamedIndividual>
 
     <owl:NamedIndividual rdf:about="&blocksworld;BlockRed_test1">
@@ -228,10 +227,10 @@
     
     <owl:NamedIndividual rdf:about="&blocksworld;Stack_test2">
         <rdf:type rdf:resource="&blocksworld;Stack"/>
-        <knowrob:objectActedOn rdf:resource="&blocksworlds;BlockRed_test2"/>
-        <knowrob:targetLocation rdf:resource="&blocksworlds;BlockBlue_test2"/>
-        <knowrob:hasEffect rdf:resource="&blocksworlds;StackEffect_0"/>
-        <knowrob:hasEffect rdf:resource="&blocksworlds;StackEffect_1"/>
+        <knowrob:objectActedOn rdf:resource="&blocksworld;BlockRed_test2"/>
+        <knowrob:targetLocation rdf:resource="&blocksworld;BlockBlue_test2"/>
+        <knowrob:hasEffect rdf:resource="&blocksworld;StackEffect_0"/>
+        <knowrob:hasEffect rdf:resource="&blocksworld;StackEffect_1"/>
     </owl:NamedIndividual>
 
     <owl:NamedIndividual rdf:about="&blocksworld;BlockRed_test2">

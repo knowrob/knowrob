@@ -47,6 +47,7 @@
 :- use_module(library('rdfs_computable')).
 
 
+:- use_module(library('fluents')).
 :- use_module(library('util')).
 :- use_module(library('comp_similarity')).
 :- use_module(library('knowrob_owl')).
