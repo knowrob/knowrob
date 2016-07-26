@@ -46,10 +46,40 @@
             assert_fluent_end(r,r).
 
 assert_fluent_begin(Subject, Predicate, Object) :-
-  true.
-
-assert_fluent_end(Subject, Predicate) :-
-  true.
+  %TODO: what if fluent exist? -> noop
+  % Create open interval (i.e., without end time specified)
+  current_time(Now),
+  create_timepoint(Now, IntervalStart),
+  rdf_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimeInterval', Interval),
+  rdf_assert(Interval, 'http://knowrob.org/kb/knowrob.owl#startTime', IntervalStart),
+  % Create temporal parts
+  rdf_instance_from_class('http://knowrob.org/kb/knowrob.owl#TemporalPart', SubjectPart),
+  rdf_assert(SubjectPart, 'http://knowrob.org/kb/knowrob.owl#temporalPartOf', Subject),
+  rdf_assert(SubjectPart, 'http://knowrob.org/kb/knowrob.owl#temporalExtend', Interval),
+  rdf_instance_from_class('http://knowrob.org/kb/knowrob.owl#TemporalPart', ObjectPart),
+  rdf_assert(ObjectPart, 'http://knowrob.org/kb/knowrob.owl#temporalPartOf', Object),
+  rdf_assert(ObjectPart, 'http://knowrob.org/kb/knowrob.owl#temporalExtend', Interval),
+  % Link tempoiral parts via fluent property
+  rdf_assert(SubjectPart, Predicate, ObjectPart).
 
 assert_fluent_end(Subject, Predicate, Object) :-
-  true.
+  rdf_has(SubjectPart, 'http://knowrob.org/kb/knowrob.owl#temporalPartOf', Subject),
+  rdf_has(ObjectPart, 'http://knowrob.org/kb/knowrob.owl#temporalPartOf', Object),
+  rdf_has(SubjectPart, Predicate, ObjectPart),
+  rdf_has(SubjectPart, 'http://knowrob.org/kb/knowrob.owl#temporalExtend', Interval),
+  not( rdf_has(Interval, 'http://knowrob.org/kb/knowrob.owl#endTime', _) ),
+  current_time(Now),
+  create_timepoint(Now, IntervalEnd),
+  rdf_assert(Interval, 'http://knowrob.org/kb/knowrob.owl#endTime', IntervalEnd).
+
+assert_fluent_end(Subject, Predicate) :-
+  current_time(Now),
+  forall((
+    rdf_has(SubjectPart, 'http://knowrob.org/kb/knowrob.owl#temporalPartOf', Subject),
+    rdf_has(SubjectPart, Predicate, _)
+  ), (
+    rdf_has(SubjectPart, 'http://knowrob.org/kb/knowrob.owl#temporalExtend', Interval),
+    not( rdf_has(Interval, 'http://knowrob.org/kb/knowrob.owl#endTime', _) ),
+    create_timepoint(Now, IntervalEnd),
+    rdf_assert(Interval, 'http://knowrob.org/kb/knowrob.owl#endTime', IntervalEnd)
+  )).

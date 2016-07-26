@@ -117,17 +117,17 @@
 
     <owl:NamedIndividual rdf:about="&blocksworld;StackEffect_0">
         <rdf:type rdf:resource="&action-effects;Integrate"/>
-        <action-effects:effectEntity rdf:datatype="&xsd;string">?action &knowrob;objectActedOn</action-effects:effectEntity>
-        <action-effects:effectValue rdf:datatype="&xsd;string">?action &knowrob;targetLocation</action-effects:effectValue>
-        <action-effects:effectProperty rdf:datatype="&xsd;string">&knowrob;on-Physical</action-effects:effectProperty>
+        <action-effects:subject rdf:datatype="&xsd;string">?action &knowrob;objectActedOn</action-effects:subject>
+        <action-effects:object rdf:datatype="&xsd;string">?action &knowrob;targetLocation</action-effects:object>
+        <action-effects:predicate rdf:datatype="&xsd;string">&knowrob;on-Physical</action-effects:predicate>
     </owl:NamedIndividual>
     
     <!-- http://knowrob.org/kb/blocksworld.owl#StackEffect_1 -->
 
     <owl:NamedIndividual rdf:about="&blocksworld;StackEffect_1">
         <rdf:type rdf:resource="&action-effects;ClearProperty"/>
-        <action-effects:effectEntity rdf:datatype="&xsd;string">?action &knowrob;objectActedOn</action-effects:effectEntity>
-        <action-effects:effectProperty rdf:datatype="&xsd;string">&blocksworld;graspedBy</action-effects:effectProperty>
+        <action-effects:subject rdf:datatype="&xsd;string">?action &knowrob;objectActedOn</action-effects:subject>
+        <action-effects:predicate rdf:datatype="&xsd;string">&blocksworld;graspedBy</action-effects:predicate>
     </owl:NamedIndividual>
 
     <!-- http://knowrob.org/kb/temporal-part-example.owl#timepoint_0 -->

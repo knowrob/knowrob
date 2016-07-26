@@ -55,35 +55,35 @@
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#effectEntity -->
+    <!-- http://knowrob.org/kb/knowrob.owl#subject -->
 
-    <owl:DatatypeProperty rdf:about="&action-effects;effectEntity">
-        <rdfs:subPropertyOf rdf:resource="&action-effects;effectParameter"/>
+    <owl:DatatypeProperty rdf:about="&action-effects;subject">
+        <rdfs:subPropertyOf rdf:resource="&action-effects;tripleMember"/>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#effectParameter -->
+    <!-- http://knowrob.org/kb/knowrob.owl#tripleMember -->
 
-    <owl:DatatypeProperty rdf:about="&action-effects;effectParameter">
+    <owl:DatatypeProperty rdf:about="&action-effects;tripleMember">
         <rdfs:domain rdf:resource="&action-effects;ActionEffect"/>
         <rdfs:subPropertyOf rdf:resource="&owl;topDataProperty"/>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#effectProperty -->
+    <!-- http://knowrob.org/kb/knowrob.owl#predicate -->
 
-    <owl:DatatypeProperty rdf:about="&action-effects;effectProperty">
-        <rdfs:subPropertyOf rdf:resource="&action-effects;effectParameter"/>
+    <owl:DatatypeProperty rdf:about="&action-effects;predicate">
+        <rdfs:subPropertyOf rdf:resource="&action-effects;tripleMember"/>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#effectValue -->
+    <!-- http://knowrob.org/kb/knowrob.owl#object -->
 
-    <owl:DatatypeProperty rdf:about="&action-effects;effectValue">
-        <rdfs:subPropertyOf rdf:resource="&action-effects;effectParameter"/>
+    <owl:DatatypeProperty rdf:about="&action-effects;object">
+        <rdfs:subPropertyOf rdf:resource="&action-effects;tripleMember"/>
     </owl:DatatypeProperty>
     
 
@@ -104,21 +104,21 @@
         <rdfs:subClassOf rdf:resource="&knowrob;Event"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&action-effects;effectValue"/>
+                <owl:onProperty rdf:resource="&action-effects;object"/>
                 <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:maxQualifiedCardinality>
                 <owl:onDataRange rdf:resource="&xsd;anyURI"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&action-effects;effectEntity"/>
+                <owl:onProperty rdf:resource="&action-effects;subject"/>
                 <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:maxQualifiedCardinality>
                 <owl:onDataRange rdf:resource="&xsd;anyURI"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&action-effects;effectProperty"/>
+                <owl:onProperty rdf:resource="&action-effects;predicate"/>
                 <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:maxQualifiedCardinality>
                 <owl:onDataRange rdf:resource="&xsd;anyURI"/>
             </owl:Restriction>
@@ -133,21 +133,21 @@
         <rdfs:subClassOf rdf:resource="&action-effects;ActionEffect"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&action-effects;effectValue"/>
+                <owl:onProperty rdf:resource="&action-effects;object"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">0</owl:qualifiedCardinality>
                 <owl:onDataRange rdf:resource="&xsd;anyURI"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&action-effects;effectEntity"/>
+                <owl:onProperty rdf:resource="&action-effects;subject"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onDataRange rdf:resource="&xsd;anyURI"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&action-effects;effectProperty"/>
+                <owl:onProperty rdf:resource="&action-effects;predicate"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onDataRange rdf:resource="&xsd;anyURI"/>
             </owl:Restriction>
@@ -163,26 +163,26 @@
         <rdfs:subClassOf rdf:resource="&action-effects;ActionEffect"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&action-effects;effectValue"/>
+                <owl:onProperty rdf:resource="&action-effects;object"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onDataRange rdf:resource="&xsd;anyURI"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&action-effects;effectEntity"/>
+                <owl:onProperty rdf:resource="&action-effects;subject"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">0</owl:qualifiedCardinality>
                 <owl:onDataRange rdf:resource="&xsd;anyURI"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&action-effects;effectProperty"/>
+                <owl:onProperty rdf:resource="&action-effects;predicate"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">0</owl:qualifiedCardinality>
                 <owl:onDataRange rdf:resource="&xsd;anyURI"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment>Creates a new Individual of type given in `effectValue` property.</rdfs:comment>
+        <rdfs:comment>Creates a new Individual of type given in `object` property.</rdfs:comment>
     </owl:Class>
     
 
@@ -193,21 +193,21 @@
         <rdfs:subClassOf rdf:resource="&action-effects;ActionEffect"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&action-effects;effectProperty"/>
+                <owl:onProperty rdf:resource="&action-effects;predicate"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onDataRange rdf:resource="&xsd;anyURI"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&action-effects;effectEntity"/>
+                <owl:onProperty rdf:resource="&action-effects;subject"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onDataRange rdf:resource="&xsd;anyURI"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&action-effects;effectValue"/>
+                <owl:onProperty rdf:resource="&action-effects;object"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onDataRange rdf:resource="&xsd;anyURI"/>
             </owl:Restriction>
@@ -223,21 +223,21 @@
         <rdfs:subClassOf rdf:resource="&action-effects;ActionEffect"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&action-effects;effectProperty"/>
+                <owl:onProperty rdf:resource="&action-effects;predicate"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onDataRange rdf:resource="&xsd;anyURI"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&action-effects;effectEntity"/>
+                <owl:onProperty rdf:resource="&action-effects;subject"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onDataRange rdf:resource="&xsd;anyURI"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&action-effects;effectValue"/>
+                <owl:onProperty rdf:resource="&action-effects;object"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onDataRange rdf:resource="&xsd;anyURI"/>
             </owl:Restriction>
@@ -253,21 +253,21 @@
         <rdfs:subClassOf rdf:resource="&action-effects;ActionEffect"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&action-effects;effectProperty"/>
+                <owl:onProperty rdf:resource="&action-effects;predicate"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onDataRange rdf:resource="&xsd;anyURI"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&action-effects;effectEntity"/>
+                <owl:onProperty rdf:resource="&action-effects;subject"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onDataRange rdf:resource="&xsd;anyURI"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&action-effects;effectValue"/>
+                <owl:onProperty rdf:resource="&action-effects;object"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onDataRange rdf:resource="&xsd;anyURI"/>
             </owl:Restriction>
@@ -283,21 +283,21 @@
         <rdfs:subClassOf rdf:resource="&action-effects;ActionEffect"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&action-effects;effectProperty"/>
+                <owl:onProperty rdf:resource="&action-effects;predicate"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onDataRange rdf:resource="&xsd;anyURI"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&action-effects;effectEntity"/>
+                <owl:onProperty rdf:resource="&action-effects;subject"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onDataRange rdf:resource="&xsd;anyURI"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&action-effects;effectValue"/>
+                <owl:onProperty rdf:resource="&action-effects;object"/>
                 <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onDataRange rdf:resource="&xsd;anyURI"/>
             </owl:Restriction>
