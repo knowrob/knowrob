@@ -137,7 +137,6 @@
     </owl:ObjectProperty>
     
 
-
     <!-- http://knowrob.org/kb/knowrob.owl#behind-Generally -->
 
     <owl:ObjectProperty rdf:about="&knowrob;behind-Generally">
@@ -2774,6 +2773,10 @@ There are various specializations of coordinateValuePredicateOfSystem currently 
         <rdfs:subPropertyOf rdf:resource="&knowrob;vector"/>
     </owl:DatatypeProperty>
     
+    <owl:DataProperty rdf:about="&knowrob;boundingBoxSize">
+        <rdfs:domain rdf:resource="&knowrob;SpatialThing-Localized"/>
+        <rdfs:subPropertyOf rdf:resource="&knowrob;vector"/>
+    </owl:DataProperty>
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#probability -->
