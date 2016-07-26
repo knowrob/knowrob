@@ -31,7 +31,9 @@
 */
 :- module(action_effects,
     [
-      project_action_effects/1
+      project_action_effects/1,
+      action_project/1,
+      action_project/2
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -42,12 +44,20 @@
 
 
 :- rdf_db:rdf_register_ns(knowrob,       'http://knowrob.org/kb/knowrob.owl#',      [keep(true)]).
+:- rdf_db:rdf_register_ns(effects,       'http://knowrob.org/kb/action-effects.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(object_change, 'http://knowrob.org/kb/object-change.owl#', [keep(true)]).
 
 :-  rdf_meta
     project_action_effects(r),
+    action_project(r),
     unlink_object(r),
     remove_object_properties(r,r).
+
+    
+action_project(Action) :- action_project(Action, _).
+
+action_project(Action, Effects) :-
+  false. % TODO: implement
 
 
 % utility predicate: remove reference to an object (e.g. if it has been destroyed)
