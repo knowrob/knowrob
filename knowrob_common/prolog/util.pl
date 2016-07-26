@@ -107,33 +107,29 @@ time_between([T2,T3], T0, T1) :-
   time_between(T2, T0, T1),
   time_between(T3, T0, T1), !.
 
-time_between(T, T0, inf) :-
-  not(is_list(T)), 
-  time_term(T0, T0_term),
-  time_term(T , T_term),
-  T0_term =< T_term, !.
-
 time_between(T, T0, T1) :-
   not(is_list(T)), 
-  time_term(T0, T0_term),
-  time_term(T1, T1_term),
-  time_term(T , T_term),
-  T0_term =< T_term, T_term =< T1_term.
+  time_earlier_then(T0, T),
+  time_earlier_then(T, T1).
 
 %% time_later_then(+T0, +T1)
 % True iff T0 >= T1
 %
+time_later_then(_, inf)   :- false, !.
+time_later_then(inf, _)   :- true,  !.
 time_later_then(T0, T1) :-
-  time_term(T0, T0_term),
-  time_term(T1, T1_term),
+  time_term(T0, T0_term), number(T0_term),
+  time_term(T1, T1_term), number(T1_term),
   T1_term =< T0_term.
 
 %% time_earlier_then(+T0, +T1)
 % True iff T0 <= T1
 %
+time_earlier_then(inf, _)   :- false, !.
+time_earlier_then(_, inf)   :- true,  !.
 time_earlier_then(T0, T1) :-
-  time_term(T0, T0_term),
-  time_term(T1, T1_term),
+  time_term(T0, T0_term), number(T0_term),
+  time_term(T1, T1_term), number(T1_term),
   T0_term =< T1_term.
 
 %% reduce(+Predicate, +List, +StartValue, -Result).

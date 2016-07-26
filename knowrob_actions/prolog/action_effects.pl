@@ -1,6 +1,6 @@
 /** <module> Prediction of action effects
 
-  Copyright (C) 2011 Moritz Tenorth
+  Copyright (C) 2011 Moritz Tenorth, 2016 Daniel Beßler
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -25,32 +25,165 @@
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@author Moritz Tenorth
+@author Moritz Tenorth, Daniel Beßler
 @license BSD
 
 */
 :- module(action_effects,
     [
-      project_action_effects/1
+      project_action_effects/1,
+      action_preconditions_fulfilled/1,
+      action_project_effects/1,
+      action_project_effects/2
     ]).
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('rdfs_computable')).
 :- use_module(library('knowrob_owl')).
-
+:- use_module(library('owl')).
+:- use_module(library('fluents')).
 
 
 :- rdf_db:rdf_register_ns(knowrob,       'http://knowrob.org/kb/knowrob.owl#',      [keep(true)]).
+:- rdf_db:rdf_register_ns(action_effects,       'http://knowrob.org/kb/action-effects.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(object_change, 'http://knowrob.org/kb/object-change.owl#', [keep(true)]).
 
 :-  rdf_meta
+    action_preconditions_fulfilled(r),
+    action_project_effects(r),
+    action_project_effects(r,?),
+    action_project_effect(r,r,?),
+    query_entity(r,r,r,r),
+    query_predicate(r,r,r,r),
     project_action_effects(r),
     unlink_object(r),
     remove_object_properties(r,r).
 
 
+action_preconditions_fulfilled(Action) :-
+  true. % TODO: implement
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Action effect projection based on OWL description of effects
+%
+
+%% action_project_effects(+Action)
+%% action_project_effects(+Action, -Effects)
+%
+% Project the effects of @Action into the KB.
+% This boils down to manipulation of the rdf triple store.
+% Since we want to reason about past states we generally use
+% fluent properties and never retract from the KB.
+% The projection method uses the action-effect and fluent
+% ontologies which are part of the KnowRob core KB.
+% Preconditions are not checked.
+%
+% @Action The action of which effects should be projected in the KB
+% @Effects Descriptions of projected effects
+%
+action_project_effects(Action) :- action_project_effects(Action, _).
+
+action_project_effects(Action, Effects) :-
+  once( owl_individual_of(Action, knowrob:'Action') ),
+  % TODO(daniel): Support ordering constraints of effects?
+  findall(EffectDescription, (
+    rdf_has(Action, knowrob:'hasEffect', Effect),
+    action_project_effect(Action, Effect, EffectDescription)
+  ), Effects).
+
+action_project_effect(Action, Effect, integrate(Subject,Predicate,Object)) :-
+  once(owl_individual_of(Effect, action_effects:'Integrate')),
+  % parse arguments
+  query_entity(Action, Effect, action_effects:'subject', Subject),
+  query_predicate(Effect, Predicate),
+  query_entity(Action, Effect, action_effects:'object', Object),
+  % Assert temporal parts and link via @Predicate
+  assert_fluent_begin(Subject, Predicate, Object), !.
+
+action_project_effect(Action, Effect, decompose(Subject,Predicate)) :-
+  once(owl_individual_of(Effect, action_effects:'Decompose')),
+  % parse arguments
+  query_entity(Action, Effect, action_effects:'subject', Subject),
+  query_predicate(Effect, Predicate),
+  % Read domain type and create new instance
+  rdf_has(Predicate, rdfs:range, DomainClass),
+  rdf_instance_from_class(DomainClass, DomainEntity),
+  % Assert temporal parts and link via @Predicate
+  assert_fluent_begin(Subject, Predicate, DomainEntity), !.
+
+action_project_effect(Action, Effect, parametrize(Subject,Predicate,Object)) :-
+  once(owl_individual_of(Effect, action_effects:'Parametrize')),
+  % parse arguments
+  query_entity(Action, Effect, action_effects:'subject', Subject),
+  query_predicate(Effect, Predicate),
+  % Read the data value
+  rdf_has(Effect, action_effects:'object', literal(type(_,Object))),
+  % Assert temporal parts and link via @Predicate
+  assert_fluent_begin(Subject, Predicate, Object), !.
+  
+action_project_effect(Action, Effect, create(Object)) :-
+  once(owl_individual_of(Effect, action_effects:'Create')),
+  % parse arguments
+  query_entity(Action, Effect, action_effects:'object', ObjectClass),
+  rdf_instance_from_class(ObjectClass, Object), !.
+
+action_project_effect(Action, Effect, clear(Subject,Predicate)) :-
+  once(owl_individual_of(Effect, action_effects:'ClearProperty')),
+  % parse arguments
+  query_entity(Action, Effect, action_effects:'subject', Subject),
+  query_predicate(Effect, Predicate),
+  % Assert temporal parts and link via @Predicate
+  assert_fluent_end(Subject, Predicate), !.
+
+action_project_effect(Action, Effect, separate(Subject,Predicate)) :-
+  once(owl_individual_of(Effect, action_effects:'Separate')),
+  % parse arguments
+  query_entity(Action, Effect, action_effects:'subject', Subject),
+  query_predicate(Effect, Predicate),
+  query_entity(Action, Effect, action_effects:'object', Domain),
+  % Assert temporal parts and link via @Predicate
+  assert_fluent_end(Subject, Predicate, Domain), !.
+
+action_project_effect(_, Effect, noop) :-
+  write('Unable to project action effect individual "'), write(Effect), writeln('".'), !.
+
+
+query_predicate(Effect, Predicate) :-
+  rdf_has(Effect, action_effects:'predicate', literal(type(_,Predicate))).
+
+query_entity(Action, Effect, Predicate, Entity) :-
+  rdf_has(Effect, Predicate, literal(type(_,EntityQuery))),
+  atomic_list_concat(EntityQueryList, ' ', EntityQuery),
+  query_entity0(Action, null, EntityQueryList, Entity).
+
+query_entity0(_, Entity, [], Entity).
+
+query_entity0(Action, null, ['?action'|Rest], Entity) :-
+  query_entity0(Action, Action, Rest, Entity), !.
+
+query_entity0(Action, null, [Head|Rest], Entity) :-
+  query_entity0(Action, Head, Rest, Entity), !.
+
+query_entity0(Action, Parent, [Prop|Rest], Entity) :-
+  % FIXME(daniel): What if cardinality > 1 ?
+  % TODO(daniel): support fluents here?
+  once((rdf_has(Parent, Prop, Child)
+  -> query_entity0(Action, Child, Rest, Entity)
+  ;  (
+    write('Unable to project action "'), write(Action), writeln('".')
+  ))).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%
+%
+
 % utility predicate: remove reference to an object (e.g. if it has been destroyed)
+% @deprecated
 %
 unlink_object(Obj) :-
   ((findall(Prop, (rdfs_subproperty_of(Prop, knowrob:topologicalRelations)), Props),
@@ -59,6 +192,7 @@ unlink_object(Obj) :-
     findall(P,    (member(P, Props), rdf_retractall(Obj, P, _)), _),!) ; true,!).
 
 % utility predicate: remove all assertions of sub-properties of Property from Obj
+% @deprecated
 remove_object_properties(Obj, Property) :-
 (findall(Prop, (rdfs_subproperty_of(Prop, Property)), Props),
    findall(P,    (member(P, Props), rdf_retractall(Obj, P, _)), _)),!.
@@ -72,6 +206,7 @@ remove_object_properties(Obj, Property) :-
 
 % % % % % % % % % % % % % % % %
 % Mixing baking mix to a dough
+% @deprecated
 project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'Mixing'),
@@ -99,6 +234,7 @@ project_action_effects(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Adding something to something else
+% @deprecated
 project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'Incorporation-Physical'),
@@ -117,6 +253,7 @@ project_action_effects(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Heat up food
+% @deprecated
 project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'HeatingFood'),
@@ -128,6 +265,7 @@ project_action_effects(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Boil food
+% @deprecated
 project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'BoilingFood'),
@@ -169,6 +307,7 @@ project_action_effects(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Cleaning something
+% @deprecated
 project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'Cleaning'),
@@ -194,6 +333,7 @@ project_action_effects(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Cutting off a piece
+% @deprecated
 project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'CuttingOffAPiece'),
@@ -217,6 +357,7 @@ project_action_effects(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Cracking an egg
+% @deprecated
 project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'Cracking'),
@@ -251,6 +392,7 @@ project_action_effects(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Applying something to a surface (e.g. spreading butter)
+% @deprecated
 project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'ApplyingSomethingToSurface'),
@@ -272,6 +414,7 @@ project_action_effects(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Putting something onto something
+% @deprecated
 project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'PuttingSomethingOnto'),
@@ -292,6 +435,7 @@ project_action_effects(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Putting something into a container
+% @deprecated
 project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'PuttingSomethingIntoSomething'),
@@ -314,6 +458,7 @@ project_action_effects(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Putting something to some location
+% @deprecated
 project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'PuttingSomethingSomewhere'),
@@ -343,6 +488,7 @@ project_action_effects(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Pouring something onto something
+% @deprecated
 project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'PouringSomethingOnto'),
@@ -370,6 +516,7 @@ project_action_effects(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Switching on a device
+% @deprecated
 project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'TurningOnPoweredDevice'),
@@ -393,6 +540,7 @@ project_action_effects(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Switching off a device
+% @deprecated
 project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'TurningOffPoweredDevice'),
@@ -416,6 +564,7 @@ project_action_effects(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Turning on water (objectActedOn is a tap)
+% @deprecated
 project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'TurningOnWater'),
@@ -439,6 +588,7 @@ project_action_effects(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Turning off water (objectActedOn is a tap)
+% @deprecated
 project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'TurningOffWater'),
@@ -462,6 +612,7 @@ project_action_effects(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Opening a container (change state to open)
+% @deprecated
 project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'OpeningAContainerArtifact'),
@@ -485,6 +636,7 @@ project_action_effects(Action) :-
 
 % % % % % % % % % % % % % % % %
 % Closing a container (change state to closed)
+% @deprecated
 project_action_effects(Action) :-
 
   owl_individual_of(Action, knowrob:'ClosingAContainerArtifact'),

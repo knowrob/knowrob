@@ -373,8 +373,9 @@ marker_initialize_object(Identifier,MarkerObject) :-
     marker_color(MarkerObject, [0.0,0.0,0.0,0.0]),
     marker_scale(MarkerObject, [1.0,1.0,1.0])
   )),
-  % TODO: object_dimensions should not change mesh scale, use mesh_scale property for mesh scaling
   ignore((
+    % TODO: ignore scale for meshes?
+    %not( marker_type(MarkerObject, mesh_resource) ),
     object_dimensions(Identifier, X, Y, Z),
     marker_scale(MarkerObject, [X, Y, Z])
   )),
