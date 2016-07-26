@@ -32,6 +32,7 @@
 package org.knowrob.vis;
 
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import org.ros.namespace.GraphName;
 import org.ros.node.AbstractNodeMain;
@@ -88,13 +89,15 @@ public class TaskTreeVisualization extends AbstractNodeMain {
          *  tasks[x][1] contains task ID
 	 *  tasks[x][2] contains parent task's ID
 	 *  tasks[x][3] contains task type  
+	 *  tasks[x][4] contains start time
+	 *  tasks[x][5] contains end time  
 	 */
 	public void addTaskTree(String[][] tasks, String[] highlightedTasks, String[] allowedTypes) {
 
 		data = node.getTopicMessageFactory().newFromType(data_vis_msgs.TaskTree._TYPE);
 
-		data.setWidth(960);
-		data.setHeight(500);
+		data.setWidth(460);
+		data.setHeight(580);
 		ArrayList<Task> tree = new ArrayList<Task>();
 		
 
@@ -102,14 +105,28 @@ public class TaskTreeVisualization extends AbstractNodeMain {
 		for(int i = tasks.length - 1; i >= 0; i--) 
                 {
 			Task t = node.getTopicMessageFactory().newFromType(data_vis_msgs.Task._TYPE);
-			t.setInfo( tasks[i][0]);
+
+
+			if(!tasks[i][0].equals("' '"))
+				t.setInfo(tasks[i][0]);
+			else
+			{
+				StringTokenizer tkn = new StringTokenizer(tasks[i][3], "#");
+				tkn.nextToken();
+				t.setInfo(tkn.nextToken());
+			}
+
+
 			t.setColor("#000000");
 			t.setId(i);
                         t.setParent(i);
-			t.setType(tasks[i][3]);
+			t.setType(tasks[i][3] );
+			t.setTip("ID: " + tasks[i][1] + ", Goal: " + tasks[i][0] +
+				", Type: " + tasks[i][3] + ", Start: " + tasks[i][4] + 
+				", End: " + tasks[i][5]);
 
 			// checking if the current task should be visualized in the tree
-			boolean isVisualizationDesired = false;
+			boolean isVisualizationDesired = true;
 			for(int j = 0; j < allowedTypes.length; j++)
 			{
 				if(allowedTypes[j].equals(tasks[i][3]))
@@ -170,11 +187,15 @@ public class TaskTreeVisualization extends AbstractNodeMain {
 	public void removeTaskTree() 
 	{
 		data = null;
+		data = node.getTopicMessageFactory().newFromType(data_vis_msgs.TaskTree._TYPE);
+		data.setWidth(0);
+		data.setHeight(0);
+		publishTree();
 	}
 
 	public void publishTree() 
 	{
-		pub.publish(data);
+		pub.publish(data);		
 	}
 
 
