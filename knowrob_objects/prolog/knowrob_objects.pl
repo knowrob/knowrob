@@ -39,6 +39,7 @@
       object_pose/3,
       object_color/2,
       object_dimensions/4,
+      class_dimensions/4,
       object_assert_dimensions/4,
       object_assert_color/2,
       matrix_rotation/2,
@@ -121,6 +122,7 @@
     object_pose(+,-,-),
     object_color(r, ?),
     object_dimensions(r, ?, ?, ?),
+    class_dimensions(r, ?, ?, ?),
     object_assert_dimensions(r, +, +, +),
     object_assert_color(r, +),
     matrix_rotation(+,-),
@@ -342,8 +344,19 @@ object_dimensions(Obj, Depth, Width, Height) :-
 object_dimensions(Obj, Depth, Width, Height) :-
   owl_has(Obj, srdl2comp:'box_size', literal(type(_, ScaleVector))),
   parse_vector(ScaleVector, [Depth, Width, Height]).
-  
-  
+
+%% class_dimensions(?Class, ?Depth, ?Width, ?Height) is nondet.
+%
+% Get the width, depth and height of the class.
+%
+% @param Class  Subclass of EnduringThing-Localized
+% @param Depth  Depth of the bounding box (x-dimension)
+% @param Width  Width of the bounding box (y-dimension)
+% @param Height Height of the bounding box (z-dimension)
+%
+class_dimensions(Class, Depth, Width, Height) :-
+  class_properties(Class, knowrob:'boundingBoxSize', literal(type(_, ScaleVector))),
+  parse_vector(ScaleVector, [Depth, Width, Height]),!.
 
 %% object_assert_dimensions(+Obj, +H, +W, +D) is nondet.
 %
