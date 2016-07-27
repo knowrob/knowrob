@@ -337,9 +337,12 @@ object_dimensions(Obj, Depth, Width, Height) :-
   parse_vector(ScaleVector, [Depth, Width, Height]),!.
   
 object_dimensions(Obj, Depth, Width, Height) :-
-  owl_has(Obj, knowrob:depthOfObject,  literal(type(_, Depth))),
-  owl_has(Obj, knowrob:widthOfObject,  literal(type(_, Width))),
-  owl_has(Obj, knowrob:heightOfObject, literal(type(_, Height))),!.
+  owl_has(Obj, knowrob:depthOfObject,  literal(type(_, Depth_))),
+  owl_has(Obj, knowrob:widthOfObject,  literal(type(_, Width_))),
+  owl_has(Obj, knowrob:heightOfObject, literal(type(_, Height_))),
+  atom_number(Depth_, Depth),
+  atom_number(Width_, Width),
+  atom_number(Height_, Height),!.
 
 object_dimensions(Obj, Depth, Width, Height) :-
   owl_has(Obj, srdl2comp:'box_size', literal(type(_, ScaleVector))),
