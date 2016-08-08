@@ -39,6 +39,11 @@
 :- use_module(library('owl')).
 :- use_module(library('rdfs_computable')).
 
+% define holds as meta-predicate and allow the definitions
+% to be in different parts of the source file
+:- meta_predicate holds(0, ?, ?).
+:- multifile holds/2.
+
 :- rdf_meta holds(t),
             holds(t,?).
 
@@ -84,21 +89,21 @@ holds(Property, Subject, Object, T) :-
   rdfs_individual_of(Property, owl:'DatatypeProperty'),
   % query temporal part that declares '@Property = @Object'
   rdf_has(SubjectPart, knowrob:'temporalPartOf', Subject),
-  once(rdf_triple(Property, SubjectPart, Object)),
+  once(rdf_has(Property, SubjectPart, Object)),
   % match time interval with @T
   rdf_has(SubjectPart, knowrob:'temporalExtend', TimeInterval),
   time_term(TimeInterval, [T0,T1]),
   (  var(T)
   -> T = [T0,T1]
   ;  time_between(T, T0, T1)
-  ).
+  ), !.
   
 holds(Property, Subject, Object, T) :-
   rdfs_individual_of(Property, owl:'ObjectProperty'),
   % query temporal part that declares '@Property = ObjectPart'
   % where ObjectPart is a temporal part of @Object
   rdf_has(SubjectPart, knowrob:'temporalPartOf', Subject),
-  once(rdf_triple(Property, SubjectPart, ObjectPart)),
+  once(rdf_has(Property, SubjectPart, ObjectPart)),
   rdf_has(ObjectPart, knowrob:'temporalPartOf', Object),
   % match time interval with @T
   rdf_has(SubjectPart, knowrob:'temporalExtend', TimeInterval),
@@ -106,4 +111,4 @@ holds(Property, Subject, Object, T) :-
   (  var(T)
   -> T = [T0,T1]
   ;  time_between(T, T0, T1)
-  ).
+  ), !.
