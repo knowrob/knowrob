@@ -32,7 +32,10 @@
 :- module(knowrob_language,
     [
       holds/1,
-      holds/2
+      holds/2,
+      occurs/1,
+      occurs/2,
+      occurs/3
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -41,19 +44,23 @@
 
 % define holds as meta-predicate and allow the definitions
 % to be in different parts of the source file
-:- meta_predicate holds(0, ?, ?).
-:- multifile holds/2.
+:- meta_predicate holds(0, ?, ?)
+                  occurs(0, ?, ?, ?).
+
+:- multifile holds/2
+             occurs/3.
 
 :- rdf_meta holds(t),
-            holds(t,?).
+            holds(t,?)
+            occurs(?),
+            occurs(?,?),
+            occurs(?,?,?).
 
 %% holds(+Term, ?T)
 %% holds(+Term)
 %
-% True iff @Term holds during @T.
-% 
-% @T can be TimeInterval or TimePoint individual, a number or a list of two numbers
-% representing an time interval.
+% True iff @Term holds during @T. Where @T is a TimeInterval or TimePoint individual,
+% a number or a list of two numbers representing a time interval.
 %
 % @param Term Must be of the form: "PROPERTY(SUBJECT, OBJECT)".
 %             For example: `Term = knowrob:insideOf(example:'DinnerPlate_fdigh245', example:'Drawer_bsdgwe8trg')`.
@@ -112,3 +119,52 @@ holds(Property, Subject, Object, T) :-
   -> T = [T0,T1]
   ;  time_between(T, T0, T1)
   ), !.
+
+%% occurs(?Evt) is nondet.
+%% occurs(?Evt,?T) is nondet.
+%% occurs(?Evt,?T,?EvtType) is nondet.
+%
+% True iff @Evt occurs during @T. Where @T is a TimeInterval or TimePoint individual,
+% a number or a list of two numbers representing a time interval.
+% @EvtType specifies the type of the event, it must be a subclass of knowrob:'Event'.
+%
+% @param Evt Identifier of the event
+% @param T   Timepoint or time interval
+% @param EvtType Identifier of the event type
+% 
+occurs(Evt) :-
+  current_time(T),
+  occurs(Evt, T, knowrob:'Event').
+
+occurs(Evt, T) :-
+  occurs(Evt, T, knowrob:'Event').
+
+occurs(Evt, T, EvtTyp) :-
+  number(T), current_time(Now),
+  occurs(Evt, [T,Now], EvtTyp), !.
+
+occurs(Evt, T, EvtTyp) :-
+  atom(T), time_term(T,T_val), current_time(Now),
+  occurs(Evt, [T_val,Now], EvtTyp), !.
+
+% Read event instance from RDF triple store
+occurs(Evt, T, EvtTyp) :-
+  rdfs_subclass_of(EvtType, knowrob:'Event'),
+  rdfs_individual_of(Evt, EvtTyp),
+  rdf_has(Evt, knowrob:'startTime', T0),
+  (rdf_has(Evt, knowrob:'endTime', T1) ; current_time(T1)),
+  (  var(T)
+  -> T = [T0,T1]
+  ;  time_between(T, T0, T1)
+  ).
+
+% Compute event instance
+occurs(Evt, T, EvtTyp) :-
+  var(Evt),
+  rdfs_subclass_of(EvtType, knowrob:'Event'),
+  rdfs_computable_prolog_instance_of(Evt, Type),
+  occurs(Evt, T, EvtTyp).
+
+%% NOTE(daniel): Define computable occurs in external files like this:
+%% knowrob_language:occurs(Evt, [T0,T1], knowrob:'MyEvent') :-
+%%   var(Evt), compute_my_event(T0,T1,Evt).
