@@ -1,4 +1,4 @@
-/** <module> Core part of the KnowRob language
+/** <module> Predicates for temporal reasoning in KnowRob
 
   Copyright (C) 2016 Daniel Beßler
   All rights reserved.
@@ -29,13 +29,16 @@
 @license BSD
 */
 
-:- module(knowrob_language,
+:- module(knowrob_temporal,
     [
       holds/1,
       holds/2,
       occurs/1,
       occurs/2,
-      occurs/3
+      occurs/3,
+      assert_fluent_begin/3,
+      assert_fluent_end/3,
+      assert_fluent_end/2
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -54,7 +57,10 @@
             holds(t,?)
             occurs(?),
             occurs(?,?),
-            occurs(?,?,?).
+            occurs(?,?,?),
+            assert_fluent_begin(r,r,r),
+            assert_fluent_end(r,r,r),
+            assert_fluent_end(r,r)..
 
 %% holds(+Term, ?T)
 %% holds(+Term)
@@ -166,5 +172,52 @@ occurs(Evt, T, EvtTyp) :-
   occurs(Evt, T, EvtTyp).
 
 %% NOTE(daniel): Define computable occurs in external files like this:
-%% knowrob_language:occurs(Evt, [T0,T1], knowrob:'MyEvent') :-
+%% knowrob_temporal:occurs(Evt, [T0,T1], knowrob:'MyEvent') :-
 %%   var(Evt), compute_my_event(T0,T1,Evt).
+
+
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% methods for asserting fluent relations
+
+
+assert_fluent_begin(Subject, Predicate, Object) :-
+  %TODO: what if fluent exist? -> noop
+  % Create open interval (i.e., without end time specified)
+  current_time(Now),
+  create_timepoint(Now, IntervalStart),
+  rdf_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimeInterval', Interval),
+  rdf_assert(Interval, 'http://knowrob.org/kb/knowrob.owl#startTime', IntervalStart),
+  % Create temporal parts
+  rdf_instance_from_class('http://knowrob.org/kb/knowrob.owl#TemporalPart', SubjectPart),
+  rdf_assert(SubjectPart, 'http://knowrob.org/kb/knowrob.owl#temporalPartOf', Subject),
+  rdf_assert(SubjectPart, 'http://knowrob.org/kb/knowrob.owl#temporalExtend', Interval),
+  rdf_instance_from_class('http://knowrob.org/kb/knowrob.owl#TemporalPart', ObjectPart),
+  rdf_assert(ObjectPart, 'http://knowrob.org/kb/knowrob.owl#temporalPartOf', Object),
+  rdf_assert(ObjectPart, 'http://knowrob.org/kb/knowrob.owl#temporalExtend', Interval),
+  % Link tempoiral parts via fluent property
+  rdf_assert(SubjectPart, Predicate, ObjectPart).
+
+assert_fluent_end(Subject, Predicate, Object) :-
+  rdf_has(SubjectPart, 'http://knowrob.org/kb/knowrob.owl#temporalPartOf', Subject),
+  rdf_has(ObjectPart, 'http://knowrob.org/kb/knowrob.owl#temporalPartOf', Object),
+  rdf_has(SubjectPart, Predicate, ObjectPart),
+  rdf_has(SubjectPart, 'http://knowrob.org/kb/knowrob.owl#temporalExtend', Interval),
+  not( rdf_has(Interval, 'http://knowrob.org/kb/knowrob.owl#endTime', _) ),
+  current_time(Now),
+  create_timepoint(Now, IntervalEnd),
+  rdf_assert(Interval, 'http://knowrob.org/kb/knowrob.owl#endTime', IntervalEnd).
+
+assert_fluent_end(Subject, Predicate) :-
+  current_time(Now),
+  forall((
+    rdf_has(SubjectPart, 'http://knowrob.org/kb/knowrob.owl#temporalPartOf', Subject),
+    rdf_has(SubjectPart, Predicate, _)
+  ), (
+    rdf_has(SubjectPart, 'http://knowrob.org/kb/knowrob.owl#temporalExtend', Interval),
+    not( rdf_has(Interval, 'http://knowrob.org/kb/knowrob.owl#endTime', _) ),
+    create_timepoint(Now, IntervalEnd),
+    rdf_assert(Interval, 'http://knowrob.org/kb/knowrob.owl#endTime', IntervalEnd)
+  )).
+

@@ -53,7 +53,7 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('rdfs_computable')).
 :- use_module(library('knowrob_objects')).
-:- use_module(library('knowrob_language')).
+:- use_module(library('knowrob_temporal')).
 
 
 :- rdf_db:rdf_register_ns(knowrob,      'http://knowrob.org/kb/knowrob.owl#',      [keep(true)]).
@@ -91,7 +91,7 @@
 %
 on_Physical(Top, Bottom) :-
     get_timepoint(T),
-    knowrob_language:holds(on_Physical(Top, Bottom), T).
+    knowrob_temporal:holds(on_Physical(Top, Bottom), T).
 
 
 
@@ -107,7 +107,7 @@ on_Physical(Top, Bottom) :-
 % @param Bottom Identifier of the lower Object
 % @param T      TimePoint or Event for which the relations is supposed to hold
 %
-knowrob_language:holds(on_Physical(Top, Bottom),T) :-
+knowrob_temporal:holds(on_Physical(Top, Bottom),T) :-
 
     % get object center for Top
     object_detection(Top, T, VPT),
@@ -133,7 +133,7 @@ knowrob_language:holds(on_Physical(Top, Bottom),T) :-
     <( BZ, TZ),
     Top \= Bottom.
 
-%%% knowrob_language:holds(on_Physical(Top, Bottom), T) :-
+%%% knowrob_temporal:holds(on_Physical(Top, Bottom), T) :-
 %%%
 %%%     object_detection(Top, T, VPT),
 %%%     object_detection(Bottom, T, VPB),
@@ -177,7 +177,7 @@ knowrob_language:holds(on_Physical(Top, Bottom),T) :-
 %
 comp_above_of(Top, Bottom) :-
     get_timepoint(T),
-    knowrob_language:holds(comp_above_of(Top, Bottom), T).
+    knowrob_temporal:holds(comp_above_of(Top, Bottom), T).
 
 
 
@@ -193,7 +193,7 @@ comp_above_of(Top, Bottom) :-
 % @param Bottom Identifier of the lower Object
 % @param T      TimePoint or Event for which the relations is supposed to hold
 %
-knowrob_language:holds(comp_above_of(Top, Bottom),T) :-
+knowrob_temporal:holds(comp_above_of(Top, Bottom),T) :-
 
 
     % get object center for Top
@@ -234,7 +234,7 @@ knowrob_language:holds(comp_above_of(Top, Bottom),T) :-
 %
 comp_below_of(Bottom, Top) :-
     get_timepoint(T),
-    knowrob_language:holds(comp_above_of(Top, Bottom), T).
+    knowrob_temporal:holds(comp_above_of(Top, Bottom), T).
 
 
 
@@ -250,7 +250,7 @@ comp_below_of(Bottom, Top) :-
 %
 comp_toTheLeftOf(Left, Right) :-
     get_timepoint(T),
-    knowrob_language:holds(comp_toTheLeftOf(Left, Right), T).
+    knowrob_temporal:holds(comp_toTheLeftOf(Left, Right), T).
 
 
 %% holds(+ToTheLeftOf:compound, +T) is nondet.
@@ -264,7 +264,7 @@ comp_toTheLeftOf(Left, Right) :-
 % @param Bottom Identifier of the lower Object
 % @param T      TimePoint or Event for which the relations is supposed to hold
 %
-knowrob_language:holds(comp_toTheLeftOf(Left, Right), T) :-
+knowrob_temporal:holds(comp_toTheLeftOf(Left, Right), T) :-
     %
     % TODO: adapt this to take rotations and object dimensions into account
     %
@@ -305,7 +305,7 @@ knowrob_language:holds(comp_toTheLeftOf(Left, Right), T) :-
 %
 comp_toTheRightOf(Right, Left) :-
     get_timepoint(T),
-    knowrob_language:holds(comp_toTheRightOf(Right, Left), T).
+    knowrob_temporal:holds(comp_toTheRightOf(Right, Left), T).
 
 
 %% holds(+ToTheRightOf:compound, +T) is nondet.
@@ -319,8 +319,8 @@ comp_toTheRightOf(Right, Left) :-
 % @param T      TimePoint or Event for which the relations is supposed to hold
 % @see comp_toTheLeftOf
 %
-knowrob_language:holds(comp_toTheRightOf(Right, Left), T) :-
-    knowrob_language:holds(comp_toTheLeftOf(Left, Right), T).
+knowrob_temporal:holds(comp_toTheRightOf(Right, Left), T) :-
+    knowrob_temporal:holds(comp_toTheLeftOf(Left, Right), T).
 
 
 
@@ -339,7 +339,7 @@ knowrob_language:holds(comp_toTheRightOf(Right, Left), T) :-
 %
 comp_toTheSideOf(A, B) :-
     get_timepoint(T),
-    knowrob_language:holds(comp_toTheSideOf(A, B), T).
+    knowrob_temporal:holds(comp_toTheSideOf(A, B), T).
 
 %% holds(+ToTheLeftOf:compound, +T) is nondet.
 %
@@ -353,9 +353,9 @@ comp_toTheSideOf(A, B) :-
 % @see comp_toTheLeftOf
 % @see comp_toTheRightOf
 %
-knowrob_language:holds(comp_toTheSideOf(A, B), T) :-
-    knowrob_language:holds(comp_toTheRightOf(A, B), T);
-    knowrob_language:holds(comp_toTheLeftOf(A, B), T).
+knowrob_temporal:holds(comp_toTheSideOf(A, B), T) :-
+    knowrob_temporal:holds(comp_toTheRightOf(A, B), T);
+    knowrob_temporal:holds(comp_toTheLeftOf(A, B), T).
 
 
 
@@ -373,7 +373,7 @@ knowrob_language:holds(comp_toTheSideOf(A, B), T) :-
 %
 comp_inFrontOf(Front, Back) :-
     get_timepoint(T),
-    knowrob_language:holds(comp_inFrontOf(Front, Back), T).
+    knowrob_temporal:holds(comp_inFrontOf(Front, Back), T).
 
 %% holds(+InFrontOf:compound, +T) is nondet.
 %
@@ -386,7 +386,7 @@ comp_inFrontOf(Front, Back) :-
 % @param Back Identifier of the back Object
 % @param T TimePoint or Event for which the relations is supposed to hold
 %
-knowrob_language:holds(comp_inFrontOf(Front, Back), T) :-
+knowrob_temporal:holds(comp_inFrontOf(Front, Back), T) :-
     %
     % TODO: adapt this to take rotations and object dimensions into account
     %
@@ -422,7 +422,7 @@ knowrob_language:holds(comp_inFrontOf(Front, Back), T) :-
 %
 comp_inCenterOf(Inner, Outer) :-
     get_timepoint(T),
-    knowrob_language:holds(comp_inCenterOf(Inner, Outer), T).
+    knowrob_temporal:holds(comp_inCenterOf(Inner, Outer), T).
 
 %% holds(+InCenterOf:compound, +T) is nondet.
 %
@@ -435,7 +435,7 @@ comp_inCenterOf(Inner, Outer) :-
 % @param Outer Identifier of the outer Object
 % @param T TimePoint or Event for which the relations is supposed to hold
 %
-knowrob_language:holds(comp_inCenterOf(Inner, Outer), T) :-
+knowrob_temporal:holds(comp_inCenterOf(Inner, Outer), T) :-
 
     object_detection(Inner, T, VPI),
     object_detection(Outer, T, VPO),
@@ -472,7 +472,7 @@ knowrob_language:holds(comp_inCenterOf(Inner, Outer), T) :-
 %
 in_ContGeneric(InnerObj, OuterObj) :-
     get_timepoint(T),
-    knowrob_language:holds(in_ContGeneric(InnerObj, OuterObj), T).
+    knowrob_temporal:holds(in_ContGeneric(InnerObj, OuterObj), T).
 
 
 %% holds(+InContained:compound, +T) is nondet.
@@ -486,7 +486,7 @@ in_ContGeneric(InnerObj, OuterObj) :-
 % @param OuterObj Identifier of the outer Object
 % @param T TimePoint or Event for which the relations is supposed to hold
 %
-knowrob_language:holds(in_ContGeneric(InnerObj, OuterObj), T) :-
+knowrob_temporal:holds(in_ContGeneric(InnerObj, OuterObj), T) :-
 
 %     (var(InnerObj); var(OuterObj)),
 
