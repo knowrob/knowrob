@@ -1,6 +1,6 @@
 /** <module> Utilities for handling OWL information in KnowRob.
 
-  Copyright (C) 2011 Moritz Tenorth
+  Copyright (C) 2011 Moritz Tenorth, 2016 Daniel Beßler
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -25,13 +25,20 @@
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@author Moritz Tenorth
+@author Moritz Tenorth, Daniel Beßler
 @license BSD
 
 */
 
 :- module(knowrob_owl,
     [
+      entity/2,
+      entity_description/2,
+      entity_description_property/3,
+      entity_type/2,
+      entity_compute/2,
+      entity_assert/2,
+      is_entitiy_description/1,
       class_properties/3,
       class_properties_some/3,
       class_properties_all/3,
@@ -44,6 +51,7 @@
       get_timepoint/1,
       get_timepoint/2,
       create_timepoint/2,
+      create_interval/3,
       inspect/3
     ]).
 
@@ -53,7 +61,21 @@
 :- use_module(library('rdfs_computable')).
 :- use_module(library('owl')).
 
-:- rdf_meta class_properties(r,r,t),
+% define meta-predicates and allow the definitions
+% to be in different source files
+:- meta_predicate entity_type(0, ?, ?),
+                  entity_compute(0, ?, ?).
+:- multifile entity_type/2,
+             entity_compute/2.
+
+:- rdf_meta entity(r,?),
+            entity_description(r,?),
+            entity_description_property(+,?,?),
+            entity_type(r,?),
+            entity_compute(r,?),
+            entity_assert(r,?),
+            is_entitiy_description(+),
+            class_properties(r,r,t),
             class_properties_some(r,r,t),
             class_properties_all(r,r,t),
             class_properties_value(r,r,t),
@@ -193,6 +215,18 @@ create_timepoint(TimeStamp, TimePoint) :-
   atom_concat('http://knowrob.org/kb/knowrob.owl#timepoint_', TimeStamp, TimePoint),
   rdf_assert(TimePoint, rdf:type, knowrob:'TimePoint').
 
+%% create_interval(+Start, +End, -TimeInterval) is det.
+%
+% Create a interval-identifier for the given start and end time stamps
+%
+%
+create_interval(Start, End, TimeInterval) :-
+  create_timepoint(Start, StartI),
+  create_timepoint(End, EndI),
+  atomic_list_concat(['http://knowrob.org/kb/knowrob.owl#TimeInterval',Start,End], '_', TimeInterval),
+  rdf_assert(TimeInterval, rdf:type, knowrob:'TimeInterval'),
+  rdf_assert(TimeInterval, knowrob:'startTime', StartI),
+  rdf_assert(TimeInterval, knowrob:'endTime', EndI).
 
 %% get_timepoint(-T) is det.
 %
@@ -277,7 +311,7 @@ class_properties_1_some(Class, Prop, Val) :-       % read all values for some_va
 
 %% class_properties_all(?Class, ?Prop, ?Val) is nondet.
 %
-% Collect all property values of someValuesFrom-restrictions of a class
+% Collect all property values of allValuesFrom-restrictions of a class
 %
 % @param Class Class whose restrictions are being considered
 % @param Prop  Property whose restrictions in Class are being considered
@@ -303,7 +337,7 @@ class_properties_1_all(Class, Prop, Val) :-       % read all values for all_valu
 
 %% class_properties_value(?Class, ?Prop, ?Val) is nondet.
 %
-% Collect all property values of someValuesFrom-restrictions of a class
+% Collect all property values of hasValue-restrictions of a class
 %
 % @param Class Class whose restrictions are being considered
 % @param Prop  Property whose restrictions in Class are being considered
@@ -363,3 +397,271 @@ class_properties_transitive_nosup(Class, Prop, SubComp) :-
     Sub \= Class,
     class_properties_transitive_nosup(Sub, Prop, SubComp).
 
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% methods for querying OWL entities
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TASKS
+%%%
+%%%%%%%%%%%%% timepoint/interval entities
+%%% [a, timepoint, [value, ?time]]
+%%% 1. special handling of timepoint value (since it is not a property!)
+%%% [an, interval, [start_time, [a, timepoint, [value, ?time]]]]
+%%% 2. interval handling should just work
+%%%
+%%%
+%%%%%%%%%%%%% query entities using computables
+%%% [an, event, [comp_temporal:beforeI, [a, timepoint, [value, ?time]]]]
+%%% [an, event, [comp_temporal:beforeI, [an, event, ..]]]
+%%% 1. Should just work
+%%%
+%%%
+%%%%%%%%%%%%% compute entites
+%%% 1. Write multifile `entity_compute/2` predicate
+%%%
+%%% 1.1. Compute `Timepoint`/`TimeInterval` individuals
+%%% 1.1.1 Interpret `value` key
+%%% 1.1.2 Build name
+%%% 1.1.3 Check if existing
+%%% 1.1.4 Call `create_timepoint` if not
+%%%
+%%% 1.2. Compute mongo individuals
+%%% 1.2.1. description to mongo query
+%%% 1.2.1.1. map properties to mongo keys
+%%% 1.2.1.2. map computables to prolog operators where possible (e.g., ?t0 `beforeI` ?t1)
+%%% 1.2.2. iterate results
+%%% 1.2.3. create mongo result description
+%%%
+%%% 1.2.4. handle objects (logged_designators)
+%%% 1.2.4.1. individual selection by identity resolution (evolving designators, action logs, spatial reasoning?, similarity measure?)
+%%% 1.2.4.2. if no existing individual found, assert new SpatialThing
+%%% 1.2.4.3. create property fluents based on designator values (including rdf:type)
+%%% 1.2.4.4. attach designator?
+%%%
+%%% 1.2.5. handle locations (logged_designators)
+%%% TODO how are these (ideally) represented in designators
+%%%
+%%% 1.2.6. handle poses (tf)
+%%% 1.2.6.1. call `entity_assert`
+%%%
+%%% 1.2.7. handle trajectories (tf)
+%%% TODO this requires some more thoughts....
+%%%
+%%%
+%%% 2. Call `entity_compute` in `entity_description` iff var(Entity)
+%%%
+%%%
+%%% TODO Generic implementation using computable classes?
+%%%    * How to limit computation?
+%%%
+
+%% entity(?Entity, ?Descr) is nondet.
+%
+% Query for entity matching an entity description or build
+% description for entity.
+%
+% @param Entity IRI of matching entity
+% @param Descr An entity description, OWL individual or class IRI
+%
+entity(Entity, Entity) :-
+  atom(Entity),
+  rdfs_individual_of(Entity, owl:'NamedIndividual'), !.
+
+entity(Entity, EntityClass) :-
+  atom(EntityClass),
+  rdfs_individual_of(Entity, EntityClass), !.
+
+% Entity descriptions
+entity(Entity,Descr) :-
+  is_entitiy_description(Descr),
+  entity_description(Entity,Descr).
+
+
+%% entity_description(?Class, ?Descr) is nondet.
+%
+% Query for entity matching an entity description or build
+% description for entity.
+%
+% @param Entity IRI of matching entity
+% @param Descr An entity description
+%
+entity_description(Entity, [an|[Type|Descr]]) :-
+  (
+    entity_type([an,Type], TypeIri),
+    rdfs_individual_of(Entity, TypeIri),
+    entity_description(Entity, Descr)
+  ) ; (
+    var(Entity),
+    entity_compute(Entity, [an|[Type|Descr]])
+  ).
+
+entity_description(Entity, [a|[Type|Descr]]) :-
+  (
+    entity_type([a,Type], TypeIri),
+    rdfs_individual_of(Entity, TypeIri),
+    entity_description(Entity, Descr)
+  ) ; (
+    var(Entity),
+    entity_compute(Entity, [a|[Type|Descr]])
+  ).
+
+entity_description(Entity, [type|[Type|Descr]]) :-
+  (  var(Type)
+  ->  (
+      rdfs_individual_of(Entity, TypeIri),
+      entity_iri_description(TypeIri, Type, camelcase)
+  ) ; (
+      entity_iri_description(TypeIri, Type, camelcase),
+      rdfs_individual_of(Entity, TypeIri)
+  )),
+  entity_description(Entity, Descr).
+
+entity_description(Entity, [Key|[Value|Descr]]) :-
+  % match property with key and read value from RDF store
+  (  var(Key)
+  ->  ( % Key unbound, generate description
+      rdf_has(Entity, PropIri, PropValue), % TODO: howto handle temporal parts?
+      entity_iri_description(PropIri, Key, lower_camelcase)
+  ) ; ( % Key bound, match description with existing entitiy
+      entity_iri_description(PropIri, Key, lower_camelcase),
+      rdf_has(Entity, PropIri, PropValue) % TODO: howto handle temporal parts?
+  )),
+  % match rdf value with description value
+  (  rdf_has(PropIri, rdf:type, owl:'ObjectProperty')
+  -> entity_description(PropValue, Value)
+  ;  property_value(PropValue, Value)
+  ),
+  entity_description(Entity, Descr).
+
+% timepoint special case because time value is not a property!
+entity_description(Entity, [value|[TimeValue|_]]) :-
+  rdfs_individual_of(Entity, knowrob:'Timepoint'),
+  time_term(Entity,TimeValueNum),
+  atom_number(TimeValue,TimeValueNum).
+
+entity_description(_, []).
+
+
+%% entity_type(?Descr, ?Iri) is det.
+%
+% Maps ectity type description to IRI
+%
+% @param Descr The type description "[a,an] ?type_name"
+% @param Iri The corresponding type iri
+%
+entity_type([a,timepoint],  knowrob:'Timepoint').
+entity_type([an,interval],  knowrob:'TimeInterval').
+entity_type([an,action],    knowrob:'Action').
+entity_type([an,event],     knowrob:'Event').
+entity_type([an,object],    knowrob:'SpatialThing').
+entity_type([a,location],   knowrob:'Location').
+entity_type([a,pose],       knowrob:'Pose').
+entity_type([a,trajectory], knowrob:'Trajectory').
+
+
+%% entity_compute(?Entity, ?Descr) is nondet.
+%
+% Compute entities matching given description.
+% This is actually supposed to modify the RDF triple store.
+%
+% @param Entity IRI of matching entity
+% @param Descr An entity description
+%
+entity_compute(Entity, [a|[timepoint|Descr]]) :-
+  entity_description_property(Descr, value, Time),
+  create_timepoint(Time, Entity). % FIXME: redundant results
+
+entity_compute(Entity, [an|[interval|Descr]]) :-
+  entity_description_property(Descr, start_time, StartDescr),
+  entity_description_property(StartDescr, value, Start),
+  
+  entity_description_property(Descr, end_time, EndDescr),
+  entity_description_property(EndDescr, value, End),
+  
+  create_interval(Start,End,Entity). % FIXME: redundant results
+
+%%%%%% knowrob_mongo
+%entity_compute(Entity, [an|[object|Tail]]) :- false. % TODO
+%entity_compute(Entity, [a|[location|Tail]]) :- false. % TODO
+%entity_compute(Entity, [a|[pose|Tail]]) :- false. % TODO
+%entity_compute(Entity, [a|[trajectory|Tail]]) :- false. % TODO
+
+
+%% entity_assert(-Entity, +Descr) is nondet.
+%
+% Assert entity description in RDF triple store as new individual.
+%
+% @param Entity IRI of matching entity
+% @param Descr An entity description
+%
+entity_assert(Entity, [a|[Type|Descr]]) :-
+  var(Entity), nonvar(Type),
+  entity_type([a,Type], TypeIri),
+  rdf_instance_from_class(TypeIri, Entity),
+  entity_assert(Entity, Descr).
+
+entity_assert(Entity, [an|[Type|Descr]]) :-
+  var(Entity), nonvar(Type),
+  entity_type([an,Type], TypeIri),
+  rdf_instance_from_class(TypeIri, Entity),
+  entity_assert(Entity, Descr).
+
+entity_assert(Entity, [Key|[Value|Descr]]) :-
+  nonvar(Entity), nonvar(Key), nonvar(Value),
+  entity_iri_description(PropIri, Key, lower_camelcase),
+  (  rdf_has(PropIri, rdf:type, owl:'ObjectProperty')
+  ->  ( % nested entity
+      entity_assert(ValueEntity, Value),
+      rdf_assert(Entity, PropIri, ValueEntity)
+  ) ; ( % data property
+      rdf_has(PropIri, rdfs:range, Range),
+      rdf_assert(Entity, PropIri, literal(type(Range,Value)))
+  )),
+  entity_assert(Entity, Descr).
+
+entity_assert(Entity, []) :- nonvar(Entity).
+
+
+%% is_entitiy_description(+Descr) is nondet.
+%
+% @param Descr ....
+%
+is_entitiy_description([X|[Y|_]]) :- entity_type([X,Y],_).
+
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% helper
+
+%% Read entity description property value
+entity_description_property([], _, _).
+entity_description_property([Key|[Val|_]], Key, Val) :- !.
+entity_description_property([_|Descr], Key, Val) :- entity_description_property(Key, Descr,Val).
+
+%% Read entity description namespace
+entity_ns(Entity, NamespaceUri, EntityName) :-
+  (  Entity =.. [':', NS, EntityName]
+  ->  (
+      rdf_current_ns(NS, NamespaceUri)
+  ) ; ( % fallback to knowrob namespace
+      EntityName = Entity,
+      rdf_current_ns(knowrob, NamespaceUri)
+  )), !.
+entity_ns(Entity, NamespaceUri, EntityName) :-
+  rdf_split_url(NamespaceUri, EntityName, Entity).
+
+%% Converts between IRI representation and description representation
+entity_iri_description(Iri, Descr, Formatter) :-
+  var(Descr),
+  rdf_split_url(NamespaceUri, Name, Iri),
+  rdf_current_ns(Namespace, NamespaceUri),
+  call(Formatter, NameUnderscore, Name),
+  (  Namespace=knowrob
+  -> Descr=NameUnderscore
+  ;  Descr=Namespace:NameUnderscore
+  ).
+entity_iri_description(Iri, Description, Formatter) :-
+  var(Iri),
+  entity_ns(Description, NS, NameUnderscore),
+  call(Formatter, NameUnderscore, Name),
+  atom_concat(NS, Name, Iri).
