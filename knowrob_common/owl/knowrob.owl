@@ -43,6 +43,7 @@
           thereof) in any natural or formal language, as well as to derivations
           of this content or inclusion of it in other ontologies.
         </rdfs:comment>
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_temporal.owl"/>
     </owl:Ontology>
     
 
@@ -577,17 +578,6 @@
         <rdfs:domain rdf:resource="&knowrob;ConstructionArtifact"/>
         <rdfs:range rdf:resource="&knowrob;RoomInAConstruction"/>
         <rdfs:subPropertyOf rdf:resource="&knowrob;containsCavity"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#hasTemporalPart -->
-
-    <owl:ObjectProperty rdf:about="&knowrob;hasTemporalPart">
-        <rdfs:domain rdf:resource="&knowrob;SpatialThing"/>
-        <rdfs:range rdf:resource="&knowrob;TemporalPart"/>
-        <owl:inverseOf rdf:resource="&knowrob;temporalPartOf"/>
-        <rdfs:subPropertyOf rdf:resource="&knowrob;temporallyRelated"/>
     </owl:ObjectProperty>
     
 
@@ -1639,26 +1629,6 @@ Note that locatedAtPoint-Spatial is irreflexive; in order to locate points in sp
 
     <owl:ObjectProperty rdf:about="&knowrob;taskToAchieve">
         <rdfs:domain rdf:resource="&knowrob;PurposefulAction"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#temporalExtend -->
-
-    <owl:ObjectProperty rdf:about="&knowrob;temporalExtend">
-        <rdfs:domain rdf:resource="&knowrob;TemporalPart"/>
-        <rdfs:range rdf:resource="&knowrob;TimeInterval"/>
-        <rdfs:subPropertyOf rdf:resource="&knowrob;temporallyRelated"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#temporalPartOf -->
-
-    <owl:ObjectProperty rdf:about="&knowrob;temporalPartOf">
-        <rdfs:range rdf:resource="&knowrob;SpatialThing"/>
-        <rdfs:domain rdf:resource="&knowrob;TemporalPart"/>
-        <rdfs:subPropertyOf rdf:resource="&knowrob;temporallyRelated"/>
     </owl:ObjectProperty>
     
 
@@ -10704,15 +10674,6 @@ Cf. Surface, whose instances are two-dimensional, intangible regions of space.</
     <owl:Class rdf:about="&knowrob;TemperatureChangingProcess">
         <rdfs:subClassOf rdf:resource="&knowrob;IntrinsicStateChangeEvent"/>
         <rdfs:comment rdf:datatype="&xsd;string">A specialization of IntrinsicStateChangeEvent. In each instance of TemperatureChangingProcess, the temperature of some object is changed. Specializations of TemperatureChangingProcess include the collections CookingFood and Freezing.</rdfs:comment>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#TemporalPart -->
-
-    <owl:Class rdf:about="&knowrob;TemporalPart">
-        <rdfs:subClassOf rdf:resource="&knowrob;TemporallyExtendedThing"/>
-        <rdfs:comment>temporal parts are the parts of an object that exist in time. A temporal part would be something like &quot;the first year of a person&apos;s life&quot;, or &quot;all of a table from between 10:00 a.m. on June 21, 1994 to 11:00 p.m. on July 23, 1996&quot;.</rdfs:comment>
     </owl:Class>
     
 
