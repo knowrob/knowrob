@@ -35,32 +35,52 @@
       holds/2,
       occurs/1,
       occurs/2,
-      occurs/3,
+      interval/2,
+      interval_start/2,
+      interval_end/2,
+      interval_before/2,
+      interval_after/2,
+      interval_meets/2,
+      interval_starts/2,
+      interval_finishes/2,
+      interval_overlaps/2,
+      interval_during/2,
       assert_fluent_begin/3,
       assert_fluent_end/3,
       assert_fluent_end/2
     ]).
 
+:- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('owl')).
 :- use_module(library('rdfs_computable')).
 
-% define holds as meta-predicate and allow the definitions
-% to be in different parts of the source file
-:- meta_predicate holds(0, ?, ?)
-                  occurs(0, ?, ?, ?).
-
-:- multifile holds/2
-             occurs/3.
-
+% define predicates as rdf_meta predicates
+% (i.e. rdf namespaces are automatically expanded)
 :- rdf_meta holds(t),
-            holds(t,?)
+            holds(t,?),
             occurs(?),
             occurs(?,?),
-            occurs(?,?,?),
+            interval(?,?),
+            interval_start(?,?),
+            interval_end(?,?),
+            interval_before(?,?),
+            interval_after(?,?),
+            interval_meets(?,?),
+            interval_starts(?,?),
+            interval_finishes(?,?),
+            interval_overlaps(?,?),
+            interval_during(?,?),
             assert_fluent_begin(r,r,r),
             assert_fluent_end(r,r,r),
-            assert_fluent_end(r,r)..
+            assert_fluent_end(r,r).
+
+% define holds as meta-predicate and allow the definitions
+% to be in different source files
+:- meta_predicate holds(0, ?, ?),
+                  occurs(0, ?, ?).
+:- multifile holds/2,
+             occurs/2.
 
 %% holds(+Term, ?T)
 %% holds(+Term)
@@ -128,52 +148,51 @@ holds(Property, Subject, Object, T) :-
 
 %% occurs(?Evt) is nondet.
 %% occurs(?Evt,?T) is nondet.
-%% occurs(?Evt,?T,?EvtType) is nondet.
 %
 % True iff @Evt occurs during @T. Where @T is a TimeInterval or TimePoint individual,
 % a number or a list of two numbers representing a time interval.
-% @EvtType specifies the type of the event, it must be a subclass of knowrob:'Event'.
 %
-% @param Evt Identifier of the event
+% @param Evt Identifier of the event or a term of the form $Type($Instance)
 % @param T   Timepoint or time interval
-% @param EvtType Identifier of the event type
 % 
 occurs(Evt) :-
   current_time(T),
-  occurs(Evt, T, knowrob:'Event').
+  occurs(Evt, T).
 
 occurs(Evt, T) :-
-  occurs(Evt, T, knowrob:'Event').
-
-occurs(Evt, T, EvtTyp) :-
-  number(T), current_time(Now),
-  occurs(Evt, [T,Now], EvtTyp), !.
-
-occurs(Evt, T, EvtTyp) :-
-  atom(T), time_term(T,T_val), current_time(Now),
-  occurs(Evt, [T_val,Now], EvtTyp), !.
+  not(is_list(T)),
+  time_term(T,T_val),
+  (  is_list(T_val)
+  -> occurs(Evt, T_val)
+  ;  (
+       current_time(Now),
+       occurs(Evt, [T_val,Now])
+     )
+  ), !.
 
 % Read event instance from RDF triple store
-occurs(Evt, T, EvtTyp) :-
+occurs(Evt, T) :-
+  entity(Evt, Inst, EvtType),
   rdfs_subclass_of(EvtType, knowrob:'Event'),
-  rdfs_individual_of(Evt, EvtTyp),
-  rdf_has(Evt, knowrob:'startTime', T0),
-  (rdf_has(Evt, knowrob:'endTime', T1) ; current_time(T1)),
+  rdfs_individual_of(Inst, EvtType),
+  rdf_has(Inst, knowrob:'startTime', T0),
+  (rdf_has(Inst, knowrob:'endTime', T1) ; current_time(T1)),
   (  var(T)
   -> T = [T0,T1]
   ;  time_between(T, T0, T1)
   ).
 
 % Compute event instance
-occurs(Evt, T, EvtTyp) :-
-  var(Evt),
+occurs(Evt, T) :-
+  entity(Evt, Inst, EvtType),
+  var(Inst),
   rdfs_subclass_of(EvtType, knowrob:'Event'),
-  rdfs_computable_prolog_instance_of(Evt, Type),
-  occurs(Evt, T, EvtTyp).
+  rdfs_computable_prolog_instance_of(Inst, EvtType),
+  occurs(Inst, T).
 
 %% NOTE(daniel): Define computable occurs in external files like this:
-%% knowrob_temporal:occurs(Evt, [T0,T1], knowrob:'MyEvent') :-
-%%   var(Evt), compute_my_event(T0,T1,Evt).
+%% knowrob_temporal:occurs(knowrob:'MyEvent'(Evt), [T0,T1]) :-
+%%   var(Evt), compute_my_event(Evt,[T0,T1]).
 
 
 
@@ -221,3 +240,127 @@ assert_fluent_end(Subject, Predicate) :-
     rdf_assert(Interval, 'http://knowrob.org/kb/knowrob.owl#endTime', IntervalEnd)
   )).
 
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% Allen's interval algebra
+
+%% interval(I,[ST,ET]) is semidet.
+%
+% The interval of I
+%
+% @param I Time point, interval or temporally extended entity
+% @param [ST,ET] Start and end time of the interval
+% 
+interval(T, [T,T]) :- number(T).
+interval([T0,T1], [T0,T1]).
+interval(I, [T0,T1]) :-
+  entity(I, Inst, _),
+  rdf_has(Inst, knowrob:'temporalExtend', Ext),
+  interval(Ext, [T0,T1]).
+interval(I, [T0_val,T1_val]) :-
+  entity(I, Inst, _),
+  rdf_has(Inst, knowrob:'startTime', T0),
+  (rdf_has(Inst, knowrob:'endTime', T1) ; current_time(T1)),
+  time_term(T0, T0_val),
+  time_term(T1, T1_val).
+
+%% interval_start(I,End) is semidet.
+%
+% The start time of I 
+%
+% @param I Time point, interval or temporally extended entity
+% 
+interval_start(I, Start) :- interval(I, [Start,_]).
+%% interval_end(I,End) is semidet.
+%
+% The end time of I 
+%
+% @param I Time point, interval or temporally extended entity
+% 
+interval_end(I, End)     :- interval(I, [_,End]).
+
+%% interval_before(I0,I1) is semidet.
+%
+%  Interval I0 takes place before I1
+%
+% @param I0 Time point, interval or temporally extended entity
+% @param I1 Time point, interval or temporally extended entity
+% 
+interval_before(I0, I1) :-
+  interval(I0, [_,End0]),
+  interval(I1, [Begin1,_]),
+  time_earlier_then(End0,Begin1).
+
+%% interval_after(I0,I1) is semidet.
+%
+% Interval I0 takes place after I1
+%
+% @param I0 Time point, interval or temporally extended entity
+% @param I1 Time point, interval or temporally extended entity
+% 
+interval_after(I0, I1) :-
+  interval(I0, [_,End0]),
+  interval(I1, [Begin1,_]),
+  time_later_then(Begin1,End0).
+
+%% comp_meetsI(I0,I1) is semidet.
+%
+% Intervals I0 and I1 meet, i.e. the end time of I0 is equal to the start time of I1
+%
+% @param I0 Time point, interval or temporally extended entity
+% @param I1 Time point, interval or temporally extended entity
+% 
+interval_meets(I0, I1) :-
+  interval(I0, [_,T_meet]),
+  interval(I1, [T_meet,_]).
+
+%% interval_starts(I0,I1) is semidet.
+%
+% Interval I0 starts interval I1, i.e. both have the same start time, but I0 finishes earlier
+%
+% @param I0 Time point, interval or temporally extended entity
+% @param I1 Time point, interval or temporally extended entity
+% 
+interval_starts(I0, I1) :-
+  interval(I0, [T_start,End0]),
+  interval(I1, [T_start,End1]),
+  time_earlier_then(End0,End1).
+
+%% interval_finishes(I0,I1) is semidet.
+%
+% Interval I0 finishes interval I1, i.e. both have the same end time, but I0 starts later
+%
+% @param I0 Time point, interval or temporally extended entity
+% @param I1 Time point, interval or temporally extended entity
+% 
+interval_finishes(I0, I1) :-
+  interval(I0, [Begin0,T_end]),
+  interval(I1, [Begin1,T_end]),
+  time_earlier_then(Begin1,Begin0).
+
+%% interval_overlaps(I0,I1) is semidet.
+%
+% Interval I0  overlaps temporally with I1
+%
+% @param I0 Time point, interval or temporally extended entity
+% @param I1 Time point, interval or temporally extended entity
+% 
+interval_overlaps(I0, I1) :-
+  interval(I0, [Begin0,End0]),
+  interval(I1, [Begin1,End1]),
+  time_earlier_then(Begin0,End1),
+  time_earlier_then(Begin1,End0).
+
+%% interval_during(I0,I1) is semidet.
+%
+% Interval I0 is inside interval I1, i.e. it starts later and finishes earlier than I1.
+%
+% @param I0 Time point, interval or temporally extended entity
+% @param I1 Time point, interval or temporally extended entity
+% 
+interval_during(I0, I1) :-
+  interval(I0, [Begin0,End0]),
+  interval(I1, [Begin1,End1]),
+  time_earlier_then(Begin1,Begin0),
+  time_earlier_then(End0,End1).
