@@ -51,6 +51,8 @@
       extract_values/3,
       print_info/2,
       string_tokens/2,
+      camelcase/2,
+      lower_camelcase/2,
       lists_equal/2,
       time_term/2,
       time_between/3,
@@ -426,6 +428,53 @@ property_value(literal(RelationValue), RelationValue) :- !.
 property_value(Related, RelationValue) :-
   atom(Related), rdf_split_url(_,RelationValue,Related), !.
 property_value(Related, Related).
+
+
+%% camelcase(?Underscore:atom, ?CamelCase:atom) is det.
+%
+%  For example, `camelcase(hello_world, 'HelloWorld')`. Works in both
+%  directions.
+camelcase(Underscore,CamelCase) :-
+    when((ground(U0);ground(Underscore)),prepend_underscore(Underscore, U0)),
+    delay(atom_codes(U0,U0Codes)),
+    delay(atom_codes(CamelCase,CCodes)),
+    once(camelcase_(U0Codes,CCodes)).
+camelcase_([],[]).
+camelcase_([0'_,Lower|Lowers], [Upper|Uppers]) :-
+    upper_lower(Upper, Lower),
+    camelcase_(Lowers, Uppers).
+camelcase_([Lower|Lowers], [Lower|Uppers]) :-
+    upper_lower(_,Lower),
+    camelcase_(Lowers, Uppers).
+
+%% lower_camelcase(?Underscore:atom, ?LowerCamelCase:atom) is det.
+%
+%  For example, `lower_camelcase(hello_world, helloWorld)`. Works in both
+%  directions.
+lower_camelcase(Underscore,LowerCamelCase) :-
+    camelcase(Underscore,CamelCase),
+    atom_codes(CamelCase,[Head|Tail]),
+    Downcase is Head + 32,
+    atom_codes(LowerCamelCase,[Downcase|Tail]).
+
+%% upper_lower(?Upper:integer, ?Lower:integer) is semidet.
+%
+%  True if Upper (uppercase code) and Lower (lowercase code) represent the same letter.
+%  Useful for bidirection case conversion among ASCII characters.
+upper_lower(U,L) :-
+    U #>= 0'A, U #=< 0'Z,
+    L #>= 0'a, L #=< 0'z,
+    L #= U + 32.
+
+%% prepend_underscore(?Without:atom, ?With:atom) is semidet.
+%
+%  True if With has the same content as Without but the former starts
+%  with an underscore character.
+prepend_underscore(Without, With) :-
+    delay(atom_codes(Without,WithoutCodes)),
+    delay(atom_codes(With,WithCodes)),
+    append([0'_],WithoutCodes,WithCodes).
+
 
 current_time(T) :-
   set_prolog_flag(float_format, '%.12g'),
