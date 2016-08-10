@@ -75,20 +75,6 @@
     <computable:target rdf:resource="#temporallySubsumes"/>
   </computable:PrologProperty>
 
-  <computable:PrologProperty rdf:about="#computeTimePointStartTime">
-    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_time_point_start_time</computable:command>
-    <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
-    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-    <computable:target rdf:resource="#timePointStartTime"/>
-  </computable:PrologProperty>
-
-  <computable:PrologProperty rdf:about="#computeTimePointEndTime">
-    <computable:command rdf:datatype="&xsd;string">comp_temporal:comp_time_point_end_time</computable:command>
-    <computable:cache rdf:datatype="&xsd;string">nocache</computable:cache>
-    <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-    <computable:target rdf:resource="#timePointEndTime"/>
-  </computable:PrologProperty>
-
   <!-- Allen's 13 temporal relations for intervals -->
 
   <owl:ObjectProperty rdf:about="#afterI">
