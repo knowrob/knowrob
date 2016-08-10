@@ -45,9 +45,16 @@
 :- use_module(library('owl')).
 :- use_module(library('owl_parser')).
 :- use_module(library('rdfs_computable')).
-
-
 :- use_module(library('util')).
+
+:- pack_path(PackPath), mkdir(PackPath),
+   pack_install(delay, [interactive(false),
+     url('http://storage.googleapis.com/packs.ndrix.com/delay/delay-0.3.3.zip'),
+     package_directory(PackPath),
+     upgrade(true), silent(true)
+]).
+
+:- use_module(library('atoms')).
 :- use_module(library('comp_similarity')).
 :- use_module(library('knowrob_owl')).
 % :- use_module(library('knowrob_units')).

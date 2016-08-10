@@ -51,8 +51,7 @@
       extract_values/3,
       print_info/2,
       string_tokens/2,
-      camelcase/2,
-      lower_camelcase/2,
+      pack_path/1,
       lists_equal/2,
       time_term/2,
       time_between/3,
@@ -513,6 +512,10 @@ path_split(Path, PathList) :-
   path_delimiter(Delimiter),
   atomic_list_concat(PathList, Delimiter, Path).
 
+pack_path(Path) :-
+  getenv('USER', User),
+  atomic_list_concat(['/home',User,lib,swipl,pack], '/', Path).
+  
 %% mkdir(+Dir)
 %
 % Create directory at @Dir if it does not yet exist.
