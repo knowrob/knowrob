@@ -596,12 +596,12 @@ rdfs_prolog_to_rdf(Property, PrologValue, RDFValue) :-
   -> RDFValue = literal(type(Range, PrologValue))
   ; rdf_has(Range, rdf:type, owl:'DataRange')
   -> (rdf_has(Range, rdf:oneOf, OneOf),
-    rdfs_list_to_prolog_list(OneOf, OneOfList),
+    rdfs_list_to_prolog_list(OneOf, OneOfList), (
     member(literal(type(Type, PrologValue)), OneOfList)
     -> RDFValue = literal(type(Type, PrologValue))
     ; member(PrologValue, OneOfList)
     -> RDFValue = PrologValue
-    ; print(['The value ',PrologValue,' is not in the oneOf range list ',OneOfList]), fail)
+    ; print(['The value ',PrologValue,' is not in the oneOf range list ',OneOfList]), fail))
   ; print(['Cannot determine the type for ', PrologValue, ' in the range ', Range])).
 
 
