@@ -47,12 +47,7 @@
 :- use_module(library('rdfs_computable')).
 :- use_module(library('util')).
 
-:- pack_path(PackPath), mkdir(PackPath),
-   pack_install(delay, [interactive(false),
-     url('http://storage.googleapis.com/packs.ndrix.com/delay/delay-0.3.3.zip'),
-     package_directory(PackPath),
-     upgrade(true), silent(true)
-]).
+:- prolog_pack_install(delay, 'http://storage.googleapis.com/packs.ndrix.com/delay/delay-0.3.3.zip').
 
 :- use_module(library('atoms')).
 :- use_module(library('comp_similarity')).
@@ -85,4 +80,5 @@
 :- use_module(library(plunit)).
 :- set_test_options([load('always'),
                      run('make'),
-                     silent(true)]).
+                     silent(false),
+                     cleanup(true)]).
