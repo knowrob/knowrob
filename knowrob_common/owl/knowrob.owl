@@ -4761,7 +4761,9 @@ Cf. PolarCoordinateSystem.</rdfs:comment>
 
     <!-- http://knowrob.org/kb/knowrob.owl#ConceptualWork -->
 
-    <owl:Class rdf:about="&knowrob;ConceptualWork"/>
+    <owl:Class rdf:about="&knowrob;ConceptualWork">
+        <rdfs:subClassOf rdf:resource="&owl;Thing" />
+    </owl:Class>
     
 
 
