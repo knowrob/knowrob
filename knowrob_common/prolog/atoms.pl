@@ -60,10 +60,19 @@ camelcase_([Lower|Lowers], [Lower|Uppers]) :-
 %  For example, `lower_camelcase(hello_world, helloWorld)`. Works in both
 %  directions.
 lower_camelcase(Underscore,LowerCamelCase) :-
-    camelcase(Underscore,CamelCase),
-    atom_codes(CamelCase,[Head|Tail]),
-    Downcase is Head + 32,
-    atom_codes(LowerCamelCase,[Downcase|Tail]).
+    (  nonvar(Underscore)
+    -> (
+        camelcase(Underscore,CamelCase),
+        atom_codes(CamelCase,[Head|Tail]),
+        Downcase is Head + 32,
+        atom_codes(LowerCamelCase,[Downcase|Tail])
+    ) ; (
+        nonvar(LowerCamelCase),
+        atom_codes(LowerCamelCase,[Head|Tail]),
+        Upcase is Head - 32,
+        atom_codes(CamelCase,[Upcase|Tail]),
+        camelcase(Underscore,CamelCase)
+    )).
 
 %% upper_lower(?Upper:integer, ?Lower:integer) is semidet.
 %
