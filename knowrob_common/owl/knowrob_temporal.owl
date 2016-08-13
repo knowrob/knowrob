@@ -51,6 +51,14 @@
         <rdfs:subPropertyOf rdf:resource="&knowrob;temporallyRelated"/>
     </owl:ObjectProperty>
 
+    <!-- http://knowrob.org/kb/knowrob.owl#temporalProperty -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;temporalProperty">
+        <rdfs:domain rdf:resource="&knowrob;TemporalPart"/>
+        <rdfs:range rdf:resource="&rdf;Property"/>
+        <rdfs:subPropertyOf rdf:resource="&knowrob;temporallyRelated"/>
+    </owl:ObjectProperty>
+
     <!-- http://knowrob.org/kb/knowrob.owl#temporalPartOf -->
 
     <owl:ObjectProperty rdf:about="&knowrob;temporalPartOf">

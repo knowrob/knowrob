@@ -173,15 +173,14 @@
     </owl:NamedIndividual>
     
     <owl:NamedIndividual rdf:about="&blocksworld;BlockRed_test0@TimeInterval_sfdigug3">
-        <rdf:type rdf:resource="&knowrob;SpatialThing"/>
         <rdf:type rdf:resource="&knowrob;TemporalPart"/>
         <blocksworld:graspedBy rdf:resource="&blocksworld;Hand_test0@TimeInterval_sfdigug3"/>
         <knowrob:temporalPartOf rdf:resource="&blocksworld;BlockRed_test0"/>
         <knowrob:temporalExtend rdf:resource="&blocksworld;TimeInterval_sfdigug3"/>
+        <knowrob:temporalProperty rdf:resource="&blocksworld;graspedBy"/>
     </owl:NamedIndividual>
     
     <owl:NamedIndividual rdf:about="&blocksworld;Hand_test0@TimeInterval_sfdigug3">
-        <rdf:type rdf:resource="&knowrob;Hand"/>
         <rdf:type rdf:resource="&knowrob;TemporalPart"/>
         <knowrob:temporalPartOf rdf:resource="&blocksworld;Hand_test0"/>
         <knowrob:temporalExtend rdf:resource="&blocksworld;TimeInterval_sfdigug3"/>
@@ -260,33 +259,31 @@
     </owl:NamedIndividual>
     
     <owl:NamedIndividual rdf:about="&blocksworld;BlockRed_test2@TimeInterval_gon49235h">
-        <rdf:type rdf:resource="&knowrob;SpatialThing"/>
         <rdf:type rdf:resource="&knowrob;TemporalPart"/>
         <blocksworld:graspedBy rdf:resource="&blocksworld;Hand_test2@TimeInterval_gon49235h"/>
         <knowrob:temporalPartOf rdf:resource="&blocksworld;BlockRed_test2"/>
         <knowrob:temporalExtend rdf:resource="&blocksworld;TimeInterval_gon49235h"/>
+        <knowrob:temporalProperty rdf:resource="&blocksworld;graspedBy"/>
     </owl:NamedIndividual>
     
     <owl:NamedIndividual rdf:about="&blocksworld;Hand_test2@TimeInterval_gon49235h">
-        <rdf:type rdf:resource="&knowrob;Hand"/>
         <rdf:type rdf:resource="&knowrob;TemporalPart"/>
         <knowrob:temporalPartOf rdf:resource="&blocksworld;Hand_test2"/>
         <knowrob:temporalExtend rdf:resource="&blocksworld;TimeInterval_gon49235h"/>
     </owl:NamedIndividual>
     
     <owl:NamedIndividual rdf:about="&blocksworld;BlockBlue_test2@TimeInterval_dfgnk43895">
-        <rdf:type rdf:resource="&knowrob;SpatialThing"/>
         <rdf:type rdf:resource="&knowrob;TemporalPart"/>
         <knowrob:temporalPartOf rdf:resource="&blocksworld;BlockBlue_test2"/>
         <knowrob:temporalExtend rdf:resource="&blocksworld;TimeInterval_dfgnk43895"/>
     </owl:NamedIndividual>
     
     <owl:NamedIndividual rdf:about="&blocksworld;BlockGreen_test2@TimeInterval_dfgnk43895">
-        <rdf:type rdf:resource="&knowrob;SpatialThing"/>
         <rdf:type rdf:resource="&knowrob;TemporalPart"/>
         <knowrob:on-Physical rdf:resource="&blocksworld;BlockBlue_test2@TimeInterval_dfgnk43895"/>
         <knowrob:temporalPartOf rdf:resource="&blocksworld;BlockGreen_test2"/>
         <knowrob:temporalExtend rdf:resource="&blocksworld;TimeInterval_dfgnk43895"/>
+        <knowrob:temporalProperty rdf:resource="&knowrob;on-Physical"/>
     </owl:NamedIndividual>
 </rdf:RDF>
 

@@ -61,7 +61,7 @@
     remove_object_properties(r,r).
 
 
-action_preconditions_fulfilled(Action) :-
+action_preconditions_fulfilled(_) :-
   true. % TODO: implement
 
 
@@ -101,7 +101,7 @@ action_project_effect(Action, Effect, integrate(Subject,Predicate,Object)) :-
   query_predicate(Effect, Predicate),
   query_entity(Action, Effect, action_effects:'object', Object),
   % Assert temporal parts and link via @Predicate
-  assert_fluent_begin(Subject, Predicate, Object), !.
+  fluent_assert(Subject, Predicate, Object), !.
 
 action_project_effect(Action, Effect, decompose(Subject,Predicate)) :-
   once(owl_individual_of(Effect, action_effects:'Decompose')),
@@ -112,7 +112,7 @@ action_project_effect(Action, Effect, decompose(Subject,Predicate)) :-
   rdf_has(Predicate, rdfs:range, DomainClass),
   rdf_instance_from_class(DomainClass, DomainEntity),
   % Assert temporal parts and link via @Predicate
-  assert_fluent_begin(Subject, Predicate, DomainEntity), !.
+  fluent_assert(Subject, Predicate, DomainEntity), !.
 
 action_project_effect(Action, Effect, parametrize(Subject,Predicate,Object)) :-
   once(owl_individual_of(Effect, action_effects:'Parametrize')),
@@ -122,7 +122,7 @@ action_project_effect(Action, Effect, parametrize(Subject,Predicate,Object)) :-
   % Read the data value
   rdf_has(Effect, action_effects:'object', literal(type(_,Object))),
   % Assert temporal parts and link via @Predicate
-  assert_fluent_begin(Subject, Predicate, Object), !.
+  fluent_assert(Subject, Predicate, Object), !.
   
 action_project_effect(Action, Effect, create(Object)) :-
   once(owl_individual_of(Effect, action_effects:'Create')),
@@ -136,7 +136,7 @@ action_project_effect(Action, Effect, clear(Subject,Predicate)) :-
   query_entity(Action, Effect, action_effects:'subject', Subject),
   query_predicate(Effect, Predicate),
   % Assert temporal parts and link via @Predicate
-  assert_fluent_end(Subject, Predicate), !.
+  fluent_assert_end(Subject, Predicate), !.
 
 action_project_effect(Action, Effect, separate(Subject,Predicate)) :-
   once(owl_individual_of(Effect, action_effects:'Separate')),
@@ -145,7 +145,7 @@ action_project_effect(Action, Effect, separate(Subject,Predicate)) :-
   query_predicate(Effect, Predicate),
   query_entity(Action, Effect, action_effects:'object', Domain),
   % Assert temporal parts and link via @Predicate
-  assert_fluent_end(Subject, Predicate, Domain), !.
+  fluent_assert_end(Subject, Predicate, Domain), !.
 
 action_project_effect(_, Effect, noop) :-
   write('Unable to project action effect individual "'), write(Effect), writeln('".'), !.
