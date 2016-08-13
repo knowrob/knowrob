@@ -33,6 +33,8 @@
     [
       holds/1,
       holds/2,
+      holds/3,
+      holds/4,
       occurs/1,
       occurs/2,
       interval/2,
@@ -45,20 +47,26 @@
       interval_finishes/2,
       interval_overlaps/2,
       interval_during/2,
-      assert_fluent_begin/3,
-      assert_fluent_end/3,
-      assert_fluent_end/2
+      fluent_has/3,
+      fluent_has/4,
+      fluent_assert/3,
+      fluent_assert/4,
+      fluent_assert_end/3,
+      fluent_assert_end/2
     ]).
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('owl')).
 :- use_module(library('rdfs_computable')).
+:- use_module(library('knowrob_owl')).
 
 % define predicates as rdf_meta predicates
 % (i.e. rdf namespaces are automatically expanded)
 :- rdf_meta holds(t),
             holds(t,?),
+            holds(r,r,t),
+            holds(r,r,t,?),
             occurs(?),
             occurs(?,?),
             interval(?,?),
@@ -71,9 +79,12 @@
             interval_finishes(?,?),
             interval_overlaps(?,?),
             interval_during(?,?),
-            assert_fluent_begin(r,r,r),
-            assert_fluent_end(r,r,r),
-            assert_fluent_end(r,r).
+            fluent_has(r,r,t,?),
+            fluent_has(r,r,t),
+            fluent_assert(r,r,t),
+            fluent_assert(r,r,t,r),
+            fluent_assert_end(r,r,r),
+            fluent_assert_end(r,r).
 
 % define holds as meta-predicate and allow the definitions
 % to be in different source files
@@ -97,54 +108,38 @@ holds(Term) :-
   current_time(T),
   holds(Term,T).
 
-holds(Term, T) :-
+holds(Term, I) :-
   (  Term =.. [':', Namespace, Tail]
   -> (
-     Tail =.. [Property,Subject,Object],
+     Tail =.. [P,S,O],
      % unpack namespace
      rdf_current_ns(Namespace, NamespaceUri),
-     atom_concat(NamespaceUri, Property, PropertyUri),
-     holds(PropertyUri, Subject, Object, T)
+     atom_concat(NamespaceUri, P, PropertyUri),
+     holds(S, PropertyUri, O, I)
   ) ; (
-     Term =.. [Property,Subject,Object],
-     holds(Property, Subject, Object, T)
+     Term =.. [P,S,O],
+     holds(S, P, O, I)
   )).
 
-holds(Property, Subject, Object, T) :-
-  rdf_triple(Property, Subject, Object),
-  not( rdfs_individual_of(Subject, knowrob:'TemporalPart') ),
-  (  var(T)
-  -> T = [0.0,inf]
+holds(S, P, O) :-
+  current_time(T),
+  holds(S, P, O, T).
+
+holds(S, P, O, I) :-
+  not( rdfs_individual_of(S, knowrob:'TemporalPart') ),
+  rdf_triple(P, S, O),
+  (  var(I)
+  -> I = [0.0]
   ;  true
-  ), !.
+  ).
   
-holds(Property, Subject, Object, T) :-
-  rdfs_individual_of(Property, owl:'DatatypeProperty'),
-  % query temporal part that declares '@Property = @Object'
-  rdf_has(SubjectPart, knowrob:'temporalPartOf', Subject),
-  once(rdf_has(Property, SubjectPart, Object)),
-  % match time interval with @T
-  rdf_has(SubjectPart, knowrob:'temporalExtend', TimeInterval),
-  time_term(TimeInterval, [T0,T1]),
-  (  var(T)
-  -> T = [T0,T1]
-  ;  time_between(T, T0, T1)
-  ), !.
-  
-holds(Property, Subject, Object, T) :-
-  rdfs_individual_of(Property, owl:'ObjectProperty'),
-  % query temporal part that declares '@Property = ObjectPart'
-  % where ObjectPart is a temporal part of @Object
-  rdf_has(SubjectPart, knowrob:'temporalPartOf', Subject),
-  once(rdf_has(Property, SubjectPart, ObjectPart)),
-  rdf_has(ObjectPart, knowrob:'temporalPartOf', Object),
-  % match time interval with @T
-  rdf_has(SubjectPart, knowrob:'temporalExtend', TimeInterval),
-  time_term(TimeInterval, [T0,T1]),
-  (  var(T)
-  -> T = [T0,T1]
-  ;  time_between(T, T0, T1)
-  ), !.
+holds(S, P, O, I) :-
+  fluent_has(S, P, O, TimeInterval),
+  time_term(TimeInterval, Interval),
+  (  var(I)
+  -> I = Interval
+  ;  interval_during(I, Interval)
+  ).
 
 %% occurs(?Evt) is nondet.
 %% occurs(?Evt,?T) is nondet.
@@ -159,40 +154,18 @@ occurs(Evt) :-
   current_time(T),
   occurs(Evt, T).
 
-occurs(Evt, T) :-
-  not(is_list(T)),
-  time_term(T,T_val),
-  (  is_list(T_val)
-  -> occurs(Evt, T_val)
-  ;  (
-       current_time(Now),
-       occurs(Evt, [T_val,Now])
-     )
-  ), !.
-
 % Read event instance from RDF triple store
-occurs(Evt, T) :-
-  entity(Evt, Inst, EvtType),
-  rdfs_subclass_of(EvtType, knowrob:'Event'),
-  rdfs_individual_of(Inst, EvtType),
-  rdf_has(Inst, knowrob:'startTime', T0),
-  (rdf_has(Inst, knowrob:'endTime', T1) ; current_time(T1)),
-  (  var(T)
-  -> T = [T0,T1]
-  ;  time_between(T, T0, T1)
-  ).
-
-% Compute event instance
-occurs(Evt, T) :-
-  entity(Evt, Inst, EvtType),
-  var(Inst),
-  rdfs_subclass_of(EvtType, knowrob:'Event'),
-  rdfs_computable_prolog_instance_of(Inst, EvtType),
-  occurs(Inst, T).
+occurs(EvtDescr, I) :-
+  rdfs_individual_of(Evt, knowrob:'Event'),
+  entity(Evt, EvtDescr),
+  interval(Evt, EvtI),
+  (  var(I)
+  -> I = EvtI
+  ;  interval_during(I, EvtI) ).
 
 %% NOTE(daniel): Define computable occurs in external files like this:
-%% knowrob_temporal:occurs(knowrob:'MyEvent'(Evt), [T0,T1]) :-
-%%   var(Evt), compute_my_event(Evt,[T0,T1]).
+%% knowrob_temporal:occurs(my_event, Descr, [T0,T1]) :-
+%%    occurs_my_event(Descr,[T0,T1]).
 
 
 
@@ -201,45 +174,76 @@ occurs(Evt, T) :-
 % methods for asserting fluent relations
 
 
-assert_fluent_begin(Subject, Predicate, Object) :-
-  %TODO: what if fluent exist? -> noop
-  % Create open interval (i.e., without end time specified)
+fluent_assert(S, P, O) :-
   current_time(Now),
-  create_timepoint(Now, IntervalStart),
-  rdf_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimeInterval', Interval),
-  rdf_assert(Interval, 'http://knowrob.org/kb/knowrob.owl#startTime', IntervalStart),
+  fluent_assert(S, P, O, [Now]), !.
+
+fluent_assert(S, P, O, [Begin,End]) :-
+  number(Begin), number(End),
+  create_interval([Begin,End], I),
+  fluent_assert(S, P, O, I), !.
+
+fluent_assert(S, P, O, [Begin]) :-
+  number(Begin),
+  create_timepoint(Begin, IntervalStart),
+  rdf_instance_from_class(knowrob:'TimeInterval', I),
+  rdf_assert(I, knowrob:'startTime', IntervalStart),
+  fluent_assert(S, P, O, I), !.
+
+fluent_assert(S, P, O, TimeInst) :-
+  atom(TimeInst),
+  rdfs_individual_of(TimeInst, knowrob:'Timepoint'),
+  time_term(TimeInst, Time),
+  fluent_assert(S, P, O, [Time]), !.
+
+fluent_assert(S, P, O, Time) :-
+  number(Time),
+  fluent_assert(S, P, O, [Time]), !.
+
+fluent_assert(S, P, O, I) :-
+  atom(I),
+  rdfs_individual_of(I, knowrob:'TimeInterval'),
   % Create temporal parts
-  rdf_instance_from_class('http://knowrob.org/kb/knowrob.owl#TemporalPart', SubjectPart),
-  rdf_assert(SubjectPart, 'http://knowrob.org/kb/knowrob.owl#temporalPartOf', Subject),
-  rdf_assert(SubjectPart, 'http://knowrob.org/kb/knowrob.owl#temporalExtend', Interval),
-  rdf_instance_from_class('http://knowrob.org/kb/knowrob.owl#TemporalPart', ObjectPart),
-  rdf_assert(ObjectPart, 'http://knowrob.org/kb/knowrob.owl#temporalPartOf', Object),
-  rdf_assert(ObjectPart, 'http://knowrob.org/kb/knowrob.owl#temporalExtend', Interval),
-  % Link tempoiral parts via fluent property
-  rdf_assert(SubjectPart, Predicate, ObjectPart).
+  rdf_instance_from_class(knowrob:'TemporalPart', SubjectPart),
+  rdf_assert(SubjectPart, knowrob:'temporalPartOf', S),
+  rdf_assert(SubjectPart, knowrob:'temporalProperty', P),
+  rdf_assert(SubjectPart, knowrob:'temporalExtend', I),
+  (  rdf_has(P, rdf:type, owl:'ObjectProperty')
+  ->  (
+      rdf_instance_from_class(knowrob:'TemporalPart', ObjectPart),
+      rdf_assert(ObjectPart, knowrob:'temporalPartOf', O),
+      rdf_assert(ObjectPart, knowrob:'temporalExtend', I),
+      rdf_assert(SubjectPart, P, ObjectPart)
+      )
+  ;   rdf_assert(SubjectPart, P, O)
+  ), !.
 
-assert_fluent_end(Subject, Predicate, Object) :-
-  rdf_has(SubjectPart, 'http://knowrob.org/kb/knowrob.owl#temporalPartOf', Subject),
-  rdf_has(ObjectPart, 'http://knowrob.org/kb/knowrob.owl#temporalPartOf', Object),
-  rdf_has(SubjectPart, Predicate, ObjectPart),
-  rdf_has(SubjectPart, 'http://knowrob.org/kb/knowrob.owl#temporalExtend', Interval),
-  not( rdf_has(Interval, 'http://knowrob.org/kb/knowrob.owl#endTime', _) ),
+fluent_assert_end(S, P) :-
   current_time(Now),
-  create_timepoint(Now, IntervalEnd),
-  rdf_assert(Interval, 'http://knowrob.org/kb/knowrob.owl#endTime', IntervalEnd).
+  fluent_assert_end(S, P, Now), !.
 
-assert_fluent_end(Subject, Predicate) :-
-  current_time(Now),
+fluent_assert_end(S, P, Time) :-
+  number(Time),
   forall((
-    rdf_has(SubjectPart, 'http://knowrob.org/kb/knowrob.owl#temporalPartOf', Subject),
-    rdf_has(SubjectPart, Predicate, _)
+    rdf_has(SubjectPart, knowrob:'temporalPartOf', S),
+    rdf_has(SubjectPart, P, _)
   ), (
-    rdf_has(SubjectPart, 'http://knowrob.org/kb/knowrob.owl#temporalExtend', Interval),
-    not( rdf_has(Interval, 'http://knowrob.org/kb/knowrob.owl#endTime', _) ),
-    create_timepoint(Now, IntervalEnd),
-    rdf_assert(Interval, 'http://knowrob.org/kb/knowrob.owl#endTime', IntervalEnd)
+    rdf_has(SubjectPart, knowrob:'temporalExtend', I),
+    not( rdf_has(I, knowrob:'endTime', _) ),
+    create_timepoint(Time, IntervalEnd),
+    rdf_assert(I, knowrob:'endTime', IntervalEnd)
   )).
 
+fluent_property(TemporalPart, PropertyIri) :-
+  rdf_has(TemporalPart, knowrob:temporalProperty, PropertyIri).
+
+fluent_has(S, P, O) :- fluent_has(S, P, O, _).
+fluent_has(S, P, O, I) :-
+  (owl_has(S, knowrob:hasTemporalPart, TemporalPart) ; TemporalPart = S),
+  rdf_has(TemporalPart, knowrob:temporalExtend, I),
+  rdf_has(TemporalPart, knowrob:temporalProperty, P),
+  rdf_has(TemporalPart, P, TemporalPart_O),
+  once(owl_has(TemporalPart_O, knowrob:temporalPartOf, O) ; O = TemporalPart_O).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -252,18 +256,19 @@ assert_fluent_end(Subject, Predicate) :-
 % @param I Time point, interval or temporally extended entity
 % @param [ST,ET] Start and end time of the interval
 % 
-interval(T, [T,T]) :- number(T).
 interval([T0,T1], [T0,T1]).
-interval(I, [T0,T1]) :-
-  entity(I, Inst, _),
-  rdf_has(Inst, knowrob:'temporalExtend', Ext),
-  interval(Ext, [T0,T1]).
-interval(I, [T0_val,T1_val]) :-
-  entity(I, Inst, _),
-  rdf_has(Inst, knowrob:'startTime', T0),
-  (rdf_has(Inst, knowrob:'endTime', T1) ; current_time(T1)),
+interval([T0], [T0]).
+interval(I, Interval) :-
+  atom(I),
+  rdf_has(I, knowrob:'temporalExtend', Ext),
+  interval(Ext, Interval).
+interval(I, Interval) :-
+  atom(I),
+  rdf_has(I, knowrob:'startTime', T0),
   time_term(T0, T0_val),
-  time_term(T1, T1_val).
+  (  rdf_has(I, knowrob:'endTime', T1)
+  -> (time_term(T1, T1_val), Interval=[T0_val,T1_val])
+  ;  Interval=[T0_val] ).
 
 %% interval_start(I,End) is semidet.
 %
@@ -271,14 +276,14 @@ interval(I, [T0_val,T1_val]) :-
 %
 % @param I Time point, interval or temporally extended entity
 % 
-interval_start(I, Start) :- interval(I, [Start,_]).
+interval_start(I, Start) :- (interval(I, [Start,_]) ; interval(I, [Start])), !.
 %% interval_end(I,End) is semidet.
 %
 % The end time of I 
 %
 % @param I Time point, interval or temporally extended entity
 % 
-interval_end(I, End)     :- interval(I, [_,End]).
+interval_end(I, End)     :- interval(I, [_,End]), !.
 
 %% interval_before(I0,I1) is semidet.
 %
@@ -289,8 +294,9 @@ interval_end(I, End)     :- interval(I, [_,End]).
 % 
 interval_before(I0, I1) :-
   interval(I0, [_,End0]),
-  interval(I1, [Begin1,_]),
-  time_earlier_then(End0,Begin1).
+  ( interval(I1, [Begin1,_]);
+    interval(I1, [Begin1]) ),
+  time_earlier_then(End0,Begin1), !.
 
 %% interval_after(I0,I1) is semidet.
 %
@@ -301,10 +307,11 @@ interval_before(I0, I1) :-
 % 
 interval_after(I0, I1) :-
   interval(I0, [_,End0]),
-  interval(I1, [Begin1,_]),
-  time_later_then(Begin1,End0).
+  ( interval(I1, [Begin1,_]);
+    interval(I1, [Begin1]) ),
+  time_later_then(Begin1,End0), !.
 
-%% comp_meetsI(I0,I1) is semidet.
+%% interval_meets(I0,I1) is semidet.
 %
 % Intervals I0 and I1 meet, i.e. the end time of I0 is equal to the start time of I1
 %
@@ -312,8 +319,9 @@ interval_after(I0, I1) :-
 % @param I1 Time point, interval or temporally extended entity
 % 
 interval_meets(I0, I1) :-
-  interval(I0, [_,T_meet]),
-  interval(I1, [T_meet,_]).
+  interval(I0, [_,Time]),
+  ( interval(I1, [Time,_]);
+    interval(I1, [Time]) ), !.
 
 %% interval_starts(I0,I1) is semidet.
 %
@@ -324,8 +332,9 @@ interval_meets(I0, I1) :-
 % 
 interval_starts(I0, I1) :-
   interval(I0, [T_start,End0]),
-  interval(I1, [T_start,End1]),
-  time_earlier_then(End0,End1).
+  (( interval(I1, [T_start,End1]),
+     time_earlier_then(End0,End1) ) ;
+     interval(I1, [T_start]) ), !.
 
 %% interval_finishes(I0,I1) is semidet.
 %
@@ -337,7 +346,7 @@ interval_starts(I0, I1) :-
 interval_finishes(I0, I1) :-
   interval(I0, [Begin0,T_end]),
   interval(I1, [Begin1,T_end]),
-  time_earlier_then(Begin1,Begin0).
+  time_earlier_then(Begin1,Begin0), !.
 
 %% interval_overlaps(I0,I1) is semidet.
 %
@@ -347,10 +356,12 @@ interval_finishes(I0, I1) :-
 % @param I1 Time point, interval or temporally extended entity
 % 
 interval_overlaps(I0, I1) :-
-  interval(I0, [Begin0,End0]),
-  interval(I1, [Begin1,End1]),
-  time_earlier_then(Begin0,End1),
-  time_earlier_then(Begin1,End0).
+  ( interval(I0, [Begin0,End0]);
+    interval(I0, [Begin0]) ),
+  (( interval(I1, [Begin1,End1]),
+     time_earlier_then(Begin0,End1) );
+     interval(I1, [Begin1]) ),
+  ( var(End0); time_earlier_then(Begin1,End0) ), !.
 
 %% interval_during(I0,I1) is semidet.
 %
@@ -359,8 +370,17 @@ interval_overlaps(I0, I1) :-
 % @param I0 Time point, interval or temporally extended entity
 % @param I1 Time point, interval or temporally extended entity
 % 
+interval_during(Time0, I1) :-
+  number(Time0),
+  (( interval(I1, [Begin1,End1]),
+     time_earlier_then(Time0,End1) ) ;
+     interval(I1, [Begin1]) ),
+  time_earlier_then(Begin1,Time0), !.
 interval_during(I0, I1) :-
-  interval(I0, [Begin0,End0]),
-  interval(I1, [Begin1,End1]),
-  time_earlier_then(Begin1,Begin0),
-  time_earlier_then(End0,End1).
+  ( interval(I0, [Begin0,End0]) ;
+    interval(I0, [Begin0]) ),
+  (( nonvar(End0),
+     interval(I1, [Begin1,End1]),
+     time_earlier_then(End0,End1) ) ;
+     interval(I1, [Begin1]) ),
+  time_earlier_then(Begin1,Begin0), !.
