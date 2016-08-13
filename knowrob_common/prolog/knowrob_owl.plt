@@ -29,8 +29,6 @@
 :- owl_parser:owl_parse('package://knowrob_common/owl/knowrob_temporal.owl').
 :- owl_parser:owl_parse('package://knowrob_common/owl/knowrob_temporal_test.owl').
 
-:- rdf_db:rdf_register_prefix(test, 'http://knowrob.org/kb/knowrob_temporal_test.owl#', [keep(true)]).
-
 :- rdf_meta fluent_begin(r,r,t,r),
             fluent_test_assert(r,r,t).
 
@@ -89,7 +87,7 @@ test(entity_assert_obj_property0) :-
 
 test(entity_fluent0) :-
   entity_assert(Obj, [an, object, [type, dough], [volume_of_object, 10.0, during, [an, interval, [0.0,20.0]]]]),
-  rdfs_individual_of(Obj, knowrob:'Dough'),
+  atom(Obj), rdfs_individual_of(Obj, knowrob:'Dough'),
   holds(knowrob:'volumeOfObject'(Obj, literal(type(xsd:float,10.0))), 5.0),
   holds(knowrob:'volumeOfObject'(Obj, literal(type(xsd:float,10.0))), [0.0,20.0]),
   not( holds(knowrob:'volumeOfObject'(Obj, literal(type(xsd:float,10.0))), [0.0,21.0]) ).

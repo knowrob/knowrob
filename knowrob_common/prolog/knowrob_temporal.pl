@@ -109,6 +109,12 @@ holds(Term) :-
   holds(Term,T).
 
 holds(Term, I) :-
+  var(Term),
+  holds(S, P, O, I),
+  Term =.. [':', P, (S,O)].
+
+holds(Term, I) :-
+  nonvar(Term),
   (  Term =.. [':', Namespace, Tail]
   -> (
      Tail =.. [P,S,O],
@@ -119,15 +125,17 @@ holds(Term, I) :-
   ) ; (
      Term =.. [P,S,O],
      holds(S, P, O, I)
-  )).
+  )), !.
 
 holds(S, P, O) :-
   current_time(T),
   holds(S, P, O, T).
 
 holds(S, P, O, I) :-
-  not( rdfs_individual_of(S, knowrob:'TemporalPart') ),
-  rdf_triple(P, S, O),
+  (  atom(P)
+  -> rdf_triple(P, S, O)
+  ;  owl_has(S,P,O)
+  ),
   (  var(I)
   -> I = [0.0]
   ;  true
@@ -237,13 +245,26 @@ fluent_assert_end(S, P, Time) :-
 fluent_property(TemporalPart, PropertyIri) :-
   rdf_has(TemporalPart, knowrob:temporalProperty, PropertyIri).
 
+%% fluent_has(?Subject, ?Predicate, ?Object, ?Interval)
+%
+% True if this relation is specified via knowrob:TemporalPart
+% or can be deduced using OWL inference rules.
+% 
 fluent_has(S, P, O) :- fluent_has(S, P, O, _).
+
 fluent_has(S, P, O, I) :-
-  (owl_has(S, knowrob:hasTemporalPart, TemporalPart) ; TemporalPart = S),
-  rdf_has(TemporalPart, knowrob:temporalExtend, I),
-  rdf_has(TemporalPart, knowrob:temporalProperty, P),
-  rdf_has(TemporalPart, P, TemporalPart_O),
-  once(owl_has(TemporalPart_O, knowrob:temporalPartOf, O) ; O = TemporalPart_O).
+  nonvar(S),
+  rdfs_individual_of(S, knowrob:'TemporalPart'),
+  rdf_has(S, knowrob:temporalExtend, I),
+  rdf_has(S, knowrob:temporalProperty, P),
+  rdf_has(S, P, S_O),
+  (( rdfs_individual_of(S_O, knowrob:'TemporalPart') )
+  -> owl_has(S_O, knowrob:temporalPartOf, O)
+  ;  O = S_O ).
+
+fluent_has(S, P, O, I) :-
+  owl_has(S, knowrob:hasTemporalPart, TemporalPart),
+  fluent_has(TemporalPart, P, O, I).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -258,10 +279,15 @@ fluent_has(S, P, O, I) :-
 % 
 interval([T0,T1], [T0,T1]).
 interval([T0], [T0]).
+interval(Time, [Time,Time]) :- number(Time).
 interval(I, Interval) :-
   atom(I),
   rdf_has(I, knowrob:'temporalExtend', Ext),
   interval(Ext, Interval).
+interval(TimePoint, [Time,Time]) :-
+  atom(TimePoint),
+  rdfs_individual_of(TimePoint, knowrob:'TimePoint'),
+  time_term(TimePoint, Time).
 interval(I, Interval) :-
   atom(I),
   rdf_has(I, knowrob:'startTime', T0),
@@ -296,7 +322,7 @@ interval_before(I0, I1) :-
   interval(I0, [_,End0]),
   ( interval(I1, [Begin1,_]);
     interval(I1, [Begin1]) ),
-  time_earlier_then(End0,Begin1), !.
+  (End0 < Begin1), !.
 
 %% interval_after(I0,I1) is semidet.
 %
@@ -306,10 +332,10 @@ interval_before(I0, I1) :-
 % @param I1 Time point, interval or temporally extended entity
 % 
 interval_after(I0, I1) :-
-  interval(I0, [_,End0]),
-  ( interval(I1, [Begin1,_]);
-    interval(I1, [Begin1]) ),
-  time_later_then(Begin1,End0), !.
+  interval(I1, [_,End1]),
+  ( interval(I0, [Begin0,_]);
+    interval(I0, [Begin0]) ),
+  (Begin0 > End1), !.
 
 %% interval_meets(I0,I1) is semidet.
 %
@@ -333,7 +359,7 @@ interval_meets(I0, I1) :-
 interval_starts(I0, I1) :-
   interval(I0, [T_start,End0]),
   (( interval(I1, [T_start,End1]),
-     time_earlier_then(End0,End1) ) ;
+     (End0 < End1) ) ;
      interval(I1, [T_start]) ), !.
 
 %% interval_finishes(I0,I1) is semidet.
@@ -346,7 +372,7 @@ interval_starts(I0, I1) :-
 interval_finishes(I0, I1) :-
   interval(I0, [Begin0,T_end]),
   interval(I1, [Begin1,T_end]),
-  time_earlier_then(Begin1,Begin0), !.
+  (Begin0 > Begin1), !.
 
 %% interval_overlaps(I0,I1) is semidet.
 %
@@ -359,9 +385,10 @@ interval_overlaps(I0, I1) :-
   ( interval(I0, [Begin0,End0]);
     interval(I0, [Begin0]) ),
   (( interval(I1, [Begin1,End1]),
-     time_earlier_then(Begin0,End1) );
+     ( nonvar(End0), (End0 < End1) ));   % ends before the end of
      interval(I1, [Begin1]) ),
-  ( var(End0); time_earlier_then(Begin1,End0) ), !.
+  (var(End0) ; (End0 > Begin1)),         % ends after the start of
+  (Begin0 < Begin1),!.                   % begins before the start of
 
 %% interval_during(I0,I1) is semidet.
 %
@@ -373,14 +400,15 @@ interval_overlaps(I0, I1) :-
 interval_during(Time0, I1) :-
   number(Time0),
   (( interval(I1, [Begin1,End1]),
-     time_earlier_then(Time0,End1) ) ;
+     (Time0 < End1) ) ;
      interval(I1, [Begin1]) ),
-  time_earlier_then(Begin1,Time0), !.
+  (Begin1 < Time0), !.
 interval_during(I0, I1) :-
   ( interval(I0, [Begin0,End0]) ;
     interval(I0, [Begin0]) ),
   (( nonvar(End0),
      interval(I1, [Begin1,End1]),
-     time_earlier_then(End0,End1) ) ;
+     (End0 =< End1) ) ;
      interval(I1, [Begin1]) ),
-  time_earlier_then(Begin1,Begin0), !.
+  (Begin1 =< Begin0), !.
+

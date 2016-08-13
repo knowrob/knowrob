@@ -29,7 +29,7 @@
 :- owl_parser:owl_parse('package://knowrob_common/owl/knowrob_temporal.owl').
 :- owl_parser:owl_parse('package://knowrob_common/owl/knowrob_temporal_test.owl').
 
-:- rdf_db:rdf_register_prefix(test, 'http://knowrob.org/kb/knowrob_temporal_test.owl#', [keep(true)]).
+:- rdf_db:rdf_register_prefix(knowrob_temporal_test, 'http://knowrob.org/kb/knowrob_temporal_test.owl#', [keep(true)]).
 
 :- rdf_meta fluent_begin(r,r,t,r),
             fluent_test_assert(r,r,t).
@@ -101,16 +101,46 @@ fluent_test_assert(S,P,[O1,O2]) :-
 test(fluent_assert_data) :-
   Value1_=literal(type(xsd:'float',10.0)), rdf_global_term(Value1_, Value1),
   Value2_=literal(type(xsd:'float',15.0)), rdf_global_term(Value2_, Value2),
-  rdf_assert(test:'Dough_vs5hgsg0', rdf:type, knowrob:'Dough'),
-  fluent_test_assert(test:'Dough_vs5hgsg0', knowrob:temperatureOfObject, [Value1,Value2]).
+  rdf_assert(knowrob_temporal_test:'Dough_vs5hgsg0', rdf:type, knowrob:'Dough'),
+  fluent_test_assert(knowrob_temporal_test:'Dough_vs5hgsg0', knowrob:temperatureOfObject, [Value1,Value2]).
 
 test(fluent_assert_object) :-
-  Value1_=test:'Container_vs5hgsg0', rdf_global_term(Value1_, Value1),
-  Value2_=test:'Container_SFmvd9df', rdf_global_term(Value2_, Value2),
-  rdf_assert(test:'Dough_vs5hgsg0', rdf:type, knowrob:'Dough'),
+  Value1_=knowrob_temporal_test:'Container_vs5hgsg0', rdf_global_term(Value1_, Value1),
+  Value2_=knowrob_temporal_test:'Container_SFmvd9df', rdf_global_term(Value2_, Value2),
+  rdf_assert(knowrob_temporal_test:'Dough_vs5hgsg0', rdf:type, knowrob:'Dough'),
   rdf_assert(Value1, rdf:type, knowrob:'Container'),
   rdf_assert(Value2, rdf:type, knowrob:'Container'),
-  fluent_test_assert(test:'Dough_vs5hgsg0', knowrob:insideOf, [Value1,Value2]).
+  fluent_test_assert(knowrob_temporal_test:'Dough_vs5hgsg0', knowrob:insideOf, [Value1,Value2]).
+
+test(fluent_has0) :-
+  fluent_has(knowrob_temporal_test:'Dough_vs5hgsg0', knowrob:temperatureOfObject,
+             literal(type(xsd:'float',10.0)), I),
+  interval(I, [0.0,20.0]).
+test(fluent_has1) :-
+  fluent_has(knowrob_temporal_test:'Dough_vs5hgsg0', knowrob:temperatureOfObject, O, I),
+  interval(I, [0.0,20.0]),
+  O = literal(type(_,10.0)).
+test(fluent_has2) :-
+  fluent_has(knowrob_temporal_test:'Dough_vs5hgsg0', P, O, I),
+  interval(I, [0.0,20.0]),
+  P = 'http://knowrob.org/kb/knowrob.owl#temperatureOfObject',
+  O = literal(type(_,10.0)).
+test(fluent_has3) :-
+  fluent_has(S, P, O, I),
+  S = 'http://knowrob.org/kb/knowrob_temporal_test.owl#Dough_vs5hgsg0',
+  P = 'http://knowrob.org/kb/knowrob.owl#temperatureOfObject',
+  interval(I, [0.0,20.0]),
+  O = literal(type(_,10.0)).
+test(fluent_has4) :-
+  fluent_has(S, knowrob:temperatureOfObject, O, I),
+  S = 'http://knowrob.org/kb/knowrob_temporal_test.owl#Dough_vs5hgsg0',
+  interval(I, [0.0,20.0]),
+  O = literal(type(_,10.0)).
+test(fluent_has5) :-
+  fluent_has(S, P, literal(type(xsd:'float',10.0)), I),
+  S = 'http://knowrob.org/kb/knowrob_temporal_test.owl#Dough_vs5hgsg0',
+  P = 'http://knowrob.org/kb/knowrob.owl#temperatureOfObject',
+  interval(I, [0.0,20.0]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% `holds`

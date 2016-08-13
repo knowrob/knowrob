@@ -766,7 +766,7 @@ entity_head(Entity, Type, TypeIri) :-
   entity_head_(Entity, Type, TypeIri),
   forall( entity_head_(Entity, _, TypeIri_), ( % TODO: do this faster
     ( TypeIri_ = TypeIri ) ; not(rdf_reachable(TypeIri_, rdfs:subClassOf, TypeIri))
-  )).
+  )), !.
 entity_head_(Entity, [an,Type], TypeIri) :-
   entity_type([an,Type], TypeIri),
   entity_iri(Entity, TypeIri).
