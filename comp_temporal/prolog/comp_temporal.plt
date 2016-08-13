@@ -37,72 +37,76 @@
 :- rdf_db:rdf_register_ns(owl,  'http://www.w3.org/2002/07/owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(xsd,  'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
-:- rdf_db:rdf_register_ns(test, 'http://knowrob.org/kb/test_comp_temporal.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(test_comp_temporal, 'http://knowrob.org/kb/test_comp_temporal.owl#', [keep(true)]).
 
 
 % Test if
 test(comp_temporallySubsumes) :-
-    comp_temporallySubsumes(test:'Long', test:'Short1'),!.
+    comp_temporallySubsumes(test_comp_temporal:'Long', test_comp_temporal:'Short1'),!.
 
 test(comp_after) :-
-    comp_after(test:'timepoint_1377777000', test:'timepoint_1377777002').
+    comp_after(test_comp_temporal:'timepoint_1377777002', test_comp_temporal:'timepoint_1377777000').
 
 test(comp_duration) :-
     comp_duration('http://knowrob.org/kb/test_comp_temporal.owl#Long', 10).
 
 test(comp_equalI) :-
-      comp_equalI(test:'Long', test:'Long'),
-    \+comp_equalI(test:'Long', test:'Short1').
+      comp_equalI(test_comp_temporal:'Long', test_comp_temporal:'Long'),
+    \+comp_equalI(test_comp_temporal:'Long', test_comp_temporal:'Short1').
 
 test(comp_beforeI) :-
-      comp_beforeI(test:'Short1',test:'Short3'),
-    \+comp_beforeI(test:'Short3',test:'Short1'),
-    \+comp_beforeI(test:'Short1',test:'Short2'),
-    \+comp_beforeI(test:'Short2',test:'Short1').
+      comp_beforeI(test_comp_temporal:'Short1',test_comp_temporal:'Short3'),
+    \+comp_beforeI(test_comp_temporal:'Short3',test_comp_temporal:'Short1'),
+    \+comp_beforeI(test_comp_temporal:'Short1',test_comp_temporal:'Short2'),
+    \+comp_beforeI(test_comp_temporal:'Short2',test_comp_temporal:'Short1').
 
 test(comp_afterI) :-
-      comp_afterI(test:'Short3',test:'Short1'),
-    \+comp_afterI(test:'Short1',test:'Short3'),
-    \+comp_afterI(test:'Short1',test:'Short2'),
-    \+comp_afterI(test:'Short2',test:'Short1').
+      comp_afterI(test_comp_temporal:'Short3',test_comp_temporal:'Short1'),
+    \+comp_afterI(test_comp_temporal:'Short1',test_comp_temporal:'Short3'),
+    \+comp_afterI(test_comp_temporal:'Short1',test_comp_temporal:'Short2'),
+    \+comp_afterI(test_comp_temporal:'Short2',test_comp_temporal:'Short1').
 
 test(comp_overlapsI) :-
-      comp_overlapsI(test:'Long', test:'Short4'),
-    \+comp_overlapsI(test:'Short4', test:'Long').
+      comp_overlapsI(test_comp_temporal:'Long', test_comp_temporal:'Short4'),
+    \+comp_overlapsI(test_comp_temporal:'Short4', test_comp_temporal:'Long').
 
 test(comp_overlapsInvI) :-
-      comp_overlapsInvI(test:'Short4', test:'Long'),
-    \+comp_overlapsInvI(test:'Long', test:'Short4').
+      comp_overlapsInvI(test_comp_temporal:'Short4', test_comp_temporal:'Long'),
+    \+comp_overlapsInvI(test_comp_temporal:'Long', test_comp_temporal:'Short4').
 
 test(comp_meetsI) :-
-    comp_meetsI(test:'Short1', test:'Short2'),
-    \+comp_meetsI(test:'Short1', test:'Short3').
+    comp_meetsI(test_comp_temporal:'Short1', test_comp_temporal:'Short2'),
+    \+comp_meetsI(test_comp_temporal:'Short1', test_comp_temporal:'Short3').
 
 test(comp_meetsInvI) :- 
-    comp_meetsInvI(test:'Short2', test:'Short1'),
-    \+comp_meetsInvI(test:'Short3', test:'Short1').
+    comp_meetsInvI(test_comp_temporal:'Short2', test_comp_temporal:'Short1'),
+    \+comp_meetsInvI(test_comp_temporal:'Short3', test_comp_temporal:'Short1').
 
 test(comp_duringI) :-
-    comp_duringI(test:'Short2',test:'Long'),
-    \+ comp_duringI(test:'Short1',test:'Short2').
+    comp_duringI(test_comp_temporal:'Short2',test_comp_temporal:'Long'),
+    \+ comp_duringI(test_comp_temporal:'Short1',test_comp_temporal:'Short2').
 
 test(comp_duringInvI) :- 
-    comp_duringInvI(test:'Long',test:'Short2').
+    comp_duringInvI(test_comp_temporal:'Long',test_comp_temporal:'Short2').
 
 test(comp_startsI) :- 
-    comp_startsI(test:'Short1',test:'Long').
+    comp_startsI(test_comp_temporal:'Short1',test_comp_temporal:'Long').
 
 test(comp_startsInvI) :- 
-    comp_startsInvI(test:'Long',test:'Short1').
+    comp_startsInvI(test_comp_temporal:'Long',test_comp_temporal:'Short1').
 
 test(comp_finishesI) :- 
-    comp_finishesI(test:'Short3',test:'Long'),
-    \+ comp_finishesInvI(test:'Short4',test:'Long').
+    comp_finishesI(test_comp_temporal:'Short3',test_comp_temporal:'Long'),
+    \+ comp_finishesInvI(test_comp_temporal:'Short4',test_comp_temporal:'Long').
 
 test(comp_finishesInvI) :-
-    comp_finishesInvI(test:'Long',test:'Short3'),
-    \+ comp_finishesInvI(test:'Long',test:'Short4').
+    comp_finishesInvI(test_comp_temporal:'Long',test_comp_temporal:'Short3'),
+    \+ comp_finishesInvI(test_comp_temporal:'Long',test_comp_temporal:'Short4').
 
+%test(entity_event_after) :-
+%  entity(Evt, [an, event, [type, thinking], [comp_temporal:after, [a, timepoint, 10.0]]]),
+%  rdfs_individual_of(Evt, knowrob:'Thinking'),
+%  rdf_has(Evt, knowrob:'startTime', knowrob:'timepoint_20.0').
 
 :- end_tests(comp_temporal).
 

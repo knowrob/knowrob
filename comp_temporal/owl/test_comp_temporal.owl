@@ -30,31 +30,31 @@
     <!--                                 |_Short4_|  -->
 
 
-    <owl:namedIndividual rdf:about="&test;Long">
+    <owl:NamedIndividual rdf:about="&test;Long">
         <rdf:type rdf:resource="&knowrob;Event"/>
         <knowrob:startTime rdf:resource="&test;timepoint_1377777000"/>
         <knowrob:endTime rdf:resource="&test;timepoint_1377777010"/>
-    </owl:namedIndividual>
-    <owl:namedIndividual rdf:about="&test;Short1">
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="&test;Short1">
         <rdf:type rdf:resource="&knowrob;Event"/>
         <knowrob:startTime rdf:resource="&test;timepoint_1377777000"/>
         <knowrob:endTime rdf:resource="&test;timepoint_1377777002"/>
-    </owl:namedIndividual>
-    <owl:namedIndividual rdf:about="&test;Short2">
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="&test;Short2">
         <rdf:type rdf:resource="&knowrob;Event"/>
         <knowrob:startTime rdf:resource="&test;timepoint_1377777002"/>
         <knowrob:endTime rdf:resource="&test;timepoint_1377777004"/>
-    </owl:namedIndividual>
-    <owl:namedIndividual rdf:about="&test;Short3">
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="&test;Short3">
         <rdf:type rdf:resource="&knowrob;Event"/>
         <knowrob:startTime rdf:resource="&test;timepoint_1377777008"/>
         <knowrob:endTime rdf:resource="&test;timepoint_1377777010"/>
-    </owl:namedIndividual>
-    <owl:namedIndividual rdf:about="&test;Short4">
+    </owl:NamedIndividual>
+    <owl:NamedIndividual rdf:about="&test;Short4">
         <rdf:type rdf:resource="&knowrob;Event"/>
         <knowrob:startTime rdf:resource="&test;timepoint_1377777009"/>
         <knowrob:endTime rdf:resource="&test;timepoint_1377777011"/>
-    </owl:namedIndividual>
+    </owl:NamedIndividual>
 
 
     <!-- Timepoint Individuals -->

@@ -26,8 +26,8 @@
 
 
   <owl:ObjectProperty rdf:about="#after">
-    <rdfs:range rdf:resource="&knowrob;#TimePoint"/>
-    <rdfs:domain rdf:resource="&knowrob;#TimePoint"/>
+    <rdfs:range rdf:resource="&knowrob;#TimeInterval"/>
+    <rdfs:domain rdf:resource="&knowrob;#TimeInterval"/>
     <rdfs:subPropertyOf rdf:resource="&knowrob;#after"/>
   </owl:ObjectProperty>
 
