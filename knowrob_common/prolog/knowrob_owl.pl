@@ -33,12 +33,10 @@
 :- module(knowrob_owl,
     [
       entity/2,
-      entity_description/2,
-      entity_description_property/3,
+      entity_has/3,
       entity_type/2,
       entity_compute/2,
       entity_assert/2,
-      is_entitiy_description/1,
       class_properties/3,
       class_properties_some/3,
       class_properties_all/3,
@@ -51,7 +49,7 @@
       get_timepoint/1,
       get_timepoint/2,
       create_timepoint/2,
-      create_interval/3,
+      create_interval/2,
       inspect/3
     ]).
 
@@ -69,12 +67,11 @@
              entity_compute/2.
 
 :- rdf_meta entity(r,?),
-            entity_description(r,?),
-            entity_description_property(+,?,?),
+            entity_property(+,?,?),
             entity_type(r,?),
             entity_compute(r,?),
             entity_assert(r,?),
-            is_entitiy_description(+),
+            entity_iri(r,r),
             class_properties(r,r,t),
             class_properties_some(r,r,t),
             class_properties_all(r,r,t),
@@ -215,12 +212,32 @@ create_timepoint(TimeStamp, TimePoint) :-
   atom_concat('http://knowrob.org/kb/knowrob.owl#timepoint_', TimeStamp, TimePoint),
   rdf_assert(TimePoint, rdf:type, knowrob:'TimePoint').
 
+%% create_interval(+Start, -TimeInterval) is nondet.
 %% create_interval(+Start, +End, -TimeInterval) is det.
 %
 % Create a interval-identifier for the given start and end time stamps
 %
 %
-create_interval(Start, End, TimeInterval) :-
+
+create_interval([Start], TimeInterval) :-
+  atom(Start), time_term(Start, Start_),
+  create_interval([Start_], TimeInterval), !.
+
+create_interval([Start], TimeInterval) :-
+  create_timepoint(Start, StartI),
+  rdf_instance_from_class(knowrob:'TimeInterval', TimeInterval),
+  rdf_assert(TimeInterval, rdf:type, knowrob:'TimeInterval'),
+  rdf_assert(TimeInterval, knowrob:'startTime', StartI).
+
+create_interval([Start, End], TimeInterval) :-
+  atom(Start), time_term(Start, Start_),
+  create_interval([Start_, End], TimeInterval), !.
+
+create_interval([Start, End], TimeInterval) :-
+  atom(End), time_term(End, End_),
+  create_interval([Start, End_], TimeInterval), !.
+
+create_interval([Start, End], TimeInterval) :-
   create_timepoint(Start, StartI),
   create_timepoint(End, EndI),
   atomic_list_concat(['http://knowrob.org/kb/knowrob.owl#TimeInterval',Start,End], '_', TimeInterval),
@@ -448,14 +465,14 @@ class_properties_transitive_nosup(Class, Prop, SubComp) :-
 %%% TODO this requires some more thoughts....
 %%%
 %%%
-%%% 2. Call `entity_compute` in `entity_description` iff var(Entity)
+%%% 2. Call `entity_compute` in `entity` iff var(Entity)
 %%%
 %%%
 %%% TODO Generic implementation using computable classes?
 %%%    * How to limit computation?
 %%%
 
-%% entity(?Entity, ?Descr) is nondet.
+%% entity(?Entity, +Descr) is nondet.
 %
 % Query for entity matching an entity description or build
 % description for entity.
@@ -463,83 +480,88 @@ class_properties_transitive_nosup(Class, Prop, SubComp) :-
 % @param Entity IRI of matching entity
 % @param Descr An entity description, OWL individual or class IRI
 %
-entity(Entity, Entity) :-
-  atom(Entity),
-  rdfs_individual_of(Entity, owl:'NamedIndividual'), !.
-
 entity(Entity, EntityClass) :-
   atom(EntityClass),
   rdfs_individual_of(Entity, EntityClass), !.
 
-% Entity descriptions
-entity(Entity,Descr) :-
-  is_entitiy_description(Descr),
-  entity_description(Entity,Descr).
+entity(Entity, Descr) :-
+  var(Descr), !,
+  rdfs_individual_of(Entity,owl:'Thing'),
+  entity_head(Entity, [A,TypeBase], TypeIri),
+  entity_generate(Entity, [A,TypeBase], TypeIri, Descr).
 
+entity(Entity, Descr) :-
+  entity_(Entity, Descr),
+  % make sure it's an individual and not a class
+  rdfs_individual_of(Entity, owl:'Thing').
 
-%% entity_description(?Class, ?Descr) is nondet.
-%
-% Query for entity matching an entity description or build
-% description for entity.
-%
-% @param Entity IRI of matching entity
-% @param Descr An entity description
-%
-entity_description(Entity, [an|[Type|Descr]]) :-
-  (
-    entity_type([an,Type], TypeIri),
-    rdfs_individual_of(Entity, TypeIri),
-    entity_description(Entity, Descr)
-  ) ; (
+entity_(Entity, [a, timepoint, Time]) :-
+  number(Time), create_timepoint(Time, Entity), !.
+entity_(Entity, [a, timepoint, [value,TimeValue]]) :-
+  nonvar(TimeValue), create_timepoint(TimeValue, Entity),!.
+entity_(Entity, [a, timepoint, [name,Name]]) :-
+  nonvar(Name),
+  rdf_global_term(Name, Entity),
+  time_term(Entity, TimeValue),
+  create_timepoint(TimeValue, Entity),!.
+
+entity_(Entity, [an, interval, [Begin, End]]) :-
+  create_interval([Begin,End],Entity), !.
+entity_(Entity, [an, interval, [Begin]]) :-
+  create_interval([Begin],Entity),
+  interval(Entity, [Begin]), !.
+
+entity_(Entity, [A|[Type|Descr]]) :-
+  nonvar(A),nonvar(Type),
+  entity_head(Entity, [A,Type], _),
+  entity_(Entity, Descr) ; (
     var(Entity),
-    entity_compute(Entity, [an|[Type|Descr]])
+    entity_compute(Entity, [A|[Type|Descr]])
   ).
 
-entity_description(Entity, [a|[Type|Descr]]) :-
-  (
-    entity_type([a,Type], TypeIri),
-    rdfs_individual_of(Entity, TypeIri),
-    entity_description(Entity, Descr)
-  ) ; (
-    var(Entity),
-    entity_compute(Entity, [a|[Type|Descr]])
-  ).
+entity_(Entity, [[type,Type]|Descr]) :-
+  nonvar(Type),
+  entity_iri(TypeIri, Type, camelcase),
+  ( rdfs_individual_of(Entity, TypeIri);
+    Entity = TypeIri ),
+  entity_(Entity, Descr).
 
-entity_description(Entity, [type|[Type|Descr]]) :-
-  (  var(Type)
-  ->  (
-      rdfs_individual_of(Entity, TypeIri),
-      entity_iri_description(TypeIri, Type, camelcase)
-  ) ; (
-      entity_iri_description(TypeIri, Type, camelcase),
-      rdfs_individual_of(Entity, TypeIri)
-  )),
-  entity_description(Entity, Descr).
+entity_(Entity, [[name,Name]|Descr]) :-
+  nonvar(Name),
+  entity_iri(NameIri, Name, camelcase),
+  Entity = NameIri,
+  entity_(Entity, Descr).
 
-entity_description(Entity, [Key|[Value|Descr]]) :-
-  % match property with key and read value from RDF store
-  (  var(Key)
-  ->  ( % Key unbound, generate description
-      rdf_has(Entity, PropIri, PropValue), % TODO: howto handle temporal parts?
-      entity_iri_description(PropIri, Key, lower_camelcase)
-  ) ; ( % Key bound, match description with existing entitiy
-      entity_iri_description(PropIri, Key, lower_camelcase),
-      rdf_has(Entity, PropIri, PropValue) % TODO: howto handle temporal parts?
-  )),
-  % match rdf value with description value
-  (  rdf_has(PropIri, rdf:type, owl:'ObjectProperty')
-  -> entity_description(PropValue, Value)
-  ;  property_value(PropValue, Value)
-  ),
-  entity_description(Entity, Descr).
+%% Key-value property
+entity_(Entity, [[Key,Value]|Descr]) :-
+  nonvar(Key), nonvar(Value),
+  entity_properties([[PropIri,PropValue]], [[Key,Value]]),
+  holds(Entity,PropIri,PropValue),
+  entity_(Entity, Descr).
 
-% timepoint special case because time value is not a property!
-entity_description(Entity, [value|[TimeValue|_]]) :-
-  rdfs_individual_of(Entity, knowrob:'Timepoint'),
-  time_term(Entity,TimeValueNum),
-  atom_number(TimeValue,TimeValueNum).
+%% Fluid properties that match temporal relation.
+entity_(Entity, [[Key,Value,TemporalRelation,IntervalDescr]|Descr]) :-
+  nonvar(Key), nonvar(Value),
+  entity_properties([[PropIri,PropValue]], [[Key,Value]]),
+  interval(IntervalDescr, Interval),
+  holds(Entity,PropIri,PropValue,FluentInterval),
+  interval_operator(TemporalRelation,FluentInterval,Interval),
+  entity_(Entity, Descr).
 
-entity_description(_, []).
+entity_(_, []).
+
+%% Read entity property value
+entity_has(S,P,O) :-
+  once((
+    entity_has_(S,P,O) ; (
+      atom(S),
+      entity(S,Descr),
+      entity_has_(Descr,P,O)
+    )
+  )).
+entity_has_([], _, _) :- false.
+entity_has_([[Key|[Val|_]]|_], Key, Val) :- !.
+entity_has_([_|Descr], Key, Val) :- entity_has_(Descr,Key,Val).
 
 
 %% entity_type(?Descr, ?Iri) is det.
@@ -549,14 +571,14 @@ entity_description(_, []).
 % @param Descr The type description "[a,an] ?type_name"
 % @param Iri The corresponding type iri
 %
-entity_type([a,timepoint],  knowrob:'Timepoint').
-entity_type([an,interval],  knowrob:'TimeInterval').
-entity_type([an,action],    knowrob:'Action').
-entity_type([an,event],     knowrob:'Event').
-entity_type([an,object],    knowrob:'SpatialThing').
-entity_type([a,location],   knowrob:'Location').
-entity_type([a,pose],       knowrob:'Pose').
-entity_type([a,trajectory], knowrob:'Trajectory').
+entity_type([a,timepoint],  'http://knowrob.org/kb/knowrob.owl#TimePoint').
+entity_type([an,interval],  'http://knowrob.org/kb/knowrob.owl#TimeInterval').
+entity_type([an,action],    'http://knowrob.org/kb/knowrob.owl#Action').
+entity_type([an,event],     'http://knowrob.org/kb/knowrob.owl#Event').
+entity_type([an,object],    'http://knowrob.org/kb/knowrob.owl#SpatialThing').
+entity_type([a,location],   'http://knowrob.org/kb/knowrob.owl#Location').
+entity_type([a,pose],       'http://knowrob.org/kb/knowrob.owl#Pose').
+entity_type([a,trajectory], 'http://knowrob.org/kb/knowrob.owl#Trajectory').
 
 
 %% entity_compute(?Entity, ?Descr) is nondet.
@@ -567,18 +589,20 @@ entity_type([a,trajectory], knowrob:'Trajectory').
 % @param Entity IRI of matching entity
 % @param Descr An entity description
 %
+entity_compute(Entity, [a,timepoint,Time]) :-
+  create_timepoint(Time, Entity), !.
 entity_compute(Entity, [a|[timepoint|Descr]]) :-
-  entity_description_property(Descr, value, Time),
+  entity_has(Descr, value, Time),
   create_timepoint(Time, Entity). % FIXME: redundant results
 
 entity_compute(Entity, [an|[interval|Descr]]) :-
-  entity_description_property(Descr, start_time, StartDescr),
-  entity_description_property(StartDescr, value, Start),
+  entity_has(Descr, start_time, StartDescr),
+  entity_has(StartDescr, value, Start),
   
-  entity_description_property(Descr, end_time, EndDescr),
-  entity_description_property(EndDescr, value, End),
+  entity_has(Descr, end_time, EndDescr),
+  entity_has(EndDescr, value, End),
   
-  create_interval(Start,End,Entity). % FIXME: redundant results
+  create_interval([Start,End],Entity). % FIXME: redundant results
 
 %%%%%% knowrob_mongo
 %entity_compute(Entity, [an|[object|Tail]]) :- false. % TODO
@@ -594,21 +618,48 @@ entity_compute(Entity, [an|[interval|Descr]]) :-
 % @param Entity IRI of matching entity
 % @param Descr An entity description
 %
-entity_assert(Entity, [a|[Type|Descr]]) :-
-  var(Entity), nonvar(Type),
-  entity_type([a,Type], TypeIri),
-  rdf_instance_from_class(TypeIri, Entity),
-  entity_assert(Entity, Descr).
+entity_assert(Entity, [a, timepoint, Time]) :-
+  number(Time), create_timepoint(Time, Entity), !.
+entity_assert(Entity, [a, timepoint, [value, Time]]) :-
+  create_timepoint(Time, Entity), !.
 
-entity_assert(Entity, [an|[Type|Descr]]) :-
-  var(Entity), nonvar(Type),
-  entity_type([an,Type], TypeIri),
-  rdf_instance_from_class(TypeIri, Entity),
-  entity_assert(Entity, Descr).
+entity_assert(Entity, [an, interval, [Begin, End]]) :-
+  create_interval([Begin, End], Entity), !.
+entity_assert(Entity, [an, interval, [Begin]]) :-
+  create_interval([Begin], Entity), !.
+entity_assert(Entity, [an|[interval|Descr]]) :-
+  entity_has(Descr, start_time, BeginDescr),
+  entity(Begin, BeginDescr),
+  (( entity_has(Descr, end_time, EndDescr),
+     entity(End, EndDescr),
+     create_interval([Begin, End], Entity) );
+     create_interval([Begin], Entity) ), !.
 
-entity_assert(Entity, [Key|[Value|Descr]]) :-
+entity_assert(Entity, [A|[Type|Descr]]) :-
+  nonvar(Type),
+  entity_type([A,Type], TypeIri_),
+  (( entity_has(Descr,type,AType),
+     entity_iri(AType, ATypeIri),
+     rdf_reachable(ATypeIri, rdfs:subClassOf, TypeIri_) )
+  -> TypeIri = ATypeIri
+  ;  TypeIri = TypeIri_ ),
+  (( entity_has(Descr, name, Entity_),
+     rdf_global_term(Entity_, Entity), % TODO: fallback to knowrob prefix
+     rdf_assert(Entity, rdf:type, TypeIri) );
+     rdf_instance_from_class(TypeIri, Entity) ),
+  entity_assert(Entity, Descr), !.
+
+entity_assert(Entity, [[name,_]|Descr]) :- entity_assert(Entity, Descr), !.
+
+entity_assert(Entity, [[type,TypeDescr]|Descr]) :-
+  nonvar(Entity), nonvar(TypeDescr),
+  entity_iri(TypeIri, TypeDescr, camelcase),
+  rdf_assert(Entity, rdf:type, TypeIri),
+  entity_assert(Entity, Descr), !.
+
+entity_assert(Entity, [[Key,Value]|Descr]) :-
   nonvar(Entity), nonvar(Key), nonvar(Value),
-  entity_iri_description(PropIri, Key, lower_camelcase),
+  entity_iri(PropIri, Key, lower_camelcase),
   (  rdf_has(PropIri, rdf:type, owl:'ObjectProperty')
   ->  ( % nested entity
       entity_assert(ValueEntity, Value),
@@ -619,26 +670,120 @@ entity_assert(Entity, [Key|[Value|Descr]]) :-
   )),
   entity_assert(Entity, Descr).
 
-entity_assert(Entity, []) :- nonvar(Entity).
+entity_assert(Entity, [[Key,Value,during,IntervalDescr]|Descr]) :-
+  nonvar(Entity), nonvar(Key), nonvar(Value),
+  entity_iri(PropIri, Key, lower_camelcase),
+  entity(Interval, IntervalDescr),
+  (  rdf_has(PropIri, rdf:type, owl:'ObjectProperty')
+  ->  ( % nested entity
+      entity_assert(ValueEntity, Value),
+      fluent_assert(Entity,PropIri,ValueEntity,Interval)
+  ) ; ( % data property
+      rdf_has(PropIri, rdfs:range, Range),
+      fluent_assert(Entity,PropIri,literal(type(Range,Value)),Interval)
+  )),
+  entity_assert(Entity, Descr).
 
-
-%% is_entitiy_description(+Descr) is nondet.
-%
-% @param Descr ....
-%
-is_entitiy_description([X|[Y|_]]) :- entity_type([X,Y],_).
+entity_assert(_, []).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % helper
 
-%% Read entity description property value
-entity_description_property([], _, _).
-entity_description_property([Key|[Val|_]], Key, Val) :- !.
-entity_description_property([_|Descr], Key, Val) :- entity_description_property(Key, Descr,Val).
 
-%% Read entity description namespace
+interval_operator(during, I1, I2) :-   interval_during(I1,I2).
+interval_operator(before, I1, I2) :-   interval_before(I1,I2).
+interval_operator(after, I1, I2) :-    interval_after(I1,I2).
+interval_operator(meets, I1, I2) :-    interval_meets(I1,I2).
+interval_operator(starts, I1, I2) :-   interval_starts(I1,I2).
+interval_operator(finishes, I1, I2) :- interval_finishes(I1,I2).
+interval_operator(overlaps, I1, I2) :- interval_overlaps(I1,I2).
+
+
+entity_properties([['http://www.w3.org/1999/02/22-rdf-syntax-ns#type',_]|Tail], DescrTail) :-
+  entity_properties(Tail, DescrTail), !.
+
+entity_properties([['http://www.w3.org/2000/01/rdf-schema#comment',_]|Tail], DescrTail) :-
+  entity_properties(Tail, DescrTail), !.
+
+entity_properties([['http://www.w3.org/2000/01/rdf-schema#subClassOf',_]|Tail], DescrTail) :-
+  entity_properties(Tail, DescrTail), !.
+
+entity_properties([[inverse_of('http://knowrob.org/kb/knowrob.owl#temporalPartOf'),Fluent]|Tail],
+                            [[Key,Value,during,IntervalDescr]|DescrTail]) :-
+  fluent_has(Fluent, PropIri, PropValue, IntervalIri),
+  entity_properties([[PropIri,PropValue]], [[Key,Value]]),
+  entity(IntervalIri, IntervalDescr),
+  entity_properties(Tail, DescrTail), !.
+
+entity_properties([[inverse_of(_),_]|Tail], DescrTail) :-
+  entity_properties(Tail, DescrTail), !.
+
+entity_properties([[PropIri,TimeIri]|Tail],
+                  [[Key, [a,timepoint,Time]]|DescrTail]) :-
+  rdfs_individual_of(TimeIri, knowrob:'TimePoint'),
+  entity_iri(PropIri, Key, lower_camelcase),
+  time_term(TimeIri,Time),
+  entity_properties(Tail, DescrTail), !.
+
+entity_properties([[PropIri,IntervalIri]|Tail],
+                  [[Key, [an,interval,Interval]]|DescrTail]) :-
+  interval(IntervalIri,Interval),
+  entity_iri(PropIri, Key, lower_camelcase),
+  entity_properties(Tail, DescrTail), !.
+
+entity_properties([[PropIri,PropValue]|Tail], [[Key,Value]|DescrTail]) :-
+  entity_iri(PropIri, Key, lower_camelcase),
+  % match rdf value with description value
+  (  rdf_has(PropIri, rdf:type, owl:'ObjectProperty')
+  -> entity(PropValue, Value)
+  ;  property_value(PropValue, Value)
+  ),
+  entity_properties(Tail, DescrTail).
+
+entity_properties([], []).
+
+
+% TODO: howto handle mongo entities here?
+entity_generate(Entity, [a,timepoint], _, [a,timepoint,Time]) :-
+  rdfs_individual_of(Entity, knowrob:'TimePoint'), time_term(Entity,Time), !.
+entity_generate(Entity, [an,interval], _, [an,interval,Interval]) :-
+  interval(Entity,Interval), !.
+entity_generate(Entity, [A,TypeBase], TypeBaseIri, [A|[TypeBase|[[type,TypeName]|PropDescr]]]) :-
+  (( rdf_has(Entity, rdf:type, Type),
+     Type \= TypeBaseIri,
+     rdf_reachable(Type, rdfs:subClassOf, TypeBaseIri) )
+  -> TypeIri = Type
+  ;  TypeIri = TypeBaseIri ),
+  entity_iri(TypeIri, TypeName, camelcase),
+  findall([PropIri,PropValue], rdf_has(Entity, PropIri, PropValue), Props),
+  entity_properties(Props, PropDescr), !.
+
+
+%% Match [a|an, ?entity_type]
+entity_head(Entity, Type, TypeIri) :-
+  entity_head_(Entity, Type, TypeIri),
+  forall( entity_head_(Entity, _, TypeIri_), ( % TODO: do this faster
+    ( TypeIri_ = TypeIri ) ; not(rdf_reachable(TypeIri_, rdfs:subClassOf, TypeIri))
+  )).
+entity_head_(Entity, [an,Type], TypeIri) :-
+  entity_type([an,Type], TypeIri),
+  entity_iri(Entity, TypeIri).
+entity_head_(Entity, [a,Type], TypeIri) :-
+  entity_type([a,Type], TypeIri),
+  entity_iri(Entity, TypeIri).
+entity_head_(_, [a,thing], 'http://www.w3.org/2002/07/owl#Thing').
+
+
+entity_type(Entity, TypeBase, Entity) :-
+  atom(Entity), rdf_reachable(Entity, rdfs:subClassOf, TypeBase), !.
+entity_type(Entity, TypeBase, Type) :-
+  rdf_has(Entity, rdf:type, Type),
+  rdf_reachable(Type, rdfs:subClassOf, TypeBase).
+
+
+%% Read entity namespace
 entity_ns(Entity, NamespaceUri, EntityName) :-
   (  Entity =.. [':', NS, EntityName]
   ->  (
@@ -650,8 +795,9 @@ entity_ns(Entity, NamespaceUri, EntityName) :-
 entity_ns(Entity, NamespaceUri, EntityName) :-
   rdf_split_url(NamespaceUri, EntityName, Entity).
 
+
 %% Converts between IRI representation and description representation
-entity_iri_description(Iri, Descr, Formatter) :-
+entity_iri(Iri, Descr, Formatter) :-
   var(Descr),
   rdf_split_url(NamespaceUri, Name, Iri),
   rdf_current_ns(Namespace, NamespaceUri),
@@ -660,8 +806,16 @@ entity_iri_description(Iri, Descr, Formatter) :-
   -> Descr=NameUnderscore
   ;  Descr=Namespace:NameUnderscore
   ).
-entity_iri_description(Iri, Description, Formatter) :-
+entity_iri(Iri, Description, Formatter) :-
   var(Iri),
   entity_ns(Description, NS, NameUnderscore),
   call(Formatter, NameUnderscore, Name),
   atom_concat(NS, Name, Iri).
+
+entity_iri(Entity, Type) :-
+  rdf_has(Entity, rdf:type, Type),
+  rdf_split_url(Url, _, Type),
+  rdf_current_ns(NS, Url),
+  NS \= owl.
+entity_iri(Entity, Type) :-
+  rdfs_individual_of(Entity,Type).
