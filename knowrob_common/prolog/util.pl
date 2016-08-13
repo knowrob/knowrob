@@ -51,10 +51,12 @@
       extract_values/3,
       print_info/2,
       string_tokens/2,
-      pack_path/1,
+      prolog_pack_path/1,
+      prolog_pack_install/2,
       lists_equal/2,
       time_term/2,
       time_between/3,
+      time_between/2,
       time_later_then/2,
       time_earlier_then/2,
       current_time/1,
@@ -74,21 +76,24 @@ current_time(T) :-
 time_term(Timepoint, Timepoint) :-
   number(Timepoint), !.
 
-time_term([T0,T1], [T0,T1]) :-
-  number(T0),
-  number(T1), !.
+time_term([Begin,End], [Begin,End]) :-
+  number(Begin), number(End), !.
 
-time_term(Timeinterval, [T0,T1]) :-
+time_term([Begin], [Begin]) :-
+  number(Begin), !.
+
+time_term(Timeinterval, Interval) :-
   atom(Timeinterval),
-  owl_individual_of(Timeinterval, knowrob:'TimeInterval'),
+  rdfs_individual_of(Timeinterval, knowrob:'TimeInterval'),
   rdf_has(Timeinterval, knowrob:'startTime', Timepoint0),
-  time_term(Timepoint0, T0),
+  time_term(Timepoint0, Begin),
   (  rdf_has(Timeinterval, knowrob:'endTime', Timepoint1)
-  -> time_term(Timepoint1, T1)
-  ;  T1 = inf
+  -> (time_term(Timepoint1, End), Interval=[Begin,End])
+  ;  Interval=[Begin]
   ), !.
 
 time_term(Timepoint, Time) :-
+  atom(Timepoint),
   (  rdf_split_url(_, TimePointLocal, Timepoint),
      atom_concat('timepoint_', TimeAtom, TimePointLocal)
   -> term_to_atom(Time, TimeAtom)
@@ -103,10 +108,9 @@ time_term(Timepoint, Time) :-
 %
 time_between(Timeinterval, T0, T1) :-
   atom(Timeinterval),
-  owl_individual_of(Timeinterval, knowrob:'TimeInterval'),
-  time_term(Timeinterval , [T2,T3]),
-  time_between(T2, T0, T1),
-  time_between(T3, T0, T1), !.
+  rdfs_individual_of(Timeinterval, knowrob:'TimeInterval'),
+  time_term(Timeinterval , Interval),
+  time_between(Interval, T0, T1), !.
 
 time_between([T2,T3], T0, T1) :-
   time_between(T2, T0, T1),
@@ -117,25 +121,44 @@ time_between(T, T0, T1) :-
   time_earlier_then(T0, T),
   time_earlier_then(T, T1).
 
+time_between(T, Timeinterval) :-
+  atom(Timeinterval),
+  rdfs_individual_of(Timeinterval, knowrob:'TimeInterval'),
+  time_term(Timeinterval , Interval),
+  time_between(T, Interval), !.
+
+time_between(T, [Begin,End]) :-
+  time_between(T, Begin, End).
+
+time_between(T, [Begin]) :-
+  time_later_then(T, [Begin]).
+
+
 %% time_later_then(+T0, +T1)
 % True iff T0 >= T1
 %
-time_later_then(_, inf)   :- false, !.
-time_later_then(inf, _)   :- true,  !.
 time_later_then(T0, T1) :-
-  time_term(T0, T0_term), number(T0_term),
-  time_term(T1, T1_term), number(T1_term),
-  T1_term =< T0_term.
+  time_term(T0, T0_term),
+  time_term(T1, T1_term),
+  time_later_then_(T0_term, T1_term), !.
+time_later_then_([_], [_])     :- false.
+time_later_then_([T0], [_,T1])   :- T1 =< T0, !.
+time_later_then_([_,T0], [T1])   :- T1 =< T0, !.
+time_later_then_([_,T0], [_,T1]) :- T1 =< T0, !.
+time_later_then_(T0, T1) :- number(T0), number(T1), T1 =< T0, !.
 
 %% time_earlier_then(+T0, +T1)
 % True iff T0 <= T1
 %
-time_earlier_then(inf, _)   :- false, !.
-time_earlier_then(_, inf)   :- true,  !.
 time_earlier_then(T0, T1) :-
-  time_term(T0, T0_term), number(T0_term),
-  time_term(T1, T1_term), number(T1_term),
-  T0_term =< T1_term.
+  time_term(T0, T0_term),
+  time_term(T1, T1_term),
+  time_earlier_then_(T0_term, T1_term), !.
+time_earlier_then_([_], [_])     :- false.
+time_earlier_then_([T0], [_,T1])   :- T0 =< T1, !.
+time_earlier_then_([_,T0], [T1])   :- T0 =< T1, !.
+time_earlier_then_([_,T0], [_,T1]) :- T0 =< T1, !.
+time_earlier_then_(T0, T1) :- number(T0), number(T1), T0 =< T1, !.
 
 %% reduce(+Predicate, +List, +StartValue, -Result).
 % The predicate is first called for the first element of the list, the start value and an intermediate result.
@@ -465,9 +488,24 @@ path_split(Path, PathList) :-
   path_delimiter(Delimiter),
   atomic_list_concat(PathList, Delimiter, Path).
 
-pack_path(Path) :-
+prolog_pack_path(Path) :-
   getenv('USER', User),
   atomic_list_concat(['/home',User,lib,swipl,pack], '/', Path).
+
+%% prolog_pack_install(+PackName, +URL)
+%
+% Download and install a Prolog package.
+% Do nothing if pack is allready installed.
+%
+prolog_pack_install(PackName, URL) :-
+  prolog_pack_path(PackPath),
+  mkdir(PackPath),
+  ( pack_property(delay, version(_));
+    pack_install(PackName, [interactive(false),
+      url(URL),
+      package_directory(PackPath),
+      upgrade(true), silent(true)
+    ]) ), !.
   
 %% mkdir(+Dir)
 %
