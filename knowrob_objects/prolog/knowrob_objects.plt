@@ -34,19 +34,19 @@
 :- rdf_db:rdf_register_prefix(test, 'http://knowrob.org/kb/test_knowrob_objects.owl#', [keep(true)]).
 
 test(storagePlaceFor1) :-
-  storagePlaceFor(test:'Dishwasher1', test:'Cup1').
+  storagePlaceFor(test:'Dishwasher1', test:'Cup1'), !.
 
 test(storagePlaceFor2) :-
-  storagePlaceFor(test:'Dishwasher1', test:'Cup2').
+  storagePlaceFor(test:'Dishwasher1', test:'Cup2'), !.
 
 test(storagePlaceFor3) :-
-  storagePlaceFor(test:'Dishwasher1', knowrob:'FoodVessel').
+  storagePlaceFor(test:'Dishwasher1', knowrob:'FoodVessel'), !.
 
 test(storagePlaceForBecause1) :-
-  storagePlaceForBecause(test:'Dishwasher1', test:'Cup1', knowrob:'FoodVessel').
+  storagePlaceForBecause(test:'Dishwasher1', test:'Cup1', knowrob:'FoodVessel'), !.
 
 test(storagePlaceForBecause2) :-
-  storagePlaceForBecause(test:'Dishwasher1', test:'Cup1', knowrob:'FoodVessel').
+  storagePlaceForBecause(test:'Dishwasher1', test:'Cup1', knowrob:'FoodVessel'), !.
 
 test(current_object_pose) :-
   current_object_pose(test:'Cup1',
@@ -70,7 +70,7 @@ test(rotmat_to_list) :-
                   0.0,         0.0,        0.0, 1.0]).
 
 test(object_dimensions) :-
-  object_dimensions(test:'Handle1', '0.015', '0.015', '0.015'),
+  object_dimensions(test:'Handle1', 0.015, 0.015, 0.015),
   !.
 
 test(delete_object_information1) :-
@@ -92,18 +92,13 @@ test(object_assert_color) :-
 test(object_color) :-
   object_color(test:'Cup1', '0.3 0.5 0.6 1').
 
-test(object_assert_dimensions1) :-
-  object_assert_dimensions(test:'Cup1', '0.032', '0.032', '0.12'),
-  object_dimensions(test:'Cup1', '0.12', '0.032', '0.032'),
+test(object_assert_dimensions) :-
+  object_assert_dimensions(test:'Cup2', 0.032, 0.032, 0.12),
+  object_dimensions(test:'Cup2', 0.032, 0.032, 0.12),
   !.
 
-test(object_assert_dimensions2) :-
-  object_assert_dimensions(test:'Cup2', '0.032', '0.032', '0.12'),
-  object_dimensions(test:'Cup2', '0.12', '0.032', '0.032'),
-  !.
-
-test(object_detection, fixme) :-
-  object_detection(test:'Cup1', test:'timepoint_1331040458', test:'SemanticMapPerception2').
+%test(object_detection, fixme) :-
+%  object_detection(test:'Cup1', test:'timepoint_1331040458', test:'SemanticMapPerception2').
 
 :- end_tests(knowrob_objects).
 

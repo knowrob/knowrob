@@ -340,9 +340,9 @@ object_dimensions(Obj, Depth, Width, Height) :-
   owl_has(Obj, knowrob:depthOfObject,  literal(type(_, Depth_))),
   owl_has(Obj, knowrob:widthOfObject,  literal(type(_, Width_))),
   owl_has(Obj, knowrob:heightOfObject, literal(type(_, Height_))),
-  atom_number(Depth_, Depth),
-  atom_number(Width_, Width),
-  atom_number(Height_, Height),!.
+  ((number(Depth_), Depth=Depth_); atom_number(Depth_, Depth)),
+  ((number(Width_), Width=Width_); atom_number(Width_, Width)),
+  ((number(Height_), Height=Height_); atom_number(Height_, Height)),!.
 
 object_dimensions(Obj, Depth, Width, Height) :-
   owl_has(Obj, srdl2comp:'box_size', literal(type(_, ScaleVector))),
@@ -361,7 +361,7 @@ class_dimensions(Class, Depth, Width, Height) :-
   class_properties(Class, knowrob:'boundingBoxSize', literal(type(_, ScaleVector))),
   parse_vector(ScaleVector, [Depth, Width, Height]),!.
 
-%% object_assert_dimensions(+Obj, +H, +W, +D) is nondet.
+%% object_assert_dimensions(+Obj, +D, +W, +H) is nondet.
 %
 % Assert object dimension properties.
 %
@@ -370,7 +370,7 @@ class_dimensions(Class, Depth, Width, Height) :-
 % @param Width  Width of the bounding box (y-dimension)
 % @param Height Height of the bounding box (z-dimension)
 % 
-object_assert_dimensions(Obj, H, W, D) :-
+object_assert_dimensions(Obj, D, W, H) :-
     rdf_assert(Obj,knowrob:'depthOfObject',literal(type(xsd:float, D))),
     rdf_assert(Obj,knowrob:'widthOfObject',literal(type(xsd:float, W))),
     rdf_assert(Obj,knowrob:'heightOfObject',literal(type(xsd:float, H))).
