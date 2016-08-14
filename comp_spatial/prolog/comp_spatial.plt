@@ -132,6 +132,12 @@ test(toTheSideOf2) :-
 test(toTheSideOf3) :-
   rdf_triple(knowrob:'toTheSideOf', test_sp:'cup1', test_sp:'cup2'),!.
 
+% TODO test computable in entity description
+%test(entity_event_after) :-
+%  entity(Evt, [an, event, [type, thinking], [comp_temporal:after, [a, timepoint, 10.0]]]),
+%  rdfs_individual_of(Evt, knowrob:'Thinking'),
+%  rdf_has(Evt, knowrob:'startTime', knowrob:'timepoint_20.0').
+
 
 :- end_tests(comp_spatial).
 

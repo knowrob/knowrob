@@ -48,6 +48,7 @@
 :- use_module(library('owl')).
 :- use_module(library('rdfs_computable')).
 :- use_module(library('jpl')).
+:- use_module(library('knowrob_owl')).
 :- use_module(library('knowrob_mongo')).
 :- use_module(library('knowrob_mongo_interface')).
 :- use_module(library('srdl2')).
@@ -258,3 +259,29 @@ mng_obj_pose_at_time(Obj, SourceFrame, TargetFrame, TimePoint, Pose) :-
 
   % set time point for pose,
   rdf_assert(Perception, knowrob:startTime, TimePoint).
+
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% knowrob_owl entity descriptions
+
+knowrob_owl:entity_compute(Entity, [a|[pose|Descr]]) :-
+  entity_has(Descr, tf_frame, UrdfName),
+  entity_has(Descr, temporal_extend, IntervalDescr),
+  SourceFrame='/map', % FIXME
+  pose_compute(Pose, SourceFrame, UrdfName, IntervalDescr),
+  matrix_rotation(Pose, [QW,QX,QY,QZ]),
+  matrix_translation(Pose, [X,Y,Z]),
+  create_pose([X,Y,Z], [QW,QX,QY,QZ], Entity).
+
+pose_compute(Pose, SourceFrame, UrdfName, [a|[timepoint|Descr]]) :-
+  entity(TimeIri, Descr), time_term(TimeIri, Time),
+  mng_lookup_transform(SourceFrame, UrdfName, Time, Pose), !.
+
+% FIXME: support looking up all poses that occur during given interval
+%pose_compute(Pose, SourceFrame, UrdfName, [an|[interval|Descr]]) :-
+%  entity(TimeIri, Descr), time_term(TimeIri, Interval),
+%  mng_lookup_transform(SourceFrame, UrdfName, Interval, Pose).
+
+% TODO: trajectory entity_compute
+%knowrob_owl:entity_compute(Entity, [a|[trajectory|Descr]]) :-

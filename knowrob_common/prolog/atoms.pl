@@ -48,6 +48,9 @@ camelcase(Underscore,CamelCase) :-
     delay(atom_codes(CamelCase,CCodes)),
     once(camelcase_(U0Codes,CCodes)).
 camelcase_([],[]).
+camelcase_([0'-,Lower|Lowers], [0'-,Upper|Uppers]) :-
+    upper_lower(Upper, Lower),
+    camelcase_(Lowers, Uppers), !.
 camelcase_([0'_,Lower|Lowers], [Upper|Uppers]) :-
     upper_lower(Upper, Lower),
     camelcase_(Lowers, Uppers).
@@ -78,6 +81,7 @@ lower_camelcase(Underscore,LowerCamelCase) :-
 %
 %  True if Upper (uppercase code) and Lower (lowercase code) represent the same letter.
 %  Useful for bidirection case conversion among ASCII characters.
+upper_lower(0'-,0'-) :- !.
 upper_lower(U,L) :-
     U #>= 0'A, U #=< 0'Z,
     L #>= 0'a, L #=< 0'z,

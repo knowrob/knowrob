@@ -26,8 +26,9 @@
 :- use_module(library('knowrob_owl')).
 :- use_module(library('knowrob_temporal')).
 
-:- owl_parser:owl_parse('package://knowrob_common/owl/knowrob_temporal.owl').
-:- owl_parser:owl_parse('package://knowrob_common/owl/knowrob_temporal_test.owl').
+:- owl_parser:owl_parse('package://knowrob_common/owl/knowrob_owl_test.owl').
+
+:- rdf_db:rdf_register_prefix(knowrob_owl_test, 'http://knowrob.org/kb/knowrob_owl_test.owl#', [keep(true)]).
 
 :- rdf_meta fluent_begin(r,r,t,r),
             fluent_test_assert(r,r,t).
@@ -35,63 +36,116 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% OWL reasoning
-
-test(class_properties) :-
-  fail. % TODO: write test with object property
+%% TODO: write some OWL reasoning tests
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% OWL entity descriptions
 
-test(entity_assert_timepoint1) :-
+%% Intervals
+
+test(assert_timepoint) :-
   entity_assert(knowrob:'timepoint_20.0', [a, timepoint, 20.0]).
-test(entity_assert_timepoint2) :-
+
+test(assert_timepoint_with_value_key) :-
   entity_assert(knowrob:'timepoint_30.0', [a, timepoint, [value, 30.0]]).
-test(entity_assert_timepoint3) :-
+
+test(assert_timepoint_with_name_key) :-
   entity_assert(knowrob:'timepoint_40.0', [a, timepoint, [name, knowrob:'timepoint_40.0']]).
 
-test(entity_timepoint1) :-
+test(query_timepoint) :-
   entity(knowrob:'timepoint_20.0', [a, timepoint, 20.0]).
-test(entity_timepoint2) :-
+
+test(query_timepoint_with_value_key) :-
   entity(knowrob:'timepoint_20.0', [a, timepoint, [value, '20.0']]).
-test(entity_timepoint3) :-
+
+test(query_timepoint_with_name_key) :-
   entity(knowrob:'timepoint_20.0', [a, timepoint, [name, knowrob:'timepoint_20.0']]).
-test(entity_timepoint4) :-
+
+test(generate_timepoint_description) :-
   entity(knowrob:'timepoint_20.0', X),
   X = [a, timepoint, 20.0].
 
-test(entity_assert_interval1) :-
+test(assert_interval) :-
   entity_assert(knowrob:'TimeInterval_20.0_40.0', [an, interval, [20.0,40.0]]).
-test(entity_assert_interval2) :-
+
+test(assert_interval_with_properties) :-
   entity_assert(knowrob:'TimeInterval_20.0_40.0', [an, interval,
       [start_time, [a, timepoint, 20.0]],
       [end_time, [a, timepoint, 40.0]]]).
-test(entity_assert_interval3) :-
+
+test(generate_interval_description) :-
   entity(knowrob:'TimeInterval_20.0_40.0', X), X = [an, interval, [20.0,40.0]].
 
-test(entity_assert_event1) :-
+
+%% Events
+
+test(assert_event) :-
   entity_assert(Evt, [an, event, [type, thinking]]),
   rdfs_individual_of(Evt, knowrob:'Thinking').
-test(entity_assert_event2) :-
+
+test(assert_event_with_property) :-
   entity_assert(Evt, [an, event, [type, thinking], [start_time, [a, timepoint, 20.0]]]),
   rdfs_individual_of(Evt, knowrob:'Thinking'),
   rdf_has(Evt, knowrob:'startTime', knowrob:'timepoint_20.0').
 
-test(entity_assert_object1) :-
+
+%% Objects
+
+test(assert_object) :-
   entity_assert(Obj, [an, object, [type, dough]]),
   rdfs_individual_of(Obj, knowrob:'Dough').
-test(entity_assert_obj_property0) :-
+
+test(assert_object_with_property) :-
   entity_assert(Obj, [an, object, [type, dough], [volume_of_object, 10.0]]),
   rdfs_individual_of(Obj, knowrob:'Dough'),
   rdf_has(Obj, knowrob:'volumeOfObject', literal(type(xsd:float,10.0))).
 
-test(entity_fluent0) :-
+test(generate_refrigerator_description) :-
+  entity(knowrob_owl_test:'Refrigerator_fg45543', X),
+  X = [an, object, [type, refrigerator]].
+
+
+%% Poses
+
+test(assert_pose) :-
+  entity_assert(knowrob:'Pose_0.0_2.0_0.0_1.0_0.0_0.1_0.2', [a, pose, [0.0,2.0,0.0], [1.0,0.0,0.1,0.2]]),
+  rdfs_individual_of(knowrob:'Pose_0.0_2.0_0.0_1.0_0.0_0.1_0.2', knowrob:'Pose').
+
+test(generate_pose_description) :-
+  entity(knowrob:'Pose_0.0_2.0_0.0_1.0_0.0_0.1_0.2', X),
+  X = [a, pose, [0.0,2.0,0.0], [1.0,0.0,0.1,0.2]].
+
+
+%% Locations
+
+test(assert_location) :-
+  entity_assert(Loc, [a, location]),
+  rdfs_individual_of(Loc, knowrob:'SpaceRegion').
+
+test(assert_location_with_property) :-
+  % FIXME: [an, object, ...] does not exist, howto handle this?
+  entity_assert(Loc, [a, location, [inside_of, [an, object, [type, container]]]]),
+  rdfs_individual_of(Loc, knowrob:'SpaceRegion'),
+  rdf_has(Loc, knowrob:'insideOf', O),
+  rdfs_individual_of(O, knowrob:'Container').
+
+test(generate_location_description) :-
+  entity(knowrob:'Location_on-Physical_Refrigerator_fg45543', X),
+  X = [a, location|Descr],
+  entity_has(Descr, 'on-physical', _).
+
+
+%% Fluents
+
+test(assert_fluent) :-
   entity_assert(Obj, [an, object, [type, dough], [volume_of_object, 10.0, during, [an, interval, [0.0,20.0]]]]),
   atom(Obj), rdfs_individual_of(Obj, knowrob:'Dough'),
   holds(knowrob:'volumeOfObject'(Obj, literal(type(xsd:float,10.0))), 5.0),
   holds(knowrob:'volumeOfObject'(Obj, literal(type(xsd:float,10.0))), [0.0,20.0]),
   not( holds(knowrob:'volumeOfObject'(Obj, literal(type(xsd:float,10.0))), [0.0,21.0]) ).
-test(entity_fluent1) :-
+
+test(assert_fluent_changing_value) :-
   entity_assert(Obj, [an, object, [type, dough],
         [volume_of_object, 10.0, during, [an, interval, [0.0,20.0]]],
         [volume_of_object, 15.0, during, [an, interval, [20.0,30.0]]]]),
@@ -101,7 +155,8 @@ test(entity_fluent1) :-
   not( holds(knowrob:'volumeOfObject'(Obj, literal(type(xsd:float,10.0))), [0.0,21.0]) ),
   holds(knowrob:'volumeOfObject'(Obj, literal(type(xsd:float,15.0))), 25.0),
   holds(knowrob:'volumeOfObject'(Obj, literal(type(xsd:float,15.0))), [20.0,30.0]).
-test(entity_gen_fluent0) :-
+
+test(generate_fluent_description) :-
   Descr=[an, object, [type, dough], [volume_of_object, 10.0, during, [an, interval, [60.0,70.0]]]],
   entity_assert(Obj, Descr),
   rdfs_individual_of(Obj, knowrob:'Dough'),

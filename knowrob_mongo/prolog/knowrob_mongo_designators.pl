@@ -429,3 +429,13 @@ jpl_matrix_list(JplMat, [X00, X01, X02, X03,
   jpl_call(JplMat, 'getElement', [3,1], X31),
   jpl_call(JplMat, 'getElement', [3,2], X32),
   jpl_call(JplMat, 'getElement', [3,3], X33).
+
+
+
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% knowrob_owl entity descriptions
+
+% TODO: trajectory entity_compute
+%knowrob_owl:entity_compute(Entity, [an|[object|Descr]]) :-

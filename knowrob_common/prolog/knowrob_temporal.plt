@@ -39,24 +39,34 @@
 
 test(interval_during0) :-
   interval_during(1.0, [0.0]).
+
 test(interval_during1) :-
   interval_during(1.0, [0.0,2.0]).
+
 test(interval_during2) :-
   interval_during([1.0,2.0], [0.0,2.0]).
+
 test(interval_during3) :-
   interval_during([1.0], [0.0]).
+
 test(interval_during4, [fail]) :-
   interval_during(1.0, [2.0]).
+
 test(interval_during5, [fail]) :-
   interval_during([1.0], [2.0]).
+
 test(interval_during6, [fail]) :-
   interval_during([1.0,3.0], [2.0]).
+
 test(interval_during7, [fail]) :-
   interval_during(6.0, [2.0,4.0]).
+
 test(interval_during8, [fail]) :-
   interval_during([1.0], [2.0,4.0]).
+
 test(interval_during9, [fail]) :-
   interval_during([3.0], [2.0,4.0]).
+
 test(interval_during10, [fail]) :-
   interval_during([2.0,5.0], [2.0,4.0]).
 
@@ -112,35 +122,24 @@ test(fluent_assert_object) :-
   rdf_assert(Value2, rdf:type, knowrob:'Container'),
   fluent_test_assert(knowrob_temporal_test:'Dough_vs5hgsg0', knowrob:insideOf, [Value1,Value2]).
 
-test(fluent_has0) :-
+
+test(fluent_has) :-
   fluent_has(knowrob_temporal_test:'Dough_vs5hgsg0', knowrob:temperatureOfObject,
              literal(type(xsd:'float',10.0)), I),
   interval(I, [0.0,20.0]).
-test(fluent_has1) :-
+
+test(fluent_has_O_unbound) :-
   fluent_has(knowrob_temporal_test:'Dough_vs5hgsg0', knowrob:temperatureOfObject, O, I),
   interval(I, [0.0,20.0]),
   O = literal(type(_,10.0)).
-test(fluent_has2) :-
-  fluent_has(knowrob_temporal_test:'Dough_vs5hgsg0', P, O, I),
-  interval(I, [0.0,20.0]),
-  P = 'http://knowrob.org/kb/knowrob.owl#temperatureOfObject',
-  O = literal(type(_,10.0)).
-test(fluent_has3) :-
+
+test(fluent_has_S_P_O_unbound) :-
   fluent_has(S, P, O, I),
   S = 'http://knowrob.org/kb/knowrob_temporal_test.owl#Dough_vs5hgsg0',
   P = 'http://knowrob.org/kb/knowrob.owl#temperatureOfObject',
   interval(I, [0.0,20.0]),
   O = literal(type(_,10.0)).
-test(fluent_has4) :-
-  fluent_has(S, knowrob:temperatureOfObject, O, I),
-  S = 'http://knowrob.org/kb/knowrob_temporal_test.owl#Dough_vs5hgsg0',
-  interval(I, [0.0,20.0]),
-  O = literal(type(_,10.0)).
-test(fluent_has5) :-
-  fluent_has(S, P, literal(type(xsd:'float',10.0)), I),
-  S = 'http://knowrob.org/kb/knowrob_temporal_test.owl#Dough_vs5hgsg0',
-  P = 'http://knowrob.org/kb/knowrob.owl#temperatureOfObject',
-  interval(I, [0.0,20.0]).
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% `holds`

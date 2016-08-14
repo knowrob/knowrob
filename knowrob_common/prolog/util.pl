@@ -65,7 +65,9 @@
       path_delimiter/1,
       path_concat/3,
       path_split/2,
-      mkdir/1
+      mkdir/1,
+      matrix_rotation/2,
+      matrix_translation/2
 ]).
 
 current_time(T) :-
@@ -527,3 +529,14 @@ mkdir(Path, [Head|Tail]) :-
   path_concat(Path, Head, ChildPath),
   mkdir(ChildPath, Tail).
 mkdir(_, []).
+
+
+matrix_rotation(Matrix, [QW,QX,QY,QZ]) :-
+  jpl_list_to_array(Matrix, MatrixArr),
+  jpl_call('org.knowrob.utils.MathUtil', 'matrixToQuaternion', [MatrixArr], QuaternionArr),
+  jpl_array_to_list(QuaternionArr, [QW,QX,QY,QZ]).
+
+matrix_translation(Matrix, [X,Y,Z]) :-
+  nth0( 3, Matrix, X),
+  nth0( 7, Matrix, Y),
+  nth0(11, Matrix, Z).

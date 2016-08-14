@@ -50,7 +50,11 @@
       get_timepoint/2,
       create_timepoint/2,
       create_interval/2,
-      inspect/3
+      create_pose/3,
+      inspect/3,
+      rotmat_to_list/2,
+      position_to_list/2,
+      quaternion_to_list/2
     ]).
 
 :- use_module(library('crypt')).
@@ -58,6 +62,7 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('rdfs_computable')).
 :- use_module(library('owl')).
+:- use_module(library('knowrob_math')).
 
 % define meta-predicates and allow the definitions
 % to be in different source files
@@ -85,7 +90,10 @@
             get_timepoint(r),
             get_timepoint(+,r),
             create_restr(r, r, r, r, +, r),
-            inspect(r,r,r).
+            inspect(r,r,r),
+            rotmat_to_list(r,-),
+            position_to_list(r,-),
+            quaternion_to_list(r,-).
 
 :- rdf_db:rdf_register_ns(owl,    'http://www.w3.org/2002/07/owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(rdfs,   'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
@@ -244,6 +252,42 @@ create_interval([Start, End], TimeInterval) :-
   rdf_assert(TimeInterval, rdf:type, knowrob:'TimeInterval'),
   rdf_assert(TimeInterval, knowrob:'startTime', StartI),
   rdf_assert(TimeInterval, knowrob:'endTime', EndI).
+
+%% create_interval(+Start, -TimeInterval) is nondet.
+%% create_interval(+Start, +End, -TimeInterval) is det.
+%
+% Create a interval-identifier for the given start and end time stamps
+%
+%
+create_pose([X,Y,Z], [QW,QX,QY,QZ], Pose) :-
+  atomic_list_concat(['http://knowrob.org/kb/knowrob.owl#Pose'|[X,Y,Z,QW,QX,QY,QZ]], '_', Pose),
+  atomic_list_concat([X,Y,Z], ',', Translation),
+  atomic_list_concat([QW,QX,QY,QZ], ',', Quaternion),
+  rdf_assert(Pose, rdf:type, knowrob:'Pose'),
+  rdf_assert(Pose, knowrob:'translation', literal(type(string,Translation))),
+  rdf_assert(Pose, knowrob:'quaternion', literal(type(string,Quaternion))).
+
+%% create_location(+Axioms, -Location) is nondet.
+%
+% Create a location-identifier for the given axioms
+%
+%
+create_location(Axioms, Location) :-
+  location_name(Axioms, Location),
+  rdf_assert(Location, rdf:type, knowrob:'SpaceRegion'),
+  forall( member((P,O), Axioms), rdf_assert(Location, P, O) ).
+
+location_name(Axioms, Location) :-
+  is_list(Axioms),
+  location_name_args_(Axioms,Args),
+  atomic_list_concat(['http://knowrob.org/kb/knowrob.owl#SpaceRegion'|Args], '_', Location).
+
+location_name_args_([(P,O)|Axioms], [P_name|[O_name|Args]]) :-
+  rdf_split_url(_, P_name, P), % FIXME: don't ignore namespace
+  rdf_split_url(_, O_name, O),
+  location_name_args_(Axioms, Args).
+location_name_args_([], []).
+
 
 %% get_timepoint(-T) is det.
 %
@@ -415,62 +459,64 @@ class_properties_transitive_nosup(Class, Prop, SubComp) :-
     class_properties_transitive_nosup(Sub, Prop, SubComp).
 
 
+
+
+
+%% rotmat_to_list(+RotMatInstance, -PoseList) is nondet.
+%
+% Read the pose values for an instance of a rotation matrix
+%
+% @param Obj       Instance of a subclass of SpatialThing-Localized
+% @param PoseList  Row-based representation of the object's 4x4 pose matrix as list[16]
+% 
+rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]) :-
+
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m00',Pose,M00literal), strip_literal_type(M00literal, M00a), term_to_atom(M00, M00a),
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m01',Pose,M01literal), strip_literal_type(M01literal, M01a), term_to_atom(M01, M01a),
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m02',Pose,M02literal), strip_literal_type(M02literal, M02a), term_to_atom(M02, M02a),
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m03',Pose,M03literal), strip_literal_type(M03literal, M03a), term_to_atom(M03, M03a),
+
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m10',Pose,M10literal), strip_literal_type(M10literal, M10a), term_to_atom(M10, M10a),
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m11',Pose,M11literal), strip_literal_type(M11literal, M11a), term_to_atom(M11, M11a),
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m12',Pose,M12literal), strip_literal_type(M12literal, M12a), term_to_atom(M12, M12a),
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m13',Pose,M13literal), strip_literal_type(M13literal, M13a), term_to_atom(M13, M13a),
+
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m20',Pose,M20literal), strip_literal_type(M20literal, M20a), term_to_atom(M20, M20a),
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m21',Pose,M21literal), strip_literal_type(M21literal, M21a), term_to_atom(M21, M21a),
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m22',Pose,M22literal), strip_literal_type(M22literal, M22a), term_to_atom(M22, M22a),
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m23',Pose,M23literal), strip_literal_type(M23literal, M23a), term_to_atom(M23, M23a),
+
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m30',Pose,M30literal), strip_literal_type(M30literal, M30a), term_to_atom(M30, M30a),
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m31',Pose,M31literal), strip_literal_type(M31literal, M31a), term_to_atom(M31, M31a),
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m32',Pose,M32literal), strip_literal_type(M32literal, M32a), term_to_atom(M32, M32a),
+    rdf_triple('http://knowrob.org/kb/knowrob.owl#m33',Pose,M33literal), strip_literal_type(M33literal, M33a), term_to_atom(M33, M33a),!.
+
+%% position_to_list(+Pose, -PositionList) is nondet.
+%
+% Read the translation values for an instance of a transformation
+%
+% @param Pose          Instance of a subclass of Transformation
+% @param PositionList  list[3] that represents translation of an object
+% 
+position_to_list(Pose, [X,Y,Z]) :-
+  rdf_triple('http://knowrob.org/kb/knowrob.owl#translation', Pose, literal(type(_,Translation))),
+  parse_vector(Translation, [X,Y,Z]).
+
+%% quaternion_to_list(+Pose, -QuaternionList) is nondet.
+%
+% Read the rotation values for an instance of a transformation
+%
+% @param Pose          Instance of a subclass of Transformation
+% @param PositionList  list[4] that represents rotation of an object. First list element is the w component of the quaternion.
+% 
+quaternion_to_list(Pose, [QW,QX,QY,QZ]) :-
+  rdf_triple('http://knowrob.org/kb/knowrob.owl#quaternion', Pose, literal(type(_,Quaternion))),
+  parse_vector(Quaternion, [QW,QX,QY,QZ]).
+
+
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % methods for querying OWL entities
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TASKS
-%%%
-%%%%%%%%%%%%% timepoint/interval entities
-%%% [a, timepoint, [value, ?time]]
-%%% 1. special handling of timepoint value (since it is not a property!)
-%%% [an, interval, [start_time, [a, timepoint, [value, ?time]]]]
-%%% 2. interval handling should just work
-%%%
-%%%
-%%%%%%%%%%%%% query entities using computables
-%%% [an, event, [comp_temporal:beforeI, [a, timepoint, [value, ?time]]]]
-%%% [an, event, [comp_temporal:beforeI, [an, event, ..]]]
-%%% 1. Should just work
-%%%
-%%%
-%%%%%%%%%%%%% compute entites
-%%% 1. Write multifile `entity_compute/2` predicate
-%%%
-%%% 1.1. Compute `Timepoint`/`TimeInterval` individuals
-%%% 1.1.1 Interpret `value` key
-%%% 1.1.2 Build name
-%%% 1.1.3 Check if existing
-%%% 1.1.4 Call `create_timepoint` if not
-%%%
-%%% 1.2. Compute mongo individuals
-%%% 1.2.1. description to mongo query
-%%% 1.2.1.1. map properties to mongo keys
-%%% 1.2.1.2. map computables to prolog operators where possible (e.g., ?t0 `beforeI` ?t1)
-%%% 1.2.2. iterate results
-%%% 1.2.3. create mongo result description
-%%%
-%%% 1.2.4. handle objects (logged_designators)
-%%% 1.2.4.1. individual selection by identity resolution (evolving designators, action logs, spatial reasoning?, similarity measure?)
-%%% 1.2.4.2. if no existing individual found, assert new SpatialThing
-%%% 1.2.4.3. create property fluents based on designator values (including rdf:type)
-%%% 1.2.4.4. attach designator?
-%%%
-%%% 1.2.5. handle locations (logged_designators)
-%%% TODO how are these (ideally) represented in designators
-%%%
-%%% 1.2.6. handle poses (tf)
-%%% 1.2.6.1. call `entity_assert`
-%%%
-%%% 1.2.7. handle trajectories (tf)
-%%% TODO this requires some more thoughts....
-%%%
-%%%
-%%% 2. Call `entity_compute` in `entity` iff var(Entity)
-%%%
-%%%
-%%% TODO Generic implementation using computable classes?
-%%%    * How to limit computation?
-%%%
 
 %% entity(?Entity, +Descr) is nondet.
 %
@@ -480,6 +526,10 @@ class_properties_transitive_nosup(Class, Prop, SubComp) :-
 % @param Entity IRI of matching entity
 % @param Descr An entity description, OWL individual or class IRI
 %
+% TODO: support property units
+%    - [an, object, [volumeOfObject, '20ml', during [0.0,20.0]]]
+% TODO: handle trajectory
+%    - [a, trajectory, [urdf, 'base_link'], [temporal_extend, [an, interval, [40.0,80.0]]]]
 entity(Entity, EntityClass) :-
   atom(EntityClass),
   rdfs_individual_of(Entity, EntityClass), !.
@@ -510,13 +560,37 @@ entity_(Entity, [an, interval, [Begin, End]]) :-
 entity_(Entity, [an, interval, [Begin]]) :-
   create_interval([Begin],Entity),
   interval(Entity, [Begin]), !.
+entity_(Entity, [an, interval|Descr]) :-
+  entity_has(Descr, start_time, BeginDescr),
+  entity(Begin, BeginDescr),
+  (( entity_has(Descr, end_time, EndDescr),
+     entity(End, EndDescr),
+     create_interval([Begin, End], Entity) );
+     create_interval([Begin], Entity) ), !.
 
-entity_(Entity, [A|[Type|Descr]]) :-
+entity_(Entity, [a, pose, [X,Y,Z], [QW,QX,QY,QZ]]) :-
+  create_pose([X,Y,Z], [QW,QX,QY,QZ], Entity), !.
+entity_(Entity, [a|[pose|Descr]]) :-
+  entity_has(Descr, translation, [X,Y,Z]),
+  entity_has(Descr, quaternion, [QW,QX,QY,QZ]),
+  create_pose([X,Y,Z], [QW,QX,QY,QZ], Entity), !.
+
+entity_(Entity, [a, location|Descr]) :-
+  findall( [P,O], (
+    member([P_descr, O_desc], Descr),
+    entity_iri(P, P_descr, lower_camelcase),
+    rdfs_subproperty_of(P, knowrob:'spatiallyRelated'),
+    entity(O, O_desc)
+  ), Axioms),
+  length(Axioms, L), (L > 0),
+  create_location(Axioms, Entity), !.
+
+entity_(Entity, [A, Type|Descr]) :-
   nonvar(A),nonvar(Type),
   entity_head(Entity, [A,Type], _),
   entity_(Entity, Descr) ; (
     var(Entity),
-    entity_compute(Entity, [A|[Type|Descr]])
+    entity_compute(Entity, [A, Type|Descr])
   ).
 
 entity_(Entity, [[type,Type]|Descr]) :-
@@ -575,8 +649,8 @@ entity_type([a,timepoint],  'http://knowrob.org/kb/knowrob.owl#TimePoint').
 entity_type([an,interval],  'http://knowrob.org/kb/knowrob.owl#TimeInterval').
 entity_type([an,action],    'http://knowrob.org/kb/knowrob.owl#Action').
 entity_type([an,event],     'http://knowrob.org/kb/knowrob.owl#Event').
-entity_type([an,object],    'http://knowrob.org/kb/knowrob.owl#SpatialThing').
-entity_type([a,location],   'http://knowrob.org/kb/knowrob.owl#Location').
+entity_type([an,object],    'http://knowrob.org/kb/knowrob.owl#EnduringThing-Localized').
+entity_type([a,location],   'http://knowrob.org/kb/knowrob.owl#SpaceRegion').
 entity_type([a,pose],       'http://knowrob.org/kb/knowrob.owl#Pose').
 entity_type([a,trajectory], 'http://knowrob.org/kb/knowrob.owl#Trajectory').
 
@@ -589,26 +663,8 @@ entity_type([a,trajectory], 'http://knowrob.org/kb/knowrob.owl#Trajectory').
 % @param Entity IRI of matching entity
 % @param Descr An entity description
 %
-entity_compute(Entity, [a,timepoint,Time]) :-
-  create_timepoint(Time, Entity), !.
-entity_compute(Entity, [a|[timepoint|Descr]]) :-
-  entity_has(Descr, value, Time),
-  create_timepoint(Time, Entity). % FIXME: redundant results
-
-entity_compute(Entity, [an|[interval|Descr]]) :-
-  entity_has(Descr, start_time, StartDescr),
-  entity_has(StartDescr, value, Start),
-  
-  entity_has(Descr, end_time, EndDescr),
-  entity_has(EndDescr, value, End),
-  
-  create_interval([Start,End],Entity). % FIXME: redundant results
-
-%%%%%% knowrob_mongo
-%entity_compute(Entity, [an|[object|Tail]]) :- false. % TODO
-%entity_compute(Entity, [a|[location|Tail]]) :- false. % TODO
-%entity_compute(Entity, [a|[pose|Tail]]) :- false. % TODO
-%entity_compute(Entity, [a|[trajectory|Tail]]) :- false. % TODO
+entity_compute(_, [a|[timepoint|_]]) :- fail.
+entity_compute(_, [an|[interval|_]]) :- fail.
 
 
 %% entity_assert(-Entity, +Descr) is nondet.
@@ -618,24 +674,18 @@ entity_compute(Entity, [an|[interval|Descr]]) :-
 % @param Entity IRI of matching entity
 % @param Descr An entity description
 %
-entity_assert(Entity, [a, timepoint, Time]) :-
-  number(Time), create_timepoint(Time, Entity), !.
-entity_assert(Entity, [a, timepoint, [value, Time]]) :-
-  create_timepoint(Time, Entity), !.
+entity_assert(Entity, [a,timepoint|Descr]) :- entity(Entity, [a,timepoint|Descr]), !.
+entity_assert(Entity, [an,interval|Descr]) :- entity(Entity, [an,interval|Descr]), !.
+entity_assert(Entity, [a,location|Descr]) :-  entity(Entity, [a,location|Descr]), !.
 
-entity_assert(Entity, [an, interval, [Begin, End]]) :-
-  create_interval([Begin, End], Entity), !.
-entity_assert(Entity, [an, interval, [Begin]]) :-
-  create_interval([Begin], Entity), !.
-entity_assert(Entity, [an|[interval|Descr]]) :-
-  entity_has(Descr, start_time, BeginDescr),
-  entity(Begin, BeginDescr),
-  (( entity_has(Descr, end_time, EndDescr),
-     entity(End, EndDescr),
-     create_interval([Begin, End], Entity) );
-     create_interval([Begin], Entity) ), !.
+entity_assert(Entity, [a, pose, [X,Y,Z], [QW,QX,QY,QZ]]) :-
+  create_pose([X,Y,Z], [QW,QX,QY,QZ], Entity), !.
+entity_assert(Entity, [a, pose|Descr]) :-
+  entity_has(Descr, translation, [X,Y,Z]),
+  entity_has(Descr, quaternion, [QW,QX,QY,QZ]),
+  create_pose([X,Y,Z], [QW,QX,QY,QZ], Entity), !.
 
-entity_assert(Entity, [A|[Type|Descr]]) :-
+entity_assert(Entity, [A,Type|Descr]) :-
   nonvar(Type),
   entity_type([A,Type], TypeIri_),
   (( entity_has(Descr,type,AType),
@@ -731,7 +781,7 @@ entity_properties([[PropIri,IntervalIri]|Tail],
                   [[Key, [an,interval,Interval]]|DescrTail]) :-
   interval(IntervalIri,Interval),
   entity_iri(PropIri, Key, lower_camelcase),
-  entity_properties(Tail, DescrTail), !.
+  entity_properties(Tail, DescrTail), !. % FIXME: does this disable to have events as value keys?
 
 entity_properties([[PropIri,PropValue]|Tail], [[Key,Value]|DescrTail]) :-
   entity_iri(PropIri, Key, lower_camelcase),
@@ -745,12 +795,19 @@ entity_properties([[PropIri,PropValue]|Tail], [[Key,Value]|DescrTail]) :-
 entity_properties([], []).
 
 
-% TODO: howto handle mongo entities here?
 entity_generate(Entity, [a,timepoint], _, [a,timepoint,Time]) :-
-  rdfs_individual_of(Entity, knowrob:'TimePoint'), time_term(Entity,Time), !.
+  rdfs_individual_of(Entity, knowrob:'TimePoint'),
+  time_term(Entity,Time), !.
+
 entity_generate(Entity, [an,interval], _, [an,interval,Interval]) :-
+  rdfs_individual_of(Entity, knowrob:'TemporalThing'),
   interval(Entity,Interval), !.
-entity_generate(Entity, [A,TypeBase], TypeBaseIri, [A|[TypeBase|[[type,TypeName]|PropDescr]]]) :-
+
+entity_generate(Pose, [a, pose], _, [a, pose, [X,Y,Z], [QW,QX,QY,QZ]]) :-
+  position_to_list(Pose, [X,Y,Z]),
+  quaternion_to_list(Pose, [QW,QX,QY,QZ]), !.
+
+entity_generate(Entity, [A,TypeBase], TypeBaseIri, [A,TypeBase|[[type,TypeName]|PropDescr]]) :-
   (( rdf_has(Entity, rdf:type, Type),
      Type \= TypeBaseIri,
      rdf_reachable(Type, rdfs:subClassOf, TypeBaseIri) )
@@ -764,20 +821,24 @@ entity_generate(Entity, [A,TypeBase], TypeBaseIri, [A|[TypeBase|[[type,TypeName]
 %% Match [a|an, ?entity_type]
 entity_head(Entity, Type, TypeIri) :-
   entity_head_(Entity, Type, TypeIri),
-  forall( entity_head_(Entity, _, TypeIri_), ( % TODO: do this faster
+  forall( entity_head_(Entity, _, TypeIri_), ( % TODO: could be done faster
     ( TypeIri_ = TypeIri ) ; not(rdf_reachable(TypeIri_, rdfs:subClassOf, TypeIri))
   )), !.
+
 entity_head_(Entity, [an,Type], TypeIri) :-
   entity_type([an,Type], TypeIri),
   entity_iri(Entity, TypeIri).
+
 entity_head_(Entity, [a,Type], TypeIri) :-
   entity_type([a,Type], TypeIri),
   entity_iri(Entity, TypeIri).
+
 entity_head_(_, [a,thing], 'http://www.w3.org/2002/07/owl#Thing').
 
 
 entity_type(Entity, TypeBase, Entity) :-
   atom(Entity), rdf_reachable(Entity, rdfs:subClassOf, TypeBase), !.
+
 entity_type(Entity, TypeBase, Type) :-
   rdf_has(Entity, rdf:type, Type),
   rdf_reachable(Type, rdfs:subClassOf, TypeBase).
@@ -792,6 +853,7 @@ entity_ns(Entity, NamespaceUri, EntityName) :-
       EntityName = Entity,
       rdf_current_ns(knowrob, NamespaceUri)
   )), !.
+
 entity_ns(Entity, NamespaceUri, EntityName) :-
   rdf_split_url(NamespaceUri, EntityName, Entity).
 
@@ -806,6 +868,7 @@ entity_iri(Iri, Descr, Formatter) :-
   -> Descr=NameUnderscore
   ;  Descr=Namespace:NameUnderscore
   ).
+
 entity_iri(Iri, Description, Formatter) :-
   var(Iri),
   entity_ns(Description, NS, NameUnderscore),
@@ -817,5 +880,6 @@ entity_iri(Entity, Type) :-
   rdf_split_url(Url, _, Type),
   rdf_current_ns(NS, Url),
   NS \= owl.
+
 entity_iri(Entity, Type) :-
   rdfs_individual_of(Entity,Type).

@@ -103,6 +103,7 @@ test(comp_finishesInvI) :-
     comp_finishesInvI(test_comp_temporal:'Long',test_comp_temporal:'Short3'),
     \+ comp_finishesInvI(test_comp_temporal:'Long',test_comp_temporal:'Short4').
 
+% TODO test computable in entity description
 %test(entity_event_after) :-
 %  entity(Evt, [an, event, [type, thinking], [comp_temporal:after, [a, timepoint, 10.0]]]),
 %  rdfs_individual_of(Evt, knowrob:'Thinking'),

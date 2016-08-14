@@ -27,46 +27,6 @@
         <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
     </owl:Ontology>
     
-    <!-- http://knowrob.org/kb/knowrob.owl#TemporalPart -->
-
-    <owl:Class rdf:about="&knowrob;TemporalPart">
-        <rdfs:subClassOf rdf:resource="&knowrob;TemporallyExtendedThing"/>
-        <rdfs:comment>temporal parts are the parts of an object that exist in time. A temporal part would be something like &quot;the first year of a person&apos;s life&quot;, or &quot;all of a table from between 10:00 a.m. on June 21, 1994 to 11:00 p.m. on July 23, 1996&quot;.</rdfs:comment>
-    </owl:Class>
-
-    <!-- http://knowrob.org/kb/knowrob.owl#hasTemporalPart -->
-
-    <owl:ObjectProperty rdf:about="&knowrob;hasTemporalPart">
-        <rdfs:domain rdf:resource="&knowrob;SpatialThing"/>
-        <rdfs:range rdf:resource="&knowrob;TemporalPart"/>
-        <owl:inverseOf rdf:resource="&knowrob;temporalPartOf"/>
-        <rdfs:subPropertyOf rdf:resource="&knowrob;temporallyRelated"/>
-    </owl:ObjectProperty>
-
-    <!-- http://knowrob.org/kb/knowrob.owl#temporalExtend -->
-
-    <owl:ObjectProperty rdf:about="&knowrob;temporalExtend">
-        <rdfs:domain rdf:resource="&knowrob;TemporalPart"/>
-        <rdfs:range rdf:resource="&knowrob;TimeInterval"/>
-        <rdfs:subPropertyOf rdf:resource="&knowrob;temporallyRelated"/>
-    </owl:ObjectProperty>
-
-    <!-- http://knowrob.org/kb/knowrob.owl#temporalProperty -->
-
-    <owl:ObjectProperty rdf:about="&knowrob;temporalProperty">
-        <rdfs:domain rdf:resource="&knowrob;TemporalPart"/>
-        <rdfs:range rdf:resource="&rdf;Property"/>
-        <rdfs:subPropertyOf rdf:resource="&knowrob;temporallyRelated"/>
-    </owl:ObjectProperty>
-
-    <!-- http://knowrob.org/kb/knowrob.owl#temporalPartOf -->
-
-    <owl:ObjectProperty rdf:about="&knowrob;temporalPartOf">
-        <rdfs:range rdf:resource="&knowrob;SpatialThing"/>
-        <rdfs:domain rdf:resource="&knowrob;TemporalPart"/>
-        <rdfs:subPropertyOf rdf:resource="&knowrob;temporallyRelated"/>
-    </owl:ObjectProperty>
-    
 </rdf:RDF>
 
 

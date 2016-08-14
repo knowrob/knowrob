@@ -42,11 +42,6 @@
       class_dimensions/4,
       object_assert_dimensions/4,
       object_assert_color/2,
-      matrix_rotation/2,
-      matrix_translation/2,
-      rotmat_to_list/2,
-      position_to_list/2,
-      quaternion_to_list/2,
       create_joint_information/9,
       update_joint_information/7,
       read_joint_information/9,
@@ -125,9 +120,6 @@
     class_dimensions(r, ?, ?, ?),
     object_assert_dimensions(r, +, +, +),
     object_assert_color(r, +),
-    matrix_rotation(+,-),
-    matrix_translation(+,-),
-    rotmat_to_list(r,-),
     comp_orientation(r, r),
     instantiate_at_position(r,+,r),
     transform_relative_to(r,r,-),
@@ -261,67 +253,6 @@ object_pose_at_time(Obj, Time, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21
   rdf_triple(knowrob:eventOccursAt, Detection, Pose),!,
   
   rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]).
-
-%% position_to_list(+Pose, -PositionList) is nondet.
-%
-% Read the translation values for an instance of a transformation
-%
-% @param Pose          Instance of a subclass of Transformation
-% @param PositionList  list[3] that represents translation of an object
-% 
-position_to_list(Pose, [X,Y,Z]) :-
-  rdf_triple('http://knowrob.org/kb/knowrob.owl#translation', Pose, literal(type(_,Translation))),
-  parse_vector(Translation, [X,Y,Z]).
-
-%% quaternion_to_list(+Pose, -QuaternionList) is nondet.
-%
-% Read the rotation values for an instance of a transformation
-%
-% @param Pose          Instance of a subclass of Transformation
-% @param PositionList  list[4] that represents rotation of an object. First list element is the w component of the quaternion.
-% 
-quaternion_to_list(Pose, [QW,QX,QY,QZ]) :-
-  rdf_triple('http://knowrob.org/kb/knowrob.owl#quaternion', Pose, literal(type(_,Quaternion))),
-  parse_vector(Quaternion, [QW,QX,QY,QZ]).
-
-matrix_rotation(Matrix, [QW,QX,QY,QZ]) :-
-  jpl_list_to_array(Matrix, MatrixArr),
-  jpl_call('org.knowrob.utils.MathUtil', 'matrixToQuaternion', [MatrixArr], QuaternionArr),
-  jpl_array_to_list(QuaternionArr, [QW,QX,QY,QZ]).
-
-matrix_translation(Matrix, [X,Y,Z]) :-
-  nth0( 3, Matrix, X),
-  nth0( 7, Matrix, Y),
-  nth0(11, Matrix, Z).
-
-%% rotmat_to_list(+RotMatInstance, -PoseList) is nondet.
-%
-% Read the pose values for an instance of a rotation matrix
-%
-% @param Obj       Instance of a subclass of SpatialThing-Localized
-% @param PoseList  Row-based representation of the object's 4x4 pose matrix as list[16]
-% 
-rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]) :-
-
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m00',Pose,M00literal), strip_literal_type(M00literal, M00a), term_to_atom(M00, M00a),
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m01',Pose,M01literal), strip_literal_type(M01literal, M01a), term_to_atom(M01, M01a),
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m02',Pose,M02literal), strip_literal_type(M02literal, M02a), term_to_atom(M02, M02a),
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m03',Pose,M03literal), strip_literal_type(M03literal, M03a), term_to_atom(M03, M03a),
-
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m10',Pose,M10literal), strip_literal_type(M10literal, M10a), term_to_atom(M10, M10a),
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m11',Pose,M11literal), strip_literal_type(M11literal, M11a), term_to_atom(M11, M11a),
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m12',Pose,M12literal), strip_literal_type(M12literal, M12a), term_to_atom(M12, M12a),
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m13',Pose,M13literal), strip_literal_type(M13literal, M13a), term_to_atom(M13, M13a),
-
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m20',Pose,M20literal), strip_literal_type(M20literal, M20a), term_to_atom(M20, M20a),
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m21',Pose,M21literal), strip_literal_type(M21literal, M21a), term_to_atom(M21, M21a),
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m22',Pose,M22literal), strip_literal_type(M22literal, M22a), term_to_atom(M22, M22a),
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m23',Pose,M23literal), strip_literal_type(M23literal, M23a), term_to_atom(M23, M23a),
-
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m30',Pose,M30literal), strip_literal_type(M30literal, M30a), term_to_atom(M30, M30a),
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m31',Pose,M31literal), strip_literal_type(M31literal, M31a), term_to_atom(M31, M31a),
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m32',Pose,M32literal), strip_literal_type(M32literal, M32a), term_to_atom(M32, M32a),
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m33',Pose,M33literal), strip_literal_type(M33literal, M33a), term_to_atom(M33, M33a),!.
 
 %% object_dimensions(?Obj, ?Depth, ?Width, ?Height) is nondet.
 %
