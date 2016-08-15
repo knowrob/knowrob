@@ -123,17 +123,17 @@ test(fluent_assert_object) :-
   fluent_test_assert(knowrob_temporal_test:'Dough_vs5hgsg0', knowrob:insideOf, [Value1,Value2]).
 
 
-test(fluent_has) :-
+test(fluent_has, [nondet]) :-
   fluent_has(knowrob_temporal_test:'Dough_vs5hgsg0', knowrob:temperatureOfObject,
              literal(type(xsd:'float',10.0)), I),
   interval(I, [0.0,20.0]).
 
-test(fluent_has_O_unbound) :-
+test(fluent_has_O_unbound, [nondet]) :-
   fluent_has(knowrob_temporal_test:'Dough_vs5hgsg0', knowrob:temperatureOfObject, O, I),
   interval(I, [0.0,20.0]),
   O = literal(type(_,10.0)).
 
-test(fluent_has_S_P_O_unbound) :-
+test(fluent_has_S_P_O_unbound, [nondet]) :-
   fluent_has(S, P, O, I),
   S = 'http://knowrob.org/kb/knowrob_temporal_test.owl#Dough_vs5hgsg0',
   P = 'http://knowrob.org/kb/knowrob.owl#temperatureOfObject',

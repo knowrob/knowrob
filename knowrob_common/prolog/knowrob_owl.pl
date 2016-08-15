@@ -233,7 +233,7 @@ create_interval([Start], TimeInterval) :-
 
 create_interval([Start], TimeInterval) :-
   create_timepoint(Start, StartI),
-  rdf_instance_from_class(knowrob:'TimeInterval', TimeInterval),
+  atomic_list_concat(['http://knowrob.org/kb/knowrob.owl#TimeInterval',Start], '_', TimeInterval),
   rdf_assert(TimeInterval, rdf:type, knowrob:'TimeInterval'),
   rdf_assert(TimeInterval, knowrob:'startTime', StartI).
 
@@ -526,8 +526,8 @@ quaternion_to_list(Pose, [QW,QX,QY,QZ]) :-
 % @param Entity IRI of matching entity
 % @param Descr An entity description, OWL individual or class IRI
 %
-% TODO: support property units
-%    - [an, object, [volumeOfObject, '20ml', during [0.0,20.0]]]
+% TODO: support specification of property units
+%    - [an, object, [height, 20, qudt:meter, during [0.0,20.0]]]
 % TODO: handle trajectory
 %    - [a, trajectory, [urdf, 'base_link'], [temporal_extend, [an, interval, [40.0,80.0]]]]
 entity(Entity, EntityClass) :-

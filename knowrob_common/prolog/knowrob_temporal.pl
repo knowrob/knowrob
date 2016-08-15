@@ -255,18 +255,18 @@ fluent_property(TemporalPart, PropertyIri) :-
 fluent_has(S, P, O) :- fluent_has(S, P, O, _).
 
 fluent_has(S, P, O, I) :-
+  owl_has(S, knowrob:hasTemporalPart, TemporalPart),
+  fluent_has(TemporalPart, P, O, I).
+
+fluent_has(S, P, O, I) :-
   nonvar(S),
   rdfs_individual_of(S, knowrob:'TemporalPart'),
   rdf_has(S, knowrob:temporalExtend, I),
   rdf_has(S, knowrob:temporalProperty, P),
   rdf_has(S, P, S_O),
   (( rdfs_individual_of(S_O, knowrob:'TemporalPart') )
-  -> owl_has(S_O, knowrob:temporalPartOf, O)
+  -> once(owl_has(S_O, knowrob:temporalPartOf, O))
   ;  O = S_O ).
-
-fluent_has(S, P, O, I) :-
-  owl_has(S, knowrob:hasTemporalPart, TemporalPart),
-  fluent_has(TemporalPart, P, O, I).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

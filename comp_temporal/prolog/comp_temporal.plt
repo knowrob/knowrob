@@ -103,11 +103,13 @@ test(comp_finishesInvI) :-
     comp_finishesInvI(test_comp_temporal:'Long',test_comp_temporal:'Short3'),
     \+ comp_finishesInvI(test_comp_temporal:'Long',test_comp_temporal:'Short4').
 
-% TODO test computable in entity description
-%test(entity_event_after) :-
-%  entity(Evt, [an, event, [type, thinking], [comp_temporal:after, [a, timepoint, 10.0]]]),
-%  rdfs_individual_of(Evt, knowrob:'Thinking'),
-%  rdf_has(Evt, knowrob:'startTime', knowrob:'timepoint_20.0').
+
+test(query_event_after) :-
+  findall(Evt, entity(Evt, [an, event, [comp_temporal:after, [a, timepoint, 1377777004.0]]]), Evts),
+  member('http://knowrob.org/kb/test_comp_temporal.owl#Short3', Evts),
+  member('http://knowrob.org/kb/test_comp_temporal.owl#Short4', Evts),
+  not( member('http://knowrob.org/kb/test_comp_temporal.owl#Short2', Evts) ).
+
 
 :- end_tests(comp_temporal).
 
