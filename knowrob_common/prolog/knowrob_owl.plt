@@ -66,6 +66,9 @@ test(generate_timepoint_description) :-
   entity(knowrob:'timepoint_20.0', X),
   X = [a, timepoint, 20.0].
 
+test(generate_timepoint_description_unexisting, [fail]) :-
+  entity(knowrob:'timepoint_4530.0', X), X = [a, timepoint, 4530.0].
+
 test(assert_interval) :-
   entity_assert(knowrob:'TimeInterval_20.0_40.0', [an, interval, [20.0,40.0]]).
 
@@ -105,6 +108,18 @@ test(generate_refrigerator_description) :-
   entity(knowrob_owl_test:'Refrigerator_fg45543', X),
   X = [an, object, [type, refrigerator]].
 
+test(query_refrigerator, [nondet]) :-
+  entity(Cont, [an, object, [type, refrigerator]]),
+  Cont = 'http://knowrob.org/kb/knowrob_owl_test.owl#Refrigerator_fg45543'.
+
+test(query_container, [nondet]) :-
+  entity(Cont, [an, object, [type, container]]),
+  Cont = 'http://knowrob.org/kb/knowrob_owl_test.owl#Refrigerator_fg45543'.
+
+test(query_cup, [nondet]) :-
+  entity(Cup, [an, object, [type, cup]]),
+  Cup = 'http://knowrob.org/kb/knowrob_owl_test.owl#Cup_sfd498th'.
+
 
 %% Poses
 
@@ -124,7 +139,6 @@ test(assert_location) :-
   rdfs_individual_of(Loc, knowrob:'SpaceRegion').
 
 test(assert_location_with_property) :-
-  % FIXME: [an, object, ...] does not exist, howto handle this?
   entity_assert(Loc, [a, location, [inside_of, [an, object, [type, container]]]]),
   rdfs_individual_of(Loc, knowrob:'SpaceRegion'),
   rdf_has(Loc, knowrob:'insideOf', O),

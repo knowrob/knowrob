@@ -537,7 +537,7 @@ entity(Entity, EntityClass) :-
 entity(Entity, Descr) :-
   var(Descr), !,
   rdfs_individual_of(Entity,owl:'Thing'),
-  entity_head(Entity, [A,TypeBase], TypeIri),
+  once(entity_head(Entity, [A,TypeBase], TypeIri)),
   entity_generate(Entity, [A,TypeBase], TypeIri, Descr).
 
 entity(Entity, Descr) :-
@@ -580,15 +580,16 @@ entity_(Entity, [a, location|Descr]) :-
     member([P_descr, O_desc], Descr),
     entity_iri(P, P_descr, lower_camelcase),
     rdfs_subproperty_of(P, knowrob:'spatiallyRelated'),
-    entity(O, O_desc)
+    entity(O, O_desc) % FIXME: there could be multiple entities matching this (eg an object type container)
   ), Axioms),
   length(Axioms, L), (L > 0),
   create_location(Axioms, Entity), !.
 
 entity_(Entity, [A, Type|Descr]) :-
-  nonvar(A),nonvar(Type),
-  entity_head(Entity, [A,Type], _),
-  entity_(Entity, Descr) ; (
+  nonvar(A),nonvar(Type),member(A, [a,an]),
+  ( entity_head(Entity, [A,Type], _),
+    entity_(Entity, Descr)
+  ) ; (
     var(Entity),
     entity_compute(Entity, [A, Type|Descr])
   ).
@@ -674,9 +675,10 @@ entity_compute(_, [an|[interval|_]]) :- fail.
 % @param Entity IRI of matching entity
 % @param Descr An entity description
 %
-entity_assert(Entity, [a,timepoint|Descr]) :- entity(Entity, [a,timepoint|Descr]), !.
+entity_assert(Entity, [a,timepoint|Descr]) :- entity(Entity, [a,timepoint|Descr]), !. 
 entity_assert(Entity, [an,interval|Descr]) :- entity(Entity, [an,interval|Descr]), !.
 entity_assert(Entity, [a,location|Descr]) :-  entity(Entity, [a,location|Descr]), !.
+% FIXME: above does not allow to call entity_assert for nested entites
 
 entity_assert(Entity, [a, pose, [X,Y,Z], [QW,QX,QY,QZ]]) :-
   create_pose([X,Y,Z], [QW,QX,QY,QZ], Entity), !.
@@ -712,10 +714,11 @@ entity_assert(Entity, [[Key,Value]|Descr]) :-
   entity_iri(PropIri, Key, lower_camelcase),
   (  rdf_has(PropIri, rdf:type, owl:'ObjectProperty')
   ->  ( % nested entity
-      entity_assert(ValueEntity, Value),
+      entity(ValueEntity, Value), % TODO: support recursive option (call enity_assert instead)
       rdf_assert(Entity, PropIri, ValueEntity)
   ) ; ( % data property
-      rdf_has(PropIri, rdfs:range, Range),
+      rdf_has(PropIri, rdf:type, owl:'DatatypeProperty'),
+      rdf_has(PropIri, rdfs:range, Range), % FIXME: what if range unspecified
       rdf_assert(Entity, PropIri, literal(type(Range,Value)))
   )),
   entity_assert(Entity, Descr).
@@ -726,10 +729,11 @@ entity_assert(Entity, [[Key,Value,during,IntervalDescr]|Descr]) :-
   entity(Interval, IntervalDescr),
   (  rdf_has(PropIri, rdf:type, owl:'ObjectProperty')
   ->  ( % nested entity
-      entity_assert(ValueEntity, Value),
+      entity(ValueEntity, Value),
       fluent_assert(Entity,PropIri,ValueEntity,Interval)
   ) ; ( % data property
-      rdf_has(PropIri, rdfs:range, Range),
+      rdf_has(PropIri, rdf:type, owl:'DatatypeProperty'),
+      rdf_has(PropIri, rdfs:range, Range), % FIXME: what if range unspecified
       fluent_assert(Entity,PropIri,literal(type(Range,Value)),Interval)
   )),
   entity_assert(Entity, Descr).
@@ -786,10 +790,8 @@ entity_properties([[PropIri,IntervalIri]|Tail],
 entity_properties([[PropIri,PropValue]|Tail], [[Key,Value]|DescrTail]) :-
   entity_iri(PropIri, Key, lower_camelcase),
   % match rdf value with description value
-  (  rdf_has(PropIri, rdf:type, owl:'ObjectProperty')
-  -> entity(PropValue, Value)
-  ;  property_value(PropValue, Value)
-  ),
+  (( rdf_has(PropIri, rdf:type, owl:'ObjectProperty'),   entity(PropValue, Value) ) ;
+   ( rdf_has(PropIri, rdf:type, owl:'DatatypeProperty'), property_value(PropValue, Value) )),
   entity_properties(Tail, DescrTail).
 
 entity_properties([], []).
@@ -819,21 +821,24 @@ entity_generate(Entity, [A,TypeBase], TypeBaseIri, [A,TypeBase|[[type,TypeName]|
 
 
 %% Match [a|an, ?entity_type]
-entity_head(Entity, Type, TypeIri) :-
-  entity_head_(Entity, Type, TypeIri),
-  forall( entity_head_(Entity, _, TypeIri_), ( % TODO: could be done faster
-    ( TypeIri_ = TypeIri ) ; not(rdf_reachable(TypeIri_, rdfs:subClassOf, TypeIri))
-  )), !.
+entity_head(Entity, [A,Type], TypeIri) :-
+  var(Entity),
+  entity_type([A,Type], TypeIri),
+  rdfs_individual_of(Entity, TypeIri).
 
-entity_head_(Entity, [an,Type], TypeIri) :-
-  entity_type([an,Type], TypeIri),
-  entity_iri(Entity, TypeIri).
-
-entity_head_(Entity, [a,Type], TypeIri) :-
-  entity_type([a,Type], TypeIri),
-  entity_iri(Entity, TypeIri).
-
-entity_head_(_, [a,thing], 'http://www.w3.org/2002/07/owl#Thing').
+entity_head(Entity, [A,Type], TypeIri) :-
+  nonvar(Entity),
+  findall([A,Type,TypeIri], (
+    ( entity_type([A,Type], TypeIri), rdfs_individual_of(Entity, TypeIri) );
+    [A,Type,TypeIri]=[a,thing,'http://www.w3.org/2002/07/owl#Thing']
+  ), Types),
+  member([A,Type,TypeIri], Types),
+  % pick only the most special types
+  forall( member([_,BType,BTypeIri], Types), (
+    BType = Type ; (
+      not(rdf_reachable(BTypeIri, rdfs:subClassOf, TypeIri))
+    )
+  )).
 
 
 entity_type(Entity, TypeBase, Entity) :-
