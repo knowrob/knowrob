@@ -576,12 +576,7 @@ entity_(Entity, [a|[pose|Descr]]) :-
   create_pose([X,Y,Z], [QW,QX,QY,QZ], Entity), !.
 
 entity_(Entity, [a, location|Descr]) :-
-  findall( [P,O], (
-    member([P_descr, O_desc], Descr),
-    entity_iri(P, P_descr, lower_camelcase),
-    rdfs_subproperty_of(P, knowrob:'spatiallyRelated'),
-    entity(O, O_desc) % FIXME: there could be multiple entities matching this (eg an object type container)
-  ), Axioms),
+  entity_axioms(Descr, knowrob:'spatiallyRelated', Axioms),
   length(Axioms, L), (L > 0),
   create_location(Axioms, Entity), !.
 
@@ -795,6 +790,15 @@ entity_properties([[PropIri,PropValue]|Tail], [[Key,Value]|DescrTail]) :-
   entity_properties(Tail, DescrTail).
 
 entity_properties([], []).
+
+
+entity_axioms([P_descr,O_desc|Descr], AxiomIri, [P,O|Axioms]) :-
+  entity_iri(P, P_descr, lower_camelcase),
+  rdfs_subproperty_of(P, AxiomIri),
+  entity(O, O_desc),
+  entity_axioms(Descr, AxiomIri, Axioms).
+
+entity_axioms([], _, []).
 
 
 entity_generate(Entity, [a,timepoint], _, [a,timepoint,Time]) :-
