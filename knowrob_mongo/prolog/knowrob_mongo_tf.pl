@@ -132,8 +132,8 @@ mng_transform_pose(PoseListIn, SourceFrame, TargetFrame, TimePoint, PoseListOut)
   jpl_new('tfjava.Stamped', [MatrixIn, SourceFrame, TimeInt], StampedIn),
 
   knowrob_coordinates:list_to_matrix4d([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1], MatrixOut),
-  % TODO: What is /base_link doing here?
-  jpl_new('tfjava.Stamped', [MatrixOut, '/base_link', TimeInt], StampedOut),
+  % create intermediate matrix 
+  jpl_new('tfjava.Stamped', [MatrixOut, '/', TimeInt], StampedOut),
 
   mongo_interface(DB),
   jpl_call(DB, 'transformPose', [TargetFrame, StampedIn, StampedOut], @(true)),
@@ -237,6 +237,7 @@ mng_comp_pose_at_time(RobotPart, TargetFrame, TimePoint, Pose) :-
 % @param TimePoint    Instance of knowrob:TimePoint
 % @param Pose         Instance of a knowrob:RotationMatrix3D with the pose data
 %
+% TODO: represent pose via fluent
 mng_obj_pose_at_time(Obj, SourceFrame, TargetFrame, TimePoint, Pose) :-
 
   % read object pose in original coordinates at TimePoint
@@ -265,7 +266,7 @@ mng_obj_pose_at_time(Obj, SourceFrame, TargetFrame, TimePoint, Pose) :-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % knowrob_owl entity descriptions
 
-knowrob_owl:entity_compute(Entity, [a|[pose|Descr]]) :-
+knowrob_owl:entity_compute(Entity, [a,pose|Descr]) :-
   entity_has(Descr, tf_frame, UrdfName),
   entity_has(Descr, temporal_extend, IntervalDescr),
   SourceFrame='/map', % FIXME
@@ -274,7 +275,7 @@ knowrob_owl:entity_compute(Entity, [a|[pose|Descr]]) :-
   matrix_translation(Pose, [X,Y,Z]),
   create_pose([X,Y,Z], [QW,QX,QY,QZ], Entity).
 
-pose_compute(Pose, SourceFrame, UrdfName, [a|[timepoint|Descr]]) :-
+pose_compute(Pose, SourceFrame, UrdfName, [a,timepoint|Descr]) :-
   entity(TimeIri, Descr), time_term(TimeIri, Time),
   mng_lookup_transform(SourceFrame, UrdfName, Time, Pose), !.
 

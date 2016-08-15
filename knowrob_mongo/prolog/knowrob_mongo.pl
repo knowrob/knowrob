@@ -367,7 +367,6 @@ mng_republish(DBObj, TypeJava, TypeString, '', Msg) :-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % Higher-level reasoning methods
 %
-% TODO(daniel): Move to another module
 
 %% obj_visible_in_camera(+Obj, ?Camera, +TimePoint) is nondet.
 %
@@ -379,6 +378,7 @@ mng_republish(DBObj, TypeJava, TypeString, '', Msg) :-
 % @param Camera     Instance of an srdl2comp:Camera
 % @param TimePoint  Instance of a knowrob:TimePoint at which the scene is to be evaluated
 % 
+% TODO(daniel): Move to another module
 obj_visible_in_camera(Obj, Camera, TimePoint) :-
 
   findall(Camera, owl_individual_of(Camera, srdl2comp:'Camera'), Cameras),
@@ -428,6 +428,7 @@ obj_visible_in_camera(Obj, Camera, TimePoint) :-
 % @param Camera     Instance of an srdl2comp:Camera
 % @param TimePoint  Instance of a knowrob:TimePoint at which the scene is to be evaluated
 % 
+% TODO(daniel): Move to another module
 obj_blocked_by_in_camera(Obj, Blocker, Camera, TimePoint) :-
 
   findall(Camera, owl_individual_of(Camera, srdl2comp:'Camera'), Cameras),
