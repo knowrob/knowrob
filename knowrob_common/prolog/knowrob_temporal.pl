@@ -129,9 +129,10 @@ holds(Term, I) :-
 
 holds(S, P, O) :-
   current_time(T),
-  holds(S, P, O, T).
+  holds(S, P, O, [T,T]).
 
 holds(S, P, O, I) :-
+  ( atom(S) ; var(S) ),
   (  atom(P)
   -> rdf_triple(P, S, O)
   ;  owl_has(S,P,O)
@@ -142,6 +143,7 @@ holds(S, P, O, I) :-
   ).
   
 holds(S, P, O, I) :-
+  ( atom(S) ; var(S) ),
   fluent_has(S, P, O, TimeInterval),
   time_term(TimeInterval, Interval),
   (  var(I)
