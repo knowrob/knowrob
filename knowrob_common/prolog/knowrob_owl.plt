@@ -28,7 +28,7 @@
 
 :- owl_parser:owl_parse('package://knowrob_common/owl/knowrob_owl_test.owl').
 
-:- rdf_db:rdf_register_prefix(knowrob_owl_test, 'http://knowrob.org/kb/knowrob_owl_test.owl#', [keep(true)]).
+:- rdf_db:rdf_register_prefix(test_owl, 'http://knowrob.org/kb/knowrob_owl_test.owl#', [keep(true)]).
 
 :- rdf_meta fluent_begin(r,r,t,r),
             fluent_test_assert(r,r,t).
@@ -105,30 +105,35 @@ test(assert_object_with_property) :-
   rdf_has(Obj, knowrob:'volumeOfObject', literal(type(xsd:float,10.0))).
 
 test(generate_refrigerator_description) :-
-  entity(knowrob_owl_test:'Refrigerator_fg45543', X),
+  entity(test_owl:'Refrigerator_fg45543', X),
   X = [an, object, [type, refrigerator]].
 
 test(query_refrigerator, [nondet]) :-
   entity(Cont, [an, object, [type, refrigerator]]),
-  Cont = 'http://knowrob.org/kb/knowrob_owl_test.owl#Refrigerator_fg45543'.
+  rdf_equal(Cont, test_owl:'Refrigerator_fg45543').
+
+test(query_refrigerator_by_name, [nondet]) :-
+  entity(Cont, [an, object, [name, test_owl:'Refrigerator_fg45543']]),
+  rdf_equal(Cont, test_owl:'Refrigerator_fg45543').
 
 test(query_container, [nondet]) :-
   entity(Cont, [an, object, [type, container]]),
-  Cont = 'http://knowrob.org/kb/knowrob_owl_test.owl#Refrigerator_fg45543'.
+  rdf_equal(Cont, test_owl:'Refrigerator_fg45543').
 
 test(query_cup, [nondet]) :-
   entity(Cup, [an, object, [type, cup]]),
-  Cup = 'http://knowrob.org/kb/knowrob_owl_test.owl#Cup_sfd498th'.
+  rdf_equal(Cup, test_owl:'Cup_sfd498th').
 
 
 %% Poses
 
 test(assert_pose) :-
-  entity_assert(knowrob:'Pose_0.0_2.0_0.0_1.0_0.0_0.1_0.2', [a, pose, [0.0,2.0,0.0], [1.0,0.0,0.1,0.2]]),
-  rdfs_individual_of(knowrob:'Pose_0.0_2.0_0.0_1.0_0.0_0.1_0.2', knowrob:'Pose').
+  entity_assert(Pose, [a, pose, [0.0,2.0,0.0], [1.0,0.0,0.1,0.2]]),
+  rdf_split_url(_, 'Pose_MapFrame_0.0_2.0_0.0_1.0_0.0_0.1_0.2', Pose),
+  rdfs_individual_of(knowrob:'Pose_MapFrame_0.0_2.0_0.0_1.0_0.0_0.1_0.2', knowrob:'Pose').
 
 test(generate_pose_description) :-
-  entity(knowrob:'Pose_0.0_2.0_0.0_1.0_0.0_0.1_0.2', X),
+  entity(knowrob:'Pose_MapFrame_0.0_2.0_0.0_1.0_0.0_0.1_0.2', X),
   X = [a, pose, [0.0,2.0,0.0], [1.0,0.0,0.1,0.2]].
 
 
@@ -139,9 +144,9 @@ test(assert_location) :-
   rdfs_individual_of(Loc, knowrob:'SpaceRegion').
 
 test(assert_location_with_property) :-
-  entity_assert(Loc, [a, location, [inside_of, [an, object, [type, container]]]]),
+  entity_assert(Loc, [a, location, [in-cont_generic, [an, object, [type, container]]]]),
   rdfs_individual_of(Loc, knowrob:'SpaceRegion'),
-  rdf_has(Loc, knowrob:'insideOf', O),
+  rdf_has(Loc, knowrob:'in-ContGeneric', O),
   rdfs_individual_of(O, knowrob:'Container').
 
 test(generate_location_description) :-
@@ -177,4 +182,8 @@ test(generate_fluent_description) :-
   entity(Obj, Descr_),
   Descr_=Descr.
 
+%[an, object, [manipulated_by, pr2, during, [a, timepoint, now]]]
+%[an, object, [type, cup], [not(contains), [an object, [type, water]]]]
+%[an, object, [type, counter_top]]
+  
 :- end_tests(knowrob_owl).
