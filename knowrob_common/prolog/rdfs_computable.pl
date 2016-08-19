@@ -46,6 +46,7 @@
 :- use_module(library('semweb/rdf_db')).
 % :- use_module(library('odbc')).
 :- use_module(library('lists')).
+:- use_module(library('knowrob_owl')).
 
 :- rdf_register_ns(computable, 'http://knowrob.org/kb/computable.owl#').
 :- rdf_meta
@@ -94,12 +95,13 @@ rdf_triple(Property, Frame, Value) :-
     rdf_has(Frame, computable:'rest', RestProperty),
     rdf_triple(rdfs:range, RestProperty, Value)), X),
   assert(user:(X)).
-:- user:expand_term((rdf_triple_hook(Property, Frame, Value):-
-    rdf_equal(Property, rdfs:range),
-    rdfs_instance_of(Frame, am:'Feature'),
-    rdf_has(Frame, computable:'rest', RestProperty),
-    rdf_triple(rdfs:range, RestProperty, Value)), X),
-  assert(user:(X)).
+% FIXME(daniel): am namespace not defined!
+%:- user:expand_term((rdf_triple_hook(Property, Frame, Value):-
+%    rdf_equal(Property, rdfs:range),
+%    rdfs_instance_of(Frame, am:'Feature'),
+%    rdf_has(Frame, computable:'rest', RestProperty),
+%    rdf_triple(rdfs:range, RestProperty, Value)), X),
+%  assert(user:(X)).
 :- user:expand_term((rdf_triple_hook(Property, Frame, Value):-
     rdf_equal(Property, rdfs:domain),
     rdfs_instance_of(Frame, computable:'PropertyConcatenation'),
@@ -303,20 +305,21 @@ rdfs_computable_triple(Property, Frame, Value) :-
           ; true)))
 
     ; ( % frame bound, value unbound
+    
       rdf(computable:cachedAllValuesFor, Property, Frame, cache)
 
-      -> % return cached values
+      -> ( % return cached values
         setof(MyValue, rdf(Property, Frame, MyValue, cache), Values),
         member(Value, Values)
 
-      ; % compute values and cache them
+      ) ; (% compute values and cache them
         setof(MyValue, rdfs_computable_triple_1(Property, Frame, MyValue), Values),
         ( (rdf_has(CP, computable:target, Property), rdf_has(CP, computable:cache, literal(type('http://www.w3.org/2001/XMLSchema#string', cache))))
           -> rdf_assert(computable:cachedAllValuesFor, Property, Frame, cache),
              maplist(rdfs_computable_cache_values(Property, Frame), Values)
           ; true),
         member(Value, Values)
-      ))
+      )))
   ; nonvar(Value)
     -> ( % frame unbound, value bound
         rdf(Property, Value, computable:cachedAllFramesFor, cache)
@@ -547,11 +550,10 @@ rdfs_computable_prolog_triple(Property, Frame, Value) :-
 
   % execute the Prolog predicate (namespace expansion etc.)
   (
-    (nonvar(Value)) ->
+    (nonvar(Value)) -> (
       (call(Command, Frame, Value))
-    ;
+    ) ; (
       (call(Command, Frame, PrologValue),
-
         % result: PrologValue
         (PrologValue=[_|_]
         -> member(Temp, PrologValue),
@@ -559,7 +561,7 @@ rdfs_computable_prolog_triple(Property, Frame, Value) :-
         ; PrologValue=[]
         -> fail
         ; rdfs_prolog_to_rdf(Property, PrologValue, Value))
-      )
+      ))
   ).
 
 
@@ -576,7 +578,8 @@ rdfs_computable_prolog_triple(Property, Frame, Value) :-
 %
 %
 rdfs_prolog_to_rdf(Property, PrologValue, RDFValue) :-
-  rdf_has(Property, rdfs:range, Range),
+  rdf_phas(Property, rdfs:range, Range),
+  
   ((rdfs_individual_of(Range, rdf:'Class')
     ; rdfs_individual_of(Range, owl:'Class'))
   -> %RDFValue = PrologValue
@@ -603,7 +606,6 @@ rdfs_prolog_to_rdf(Property, PrologValue, RDFValue) :-
     -> RDFValue = PrologValue
     ; print(['The value ',PrologValue,' is not in the oneOf range list ',OneOfList]), fail))
   ; print(['Cannot determine the type for ', PrologValue, ' in the range ', Range])).
-
 
 %%
 % rdfs_computable_value_from_url(+Property, ?Value, ?MyValue) :-

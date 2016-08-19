@@ -46,11 +46,12 @@
       create_restr/6,
       rdf_instance_from_class/2,
       rdf_instance_from_class/3,
+      rdf_phas/3,
       get_timepoint/1,
       get_timepoint/2,
       create_timepoint/2,
       create_interval/2,
-      create_pose/3,
+      create_pose/2,
       inspect/3,
       rotmat_to_list/2,
       position_to_list/2,
@@ -87,13 +88,15 @@
             rdf_instance_from_class(r,r),
             rdf_instance_from_class(r,r,r),
             create_timepoint(+,r),
+            create_poset(+,r),
             get_timepoint(r),
             get_timepoint(+,r),
             create_restr(r, r, r, r, +, r),
             inspect(r,r,r),
             rotmat_to_list(r,-),
             position_to_list(r,-),
-            quaternion_to_list(r,-).
+            quaternion_to_list(r,-),
+            rdf_phas(r,r,o).
 
 :- rdf_db:rdf_register_ns(owl,    'http://www.w3.org/2002/07/owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(rdfs,   'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
@@ -125,7 +128,12 @@ inspect(Thing, P, O) :-
   rdf_has(Thing, rdf:type, owl:'Class'),
   class_properties(Thing, P, Olit),
   strip_literal_type(Olit, O).
-  
+
+
+rdf_phas(Property, P, O) :-
+        rdfs_subproperty_of(Property, Super),
+        rdf_has(Super, P, O2), !,
+        O = O2.
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
@@ -209,6 +217,7 @@ create_restr(Class, Prop, Value, RestrType, SourceRef, Restr) :-
   rdf_assert(Restr, RestrType, Value, SourceRef).
 
 
+% TODO: creat_* functions into knowrob_owl_factory module
 %% create_timepoint(+TimeStamp, -TimePoint) is det.
 %
 % Create a timepoint-identifier for the given time stamp
@@ -253,19 +262,23 @@ create_interval([Start, End], TimeInterval) :-
   rdf_assert(TimeInterval, knowrob:'startTime', StartI),
   rdf_assert(TimeInterval, knowrob:'endTime', EndI).
 
-%% create_interval(+Start, -TimeInterval) is nondet.
-%% create_interval(+Start, +End, -TimeInterval) is det.
-%
-% Create a interval-identifier for the given start and end time stamps
+%% create_pose(+Term, -Iri) is nondet.
 %
 %
-create_pose([X,Y,Z], [QW,QX,QY,QZ], Pose) :-
-  atomic_list_concat(['http://knowrob.org/kb/knowrob.owl#Pose'|[X,Y,Z,QW,QX,QY,QZ]], '_', Pose),
-  atomic_list_concat([X,Y,Z], ',', Translation),
-  atomic_list_concat([QW,QX,QY,QZ], ',', Quaternion),
+create_pose(pose([X,Y,Z], [QW,QX,QY,QZ]), Pose) :-
+  create_pose(pose('http://knowrob.org/kb/knowrob.owl#MapFrame', [X,Y,Z], [QW,QX,QY,QZ]), Pose), !.
+
+create_pose(pose(ReferenceObj, [X,Y,Z], [QW,QX,QY,QZ]), Pose) :-
+  rdfs_individual_of(ReferenceObj, knowrob:'SpatialThing-Localized'),
+  rdf_split_url(_, Ref, ReferenceObj),
+  atomic_list_concat(['http://knowrob.org/kb/knowrob.owl#Pose'|[Ref,X,Y,Z,QW,QX,QY,QZ]], '_', Pose),
+  atomic_list_concat([X,Y,Z], ' ', Translation),
+  atomic_list_concat([QW,QX,QY,QZ], ' ', Quaternion),
   rdf_assert(Pose, rdf:type, knowrob:'Pose'),
   rdf_assert(Pose, knowrob:'translation', literal(type(string,Translation))),
-  rdf_assert(Pose, knowrob:'quaternion', literal(type(string,Quaternion))).
+  rdf_assert(Pose, knowrob:'quaternion', literal(type(string,Quaternion))),
+  rdf_assert(Pose, knowrob:'relativeTo', ReferenceObj).
+
 
 %% create_location(+Axioms, -Location) is nondet.
 %
@@ -281,12 +294,6 @@ location_name(Axioms, Location) :-
   is_list(Axioms),
   location_name_args_(Axioms,Args),
   atomic_list_concat(['http://knowrob.org/kb/knowrob.owl#SpaceRegion'|Args], '_', Location).
-
-location_name_args_([(P,O)|Axioms], [P_name|[O_name|Args]]) :-
-  rdf_split_url(_, P_name, P), % FIXME: don't ignore namespace
-  rdf_split_url(_, O_name, O),
-  location_name_args_(Axioms, Args).
-location_name_args_([], []).
 
 
 %% get_timepoint(-T) is det.
@@ -569,11 +576,13 @@ entity_(Entity, [an, interval|Descr]) :-
      create_interval([Begin], Entity) ), !.
 
 entity_(Entity, [a, pose, [X,Y,Z], [QW,QX,QY,QZ]]) :-
-  create_pose([X,Y,Z], [QW,QX,QY,QZ], Entity), !.
+  create_pose(pose([X,Y,Z], [QW,QX,QY,QZ]), Entity), !.
 entity_(Entity, [a|[pose|Descr]]) :-
   entity_has(Descr, translation, [X,Y,Z]),
   entity_has(Descr, quaternion, [QW,QX,QY,QZ]),
-  create_pose([X,Y,Z], [QW,QX,QY,QZ], Entity), !.
+  (  entity_has(Descr, reference_frame, Frame)
+  -> create_pose(pose(Frame, [X,Y,Z], [QW,QX,QY,QZ]), Entity)
+  ;  create_pose(pose([X,Y,Z], [QW,QX,QY,QZ]), Entity) ), !.
 
 entity_(Entity, [a, location|Descr]) :-
   entity_axioms(Descr, knowrob:'spatiallyRelated', Axioms),
@@ -582,6 +591,7 @@ entity_(Entity, [a, location|Descr]) :-
 
 entity_(Entity, [A, Type|Descr]) :-
   nonvar(A),nonvar(Type),member(A, [a,an]),
+  entity_name(Descr, Entity),
   ( entity_head(Entity, [A,Type], _),
     entity_(Entity, Descr)
   ) ; (
@@ -589,17 +599,15 @@ entity_(Entity, [A, Type|Descr]) :-
     entity_compute(Entity, [A, Type|Descr])
   ).
 
+entity_(Entity, [[name,EntityName]|Descr]) :-
+  entity_name([name,EntityName], Entity),
+  entity_(Entity, Descr).
+
 entity_(Entity, [[type,Type]|Descr]) :-
   nonvar(Type),
   entity_iri(TypeIri, Type, camelcase),
   ( rdfs_individual_of(Entity, TypeIri);
     Entity = TypeIri ),
-  entity_(Entity, Descr).
-
-entity_(Entity, [[name,Name]|Descr]) :-
-  nonvar(Name),
-  entity_iri(NameIri, Name, camelcase),
-  Entity = NameIri,
   entity_(Entity, Descr).
 
 %% Key-value property
@@ -619,6 +627,16 @@ entity_(Entity, [[Key,Value,TemporalRelation,IntervalDescr]|Descr]) :-
   entity_(Entity, Descr).
 
 entity_(_, []).
+
+
+entity_name(Descr, Entity) :-
+  entity_has(Descr,name,Name),
+  rdf_global_term(Name, Entity),
+  (   rdf_has(Entity, _, _)
+  -> true
+  ;  entity_iri(Entity, Name, camelcase) ), !.
+entity_name(_, _).
+
 
 %% Read entity property value
 entity_has(S,P,O) :-
@@ -676,11 +694,17 @@ entity_assert(Entity, [a,location|Descr]) :-  entity(Entity, [a,location|Descr])
 % FIXME: above does not allow to call entity_assert for nested entites
 
 entity_assert(Entity, [a, pose, [X,Y,Z], [QW,QX,QY,QZ]]) :-
-  create_pose([X,Y,Z], [QW,QX,QY,QZ], Entity), !.
+  create_pose(pose([X,Y,Z], [QW,QX,QY,QZ]), Entity), !.
 entity_assert(Entity, [a, pose|Descr]) :-
   entity_has(Descr, translation, [X,Y,Z]),
   entity_has(Descr, quaternion, [QW,QX,QY,QZ]),
-  create_pose([X,Y,Z], [QW,QX,QY,QZ], Entity), !.
+  (  entity_has(Descr, relative_to, RelObjDescr)
+  -> (
+    entity(RelObj, RelObjDescr),
+    create_pose(pose(RelObj, [X,Y,Z], [QW,QX,QY,QZ]), Entity)
+  ) ; (
+    create_pose(pose([X,Y,Z], [QW,QX,QY,QZ]), Entity) )
+  ), !.
 
 entity_assert(Entity, [A,Type|Descr]) :-
   nonvar(Type),
@@ -736,9 +760,20 @@ entity_assert(Entity, [[Key,Value,during,IntervalDescr]|Descr]) :-
 entity_assert(_, []).
 
 
+% TODO: format method for pretty printing
+%entity_to_string
+
+
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % helper
+
+
+location_name_args_([(P,O)|Axioms], [P_name|[O_name|Args]]) :-
+  rdf_split_url(_, P_name, P), % FIXME: don't ignore namespace
+  rdf_split_url(_, O_name, O),
+  location_name_args_(Axioms, Args).
+location_name_args_([], []).
 
 
 interval_operator(during, I1, I2) :-   interval_during(I1,I2).
@@ -759,7 +794,7 @@ entity_properties([['http://www.w3.org/2000/01/rdf-schema#comment',_]|Tail], Des
 entity_properties([['http://www.w3.org/2000/01/rdf-schema#subClassOf',_]|Tail], DescrTail) :-
   entity_properties(Tail, DescrTail), !.
 
-entity_properties([[inverse_of('http://knowrob.org/kb/knowrob.owl#temporalPartOf'),Fluent]|Tail],
+entity_properties([['http://knowrob.org/kb/knowrob.owl#temporalParts',Fluent]|Tail],
                             [[Key,Value,during,IntervalDescr]|DescrTail]) :-
   fluent_has(Fluent, PropIri, PropValue, IntervalIri),
   entity_properties([[PropIri,PropValue]], [[Key,Value]]),
