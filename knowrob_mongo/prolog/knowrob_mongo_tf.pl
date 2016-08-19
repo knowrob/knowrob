@@ -249,7 +249,7 @@ mng_obj_pose_at_time(Obj, SourceFrame, TargetFrame, TimePoint, Pose) :-
 %         ),
 
   mng_transform_pose(PoseListIn, SourceFrame, TargetFrame, TimePoint, PoseListOut),
-  create_pose(PoseListOut, Pose),
+  create_pose(PoseListOut, Pose), % XXX won't work
   rdf_assert(Pose, knowrob:tfFrame, TargetFrame),
 
   rdf_instance_from_class('http://knowrob.org/kb/knowrob.owl#Proprioception', Perception),
@@ -273,7 +273,7 @@ knowrob_owl:entity_compute(Entity, [a,pose|Descr]) :-
   pose_compute(Pose, SourceFrame, UrdfName, IntervalDescr),
   matrix_rotation(Pose, [QW,QX,QY,QZ]),
   matrix_translation(Pose, [X,Y,Z]),
-  create_pose([X,Y,Z], [QW,QX,QY,QZ], Entity).
+  create_pose(pose(SourceFrame, [X,Y,Z], [QW,QX,QY,QZ]), Entity).
 
 pose_compute(Pose, SourceFrame, UrdfName, [a,timepoint|Descr]) :-
   entity(TimeIri, Descr), time_term(TimeIri, Time),

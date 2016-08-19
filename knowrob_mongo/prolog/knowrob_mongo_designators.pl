@@ -41,6 +41,7 @@
       mng_designator_location/2,
       mng_designator_location/3,
       mng_designator_timestamp/2,
+      mng_designator_interval/2,
       mng_designator_props/3,
       mng_designator_props/4,
       mng_desig_matches/2,
@@ -106,7 +107,7 @@ mng_designator(Designator, DesigJava, Pattern) :-
   mng_designator(Designator, DesigJava, Pattern, 'designator._id').
 
 mng_designator(Designator, DesigJava, Pattern, IdKey) :-
-  mng_designator_id(Designator, DesigID),
+  mng_designator_id(Designator, DesigID), % FIXME: what if var(Designator)
   mng_query('logged_designators', one(DBObj), [[IdKey, 'is', DesigID]|Pattern]),
   mng_designator(DBObj, DesigJava).
 
@@ -114,7 +115,7 @@ mng_designator_before(Designator, DesigJava, Time) :-
   mng_designator(Designator, DesigJava, Time, []).
 
 mng_designator_before(Designator, DesigJava, Time, Pattern) :-
-  mng_designator_id(Designator, DesigID),
+  mng_designator_id(Designator, DesigID), % FIXME: what if var(Designator)
   mng_query_latest('logged_designators', one(DBObj), '__recorded',
     Time, [['designator._id', 'is', DesigID]|Pattern]),
   mng_designator(DBObj, DesigJava).
@@ -242,6 +243,17 @@ mng_designator_timestamp(DesigJava, Timestamp) :-
   jpl_is_object(DesigJava),
   jpl_call(DesigJava, 'get', ['_time_created'], TimestampAtom),
   atom_number(TimestampAtom, Timestamp).
+  
+mng_designator_interval(Designator, Interval) :-
+  atom(Designator),
+  mng_designator(Designator, DesigJava),
+  mng_designator_timestamp(DesigJava, Begin),
+  (  rdf_has(Designator, knowrob:successorDesignator, Succ)
+  ->  (
+      mng_designator_timestamp(Succ, End),
+      Interval = [Begin,End]
+      )
+  ;   Interval = [Begin] ).
 
 % TODO remove
 mng_decision_tree(DesigJava) :-

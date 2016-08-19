@@ -402,7 +402,7 @@ obj_visible_in_camera(Obj, Camera, TimePoint) :-
   atom_concat('/', CamFrameID, CamFrame),
 
   % TODO: mng_latest_designator_before_time does not refer to Obj
-  (object_pose_at_time(Obj, TimePoint, PoseListObj); mng_latest_designator_before_time(TimePoint, 'object', PoseListObj)),
+  (object_pose_at_time(Obj, TimePoint, mat(PoseListObj)); mng_latest_designator_before_time(TimePoint, 'object', PoseListObj)),
   mng_transform_pose(PoseListObj, '/map', CamFrame, TimePoint, RelObjPose),
 
   RelObjPose = [_,_,_,ObjX,_,_,_,ObjY,_,_,_,ObjZ,_,_,_,_],
@@ -440,7 +440,7 @@ obj_blocked_by_in_camera(Obj, Blocker, Camera, TimePoint) :-
 
 
   % Read object pose w.r.t. camera
-  (object_pose_at_time(Obj, TimePoint, PoseListObj); mng_latest_designator_before_time(TimePoint, 'object', PoseListObj)),
+  (object_pose_at_time(Obj, TimePoint, mat(PoseListObj)); mng_latest_designator_before_time(TimePoint, 'object', PoseListObj)),
   mng_transform_pose(PoseListObj, '/map', CamFrame, TimePoint, ObjPoseInCamFrame),
   ObjPoseInCamFrame = [_,_,_,ObjX,_,_,_,ObjY,_,_,_,ObjZ,_,_,_,_],
   ObjBearingX is atan2(ObjY, ObjX),

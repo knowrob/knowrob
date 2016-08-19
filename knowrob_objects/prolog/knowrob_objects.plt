@@ -57,10 +57,10 @@ test(current_object_pose) :-
 
 test(object_pose_at_time) :-
   object_pose_at_time(test_knowrob_objects:'Cup1', test_knowrob_objects:'timepoint_1331040458',
-                      [0.99607825, -0.08847681, 0.0, 1.1277804,
+                      mat([0.99607825, -0.08847681, 0.0, 1.1277804,
                        0.08847681,  0.99607825, 0.0, 2.6304414,
                        0.0,         0.0,        1.0, 0.816479,
-                       0.0,         0.0,        0.0, 1.0]).
+                       0.0,         0.0,        0.0, 1.0])).
 
 test(rotmat_to_list) :-
   rotmat_to_list(test_knowrob_objects:'RotationMatrix3D_1',

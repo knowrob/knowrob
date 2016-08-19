@@ -32,12 +32,10 @@
 :- module(knowrob_perception,
     [
       create_object_perception/4,
-      create_pose/2,
       create_perception_instance/2,
       create_perception_instance/3,
       set_object_perception/2,
       set_perception_pose/2,
-      create_pose/2,
       set_perception_cov/2
     ]).
 
@@ -158,41 +156,9 @@ set_object_perception(Object, Perception) :-
 % @param PoseList    Pose of the perceived object as row-based list containing the 4x4 rotation matrix
 % 
 set_perception_pose(Perception, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]) :-
-
+  % FIXME: won't work
   create_pose([M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33], PoseInst),
   rdf_assert(Perception, knowrob:eventOccursAt, PoseInst).
-
-%% create_pose(PoseList, PoseInst) is det.
-%
-% Set the pose of an object perception to the value given as PoseList
-%
-% @param Perception  Instance of a RotationMatrix3D with all elements asserted as datatype properties
-% @param PoseList    Pose as row-based list containing the 4x4 rotation matrix
-% 
-create_pose([M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33], PoseInst) :-
-
-  rdf_instance_from_class(knowrob:'RotationMatrix3D', PoseInst),
-
-  rdf_assert(PoseInst,'http://knowrob.org/kb/knowrob.owl#m00',literal(type(xsd:float, M00))),
-  rdf_assert(PoseInst,'http://knowrob.org/kb/knowrob.owl#m01',literal(type(xsd:float, M01))),
-  rdf_assert(PoseInst,'http://knowrob.org/kb/knowrob.owl#m02',literal(type(xsd:float, M02))),
-  rdf_assert(PoseInst,'http://knowrob.org/kb/knowrob.owl#m03',literal(type(xsd:float, M03))),
-
-  rdf_assert(PoseInst,'http://knowrob.org/kb/knowrob.owl#m10',literal(type(xsd:float, M10))),
-  rdf_assert(PoseInst,'http://knowrob.org/kb/knowrob.owl#m11',literal(type(xsd:float, M11))),
-  rdf_assert(PoseInst,'http://knowrob.org/kb/knowrob.owl#m12',literal(type(xsd:float, M12))),
-  rdf_assert(PoseInst,'http://knowrob.org/kb/knowrob.owl#m13',literal(type(xsd:float, M13))),
-
-  rdf_assert(PoseInst,'http://knowrob.org/kb/knowrob.owl#m20',literal(type(xsd:float, M20))),
-  rdf_assert(PoseInst,'http://knowrob.org/kb/knowrob.owl#m21',literal(type(xsd:float, M21))),
-  rdf_assert(PoseInst,'http://knowrob.org/kb/knowrob.owl#m22',literal(type(xsd:float, M22))),
-  rdf_assert(PoseInst,'http://knowrob.org/kb/knowrob.owl#m23',literal(type(xsd:float, M23))),
-
-  rdf_assert(PoseInst,'http://knowrob.org/kb/knowrob.owl#m30',literal(type(xsd:float, M30))),
-  rdf_assert(PoseInst,'http://knowrob.org/kb/knowrob.owl#m31',literal(type(xsd:float, M31))),
-  rdf_assert(PoseInst,'http://knowrob.org/kb/knowrob.owl#m32',literal(type(xsd:float, M32))),
-  rdf_assert(PoseInst,'http://knowrob.org/kb/knowrob.owl#m33',literal(type(xsd:float, M33))).
-
 
 
 

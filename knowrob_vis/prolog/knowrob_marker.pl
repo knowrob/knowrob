@@ -163,7 +163,7 @@ marker_lookup_transform(MarkerObject, Identifier, T, (Translation,Orientation)) 
   marker_lookup_transform(MarkerObject, Object, T, (Translation,Orientation)).
 
 marker_lookup_transform(_, Identifier, T, (Translation,Orientation)) :-
-  object_pose_at_time(Identifier, T, Translation, Orientation).
+  object_pose_at_time(Identifier, T, pose(Translation, Orientation)).
 
 marker_lookup_transform(MarkerObject, Identifier, T, (Translation,Orientation)) :-
   marker_lookup_transform(MarkerObject, Identifier, '/map', T, (Translation,Orientation)).
@@ -362,7 +362,7 @@ marker_initialize_object(Identifier,MarkerObject) :-
     mng_designator_timestamp(Identifier, T),
     mng_designator_location(Identifier, LocList),
     create_timepoint(T, Timepoint),
-    create_pose(LocList, Loc),
+    create_pose(LocList, Loc), % FIXME: won't work
     add_object_as_semantic_instance(Identifier, Loc, Timepoint, Instance),
     marker_initialize_object(Instance,MarkerObject)
   )),

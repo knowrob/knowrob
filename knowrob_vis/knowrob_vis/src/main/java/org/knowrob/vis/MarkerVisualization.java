@@ -1400,7 +1400,7 @@ public class MarkerVisualization extends AbstractNodeMain {
 
 		try {
 			// read object pose
-			String query = "object_pose_at_time('"+ identifier + "', '"+ timepoint + "', [X,Y,Z], [QW,QX,QY,QZ])";
+			String query = "object_pose_at_time('"+ identifier + "', '"+ timepoint + "', pose([X,Y,Z], [QW,QX,QY,QZ]))";
 			//log.info(query);
 			HashMap<String, Vector<String>> res = PrologInterface.executeQuery(query);
 

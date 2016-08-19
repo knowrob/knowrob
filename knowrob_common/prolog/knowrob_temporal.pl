@@ -88,9 +88,9 @@
 
 % define holds as meta-predicate and allow the definitions
 % to be in different source files
-:- meta_predicate holds(0, ?, ?),
+:- meta_predicate holds(0, ?, ?, ?, ?),
                   occurs(0, ?, ?).
-:- multifile holds/2,
+:- multifile holds/4,
              occurs/2.
 
 %% holds(+Term, ?T)
@@ -215,13 +215,14 @@ fluent_assert(S, P, O, I) :-
   rdfs_individual_of(I, knowrob:'TimeInterval'),
   % Create temporal parts
   rdf_instance_from_class(knowrob:'TemporalPart', SubjectPart),
-  rdf_assert(SubjectPart, knowrob:'temporalPartOf', S),
+  rdf_assert(S, knowrob:'temporalParts', SubjectPart),
   rdf_assert(SubjectPart, knowrob:'temporalProperty', P),
   rdf_assert(SubjectPart, knowrob:'temporalExtend', I),
   (  rdf_has(P, rdf:type, owl:'ObjectProperty')
   ->  (
+      % TODO(daniel) some concepts like poses don't need temporal parts
       rdf_instance_from_class(knowrob:'TemporalPart', ObjectPart),
-      rdf_assert(ObjectPart, knowrob:'temporalPartOf', O),
+      rdf_assert(O, knowrob:'temporalParts', ObjectPart),
       rdf_assert(ObjectPart, knowrob:'temporalExtend', I),
       rdf_assert(SubjectPart, P, ObjectPart)
       )
@@ -235,7 +236,7 @@ fluent_assert_end(S, P) :-
 fluent_assert_end(S, P, Time) :-
   number(Time),
   forall((
-    rdf_has(SubjectPart, knowrob:'temporalPartOf', S),
+    rdf_has(S, knowrob:'temporalParts',SubjectPart),
     rdf_has(SubjectPart, P, _)
   ), (
     rdf_has(SubjectPart, knowrob:'temporalExtend', I),
@@ -255,7 +256,7 @@ fluent_property(TemporalPart, PropertyIri) :-
 fluent_has(S, P, O) :- fluent_has(S, P, O, _).
 
 fluent_has(S, P, O, I) :-
-  owl_has(S, knowrob:hasTemporalPart, TemporalPart),
+  owl_has(S, knowrob:'temporalParts', TemporalPart),
   fluent_has(TemporalPart, P, O, I).
 
 fluent_has(S, P, O, I) :-
@@ -265,7 +266,7 @@ fluent_has(S, P, O, I) :-
   rdf_has(S, knowrob:temporalProperty, P),
   rdf_has(S, P, S_O),
   (( rdfs_individual_of(S_O, knowrob:'TemporalPart') )
-  -> once(owl_has(S_O, knowrob:temporalPartOf, O))
+  -> once(owl_has(O, knowrob:temporalParts, S_O))
   ;  O = S_O ).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
