@@ -82,10 +82,10 @@ test(interval_during10, [fail]) :-
 
 fluent_begin(S,P,O,Time) :-
   fluent_assert(S, P, O, Time),
-  owl_has(S, knowrob:hasTemporalPart, TemporalPart0),
+  owl_has(S, knowrob:temporalParts, TemporalPart0),
   (  rdf_has(P, rdf:type, owl:'ObjectProperty')
   -> (
-      owl_has(O, knowrob:hasTemporalPart, TemporalPart1),
+      owl_has(O, knowrob:temporalParts, TemporalPart1),
       rdf_has(TemporalPart0, P, TemporalPart1)
   ) ; (
       rdf_has(TemporalPart0, P, O)
