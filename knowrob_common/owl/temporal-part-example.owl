@@ -58,6 +58,8 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/temporal-part-example.owl#DinnerPlate_fdigh245">
         <rdf:type rdf:resource="&knowrob;DinnerPlate"/>
+        <knowrob:temporalParts rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#TemporalPart_D49875h4"/>
+        <knowrob:temporalParts rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#TemporalPart_SFUH235zgds"/>
     </owl:NamedIndividual>
     
 
@@ -66,6 +68,7 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/temporal-part-example.owl#Drawer_bsdgwe8trg">
         <rdf:type rdf:resource="&knowrob;Drawer"/>
+        <knowrob:temporalParts rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#TemporalPart_SFiuh454"/>
     </owl:NamedIndividual>
     
 
@@ -75,7 +78,6 @@
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/temporal-part-example.owl#TemporalPart_D49875h4">
         <rdf:type rdf:resource="&knowrob;TemporalPart"/>
         <knowrob:volumeOfObject rdf:datatype="&xsd;float">10.0</knowrob:volumeOfObject>
-        <knowrob:temporalPartOf rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#DinnerPlate_fdigh245"/>
         <knowrob:insideOf rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#TemporalPart_SFiuh454"/>
         <knowrob:temporalExtend rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#TimeInterval_fdgu4389ds"/>
         <knowrob:temporalProperty rdf:resource="&knowrob;volumeOfObject"/>
@@ -89,7 +91,6 @@
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/temporal-part-example.owl#TemporalPart_SFUH235zgds">
         <rdf:type rdf:resource="&knowrob;TemporalPart"/>
         <knowrob:volumeOfObject rdf:datatype="&xsd;float">33.0</knowrob:volumeOfObject>
-        <knowrob:temporalPartOf rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#DinnerPlate_fdigh245"/>
         <knowrob:temporalExtend rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#TimeInterval_SDPFOMKe4ru5"/>
         <knowrob:temporalProperty rdf:resource="&knowrob;volumeOfObject"/>
     </owl:NamedIndividual>
@@ -100,7 +101,6 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/temporal-part-example.owl#TemporalPart_SFiuh454">
         <rdf:type rdf:resource="&knowrob;TemporalPart"/>
-        <knowrob:temporalPartOf rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#Drawer_bsdgwe8trg"/>
         <knowrob:temporalExtend rdf:resource="http://knowrob.org/kb/temporal-part-example.owl#TimeInterval_fdgu4389ds"/>
     </owl:NamedIndividual>
     
