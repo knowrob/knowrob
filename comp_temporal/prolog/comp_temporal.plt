@@ -108,7 +108,7 @@ test(query_event_after) :-
   findall(Evt, entity(Evt, [an, event, [comp_temporal:after, [a, timepoint, 1377777004.0]]]), Evts),
   member('http://knowrob.org/kb/test_comp_temporal.owl#Short3', Evts),
   member('http://knowrob.org/kb/test_comp_temporal.owl#Short4', Evts),
-  not( member('http://knowrob.org/kb/test_comp_temporal.owl#Short2', Evts) ).
+  not( member('http://knowrob.org/kb/test_comp_temporal.owl#Short2', Evts) ), !.
 
 
 :- end_tests(comp_temporal).
