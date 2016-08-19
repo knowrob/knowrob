@@ -43,6 +43,14 @@
 %  For example, `camelcase(hello_world, 'HelloWorld')`. Works in both
 %  directions.
 camelcase(Underscore,CamelCase) :-
+    compound(Underscore),
+    term_to_atom(Underscore, Underscore_),
+    camelcase(Underscore_,CamelCase), !.
+camelcase(Underscore,CamelCase) :-
+    compound(CamelCase),
+    term_to_atom(CamelCase, CamelCase_),
+    camelcase(Underscore,CamelCase_), !.
+camelcase(Underscore,CamelCase) :-
     when((ground(U0);ground(Underscore)),prepend_underscore(Underscore, U0)),
     delay(atom_codes(U0,U0Codes)),
     delay(atom_codes(CamelCase,CCodes)),
@@ -62,6 +70,14 @@ camelcase_([Lower|Lowers], [Lower|Uppers]) :-
 %
 %  For example, `lower_camelcase(hello_world, helloWorld)`. Works in both
 %  directions.
+lower_camelcase(Underscore,CamelCase) :-
+    compound(Underscore),
+    term_to_atom(Underscore, Underscore_),
+    lower_camelcase(Underscore_,CamelCase), !.
+lower_camelcase(Underscore,CamelCase) :-
+    compound(CamelCase),
+    term_to_atom(CamelCase, CamelCase_),
+    lower_camelcase(Underscore,CamelCase_), !.
 lower_camelcase(Underscore,LowerCamelCase) :-
     (  nonvar(Underscore)
     -> (
@@ -85,7 +101,7 @@ upper_lower(0'-,0'-) :- !.
 upper_lower(U,L) :-
     U #>= 0'A, U #=< 0'Z,
     L #>= 0'a, L #=< 0'z,
-    L #= U + 32.
+    L #= U + 32, !.
 
 %% prepend_underscore(?Without:atom, ?With:atom) is semidet.
 %
