@@ -21,11 +21,8 @@
     <owl:Ontology rdf:about="http://knowrob.org/kb/test_comp_spatial.owl">
         <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
     </owl:Ontology>
-
-
-    <owl:NamedIndividual rdf:about="&test;timepoint_1377777000">
-        <rdf:type rdf:resource="&knowrob;TimePoint"/>
-    </owl:NamedIndividual>
+    
+    
 
 
     <!-- Cupboard of 1x1x1m with its center at position (1,1,0.5) -->
@@ -35,82 +32,32 @@
         <knowrob:heightOfObject rdf:datatype="&xsd;double">1.0</knowrob:heightOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;double">1.0</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;double">1.0</knowrob:widthOfObject>
+        <knowrob:pose rdf:resource="&test;Pose_cupboard1"/>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="&test;Pose_cupboard1">
+        <rdf:type rdf:resource="&knowrob;Pose"/>
+        <knowrob:quaternion rdf:datatype="&xsd;string">1.0 0.0 0.0 0.0</knowrob:quaternion>
+        <knowrob:translation rdf:datatype="&xsd;string">1.0 1.0 0.5</knowrob:translation>
+        <knowrob:relativeTo rdf:resource="&knowrob;MapFrame"/>
     </owl:NamedIndividual>
 
-    <owl:NamedIndividual rdf:about="&test;VisualPerception_cupboard1">
-        <rdf:type rdf:resource="&knowrob;VisualPerception"/>
-        <knowrob:startTime rdf:resource="&test;timepoint_1377777000"/>
-        <knowrob:objectActedOn rdf:resource="&test;cupboard1"/>
-        <knowrob:eventOccursAt rdf:resource="&test;RotMat3D_cupboard1"/>
-    </owl:NamedIndividual>
-
-    <owl:NamedIndividual rdf:about="&test;RotMat3D_cupboard1">
-        <rdf:type rdf:resource="&test;RotationMatrix3D"/>
-
-        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
-        <knowrob:m01 rdf:datatype="&xsd;double">0.0</knowrob:m01>
-        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
-        <knowrob:m03 rdf:datatype="&xsd;double">1.0</knowrob:m03>
-
-        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
-        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
-        <knowrob:m12 rdf:datatype="&xsd;double">0.0</knowrob:m12>
-        <knowrob:m13 rdf:datatype="&xsd;double">1.0</knowrob:m13>
-
-        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
-        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
-        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
-        <knowrob:m23 rdf:datatype="&xsd;double">0.5</knowrob:m23>
-
-        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
-        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
-        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
-        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
-    </owl:NamedIndividual>
-
-
-
-
-
+    
+    
     <owl:NamedIndividual rdf:about="&test;cup1">
         <rdf:type rdf:resource="&knowrob;Cup"/>
         <knowrob:heightOfObject rdf:datatype="&xsd;double">0.1</knowrob:heightOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;double">0.1</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;double">0.1</knowrob:widthOfObject>
+        <knowrob:pose rdf:resource="&test;Pose_cup1"/>
     </owl:NamedIndividual>
-
-    <owl:NamedIndividual rdf:about="&test;VisualPerception_cup1">
-        <rdf:type rdf:resource="&knowrob;VisualPerception"/>
-        <knowrob:startTime rdf:resource="&test;timepoint_1377777000"/>
-        <knowrob:objectActedOn rdf:resource="&test;cup1"/>
-        <knowrob:eventOccursAt rdf:resource="&test;RotMat3D_cup1"/>
+    
+    <owl:NamedIndividual rdf:about="&test;Pose_cup1">
+        <rdf:type rdf:resource="&knowrob;Pose"/>
+        <knowrob:quaternion rdf:datatype="&xsd;string">1.0 0.0 0.0 0.0</knowrob:quaternion>
+        <knowrob:translation rdf:datatype="&xsd;string">1.25 0.75 1.05</knowrob:translation>
+        <knowrob:relativeTo rdf:resource="&knowrob;MapFrame"/>
     </owl:NamedIndividual>
-
-    <owl:NamedIndividual rdf:about="&test;RotMat3D_cup1">
-        <rdf:type rdf:resource="&test;RotationMatrix3D"/>
-
-        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
-        <knowrob:m01 rdf:datatype="&xsd;double">0.0</knowrob:m01>
-        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
-        <knowrob:m03 rdf:datatype="&xsd;double">1.25</knowrob:m03>
-
-        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
-        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
-        <knowrob:m12 rdf:datatype="&xsd;double">0.0</knowrob:m12>
-        <knowrob:m13 rdf:datatype="&xsd;double">0.75</knowrob:m13>
-
-        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
-        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
-        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
-        <knowrob:m23 rdf:datatype="&xsd;double">1.05</knowrob:m23>
-
-        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
-        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
-        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
-        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
-    </owl:NamedIndividual>
-
-
 
 
 
@@ -119,41 +66,16 @@
         <knowrob:heightOfObject rdf:datatype="&xsd;double">0.1</knowrob:heightOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;double">0.1</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;double">0.1</knowrob:widthOfObject>
+        <knowrob:pose rdf:resource="&test;Pose_cup2"/>
     </owl:NamedIndividual>
-
-    <owl:NamedIndividual rdf:about="&test;VisualPerception_cup2">
-        <rdf:type rdf:resource="&knowrob;VisualPerception"/>
-        <knowrob:startTime rdf:resource="&test;timepoint_1377777000"/>
-        <knowrob:objectActedOn rdf:resource="&test;cup2"/>
-        <knowrob:eventOccursAt rdf:resource="&test;RotMat3D_cup2"/>
+    
+    <owl:NamedIndividual rdf:about="&test;Pose_cup2">
+        <rdf:type rdf:resource="&knowrob;Pose"/>
+        <knowrob:quaternion rdf:datatype="&xsd;string">1.0 0.0 0.0 0.0</knowrob:quaternion>
+        <knowrob:translation rdf:datatype="&xsd;string">1.0 1.0 1.05</knowrob:translation>
+        <knowrob:relativeTo rdf:resource="&knowrob;MapFrame"/>
     </owl:NamedIndividual>
-
-    <owl:NamedIndividual rdf:about="&test;RotMat3D_cup2">
-        <rdf:type rdf:resource="&test;RotationMatrix3D"/>
-
-        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
-        <knowrob:m01 rdf:datatype="&xsd;double">0.0</knowrob:m01>
-        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
-        <knowrob:m03 rdf:datatype="&xsd;double">1.0</knowrob:m03>
-
-        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
-        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
-        <knowrob:m12 rdf:datatype="&xsd;double">0.0</knowrob:m12>
-        <knowrob:m13 rdf:datatype="&xsd;double">1.0</knowrob:m13>
-
-        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
-        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
-        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
-        <knowrob:m23 rdf:datatype="&xsd;double">1.05</knowrob:m23>
-
-        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
-        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
-        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
-        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
-    </owl:NamedIndividual>
-
-
-
+    
 
 
     <owl:NamedIndividual rdf:about="&test;cup3">
@@ -161,40 +83,14 @@
         <knowrob:heightOfObject rdf:datatype="&xsd;double">0.1</knowrob:heightOfObject>
         <knowrob:depthOfObject rdf:datatype="&xsd;double">0.1</knowrob:depthOfObject>
         <knowrob:widthOfObject rdf:datatype="&xsd;double">0.1</knowrob:widthOfObject>
+        <knowrob:pose rdf:resource="&test;Pose_cup3"/>
     </owl:NamedIndividual>
-
-    <owl:NamedIndividual rdf:about="&test;VisualPerception_cup3">
-        <rdf:type rdf:resource="&knowrob;VisualPerception"/>
-        <knowrob:startTime rdf:resource="&test;timepoint_1377777000"/>
-        <knowrob:objectActedOn rdf:resource="&test;cup3"/>
-        <knowrob:eventOccursAt rdf:resource="&test;RotMat3D_cup3"/>
+    
+    <owl:NamedIndividual rdf:about="&test;Pose_cup3">
+        <rdf:type rdf:resource="&knowrob;Pose"/>
+        <knowrob:quaternion rdf:datatype="&xsd;string">1.0 0.0 0.0 0.0</knowrob:quaternion>
+        <knowrob:translation rdf:datatype="&xsd;string">1.0 1.0 0.5</knowrob:translation>
+        <knowrob:relativeTo rdf:resource="&knowrob;MapFrame"/>
     </owl:NamedIndividual>
-
-    <owl:NamedIndividual rdf:about="&test;RotMat3D_cup3">
-        <rdf:type rdf:resource="&test;RotationMatrix3D"/>
-
-        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
-        <knowrob:m01 rdf:datatype="&xsd;double">0.0</knowrob:m01>
-        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
-        <knowrob:m03 rdf:datatype="&xsd;double">1.0</knowrob:m03>
-
-        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
-        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
-        <knowrob:m12 rdf:datatype="&xsd;double">0.0</knowrob:m12>
-        <knowrob:m13 rdf:datatype="&xsd;double">1.0</knowrob:m13>
-
-        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
-        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
-        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
-        <knowrob:m23 rdf:datatype="&xsd;double">0.5</knowrob:m23>
-
-        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
-        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
-        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
-        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
-    </owl:NamedIndividual>
-
-
-
 
 </rdf:RDF>
