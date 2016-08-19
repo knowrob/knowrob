@@ -34,7 +34,7 @@
 :- rdf_db:rdf_register_ns(blocksworld,  'http://knowrob.org/kb/blocksworld.owl#', [keep(true)]).
 
 red_block_ontop_blue_block :-
-  holds( knowrob:'on-Physical'(blocksworld:'BlockRed_test0', blocksworld:'BlockBlue_test0') ), !.
+  holds( blocksworld:ontop(blocksworld:'BlockRed_test0', blocksworld:'BlockBlue_test0') ), !.
 red_block_in_hand :-
   holds( blocksworld:graspedBy(blocksworld:'BlockRed_test0', blocksworld:'Hand_test0') ), !.
 
