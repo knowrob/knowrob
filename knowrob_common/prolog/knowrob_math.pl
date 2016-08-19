@@ -104,7 +104,7 @@ eval_owl_term(OWL, Val) :-
 
 parse_vector([X|Y], [X|Y]).
 parse_vector(In, Numbers) :-
-  parse_vector(In, Numbers, ',') ; parse_vector(In, Numbers, ' ').
+  parse_vector(In, Numbers, ' ').
 parse_vector(In, Numbers, Delimiter) :-
   atom(In),
   atomic_list_concat(Atoms, Delimiter, In),
