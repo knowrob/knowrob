@@ -67,7 +67,8 @@
       path_split/2,
       mkdir/1,
       matrix_rotation/2,
-      matrix_translation/2
+      matrix_translation/2,
+      matrix/3
 ]).
 
 current_time(T) :-
@@ -540,3 +541,9 @@ matrix_translation(Matrix, [X,Y,Z]) :-
   nth0( 3, Matrix, X),
   nth0( 7, Matrix, Y),
   nth0(11, Matrix, Z).
+
+matrix(Translation, Orientation, Matrix) :-
+  jpl_list_to_array(Translation, TranslationArr),
+  jpl_list_to_array(Orientation, OrientationArr),
+  jpl_call('org.knowrob.utils.MathUtil', 'matrix', [TranslationArr,OrientationArr], MatrixArr),
+  jpl_array_to_list(MatrixArr, Matrix).
