@@ -39,6 +39,7 @@
       object_pose/3,
       object_color/2,
       object_dimensions/4,
+      object_distance/3,
       class_dimensions/4,
       object_assert_dimensions/4,
       object_assert_color/2,
@@ -118,6 +119,7 @@
     object_pose(+,-,-),
     object_color(r, ?),
     object_dimensions(r, ?, ?, ?),
+    object_distance(r,r,-),
     class_dimensions(r, ?, ?, ?),
     object_assert_dimensions(r, +, +, +),
     object_assert_color(r, +),
@@ -365,6 +367,17 @@ object_assert_color(ObjInstance, [R,G,B,A]) :-
 object_assert_color(ObjInstance, Col) :-
    atom(Col),
    rdf_assert(ObjInstance, knowrob:'mainColorOfObject',literal(type(xsd:string, Col))).
+
+
+% distance in 3d
+object_distance(A,B,D):-
+  current_object_pose(A, [AX,AY,AZ,_,_,_,_]),
+  current_object_pose(B, [BX,BY,BZ,_,_,_,_]),
+  DX is AX - BX,
+  DY is AY - BY,
+  DZ is AZ - BZ,
+  D is sqrt( ((DX*DX) + (DY*DY)) + (DZ*DZ)).
+
 
 %% instantiate_at_position(+ObjClassDef, +PoseList, -ObjInst) is det.
 %
