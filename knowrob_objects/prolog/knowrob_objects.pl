@@ -310,7 +310,6 @@ object_dimensions(Obj, Depth, Width, Height) :-
   ((number(Height_), Height=Height_); atom_number(Height_, Height)),!.
 
 object_dimensions(Obj, Depth, Width, Height) :-
-  % FIXME: srdl2comp not part of knowrob core
   owl_has(Obj, srdl2comp:'box_size', literal(type(_, ScaleVector))),
   parse_vector(ScaleVector, [Depth, Width, Height]).
 
@@ -504,7 +503,7 @@ update_instance_from_class_def(ObjClassDef, ObjInst) :-
 
     % collect non-fulfilled object properties
     findall([Inst, P, Oinst], (find_missing_objprops(Inst, P, Oinst)), ObjPs),
-    sort(ObjPs, ObjPsSorted),print(ObjPsSorted),
+    sort(ObjPs, ObjPsSorted),
 
     findall(O,(member([Cinst,P,O], ObjPsSorted), % assert missing properties
                rdf_assert(Cinst, P, O)), _ObjRestrs),
@@ -513,6 +512,7 @@ update_instance_from_class_def(ObjClassDef, ObjInst) :-
     findall([Inst, P, O], (find_missing_dataprops(Inst, P, O)), DataPs),
     sort(DataPs, DataPsSorted),
 
+    % TODO: use fluent here?
     findall(O, (member([Cinst, P,O], DataPsSorted),
                 rdf_assert(Cinst, P, O)), _Os),
 
@@ -1100,7 +1100,6 @@ latest_inferred_object_types(ObjectTypes) :-
 % @param Time       Time point of interest. If unbound, all detections of the object are returned.
 % @param Detection  Detections of the object that are assumed to be valid at time Time
 %
-% @deprecated
 object_detection(Object, Time, Detection) :-
 
     findall([D_i,Object], (rdf_has(D_i, knowrob:objectActedOn, Object),
@@ -1153,6 +1152,7 @@ comp_orientation(Object, Pose) :-
 % @param Long   The longer time span (e.g. detection of an object)
 % @param Short  The shorter time span (e.g. detection of an object)
 %
+% FIXME(daniel) should not be part of this module
 temporally_subsumes(Long, Short) :-
 
       once(detection_starttime(Short, ShortSt)),

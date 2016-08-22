@@ -721,15 +721,3 @@ rdf_class_compare(Delta, Class0, Class1) :-
   -> Delta = '>'
   ; throw(error(not_comparable,_)).
 
-
-
-
-% unsused?
-rdfs_computable_literal_value(Literal, _) :-
-  var(Literal), !,
-  throw(error(instantiation_error, _)).
-rdfs_computable_literal_value(Literal, Value) :-
-  nonvar(Literal),
-  (Literal=literal(type(_,Value))
-  -> true
-  ; Value=Literal).

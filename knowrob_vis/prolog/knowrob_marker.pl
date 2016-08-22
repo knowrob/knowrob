@@ -165,9 +165,11 @@ marker_lookup_transform(MarkerObject, Identifier, T, (Translation,Orientation)) 
 marker_lookup_transform(_, Identifier, T, (Translation,Orientation)) :-
   object_pose_at_time(Identifier, T, pose(Translation, Orientation)).
 
+% TODO: remove case, should be covered by object_pose_at_time
 marker_lookup_transform(MarkerObject, Identifier, T, (Translation,Orientation)) :-
   marker_lookup_transform(MarkerObject, Identifier, '/map', T, (Translation,Orientation)).
 
+% TODO: remove case, should be covered by object_pose_at_time
 marker_lookup_transform(MarkerObject, Identifier, TargetFrame, T, (Translation,Orientation)) :-
   marker_tf_frame(MarkerObject, Identifier, TfFrame),
   not( atom_prefix(TfFrame, 'http') ),
@@ -795,6 +797,7 @@ marker_update(MarkerTerm, time(T,Arg)) :-
 % @param MarkerObject The MarkerObject instance
 % @param T A time atom (e.g., 'timepoint_1396512604'), time number (e.g., 1396512604) or an interval (e.g., interval(1396512604, 1396512608, 0.5)).
 %
+% TODO: update all visual properties (using fluents)
 marker_update(object_without_children(Identifier), MarkerObject, T) :-
   ignore(once((
     marker_estimate_transform(MarkerObject,Identifier,T,(Translation,Orientation)),
