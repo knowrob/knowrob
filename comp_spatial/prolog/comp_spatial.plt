@@ -80,13 +80,13 @@ test(on_physical3) :-
 
   
 test(aboveOf1) :-
-  rdf_triple(knowrob:'aboveOf', test_sp:'cup1', A),
+  rdf_triple(knowrob:'above-Generally', test_sp:'cup1', A),
   rdf_equal(A, test_sp:'cupboard1'),!.
 test(aboveOf2) :-
-  rdf_triple(knowrob:'aboveOf', A, test_sp:'cupboard1'),
+  rdf_triple(knowrob:'above-Generally', A, test_sp:'cupboard1'),
   rdf_equal(A, test_sp:'cup1'),!.
 test(aboveOf3) :-
-  rdf_triple(knowrob:'aboveOf', test_sp:'cup1', test_sp:'cupboard1'),!.
+  rdf_triple(knowrob:'above-Generally', test_sp:'cup1', test_sp:'cupboard1'),!.
 
 
   
@@ -94,10 +94,10 @@ test(aboveOf3) :-
 %   rdf_triple(knowrob:'belowOf', test_sp:'cupboard1', A),
 %   rdf_equal(A, test_sp:'cup1'),!.
 test(belowOf2) :-
-  rdf_triple(knowrob:'belowOf', A, test_sp:'cup1'),
+  rdf_triple(knowrob:'below-Generally', A, test_sp:'cup1'),
   rdf_equal(A, test_sp:'cupboard1'),!.
 test(belowOf3) :-
-  rdf_triple(knowrob:'belowOf', test_sp:'cupboard1', test_sp:'cup1'),!.
+  rdf_triple(knowrob:'below-Generally', test_sp:'cupboard1', test_sp:'cup1'),!.
 
 
   
@@ -131,6 +131,9 @@ test(toTheSideOf2) :-
   rdf_equal(A, test_sp:'cup1'),!.
 test(toTheSideOf3) :-
   rdf_triple(knowrob:'toTheSideOf', test_sp:'cup1', test_sp:'cup2'),!.
+test(toTheSideOf4) :-
+  entity(A, [an, object, [to_the_side_of, [an, object, [name, test_sp:'cup2']]]]),
+  rdf_equal(A, test_sp:'cup1'),!.
 
 
 :- end_tests(comp_spatial).

@@ -39,14 +39,10 @@
       object_pose/3,
       object_color/2,
       object_dimensions/4,
+      object_distance/3,
       class_dimensions/4,
       object_assert_dimensions/4,
       object_assert_color/2,
-      matrix_rotation/2,
-      matrix_translation/2,
-      rotmat_to_list/2,
-      position_to_list/2,
-      quaternion_to_list/2,
       create_joint_information/9,
       update_joint_information/7,
       read_joint_information/9,
@@ -119,15 +115,14 @@
     current_object_pose(r,-),
     current_object_pose(r,r,-),
     object_pose_at_time(r,r,?),
+    object_pose_at_time(r,r,?,?),
     object_pose(+,-,-),
     object_color(r, ?),
     object_dimensions(r, ?, ?, ?),
+    object_distance(r,r,-),
     class_dimensions(r, ?, ?, ?),
     object_assert_dimensions(r, +, +, +),
     object_assert_color(r, +),
-    matrix_rotation(+,-),
-    matrix_translation(+,-),
-    rotmat_to_list(r,-),
     comp_orientation(r, r),
     instantiate_at_position(r,+,r),
     transform_relative_to(r,r,-),
@@ -207,8 +202,9 @@ storagePlaceForBecause(St, ObjType, ObjT) :-
 % @param Obj       Instance of a subclass of SpatialThing-Localized
 % @param PoseList  Row-based representation of the object by translation and quaternion list[7]
 % 
-current_object_pose(Obj, [TX,TY,TZ,QX,QY,QZ,QW]) :-
-  object_pose_at_time(Obj,_,[TX, TY, TZ],[QW,QX,QY,QZ]),!.
+current_object_pose(Obj, [TX,TY,TZ,QW,QX,QY,QZ]) :-
+  current_time(T),
+  object_pose_at_time(Obj, T, pose([TX, TY, TZ], [QW,QX,QY,QZ])),!.
 
 %% current_object_pose(+ObjInstance, -PoseList) is nondet.
 %
@@ -218,20 +214,8 @@ current_object_pose(Obj, [TX,TY,TZ,QX,QY,QZ,QW]) :-
 % @param PoseList  Row-based representation of the object's 4x4 pose matrix as list[16]
 % 
 current_object_pose(Obj, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]) :-
-
-  rdf_triple('http://knowrob.org/kb/knowrob.owl#orientation',Obj,Pose),!,
-  rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]).
-
-% Quaternion and position
-object_pose(Pose, [X,Y,Z], [QW,QX,QY,QZ]) :-
-  position_to_list(Pose, [X,Y,Z]),
-  quaternion_to_list(Pose, [QW,QX,QY,QZ]).
-
-% TransformationMatrix
-object_pose(Pose, [X,Y,Z], [QW,QX,QY,QZ]) :-
-  rotmat_to_list(Pose, Matrix),
-  matrix_rotation(Matrix, [QW,QX,QY,QZ]),
-  matrix_translation(Matrix, [X,Y,Z]).
+  current_time(T),
+  object_pose_at_time(Obj, T, mat([M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33])),!.
 
 %% object_pose_at_time(+ObjInstance, +Time, -Position, -Quaternion) is nondet.
 %
@@ -242,86 +226,72 @@ object_pose(Pose, [X,Y,Z], [QW,QX,QY,QZ]) :-
 % @param Position    list[3] that represents the position of the object
 % @param Quaternion  list[4] that represents the rotation of the object
 % 
-object_pose_at_time(Obj, Time, [X,Y,Z], [QW,QX,QY,QZ]) :-
-  object_detection(Obj, Time, Detection),
-  rdf_triple(knowrob:eventOccursAt, Detection, Pose),!,
+object_pose_at_time(Obj, Time, Pose) :-
+  object_pose_at_time(Obj, Time, Pose, _).
+
+object_pose_at_time(Obj, Time, pose([X,Y,Z], [QW,QX,QY,QZ]), Interval) :-
+  !, object_pose_holds(Obj, Time, Pose, Interval),
   object_pose(Pose, [X,Y,Z], [QW,QX,QY,QZ]).
 
-%% object_pose_at_time(+ObjInstance, +Time, -PoseList) is nondet.
-%
-% Get the pose of an object based on the latest perception before Time
-%
-% @param Obj       Instance of a subclass of SpatialThing-Localized
-% @param Time      Instance of a TimePoint
-% @param PoseList  Row-based representation of the object's 4x4 pose matrix as list[16]
-% 
-object_pose_at_time(Obj, Time, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]) :-
+object_pose_at_time(Obj, Time, mat(Matrix), Interval) :-
+  !, object_pose_holds(Obj, Time, Pose, Interval),
+  object_pose(Pose, Matrix).
 
+object_pose_at_time(Obj, Time, Pose, Interval) :-
+  object_pose_holds(Obj, Time, Pose, Interval).
+
+
+object_pose_holds(Pose, _, Pose, [0.0]) :-
+  nonvar(Pose), rdfs_individual_of(Pose, knowrob:'Pose'), !.
+
+object_pose_holds(Pose, _, Pose, [0.0]) :-
+  nonvar(Pose), rdfs_individual_of(Pose, knowrob:'Matrix'), !.
+
+object_pose_holds(Obj, Time, Pose, Interval) :-
+  ( nonvar(Obj)
+  -> (
+    holds(Obj, 'http://knowrob.org/kb/knowrob.owl#pose', Pose, Interval),
+    interval_during(Time, Interval), ! % TODO: use intersection test instead of during
+  );(
+    holds(Obj, 'http://knowrob.org/kb/knowrob.owl#pose', Pose, Interval),
+    interval_during(Time, Interval)
+  )).
+
+object_pose_holds(Obj, Time, Pose, Interval) :-
   object_detection(Obj, Time, Detection),
-  rdf_triple(knowrob:eventOccursAt, Detection, Pose),!,
-  
-  rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]).
+  rdf_triple(knowrob:eventOccursAt, Detection, Pose),
+  rdf_has(Detection, knowrob:startTime, StartTime),
+  time_term(StartTime, Begin),
+  % query time interval of next object perception
+  (  rdf_has(Next, knowrob:previousDetectionOfObject, Detection)
+  -> (
+      rdf_has(Next, knowrob:startTime, EndTime),
+      time_term(EndTime, End),
+      Interval = [Begin,End]
+  ) ; (
+      Interval = [Begin]
+  )), !.
 
-%% position_to_list(+Pose, -PositionList) is nondet.
-%
-% Read the translation values for an instance of a transformation
-%
-% @param Pose          Instance of a subclass of Transformation
-% @param PositionList  list[3] that represents translation of an object
-% 
-position_to_list(Pose, [X,Y,Z]) :-
-  rdf_triple('http://knowrob.org/kb/knowrob.owl#translation', Pose, literal(type(_,Translation))),
-  parse_vector(Translation, [X,Y,Z]).
 
-%% quaternion_to_list(+Pose, -QuaternionList) is nondet.
-%
-% Read the rotation values for an instance of a transformation
-%
-% @param Pose          Instance of a subclass of Transformation
-% @param PositionList  list[4] that represents rotation of an object. First list element is the w component of the quaternion.
-% 
-quaternion_to_list(Pose, [QW,QX,QY,QZ]) :-
-  rdf_triple('http://knowrob.org/kb/knowrob.owl#quaternion', Pose, literal(type(_,Quaternion))),
-  parse_vector(Quaternion, [QW,QX,QY,QZ]).
+% TODO: rename to read pose? move to knowrob_owl
+% Quaternion and position
+object_pose(Pose, [X,Y,Z], [QW,QX,QY,QZ]) :-
+  position_to_list(Pose, [X,Y,Z]),
+  quaternion_to_list(Pose, [QW,QX,QY,QZ]), !.
 
-matrix_rotation(Matrix, [QW,QX,QY,QZ]) :-
-  jpl_list_to_array(Matrix, MatrixArr),
-  jpl_call('org.knowrob.utils.MathUtil', 'matrixToQuaternion', [MatrixArr], QuaternionArr),
-  jpl_array_to_list(QuaternionArr, [QW,QX,QY,QZ]).
+% TransformationMatrix
+object_pose(Pose, [X,Y,Z], [QW,QX,QY,QZ]) :-
+  rotmat_to_list(Pose, Matrix),
+  matrix_rotation(Matrix, [QW,QX,QY,QZ]),
+  matrix_translation(Matrix, [X,Y,Z]).
 
-matrix_translation(Matrix, [X,Y,Z]) :-
-  nth0( 3, Matrix, X),
-  nth0( 7, Matrix, Y),
-  nth0(11, Matrix, Z).
+object_pose(Pose, Mat) :-
+  rotmat_to_list(Pose, Mat), !.
 
-%% rotmat_to_list(+RotMatInstance, -PoseList) is nondet.
-%
-% Read the pose values for an instance of a rotation matrix
-%
-% @param Obj       Instance of a subclass of SpatialThing-Localized
-% @param PoseList  Row-based representation of the object's 4x4 pose matrix as list[16]
-% 
-rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]) :-
-
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m00',Pose,M00literal), strip_literal_type(M00literal, M00a), term_to_atom(M00, M00a),
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m01',Pose,M01literal), strip_literal_type(M01literal, M01a), term_to_atom(M01, M01a),
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m02',Pose,M02literal), strip_literal_type(M02literal, M02a), term_to_atom(M02, M02a),
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m03',Pose,M03literal), strip_literal_type(M03literal, M03a), term_to_atom(M03, M03a),
-
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m10',Pose,M10literal), strip_literal_type(M10literal, M10a), term_to_atom(M10, M10a),
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m11',Pose,M11literal), strip_literal_type(M11literal, M11a), term_to_atom(M11, M11a),
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m12',Pose,M12literal), strip_literal_type(M12literal, M12a), term_to_atom(M12, M12a),
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m13',Pose,M13literal), strip_literal_type(M13literal, M13a), term_to_atom(M13, M13a),
-
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m20',Pose,M20literal), strip_literal_type(M20literal, M20a), term_to_atom(M20, M20a),
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m21',Pose,M21literal), strip_literal_type(M21literal, M21a), term_to_atom(M21, M21a),
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m22',Pose,M22literal), strip_literal_type(M22literal, M22a), term_to_atom(M22, M22a),
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m23',Pose,M23literal), strip_literal_type(M23literal, M23a), term_to_atom(M23, M23a),
-
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m30',Pose,M30literal), strip_literal_type(M30literal, M30a), term_to_atom(M30, M30a),
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m31',Pose,M31literal), strip_literal_type(M31literal, M31a), term_to_atom(M31, M31a),
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m32',Pose,M32literal), strip_literal_type(M32literal, M32a), term_to_atom(M32, M32a),
-    rdf_triple('http://knowrob.org/kb/knowrob.owl#m33',Pose,M33literal), strip_literal_type(M33literal, M33a), term_to_atom(M33, M33a),!.
+object_pose(Pose, Mat) :-
+  position_to_list(Pose, [X,Y,Z]),
+  quaternion_to_list(Pose, [QW,QX,QY,QZ]),
+  matrix([X,Y,Z], [QW,QX,QY,QZ], Mat), !.
 
 %% object_dimensions(?Obj, ?Depth, ?Width, ?Height) is nondet.
 %
@@ -332,6 +302,7 @@ rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23
 % @param Width  Width of the bounding box (y-dimension)
 % @param Height Height of the bounding box (z-dimension)
 % 
+% FIXME: shouldn't it be W-H-D ?
 object_dimensions(Obj, Depth, Width, Height) :-
   owl_has(Obj, knowrob:'boundingBoxSize', literal(type(_, ScaleVector))),
   parse_vector(ScaleVector, [Depth, Width, Height]),!.
@@ -340,9 +311,9 @@ object_dimensions(Obj, Depth, Width, Height) :-
   owl_has(Obj, knowrob:depthOfObject,  literal(type(_, Depth_))),
   owl_has(Obj, knowrob:widthOfObject,  literal(type(_, Width_))),
   owl_has(Obj, knowrob:heightOfObject, literal(type(_, Height_))),
-  atom_number(Depth_, Depth),
-  atom_number(Width_, Width),
-  atom_number(Height_, Height),!.
+  ((number(Depth_), Depth=Depth_); atom_number(Depth_, Depth)),
+  ((number(Width_), Width=Width_); atom_number(Width_, Width)),
+  ((number(Height_), Height=Height_); atom_number(Height_, Height)),!.
 
 object_dimensions(Obj, Depth, Width, Height) :-
   owl_has(Obj, srdl2comp:'box_size', literal(type(_, ScaleVector))),
@@ -361,7 +332,7 @@ class_dimensions(Class, Depth, Width, Height) :-
   class_properties(Class, knowrob:'boundingBoxSize', literal(type(_, ScaleVector))),
   parse_vector(ScaleVector, [Depth, Width, Height]),!.
 
-%% object_assert_dimensions(+Obj, +H, +W, +D) is nondet.
+%% object_assert_dimensions(+Obj, +D, +W, +H) is nondet.
 %
 % Assert object dimension properties.
 %
@@ -370,10 +341,9 @@ class_dimensions(Class, Depth, Width, Height) :-
 % @param Width  Width of the bounding box (y-dimension)
 % @param Height Height of the bounding box (z-dimension)
 % 
-object_assert_dimensions(Obj, H, W, D) :-
-    rdf_assert(Obj,knowrob:'depthOfObject',literal(type(xsd:float, D))),
-    rdf_assert(Obj,knowrob:'widthOfObject',literal(type(xsd:float, W))),
-    rdf_assert(Obj,knowrob:'heightOfObject',literal(type(xsd:float, H))).
+object_assert_dimensions(Obj, D, W, H) :-
+  atomic_list_concat([D, W, H], ' ', V),
+  rdf_assert(Obj, knowrob:'boundingBoxSize', literal(type(xsd:string, V))).
 
 %% object_color(?Obj, ?Col) is nondet.
 %
@@ -383,7 +353,7 @@ object_assert_dimensions(Obj, H, W, D) :-
 % @param Col  Main color of the object
 % 
 object_color(Obj, Col) :-
-  rdf_has(Obj, knowrob:mainColorOfObject, literal(type(_, Col))).
+  holds(knowrob:mainColorOfObject(Obj, literal(type(_, Col)))).
 
 %% object_color(?Obj, ?Col) is nondet.
 %
@@ -402,6 +372,17 @@ object_assert_color(ObjInstance, [R,G,B,A]) :-
 object_assert_color(ObjInstance, Col) :-
    atom(Col),
    rdf_assert(ObjInstance, knowrob:'mainColorOfObject',literal(type(xsd:string, Col))).
+
+
+% distance in 3d
+object_distance(A,B,D):-
+  current_object_pose(A, [AX,AY,AZ,_,_,_,_]),
+  current_object_pose(B, [BX,BY,BZ,_,_,_,_]),
+  DX is AX - BX,
+  DY is AY - BY,
+  DZ is AZ - BZ,
+  D is sqrt( ((DX*DX) + (DY*DY)) + (DZ*DZ)).
+
 
 %% instantiate_at_position(+ObjClassDef, +PoseList, -ObjInst) is det.
 %
@@ -528,7 +509,7 @@ update_instance_from_class_def(ObjClassDef, ObjInst) :-
 
     % collect non-fulfilled object properties
     findall([Inst, P, Oinst], (find_missing_objprops(Inst, P, Oinst)), ObjPs),
-    sort(ObjPs, ObjPsSorted),print(ObjPsSorted),
+    sort(ObjPs, ObjPsSorted),
 
     findall(O,(member([Cinst,P,O], ObjPsSorted), % assert missing properties
                rdf_assert(Cinst, P, O)), _ObjRestrs),
@@ -537,6 +518,7 @@ update_instance_from_class_def(ObjClassDef, ObjInst) :-
     findall([Inst, P, O], (find_missing_dataprops(Inst, P, O)), DataPs),
     sort(DataPs, DataPsSorted),
 
+    % TODO: use fluent here?
     findall(O, (member([Cinst, P,O], DataPsSorted),
                 rdf_assert(Cinst, P, O)), _Os),
 
@@ -1123,7 +1105,7 @@ latest_inferred_object_types(ObjectTypes) :-
 % @param Object     Object instance of interest
 % @param Time       Time point of interest. If unbound, all detections of the object are returned.
 % @param Detection  Detections of the object that are assumed to be valid at time Time
-%<
+%
 object_detection(Object, Time, Detection) :-
 
     findall([D_i,Object], (rdf_has(D_i, knowrob:objectActedOn, Object),
@@ -1151,6 +1133,7 @@ object_detection(Object, Time, Detection) :-
 % @param Object      Object identifier
 % @param Pose Identifier of the pose matrix
 %
+% @deprecated
 comp_orientation(Object, Pose) :-
 
     latest_detection_of_instance(Object, LatestDetection),
@@ -1175,6 +1158,7 @@ comp_orientation(Object, Pose) :-
 % @param Long   The longer time span (e.g. detection of an object)
 % @param Short  The shorter time span (e.g. detection of an object)
 %
+% FIXME(daniel) should not be part of this module
 temporally_subsumes(Long, Short) :-
 
       once(detection_starttime(Short, ShortSt)),

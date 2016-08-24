@@ -156,18 +156,20 @@ marker_tf_frame(MarkerObject, Identifier, TfFrame) :-
   )).
   
 marker_lookup_transform(MarkerObject, Identifier, T, (Translation,Orientation)) :-
-  rdfs_individual_of(Identifier, knowrob:'CRAMDesignator'),
+  rdfs_individual_of(Identifier, knowrob:'Designator'),
   rdf_split_url(Prefix, ObjName, Identifier),
   atomic_list_concat([Prefix,'Object_',ObjName], Object),
   rdfs_individual_of(Object, knowrob:'SpatialThing-Localized'),
   marker_lookup_transform(MarkerObject, Object, T, (Translation,Orientation)).
 
 marker_lookup_transform(_, Identifier, T, (Translation,Orientation)) :-
-  object_pose_at_time(Identifier, T, Translation, Orientation).
+  object_pose_at_time(Identifier, T, pose(Translation, Orientation)).
 
+% TODO: remove case, should be covered by object_pose_at_time
 marker_lookup_transform(MarkerObject, Identifier, T, (Translation,Orientation)) :-
   marker_lookup_transform(MarkerObject, Identifier, '/map', T, (Translation,Orientation)).
 
+% TODO: remove case, should be covered by object_pose_at_time
 marker_lookup_transform(MarkerObject, Identifier, TargetFrame, T, (Translation,Orientation)) :-
   marker_tf_frame(MarkerObject, Identifier, TfFrame),
   not( atom_prefix(TfFrame, 'http') ),
@@ -176,7 +178,7 @@ marker_lookup_transform(MarkerObject, Identifier, TargetFrame, T, (Translation,O
   matrix_translation(Pose, Translation).
 
 %marker_lookup_transform(MarkerObject, Identifier, TargetFrame, T, (Translation,Orientation)) :-
-%  rdfs_individual_of(Identifier, knowrob:'CRAMDesignator'),
+%  rdfs_individual_of(Identifier, knowrob:'Designator'),
 %  mng_designator_location(Identifier, PoseMatrix),
 %  matrix_translation(PoseMatrix, Translation),
 %  matrix_rotation(PoseMatrix, Orientation).
@@ -194,7 +196,7 @@ marker_push_visually_above(Identifier, _, ([X0,Y0,Z0],R), ([X0,Y0,Z1],R)) :-
   Value > Z0, Z1 is Value.
   
 marker_push_visually_above(Identifier, T, PoseIn, PoseOut) :-
-  rdfs_individual_of(Identifier, knowrob:'CRAMDesignator'),
+  rdfs_individual_of(Identifier, knowrob:'Designator'),
   rdf_split_url(Prefix, ObjName, Identifier),
   atomic_list_concat([Prefix,'Object_',ObjName], Object),
   rdfs_individual_of(Object, knowrob:'SpatialThing-Localized'),
@@ -357,12 +359,12 @@ marker_initialize_object(Identifier,MarkerObject) :-
   ;  marker_has_visual(MarkerObject,false)
   ),
   ignore((
-    rdfs_individual_of(Identifier, knowrob:'CRAMDesignator'),
+    rdfs_individual_of(Identifier, knowrob:'Designator'),
     % TODO: use existing instance if available
     mng_designator_timestamp(Identifier, T),
     mng_designator_location(Identifier, LocList),
     create_timepoint(T, Timepoint),
-    create_pose(LocList, Loc),
+    create_pose(LocList, Loc), % FIXME: won't work
     add_object_as_semantic_instance(Identifier, Loc, Timepoint, Instance),
     marker_initialize_object(Instance,MarkerObject)
   )),
@@ -795,6 +797,7 @@ marker_update(MarkerTerm, time(T,Arg)) :-
 % @param MarkerObject The MarkerObject instance
 % @param T A time atom (e.g., 'timepoint_1396512604'), time number (e.g., 1396512604) or an interval (e.g., interval(1396512604, 1396512608, 0.5)).
 %
+% TODO: update all visual properties (using fluents)
 marker_update(object_without_children(Identifier), MarkerObject, T) :-
   ignore(once((
     marker_estimate_transform(MarkerObject,Identifier,T,(Translation,Orientation)),
@@ -868,7 +871,7 @@ marker_update(trajectory(Link), MarkerObject, T1) :-
   )).
 
 marker_update(trajectory(Link), MarkerObject, interval(T0,T1)) :-
-  marker_update(trajectory(Link), MarkerObject, (T0,T1,dt(0.5))).
+  marker_update(trajectory(Link), MarkerObject, interval(T0,T1,dt(0.5))).
 
 marker_update(trajectory(Link), MarkerObject, interval(T0,T1,Interval)) :-
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
@@ -1173,7 +1176,7 @@ marker_query(MarkerName, _, 'Marker Visualization', 'Remove this marker.', Query
   term_to_atom(QueryTerm,QueryAtom).
 
 marker_query_individual(MarkerName, individual(Individual), QueryGroup, QueryTitle, Query) :-
-  rdfs_individual_of(Individual, knowrob:'CRAMDesignator'),
+  rdfs_individual_of(Individual, knowrob:'Designator'),
   rdf_split_url(Prefix, ObjName, Individual),
   atomic_list_concat([Prefix,'Object_',ObjName], Object),
   rdfs_individual_of(Object, knowrob:'SpatialThing-Localized'),

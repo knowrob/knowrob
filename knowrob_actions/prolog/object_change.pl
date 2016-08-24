@@ -126,6 +126,7 @@ action_effects(Action, PostActors) :-
 % @param From Input of some action
 % @param To   Output created by this action
 %
+% @deprecated
 transformed_into(From, To) :-
   ( owl_has(Event, knowrob:thingIncorporated, From);
     owl_has(Event, knowrob:objectAddedTo, From);
@@ -149,6 +150,7 @@ transformed_into(From, To) :-
 % @param From Input of some action
 % @param To   Output created by this action
 %
+% @deprecated
 transformed_into_transitive(From, To) :-
   transformed_into(From, To).
 
@@ -242,6 +244,7 @@ integrate_additional_actions([A|ActSeq], ResultActSeq) :-
 % @param Inst         Generated action instance
 % @param PostActors   Created outputs
 %
+% FIXME: use new action effect projection here
 project_action_class(Action, Inst, PostActors) :-
 
   % create instance of the action

@@ -53,7 +53,7 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('rdfs_computable')).
 :- use_module(library('knowrob_objects')).
-:- use_module(library('knowrob_language')).
+:- use_module(library('knowrob_temporal')).
 
 
 :- rdf_db:rdf_register_ns(knowrob,      'http://knowrob.org/kb/knowrob.owl#',      [keep(true)]).
@@ -65,18 +65,36 @@
 % (i.e. rdf namespaces are automatically expanded)
 :-  rdf_meta
     on_Physical(r, r),
+    on_Physical_at_time(r, r, +),
     in_ContGeneric(r, r),
-    adjacent_Objects(r, r),
+    in_ContGeneric_at_time(r, r, +),
     comp_below_of(r,r),
+    comp_below_of_at_time(r,r,+),
     comp_above_of(r,r),
+    comp_above_of_at_time(r,r,+),
     comp_toTheSideOf(r, r),
+    comp_toTheSideOf_at_time(r, r,+),
     comp_toTheRightOf(r, r),
+    comp_toTheRightOf_at_time(r, r,+),
     comp_toTheLeftOf(r, r),
+    comp_toTheLeftOf_at_time(r, r,+),
     comp_inFrontOf(r, r),
+    comp_inFrontOf_at_time(r, r,+),
     comp_inCenterOf(r, r),
+    comp_inCenterOf_at_time(r, r,+),
     comp_center(r, r).
 
 
+spatially_holds_interval(S, P, O, I) :-
+  forall((
+    % For all time instants of object pose changes during I
+    (Obj=S;Obj=O),
+    object_pose_at_time(Obj, Instant, _, PoseInterval),
+    interval_start(PoseInterval, Instant),
+    interval_during(Instant, I)
+  ), (
+    call(P, S, O, Instant)
+  )).
 
 
 %% on_Physical(?Top, ?Bottom) is nondet.
@@ -90,50 +108,28 @@
 % @param Bottom Identifier of the lower Object
 %
 on_Physical(Top, Bottom) :-
-    get_timepoint(T),
-    knowrob_language:holds(on_Physical(Top, Bottom), T).
-
-
-
-%% holds(+OnPhysicalPred:compound, +T) is nondet.
-%
-% Usage: holds(on_Physical(?Top, ?Bottom), +T)
-%
-% Check if Top has been in the area of and above Bottom at time point T.
-%
-% Currently does not take the orientation into account, only the position and dimension.
-%
-% @param Top    Identifier of the upper Object
-% @param Bottom Identifier of the lower Object
-% @param T      TimePoint or Event for which the relations is supposed to hold
-%
-knowrob_language:holds(on_Physical(Top, Bottom),T) :-
-
+    get_timepoint(Instant),
+    on_Physical_at_time(Top, Bottom, Instant).
+    
+on_Physical_at_time(Top, Bottom, Instant) :-
+    rdfs_individual_of(Top, knowrob:'SpatialThing-Localized'),
     % get object center for Top
-    object_detection(Top, T, VPT),
-    rdf_triple(knowrob:eventOccursAt, VPT,    TopMatrix),
-    rdf_triple(knowrob:m03, TopMatrix, TCxx),strip_literal_type(TCxx, TCx),atom_to_term(TCx,TX,_),
-    rdf_triple(knowrob:m13, TopMatrix, TCyy),strip_literal_type(TCyy, TCy),atom_to_term(TCy,TY,_),
-    rdf_triple(knowrob:m23, TopMatrix, TCzz),strip_literal_type(TCzz, TCz),atom_to_term(TCz,TZ,_),
-
-%     rdf_triple(knowrob:heightOfObject, Top, literal(type(_,Th))),atom_to_term(Th,TH,_),
-
+    object_pose_at_time(Top, Instant, pose([TX,TY,TZ], _)),
+    
+    rdfs_individual_of(Bottom, knowrob:'SpatialThing-Localized'),
+    Top \= Bottom,
     % query for objects at center point
     objectAtPoint2D(TX,TY,Bottom),
-
     % get height of objects at center point
-    object_detection(Bottom, T, VPB),
-    rdf_triple(knowrob:eventOccursAt, VPB, BottomMatrix),
-    rdf_triple(knowrob:m23, BottomMatrix, BCzz), strip_literal_type(BCzz, BCz),atom_to_term(BCz,BZ,_),
-%     rdf_triple(knowrob:heightOfObject, Bottom, literal(type(_,Bh))),atom_to_term(Bh,BH,_),
-
-%     print('bottom height:'), print(BH),
+    object_pose_at_time(Bottom, Instant, pose([_,_,BZ], _)),
 
     % the criterion is if the difference between them is less than epsilon=5cm
-    <( BZ, TZ),
-    Top \= Bottom.
+    <( BZ, TZ).
 
-%%% knowrob_language:holds(on_Physical(Top, Bottom), T) :-
+knowrob_temporal:holds(Top, knowrob:'on-Physical', Bottom, Interval) :-
+    spatially_holds_interval(Top, on_Physical_at_time, Bottom, Interval).
+
+%%% knowrob_temporal:holds(on_Physical(Top, Bottom), T) :-
 %%%
 %%%     object_detection(Top, T, VPT),
 %%%     object_detection(Bottom, T, VPB),
@@ -176,49 +172,29 @@ knowrob_language:holds(on_Physical(Top, Bottom),T) :-
 % @param Bottom Identifier of the lower Object
 %
 comp_above_of(Top, Bottom) :-
-    get_timepoint(T),
-    knowrob_language:holds(comp_above_of(Top, Bottom), T).
+    get_timepoint(Instant),
+    comp_above_of_at_time(Top, Bottom, Instant).
 
-
-
-%% holds(+BelowOf:compound, +T) is nondet.
-%
-% Usage: holds(comp_above_of(?Top, ?Bottom), +T)
-%
-% Check if Bottom has been in the area of and below Top at time point T.
-%
-% Currently does not take the orientation into account, only the position and dimension.
-%
-% @param Top    Identifier of the upper Object
-% @param Bottom Identifier of the lower Object
-% @param T      TimePoint or Event for which the relations is supposed to hold
-%
-knowrob_language:holds(comp_above_of(Top, Bottom),T) :-
-
-
+comp_above_of_at_time(Top, Bottom, Instant) :-
+    rdfs_individual_of(Top, knowrob:'SpatialThing-Localized'),
+    
     % get object center for Top
-    object_detection(Top, T, VPT),
-    rdf_triple(knowrob:eventOccursAt, VPT,    TopMatrix),
-    rdf_triple(knowrob:m03, TopMatrix, TCxx),strip_literal_type(TCxx, TCx),atom_to_term(TCx,TX,_),
-    rdf_triple(knowrob:m13, TopMatrix, TCyy),strip_literal_type(TCyy, TCy),atom_to_term(TCy,TY,_),
-    rdf_triple(knowrob:m23, TopMatrix, TCzz),strip_literal_type(TCzz, TCz),atom_to_term(TCz,TZ,_),
-
-%     rdf_triple(knowrob:heightOfObject, Top, literal(type(_,Th))),atom_to_term(Th,TH,_),
+    object_pose_at_time(Top, Instant, pose([TX,TY,TZ], _)),
+    
+    rdfs_individual_of(Bottom, knowrob:'SpatialThing-Localized'),
+    Top \= Bottom,
 
     % query for objects at center point
     objectAtPoint2D(TX,TY,Bottom),
 
     % get height of objects at center point
-    object_detection(Bottom, T, VPB),
-    rdf_triple(knowrob:eventOccursAt, VPB, BottomMatrix),
-    rdf_triple(knowrob:m23, BottomMatrix, BCzz), strip_literal_type(BCzz, BCz),atom_to_term(BCz,BZ,_),
-%     rdf_triple(knowrob:heightOfObject, Bottom, literal(type(_,Bh))),atom_to_term(Bh,BH,_),
-
-%     print('bottom height:'), print(BH),
+    object_pose_at_time(Bottom, Instant, pose([_,_,BZ], _)),
 
     % the criterion is if the difference between them is less than epsilon=5cm
-    <( BZ, TZ),
-    Top \= Bottom.
+    <( BZ, TZ).
+
+knowrob_temporal:holds(Top, knowrob:'above-Generally', Bottom, Interval) :-
+    spatially_holds_interval(Top, comp_above_of_at_time, Bottom, Interval).
 
 
 
@@ -232,9 +208,10 @@ knowrob_language:holds(comp_above_of(Top, Bottom),T) :-
 % @param Bottom Identifier of the lower Object
 % @param Top Identifier of the upper Object
 %
-comp_below_of(Bottom, Top) :-
-    get_timepoint(T),
-    knowrob_language:holds(comp_above_of(Top, Bottom), T).
+comp_below_of(Bottom, Top) :- comp_above_of(Top, Bottom).
+
+knowrob_temporal:holds(Bottom, knowrob:'below-Generally', Top, Interval) :-
+    spatially_holds_interval(Top, comp_above_of_at_time, Bottom, Interval).
 
 
 
@@ -249,46 +226,26 @@ comp_below_of(Bottom, Top) :-
 % @param Right Identifier of the right Object
 %
 comp_toTheLeftOf(Left, Right) :-
-    get_timepoint(T),
-    knowrob_language:holds(comp_toTheLeftOf(Left, Right), T).
+    get_timepoint(Instant),
+    comp_toTheLeftOf_at_time(Left, Right, Instant).
 
-
-%% holds(+ToTheLeftOf:compound, +T) is nondet.
-%
-% Usage: holds(comp_toTheLeftOf(?Left, ?Right), +T)
-%
-% Check if Left is to the left of Right. Currently does not take the orientation
-% into account, only the position and dimension.
-%
-% @param Top    Identifier of the upper Object
-% @param Bottom Identifier of the lower Object
-% @param T      TimePoint or Event for which the relations is supposed to hold
-%
-knowrob_language:holds(comp_toTheLeftOf(Left, Right), T) :-
+comp_toTheLeftOf_at_time(Left, Right, Instant) :-
     %
     % TODO: adapt this to take rotations and object dimensions into account
     %
-
-    object_detection(Left, T, VPL),
-    object_detection(Right, T, VPR),
-
-    rdf_triple(knowrob:eventOccursAt, VPL, LeftMatrix),
-    rdf_triple(knowrob:eventOccursAt, VPR, RightMatrix),
-
-    % read the center coordinates of the left entity
-    rdf_triple(knowrob:m03, LeftMatrix, literal(type(_,LCx))),atom_to_term(LCx,LX,_),
-    rdf_triple(knowrob:m13, LeftMatrix, literal(type(_,LCy))),atom_to_term(LCy,LY,_),
-    rdf_triple(knowrob:m23, LeftMatrix, literal(type(_,LCz))),atom_to_term(LCz,LZ,_),
-
-    % read the center coordinates of the right entity
-    rdf_triple(knowrob:m03, RightMatrix, literal(type(_,RCx))),atom_to_term(RCx,RX,_),
-    rdf_triple(knowrob:m13, RightMatrix, literal(type(_,RCy))),atom_to_term(RCy,RY,_),
-    rdf_triple(knowrob:m23, RightMatrix, literal(type(_,RCz))),atom_to_term(RCz,RZ,_),
+    rdfs_individual_of(Left, knowrob:'SpatialThing-Localized'),
+    object_pose_at_time(Left, Instant, pose([LX,LY,LZ], _)),
+    
+    rdfs_individual_of(Right, knowrob:'SpatialThing-Localized'),
+    Left \= Right,
+    object_pose_at_time(Right, Instant, pose([RX,RY,RZ], _)),
 
     =<( abs( LX - RX), 0.30),  % less than 30cm y diff
     =<( RY, LY ),              % right obj has a smaller y coord than the left one (on the table)
-    =<( abs( LZ - RZ), 0.30),  % less than 30cm height diff
-    Left \= Right.
+    =<( abs( LZ - RZ), 0.30).  % less than 30cm height diff
+
+knowrob_temporal:holds(Left, knowrob:'toTheLeftOf', Right, Interval) :-
+    spatially_holds_interval(Left, comp_toTheLeftOf_at_time, Right, Interval).
 
 
 
@@ -303,25 +260,10 @@ knowrob_language:holds(comp_toTheLeftOf(Left, Right), T) :-
 % @param Left Identifier of the left Object
 % @see comp_toTheLeftOf
 %
-comp_toTheRightOf(Right, Left) :-
-    get_timepoint(T),
-    knowrob_language:holds(comp_toTheRightOf(Right, Left), T).
+comp_toTheRightOf(Right, Left) :- comp_toTheLeftOf(Left, Right).
 
-
-%% holds(+ToTheRightOf:compound, +T) is nondet.
-%
-% Usage: holds(comp_toTheRightOf(?Right,?Left), +T)
-%
-% Check if Right is to the right of Left.
-%
-% @param Right Identifier of the right Object
-% @param Left Identifier of the left Object
-% @param T      TimePoint or Event for which the relations is supposed to hold
-% @see comp_toTheLeftOf
-%
-knowrob_language:holds(comp_toTheRightOf(Right, Left), T) :-
-    knowrob_language:holds(comp_toTheLeftOf(Left, Right), T).
-
+knowrob_temporal:holds(Right, knowrob:'toTheRightOf', Left, Interval) :-
+    spatially_holds_interval(Left, comp_toTheLeftOf_at_time, Right, Interval).
 
 
 
@@ -338,26 +280,11 @@ knowrob_language:holds(comp_toTheRightOf(Right, Left), T) :-
 % @see comp_toTheRightOf
 %
 comp_toTheSideOf(A, B) :-
-    get_timepoint(T),
-    knowrob_language:holds(comp_toTheSideOf(A, B), T).
+    once(comp_toTheRightOf(A, B); comp_toTheLeftOf(A, B)).
 
-%% holds(+ToTheLeftOf:compound, +T) is nondet.
-%
-% Usage: holds(comp_toTheSideOf(?A, ?B), +T) is nondet.
-%
-% Check if A is either to the left or the right of B.
-%
-% @param A Identifier of Object A
-% @param B Identifier of Object B
-% @param T TimePoint or Event for which the relations is supposed to hold
-% @see comp_toTheLeftOf
-% @see comp_toTheRightOf
-%
-knowrob_language:holds(comp_toTheSideOf(A, B), T) :-
-    knowrob_language:holds(comp_toTheRightOf(A, B), T);
-    knowrob_language:holds(comp_toTheLeftOf(A, B), T).
-
-
+knowrob_temporal:holds(A, knowrob:'toTheSideOf', B, Interval) :-
+    once(knowrob_temporal:holds(A, knowrob:'toTheRightOf', B, Interval) ;
+         knowrob_temporal:holds(A, knowrob:'toTheLeftOf', B, Interval)).
 
 
 %% comp_inFrontOf(?Front, ?Back) is nondet.
@@ -372,39 +299,24 @@ knowrob_language:holds(comp_toTheSideOf(A, B), T) :-
 % @param Back Identifier of the back Object
 %
 comp_inFrontOf(Front, Back) :-
-    get_timepoint(T),
-    knowrob_language:holds(comp_inFrontOf(Front, Back), T).
+    get_timepoint(Instant),
+    comp_inFrontOf_at_time(Front, Back, Instant).
 
-%% holds(+InFrontOf:compound, +T) is nondet.
-%
-% Usage: holds(comp_inFrontOf(?Front, ?Back), +T)
-%
-% Check if Front is in front of Back. Currently does not take the orientation
-% into account, only the position and dimension.
-%
-% @param Front Identifier of the front Object
-% @param Back Identifier of the back Object
-% @param T TimePoint or Event for which the relations is supposed to hold
-%
-knowrob_language:holds(comp_inFrontOf(Front, Back), T) :-
+comp_inFrontOf_at_time(Front, Back, Instant) :-
     %
     % TODO: adapt this to take rotations and object dimensions into account
     %
+    rdfs_individual_of(Front, knowrob:'SpatialThing-Localized'),
+    object_pose_at_time(Front, Instant, pose([FX,_,_], _)),
+    
+    rdfs_individual_of(Back, knowrob:'SpatialThing-Localized'),
+    Front \= Back,
+    object_pose_at_time(Back, Instant, pose([BX,_,_], _)),
 
-    object_detection(Front, T, VPF),
-    object_detection(Back, T, VPB),
-
-    rdf_triple(knowrob:eventOccursAt, VPF, FrontMatrix),
-    rdf_triple(knowrob:eventOccursAt, VPB, BackMatrix),
-
-    % read the center coordinates of the front entity
-    rdf_triple(knowrob:m03, FrontMatrix, literal(type(_,FCx))),atom_to_term(FCx,FX,_),
-
-    % read the center coordinates of the back entity
-    rdf_triple(knowrob:m03, BackMatrix, literal(type(_,BCx))),atom_to_term(BCx,BX,_),
-
-    =<( BX, FX ),      % front obj has a higher x coord
-    Front \= Back.
+    =<( BX, FX ).      % front obj has a higher x coord.
+    
+knowrob_temporal:holds(Front, knowrob:'inFrontOf-Generally', Back, Interval) :-
+    spatially_holds_interval(Front, comp_inFrontOf_at_time, Back, Interval).
 
 
 
@@ -421,42 +333,23 @@ knowrob_language:holds(comp_inFrontOf(Front, Back), T) :-
 % @param Outer Identifier of the outer Object
 %
 comp_inCenterOf(Inner, Outer) :-
-    get_timepoint(T),
-    knowrob_language:holds(comp_inCenterOf(Inner, Outer), T).
+    get_timepoint(Instant),
+    comp_inCenterOf_at_time(Inner, Outer, Instant).
 
-%% holds(+InCenterOf:compound, +T) is nondet.
-%
-% Usage: holds(comp_inCenterOf(?Inner, ?Outer), +T)
-%
-% Check if Inner is in the center of OuterObj. Currently does not take the orientation
-% into account, only the position and dimension.
-%
-% @param Inner Identifier of the inner Object
-% @param Outer Identifier of the outer Object
-% @param T TimePoint or Event for which the relations is supposed to hold
-%
-knowrob_language:holds(comp_inCenterOf(Inner, Outer), T) :-
-
-    object_detection(Inner, T, VPI),
-    object_detection(Outer, T, VPO),
-
-    rdf_triple(knowrob:eventOccursAt, VPI, InnerMatrix),
-    rdf_triple(knowrob:eventOccursAt, VPO, OuterMatrix),
-
-    % read the center coordinates of the left entity
-    rdf_triple(knowrob:m03, InnerMatrix, literal(type(_,ICx))),atom_to_term(ICx,IX,_),
-    rdf_triple(knowrob:m13, InnerMatrix, literal(type(_,ICy))),atom_to_term(ICy,IY,_),
-    rdf_triple(knowrob:m23, InnerMatrix, literal(type(_,ICz))),atom_to_term(ICz,IZ,_),
-
-    % read the center coordinates of the right entity
-    rdf_triple(knowrob:m03, OuterMatrix, literal(type(_,OCx))),atom_to_term(OCx,OX,_),
-    rdf_triple(knowrob:m13, OuterMatrix, literal(type(_,OCy))),atom_to_term(OCy,OY,_),
-    rdf_triple(knowrob:m23, OuterMatrix, literal(type(_,OCz))),atom_to_term(OCz,OZ,_),
+comp_inCenterOf_at_time(Inner, Outer, Instant) :-
+    rdfs_individual_of(Inner, knowrob:'SpatialThing-Localized'),
+    object_pose_at_time(Inner, Instant, pose([IX,IY,IZ], _)),
+    
+    rdfs_individual_of(Outer, knowrob:'SpatialThing-Localized'),
+    Inner \= Outer,
+    object_pose_at_time(Outer, Instant, pose([OX,OY,OZ], _)),
 
     =<( abs( IX - OX), 0.20),  % less than 20cm x diff
     =<( abs( IY - OY), 0.20),  % less than 20cm y diff
-    =<( abs( IZ - OZ), 0.20),  % less than 20cm z diff
-    Inner \= Outer.
+    =<( abs( IZ - OZ), 0.20).  % less than 20cm z diff
+    
+knowrob_temporal:holds(Inner, knowrob:'inCenterOf', Outer, Interval) :-
+    spatially_holds_interval(Inner, comp_inCenterOf_at_time, Outer, Interval).
 
 
 %% in_ContGeneric(?InnerObj, ?OuterObj) is nondet.
@@ -471,58 +364,27 @@ knowrob_language:holds(comp_inCenterOf(Inner, Outer), T) :-
 % @param OuterObj Identifier of the outer Object
 %
 in_ContGeneric(InnerObj, OuterObj) :-
-    get_timepoint(T),
-    knowrob_language:holds(in_ContGeneric(InnerObj, OuterObj), T).
+    get_timepoint(Instant),
+    in_ContGeneric_at_time(InnerObj, OuterObj, Instant).
 
-
-%% holds(+InContained:compound, +T) is nondet.
-%
-% Usage: holds(in_ContGeneric(?InnerObj, ?OuterObj), +T)
-%
-% Check if Inner is in the center of OuterObj. Currently does not take the orientation
-% into account, only the position and dimension.
-%
-% @param InnerObj Identifier of the inner Object
-% @param OuterObj Identifier of the outer Object
-% @param T TimePoint or Event for which the relations is supposed to hold
-%
-knowrob_language:holds(in_ContGeneric(InnerObj, OuterObj), T) :-
-
-%     (var(InnerObj); var(OuterObj)),
-
-    object_detection(InnerObj, T, VPI),
-    object_detection(OuterObj, T, VPO),
-
-    rdf_triple(knowrob:eventOccursAt, VPI, InnerObjMatrix),
-    rdf_triple(knowrob:eventOccursAt, VPO, OuterObjMatrix),
-
-    % read the center coordinates of the left entity
-    rdf_triple(knowrob:m03, InnerObjMatrix, LICX),strip_literal_type(LICX,ICx),atom_to_term(ICx,IX,_),
-    rdf_triple(knowrob:m13, InnerObjMatrix, LICY),strip_literal_type(LICY,ICy),atom_to_term(ICy,IY,_),
-    rdf_triple(knowrob:m23, InnerObjMatrix, LICZ),strip_literal_type(LICZ,ICz),atom_to_term(ICz,IZ,_),
-
-    % read the center coordinates of the right entity
-    rdf_triple(knowrob:m03, OuterObjMatrix, LOCX),strip_literal_type(LOCX,OCx),atom_to_term(OCx,OX,_),
-    rdf_triple(knowrob:m13, OuterObjMatrix, LOCY),strip_literal_type(LOCY,OCy),atom_to_term(OCy,OY,_),
-    rdf_triple(knowrob:m23, OuterObjMatrix, LOCZ),strip_literal_type(LOCZ,OCz),atom_to_term(OCz,OZ,_),
-
-    % read the dimensions of the outer entity
-    rdf_triple(knowrob:widthOfObject, OuterObj, LOW),strip_literal_type(LOW,Ow),atom_to_term(Ow,OW,_),
-    rdf_triple(knowrob:heightOfObject,OuterObj, LOH),strip_literal_type(LOH,Oh),atom_to_term(Oh,OH,_),
-    rdf_triple(knowrob:depthOfObject, OuterObj, LOD),strip_literal_type(LOD,Od),atom_to_term(Od,OD,_),
-
-    % read the dimensions of the inner entity
-    rdf_triple(knowrob:widthOfObject, InnerObj, LIW),strip_literal_type(LIW,Iw),atom_to_term(Iw,IW,_),
-    rdf_triple(knowrob:heightOfObject,InnerObj, LIH),strip_literal_type(LIH,Ih),atom_to_term(Ih,IH,_),
-    rdf_triple(knowrob:depthOfObject, InnerObj, LID),strip_literal_type(LID,Id),atom_to_term(Id,ID,_),
-
+in_ContGeneric_at_time(InnerObj, OuterObj, Instant) :-
+    rdfs_individual_of(InnerObj, knowrob:'SpatialThing-Localized'),
+    object_pose_at_time(InnerObj, Instant, pose([IX,IY,IZ], _)),
+    object_dimensions(InnerObj, ID, IW, IH),
+    
+    rdfs_individual_of(OuterObj, knowrob:'SpatialThing-Localized'),
+    InnerObj \= OuterObj,
+    object_pose_at_time(OuterObj, Instant, pose([OX,OY,OZ], _)),
+    object_dimensions(OuterObj, OD, OW, OH),
+    
     % InnerObj is contained by OuterObj if (center_i+0.5*dim_i)<=(center_o+0.5*dim_o)
     % for all dimensions (x, y, z)
     >=( (IX - 0.5*ID), (OX - 0.5*OD)-0.05), =<( (IX + 0.5*ID),  (OX + 0.5*OD)+0.05 ),
     >=( (IY - 0.5*IW), (OY - 0.5*OW)-0.05 ), =<( (IY + 0.5*IW), (OY + 0.5*OW)+0.05 ),
-    >=( (IZ - 0.5*IH), (OZ - 0.5*OH)-0.05 ), =<( (IZ + 0.5*IH), (OZ + 0.5*OH)+0.05 ),
-    InnerObj \= OuterObj.
+    >=( (IZ - 0.5*IH), (OZ - 0.5*OH)-0.05 ), =<( (IZ + 0.5*IH), (OZ + 0.5*OH)+0.05 ).
 
+knowrob_temporal:holds(Inner, knowrob:'in-ContGeneric', Outer, Interval) :-
+  spatially_holds_interval(Inner, in_ContGeneric_at_time, Outer, Interval).
 
 
 
@@ -601,17 +463,12 @@ objectAtPoint2D(Point2D, Obj) :-
 objectAtPoint2D(PX,PY,Obj) :-
 
     % get information of potential objects at positon point2d (x/y)
-
-    rdf_triple(knowrob:depthOfObject, Obj, Oww), strip_literal_type(Oww, Ow),atom_to_term(Ow,OW,_),
-    rdf_triple(knowrob:widthOfObject, Obj, Odd), strip_literal_type(Odd, Od),atom_to_term(Od,OD,_),
-
-    rdf_triple(knowrob:orientation, Obj, Mat),
-    rdf_triple(knowrob:m03, Mat, Tmm03), strip_literal_type(Tmm03, TM03),atom_to_term(TM03,OX,_),
-    rdf_triple(knowrob:m13, Mat, Tmm13), strip_literal_type(Tmm13, TM13),atom_to_term(TM13,OY,_),
-    rdf_triple(knowrob:m00, Mat, Tmm00), strip_literal_type(Tmm00, TM00),atom_to_term(TM00,M00,_),
-    rdf_triple(knowrob:m01, Mat, Tmm01), strip_literal_type(Tmm01, TM01),atom_to_term(TM01,M01,_),
-    rdf_triple(knowrob:m10, Mat, Tmm10), strip_literal_type(Tmm10, TM10),atom_to_term(TM10,M10,_),
-    rdf_triple(knowrob:m11, Mat, Tmm11), strip_literal_type(Tmm11, TM11),atom_to_term(TM11,M11,_),
+    object_dimensions(Obj, OD, OW, _),
+    
+    current_object_pose(Obj, [M00, M01, _, OX,
+                              M10, M11, _, OY,
+                              _, _, _, _,
+                              _, _, _, _]),
 
     % object must have an extension
     <(0,OW), <(0,OD),

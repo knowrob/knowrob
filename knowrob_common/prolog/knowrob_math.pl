@@ -103,10 +103,20 @@ eval_owl_term(OWL, Val) :-
     Val is Val1 / Val2.
 
 parse_vector([X|Y], [X|Y]).
-parse_vector(In, Out) :-
-  jpl_call('org.knowrob.utils.MathUtil', 'parseVector', [In, ' '], OutArr),
-  not(OutArr = @(null)),
-  jpl_array_to_list(OutArr, Out).
+parse_vector(In, Numbers) :-
+  parse_vector(In, Numbers, ' ').
+parse_vector(In, Numbers, Delimiter) :-
+  atom(In),
+  atomic_list_concat(Atoms, Delimiter, In),
+  findall(Num, (
+    member(Atom,Atoms),
+    atom_number(Atom,Num)
+  ), Numbers),
+  length(Atoms,L),
+  length(Numbers,L).
+  %jpl_call('org.knowrob.utils.MathUtil', 'parseVector', [In, ' '], OutArr),
+  %not(OutArr = @(null)),
+  %jpl_array_to_list(OutArr, Out).
 
 quaternion_multiply(Q0,Q1,Multiplied) :-
   jpl_list_to_array(Q0, Q0_array),

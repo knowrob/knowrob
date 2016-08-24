@@ -31,79 +31,74 @@
 :- rdf_db:rdf_register_prefix(owl,  'http://www.w3.org/2002/07/owl#', [keep(true)]).
 :- rdf_db:rdf_register_prefix(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_prefix(xsd,  'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
-:- rdf_db:rdf_register_prefix(test, 'http://knowrob.org/kb/test_knowrob_objects.owl#', [keep(true)]).
+:- rdf_db:rdf_register_prefix(test_knowrob_objects, 'http://knowrob.org/kb/test_knowrob_objects.owl#', [keep(true)]).
 
 test(storagePlaceFor1) :-
-  storagePlaceFor(test:'Dishwasher1', test:'Cup1').
+  storagePlaceFor(test_knowrob_objects:'Dishwasher1', test_knowrob_objects:'Cup1'), !.
 
 test(storagePlaceFor2) :-
-  storagePlaceFor(test:'Dishwasher1', test:'Cup2').
+  storagePlaceFor(test_knowrob_objects:'Dishwasher1', test_knowrob_objects:'Cup2'), !.
 
 test(storagePlaceFor3) :-
-  storagePlaceFor(test:'Dishwasher1', knowrob:'FoodVessel').
+  storagePlaceFor(test_knowrob_objects:'Dishwasher1', knowrob:'FoodVessel'), !.
 
 test(storagePlaceForBecause1) :-
-  storagePlaceForBecause(test:'Dishwasher1', test:'Cup1', knowrob:'FoodVessel').
+  storagePlaceForBecause(test_knowrob_objects:'Dishwasher1', test_knowrob_objects:'Cup1', knowrob:'FoodVessel'), !.
 
 test(storagePlaceForBecause2) :-
-  storagePlaceForBecause(test:'Dishwasher1', test:'Cup1', knowrob:'FoodVessel').
+  storagePlaceForBecause(test_knowrob_objects:'Dishwasher1', test_knowrob_objects:'Cup1', knowrob:'FoodVessel'), !.
 
 test(current_object_pose) :-
-  current_object_pose(test:'Cup1',
+  current_object_pose(test_knowrob_objects:'Cup1',
                       [0.99607825, -0.08847681, 0.0, 1.1277804,
                        0.08847681,  0.99607825, 0.0, 2.6304414,
                        0.0,         0.0,        1.0, 0.816479,
                        0.0,         0.0,        0.0, 1.0]).
 
 test(object_pose_at_time) :-
-  object_pose_at_time(test:'Cup1', test:'timepoint_1331040458',
-                      [0.99607825, -0.08847681, 0.0, 1.1277804,
+  object_pose_at_time(test_knowrob_objects:'Cup1', test_knowrob_objects:'timepoint_1331040458',
+                      mat([0.99607825, -0.08847681, 0.0, 1.1277804,
                        0.08847681,  0.99607825, 0.0, 2.6304414,
                        0.0,         0.0,        1.0, 0.816479,
-                       0.0,         0.0,        0.0, 1.0]).
+                       0.0,         0.0,        0.0, 1.0])).
 
 test(rotmat_to_list) :-
-  rotmat_to_list(test:'RotationMatrix3D_1',
+  rotmat_to_list(test_knowrob_objects:'RotationMatrix3D_1',
                  [0.99607825, -0.08847681, 0.0, 1.1171718,
                   0.08847681,  0.99607825, 0.0, 0.44037533,
                   0.0,         0.0,        1.0, 0.4702375,
                   0.0,         0.0,        0.0, 1.0]).
 
 test(object_dimensions) :-
-  object_dimensions(test:'Handle1', '0.015', '0.015', '0.015'),
+  object_dimensions(test_knowrob_objects:'Handle1', 0.015, 0.015, 0.015),
   !.
 
 test(delete_object_information1) :-
-  delete_object_information(test:'Handle1').
+  delete_object_information(test_knowrob_objects:'Handle1').
 
 test(delete_object_information2, [fail]) :-
-  rdf_has(_, _, test:'Handle1').
+  rdf_has(_, _, test_knowrob_objects:'Handle1').
 
 test(delete_object_information_recursive1) :-
-  delete_object_information_recursive(test:'Dishwasher1').
+  delete_object_information_recursive(test_knowrob_objects:'Dishwasher1').
 
 test(delete_object_information_recursive2, [fail]) :-
-  rdf_has(test:'Dishwasher1', knowrob:'parts', _).
+  rdf_has(test_knowrob_objects:'Dishwasher1', knowrob:'parts', _).
 
 test(object_assert_color) :-
-  object_assert_color(test:'Cup1', '0.3 0.5 0.6 1'),
-  object_color(test:'Cup1', '0.3 0.5 0.6 1').
+  object_assert_color(test_knowrob_objects:'Cup1', '0.3 0.5 0.6 1'),
+  object_color(test_knowrob_objects:'Cup1', '0.3 0.5 0.6 1').
 
 test(object_color) :-
-  object_color(test:'Cup1', '0.3 0.5 0.6 1').
+  object_color(test_knowrob_objects:'Cup1', '0.3 0.5 0.6 1').
 
-test(object_assert_dimensions1) :-
-  object_assert_dimensions(test:'Cup1', '0.032', '0.032', '0.12'),
-  object_dimensions(test:'Cup1', '0.12', '0.032', '0.032'),
+test(object_assert_dimensions) :-
+  object_assert_dimensions(test_knowrob_objects:'Cup2', 0.032, 0.032, 0.12),
+  object_dimensions(test_knowrob_objects:'Cup2', 0.032, 0.032, 0.12),
   !.
 
-test(object_assert_dimensions2) :-
-  object_assert_dimensions(test:'Cup2', '0.032', '0.032', '0.12'),
-  object_dimensions(test:'Cup2', '0.12', '0.032', '0.032'),
-  !.
-
-test(object_detection, fixme) :-
-  object_detection(test:'Cup1', test:'timepoint_1331040458', test:'SemanticMapPerception2').
+%test(object_detection, fixme) :-
+%  object_detection(test_knowrob_objects:'Cup1', test_knowrob_objects:'timepoint_1331040458', test_knowrob_objects:'SemanticMapPerception2').
 
 :- end_tests(knowrob_objects).
 

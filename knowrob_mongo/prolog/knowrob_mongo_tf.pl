@@ -48,6 +48,7 @@
 :- use_module(library('owl')).
 :- use_module(library('rdfs_computable')).
 :- use_module(library('jpl')).
+:- use_module(library('knowrob_owl')).
 :- use_module(library('knowrob_mongo')).
 :- use_module(library('knowrob_mongo_interface')).
 :- use_module(library('srdl2')).
@@ -121,18 +122,17 @@ mng_lookup_position(Target, Source, TimePoint, Position) :-
 % @param PoseListOut   Pose matrix as row-based list[16]
 %
 mng_transform_pose(PoseListIn, SourceFrame, TargetFrame, TimePoint, PoseListOut) :-
-
-  rdf_split_url(_, TimePointLocal, TimePoint),
-  atom_concat('timepoint_', TimeAtom, TimePointLocal),
-  term_to_atom(Time, TimeAtom),
+  
+  time_term(TimePoint, Time),
+  number(Time),
   TimeInt is round(Time),
 
   knowrob_coordinates:list_to_matrix4d(PoseListIn, MatrixIn),
   jpl_new('tfjava.Stamped', [MatrixIn, SourceFrame, TimeInt], StampedIn),
 
   knowrob_coordinates:list_to_matrix4d([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1], MatrixOut),
-  % TODO: What is /base_link doing here?
-  jpl_new('tfjava.Stamped', [MatrixOut, '/base_link', TimeInt], StampedOut),
+  % create intermediate matrix 
+  jpl_new('tfjava.Stamped', [MatrixOut, '/', TimeInt], StampedOut),
 
   mongo_interface(DB),
   jpl_call(DB, 'transformPose', [TargetFrame, StampedIn, StampedOut], @(true)),
@@ -236,6 +236,7 @@ mng_comp_pose_at_time(RobotPart, TargetFrame, TimePoint, Pose) :-
 % @param TimePoint    Instance of knowrob:TimePoint
 % @param Pose         Instance of a knowrob:RotationMatrix3D with the pose data
 %
+% @deprecated
 mng_obj_pose_at_time(Obj, SourceFrame, TargetFrame, TimePoint, Pose) :-
 
   % read object pose in original coordinates at TimePoint
@@ -247,8 +248,8 @@ mng_obj_pose_at_time(Obj, SourceFrame, TargetFrame, TimePoint, Pose) :-
 %         ),
 
   mng_transform_pose(PoseListIn, SourceFrame, TargetFrame, TimePoint, PoseListOut),
-  create_pose(PoseListOut, Pose),
-  rdf_assert(Pose, knowrob:tfFrame, TargetFrame),
+  create_pose(PoseListOut, Pose), % XXX won't work
+  rdf_assert(Pose, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', TargetFrame),
 
   rdf_instance_from_class('http://knowrob.org/kb/knowrob.owl#Proprioception', Perception),
   rdf_assert(Perception, knowrob:startTime, TimePoint),
@@ -258,3 +259,37 @@ mng_obj_pose_at_time(Obj, SourceFrame, TargetFrame, TimePoint, Pose) :-
 
   % set time point for pose,
   rdf_assert(Perception, knowrob:startTime, TimePoint).
+
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% knowrob_owl entity descriptions
+
+% TODO(daniel): howto unit test?
+% ?- register_ros_package(knowrob_mongo).
+% ?- mng_db('Pick-and-Place_pr2-general-pick-and-place_0').
+% ?- entity(Pose, [a, pose, [urdf_name, '/laser_tilt_mount_link'], [temporal_extend, [a, timepoint, 1396512420.0]]]).
+
+knowrob_owl:entity_compute(Entity, [a,pose|Descr]) :-
+  entity_has(Descr, urdf_name, UrdfName),
+  entity_has(Descr, temporal_extend, IntervalDescr),
+  % TODO(daniel): allow specification of reference frame
+  ReferenceFrame='http://knowrob.org/kb/knowrob.owl#MapFrame',
+  TFMapFrame='/map', % FIXME bad assumption
+  pose_compute(Pose, TFMapFrame, UrdfName, IntervalDescr),
+  matrix_rotation(Pose, [QW,QX,QY,QZ]),
+  matrix_translation(Pose, [X,Y,Z]),
+  create_pose(pose(ReferenceFrame, [X,Y,Z], [QW,QX,QY,QZ]), Entity).
+
+pose_compute(Pose, SourceFrame, UrdfName, [a,timepoint|Descr]) :-
+  entity(TimeIri, [a,timepoint|Descr]),
+  time_term(TimeIri, Time),
+  mng_lookup_transform(SourceFrame, UrdfName, Time, Pose), !.
+
+% FIXME: support looking up all poses that occur during given interval
+%pose_compute(Pose, SourceFrame, UrdfName, [an|[interval|Descr]]) :-
+%  entity(TimeIri, Descr), time_term(TimeIri, Interval),
+%  mng_lookup_transform(SourceFrame, UrdfName, Interval, Pose).
+
+% TODO: trajectory entity_compute
+%knowrob_owl:entity_compute(Entity, [a|[trajectory|Descr]]) :-

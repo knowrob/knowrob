@@ -45,8 +45,7 @@
       map_child_objects/2,
       map_object_label/2,
       map_connection_type/3,
-      map_joint_name/3,
-      rdf_atom_no_ns/2
+      map_joint_name/3
     ]).
 
 
@@ -72,8 +71,7 @@
       map_object_dimensions(r,?,?,?),
       map_object_label(r,?),
       map_connection_type(r,r,+),
-      map_joint_name(r,r,r),
-      rdf_atom_no_ns(r,?).
+      map_joint_name(r,r,r).
 
 
 
@@ -88,6 +86,7 @@
 % @param Map   Instance of a knowrob:SemanticEnvironmentMap
 % @param Objs  List of instances of the root objects in the map
 % 
+% @deprecated
 map_root_objects(Map, Objs) :-
     setof( Obj, map_root_object(Map, Obj), Objs).
 
@@ -100,6 +99,7 @@ map_root_objects(Map, Objs) :-
 % @param Map  Instance of a knowrob:SemanticEnvironmentMap
 % @param Objs Instance of a root object in the map
 % 
+% @deprecated
 map_root_object(Map, Obj) :-
     owl_has(Obj, knowrob:describedInMap, Map).
 
@@ -122,8 +122,10 @@ map_child_objects(Parent, Children) :-
 % @param Parent   Object instance
 % @param Child    Object instance
 % 
+% TODO: use holds for properPhysicalParts relation
 map_child_object(Parent, Child) :-
-    owl_has( Parent, knowrob:'properPhysicalParts', Child ),
+    rdf_reachable(Parent, knowrob:properPhysicalParts, Child),
+    Parent \= Child,
     not( owl_individual_of(Child, knowrob:'Connection-Physical') ).
 
     
@@ -141,8 +143,7 @@ map_child_object(Parent, Child) :-
 % @param Inst  Object instance
 % 
 map_object_info([Inst, Type, Pose, [D, W, H]]) :-
-    map_instance(Map),
-    map_root_object(Map, Inst),
+    owl_individual_of(Inst, knowrob:'SpatialThing'),
     map_object_type(Inst, Type),
     current_object_pose(Inst, Pose),
     map_object_dimensions(Inst, W, D, H).
@@ -157,7 +158,7 @@ map_object_info([Inst, Type, Pose, [D, W, H]]) :-
 % @param Type  Class of Obj
 %  
 map_object_type(Obj, Type) :-
-    rdf_has(Obj, rdf:type, Type),
+    holds(Obj, rdf:type, Type),
     owl_subclass_of(Type, knowrob:'SpatialThing').
 
 
@@ -170,7 +171,7 @@ map_object_type(Obj, Type) :-
 % @param Label  Value of the rdfs:label annotation
 %  
 map_object_label(Obj, Label) :-
-    owl_has(Obj, rdfs:label, label ).
+    owl_has(Obj, rdfs:label, literal(type(_, Label)) ).
 
 
 
@@ -198,7 +199,7 @@ map_object_dimensions( Obj, W, D, H ) :-
     % The depth of a knob defaults to 3cm here. This information
     % should either be asserted somewhere else or be set as a property
     % when importing the semantic map.
-    owl_has( Obj, knowrob:'radius', literal(type(_, Radius_)) ),
+    holds( Obj, knowrob:radius, literal(type(_, Radius_)) ),
     atom_number(Radius_, Radius),
     W is 2 * Radius,
     H is 2 * Radius,
@@ -224,15 +225,15 @@ map_object_dimensions( Obj, W, D, H ) :-
 %       are to do after all, so I let them like this for now (MT).
 % 
 map_connection_type( Parent, Child, 'HingedJoint' ) :-
-    rdf_has( Parent, knowrob:'properPhysicalParts', Child ),
-    rdf_has( Child, knowrob:'properPhysicalParts', Joint ),
+    holds( Parent, knowrob:'properPhysicalParts', Child ),
+    holds( Child, knowrob:'properPhysicalParts', Joint ),
     owl_individual_of(Joint, knowrob:'HingedJoint'), !.
 
 map_connection_type( Parent, Parent, 'PrismaticJoint' ) :-
-    rdf_has( Parent, rdf:type, knowrob:'Drawer' ), !.
+    holds( Parent, rdf:type, knowrob:'Drawer' ), !.
 
 map_connection_type( Parent, Child, 'Fixed' ) :-
-    rdf_has( Parent, knowrob:'properPhysicalParts', Child ).
+    holds( Parent, knowrob:'properPhysicalParts', Child ).
 
 
 
@@ -245,8 +246,8 @@ map_connection_type( Parent, Child, 'Fixed' ) :-
 % @param Instance of a Connection-Physical
 % 
 map_joint_name( Parent, Child, Name ) :-
-    rdf_has( Parent, knowrob:'properPhysicalParts', Child ),
-    rdf_has( Child, knowrob:'properPhysicalParts', Name ),
+    holds( Parent, knowrob:'properPhysicalParts', Child ),
+    holds( Child, knowrob:'properPhysicalParts', Name ),
     owl_individual_of( Name, knowrob:'Connection-Physical' ).
 
 
@@ -290,6 +291,7 @@ map_read_all([R0|EntityList]) :-
 % @param ObjList  List of all objects
 % @param Map      Instance of a knowrob:SemanticEnvironmentMap
 % 
+% @deprecated
 map_read_all([R0|EntityList], MapInstance) :-
     map_read_entity(MapInstance, 'null', R0),
     setof(TopLevelObj, owl_has(TopLevelObj, knowrob:describedInMap, MapInstance), TopLevelObjs),
@@ -297,7 +299,7 @@ map_read_all([R0|EntityList], MapInstance) :-
 
 map_read_entities([], _, []).
 map_read_entities([E|Es], P, Res) :-
-  ((setof(Part, rdf_has(E, knowrob:properPhysicalParts, Part), Parts)) -> (
+  ((setof(Part, holds(E, knowrob:properPhysicalParts, Part), Parts)) -> (
     map_read_entity(E, P, R0),
     map_read_entities(Parts, E, Rs),
     append([R0], Rs, R)
@@ -309,26 +311,11 @@ map_read_entities([E|Es], P, Res) :-
   append(R, Res1, Res).
 
 map_read_entity(E, Parent, [E_no_ns, Parent_no_ns, Pose]) :-
-    rdf_atom_no_ns(E, E_no_ns),
+    rdf_split_url(_, E_no_ns, E),
     ((Parent = 'null') ->
      (Parent_no_ns = Parent) ;
-     rdf_atom_no_ns(Parent, Parent_no_ns)),
+     rdf_split_url(_, Parent_no_ns, Parent)),
     current_object_pose( E, Pose ).
 
-
-
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% Utility methods
-
-%% rdf_atom_no_ns(IRI, LocalName) is det.
-%
-% Extract the local part of an IRI, i.e. the part after the hash sign
-%
-% @param IRI        Full OWL IRI
-% @param LocalName  Local part of the IRI after the hash sign
-% 
-rdf_atom_no_ns( IRI, LocalName ) :-
-    rdf_split_url(_, LocalName, IRI ).
 
 
