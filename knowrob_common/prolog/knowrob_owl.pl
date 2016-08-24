@@ -52,6 +52,7 @@
       create_timepoint/2,
       create_interval/2,
       create_pose/2,
+      create_tf_frame/2,
       inspect/3,
       rotmat_to_list/2,
       position_to_list/2,
@@ -278,6 +279,17 @@ create_pose(pose(ReferenceObj, [X,Y,Z], [QW,QX,QY,QZ]), Pose) :-
   rdf_assert(Pose, knowrob:'translation', literal(type(string,Translation))),
   rdf_assert(Pose, knowrob:'quaternion', literal(type(string,Quaternion))),
   rdf_assert(Pose, knowrob:'relativeTo', ReferenceObj).
+
+create_pose(mat(Data), Pose) :-
+  matrix_translation(Data, Translation),
+  matrix_rotation(Data, Rotation),
+  create_pose(pose(Translation, Rotation), Pose).
+
+
+create_tf_frame(URDFName, Frame) :-
+  atomic_list_concat(['http://knowrob.org/kb/knowrob.owl#FrameOfReference'|[URDFName]], '_', Frame),
+  rdf_assert(Frame, rdf:type, knowrob:'FrameOfReference'),
+  rdf_assert(Frame, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(type(xsd:string, URDFName))).
 
 
 %% create_location(+Axioms, -Location) is nondet.
@@ -550,7 +562,8 @@ entity(Entity, Descr) :-
 entity(Entity, Descr) :-
   entity_(Entity, Descr),
   % make sure it's an individual and not a class
-  rdfs_individual_of(Entity, owl:'Thing').
+  rdfs_individual_of(Entity, owl:'Thing'),
+  \+ rdfs_individual_of(Entity, knowrob:'TemporalPart').
 
 entity_(Entity, [a, timepoint, Time]) :-
   number(Time), create_timepoint(Time, Entity), !.
@@ -606,7 +619,12 @@ entity_(Entity, [[name,EntityName]|Descr]) :-
 entity_(Entity, [[type,Type]|Descr]) :-
   nonvar(Type),
   entity_iri(TypeIri, Type, camelcase),
+  
+  % TODO: match all entities that ever were classified with Type?
+  % TODO: handle during?
+  current_time(Instant),
   ( rdfs_individual_of(Entity, TypeIri);
+    fluent_has(Entity, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', TypeIri, Instant);
     Entity = TypeIri ),
   entity_(Entity, Descr).
 
@@ -749,11 +767,13 @@ entity_assert(Entity, [[Key,Value,during,IntervalDescr]|Descr]) :-
   (  rdf_has(PropIri, rdf:type, owl:'ObjectProperty')
   ->  ( % nested entity
       entity(ValueEntity, Value),
-      fluent_assert(Entity,PropIri,ValueEntity,Interval)
+      create_fluent(Entity, Fluent, Interval),
+      fluent_assert(Fluent, PropIri, ValueEntity)
   ) ; ( % data property
       rdf_has(PropIri, rdf:type, owl:'DatatypeProperty'),
       rdf_phas(PropIri, rdfs:range, Range), % FIXME: what if range unspecified
-      fluent_assert(Entity,PropIri,literal(type(Range,Value)),Interval)
+      create_fluent(Entity, Fluent, Interval),
+      fluent_assert(Fluent, PropIri, literal(type(Range,Value)))
   )),
   entity_assert(Entity, Descr).
 
@@ -797,7 +817,13 @@ entity_properties([['http://www.w3.org/2000/01/rdf-schema#subClassOf',_]|Tail], 
 entity_properties([['http://knowrob.org/kb/knowrob.owl#temporalParts',Fluent]|Tail],
                             [[Key,Value,during,IntervalDescr]|DescrTail]) :-
   fluent_has(Fluent, PropIri, PropValue, IntervalIri),
-  entity_properties([[PropIri,PropValue]], [[Key,Value]]),
+  ( rdf_equal(PropIri, rdf:type)
+  -> (
+    Key=type,
+    entity_iri(PropValue, Value, camelcase)
+  ) ; (
+    entity_properties([[PropIri,PropValue]], [[Key,Value]])
+  )),
   entity(IntervalIri, IntervalDescr),
   entity_properties(Tail, DescrTail), !.
 

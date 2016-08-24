@@ -38,7 +38,7 @@ red_block_ontop_blue_block :-
 red_block_in_hand :-
   holds( blocksworld:graspedBy(blocksworld:'BlockRed_test0', blocksworld:'Hand_test0') ), !.
 
-test('blocksworld stack red on blue') :-
+test(blocksworld_stack_red_on_blue) :-
   not( red_block_ontop_blue_block ),
   red_block_in_hand,
   action_project_effects(blocksworld:'Stack_test0', _),

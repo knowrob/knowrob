@@ -242,14 +242,20 @@ object_pose_at_time(Obj, Time, Pose, Interval) :-
 
 
 object_pose_holds(Pose, _, Pose, [0.0]) :-
-  rdfs_individual_of(Pose, knowrob:'Pose'), !.
+  nonvar(Pose), rdfs_individual_of(Pose, knowrob:'Pose'), !.
 
 object_pose_holds(Pose, _, Pose, [0.0]) :-
-  rdfs_individual_of(Pose, knowrob:'Matrix'), !.
+  nonvar(Pose), rdfs_individual_of(Pose, knowrob:'Matrix'), !.
 
 object_pose_holds(Obj, Time, Pose, Interval) :-
-  holds(Obj, 'http://knowrob.org/kb/knowrob.owl#pose', Pose, Interval),
-  interval_during(Time, Interval), !.
+  ( nonvar(Obj)
+  -> (
+    holds(Obj, 'http://knowrob.org/kb/knowrob.owl#pose', Pose, Interval),
+    interval_during(Time, Interval), ! % TODO: use intersection test instead of during
+  );(
+    holds(Obj, 'http://knowrob.org/kb/knowrob.owl#pose', Pose, Interval),
+    interval_during(Time, Interval)
+  )).
 
 object_pose_holds(Obj, Time, Pose, Interval) :-
   object_detection(Obj, Time, Detection),

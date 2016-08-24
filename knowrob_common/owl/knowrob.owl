@@ -328,6 +328,14 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#designator -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#designator">
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#Designator"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#detectedAgent -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#detectedAgent">
@@ -1734,6 +1742,15 @@ See also the corresponding function StartFn; and see endingPoint.</rdfs:comment>
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#successorDesignator -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#successorDesignator">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Designator"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#Designator"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#supportedObject -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#supportedObject">
@@ -3104,16 +3121,6 @@ sizeParameterOfObject is the common generalization of all those PhysicalAmountSl
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#tfFrame -->
-
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#tfFrame">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    </owl:DatatypeProperty>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#translation -->
 
     <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#translation">
@@ -3929,14 +3936,6 @@ See also xAxisPredicateOfSystem and yAxisPredicateOfSystem.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#BentoBox">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FingerFood"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#Binding -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Binding">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ConceptualWork"/>
     </owl:Class>
     
 
@@ -5518,6 +5517,14 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Designator -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Designator">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationBearingThing"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#Desk-PieceOfFurniture -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Desk-PieceOfFurniture">
@@ -7026,7 +7033,40 @@ Specializations of HomogeneousSpaceRegion include SpaceChunk, Surface, Line, and
 
     <!-- http://knowrob.org/kb/knowrob.owl#InformationBearingThing -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#InformationBearingThing"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#InformationBearingThing">
+        <rdfs:comment>A collection of spatially-localized individuals, including various actions and events as well as physical objects. Each instance of InformationBearingThing (or &quot;IBT&quot;) is an item that contains information (for an agent who knows how to interpret it). Examples: a copy of the novel Moby Dick; a signal buoy; a photograph; an elevator sign in Braille; a map; a US dollar bill; a resume; a musical score; copies of the CycProgram.
+
+For representations of the propositional content of information bearing things, see PropositionalInformationThing; but note that not all IBTs have a propositional content (cf. ArtObject). An important specialization of InformationBearingThing is InformationBearingObject, which comprises all of those IBTs that are also physical objects (i.e. PartiallyTangibles). Though often a subtle task in particular contexts, it is important to distinguish the various specializations of InformationBearingThing from those of AspatialInformationStore (whose instances are the chunks of information instantiated in particular IBTs; see instantiationOfAIT) and from those of ConceptualWork (whose instances are the conceptual or artistic creations that are instantiated in particular IBTs; see instantiationOfWork).
+
+For instance, TextString is a specialization of AspatialInformationStore, TextualMaterial is a specialization of InformationBearingThing, and TextualPCW is a specialization of ConceptualWork; to conflate any of these with another would be to make a &quot;category error&quot;. Also note that events in which information is transferred (see InformationTransferEvent) are not considered instances of InformationBearingThing. Rather, such transfer events have as one of their participants (see actors) some instance of InformationBearingThing; though in cases where IBTs are themselves events this will require distinguishing very finely between the event that encodes the information and the event that is the information transfer. See also the sense-modality-based specializations, SoundInformationBearingThing and VisualInformationBearingThing.</rdfs:comment>
+        <rdfs:seeAlso rdf:resource="http://sw.opencyc.org/concept/Mx4rvkNufpwpEbGdrcN5Y29ycA"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Informing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Informing">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationBearingThing"/>
+        <rdfs:comment>A FirstOrderCollection. Each instance of Informing is a CommunicationAct_Single in which the senderOfInfo conveys some piece of propositional information--i.e. information of the sort that can be true or false.
+
+The information conveyed in an Informing is presented by the sender as being true, though it may in fact be false. Thus, passing on misinformation counts as Informing, as do acts of Lying.
+
+Note that the propositional nature of the information conveyed in an Informing may be implicit; for example, if Alice asks &apos;What&apos;s your favorite color?&apos; and Bob simply responds &apos;Red&apos;, Bob has implicitly conveyed the proposition Bob&apos;s favorite color is red.
+
+Specializations of Informing include Reporting, Testifying, and AnnouncingSomething.</rdfs:comment>
+        <rdfs:seeAlso rdf:resource="http://sw.opencyc.org/concept/Mx4rvVieApwpEbGdrcN5Y29ycA"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#InformingProgramUser -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#InformingProgramUser">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Informing"/>
+        <rdfs:comment>The collection of all events in which an instance of SoftwareAgent provides information to an interactive user of an instance of ComputerProcessRunning.</rdfs:comment>
+        <rdfs:seeAlso rdf:resource="http://sw.opencyc.org/concept/Mx4rtedJ0A9cEdaAAABQ2rksLw"/>
+    </owl:Class>
     
 
 
@@ -9149,6 +9189,22 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#PrologQuery -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PrologQuery">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Query"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PrologQueryAnswer -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PrologQueryAnswer">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InformingProgramUser"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#Proprioception -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Proprioception">
@@ -9337,7 +9393,9 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
     <!-- http://knowrob.org/kb/knowrob.owl#Query -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Query">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ConceptualWork"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationBearingThing"/>
+        <rdfs:comment>The collection of all InformationBearingThings whose information content is a request for information. An InformationRequest_IBT is the communicationToken in any act of RequestingInformation.</rdfs:comment>
+        <rdfs:seeAlso rdf:resource="http://sw.opencyc.org/concept/Mx4rcF7MOF04EdaAAABQ2sS97g"/>
     </owl:Class>
     
 
@@ -9345,7 +9403,7 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
     <!-- http://knowrob.org/kb/knowrob.owl#QueryBinding -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#QueryBinding">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Binding"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PrologQueryAnswer"/>
     </owl:Class>
     
 
@@ -9354,6 +9412,8 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Querying">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#IntentionalMentalEvent"/>
+        <rdfs:comment>A specialization of Requesting_CommunicationAct. In each instance of RequestingInformation, an agent asks a question or requests some information. See also the IllocutionaryForce associated with this action, #$Query.</rdfs:comment>
+        <rdfs:seeAlso rdf:resource="http://sw.opencyc.org/concept/Mx4rvVitwpwpEbGdrcN5Y29ycA"/>
     </owl:Class>
     
 
@@ -11433,7 +11493,7 @@ As the above examples illustrate, it is not the case that everthing that has a t
     <!-- http://knowrob.org/kb/knowrob.owl#VariableBinding -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#VariableBinding">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Binding"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PrologQueryAnswer"/>
     </owl:Class>
     
 
@@ -11499,6 +11559,8 @@ As the above examples illustrate, it is not the case that everthing that has a t
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#VisualInformationBearingThing">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationBearingThing"/>
+        <rdfs:comment>A specialization of both Artifact_Generic and InformationBearingThing. Each instance of this collection is an artifact from which information is extracted by viewing it (note that a viewer may need to be familiar with an appropriate set of interpretive conventions in order to do this). Examples of VisualInformationBearingThing include handwritten letters, newspapers, sculptures, television sets, and neon signs. (Thus, the information content of VisualInformationBearingThings may or may not be propositional in nature.) In the proper conditions, instances of VisualInformationBearingThing produce instances of VisualImage (which, unlike instances of VisualInformationBearingThing, are instances of Event). For example, if one shines light on a photograph, a characteristic VisualImage is produced. Likewise, if one electrifies a neon sign, a VisualImage is produced. A notable specialization of this collection is StillImageSource -- sources of VisualImage that do not move (which thus includes all the examples of VisualInformationBearingThing given above except for the television set). See also the predicate visuallyDepicts.</rdfs:comment>
+        <rdfs:seeAlso rdf:resource="http://sw.opencyc.org/concept/Mx4rvVjPtpwpEbGdrcN5Y29ycA"/>
     </owl:Class>
     
 
@@ -11863,12 +11925,6 @@ As the above examples illustrate, it is not the case that everthing that has a t
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#CRAMDesignator -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#CRAMDesignator"/>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#CarryingWhileLocomoting -->
 
     <owl:Thing rdf:about="http://knowrob.org/kb/knowrob.owl#CarryingWhileLocomoting">
@@ -11883,6 +11939,12 @@ As the above examples illustrate, it is not the case that everthing that has a t
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
         <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#Dirtiness"/>
     </owl:Thing>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Designator -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#Designator"/>
     
 
 
@@ -12021,7 +12083,7 @@ As the above examples illustrate, it is not the case that everthing that has a t
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#Query_RBNU745gvFSVG">
         <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#Query"/>
-        <queryAbout rdf:resource="http://knowrob.org/kb/knowrob.owl#CRAMDesignator"/>
+        <queryAbout rdf:resource="http://knowrob.org/kb/knowrob.owl#Designator"/>
         <groupName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Designator Properties</groupName>
         <queryName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">What are the designator properties?</queryName>
         <queryString rdf:datatype="http://www.w3.org/2001/XMLSchema#string">mng_designator(Individual, ObjDesignator), findall(_X, (mng_designator_props(ObjDesignator, _Property, _Value), atomic_list_concat([&apos;   &apos;,_Property,_Value], &apos; &apos;, _X) ), _PropertyNames), atomic_list_concat([&apos;&apos;|_PropertyNames], &apos;\n&apos;, Properties)</queryString>

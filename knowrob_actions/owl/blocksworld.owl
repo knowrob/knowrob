@@ -161,12 +161,12 @@
     </owl:NamedIndividual>
 
     <owl:NamedIndividual rdf:about="&blocksworld;BlockRed_test0">
-        <rdf:type rdf:resource="&knowrob;SpatialThing"/>
+        <rdf:type rdf:resource="&knowrob;SpatialThing-Localized"/>
         <knowrob:temporalParts rdf:resource="&blocksworld;BlockRed_test0@TimeInterval_sfdigug3"/>
     </owl:NamedIndividual>
 
     <owl:NamedIndividual rdf:about="&blocksworld;BlockBlue_test0">
-        <rdf:type rdf:resource="&knowrob;SpatialThing"/>
+        <rdf:type rdf:resource="&knowrob;SpatialThing-Localized"/>
     </owl:NamedIndividual>
 
     <owl:NamedIndividual rdf:about="&blocksworld;Hand_test0">
@@ -210,11 +210,11 @@
     </owl:NamedIndividual>
 
     <owl:NamedIndividual rdf:about="&blocksworld;BlockRed_test1">
-        <rdf:type rdf:resource="&knowrob;SpatialThing"/>
+        <rdf:type rdf:resource="&knowrob;SpatialThing-Localized"/>
     </owl:NamedIndividual>
 
     <owl:NamedIndividual rdf:about="&blocksworld;BlockBlue_test1">
-        <rdf:type rdf:resource="&knowrob;SpatialThing"/>
+        <rdf:type rdf:resource="&knowrob;SpatialThing-Localized"/>
     </owl:NamedIndividual>
 
     <!-- 
@@ -238,17 +238,17 @@
     </owl:NamedIndividual>
 
     <owl:NamedIndividual rdf:about="&blocksworld;BlockRed_test2">
-        <rdf:type rdf:resource="&knowrob;SpatialThing"/>
+        <rdf:type rdf:resource="&knowrob;SpatialThing-Localized"/>
         <knowrob:temporalParts rdf:resource="&blocksworld;BlockRed_test2@TimeInterval_gon49235h"/>
     </owl:NamedIndividual>
 
     <owl:NamedIndividual rdf:about="&blocksworld;BlockBlue_test2">
-        <rdf:type rdf:resource="&knowrob;SpatialThing"/>
+        <rdf:type rdf:resource="&knowrob;SpatialThing-Localized"/>
         <knowrob:temporalParts rdf:resource="&blocksworld;BlockBlue_test2@TimeInterval_dfgnk43895"/>
     </owl:NamedIndividual>
 
     <owl:NamedIndividual rdf:about="&blocksworld;BlockGreen_test2">
-        <rdf:type rdf:resource="&knowrob;SpatialThing"/>
+        <rdf:type rdf:resource="&knowrob;SpatialThing-Localized"/>
         <knowrob:temporalParts rdf:resource="&blocksworld;BlockGreen_test2@TimeInterval_dfgnk43895"/>
     </owl:NamedIndividual>
 

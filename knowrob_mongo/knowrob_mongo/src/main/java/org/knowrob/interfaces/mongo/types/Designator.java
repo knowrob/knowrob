@@ -45,9 +45,11 @@ import com.mongodb.BasicDBObject;
 public class Designator {
 	protected Map<String, Object> values;
 	protected String detectionType = "";
+        protected final java.util.Date instant;
 	
-	public Designator() {
+	public Designator(java.util.Date instant) {
 		values = new LinkedHashMap<String, Object>();
+		this.instant = instant;
 	}
 
 	public boolean containsKey(Object arg0) {
@@ -111,7 +113,11 @@ public class Designator {
 	public void setType(String type) {
 		this.values.put("_designator_type", type);
 	}
-	
+
+	public java.util.Date getInstant() {
+		return instant;
+	}
+
 	public String getDetectionType() {
 		return detectionType;
 	}
@@ -125,7 +131,7 @@ public class Designator {
 		for(Object val : l) {
 			Object valAccepted = null;
 			if(val instanceof BasicDBObject) {
-				valAccepted = new Designator().readFromDBObject((BasicDBObject)val);
+				valAccepted = new Designator(instant).readFromDBObject((BasicDBObject)val);
 			}
 			else {
 				valAccepted = val.toString();
@@ -239,10 +245,10 @@ public class Designator {
 			if(valAccepted == null) {
 				// Designator properties
 				if(val instanceof BasicDBObject) {
-					valAccepted = new Designator().readFromDBObject((BasicDBObject) val);
+					valAccepted = new Designator(instant).readFromDBObject((BasicDBObject) val);
 				
 				} else if(val instanceof BasicDBList) {
-					valAccepted = new Designator().readFromDBList((BasicDBList) val);
+					valAccepted = new Designator(instant).readFromDBList((BasicDBList) val);
 				
 				} else {
 					valAccepted = row.getString(key);

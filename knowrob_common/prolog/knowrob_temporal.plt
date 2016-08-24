@@ -81,8 +81,8 @@ test(interval_during10, [fail]) :-
 %%%%% Fluents
 
 fluent_begin(S,P,O,Time) :-
-  fluent_assert(S, P, O, Time),
-  owl_has(S, knowrob:temporalParts, TemporalPart0),
+  create_fluent(S, TemporalPart0, Time),
+  fluent_assert(TemporalPart0, P, O),
   (  rdf_has(P, rdf:type, owl:'ObjectProperty')
   -> (
       owl_has(O, knowrob:temporalParts, TemporalPart1),
@@ -135,10 +135,24 @@ test(fluent_has_O_unbound, [nondet]) :-
 
 test(fluent_has_S_P_O_unbound, [nondet]) :-
   fluent_has(S, P, O, I),
-  S = 'http://knowrob.org/kb/knowrob_temporal_test.owl#Dough_vs5hgsg0',
-  P = 'http://knowrob.org/kb/knowrob.owl#temperatureOfObject',
+  rdf_equal(S, knowrob_temporal_test:'Dough_vs5hgsg0'),
+  rdf_equal(P, knowrob:'temperatureOfObject'),
   interval(I, [0.0,20.0]),
   O = literal(type(_,10.0)).
+
+test(fluent_has_type) :-
+  fluent_has(knowrob_temporal_test:'EnduringThing-Localized_GSFgh4u6', rdf:type, Type),
+  rdf_equal(Type, knowrob:'Cup'), !.
+
+test(fluent_has_type_holds) :-
+  holds(knowrob_temporal_test:'EnduringThing-Localized_GSFgh4u6', rdf:type, knowrob:'Cup'), !.
+
+test(fluent_has_type_descr) :-
+  entity(knowrob_temporal_test:'EnduringThing-Localized_GSFgh4u6', Descr),
+  entity_has(Descr, type, cup).
+
+test(fluent_type_match) :-
+  entity(knowrob_temporal_test:'EnduringThing-Localized_GSFgh4u6', [an, object, [type, cup]]), !.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

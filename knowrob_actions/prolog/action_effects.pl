@@ -101,7 +101,8 @@ action_project_effect(Action, Effect, integrate(Subject,Predicate,Object)) :-
   query_predicate(Effect, Predicate),
   query_effect_entity(Action, Effect, action_effects:'object', Object),
   % Assert temporal parts and link via @Predicate
-  fluent_assert(Subject, Predicate, Object), !.
+  create_fluent(Subject, Fluent),
+  fluent_assert(Fluent, Predicate, Object), !.
 
 action_project_effect(Action, Effect, decompose(Subject,Predicate)) :-
   once(owl_individual_of(Effect, action_effects:'Decompose')),
@@ -112,7 +113,8 @@ action_project_effect(Action, Effect, decompose(Subject,Predicate)) :-
   rdf_has(Predicate, rdfs:range, DomainClass),
   rdf_instance_from_class(DomainClass, DomainEntity),
   % Assert temporal parts and link via @Predicate
-  fluent_assert(Subject, Predicate, DomainEntity), !.
+  create_fluent(Subject, Fluent),
+  fluent_assert(Fluent, Predicate, DomainEntity), !.
 
 action_project_effect(Action, Effect, parametrize(Subject,Predicate,Object)) :-
   once(owl_individual_of(Effect, action_effects:'Parametrize')),
@@ -122,7 +124,8 @@ action_project_effect(Action, Effect, parametrize(Subject,Predicate,Object)) :-
   % Read the data value
   rdf_has(Effect, action_effects:'object', literal(type(_,Object))),
   % Assert temporal parts and link via @Predicate
-  fluent_assert(Subject, Predicate, Object), !.
+  create_fluent(Subject, Fluent),
+  fluent_assert(Fluent, Predicate, Object), !.
   
 action_project_effect(Action, Effect, create(Object)) :-
   once(owl_individual_of(Effect, action_effects:'Create')),

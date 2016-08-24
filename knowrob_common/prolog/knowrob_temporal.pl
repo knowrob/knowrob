@@ -47,10 +47,11 @@
       interval_finishes/2,
       interval_overlaps/2,
       interval_during/2,
+      create_fluent/2,
+      create_fluent/3,
+      fluent_assert/3,
       fluent_has/3,
       fluent_has/4,
-      fluent_assert/3,
-      fluent_assert/4,
       fluent_assert_end/3,
       fluent_assert_end/2
     ]).
@@ -81,8 +82,9 @@
             interval_during(?,?),
             fluent_has(r,r,t,?),
             fluent_has(r,r,t),
+            create_fluent(r,t),
+            create_fluent(r,r,t),
             fluent_assert(r,r,t),
-            fluent_assert(r,r,t,r),
             fluent_assert_end(r,r,r),
             fluent_assert_end(r,r).
 
@@ -137,6 +139,8 @@ holds(S, P, O, I) :-
   -> rdf_triple(P, S, O)
   ;  owl_has(S,P,O)
   ),
+  \+ rdfs_individual_of(S, knowrob:'TemporalPart'),
+  \+ rdfs_individual_of(O, knowrob:'TemporalPart'),
   (  var(I)
   -> I = [0.0]
   ;  true
@@ -183,51 +187,75 @@ occurs(EvtDescr, I) :-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % methods for asserting fluent relations
 
-
-fluent_assert(S, P, O) :-
+create_fluent(Obj, Fluent) :-
   current_time(Now),
-  fluent_assert(S, P, O, [Now]), !.
+  create_fluent(Obj, Fluent, [Now]), !.
 
-fluent_assert(S, P, O, [Begin,End]) :-
+create_fluent(Obj, Fluent, [Begin,End]) :-
   number(Begin), number(End),
   create_interval([Begin,End], I),
-  fluent_assert(S, P, O, I), !.
+  create_fluent(Obj, Fluent, I), !.
 
-fluent_assert(S, P, O, [Begin]) :-
+create_fluent(Obj, Fluent, [Begin]) :-
   number(Begin),
   create_timepoint(Begin, IntervalStart),
   rdf_instance_from_class(knowrob:'TimeInterval', I),
   rdf_assert(I, knowrob:'startTime', IntervalStart),
-  fluent_assert(S, P, O, I), !.
+  create_fluent(Obj, Fluent, I), !.
 
-fluent_assert(S, P, O, TimeInst) :-
+create_fluent(Obj, Fluent, TimeInst) :-
   atom(TimeInst),
   rdfs_individual_of(TimeInst, knowrob:'Timepoint'),
   time_term(TimeInst, Time),
-  fluent_assert(S, P, O, [Time]), !.
+  create_fluent(Obj, Fluent, [Time]), !.
 
-fluent_assert(S, P, O, Time) :-
+create_fluent(Obj, Fluent, Time) :-
   number(Time),
-  fluent_assert(S, P, O, [Time]), !.
+  create_fluent(Obj, Fluent, [Time]), !.
 
-fluent_assert(S, P, O, I) :-
+create_fluent(Obj, Fluent, I) :-
   atom(I),
   rdfs_individual_of(I, knowrob:'TimeInterval'),
-  % Create temporal parts
-  rdf_instance_from_class(knowrob:'TemporalPart', SubjectPart),
-  rdf_assert(S, knowrob:'temporalParts', SubjectPart),
-  rdf_assert(SubjectPart, knowrob:'temporalProperty', P),
-  rdf_assert(SubjectPart, knowrob:'temporalExtend', I),
-  (  rdf_has(P, rdf:type, owl:'ObjectProperty')
-  ->  (
-      % TODO(daniel) some concepts like poses don't need temporal parts
-      rdf_instance_from_class(knowrob:'TemporalPart', ObjectPart),
-      rdf_assert(O, knowrob:'temporalParts', ObjectPart),
-      rdf_assert(ObjectPart, knowrob:'temporalExtend', I),
-      rdf_assert(SubjectPart, P, ObjectPart)
-      )
-  ;   rdf_assert(SubjectPart, P, O)
-  ), !.
+  rdf_instance_from_class(knowrob:'TemporalPart', Fluent),
+  rdf_assert(Obj, knowrob:'temporalParts', Fluent),
+  rdf_assert(Fluent, knowrob:'temporalExtend', I).
+
+%fluent_assert(S, P, O, I, SubjectPart) :-
+%  atom(I),
+%  rdfs_individual_of(I, knowrob:'TimeInterval'),
+%  once((nonvar(SubjectPart) ; rdf_instance_from_class(knowrob:'TemporalPart', SubjectPart))),
+%  rdf_instance_from_class(knowrob:'TemporalPart', SubjectPart),
+%  rdf_assert(S, knowrob:'temporalParts', SubjectPart),
+%  rdf_assert(SubjectPart, knowrob:'temporalProperty', P),
+%  rdf_assert(SubjectPart, knowrob:'temporalExtend', I),
+%  fluent_assert_object(SubjectPart, P, O, I).
+
+
+fluent_assert(S, P, nontemporal(O)) :-
+  rdfs_individual_of(S, knowrob:'TemporalPart'),
+  rdf_assert(S, knowrob:'temporalProperty', P),
+  rdf_assert(S, P, O), !.
+
+fluent_assert(S, P, O) :-
+  rdfs_individual_of(S, knowrob:'TemporalPart'),
+  rdfs_individual_of(O, knowrob:'TemporalPart'),
+  rdf_assert(S, P, O), !.
+
+fluent_assert(S, P, O) :-
+  rdf_has(P, rdf:type, owl:'ObjectProperty'),
+  rdf_has(S, knowrob:'temporalExtend', I),
+  rdf_instance_from_class(knowrob:'TemporalPart', ObjectPart),
+  rdf_assert(O, knowrob:'temporalParts', ObjectPart),
+  % TODO: handle inverse of P, add as temporalProperty?
+  rdf_assert(ObjectPart, knowrob:'temporalExtend', I),
+  rdf_assert(S, knowrob:'temporalProperty', P),
+  rdf_assert(S, P, ObjectPart), !.
+
+fluent_assert(S, P, O) :-
+  rdfs_individual_of(S, knowrob:'TemporalPart'),
+  rdf_assert(S, knowrob:'temporalProperty', P),
+  rdf_assert(S, P, O).
+
 
 fluent_assert_end(S, P) :-
   current_time(Now),
@@ -245,29 +273,42 @@ fluent_assert_end(S, P, Time) :-
     rdf_assert(I, knowrob:'endTime', IntervalEnd)
   )).
 
+
 fluent_property(TemporalPart, PropertyIri) :-
   rdf_has(TemporalPart, knowrob:temporalProperty, PropertyIri).
+
 
 %% fluent_has(?Subject, ?Predicate, ?Object, ?Interval)
 %
 % True if this relation is specified via knowrob:TemporalPart
 % or can be deduced using OWL inference rules.
 % 
-fluent_has(S, P, O) :- fluent_has(S, P, O, _).
+fluent_has(S, P, O) :- fluent_has(S, P, O, _). % FIXME: redundant results!
 
 fluent_has(S, P, O, I) :-
-  owl_has(S, knowrob:'temporalParts', TemporalPart),
+  rdfs_individual_of(S, knowrob:'SpatialThing-Localized'),
+  rdf_has(S, knowrob:'temporalParts', TemporalPart),
   fluent_has(TemporalPart, P, O, I).
 
 fluent_has(S, P, O, I) :-
   nonvar(S),
   rdfs_individual_of(S, knowrob:'TemporalPart'),
-  rdf_has(S, knowrob:temporalExtend, I),
+  rdf_has(S, knowrob:temporalExtend, Ext),
+  (var(I)
+  -> I=Ext 
+  ;  interval_during(I, Ext)),
+  
   rdf_has(S, knowrob:temporalProperty, P),
   rdf_has(S, P, S_O),
-  (( rdfs_individual_of(S_O, knowrob:'TemporalPart') )
+  
+  (rdf_equal(P, rdf:type)
+  -> \+ rdf_equal(S_O, owl:'NamedIndividual'),
+     \+ rdf_equal(S_O, knowrob:'TemporalPart')
+  ;  true),
+  
+  (rdfs_individual_of(S_O, knowrob:'TemporalPart')
   -> once(owl_has(O, knowrob:temporalParts, S_O))
-  ;  O = S_O ).
+  ;  O = S_O).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

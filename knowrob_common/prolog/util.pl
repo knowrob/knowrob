@@ -547,3 +547,4 @@ matrix(Translation, Orientation, Matrix) :-
   jpl_list_to_array(Orientation, OrientationArr),
   jpl_call('org.knowrob.utils.MathUtil', 'matrix', [TranslationArr,OrientationArr], MatrixArr),
   jpl_array_to_list(MatrixArr, Matrix).
+

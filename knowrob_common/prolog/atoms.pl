@@ -31,12 +31,24 @@
 */
 
 :- module(atoms,
-    [ camelcase/2,
+    [ lowercase/2,
+      camelcase/2,
       lower_camelcase/2
 ]).
 
 :- use_module(library('clpfd')). % TODO: what is this used for?
 :- use_module(library('delay')). % TODO: what is this used for?
+
+lowercase(Upper,Lower) :-
+    (ground(Upper);ground(Lower)),
+    delay(atom_codes(Upper,UpperCodes)),
+    delay(atom_codes(Lower,LowerCodes)),
+    lowercase_(LowerCodes, UpperCodes).
+lowercase_([],[]).
+lowercase_([Lower|Lowers], [Upper|Uppers]) :-
+    upper_lower(Upper, Lower),
+    lowercase_(Lowers, Uppers), !.
+lowercase_([C|Lowers], [C|Uppers]) :- lowercase_(Lowers, Uppers).
 
 %% camelcase(?Underscore:atom, ?CamelCase:atom) is det.
 %
