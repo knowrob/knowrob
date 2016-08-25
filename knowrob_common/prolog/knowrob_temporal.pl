@@ -37,6 +37,7 @@
       holds/4,
       occurs/1,
       occurs/2,
+      occurs/3,
       interval/2,
       interval_start/2,
       interval_end/2,
@@ -68,8 +69,9 @@
             holds(t,?),
             holds(r,r,t),
             holds(r,r,t,?),
-            occurs(?),
-            occurs(?,?),
+            occurs(t),
+            occurs(t,?),
+            occurs(t,?,r),
             interval(?,?),
             interval_start(?,?),
             interval_end(?,?),
@@ -170,7 +172,10 @@ occurs(Evt) :-
 
 % Read event instance from RDF triple store
 occurs(EvtDescr, I) :-
-  rdfs_individual_of(Evt, knowrob:'Event'),
+  occurs(EvtDescr, I, knowrob:'Event').
+
+occurs(EvtDescr, I, Type) :-
+  rdfs_individual_of(Evt, Type),
   entity(Evt, EvtDescr),
   interval(Evt, EvtI),
   (  var(I)

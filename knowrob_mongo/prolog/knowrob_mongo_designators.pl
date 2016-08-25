@@ -544,7 +544,7 @@ assert_successor_chain([[_,D0],[T1,D1]|Tail]) :-
   rdf_assert(D0, knowrob:'successorDesignator', D1),
   assert_successor_chain([[T1,D1]|Tail]).
 
-assert_successor_chain([[T,D]]) :-
+assert_successor_chain([[_,D]]) :-
   rdf_assert(D, rdf:'type', knowrob:'Designator').
 
   

@@ -47,6 +47,7 @@
       rdf_instance_from_class/2,
       rdf_instance_from_class/3,
       rdf_phas/3,
+      rdf_atom_no_ns/2,
       get_timepoint/1,
       get_timepoint/2,
       create_timepoint/2,
@@ -88,6 +89,7 @@
             class_properties_transitive_nosup_1(r,r,r),
             rdf_instance_from_class(r,r),
             rdf_instance_from_class(r,r,r),
+            rdf_atom_no_ns(r,?),
             create_timepoint(+,r),
             create_poset(+,r),
             get_timepoint(r),
@@ -135,6 +137,8 @@ rdf_phas(Property, P, O) :-
         rdfs_subproperty_of(Property, Super),
         rdf_has(Super, P, O2), !,
         O = O2.
+
+rdf_atom_no_ns(Iri, Name) :- rdf_split_url(_, Name, Iri).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
