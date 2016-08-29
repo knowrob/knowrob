@@ -607,8 +607,8 @@ mng_desig_find_object(_, _, DesigPose, I, Object) :-
 
 % FIXME: something not working below
 % Find object with unspecified pose
-%mng_desig_find_object(_, TypeIri, _, _, Object) :-
-%  holds(Object, rdf:type, TypeIri),
-%  \+ rdfs_individual_of(Object, knowrob:'TemporalPart'),
-%  \+ object_pose_at_time(Object, pose(_,_), _), !.
+mng_desig_find_object(_, TypeIri, _, _, Object) :-
+  holds(Object, rdf:type, TypeIri),
+  \+ rdfs_individual_of(Object, knowrob:'TemporalPart'),
+  \+ object_pose_specified(Object), !.
 

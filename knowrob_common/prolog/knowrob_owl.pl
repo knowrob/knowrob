@@ -609,11 +609,11 @@ entity_(Entity, [a, location|Descr]) :-
 entity_(Entity, [A, Type|Descr]) :-
   nonvar(A),nonvar(Type),member(A, [a,an]),
   entity_name(Descr, Entity),
-  ( entity_head(Entity, [A,Type], _),
-    entity_(Entity, Descr)
-  ) ; (
-    var(Entity),
+  ( var(Entity),
     entity_compute(Entity, [A, Type|Descr])
+  ) ; (
+    entity_head(Entity, [A,Type], _),
+    entity_(Entity, Descr)
   ).
 
 entity_(Entity, [[name,EntityName]|Descr]) :-

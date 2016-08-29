@@ -37,6 +37,7 @@
       object_pose_at_time/3,
       object_pose_at_time/4,
       object_pose/3,
+      object_pose_specified/1,
       object_color/2,
       object_dimensions/4,
       object_distance/3,
@@ -116,6 +117,7 @@
     current_object_pose(r,r,-),
     object_pose_at_time(r,r,?),
     object_pose_at_time(r,r,?,?),
+    object_pose_specified(r),
     object_pose(+,-,-),
     object_color(r, ?),
     object_dimensions(r, ?, ?, ?),
@@ -239,6 +241,14 @@ object_pose_at_time(Obj, Time, mat(Matrix), Interval) :-
 
 object_pose_at_time(Obj, Time, Pose, Interval) :-
   object_pose_holds(Obj, Time, Pose, Interval).
+
+
+object_pose_specified(Obj) :-
+  rdf_has(Obj, knowrob:pose, _), !.
+
+object_pose_specified(Obj) :-
+  rdf_has(Obj, knowrob:temporalParts, Part),
+  rdf_has(Part, knowrob:pose, _) !.
 
 
 object_pose_holds(Pose, _, Pose, [0.0]) :-
