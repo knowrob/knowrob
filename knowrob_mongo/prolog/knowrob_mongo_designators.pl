@@ -177,6 +177,9 @@ mng_type_to_iri(Type, TypeIri) :-
   rdf_global_term(Type, TypeIri),
   rdf_has(Type, rdf:type, _).
 mng_type_to_iri(Type, TypeIri) :-
+  atom_concat('http://knowrob.org/kb/knowrob.owl#', Type, TypeIri),
+  rdf_has(TypeIri, rdf:type, _), !.
+mng_type_to_iri(Type, TypeIri) :-
   lowercase(Type, TypeLower),
   camelcase(TypeLower, TypeCamel),
   atom_concat('http://knowrob.org/kb/knowrob.owl#', TypeCamel, TypeIri),

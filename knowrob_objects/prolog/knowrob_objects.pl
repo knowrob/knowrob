@@ -258,6 +258,7 @@ object_pose_holds(Obj, Time, Pose, Interval) :-
   )).
 
 object_pose_holds(Obj, Time, Pose, Interval) :-
+  not( is_list(Time) ), % FIXME: howto handle interval case?
   object_detection(Obj, Time, Detection),
   rdf_triple(knowrob:eventOccursAt, Detection, Pose),
   rdf_has(Detection, knowrob:startTime, StartTime),

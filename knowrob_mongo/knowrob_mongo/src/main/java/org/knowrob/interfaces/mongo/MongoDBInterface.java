@@ -285,6 +285,10 @@ public class MongoDBInterface {
 		
 		QueryBuilder qb = QueryBuilder.start("designator").exists("_id");
 		for(int i=0; i<keys.length; i++) {
+			
+			// HACK
+			values[i] = values[i].replace("_", "");
+			
 			qb = qb.and(keys[i]).is(Pattern.compile(values[i],Pattern.CASE_INSENSITIVE)); // pattern for case insensitive matching
 		}
 		

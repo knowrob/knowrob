@@ -138,7 +138,7 @@ marker_srdl_tf_frame(Identifier, UrdfName) :-
 marker_srdl_tf_frame(Identifier, UrdfName) :-
   rdf_has(Identifier, knowrob:'urdfName', literal(UrdfName)), !.
 marker_srdl_tf_frame(Identifier, UrdfName) :-
-  not( rdf_split_url(_, _, Identifier) ),
+  not( atom_prefix(Identifier, 'http') ),
   UrdfName = Identifier.
 
 atom_ensure_prefix(Atom, Prefix, Atom) :-
@@ -165,12 +165,7 @@ marker_lookup_transform(MarkerObject, Identifier, T, (Translation,Orientation)) 
   marker_lookup_transform(MarkerObject, Object, T, (Translation,Orientation)), !.
 
 marker_lookup_transform(_, Identifier, T, (Translation,Orientation)) :-
-writeln(marker_lookup_transform),
-write('    Identifier '), writeln(Identifier),
-write('    T '), writeln(T),
-  object_pose_at_time(Identifier, T, pose(Translation, Orientation)),
-write('    Translation '), writeln(Translation),
-write('    Orientation '), writeln(Orientation), !.
+  object_pose_at_time(Identifier, T, pose(Translation, Orientation)), !.
 
 % TODO: remove case, should be covered by object_pose_at_time
 marker_lookup_transform(MarkerObject, Identifier, T, (Translation,Orientation)) :-
@@ -376,16 +371,16 @@ marker_initialize_object(Identifier,MarkerObject) :-
     marker_initialize_object(Instance,MarkerObject)
   )),
   ignore((
+    %not( marker_type(MarkerObject, mesh_resource) ),
+    object_dimensions(Identifier, X, Y, Z),
+    marker_scale(MarkerObject, [X, Y, Z])
+  )),
+  ignore((
     get_model_path(Identifier, Path),
     marker_type(MarkerObject, mesh_resource),
     marker_mesh_resource(MarkerObject, Path),
     marker_color(MarkerObject, [0.0,0.0,0.0,0.0]),
     marker_scale(MarkerObject, [1.0,1.0,1.0])
-  )),
-  ignore((
-    not( marker_type(MarkerObject, mesh_resource) ),
-    object_dimensions(Identifier, X, Y, Z),
-    marker_scale(MarkerObject, [X, Y, Z])
   )),
   ignore((
     object_color(Identifier, Color),
