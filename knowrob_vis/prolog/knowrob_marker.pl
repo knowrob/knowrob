@@ -136,7 +136,9 @@ marker_succeeding_links(Link0, Links) :-
 marker_srdl_tf_frame(Identifier, UrdfName) :-
   rdf_has(Identifier, srdl2comp:'urdfName', literal(UrdfName)), !.
 marker_srdl_tf_frame(Identifier, UrdfName) :-
-  not( rdf_has(Identifier, rdf:'type', _) ),
+  rdf_has(Identifier, knowrob:'urdfName', literal(UrdfName)), !.
+marker_srdl_tf_frame(Identifier, UrdfName) :-
+  not( rdf_split_url(_, _, Identifier) ),
   UrdfName = Identifier.
 
 atom_ensure_prefix(Atom, Prefix, Atom) :-
@@ -160,14 +162,19 @@ marker_lookup_transform(MarkerObject, Identifier, T, (Translation,Orientation)) 
   rdf_split_url(Prefix, ObjName, Identifier),
   atomic_list_concat([Prefix,'Object_',ObjName], Object),
   rdfs_individual_of(Object, knowrob:'SpatialThing-Localized'),
-  marker_lookup_transform(MarkerObject, Object, T, (Translation,Orientation)).
+  marker_lookup_transform(MarkerObject, Object, T, (Translation,Orientation)), !.
 
 marker_lookup_transform(_, Identifier, T, (Translation,Orientation)) :-
-  object_pose_at_time(Identifier, T, pose(Translation, Orientation)).
+writeln(marker_lookup_transform),
+write('    Identifier '), writeln(Identifier),
+write('    T '), writeln(T),
+  object_pose_at_time(Identifier, T, pose(Translation, Orientation)),
+write('    Translation '), writeln(Translation),
+write('    Orientation '), writeln(Orientation), !.
 
 % TODO: remove case, should be covered by object_pose_at_time
 marker_lookup_transform(MarkerObject, Identifier, T, (Translation,Orientation)) :-
-  marker_lookup_transform(MarkerObject, Identifier, '/map', T, (Translation,Orientation)).
+  marker_lookup_transform(MarkerObject, Identifier, '/map', T, (Translation,Orientation)), !.
 
 % TODO: remove case, should be covered by object_pose_at_time
 marker_lookup_transform(MarkerObject, Identifier, TargetFrame, T, (Translation,Orientation)) :-
@@ -175,7 +182,7 @@ marker_lookup_transform(MarkerObject, Identifier, TargetFrame, T, (Translation,O
   not( atom_prefix(TfFrame, 'http') ),
   mng_lookup_transform(TargetFrame, TfFrame, T, Pose),
   matrix_rotation(Pose, Orientation),
-  matrix_translation(Pose, Translation).
+  matrix_translation(Pose, Translation), !.
 
 %marker_lookup_transform(MarkerObject, Identifier, TargetFrame, T, (Translation,Orientation)) :-
 %  rdfs_individual_of(Identifier, knowrob:'Designator'),
@@ -364,7 +371,7 @@ marker_initialize_object(Identifier,MarkerObject) :-
     mng_designator_timestamp(Identifier, T),
     mng_designator_location(Identifier, LocList),
     create_timepoint(T, Timepoint),
-    create_pose(LocList, Loc), % FIXME: won't work
+    create_pose(mat(LocList), Loc),
     add_object_as_semantic_instance(Identifier, Loc, Timepoint, Instance),
     marker_initialize_object(Instance,MarkerObject)
   )),
@@ -376,8 +383,7 @@ marker_initialize_object(Identifier,MarkerObject) :-
     marker_scale(MarkerObject, [1.0,1.0,1.0])
   )),
   ignore((
-    % TODO: ignore scale for meshes?
-    %not( marker_type(MarkerObject, mesh_resource) ),
+    not( marker_type(MarkerObject, mesh_resource) ),
     object_dimensions(Identifier, X, Y, Z),
     marker_scale(MarkerObject, [X, Y, Z])
   )),

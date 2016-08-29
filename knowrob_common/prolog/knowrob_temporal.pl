@@ -69,9 +69,9 @@
             holds(t,?),
             holds(r,r,t),
             holds(r,r,t,?),
-            occurs(t),
-            occurs(t,?),
-            occurs(t,?,r),
+            occurs(r),
+            occurs(r,?),
+            occurs(r,?,r),
             interval(?,?),
             interval_start(?,?),
             interval_end(?,?),
@@ -92,10 +92,8 @@
 
 % define holds as meta-predicate and allow the definitions
 % to be in different source files
-:- meta_predicate holds(0, ?, ?, ?, ?),
-                  occurs(0, ?, ?).
-:- multifile holds/4,
-             occurs/2.
+:- meta_predicate holds(0, ?, ?, ?, ?).
+:- multifile holds/4.
 
 %% holds(+Term, ?T)
 %% holds(+Term)
@@ -163,7 +161,7 @@ holds(S, P, O, I) :-
 % True iff @Evt occurs during @T. Where @T is a TimeInterval or TimePoint individual,
 % a number or a list of two numbers representing a time interval.
 %
-% @param Evt Identifier of the event or a term of the form $Type($Instance)
+% @param Evt Identifier of the event
 % @param T   Timepoint or time interval
 % 
 occurs(Evt) :-
@@ -171,20 +169,17 @@ occurs(Evt) :-
   occurs(Evt, T).
 
 % Read event instance from RDF triple store
-occurs(EvtDescr, I) :-
-  occurs(EvtDescr, I, knowrob:'Event').
+occurs(Evt, I) :-
+  occurs(Evt, I, knowrob:'Event').
 
-occurs(EvtDescr, I, Type) :-
+occurs(Evt, I, Type) :-
   rdfs_individual_of(Evt, Type),
-  entity(Evt, EvtDescr),
   interval(Evt, EvtI),
   (  var(I)
   -> I = EvtI
   ;  interval_during(I, EvtI) ).
 
-%% NOTE(daniel): Define computable occurs in external files like this:
-%% knowrob_temporal:occurs(my_event, Descr, [T0,T1]) :-
-%%    occurs_my_event(Descr,[T0,T1]).
+%% TODO: make occurs a multifile predicate
 
 
 

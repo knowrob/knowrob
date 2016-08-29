@@ -511,8 +511,7 @@ mng_desig_chain(Designator, Designators) :-
   rdf_reachable(FirstDesig, knowrob:'successorDesignator', Designator),
   \+ rdf_has(_, knowrob:'successorDesignator', FirstDesig),
   mng_desig_chain_symbolic(FirstDesig, Designators),
-  length(Designators,L), L>1,
-  writeln(quick_match), !.
+  length(Designators,L), L>1, !.
 
 mng_desig_chain(Designator, Designators) :-
   mng_designator(Designator, DesigJava),

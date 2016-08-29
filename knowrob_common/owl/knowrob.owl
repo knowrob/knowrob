@@ -261,6 +261,7 @@
     <!-- http://knowrob.org/kb/knowrob.owl#contains -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#contains">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#locatedAtRelative"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Containers can contain contents; or more strictly, containers have a cavity that can contain contents. We will use our own slot named contains (instead of the Cyc slot named in-cont-generic) to relate a Container to the objects of interest that are currently within the Cavity of that Container. (We ignore for now the problem of objects that are only part-way inside a container.)</rdfs:comment>
     </owl:ObjectProperty>
     
@@ -12050,7 +12051,7 @@ As the above examples illustrate, it is not the case that everthing that has a t
         <queryAbout rdf:resource="http://knowrob.org/kb/knowrob.owl#PurposefulAction"/>
         <groupName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Episodic Memory</groupName>
         <queryName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In which time interval did this action occur?</queryName>
-        <queryString rdf:datatype="http://www.w3.org/2001/XMLSchema#string">event_interval(Individual, T0, T1).</queryString>
+        <queryString rdf:datatype="http://www.w3.org/2001/XMLSchema#string">interval(Action, I).</queryString>
     </owl:NamedIndividual>
     
 
