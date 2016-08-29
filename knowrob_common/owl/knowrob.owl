@@ -6121,6 +6121,14 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Experiment -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Experiment">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Event"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#ExtendedSpaceRegion -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ExtendedSpaceRegion">
@@ -9467,6 +9475,30 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#RedMetalBowl -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RedMetalBowl">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Bowl-Generic"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RedMetalCup -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RedMetalCup">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cup"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RedMetalPlate -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RedMetalPlate">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DinnerPlate"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#RedWine -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RedWine">
@@ -9778,7 +9810,7 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
     <!-- http://knowrob.org/kb/knowrob.owl#RobotExperiment -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RobotExperiment">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Event"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Experiment"/>
     </owl:Class>
     
 
@@ -10154,6 +10186,14 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SilverwarePiece">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodUtensil"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SimulationExperiment -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SimulationExperiment">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Experiment"/>
     </owl:Class>
     
 
