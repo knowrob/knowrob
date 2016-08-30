@@ -19,6 +19,8 @@
 
 :- begin_tests(knowrob_objects).
 
+:- register_ros_package(knowrob_mongo).
+
 :- use_module(library(semweb/rdf_db)).
 :- use_module(library('owl')).
 :- use_module(library('owl_parser')).

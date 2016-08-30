@@ -68,6 +68,7 @@
       mkdir/1,
       matrix_rotation/2,
       matrix_translation/2,
+      matrix_translate/3,
       matrix/3
 ]).
 
@@ -547,4 +548,17 @@ matrix(Translation, Orientation, Matrix) :-
   jpl_list_to_array(Orientation, OrientationArr),
   jpl_call('org.knowrob.utils.MathUtil', 'matrix', [TranslationArr,OrientationArr], MatrixArr),
   jpl_array_to_list(MatrixArr, Matrix).
+
+matrix_translate([M00, M01, M02, MX,
+                  M10, M11, M12, MY,
+                  M20, M21, M22, MZ,
+                  M30, M31, M32, M33],
+                 [OX,OY,OZ],
+                 [M00, M01, M02, MX_,
+                  M10, M11, M12, MY_,
+                  M20, M21, M22, MZ_,
+                  M30, M31, M32, M33]) :-
+  MX_ is MX + OX,
+  MY_ is MY + OY,
+  MZ_ is MZ + OZ.
 

@@ -9475,30 +9475,6 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#RedMetalBowl -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RedMetalBowl">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Bowl-Generic"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#RedMetalCup -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RedMetalCup">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cup"/>
-    </owl:Class>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#RedMetalPlate -->
-
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RedMetalPlate">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DinnerPlate"/>
-    </owl:Class>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#RedWine -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RedWine">

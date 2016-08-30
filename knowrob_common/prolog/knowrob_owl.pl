@@ -607,14 +607,9 @@ entity_(Entity, [a, location|Descr]) :-
   create_location(Axioms, Entity), !.
 
 entity_(Entity, [A, Type|Descr]) :-
-  nonvar(A),nonvar(Type),member(A, [a,an]),
+  nonvar(A),nonvar(Type),member(A, [a,an]), !,
   entity_name(Descr, Entity),
-  ( var(Entity),
-    entity_compute(Entity, [A, Type|Descr])
-  ) ; (
-    entity_head(Entity, [A,Type], _),
-    entity_(Entity, Descr)
-  ).
+  entity_body(Entity, [A, Type|Descr]).
 
 entity_(Entity, [[name,EntityName]|Descr]) :-
   entity_name([name,EntityName], Entity),
@@ -649,6 +644,17 @@ entity_(Entity, [[Key,Value,TemporalRelation,IntervalDescr]|Descr]) :-
   entity_(Entity, Descr).
 
 entity_(_, []).
+
+
+entity_body(Entity, [A, Type|Descr]) :-
+  var(Entity),
+  % TODO: skip if existing before computing
+  % in that case computing still makes sense in order to update
+  % with latest designators
+  once(entity_compute(Entity, [A, Type|Descr])).
+entity_body(Entity, [A, Type|Descr]) :-
+  entity_head(Entity, [A,Type], _),
+  entity_(Entity, Descr).
 
 
 entity_name(Descr, Entity) :-
@@ -818,18 +824,20 @@ entity_properties([['http://www.w3.org/2000/01/rdf-schema#comment',_]|Tail], Des
 entity_properties([['http://www.w3.org/2000/01/rdf-schema#subClassOf',_]|Tail], DescrTail) :-
   entity_properties(Tail, DescrTail), !.
 
-entity_properties([['http://knowrob.org/kb/knowrob.owl#temporalParts',Fluent]|Tail],
-                            [[Key,Value,during,IntervalDescr]|DescrTail]) :-
-  fluent_has(Fluent, PropIri, PropValue, IntervalIri),
-  ( rdf_equal(PropIri, rdf:type)
-  -> (
-    Key=type,
-    entity_iri(PropValue, Value, camelcase)
-  ) ; (
-    entity_properties([[PropIri,PropValue]], [[Key,Value]])
-  )),
-  entity(IntervalIri, IntervalDescr),
-  entity_properties(Tail, DescrTail), !.
+entity_properties([['http://knowrob.org/kb/knowrob.owl#temporalParts',Fluent]|Tail], Descr) :-
+  findall([Key,Value,during,IntervalDescr], (
+    fluent_has(Fluent, PropIri, PropValue, IntervalIri),
+    ( rdf_equal(PropIri, rdf:type)
+    -> (
+      Key=type,
+      entity_iri(PropValue, Value, camelcase)
+    ) ; (
+      entity_properties([[PropIri,PropValue]], [[Key,Value]])
+    )),
+    entity(IntervalIri, IntervalDescr)
+  ), FluentDescr),
+  entity_properties(Tail, DescrTail),
+  append(FluentDescr, DescrTail, Descr), !.
 
 entity_properties([[inverse_of(_),_]|Tail], DescrTail) :-
   entity_properties(Tail, DescrTail), !.

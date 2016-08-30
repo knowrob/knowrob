@@ -132,7 +132,7 @@ test(toTheSideOf2) :-
 test(toTheSideOf3) :-
   rdf_triple(knowrob:'toTheSideOf', test_sp:'cup1', test_sp:'cup2'),!.
 test(toTheSideOf4) :-
-  entity(A, [an, object, [to_the_side_of, [an, object, [name, test_sp:'cup2']]]]),
+  entity(A, [an, object, [type, cup], [to_the_side_of, [an, object, [name, test_sp:'cup2']]]]),
   rdf_equal(A, test_sp:'cup1'),!.
 
 
