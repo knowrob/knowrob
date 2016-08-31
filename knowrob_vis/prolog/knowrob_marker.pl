@@ -31,6 +31,10 @@
 
 :- module(knowrob_marker,
     [
+      show/0,
+      show/1,
+      show/2,
+      
       marker_publish/0,
       marker_republish/0,
       marker/2,
@@ -80,6 +84,8 @@
             marker_show(t),
             marker_update(t),
             marker_update(t,r),
+            show(t),
+            show(t,r),
             marker_remove(t),
             marker_children(t,?),
             marker_type(t,?),
@@ -711,6 +717,10 @@ marker_show(Marker) :-
 %
 % Updating marker for given timepoint/timerange
 %
+
+show :- marker_update.
+show(X) :- marker_update(X).
+show(X,Instant) :- marker_update(X,Instant).
 
 %% marker_update is det.
 %
