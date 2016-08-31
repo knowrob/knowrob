@@ -380,7 +380,13 @@ marker_initialize_object(Identifier,MarkerObject) :-
     marker_type(MarkerObject, mesh_resource),
     marker_mesh_resource(MarkerObject, Path),
     marker_color(MarkerObject, [0.0,0.0,0.0,0.0]),
-    marker_scale(MarkerObject, [1.0,1.0,1.0])
+    marker_scale(MarkerObject, [1.0,1.0,1.0]),
+    
+    ( rdf_has(Identifier, srdl2comp:'mesh_scale', literal(type(_,Scale)))
+    -> (
+      parse_vector(Scale, ScaleVec),
+      marker_scale(MarkerObject, ScaleVec)
+    ) ; true )
   )),
   ignore((
     object_color(Identifier, Color),
