@@ -560,7 +560,7 @@ entity(Entity, EntityClass) :-
 entity(Entity, Descr) :-
   var(Descr), !,
   rdfs_individual_of(Entity,owl:'Thing'),
-  once(entity_head(Entity, [A,TypeBase], TypeIri)),
+  once(entity_head(Entity, [A,TypeBase], _, TypeIri)),
   entity_generate(Entity, [A,TypeBase], TypeIri, Descr).
 
 entity(Entity, Descr) :-
@@ -615,17 +615,21 @@ entity_(Entity, [[name,EntityName]|Descr]) :-
   entity_name([name,EntityName], Entity),
   entity_(Entity, Descr).
 
-entity_(Entity, [[type,Type]|Descr]) :-
+entity_(Entity, [[type,Type]|Descr]) :- % NOTE: type checked in entity_head
   nonvar(Type),
-  entity_iri(TypeIri, Type, camelcase),
-  
-  % TODO: match all entities that ever were classified with Type?
-  % TODO: handle during?
-  current_time(Instant),
-  ( rdfs_individual_of(Entity, TypeIri);
-    fluent_has(Entity, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', TypeIri, Instant);
-    Entity = TypeIri ),
   entity_(Entity, Descr).
+%entity_(Entity, [[type,Type]|Descr]) :-
+%  nonvar(Type),
+%  entity_iri(TypeIri, Type, camelcase),
+%  
+%  % TODO: match all entities that ever were classified with Type?
+%  % TODO: handle during?
+%  current_time(Instant),
+%  once((
+%    rdfs_individual_of(Entity, TypeIri);
+%    fluent_has(Entity, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', TypeIri, Instant);
+%    Entity = TypeIri )),
+%  entity_(Entity, Descr).
 
 %% Key-value property
 entity_(Entity, [[Key,Value]|Descr]) :-
@@ -653,8 +657,11 @@ entity_body(Entity, [A, Type|Descr]) :-
   % with latest designators
   once(entity_compute(Entity, [A, Type|Descr])).
 entity_body(Entity, [A, Type|Descr]) :-
-  entity_head(Entity, [A,Type], _),
-  entity_(Entity, Descr).
+  entity_head(Entity, [A,Type], Descr, _),
+  entity_(Entity, Descr),
+  % check general type last because it matches many entities
+  entity_type([A,Type], TypeIri),
+  owl_individual_of(Entity, TypeIri).
 
 
 entity_name(Descr, Entity) :-
@@ -667,17 +674,10 @@ entity_name(_, _).
 
 
 %% Read entity property value
-entity_has(S,P,O) :-
-  once((
-    entity_has_(S,P,O) ; (
-      atom(S),
-      entity(S,Descr),
-      entity_has_(Descr,P,O)
-    )
-  )).
-entity_has_([], _, _) :- false.
-entity_has_([[Key|[Val|_]]|_], Key, Val) :- !.
-entity_has_([_|Descr], Key, Val) :- entity_has_(Descr,Key,Val).
+entity_has([], _, _) :- false.
+entity_has([[Key,Val|_]|Tail], Key_, Val_) :-
+  (Key_=Key, Val_=Val);
+  entity_has(Tail, Key_, Val_).
 
 
 %% entity_type(?Descr, ?Iri) is det.
@@ -859,7 +859,8 @@ entity_properties([[PropIri,PropValue]|Tail], [[Key,Value]|DescrTail]) :-
   entity_iri(PropIri, Key, lower_camelcase),
   % match rdf value with description value
   (( rdf_has(PropIri, rdf:type, owl:'ObjectProperty'),   entity(PropValue, Value) ) ;
-   ( rdf_has(PropIri, rdf:type, owl:'DatatypeProperty'), property_value(PropValue, Value) )),
+   %( rdf_has(PropIri, rdf:type, owl:'DatatypeProperty'), property_value(PropValue, Value) )),
+   ( rdf_global_term(Value, PropValue) )),
   entity_properties(Tail, DescrTail).
 
 entity_properties([], []).
@@ -898,12 +899,35 @@ entity_generate(Entity, [A,TypeBase], TypeBaseIri, [A,TypeBase|[[type,TypeName]|
 
 
 %% Match [a|an, ?entity_type]
-entity_head(Entity, [A,Type], TypeIri) :-
+entity_head(Entity, _, Descr, TypeIri) :-
   var(Entity),
-  entity_type([A,Type], TypeIri),
-  rdfs_individual_of(Entity, TypeIri).
+  
+  % TODO: match all entities that ever were classified with Type?
+  % TODO: handle during?
+  %current_time(Instant),
+  %once((
+  %  rdfs_individual_of(Entity, TypeIri);
+  %  fluent_has(Entity, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', TypeIri, Instant);
+  %  Entity = TypeIri )),
+  
+  findall(TypeIri, (
+    entity_has(Descr, type, TypeDescr),
+    entity_iri(TypeIri, TypeDescr, camelcase)
+  ), Types),
+  
+  ( Types=[]
+  -> true
+  ; (
+    findall(E, (
+      owl_individual_of_all(E, Types),
+      \+ owl_individual_of(E, knowrob:'TemporalPart')
+    ), Entities),
+    % avoid redundant results of owl_individual_of
+    list_to_set(Entities, EntitiesUnique),
+    member(Entity, EntitiesUnique)
+  )).
 
-entity_head(Entity, [A,Type], TypeIri) :-
+entity_head(Entity, [A,Type], _, TypeIri) :-
   nonvar(Entity),
   findall([A,Type,TypeIri], (
     ( entity_type([A,Type], TypeIri), rdfs_individual_of(Entity, TypeIri) );
@@ -917,6 +941,10 @@ entity_head(Entity, [A,Type], TypeIri) :-
     )
   )).
 
+owl_individual_of_all(Individual, [TypeIri|Types]) :-
+  owl_individual_of(Individual, TypeIri),
+  owl_individual_of_all(Individual, Types).
+owl_individual_of_all(_, []).
 
 entity_type(Entity, TypeBase, Entity) :-
   atom(Entity), rdf_reachable(Entity, rdfs:subClassOf, TypeBase), !.

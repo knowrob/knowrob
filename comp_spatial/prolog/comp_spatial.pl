@@ -368,11 +368,11 @@ in_ContGeneric(InnerObj, OuterObj) :-
     in_ContGeneric_at_time(InnerObj, OuterObj, Instant).
 
 in_ContGeneric_at_time(InnerObj, OuterObj, Instant) :-
-    rdfs_individual_of(InnerObj, knowrob:'SpatialThing-Localized'),
+    rdfs_individual_of(InnerObj, knowrob:'EnduringThing-Localized'),
     object_pose_at_time(InnerObj, Instant, pose([IX,IY,IZ], _)),
     object_dimensions(InnerObj, ID, IW, IH),
     
-    rdfs_individual_of(OuterObj, knowrob:'SpatialThing-Localized'),
+    rdfs_individual_of(OuterObj, knowrob:'Container'),
     InnerObj \= OuterObj,
     object_pose_at_time(OuterObj, Instant, pose([OX,OY,OZ], _)),
     object_dimensions(OuterObj, OD, OW, OH),

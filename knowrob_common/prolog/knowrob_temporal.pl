@@ -154,6 +154,10 @@ holds(S, P, O, I) :-
   -> I = Interval
   ;  interval_during(I, Interval)
   ).
+  
+holds(S, P, O, [0.0]) :-
+  class_properties(S, P, O).
+
 
 %% occurs(?Evt) is nondet.
 %% occurs(?Evt,?T) is nondet.
@@ -175,9 +179,9 @@ occurs(Evt, I) :-
 occurs(Evt, I, Type) :-
   rdfs_individual_of(Evt, Type),
   interval(Evt, EvtI),
-  (  var(I)
-  -> I = EvtI
-  ;  interval_during(I, EvtI) ).
+  (  ground(I)
+  -> interval_during(I, EvtI)
+  ;  I = EvtI ).
 
 %% TODO: make occurs a multifile predicate
 
