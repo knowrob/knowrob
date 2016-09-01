@@ -37,6 +37,7 @@
       entity_type/2,
       entity_compute/2,
       entity_assert/2,
+      entity_iri/3,
       class_properties/3,
       class_properties_some/3,
       class_properties_all/3,
@@ -492,6 +493,9 @@ class_properties_transitive_nosup(Class, Prop, SubComp) :-
 % @param Obj       Instance of a subclass of SpatialThing-Localized
 % @param PoseList  Row-based representation of the object's 4x4 pose matrix as list[16]
 % 
+rotmat_to_list([M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33],
+               [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]) :- !.
+
 rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]) :-
 
     rdf_triple('http://knowrob.org/kb/knowrob.owl#m00',Pose,M00literal), strip_literal_type(M00literal, M00a), term_to_atom(M00, M00a),
@@ -564,6 +568,12 @@ entity(Entity, Descr) :-
   entity_generate(Entity, [A,TypeBase], TypeIri, Descr).
 
 entity(Entity, Descr) :-
+  % FIXME: don't compute all here
+  % compute all so that we can avoid redundant results
+  %% FIXME: won't work if unbound var in Descr!!!
+  %%findall(E, entity_(E, Descr), Entities),
+  %%list_to_set(Entities, EntitiesUnique),
+  %%member(Entity, EntitiesUnique),
   entity_(Entity, Descr),
   % make sure it's an individual and not a class
   rdfs_individual_of(Entity, owl:'Thing'),
@@ -633,9 +643,15 @@ entity_(Entity, [[type,Type]|Descr]) :- % NOTE: type checked in entity_head
 
 %% Key-value property
 entity_(Entity, [[Key,Value]|Descr]) :-
-  nonvar(Key), nonvar(Value),
+  nonvar(Key), %nonvar(Value),
+  % TODO: descriptions must also contain literal(type(_,_)) term, allow to skip that
   entity_properties([[PropIri,PropValue]], [[Key,Value]]),
   holds(Entity,PropIri,PropValue),
+  
+  (  var(Value)
+  -> Value = PropValue
+  ;  true ),
+  
   entity_(Entity, Descr).
 
 %% Fluid properties that match temporal relation.
@@ -844,6 +860,7 @@ entity_properties([[inverse_of(_),_]|Tail], DescrTail) :-
 
 entity_properties([[PropIri,TimeIri]|Tail],
                   [[Key, [a,timepoint,Time]]|DescrTail]) :-
+  once((nonvar(TimeIri);nonvar(Time))),
   rdfs_individual_of(TimeIri, knowrob:'TimePoint'),
   entity_iri(PropIri, Key, lower_camelcase),
   time_term(TimeIri,Time),
@@ -851,6 +868,7 @@ entity_properties([[PropIri,TimeIri]|Tail],
 
 entity_properties([[PropIri,IntervalIri]|Tail],
                   [[Key, [an,interval,Interval]]|DescrTail]) :-
+  once((nonvar(IntervalIri);nonvar(Interval))),
   interval(IntervalIri,Interval),
   entity_iri(PropIri, Key, lower_camelcase),
   entity_properties(Tail, DescrTail), !. % FIXME: does this disable to have events as value keys?
@@ -858,9 +876,10 @@ entity_properties([[PropIri,IntervalIri]|Tail],
 entity_properties([[PropIri,PropValue]|Tail], [[Key,Value]|DescrTail]) :-
   entity_iri(PropIri, Key, lower_camelcase),
   % match rdf value with description value
+  ( once(nonvar(Value);nonvar(PropValue)) ->
   (( rdf_has(PropIri, rdf:type, owl:'ObjectProperty'),   entity(PropValue, Value) ) ;
    %( rdf_has(PropIri, rdf:type, owl:'DatatypeProperty'), property_value(PropValue, Value) )),
-   ( rdf_global_term(Value, PropValue) )),
+   ( rdf_global_term(Value, PropValue) )) ; Value = PropValue ),
   entity_properties(Tail, DescrTail).
 
 entity_properties([], []).
@@ -911,8 +930,10 @@ entity_head(Entity, _, Descr, TypeIri) :-
   %  Entity = TypeIri )),
   
   findall(TypeIri, (
-    entity_has(Descr, type, TypeDescr),
-    entity_iri(TypeIri, TypeDescr, camelcase)
+    entity_has(Descr, type, TypeDescr), once(
+    entity_iri(TypeIri, TypeDescr, camelcase) ;
+    rdf_global_term(TypeDescr, TypeIri) )
+    % TODO: ensure it's really a type
   ), Types),
   
   ( Types=[]

@@ -38,6 +38,7 @@
       mng_designator_before/3,
       mng_designator_before/4,
       mng_designator_type/2,
+      mng_desig_object/2,
       mng_object_type/2,
       mng_designator_location/2,
       mng_designator_location/3,
@@ -77,6 +78,7 @@
     mng_designator_location(r,?),
     mng_designator_location(r,?,r),
     mng_desig_matches(r, +),
+    mng_desig_object(r, r),
     mng_obj_pose_by_desig(r,r),
     mng_object_pose_at_time(r,+,r,?),
     mng_designator_props(r,?),
@@ -486,6 +488,14 @@ jpl_matrix_list(JplMat, [X00, X01, X02, X03,
 
 
 
+
+mng_object_pose_at_time(Object, Instant, Pose, I) :-
+  ground(Instant),
+  rdf_has(Object, srdl2comp:'urdfName', literal(UrdfName)),
+  atom_ensure_prefix(UrdfName, '/', UrdfNameResolved),
+  % FIXME: /map frame 
+  mng_lookup_transform('/map', UrdfNameResolved, Instant, Pose),
+  !.
 
 mng_object_pose_at_time(Object, Instant, Pose, I) :-
   %not( object_pose_specified(Object) ), % TODO not specified at time?

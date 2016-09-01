@@ -147,11 +147,6 @@ marker_srdl_tf_frame(Identifier, UrdfName) :-
   not( atom_prefix(Identifier, 'http') ),
   UrdfName = Identifier.
 
-atom_ensure_prefix(Atom, Prefix, Atom) :-
-  sub_atom(Atom, 0, _, _, Prefix), !.
-atom_ensure_prefix(Atom, Prefix, AtomResolved) :-
-  atom_concat(Prefix, Atom, AtomResolved).
-
 marker_tf_frame(MarkerObject, Identifier, TfFrame) :-
   marker_srdl_tf_frame(Identifier, UrdfName),
   atom_ensure_prefix(UrdfName, '/', UrdfNameResolved),
@@ -1357,6 +1352,11 @@ marker_mesh_resource(Marker, Mesh) :-
 % @param Value The property value
 %
 marker_pose(Marker, pose(Position,Orientation)) :-
+  marker_call(Marker, pose(Position,Orientation), (get_marker_pose,set_marker_pose)).
+
+marker_pose(Marker, mat(Matrix)) :-
+  matrix_translation(Matrix, Position),
+  matrix_rotation(Matrix, Orientation),
   marker_call(Marker, pose(Position,Orientation), (get_marker_pose,set_marker_pose)).
 
 marker_pose(Marker, Position, Orientation) :-

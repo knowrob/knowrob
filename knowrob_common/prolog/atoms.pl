@@ -33,11 +33,18 @@
 :- module(atoms,
     [ lowercase/2,
       camelcase/2,
-      lower_camelcase/2
+      lower_camelcase/2,
+      atom_ensure_prefix/3
 ]).
 
 :- use_module(library('clpfd')). % TODO: what is this used for?
 :- use_module(library('delay')). % TODO: what is this used for?
+
+
+atom_ensure_prefix(Atom, Prefix, Atom) :-
+  sub_atom(Atom, 0, _, _, Prefix), !.
+atom_ensure_prefix(Atom, Prefix, AtomResolved) :-
+  atom_concat(Prefix, Atom, AtomResolved).
 
 lowercase(Upper,Lower) :-
     (ground(Upper);ground(Lower)),
