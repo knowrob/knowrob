@@ -266,8 +266,15 @@ mng_designator_location(Designator, Mat, T) :-
 % 
 mng_designator_timestamp(Designator, Timestamp) :-
   atom(Designator),
-  mng_designator(Designator, DesigJava),
-  mng_designator_timestamp(DesigJava, Timestamp).
+  once((
+    rdf_has(Obj, knowrob:designator, Designator),
+    rdf_has(Ev, knowrob:objectActedOn, Obj),
+    rdfs_individual_of(Ev, knowrob:'Event'),
+    interval_start(Ev, Timestamp)
+  ) ; (
+    mng_designator(Designator, DesigJava),
+    mng_designator_timestamp(DesigJava, Timestamp)
+  )).
   
 mng_designator_timestamp(DesigJava, Timestamp) :-
   jpl_is_object(DesigJava),
@@ -283,7 +290,7 @@ mng_designator_interval(Designator, Interval) :-
 
 mng_designator_interval(Designator, DesigJava, Interval) :-
   jpl_is_object(DesigJava),
-  mng_designator_timestamp(DesigJava, Begin),
+  mng_designator_timestamp(Designator, Begin),
   (  rdf_has(Designator, knowrob:successorDesignator, Succ)
   ->  (
       mng_designator_timestamp(Succ, End),
@@ -490,14 +497,17 @@ jpl_matrix_list(JplMat, [X00, X01, X02, X03,
 
 
 mng_object_pose_at_time(Object, Instant, Pose, I) :-
-  ground(Instant),
+  nonvar(Instant),
   rdf_has(Object, srdl2comp:'urdfName', literal(UrdfName)),
+  \+ rdfs_individual_of(Object, knowrob:'TemporalPart'),
   atom_ensure_prefix(UrdfName, '/', UrdfNameResolved),
   % FIXME: /map frame 
   mng_lookup_transform('/map', UrdfNameResolved, Instant, Pose),
   !.
 
 mng_object_pose_at_time(Object, Instant, Pose, I) :-
+  nonvar(Object),
+  \+ rdfs_individual_of(Object, knowrob:'TemporalPart'),
   %not( object_pose_specified(Object) ), % TODO not specified at time?
   entity(Object, Descr),
   mng_object_compute(Object, Descr),
