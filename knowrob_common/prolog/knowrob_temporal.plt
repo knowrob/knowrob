@@ -149,7 +149,7 @@ test(fluent_has_type_holds) :-
 
 test(fluent_has_type_descr) :-
   entity(knowrob_temporal_test:'EnduringThing-Localized_GSFgh4u6', Descr),
-  entity_has(Descr, type, cup).
+  entity_has(Descr, type, cup), !.
 
 test(fluent_type_match) :-
   entity(knowrob_temporal_test:'EnduringThing-Localized_GSFgh4u6', [an, object, [type, cup]]), !.

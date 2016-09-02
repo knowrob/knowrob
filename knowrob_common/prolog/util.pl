@@ -439,6 +439,7 @@ max_list1([A|Arest], OldMax ,Max) :-
 % Strip the literal(type(..., Value)) and return value if present, else return the original.
 %
 strip_literal_type(literal(type(_, Value)), Value) :- !.
+strip_literal_type(literal(Value), Value) :- !.
 strip_literal_type(Value, Value).
 
 %% property_name(+Relation,-RelationName)

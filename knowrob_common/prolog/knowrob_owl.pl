@@ -643,20 +643,29 @@ entity_(Entity, [[type,Type]|Descr]) :- % NOTE: type checked in entity_head
 
 %% Key-value property
 entity_(Entity, [[Key,Value]|Descr]) :-
-  nonvar(Key), %nonvar(Value),
-  % TODO: descriptions must also contain literal(type(_,_)) term, allow to skip that
-  entity_properties([[PropIri,PropValue]], [[Key,Value]]),
+  nonvar(Key),
+  entity_iri(PropIri, Key, lower_camelcase),
+  
+  % TODO: if ground(Value), \+ is_list(Value): bind PropValue before!!
   holds(Entity,PropIri,PropValue),
   
-  (  var(Value)
-  -> Value = PropValue
-  ;  true ),
+  ( rdf_has(PropIri, rdf:type, owl:'DatatypeProperty')
+  -> (
+    % strip literal(type(_,_)) term and match data values
+    strip_literal_type(PropValue, X),
+    (var(Value) -> Value=X ; strip_literal_type(Value, X))
+  ) ; (
+    (  var(Value)
+    -> Value = PropValue % Bind Iri if var(Value)
+    ;  entity_object_value(PropValue, Value) )
+  )),
   
   entity_(Entity, Descr).
 
 %% Fluid properties that match temporal relation.
 entity_(Entity, [[Key,Value,TemporalRelation,IntervalDescr]|Descr]) :-
   nonvar(Key), nonvar(Value),
+  % FIXME: may be slow to compute PropValue here, look at above case
   entity_properties([[PropIri,PropValue]], [[Key,Value]]),
   interval(IntervalDescr, Interval),
   holds(Entity,PropIri,PropValue,FluentInterval),
@@ -665,6 +674,18 @@ entity_(Entity, [[Key,Value,TemporalRelation,IntervalDescr]|Descr]) :-
 
 entity_(_, []).
 
+
+entity_object_value(Iri, Value) :-
+  is_list(Value),
+  entity(Iri, Value), !.
+entity_object_value(Iri, Value) :-
+  entity_ns(Value, NS, ValueUnderscore),
+  atom(ValueUnderscore),
+  camelcase(ValueUnderscore, ValueCamel),
+  atom_concat(NS, ValueCamel, Iri), !.
+entity_object_value(Iri, Value) :-
+  rdf_global_term(Value, Iri), !.
+  
 
 entity_body(Entity, [A, Type|Descr]) :-
   var(Entity),
@@ -690,10 +711,8 @@ entity_name(_, _).
 
 
 %% Read entity property value
-entity_has([], _, _) :- false.
-entity_has([[Key,Val|_]|Tail], Key_, Val_) :-
-  (Key_=Key, Val_=Val);
-  entity_has(Tail, Key_, Val_).
+entity_has([[Key,Val|_]|_], Key, Val).
+entity_has([_|Tail], Key, Val) :- entity_has(Tail, Key, Val).
 
 
 %% entity_type(?Descr, ?Iri) is det.
@@ -711,7 +730,6 @@ entity_type([an,object],    'http://knowrob.org/kb/knowrob.owl#EnduringThing-Loc
 entity_type([a,location],   'http://knowrob.org/kb/knowrob.owl#SpaceRegion').
 entity_type([a,pose],       'http://knowrob.org/kb/knowrob.owl#Pose').
 entity_type([a,trajectory], 'http://knowrob.org/kb/knowrob.owl#Trajectory').
-
 
 %% entity_compute(?Entity, ?Descr) is nondet.
 %
@@ -878,7 +896,6 @@ entity_properties([[PropIri,PropValue]|Tail], [[Key,Value]|DescrTail]) :-
   % match rdf value with description value
   ( once(nonvar(Value);nonvar(PropValue)) ->
   (( rdf_has(PropIri, rdf:type, owl:'ObjectProperty'),   entity(PropValue, Value) ) ;
-   %( rdf_has(PropIri, rdf:type, owl:'DatatypeProperty'), property_value(PropValue, Value) )),
    ( rdf_global_term(Value, PropValue) )) ; Value = PropValue ),
   entity_properties(Tail, DescrTail).
 
@@ -986,6 +1003,7 @@ entity_ns(Entity, NamespaceUri, EntityName) :-
   )), !.
 
 entity_ns(Entity, NamespaceUri, EntityName) :-
+  atom(Entity),
   rdf_split_url(NamespaceUri, EntityName, Entity).
 
 

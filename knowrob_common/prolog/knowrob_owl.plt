@@ -152,7 +152,7 @@ test(assert_location_with_property) :-
 test(generate_location_description) :-
   entity(knowrob:'Location_on-Physical_Refrigerator_fg45543', X),
   X = [a, location|Descr],
-  entity_has(Descr, 'on-physical', _).
+  once(entity_has(Descr, 'on-physical', _)).
 
 
 %% Fluents
