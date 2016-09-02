@@ -679,8 +679,9 @@ entity_object_value(Iri, Value) :-
   is_list(Value),
   entity(Iri, Value), !.
 entity_object_value(Iri, Value) :-
+  once( var(Iri) ; atom(Iri) ),
   entity_ns(Value, NS, ValueUnderscore),
-  atom(ValueUnderscore),
+  atom(NS), atom(ValueUnderscore),
   camelcase(ValueUnderscore, ValueCamel),
   atom_concat(NS, ValueCamel, Iri), !.
 entity_object_value(Iri, Value) :-
@@ -808,7 +809,7 @@ entity_assert(Entity, [[Key,Value,during,IntervalDescr]|Descr]) :-
   nonvar(Entity), nonvar(Key), nonvar(Value),
   entity_iri(PropIri, Key, lower_camelcase),
   entity(Interval, IntervalDescr),
-  (  rdf_has(PropIri, rdf:type, owl:'ObjectProperty')
+  (  rdf_has(PropIri, rdf:type, owl:'ObjectProperty') % FIXME: also holds for datatype prop
   ->  ( % nested entity
       entity(ValueEntity, Value),
       create_fluent(Entity, Fluent, Interval),
@@ -894,9 +895,10 @@ entity_properties([[PropIri,IntervalIri]|Tail],
 entity_properties([[PropIri,PropValue]|Tail], [[Key,Value]|DescrTail]) :-
   entity_iri(PropIri, Key, lower_camelcase),
   % match rdf value with description value
-  ( once(nonvar(Value);nonvar(PropValue)) ->
-  (( rdf_has(PropIri, rdf:type, owl:'ObjectProperty'),   entity(PropValue, Value) ) ;
-   ( rdf_global_term(Value, PropValue) )) ; Value = PropValue ),
+  (  rdf_has(PropIri, rdf:type, owl:'DatatypeProperty')
+  -> (var(Value) -> strip_literal_type(PropValue, Value) ; rdf_global_term(Value, PropValue))
+  ;  entity(PropValue, Value)
+  ),
   entity_properties(Tail, DescrTail).
 
 entity_properties([], []).
