@@ -715,7 +715,15 @@ marker_show(Marker) :-
 
 show :- marker_update.
 show(X) :- marker_update(X).
-show(X,Instant) :- marker_update(X,Instant).
+show(X, Props) :-
+  is_list(Props),
+  marker_update(X),
+  marker_properties(X, Props).
+show(X, Instant) :-
+  marker_update(X,Instant).
+show(X, Instant, Props) :-
+  marker_update(X,Instant),
+  marker_properties(X, Props).
 
 %% marker_update is det.
 %
@@ -1249,6 +1257,9 @@ marker_property(Marker, scale(Scale)) :-
 
 marker_property(Marker, pose(Position,Orientation)) :-
   marker_pose(Marker, Position, Orientation).
+
+marker_property(Marker, pose(mat(Mat))) :-
+  marker_pose(Marker, mat(Mat)).
 
 marker_property(Marker, mesh(Mesh)) :-
   marker_mesh_resource(Marker, Mesh).
