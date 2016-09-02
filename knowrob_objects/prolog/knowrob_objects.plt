@@ -58,7 +58,7 @@ test(current_object_pose) :-
                        0.0,         0.0,        0.0, 1.0]).
 
 test(object_pose_at_time) :-
-  object_pose_at_time(test_knowrob_objects:'Cup1', test_knowrob_objects:'timepoint_1331040458',
+  object_pose_at_time(test_knowrob_objects:'Cup1', knowrob:'timepoint_1331040458',
                       mat([0.99607825, -0.08847681, 0.0, 1.1277804,
                        0.08847681,  0.99607825, 0.0, 2.6304414,
                        0.0,         0.0,        1.0, 0.816479,

@@ -267,10 +267,6 @@ object_pose_holds(Obj, Time, Pose, Interval) :-
   )).
 
 object_pose_holds(Obj, Time, Pose, Interval) :-
-  nonvar(Obj),
-  mng_object_pose_at_time(Obj, Time, Pose, Interval), !.
-
-object_pose_holds(Obj, Time, Pose, Interval) :-
   not( is_list(Time) ), % FIXME: howto handle interval case?
   object_detection(Obj, Time, Detection),
   rdf_triple(knowrob:eventOccursAt, Detection, Pose),
@@ -286,13 +282,25 @@ object_pose_holds(Obj, Time, Pose, Interval) :-
       Interval = [Begin]
   )), !.
 
+object_pose_holds(Obj, Time, Pose, Interval) :-
+  nonvar(Obj),
+  mng_object_pose_at_time(Obj, Time, Pose, Interval), !.
+
+
+% TransformationMatrix
+object_pose(Matrix, _, pose([X,Y,Z], [QW,QX,QY,QZ])) :-
+  is_list(Matrix), !,
+  matrix_rotation(Matrix, [QW,QX,QY,QZ]),
+  matrix_translation(Matrix, [X,Y,Z]).
+
+object_pose(Matrix, _, mat(Matrix)) :-
+  is_list(Matrix), !.
 
 % TODO: rename to read pose? move to knowrob_owl
 % TF pose
 object_pose(Pose, Instant, pose([X,Y,Z], [QW,QX,QY,QZ])) :-
-  \+ is_list(Pose),
   rdf_has(Pose, srdl2comp:'urdfName', literal(URDFName)),
-  mng_lookup_transform('/map', URDFName, Instant, Transform),
+  mng_lookup_transform('/map', URDFName, Instant, Transform), % FIXME: /map
   matrix_rotation(Transform, [QW,QX,QY,QZ]),
   matrix_translation(Transform, [MX,MY,MZ]),
   % apply offset if specified
@@ -301,9 +309,8 @@ object_pose(Pose, Instant, pose([X,Y,Z], [QW,QX,QY,QZ])) :-
   ;  [X,Y,Z] = [MX,MY,MZ] ), !.
   
 object_pose(Pose, Instant, mat(Mat)) :-
-  \+ is_list(Pose),
   rdf_has(Pose, srdl2comp:'urdfName', URDFName),
-  mng_lookup_transform('/map', URDFName, Instant, Mat_),
+  mng_lookup_transform('/map', URDFName, Instant, Mat_), % FIXME: /map
   % apply offset if specified
   ( position_to_list(Pose, [OX,OY,OZ])
   -> matrix_translate(Mat_, [OX,OY,OZ], Mat)
@@ -311,27 +318,23 @@ object_pose(Pose, Instant, mat(Mat)) :-
 
 % Quaternion and position
 object_pose(Pose, _, pose([X,Y,Z], [QW,QX,QY,QZ])) :-
-  \+ is_list(Pose),
   position_to_list(Pose, [X,Y,Z]),
   quaternion_to_list(Pose, [QW,QX,QY,QZ]), !.
 
 object_pose(Pose, _, mat(Mat)) :-
-  \+ is_list(Pose),
   position_to_list(Pose, [X,Y,Z]),
   quaternion_to_list(Pose, [QW,QX,QY,QZ]),
   matrix([X,Y,Z], [QW,QX,QY,QZ], Mat), !.
 
-
-% TransformationMatrix
 object_pose(Pose, _, pose([X,Y,Z], [QW,QX,QY,QZ])) :-
-  is_list(Pose),
+  rdfs_individual_of(Pose, knowrob:'Matrix'),
   rotmat_to_list(Pose, Matrix),
   matrix_rotation(Matrix, [QW,QX,QY,QZ]),
   matrix_translation(Matrix, [X,Y,Z]), !.
 
-object_pose(Pose, _, mat(Mat)) :-
-  is_list(Pose),
-  rotmat_to_list(Pose, Mat), !.
+object_pose(Pose, _, mat(Matrix)) :-
+  rdfs_individual_of(Pose, knowrob:'Matrix'),
+  rotmat_to_list(Pose, Matrix), !.
 
 
 %% object_dimensions(?Obj, ?Depth, ?Width, ?Height) is nondet.
