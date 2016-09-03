@@ -50,6 +50,32 @@
 
     <owl:Class rdf:about="&robot;boxy">
         <rdfs:subClassOf rdf:resource="&knowrob;Robot"/>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&srdl2-cap;hasCapability"/>
+                        <owl:someValuesFrom rdf:resource="&srdl2-cap;GraspingCapability"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&srdl2-cap;hasCapability"/>
+                        <owl:someValuesFrom rdf:resource="&srdl2-cap;GripperMotionCapability"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&srdl2-cap;hasCapability"/>
+                        <owl:someValuesFrom rdf:resource="&srdl2-cap;move_arm"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&srdl2-cap;hasCapability"/>
+                        <owl:someValuesFrom rdf:resource="&srdl2-cap;move_base"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&srdl2-cap;hasCapability"/>
+                        <owl:someValuesFrom rdf:resource="&srdl2-cap;ObjectRecognitionCapability"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
     </owl:Class>
 
 
