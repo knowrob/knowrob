@@ -310,7 +310,8 @@ object_pose(Pose, Instant, pose([X,Y,Z], [QW,QX,QY,QZ])) :-
   
 object_pose(Pose, Instant, mat(Mat)) :-
   rdf_has(Pose, srdl2comp:'urdfName', URDFName),
-  mng_lookup_transform('/map', URDFName, Instant, Mat_), % FIXME: /map
+  strip_literal_type(URDFName, URDFName_Stripped),
+  mng_lookup_transform('/map', URDFName_Stripped, Instant, Mat_), % FIXME: /map
   % apply offset if specified
   ( position_to_list(Pose, [OX,OY,OZ])
   -> matrix_translate(Mat_, [OX,OY,OZ], Mat)
