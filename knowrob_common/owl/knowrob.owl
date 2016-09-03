@@ -12105,7 +12105,7 @@ As the above examples illustrate, it is not the case that everthing that has a t
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#Query_GDBHFHRK6S75R">
         <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#Query"/>
         <queryAbout rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-        <groupName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OWL Properties</groupName>
+        <groupName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Symbolic knowledge</groupName>
         <queryName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">What are the object properties?</queryName>
         <queryString rdf:datatype="http://www.w3.org/2001/XMLSchema#string">findall(_X, (owl_has(Individual, _Property, _Value), property_name(_Property, _PropertyName), property_value(_Value, _PropertyValue), atomic_list_concat([&apos;   &apos;,_PropertyName,_PropertyValue], &apos; &apos;, _X) ), _PropertyNames), atomic_list_concat([&apos;&apos;|_PropertyNames], &apos;\n&apos;, Properties)</queryString>
     </owl:NamedIndividual>
