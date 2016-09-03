@@ -699,7 +699,7 @@ entity_body(Entity, [A, Type|Descr]) :-
   entity_(Entity, Descr),
   % check general type last because it matches many entities
   entity_type([A,Type], TypeIri),
-  owl_individual_of(Entity, TypeIri).
+  once(owl_individual_of(Entity, TypeIri)).
 
 
 entity_name(Descr, Entity) :-
