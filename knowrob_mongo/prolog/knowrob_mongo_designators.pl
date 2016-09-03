@@ -160,6 +160,7 @@ mng_obj_pose_by_desig(Obj, Pose) :-
 mng_designator_type(Designator, Type) :-
   atom(Designator),
   mng_designator(Designator, DesigJava),
+  not( jpl_null(DesigJava) ),
   jpl_call(DesigJava, 'getType', [], Type).
 
 mng_designator_type(DesigJava, Type) :-

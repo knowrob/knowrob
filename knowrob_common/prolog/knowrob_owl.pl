@@ -647,6 +647,8 @@ entity_(Entity, [[Key,Value]|Descr]) :-
   entity_iri(PropIri, Key, lower_camelcase),
   
   % TODO: if ground(Value), \+ is_list(Value): bind PropValue before!!
+  %    - if object property -> must be individual or class (use entity_iri)
+  %    - if data property -> must be one of [literal(type(_,Val)), literal(Val), Val]
   holds(Entity,PropIri,PropValue),
   
   ( rdf_has(PropIri, rdf:type, owl:'DatatypeProperty')
