@@ -8057,6 +8057,14 @@ For predicates that relate things to measurable quantities that characterize the
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#MovingAnObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MovingAnObject">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Movement-TranslationEvent"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#MultiRoomUnit -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MultiRoomUnit">
