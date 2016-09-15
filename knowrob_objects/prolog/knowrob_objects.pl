@@ -284,7 +284,7 @@ object_pose_holds(Obj, Time, Pose, Interval) :-
 
 object_pose_holds(Obj, Time, Pose, Interval) :-
   nonvar(Obj),
-  mng_object_pose_at_time(Obj, Time, Pose, Interval), !.
+  knowrob_mongo:mng_object_pose_at_time(Obj, Time, Pose, Interval), !.
 
 
 % TransformationMatrix
