@@ -261,6 +261,7 @@
     <!-- http://knowrob.org/kb/knowrob.owl#contains -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#contains">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#locatedAtRelative"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Containers can contain contents; or more strictly, containers have a cavity that can contain contents. We will use our own slot named contains (instead of the Cyc slot named in-cont-generic) to relate a Container to the objects of interest that are currently within the Cavity of that Container. (We ignore for now the problem of objects that are only part-way inside a container.)</rdfs:comment>
     </owl:ObjectProperty>
     
@@ -1937,6 +1938,14 @@ See also the specialization cotemporal.</rdfs:comment>
         <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">(toTheSideOf OBJ1 OBJ2) says that OBJ1 is located to OBJ2&apos;s left or right side. Thus the arg2 of toTheSideOf is restricted to instances of LeftAndRightSidedObject. The arg1 can be any instance of SpatialThing_Localized. Because of this asymmetry in argument restrictions, toTheSideOf is not sufficient for representing all cases in which one object is to the right or left of another (see toTheRightOf and toTheLeftOf). Note that this predicate cannot be used to state that an object is to the side of another, from the perspective of a third party, except as an argument in a perceivesThat assertion.</rdfs:comment>
         <rdfs:seeAlso rdf:resource="http://sw.opencyc.org/concept/Mx4rp1hyhk34QdiBZo0vBK7unQ"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#toolUsed -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#toolUsed">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#preActors"/>
     </owl:ObjectProperty>
     
 
@@ -6120,6 +6129,14 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Experiment -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Experiment">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Event"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#ExtendedSpaceRegion -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ExtendedSpaceRegion">
@@ -8040,6 +8057,14 @@ For predicates that relate things to measurable quantities that characterize the
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#MovingAnObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MovingAnObject">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Movement-TranslationEvent"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#MultiRoomUnit -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MultiRoomUnit">
@@ -9777,7 +9802,7 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
     <!-- http://knowrob.org/kb/knowrob.owl#RobotExperiment -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RobotExperiment">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Event"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Experiment"/>
     </owl:Class>
     
 
@@ -10153,6 +10178,14 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SilverwarePiece">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodUtensil"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SimulationExperiment -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SimulationExperiment">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Experiment"/>
     </owl:Class>
     
 
@@ -12050,7 +12083,7 @@ As the above examples illustrate, it is not the case that everthing that has a t
         <queryAbout rdf:resource="http://knowrob.org/kb/knowrob.owl#PurposefulAction"/>
         <groupName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Episodic Memory</groupName>
         <queryName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In which time interval did this action occur?</queryName>
-        <queryString rdf:datatype="http://www.w3.org/2001/XMLSchema#string">event_interval(Individual, T0, T1).</queryString>
+        <queryString rdf:datatype="http://www.w3.org/2001/XMLSchema#string">interval(Action, I).</queryString>
     </owl:NamedIndividual>
     
 
@@ -12072,7 +12105,7 @@ As the above examples illustrate, it is not the case that everthing that has a t
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#Query_GDBHFHRK6S75R">
         <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#Query"/>
         <queryAbout rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-        <groupName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OWL Properties</groupName>
+        <groupName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Symbolic knowledge</groupName>
         <queryName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">What are the object properties?</queryName>
         <queryString rdf:datatype="http://www.w3.org/2001/XMLSchema#string">findall(_X, (owl_has(Individual, _Property, _Value), property_name(_Property, _PropertyName), property_value(_Value, _PropertyValue), atomic_list_concat([&apos;   &apos;,_PropertyName,_PropertyValue], &apos; &apos;, _X) ), _PropertyNames), atomic_list_concat([&apos;&apos;|_PropertyNames], &apos;\n&apos;, Properties)</queryString>
     </owl:NamedIndividual>

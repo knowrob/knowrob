@@ -107,7 +107,8 @@ parse_vector(In, Numbers) :-
   parse_vector(In, Numbers, ' ').
 parse_vector(In, Numbers, Delimiter) :-
   atom(In),
-  atomic_list_concat(Atoms, Delimiter, In),
+  normalize_space(atom(In_Normalized),In),
+  atomic_list_concat(Atoms, Delimiter, In_Normalized),
   findall(Num, (
     member(Atom,Atoms),
     atom_number(Atom,Num)

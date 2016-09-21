@@ -86,15 +86,17 @@
 
 
 spatially_holds_interval(S, P, O, I) :-
-  forall((
-    % For all time instants of object pose changes during I
-    (Obj=S;Obj=O),
-    object_pose_at_time(Obj, Instant, _, PoseInterval),
-    interval_start(PoseInterval, Instant),
-    interval_during(Instant, I)
-  ), (
-    call(P, S, O, Instant)
-  )).
+  %forall((
+  %  % For all time instants of object pose changes during I
+  %  (Obj=S;Obj=O),
+  %  % FIXME: this won't work since Instant unbound
+  %  object_pose_at_time(Obj, Instant, _, PoseInterval),
+  %  interval_start(PoseInterval, Instant),
+  %  interval_during(Instant, I)
+  %), (
+  %  call(P, S, O, Instant)
+  %)).
+  call(P, S, O, I).
 
 
 %% on_Physical(?Top, ?Bottom) is nondet.
@@ -119,14 +121,14 @@ on_Physical_at_time(Top, Bottom, Instant) :-
     rdfs_individual_of(Bottom, knowrob:'SpatialThing-Localized'),
     Top \= Bottom,
     % query for objects at center point
-    objectAtPoint2D(TX,TY,Bottom),
+    objectAtPoint2D(TX,TY,Bottom,Instant),
     % get height of objects at center point
     object_pose_at_time(Bottom, Instant, pose([_,_,BZ], _)),
 
     % the criterion is if the difference between them is less than epsilon=5cm
     <( BZ, TZ).
 
-knowrob_temporal:holds(Top, knowrob:'on-Physical', Bottom, Interval) :-
+knowrob_temporal:holds(Top, 'http://knowrob.org/kb/knowrob.owl#on-Physical', Bottom, Interval) :-
     spatially_holds_interval(Top, on_Physical_at_time, Bottom, Interval).
 
 %%% knowrob_temporal:holds(on_Physical(Top, Bottom), T) :-
@@ -185,7 +187,7 @@ comp_above_of_at_time(Top, Bottom, Instant) :-
     Top \= Bottom,
 
     % query for objects at center point
-    objectAtPoint2D(TX,TY,Bottom),
+    objectAtPoint2D(TX,TY,Bottom,Instant),
 
     % get height of objects at center point
     object_pose_at_time(Bottom, Instant, pose([_,_,BZ], _)),
@@ -193,7 +195,7 @@ comp_above_of_at_time(Top, Bottom, Instant) :-
     % the criterion is if the difference between them is less than epsilon=5cm
     <( BZ, TZ).
 
-knowrob_temporal:holds(Top, knowrob:'above-Generally', Bottom, Interval) :-
+knowrob_temporal:holds(Top, 'http://knowrob.org/kb/knowrob.owl#above-Generally', Bottom, Interval) :-
     spatially_holds_interval(Top, comp_above_of_at_time, Bottom, Interval).
 
 
@@ -210,7 +212,7 @@ knowrob_temporal:holds(Top, knowrob:'above-Generally', Bottom, Interval) :-
 %
 comp_below_of(Bottom, Top) :- comp_above_of(Top, Bottom).
 
-knowrob_temporal:holds(Bottom, knowrob:'below-Generally', Top, Interval) :-
+knowrob_temporal:holds(Bottom, 'http://knowrob.org/kb/knowrob.owl#below-Generally', Top, Interval) :-
     spatially_holds_interval(Top, comp_above_of_at_time, Bottom, Interval).
 
 
@@ -244,7 +246,7 @@ comp_toTheLeftOf_at_time(Left, Right, Instant) :-
     =<( RY, LY ),              % right obj has a smaller y coord than the left one (on the table)
     =<( abs( LZ - RZ), 0.30).  % less than 30cm height diff
 
-knowrob_temporal:holds(Left, knowrob:'toTheLeftOf', Right, Interval) :-
+knowrob_temporal:holds(Left, 'http://knowrob.org/kb/knowrob.owl#toTheLeftOf', Right, Interval) :-
     spatially_holds_interval(Left, comp_toTheLeftOf_at_time, Right, Interval).
 
 
@@ -262,7 +264,7 @@ knowrob_temporal:holds(Left, knowrob:'toTheLeftOf', Right, Interval) :-
 %
 comp_toTheRightOf(Right, Left) :- comp_toTheLeftOf(Left, Right).
 
-knowrob_temporal:holds(Right, knowrob:'toTheRightOf', Left, Interval) :-
+knowrob_temporal:holds(Right, 'http://knowrob.org/kb/knowrob.owl#toTheRightOf', Left, Interval) :-
     spatially_holds_interval(Left, comp_toTheLeftOf_at_time, Right, Interval).
 
 
@@ -282,7 +284,7 @@ knowrob_temporal:holds(Right, knowrob:'toTheRightOf', Left, Interval) :-
 comp_toTheSideOf(A, B) :-
     once(comp_toTheRightOf(A, B); comp_toTheLeftOf(A, B)).
 
-knowrob_temporal:holds(A, knowrob:'toTheSideOf', B, Interval) :-
+knowrob_temporal:holds(A, 'http://knowrob.org/kb/knowrob.owl#toTheSideOf', B, Interval) :-
     once(knowrob_temporal:holds(A, knowrob:'toTheRightOf', B, Interval) ;
          knowrob_temporal:holds(A, knowrob:'toTheLeftOf', B, Interval)).
 
@@ -315,7 +317,7 @@ comp_inFrontOf_at_time(Front, Back, Instant) :-
 
     =<( BX, FX ).      % front obj has a higher x coord.
     
-knowrob_temporal:holds(Front, knowrob:'inFrontOf-Generally', Back, Interval) :-
+knowrob_temporal:holds(Front, 'http://knowrob.org/kb/knowrob.owl#inFrontOf-Generally', Back, Interval) :-
     spatially_holds_interval(Front, comp_inFrontOf_at_time, Back, Interval).
 
 
@@ -348,7 +350,7 @@ comp_inCenterOf_at_time(Inner, Outer, Instant) :-
     =<( abs( IY - OY), 0.20),  % less than 20cm y diff
     =<( abs( IZ - OZ), 0.20).  % less than 20cm z diff
     
-knowrob_temporal:holds(Inner, knowrob:'inCenterOf', Outer, Interval) :-
+knowrob_temporal:holds(Inner, 'http://knowrob.org/kb/knowrob.owl#inCenterOf', Outer, Interval) :-
     spatially_holds_interval(Inner, comp_inCenterOf_at_time, Outer, Interval).
 
 
@@ -368,11 +370,11 @@ in_ContGeneric(InnerObj, OuterObj) :-
     in_ContGeneric_at_time(InnerObj, OuterObj, Instant).
 
 in_ContGeneric_at_time(InnerObj, OuterObj, Instant) :-
-    rdfs_individual_of(InnerObj, knowrob:'SpatialThing-Localized'),
+    rdfs_individual_of(InnerObj, knowrob:'EnduringThing-Localized'),
     object_pose_at_time(InnerObj, Instant, pose([IX,IY,IZ], _)),
     object_dimensions(InnerObj, ID, IW, IH),
     
-    rdfs_individual_of(OuterObj, knowrob:'SpatialThing-Localized'),
+    rdfs_individual_of(OuterObj, knowrob:'Container'),
     InnerObj \= OuterObj,
     object_pose_at_time(OuterObj, Instant, pose([OX,OY,OZ], _)),
     object_dimensions(OuterObj, OD, OW, OH),
@@ -383,7 +385,7 @@ in_ContGeneric_at_time(InnerObj, OuterObj, Instant) :-
     >=( (IY - 0.5*IW), (OY - 0.5*OW)-0.05 ), =<( (IY + 0.5*IW), (OY + 0.5*OW)+0.05 ),
     >=( (IZ - 0.5*IH), (OZ - 0.5*OH)-0.05 ), =<( (IZ + 0.5*IH), (OZ + 0.5*OH)+0.05 ).
 
-knowrob_temporal:holds(Inner, knowrob:'in-ContGeneric', Outer, Interval) :-
+knowrob_temporal:holds(Inner, 'http://knowrob.org/kb/knowrob.owl#in-ContGeneric', Outer, Interval) :-
   spatially_holds_interval(Inner, in_ContGeneric_at_time, Outer, Interval).
 
 
@@ -461,14 +463,18 @@ objectAtPoint2D(Point2D, Obj) :-
 % @bug        THIS IS BROKEN FOR ALL NON-STANDARD ROTATIONS if the upper left matrix is partly zero
 %
 objectAtPoint2D(PX,PY,Obj) :-
+    get_timepoint(Instant),
+    objectAtPoint2D(PX,PY,Obj, Instant).
+ 
+objectAtPoint2D(PX, PY, Obj, Instant) :-
 
     % get information of potential objects at positon point2d (x/y)
     object_dimensions(Obj, OD, OW, _),
     
-    current_object_pose(Obj, [M00, M01, _, OX,
-                              M10, M11, _, OY,
-                              _, _, _, _,
-                              _, _, _, _]),
+    object_pose_at_time(Obj, Instant, mat([M00, M01, _, OX,
+                                           M10, M11, _, OY,
+                                           _, _, _, _,
+                                           _, _, _, _])),
 
     % object must have an extension
     <(0,OW), <(0,OD),

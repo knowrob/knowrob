@@ -51,6 +51,11 @@ public class Designator {
 		values = new LinkedHashMap<String, Object>();
 		this.instant = instant;
 	}
+        
+        public Designator() {
+                values = new LinkedHashMap<String, Object>();
+                this.instant = new java.util.Date();
+        }
 
 	public boolean containsKey(Object arg0) {
 		return values.containsKey(arg0);

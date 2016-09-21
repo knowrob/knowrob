@@ -38,6 +38,7 @@
       mng_designator_before/3,
       mng_designator_before/4,
       mng_designator_type/2,
+      mng_desig_object/2,
       mng_object_type/2,
       mng_designator_location/2,
       mng_designator_location/3,
@@ -47,6 +48,7 @@
       mng_designator_props/4,
       mng_desig_matches/2,
       mng_obj_pose_by_desig/2,
+      mng_object_pose_at_time/4,
       mng_designator_distinct_values/2,
       mng_decision_tree/1
     ]).
@@ -76,7 +78,9 @@
     mng_designator_location(r,?),
     mng_designator_location(r,?,r),
     mng_desig_matches(r, +),
+    mng_desig_object(r, r),
     mng_obj_pose_by_desig(r,r),
+    mng_object_pose_at_time(r,+,r,?),
     mng_designator_props(r,?),
     mng_designator_props(r,+,+,?),
     mng_designator_type(r,?),
@@ -156,6 +160,7 @@ mng_obj_pose_by_desig(Obj, Pose) :-
 mng_designator_type(Designator, Type) :-
   atom(Designator),
   mng_designator(Designator, DesigJava),
+  not( jpl_null(DesigJava) ),
   jpl_call(DesigJava, 'getType', [], Type).
 
 mng_designator_type(DesigJava, Type) :-
@@ -176,6 +181,9 @@ mng_object_type(Designator, TypeIri) :-
 mng_type_to_iri(Type, TypeIri) :-
   rdf_global_term(Type, TypeIri),
   rdf_has(Type, rdf:type, _).
+mng_type_to_iri(Type, TypeIri) :-
+  atom_concat('http://knowrob.org/kb/knowrob.owl#', Type, TypeIri),
+  rdf_has(TypeIri, rdf:type, _), !.
 mng_type_to_iri(Type, TypeIri) :-
   lowercase(Type, TypeLower),
   camelcase(TypeLower, TypeCamel),
@@ -259,8 +267,15 @@ mng_designator_location(Designator, Mat, T) :-
 % 
 mng_designator_timestamp(Designator, Timestamp) :-
   atom(Designator),
-  mng_designator(Designator, DesigJava),
-  mng_designator_timestamp(DesigJava, Timestamp).
+  once((
+    rdf_has(Obj, knowrob:designator, Designator),
+    rdf_has(Ev, knowrob:objectActedOn, Obj),
+    rdfs_individual_of(Ev, knowrob:'Event'),
+    interval_start(Ev, Timestamp)
+  ) ; (
+    mng_designator(Designator, DesigJava),
+    mng_designator_timestamp(DesigJava, Timestamp)
+  )).
   
 mng_designator_timestamp(DesigJava, Timestamp) :-
   jpl_is_object(DesigJava),
@@ -276,7 +291,7 @@ mng_designator_interval(Designator, Interval) :-
 
 mng_designator_interval(Designator, DesigJava, Interval) :-
   jpl_is_object(DesigJava),
-  mng_designator_timestamp(DesigJava, Begin),
+  mng_designator_timestamp(Designator, Begin),
   (  rdf_has(Designator, knowrob:successorDesignator, Succ)
   ->  (
       mng_designator_timestamp(Succ, End),
@@ -376,6 +391,7 @@ mng_desig_matches(Designator, QueryPattern) :-
 
   jpl_list_to_array(QueryKeys, QueryKeysArr),
   jpl_list_to_array(QueryValues, QueryValuesArr),
+  length(QueryKeys, N), N > 0,
   
   % send MongoDB query:
   mng_db_call('queryDesignatorsByPattern', [QueryKeysArr, QueryValuesArr], DesigJavaArr),
@@ -417,7 +433,12 @@ desig_list_to_query(DesigList, Prefix, QueryStringList) :-
 
 % simple case: normal key/value pair
 desig_list_to_query([Key, Val], Prefix, Str-LispVal) :-
-    atom(Key), atom(Val),
+    atom(Key), atom(Val), !,
+    
+    % FIXME: more generic solution
+    not(member(Key, [
+      'path_to_cad_model'
+    ])),
 
     once(lispify_desig(Key, LispKey)),
     once(lispify_desig(Val, LispVal)),
@@ -427,7 +448,7 @@ desig_list_to_query([Key, Val], Prefix, Str-LispVal) :-
 
 % recursive case: value is a list, we have to iterate
 desig_list_to_query([Key, Val], Prefix, QueryStringList) :-
-    atom(Key), is_list(Val),
+    atom(Key), is_list(Val), !,
 
     once(lispify_desig(Key, LispKey)),
     atomic_list_concat([Prefix, '.', LispKey], NewPrefix),
@@ -476,6 +497,23 @@ jpl_matrix_list(JplMat, [X00, X01, X02, X03,
 
 
 
+mng_object_pose_at_time(Object, Instant, Pose, I) :-
+  nonvar(Instant),
+  rdf_has(Object, srdl2comp:'urdfName', literal(UrdfName)),
+  \+ rdfs_individual_of(Object, knowrob:'TemporalPart'),
+  atom_ensure_prefix(UrdfName, '/', UrdfNameResolved),
+  % FIXME: /map frame 
+  mng_lookup_transform('/map', UrdfNameResolved, Instant, Pose),
+  !.
+
+mng_object_pose_at_time(Object, Instant, Pose, I) :-
+  nonvar(Object),
+  \+ rdfs_individual_of(Object, knowrob:'TemporalPart'),
+  %not( object_pose_specified(Object) ), % TODO not specified at time?
+  entity(Object, Descr),
+  mng_object_compute(Object, Descr),
+  holds(Object, knowrob:pose, Pose, Instant),
+  holds(Object, knowrob:pose, Pose, I), !.
 
 
 
@@ -490,6 +528,11 @@ jpl_matrix_list(JplMat, [X00, X01, X02, X03,
 % ?- entity(Object, [an, object, [type, spatula]]).
 
 knowrob_owl:entity_compute(Object, [an,object|Descr]) :-
+  mng_object_compute(Object, [an,object|Descr]),
+  % Make sure object matches description
+  once(entity(Object, [an,object|Descr])).
+
+mng_object_compute(Object, [an,object|Descr]) :-
   % Query for designators matching the pattern
   % Some statements such as `during` or computable properties are ignored,
   % but objects are matched exactly with input query later
@@ -501,9 +544,7 @@ knowrob_owl:entity_compute(Object, [an,object|Descr]) :-
   % FIXME: is it the same for all designators in the chain?
   mng_desig_object(Designator, Object),
   % Assert perceptions
-  forall(member([_,D], Designators), assert_object_perception(Object, D)),
-  % Make sure object matches description
-  once(entity(Object, [an,object|Descr])).
+  forall(member([_,D], Designators), assert_object_perception(Object, D)).
 
 
 % TODO: merge designators if confident that they describe the same object
@@ -511,8 +552,7 @@ mng_desig_chain(Designator, Designators) :-
   rdf_reachable(FirstDesig, knowrob:'successorDesignator', Designator),
   \+ rdf_has(_, knowrob:'successorDesignator', FirstDesig),
   mng_desig_chain_symbolic(FirstDesig, Designators),
-  length(Designators,L), L>1,
-  writeln(quick_match), !.
+  length(Designators,L), L>1, !.
 
 mng_desig_chain(Designator, Designators) :-
   mng_designator(Designator, DesigJava),
@@ -591,22 +631,22 @@ mng_desig_object(_, Object) :-
 
 
 % Find object with matching pose
-mng_desig_find_object(_, _, DesigPose, I, Object) :-
-  object_pose_at_time(Object, I, pose([OX,OY,OZ], _)),
-  matrix_translation(DesigPose, [DX,DY,DZ]),
-  % TODO: Use additianal informartion
-  %     - did the object moved?
-  %     - was there an object at the begin/end of the interval at this location?
-  %     - did actions occured that acted on objects located at this locatoin during the interval?
-  % compare poses, use epsilon=3cm
-  =<( abs( DX - OX), 0.03),
-  =<( abs( DY - OY), 0.03),
-  =<( abs( DZ - OZ), 0.03), !.
+%mng_desig_find_object(_, _, DesigPose, I, Object) :-
+%  object_pose_at_time(Object, I, pose([OX,OY,OZ], _)),
+%  matrix_translation(DesigPose, [DX,DY,DZ]),
+%  % TODO: Use additianal informartion
+%  %     - did the object moved?
+%  %     - was there an object at the begin/end of the interval at this location?
+%  %     - did actions occured that acted on objects located at this locatoin during the interval?
+%  % compare poses, use epsilon=3cm
+%  =<( abs( DX - OX), 0.03),
+%  =<( abs( DY - OY), 0.03),
+%  =<( abs( DZ - OZ), 0.03), !.
 
 % FIXME: something not working below
 % Find object with unspecified pose
-%mng_desig_find_object(_, TypeIri, _, _, Object) :-
-%  holds(Object, rdf:type, TypeIri),
-%  \+ rdfs_individual_of(Object, knowrob:'TemporalPart'),
-%  \+ object_pose_at_time(Object, pose(_,_), _), !.
-
+mng_desig_find_object(_, TypeIri, _, _, Object) :-
+  holds(Object, rdf:type, TypeIri),
+  \+ rdfs_individual_of(Object, knowrob:'TemporalPart'),
+  \+ object_pose_specified(Object), !.
+% TODO: add case for designator temporal part?

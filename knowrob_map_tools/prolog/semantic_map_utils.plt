@@ -36,29 +36,35 @@
 
 
 test(map_instance) :-
+writeln(map_instance),
   map_instance(ias_map:'SemanticEnvironmentMap0').
   
 
 test(map_root_objects) :-
+writeln(map_root_objects),
   map_root_objects(ias_map:'SemanticEnvironmentMap0', O),
   member('http://knowrob.org/kb/knowrob.owl#CounterTop205', O),
   length(O, 23),!.
 
   
 test(map_root_object) :-
+writeln(map_root_object),
   map_root_object(ias_map:'SemanticEnvironmentMap0', knowrob:'CounterTop205'),!.
 
   
 test(map_object_dimensions) :-
+writeln(map_object_dimensions),
   map_object_dimensions(knowrob:'CounterTop205', 0.57500005, 2.0500002, 0.02),!.
 
 
 test(map_child_object) :-
+writeln(map_child_object),
   map_child_object(knowrob:'Dishwasher37', knowrob:'Door40'),
   map_child_object(knowrob:'Dishwasher37', knowrob:'Handle145'),!.
 
 
 test(map_child_objects) :-
+writeln(map_child_objects),
   map_child_objects(knowrob:'Dishwasher37', Objects),
   member('http://knowrob.org/kb/knowrob.owl#Door40', Objects),
   member('http://knowrob.org/kb/knowrob.owl#Handle145', Objects),
@@ -66,16 +72,20 @@ test(map_child_objects) :-
 
 
 test(map_object_info) :-
+writeln(map_object_info),
   map_object_info(['http://knowrob.org/kb/knowrob.owl#CounterTop205',
                    'http://knowrob.org/kb/knowrob.owl#CounterTop',
                    [-0.08847681,-0.99607825,0.0,1.1006587,0.99607825,-0.08847681,0.0,0.54706275,0.0,0.0,1.0,0.84,0.0,0.0,0.0,1.0],
-                   [2.0500002,0.57500005,0.02]]),!.
+                   [2.0500002,0.57500005,0.02]]),
+writeln(map_object_info__), !.
 
 test(map_object_type) :-
+writeln(map_object_type),
   map_object_type('http://knowrob.org/kb/knowrob.owl#CounterTop205',
                    'http://knowrob.org/kb/knowrob.owl#CounterTop'),!.
 
 test(map_object_label) :-
+writeln(map_object_label),
   map_object_label('http://knowrob.org/kb/knowrob.owl#CounterTop205', 'Counter'),!.
 
 

@@ -165,7 +165,6 @@ mng_robot_pose(Robot, Pose, Target) :-
 % @param Pose         Instance of a knowrob:RotationMatrix3D with the pose data
 %
 mng_robot_pose_at_time(Robot, TargetFrame, TimePoint, Pose) :-
-
   findall(S, (sub_component(Robot, S),
               owl_individual_of(S, srdl2comp:'UrdfLink')), Ss),
 
@@ -248,17 +247,18 @@ mng_obj_pose_at_time(Obj, SourceFrame, TargetFrame, TimePoint, Pose) :-
 %         ),
 
   mng_transform_pose(PoseListIn, SourceFrame, TargetFrame, TimePoint, PoseListOut),
-  create_pose(PoseListOut, Pose), % XXX won't work
+  create_pose(mat(PoseListOut), Pose),
   rdf_assert(Pose, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', TargetFrame),
 
   rdf_instance_from_class('http://knowrob.org/kb/knowrob.owl#Proprioception', Perception),
-  rdf_assert(Perception, knowrob:startTime, TimePoint),
+  
+  ( number(TimePoint) ->
+    create_timepoint(TimePoint, TimePoint_) ;
+    TimePoint_ = TimePoint ),
+  rdf_assert(Perception, knowrob:startTime, TimePoint_),
 
   set_object_perception(Obj, Perception),
-  rdf_assert(Perception, knowrob:eventOccursAt, Pose),
-
-  % set time point for pose,
-  rdf_assert(Perception, knowrob:startTime, TimePoint).
+  rdf_assert(Perception, knowrob:eventOccursAt, Pose).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

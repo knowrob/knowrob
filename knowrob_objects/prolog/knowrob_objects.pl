@@ -36,7 +36,7 @@
       current_object_pose/2,
       object_pose_at_time/3,
       object_pose_at_time/4,
-      object_pose/3,
+      object_pose_specified/1,
       object_color/2,
       object_dimensions/4,
       object_distance/3,
@@ -116,7 +116,8 @@
     current_object_pose(r,r,-),
     object_pose_at_time(r,r,?),
     object_pose_at_time(r,r,?,?),
-    object_pose(+,-,-),
+    object_pose_specified(r),
+    object_pose(+,+,-),
     object_color(r, ?),
     object_dimensions(r, ?, ?, ?),
     object_distance(r,r,-),
@@ -231,14 +232,22 @@ object_pose_at_time(Obj, Time, Pose) :-
 
 object_pose_at_time(Obj, Time, pose([X,Y,Z], [QW,QX,QY,QZ]), Interval) :-
   !, object_pose_holds(Obj, Time, Pose, Interval),
-  object_pose(Pose, [X,Y,Z], [QW,QX,QY,QZ]).
+  object_pose(Pose, Time, pose([X,Y,Z], [QW,QX,QY,QZ])).
 
 object_pose_at_time(Obj, Time, mat(Matrix), Interval) :-
   !, object_pose_holds(Obj, Time, Pose, Interval),
-  object_pose(Pose, Matrix).
+  object_pose(Pose, Time, mat(Matrix)).
 
 object_pose_at_time(Obj, Time, Pose, Interval) :-
   object_pose_holds(Obj, Time, Pose, Interval).
+
+
+object_pose_specified(Obj) :-
+  rdf_has(Obj, knowrob:pose, _), !.
+
+object_pose_specified(Obj) :-
+  rdf_has(Obj, knowrob:temporalParts, Part),
+  rdf_has(Part, knowrob:pose, _), !.
 
 
 object_pose_holds(Pose, _, Pose, [0.0]) :-
@@ -258,6 +267,7 @@ object_pose_holds(Obj, Time, Pose, Interval) :-
   )).
 
 object_pose_holds(Obj, Time, Pose, Interval) :-
+  not( is_list(Time) ), % FIXME: howto handle interval case?
   object_detection(Obj, Time, Detection),
   rdf_triple(knowrob:eventOccursAt, Detection, Pose),
   rdf_has(Detection, knowrob:startTime, StartTime),
@@ -272,26 +282,61 @@ object_pose_holds(Obj, Time, Pose, Interval) :-
       Interval = [Begin]
   )), !.
 
+object_pose_holds(Obj, Time, Pose, Interval) :-
+  nonvar(Obj),
+  knowrob_mongo:mng_object_pose_at_time(Obj, Time, Pose, Interval), !.
 
-% TODO: rename to read pose? move to knowrob_owl
-% Quaternion and position
-object_pose(Pose, [X,Y,Z], [QW,QX,QY,QZ]) :-
-  position_to_list(Pose, [X,Y,Z]),
-  quaternion_to_list(Pose, [QW,QX,QY,QZ]), !.
 
 % TransformationMatrix
-object_pose(Pose, [X,Y,Z], [QW,QX,QY,QZ]) :-
-  rotmat_to_list(Pose, Matrix),
+object_pose(Matrix, _, pose([X,Y,Z], [QW,QX,QY,QZ])) :-
+  is_list(Matrix), !,
   matrix_rotation(Matrix, [QW,QX,QY,QZ]),
   matrix_translation(Matrix, [X,Y,Z]).
 
-object_pose(Pose, Mat) :-
-  rotmat_to_list(Pose, Mat), !.
+object_pose(Matrix, _, mat(Matrix)) :-
+  is_list(Matrix), !.
 
-object_pose(Pose, Mat) :-
+% TODO: rename to read pose? move to knowrob_owl
+% TF pose
+object_pose(Pose, Instant, pose([X,Y,Z], [QW,QX,QY,QZ])) :-
+  rdf_has(Pose, srdl2comp:'urdfName', literal(URDFName)),
+  mng_lookup_transform('/map', URDFName, Instant, Transform), % FIXME: /map
+  matrix_rotation(Transform, [QW,QX,QY,QZ]),
+  matrix_translation(Transform, [MX,MY,MZ]),
+  % apply offset if specified
+  ( position_to_list(Pose, [OX,OY,OZ])
+  -> (X is MX+OX, Y is MY+OY, Z is MZ+OZ)
+  ;  [X,Y,Z] = [MX,MY,MZ] ), !.
+  
+object_pose(Pose, Instant, mat(Mat)) :-
+  rdf_has(Pose, srdl2comp:'urdfName', URDFName),
+  strip_literal_type(URDFName, URDFName_Stripped),
+  mng_lookup_transform('/map', URDFName_Stripped, Instant, Mat_), % FIXME: /map
+  % apply offset if specified
+  ( position_to_list(Pose, [OX,OY,OZ])
+  -> matrix_translate(Mat_, [OX,OY,OZ], Mat)
+  ;  Mat = Mat_ ), !.
+
+% Quaternion and position
+object_pose(Pose, _, pose([X,Y,Z], [QW,QX,QY,QZ])) :-
+  position_to_list(Pose, [X,Y,Z]),
+  quaternion_to_list(Pose, [QW,QX,QY,QZ]), !.
+
+object_pose(Pose, _, mat(Mat)) :-
   position_to_list(Pose, [X,Y,Z]),
   quaternion_to_list(Pose, [QW,QX,QY,QZ]),
   matrix([X,Y,Z], [QW,QX,QY,QZ], Mat), !.
+
+object_pose(Pose, _, pose([X,Y,Z], [QW,QX,QY,QZ])) :-
+  rdfs_individual_of(Pose, knowrob:'Matrix'),
+  rotmat_to_list(Pose, Matrix),
+  matrix_rotation(Matrix, [QW,QX,QY,QZ]),
+  matrix_translation(Matrix, [X,Y,Z]), !.
+
+object_pose(Pose, _, mat(Matrix)) :-
+  rdfs_individual_of(Pose, knowrob:'Matrix'),
+  rotmat_to_list(Pose, Matrix), !.
+
 
 %% object_dimensions(?Obj, ?Depth, ?Width, ?Height) is nondet.
 %
@@ -1270,7 +1315,7 @@ object_query(Individual, QueryGroup, QueryTitle, Query) :-
 %object_query(interval(T0,T1), 'Episodic Memory', 'Which actions occurred during this interval?', QueryAtom) :-
 %  QueryTerm=(
 %    rdfs_individual_of(Event, knowrob:'PurposefulAction'),
-%    event_interval(Event, Ev0, Ev1),
+%    interval(Event, [Ev0, Ev1]),
 %    ( time_between(Ev0,T0,T1) ; time_between(Ev1,T0,T1) )
 %  ),
 %  term_to_atom(QueryTerm,QueryAtom).

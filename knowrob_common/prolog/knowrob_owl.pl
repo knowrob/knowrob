@@ -37,6 +37,7 @@
       entity_type/2,
       entity_compute/2,
       entity_assert/2,
+      entity_iri/3,
       class_properties/3,
       class_properties_some/3,
       class_properties_all/3,
@@ -492,6 +493,9 @@ class_properties_transitive_nosup(Class, Prop, SubComp) :-
 % @param Obj       Instance of a subclass of SpatialThing-Localized
 % @param PoseList  Row-based representation of the object's 4x4 pose matrix as list[16]
 % 
+rotmat_to_list([M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33],
+               [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]) :- !.
+
 rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]) :-
 
     rdf_triple('http://knowrob.org/kb/knowrob.owl#m00',Pose,M00literal), strip_literal_type(M00literal, M00a), term_to_atom(M00, M00a),
@@ -560,10 +564,16 @@ entity(Entity, EntityClass) :-
 entity(Entity, Descr) :-
   var(Descr), !,
   rdfs_individual_of(Entity,owl:'Thing'),
-  once(entity_head(Entity, [A,TypeBase], TypeIri)),
+  once(entity_head(Entity, [A,TypeBase], _, TypeIri)),
   entity_generate(Entity, [A,TypeBase], TypeIri, Descr).
 
 entity(Entity, Descr) :-
+  % FIXME: don't compute all here
+  % compute all so that we can avoid redundant results
+  %% FIXME: won't work if unbound var in Descr!!!
+  %%findall(E, entity_(E, Descr), Entities),
+  %%list_to_set(Entities, EntitiesUnique),
+  %%member(Entity, EntitiesUnique),
   entity_(Entity, Descr),
   % make sure it's an individual and not a class
   rdfs_individual_of(Entity, owl:'Thing'),
@@ -607,41 +617,57 @@ entity_(Entity, [a, location|Descr]) :-
   create_location(Axioms, Entity), !.
 
 entity_(Entity, [A, Type|Descr]) :-
-  nonvar(A),nonvar(Type),member(A, [a,an]),
+  nonvar(A),nonvar(Type),member(A, [a,an]), !,
   entity_name(Descr, Entity),
-  ( entity_head(Entity, [A,Type], _),
-    entity_(Entity, Descr)
-  ) ; (
-    var(Entity),
-    entity_compute(Entity, [A, Type|Descr])
-  ).
+  entity_body(Entity, [A, Type|Descr]).
 
 entity_(Entity, [[name,EntityName]|Descr]) :-
   entity_name([name,EntityName], Entity),
   entity_(Entity, Descr).
 
-entity_(Entity, [[type,Type]|Descr]) :-
+entity_(Entity, [[type,Type]|Descr]) :- % NOTE: type checked in entity_head
   nonvar(Type),
-  entity_iri(TypeIri, Type, camelcase),
-  
-  % TODO: match all entities that ever were classified with Type?
-  % TODO: handle during?
-  current_time(Instant),
-  ( rdfs_individual_of(Entity, TypeIri);
-    fluent_has(Entity, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', TypeIri, Instant);
-    Entity = TypeIri ),
   entity_(Entity, Descr).
+%entity_(Entity, [[type,Type]|Descr]) :-
+%  nonvar(Type),
+%  entity_iri(TypeIri, Type, camelcase),
+%  
+%  % TODO: match all entities that ever were classified with Type?
+%  % TODO: handle during?
+%  current_time(Instant),
+%  once((
+%    rdfs_individual_of(Entity, TypeIri);
+%    fluent_has(Entity, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', TypeIri, Instant);
+%    Entity = TypeIri )),
+%  entity_(Entity, Descr).
 
 %% Key-value property
 entity_(Entity, [[Key,Value]|Descr]) :-
-  nonvar(Key), nonvar(Value),
-  entity_properties([[PropIri,PropValue]], [[Key,Value]]),
+  nonvar(Key),
+  entity_iri(PropIri, Key, lower_camelcase),
+  
+  % TODO: if ground(Value), \+ is_list(Value): bind PropValue before!!
+  %    - if object property -> must be individual or class (use entity_iri)
+  %    - if data property -> must be one of [literal(type(_,Val)), literal(Val), Val]
   holds(Entity,PropIri,PropValue),
+  
+  ( rdf_has(PropIri, rdf:type, owl:'DatatypeProperty')
+  -> (
+    % strip literal(type(_,_)) term and match data values
+    strip_literal_type(PropValue, X),
+    (var(Value) -> Value=X ; strip_literal_type(Value, X))
+  ) ; (
+    (  var(Value)
+    -> Value = PropValue % Bind Iri if var(Value)
+    ;  entity_object_value(PropValue, Value) )
+  )),
+  
   entity_(Entity, Descr).
 
 %% Fluid properties that match temporal relation.
 entity_(Entity, [[Key,Value,TemporalRelation,IntervalDescr]|Descr]) :-
   nonvar(Key), nonvar(Value),
+  % FIXME: may be slow to compute PropValue here, look at above case
   entity_properties([[PropIri,PropValue]], [[Key,Value]]),
   interval(IntervalDescr, Interval),
   holds(Entity,PropIri,PropValue,FluentInterval),
@@ -649,6 +675,33 @@ entity_(Entity, [[Key,Value,TemporalRelation,IntervalDescr]|Descr]) :-
   entity_(Entity, Descr).
 
 entity_(_, []).
+
+
+entity_object_value(Iri, Value) :-
+  is_list(Value),
+  entity(Iri, Value), !.
+entity_object_value(Iri, Value) :-
+  once( var(Iri) ; atom(Iri) ),
+  entity_ns(Value, NS, ValueUnderscore),
+  atom(NS), atom(ValueUnderscore),
+  camelcase(ValueUnderscore, ValueCamel),
+  atom_concat(NS, ValueCamel, Iri), !.
+entity_object_value(Iri, Value) :-
+  rdf_global_term(Value, Iri), !.
+  
+
+entity_body(Entity, [A, Type|Descr]) :-
+  var(Entity),
+  % TODO: skip if existing before computing
+  % in that case computing still makes sense in order to update
+  % with latest designators
+  once(entity_compute(Entity, [A, Type|Descr])).
+entity_body(Entity, [A, Type|Descr]) :-
+  entity_head(Entity, [A,Type], Descr, _),
+  entity_(Entity, Descr),
+  % check general type last because it matches many entities
+  entity_type([A,Type], TypeIri),
+  once(owl_individual_of(Entity, TypeIri)).
 
 
 entity_name(Descr, Entity) :-
@@ -661,17 +714,8 @@ entity_name(_, _).
 
 
 %% Read entity property value
-entity_has(S,P,O) :-
-  once((
-    entity_has_(S,P,O) ; (
-      atom(S),
-      entity(S,Descr),
-      entity_has_(Descr,P,O)
-    )
-  )).
-entity_has_([], _, _) :- false.
-entity_has_([[Key|[Val|_]]|_], Key, Val) :- !.
-entity_has_([_|Descr], Key, Val) :- entity_has_(Descr,Key,Val).
+entity_has([[Key,Val|_]|_], Key, Val).
+entity_has([_|Tail], Key, Val) :- entity_has(Tail, Key, Val).
 
 
 %% entity_type(?Descr, ?Iri) is det.
@@ -689,7 +733,6 @@ entity_type([an,object],    'http://knowrob.org/kb/knowrob.owl#EnduringThing-Loc
 entity_type([a,location],   'http://knowrob.org/kb/knowrob.owl#SpaceRegion').
 entity_type([a,pose],       'http://knowrob.org/kb/knowrob.owl#Pose').
 entity_type([a,trajectory], 'http://knowrob.org/kb/knowrob.owl#Trajectory').
-
 
 %% entity_compute(?Entity, ?Descr) is nondet.
 %
@@ -768,7 +811,7 @@ entity_assert(Entity, [[Key,Value,during,IntervalDescr]|Descr]) :-
   nonvar(Entity), nonvar(Key), nonvar(Value),
   entity_iri(PropIri, Key, lower_camelcase),
   entity(Interval, IntervalDescr),
-  (  rdf_has(PropIri, rdf:type, owl:'ObjectProperty')
+  (  rdf_has(PropIri, rdf:type, owl:'ObjectProperty') % FIXME: also holds for datatype prop
   ->  ( % nested entity
       entity(ValueEntity, Value),
       create_fluent(Entity, Fluent, Interval),
@@ -818,24 +861,27 @@ entity_properties([['http://www.w3.org/2000/01/rdf-schema#comment',_]|Tail], Des
 entity_properties([['http://www.w3.org/2000/01/rdf-schema#subClassOf',_]|Tail], DescrTail) :-
   entity_properties(Tail, DescrTail), !.
 
-entity_properties([['http://knowrob.org/kb/knowrob.owl#temporalParts',Fluent]|Tail],
-                            [[Key,Value,during,IntervalDescr]|DescrTail]) :-
-  fluent_has(Fluent, PropIri, PropValue, IntervalIri),
-  ( rdf_equal(PropIri, rdf:type)
-  -> (
-    Key=type,
-    entity_iri(PropValue, Value, camelcase)
-  ) ; (
-    entity_properties([[PropIri,PropValue]], [[Key,Value]])
-  )),
-  entity(IntervalIri, IntervalDescr),
-  entity_properties(Tail, DescrTail), !.
+entity_properties([['http://knowrob.org/kb/knowrob.owl#temporalParts',Fluent]|Tail], Descr) :-
+  findall([Key,Value,during,IntervalDescr], (
+    fluent_has(Fluent, PropIri, PropValue, IntervalIri),
+    ( rdf_equal(PropIri, rdf:type)
+    -> (
+      Key=type,
+      entity_iri(PropValue, Value, camelcase)
+    ) ; (
+      entity_properties([[PropIri,PropValue]], [[Key,Value]])
+    )),
+    entity(IntervalIri, IntervalDescr)
+  ), FluentDescr),
+  entity_properties(Tail, DescrTail),
+  append(FluentDescr, DescrTail, Descr), !.
 
 entity_properties([[inverse_of(_),_]|Tail], DescrTail) :-
   entity_properties(Tail, DescrTail), !.
 
 entity_properties([[PropIri,TimeIri]|Tail],
                   [[Key, [a,timepoint,Time]]|DescrTail]) :-
+  once((nonvar(TimeIri);nonvar(Time))),
   rdfs_individual_of(TimeIri, knowrob:'TimePoint'),
   entity_iri(PropIri, Key, lower_camelcase),
   time_term(TimeIri,Time),
@@ -843,6 +889,7 @@ entity_properties([[PropIri,TimeIri]|Tail],
 
 entity_properties([[PropIri,IntervalIri]|Tail],
                   [[Key, [an,interval,Interval]]|DescrTail]) :-
+  once((nonvar(IntervalIri);nonvar(Interval))),
   interval(IntervalIri,Interval),
   entity_iri(PropIri, Key, lower_camelcase),
   entity_properties(Tail, DescrTail), !. % FIXME: does this disable to have events as value keys?
@@ -850,8 +897,10 @@ entity_properties([[PropIri,IntervalIri]|Tail],
 entity_properties([[PropIri,PropValue]|Tail], [[Key,Value]|DescrTail]) :-
   entity_iri(PropIri, Key, lower_camelcase),
   % match rdf value with description value
-  (( rdf_has(PropIri, rdf:type, owl:'ObjectProperty'),   entity(PropValue, Value) ) ;
-   ( rdf_has(PropIri, rdf:type, owl:'DatatypeProperty'), property_value(PropValue, Value) )),
+  (  rdf_has(PropIri, rdf:type, owl:'DatatypeProperty')
+  -> (var(Value) -> strip_literal_type(PropValue, Value) ; rdf_global_term(Value, PropValue))
+  ;  entity(PropValue, Value)
+  ),
   entity_properties(Tail, DescrTail).
 
 entity_properties([], []).
@@ -890,12 +939,37 @@ entity_generate(Entity, [A,TypeBase], TypeBaseIri, [A,TypeBase|[[type,TypeName]|
 
 
 %% Match [a|an, ?entity_type]
-entity_head(Entity, [A,Type], TypeIri) :-
+entity_head(Entity, _, Descr, TypeIri) :-
   var(Entity),
-  entity_type([A,Type], TypeIri),
-  rdfs_individual_of(Entity, TypeIri).
+  
+  % TODO: match all entities that ever were classified with Type?
+  % TODO: handle during?
+  %current_time(Instant),
+  %once((
+  %  rdfs_individual_of(Entity, TypeIri);
+  %  fluent_has(Entity, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', TypeIri, Instant);
+  %  Entity = TypeIri )),
+  
+  findall(TypeIri, (
+    entity_has(Descr, type, TypeDescr), once(
+    entity_iri(TypeIri, TypeDescr, camelcase) ;
+    rdf_global_term(TypeDescr, TypeIri) )
+    % TODO: ensure it's really a type
+  ), Types),
+  
+  ( Types=[]
+  -> true
+  ; (
+    findall(E, (
+      owl_individual_of_all(E, Types),
+      \+ owl_individual_of(E, knowrob:'TemporalPart')
+    ), Entities),
+    % avoid redundant results of owl_individual_of
+    list_to_set(Entities, EntitiesUnique),
+    member(Entity, EntitiesUnique)
+  )).
 
-entity_head(Entity, [A,Type], TypeIri) :-
+entity_head(Entity, [A,Type], _, TypeIri) :-
   nonvar(Entity),
   findall([A,Type,TypeIri], (
     ( entity_type([A,Type], TypeIri), rdfs_individual_of(Entity, TypeIri) );
@@ -909,6 +983,10 @@ entity_head(Entity, [A,Type], TypeIri) :-
     )
   )).
 
+owl_individual_of_all(Individual, [TypeIri|Types]) :-
+  owl_individual_of(Individual, TypeIri),
+  owl_individual_of_all(Individual, Types).
+owl_individual_of_all(_, []).
 
 entity_type(Entity, TypeBase, Entity) :-
   atom(Entity), rdf_reachable(Entity, rdfs:subClassOf, TypeBase), !.
@@ -929,6 +1007,7 @@ entity_ns(Entity, NamespaceUri, EntityName) :-
   )), !.
 
 entity_ns(Entity, NamespaceUri, EntityName) :-
+  atom(Entity),
   rdf_split_url(NamespaceUri, EntityName, Entity).
 
 

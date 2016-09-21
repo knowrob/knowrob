@@ -152,7 +152,7 @@ test(assert_location_with_property) :-
 test(generate_location_description) :-
   entity(knowrob:'Location_on-Physical_Refrigerator_fg45543', X),
   X = [a, location|Descr],
-  entity_has(Descr, 'on-physical', _).
+  once(entity_has(Descr, 'on-physical', _)).
 
 
 %% Fluents
@@ -183,7 +183,18 @@ test(generate_fluent_description) :-
   Descr_=Descr.
 
 %[an, object, [manipulated_by, pr2, during, [a, timepoint, now]]]
+
+% Pouring content of water bottle into cup
 %[an, object, [type, cup], [not(contains), [an object, [type, water]]]]
+
+%:- entity(BottleIndividual, [an, object, [type, bottle], [grasped_by, ....]]).
+%:- % rdf_assert(BottleIndividual, knowrob:contains, WaterIndividual).
+%:- entity(CupIndividual, [an, object, [type, cup], [contains, [an object, [type, water]]]]).
+%:- % rdf_assert(ActionIndividual, knowrob:targetLocation, CupIndividual).
+%:- % rdf_assert(ActionIndividual, knowrob:objectActedon, BottleIndividual).
+%:- action_project_effect(ActionIndividual).
+%:- % rdf_assert(CupIndividual, knowrob:contains, WaterIndividual).
+
 %[an, object, [type, counter_top]]
   
 :- end_tests(knowrob_owl).
