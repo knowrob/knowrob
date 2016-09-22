@@ -101,6 +101,8 @@ public class TFMemory {
 	MongoClient mongoClient;
 	DB db;
 
+	private String tfTableName;
+
 	/* **********************************************************************
 	 * *                           INITIALIZATION                           *
 	 * ********************************************************************** */
@@ -144,6 +146,16 @@ public class TFMemory {
 
 		frames = new HashMap<String, Frame>();
 
+		tfTableName = "tf";
+
+	}
+
+	public String getTfTableName() {
+		return tfTableName;
+	}
+	
+	public void setTfTableName(String tfTableName) {
+		this.tfTableName = tfTableName;
 	}
 	
 	public DB getDatabase() {
@@ -386,7 +398,7 @@ public class TFMemory {
 	 */
 	private StampedTransform loadTransformFromDB(String childFrameID, Date date) {
 
-		DBCollection coll = db.getCollection("tf");
+		DBCollection coll = db.getCollection(tfTableName);
 		DBObject query = new BasicDBObject();
 
 		// select time slice from BUFFER_SIZE seconds before to half a second after given time
