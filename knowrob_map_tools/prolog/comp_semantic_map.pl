@@ -62,7 +62,6 @@ POSSIBILITY OF SUCH DAMAGE.
      get_room/2,
      get_level/2,
     
-     euclidean_distance/3,
      in_room/2,
      same_room/2,
      in_level/2,
@@ -123,7 +122,6 @@ POSSIBILITY OF SUCH DAMAGE.
   get_room(r, -),
   get_level(r, -),
   
-  euclidean_distance(r,r,-),
   in_room(r, r),
   same_room(r, r),
   in_level(r, r),
@@ -187,6 +185,7 @@ lookForObj(Obj,Obj):-
 % computable wrappers for all predicates below obj -> objT? 
 
 lookForObjT(ObjT, Obj):-
+  % TODO: call `entity` instead, would also include logged designators
   owl_subclass_of(ObjT, knowrob:'SpatialThing-Localized'),
   owl_has(Obj, rdf:type, ObjT).
   %rdf_triple(knowrob:orientation, Obj, Loc).
@@ -265,6 +264,7 @@ createdAtLocationTBecause(ObjT, LocT, EvtT) :-
 createdInEventT(ObjT, EvtT) :-
   owl_subclass_of(ObjT, knowrob:'SpatialThing-Localized'),
   owl_subclass_of(EvtT, knowrob:'ActionOnObject'),
+  % FIXME: does not work with new action projection
   owl_restriction_on(EvtT, restriction(knowrob:'outputsCreated', some_values_from(ObjT))).
 
 
@@ -369,20 +369,6 @@ data_value(DataProperty,Ind,Value):-
   rdf_triple(DataProperty, Ind, LiteralType),
   strip_literal_type(LiteralType,AtomVal),
   atom_to_term(AtomVal,Value,_).
-  
-
-% distance in 3d
-euclidean_distance(A,B,D):-
-  data_value(knowrob:m03, A, AX),
-  data_value(knowrob:m13, A, AY),
-  data_value(knowrob:m23, A, AZ),
-  data_value(knowrob:m03, B, BX),
-  data_value(knowrob:m13, B, BY),
-  data_value(knowrob:m23, B, BZ),
-  DX is AX - BX,
-  DY is AY - BY,
-  DZ is AZ - BZ,
-  D is sqrt( ((DX*DX) + (DY*DY)) + (DZ*DZ)).
 
 in_room(Place, Room):-
   setof(R, owl_individual_of(R, knowrob:'RoomInAConstruction'), Rs),
@@ -431,9 +417,7 @@ path_cost(Current,Goal,Cost):-
 intra_level_cost(A,B,D):-
   % todo: replace by more accurate heuristic
   % call to path planner? only if available, otherwise heuristic
-  rdf_triple(knowrob:orientation,A,RA),
-  rdf_triple(knowrob:orientation,B,RB),
-  euclidean_distance(RA,RB,D).
+  object_distance(A,B,D).
 
 inter_level_cost(A,B,Cost):-
   level_distance(A,B,LevelDistance),
@@ -461,6 +445,7 @@ level_distance(A,B,D):-
 %
 % Create perception instance 
 %
+% @deprecated
 create_perception_instance(Perception) :-
 
   rdf_instance_from_class('http://knowrob.org/kb/knowrob.owl#Perceiving', Perception),
@@ -474,6 +459,7 @@ create_perception_instance(Perception) :-
 %
 % Create object instance having type 
 %
+% @deprecated
 create_object_instance(Type, Obj) :-
 
   (rdf_has(Obj, rdf:type, Type), !) ;
@@ -496,6 +482,7 @@ set_object_perception(Object, Perception) :-
 %
 % Set the pose of an object perception
 %
+% @deprecated
 set_perception_pose(Perception, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]) :-
 
   % set the pose
@@ -509,6 +496,7 @@ set_perception_pose(Perception, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M2
 %
 % Set the pose of an object perception
 %
+% @deprecated
 update_pose(Object, Pose):-
 
   % Object should already exist to update a pose,

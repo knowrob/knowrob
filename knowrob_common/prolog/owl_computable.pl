@@ -71,7 +71,7 @@
 
 %%	owl_satisfies_restriction(?Resource, +Restriction)
 %
-%	True if Restriction satisfies the restriction imposed by Restriction.
+%	True if Resource satisfies the restriction imposed by Restriction.
 %	The current implementation makes the following assumptions:
 %
 %		* Only one of owl:hasValue, owl:allValuesFrom or owl:someValuesFrom

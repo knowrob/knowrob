@@ -47,11 +47,9 @@ public class MathUtil {
 	 */
 	public static double[] matrixToQuaternion(float[] matrix) {
 		double[] p = new double[16];
-
 		for(int i=0;i<16;i++) {
 			p[i] = matrix[i];
 		}
-		
 		return matrixToQuaternion(p);
 	}
 
@@ -64,8 +62,25 @@ public class MathUtil {
 		Matrix4d poseMat = new Matrix4d(matrix);
 		Quat4d quat = new Quat4d();
 		quat.set(poseMat);
-		
 		return new double[] { quat.w, quat.x, quat.y, quat.z };
+	}
+
+	public static double[] matrix(float[] translation, float[] quatenrion) {
+		return matrix(
+				new double[] {translation[0], translation[1], translation[2]},
+				new double[] {quatenrion[0], quatenrion[1], quatenrion[2], quatenrion[3]});
+	}
+
+	public static double[] matrix(double[] translation, double[] quatenrion) {
+		Quat4d q = new Quat4d(quatenrion[1], quatenrion[2], quatenrion[3], quatenrion[0]);
+		Vector3d t = new Vector3d(translation);
+		Matrix4d poseMat = new Matrix4d(q, t, 1.0);
+		return new double[] {
+				poseMat.m00, poseMat.m01, poseMat.m02, poseMat.m03,
+				poseMat.m10, poseMat.m11, poseMat.m12, poseMat.m13,
+				poseMat.m20, poseMat.m21, poseMat.m22, poseMat.m23,
+				poseMat.m20, poseMat.m31, poseMat.m32, poseMat.m33
+		};
 	}
 
 	public static float[] quaternionDifference(float[] q0, float[] q1) {

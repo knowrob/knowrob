@@ -31,6 +31,10 @@
 
 :- module(knowrob_marker,
     [
+      show/0,
+      show/1,
+      show/2,
+      
       marker_publish/0,
       marker_republish/0,
       marker/2,
@@ -80,6 +84,8 @@
             marker_show(t),
             marker_update(t),
             marker_update(t,r),
+            show(t),
+            show(t,r),
             marker_remove(t),
             marker_children(t,?),
             marker_type(t,?),
@@ -136,13 +142,10 @@ marker_succeeding_links(Link0, Links) :-
 marker_srdl_tf_frame(Identifier, UrdfName) :-
   rdf_has(Identifier, srdl2comp:'urdfName', literal(UrdfName)), !.
 marker_srdl_tf_frame(Identifier, UrdfName) :-
-  not( rdf_has(Identifier, rdf:'type', _) ),
+  rdf_has(Identifier, knowrob:'urdfName', literal(UrdfName)), !.
+marker_srdl_tf_frame(Identifier, UrdfName) :-
+  not( atom_prefix(Identifier, 'http') ),
   UrdfName = Identifier.
-
-atom_ensure_prefix(Atom, Prefix, Atom) :-
-  sub_atom(Atom, 0, _, _, Prefix), !.
-atom_ensure_prefix(Atom, Prefix, AtomResolved) :-
-  atom_concat(Prefix, Atom, AtomResolved).
 
 marker_tf_frame(MarkerObject, Identifier, TfFrame) :-
   marker_srdl_tf_frame(Identifier, UrdfName),
@@ -156,27 +159,29 @@ marker_tf_frame(MarkerObject, Identifier, TfFrame) :-
   )).
   
 marker_lookup_transform(MarkerObject, Identifier, T, (Translation,Orientation)) :-
-  rdfs_individual_of(Identifier, knowrob:'CRAMDesignator'),
+  rdfs_individual_of(Identifier, knowrob:'Designator'),
   rdf_split_url(Prefix, ObjName, Identifier),
   atomic_list_concat([Prefix,'Object_',ObjName], Object),
   rdfs_individual_of(Object, knowrob:'SpatialThing-Localized'),
-  marker_lookup_transform(MarkerObject, Object, T, (Translation,Orientation)).
+  marker_lookup_transform(MarkerObject, Object, T, (Translation,Orientation)), !.
 
 marker_lookup_transform(_, Identifier, T, (Translation,Orientation)) :-
-  object_pose_at_time(Identifier, T, Translation, Orientation).
+  object_pose_at_time(Identifier, T, pose(Translation, Orientation)), !.
 
+% TODO: remove case, should be covered by object_pose_at_time
 marker_lookup_transform(MarkerObject, Identifier, T, (Translation,Orientation)) :-
-  marker_lookup_transform(MarkerObject, Identifier, '/map', T, (Translation,Orientation)).
+  marker_lookup_transform(MarkerObject, Identifier, '/map', T, (Translation,Orientation)), !.
 
+% TODO: remove case, should be covered by object_pose_at_time
 marker_lookup_transform(MarkerObject, Identifier, TargetFrame, T, (Translation,Orientation)) :-
   marker_tf_frame(MarkerObject, Identifier, TfFrame),
   not( atom_prefix(TfFrame, 'http') ),
   mng_lookup_transform(TargetFrame, TfFrame, T, Pose),
   matrix_rotation(Pose, Orientation),
-  matrix_translation(Pose, Translation).
+  matrix_translation(Pose, Translation), !.
 
 %marker_lookup_transform(MarkerObject, Identifier, TargetFrame, T, (Translation,Orientation)) :-
-%  rdfs_individual_of(Identifier, knowrob:'CRAMDesignator'),
+%  rdfs_individual_of(Identifier, knowrob:'Designator'),
 %  mng_designator_location(Identifier, PoseMatrix),
 %  matrix_translation(PoseMatrix, Translation),
 %  matrix_rotation(PoseMatrix, Orientation).
@@ -194,7 +199,7 @@ marker_push_visually_above(Identifier, _, ([X0,Y0,Z0],R), ([X0,Y0,Z1],R)) :-
   Value > Z0, Z1 is Value.
   
 marker_push_visually_above(Identifier, T, PoseIn, PoseOut) :-
-  rdfs_individual_of(Identifier, knowrob:'CRAMDesignator'),
+  rdfs_individual_of(Identifier, knowrob:'Designator'),
   rdf_split_url(Prefix, ObjName, Identifier),
   atomic_list_concat([Prefix,'Object_',ObjName], Object),
   rdfs_individual_of(Object, knowrob:'SpatialThing-Localized'),
@@ -357,27 +362,32 @@ marker_initialize_object(Identifier,MarkerObject) :-
   ;  marker_has_visual(MarkerObject,false)
   ),
   ignore((
-    rdfs_individual_of(Identifier, knowrob:'CRAMDesignator'),
+    rdfs_individual_of(Identifier, knowrob:'Designator'),
     % TODO: use existing instance if available
     mng_designator_timestamp(Identifier, T),
     mng_designator_location(Identifier, LocList),
     create_timepoint(T, Timepoint),
-    create_pose(LocList, Loc),
+    create_pose(mat(LocList), Loc),
     add_object_as_semantic_instance(Identifier, Loc, Timepoint, Instance),
     marker_initialize_object(Instance,MarkerObject)
+  )),
+  ignore((
+    %not( marker_type(MarkerObject, mesh_resource) ),
+    object_dimensions(Identifier, X, Y, Z),
+    marker_scale(MarkerObject, [X, Y, Z])
   )),
   ignore((
     get_model_path(Identifier, Path),
     marker_type(MarkerObject, mesh_resource),
     marker_mesh_resource(MarkerObject, Path),
     marker_color(MarkerObject, [0.0,0.0,0.0,0.0]),
-    marker_scale(MarkerObject, [1.0,1.0,1.0])
-  )),
-  ignore((
-    % TODO: ignore scale for meshes?
-    %not( marker_type(MarkerObject, mesh_resource) ),
-    object_dimensions(Identifier, X, Y, Z),
-    marker_scale(MarkerObject, [X, Y, Z])
+    marker_scale(MarkerObject, [1.0,1.0,1.0]),
+    
+    ( rdf_has(Identifier, srdl2comp:'mesh_scale', literal(type(_,Scale)))
+    -> (
+      parse_vector(Scale, ScaleVec),
+      marker_scale(MarkerObject, ScaleVec)
+    ) ; true )
   )),
   ignore((
     object_color(Identifier, Color),
@@ -542,7 +552,7 @@ marker_new(MarkerName, link(Link), MarkerObject, Parent) :-
   marker_primitive(arrow, MarkerName, link(Link), MarkerObject, Parent).
 
 marker_new(MarkerName, trajectory(Link), MarkerObject, Parent) :-
-  marker_primitive(arrow, MarkerName, trajectory(Link), MarkerObject, Parent),
+  marker_primitive(sphere, MarkerName, trajectory(Link), MarkerObject, Parent),
   marker_color(MarkerObject, [1.0,1.0,0.0,1.0]),
   marker_has_visual(MarkerObject, false).
 
@@ -703,6 +713,18 @@ marker_show(Marker) :-
 % Updating marker for given timepoint/timerange
 %
 
+show :- marker_update.
+show(X) :- marker_update(X).
+show(X, Props) :-
+  is_list(Props),
+  marker_update(X),
+  marker_properties(X, Props).
+show(X, Instant) :-
+  marker_update(X,Instant).
+show(X, Instant, Props) :-
+  marker_update(X,Instant),
+  marker_properties(X, Props).
+
 %% marker_update is det.
 %
 % Updates all markers for the current local time.
@@ -795,6 +817,7 @@ marker_update(MarkerTerm, time(T,Arg)) :-
 % @param MarkerObject The MarkerObject instance
 % @param T A time atom (e.g., 'timepoint_1396512604'), time number (e.g., 1396512604) or an interval (e.g., interval(1396512604, 1396512608, 0.5)).
 %
+% TODO: update all visual properties (using fluents)
 marker_update(object_without_children(Identifier), MarkerObject, T) :-
   ignore(once((
     marker_estimate_transform(MarkerObject,Identifier,T,(Translation,Orientation)),
@@ -868,7 +891,7 @@ marker_update(trajectory(Link), MarkerObject, T1) :-
   )).
 
 marker_update(trajectory(Link), MarkerObject, interval(T0,T1)) :-
-  marker_update(trajectory(Link), MarkerObject, (T0,T1,dt(0.5))).
+  marker_update(trajectory(Link), MarkerObject, interval(T0,T1,dt(0.5))).
 
 marker_update(trajectory(Link), MarkerObject, interval(T0,T1,Interval)) :-
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
@@ -1173,7 +1196,7 @@ marker_query(MarkerName, _, 'Marker Visualization', 'Remove this marker.', Query
   term_to_atom(QueryTerm,QueryAtom).
 
 marker_query_individual(MarkerName, individual(Individual), QueryGroup, QueryTitle, Query) :-
-  rdfs_individual_of(Individual, knowrob:'CRAMDesignator'),
+  rdfs_individual_of(Individual, knowrob:'Designator'),
   rdf_split_url(Prefix, ObjName, Individual),
   atomic_list_concat([Prefix,'Object_',ObjName], Object),
   rdfs_individual_of(Object, knowrob:'SpatialThing-Localized'),
@@ -1234,6 +1257,9 @@ marker_property(Marker, scale(Scale)) :-
 
 marker_property(Marker, pose(Position,Orientation)) :-
   marker_pose(Marker, Position, Orientation).
+
+marker_property(Marker, pose(mat(Mat))) :-
+  marker_pose(Marker, mat(Mat)).
 
 marker_property(Marker, mesh(Mesh)) :-
   marker_mesh_resource(Marker, Mesh).
@@ -1337,6 +1363,11 @@ marker_mesh_resource(Marker, Mesh) :-
 % @param Value The property value
 %
 marker_pose(Marker, pose(Position,Orientation)) :-
+  marker_call(Marker, pose(Position,Orientation), (get_marker_pose,set_marker_pose)).
+
+marker_pose(Marker, mat(Matrix)) :-
+  matrix_translation(Matrix, Position),
+  matrix_rotation(Matrix, Orientation),
   marker_call(Marker, pose(Position,Orientation), (get_marker_pose,set_marker_pose)).
 
 marker_pose(Marker, Position, Orientation) :-

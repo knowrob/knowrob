@@ -182,7 +182,7 @@
         <rdf:type rdf:resource="&knowrob;SemanticMapPerception"/>
         <knowrob:objectActedOn rdf:resource="&test;Cup1"/>
         <knowrob:eventOccursAt rdf:resource="&test;RotationMatrix3D_2"/>
-        <knowrob:startTime rdf:resource="&test;timepoint_1331040458"/>
+        <knowrob:startTime rdf:resource="&knowrob;timepoint_1331040458"/>
     </owl:NamedIndividual>
     
 
@@ -193,14 +193,14 @@
         <rdf:type rdf:resource="&knowrob;SemanticMapPerception"/>
         <knowrob:objectActedOn rdf:resource="&test;Dishwasher1"/>
         <knowrob:eventOccursAt rdf:resource="&test;RotationMatrix3D_1"/>
-        <knowrob:startTime rdf:resource="&test;timepoint_1331040458"/>
+        <knowrob:startTime rdf:resource="&knowrob;timepoint_1331040458"/>
     </owl:NamedIndividual>
     
 
 
     <!-- http://knowrob.org/kb/test_knowrob_objects.owl#timepoint_1331040458 -->
 
-    <owl:NamedIndividual rdf:about="&test;timepoint_1331040458">
+    <owl:NamedIndividual rdf:about="&knowrob;timepoint_1331040458">
         <rdf:type rdf:resource="&knowrob;TimePoint"/>
     </owl:NamedIndividual>
 </rdf:RDF>
