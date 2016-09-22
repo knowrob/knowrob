@@ -1,3 +1,4 @@
+% as downloaded from http://www.swi-prolog.org/pack/file_details/delay/prolog/delay.pl?show=src
 :- module(delay, [ delay/1
                  , univ/3
                  , when_proper_list/2
