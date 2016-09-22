@@ -48,7 +48,7 @@
 :- use_module(library('util')).
 
 % TODO: better do this in catkin make
-:- prolog_pack_install(delay, 'http://storage.googleapis.com/packs.ndrix.com/delay/delay-0.3.3.zip').
+:- use_module(library('delay')).
 
 :- use_module(library('atoms')).
 :- use_module(library('comp_similarity')).
