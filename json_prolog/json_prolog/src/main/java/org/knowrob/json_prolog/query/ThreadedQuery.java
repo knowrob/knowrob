@@ -113,31 +113,33 @@ public class ThreadedQuery implements Runnable {
 			}
 			return;
 		}
-		
 		// Wake up caller waiting on the thread to be started
+		// (i.e., wake up caller of the method `waitOnThread`)
 		synchronized (getQueryObject()) {
 			try { getQueryObject().notifyAll(); }
 			catch (Exception e) {}
 		}
-		
+		// Start processing query commands
 		QueryCommand cmd = null;
-		
 		try {
-			while(isRunning) {
+			while(isRunning) { // until thread is closed
 				if(commadQueue.isEmpty()) {
-					// Wait for command to be pushed
+					// Wait for command to be pushed onto the command queue
 					synchronized (this) {
 						try { this.wait(); }
 						catch (Exception e) {}
 					}
 				}
 				else {
+					// poll command from queue
 					synchronized (commadQueue) {
 						cmd = commadQueue.poll();
 					}
-					currentCommand  = cmd;
+					currentCommand = cmd;
+					// process the command
 					cmd.result = cmd.execute(query);
 					currentCommand = null;
+					// ensure cmd.result is not null
 					if(cmd.result == null) {
 						cmd.result = new QueryYieldsNullException(query);
 					}
@@ -165,17 +167,19 @@ public class ThreadedQuery implements Runnable {
 	public void close() {
 		if(!isClosed && isRunning) {
 			isRunning = false;
-			// Notify caller that command finished
+			// Notify caller that command finished (e.g., in case query was closed when a command
+			// did not completed yet)
 			for(QueryCommand cmd : commadQueue) {
 				if(cmd.result==null) cmd.result = new QueryClosedException(query);
 				synchronized(cmd) { cmd.notifyAll(); }
 			}
+			// FIXME: what happens if thread is stuck with a command that does not terminate?
 			if(currentCommand!=null) {
 				currentCommand.result = new QueryClosedException(query);
 				synchronized(currentCommand) { currentCommand.notifyAll(); }
 				currentCommand = null;
 			}
-			// wake up query thread
+			// wake up query thread so that it can terminate after close was called
 			synchronized (this) { this.notifyAll(); }
 		}
 	}
@@ -190,15 +194,18 @@ public class ThreadedQuery implements Runnable {
 		}
 		
 		cmd.result = null;
+		// add command to queue which is processed in query thread
 		synchronized (commadQueue) { commadQueue.push(cmd); }
-		// wake up query thread
+		// wake up query thread in case it is sleeping
 		synchronized (this) { this.notifyAll(); }
+		// wait until query thread processed the command
 		if(cmd.result==null) {
 			synchronized(cmd) {
 				try { cmd.wait(); }
 				catch (Exception e) {}
 			}
 		}
+		// handle query result. in case it's an exception, throw it!
 		if(cmd.result instanceof Exception)
 		  throw (Exception)cmd.result;
 		return cmd.result;

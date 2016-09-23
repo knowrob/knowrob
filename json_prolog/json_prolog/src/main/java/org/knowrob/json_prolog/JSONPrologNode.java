@@ -353,7 +353,7 @@ public class JSONPrologNode extends AbstractNodeMain {
 			}
 			queries.remove(id);
 			if(query instanceof PrologIncrementalSolutions)
-				hasIncrementalQuery = false;
+				hasIncrementalQuery = false; // XXX: there still could be one!
 		}
 	}
 
