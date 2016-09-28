@@ -86,17 +86,32 @@
 
 
 spatially_holds_interval(S, P, O, I) :-
-  %forall((
-  %  % For all time instants of object pose changes during I
-  %  (Obj=S;Obj=O),
-  %  % FIXME: this won't work since Instant unbound
-  %  object_pose_at_time(Obj, Instant, _, PoseInterval),
-  %  interval_start(PoseInterval, Instant),
-  %  interval_during(Instant, I)
-  %), (
-  %  call(P, S, O, Instant)
-  %)).
+  var(I),
   call(P, S, O, I).
+spatially_holds_interval(S, P, O, I) :-
+  % I is a time instant
+  nonvar(I),
+  time_term(I, Instant),
+  call(P, S, O, Instant).
+spatially_holds_interval(S, P, O, I) :-
+  % I is a closed interval
+  nonvar(I),
+  interval(I, [Begin, End]),
+  spatially_holds_interval(S, P, O, Begin, End).
+spatially_holds_interval(S, P, O, I) :-
+  % I is an opened interval
+  nonvar(I),
+  interval(I, [Begin]),
+  get_timepoint(End),
+  spatially_holds_interval(S, P, O, Begin, End).
+spatially_holds_interval(S, P, O, Begin, End) :-
+  % NOTE: this is an approximation, just checking if the relations holds
+  %       for begin and end of the time interval.
+  %       This could be wrong if object poses change within this interval
+  % TODO: ensure that this inference is correct by taking into account timepoints
+  %       where the pose changed.
+  call(P, S, O, Begin),
+  call(P, S, O, End).
 
 
 %% on_Physical(?Top, ?Bottom) is nondet.
@@ -199,7 +214,6 @@ knowrob_temporal:holds(Top, 'http://knowrob.org/kb/knowrob.owl#above-Generally',
     spatially_holds_interval(Top, comp_above_of_at_time, Bottom, Interval).
 
 
-
 %% comp_below_of(?Bottom, ?Top) is nondet.
 %
 % Check if Top is in the area of and above Bottom.
@@ -214,7 +228,6 @@ comp_below_of(Bottom, Top) :- comp_above_of(Top, Bottom).
 
 knowrob_temporal:holds(Bottom, 'http://knowrob.org/kb/knowrob.owl#below-Generally', Top, Interval) :-
     spatially_holds_interval(Top, comp_above_of_at_time, Bottom, Interval).
-
 
 
 %% comp_toTheLeftOf(?Left, ?Right) is nondet.
@@ -250,7 +263,6 @@ knowrob_temporal:holds(Left, 'http://knowrob.org/kb/knowrob.owl#toTheLeftOf', Ri
     spatially_holds_interval(Left, comp_toTheLeftOf_at_time, Right, Interval).
 
 
-
 %% comp_toTheRightOf(?Right,?Left) is nondet.
 %
 % Check if Right is to the right of Left.
@@ -266,7 +278,6 @@ comp_toTheRightOf(Right, Left) :- comp_toTheLeftOf(Left, Right).
 
 knowrob_temporal:holds(Right, 'http://knowrob.org/kb/knowrob.owl#toTheRightOf', Left, Interval) :-
     spatially_holds_interval(Left, comp_toTheLeftOf_at_time, Right, Interval).
-
 
 
 %% comp_toTheSideOf(?A, ?B) is nondet.
@@ -319,8 +330,6 @@ comp_inFrontOf_at_time(Front, Back, Instant) :-
     
 knowrob_temporal:holds(Front, 'http://knowrob.org/kb/knowrob.owl#inFrontOf-Generally', Back, Interval) :-
     spatially_holds_interval(Front, comp_inFrontOf_at_time, Back, Interval).
-
-
 
 
 %% comp_inCenterOf(?Inner, ?Outer) is nondet.
@@ -386,7 +395,7 @@ in_ContGeneric_at_time(InnerObj, OuterObj, Instant) :-
     >=( (IZ - 0.5*IH), (OZ - 0.5*OH)-0.05 ), =<( (IZ + 0.5*IH), (OZ + 0.5*OH)+0.05 ).
 
 knowrob_temporal:holds(Inner, 'http://knowrob.org/kb/knowrob.owl#in-ContGeneric', Outer, Interval) :-
-  spatially_holds_interval(Inner, in_ContGeneric_at_time, Outer, Interval).
+    spatially_holds_interval(Inner, in_ContGeneric_at_time, Outer, Interval).
 
 
 
@@ -428,11 +437,11 @@ knowrob_temporal:holds(Inner, 'http://knowrob.org/kb/knowrob.owl#in-ContGeneric'
 %
 % @param Obj    The object identifier
 % @param Center The center point identifier as a String 'translation_<rotation matrix identifier>'
-    comp_center(Obj, Center) :-
-      rdf_triple(knowrob:orientation, Obj, Matrix),
-      rdf_split_url(G, L, Matrix),
-      atom_concat('translation_', L, P),
-      rdf_split_url(G, P, Center).
+comp_center(Obj, Center) :-
+  rdf_triple(knowrob:orientation, Obj, Matrix),
+  rdf_split_url(G, L, Matrix),
+  atom_concat('translation_', L, P),
+  rdf_split_url(G, P, Center).
 
 
 
