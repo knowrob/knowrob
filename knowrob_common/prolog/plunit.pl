@@ -530,6 +530,7 @@ run_unit([H|T]) :- !,
 	run_unit(T).
 run_unit(Spec) :-
 	unit_from_spec(Spec, Unit, Tests, Module, UnitOptions),
+	format(user_error, 'Running tests for unit ~w...\n', [Unit]),
 	(   option(blocked(Reason), UnitOptions)
 	->  info(plunit(blocked(unit(Unit, Reason))))
 	;   setup(Module, unit(Unit), UnitOptions)
@@ -995,9 +996,9 @@ success(Unit, Name, Line, Det, _Time, Options) :-
 	(   (   Det == true
 	    ;	memberchk(nondet, Options)
 	    )
-	->  put_char(user_error, +),
+	->  format(user_error, '    [~w] ~w: +\n', [Unit, Name]),
 	    Ok = passed
-	;   put_char(user_error, !),
+	;   format(user_error, '    [~w] ~w: !\n', [Unit, Name]),
 	    Ok = nondet
 	),
 	flush_output(user_error),
@@ -1007,7 +1008,7 @@ success(Unit, Name, Line, Det, Time, Options) :-
 	(   (   Det == true
 	    ;	memberchk(nondet, Options)
 	    )
-	->  put_char(user_error, .)
+	->  format(user_error, '    [~w] ~w (~w): \u2713\n', [Unit, Name, Time])
 	;   unit_file(Unit, File),
 	    print_message(warning, plunit(nondet(File, Line, Name)))
 	),
@@ -1015,7 +1016,7 @@ success(Unit, Name, Line, Det, Time, Options) :-
 
 failure(Unit, Name, Line, _, Options) :-
 	memberchk(fixme(Reason), Options), !,
-	put_char(user_error, -),
+	format(user_error, '    [~w] ~w: \u2717\n', [Unit, Name]),
 	flush_output(user_error),
 	assert(fixme(Unit, Name, Line, Reason, failed)).
 failure(Unit, Name, Line, E, Options) :-
