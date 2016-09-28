@@ -305,12 +305,18 @@ create_tf_frame(URDFName, Frame) :-
 create_location(Axioms, Location) :-
   location_name(Axioms, Location),
   rdf_assert(Location, rdf:type, knowrob:'SpaceRegion'),
-  forall( member((P,O), Axioms), rdf_assert(Location, P, O) ).
+  forall( member([P,O], Axioms), rdf_assert(Location, P, O) ).
 
 location_name(Axioms, Location) :-
   is_list(Axioms),
   location_name_args_(Axioms,Args),
   atomic_list_concat(['http://knowrob.org/kb/knowrob.owl#SpaceRegion'|Args], '_', Location).
+
+location_name_args_([[P,O]|Axioms], [P_name|[O_name|Args]]) :-
+  rdf_split_url(_, P_name, P), % FIXME: don't ignore namespace
+  rdf_split_url(_, O_name, O),
+  location_name_args_(Axioms, Args).
+location_name_args_([], []).
 
 
 %% get_timepoint(-T) is det.
@@ -612,7 +618,7 @@ entity_(Entity, [a|[pose|Descr]]) :-
   ;  create_pose(pose([X,Y,Z], [QW,QX,QY,QZ]), Entity) ), !.
 
 entity_(Entity, [a, location|Descr]) :-
-  entity_axioms(Descr, knowrob:'spatiallyRelated', Axioms),
+  entity_axioms(Descr, 'http://knowrob.org/kb/knowrob.owl#spatiallyRelated', Axioms),
   length(Axioms, L), (L > 0),
   create_location(Axioms, Entity), !.
 
@@ -836,13 +842,6 @@ entity_assert(_, []).
 % helper
 
 
-location_name_args_([(P,O)|Axioms], [P_name|[O_name|Args]]) :-
-  rdf_split_url(_, P_name, P), % FIXME: don't ignore namespace
-  rdf_split_url(_, O_name, O),
-  location_name_args_(Axioms, Args).
-location_name_args_([], []).
-
-
 interval_operator(during, I1, I2) :-   interval_during(I1,I2).
 interval_operator(before, I1, I2) :-   interval_before(I1,I2).
 interval_operator(after, I1, I2) :-    interval_after(I1,I2).
@@ -906,7 +905,7 @@ entity_properties([[PropIri,PropValue]|Tail], [[Key,Value]|DescrTail]) :-
 entity_properties([], []).
 
 
-entity_axioms([P_descr,O_desc|Descr], AxiomIri, [P,O|Axioms]) :-
+entity_axioms([[P_descr,O_desc|_]|Descr], AxiomIri, [[P,O]|Axioms]) :-
   entity_iri(P, P_descr, lower_camelcase),
   rdfs_subproperty_of(P, AxiomIri),
   entity(O, O_desc),
