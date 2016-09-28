@@ -530,7 +530,7 @@ run_unit([H|T]) :- !,
 	run_unit(T).
 run_unit(Spec) :-
 	unit_from_spec(Spec, Unit, Tests, Module, UnitOptions),
-	format(user_error, 'Running tests for unit ~w...\n', [Unit]),
+	format(user_error, '\nRunning tests for unit ~w...\n', [Unit]),
 	(   option(blocked(Reason), UnitOptions)
 	->  info(plunit(blocked(unit(Unit, Reason))))
 	;   setup(Module, unit(Unit), UnitOptions)
