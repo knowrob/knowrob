@@ -33,6 +33,7 @@
 
 % dependencies
 :- register_ros_package(knowrob_common).
+:- register_ros_package(knowrob_mongo).
 :- register_ros_package(knowrob_objects).
 :- register_ros_package(comp_temporal).
 :- register_ros_package(comp_spatial).

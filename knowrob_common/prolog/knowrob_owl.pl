@@ -632,7 +632,7 @@ entity_(Entity, [[name,EntityName]|Descr]) :-
   entity_(Entity, Descr).
 
 entity_(Entity, [[type,Type]|Descr]) :- % NOTE: type checked in entity_head
-  nonvar(Type),
+  nonvar(Type), !,
   entity_(Entity, Descr).
 %entity_(Entity, [[type,Type]|Descr]) :-
 %  nonvar(Type),
@@ -665,7 +665,7 @@ entity_(Entity, [[Key,Value]|Descr]) :-
   ) ; (
     (  var(Value)
     -> Value = PropValue % Bind Iri if var(Value)
-    ;  entity_object_value(PropValue, Value) )
+    ;  (entity_object_value(PropValue, Value), !) )
   )),
   
   entity_(Entity, Descr).
@@ -712,6 +712,7 @@ entity_body(Entity, [A, Type|Descr]) :-
 
 entity_name(Descr, Entity) :-
   entity_has(Descr,name,Name),
+  !, % names must match!
   rdf_global_term(Name, Entity),
   (   rdf_has(Entity, _, _)
   -> true
@@ -854,6 +855,10 @@ interval_operator(overlaps, I1, I2) :- interval_overlaps(I1,I2).
 entity_properties([['http://www.w3.org/1999/02/22-rdf-syntax-ns#type',_]|Tail], DescrTail) :-
   entity_properties(Tail, DescrTail), !.
 
+entity_properties([[PropIri,_]|Tail], DescrTail) :-
+  rdf_has(PropIri, rdf:type, owl:'AnnotationProperty'),
+  entity_properties(Tail, DescrTail), !.
+
 entity_properties([['http://www.w3.org/2000/01/rdf-schema#comment',_]|Tail], DescrTail) :-
   entity_properties(Tail, DescrTail), !.
 
@@ -933,7 +938,7 @@ entity_generate(Entity, [A,TypeBase], TypeBaseIri, [A,TypeBase|[[type,TypeName]|
   -> TypeIri = Type
   ;  TypeIri = TypeBaseIri ),
   entity_iri(TypeIri, TypeName, camelcase),
-  findall([PropIri,PropValue], rdf_has(Entity, PropIri, PropValue), Props),
+  findall([PropIri,PropValue], rdf(Entity, PropIri, PropValue), Props),
   entity_properties(Props, PropDescr), !.
 
 
