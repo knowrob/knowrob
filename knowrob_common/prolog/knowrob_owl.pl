@@ -652,20 +652,17 @@ entity_(Entity, [[Key,Value]|Descr]) :-
   nonvar(Key),
   entity_iri(PropIri, Key, lower_camelcase),
   
-  % TODO: if ground(Value), \+ is_list(Value): bind PropValue before!!
-  %    - if object property -> must be individual or class (use entity_iri)
-  %    - if data property -> must be one of [literal(type(_,Val)), literal(Val), Val]
-  holds(Entity,PropIri,PropValue),
-  
-  ( rdf_has(PropIri, rdf:type, owl:'DatatypeProperty')
-  -> (
-    % strip literal(type(_,_)) term and match data values
-    strip_literal_type(PropValue, X),
-    (var(Value) -> Value=X ; strip_literal_type(Value, X))
+  (nonvar(Value)
+  -> ((
+    rdf_has(PropIri, rdf:type, owl:'DatatypeProperty')
+    -> strip_literal_type(Value, PropValue)
+    ;  entity_object_value(PropValue, Value)),
+    holds(Entity,PropIri,PropValue)
   ) ; (
-    (  var(Value)
-    -> Value = PropValue % Bind Iri if var(Value)
-    ;  (entity_object_value(PropValue, Value), !) )
+    holds(Entity,PropIri,PropValue), (
+    rdf_has(PropIri, rdf:type, owl:'DatatypeProperty')
+    -> strip_literal_type(PropValue, Value)
+    ;  Value = PropValue)
   )),
   
   entity_(Entity, Descr).
