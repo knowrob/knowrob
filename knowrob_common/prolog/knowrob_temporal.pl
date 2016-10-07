@@ -160,6 +160,7 @@ holds(S, P, O, [0.0]) :-
   %?- class_properties(X, knowrob:'typePrimaryFunction-StoragePlaceFor', knowrob:'Perishable').
   %X = __file:///home/daniel/coding/knowrob.daniel/src/knowrob/knowrob_common/owl/knowrob.owl#__Description124
   %PrologException: error(instantiation_error, _49)
+  ground(S),
   class_properties(S, P, O).
 
 
