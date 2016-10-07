@@ -79,6 +79,7 @@ camelcase_([0'-,Lower|Lowers], [0'-,Upper|Uppers]) :-
     upper_lower(Upper, Lower),
     camelcase_(Lowers, Uppers), !.
 camelcase_([0'_,Lower|Lowers], [Upper|Uppers]) :-
+    Upper #>= 0'A, Upper #=< 0'Z,
     upper_lower(Upper, Lower),
     camelcase_(Lowers, Uppers).
 camelcase_([Lower|Lowers], [Lower|Uppers]) :-
@@ -121,6 +122,14 @@ upper_lower(U,L) :-
     U #>= 0'A, U #=< 0'Z,
     L #>= 0'a, L #=< 0'z,
     L #= U + 32, !.
+upper_lower(U,L) :-
+    ground(U),
+    U >= 0'a, U =< 0'z,
+    L is U, !.
+upper_lower(U,L) :-
+    ground(L),
+    L >= 0'A, L =< 0'Z,
+    U is L, !.
 
 %% prepend_underscore(?Without:atom, ?With:atom) is semidet.
 %
