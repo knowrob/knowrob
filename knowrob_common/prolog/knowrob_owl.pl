@@ -368,6 +368,7 @@ get_timepoint(Diff, Time) :-
 % @param Val   Values that appear in a restriction of a superclass of Class on Property
 %
 class_properties(Class, Prop, Val) :-
+  rdfs_individual_of(Class, owl:'Class'), % make sure Class is bound before calling owl_subclass_of
   (class_properties_some(Class, Prop, Val);
    class_properties_value(Class, Prop, Val)).
 
