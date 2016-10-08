@@ -109,6 +109,7 @@ test(generate_refrigerator_description) :-
   X = [an, object, [type, refrigerator]].
 
 test(query_refrigerator, [nondet]) :-
+  % FIXME: slow for some reason
   entity(Cont, [an, object, [type, refrigerator]]),
   rdf_equal(Cont, test_owl:'Refrigerator_fg45543').
 

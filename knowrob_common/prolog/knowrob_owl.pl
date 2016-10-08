@@ -38,6 +38,8 @@
       entity_compute/2,
       entity_assert/2,
       entity_iri/3,
+      entity_write/1,
+      entity_format/2,
       class_properties/3,
       class_properties_some/3,
       class_properties_all/3,
@@ -677,25 +679,30 @@ entity_(Entity, [[Key,Value|ValDescr]|Descr]) :-
 entity_(_, []).
 
 
+%% Nested object description
 entity_object_value(Iri, Value) :-
-  is_list(Value),
-  entity(Iri, Value), !.
+  is_list(Value), !,
+  entity(Iri, Value).
+%% Object iri
 entity_object_value(Iri, Value) :-
   once( var(Iri) ; atom(Iri) ),
   entity_ns(Value, NS, ValueUnderscore),
   atom(NS), atom(ValueUnderscore),
   camelcase(ValueUnderscore, ValueCamel),
   atom_concat(NS, ValueCamel, Iri), !.
+%% Object iri
 entity_object_value(Iri, Value) :-
   rdf_global_term(Value, Iri), !.
-  
 
+
+%% Compute entity from external source such as a database
 entity_body(Entity, [A, Type|Descr]) :-
   var(Entity),
   % TODO: skip if existing before computing
   % in that case computing still makes sense in order to update
   % with latest designators
   once(entity_compute(Entity, [A, Type|Descr])).
+%% Handle description
 entity_body(Entity, [A, Type|Descr]) :-
   entity_head(Entity, [A,Type], Descr, _),
   entity_(Entity, Descr),
@@ -704,6 +711,7 @@ entity_body(Entity, [A, Type|Descr]) :-
   once(owl_individual_of(Entity, TypeIri)).
 
 
+%% "name" keys in the description
 entity_name(Descr, Entity) :-
   entity_has(Descr,name,Name),
   !, % names must match!
@@ -714,7 +722,7 @@ entity_name(Descr, Entity) :-
 entity_name(_, _).
 
 
-%% Read entity property value
+%% Read entity description value
 entity_has([[Key,Val|_]|_], Key, Val).
 entity_has([_|Tail], Key, Val) :- entity_has(Tail, Key, Val).
 
@@ -741,6 +749,7 @@ entity_type(Entity, TypeBase, Entity) :-
 entity_type(Entity, TypeBase, Type) :-
   rdf_has(Entity, rdf:type, Type),
   rdf_reachable(Type, rdfs:subClassOf, TypeBase).
+
 
 %% entity_compute(?Entity, ?Descr) is nondet.
 %
@@ -819,24 +828,65 @@ entity_assert(Entity, [[Key,Value,during,IntervalDescr]|Descr]) :-
   nonvar(Entity), nonvar(Key), nonvar(Value),
   entity_iri(PropIri, Key, lower_camelcase),
   entity(Interval, IntervalDescr),
-  (  rdf_has(PropIri, rdf:type, owl:'ObjectProperty') % FIXME: also holds for datatype prop
-  ->  ( % nested entity
-      entity(ValueEntity, Value),
-      create_fluent(Entity, Fluent, Interval),
-      fluent_assert(Fluent, PropIri, ValueEntity)
-  ) ; ( % data property
-      rdf_has(PropIri, rdf:type, owl:'DatatypeProperty'),
+  (  rdf_has(PropIri, rdf:type, owl:'DatatypeProperty')
+  ->  ( % data property
       rdf_phas(PropIri, rdfs:range, Range), % FIXME: what if range unspecified
       create_fluent(Entity, Fluent, Interval),
       fluent_assert(Fluent, PropIri, literal(type(Range,Value)))
+  ) ; ( % nested entity
+      rdf_has(PropIri, rdf:type, owl:'ObjectProperty'),
+      entity(ValueEntity, Value),
+      create_fluent(Entity, Fluent, Interval),
+      fluent_assert(Fluent, PropIri, ValueEntity)
   )),
   entity_assert(Entity, Descr).
 
 entity_assert(_, []).
 
 
-% TODO: format method for pretty printing
-%entity_to_string
+%% entity_format(+Descr, -String) is nondet.
+%
+% Format entity for pretty printing.
+%
+% @param Descr An entity description
+% @param String Formatted string
+%
+entity_format(Descr, String) :-
+  with_output_to(string(String), entity_write(Descr)).
+
+%% entity_write(+Descr) is nondet.
+%
+% Write entity to current output stream.
+%
+% @param Descr An entity description
+%
+entity_write(Descr) :- entity_write(Descr, '').
+
+entity_write([A,Type|Tail], Spaces) :-
+  member(A, [a,an]),
+  writef('[%w, %w,\n', [A,Type]),
+  atom_concat(Spaces, '  ', SpacesNext),
+  entity_write(Tail, SpacesNext),
+  write(']\n').
+
+entity_write([[Key,Val|ValDescr]|Tail], Spaces) :-
+  (is_list(Val)
+  -> (
+    Val=[A,Type|ValTail],
+    writef('%w[%w, [%w, %w\n', [Spaces,Key,A,Type]),
+    atom_concat(Spaces, '  ', SpacesNext),
+    entity_write(ValTail, SpacesNext),
+    writef('%w]],\n', [Spaces])
+  ) ; (
+    writef('%w%w,\n', [Spaces,[Key,Val|ValDescr]])
+  )),
+  entity_write(Tail, Spaces).
+
+entity_write([Key|Tail], Spaces) :-
+  writef('%w, %w\n', [Spaces,Key]),
+  entity_write(Tail, Spaces).
+
+entity_write([], _).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
