@@ -531,6 +531,7 @@ run_unit([H|T]) :- !,
 run_unit(Spec) :-
 	unit_from_spec(Spec, Unit, Tests, Module, UnitOptions),
 	format(user_error, '\nRunning tests for unit ~w...\n', [Unit]),
+	get_time(T0),
 	(   option(blocked(Reason), UnitOptions)
 	->  info(plunit(blocked(unit(Unit, Reason))))
 	;   setup(Module, unit(Unit), UnitOptions)
@@ -545,7 +546,9 @@ run_unit(Spec) :-
 	    ),
 	    cleanup(Module, UnitOptions)
 	;   true
-	).
+	),
+	get_time(T1), Time is T1 - T0,
+	format(user_error, 'Time passed in module ~w: ~f\n', [Unit,Time]).
 
 unit_from_spec(Unit, Unit, _, Module, Options) :-
 	atom(Unit), !,
