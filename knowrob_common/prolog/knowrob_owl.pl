@@ -659,20 +659,31 @@ entity_(Entity, [[Key,Value|ValDescr]|Descr]) :-
   nonvar(Key),
   entity_iri(PropIri, Key, lower_camelcase),
   
+  % use temporal axioms to restrict Interval var before calling holds
+  (nonvar(ValDescr)
+  -> (
+    entity_interval_axioms(ValDescr, Axioms),
+    entity_intersection_interval(Axioms, Interval)
+  ) ; true),
+  
   (nonvar(Value)
-  -> ((
+  -> (
     rdf_has(PropIri, rdf:type, owl:'DatatypeProperty')
-    -> strip_literal_type(Value, PropValue)
-    ;  entity_object_value(PropValue, Value)),
-    holds(Entity,PropIri,PropValue,Interval)
+    -> (
+      strip_literal_type(Value, X),
+      holds(Entity,PropIri,PropValue,Interval),
+      % ignore literal(type(..)) terms, just extract value
+      strip_literal_type(PropValue, X)
+    ) ; (
+      entity_object_value(PropValue, Value),
+      holds(Entity,PropIri,PropValue,Interval)
+    )
   ) ; (
     holds(Entity,PropIri,PropValue,Interval), (
     rdf_has(PropIri, rdf:type, owl:'DatatypeProperty')
     -> strip_literal_type(PropValue, Value)
     ;  Value = PropValue)
   )),
-  % handle temporal restrictions such as during/before/after/....
-  entity_temporally_holds(Interval, ValDescr),
   
   entity_(Entity, Descr).
 
@@ -894,13 +905,42 @@ entity_write([], _).
 % helper
 
 
-interval_operator(during,   interval_during)   :- !.
-interval_operator(before,   interval_before)   :- !.
-interval_operator(after,    interval_after)    :- !.
-interval_operator(meets,    interval_meets)    :- !.
-interval_operator(starts,   interval_starts)   :- !.
-interval_operator(finishes, interval_finishes) :- !.
-interval_operator(overlaps, interval_overlaps) :- !.
+interval_operator(during, interval_during)   :- !.
+interval_operator(before, interval_before)   :- !.
+interval_operator(after,  interval_after)    :- !.
+
+entity_interval_axioms([Operator,Value|Axioms], [[Operator,Interval_val]|Tail]) :-
+  interval_operator(Operator, _), !,
+  entity(Interval, Value),
+  interval(Interval, Interval_val),
+  entity_interval_axioms(Axioms, Tail).
+entity_interval_axioms([_|Axioms], Tail) :-
+  entity_interval_axioms(Axioms, Tail).
+entity_interval_axioms([], []).
+
+entity_intersection_interval([[during,I1]|Tail], Intersection) :-
+  entity_intersection_interval(Tail, I_Tail),
+  interval_intersect(I1, I_Tail, Intersection).
+entity_intersection_interval([[after,I1]|Tail], Intersection) :-
+  entity_intersection_interval(Tail, I_Tail),
+  interval_end(I1, End),
+  interval_intersect([End], I_Tail, Intersection).
+entity_intersection_interval([[before,I1]|Tail], Intersection) :-
+  entity_intersection_interval(Tail, I_Tail),
+  interval_start(I1, Begin),
+  interval_intersect([0.0,Begin], I_Tail, Intersection).
+entity_intersection_interval([], []).
+
+interval_intersect([], I, I).
+interval_intersect(I, [], I).
+interval_intersect([Begin0,End0], [Begin1,End1], [Begin,End]) :-
+  Begin is max(Begin0, Begin1),
+  End is min(End0, End1).
+interval_intersect([Begin0], [Begin1,End], [Begin,End]) :-
+  Begin is max(Begin0, Begin1).
+interval_intersect([Begin0,End], [Begin1], [Begin,End]) :-
+  Begin is max(Begin0, Begin1).
+
 
 %% Fluid properties that match temporal relation.
 entity_temporally_holds(_, []).
