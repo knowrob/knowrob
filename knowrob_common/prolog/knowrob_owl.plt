@@ -117,6 +117,10 @@ test(query_refrigerator_by_name, [nondet]) :-
   entity(Cont, [an, object, [name, test_owl:'Refrigerator_fg45543']]),
   rdf_equal(Cont, test_owl:'Refrigerator_fg45543').
 
+test(query_cup_by_nameString_prop, [nondet]) :-
+  entity(Cont, [an, object, [name_string, literal(type(_,'cup_name'))]]),
+  rdf_equal(Cont, test_owl:'Cup_sfd498th').
+
 test(query_container, [nondet]) :-
   entity(Cont, [an, object, [type, container]]),
   rdf_equal(Cont, test_owl:'Refrigerator_fg45543').
