@@ -474,10 +474,6 @@ interval_during(Time0, I1) :-
   interval_start(I1_val, Begin1),
   Begin1 =< Time0,
   (interval_end(I1_val, End1) -> Time0 =< End1 ; true).
-%  (( interval(I1, [Begin1,End1]),
-%     (Time0 < End1) ) ;
-%     interval(I1, [Begin1]) ),
-%  (Begin1 < Time0).
 
 interval_during(I0, I1) :-
   interval(I0, I0_val),
@@ -490,12 +486,3 @@ interval_during(I0, I1) :-
     interval_end(I0_val, End0),
     End0 =< End1
   ) ; true).
-  
-%  ( interval(I0, [Begin0,End0]) ;
-%    interval(I0, [Begin0]) ),
-%  (( nonvar(End0),
-%     interval(I1, [Begin1,End1]),
-%     (End0 =< End1) ) ;
-%     interval(I1, [Begin1]) ),
-%  (Begin1 =< Begin0).
-

@@ -907,7 +907,7 @@ entity_temporally_holds(_, []).
 entity_temporally_holds(FluentInterval, [TemporalRelation,IntervalDescr|Tail]) :-
   (  interval_operator(TemporalRelation,Operator)
   -> (
-    % TODO: also support entitiy descriptoins!!
+    % TODO: also support entitiy descriptions!!
     interval(IntervalDescr, IntervalDescr_val),
     call(Operator, FluentInterval, IntervalDescr_val)
   ) ; true ),

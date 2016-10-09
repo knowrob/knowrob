@@ -37,9 +37,8 @@
       atom_ensure_prefix/3
 ]).
 
-:- use_module(library('clpfd')). % TODO: what is this used for?
-:- use_module(library('delay')). % TODO: what is this used for?
-
+:- use_module(library('clpfd')).
+:- use_module(library('delay')).
 
 atom_ensure_prefix(Atom, Prefix, Atom) :-
   sub_atom(Atom, 0, _, _, Prefix), !.

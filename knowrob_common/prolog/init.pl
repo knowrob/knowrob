@@ -47,7 +47,6 @@
 :- use_module(library('rdfs_computable')).
 :- use_module(library('util')).
 
-% TODO: better do this in catkin make
 :- use_module(library('delay')).
 
 :- use_module(library('atoms')).
