@@ -300,6 +300,10 @@ public class JSONPrologNode extends AbstractNodeMain {
 
 			}
 			catch (Exception e) {
+				// TODO(daniel): In case of `PrologException` the Prolog stacktrace is not included
+				//               at the moment. The message is usually not enough to locate the error
+				//               in the code. Include the stacktrace in order to make it easier
+				//               to find failing code!
 				response.setSolution(e.getMessage());
 				response.setStatus(json_prolog_msgs.PrologNextSolutionResponse.QUERY_FAILED);
 				removeQuery(request.getId());
