@@ -155,8 +155,21 @@ holds(S, P, O, I) :-
   ;  interval_during(I, Interval)
   ).
   
-holds(S, P, O, [0.0]) :-
-  class_properties(S, P, O).
+holds(S, P, O, I) :-
+  (var(S)
+  -> (
+    class_properties(S, P, O)%,
+    %rdfs_individual_of(S, Cls)
+  ) ; (
+    % FIXME(daniel): this terribly slows down inference. Tried with comp_spatial tests
+    %rdfs_individual_of(S, Cls),
+    %class_properties(S, P, O)
+    class_properties(S, P, O)
+  )),
+  (  var(I)
+  -> I = [0.0]
+  ;  true
+  ).
 
 
 %% occurs(?Evt) is nondet.
