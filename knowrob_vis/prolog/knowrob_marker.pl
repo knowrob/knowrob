@@ -1551,7 +1551,7 @@ set_marker_scale(MarkerObj, [X,Y,Z]) :-
 
 set_marker_scale(MarkerObj, [X,Y,Z]) :-
   number(X),number(Y),number(Z),
-  jpl_list_to_array([X,Y,Z], ScaleArray),
+  jpl_new(array(float), [X,Y,Z], ScaleArray),
   jpl_call(MarkerObj, 'setScale', [ScaleArray], _).
 
 set_marker_scale(MarkerObj, Scale) :-
@@ -1582,12 +1582,12 @@ set_marker_color(MarkerObj, [R,G,B,A]) :-
 
 set_marker_color(MarkerObj, [R,G,B]) :-
   number(R),number(G),number(B),
-  jpl_list_to_array([R,G,B,1.0], ColorArray),
+  jpl_new(array(float), [R,G,B,1.0], ColorArray),
   jpl_call(MarkerObj, 'setColor', [ColorArray], _).
 
 set_marker_color(MarkerObj, [R,G,B,A]) :-
   number(R),number(G),number(B),number(A),
-  jpl_list_to_array([R,G,B,A], ColorArray),
+  jpl_new(array(float), [R,G,B,A], ColorArray),
   jpl_call(MarkerObj, 'setColor', [ColorArray], _).
 
 set_marker_color(MarkerObj, Color) :-
@@ -1617,11 +1617,11 @@ get_marker_pose(MarkerObj, pose(Translation,Orientation)) :-
   get_marker_orientation(MarkerObj, Orientation).
 
 set_marker_translation(MarkerObj, [X,Y,Z]) :-
-  jpl_list_to_array([X,Y,Z], Array),
+  jpl_new(array(double), [X,Y,Z], Array),
   jpl_call(MarkerObj, 'setTranslation', [Array], _).
 
 set_marker_orientation(MarkerObj, [QW,QX,QY,QZ]) :-
-  jpl_list_to_array([QW,QX,QY,QZ], Array),
+  jpl_new(array(double), [QW,QX,QY,QZ], Array),
   jpl_call(MarkerObj, 'setOrientation', [Array], _).
 
 set_marker_pose(MarkerObj, pose(Translation,Orientation)) :-
