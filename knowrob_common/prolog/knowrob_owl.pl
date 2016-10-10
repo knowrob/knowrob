@@ -663,7 +663,8 @@ entity_(Entity, [[Key,Value|ValDescr]|Descr]) :-
   (nonvar(ValDescr)
   -> (
     entity_interval_axioms(ValDescr, Axioms),
-    entity_intersection_interval(Axioms, Interval)
+    entity_intersection_interval(Axioms, RestrictedInterval),
+    (RestrictedInterval=[] -> true ; Interval=RestrictedInterval)
   ) ; true),
   
   (nonvar(Value)
