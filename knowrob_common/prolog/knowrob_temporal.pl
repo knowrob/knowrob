@@ -138,6 +138,9 @@ holds(S, P, O, I) :-
   (  atom(P)
   -> rdf_triple(P, S, O)
   ;  owl_has(S,P,O)
+% FIXME: inspect does not infer class properties of individuals!
+%   e.g., that a fridge instance is storage place for perishable
+%  ; inspect(S,P,O)
   ),
   \+ rdfs_individual_of(S, knowrob:'TemporalPart'),
   \+ rdfs_individual_of(O, knowrob:'TemporalPart'),
@@ -154,7 +157,8 @@ holds(S, P, O, I) :-
   -> I = Interval
   ;  interval_during(I, Interval)
   ).
-  
+
+/*  
 holds(S, P, O, I) :-
   (var(S)
   -> (
@@ -169,7 +173,7 @@ holds(S, P, O, I) :-
   (  var(I)
   -> I = [0.0]
   ;  true
-  ).
+  ).*/
 
 
 %% occurs(?Evt) is nondet.

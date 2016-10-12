@@ -2543,6 +2543,7 @@
         <srdl2-comp:urdfName>arm_fwk_fwa_050_frame_in</srdl2-comp:urdfName>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_adapters_description/meshes/fwk_fwa_050_simple.stl</knowrob:pathToCadModel>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;saphari_robot_arm_fwk_fwa_050_trans_frame_out"/>
+        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
     </owl:NamedIndividual>
 
 
@@ -2603,6 +2604,7 @@
         <srdl2-comp:succeedingJoint rdf:resource="&robot;saphari_robot_gripper_guide_joint_finger_left"/>
         
         <srdl2-comp:turnGravityOff rdf:datatype="&xsd;boolean">false</srdl2-comp:turnGravityOff>
+        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
     </owl:NamedIndividual>
 
 
@@ -2622,6 +2624,7 @@
         <srdl2-comp:contact_coefficients_kd rdf:datatype="&qudt-unit;Unitless">1.0</srdl2-comp:contact_coefficients_kd>
         <srdl2-comp:contact_coefficients_kp rdf:datatype="&qudt-unit;Unitless">1000.0</srdl2-comp:contact_coefficients_kp>
         <srdl2-comp:contact_coefficients_mu rdf:datatype="&xsd;string">0</srdl2-comp:contact_coefficients_mu>
+        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
     </owl:NamedIndividual>
 
 
@@ -2642,6 +2645,7 @@
         <srdl2-comp:contact_coefficients_kp rdf:datatype="&qudt-unit;Unitless">1000.0</srdl2-comp:contact_coefficients_kp>
         <srdl2-comp:contact_coefficients_mu rdf:datatype="&xsd;string">0</srdl2-comp:contact_coefficients_mu>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;saphari_robot_gripper_guide_joint_finger_right"/>
+        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
     </owl:NamedIndividual>
 
 
@@ -2661,6 +2665,7 @@
          <srdl2-comp:contact_coefficients_kd rdf:datatype="&qudt-unit;Unitless">1.0</srdl2-comp:contact_coefficients_kd>
         <srdl2-comp:contact_coefficients_kp rdf:datatype="&qudt-unit;Unitless">1000.0</srdl2-comp:contact_coefficients_kp>
         <srdl2-comp:contact_coefficients_mu rdf:datatype="&xsd;string">0</srdl2-comp:contact_coefficients_mu>
+        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
     </owl:NamedIndividual>
 
 
