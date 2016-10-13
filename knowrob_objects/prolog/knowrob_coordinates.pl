@@ -98,7 +98,7 @@ pose_into_relative_coord(GlobalPose, ReferencePose, RelativePose) :-
     list_to_matrix4d(GlobalPose,  GlobalPose4d),
     list_to_matrix4d(ReferencePose, ReferencePose4d),
 
-    pose_into_relative_coord(GlobalPose4d, ReferencePose4d, RelativePose4d),
+    pose4d_into_relative_coord(GlobalPose4d, ReferencePose4d, RelativePose4d),
 
     matrix4d_to_list(RelativePose4d,RelativePose).
 
