@@ -65,6 +65,8 @@
       marker_highlight_remove/1,
       marker_highlight_toggle/1,
       
+      marker_primitive/5,
+      
       marker_queries/2,
       
       marker_distance/3,
@@ -104,6 +106,13 @@
             marker_queries(+,-),
             marker_trajectory_length(t,?),
             marker_distance(t,t,?).
+
+% define marker_new and marker_update as meta-predicate and allow the definitions
+% to be in different source files
+%:- meta_predicate marker_new(0, ?, ?, ?, ?),
+%                  marker_update(0, ?, ?, ?, ?).
+:- multifile marker_new/4,
+             marker_update/3.
 
 marker_has_visual(Identifier) :-
   not(owl_individual_of(Identifier, srdl2comp:'UrdfJoint')),
@@ -593,11 +602,40 @@ marker_new(MarkerName, object(Identifier), MarkerObject, Parent) :-
   marker_children(Identifier,Children),
   forall(
     member( Child,Children ), ignore((
-      marker_child_name(object(Identifier), MarkerName, object(Child), ChildName),
-      marker(ChildName, object(Child), _, MarkerObject)
+      marker_term(Child, ChildTerm),
+      marker_child_name(object(Identifier), MarkerName, ChildTerm, ChildName),
+      marker(ChildName, ChildTerm, _, MarkerObject)
     ))
   ).
 
+marker_new(MarkerName, experiment(Identifier), MarkerObject, Parent) :-
+  marker_primitive(cube, MarkerName, object(Identifier), MarkerObject, Parent),
+  marker_initialize_object(Identifier, MarkerObject),
+  % Semantic map
+  rdf_has(Identifier, knowrob:'performedInMap', Map),
+  marker_child_name(experiment(Identifier), MarkerName,
+                    object(Map), MapName),
+  marker_new(MapName, object(Map), _, MarkerObject),
+  %% TODO: or require markerType annotations for robots and humans?
+  % agents
+  forall(
+    % TODO: add property robotActor
+    owl_has(Map, knowrob:robotActor, Agent), ignore((
+      marker_child_name(experiment(Identifier), MarkerName,
+                        agent(Agent), AgentName),
+      marker(AgentName, agent(Agent), _, MarkerObject)
+    ))
+  ),
+  % humans
+  forall(
+    % TODO: add property humanActor
+    owl_has(Map, knowrob:humanActor, Human), ignore((
+      marker_child_name(experiment(Identifier), MarkerName,
+                        stickman(Human), HumanName),
+      marker(HumanName, stickman(Human), _, MarkerObject)
+    ))
+  ).
+  
 marker_new(MarkerName, attached(MarkerTerm,AttachedTo), MarkerObject, Parent) :-
   marker_primitive(cube, MarkerName, attached(MarkerTerm,AttachedTo), MarkerObject, Parent),
   marker_has_visual(MarkerObject, false),
@@ -713,17 +751,34 @@ marker_show(Marker) :-
 % Updating marker for given timepoint/timerange
 %
 
+% TODO: hide marker if marker_update failed?
 show :- marker_update.
-show(X) :- marker_update(X).
+show(X) :-
+  marker_term(X, MarkerTerm),
+  marker_update(MarkerTerm).
 show(X, Props) :-
   is_list(Props),
-  marker_update(X),
-  marker_properties(X, Props).
+  marker_term(X, MarkerTerm),
+  marker_update(MarkerTerm),
+  marker_properties(MarkerTerm, Props).
 show(X, Instant) :-
-  marker_update(X,Instant).
+  marker_term(X, MarkerTerm),
+  marker_update(MarkerTerm,Instant).
 show(X, Instant, Props) :-
-  marker_update(X,Instant),
-  marker_properties(X, Props).
+  marker_term(X, MarkerTerm),
+  marker_update(MarkerTerm,Instant),
+  marker_properties(MarkerTerm, Props).
+
+marker_term(X, experiment(X)) :-
+  atom(X),
+  rdfs_individual_of(X, knowrob:'Experiment'), !.
+marker_term(X, MarkerTerm) :-
+  atom(X),
+  rdfs_individual_of(X, _), !,
+  (owl_has(X, knowrob:markerType, literal(type(_,Type)))
+  -> MarkerTerm =.. [Type,X]
+  ;  MarkerTerm = object(X)).
+marker_term(X, X).
 
 %% marker_update is det.
 %
@@ -833,8 +888,11 @@ marker_update(object(Identifier), MarkerObject, T) :-
   jpl_array_to_list(ChildrenArray,Children),
   forall(member(ChildObject,Children), once((
     v_marker_object(_, ChildTerm, ChildObject, _),
-    marker_update(ChildTerm, ChildObject, T),
-    marker_timestamp(MarkerObject, T)
+    (  marker_update(ChildTerm, ChildObject, T)
+    -> true
+    ;  marker_hide(ChildObject)
+    ),
+    marker_timestamp(MarkerObject, T) % FIXME: shouldn't it be ChildObject here?
   ))).
 
 marker_update(attached(Marker,AttachedTo), _, T) :-
@@ -926,7 +984,14 @@ marker_update(average_trajectory(Link), MarkerObject, interval(T0,T1,Interval)) 
 %  marker_translation(Parent, [X,Y,Z]),
 %  marker_translation(MarkerObject, [X,Y,Z]).
 
-marker_update(_, MarkerObject, T) :-
+marker_update(stickman(_), MarkerObject, T) :-
+  marker_update_children(MarkerObject, T).
+marker_update(agent(_), MarkerObject, T) :-
+  marker_update_children(MarkerObject, T).
+marker_update(experiment(_), MarkerObject, T) :-
+  marker_update_children(MarkerObject, T).
+
+marker_update_children(MarkerObject, T) :-
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
   jpl_array_to_list(ChildrenArray,Children),
   forall(member(ChildObject,Children), ignore((
