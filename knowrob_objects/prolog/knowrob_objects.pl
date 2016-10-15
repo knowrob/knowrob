@@ -34,11 +34,13 @@
       storagePlaceFor/2,
       storagePlaceForBecause/3,
       current_object_pose/2,
+      new_current_object_pose/2,
       object_pose_at_time/3,
       object_pose_at_time/4,
       object_pose/3,
       object_color/2,
       object_dimensions/4,
+      new_object_dimensions/4,
       object_assert_dimensions/4,
       object_assert_color/2,
       matrix_rotation/2,
@@ -117,10 +119,13 @@
     storagePlaceForBecause(r,r,r),
     current_object_pose(r,-),
     current_object_pose(r,r,-),
+    new_current_object_pose(r,-),
+    new_current_object_pose(r,r,-),
     object_pose_at_time(r,r,?),
     object_pose(+,-,-),
     object_color(r, ?),
     object_dimensions(r, ?, ?, ?),
+    new_object_dimensions(r, ?, ?, ?),
     object_assert_dimensions(r, +, +, +),
     object_assert_color(r, +),
     matrix_rotation(+,-),
@@ -220,6 +225,22 @@ current_object_pose(Obj, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22,
   rdf_triple('http://knowrob.org/kb/knowrob.owl#orientation',Obj,Pose),!,
   rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]).
 
+%% new_current_object_pose(+ObjInstance, -PoseList) is nondet.
+%
+% Get the pose of an object based on the latest perception
+%
+% @param Obj       Instance of a subclass of SpatialThing-Localized
+% @param PoseList  Row-based representation of the object's 4x4 pose matrix as list[16]
+% 
+new_current_object_pose(Obj, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]) :-
+ rdf_has(SEM,knowrob:objectActedOn,Obj),
+ rdf_has(SEM,knowrob:eventOccursAt,TNS),
+ rdf_triple('http://knowrob.org/kb/knowrob.owl#translation',TNS,literal(type(_,Translation))),
+ rdf_triple('http://knowrob.org/kb/knowrob.owl#quaternion',TNS,literal(type(_,Quaternion))),
+ parse_vector(Translation,Origin),
+ parse_vector(Quaternion,Orientation),
+ append(Origin,Orientation,Pose),jpl_list_to_array(Pose,PoseArray),jpl_call('org.knowrob.utils.MathUtil', 'transformToMatrix',[ PoseArray ],LIST),jpl_array_to_list(LIST,[M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]).
+  
 % Quaternion and position
 object_pose(Pose, [X,Y,Z], [QW,QX,QY,QZ]) :-
   position_to_list(Pose, [X,Y,Z]),
@@ -344,6 +365,24 @@ object_dimensions(Obj, Depth, Width, Height) :-
   parse_vector(ScaleVector, [Depth, Width, Height]).
   
   
+
+
+%% new_object_dimensions(?Obj, ?Depth, ?Width, ?Height) is nondet.
+%
+% Get the width, depth and height of the object.
+%
+% @param Obj    Instance of a subclass of EnduringThing-Localized
+% @param Depth  Depth of the bounding box (x-dimension)
+% @param Width  Width of the bounding box (y-dimension)
+% @param Height Height of the bounding box (z-dimension)
+% 
+new_object_dimensions(Obj, Depth, Width, Height) :-
+  owl_has(Obj, knowrob:'depthOfObject',  literal(type(_, Depth))),
+  atom_number(Depth, D),
+  owl_has(Obj, knowrob:'widthOfObject',  literal(type(_, Width))),
+  atom_number(Width, W),
+  owl_has(Obj, knowrob:'heightOfObject', literal(type(_, Height))),
+  atom_number(Height, H).
 
 %% object_assert_dimensions(+Obj, +H, +W, +D) is nondet.
 %

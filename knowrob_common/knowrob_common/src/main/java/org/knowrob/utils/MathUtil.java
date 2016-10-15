@@ -40,6 +40,45 @@ import javax.vecmath.Quat4d;
 import javax.vecmath.Vector3d;
 
 public class MathUtil {
+
+    public static double[] transformToMatrix(float[] pose) {
+	    double[] m = new double[16];
+
+	    double xx = pose[3] * pose[3];
+	    double xy = pose[3] * pose[4];
+	    double xz = pose[3] * pose[5];
+	    double xw = pose[3] * pose[6];
+
+	    double yy = pose[4] * pose[4];
+	    double yz = pose[4] * pose[5];
+	    double yw = pose[4] * pose[6];
+
+	    double zz = pose[5] * pose[5];
+	    double zw = pose[5] * pose[6];
+
+	    m[0]  = 1 - 2 * ( yy + zz );
+	    m[1]  =     2 * ( xy - zw );
+	    m[2]  =     2 * ( xz + yw );
+	    m[3]  = pose[0];
+
+	    m[4]  =     2 * ( xy + zw );
+	    m[5]  = 1 - 2 * ( xx + zz );
+	    m[6]  =     2 * ( yz - xw );
+	    m[7]  = pose[1];
+
+	    m[8]  =     2 * ( xz - yw );
+	    m[9]  =     2 * ( yz + xw );
+	    m[10] = 1 - 2 * ( xx + yy );
+	    m[11] = pose[2];
+
+	    m[12]=0;
+	    m[13]=0;
+	    m[14]=0;
+	    m[15]=1;
+	    return m;
+	}
+
+    
 	/**
 	 * Computes quaternion from 4x4 matrix
 	 * @param matrix The 4x4 matrix
