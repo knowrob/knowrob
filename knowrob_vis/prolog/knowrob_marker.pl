@@ -34,6 +34,9 @@
       show/0,
       show/1,
       show/2,
+      show_next/0,
+      highlight/1,
+      highlight/2,
       
       marker_publish/0,
       marker_republish/0,
@@ -754,20 +757,78 @@ marker_show(Marker) :-
 % TODO: hide marker if marker_update failed?
 show :- marker_update.
 show(X) :-
-  marker_term(X, MarkerTerm),
-  marker_update(MarkerTerm).
+  is_list(X), !,
+  show_next,
+  forall( member(MarkerDescr, X), (
+    T =.. [show|MarkerDescr], call(T)
+  )), !.
+show(X) :-
+  rdfs_individual_of(X, knowrob:'Designator'),
+  % TODO: also show object marker
+  %marker_term(X, MarkerTerm),
+  %marker_update(MarkerTerm)
+  designator_publish(X),
+  (( rdf_has(Act, knowrob:objectActedOn, X),
+     rdf_has(Act, knowrob:capturedImage, _) )
+  -> designator_publish_image(Act)
+  ;  true ), !.
+show(X) :-
+  get_timepoint(Instant),
+  show_object(X,_,Instant), !.
 show(X, Props) :-
   is_list(Props),
   marker_term(X, MarkerTerm),
-  marker_update(MarkerTerm),
-  marker_properties(MarkerTerm, Props).
+  marker(MarkerTerm, MarkerObj),
+  marker_update(MarkerObj),
+  marker_properties(MarkerObj, Props), !.
 show(X, Instant) :-
-  marker_term(X, MarkerTerm),
-  marker_update(MarkerTerm,Instant).
+  show_object(X,_,Instant), !.
 show(X, Instant, Props) :-
+  is_list(Props),
+  show_object(X,MarkerObj,Instant),
+  marker_properties(MarkerObj, Props), !.
+
+
+show_object(Obj, MarkerObj, Instant) :-
+  marker_term(Obj, MarkerTerm),
+  marker(MarkerTerm, MarkerObj),
+  marker_update(MarkerObj,Instant),
+  
+  (( atom(Obj), rdfs_individual_of(Obj, knowrob:'EmbodiedAgent') )
+  -> ignore(show_speech(Obj,Instant)) ; true ).
+
+show_speech(Agent,Instant) :-
+  rdf_has(Ev, knowrob:'sender', Agent),
+  rdfs_individual_of(Ev, knowrob:'SpeechAct'),
+  occurs(Ev, Instant),
+  rdf_has(Ev, knowrob:'content', literal(type(_,Text))),
+  rdf_has(Ev, knowrob:'sender', Agent),
+  % find head
+  sub_component(pr2:'PR2Robot1', Head),
+  rdfs_individual_of(Head, knowrob:'Head-Vertebrate'),
+  rdf_has(Head, srdl2comp:urdfName, URDFVal),
+  strip_literal_type(URDFVal,URDF),
+  % FIXME: /map bad assumption
+  mng_lookup_transform('/map', URDF, Instant, Transform),
+  matrix_translation(Transform, [X,Y,Z]),
+  Z_Offset is Z + 0.2,
+  marker(sprite_text('PR2_SPEECH'), MarkerObj),
+  marker_color(sprite_text('PR2_SPEECH'), [1.0,1.0,1.0]),
+  marker_text(MarkerObj, Text),
+  marker_translation(MarkerObj, [X,Y,Z_Offset]).
+
+
+highlight(X) :-
   marker_term(X, MarkerTerm),
-  marker_update(MarkerTerm,Instant),
-  marker_properties(MarkerTerm, Props).
+  marker_highlight(MarkerTerm).
+highlight(X,Color) :-
+  marker_term(X, MarkerTerm),
+  marker_highlight(MarkerTerm,Color).
+
+show_next :-
+  marker_highlight_remove(all),
+  marker_remove(trajectories).
+
 
 marker_term(X, experiment(X)) :-
   atom(X),
@@ -990,6 +1051,11 @@ marker_update(agent(_), MarkerObject, T) :-
   marker_update_children(MarkerObject, T).
 marker_update(experiment(_), MarkerObject, T) :-
   marker_update_children(MarkerObject, T).
+
+% primitive types don't have update hooks
+marker_update(Term, _, _) :-
+  Term =.. [Type|_],
+  marker_prop_type(Type,_).
 
 marker_update_children(MarkerObject, T) :-
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
