@@ -175,7 +175,13 @@ mng_designator_type(DesigJava, Type) :-
 % @param TypeIri     Type IRI of the designator
 % 
 mng_object_type(Designator, TypeIri) :-
-  jpl_call(Designator, 'get', ['TYPE'], Type),
+  mng_designator(Designator, DesigJava),
+  mng_object_type(Designator, DesigJava, TypeIri).
+
+mng_object_type(Designator, _, TypeIri) :-
+  (( mng_designator_props(Designator, 'TYPE', Type) )
+  ;( mng_designator_props(Designator, 'RESPONSE', Type) )
+  ;( mng_designator_props(Designator, 'DETECTION.TYPE', Type) )),
   mng_type_to_iri(Type, TypeIri), !.
 
 mng_type_to_iri(Type, TypeIri) :-
@@ -190,6 +196,7 @@ mng_type_to_iri(Type, TypeIri) :-
   atom_concat('http://knowrob.org/kb/knowrob.owl#', TypeCamel, TypeIri),
   rdf_has(TypeIri, rdf:type, _).
 
+
 %% mng_designator_props(+Designator, ?PropertyPath, ?Value) is nondet.
 %
 % Read the properties of a logged designator by its ID
@@ -199,6 +206,7 @@ mng_type_to_iri(Type, TypeIri) :-
 % @param Value        Value slot of the designator
 % 
 mng_designator_props(Designator, Prop, Value) :-
+  atom(Designator),
   mng_designator(Designator, DesigJava),
   mng_designator_props(Designator, DesigJava, Prop, Value).
 
@@ -403,7 +411,14 @@ mng_desig_matches(Designator, QueryPattern) :-
   not(DesigJava = @(null)),
   jpl_call(DesigJava, 'get', ['_ID'], DesigID),
   not(DesigID = @(null)),
-  % FIXME: namespace assumption
+  mng_desig_iri(DesigID, Designator).
+
+
+mng_desig_iri(DesigID, Designator) :-
+  rdf_split_url('http://knowrob.org/kb/log.owl#', DesigID, Designator),
+  rdfs_individual_of(Designator, knowrob:'Designator').
+mng_desig_iri(DesigID, Designator) :-
+  % fallback case
   rdf_split_url('http://knowrob.org/kb/cram_log.owl#', DesigID, Designator).
 
 
@@ -437,7 +452,8 @@ desig_list_to_query([Key, Val], Prefix, Str-LispVal) :-
     
     % FIXME: more generic solution
     not(member(Key, [
-      'path_to_cad_model'
+      'path_to_cad_model',
+      'described_in_map'
     ])),
 
     once(lispify_desig(Key, LispKey)),
@@ -536,13 +552,13 @@ mng_object_compute(Object, [an,object|Descr]) :-
   % Query for designators matching the pattern
   % Some statements such as `during` or computable properties are ignored,
   % but objects are matched exactly with input query later
-  mng_desig_matches(Designator, [an,object|Descr]),
+  once(mng_desig_matches(Designator, [an,object|Descr])), % FIXME: once save here?
   mng_desig_chain(Designator, Designators),
   % Only proceed for first designator in chain
-  Designators=[[_,Designator]|_],
+  Designators=[[_,FirstDesignator]|_],
   % Find OWL individual for designator
   % FIXME: is it the same for all designators in the chain?
-  mng_desig_object(Designator, Object),
+  ( var(Object) -> mng_desig_object(FirstDesignator, Object) ; true ),
   % Assert perceptions
   forall(member([_,D], Designators), assert_object_perception(Object, D)).
 
@@ -595,7 +611,7 @@ assert_object_perception(Object, Designator) :-
 assert_object_perception(Object, Designator) :-
   mng_designator(Designator, DesigJava),
   mng_designator_interval(Designator, DesigJava, I),
-  mng_object_type(DesigJava, TypeIri),
+  mng_object_type(Designator, DesigJava, TypeIri),
   % TODO: handle relative poses
   mng_designator_location(DesigJava, DesigPose),
   
@@ -621,9 +637,9 @@ mng_desig_object(Designator, Object) :-
 mng_desig_object(Designator, Object) :-
   mng_designator(Designator, DesigJava),
   mng_designator_interval(Designator, DesigJava, I),
-  mng_object_type(DesigJava, TypeIri),
   % TODO: handle relative poses
   mng_designator_location(DesigJava, DesigPose),
+  mng_object_type(Designator, DesigJava, TypeIri),
   mng_desig_find_object(Designator, TypeIri, DesigPose, I, Object), !.
 
 mng_desig_object(_, Object) :-
