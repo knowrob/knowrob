@@ -4974,6 +4974,7 @@
     <!-- &pr2;pr2_head_pan_link -->
 
     <owl:NamedIndividual rdf:about="&pr2;pr2_head_pan_link">
+        <rdf:type rdf:resource="&knowrob;Head-Vertebrate"/>
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>head_pan_link</srdl2-comp:urdfName>
         <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">6.339</srdl2-comp:mass_value>
