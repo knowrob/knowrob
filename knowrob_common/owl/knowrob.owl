@@ -6764,6 +6764,26 @@ Note that what counts as &quot;approximating&quot; a given simple geometric shap
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Head-AnimalBodyPart -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Head-AnimalBodyPart">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#AnimalBodyPart"/>
+        <rdfs:comment>A specialization of ExternalAnatomicalPart, and AnimalBodyPart, and an instance of UniqueAnatomicalPartType: the collection of all heads of Animals. See also the more specialized Head_Vertebrate.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/Head_AnimalBodyPart</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Head-Vertebrate -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Head-Vertebrate">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Head-AnimalBodyPart"/>
+        <rdfs:comment>The collection of all heads of Vertebrates (animals with backbones). Vertebrate heads all have faces (see FaceOfAnimal) and connect to the animal&apos;s torso via a neck; these things are not generally true for most non-vertebrates.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/Head_Vertebrate</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#HealthAndBeautyProduct -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HealthAndBeautyProduct">
@@ -6954,6 +6974,14 @@ Specializations of HomogeneousSpaceRegion include SpaceChunk, Surface, Line, and
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HumanAccessibleIBO">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#HumanScaleObject"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationBearingObject"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HumanHead -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HumanHead">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Head-Vertebrate"/>
     </owl:Class>
     
 
@@ -9812,6 +9840,14 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RobotExperimentDirectory">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DirectoryName"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Event"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RobotHead -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RobotHead">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Head-Vertebrate"/>
     </owl:Class>
     
 
