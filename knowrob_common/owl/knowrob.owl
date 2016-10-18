@@ -3642,6 +3642,14 @@ See also xAxisPredicateOfSystem and yAxisPredicateOfSystem.</rdfs:comment>
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Apple -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Apple">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EdibleFruit"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#ApplyingSomethingToSurface -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ApplyingSomethingToSurface">
@@ -3697,6 +3705,17 @@ See also xAxisPredicateOfSystem and yAxisPredicateOfSystem.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Artifact">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InanimateObject-NonNatural"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#AssembledFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AssembledFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodComposite"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparedFood"/>
+        <rdfs:comment>The collection of all assembled food. A type of FoodComposite. AssembledFood is a FoodTypeByPreparationStyle.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rgbVqXilGEdqAAAACs2IMmw</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -3795,6 +3814,8 @@ See also xAxisPredicateOfSystem and yAxisPredicateOfSystem.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Baked">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cooked"/>
+        <rdfs:comment>A specialization of Cooked. Food that is Baked has been prepared in an event of BakingFood, using a RegularOven.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rA3QnUHS6EdaAAACgyZzFrg</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -3847,6 +3868,22 @@ See also xAxisPredicateOfSystem and yAxisPredicateOfSystem.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Ball">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PortableObject"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Banana -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Banana">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EdibleFruit"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#BarbecueSauce -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#BarbecueSauce">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Sauce"/>
     </owl:Class>
     
 
@@ -4003,6 +4040,16 @@ See also xAxisPredicateOfSystem and yAxisPredicateOfSystem.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Boiled">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cooked"/>
+        <rdfs:comment>The subcollection of Food whose instances been boiled; a specialization of Cooked.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rEaxgmnS-EdaAAACgyZzFrg</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#BoiledEgg -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#BoiledEgg">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Boiled"/>
     </owl:Class>
     
 
@@ -4148,6 +4195,9 @@ See also xAxisPredicateOfSystem and yAxisPredicateOfSystem.</rdfs:comment>
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Bread">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Baked"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CerealFood"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FingerFood"/>
+        <rdfs:comment>An instance of ProductType, and a specialization of Baked. Each instance of Bread is a baked food made of a dough or batter containing some instance of FlourOrMeal, and usually water or milk. The dough from which the bread is made will often (but not always) contain some leavening agent, such as Yeast.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjMeZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -4259,7 +4309,9 @@ See also xAxisPredicateOfSystem and yAxisPredicateOfSystem.</rdfs:comment>
     <!-- http://knowrob.org/kb/knowrob.owl#Cake -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cake">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#AssembledFood"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Baked"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DessertFood"/>
     </owl:Class>
     
 
@@ -4323,6 +4375,8 @@ See also xAxisPredicateOfSystem and yAxisPredicateOfSystem.</rdfs:comment>
                 <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Sugar"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:comment>The collection of all candy. A type of SolidFoodArtifact, Food_ReadyToEat, and SweetTaste. The collection Candy is a SnackFoodType and an ExistingStuffType. Each instance of Candy is a relatively small and very sugary confection. Representative specializations of Candy include Jellybean, Lollipop and CandyBar.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwPfsL5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -4376,6 +4430,16 @@ See also xAxisPredicateOfSystem and yAxisPredicateOfSystem.</rdfs:comment>
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Carrot-Foodstuff -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Carrot-Foodstuff">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Vegetable-Food"/>
+        <rdfs:comment>Foodstuff from the edible root of the carrot.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwQCF3JwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#CarryingWhileLocomoting -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CarryingWhileLocomoting">
@@ -4416,6 +4480,14 @@ Cf. PolarCoordinateSystem.</rdfs:comment>
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Cashew-TheSeed -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cashew-TheSeed">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EdibleNut"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#Cavity -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cavity">
@@ -4435,7 +4507,9 @@ Cf. PolarCoordinateSystem.</rdfs:comment>
     <!-- http://knowrob.org/kb/knowrob.owl#CerealFood -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CerealFood">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SolidFood"/>
+        <rdfs:comment>A specialization of EdibleStuff and an instance of FoodGroup. Each instance of CerealFood is food that consists of a significant amount of grain products, such as breads and cereals. Note that CerealFood is not a specialization of VegetableMatter because some breads contain non-plant constituents such as salt.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjMvZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -4479,6 +4553,7 @@ Cf. PolarCoordinateSystem.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cheese">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DairyProduct"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SolidFood"/>
     </owl:Class>
     
 
@@ -4511,6 +4586,8 @@ Cf. PolarCoordinateSystem.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Chip-Food">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SnackFood"/>
+        <rdfs:comment>The collection of all chips. A type of SnackFood, SolidFoodArtifact, and Flaky_CoherentPhysicalStructure. The collection Chip_Snack is a SnackFoodType and a SpatiallyDisjointObjectType. Each instance of Chip_Snack is a thin, crispy and fairly small snack food object, often prepared through baking or deep-frying.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvViEfZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -5185,7 +5262,9 @@ Cf. DisconnectedSpaceRegion, with which this collection makes up a partition of 
     <!-- http://knowrob.org/kb/knowrob.owl#Cooked -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cooked">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparedFood"/>
+        <rdfs:comment>The subcollection of EdibleStuff whose instances have been cooked. Food becomes Cooked as the result of an event of CookingFood. Specialized forms of Cooked include Steamed, Baked, Microwaved and Grilled.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rQoMFtHTAEdaAAACgyZzFrg</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -5194,6 +5273,9 @@ Cf. DisconnectedSpaceRegion, with which this collection makes up a partition of 
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cookie">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Baked"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DessertFood"/>
+        <rdfs:comment>An instance of DefaultDisjointEdibleStuffType and a specialization of DessertFood and Baked. Each instance of Cookie is a small, sweet, baked good--usually relatively flat, often Disc shaped. Typical ingredients include FlourOrMeal, Sweetener, and EdibleFat.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvViDSJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -5312,6 +5394,8 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cracker-FoodItem">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SnackFood"/>
+        <rdfs:comment>The collection of all crackers. A type of Biscuit, SolidFoodArtifact, SaltyTaste, Flaky_CoherentPhysicalStructure, and SnackFood. The collection Cracker_FoodItem is a SnackFoodType and a SpatiallyDisjointObjectType. Each instance of Cracker_FoodItem is a thin and crisp biscuit.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVi5n5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -5425,6 +5509,17 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#CuttingBoard -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CuttingBoard">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkPreparationDevice"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#NonPoweredDevice"/>
+        <rdfs:comment>The collection of all cutting boards -- movable flat surfaces, usually of wood or plastic, on which quantities of food can be cut up.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVil2JwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#CuttingDevice -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CuttingDevice">
@@ -5478,6 +5573,8 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#DairyProduct">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Perishable"/>
+        <rdfs:comment>A specialization of FoodOrDrink and an instance of FoodGroup. Each instance of DairyProduct is a foodstuff that is milk or processed milk. Important specializations of DairyProduct include CowsMilk_Product, Cheese, Butter, and IceCream.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/DairyProduct</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -5538,6 +5635,16 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Desk-PieceOfFurniture">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Table-PieceOfFurniture"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#DessertFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#DessertFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+        <rdfs:comment>A collection of tangible stuff. Each instance of DessertFood is an item of food which, in its prepared state, is customarily eaten by people as part of the DessertCourse of a meal. For example, (in NorthAmericanCuisine,) ice cream, cake, pie.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVkKypwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -5786,6 +5893,16 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Dried -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Dried">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparedFood"/>
+        <rdfs:comment>The collection of all dried food. A type of PreparedFood. The collection Dried is a FoodTypeByPreparationStyle and an EdibleStuffTypeByPreparationStyle.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rU0xmUHS8EdaAAACgyZzFrg</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#Drink -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Drink">
@@ -5915,8 +6032,30 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#EdibleFruit -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#EdibleFruit">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FruitOrVegetableFood"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SolidFood"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The collection of individual edible fruits, often eaten whole by people or used in cooking. Note that this is the common-sense notion of fruit, so tomatoes, olives, legumes are NOT EdibleFruit. See also Fruit.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjllZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#EdibleMushroom -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#EdibleMushroom">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SolidFood"/>
+        <rdfs:comment>The collection of all mushrooms that are edible.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4roRldbqk1R9KrcBKVumiVQQ</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#EdibleNut -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#EdibleNut">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+        <rdfs:comment>The nuts that people typically eat.This is the commonsense, not botanical definition, so EdibleNut has specializations such as (SeedFn PeanutPlant).</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjrDZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -5932,7 +6071,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#Egg-Chickens -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Egg-Chickens">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SolidFood"/>
     </owl:Class>
     
 
@@ -6232,6 +6371,8 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FingerFood">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food-ReadyToEat"/>
+        <rdfs:comment>This is the collection of foods normally eaten using the fingers rather than utensils, that is, one&apos;s fingers directly touch the food and this is not considered rude in the cultural context of the eating.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvnnq_JwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -6358,6 +6499,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Food">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrink"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An instance of ExistingStuffType, and a specialization of FoodOrDrink. Each instance of Food is a particular portion of food of a type which can be, and habitually is, eaten by humans or other animals. Here the notion of _eating_ is important; eating an instance of Food will generally require biting or chewing, but if placed into the mouth (e.g. with a utensil) in a manner not considered to be drinking, it is still considered eating. Thus, edible stuff normally taken in via drinking, inhalation, or osmosis is excluded from this collection. A borderline example is a bowl of bouillon, which, although it can be drunk from the bowl is normally ``eaten&apos;&apos; with a spoon; a borderline non-example is a very thick milkshake, which may be eaten with a spoon, but is normally drunk (possibly using a straw) from a glass. Instances of Food provide calories and/or nutrients that humans or animals need.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVi9i5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -6367,6 +6509,8 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Food-ReadyToEat">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Perishable"/>
+        <rdfs:comment>A specialization of (FoodOrDrinkForFn Person). Each instance of Food_ReadyToEat is food that is edible more or less in its current state, without further elaborate preparation. Instances of Food_ReadyToEat can require unwrapping, cutting, pouring, buttering, or cooling before being consumed, but not cooking or other complex or sophisticated preparation that is typically done in a kitchen or other food-preparation area rather than at the table or site of consumption. If a cook would inspect an item and pronounce it &quot;done,&quot; that item is probably an instance of Food_ReadyToEat.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjMlJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -6385,10 +6529,22 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#FoodComposite -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FoodComposite">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+        <rdfs:comment>This is the collection of food items that have been prepared and which contain two or more ingredients. It includes almost anything that is served as a dish at a meal. FoodComposite needn&apos;t be cooked, nor do the ingredients have to form a Mixture. The collection excludes beverages, and is thus a proper spec of EdibleStuffComposite.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwPqcnZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#FoodIngredientOnly -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FoodIngredientOnly">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkOrIngredient"/>
+        <rdfs:comment>A specialization of EdibleStuff. Each instance of FoodIngredientOnly is an edible substance that is used in making other food but isn&apos;t eaten by itself. Instances of FoodIngredientOnly may or may not require some preparation. For example, TableSalt, VegetableOil, and Ketchup are specializations of FoodIngredientOnly, since all of their instances are used only as ingredients or condiments. In contrast, Egg_Chickens is not a specialization of FoodIngredientOnly; some of its instances serve as ingredients in cooking other dishes, but other instances are simply eaten after poaching or frying. Types of food, such as Pizza, whose instances are never merely ingredients, are specializations of Food.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjaKpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -6496,6 +6652,16 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#FreshFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FreshFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparedFood"/>
+        <rdfs:comment>The subcollection of EdibleStuff whose members are relatively fresh. This collection applies particularly to food items, such as vegetables, but can also apply to some FoodComposites, such as uncooked nondried pasta. Being FreshFood means not having been cooked and having been harvested or made in the quite recent past.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rRHFS0HS8EdaAAACgyZzFrg</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#Friday -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Friday">
@@ -6534,7 +6700,21 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#Frozen -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Frozen">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkOrIngredient"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparedFood"/>
+        <rdfs:comment>The collection of all frozen food. A type of ConvenienceFood and PreparedFood. The collection Frozen is a FoodTypeByPreparationStyle and an EdibleStuffTypeByPreparationStyle.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rllf_ZHS7EdaAAACgyZzFrg</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FruitOrVegetableFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FruitOrVegetableFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EdibleStuff"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Perishable"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#UnpreparedFood"/>
+        <rdfs:comment>A specialization of EdibleStuff and an instance of FoodGroup. Each instance of FruitOrVegetableFood is a fruit or a vegetable.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjmFpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -6646,6 +6826,14 @@ Note that what counts as &quot;approximating&quot; a given simple geometric shap
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Gravy -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Gravy">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Sauce"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#GreenColor -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#GreenColor">
@@ -6674,6 +6862,8 @@ Note that what counts as &quot;approximating&quot; a given simple geometric shap
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Grilled">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cooked"/>
+        <rdfs:comment>The subcollection of food whose instances have been grilled - a specialization of Cooked. Food that is Grilled has been prepared in an event of GrillingFood, using a BBQGrill or an ElectricGrill.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rLTN07nS9EdaAAACgyZzFrg</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -6760,6 +6950,24 @@ Note that what counts as &quot;approximating&quot; a given simple geometric shap
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HardCopyInformationBearingObject">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#HumanAccessibleIBO"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HawaiianPizza -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HawaiianPizza">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Pizza"/>
+        <rdfs:comment>A specialization of Pizza. Each instance of Pizza_HawaiianStyle is a pizza with at least ham and pineapple as its ingredients.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rMytTYrkwEd2AAAAhm0vLxw</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Hazelnut -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Hazelnut">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EdibleNut"/>
     </owl:Class>
     
 
@@ -7022,6 +7230,12 @@ Specializations of HomogeneousSpaceRegion include SpaceChunk, Surface, Line, and
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#IceCream">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DairyProduct"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DessertFood"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodComposite"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Frozen"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SolidFood"/>
+        <rdfs:comment>A specialization of DairyProduct and DessertFood. Each instance of IceCream is some ice cream.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVj1EpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -7209,6 +7423,14 @@ Note that some events, such as an ice cube melting into a small puddle of water,
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Jam-Foodstuff -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Jam-Foodstuff">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Boiled"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#JapaneseCuisine -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#JapaneseCuisine">
@@ -7230,6 +7452,14 @@ Note that some events, such as an ice cube melting into a small puddle of water,
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Juice">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Drink"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Ketchup -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Ketchup">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TomatoBasedSauce"/>
     </owl:Class>
     
 
@@ -7497,6 +7727,16 @@ Note that some events, such as an ice cube melting into a small puddle of water,
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#LoafOfBread -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LoafOfBread">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Bread"/>
+        <rdfs:comment>A specialization of Bread and Food_ReadyToEat. Each instance of LoafOfBread is a loaf of baked bread, which may be either sliced or unsliced, but is otherwise ready to eat.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rTdOzf9lKQZC_2kenYwUCDQ</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#Lobby-Room -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Lobby-Room">
@@ -7696,6 +7936,14 @@ Note that some events, such as an ice cube melting into a small puddle of water,
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Mango -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Mango">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EdibleFruit"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#ManipulationPlace -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ManipulationPlace">
@@ -7846,7 +8094,7 @@ For predicates that relate things to measurable quantities that characterize the
     <!-- http://knowrob.org/kb/knowrob.owl#MeatOrLegumeFood -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MeatOrLegumeFood">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SolidFood"/>
     </owl:Class>
     
 
@@ -7933,6 +8181,8 @@ For predicates that relate things to measurable quantities that characterize the
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Microwaved">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cooked"/>
+        <rdfs:comment>The collection of Food that has been microwaved; a specialization of Cooked. Food that is Microwaved has been prepared in an event of Microwaving, using a MicrowaveOven.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rzuaylnS-EdaAAACgyZzFrg</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -8300,6 +8550,16 @@ For predicates that relate things to measurable quantities that characterize the
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Onion-Foodstuff -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Onion-Foodstuff">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Vegetable-Food"/>
+        <rdfs:comment>Foodstuff from the edible bulb of the onion plant.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwQCWWZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#OpeningABottle -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#OpeningABottle">
@@ -8642,6 +8902,14 @@ For predicates that relate things to measurable quantities that characterize the
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Peanut -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Peanut">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EdibleNut"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#Pencil -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pencil">
@@ -8756,6 +9024,14 @@ For predicates that relate things to measurable quantities that characterize the
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#PestoSauce -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PestoSauce">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Sauce"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#PhysicalContactSituation -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PhysicalContactSituation"/>
@@ -8864,6 +9140,14 @@ For predicates that relate things to measurable quantities that characterize the
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Pineapple -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pineapple">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EdibleFruit"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#Pitcher -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pitcher">
@@ -8876,6 +9160,7 @@ For predicates that relate things to measurable quantities that characterize the
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pizza">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FingerFood"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodComposite"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#commonFoodTypeOfCuisine"/>
@@ -8888,6 +9173,8 @@ For predicates that relate things to measurable quantities that characterize the
                 <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Cheese"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:comment>The collection of flat baked pie crusts topped with tomato sauce, cheese, spices, and various other ingredients, including anchovies.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVibapwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -9070,6 +9357,16 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Potato-Foodstuff -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Potato-Foodstuff">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Vegetable-Food"/>
+        <rdfs:comment>Potato in any of its edible forms.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwQB_TpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#PotatoSalad -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PotatoSalad">
@@ -9166,6 +9463,16 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#PreparedFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PreparedFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+        <rdfs:comment>The collection of all prepared foods. A type of Food. The collection PreparedFood is a FoodTypeByPreparationStatus and a SpatiallyDisjointObjectType.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rWY_N1ibjEdqAAAACs2IMmw</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#PreparingABeverage -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PreparingABeverage">
@@ -9213,7 +9520,10 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
     <!-- http://knowrob.org/kb/knowrob.owl#Pretzel -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pretzel">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Baked"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SnackFood"/>
+        <rdfs:seeAlso>This is the collection of pretzels. A pretzel is a wheat flour based baked good which is in the shape of a narrow cylinder, often twisted into the familiar pretzel shape.</rdfs:seeAlso>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rv-bhIJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -9270,6 +9580,15 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PublicRestroom">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Restroom"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Pudding -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pudding">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#DessertFood"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodComposite"/>
     </owl:Class>
     
 
@@ -9802,10 +10121,20 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#RoastBeef -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RoastBeef">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Roasted"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#Roasted -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Roasted">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cooked"/>
+        <rdfs:comment>The collection of all roasted food. A type of Cooked. The collection Roasted is a FoodTypeByPreparationStyle, a SpatiallyDisjointObjectType, and an EdibleStuffTypeByPreparationStyle.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4r0qMEknS6EdaAAACgyZzFrg</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -9937,6 +10266,7 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
     <!-- http://knowrob.org/kb/knowrob.owl#Salad -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Salad">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#AssembledFood"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food-ReadyToEat"/>
         <rdfs:subClassOf>
             <owl:Restriction>
@@ -9944,6 +10274,16 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
                 <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#VegetarianCuisine"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:comment>Different kinds of salads. Green salad, potato salad, etc.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvViX8ZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Salsa-TheCondiment -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Salsa-TheCondiment">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Sauce"/>
     </owl:Class>
     
 
@@ -9951,6 +10291,7 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
     <!-- http://knowrob.org/kb/knowrob.owl#Sandwich -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Sandwich">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#AssembledFood"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FingerFood"/>
         <rdfs:subClassOf>
             <owl:Restriction>
@@ -9970,6 +10311,8 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
                 <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#GreenSalad"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:comment>A DefaultDisjointEdibleStuffType and specialization of FingerFood. Each instance of Sandwich is a SolidFoodArtifact consisting of a bun or roll or a couple of slices of bread with food (e.g. meat, cheese, vegetables, peanut butter, jelly) in between.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwQB8jpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -9998,6 +10341,17 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Saturday">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Weekday"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Sauce -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Sauce">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodIngredientOnly"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LiquidTangibleThing"/>
+        <rdfs:comment>The collection of sauces: liquids that aren&apos;t eaten by themselves, but only if applied to other foods, as a coating or dip for them.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVirapwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -10290,6 +10644,8 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SnackFood">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food-ReadyToEat"/>
+        <rdfs:comment>The collection of all snack food. A type of Food. The collection SnackFood is a FoodTypeByEatingPurpose, a SpatiallyDisjointObjectType, and a DefaultDisjointEdibleStuffType.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwNOVSJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -10348,6 +10704,17 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#SolidFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SolidFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SolidTangibleThing"/>
+        <rdfs:comment>This is the subcollection of Food that is normally in a Solid_StateOfMatter when eaten.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvplbE5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#SolidTangibleThing -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SolidTangibleThing">
@@ -10361,6 +10728,8 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Soup">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LiquidTangibleThing"/>
+        <rdfs:comment>The food soup.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVj2XJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -10598,6 +10967,8 @@ Note that a fictional or imaginary object (such as Frodo, Captain Queeg, or HAL9
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Steamed">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cooked"/>
+        <rdfs:comment>The attribute Steamed is a specialized form of Cooked. Food that is Steamed has been prepared in an event of SteamingFood.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4royB9onS7EdaAAACgyZzFrg</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -10697,6 +11068,14 @@ Note that a fictional or imaginary object (such as Frodo, Captain Queeg, or HAL9
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#StrainerForCooking">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkPreparationDevice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Strawberry -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Strawberry">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EdibleFruit"/>
     </owl:Class>
     
 
@@ -10876,6 +11255,8 @@ Cf. Surface, whose instances are two-dimensional, intangible regions of space.</
                 <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Rice"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:comment>In Japanese cooking, cold boiled rice moistened with rice vinegar, usually shaped into bite-size pieces and topped with raw seafood (nigiri-zushi) or formed into a long seaweed-wrapped roll, often around strips of vegetable or raw fish, and sliced into bite-size pieces (maki-zushi).</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvu69v5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -11213,10 +11594,21 @@ As the above examples illustrate, it is not the case that everthing that has a t
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Toast -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Toast">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Bread"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Toasted"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#Toasted -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Toasted">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Cooked"/>
+        <rdfs:comment>The collection of food that has been toasted. A specialization of Cooked.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4r29LACHS-EdaAAACgyZzFrg</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -11243,6 +11635,24 @@ As the above examples illustrate, it is not the case that everthing that has a t
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ToiletrySubstance">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#HealthAndBeautyProduct"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PersonalHygieneProduct"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Tomato-Foodstuff -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Tomato-Foodstuff">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Vegetable-Food"/>
+        <rdfs:comment>Foodstuff from the edible fruit of tomato plants.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwQCF_pwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TomatoBasedSauce -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TomatoBasedSauce">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Sauce"/>
     </owl:Class>
     
 
@@ -11518,6 +11928,16 @@ As the above examples illustrate, it is not the case that everthing that has a t
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#UnpreparedFood -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#UnpreparedFood">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Food"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PartiallyTangible"/>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rWvJqTibjEdqAAAACs2IMmw</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#UtilityRoom -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#UtilityRoom">
@@ -11579,6 +11999,16 @@ As the above examples illustrate, it is not the case that everthing that has a t
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Vector">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#MathematicalObject"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Vegetable-Food -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Vegetable-Food">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FruitOrVegetableFood"/>
+        <rdfs:comment>A specialization of FoodOrDrink. Each instance of Vegetable_Food is a foodstuff which is derived from a plant and is ordinarily considered a vegetable; e.g., a carrot (an instance of Carrot_Foodstuff), a potato (an instance of Potato_Foodstuff), a lima bean (an instance of Bean_Foodstuff), or a tomato (an instance of Tomato_Foodstuff). Note that Vegetable_Food includes certain plant parts, such as tomatoes, that are technically classified as fruits by botanists, but which are treated as vegetables in food classification.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjqzZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
