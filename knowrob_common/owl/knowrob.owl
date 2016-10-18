@@ -128,6 +128,17 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#arrangementObjectTypes -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#arrangementObjectTypes">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#ArrangementOfLikeObjects"/>
+        <rdfs:comment>TODO: Specify domain as set of object types, problem is that types are not instances</rdfs:comment>
+        <rdfs:comment>This predicate relates an arrangement of like objects to a type of object under which all of its members fall. (arrangementObjectTypes GROUP OBJTYPE) means that OBJTYPE is an instance of ExistingObjectType that all groupMembers of GROUP are instances of. For example, if the members of GROUP are the trees in a palm grove, then OBJTYPE could be PalmTree. OBJTYPE need not be one of the maximally specific types under which all of GROUP&apos;s members fall: the grove can still be described as an arrangement of PalmTrees even if all of the members happen to be instances of DatePalm. Each instance of ArrangementOfLikeObjects should have at least one such corresponding object type. For a more specific predicate see arrangementNearestObjectTypes.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/arrangementObjectTypes</rdfs:seeAlso>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#beforeI -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#beforeI">
@@ -3701,6 +3712,16 @@ See also xAxisPredicateOfSystem and yAxisPredicateOfSystem.</rdfs:comment>
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#ArrangementOfLikeObjects -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ArrangementOfLikeObjects">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#GroupOfTangibleThings"/>
+        <rdfs:comment>A collection of groups of PartiallyTangibles. Each instance of ArrangementOfLikeObjects is a group of partially tangible objects, all of the same type (see arrangementObjectTypes and arrangementNearestObjectTypes), having a specified set of spatial relations holding among them (see arrangementPredicates and arrangementNearestPredicates). See also Group.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/ArrangementOfLikeObjects</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#Artifact -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Artifact">
@@ -4528,6 +4549,14 @@ Cf. PolarCoordinateSystem.</rdfs:comment>
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Champagne">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CarbonatedBeverage"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Wine"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Champignon -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Champignon">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EdibleMushroom"/>
     </owl:Class>
     
 
@@ -6529,6 +6558,15 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#FoodArrangement -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FoodArrangement">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ArrangementOfLikeObjects"/>
+        <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/FoodArrangement</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#FoodComposite -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FoodComposite">
@@ -6872,6 +6910,15 @@ Note that what counts as &quot;approximating&quot; a given simple geometric shap
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#GripperAtPoseState">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#AtPoseState"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#GroupOfTangibleThings -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#GroupOfTangibleThings">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PartiallyTangible"/>
+        <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/Group_of_tangible_things</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -9140,6 +9187,16 @@ For predicates that relate things to measurable quantities that characterize the
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Pile -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pile">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ArrangementOfLikeObjects"/>
+        <rdfs:comment>A pile is a group or mob of things stacked or piled on top of each other in either an organized or disorganized fashion. If it&apos;s neat, it could be called a stack.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/Pile</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#Pineapple -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pineapple">
@@ -10908,6 +10965,16 @@ Note that a fictional or imaginary object (such as Frodo, Captain Queeg, or HAL9
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SpreadingOntoSurface">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ApplyingSomethingToSurface"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Stack -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Stack">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Pile"/>
+        <rdfs:comment>an organized pile. Usually things in a stack are similar in sized and shaped, and lay nicely one on top of another.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/Stack</rdfs:seeAlso>
     </owl:Class>
     
 
