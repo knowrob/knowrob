@@ -599,6 +599,18 @@ marker_new(MarkerName, object_without_children(Identifier), MarkerObject, Parent
   marker_primitive(cube, MarkerName, object_without_children(Identifier), MarkerObject, Parent),
   marker_initialize_object(Identifier, MarkerObject).
 
+% special case particles (e.g., a pile of stuff)
+marker_new(MarkerName, object(Identifier), MarkerObject, Parent) :-
+  rdf_has(Identifier, srdl2comp:'urdfName', UrdfVal),
+  rdf_has(Identifier, knowrob:'numParticles', literal(type(_,ParticleCount))),
+  strip_literal_type(UrdfVal,UrdfFormat),
+  atom_number(ParticleCount, N),
+  
+  marker_primitive(sphere, MarkerName, object(Identifier), MarkerObject, Parent),
+  marker_color(MarkerObject, [1.0,1.0,0.0,1.0]),
+  marker_has_visual(MarkerObject, false),
+  marker_new_particles(MarkerObject, Identifier, UrdfFormat, N, 1), !.
+
 marker_new(MarkerName, object(Identifier), MarkerObject, Parent) :-
   marker_primitive(cube, MarkerName, object(Identifier), MarkerObject, Parent),
   marker_initialize_object(Identifier, MarkerObject),
@@ -713,6 +725,26 @@ marker_new(MarkerName, sprite_scaled(Id), MarkerObject, Parent) :-
 marker_new(MarkerName, background_image(Id), MarkerObject, Parent) :-
   marker_new(MarkerName, black(background_image,background_image(Id)), MarkerObject, Parent).
 
+
+% TODO: don't create a marker for each particle!
+% TODO: remove/add markers when pile size changes
+% FIXME: one particle left out (first or last index), does TF data start at 1 or 0 ?
+marker_new_particles(_, _, _, Count, Count) :- !.
+marker_new_particles(Parent, Obj, UrdfFormat, Count, Index) :-
+  format(atom(Urdf), UrdfFormat, [Index]),
+  % Create marker
+  marker(Urdf, link(Urdf), MarkerObject, Parent),
+  ( owl_has(Obj, knowrob:'pathToCadModel', literal(type(_,MeshPath))) -> (
+    marker_color(MarkerObject, [0.0,0.0,0.0,0.0]),
+    marker_scale(MarkerObject, [1.0,1.0,1.0]),
+    marker_type(MarkerObject, mesh_resource),
+    marker_mesh_resource(MarkerObject, MeshPath)
+  )),
+  % create next marker
+  NextIndex is Index + 1,
+  marker_new_particles(Parent, Obj, UrdfFormat, Count, NextIndex).
+
+
 marker_child_name(ParentTerm, ParentName, ChildTerm, ChildName) :-
   term_to_atom(ParentTerm, N), N = ParentName,
   term_to_atom(ChildTerm, ChildName), !.
@@ -754,14 +786,15 @@ marker_show(Marker) :-
 % Updating marker for given timepoint/timerange
 %
 
-% TODO: hide marker if marker_update failed?
 show :- marker_update.
+
 show(X) :-
   is_list(X), !,
   show_next,
   forall( member(MarkerDescr, X), (
     T =.. [show|MarkerDescr], call(T)
   )), !.
+
 show(X) :-
   rdfs_individual_of(X, knowrob:'Designator'),
   % TODO: also show object marker
@@ -772,30 +805,33 @@ show(X) :-
      rdf_has(Act, knowrob:capturedImage, _) )
   -> designator_publish_image(Act)
   ;  true ), !.
+
 show(X) :-
   get_timepoint(Instant),
-  show_object(X,_,Instant), !.
-show(X, Props) :-
-  is_list(Props),
-  marker_term(X, MarkerTerm),
-  marker(MarkerTerm, MarkerObj),
-  marker_update(MarkerObj),
-  marker_properties(MarkerObj, Props), !.
+  show(X,Instant,[]), !.
+
+show(X, Properties) :-
+  is_list(Properties),
+  get_timepoint(Instant),
+  show(X,Instant,Properties), !.
+
 show(X, Instant) :-
-  show_object(X,_,Instant), !.
-show(X, Instant, Props) :-
-  is_list(Props),
-  show_object(X,MarkerObj,Instant),
-  marker_properties(MarkerObj, Props), !.
+  show(X, Instant, []), !.
 
-
-show_object(Obj, MarkerObj, Instant) :-
-  marker_term(Obj, MarkerTerm),
+show(X, Instant, Properties) :-
+  is_list(Properties),
+  
+  marker_term(X, MarkerTerm),
+writeln(MarkerTerm),
   marker(MarkerTerm, MarkerObj),
   marker_update(MarkerObj,Instant),
   
-  (( atom(Obj), rdfs_individual_of(Obj, knowrob:'EmbodiedAgent') )
-  -> ignore(show_speech(Obj,Instant)) ; true ).
+  % TODO: X could also be a term agent(?Identifier) or object(?Identifier)
+  (( atom(X), rdfs_individual_of(X, knowrob:'EmbodiedAgent') )
+  -> ignore(show_speech(X,Instant)) ; true ),
+  
+  marker_properties(MarkerObj, Properties).
+  
 
 show_speech(Agent,Instant) :-
   rdf_has(Ev, knowrob:'sender', Agent),
