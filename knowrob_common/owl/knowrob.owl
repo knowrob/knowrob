@@ -9610,6 +9610,8 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PreparingABeverage">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparingFoodOrDrink"/>
+        <rdfs:comment>Making a batch of something drinkable.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/PreparingABeverage</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -9618,6 +9620,8 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PreparingAFoodItem">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparingFoodOrDrink"/>
+        <rdfs:comment>A specialization of PreparingFoodOrDrink. Each instance of PreparingFoodItem is an event in which a single item of Food is prepared to make it ready to eat. For example, instances of MakingToast, roasting a turkey, or BakingBread.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/PreparingFoodItem</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -9646,6 +9650,8 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
                 <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkOrIngredient"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:comment>A specialization of both PurposefulPhysicalAction and HumanActivity. Each instance of PreparingFoodOrDrink is an event in which an instance of FoodOrDrink is created. An instance of PreparingFoodOrDrink may be an event in which preparation is done `from scratch&apos;, using raw ingredients, or it may be an event in which semi-prepared or `convenience&apos; products (such as cake mixes, margarita mixes, or frozen foods) are used. Typical sub-events (see the predicate subEvents) in instances of PreparingFoodOrDrink include activities commonly performed by cooks and/or bartenders, including instances of ChoppingSomething, CookingFood, BakingFood, or MixingAlcoholicDrinks. Each instance of PreparingFoodOrDrink ends when the item prepared is ready to eat. Notable specializations of PreparingFoodOrDrink include GrillingFood, SteamingFood, and PreparingABeverage.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/2009/04/07/concept/en/PreparingFoodOrDrink</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -10157,6 +10163,14 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Retracting -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Retracting">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#VoluntaryBodyMovement"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#RfidLostPerception -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RfidLostPerception">
@@ -10318,6 +10332,14 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RobovieMR2">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Robot"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RollingDough -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RollingDough">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparingFoodOrDrink"/>
     </owl:Class>
     
 
