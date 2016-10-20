@@ -70,13 +70,6 @@ test(interval_during9, [fail]) :-
 test(interval_during10, [fail]) :-
   interval_during([2.0,5.0], [2.0,4.0]).
 
-%interval_operator(before, I1, I2) :-   interval_before(I1,I2).
-%interval_operator(after, I1, I2) :-    interval_after(I1,I2).
-%interval_operator(meets, I1, I2) :-    interval_meets(I1,I2).
-%interval_operator(starts, I1, I2) :-   interval_starts(I1,I2).
-%interval_operator(finishes, I1, I2) :- interval_finishes(I1,I2).
-%interval_operator(overlaps, I1, I2) :- interval_overlaps(I1,I2).
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Fluents
 
@@ -154,15 +147,5 @@ test(fluent_has_type_descr) :-
 test(fluent_type_match) :-
   entity(knowrob_temporal_test:'EnduringThing-Localized_GSFgh4u6', [an, object, [type, cup]]), !.
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%% `holds`
-
-test(holds) :- fail. % TODO: write test with object property
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%% `òccurs`
-
-test(occurs) :- fail. % TODO: write test with object property
 
 :- end_tests(knowrob_temporal).

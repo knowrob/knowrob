@@ -228,7 +228,7 @@ current_object_pose(Obj, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22,
 % @param Quaternion  list[4] that represents the rotation of the object
 % 
 object_pose_at_time(Obj, Time, Pose) :-
-  object_pose_at_time(Obj, Time, Pose, _).
+  object_pose_at_time(Obj, Time, Pose, [Time,Time]).
 
 object_pose_at_time(Obj, Time, pose([X,Y,Z], [QW,QX,QY,QZ]), Interval) :-
   !, object_pose_holds(Obj, Time, Pose, Interval),
@@ -260,7 +260,7 @@ object_pose_holds(Obj, Time, Pose, Interval) :-
   ( nonvar(Obj)
   -> (
     holds(Obj, 'http://knowrob.org/kb/knowrob.owl#pose', Pose, Interval),
-    interval_during(Time, Interval), ! % TODO: use intersection test instead of during
+    interval_during(Time, Interval), !
   );(
     holds(Obj, 'http://knowrob.org/kb/knowrob.owl#pose', Pose, Interval),
     interval_during(Time, Interval)
@@ -277,10 +277,14 @@ object_pose_holds(Obj, Time, Pose, Interval) :-
   -> (
       rdf_has(Next, knowrob:startTime, EndTime),
       time_term(EndTime, End),
-      Interval = [Begin,End]
+      PoseInterval = [Begin,End]
   ) ; (
-      Interval = [Begin]
-  )), !.
+      PoseInterval = [Begin]
+  )),
+  (  ground(Interval)
+  -> interval_during(Interval, PoseInterval)
+  ;  Interval = PoseInterval
+  ), !.
 
 object_pose_holds(Obj, Time, Pose, Interval) :-
   nonvar(Obj),

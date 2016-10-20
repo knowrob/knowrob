@@ -109,12 +109,27 @@ test(generate_refrigerator_description) :-
   X = [an, object, [type, refrigerator]].
 
 test(query_refrigerator, [nondet]) :-
+  % FIXME: slow for some reason
   entity(Cont, [an, object, [type, refrigerator]]),
   rdf_equal(Cont, test_owl:'Refrigerator_fg45543').
+
+test(query_primary_storage_place1, [nondet]) :-
+  entity(Obj, [an, object,
+    [knowrob:'typePrimaryFunction-StoragePlaceFor', knowrob:'Perishable']]),
+  rdf_equal(Obj, test_owl:'Refrigerator').
+
+test(query_primary_storage_place2, [nondet]) :-
+  entity(Obj, [an, object,
+    ['type_primary_function-storage_place_for', knowrob:'Perishable']]),
+  rdf_equal(Obj, test_owl:'Refrigerator_fg45543').
 
 test(query_refrigerator_by_name, [nondet]) :-
   entity(Cont, [an, object, [name, test_owl:'Refrigerator_fg45543']]),
   rdf_equal(Cont, test_owl:'Refrigerator_fg45543').
+
+test(query_cup_by_nameString_prop, [nondet]) :-
+  entity(Cont, [an, object, [name_string, literal(type(_,'cup_name'))]]),
+  rdf_equal(Cont, test_owl:'Cup_sfd498th').
 
 test(query_container, [nondet]) :-
   entity(Cont, [an, object, [type, container]]),

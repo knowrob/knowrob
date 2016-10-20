@@ -145,11 +145,12 @@ public class JSONPrologNode extends AbstractNodeMain {
 				json_prolog_msgs.PrologQueryRequest,json_prolog_msgs.PrologQueryResponse> {
 		@Override
 		public void build(json_prolog_msgs.PrologQueryRequest request, json_prolog_msgs.PrologQueryResponse response) {
-			if(!closeIncrementalQuery(response)) {
-				response.setOk(false);
-				response.setMessage("Failed to close incremental query.");
-				return;
-			}
+			// TODO(daniel): why should we close? Could be two different clients
+			//if(!closeIncrementalQuery(response)) {
+			//	response.setOk(false);
+			//	response.setMessage("Failed to close incremental query.");
+			//	return;
+			//}
 			
 			if ( queries.get(request.getId()) != null ) {
 				response.setOk(false);
@@ -194,11 +195,12 @@ public class JSONPrologNode extends AbstractNodeMain {
 		public void build(json_prolog_msgs.PrologQueryRequest request,
 						json_prolog_msgs.PrologQueryResponse response) {
 			try {
-				if(!closeIncrementalQuery(response)) {
-					response.setOk(false);
-					response.setMessage("Failed to close incremental query.");
-					return;
-				}
+				// TODO(daniel): why should we close? Could be two different clients
+				//if(!closeIncrementalQuery(response)) {
+				//	response.setOk(false);
+				//	response.setMessage("Failed to close incremental query.");
+				//	return;
+				//}
 				
 				synchronized(jpl.Query.class) {
 					if (queries.get(request.getId()) != null ) {
@@ -298,6 +300,10 @@ public class JSONPrologNode extends AbstractNodeMain {
 
 			}
 			catch (Exception e) {
+				// TODO(daniel): In case of `PrologException` the Prolog stacktrace is not included
+				//               at the moment. The message is usually not enough to locate the error
+				//               in the code. Include the stacktrace in order to make it easier
+				//               to find failing code!
 				response.setSolution(e.getMessage());
 				response.setStatus(json_prolog_msgs.PrologNextSolutionResponse.QUERY_FAILED);
 				removeQuery(request.getId());
@@ -353,7 +359,7 @@ public class JSONPrologNode extends AbstractNodeMain {
 			}
 			queries.remove(id);
 			if(query instanceof PrologIncrementalSolutions)
-				hasIncrementalQuery = false;
+				hasIncrementalQuery = false; // XXX: there still could be one!
 		}
 	}
 

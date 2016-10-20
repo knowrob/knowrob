@@ -530,6 +530,8 @@ run_unit([H|T]) :- !,
 	run_unit(T).
 run_unit(Spec) :-
 	unit_from_spec(Spec, Unit, Tests, Module, UnitOptions),
+	format(user_error, '\nRunning tests for unit ~w...\n', [Unit]),
+	get_time(T0),
 	(   option(blocked(Reason), UnitOptions)
 	->  info(plunit(blocked(unit(Unit, Reason))))
 	;   setup(Module, unit(Unit), UnitOptions)
@@ -544,7 +546,9 @@ run_unit(Spec) :-
 	    ),
 	    cleanup(Module, UnitOptions)
 	;   true
-	).
+	),
+	get_time(T1), Time is T1 - T0,
+	format(user_error, 'Time passed in module ~w: ~f\n', [Unit,Time]).
 
 unit_from_spec(Unit, Unit, _, Module, Options) :-
 	atom(Unit), !,
@@ -995,9 +999,9 @@ success(Unit, Name, Line, Det, _Time, Options) :-
 	(   (   Det == true
 	    ;	memberchk(nondet, Options)
 	    )
-	->  put_char(user_error, +),
+	->  format(user_error, '    [~w] ~w: +\n', [Unit, Name]),
 	    Ok = passed
-	;   put_char(user_error, !),
+	;   format(user_error, '    [~w] ~w: !\n', [Unit, Name]),
 	    Ok = nondet
 	),
 	flush_output(user_error),
@@ -1007,7 +1011,7 @@ success(Unit, Name, Line, Det, Time, Options) :-
 	(   (   Det == true
 	    ;	memberchk(nondet, Options)
 	    )
-	->  put_char(user_error, .)
+	->  format(user_error, '    [~w] ~w (~w): \u2713\n', [Unit, Name, Time])
 	;   unit_file(Unit, File),
 	    print_message(warning, plunit(nondet(File, Line, Name)))
 	),
@@ -1015,7 +1019,7 @@ success(Unit, Name, Line, Det, Time, Options) :-
 
 failure(Unit, Name, Line, _, Options) :-
 	memberchk(fixme(Reason), Options), !,
-	put_char(user_error, -),
+	format(user_error, '    [~w] ~w: \u2717\n', [Unit, Name]),
 	flush_output(user_error),
 	assert(fixme(Unit, Name, Line, Reason, failed)).
 failure(Unit, Name, Line, E, Options) :-

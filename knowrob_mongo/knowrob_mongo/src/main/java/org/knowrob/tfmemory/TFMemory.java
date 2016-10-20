@@ -315,13 +315,13 @@ public class TFMemory {
 		// load data from DB if the current time point is already in the buffer
 		Frame sourceFrame = verifyDataAvailable(time, resolvedSourceID);
 		if(sourceFrame==null) {
-			System.err.println("Cannot transform: source frame \"" + resolvedSourceID + "\" does not exist.");
+			//System.err.println("Cannot transform: source frame \"" + resolvedSourceID + "\" does not exist.");
 			return null;
 		}
 
 		Frame targetFrame = verifyDataAvailable(time, resolvedTargetID);
 		if(targetFrame==null) {
-			System.err.println("Cannot transform: target frame \"" + resolvedTargetID + "\" does not exist.");
+			//System.err.println("Cannot transform: target frame \"" + resolvedTargetID + "\" does not exist.");
 			return null;
 		}
 
@@ -332,8 +332,8 @@ public class TFMemory {
 
 		// fill the lists using lookupLists. If it returns FALSE, no transformation could be found.
 		if (!lookupLists(targetFrame, sourceFrame, time.totalNsecs(), inverseTransforms, forwardTransforms)) {
-			System.err.println("Cannot transform: source + \"" + resolvedSourceID + "\" and target \""
-					+ resolvedTargetID + "\" are not connected.");
+			//System.err.println("Cannot transform: source + \"" + resolvedSourceID + "\" and target \""
+			//		+ resolvedTargetID + "\" are not connected.");
 			return null;
 		}
 
@@ -688,8 +688,8 @@ public class TFMemory {
 	 * was not fully resolved.
 	 */
 	private String assertResolved(String prefix, String frameID) {
-		if (!frameID.startsWith("/"))
-			System.err.println("TF operating on not fully resolved frame id " + frameID +", resolving using local prefix " + prefix);
+		//if (!frameID.startsWith("/"))
+		//	System.err.println("TF operating on not fully resolved frame id " + frameID +", resolving using local prefix " + prefix);
 		return resolve(prefix, frameID);
 	}
 
