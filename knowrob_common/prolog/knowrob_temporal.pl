@@ -379,9 +379,10 @@ interval(I, Interval) :-
 %
 % @param I Time point, interval or temporally extended entity
 % 
-interval_start(I, Start) :-
+interval_start(I, Start_val) :-
   interval(I, Val),
-  once(( Val=[Start] ; Val=[Start,_] )).
+  once(( Val=[Start] ; Val=[Start,_] )),
+  time_term(Start, Start_val).
 
 %% interval_end(I,End) is semidet.
 %
@@ -389,8 +390,9 @@ interval_start(I, Start) :-
 %
 % @param I Time point, interval or temporally extended entity
 % 
-interval_end(I, End) :-
-  interval(I, [_,End]).
+interval_end(I, End_val) :-
+  interval(I, [_,End]),
+  time_term(End, End_val).
 
 %% interval_before(I0,I1) is semidet.
 %
