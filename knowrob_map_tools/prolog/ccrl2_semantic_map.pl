@@ -38,7 +38,6 @@
 :- use_module(library('semweb/rdf_edit')).
 :- use_module(library('semweb/actionmodel')).
 
-
 :- owl_parser:owl_parse('@LOCAL_PACKAGE_PATH@/owl/ccrl2_semantic_map.owl', false, false, true).
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).

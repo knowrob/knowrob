@@ -4,15 +4,25 @@ PL_ARGS=$@
 PL_INIT_FILE=$(rospack find rosprolog)/prolog/init.pl
 SCRIPT_FILE=""
 
-if [ -n "$1" ] && [ -n "$(rospack find $1)" ]; then
-    ROS_EXPORT_CLASSPATH=`$(rospack find rosprolog)/scripts/get_pkg_classpath $1`
-    export CLASSPATH=$ROS_EXPORT_CLASSPATH:$CLASSPATH
 
-    if [ -f $(rospack find $1)/prolog/init.pl ]; then
-        SCRIPT_FILE="-g ensure_loaded('${PL_INIT_FILE}'),register_ros_package($1),load_test_files(_),run_tests -t halt"
-    fi
-    PL_ARGS=${@:1}
+if [ -n "$1" ]; then
+   G_ARGS="ensure_loaded('${PL_INIT_FILE}')"
+   
+   IFS=','
+   for PKG in $1; do
+     IFS=' '
+     G_ARGS="$G_ARGS,register_ros_package($PKG)"
+     if [ -f $(rospack find $PKG)/prolog/init.pl ]; then
+       ROS_EXPORT_CLASSPATH=`$(rospack find rosprolog)/scripts/get_pkg_classpath $PKG`
+       export CLASSPATH=$ROS_EXPORT_CLASSPATH:$CLASSPATH
+     else
+       exit 1
+     fi
+     IFS=','
+   done
+   SCRIPT_FILE="-g $G_ARGS,load_test_files(_) -t ignore(run_tests),halt"
 fi
 
-cd "$(rospack find $1)"
-exec /usr/bin/swipl -q -f ${PL_INIT_FILE}  ${SCRIPT_FILE} ${PL_ARGS}
+IFS=' '
+cd "$(rospack find knowrob_common)"
+exec /usr/bin/swipl -q -f ${PL_INIT_FILE}  ${SCRIPT_FILE} knowrob_common

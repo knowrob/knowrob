@@ -45,18 +45,18 @@
 :- use_module(library('owl')).
 :- use_module(library('owl_parser')).
 :- use_module(library('rdfs_computable')).
-
-
-:- use_module(library('fluents')).
 :- use_module(library('util')).
+
+:- use_module(library('delay')).
+
+:- use_module(library('atoms')).
 :- use_module(library('comp_similarity')).
 :- use_module(library('knowrob_owl')).
 % :- use_module(library('knowrob_units')).
 :- use_module(library('owl_export')).
 :- use_module(library('knowrob_cad_parser')).
 :- use_module(library('knowrob_actions')).
-
-:- use_module(library('knowrob_language')).
+:- use_module(library('knowrob_temporal')).
 
 
 % parse OWL files, register name spaces
@@ -80,4 +80,5 @@
 :- use_module(library(plunit)).
 :- set_test_options([load('always'),
                      run('make'),
-                     silent(true)]).
+                     silent(false),
+                     cleanup(true)]).

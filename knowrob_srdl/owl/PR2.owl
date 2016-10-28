@@ -4974,6 +4974,7 @@
     <!-- &pr2;pr2_head_pan_link -->
 
     <owl:NamedIndividual rdf:about="&pr2;pr2_head_pan_link">
+        <rdf:type rdf:resource="&knowrob;Head-Vertebrate"/>
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>head_pan_link</srdl2-comp:urdfName>
         <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">6.339</srdl2-comp:mass_value>
@@ -5462,7 +5463,6 @@
         <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.01</srdl2-comp:inertia_iyy>
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.01</srdl2-comp:inertia_izz>
-        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
         <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0.5 0.5 0.5 1</srdl2-comp:color_rgba>
         <srdl2-comp:sphere_radius rdf:datatype="&xsd;string">0.0005</srdl2-comp:sphere_radius>
         <srdl2-comp:succeedingJoint rdf:resource="&pr2;pr2_head_mount_kinect_ir_joint"/>

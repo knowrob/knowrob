@@ -50,6 +50,32 @@
 
     <owl:Class rdf:about="&robot;boxy">
         <rdfs:subClassOf rdf:resource="&knowrob;Robot"/>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&srdl2-cap;hasCapability"/>
+                        <owl:someValuesFrom rdf:resource="&srdl2-cap;GraspingCapability"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&srdl2-cap;hasCapability"/>
+                        <owl:someValuesFrom rdf:resource="&srdl2-cap;GripperMotionCapability"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&srdl2-cap;hasCapability"/>
+                        <owl:someValuesFrom rdf:resource="&srdl2-cap;move_arm"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&srdl2-cap;hasCapability"/>
+                        <owl:someValuesFrom rdf:resource="&srdl2-cap;move_base"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="&srdl2-cap;hasCapability"/>
+                        <owl:someValuesFrom rdf:resource="&srdl2-cap;ObjectRecognitionCapability"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
     </owl:Class>
 
 
@@ -58,7 +84,7 @@
     <!-- =========================================== -->
 
 
-    <owl:NamedIndividual rdf:about="&robot;boxy_robot1">
+    <owl:NamedIndividual rdf:about="&robot;boxy_robot_3">
         <rdf:type rdf:resource="&robot;boxy"/>
         <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_base_footprint"/>
 	<srdl2-comp:subComponent rdf:resource="&robot;boxy_body"/>
@@ -86,10 +112,9 @@
     
     <owl:NamedIndividual rdf:about="&robot;boxy_head">
         <rdf:type rdf:resource="&srdl2-comp;ComponentComposition"/>
-        <!--rdf:type rdf:resource="&srdl2-comp;MobileBase"/-->
-
-        <srdl2-comp:baseLinkOfComposition rdf:resource="&robot;boxy_pw070_base_link"/>
+        <srdl2-comp:baseLinkOfComposition rdf:resource="&robot;boxy_neck_adapter_ur3_frame_in"/>
         <srdl2-comp:endLinkOfComposition rdf:resource="&robot;boxy_head_mount_kinect2_rgb_optical_frame"/>
+        <srdl2-comp:endLinkOfComposition rdf:resource="&robot;boxy_neck_look_target_4"/>
     </owl:NamedIndividual>
     
     
@@ -141,6 +166,1175 @@
     <!-- =========================================== -->
     <!-- |   Robot Joints                          | -->
     <!-- =========================================== -->
+
+    <!-- &robot;boxy_left_arm_adapter_iso50_kms40_joint -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_left_arm_adapter_iso50_kms40_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>left_arm_adapter_iso50_kms40_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_left_arm_adapter_iso50_kms40_frame_in"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;Proprioception_x2VtZWvj -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_x2VtZWvj">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_lBDkSh8x"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_left_arm_adapter_iso50_kms40_joint"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_lBDkSh8x -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_lBDkSh8x">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_uIe3pkAB"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">-1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">2.0682310711021444E-13</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">-2.0682310711021444E-13</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">-1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">-0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_left_arm_adapter_iso50_kms40_trans_frame_out -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_left_arm_adapter_iso50_kms40_trans_frame_out">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>left_arm_adapter_iso50_kms40_trans_frame_out</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_left_arm_adapter_iso50_kms40_frame_out"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;Proprioception_gdjbn4gQ -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_gdjbn4gQ">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_kSg07oHh"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_left_arm_adapter_iso50_kms40_trans_frame_out"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_kSg07oHh -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_kSg07oHh">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_lBDkSh8x"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.016</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_left_arm_kms40_joint -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_left_arm_kms40_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>left_arm_kms40_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_left_arm_kms40_frame_in"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;Proprioception_DbcFt3me -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_DbcFt3me">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_vQbnDpKs"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_left_arm_kms40_joint"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_vQbnDpKs -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_vQbnDpKs">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_kSg07oHh"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_left_arm_kms40_trans_frame_out -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_left_arm_kms40_trans_frame_out">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>left_arm_kms40_trans_frame_out</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_left_arm_kms40_frame_out"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;Proprioception_z0TOd3Dc -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_z0TOd3Dc">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_nMBF7lgq"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_left_arm_kms40_trans_frame_out"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_nMBF7lgq -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_nMBF7lgq">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_vQbnDpKs"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.027</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_left_arm_adapter_kms40_fwk050_in_joint -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_left_arm_adapter_kms40_fwk050_in_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>left_arm_adapter_kms40_fwk050_in_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_left_arm_adapter_kms40_fwk050_frame_in"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;Proprioception_oMnqePSo -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_oMnqePSo">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_grmaoafE"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_left_arm_adapter_kms40_fwk050_in_joint"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_grmaoafE -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_grmaoafE">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_nMBF7lgq"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_left_arm_adapter_kms40_fwk050_trans_frame_out -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_left_arm_adapter_kms40_fwk050_trans_frame_out">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>left_arm_adapter_kms40_fwk050_trans_frame_out</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_left_arm_adapter_kms40_fwk050_frame_out"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;Proprioception_zMkENQXB -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_zMkENQXB">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_spioXbiP"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_left_arm_adapter_kms40_fwk050_trans_frame_out"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_spioXbiP -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_spioXbiP">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_grmaoafE"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.01</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_left_arm_fwk_fwa_050_in_joint -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_left_arm_fwk_fwa_050_in_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>left_arm_fwk_fwa_050_in_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_left_arm_fwk_fwa_050_frame_in"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;Proprioception_tXESJWLj -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_tXESJWLj">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_jlIGq8PN"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_left_arm_fwk_fwa_050_in_joint"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_jlIGq8PN -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_jlIGq8PN">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_spioXbiP"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_left_arm_fwk_fwa_050_trans_frame_out -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_left_arm_fwk_fwa_050_trans_frame_out">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>left_arm_fwk_fwa_050_trans_frame_out</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_left_arm_fwk_fwa_050_frame_out"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;Proprioception_pVlLsU3h -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_pVlLsU3h">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_hzktSfnx"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_left_arm_fwk_fwa_050_trans_frame_out"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_hzktSfnx -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_hzktSfnx">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_jlIGq8PN"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0141</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_left_arm_adapter_fwa050_wsg50_in_joint -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_left_arm_adapter_fwa050_wsg50_in_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>left_arm_adapter_fwa050_wsg50_in_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_left_arm_adapter_fwa050_wsg50_frame_in"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;Proprioception_BViZ2T5s -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_BViZ2T5s">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_tzgJbesI"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_left_arm_adapter_fwa050_wsg50_in_joint"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_tzgJbesI -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_tzgJbesI">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_hzktSfnx"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_left_arm_adapter_fwa050_wsg50_trans_frame_out -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_left_arm_adapter_fwa050_wsg50_trans_frame_out">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>left_arm_adapter_fwa050_wsg50_trans_frame_out</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_left_arm_adapter_fwa050_wsg50_frame_out"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;Proprioception_qyKD4IkG -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_qyKD4IkG">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_ktE2EcZG"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_left_arm_adapter_fwa050_wsg50_trans_frame_out"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_ktE2EcZG -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_ktE2EcZG">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_tzgJbesI"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.01</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+    <!-- &robot;boxy_neck_base_link-base_fixed_joint -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_base_link-base_fixed_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>neck_base_link-base_fixed_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_neck_base"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;Proprioception_a6lc73rV -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_a6lc73rV">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_2OdZEqq5"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_neck_base_link-base_fixed_joint"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_2OdZEqq5 -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_2OdZEqq5">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_F94SBypn"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">-1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">3.5897930298416118E-9</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">-3.5897930298416118E-9</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">-1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">-0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_head1 -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_head1">
+        <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
+        <srdl2-comp:urdfName>head1</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_neck_look_target_2"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;Proprioception_xi52N9l6 -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_xi52N9l6">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_6QwQUqa7"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_head1"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_6QwQUqa7 -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_6QwQUqa7">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_TQzAlr8T"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_head2 -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_head2">
+        <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
+        <srdl2-comp:urdfName>head2</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_neck_look_target_3"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;Proprioception_mTyGOWAh -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_mTyGOWAh">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_QpHBFdIg"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_head2"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_QpHBFdIg -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_QpHBFdIg">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_6QwQUqa7"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_head3 -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_head3">
+        <rdf:type rdf:resource="&srdl2-comp;ContinuousUrdfJoint"/>
+        <srdl2-comp:urdfName>head3</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_neck_look_target_4"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;Proprioception_dPWYjT8f -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_dPWYjT8f">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_2pDPcdKt"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_head3"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_2pDPcdKt -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_2pDPcdKt">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_QpHBFdIg"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_neck_obstacle_joint -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_obstacle_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>head</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_neck_obstacle"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;Proprioception_PdEES8Hs -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_PdEES8Hs">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_Ut1sWgri"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_neck_obstacle_joint"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_Ut1sWgri -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_Ut1sWgri">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_SIBh8mZ1"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">-0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">-3.673205103346574E-6</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">0.9999999999932537</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.01</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">-0.9999999999932537</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">-3.673205103346574E-6</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_neck_joint_end -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_joint_end">
+        <rdf:type rdf:resource="&srdl2-comp;PrismaticUrdfJoint"/>
+        <srdl2-comp:urdfName>neck_joint_end</srdl2-comp:urdfName>
+        <srdl2-comp:pose_rpy rdf:datatype="&xsd;string">0 0 0</srdl2-comp:pose_rpy>
+        <srdl2-comp:pose_xyz rdf:datatype="&xsd;string">0 0 0</srdl2-comp:pose_xyz>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_neck_look_target"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;Proprioception_r6NSi2ra -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_r6NSi2ra">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_TQzAlr8T"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_neck_joint_end"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_TQzAlr8T -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_TQzAlr8T">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_SIBh8mZ1"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">-0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">-3.673205103346574E-6</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">0.9999999999932537</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.01</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">-0.9999999999932537</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">-3.673205103346574E-6</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_head_mount_kinect2_in_joint -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_head_mount_kinect2_in_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>head_mount_kinect2_in_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_head_mount_kinect2_rgb_optical_frame"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;Proprioception_ANPppSeD -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_ANPppSeD">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_VBYNajz0"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_head_mount_kinect2_in_joint"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_VBYNajz0 -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_VBYNajz0">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_YUSrStRV"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.3267948966775328E-6</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.9999999999991198</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">-0.02</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">1.326794896676365E-6</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.760384697849545E-12</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">0.9999999999991198</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.1</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">-0.9999999999982396</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">-1.326794896676365E-6</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.3267948966775328E-6</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.02</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_neck_adapter_iso50_kinect2_trans_frame_out -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_adapter_iso50_kinect2_trans_frame_out">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>neck_adapter_iso50_kinect2_trans_frame_out</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_neck_adapter_iso50_kinect2_frame_out"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;Proprioception_LblNo6Xp -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_LblNo6Xp">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_YUSrStRV"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_neck_adapter_iso50_kinect2_trans_frame_out"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_YUSrStRV -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_YUSrStRV">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_5IyvEn3d"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.02</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_neck_adapter_iso50_kinect2_joint -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_adapter_iso50_kinect2_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>neck_adapter_iso50_kinect2_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_neck_adapter_iso50_kinect2_frame_in"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;Proprioception_rfyS97o2 -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_rfyS97o2">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_5IyvEn3d"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_neck_adapter_iso50_kinect2_joint"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_5IyvEn3d -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_5IyvEn3d">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_SIBh8mZ1"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.3267948966775328E-6</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">0.9999999999991198</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">-0.9999999999991198</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.3267948966775328E-6</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">-0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_neck_wrist_3_link-tool0_fixed_joint -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_wrist_3_link-tool0_fixed_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>neck_wrist_3_link-tool0_fixed_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_neck_tool0"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;Proprioception_5hFa29gS -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_5hFa29gS">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_SIBh8mZ1"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_neck_wrist_3_link-tool0_fixed_joint"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_SIBh8mZ1 -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_SIBh8mZ1">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_SP8W8q8D"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.7948965149208059E-9</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">1.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0819</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">-0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">-1.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.7948965149208059E-9</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_neck_ee_fixed_joint -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_ee_fixed_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>neck_ee_fixed_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_neck_ee_link"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;Proprioception_N6uK12mw -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_N6uK12mw">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_OP5aGraP"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_neck_ee_fixed_joint"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_OP5aGraP -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_OP5aGraP">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_SP8W8q8D"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.7948965149208059E-9</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-1.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">1.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.7948965149208059E-9</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0819</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_neck_wrist_1_joint -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_wrist_1_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>neck_wrist_1_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_neck_wrist_1_link"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;Proprioception_VAFAWhvb -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_VAFAWhvb">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_NH7Psm3Y"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_neck_wrist_1_joint"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_NH7Psm3Y -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_NH7Psm3Y">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_BH0BTmXK"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.7948965149208059E-9</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">1.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">-1.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.7948965149208059E-9</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.21325</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_neck_wrist_2_joint -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_wrist_2_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>neck_wrist_2_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_neck_wrist_2_link"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &robot;Proprioception_Nu4Sqd28 -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_Nu4Sqd28">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_LWJEEuAG"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_neck_wrist_2_joint"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_LWJEEuAG -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_LWJEEuAG">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_NH7Psm3Y"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.08505</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_neck_wrist_3_joint -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_wrist_3_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>neck_wrist_3_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_neck_wrist_3_link"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;Proprioception_8b1G56SL -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_8b1G56SL">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_SP8W8q8D"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_neck_wrist_3_joint"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_SP8W8q8D -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_SP8W8q8D">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_LWJEEuAG"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.08535</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_neck_elbow_joint -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_elbow_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>neck_elbow_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_neck_forearm_link"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;Proprioception_ZSYrdhed -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_ZSYrdhed">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_BH0BTmXK"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_neck_elbow_joint"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_BH0BTmXK -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_BH0BTmXK">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_KNLjqprN"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">-0.0925</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.24365</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_neck_shoulder_pan_joint -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_shoulder_pan_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>neck_shoulder_pan_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_neck_shoulder_link"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;Proprioception_IrK2bdi8 -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_IrK2bdi8">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_Q7YQ9zsB"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_neck_shoulder_pan_joint"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_Q7YQ9zsB -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_Q7YQ9zsB">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_F94SBypn"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.1519</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+    <!-- &robot;boxy_neck_mounting_joint -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_mounting_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>neck_mounting_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_neck_base_link"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;Proprioception_xrOOScfU -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_xrOOScfU">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_F94SBypn"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_neck_mounting_joint"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_F94SBypn -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_F94SBypn">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_NcDk7SSq"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">1.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">-1.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">4.8965888601467475E-12</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">-0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_neck_adapter_ur3_in_joint -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_adapter_ur3_in_joint">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>neck_adapter_ur3_in_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_neck_adapter_ur3_frame_in"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &robot;Proprioception_MQD3RqJK -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_MQD3RqJK">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_PY3vUukI"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_neck_adapter_ur3_in_joint"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_PY3vUukI -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_PY3vUukI">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_EY6hnvfu"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.175</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">-0.227</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">1.48</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
+
+    <!-- &robot;boxy_neck_adapter_ur3_trans_frame_out -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_adapter_ur3_trans_frame_out">
+        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
+        <srdl2-comp:urdfName>neck_adapter_ur3_trans_frame_out</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_neck_adapter_ur3_frame_out"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &robot;Proprioception_IOmbBo1I -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_IOmbBo1I">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_NcDk7SSq"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_neck_adapter_ur3_trans_frame_out"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_NcDk7SSq -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_NcDk7SSq">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_PY3vUukI"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.003</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
+
 
 
     <!-- &robot;boxy_laser_reference_front_joint -->
@@ -274,232 +1468,6 @@
         <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
         <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
     </owl:NamedIndividual>
-
-
-
-    <!-- &robot;boxy_head_joint -->
-
-    <owl:NamedIndividual rdf:about="&robot;boxy_head_joint">
-        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
-        <srdl2-comp:urdfName>head_joint</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_pw070_base_link"/>
-    </owl:NamedIndividual>
-
-
-    <!-- &robot;Proprioception_opAyH76B -->
-
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_opAyH76B">
-        <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_zUivOUni"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;boxy_head_joint"/>
-    </owl:NamedIndividual>
-
-
-
-    <!-- &robot;RotationMatrix3D_zUivOUni -->
-
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_zUivOUni">
-        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_DYBm4U7l"/>
-        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
-        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
-        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
-        <knowrob:m03 rdf:datatype="&xsd;double">0.2</knowrob:m03>
-        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
-        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
-        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
-        <knowrob:m13 rdf:datatype="&xsd;double">-0.21</knowrob:m13>
-        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
-        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
-        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
-        <knowrob:m23 rdf:datatype="&xsd;double">1.48</knowrob:m23>
-        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
-        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
-        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
-        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
-    </owl:NamedIndividual>
-
-
-
-    <!-- &robot;boxy_head_pan_joint -->
-
-    <owl:NamedIndividual rdf:about="&robot;boxy_head_pan_joint">
-        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
-        <srdl2-comp:urdfName>head_pan_joint</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_pw070_box"/>
-    </owl:NamedIndividual>
-
-
-    <!-- &robot;Proprioception_d45cJWlP -->
-
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_d45cJWlP">
-        <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_oxM8PISw"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;boxy_head_pan_joint"/>
-    </owl:NamedIndividual>
-
-
-
-    <!-- &robot;RotationMatrix3D_oxM8PISw -->
-
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_oxM8PISw">
-        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_zUivOUni"/>
-        <knowrob:m00 rdf:datatype="&xsd;double">-3.673205103346574E-6</knowrob:m00>
-        <knowrob:m01 rdf:datatype="&xsd;double">0.9999999999932537</knowrob:m01>
-        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
-        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
-        <knowrob:m10 rdf:datatype="&xsd;double">0.9999999999662689</knowrob:m10>
-        <knowrob:m11 rdf:datatype="&xsd;double">3.673205103247453E-6</knowrob:m11>
-        <knowrob:m12 rdf:datatype="&xsd;double">7.346410206643587E-6</knowrob:m12>
-        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
-        <knowrob:m20 rdf:datatype="&xsd;double">7.346410206594026E-6</knowrob:m20>
-        <knowrob:m21 rdf:datatype="&xsd;double">2.6984871462320583E-11</knowrob:m21>
-        <knowrob:m22 rdf:datatype="&xsd;double">-0.9999999999730151</knowrob:m22>
-        <knowrob:m23 rdf:datatype="&xsd;double">0.0938</knowrob:m23>
-        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
-        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
-        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
-        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
-    </owl:NamedIndividual>
-
-
-
-    <!-- &robot;boxy_head_tilt_joint -->
-
-    <owl:NamedIndividual rdf:about="&robot;boxy_head_tilt_joint">
-        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
-        <srdl2-comp:urdfName>head_tilt_joint</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_pw070_plate"/>
-    </owl:NamedIndividual>
-
-
-    <!-- &robot;Proprioception_M2URmVvp -->
-
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_M2URmVvp">
-        <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_AxGlnHHI"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;boxy_head_tilt_joint"/>
-    </owl:NamedIndividual>
-
-
-
-    <!-- &robot;RotationMatrix3D_AxGlnHHI -->
-
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_AxGlnHHI">
-        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_oxM8PISw"/>
-        <knowrob:m00 rdf:datatype="&xsd;double">1.0</knowrob:m00>
-        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
-        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
-        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
-        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
-        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
-        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
-        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
-        <knowrob:m20 rdf:datatype="&xsd;double">0.0</knowrob:m20>
-        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
-        <knowrob:m22 rdf:datatype="&xsd;double">1.0</knowrob:m22>
-        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
-        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
-        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
-        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
-        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
-    </owl:NamedIndividual>
-
-
-
-    <!-- &robot;boxy_trans_frame_out -->
-
-    <owl:NamedIndividual rdf:about="&robot;boxy_trans_frame_out">
-        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
-        <srdl2-comp:urdfName>trans_frame_out</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_pw070_frame_out"/>
-    </owl:NamedIndividual>
-
-
-    <!-- &robot;Proprioception_GdcPj2k7 -->
-
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_GdcPj2k7">
-        <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_wtqu7HXG"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;boxy_trans_frame_out"/>
-    </owl:NamedIndividual>
-
-
-
-    <!-- &robot;RotationMatrix3D_wtqu7HXG -->
-
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_wtqu7HXG">
-        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_AxGlnHHI"/>
-        <knowrob:m00 rdf:datatype="&xsd;double">-3.673205103346574E-6</knowrob:m00>
-        <knowrob:m01 rdf:datatype="&xsd;double">0.9999999999932537</knowrob:m01>
-        <knowrob:m02 rdf:datatype="&xsd;double">0.0</knowrob:m02>
-        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
-        <knowrob:m10 rdf:datatype="&xsd;double">0.9999999999662689</knowrob:m10>
-        <knowrob:m11 rdf:datatype="&xsd;double">3.673205103247453E-6</knowrob:m11>
-        <knowrob:m12 rdf:datatype="&xsd;double">7.346410206643587E-6</knowrob:m12>
-        <knowrob:m13 rdf:datatype="&xsd;double">0.0</knowrob:m13>
-        <knowrob:m20 rdf:datatype="&xsd;double">7.346410206594026E-6</knowrob:m20>
-        <knowrob:m21 rdf:datatype="&xsd;double">2.6984871462320583E-11</knowrob:m21>
-        <knowrob:m22 rdf:datatype="&xsd;double">-0.9999999999730151</knowrob:m22>
-        <knowrob:m23 rdf:datatype="&xsd;double">-0.07</knowrob:m23>
-        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
-        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
-        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
-        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
-    </owl:NamedIndividual>
-
-
-
-    <!-- &robot;boxy_head_mount_kinect2_in_joint -->
-
-    <owl:NamedIndividual rdf:about="&robot;boxy_head_mount_kinect2_in_joint">
-        <rdf:type rdf:resource="&srdl2-comp;FixedUrdfJoint"/>
-        <srdl2-comp:urdfName>head_mount_kinect2_in_joint</srdl2-comp:urdfName>
-        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_head_mount_kinect2_rgb_optical_frame"/>
-    </owl:NamedIndividual>
-
-
-    <!-- &robot;Proprioception_4b7hp1rv -->
-
-    <owl:NamedIndividual rdf:about="&robot;Proprioception_4b7hp1rv">
-        <rdf:type rdf:resource="&knowrob;Proprioception"/>
-        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_qFIs4NMn"/>
-        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
-        <knowrob:objectActedOn rdf:resource="&robot;boxy_head_mount_kinect2_in_joint"/>
-    </owl:NamedIndividual>
-
-
-
-    <!-- &robot;RotationMatrix3D_qFIs4NMn -->
-
-    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_qFIs4NMn">
-        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
-        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_wtqu7HXG"/>
-        <knowrob:m00 rdf:datatype="&xsd;double">0.0031600481159757172</knowrob:m00>
-        <knowrob:m01 rdf:datatype="&xsd;double">0.9999907787535292</knowrob:m01>
-        <knowrob:m02 rdf:datatype="&xsd;double">-0.002908006845770992</knowrob:m02>
-        <knowrob:m03 rdf:datatype="&xsd;double">0.0402529</knowrob:m03>
-        <knowrob:m10 rdf:datatype="&xsd;double">-0.027663493247264578</knowrob:m10>
-        <knowrob:m11 rdf:datatype="&xsd;double">0.0029943264688080014</knowrob:m11>
-        <knowrob:m12 rdf:datatype="&xsd;double">0.9996128076162073</knowrob:m12>
-        <knowrob:m13 rdf:datatype="&xsd;double">-0.0959434</knowrob:m13>
-        <knowrob:m20 rdf:datatype="&xsd;double">0.9996122974620028</knowrob:m20>
-        <knowrob:m21 rdf:datatype="&xsd;double">-0.0030783789416718083</knowrob:m21>
-        <knowrob:m22 rdf:datatype="&xsd;double">0.02767270037109147</knowrob:m22>
-        <knowrob:m23 rdf:datatype="&xsd;double">0.0332714</knowrob:m23>
-        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
-        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
-        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
-        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
-    </owl:NamedIndividual>
-
 
 
     <!-- &robot;boxy_shoulder_kinect_joint -->
@@ -2801,6 +3769,45 @@
     <!-- |   Robot Links                           | -->
     <!-- =========================================== -->
 
+    <!-- &robot;boxy_neck_shoulder_lift_joint -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_shoulder_lift_joint">
+        <rdf:type rdf:resource="&srdl2-comp;RevoluteUrdfJoint"/>
+        <srdl2-comp:urdfName>neck_shoulder_lift_joint</srdl2-comp:urdfName>
+        <srdl2-comp:succeedingLink rdf:resource="&robot;boxy_neck_upper_arm_link"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;Proprioception_AlakE9R4 -->
+
+    <owl:NamedIndividual rdf:about="&robot;Proprioception_AlakE9R4">
+        <rdf:type rdf:resource="&knowrob;Proprioception"/>
+        <knowrob:eventOccursAt rdf:resource="&robot;RotationMatrix3D_KNLjqprN"/>
+        <knowrob:startTime rdf:resource="&robot;timepoint_1357020000"/>
+        <knowrob:objectActedOn rdf:resource="&robot;boxy_neck_shoulder_lift_joint"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;RotationMatrix3D_KNLjqprN -->
+
+    <owl:NamedIndividual rdf:about="&robot;RotationMatrix3D_KNLjqprN">
+        <rdf:type rdf:resource="&knowrob;RotationMatrix3D"/>
+        <knowrob:relativeTo rdf:resource="&robot;RotationMatrix3D_Q7YQ9zsB"/>
+        <knowrob:m00 rdf:datatype="&xsd;double">1.7948965149208059E-9</knowrob:m00>
+        <knowrob:m01 rdf:datatype="&xsd;double">-0.0</knowrob:m01>
+        <knowrob:m02 rdf:datatype="&xsd;double">1.0</knowrob:m02>
+        <knowrob:m03 rdf:datatype="&xsd;double">0.0</knowrob:m03>
+        <knowrob:m10 rdf:datatype="&xsd;double">0.0</knowrob:m10>
+        <knowrob:m11 rdf:datatype="&xsd;double">1.0</knowrob:m11>
+        <knowrob:m12 rdf:datatype="&xsd;double">-0.0</knowrob:m12>
+        <knowrob:m13 rdf:datatype="&xsd;double">0.1198</knowrob:m13>
+        <knowrob:m20 rdf:datatype="&xsd;double">-1.0</knowrob:m20>
+        <knowrob:m21 rdf:datatype="&xsd;double">0.0</knowrob:m21>
+        <knowrob:m22 rdf:datatype="&xsd;double">1.7948965149208059E-9</knowrob:m22>
+        <knowrob:m23 rdf:datatype="&xsd;double">0.0</knowrob:m23>
+        <knowrob:m30 rdf:datatype="&xsd;double">0.0</knowrob:m30>
+        <knowrob:m31 rdf:datatype="&xsd;double">0.0</knowrob:m31>
+        <knowrob:m32 rdf:datatype="&xsd;double">0.0</knowrob:m32>
+        <knowrob:m33 rdf:datatype="&xsd;double">1.0</knowrob:m33>
+    </owl:NamedIndividual>
 
     <!-- &robot;boxy_base_link -->
 
@@ -2818,10 +3825,10 @@
         <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.792156862745098 0.819607843137255 0.933333333333333 1</knowrob:mainColorOfObject>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_laser_reference_front_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_laser_reference_back_joint"/>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_head_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_shoulder_kinect_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_torso_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_triangle_base_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_neck_adapter_ur3_in_joint"/>
     </owl:NamedIndividual>
 
 
@@ -2853,70 +3860,253 @@
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_base_footprint_joint"/>
     </owl:NamedIndividual>
 
+    <!-- &robot;boxy_neck_adapter_ur3_frame_in -->
 
-    <!-- &robot;boxy_pw070_base_link -->
-
-    <owl:NamedIndividual rdf:about="&robot;boxy_pw070_base_link">
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_adapter_ur3_frame_in">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
-        <srdl2-comp:urdfName>pw070_base_link</srdl2-comp:urdfName>
-        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.115600516395015</srdl2-comp:mass_value>
-        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">4.22762247390204E-05</srdl2-comp:inertia_ixx>
-        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">-1.61518323710916E-21</srdl2-comp:inertia_ixy>
-        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">1.64564610608109E-21</srdl2-comp:inertia_ixz>
-        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">4.22005265483119E-05</srdl2-comp:inertia_iyy>
-        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">-1.05221078652886E-21</srdl2-comp:inertia_iyz>
-        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">5.93634422539094E-05</srdl2-comp:inertia_izz>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_schunk_pw070_v6//meshes/pw070_base_link.STL</knowrob:pathToCadModel>
-        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.501960784313725 0.501960784313725 0.250980392156863 1</knowrob:mainColorOfObject>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_head_pan_joint"/>
+        <srdl2-comp:urdfName>neck_adapter_ur3_frame_in</srdl2-comp:urdfName>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.1 0.18 0.006</srdl2-comp:box_size>
+        <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0.8 0 0 1</srdl2-comp:color_rgba>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_neck_adapter_ur3_trans_frame_out"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_neck_adapter_ur3_frame_out -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_adapter_ur3_frame_out">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>neck_adapter_ur3_frame_out</srdl2-comp:urdfName>
+        <srdl2-comp:link_name rdf:datatype="&xsd;string">neck_adapter_ur3_frame_out</srdl2-comp:link_name>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_neck_mounting_joint"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_neck_base_link -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_base_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>neck_base_link</srdl2-comp:urdfName>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_ur_description/meshes/ur3/visual/base.dae</knowrob:pathToCadModel>
+        <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0.7 0.7 0.7 1.0</srdl2-comp:color_rgba>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">2.0</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.0030531654454</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.0030531654454</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.005625</srdl2-comp:inertia_izz>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_neck_shoulder_pan_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_neck_base_link-base_fixed_joint"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_neck_shoulder_link -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_shoulder_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>neck_shoulder_link</srdl2-comp:urdfName>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_ur_description/meshes/ur3/visual/shoulder.dae</knowrob:pathToCadModel>
+        <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0.7 0.7 0.7 1.0</srdl2-comp:color_rgba>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">2.0</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.0080931634294</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.0080931634294</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.005625</srdl2-comp:inertia_izz>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_neck_shoulder_lift_joint"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_neck_upper_arm_link -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_upper_arm_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>neck_upper_arm_link</srdl2-comp:urdfName>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_ur_description/meshes/ur3/visual/upperarm.dae</knowrob:pathToCadModel>
+        <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0.7 0.7 0.7 1.0</srdl2-comp:color_rgba>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">3.42</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.0217284832211</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.0217284832211</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.00961875</srdl2-comp:inertia_izz>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_neck_elbow_joint"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_neck_forearm_link -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_forearm_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>neck_forearm_link</srdl2-comp:urdfName>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_ur_description/meshes/ur3/visual/forearm.dae</knowrob:pathToCadModel>
+        <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0.7 0.7 0.7 1.0</srdl2-comp:color_rgba>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">1.26</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.00654680644378</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.00654680644378</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.00354375</srdl2-comp:inertia_izz>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_neck_wrist_1_joint"/>
+    </owl:NamedIndividual>
+
+    <!-- &robot;boxy_neck_wrist_1_link -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_wrist_1_link">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>neck_wrist_1_link</srdl2-comp:urdfName>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_ur_description/meshes/ur3/visual/wrist1.dae</knowrob:pathToCadModel>
+        <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0.7 0.7 0.7 1.0</srdl2-comp:color_rgba>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.8</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.002084999166</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.002084999166</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.00225</srdl2-comp:inertia_izz>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_neck_wrist_2_joint"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;boxy_pw070_box -->
+    <!-- &robot;boxy_neck_wrist_2_link -->
 
-    <owl:NamedIndividual rdf:about="&robot;boxy_pw070_box">
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_wrist_2_link">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
-        <srdl2-comp:urdfName>pw070_box</srdl2-comp:urdfName>
-        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.795464859270861</srdl2-comp:mass_value>
-        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.00106829634194245</srdl2-comp:inertia_ixx>
-        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">8.63510385056357E-20</srdl2-comp:inertia_ixy>
-        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">-1.28767421479418E-05</srdl2-comp:inertia_ixz>
-        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.00158199067955857</srdl2-comp:inertia_iyy>
-        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">-1.66255748362911E-08</srdl2-comp:inertia_iyz>
-        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.00115077124113952</srdl2-comp:inertia_izz>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_schunk_pw070_v6//meshes/pw070_box.STL</knowrob:pathToCadModel>
-        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.501960784313725 0.501960784313725 0.250980392156863 1</knowrob:mainColorOfObject>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_head_tilt_joint"/>
+        <srdl2-comp:urdfName>neck_wrist_2_link</srdl2-comp:urdfName>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_ur_description/meshes/ur3/visual/wrist2.dae</knowrob:pathToCadModel>
+        <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0.7 0.7 0.7 1.0</srdl2-comp:color_rgba>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.8</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.002084999166</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.002084999166</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.00225</srdl2-comp:inertia_izz>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_neck_wrist_3_joint"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;boxy_pw070_plate -->
+    <!-- &robot;boxy_neck_wrist_3_link -->
 
-    <owl:NamedIndividual rdf:about="&robot;boxy_pw070_plate">
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_wrist_3_link">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
-        <srdl2-comp:urdfName>pw070_plate</srdl2-comp:urdfName>
-        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.20324493262428</srdl2-comp:mass_value>
-        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.00027991057755713</srdl2-comp:inertia_ixx>
-        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">4.77643348599192E-08</srdl2-comp:inertia_ixy>
-        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">-7.69501477424774E-05</srdl2-comp:inertia_ixz>
-        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.000674719224958911</srdl2-comp:inertia_iyy>
-        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">2.09169636982284E-20</srdl2-comp:inertia_iyz>
-        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.000546047259750224</srdl2-comp:inertia_izz>
-        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_schunk_pw070_v6//meshes/pw070_plate.STL</knowrob:pathToCadModel>
-        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.501960784313725 0.501960784313725 0.250980392156863 1</knowrob:mainColorOfObject>
-        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_trans_frame_out"/>
+        <srdl2-comp:urdfName>neck_wrist_3_link</srdl2-comp:urdfName>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_ur_description/meshes/ur3/visual/wrist3.dae</knowrob:pathToCadModel>
+        <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0.7 0.7 0.7 1.0</srdl2-comp:color_rgba>
+        <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.35</srdl2-comp:mass_value>
+        <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.000912187135125</srdl2-comp:inertia_ixx>
+        <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixy>
+        <srdl2-comp:inertia_ixz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixz>
+        <srdl2-comp:inertia_iyy rdf:datatype="&qudt-unit;Kilogram">0.000912187135125</srdl2-comp:inertia_iyy>
+        <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_iyz>
+        <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.000984375</srdl2-comp:inertia_izz>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_neck_ee_fixed_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_neck_wrist_3_link-tool0_fixed_joint"/>
     </owl:NamedIndividual>
 
 
-    <!-- &robot;boxy_pw070_frame_out -->
+    <!-- &robot;boxy_neck_ee_link -->
 
-    <owl:NamedIndividual rdf:about="&robot;boxy_pw070_frame_out">
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_ee_link">
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
-        <srdl2-comp:urdfName>pw070_frame_out</srdl2-comp:urdfName>
-        <srdl2-comp:link_name rdf:datatype="&xsd;string">pw070_frame_out</srdl2-comp:link_name>
+        <srdl2-comp:urdfName>neck_ee_link</srdl2-comp:urdfName>
+        <srdl2-comp:box_size rdf:datatype="&xsd;string">0.01 0.01 0.01</srdl2-comp:box_size>
+    </owl:NamedIndividual>
+
+
+    <!-- &robot;boxy_neck_base -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_base">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>neck_base</srdl2-comp:urdfName>
+        <srdl2-comp:link_name rdf:datatype="&xsd;string">neck_base</srdl2-comp:link_name>
+    </owl:NamedIndividual>
+
+
+    <!-- &robot;boxy_neck_tool0 -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_tool0">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>neck_tool0</srdl2-comp:urdfName>
+        <srdl2-comp:link_name rdf:datatype="&xsd;string">neck_tool0</srdl2-comp:link_name>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_neck_adapter_iso50_kinect2_joint"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_neck_joint_end"/>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_neck_obstacle_joint"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &robot;boxy_neck_adapter_iso50_kinect2_frame_in -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_adapter_iso50_kinect2_frame_in">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>neck_adapter_iso50_kinect2_frame_in</srdl2-comp:urdfName>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_adapter_iso50_kinect2_description/meshes/adapter_iso50_kinect2.stl</knowrob:pathToCadModel>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_neck_adapter_iso50_kinect2_trans_frame_out"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &robot;boxy_neck_adapter_iso50_kinect2_frame_out -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_adapter_iso50_kinect2_frame_out">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>neck_adapter_iso50_kinect2_frame_out</srdl2-comp:urdfName>
+        <srdl2-comp:link_name rdf:datatype="&xsd;string">neck_adapter_iso50_kinect2_frame_out</srdl2-comp:link_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_head_mount_kinect2_in_joint"/>
     </owl:NamedIndividual>
 
+
+    <!-- &robot;boxy_neck_look_target -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_look_target">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>neck_look_target</srdl2-comp:urdfName>
+        <srdl2-comp:cylinder_length rdf:datatype="&xsd;string">0.001</srdl2-comp:cylinder_length>
+        <srdl2-comp:cylinder_radius rdf:datatype="&xsd;string">0.001</srdl2-comp:cylinder_radius>
+        <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0.2 0.2 0.7 1</srdl2-comp:color_rgba>
+        <srdl2-comp:cylinder_length rdf:datatype="&xsd;string">0.35</srdl2-comp:cylinder_length>
+        <srdl2-comp:cylinder_radius rdf:datatype="&xsd;string">0.028</srdl2-comp:cylinder_radius>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_head1"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &robot;boxy_neck_obstacle -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_obstacle">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>neck_obstacle</srdl2-comp:urdfName>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kinect2_look_target/meshes/Cilinder.stl</knowrob:pathToCadModel>
+        <!-- <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.0001 0.0001 0.0001</srdl2-comp:mesh_scale> -->
+        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.01 0.01 0.01</srdl2-comp:mesh_scale>
+        <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0.2 0.2 0.7 1</srdl2-comp:color_rgba>
+    </owl:NamedIndividual>
+
+
+    <!-- &robot;boxy_neck_look_target_2 -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_look_target_2">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>neck_look_target_2</srdl2-comp:urdfName>
+        <srdl2-comp:link_name rdf:datatype="&xsd;string">neck_look_target_2</srdl2-comp:link_name>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_head2"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &robot;boxy_neck_look_target_3 -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_look_target_3">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>neck_look_target_3</srdl2-comp:urdfName>
+        <srdl2-comp:link_name rdf:datatype="&xsd;string">neck_look_target_3</srdl2-comp:link_name>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_head3"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &robot;boxy_neck_look_target_4 -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_neck_look_target_4">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>neck_look_target_4</srdl2-comp:urdfName>
+        <srdl2-comp:link_name rdf:datatype="&xsd;string">neck_look_target_4</srdl2-comp:link_name>
+    </owl:NamedIndividual>
 
     <!-- &robot;boxy_head_mount_kinect2_rgb_optical_frame -->
 
@@ -2924,7 +4114,10 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>head_mount_kinect2_rgb_optical_frame</srdl2-comp:urdfName>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kinect2_description/meshes/kinect2_origin_on_rgb_optical_frame.stl</knowrob:pathToCadModel>
-        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
+<!--
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_boxy_description/meshes/sensors/68-04546_Kinect_Sensor-coarse.dae</knowrob:pathToCadModel>
+-->
+        <!-- <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale> -->
         <srdl2-comp:material_name rdf:datatype="&xsd;string">Kinect2Grey</srdl2-comp:material_name>
     </owl:NamedIndividual>
 
@@ -2935,7 +4128,7 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>shoulder_kinect_link</srdl2-comp:urdfName>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_boxy_description/meshes/sensors/68-04546_Kinect_Sensor-coarse.dae</knowrob:pathToCadModel>
-        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
+        <!-- <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale> -->
         <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.5 0.5 0.5 1</knowrob:mainColorOfObject>
         <srdl2-comp:sphere_radius rdf:datatype="&qudt-unit;Unitless">0.0005</srdl2-comp:sphere_radius>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_shoulder_kinect_rgb_joint"/>
@@ -3054,6 +4247,7 @@
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.00381666666667</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_base.dae</knowrob:pathToCadModel>
+        <!-- <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale> -->
         <srdl2-comp:material_name rdf:datatype="&xsd;string">UniHB-Red</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_arm_0_joint"/>
         <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
@@ -3073,6 +4267,7 @@
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0118666666667</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_1.dae</knowrob:pathToCadModel>
+        <!-- <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale> -->
         <srdl2-comp:material_name rdf:datatype="&xsd;string">UniHB-Red</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_arm_1_joint"/>
         <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
@@ -3092,6 +4287,7 @@
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0118666666667</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_2.dae</knowrob:pathToCadModel>
+        <!-- <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale> -->
         <srdl2-comp:material_name rdf:datatype="&xsd;string">UniHB-Red</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_arm_2_joint"/>
         <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
@@ -3111,6 +4307,7 @@
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0118666666667</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_3.dae</knowrob:pathToCadModel>
+        <!-- <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale> -->
         <srdl2-comp:material_name rdf:datatype="&xsd;string">UniHB-Red</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_arm_3_joint"/>
         <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
@@ -3130,6 +4327,7 @@
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0118666666667</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_4.dae</knowrob:pathToCadModel>
+        <!-- <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale> -->
         <srdl2-comp:material_name rdf:datatype="&xsd;string">UniHB-Red</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_arm_4_joint"/>
         <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
@@ -3149,6 +4347,7 @@
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0108506666667</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_last.dae</knowrob:pathToCadModel>
+        <!-- <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale> -->
         <srdl2-comp:material_name rdf:datatype="&xsd;string">UniHB-Red</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_arm_5_joint"/>
         <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
@@ -3168,7 +4367,7 @@
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.00520833333333</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_wrist.dae</knowrob:pathToCadModel>
-        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale>
+        <!-- <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale> -->
         <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_arm_6_joint"/>
         <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
@@ -3188,7 +4387,7 @@
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.333333333333</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_flanche.dae</knowrob:pathToCadModel>
-        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale>
+        <!-- <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale> -->
         <srdl2-comp:material_name rdf:datatype="&xsd;string">Black</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_arm_flange_joint"/>
         <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
@@ -3219,6 +4418,116 @@
         <srdl2-comp:cylinder_length rdf:datatype="&qudt-unit;Unitless">0.01</srdl2-comp:cylinder_length>
         <srdl2-comp:cylinder_radius rdf:datatype="&qudt-unit;Unitless">0.0315</srdl2-comp:cylinder_radius>
         <srdl2-comp:material_name rdf:datatype="&xsd;string">Black</srdl2-comp:material_name>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_arm_adapter_iso50_kms40_joint"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &robot;boxy_left_arm_adapter_iso50_kms40_frame_in -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_left_arm_adapter_iso50_kms40_frame_in">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>left_arm_adapter_iso50_kms40_frame_in</srdl2-comp:urdfName>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kms_40_description/meshes/adapter_plate_iso50_kms40_weiss.stl</knowrob:pathToCadModel>
+        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_arm_adapter_iso50_kms40_trans_frame_out"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &robot;boxy_left_arm_adapter_iso50_kms40_frame_out -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_left_arm_adapter_iso50_kms40_frame_out">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>left_arm_adapter_iso50_kms40_frame_out</srdl2-comp:urdfName>
+        <srdl2-comp:link_name rdf:datatype="&xsd;string">left_arm_adapter_iso50_kms40_frame_out</srdl2-comp:link_name>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_arm_kms40_joint"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &robot;boxy_left_arm_kms40_frame_in -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_left_arm_kms40_frame_in">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>left_arm_kms40_frame_in</srdl2-comp:urdfName>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kms_40_description/meshes/kms40_simple.stl</knowrob:pathToCadModel>
+        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_arm_kms40_trans_frame_out"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &robot;boxy_left_arm_kms40_frame_out -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_left_arm_kms40_frame_out">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>left_arm_kms40_frame_out</srdl2-comp:urdfName>
+        <srdl2-comp:link_name rdf:datatype="&xsd;string">left_arm_kms40_frame_out</srdl2-comp:link_name>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_arm_adapter_kms40_fwk050_in_joint"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &robot;boxy_left_arm_adapter_kms40_fwk050_frame_in -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_left_arm_adapter_kms40_fwk050_frame_in">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>left_arm_adapter_kms40_fwk050_frame_in</srdl2-comp:urdfName>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_adapters_description/meshes/adapter_kms40_fwk050.stl</knowrob:pathToCadModel>
+        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_arm_adapter_kms40_fwk050_trans_frame_out"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &robot;boxy_left_arm_adapter_kms40_fwk050_frame_out -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_left_arm_adapter_kms40_fwk050_frame_out">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>left_arm_adapter_kms40_fwk050_frame_out</srdl2-comp:urdfName>
+        <srdl2-comp:link_name rdf:datatype="&xsd;string">left_arm_adapter_kms40_fwk050_frame_out</srdl2-comp:link_name>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_arm_fwk_fwa_050_in_joint"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &robot;boxy_left_arm_fwk_fwa_050_frame_in -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_left_arm_fwk_fwa_050_frame_in">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>left_arm_fwk_fwa_050_frame_in</srdl2-comp:urdfName>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_adapters_description/meshes/fwk_fwa_050_simple.stl</knowrob:pathToCadModel>
+        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_arm_fwk_fwa_050_trans_frame_out"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &robot;boxy_left_arm_fwk_fwa_050_frame_out -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_left_arm_fwk_fwa_050_frame_out">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>left_arm_fwk_fwa_050_frame_out</srdl2-comp:urdfName>
+        <srdl2-comp:link_name rdf:datatype="&xsd;string">left_arm_fwk_fwa_050_frame_out</srdl2-comp:link_name>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_arm_adapter_fwa050_wsg50_in_joint"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &robot;boxy_left_arm_adapter_fwa050_wsg50_frame_in -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_left_arm_adapter_fwa050_wsg50_frame_in">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>left_arm_adapter_fwa050_wsg50_frame_in</srdl2-comp:urdfName>
+        <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_adapters_description/meshes/adapter_fwa050_wsg50.stl</knowrob:pathToCadModel>
+        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
+        <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
+        <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_arm_adapter_fwa050_wsg50_trans_frame_out"/>
+    </owl:NamedIndividual>
+
+
+    <!-- &robot;boxy_left_arm_adapter_fwa050_wsg50_frame_out -->
+
+    <owl:NamedIndividual rdf:about="&robot;boxy_left_arm_adapter_fwa050_wsg50_frame_out">
+        <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
+        <srdl2-comp:urdfName>left_arm_adapter_fwa050_wsg50_frame_out</srdl2-comp:urdfName>
+        <srdl2-comp:link_name rdf:datatype="&xsd;string">left_arm_adapter_fwa050_wsg50_frame_out</srdl2-comp:link_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_gripper_anterior_gripper_joint"/>
     </owl:NamedIndividual>
 
@@ -3236,7 +4545,7 @@
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">1.0</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_wsg_50_description/meshes/WSG50_110.stl</knowrob:pathToCadModel>
-        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">1 1 1</srdl2-comp:mesh_scale>
+        <!-- <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">1 1 1</srdl2-comp:mesh_scale> -->
         <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.5 0.5 0.5 1</knowrob:mainColorOfObject>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_gripper_base_gripper_left_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_left_gripper_base_gripper_right_joint"/>
@@ -3259,9 +4568,8 @@
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">1.0</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_wsg_50_description/meshes/GUIDE_WSG50_110.stl</knowrob:pathToCadModel>
-        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
-        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0 0 0 1</knowrob:mainColorOfObject>
-        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
+        <!-- <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale> -->
+        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.0 0.0 0.0 1.0</knowrob:mainColorOfObject>
         <srdl2-comp:contact_coefficients_kd rdf:datatype="&qudt-unit;Unitless">1.0</srdl2-comp:contact_coefficients_kd>
         <srdl2-comp:contact_coefficients_kp rdf:datatype="&qudt-unit;Unitless">1000.0</srdl2-comp:contact_coefficients_kp>
         <srdl2-comp:contact_coefficients_mu rdf:datatype="&qudt-unit;Unitless">0</srdl2-comp:contact_coefficients_mu>
@@ -3285,8 +4593,7 @@
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">1.0</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_wsg_50_description/meshes/WSG-FMF.stl</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
-        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0 0 0 1</knowrob:mainColorOfObject>
-        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
+        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.0 0.0 0.0 1.0</knowrob:mainColorOfObject>
         <srdl2-comp:contact_coefficients_kd rdf:datatype="&qudt-unit;Unitless">1.0</srdl2-comp:contact_coefficients_kd>
         <srdl2-comp:contact_coefficients_kp rdf:datatype="&qudt-unit;Unitless">1000.0</srdl2-comp:contact_coefficients_kp>
         <srdl2-comp:contact_coefficients_mu rdf:datatype="&qudt-unit;Unitless">0</srdl2-comp:contact_coefficients_mu>
@@ -3306,9 +4613,8 @@
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">1.0</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_wsg_50_description/meshes/GUIDE_WSG50_110.stl</knowrob:pathToCadModel>
-        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
-        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0 0 0 1</knowrob:mainColorOfObject>
-        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
+        <!-- <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale> -->
+        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.0 0.0 0.0 1.0</knowrob:mainColorOfObject>
         <srdl2-comp:contact_coefficients_kd rdf:datatype="&qudt-unit;Unitless">1.0</srdl2-comp:contact_coefficients_kd>
         <srdl2-comp:contact_coefficients_kp rdf:datatype="&qudt-unit;Unitless">1000.0</srdl2-comp:contact_coefficients_kp>
         <srdl2-comp:contact_coefficients_mu rdf:datatype="&qudt-unit;Unitless">0</srdl2-comp:contact_coefficients_mu>
@@ -3330,8 +4636,7 @@
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">1.0</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_wsg_50_description/meshes/WSG-FMF.stl</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
-        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0 0 0 1</knowrob:mainColorOfObject>
-        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
+        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.0 0.0 0.0 1.0</knowrob:mainColorOfObject>
         <srdl2-comp:contact_coefficients_kd rdf:datatype="&qudt-unit;Unitless">1.0</srdl2-comp:contact_coefficients_kd>
         <srdl2-comp:contact_coefficients_kp rdf:datatype="&qudt-unit;Unitless">1000.0</srdl2-comp:contact_coefficients_kp>
         <srdl2-comp:contact_coefficients_mu rdf:datatype="&qudt-unit;Unitless">0</srdl2-comp:contact_coefficients_mu>
@@ -3361,6 +4666,7 @@
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.00381666666667</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_base.dae</knowrob:pathToCadModel>
+        <!-- <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale> -->
         <srdl2-comp:material_name rdf:datatype="&xsd;string">UniHB-Red</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_right_arm_0_joint"/>
         <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
@@ -3380,6 +4686,7 @@
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0118666666667</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_1.dae</knowrob:pathToCadModel>
+        <!-- <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale> -->
         <srdl2-comp:material_name rdf:datatype="&xsd;string">UniHB-Red</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_right_arm_1_joint"/>
         <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
@@ -3399,6 +4706,7 @@
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0118666666667</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_2.dae</knowrob:pathToCadModel>
+        <!-- <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale> -->
         <srdl2-comp:material_name rdf:datatype="&xsd;string">UniHB-Red</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_right_arm_2_joint"/>
         <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
@@ -3418,6 +4726,7 @@
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0118666666667</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_3.dae</knowrob:pathToCadModel>
+        <!-- <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale> -->
         <srdl2-comp:material_name rdf:datatype="&xsd;string">UniHB-Red</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_right_arm_3_joint"/>
         <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
@@ -3437,6 +4746,7 @@
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0118666666667</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_4.dae</knowrob:pathToCadModel>
+        <!-- <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale> -->
         <srdl2-comp:material_name rdf:datatype="&xsd;string">UniHB-Red</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_right_arm_4_joint"/>
         <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
@@ -3456,6 +4766,7 @@
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.0108506666667</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_last.dae</knowrob:pathToCadModel>
+        <!-- <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale> -->
         <srdl2-comp:material_name rdf:datatype="&xsd;string">UniHB-Red</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_right_arm_5_joint"/>
         <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
@@ -3475,6 +4786,7 @@
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.00520833333333</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_seg_wrist.dae</knowrob:pathToCadModel>
+        <!-- <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale> -->
         <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_right_arm_6_joint"/>
         <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
@@ -3494,6 +4806,7 @@
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">0.333333333333</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kuka_lwr4_description/meshes/arm_flanche.dae</knowrob:pathToCadModel>
+        <!-- <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">100 100 100</srdl2-comp:mesh_scale> -->
         <srdl2-comp:material_name rdf:datatype="&xsd;string">Black</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_right_arm_flange_joint"/>
         <srdl2-comp:material rdf:datatype="&xsd;string">kuka-lwr.material</srdl2-comp:material>
@@ -3534,7 +4847,7 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <srdl2-comp:urdfName>right_arm_adapter_iso50_kms40_frame_in</srdl2-comp:urdfName>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kms_40_description/meshes/adapter_plate_iso50_kms40_weiss.stl</knowrob:pathToCadModel>
-        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
+        <!-- <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale> -->
         <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy_right_arm_adapter_iso50_kms40_trans_frame_out"/>
     </owl:NamedIndividual>
@@ -3673,8 +4986,8 @@
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">1.0</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_wsg_50_description/meshes/GUIDE_WSG50_110.stl</knowrob:pathToCadModel>
-        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
-        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0 0 0 1</knowrob:mainColorOfObject>
+        <!-- <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale> -->
+        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.0 0.0 0.0 1.0</knowrob:mainColorOfObject>
         <srdl2-comp:contact_coefficients_kd rdf:datatype="&qudt-unit;Unitless">1.0</srdl2-comp:contact_coefficients_kd>
         <srdl2-comp:contact_coefficients_kp rdf:datatype="&qudt-unit;Unitless">1000.0</srdl2-comp:contact_coefficients_kp>
         <srdl2-comp:contact_coefficients_mu rdf:datatype="&qudt-unit;Unitless">0</srdl2-comp:contact_coefficients_mu>
@@ -3698,7 +5011,7 @@
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">1.0</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_wsg_50_description/meshes/WSG-FMF.stl</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
-        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0 0 0 1</knowrob:mainColorOfObject>
+        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.0 0.0 0.0 1.0</knowrob:mainColorOfObject>
         <srdl2-comp:contact_coefficients_kd rdf:datatype="&qudt-unit;Unitless">1.0</srdl2-comp:contact_coefficients_kd>
         <srdl2-comp:contact_coefficients_kp rdf:datatype="&qudt-unit;Unitless">1000.0</srdl2-comp:contact_coefficients_kp>
         <srdl2-comp:contact_coefficients_mu rdf:datatype="&qudt-unit;Unitless">0</srdl2-comp:contact_coefficients_mu>
@@ -3718,8 +5031,8 @@
         <srdl2-comp:inertia_iyz rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_iyz>
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">1.0</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_wsg_50_description/meshes/GUIDE_WSG50_110.stl</knowrob:pathToCadModel>
-        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
-        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0 0 0 1</knowrob:mainColorOfObject>
+        <!-- <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale> -->
+        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.0 0.0 0.0 1.0</knowrob:mainColorOfObject>
         <srdl2-comp:contact_coefficients_kd rdf:datatype="&qudt-unit;Unitless">1.0</srdl2-comp:contact_coefficients_kd>
         <srdl2-comp:contact_coefficients_kp rdf:datatype="&qudt-unit;Unitless">1000.0</srdl2-comp:contact_coefficients_kp>
         <srdl2-comp:contact_coefficients_mu rdf:datatype="&qudt-unit;Unitless">0</srdl2-comp:contact_coefficients_mu>
@@ -3741,7 +5054,7 @@
         <srdl2-comp:inertia_izz rdf:datatype="&qudt-unit;Kilogram">1.0</srdl2-comp:inertia_izz>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_wsg_50_description/meshes/WSG-FMF.stl</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
-        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0 0 0 1</knowrob:mainColorOfObject>
+        <knowrob:mainColorOfObject rdf:datatype="&xsd;string">0.0 0.0 0.0 1.0</knowrob:mainColorOfObject>
         <srdl2-comp:contact_coefficients_kd rdf:datatype="&qudt-unit;Unitless">1.0</srdl2-comp:contact_coefficients_kd>
         <srdl2-comp:contact_coefficients_kp rdf:datatype="&qudt-unit;Unitless">1000.0</srdl2-comp:contact_coefficients_kp>
         <srdl2-comp:contact_coefficients_mu rdf:datatype="&qudt-unit;Unitless">0</srdl2-comp:contact_coefficients_mu>
@@ -3756,6 +5069,7 @@
         <srdl2-comp:link_name rdf:datatype="&xsd;string">right_gripper_tool_frame</srdl2-comp:link_name>
         <knowrob:hasVisual rdf:datatype="&xsd;boolean">false</knowrob:hasVisual>
     </owl:NamedIndividual>
+
 
 
 </rdf:RDF>

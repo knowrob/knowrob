@@ -98,7 +98,7 @@ pose_into_relative_coord(GlobalPose, ReferencePose, RelativePose) :-
     list_to_matrix4d(GlobalPose,  GlobalPose4d),
     list_to_matrix4d(ReferencePose, ReferencePose4d),
 
-    pose_into_relative_coord(GlobalPose4d, ReferencePose4d, RelativePose4d),
+    pose4d_into_relative_coord(GlobalPose4d, ReferencePose4d, RelativePose4d),
 
     matrix4d_to_list(RelativePose4d,RelativePose).
 
@@ -129,8 +129,8 @@ pose4d_into_relative_coord(GlobalPose4d, ReferencePose4d, RelativePose4d) :-
 % tf-version: transform into reference object's frame
 % pose4d_into_relative_coord(GlobalPose4d, ReferencePose4d, RelativePose4d) :-
 % 
-%     rdf_has(RelativePose4d,  knowrob:tfFrame, SourceTfFrame),
-%     rdf_has(ReferencePose4d, knowrob:tfFrame, ReferenceTfFrame),
+%     rdf_has(RelativePose4d,  'http://knowrob.org/kb/srdl2-comp.owl#urdfName', SourceTfFrame),
+%     rdf_has(ReferencePose4d, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', ReferenceTfFrame),
 % 
 %     transform_pose_prolog(SourceTfFrame, RelativePose4d, ReferenceTfFrame, GlobalPose4d),!.  % TODO: source frame for _prolog predicates
 
@@ -193,7 +193,7 @@ pose4d_into_global_coord(RelativePose4d, ReferencePose4d, GlobalPose4d) :-
 % pose4d_into_global_coord(RelativePose4d, ReferencePose4d, GlobalPose4d) :-
 % 
 %     var(ReferencePose4d),
-%     rdf_has(RelativePose4d,  knowrob:tfFrame, TfFrame),
+%     rdf_has(RelativePose4d,  'http://knowrob.org/kb/srdl2-comp.owl#urdfName', TfFrame),
 % 
 %     matrix4d_to_list(RelativePose4d,RelativePoseList),
 %     transform_pose_prolog(RelativePoseList, TfFrame, '/map', GlobalPoseList),

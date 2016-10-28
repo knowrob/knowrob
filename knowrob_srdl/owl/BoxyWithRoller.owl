@@ -2254,7 +2254,6 @@
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_wsg_50_description/meshes/WSG50_110.stl</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">1 1 1</srdl2-comp:mesh_scale>
         <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0.5 0.5 0.5 1</srdl2-comp:color_rgba>
-        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">1 1 1</srdl2-comp:mesh_scale>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy2_left_gripper_base_gripper_left_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy2_left_gripper_base_gripper_right_joint"/>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy2_left_gripper_tool_frame_joint"/>
@@ -2303,6 +2302,7 @@
         <srdl2-comp:contact_coefficients_kd rdf:datatype="&xsd;string">1.0</srdl2-comp:contact_coefficients_kd>
         <srdl2-comp:contact_coefficients_kp rdf:datatype="&xsd;string">1000.0</srdl2-comp:contact_coefficients_kp>
         <srdl2-comp:contact_coefficients_mu rdf:datatype="&qudt-unit;Unitless">0</srdl2-comp:contact_coefficients_mu>
+        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
     </owl:NamedIndividual>
 
 
@@ -2324,6 +2324,7 @@
         <srdl2-comp:contact_coefficients_kp rdf:datatype="&xsd;string">1000.0</srdl2-comp:contact_coefficients_kp>
         <srdl2-comp:contact_coefficients_mu rdf:datatype="&qudt-unit;Unitless">0</srdl2-comp:contact_coefficients_mu>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy2_left_gripper_guide_joint_finger_right"/>
+        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
     </owl:NamedIndividual>
 
 
@@ -2344,6 +2345,7 @@
         <srdl2-comp:contact_coefficients_kd rdf:datatype="&xsd;string">1.0</srdl2-comp:contact_coefficients_kd>
         <srdl2-comp:contact_coefficients_kp rdf:datatype="&xsd;string">1000.0</srdl2-comp:contact_coefficients_kp>
         <srdl2-comp:contact_coefficients_mu rdf:datatype="&qudt-unit;Unitless">0</srdl2-comp:contact_coefficients_mu>
+        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
     </owl:NamedIndividual>
 
 
@@ -2566,6 +2568,7 @@
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kms_40_description/meshes/kms40_simple.stl</knowrob:pathToCadModel>
         <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy2_right_arm_kms40_trans_frame_out"/>
+        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
     </owl:NamedIndividual>
 
 
@@ -2587,6 +2590,7 @@
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_adapters_description/meshes/adapter_kms40_fwk050.stl</knowrob:pathToCadModel>
         <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy2_right_arm_adapter_kms40_fwk050_trans_frame_out"/>
+        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
     </owl:NamedIndividual>
 
 
@@ -2611,6 +2615,7 @@
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_adapters_description/meshes/fwk_fwa_050_simple.stl</knowrob:pathToCadModel>
         <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy2_right_arm_fwk_fwa_050_trans_frame_out"/>
+        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
     </owl:NamedIndividual>
 
 
@@ -2632,6 +2637,7 @@
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_adapters_description/meshes/adapter_fwa050_wsg50.stl</knowrob:pathToCadModel>
         <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy2_right_arm_adapter_fwa050_wsg50_trans_frame_out"/>
+        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
     </owl:NamedIndividual>
 
 
@@ -2669,7 +2675,6 @@
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_roller_description/meshes/iai_roller.stl</knowrob:pathToCadModel>
         <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">1 1 1</srdl2-comp:mesh_scale>
         <srdl2-comp:color_rgba rdf:datatype="&xsd;string">0.3 0.3 0.3 1</srdl2-comp:color_rgba>
-        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">1 1 1</srdl2-comp:mesh_scale>
     </owl:NamedIndividual>
 
 

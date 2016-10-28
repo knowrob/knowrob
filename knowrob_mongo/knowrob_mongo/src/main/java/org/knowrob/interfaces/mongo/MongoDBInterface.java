@@ -285,6 +285,10 @@ public class MongoDBInterface {
 		
 		QueryBuilder qb = QueryBuilder.start("designator").exists("_id");
 		for(int i=0; i<keys.length; i++) {
+			
+			// HACK
+			//values[i] = values[i].replace("_", "");
+			
 			qb = qb.and(keys[i]).is(Pattern.compile(values[i],Pattern.CASE_INSENSITIVE)); // pattern for case insensitive matching
 		}
 		
@@ -301,7 +305,8 @@ public class MongoDBInterface {
 		
 		while(cursor.hasNext()) {
 			DBObject row = cursor.next();
-			Designator desig = new Designator().readFromDBObject((BasicDBObject) row.get("designator"));
+			java.util.Date instant = (java.util.Date) row.get("__recorded");
+			Designator desig = new Designator(instant).readFromDBObject((BasicDBObject) row.get("designator"));
 			res[r++]=desig;
 		}
 		cursor.close();
@@ -329,12 +334,8 @@ public class MongoDBInterface {
 	}
 
 	public Designator designator(BasicDBObject obj) {
-		Designator d = new Designator().readFromDBObject(obj);
-		Object x = d.get("DESIGNATOR");
-		if(x!=null && x instanceof Designator)
-			return (Designator)x;
-		else
-			return d;
+		java.util.Date instant = (java.util.Date) obj.get("__recorded");
+		return new Designator(instant).readFromDBObject((BasicDBObject) obj.get("designator"));
 	}
 
 	@SuppressWarnings("unchecked")

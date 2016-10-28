@@ -66,7 +66,7 @@
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
         <computable:command rdf:datatype="&xsd;string">comp_above_of</computable:command>
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-        <computable:target rdf:resource="&knowrob;aboveOf"/>
+        <computable:target rdf:resource="&knowrob;above-Generally"/>
     </computable:PrologProperty>
 
 
@@ -74,13 +74,12 @@
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
         <computable:command rdf:datatype="&xsd;string">comp_below_of</computable:command>
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-        <computable:target rdf:resource="&knowrob;belowOf"/>
+        <computable:target rdf:resource="&knowrob;below-Generally"/>
     </computable:PrologProperty>
 
 
     <computable:PrologProperty rdf:about="#computeToTheLeftOf">
-        <computable:command rdf:datatype="&xsd;string"
-            >comp_toTheLeftOf</computable:command>
+        <computable:command rdf:datatype="&xsd;string">comp_toTheLeftOf</computable:command>
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
         <computable:target rdf:resource="&knowrob;toTheLeftOf"/>
@@ -88,8 +87,7 @@
 
 
     <computable:PrologProperty rdf:about="#computeToTheRightOf">
-        <computable:command rdf:datatype="&xsd;string"
-            >comp_toTheRightOf</computable:command>
+        <computable:command rdf:datatype="&xsd;string">comp_toTheRightOf</computable:command>
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
         <computable:target rdf:resource="&knowrob;toTheRightOf"/>
@@ -97,8 +95,7 @@
 
 
     <computable:PrologProperty rdf:about="#computeToTheSideOf">
-        <computable:command rdf:datatype="&xsd;string"
-            >comp_toTheSideOf</computable:command>
+        <computable:command rdf:datatype="&xsd;string">comp_toTheSideOf</computable:command>
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
         <computable:target rdf:resource="&knowrob;toTheSideOf"/>

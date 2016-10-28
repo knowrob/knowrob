@@ -62,6 +62,7 @@
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % Dough becomes Baked during a baking process
+% TODO: use fluent ontology
 project_process_effects :-
 
 
@@ -123,6 +124,7 @@ project_process_effects :-
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % cooling devices become cold, heating devices hot when being switched on
+% TODO: use fluent ontology
 
 project_process_effects :-
   % % % % % % % % % % % % %
@@ -153,6 +155,7 @@ project_process_effects :-
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % heating and cooling devices come to room temperature when being switched off
+% TODO: use fluent ontology
 
 project_process_effects :-
   % % % % % % % % % % % % %

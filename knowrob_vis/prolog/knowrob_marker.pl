@@ -31,6 +31,13 @@
 
 :- module(knowrob_marker,
     [
+      show/0,
+      show/1,
+      show/2,
+      show_next/0,
+      highlight/1,
+      highlight/2,
+      
       marker_publish/0,
       marker_republish/0,
       marker/2,
@@ -61,6 +68,8 @@
       marker_highlight_remove/1,
       marker_highlight_toggle/1,
       
+      marker_primitive/5,
+      
       marker_queries/2,
       
       marker_distance/3,
@@ -80,6 +89,8 @@
             marker_show(t),
             marker_update(t),
             marker_update(t,r),
+            show(t),
+            show(t,r),
             marker_remove(t),
             marker_children(t,?),
             marker_type(t,?),
@@ -98,6 +109,13 @@
             marker_queries(+,-),
             marker_trajectory_length(t,?),
             marker_distance(t,t,?).
+
+% define marker_new and marker_update as meta-predicate and allow the definitions
+% to be in different source files
+%:- meta_predicate marker_new(0, ?, ?, ?, ?),
+%                  marker_update(0, ?, ?, ?, ?).
+:- multifile marker_new/4,
+             marker_update/3.
 
 marker_has_visual(Identifier) :-
   not(owl_individual_of(Identifier, srdl2comp:'UrdfJoint')),
@@ -136,13 +154,10 @@ marker_succeeding_links(Link0, Links) :-
 marker_srdl_tf_frame(Identifier, UrdfName) :-
   rdf_has(Identifier, srdl2comp:'urdfName', literal(UrdfName)), !.
 marker_srdl_tf_frame(Identifier, UrdfName) :-
-  not( rdf_has(Identifier, rdf:'type', _) ),
+  rdf_has(Identifier, knowrob:'urdfName', literal(UrdfName)), !.
+marker_srdl_tf_frame(Identifier, UrdfName) :-
+  not( atom_prefix(Identifier, 'http') ),
   UrdfName = Identifier.
-
-atom_ensure_prefix(Atom, Prefix, Atom) :-
-  sub_atom(Atom, 0, _, _, Prefix), !.
-atom_ensure_prefix(Atom, Prefix, AtomResolved) :-
-  atom_concat(Prefix, Atom, AtomResolved).
 
 marker_tf_frame(MarkerObject, Identifier, TfFrame) :-
   marker_srdl_tf_frame(Identifier, UrdfName),
@@ -156,27 +171,29 @@ marker_tf_frame(MarkerObject, Identifier, TfFrame) :-
   )).
   
 marker_lookup_transform(MarkerObject, Identifier, T, (Translation,Orientation)) :-
-  rdfs_individual_of(Identifier, knowrob:'CRAMDesignator'),
+  rdfs_individual_of(Identifier, knowrob:'Designator'),
   rdf_split_url(Prefix, ObjName, Identifier),
   atomic_list_concat([Prefix,'Object_',ObjName], Object),
   rdfs_individual_of(Object, knowrob:'SpatialThing-Localized'),
-  marker_lookup_transform(MarkerObject, Object, T, (Translation,Orientation)).
+  marker_lookup_transform(MarkerObject, Object, T, (Translation,Orientation)), !.
 
 marker_lookup_transform(_, Identifier, T, (Translation,Orientation)) :-
-  object_pose_at_time(Identifier, T, Translation, Orientation).
+  object_pose_at_time(Identifier, T, pose(Translation, Orientation)), !.
 
+% TODO: remove case, should be covered by object_pose_at_time
 marker_lookup_transform(MarkerObject, Identifier, T, (Translation,Orientation)) :-
-  marker_lookup_transform(MarkerObject, Identifier, '/map', T, (Translation,Orientation)).
+  marker_lookup_transform(MarkerObject, Identifier, '/map', T, (Translation,Orientation)), !.
 
+% TODO: remove case, should be covered by object_pose_at_time
 marker_lookup_transform(MarkerObject, Identifier, TargetFrame, T, (Translation,Orientation)) :-
   marker_tf_frame(MarkerObject, Identifier, TfFrame),
   not( atom_prefix(TfFrame, 'http') ),
   mng_lookup_transform(TargetFrame, TfFrame, T, Pose),
   matrix_rotation(Pose, Orientation),
-  matrix_translation(Pose, Translation).
+  matrix_translation(Pose, Translation), !.
 
 %marker_lookup_transform(MarkerObject, Identifier, TargetFrame, T, (Translation,Orientation)) :-
-%  rdfs_individual_of(Identifier, knowrob:'CRAMDesignator'),
+%  rdfs_individual_of(Identifier, knowrob:'Designator'),
 %  mng_designator_location(Identifier, PoseMatrix),
 %  matrix_translation(PoseMatrix, Translation),
 %  matrix_rotation(PoseMatrix, Orientation).
@@ -194,7 +211,7 @@ marker_push_visually_above(Identifier, _, ([X0,Y0,Z0],R), ([X0,Y0,Z1],R)) :-
   Value > Z0, Z1 is Value.
   
 marker_push_visually_above(Identifier, T, PoseIn, PoseOut) :-
-  rdfs_individual_of(Identifier, knowrob:'CRAMDesignator'),
+  rdfs_individual_of(Identifier, knowrob:'Designator'),
   rdf_split_url(Prefix, ObjName, Identifier),
   atomic_list_concat([Prefix,'Object_',ObjName], Object),
   rdfs_individual_of(Object, knowrob:'SpatialThing-Localized'),
@@ -357,27 +374,32 @@ marker_initialize_object(Identifier,MarkerObject) :-
   ;  marker_has_visual(MarkerObject,false)
   ),
   ignore((
-    rdfs_individual_of(Identifier, knowrob:'CRAMDesignator'),
+    rdfs_individual_of(Identifier, knowrob:'Designator'),
     % TODO: use existing instance if available
     mng_designator_timestamp(Identifier, T),
     mng_designator_location(Identifier, LocList),
     create_timepoint(T, Timepoint),
-    create_pose(LocList, Loc),
+    create_pose(mat(LocList), Loc),
     add_object_as_semantic_instance(Identifier, Loc, Timepoint, Instance),
     marker_initialize_object(Instance,MarkerObject)
+  )),
+  ignore((
+    %not( marker_type(MarkerObject, mesh_resource) ),
+    object_dimensions(Identifier, X, Y, Z),
+    marker_scale(MarkerObject, [X, Y, Z])
   )),
   ignore((
     get_model_path(Identifier, Path),
     marker_type(MarkerObject, mesh_resource),
     marker_mesh_resource(MarkerObject, Path),
     marker_color(MarkerObject, [0.0,0.0,0.0,0.0]),
-    marker_scale(MarkerObject, [1.0,1.0,1.0])
-  )),
-  ignore((
-    % TODO: ignore scale for meshes?
-    %not( marker_type(MarkerObject, mesh_resource) ),
-    object_dimensions(Identifier, X, Y, Z),
-    marker_scale(MarkerObject, [X, Y, Z])
+    marker_scale(MarkerObject, [1.0,1.0,1.0]),
+    
+    ( rdf_has(Identifier, srdl2comp:'mesh_scale', literal(type(_,Scale)))
+    -> (
+      parse_vector(Scale, ScaleVec),
+      marker_scale(MarkerObject, ScaleVec)
+    ) ; true )
   )),
   ignore((
     object_color(Identifier, Color),
@@ -542,7 +564,7 @@ marker_new(MarkerName, link(Link), MarkerObject, Parent) :-
   marker_primitive(arrow, MarkerName, link(Link), MarkerObject, Parent).
 
 marker_new(MarkerName, trajectory(Link), MarkerObject, Parent) :-
-  marker_primitive(arrow, MarkerName, trajectory(Link), MarkerObject, Parent),
+  marker_primitive(sphere, MarkerName, trajectory(Link), MarkerObject, Parent),
   marker_color(MarkerObject, [1.0,1.0,0.0,1.0]),
   marker_has_visual(MarkerObject, false).
 
@@ -577,17 +599,58 @@ marker_new(MarkerName, object_without_children(Identifier), MarkerObject, Parent
   marker_primitive(cube, MarkerName, object_without_children(Identifier), MarkerObject, Parent),
   marker_initialize_object(Identifier, MarkerObject).
 
+% special case particles (e.g., a pile of stuff)
+marker_new(MarkerName, object(Identifier), MarkerObject, Parent) :-
+  rdf_has(Identifier, srdl2comp:'urdfName', UrdfVal),
+  rdf_has(Identifier, knowrob:'numParticles', literal(type(_,ParticleCount))),
+  strip_literal_type(UrdfVal,UrdfFormat),
+  atom_number(ParticleCount, N),
+  
+  marker_primitive(sphere, MarkerName, object(Identifier), MarkerObject, Parent),
+  marker_color(MarkerObject, [1.0,1.0,0.0,1.0]),
+  marker_has_visual(MarkerObject, false),
+  marker_new_particles(MarkerObject, Identifier, UrdfFormat, N, 1), !.
+
 marker_new(MarkerName, object(Identifier), MarkerObject, Parent) :-
   marker_primitive(cube, MarkerName, object(Identifier), MarkerObject, Parent),
   marker_initialize_object(Identifier, MarkerObject),
   marker_children(Identifier,Children),
   forall(
     member( Child,Children ), ignore((
-      marker_child_name(object(Identifier), MarkerName, object(Child), ChildName),
-      marker(ChildName, object(Child), _, MarkerObject)
+      marker_term(Child, ChildTerm),
+      marker_child_name(object(Identifier), MarkerName, ChildTerm, ChildName),
+      marker(ChildName, ChildTerm, _, MarkerObject)
     ))
   ).
 
+marker_new(MarkerName, experiment(Identifier), MarkerObject, Parent) :-
+  marker_primitive(cube, MarkerName, object(Identifier), MarkerObject, Parent),
+  marker_initialize_object(Identifier, MarkerObject),
+  % Semantic map
+  rdf_has(Identifier, knowrob:'performedInMap', Map),
+  marker_child_name(experiment(Identifier), MarkerName,
+                    object(Map), MapName),
+  marker_new(MapName, object(Map), _, MarkerObject),
+  %% TODO: or require markerType annotations for robots and humans?
+  % agents
+  forall(
+    % TODO: add property robotActor
+    owl_has(Map, knowrob:robotActor, Agent), ignore((
+      marker_child_name(experiment(Identifier), MarkerName,
+                        agent(Agent), AgentName),
+      marker(AgentName, agent(Agent), _, MarkerObject)
+    ))
+  ),
+  % humans
+  forall(
+    % TODO: add property humanActor
+    owl_has(Map, knowrob:humanActor, Human), ignore((
+      marker_child_name(experiment(Identifier), MarkerName,
+                        stickman(Human), HumanName),
+      marker(HumanName, stickman(Human), _, MarkerObject)
+    ))
+  ).
+  
 marker_new(MarkerName, attached(MarkerTerm,AttachedTo), MarkerObject, Parent) :-
   marker_primitive(cube, MarkerName, attached(MarkerTerm,AttachedTo), MarkerObject, Parent),
   marker_has_visual(MarkerObject, false),
@@ -662,6 +725,26 @@ marker_new(MarkerName, sprite_scaled(Id), MarkerObject, Parent) :-
 marker_new(MarkerName, background_image(Id), MarkerObject, Parent) :-
   marker_new(MarkerName, black(background_image,background_image(Id)), MarkerObject, Parent).
 
+
+% TODO: don't create a marker for each particle!
+% TODO: remove/add markers when pile size changes
+% FIXME: one particle left out (first or last index), does TF data start at 1 or 0 ?
+marker_new_particles(_, _, _, Count, Count) :- !.
+marker_new_particles(Parent, Obj, UrdfFormat, Count, Index) :-
+  format(atom(Urdf), UrdfFormat, [Index]),
+  % Create marker
+  marker(Urdf, link(Urdf), MarkerObject, Parent),
+  ( owl_has(Obj, knowrob:'pathToCadModel', literal(type(_,MeshPath))) -> (
+    marker_color(MarkerObject, [0.0,0.0,0.0,0.0]),
+    marker_scale(MarkerObject, [1.0,1.0,1.0]),
+    marker_type(MarkerObject, mesh_resource),
+    marker_mesh_resource(MarkerObject, MeshPath)
+  )),
+  % create next marker
+  NextIndex is Index + 1,
+  marker_new_particles(Parent, Obj, UrdfFormat, Count, NextIndex).
+
+
 marker_child_name(ParentTerm, ParentName, ChildTerm, ChildName) :-
   term_to_atom(ParentTerm, N), N = ParentName,
   term_to_atom(ChildTerm, ChildName), !.
@@ -702,6 +785,96 @@ marker_show(Marker) :-
 %
 % Updating marker for given timepoint/timerange
 %
+
+show :- marker_update.
+
+show(X) :-
+  is_list(X), !,
+  show_next,
+  forall( member(MarkerDescr, X), (
+    T =.. [show|MarkerDescr], call(T)
+  )), !.
+
+show(X) :-
+  rdfs_individual_of(X, knowrob:'Designator'),
+  % TODO: also show object marker
+  %marker_term(X, MarkerTerm),
+  %marker_update(MarkerTerm)
+  designator_publish(X),
+  (( rdf_has(Act, knowrob:objectActedOn, X),
+     rdf_has(Act, knowrob:capturedImage, _) )
+  -> designator_publish_image(Act)
+  ;  true ), !.
+
+show(X) :-
+  get_timepoint(Instant),
+  show(X,Instant,[]), !.
+
+show(X, Properties) :-
+  is_list(Properties),
+  get_timepoint(Instant),
+  show(X,Instant,Properties), !.
+
+show(X, Instant) :-
+  show(X, Instant, []), !.
+
+show(X, Instant, Properties) :-
+  is_list(Properties),
+  
+  marker_term(X, MarkerTerm),
+  marker(MarkerTerm, MarkerObj),
+  marker_update(MarkerObj,Instant),
+  
+  % TODO: X could also be a term agent(?Identifier) or object(?Identifier)
+  (( atom(X), rdfs_individual_of(X, knowrob:'EmbodiedAgent') )
+  -> ignore(show_speech(X,Instant)) ; true ),
+  
+  marker_properties(MarkerObj, Properties).
+  
+
+show_speech(Agent,Instant) :-
+  rdf_has(Ev, knowrob:'sender', Agent),
+  rdfs_individual_of(Ev, knowrob:'SpeechAct'),
+  occurs(Ev, Instant),
+  rdf_has(Ev, knowrob:'content', literal(type(_,Text))),
+  rdf_has(Ev, knowrob:'sender', Agent),
+  % find head
+  sub_component(pr2:'PR2Robot1', Head),
+  rdfs_individual_of(Head, knowrob:'Head-Vertebrate'),
+  rdf_has(Head, srdl2comp:urdfName, URDFVal),
+  strip_literal_type(URDFVal,URDF),
+  % FIXME: /map bad assumption
+  mng_lookup_transform('/map', URDF, Instant, Transform),
+  matrix_translation(Transform, [X,Y,Z]),
+  Z_Offset is Z + 0.2,
+  marker(sprite_text('PR2_SPEECH'), MarkerObj),
+  marker_color(sprite_text('PR2_SPEECH'), [1.0,1.0,1.0]),
+  marker_text(MarkerObj, Text),
+  marker_translation(MarkerObj, [X,Y,Z_Offset]).
+
+
+highlight(X) :-
+  marker_term(X, MarkerTerm),
+  marker_highlight(MarkerTerm).
+highlight(X,Color) :-
+  marker_term(X, MarkerTerm),
+  marker_highlight(MarkerTerm,Color).
+
+show_next :-
+  marker_highlight_remove(all),
+  marker_remove(trajectories).
+
+
+marker_term(X, experiment(X)) :-
+  atom(X),
+  rdfs_individual_of(X, knowrob:'Experiment'), !.
+marker_term(X, MarkerTerm) :-
+  atom(X),
+  rdfs_individual_of(X, _), !,
+  (owl_has(X, knowrob:markerType, literal(type(_,Type)))
+  -> MarkerTerm =.. [Type,X]
+  ;  MarkerTerm = object(X)).
+marker_term(X, X).
 
 %% marker_update is det.
 %
@@ -795,6 +968,7 @@ marker_update(MarkerTerm, time(T,Arg)) :-
 % @param MarkerObject The MarkerObject instance
 % @param T A time atom (e.g., 'timepoint_1396512604'), time number (e.g., 1396512604) or an interval (e.g., interval(1396512604, 1396512608, 0.5)).
 %
+% TODO: update all visual properties (using fluents)
 marker_update(object_without_children(Identifier), MarkerObject, T) :-
   ignore(once((
     marker_estimate_transform(MarkerObject,Identifier,T,(Translation,Orientation)),
@@ -810,8 +984,11 @@ marker_update(object(Identifier), MarkerObject, T) :-
   jpl_array_to_list(ChildrenArray,Children),
   forall(member(ChildObject,Children), once((
     v_marker_object(_, ChildTerm, ChildObject, _),
-    marker_update(ChildTerm, ChildObject, T),
-    marker_timestamp(MarkerObject, T)
+    (  marker_update(ChildTerm, ChildObject, T)
+    -> true
+    ;  marker_hide(ChildObject)
+    ),
+    marker_timestamp(MarkerObject, T) % FIXME: shouldn't it be ChildObject here?
   ))).
 
 marker_update(attached(Marker,AttachedTo), _, T) :-
@@ -868,7 +1045,7 @@ marker_update(trajectory(Link), MarkerObject, T1) :-
   )).
 
 marker_update(trajectory(Link), MarkerObject, interval(T0,T1)) :-
-  marker_update(trajectory(Link), MarkerObject, (T0,T1,dt(0.5))).
+  marker_update(trajectory(Link), MarkerObject, interval(T0,T1,dt(0.5))).
 
 marker_update(trajectory(Link), MarkerObject, interval(T0,T1,Interval)) :-
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
@@ -903,7 +1080,19 @@ marker_update(average_trajectory(Link), MarkerObject, interval(T0,T1,Interval)) 
 %  marker_translation(Parent, [X,Y,Z]),
 %  marker_translation(MarkerObject, [X,Y,Z]).
 
-marker_update(_, MarkerObject, T) :-
+marker_update(stickman(_), MarkerObject, T) :-
+  marker_update_children(MarkerObject, T).
+marker_update(agent(_), MarkerObject, T) :-
+  marker_update_children(MarkerObject, T).
+marker_update(experiment(_), MarkerObject, T) :-
+  marker_update_children(MarkerObject, T).
+
+% primitive types don't have update hooks
+marker_update(Term, _, _) :-
+  Term =.. [Type|_],
+  marker_prop_type(Type,_).
+
+marker_update_children(MarkerObject, T) :-
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
   jpl_array_to_list(ChildrenArray,Children),
   forall(member(ChildObject,Children), ignore((
@@ -1173,7 +1362,7 @@ marker_query(MarkerName, _, 'Marker Visualization', 'Remove this marker.', Query
   term_to_atom(QueryTerm,QueryAtom).
 
 marker_query_individual(MarkerName, individual(Individual), QueryGroup, QueryTitle, Query) :-
-  rdfs_individual_of(Individual, knowrob:'CRAMDesignator'),
+  rdfs_individual_of(Individual, knowrob:'Designator'),
   rdf_split_url(Prefix, ObjName, Individual),
   atomic_list_concat([Prefix,'Object_',ObjName], Object),
   rdfs_individual_of(Object, knowrob:'SpatialThing-Localized'),
@@ -1234,6 +1423,9 @@ marker_property(Marker, scale(Scale)) :-
 
 marker_property(Marker, pose(Position,Orientation)) :-
   marker_pose(Marker, Position, Orientation).
+
+marker_property(Marker, pose(mat(Mat))) :-
+  marker_pose(Marker, mat(Mat)).
 
 marker_property(Marker, mesh(Mesh)) :-
   marker_mesh_resource(Marker, Mesh).
@@ -1337,6 +1529,11 @@ marker_mesh_resource(Marker, Mesh) :-
 % @param Value The property value
 %
 marker_pose(Marker, pose(Position,Orientation)) :-
+  marker_call(Marker, pose(Position,Orientation), (get_marker_pose,set_marker_pose)).
+
+marker_pose(Marker, mat(Matrix)) :-
+  matrix_translation(Matrix, Position),
+  matrix_rotation(Matrix, Orientation),
   marker_call(Marker, pose(Position,Orientation), (get_marker_pose,set_marker_pose)).
 
 marker_pose(Marker, Position, Orientation) :-
@@ -1520,7 +1717,7 @@ set_marker_scale(MarkerObj, [X,Y,Z]) :-
 
 set_marker_scale(MarkerObj, [X,Y,Z]) :-
   number(X),number(Y),number(Z),
-  jpl_list_to_array([X,Y,Z], ScaleArray),
+  jpl_new(array(float), [X,Y,Z], ScaleArray),
   jpl_call(MarkerObj, 'setScale', [ScaleArray], _).
 
 set_marker_scale(MarkerObj, Scale) :-
@@ -1551,12 +1748,12 @@ set_marker_color(MarkerObj, [R,G,B,A]) :-
 
 set_marker_color(MarkerObj, [R,G,B]) :-
   number(R),number(G),number(B),
-  jpl_list_to_array([R,G,B,1.0], ColorArray),
+  jpl_new(array(float), [R,G,B,1.0], ColorArray),
   jpl_call(MarkerObj, 'setColor', [ColorArray], _).
 
 set_marker_color(MarkerObj, [R,G,B,A]) :-
   number(R),number(G),number(B),number(A),
-  jpl_list_to_array([R,G,B,A], ColorArray),
+  jpl_new(array(float), [R,G,B,A], ColorArray),
   jpl_call(MarkerObj, 'setColor', [ColorArray], _).
 
 set_marker_color(MarkerObj, Color) :-
@@ -1586,11 +1783,11 @@ get_marker_pose(MarkerObj, pose(Translation,Orientation)) :-
   get_marker_orientation(MarkerObj, Orientation).
 
 set_marker_translation(MarkerObj, [X,Y,Z]) :-
-  jpl_list_to_array([X,Y,Z], Array),
+  jpl_new(array(double), [X,Y,Z], Array),
   jpl_call(MarkerObj, 'setTranslation', [Array], _).
 
 set_marker_orientation(MarkerObj, [QW,QX,QY,QZ]) :-
-  jpl_list_to_array([QW,QX,QY,QZ], Array),
+  jpl_new(array(double), [QW,QX,QY,QZ], Array),
   jpl_call(MarkerObj, 'setOrientation', [Array], _).
 
 set_marker_pose(MarkerObj, pose(Translation,Orientation)) :-

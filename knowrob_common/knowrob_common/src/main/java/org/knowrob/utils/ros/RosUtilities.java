@@ -117,7 +117,35 @@ public class RosUtilities {
         }
         return handle;
     }
-    
+   
+    /**
+     * Runs the given launch file of the given ROS package 
+     * @param pkg name of the ROS package
+     * @param launch_file name of the launch file
+     * @param args Arguments
+     * @return Handle to this process
+     * @throws IOException 
+     */
+    public static String roslaunch(String pkg, String launch_file, String[] arg) throws IOException {
+
+        String handle = null;
+        try
+        {
+        	String args = Joiner.on(" ").join(arg);
+        	Process p = Runtime.getRuntime().exec("roslaunch " + pkg + " " + launch_file + " " + args);
+
+        	handle = UUID.randomUUID().toString();
+            processMap.put(handle, p);
+            
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return handle;
+    }
+
+ 
     
     public static void runRosjavaNode(AbstractNodeMain node, String[] args) {
     	

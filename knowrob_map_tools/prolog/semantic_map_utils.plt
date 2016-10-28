@@ -28,6 +28,7 @@
 :- use_module(library('knowrob_perception')).
 
 :- owl_parser:owl_parse('package://knowrob_map_data/owl/ccrl2_semantic_map.owl').
+:- owl_parser:owl_parse('package://knowrob_srdl/owl/srdl2-comp.owl').
 
 :- rdf_db:rdf_register_ns(xsd,      'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob,  'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
@@ -59,16 +60,17 @@ test(map_child_object) :-
 
 
 test(map_child_objects) :-
-  map_child_objects(knowrob:'Dishwasher37',
-                    ['http://knowrob.org/kb/knowrob.owl#Door40',
-                     'http://knowrob.org/kb/knowrob.owl#Handle145']),!.
+  map_child_objects(knowrob:'Dishwasher37', Objects),
+  member('http://knowrob.org/kb/knowrob.owl#Door40', Objects),
+  member('http://knowrob.org/kb/knowrob.owl#Handle145', Objects),
+  length(Objects, 2), !.
 
 
 test(map_object_info) :-
   map_object_info(['http://knowrob.org/kb/knowrob.owl#CounterTop205',
                    'http://knowrob.org/kb/knowrob.owl#CounterTop',
                    [-0.08847681,-0.99607825,0.0,1.1006587,0.99607825,-0.08847681,0.0,0.54706275,0.0,0.0,1.0,0.84,0.0,0.0,0.0,1.0],
-                   [2.0500002,0.57500005,0.02]]),!.
+                   [2.0500002,0.57500005,0.02]]), !.
 
 test(map_object_type) :-
   map_object_type('http://knowrob.org/kb/knowrob.owl#CounterTop205',

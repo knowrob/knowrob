@@ -41,8 +41,8 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('rdfs_computable')).
 :- use_module(library('knowrob_owl')).
+:- use_module(library('knowrob_temporal')).
 :- use_module(library('owl')).
-:- use_module(library('fluents')).
 
 
 :- rdf_db:rdf_register_ns(knowrob,       'http://knowrob.org/kb/knowrob.owl#',      [keep(true)]).
@@ -54,14 +54,14 @@
     action_project_effects(r),
     action_project_effects(r,?),
     action_project_effect(r,r,?),
-    query_entity(r,r,r,r),
+    query_effect_entity(r,r,r,r),
     query_predicate(r,r,r,r),
     project_action_effects(r),
     unlink_object(r),
     remove_object_properties(r,r).
 
 
-action_preconditions_fulfilled(Action) :-
+action_preconditions_fulfilled(_) :-
   true. % TODO: implement
 
 
@@ -97,81 +97,84 @@ action_project_effects(Action, Effects) :-
 action_project_effect(Action, Effect, integrate(Subject,Predicate,Object)) :-
   once(owl_individual_of(Effect, action_effects:'Integrate')),
   % parse arguments
-  query_entity(Action, Effect, action_effects:'subject', Subject),
+  query_effect_entity(Action, Effect, action_effects:'subject', Subject),
   query_predicate(Effect, Predicate),
-  query_entity(Action, Effect, action_effects:'object', Object),
+  query_effect_entity(Action, Effect, action_effects:'object', Object),
   % Assert temporal parts and link via @Predicate
-  assert_fluent_begin(Subject, Predicate, Object), !.
+  create_fluent(Subject, Fluent),
+  fluent_assert(Fluent, Predicate, Object), !.
 
 action_project_effect(Action, Effect, decompose(Subject,Predicate)) :-
   once(owl_individual_of(Effect, action_effects:'Decompose')),
   % parse arguments
-  query_entity(Action, Effect, action_effects:'subject', Subject),
+  query_effect_entity(Action, Effect, action_effects:'subject', Subject),
   query_predicate(Effect, Predicate),
   % Read domain type and create new instance
   rdf_has(Predicate, rdfs:range, DomainClass),
   rdf_instance_from_class(DomainClass, DomainEntity),
   % Assert temporal parts and link via @Predicate
-  assert_fluent_begin(Subject, Predicate, DomainEntity), !.
+  create_fluent(Subject, Fluent),
+  fluent_assert(Fluent, Predicate, DomainEntity), !.
 
 action_project_effect(Action, Effect, parametrize(Subject,Predicate,Object)) :-
   once(owl_individual_of(Effect, action_effects:'Parametrize')),
   % parse arguments
-  query_entity(Action, Effect, action_effects:'subject', Subject),
+  query_effect_entity(Action, Effect, action_effects:'subject', Subject),
   query_predicate(Effect, Predicate),
   % Read the data value
   rdf_has(Effect, action_effects:'object', literal(type(_,Object))),
   % Assert temporal parts and link via @Predicate
-  assert_fluent_begin(Subject, Predicate, Object), !.
+  create_fluent(Subject, Fluent),
+  fluent_assert(Fluent, Predicate, Object), !.
   
 action_project_effect(Action, Effect, create(Object)) :-
   once(owl_individual_of(Effect, action_effects:'Create')),
   % parse arguments
-  query_entity(Action, Effect, action_effects:'object', ObjectClass),
+  query_effect_entity(Action, Effect, action_effects:'object', ObjectClass),
   rdf_instance_from_class(ObjectClass, Object), !.
 
 action_project_effect(Action, Effect, clear(Subject,Predicate)) :-
   once(owl_individual_of(Effect, action_effects:'ClearProperty')),
   % parse arguments
-  query_entity(Action, Effect, action_effects:'subject', Subject),
+  query_effect_entity(Action, Effect, action_effects:'subject', Subject),
   query_predicate(Effect, Predicate),
   % Assert temporal parts and link via @Predicate
-  assert_fluent_end(Subject, Predicate), !.
+  fluent_assert_end(Subject, Predicate), !.
 
 action_project_effect(Action, Effect, separate(Subject,Predicate)) :-
   once(owl_individual_of(Effect, action_effects:'Separate')),
   % parse arguments
-  query_entity(Action, Effect, action_effects:'subject', Subject),
+  query_effect_entity(Action, Effect, action_effects:'subject', Subject),
   query_predicate(Effect, Predicate),
-  query_entity(Action, Effect, action_effects:'object', Domain),
+  query_effect_entity(Action, Effect, action_effects:'object', Domain),
   % Assert temporal parts and link via @Predicate
-  assert_fluent_end(Subject, Predicate, Domain), !.
+  fluent_assert_end(Subject, Predicate, Domain), !.
 
 action_project_effect(_, Effect, noop) :-
-  write('Unable to project action effect individual "'), write(Effect), writeln('".'), !.
+  write('Unable to project action effect individual "'), write(Effect), writeln('".'), fail.
 
 
 query_predicate(Effect, Predicate) :-
   rdf_has(Effect, action_effects:'predicate', literal(type(_,Predicate))).
 
-query_entity(Action, Effect, Predicate, Entity) :-
+query_effect_entity(Action, Effect, Predicate, Entity) :-
   rdf_has(Effect, Predicate, literal(type(_,EntityQuery))),
   atomic_list_concat(EntityQueryList, ' ', EntityQuery),
-  query_entity0(Action, null, EntityQueryList, Entity).
+  query_effect_entity0(Action, null, EntityQueryList, Entity).
 
-query_entity0(_, Entity, [], Entity).
+query_effect_entity0(_, Entity, [], Entity).
 
-query_entity0(Action, null, ['?action'|Rest], Entity) :-
-  query_entity0(Action, Action, Rest, Entity), !.
+query_effect_entity0(Action, null, ['?action'|Rest], Entity) :-
+  query_effect_entity0(Action, Action, Rest, Entity), !.
 
-query_entity0(Action, null, [Head|Rest], Entity) :-
-  query_entity0(Action, Head, Rest, Entity), !.
+query_effect_entity0(Action, null, [Head|Rest], Entity) :-
+  query_effect_entity0(Action, Head, Rest, Entity), !.
 
-query_entity0(Action, Parent, [Prop|Rest], Entity) :-
+query_effect_entity0(Action, Parent, [Prop|Rest], Entity) :-
   % FIXME(daniel): What if cardinality > 1 ?
   % TODO(daniel): support fluents here?
   once((rdf_has(Parent, Prop, Child)
-  -> query_entity0(Action, Child, Rest, Entity)
+  -> query_effect_entity0(Action, Child, Rest, Entity)
   ;  (
     write('Unable to project action "'), write(Action), writeln('".')
   ))).
