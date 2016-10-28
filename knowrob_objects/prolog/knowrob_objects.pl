@@ -228,6 +228,12 @@ current_object_pose(Obj, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22,
 % @param Quaternion  list[4] that represents the rotation of the object
 % 
 object_pose_at_time(Obj, Time, Pose) :-
+  atom(Time),
+  time_term(Time, Time_val),
+  object_pose_at_time(Obj, Time_val, Pose, [Time_val,Time_val]).
+
+object_pose_at_time(Obj, Time, Pose) :-
+  number(Time),
   object_pose_at_time(Obj, Time, Pose, [Time,Time]).
 
 object_pose_at_time(Obj, Time, pose([X,Y,Z], [QW,QX,QY,QZ]), Interval) :-

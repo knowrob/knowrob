@@ -3486,7 +3486,8 @@ See also xAxisPredicateOfSystem and yAxisPredicateOfSystem.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ActionOnObject">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PurposefulAction"/>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Object manipulation actions</rdfs:label>
+        <rdfs:comment>A specialization of both Action and PhysicalEvent; the collection of physical events in which some doer acts on an object. Each instance of ActionOnObject is an action in which both the roles of doneBy and objectActedOn (qq.v.) are filled. Examples include someone typing on a keyboard, a dog scratching itself, and a tornado destroying a building. Non-examples include a person dancing and wind blowing.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwOf2ypwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -4633,6 +4634,8 @@ Cf. PolarCoordinateSystem.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ChoppingSomething">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CuttingInPieces"/>
+        <rdfs:comment>The process of cutting something with a chopping tool, using a chopping motion.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVkIY5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -5434,6 +5437,8 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Cracking">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparingFoodOrDrink"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SeparationEvent"/>
+        <rdfs:comment>A collection of change events. In each Cracking, something becomes cracked. I.e., two or more areas of the thing are separated from one another (though perhaps not divided wholly into parts). In order to undergo a Cracking, the objectOfStateChange must be a SolidTangibleThing.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVj44pwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -5532,8 +5537,10 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <!-- http://knowrob.org/kb/knowrob.owl#CuttingAPieceOfFood -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CuttingAPieceOfFood">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CuttingSomething"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CuttingInPieces"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparingFoodOrDrink"/>
+        <rdfs:comment>This is the collection of actions in which the agent cuts food into pieces using an implement, that is, a knife or fork. So, biting off a piece of food is not an instance; see Biting.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVijjJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -5561,6 +5568,8 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CuttingInPieces">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CuttingSomething"/>
+        <rdfs:comment>The collection of all cutting events [CuttingSomething] which are composed of repeated cuttings in which there is a complete separation [Separation_Complete]. As a result, several (or many more) distinct connected objects are created. The pieces may be of similar or vastly dissimilar size. For example, instances of DrillingSomething and SawingSomething have important subevents which are instances of CuttingInPieces, since small pieces (e.g. sawdust) are removed from the larger piece.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwDe-sZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -5577,6 +5586,8 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CuttingSomething">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SeparationEvent"/>
+        <rdfs:comment>A specialization of both HandlingADevice and SeparationEvent. Each instance of CuttingSomething is an event in which some piece of material stuff is cut, whether or not a complete separation of parts occurs. Specializations of CuttingSomething include CuttingNails, Butchering, and CuttingFabric.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVijypwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -6384,6 +6395,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FillingProcess">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FluidFlow-Translation"/>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvViY_JwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -6501,9 +6513,21 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#FluidFlow-Separation -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FluidFlow-Separation">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FluidFlow-Translation"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SeparationEvent"/>
+        <rdfs:comment>The collection of instances of FluidFlow_Translation events in which some part of a portion of fluid moves and separates from that original portion.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4ruFtYZgJhEdyAAADggVbxzQ</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#FluidFlow-Translation -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FluidFlow-Translation">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FluidFlowEvent"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Movement-TranslationEvent"/>
         <rdfs:subClassOf>
             <owl:Restriction>
@@ -6511,6 +6535,26 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
                 <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#LiquidTangibleThing"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FluidFlowEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FluidFlowEvent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#MovementOrShapeChangeEvent"/>
+        <rdfs:comment>A specialization of MovementOrShapeChangeEvent. Each instance of FluidFlowEvent is an event in which a fluid moves (or a group of particles collectively moves). The spatial extent of the fluid may change (i.e. expansion or contraction, see ShapingSomething) and/or they may undergo a MovementEvent such as rotation (e.g. a whirlpool or a tornado) and/or translation. If the fluid undergoes translation, then the event is also an instance of FluidFlow_Translation. Examples of FluidFlow_Translation include `partial&apos; motions such as occurs in rivers flowing, or jets of air blowing. Another kind of example of FluidFlow_Translation is FluidFlow_Complete, in which the fluid moves entirely from the fromLocation and to the toLocation.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvWLc3pwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FluidFlowFromAContainer -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#FluidFlowFromAContainer">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FluidFlow-Translation"/>
+        <rdfs:comment>The collection of instances of FluidFlow_Translation in which some fluid flows from a container.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4ruAHBbpz6RGG_g3meuv8ZHw</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -7726,6 +7770,24 @@ Note that some events, such as an ice cube melting into a small puddle of water,
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#LiquidFlowEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LiquidFlowEvent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#MovementEvent"/>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rYwtjIJEGRaeRSJEekh4fcA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LiquidFlowFromAContainer -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LiquidFlowFromAContainer">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FluidFlowFromAContainer"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LiquidFlowEvent"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#LiquidTangibleThing -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LiquidTangibleThing">
@@ -8378,6 +8440,20 @@ For predicates that relate things to measurable quantities that characterize the
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MovementEvent">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalEvent"/>
+        <rdfs:comment>A specialization of GeneralizedTransfer and MovementOrShapeChangeEvent (qq.v.). This is the most general collection of physical movements. Each instance of MovementEvent is an event in which at least one object (see objectMoving) either translates some distance or moves from one rotational orientation to another, relative to a frame of reference that is not part of the translating/rotating object. The movement in question might be periodic or not, continuous or not. Notable specializations of MovementEvent include Translocation, Movement_Rotation, Movement_Periodic, and MovementProcess.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVkEAZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MovementOrShapeChangeEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MovementOrShapeChangeEvent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalEvent"/>
+        <rdfs:comment>A specialization of PhysicalEvent whose instances include translational or rotational movements of whole objects (see MovementEvent), objects changing shape (see ShapeChangeEvent), as well as events in which salient parts of an object move or change shape in relation to the reference frame of the whole object.
+
+For example, although a ticking grandfather clock is not normally undergoing either a MovementEvent or a ShapeChangeEvent, it can still be said to be moving -- and thus undergoing a MovementOrShapeChangeEvent -- in virtue of the fact that a salient part of the clock, the pendulum, is swinging. (Of course, the pendulum itself is periodically undergoing Movement_Rotation, and the tip of the pendulum is undergoing a Movement_TranslationEvent.) As a negative example, a catatonic person should not be thought of as undergoing any MovementOrShapeChangeEvent. Although blood moves through such a person&apos;s veins, her lungs expand and contract, and so on, these things would not normally be considered salient enough to entail that the person herself was undergoing a movement or shape change event.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvjKor5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -9534,6 +9610,8 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PreparingABeverage">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparingFoodOrDrink"/>
+        <rdfs:comment>Making a batch of something drinkable.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/PreparingABeverage</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -9542,6 +9620,8 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PreparingAFoodItem">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparingFoodOrDrink"/>
+        <rdfs:comment>A specialization of PreparingFoodOrDrink. Each instance of PreparingFoodItem is an event in which a single item of Food is prepared to make it ready to eat. For example, instances of MakingToast, roasting a turkey, or BakingBread.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/PreparingFoodItem</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -9570,6 +9650,8 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
                 <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodOrDrinkOrIngredient"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:comment>A specialization of both PurposefulPhysicalAction and HumanActivity. Each instance of PreparingFoodOrDrink is an event in which an instance of FoodOrDrink is created. An instance of PreparingFoodOrDrink may be an event in which preparation is done `from scratch&apos;, using raw ingredients, or it may be an event in which semi-prepared or `convenience&apos; products (such as cake mixes, margarita mixes, or frozen foods) are used. Typical sub-events (see the predicate subEvents) in instances of PreparingFoodOrDrink include activities commonly performed by cooks and/or bartenders, including instances of ChoppingSomething, CookingFood, BakingFood, or MixingAlcoholicDrinks. Each instance of PreparingFoodOrDrink ends when the item prepared is ready to eat. Notable specializations of PreparingFoodOrDrink include GrillingFood, SteamingFood, and PreparingABeverage.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/2009/04/07/concept/en/PreparingFoodOrDrink</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -10081,6 +10163,14 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Retracting -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Retracting">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#VoluntaryBodyMovement"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#RfidLostPerception -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RfidLostPerception">
@@ -10242,6 +10332,14 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RobovieMR2">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Robot"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RollingDough -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RollingDough">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PreparingFoodOrDrink"/>
     </owl:Class>
     
 
@@ -10518,6 +10616,8 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SeparationEvent">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalEvent"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalTransformationEvent"/>
+        <rdfs:comment>A sub-collection of PhysicalEvent. In each instance of SeparationEvent, an object is cut, scraped, broken, cracked or pulverized, so that part of the object is no longer attached where it once was. Note that the part need not be completely separated from the object; it may still be attached in places. See the specialization Separation_Complete for the case of complete separation.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVilD5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -10685,6 +10785,16 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Skillet">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CookingVessel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SlicingSomething -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SlicingSomething">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CuttingInPieces"/>
+        <rdfs:comment>To cut as if with a knife; the process of cutting something with a slicing tool, using a slicing motion; cutting which breaks one object into two pieces.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjMAJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -10957,6 +11067,8 @@ Note that a fictional or imaginary object (such as Frodo, Captain Queeg, or HAL9
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Spraying">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FluidFlow-Translation"/>
+        <rdfs:comment>Directing a FluidTangibleThing from one place to another by expelling it with force, rather than along a FluidConduit. However, typically, such a conduit is used to direct the fluid to the point where the Spraying begins.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwQtzJZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -11610,6 +11722,16 @@ As the above examples illustrate, it is not the case that everthing that has a t
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#ThrowingAnObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ThrowingAnObject">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#VoluntaryBodyMovement"/>
+        <rdfs:comment>An instance of TemporalObjectType and a specialization of ProjectilePropelling. Each instance of ThrowingAnObject is a VoluntaryBodyMovement in which someone sends something flying through the air by quickly moving or straightening his Arm, and, in the process, releasing the object from his grasp.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/ThrowingAnObject</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#Thumb -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Thumb">
@@ -12005,6 +12127,15 @@ As the above examples illustrate, it is not the case that everthing that has a t
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#UsingAScalpel -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#UsingAScalpel">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CuttingSomething"/>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4r0B7VwieLQdiJ1bdMGLqrkA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#UtilityRoom -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#UtilityRoom">
@@ -12170,6 +12301,8 @@ As the above examples illustrate, it is not the case that everthing that has a t
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#VoluntaryBodyMovement">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PurposefulAction"/>
+        <rdfs:comment>A specialization of both PurposefulPhysicalAction and BodyMovementEvent. Each instance of VoluntaryBodyMovement is an event in which an animal intentionally moves one part of its body relative to another part of its body. Specializations of VoluntaryBodyMovement include Biting, PunchingSomeone, and MakingAGesture.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/VoluntaryBodyMovement</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -12726,6 +12859,10 @@ As the above examples illustrate, it is not the case that everthing that has a t
 
     <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#PurposefulAction">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A specialization of both Action and AtLeastPartiallyMentalEvent. Each instance of PurposefulAction is an action consciously, volitionally, and purposefully done by (see performedBy) at least one actor.</rdfs:comment>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#Reaching">
+        <rdfs:comment>The collection of actions where an agent extends their arm(s) to reach something.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/Reaching</rdfs:seeAlso>
     </rdf:Description>
     
 

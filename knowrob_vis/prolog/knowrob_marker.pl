@@ -822,7 +822,6 @@ show(X, Instant, Properties) :-
   is_list(Properties),
   
   marker_term(X, MarkerTerm),
-writeln(MarkerTerm),
   marker(MarkerTerm, MarkerObj),
   marker_update(MarkerObj,Instant),
   
