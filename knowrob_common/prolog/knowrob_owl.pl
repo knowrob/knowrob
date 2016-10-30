@@ -586,14 +586,14 @@ entity(Entity, EntityClass) :-
 
 entity(Entity, Descr) :-
   var(Descr), !,
-  owl_individual_of(Entity,owl:'Thing'),
+  rdfs_individual_of(Entity,owl:'Thing'),
   once(entity_head(Entity, [A,TypeBase], _, TypeIri)),
   entity_generate(Entity, [A,TypeBase], TypeIri, Descr).
 
 entity(Entity, Descr) :-
   entity_(Entity, Descr),
   % make sure it's an individual and not a class
-  owl_individual_of(Entity, owl:'Thing'),
+  once(owl_individual_of(Entity, owl:'Thing')),
   \+ rdfs_individual_of(Entity, knowrob:'TemporalPart').
 
 %% Time point entities
