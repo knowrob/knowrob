@@ -34,7 +34,9 @@
     [ lowercase/2,
       camelcase/2,
       lower_camelcase/2,
-      atom_ensure_prefix/3
+      atom_ensure_prefix/3,
+      atom_ensure_suffix/3,
+      atom_remove_prefix/3
 ]).
 
 :- use_module(library('clpfd')).
@@ -44,6 +46,15 @@ atom_ensure_prefix(Atom, Prefix, Atom) :-
   sub_atom(Atom, 0, _, _, Prefix), !.
 atom_ensure_prefix(Atom, Prefix, AtomResolved) :-
   atom_concat(Prefix, Atom, AtomResolved).
+
+atom_ensure_suffix(Atom, Suffix, Atom) :-
+  atom_concat(_, Suffix, Atom), !.
+atom_ensure_suffix(Atom, Suffix, AtomResolved) :-
+  atom_concat(Atom, Suffix, AtomResolved).
+
+atom_remove_prefix(Atom, Prefix, AtomOut) :-
+  atom_concat(Prefix, AtomOut, Atom), !.
+atom_remove_prefix(Atom, _, Atom).
 
 lowercase(Upper,Lower) :-
     (ground(Upper);ground(Lower)),
