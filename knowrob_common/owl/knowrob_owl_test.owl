@@ -44,7 +44,7 @@
     
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob_owl_test.owl#VisualPerception_fg45543">
         <rdf:type rdf:resource="&knowrob;VisualPerception"/>
-        <knowrob:perceptionresult rdf:resource="http://knowrob.org/kb/knowrob_owl_test.owl#Designator_fg45543"/>
+        <knowrob:perceptionResult rdf:resource="http://knowrob.org/kb/knowrob_owl_test.owl#Designator_fg45543"/>
     </owl:NamedIndividual>
     
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob_owl_test.owl#Designator_fg45543">
