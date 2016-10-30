@@ -128,7 +128,7 @@ marker_children(Parent, Children) :-
   findall(Child, (
     rdf_reachable(Part, knowrob:describedInMap, Parent),
     (
-      rdf_reachable(Part, knowrob:'properPhysicalParts', Child);
+      rdf_reachable(Part, knowrob:'parts', Child);
       rdf_reachable(Part, srdl2comp:'subComponent', Child);
       rdf_reachable(Part, srdl2comp:'successorInKinematicChain', Child)
     ),
