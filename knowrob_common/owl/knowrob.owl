@@ -346,6 +346,17 @@
         <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#Designator"/>
     </owl:ObjectProperty>
     
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#designatedThing">
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#Designator"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized"/>
+    </owl:ObjectProperty>
+    
+    <computable:PrologProperty rdf:about="http://knowrob.org/kb/knowrob.owl#designatedThing">
+        <computable:command rdf:datatype="http://www.w3.org/2001/XMLSchema#string">knowrob_owl:comp_designatedThing</computable:command>
+        <computable:cache rdf:datatype="http://www.w3.org/2001/XMLSchema#string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="http://www.w3.org/2001/XMLSchema#string">unvisible</computable:visible>
+        <computable:target rdf:resource="http://knowrob.org/kb/knowrob.owl#designatedThing"/>
+    </computable:PrologProperty>
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#detectedAgent -->
