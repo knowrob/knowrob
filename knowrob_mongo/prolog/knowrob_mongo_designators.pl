@@ -453,7 +453,8 @@ desig_list_to_query([Key, Val], Prefix, Str-LispVal) :-
     % FIXME: more generic solution
     not(member(Key, [
       'path_to_cad_model',
-      'described_in_map'
+      'described_in_map',
+      'visually_above'
     ])),
 
     once(lispify_desig(Key, LispKey)),
