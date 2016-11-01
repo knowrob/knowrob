@@ -20,7 +20,7 @@ if [ -n "$1" ]; then
      fi
      IFS=','
    done
-   SCRIPT_FILE="-g $G_ARGS,load_test_files(_) -t ignore(run_tests),halt"
+   SCRIPT_FILE="-g $G_ARGS,load_test_files(_) -t ignore(run_tests([$1])),halt"
 fi
 
 IFS=' '
