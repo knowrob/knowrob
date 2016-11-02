@@ -30,6 +30,7 @@
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob_owl_test.owl#Cup_sfd498th">
         <rdf:type rdf:resource="&knowrob;Cup"/>
         <knowrob:nameString rdf:datatype="&xsd;string">cup_name</knowrob:nameString>  
+        <knowrob:temporalParts rdf:resource="http://knowrob.org/kb/knowrob_owl_test.owl#Cup_sfd498th@t"/>
     </owl:NamedIndividual>
     
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob_owl_test.owl#Refrigerator_fg45543">
@@ -41,6 +42,19 @@
         <knowrob:on-Physical rdf:resource="http://knowrob.org/kb/knowrob_owl_test.owl#Refrigerator_fg45543"/>
     </owl:NamedIndividual>
     
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob_owl_test.owl#VisualPerception_fg45543">
+        <rdf:type rdf:resource="&knowrob;VisualPerception"/>
+        <knowrob:perceptionResult rdf:resource="http://knowrob.org/kb/knowrob_owl_test.owl#Designator_fg45543"/>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob_owl_test.owl#Designator_fg45543">
+        <rdf:type rdf:resource="&knowrob;Designator"/>
+    </owl:NamedIndividual>
+    
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob_owl_test.owl#Cup_sfd498th@t">
+        <rdf:type rdf:resource="&knowrob;TemporalPart"/>
+        <knowrob:designator rdf:resource="http://knowrob.org/kb/knowrob_owl_test.owl#Designator_fg45543"/>
+    </owl:NamedIndividual>
     
 </rdf:RDF>
 

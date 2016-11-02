@@ -550,6 +550,11 @@ quaternion_to_list(Pose, [QW,QX,QY,QZ]) :-
   parse_vector(Quaternion, [QW,QX,QY,QZ]).
 
 
+comp_designatedThing(Designator, Obj) :-
+  rdf_has(TemporalParts, knowrob:designator, Designator),
+  rdf_has(Obj, knowrob:temporalParts, TemporalParts).
+
+
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % methods for querying OWL entities
@@ -577,7 +582,7 @@ concept(_, _) :- fail.
 %    - [a, trajectory, [urdf, 'base_link'], [temporal_extend, [an, interval, [40.0,80.0]]]]
 entity(Entity, EntityClass) :-
   atom(EntityClass),
-  rdfs_individual_of(Entity, EntityClass), !.
+  owl_individual_of(Entity, EntityClass), !.
 
 entity(Entity, Descr) :-
   var(Descr), !,
@@ -588,7 +593,7 @@ entity(Entity, Descr) :-
 entity(Entity, Descr) :-
   entity_(Entity, Descr),
   % make sure it's an individual and not a class
-  rdfs_individual_of(Entity, owl:'Thing'),
+  once(owl_individual_of(Entity, owl:'Thing')),
   \+ rdfs_individual_of(Entity, knowrob:'TemporalPart').
 
 %% Time point entities

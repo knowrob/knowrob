@@ -1945,6 +1945,7 @@
         <srdl2-comp:urdfName>head_mount_kinect2_rgb_optical_frame</srdl2-comp:urdfName>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kinect2_description/meshes/kinect2_origin_on_rgb_optical_frame.stl</knowrob:pathToCadModel>
         <srdl2-comp:material_name rdf:datatype="&xsd;string">Kinect2Grey</srdl2-comp:material_name>
+        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
     </owl:NamedIndividual>
 
 
@@ -2282,6 +2283,7 @@
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy2_left_gripper_guide_joint_finger_left"/>
         <srdl2-comp:material rdf:datatype="&xsd;string">Gazebo/Blue</srdl2-comp:material>
         <srdl2-comp:turnGravityOff rdf:datatype="&xsd;boolean">false</srdl2-comp:turnGravityOff>
+        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
     </owl:NamedIndividual>
 
 
@@ -2546,6 +2548,7 @@
         <srdl2-comp:urdfName>right_arm_adapter_iso50_kms40_frame_in</srdl2-comp:urdfName>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://iai_kms_40_description/meshes/adapter_plate_iso50_kms40_weiss.stl</knowrob:pathToCadModel>
         <srdl2-comp:material_name rdf:datatype="&xsd;string">Grey</srdl2-comp:material_name>
+        <srdl2-comp:mesh_scale rdf:datatype="&xsd;string">0.001 0.001 0.001</srdl2-comp:mesh_scale>
         <srdl2-comp:succeedingJoint rdf:resource="&robot;boxy2_right_arm_adapter_iso50_kms40_trans_frame_out"/>
     </owl:NamedIndividual>
 

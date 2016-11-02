@@ -128,7 +128,7 @@ marker_children(Parent, Children) :-
   findall(Child, (
     rdf_reachable(Part, knowrob:describedInMap, Parent),
     (
-      rdf_reachable(Part, knowrob:'properPhysicalParts', Child);
+      rdf_reachable(Part, knowrob:'parts', Child);
       rdf_reachable(Part, srdl2comp:'subComponent', Child);
       rdf_reachable(Part, srdl2comp:'successorInKinematicChain', Child)
     ),
@@ -849,8 +849,11 @@ show_speech(Agent,Instant) :-
   Z_Offset is Z + 0.2,
   marker(sprite_text('PR2_SPEECH'), MarkerObj),
   marker_color(sprite_text('PR2_SPEECH'), [1.0,1.0,1.0]),
-  marker_text(MarkerObj, Text),
-  marker_translation(MarkerObj, [X,Y,Z_Offset]).
+  marker_translation(MarkerObj, [X,Y,Z_Offset]),
+  % Create styled html text
+  format(atom(TextHtml), '<div style="font-size: 18px; font-style: italic; font-family: Oswald,Arial,Helvetica,sans-serif; text-align: center;">~w</div>', [Text]),
+  marker_text(MarkerObj, TextHtml),
+  marker_scale(MarkerObj, [1.0,1.0,1.0]).
 
 
 highlight(X) :-
