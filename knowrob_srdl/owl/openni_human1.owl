@@ -80,7 +80,7 @@
         <rdf:type rdf:resource="&robot;iai_human"/>
         <srdl2-comp:succeedingLink rdf:resource="&robot;iai_human_torso"/>
 	<srdl2-comp:subComponent rdf:resource="&robot;human_body"/>
-	<srdl2-comp:tfPrefix>human1</srdl2-comp:tfPrefix>
+        <!-- <srdl2-comp:tfPrefix>human1</srdl2-comp:tfPrefix> -->
     </owl:NamedIndividual>
 
     
