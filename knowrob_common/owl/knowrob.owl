@@ -46,6 +46,24 @@
     
 
 
+    <!-- http://knowrob.org/kb/computable.owl#cache -->
+
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/computable.owl#cache"/>
+    
+
+
+    <!-- http://knowrob.org/kb/computable.owl#command -->
+
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/computable.owl#command"/>
+    
+
+
+    <!-- http://knowrob.org/kb/computable.owl#target -->
+
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/computable.owl#target"/>
+    
+
+
     <!-- http://www.w3.org/2000/01/rdf-schema#comment -->
 
     <owl:AnnotationProperty rdf:about="http://www.w3.org/2000/01/rdf-schema#comment"/>
@@ -340,23 +358,21 @@
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#designatedThing -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#designatedThing">
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#Designator"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#designator -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#designator">
         <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#Designator"/>
     </owl:ObjectProperty>
     
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#designatedThing">
-        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#Designator"/>
-        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized"/>
-    </owl:ObjectProperty>
-    
-    <computable:PrologProperty rdf:about="http://knowrob.org/kb/knowrob.owl#designatedThing">
-        <computable:command rdf:datatype="http://www.w3.org/2001/XMLSchema#string">knowrob_owl:comp_designatedThing</computable:command>
-        <computable:cache rdf:datatype="http://www.w3.org/2001/XMLSchema#string">dontCache</computable:cache>
-        <computable:visible rdf:datatype="http://www.w3.org/2001/XMLSchema#string">unvisible</computable:visible>
-        <computable:target rdf:resource="http://knowrob.org/kb/knowrob.owl#designatedThing"/>
-    </computable:PrologProperty>
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#detectedAgent -->
@@ -2334,6 +2350,82 @@ There are various specializations of coordinateValuePredicateOfSystem currently 
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#lightConeAngle -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightConeAngle">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#lightProperty"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#lightDirection -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightDirection">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#lightProperty"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#lightIntensity -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightIntensity">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#lightProperty"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#lightProperty -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightProperty">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#lightSpotExponent -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightSpotExponent">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#lightProperty"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#lightType -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightType">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#lightProperty"/>
+        <rdfs:range>
+            <rdfs:Datatype>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+                        <rdf:first>directional</rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+                                <rdf:first>point</rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+                                        <rdf:first>spot</rdf:first>
+                                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdfs:Datatype>
+        </rdfs:range>
+        <rdfs:comment>One of &apos;spot&apos;, &apos;point&apos;, or &apos;directional&apos;. Corresponds to different light types used in Computer Graphics.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#linkToImageFile -->
 
     <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#linkToImageFile">
@@ -3465,6 +3557,12 @@ See also xAxisPredicateOfSystem and yAxisPredicateOfSystem.</rdfs:comment>
     
 
 
+    <!-- http://knowrob.org/kb/computable.owl#PrologProperty -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/computable.owl#PrologProperty"/>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#AboveGroundLevelInAConstruction -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AboveGroundLevelInAConstruction">
@@ -3738,6 +3836,8 @@ See also xAxisPredicateOfSystem and yAxisPredicateOfSystem.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Artifact">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InanimateObject-NonNatural"/>
+        <rdfs:comment>A specialization of InanimateObject. Each instance of Artifact is an at least partially tangible thing which was intentionally created by an Agent_PartiallyTangible (or a group of Agent_PartiallyTangibles working together) to serve some purpose or perform some function. In order to create an instance of Artifact, it is not necessary that an Agent_PartiallyTangible create the matter out of which the Artifact is composed; rather, an Agent_PartiallyTangible can create an instance of Artifact by assembling or modifying existing matter. Examples of Artifacts include a wooden flute that&apos;s been whittled from a tree branch, a sawhorse that&apos;s been put together out of boards and nails, and a coin that&apos;s been minted by embossing or by melting liquid silver into a mold. In addition to the obvious human artifacts (buildings, tools, textiles, power lines), the collection Artifact also includes certain sorts of things made by Animals, such as bird nests, termite mounds, and beaver dams. Artifacts without any tangible parts are excluded from the collection Artifact; they are included in the collection Artifact_Intangible.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVkH_ZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -3773,6 +3873,16 @@ See also xAxisPredicateOfSystem and yAxisPredicateOfSystem.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AuditoriumRoom">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PersonAssemblyRoom"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#AutomotiveLight -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AutomotiveLight">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice"/>
+        <rdfs:comment>The collection of all car lights. A type of ElectricalLightingDevice and AutoPart. The collection AutomotiveLight is a #$ManufacturedGoodsType, a SpatiallyDisjointObjectType, and an ArtifactTypeByGenericCategory.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvViw95wpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -6152,6 +6262,16 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#ElectricLamp -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ElectricLamp">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice"/>
+        <rdfs:comment>The collection for all kinds of freestanding (easily moveable) electrical lamps.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjeTpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#ElectricMixer -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ElectricMixer">
@@ -6164,6 +6284,8 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ElectricalComponent">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalDevice"/>
+        <rdfs:comment>A specialization of both ElectricalDevice and PhysicalPartOfObject. Each instance of ElectricalComponent is an ElectricalDevice which is normally considered to be a part of some larger, more clearly distinguished PhysicalDevice (for example, clearly distinguished in the sense that it is sold or moved as a unit). Each instance of ElectricalComponent must be connected with other parts in order to perform its primaryFunction.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjUFJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -6172,6 +6294,8 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ElectricalDevice">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PoweredDevice"/>
+        <rdfs:comment>A specialization of PoweredDevice. Each instance of ElectricalDevice is a device that requires an input of electrical current (as its energySourceForEvent) in order to perform its intended function(s). Instances of ElectricalDevice include both complex devices (for example, instances of the collections StereoSystem or Computer) and simpler ones (for example, instances of the collection ElectricalComponent).</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjUUZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -6191,6 +6315,8 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalDevice"/>
+        <rdfs:comment>Devices that provide light by transforming electrical current into light energy.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjZQZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -6258,6 +6384,7 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#EnduringThing-Localized">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A specialization of both SpatialThing_Localized and SomethingExisting (qq.v.). Each instance of EnduringThing_Localized is a spatial enduring thing at which an event can occur or a situation can obtain. Positive examples include planets, the borders between countries, human beings, rocks, and atoms. Negative example include situations, events, abstract objects, and regions of space that exclusively act as possible locations for other spatial objects (see SpaceRegion). An important specialization of EnduringThing_Localized is Place (q.v.). The salient distinction between places (instances of Place) and locations (instances of EnduringThing_Localized) is that places are assumed to have relatively permanent locations, whereas locations need not have permanent locations. Thus, from the perspective of someone standing on a beach, the crest of a breaking wave can be a location at which foaming is occuring (thus an EnduringThing_Localized), but it cannot be such a place (i.e. it cannot be an instance of Place).</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4ro3lluGJHQdiVxrZReHS-jQ</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -6452,6 +6579,16 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ConstructionArtifact"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Place"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Place-NonAgent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Flashlight -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Flashlight">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice"/>
+        <rdfs:comment>A small portable electric lamp powered by batteries.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjc1pwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -7346,6 +7483,8 @@ Specializations of HomogeneousSpaceRegion include SpaceChunk, Surface, Line, and
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#InanimateObject">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#EnduringThing-Localized"/>
+        <rdfs:comment>A subcollection of PartiallyTangible. Each instance of InanimateObject is an (at least partly) tangible thing that is not currently a living structure. Things that were never alive, dead organisms, and dead (or completely non-functioning) organism parts are included in this collection. Examples: YaleUniversity, a piece of Meat, a dead armadillo, the StatueOfLiberty, and a pile of Sawdust. Two important specializations of this collection are InanimateObject_Natural and InanimateObject_NonNatural.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVkF6pwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -7354,6 +7493,14 @@ Specializations of HomogeneousSpaceRegion include SpaceChunk, Surface, Line, and
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#InanimateObject-NonNatural">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InanimateObject"/>
+        <rdfs:comment>A collection of tangible things. An instance of InanimateObject_NonNatural is a tangible which was created during a PurposefulAction by an Agent_PartiallyTangible (or a group of Agent_PartiallyTangibles working together) whether or not that creation was intended. If the creation was intended the thing created is an instance of the more specific collection, Artifact.
+
+Let&apos;s consider some positive and negative examples.
+
+In addition to the obvious human Artifacts (buildings, tools, textiles, power lines), this collection includes Artifacts made by NonPersonAnimals, such as bird nests, termite mounds, and beaver dams. By-products (see byProducts) of PurposefulActions, such as wood chips created when chopping down a tree and slag created when obtaining metal from MineralOre, are instances of InanimateObject_NonNatural but not of Artifact. For more details on what is included in the concept Artifact, examine its comment.
+
+Negative examples include bodily excretions (see ExcretionSubstance), most instances of tracks made while walking through mud or snow (both being instances of InanimateObject_Natural, and spoken words (being intangible).</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwNwL8ZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -7372,6 +7519,15 @@ Specializations of HomogeneousSpaceRegion include SpaceChunk, Surface, Line, and
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#IndexFinger">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Finger"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#IndicatorLight -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#IndicatorLight">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice"/>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjcYZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -7615,6 +7771,15 @@ Note that some events, such as an ice cube melting into a small puddle of water,
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#Lamp-Hanging -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Lamp-Hanging">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice"/>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rv3vm3ZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#LargeDiameter -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LargeDiameter">
@@ -7760,6 +7925,8 @@ Note that some events, such as an ice cube melting into a small puddle of water,
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LightFixture">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice"/>
+        <rdfs:comment>Light fixtures are lights that are permanently attached as parts of rooms or buildings. e.g. Flourescent light fixtures in office building ceilings.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjvUpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -7769,6 +7936,8 @@ Note that some events, such as an ice cube melting into a small puddle of water,
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Lightbulb">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalComponent"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice"/>
+        <rdfs:comment>A bulb of glass or quartz enclosing material that incandesces or fluoresces when provided with current, thus generating light.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rMgnAuqUkEd2AAABQjYGu0g</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -9204,6 +9373,8 @@ For example, although a ticking grandfather clock is not normally undergoing eit
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PhysicalDevice">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Artifact"/>
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#HumanScaleObject"/>
+        <rdfs:comment>A specialization of SolidTangibleArtifact and ObjectWithUse. Each instance of PhysicalDevice is an artifact with a relatively rigid, set shape, designed for a specific use or to perform a specific function. Specializations of PhysicalDevice thus include (among others) RoadVehicle, Motorboat, HandTool, and PlumbingFixture. Artifacts which have a specific use or function, but which do not have a relatively rigid, set shape are not instances of PhysicalDevice; for this reason, neither GasolineFuel nor AntiFreeze are specializations of PhysicalDevice.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjHL5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -9571,6 +9742,8 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PoweredDevice">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalDevice"/>
+        <rdfs:comment>A specialization of PhysicalDevice. Each instance of PoweredDevice is a device that requires some power input in order to perform its intended function(s). The power supplied might be muscle power, kinetic energy, electricity, fuel-generated, and so on. Note that PoweredDevice and NonPoweredDevice partition the collection PhysicalDevice.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvViUcpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -10985,6 +11158,7 @@ For more on spatial location and occupancy, see locatedAtAbsolute and its instan
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SpatialThing">
         <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A specialization of Individual. The collection of all things that have a spatial extent or location relative to some other SpatialThing or in some embedding space. Note that to say that an entity is a member of this collection is to remain agnostic about two issues. First, a SpatialThing may be PartiallyTangible (e.g. Texas-State) or wholly Intangible (e.g. ArcticCircle or a line mentioned in a geometric theorem). Second, although we do insist on location relative to another spatial thing or in some embedding space, a SpatialThing might or might not be located in the actual physical universe. It is far from clear that all SpatialThings are so located: an ideal platonic circle or a trajectory through the phase space of some physical system (e.g.) might not be. If the intent is to imply location in the empirically observable cosmos, the user should employ this collection&apos;s specialization, SpatialThing-Localized.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjpUZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -10998,6 +11172,7 @@ For more on spatial location and occupancy, see locatedAtAbsolute and its instan
 Examples of spatially-localized things include all PartiallyTangible things, such as trees and ships, as well as certain Intangible spatial things, like the EarthsEquator. Also included are those events that can be pinned-down to specific places (see Event-Localized), and thus all PhysicalEvents. Excluded from this collection are any SpatialThings that are not localized, such as -- arguably -- purely abstract geometrical figures (e.g. a Platonic sphere).
 
 Note that a fictional or imaginary object (such as Frodo, Captain Queeg, or HAL9000-TheComputer) is typically localized with respect to the universe of the fictional/imagnary context in which it is found, and so is an instance of SpatialThing-Localized with respect to that context.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwS68M5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
@@ -11274,6 +11449,14 @@ Note that a fictional or imaginary object (such as Frodo, Captain Queeg, or HAL9
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Street">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Place"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#StreetLight -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#StreetLight">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice"/>
     </owl:Class>
     
 
@@ -12854,6 +13037,15 @@ As the above examples illustrate, it is not the case that everthing that has a t
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#designatedThing -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#designatedThing">
+        <rdf:type rdf:resource="http://knowrob.org/kb/computable.owl#PrologProperty"/>
+        <computable:visible rdf:datatype="http://www.w3.org/2001/XMLSchema#string">unvisible</computable:visible>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.w3.org/2002/07/owl#Thing -->
 
     <owl:NamedIndividual rdf:about="http://www.w3.org/2002/07/owl#Thing"/>
@@ -12874,6 +13066,11 @@ As the above examples illustrate, it is not the case that everthing that has a t
     <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#Reaching">
         <rdfs:comment>The collection of actions where an agent extends their arm(s) to reach something.</rdfs:comment>
         <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/Reaching</rdfs:seeAlso>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://knowrob.org/kb/knowrob.owl#designatedThing">
+        <computable:cache rdf:datatype="http://www.w3.org/2001/XMLSchema#string">dontCache</computable:cache>
+        <computable:command rdf:datatype="http://www.w3.org/2001/XMLSchema#string">knowrob_owl:comp_designatedThing</computable:command>
+        <computable:target rdf:resource="http://knowrob.org/kb/knowrob.owl#designatedThing"/>
     </rdf:Description>
     
 
