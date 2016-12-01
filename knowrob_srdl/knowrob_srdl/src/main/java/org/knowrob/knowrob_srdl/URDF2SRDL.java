@@ -780,15 +780,24 @@ public class URDF2SRDL {
 		
 		TopologicalOrderIterator<String,DefaultEdge> toit;
 		toit = new TopologicalOrderIterator<String,DefaultEdge>(graph);
-		String rootLinkName = toit.next();
+		String rootLinkName = null;
+    if (toit.hasNext()) {
+      rootLinkName = toit.next();
+    }
 
 		Element rootLink = null;
-		for (Element link : linkList) {
-			if (link.getAttribute("name").equals(rootLinkName)) {
-				rootLink = link;
-				break;
-			}
-		}
+
+    if (rootLinkName == null && linkList.size() > 0) {
+      // no joint in robot
+      rootLink = linkList.get(0);
+    } else {
+      for (Element link : linkList) {
+        if (link.getAttribute("name").equals(rootLinkName)) {
+          rootLink = link;
+          break;
+        }
+      }
+    }
 		
 		if (rootLink == null) {
 			throw new RuntimeException("Root joint's parent '" + rootLinkName + "' doesn't exist");
