@@ -206,7 +206,7 @@ export_abox(Individual, File) :-
   sort([Individual|RelatedInstances], Sorted),
   export_to_owl(Sorted, File), !.
 
-export_abox(Dir, Instance) :- export_abox_separated_(Dir, Instance).
+export_abox(Dir, Instance) :- export_abox_separated(Dir, Instance).
 
 export_abox_separated(Dir, Individual) :-
   % query ABOX

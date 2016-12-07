@@ -177,7 +177,7 @@
 %
 visualisation_server :-
   visualisation_server(_).
-  
+
 visualisation_server(WebServer) :-
     (\+ current_predicate(v_server, _)),
     jpl_new('org.knowrob.vis.WebServer', [], WebServer),

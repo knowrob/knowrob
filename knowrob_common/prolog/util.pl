@@ -51,8 +51,8 @@
       extract_values/3,
       print_info/2,
       string_tokens/2,
-      prolog_pack_path/1,
-      prolog_pack_install/2,
+      %prolog_pack_path/1,
+      %prolog_pack_install/2,
       lists_equal/2,
       time_term/2,
       time_between/3,
@@ -493,24 +493,24 @@ path_split(Path, PathList) :-
   path_delimiter(Delimiter),
   atomic_list_concat(PathList, Delimiter, Path).
 
-prolog_pack_path(Path) :-
-  getenv('USER', User),
-  atomic_list_concat(['/home',User,lib,swipl,pack], '/', Path).
+%prolog_pack_path(Path) :-
+  %getenv('USER', User),
+  %atomic_list_concat(['/home',User,lib,swipl,pack], '/', Path).
 
 %% prolog_pack_install(+PackName, +URL)
 %
 % Download and install a Prolog package.
 % Do nothing if pack is allready installed.
 %
-prolog_pack_install(PackName, URL) :-
-  prolog_pack_path(PackPath),
-  mkdir(PackPath),
-  ( pack_property(delay, version(_));
-    pack_install(PackName, [interactive(false),
-      url(URL),
-      package_directory(PackPath),
-      upgrade(true), silent(true)
-    ]) ), !.
+%prolog_pack_install(PackName, URL) :-
+  %prolog_pack_path(PackPath),
+  %mkdir(PackPath),
+  %( pack_property(delay, version(_));
+    %pack_install(PackName, [interactive(false),
+      %url(URL),
+      %package_directory(PackPath),
+      %upgrade(true), silent(true)
+    %]) ), !.
   
 %% mkdir(+Dir)
 %
