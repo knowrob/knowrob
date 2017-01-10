@@ -263,22 +263,25 @@ rdfs_computable_instance_of(Instance, Class) :-
 rdfs_computable_instance_of(Instance, Class) :-
   nonvar(Class),
   var(Instance),
-  ((findall(I, rdfs_computable_sql_instance_of(I,    Class), Is), member(Instance, Is)) ;
-   (findall(I, rdfs_computable_prolog_instance_of(I, Class), Is), member(Instance, Is))).
+  findall(I, rdfs_computable_prolog_instance_of(I, Class), Is), member(Instance, Is).
+%  ((findall(I, rdfs_computable_sql_instance_of(I,    Class), Is), member(Instance, Is)) ;
+%   (findall(I, rdfs_computable_prolog_instance_of(I, Class), Is), member(Instance, Is))).
 
 % determine classes
 rdfs_computable_instance_of(Instance, Class) :-
   var(Class),
   nonvar(Instance),
-  ((findall(C, rdfs_computable_sql_instance_of(Instance,    C), Cs), member(Class, Cs));
-   (findall(C, rdfs_computable_prolog_instance_of(Instance, C), Cs), member(Class, Cs))).
+  findall(C, rdfs_computable_prolog_instance_of(Instance, C), Cs), member(Class, Cs).
+%  ((findall(C, rdfs_computable_sql_instance_of(Instance,    C), Cs), member(Class, Cs));
+%   (findall(C, rdfs_computable_prolog_instance_of(Instance, C), Cs), member(Class, Cs))).
 
 % check type
 rdfs_computable_instance_of(Instance, Class) :-
   nonvar(Class),
   nonvar(Instance),
-  ((findall(C, rdfs_computable_sql_instance_of(Instance,    C), Cs), member(Cls, Cs), rdfs_subclass_of(Cls, Class));
-   (findall(C, rdfs_computable_prolog_instance_of(Instance, C), Cs), member(Cls, Cs), rdfs_subclass_of(Cls, Class))).
+  findall(C, rdfs_computable_prolog_instance_of(Instance, C), Cs), member(Cls, Cs), rdfs_subclass_of(Cls, Class).
+%  ((findall(C, rdfs_computable_sql_instance_of(Instance,    C), Cs), member(Cls, Cs), rdfs_subclass_of(Cls, Class));
+%   (findall(C, rdfs_computable_prolog_instance_of(Instance, C), Cs), member(Cls, Cs), rdfs_subclass_of(Cls, Class))).
 
 
 
