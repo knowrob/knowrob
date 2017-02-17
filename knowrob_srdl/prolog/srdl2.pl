@@ -33,11 +33,15 @@
 :- module(srdl2,
     [
         action_feasible_on_robot/2,
+        action_feasible_on_robot/3,
         missing_for_action/4,
         missing_cap_for_action/3,
         required_cap_for_action/2,
         missing_comp_for_action/3,
         required_comp_for_action/2,
+        unsatisfied_restr_on_robot/3,
+        unsatisfied_restr_on_robot/4,
+        restricted_action_on_robot/3,
         robot_tf_prefix/2,
         robot_part_tf_prefix/2,
         cap_available_on_robot/2,
@@ -68,6 +72,9 @@
         required_cap_for_action(r,r),
         missing_comp_for_action(r,r,r),
         required_comp_for_action(r,r),
+        unsatisfied_restr_on_robot(r,r,r),
+        unsatisfied_restr_on_robot(r,r,r,r),
+        restricted_action_on_robot(r,r,r),
         robot_tf_prefix(r,r),
         robot_part_tf_prefix(r,r),
         cap_available_on_robot(r,r),
@@ -115,25 +122,25 @@ robot_tf_prefix(_, '/').
 % Actions
 
 %% action_feasible_on_robot(?Action, ?Robot).
-%% action_feasible_on_robot(?Action, ?ActionDesignator, ?Robot).
+%% action_feasible_on_robot(?Action, ?ActionDescription, ?Robot).
 %
 % Verifies that an action is feasible on the given robot by making
 % sure that neither capabilites nor components are missing.
 %
-% The 3-argument variant also checks the actionability of action parameters
-% specified in ActionDesignator.
+% The 3-argument variant also checks restrictions on action parameters
+% with the action instance described in ActionDescription.
 %
 % @param Action   Action class to be checked
-% @param ActionDesignator   Designator that includes some action parameters
+% @param ActionDescription   Designator that includes some action parameters
 % @param Robot   Robot instance to be checked
 % 
-action_feasible_on_robot(Action, Robot) :-
-  \+ missing_cap_for_action(Action, Robot, _),
-  \+ missing_comp_for_action(Action, Robot, _).
-action_feasible_on_robot(Action, ActionDesignator, Robot) :-
-  action_feasible_on_robot(Action, Robot),
-  \+ missing_actionability_for_designator(Action, ActionDesignator, Robot, _).
+action_feasible_on_robot(ActionConcept, Robot) :-
+  \+ missing_cap_for_action(ActionConcept, Robot, _),
+  \+ missing_comp_for_action(ActionConcept, Robot, _).
 
+action_feasible_on_robot(ActionConcept, ActionDescription, Robot) :-
+  action_feasible_on_robot(ActionConcept, Robot),
+  unsatisfied_restr_on_robot(ActionDescription, Robot, [], ActionConcept)
 
 %% missing_for_action(Action, Robot, MissingCaps, MissingComps).
 %
@@ -356,16 +363,62 @@ plan_subevents_recursive(Plan, SubAction) :-
     plan_subevents_recursive(Sub, SubAction).
 
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% Actionability
-
-%% missing_actionability_for_designator(+Action, +ActionDesignator, +Robot) is nondet.
+%% unsatisfied_restr_on_robot(+ActionDescription, +Robot, ?Unsatisfied) is nondet.
+%% unsatisfied_restr_on_robot(+ActionDescription, +Robot, ?Unsatisfied, ?ActionConcept) is nondet.
+%% unsatisfied_restr_on_robot(+ActionInstance, +Robot, ?Unsatisfied) is nondet.
+%% unsatisfied_restr_on_robot(+ActionInstance, +Robot, ?Unsatisfied, ?ActionConcept) is nondet.
 %
-% @param Action   Action class to be checked
-% @param ActionDesignator  Action designator to be checked
-% @param Robot   Robot instance to be checked
+% Lists all unsatisfied restrictions on given action class or individual.
 %
-missing_actionability_for_designator(Action, ActionDesignator, Robot) :-
-  fail.
+% @param ActionInstance A instance of knowrob:Action
+% @param ActionDescription An entity description
+% @param Robot An individual of knowrob:Robot
+% @param Unsatisfied List of unsatidfied restrictions
+% @param ActionConcept A specialization of knowrob:Action
+%
+unsatisfied_restr_on_robot(ActionDescription, Robot, Unsatisfied) :-
+  unsatisfied_restr_on_robot(ActionDescription, Robot, Unsatisfied, _).
+unsatisfied_restr_on_robot(ActionDescription, Robot, Unsatisfied, ActionConcept) :-
+  % generate temporary OWL individual in order to perform standard OWL reasoning
+  entity_description(ActionDescription), % FIXME: not existing!
+  entity_assert(ActionInstance, ActionDescription),
+  unsatisfied_restr_on_robot(ActionInstance, Robot, Unsatisfied, ActionConcept)
+  entity_retract(ActionInstance), % FIXME: not existing!
+  !.
 
+unsatisfied_restr_on_robot(ActionInstance, Robot, Unsatisfied, ActionConcept) :-
+  owl_individual_of(ActionInstance, knowrob:'Action'),
+  % make sure the instantiation satisfies all actionability restrictions
+  ground(ActionConcept)
+  ->
+  findall(R, (
+    restricted_action_on_robot(ActionConcept, Robot, R), 
+    \+ owl_individual_of(ActionInstance, R)
+  ), Unsatisfied) ;
+  findall(R, (
+    restricted_action_on_robot(ActionInstance, Robot, R), 
+    \+ owl_individual_of(ActionInstance, R)
+  ), Unsatisfied).
 
+%% restricted_action_on_robot(+ActionConcept, +Robot, ?RestrictedAction) is nondet.
+%% restricted_action_on_robot(+ActionInstance, +Robot, ?RestrictedAction) is nondet.
+%
+% Lists all restrictions imposed on given action class or individual.
+%
+% @param ActionConcept A specialization of knowrob:Action
+% @param ActionInstance A instance of knowrob:Action
+% @param Robot An individual of knowrob:Robot
+% @param RestrictedAction A restriction imposed on first ActionConcept/ActionInstance
+%
+restricted_action_on_robot(ActionConcept, Robot, RestrictedAction) :-
+    rdfs_individual_of(ActionConcept, owl:'Class'), !,
+    class_properties(Robot, knowrob:'actionable', RestrictedAction),
+    owl_subclass_of(ActionConcept, RestrictedAction).
+
+restricted_action_on_robot(ActionInstance, Robot, RestrictedAction) :-
+    owl_individual_of(ActionInstance, knowrob:'Action'), !,
+    class_properties(Robot, knowrob:'actionable', RestrictedAction),
+    once((
+      owl_individual_of(ActionInstance, ActionConcept),
+      owl_subclass_of(ActionConcept, RestrictedAction)
+    )).

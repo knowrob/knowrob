@@ -42,6 +42,8 @@ test(sub_component) :-
 test(comp_type_available) :-
   comp_type_available(pr2:'PR2Robot1', srdl2comp:'Camera'),!.
 
+test(comp_unknown_action) :-
+  \+ action_feasible_on_robot(knowrob:'leainhfoiezr8hfddef8ez3radsfij',  pr2:'PR2Robot1'),!.
 
 test(cap_available_on_robot) :-
   cap_available_on_robot(srdl2cap:'GraspingCapability', pr2:'PR2Robot1'),!.
@@ -54,6 +56,7 @@ test(required_comp_for_action) :-
 
 test(missing_comp_for_action) :-
   \+ missing_comp_for_action(act:'MakingPancakes', pr2:'PR2Robot1', _),
+  % FIXME(daniel) below seems semantically wrong because the arm is _not_ a missing component.
   missing_comp_for_action(act:'MakingPancakes', pr2:'PR2Robt1', srdl2comp:'ArmComponent'),
   missing_comp_for_action(act:'MakingPancakes', pr2:'PR2Robt1', srdl2comp:'ArmMotionController'),!.
 
