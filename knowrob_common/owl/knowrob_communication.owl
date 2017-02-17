@@ -1,0 +1,735 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://knowrob.org/kb/knowrob_communication.owl#"
+     xml:base="http://knowrob.org/kb/knowrob_communication.owl"
+     xmlns:qudt="http://qudt.org/schema/qudt#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:computable="http://knowrob.org/kb/computable.owl#">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/knowrob_communication.owl">
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_common.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#binding -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#binding"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#communicationToken -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#communicationToken">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Communicating"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationBearingThing"/>
+        <rdfs:comment>A binary predicate which relates instances of Communicating to instances of InformationBearingThing. (communicationToken COM IBT) means that IBT carries the information transferred in COM and was used to convey that information in COM. IBT may be a tangible object (e.g., a newspaper), a sound (e.g., a voice), an image (e.g., from a television broadcast), or even a touch (e.g., a staying hand).</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjvZpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#communicatorOfInfo -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#communicatorOfInfo">
+        <rdfs:comment>(communicatorOfInfo COMMUNICATION AGENT) says that AGENT communicates information during the course of the instance of Communicating, COMMUNICATION. This means that there exists at least one sub-event (c.f., subEvents) SUB-EVENT of COMMUNICATION that is an instance of InformationTransferPhysicalEvent in which AGENT plays the senderOfInfo role.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rt4Hz8rsOQdiUO4DMdSL3eA</rdfs:seeAlso>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#infoCommunicatedTo -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#infoCommunicatedTo">
+        <rdfs:comment>(infoCommunicatedTo COMMUNICATION AGENT) says that AGENT receives information communicated during COMMUNICATION, an instance of Communicating. This means that there exists a sub-event (c.f., subEvents) SUB-EVENT of COMMUNICATION that is an instance of InformationTransferPhysicalEvent, in which AGENT plays the recipientOfInfo role.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rpBwKLLsPQdiZUP7Z9IOkww</rdfs:seeAlso>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#infoTransferred -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#infoTransferred">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#transferredThing"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#AspatialInformationStore"/>
+        <rdfs:comment>A BinaryRolePredicate that is used to specify some or all of the meaningful content of a particular transferral of information (see InformationTransferEvent). (infoTransferred TRANSFER INFO) means that INFO is information (see AspatialInformationStore) that is transferred due to TRANSFER. INFO originates (see informationOrigin) from some agent or InformationBearingThing (&quot;IBT&quot;) and, after TRANSFER, is had by another agent or is contained in another IBT (see informationDestination); INFO may persist in the origin as well. For example, when I read the front page of the newspaper, some information about current world events is transferred from the newspaper to me.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvWUq7JwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#queryBinding -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#queryBinding">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#binding"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Querying"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#QueryBinding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#recipientOfInfo -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#recipientOfInfo">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationTransferEvent"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#Agent-Generic"/>
+        <rdfs:comment>A binary predicate which relates instances of InformationTransferEvent to instances of Agent_Generic. (recipientOfInfo TRANSFER RECIP) means that the information transferred in the InformationTransferEvent TRANSFER is received by the Agent_Generic RECIP. After TRANSFER, RECIP understands or conceives of the information transferred in TRANSFER; Cyc does NOT conclude that s/he knows the information or counts it among his/her beliefs, because RECIP might not believe it. In receiving the information transferred, RECIP may be acting intentionally or unintentionally. Note that if the communication event used in the first argument slot of this predicate is a CommunicationAct_Single and the recipient of the information was intended to receive the information by the originator of the communication event (see communicationTarget) then recipientOfInfo_Intended should probably be used instead of recipientOfInfo. See also infoTransferred, and the slightly orthogonal intendedAudience (which relates instances of InformationBearingThing to instances of Agent_Generic).</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/2009/04/07/concept/en/recipientOfInfo</rdfs:seeAlso>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#senderOfInfo -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#senderOfInfo">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationTransferEvent"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#Agent-Generic"/>
+        <rdfs:comment>The predicate senderOfInfo is used to indicate the sending agent in a particular transfer of information. (senderOfInfo TRANSFER SENDER) means that SENDER is an agent who is the source of information transferred in the InformationTransferEvent TRANSFER. At the time of TRANSFER (and typically for some period beforehand), SENDER conceives of the information transferred in TRANSFER. It&apos;s not the case that SENDER necessarily knows the &apos;information&apos; or has it among his/her beliefs (see the predicates knows and beliefs), because TRANSFER could involve lying (e.g., GeorgeWashington&apos;s telling his father, &apos;I didn&apos;t chop down the cherry tree&apos;). Note that (senderOfInfo TRANSFER SENDER) implies that SENDER performs TRANSFER intentionally, in the sense that there is some other agent (related to TRANSFER via communicationTarget) that SENDER is attempting to transfer information to via TRANSFER. Of course, SENDER may or may not be successful in transferring that information to the other agent.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/2009/04/07/concept/en/senderOfInfo</rdfs:seeAlso>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#subAction -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#subAction"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#transferredThing -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#transferredThing"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#variableBinding -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#variableBinding">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#binding"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#QueryBinding"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#VariableBinding"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#variableValue -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#variableValue">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#VariableBinding"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#AccessingAnIBT -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AccessingAnIBT">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationTransferEvent"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PurposefulAction"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TransferIn"/>
+        <rdfs:comment>A specialization of both InformationTransferEvent and PurposefulAction. Each instance of AccessingAnIBT is an action by which an agent accesses the content of some instance(s) of InformationBearingThing. Examples include (getting information from) reading a newspaper, watching a film, listening to a musical performance, decoding an encrypted message, seeing a traffic police officer wave one on, or hearing one&apos;s roommate ask one to take out the trash.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjWH5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Acknowledging-CommunicationAct -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Acknowledging-CommunicationAct">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CommunicationAct-Single"/>
+        <rdfs:comment>A specialization of CommunicationAct_Single. Each instance of this collection is an action that conveys information to the effect that the performing agent has received some prior CommunicationAct_Single (which was performed by another agent). An example is Joan saying, `I hear you&apos; in response to Bette&apos;s exclaiming, `What a dump!&apos; Note that acknowledging can be implicit; for example, one can acknowledge a question by answering it.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVkMQZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Advice-IBT -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Advice-IBT">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationBearingThing"/>
+        <rdfs:comment>The collection of all InformationBearingThings whose information content is advice. An Advice_IBT is the communicationToken in any act of Advising.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rv16ko5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Advising -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Advising">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Informing"/>
+        <rdfs:comment>A collection of events, in which an IntelligentAgent A tells another IntelligentAgent B what A thinks B should do, especially when A knows more than B does about something.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvV-_fJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Agent-Generic -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Agent-Generic"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#AspatialInformationStore -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AspatialInformationStore"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#AudioCommunicating -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#AudioCommunicating">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Communicating"/>
+        <rdfs:comment>A specialization of Communicating. Each instance of AudioCommunicating is a transmission of sound-borne information between two (or more) agents. Specializations of AudioCommunicating include SpokenCommunicating and MusicalCommunicating.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjJB5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Broadcasting -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Broadcasting">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#MediaTransmitting"/>
+        <rdfs:comment>A collection of Events; a subset of MediaTransmitting. In every Broadcasting event, an InformationBearingWavePropagation is converted into radio signals, which are transmitted by a BroadcastAntenna and received by a ReceivingAntenna. Subsets of Broadcasting are RadioBroadcasting and TVBroadcasting.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rv0UWi5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CellularTelephone -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CellularTelephone">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Telephone"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Communicating -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Communicating">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalEvent"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PurposefulAction"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subAction"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationTransferEvent"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A specialization of PurposefulAction and characterized by one or more InformationTransferEvent sub-events. Each instance of Communicating is an event in which the transfer of information between or among agents is a focal action; communicating is the main purpose and/or goal in the event. That may be contrasted with events which involve communication but wherein the focus is different, e.g., playing cards (wherein the progressive actions -- and winning -- of the game are focal). Since Communicating is a specialization of PurposefulAction, each Communicating event must be intentional on the part of the communicatorOfInfo; it may or may not be intentional on the part of the agent playing the infoCommunicatedTo role. Hence, a speaker on a soapbox haranguing an indifferent crowd is performing an instance of Communicating. In contrast, Juliet soliloquizing on her balcony, unaware that Romeo is listening to her, is not Communicating; rather Romeo (and Juliet, unaware) are engaged in an Eavesdropping. Communicating may be either a one-way or a two-way transfer of information (cf. CommunicationAct_Single, MultiDirectionalCommunication). Every event belonging to Communicating contains at least one transfer of information between at least two agents who participate in the event. (Note that the latter requirement excludes reading and writing from Communicating, when those events are just the private accessing or generating of information.) Communicating may be specialized in various ways, such as, by the method or medium used (e.g., AudioCommunicating, NonVerbalCommunicating, FaceToFacePresenceCommunicating); by the type of information involved (e.g., MakingAnAgreement); by the purpose of the communication (e.g., Teaching, Negotiating); by the agents involved (e.g., IntraOrganizationCommunication, StageProduction). Examples of Communicating include a symphony performance, an email message, a telephone call, a speech, a handshake, issuing a traffic ticket -- all of which normally, and focally, involve communication between two or more agents.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvViexZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CommunicatingBetweenComputers -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CommunicatingBetweenComputers">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationTransferPhysicalEvent"/>
+        <rdfs:comment>Computers transferring information. This is not a communicating event, since it doesn&apos;t necessarily involve transfer of information into or out of agents&apos; heads.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvViXQJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CommunicatingUsingADevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CommunicatingUsingADevice">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Communicating"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#senderOfInfo"/>
+                <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#CommunicationDevice"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A subset of Communicating in which some instance of CommunicationDevice is used deliberately by the senderOfInfo in the communication. Examples include (#$UsingAFn Telephone), InternetCommunication, two-way radio communication, using a microphone on a stage, etc.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rv3Q79JwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CommunicationAct-Single -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CommunicationAct-Single">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Communicating"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationTransferEvent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subAction"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#AccessingAnIBT"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#subAction"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#IBTGeneration"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment>A collection of information transfer events; a specialization of Communicating. Each instance of CommunicationAct_Single is a single-source transmission of information from one sender (see the predicate senderOfInfo) to one or more recipients (see the predicate recipientOfInfo). Every instance of CommunicationAct_Single has a transmission sub-event (which is an instance of IBTGeneration) and one or more reception sub-events (which are instances of AccessingAnIBT). An instance of CommunicationAct_Single starts when its transmission sub-event starts and ends when its accessing sub-event(s) end.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVieg5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CommunicationDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CommunicationDevice">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#HumanScaleObject"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalDevice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#DataSending -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#DataSending">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationTransferPhysicalEvent"/>
+        <rdfs:comment>This is a collection of one-way information transfer events in which information is sent from some informationOrigin to some informationDestination.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvrPax5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ElectricalDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ElectricalDevice"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Emission -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Emission"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Explaining-CommunicationAct -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Explaining-CommunicationAct">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Informing"/>
+        <rdfs:comment>A specialized collection of communication acts. In each instance of Explaining_CommunicationAct, some agent explains something to some other agent(s). The information given in an act of explaining is an instance of Explanation.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwI_EFpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#GeneralizedTransfer -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#GeneralizedTransfer"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HumanScaleObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HumanScaleObject"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#IBTGeneration -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#IBTGeneration">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationTransferEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#InformationGathering -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#InformationGathering">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationTransferEvent"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PurposefulAction"/>
+        <rdfs:comment>A specialization of both Action and InformationTransferEvent. In each instance of InformationGathering, some instance of IntelligentAgent gathers information about something.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVj7CpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#InformationRequest-IBT -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#InformationRequest-IBT">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationBearingThing"/>
+        <rdfs:comment>The collection of all InformationBearingThings whose information content is a request for information. An InformationRequest_IBT is the communicationToken in any act of RequestingInformation.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rcF7MOF04EdaAAABQ2sS97g</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#InformationTransferEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#InformationTransferEvent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#GeneralizedTransfer"/>
+        <rdfs:comment>A specialization of GeneralizedTransfer. Each instance of InformationTransferEvent is an event in which information is transferred from a source (informationOrigin) to one or more destinations (informationDestination), where the source and the various destinations are either intelligent agents or InformationBearingThings (IBTs). Examples include reading a book (transfer of information from the book to the reader), saying something to someone (transfer of information from the speaker to the listener), machine translation (transfer of information from an encoded IBT in the source language to an encoded IBT in the target language), OCR scanning (transfer of information from a visual information source to another IBT in a different format), carving initials in a tree (transfer of information from an agent to an IBT), and making a speech (transfer of information from an agent to other agents). See also the specialization InformationTransferPhysicalEvent.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVifB5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#InformationTransferEvent-Electronic -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#InformationTransferEvent-Electronic">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationTransferPhysicalEvent"/>
+        <rdfs:comment>The collection of all events in which information is transferred electronically. Examples include all instances of TelephoneConversation, EMailSending, and PuttingUpAWebsite.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwUv8oZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#InformationTransferPhysicalEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#InformationTransferPhysicalEvent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationTransferEvent"/>
+        <rdfs:comment>A specialization of InformationTransferEvent (q.v.) and PhysicalEvent each instance of which involves at least one PartiallyTangible, either as its source (see informationOrigin), as (at least one of) its destination(s) (see informationDestination), or both. (A partially tangible source or destination, note, must pre-exist the transfer event.) Indeed, most if not all actual information transfer events are physical events; but InformationTransferPhysicalEvent does in principle exclude those such as telepathic communications between disembodied spirits or other Agent_Intangibles.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvucXhJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Informing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Informing">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CommunicationAct-Single"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationBearingThing"/>
+        <rdfs:comment>A FirstOrderCollection. Each instance of Informing is a CommunicationAct_Single in which the senderOfInfo conveys some piece of propositional information--i.e. information of the sort that can be true or false.
+
+The information conveyed in an Informing is presented by the sender as being true, though it may in fact be false. Thus, passing on misinformation counts as Informing, as do acts of Lying.
+
+Note that the propositional nature of the information conveyed in an Informing may be implicit; for example, if Alice asks &apos;What&apos;s your favorite color?&apos; and Bob simply responds &apos;Red&apos;, Bob has implicitly conveyed the proposition Bob&apos;s favorite color is red.
+
+Specializations of Informing include Reporting, Testifying, and AnnouncingSomething.</rdfs:comment>
+        <rdfs:seeAlso rdf:resource="http://sw.opencyc.org/concept/Mx4rvVieApwpEbGdrcN5Y29ycA"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#InformingProgramUser -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#InformingProgramUser">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Informing"/>
+        <rdfs:comment>The collection of all events in which an instance of SoftwareAgent provides information to an interactive user of an instance of ComputerProcessRunning.</rdfs:comment>
+        <rdfs:seeAlso rdf:resource="http://sw.opencyc.org/concept/Mx4rtedJ0A9cEdaAAABQ2rksLw"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#IntentionalMentalEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#IntentionalMentalEvent"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#InternallyQueryingKB -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#InternallyQueryingKB">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CommunicatingUsingADevice"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#RequestingInformation"/>
+        <rdfs:comment>The collection of all events of a SoftwareAgent asking for some information from some KnowledgeBase.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rtxY30A9cEdaAAABQ2rksLw</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LinguisticObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LinguisticObject">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#AspatialInformationStore"/>
+        <rdfs:comment>A specialization of AspatialInformationStore. Each instance of LinguisticObject is an intangible object that is part of some language or other, in a broad sense of &quot;part&quot; whereby LinguisticObject&apos;s specializations include such diverse collections as Title, WordSense, SententialConstituent, and NonlexicalLinguisticObject.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjQ-5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MediaTransmitting -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MediaTransmitting">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Emission"/>
+        <rdfs:comment>A collection of Events; a subset of MediaTransferEvent and of Emission. In every instance of MediaTransmitting, a collection of intangible InformationBearingThings are transmitted and received by CommunicationDevices. These IBTs are NOT electrical signals, radio waves, or the like, but are constituted of sounds and/or images emitted by individual receiving devices and accessible to human senses. Subsets of MediaTransmitting include Broadcasting (via radio or TV) and TVTransmitting (via cable or broadcast).</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvzyIYJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Perceiving -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Perceiving">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationTransferPhysicalEvent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PhysicalDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PhysicalDevice"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PhysicalEvent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PhysicalEvent"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PrologQuery -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PrologQuery">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Query"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PrologQueryAnswer -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PrologQueryAnswer">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InformingProgramUser"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PurposefulAction -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PurposefulAction"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Query -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Query">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationBearingThing"/>
+        <rdfs:comment>The collection of all InformationBearingThings whose information content is a request for information. An InformationRequest_IBT is the communicationToken in any act of RequestingInformation.</rdfs:comment>
+        <rdfs:seeAlso rdf:resource="http://sw.opencyc.org/concept/Mx4rcF7MOF04EdaAAABQ2sS97g"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#QueryBinding -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#QueryBinding">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PrologQueryAnswer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Querying -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Querying">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#IntentionalMentalEvent"/>
+        <rdfs:comment>A specialization of Requesting_CommunicationAct. In each instance of RequestingInformation, an agent asks a question or requests some information. See also the IllocutionaryForce associated with this action, #$Query.</rdfs:comment>
+        <rdfs:seeAlso rdf:resource="http://sw.opencyc.org/concept/Mx4rvVitwpwpEbGdrcN5Y29ycA"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Question-IBT -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Question-IBT">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationRequest-IBT"/>
+        <rdfs:comment>The collection of all instances of InformationRequest_IBT which take the form of a question. This collection includes yes/no questions, questions that ask for bindings (e.g. beginning with &apos;Who&apos;, &apos;What&apos; or &apos;When&apos;) and questions that ask for descriptions or explanations (e.g. &apos;How&apos; or &apos;Why&apos;).</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rrGMp8PDVQdaSupKiIKZZZA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Receiving -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Receiving">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TransferIn"/>
+        <rdfs:comment>A specialization of TransferIn. Each instance of Receiving is an event in which something `comes in&apos; to an object. Typically, a receiving has associated with it an instance of Translocation (q.v.); a particular receiving and its associated translocation(s) are related by the predicate transferInSubEvent. If the thing which `comes in&apos; is an instance of PartiallyTangible (such as a baseball, or a SCUD missile), then its reception is an instance of the specialization ReceivingAnObject (q.v.). If the translocation associated with the receiving is an instance of WavePropagation (such as a radio broadcast, or heat radiation from the Sun), then the receiving is an instance of the specialization ReceivingAWave (q.v.).</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rva8CdpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ReplyingToAQuestion -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ReplyingToAQuestion">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Informing"/>
+        <rdfs:comment>Answering a question that someone or something has posed to you.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvViaipwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Reporting -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Reporting">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Informing"/>
+        <rdfs:comment>A specialization of Informing. In each instance of Reporting, some agent imparts collected information to some other agent(s).</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwP1IVpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Requesting-CommunicationAct -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Requesting-CommunicationAct">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CommunicationAct-Single"/>
+        <rdfs:comment>A specialization of CommunicationAct_Single. Each instance of Requesting_CommunicationAct is a communication act in which one agent requests something of one or more other agents. Requests are typically followed by responses.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjqypwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RequestingInformation -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#RequestingInformation">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Requesting-CommunicationAct"/>
+        <rdfs:comment>A specialization of Requesting_CommunicationAct. In each instance of RequestingInformation, an agent asks a question or requests some information.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVitwpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Sentence -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Sentence">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LinguisticObject"/>
+        <rdfs:comment>The collection of all sentences of any (natural or artificial) language. This excludes &quot;open&quot; formulae of formal languages: expressions that are like sentences except for containing one or more unbound (or &quot;free&quot;) variables.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rv5ddsJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Signal -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Signal">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationBearingThing"/>
+        <rdfs:comment>A specialization of InformationBearingThing (IBT). Each instance of Signal is an IBT which may be interpreted (whether by a conscious user of learned signalling rules, by a computer program, or even by a cell in terms of its subsequent behaviour) as conveying some specific information. Examples include car-horn honkings, internet packets, and proteins which travel into cells across the plasma membrane. An important specialization of this collection is InformationBearingWavePropagation. Note that this collection is intended to embrace only signals themselves, not events of signalling. On the importance of keeping these two separate, see the comment on InformationBearingThing. The distinction between this collection and SymbolicThing lies in the fact that Signals are one-time-only transfers of specific information, whereas a SymbolicThing is open to its characteristic interpretation any time it is encountered. See also signifiesTo, signifies.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjJhJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SoundInformationBearingThing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SoundInformationBearingThing"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SpeechAct -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SpeechAct">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CommunicationAct-Single"/>
+        <rdfs:comment>A sub-collection of CommunicationAct_Single. Each instance is the use of language to perform some act.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rMpT3cMFXEdmAAAACs6hRjg</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SpokenCommunicating -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SpokenCommunicating">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#AudioCommunicating"/>
+        <rdfs:comment>A specialization of AudioCommunicating. Each instance of SpokenCommunicating is a transmission of sound-borne verbal information by spoken words between two or more agents (in this way SpokenCommunicating differs from Speaking, which is a SingleDoerAction). The communication may be one-way or two-way (or multi-way). Examples of SpokenCommunicating include a telephone conversation, a classroom discussion, and the GettysburgAddress_Speech.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvViVN5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SpokenUtterance-IBT -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SpokenUtterance-IBT">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SoundInformationBearingThing"/>
+        <rdfs:comment>A specialization of Sound. Each instance of this collection is a sound initially generated by some Agent_Generic speaking or making some sound with his/her mouth (or other specifically sonic-information-conveying organ or device). Such sounds may or may not have propositional content -- that is -- instantiate some PropositionalInformationThing. If such a sound is recorded and played back, the sound generated is still considered an instance of SpokenUtterance_IBT. Note that only the sounds themselves are instances of this collection -- not the activities of making them. This collection is not a specialization of Action. (For that, see CommunicationAct_Single and its specializations.) An important specialization of this collection is AnimalUtterance_IBT.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rQahWGFyWEdaAAAABAxv-7A</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Telephone -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Telephone">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CommunicationDevice"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalDevice"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TextString -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TextString">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LinguisticObject"/>
+        <rdfs:comment>A subcollection of CharacterString. Each instance of TextString is a CharacterString that constitutes a meaningful unit (with respect to some actual language or other CommunicationConvention), such as words, phrases, sentences, multi-sentence constructions, or symbols that contribute to the meaning of phrases or sentences (including syncategormatic objects such as punctuation symbols). Formal languages may define multi-symbol constructs that have meaning but are not considered words -- these, too are instances of TextString. For example, this sequence of characters:
+
+  er#q2
+
+is a CharacterString but not (as far as I know) a TextString. Conversely, the sentence you are now reading is a TextString, as is the text of this entire comment.
+
+Note that, as with all CharacterStrings, a TextString is a sequence of abstract symbols, not a tangible instantiation of it (cf. CharacterStringToken).</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rv65Pt5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TransferIn -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TransferIn"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#VariableBinding -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#VariableBinding">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PrologQueryAnswer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#WirelessCommunication -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WirelessCommunication">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#InformationTransferEvent"/>
+        <rdfs:comment>A specialization of Telecommunication. Each instance of WirelessCommunication is a communication event in which the information is carried by electromagnetic spectrum waves without an electromagnetic or optical conductor.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rwOMkapwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#WirelessCommunicationDevice -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WirelessCommunicationDevice">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CommunicationDevice"/>
+        <rdfs:comment>The collection of CommunicationDevices in which the communication signals are either not transmitted or not received entirely over a wire.</rdfs:comment>
+        <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvX1UuJwpEbGdrcN5Y29ycA</rdfs:seeAlso>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+
