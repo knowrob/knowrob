@@ -140,7 +140,7 @@ action_feasible_on_robot(ActionConcept, Robot) :-
 
 action_feasible_on_robot(ActionConcept, ActionDescription, Robot) :-
   action_feasible_on_robot(ActionConcept, Robot),
-  unsatisfied_restr_on_robot(ActionDescription, Robot, [], ActionConcept)
+  unsatisfied_restr_on_robot(ActionDescription, Robot, [], ActionConcept).
 
 %% missing_for_action(Action, Robot, MissingCaps, MissingComps).
 %
@@ -382,7 +382,7 @@ unsatisfied_restr_on_robot(ActionDescription, Robot, Unsatisfied, ActionConcept)
   % generate temporary OWL individual in order to perform standard OWL reasoning
   entity_description(ActionDescription), % FIXME: not existing!
   entity_assert(ActionInstance, ActionDescription),
-  unsatisfied_restr_on_robot(ActionInstance, Robot, Unsatisfied, ActionConcept)
+  unsatisfied_restr_on_robot(ActionInstance, Robot, Unsatisfied, ActionConcept),
   entity_retract(ActionInstance), % FIXME: not existing!
   !.
 
