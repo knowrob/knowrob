@@ -62,6 +62,7 @@
 
 :- rdf_meta
         action_feasible_on_robot(r,r),
+        action_feasible_on_robot(r,t,r),
         missing_for_action(r,r,r,r),
         missing_cap_for_action(r,r,r),
         required_cap_for_action(r,r),
@@ -114,16 +115,25 @@ robot_tf_prefix(_, '/').
 % Actions
 
 %% action_feasible_on_robot(?Action, ?Robot).
+%% action_feasible_on_robot(?Action, ?ActionDesignator, ?Robot).
 %
 % Verifies that an action is feasible on the given robot by making
 % sure that neither capabilites nor components are missing.
 %
+% The 3-argument variant also checks the actionability of action parameters
+% specified in ActionDesignator.
+%
 % @param Action   Action class to be checked
+% @param ActionDesignator   Designator that includes some action parameters
 % @param Robot   Robot instance to be checked
 % 
 action_feasible_on_robot(Action, Robot) :-
   \+ missing_cap_for_action(Action, Robot, _),
   \+ missing_comp_for_action(Action, Robot, _).
+action_feasible_on_robot(Action, ActionDesignator, Robot) :-
+  action_feasible_on_robot(Action, Robot),
+  \+ missing_actionability_for_designator(Action, ActionDesignator, Robot, _).
+
 
 %% missing_for_action(Action, Robot, MissingCaps, MissingComps).
 %
@@ -344,4 +354,18 @@ plan_subevents_recursive(Plan, SubAction) :-
     class_properties(Plan, knowrob:subAction, Sub),
     Sub \= Plan,
     plan_subevents_recursive(Sub, SubAction).
+
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% Actionability
+
+%% missing_actionability_for_designator(+Action, +ActionDesignator, +Robot) is nondet.
+%
+% @param Action   Action class to be checked
+% @param ActionDesignator  Action designator to be checked
+% @param Robot   Robot instance to be checked
+%
+missing_actionability_for_designator(Action, ActionDesignator, Robot) :-
+  fail.
+
 
