@@ -66,7 +66,7 @@
 
 :- rdf_meta
         action_feasible_on_robot(r,r),
-        action_feasible_on_robot(r,t,r),
+        action_feasible_on_robot(r,r,r),
         missing_for_action(r,r,r,r),
         missing_cap_for_action(r,r,r),
         required_cap_for_action(r,r),
@@ -138,7 +138,7 @@ action_feasible_on_robot(ActionConcept, Robot) :-
   \+ missing_cap_for_action(ActionConcept, Robot, _),
   \+ missing_comp_for_action(ActionConcept, Robot, _).
 
-action_feasible_on_robot(ActionConcept, ActionDescription, Robot) :-
+action_feasible_on_robot(ActionConcept, Robot, ActionDescription) :-
   action_feasible_on_robot(ActionConcept, Robot),
   unsatisfied_restr_on_robot(ActionDescription, Robot, [], ActionConcept).
 
@@ -380,13 +380,13 @@ unsatisfied_restr_on_robot(ActionDescription, Robot, Unsatisfied) :-
   unsatisfied_restr_on_robot(ActionDescription, Robot, Unsatisfied, _).
 unsatisfied_restr_on_robot(ActionDescription, Robot, Unsatisfied, ActionConcept) :-
   % generate temporary OWL individual in order to perform standard OWL reasoning
-  entity_description(ActionDescription), % FIXME: not existing!
+  entity_description(ActionDescription), !,
   entity_assert(ActionInstance, ActionDescription),
   unsatisfied_restr_on_robot(ActionInstance, Robot, Unsatisfied, ActionConcept),
-  entity_retract(ActionInstance), % FIXME: not existing!
-  !.
+  entity_retract(ActionInstance), !.
 
 unsatisfied_restr_on_robot(ActionInstance, Robot, Unsatisfied, ActionConcept) :-
+  atom(ActionInstance),
   owl_individual_of(ActionInstance, knowrob:'Action'),
   % make sure the instantiation satisfies all actionability restrictions
   ground(ActionConcept)
@@ -412,13 +412,20 @@ unsatisfied_restr_on_robot(ActionInstance, Robot, Unsatisfied, ActionConcept) :-
 %
 restricted_action_on_robot(ActionConcept, Robot, RestrictedAction) :-
     rdfs_individual_of(ActionConcept, owl:'Class'), !,
-    class_properties(Robot, knowrob:'actionable', RestrictedAction),
-    owl_subclass_of(ActionConcept, RestrictedAction).
+    class_properties__(Robot, 'http://knowrob.org/kb/knowrob.owl#actionable', RestrictedAction),
+    owl_subclass_of(RestrictedAction, ActionConcept).
 
 restricted_action_on_robot(ActionInstance, Robot, RestrictedAction) :-
     owl_individual_of(ActionInstance, knowrob:'Action'), !,
-    class_properties(Robot, knowrob:'actionable', RestrictedAction),
+    class_properties__(Robot, 'http://knowrob.org/kb/knowrob.owl#actionable', RestrictedAction),
     once((
       owl_individual_of(ActionInstance, ActionConcept),
-      owl_subclass_of(ActionConcept, RestrictedAction)
+      owl_subclass_of(RestrictedAction, ActionConcept)
     )).
+
+class_properties__(S,P,O) :-
+    rdfs_individual_of(S, owl:'Class'), !,
+    class_properties(S,P,O).
+class_properties__(S,P,O) :-
+    owl_individual_of(S,C),
+    class_properties(C,P,O).

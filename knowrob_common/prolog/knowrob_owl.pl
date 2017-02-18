@@ -32,11 +32,13 @@
 
 :- module(knowrob_owl,
     [
+      entity_description/1,
       entity/2,
       entity_has/3,
       entity_type/2,
       entity_compute/2,
       entity_assert/2,
+      entity_retract/1,
       entity_iri/3,
       entity_write/1,
       entity_format/2,
@@ -77,11 +79,13 @@
 :- multifile entity_type/2,
              entity_compute/2.
 
-:- rdf_meta entity(r,?),
+:- rdf_meta entity_description(t),
+            entity(r,?),
             entity_property(+,?,?),
             entity_type(r,?),
             entity_compute(r,?),
             entity_assert(r,?),
+            entity_retract(r),
             entity_iri(r,r),
             class_properties(r,r,t),
             class_properties_some(r,r,t),
@@ -570,6 +574,15 @@ comp_designatedThing(Designator, Obj) :-
 % TODO: implement
 concept(_, _) :- fail.
 
+%% entity_description(+Descr) is det.
+%
+% Type checking an entity description.
+%
+% @param Descr An entity description or something else
+%
+entity_description([A,Type|_]) :-
+  entity_type([A,Type], _).
+
 %% entity(?Entity, +Descr) is nondet.
 %
 % Query for entity matching an entity description or build
@@ -809,7 +822,7 @@ entity_assert(Entity, [A,Type|Descr]) :-
   nonvar(Type),
   entity_type([A,Type], TypeIri_),
   (( entity_has(Descr,type,AType),
-     entity_iri(AType, ATypeIri),
+     entity_iri(ATypeIri, AType, camelcase),
      rdf_reachable(ATypeIri, rdfs:subClassOf, TypeIri_) )
   -> TypeIri = ATypeIri
   ;  TypeIri = TypeIri_ ),
@@ -860,6 +873,17 @@ entity_assert(Entity, [[Key,Value,during,IntervalDescr]|Descr]) :-
 
 entity_assert(_, []).
 
+%% entity_retract(+Entity) is nondet.
+%
+% Assert entity description in RDF triple store as new individual.
+%
+% @param Entity IRI of matching entity
+%
+entity_retract(Entity) :-
+  % Retract without recursion
+  forall( owl_has(Entity, knowrob:temporalParts, TemporalPart),
+          rdf_retractall(TemporalPart, _, _)),
+  rdf_retractall(Entity, _, _).
 
 %% entity_format(+Descr, -String) is nondet.
 %
@@ -1130,6 +1154,7 @@ entity_iri(Iri, Descr, Formatter) :-
 entity_iri(Iri, Description, Formatter) :-
   var(Iri),
   entity_ns(Description, NS, NameUnderscore),
+  % FIXME: call falls if NameUnderscore is in fact Camelcase
   call(Formatter, NameUnderscore, Name),
   atom_concat(NS, Name, Iri).
 
