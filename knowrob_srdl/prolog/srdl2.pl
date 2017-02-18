@@ -206,6 +206,8 @@ required_cap_for_action(Action, Cap) :-
 % @param Cap   Capability class to be checked
 % @param Robot Robot instance
 %
+% TODO(daniel): Also consider capabilities annotated on component level. Might be useful for dynamic components!
+%
 
 % capability asserted for robot instance
 cap_available_on_robot(Cap, Robot) :-
@@ -413,16 +415,21 @@ unsatisfied_restr_on_robot(ActionInstance, Robot, Unsatisfied, ActionConcept) :-
 restricted_action_on_robot(ActionConcept, Robot, RestrictedAction) :-
     rdfs_individual_of(ActionConcept, owl:'Class'), !,
     class_properties__(Robot, 'http://knowrob.org/kb/knowrob.owl#actionable', RestrictedAction),
+    % TODO(daniel): also include restrictions imposed on the component level!
+    %           e.g., a particular arm that can lift only up to 2.5kg
     owl_subclass_of(RestrictedAction, ActionConcept).
 
 restricted_action_on_robot(ActionInstance, Robot, RestrictedAction) :-
     owl_individual_of(ActionInstance, knowrob:'Action'), !,
     class_properties__(Robot, 'http://knowrob.org/kb/knowrob.owl#actionable', RestrictedAction),
+    % TODO(daniel): also include restrictions imposed on the component level!
+    %           e.g., a particular arm that can lift only up to 2.5kg
     once((
       owl_individual_of(ActionInstance, ActionConcept),
       owl_subclass_of(RestrictedAction, ActionConcept)
     )).
 
+% TODO(daniel): use predicate from knowrob_owl instead
 class_properties__(S,P,O) :-
     rdfs_individual_of(S, owl:'Class'), !,
     class_properties(S,P,O).
