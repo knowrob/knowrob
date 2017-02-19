@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="http://knowrob.org/kb/knowrob_common.owl#"
+<rdf:RDF xmlns="http://knowrob.org/kb/knowrob.owl#"
      xml:base="http://knowrob.org/kb/knowrob_common.owl"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
@@ -42,33 +42,33 @@
     
 
 
-    <!-- http://knowrob.org/kb/knowrob_common.owl#occursAfterInOrdering -->
+    <!-- http://knowrob.org/kb/knowrob.owl#occursAfterInOrdering -->
 
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob_common.owl#occursAfterInOrdering"/>
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#occursAfterInOrdering"/>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob_common.owl#occursBeforeInOrdering -->
+    <!-- http://knowrob.org/kb/knowrob.owl#occursBeforeInOrdering -->
 
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob_common.owl#occursBeforeInOrdering"/>
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#occursBeforeInOrdering"/>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob_common.owl#pose -->
+    <!-- http://knowrob.org/kb/knowrob.owl#pose -->
 
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob_common.owl#pose"/>
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#pose"/>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob_common.owl#quaternion -->
+    <!-- http://knowrob.org/kb/knowrob.owl#quaternion -->
 
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob_common.owl#quaternion"/>
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#quaternion"/>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob_common.owl#translation -->
+    <!-- http://knowrob.org/kb/knowrob.owl#translation -->
 
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob_common.owl#translation"/>
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#translation"/>
     
 
 
@@ -9853,7 +9853,7 @@ For example, although a ticking grandfather clock is not normally undergoing eit
     <!-- http://knowrob.org/kb/knowrob.owl#PhysicalContactSituation -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PhysicalContactSituation">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob_common.owl#PhysicalContactEvent"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalContactEvent"/>
         <rdfs:comment>The collection of all temporal situations in which two or more tangible objects are touching (see touches) for at least part of the situation&apos;s duration. This includes an object&apos;s rubbing against another, objects colliding, as well as static touching configurations. Note that, although most types of PhysicalEvents involve some kind of touching, only those types for which contact is salient should be subcollections of PhysicalContactSituation.</rdfs:comment>
         <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rv_-mQpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
@@ -13455,9 +13455,9 @@ As the above examples illustrate, it is not the case that everthing that has a t
     
 
 
-    <!-- http://knowrob.org/kb/knowrob_common.owl#Connector -->
+    <!-- http://knowrob.org/kb/knowrob.owl#Connector -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#Connector">
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Connector">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#NonPoweredDevice"/>
         <rdfs:comment>A specialization of NonPoweredDevice. Each instance of Connector is a device which connects two objects. An instance of Connector may be a part incorporated into one or both of the objects connected, or it may be a totally separate device. Notable specializations of Connector include Staple, Pin, and Nail.</rdfs:comment>
         <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVi5c5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
@@ -13465,29 +13465,29 @@ As the above examples illustrate, it is not the case that everthing that has a t
     
 
 
-    <!-- http://knowrob.org/kb/knowrob_common.owl#Hook -->
+    <!-- http://knowrob.org/kb/knowrob.owl#Hook -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#Hook">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob_common.owl#Connector"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Hook">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Connector"/>
         <rdfs:comment>A curved or angular piece of metal or other hard substance for catching, pulling, holding or suspending something.</rdfs:comment>
         <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVkA_JwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob_common.owl#NavigationBeacon -->
+    <!-- http://knowrob.org/kb/knowrob.owl#NavigationBeacon -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#NavigationBeacon">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob_common.owl#NavigationDevice"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#NavigationBeacon">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#NavigationDevice"/>
         <rdfs:comment>A specialization of NavigationDevice. Each instance of NavigationBeacon is fixed artifact on or near the EarthsTopographicSurface that provides a geodetic reference point for the navigation of airborne, seafaring, land-based, or orbiting transportation.</rdfs:comment>
         <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4reZeH7iTfQdeVdtgCQ57mCg</rdfs:seeAlso>
     </owl:Class>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob_common.owl#NavigationDevice -->
+    <!-- http://knowrob.org/kb/knowrob.owl#NavigationDevice -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#NavigationDevice">
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#NavigationDevice">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalDevice"/>
         <rdfs:comment>A specialization of PhysicalDevice. Each instance of NavigationDevice is a device used for Navigating, i.e., for taking the bearings and plotting the course of someone or something travelling -- often in some transportation device -- through some medium. Notable specializations of NavigationDevice include Sextant, Compass and GPSReceiver.</rdfs:comment>
         <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjbmZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
@@ -13495,9 +13495,9 @@ As the above examples illustrate, it is not the case that everthing that has a t
     
 
 
-    <!-- http://knowrob.org/kb/knowrob_common.owl#PhysicalContactEvent -->
+    <!-- http://knowrob.org/kb/knowrob.owl#PhysicalContactEvent -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#PhysicalContactEvent">
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PhysicalContactEvent">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalEvent"/>
         <rdfs:comment>A collection of physical events in which two or more objects are in physical contact (see touches) for at least part of the event&apos;s duration. Note that, although most PhysicalEvents involve some kind of touching, only those for which contact is salient should be instances of PhysicalContactEvent. For events involving continuous contact and events in which contact is made, respectively, see the specializations ContinuousPhysicalContactEvent and PhysicalContactMakingEvent.</rdfs:comment>
         <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjnQpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
@@ -13505,10 +13505,10 @@ As the above examples illustrate, it is not the case that everthing that has a t
     
 
 
-    <!-- http://knowrob.org/kb/knowrob_common.owl#Pin -->
+    <!-- http://knowrob.org/kb/knowrob.owl#Pin -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#Pin">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob_common.owl#Connector"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pin">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Connector"/>
         <rdfs:comment>A sharp pointy thing that is not hollow, nor has any holes in it. Smaller than most nails. May be part of some larger device like Safety Pin or Brooch.</rdfs:comment>
         <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjjI5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
