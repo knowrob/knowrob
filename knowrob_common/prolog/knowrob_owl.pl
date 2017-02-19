@@ -892,7 +892,7 @@ entity_retract(Entity) :-
 %
 % Ensures entity description is asserted and binds the name to
 % Individual before goal is called.
-% Temorary assertions are retracted in a cleanup goal.
+% Temporary assertions are retracted in a cleanup goal.
 %
 % @param Description Entity description or individual
 % @param Individual Entity individual

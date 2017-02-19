@@ -43,7 +43,7 @@
         insufficient_comp_for_action/4,
         unsatisfied_restr_for_action/5,
         unsatisfied_restr_for_required_comp/5,
-        unsatisfied_restr_for_comp/4,
+        unsatisfied_restr_for_comp/5,
         cap_available_on_robot/2,
         comp_type_available/2,
         comp_restricted_action/3,
@@ -83,7 +83,7 @@
         required_comp_for_action(r,r),
         unsatisfied_restr_for_action(r,r,r,r,-),
         unsatisfied_restr_for_required_comp(r,r,r,r,-),
-        unsatisfied_restr_for_comp(r,r,r,-),
+        unsatisfied_restr_for_comp(r,r,r,r,-),
         restricted_act_on_robot(r,r,r),
         robot_tf_prefix(r,r),
         robot_part_tf_prefix(r,r),
@@ -134,6 +134,26 @@ robot_tf_prefix(_, '/').
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % Actions
 
+%% with_action_description(+ActionD, ?ActionI, +Robot, +Goal) is nondet.
+%
+% Ensures entity description is asserted and binds the name to
+% Individual before goal is called.
+% Also the performedBy relation will automatically be specified.
+% Temporary assertions are retracted in a cleanup step.
+%
+% @param Description Entity description or individual
+% @param Individual Entity individual
+% Goal The goal with OWL entity asserted
+%
+with_action_description(ActionD, ActionI, Robot, Goal) :-
+  with_owl_description(ActionD, ActionI, (
+    once((
+      rdf_has(ActionI, 'http://knowrob.org/kb/knowrob.owl#performedBy', _);
+      rdf_assert(ActionI, 'http://knowrob.org/kb/knowrob.owl#performedBy', Robot)
+    )),
+    call(Goal)
+  )).
+
 %% action_feasible_on_robot(?Action, ?Robot).
 %% action_feasible_on_robot(?Action, ?ActionDescription, ?Robot).
 %
@@ -168,8 +188,7 @@ action_feasible_on_robot(ActionC, ActionD, Robot) :-
 % @param Components   List of components feasible for the action
 % 
 action_feasible_with_components(ActionC, ActionD, Robot, Components) :-
-  % TODO(DB): Use custom with_owl_description that asserts performedBy=Robot
-  with_owl_description(ActionD, ActionI, (
+  with_action_description(ActionD, ActionI, Robot, (
     action_feasible_on_robot(ActionC, ActionI, Robot),
     findall(Cs, (
       unsatisfied_restr_for_required_comp(ActionC, ActionI, Robot, _, RestrictedComponents),
@@ -177,6 +196,7 @@ action_feasible_with_components(ActionC, ActionD, Robot, Components) :-
       \+ Cs=[]
     ), Components)
   )).
+  
 
 
 %% missing_for_action(Action, Robot, MissingCaps, MissingComps).
@@ -207,11 +227,11 @@ missing_for_action(Action, Robot, MissingCaps, MissingComps) :-
 % @param Unsatisfied   Tuples of component individuals and unsatisfied restrictions
 % 
 unsatisfied_restr_for_action(ActionC, ActionD, Robot, CompC, Unsatisfied) :-
-  with_owl_description(ActionD, ActionI, (
+  with_action_description(ActionD, ActionI, Robot, (
     findall((CompC, Unsatisfied), (
         %unsatisfied_restr_for_action_(ActionC, ActionI, Robot, CompC, Unsatisfied)
         ((
-          unsatisfied_restr_for_comp(ActionC, ActionI, Robot, Rs),
+          unsatisfied_restr_for_comp(ActionC, ActionI, Robot, Robot, Rs),
           CompC='http://knowrob.org/kb/knowrob.owl#Robot',
           Unsatisfied=[(Robot,Rs)]);
           unsatisfied_restr_for_required_comp(ActionC, ActionI, Robot, CompC, Unsatisfied)
@@ -220,10 +240,6 @@ unsatisfied_restr_for_action(ActionC, ActionD, Robot, CompC, Unsatisfied) :-
     ), Xs)
   )), !,
   member((CompC, Unsatisfied), Xs).
-%unsatisfied_restr_for_action_(ActionC, ActionI, Robot, 'http://knowrob.org/kb/knowrob.owl#Robot', [(Robot,Unsatisfied)]) :-
-%  unsatisfied_restr_for_comp(ActionC, ActionI, Robot, Unsatisfied).
-%unsatisfied_restr_for_action_(ActionC, ActionI, Robot, CompC, Restr) :-
-%  unsatisfied_restr_for_required_comp(ActionC, ActionI, Robot, CompC, Restr).
 
 
 %% unsatisfied_restr_for_required_comp(ActionC, ActionD, Robot, CompC, RestrictedComponents).
@@ -238,28 +254,31 @@ unsatisfied_restr_for_action(ActionC, ActionD, Robot, CompC, Unsatisfied) :-
 % @param RestrictedComponents   Tuples of component and unsatisfied restrictions
 % 
 unsatisfied_restr_for_required_comp(ActionC, ActionD, Robot, CompC, RestrictedComponents) :-
-  with_owl_description(ActionD, ActionI, findall((CompC, RestrictedComponents), (
-    required_comp_for_action(ActionC, CompC),
-    findall((Comp,Restr), (
-      rdf_reachable(Robot, srdl2comp:'subComponent', Comp),
-      once(owl_individual_of(Comp, CompC)),
-      unsatisfied_restr_for_comp(ActionC, ActionI, Comp, Restr)
-    ), RestrictedComponents)
-  ), Xs)), !,
+  with_action_description(ActionD, ActionI, Robot,
+    findall((CompC, RestrictedComponents), (
+      required_comp_for_action(ActionC, CompC),
+      findall((Comp,Restr), (
+        rdf_reachable(Robot, 'http://knowrob.org/kb/srdl2-comp.owl#subComponent', Comp),
+        once(owl_individual_of(Comp, CompC)),
+        unsatisfied_restr_for_comp(ActionC, ActionI, Robot, Comp, Restr)
+      ), RestrictedComponents)
+    ), Xs)
+  ), !,
   member((CompC, RestrictedComponents), Xs).
 
 
-%% unsatisfied_restr_for_comp(ActionC, ActionD, Comp, Unsatisfied).
+%% unsatisfied_restr_for_comp(ActionC, ActionD, Robot, Comp, Unsatisfied).
 %
 % Checks if any action restriction is unsatisfied.
 %
 % @param ActionC   Action class to be checked
 % @param ActionD   Action description or instance to be checked
+% @param Robot   Robot instance to be checked
 % @param Comp   Component to be chacked
 % @param Unsatisfied   List of unsatsfied action restrictions
 % 
-unsatisfied_restr_for_comp(ActionC, ActionD, Comp, Unsatisfied) :-
-  with_owl_description(ActionD, ActionI, (
+unsatisfied_restr_for_comp(ActionC, ActionD, Robot, Comp, Unsatisfied) :-
+  with_action_description(ActionD, ActionI, Robot, (
     findall(R, (
       comp_restricted_action(Comp, ActionC, R),
       % use owl_instance_of -> allow computables in R
@@ -389,10 +408,12 @@ insufficient_comp_for_action(ActionC, _, Robot, Comp) :-
   missing_comp_for_action(ActionC, Robot, Comp).
 
 insufficient_comp_for_action(ActionC, ActionD, Robot, Comp) :-
-  with_owl_description(ActionD, ActionI, findall(Comp, (
-    unsatisfied_restr_for_required_comp(ActionC, ActionI, Robot, Comp, Unsatisfied),
-    \+ member((_,[]), Unsatisfied)
-  ), Cs)),
+  with_action_description(ActionD, ActionI, Robot,
+    findall(Comp, (
+      unsatisfied_restr_for_required_comp(ActionC, ActionI, Robot, Comp, Unsatisfied),
+      \+ member((_,[]), Unsatisfied)
+    ), Cs)
+  ),
   member(Comp, Cs).
 
 
@@ -511,7 +532,7 @@ succeeding_link(BaseLink, SucceedingLink) :-
 % @param Components    Sequence of installation candidates for each insufficient component
 %
 comp_installable_for_action(ActionC, ActionD, Robot, Components) :-
-  with_owl_description(ActionD, ActionI, (
+  with_action_description(ActionD, ActionI, Robot, (
     findall((CompC,Xs), (
       insufficient_comp_for_action(ActionC, ActionI, Robot, CompC),
       % TODO(daniel): also check that component is sufficient for the action description!
