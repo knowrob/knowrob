@@ -42,6 +42,7 @@
       entity_iri/3,
       entity_write/1,
       entity_format/2,
+      with_owl_description/3,
       class_properties/3,
       class_properties_some/3,
       class_properties_all/3,
@@ -87,6 +88,7 @@
             entity_assert(r,?),
             entity_retract(r),
             entity_iri(r,r),
+            with_owl_description(r,r,t),
             class_properties(r,r,t),
             class_properties_some(r,r,t),
             class_properties_all(r,r,t),
@@ -884,6 +886,32 @@ entity_retract(Entity) :-
   forall( owl_has(Entity, knowrob:temporalParts, TemporalPart),
           rdf_retractall(TemporalPart, _, _)),
   rdf_retractall(Entity, _, _).
+
+
+%% with_owl_description(+Description, ?Individual, +Goal) is nondet.
+%
+% Ensures entity description is asserted and binds the name to
+% Individual before goal is called.
+% Temorary assertions are retracted in a cleanup goal.
+%
+% @param Description Entity description or individual
+% @param Individual Entity individual
+% Goal The goal with OWL entity asserted
+%
+with_owl_description(Description, Individual, Goal) :-
+  atom(Description)
+  -> (
+    Individual = Description,
+    call( Goal )
+  ) ; (
+    is_list(Description),
+    setup_call_cleanup(
+      entity_assert(Individual, Description),
+      call( Goal ),
+      entity_retract(Individual)
+    )
+  ).
+
 
 %% entity_format(+Descr, -String) is nondet.
 %
