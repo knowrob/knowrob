@@ -26,6 +26,8 @@
 
 :- module(owl_computable,
 	  [ 
+	    owl_instance_of/2,
+            owl_satisfies_restriction/2,
 	    owl_triple/3,			% ?Subject, ?Predicate, ?Object
 	    owl_triple_direct/3		% ?Subject, ?Predicate, ?Object
 	  ]).
@@ -33,8 +35,8 @@
 :- use_module(library(lists)).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
-:- use_module(library('semweb/rdfs_computable')).
-:- use_module(library('semweb/owl')).
+:- use_module(library('rdfs_computable')).
+:- use_module(library('owl')).
 
 
 
@@ -51,19 +53,11 @@
 	user:goal_expansion/2.
 
 :- rdf_meta
-  owl_restriction_on(r, t),
-  owl_merged_restriction(r, r, t),
-  owl_restriction(r, -),
-  owl_description(r, -),
-  owl_cardinality_on_subject(r, r, -),
-  owl_cardinality_on_class(r, r, -),
-  owl_satisfies(r, t),
+  owl_satisfies_restriction(r, t),
   owl_instance_of(r, t),
-  owl_direct_subclass_of(r, r),
-  owl_subclass_of(r, r),
-  owl_has(r, r, o),
-  owl_has_direct(r, r, o),
-  owl_same_as(r, r).
+  owl_triple(r, r, o),
+  owl_triple_direct(r, r, o),
+  owl_has_equivalent(r, r, t).
 
 
 
