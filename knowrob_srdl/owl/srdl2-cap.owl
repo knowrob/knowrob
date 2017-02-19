@@ -65,7 +65,7 @@
     <!-- http://knowrob.org/kb/srdl2-cap.owl#hasCapability -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-cap.owl#hasCapability">
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Robot"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
         <rdfs:range rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#Capability"/>
     </owl:ObjectProperty>
     
@@ -196,9 +196,9 @@
     
 
 
-    <!-- http://knowrob.org/kb/knowrob_common.owl#Connector -->
+    <!-- http://knowrob.org/kb/knowrob.owl#Connector -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#Connector"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Connector"/>
     
 
 
@@ -582,7 +582,7 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob_common.owl#Connector"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Connector"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -894,6 +894,12 @@
     <!-- http://knowrob.org/kb/srdl2-comp.owl#CollisionMap -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#CollisionMap"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-comp.owl#Component -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
     
 
 
