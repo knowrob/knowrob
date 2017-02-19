@@ -173,7 +173,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#subComponent">
         <owl:inverseOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#superComponent"/>
         <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#HardwareComponent"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
     </owl:ObjectProperty>
     
 
