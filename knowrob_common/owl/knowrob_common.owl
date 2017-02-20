@@ -21,56 +21,6 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
-
-
-    <!-- http://knowrob.org/kb/computable.owl#cache -->
-
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/computable.owl#cache"/>
-    
-
-
-    <!-- http://knowrob.org/kb/computable.owl#command -->
-
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/computable.owl#command"/>
-    
-
-
-    <!-- http://knowrob.org/kb/computable.owl#target -->
-
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/computable.owl#target"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#occursAfterInOrdering -->
-
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#occursAfterInOrdering"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#occursBeforeInOrdering -->
-
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#occursBeforeInOrdering"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#pose -->
-
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#pose"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#quaternion -->
-
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#quaternion"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#translation -->
-
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#translation"/>
-    
-
 
     <!-- http://www.w3.org/2000/01/rdf-schema#comment -->
 

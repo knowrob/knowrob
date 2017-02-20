@@ -229,11 +229,12 @@ missing_for_action(Action, Robot, MissingCaps, MissingComps) :-
 unsatisfied_restr_for_action(ActionC, ActionD, Robot, CompC, Unsatisfied) :-
   with_action_description(ActionD, ActionI, Robot, (
     findall((CompC, Unsatisfied), (
-        %unsatisfied_restr_for_action_(ActionC, ActionI, Robot, CompC, Unsatisfied)
         ((
+          % check restrictions on robot level
           unsatisfied_restr_for_comp(ActionC, ActionI, Robot, Robot, Rs),
           CompC='http://knowrob.org/kb/knowrob.owl#Robot',
           Unsatisfied=[(Robot,Rs)]);
+          % check restrictions on component level
           unsatisfied_restr_for_required_comp(ActionC, ActionI, Robot, CompC, Unsatisfied)
         ),
         not( member((_,[]), Unsatisfied) )
@@ -281,9 +282,6 @@ unsatisfied_restr_for_comp(ActionC, ActionD, Robot, Comp, Unsatisfied) :-
   with_action_description(ActionD, ActionI, Robot, (
     findall(R, (
       comp_restricted_action(Comp, ActionC, R),
-      % use owl_instance_of -> allow computables in R
-      % TODO(foo)
-      %\+ once(owl_individual_of(ActionI, R) ; knowrob_owl:owl_instance_of(ActionI, R))
       \+ knowrob_owl:owl_instance_of(ActionI, R)
       %\+ owl_individual_of(ActionI, R)
     ), Unsatisfied)
@@ -553,9 +551,8 @@ comp_installable_on_robot(Comp, CompC, Robot) :-
   once(owl_individual_of(Comp, CompC)),
   ActionD = [an, action,
       [type, srdl2act:installing_hardware_component],
-      [object_acted_on, [an, object,
-          [name, Comp]
-      ]]],
+      [object_acted_on, [an, object, [name, Comp] ]]
+  ],
   action_feasible_on_robot(srdl2act:'InstallingHardwareComponent', ActionD, Robot).
 
 

@@ -20,41 +20,6 @@
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
-    // Annotation properties
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob_queries.owl#groupName -->
-
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob_queries.owl#groupName"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob_queries.owl#queryAbout -->
-
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob_queries.owl#queryAbout"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob_queries.owl#queryName -->
-
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob_queries.owl#queryName"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob_queries.owl#queryString -->
-
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob_queries.owl#queryString"/>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
     // Object Properties
     //
     ///////////////////////////////////////////////////////////////////////////////////////
