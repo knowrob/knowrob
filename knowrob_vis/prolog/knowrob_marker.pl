@@ -119,7 +119,6 @@
 
 marker_has_visual(Identifier) :-
   not(owl_individual_of(Identifier, srdl2comp:'UrdfJoint')),
-  not(owl_individual_of(Identifier, knowrob:'Agent-Generic')),
   not(owl_individual_of(Identifier, knowrob:'RoomInAConstruction')),
   not(owl_individual_of(Identifier, knowrob:'SemanticEnvironmentMap')),
   not(rdf_has(Identifier, knowrob:'hasVisual', literal(type(_,false)))).

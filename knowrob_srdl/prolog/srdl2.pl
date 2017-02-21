@@ -282,6 +282,7 @@ unsatisfied_restr_for_comp(ActionC, ActionD, Robot, Comp, Unsatisfied) :-
   with_action_description(ActionD, ActionI, Robot, (
     findall(R, (
       comp_restricted_action(Comp, ActionC, R),
+      % owl_instance_of supports computables in restricted actions!
       \+ knowrob_owl:owl_instance_of(ActionI, R)
       %\+ owl_individual_of(ActionI, R)
     ), Unsatisfied)
