@@ -567,7 +567,7 @@ owl_individual_of_all([C|T], Resource) :-
 
 owl_individual_from_range(Resource, Class) :-
 	nonvar(Resource), !,
-	rdf_has(_, P, Resource),
+	rdf_has(_, P, Resource), atom(P), % DB: P could be inverse_of(..)
 	rdf_has(P, rdfs:range, Class), !.
 owl_individual_from_range(Resource, Class) :-
 	rdf_has(P, rdfs:range, Class),
