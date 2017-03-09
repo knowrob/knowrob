@@ -45,9 +45,7 @@
       mng_ros_message/2,
       mng_ros_message/4,
       mng_republish/3,
-      mng_republish/5,
-      obj_blocked_by_in_camera/4,
-      obj_visible_in_camera/3
+      mng_republish/5
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -76,9 +74,7 @@
     mng_ros_message(t,-),
     mng_ros_message(+,+,+,-),
     mng_republish(t,+,-),
-    mng_republish(+,+,+,+,-),
-    obj_blocked_by_in_camera(r, r, r, r),
-    obj_visible_in_camera(r, r, r).
+    mng_republish(+,+,+,+,-).
 
 
 :- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
@@ -86,7 +82,6 @@
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(xsd, 'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
 :- rdf_db:rdf_register_ns(srdl2comp, 'http://knowrob.org/kb/srdl2-comp.owl#', [keep(true)]).
-
 
 mng_republisher(Republisher) :-
     (\+ current_predicate(v_mng_republisher, _)),
@@ -379,39 +374,39 @@ mng_republish(DBObj, TypeJava, TypeString, '', Msg) :-
 % @param TimePoint  Instance of a knowrob:TimePoint at which the scene is to be evaluated
 % 
 % TODO(daniel): Move to another module
-obj_visible_in_camera(Obj, Camera, TimePoint) :-
+%obj_visible_in_camera(Obj, Camera, TimePoint) :-
 
-  findall(Camera, owl_individual_of(Camera, srdl2comp:'Camera'), Cameras),
-  member(Camera, Cameras),
+  %findall(Camera, owl_individual_of(Camera, srdl2comp:'Camera'), Cameras),
+  %member(Camera, Cameras),
 
-  % Read camera properties: horizontal field of view, aspect ratio -> vertical field of view
-  once(owl_has(Camera, srdl2comp:hfov, literal(type(_, HFOVa)))),
-  term_to_atom(HFOV, HFOVa),
+  %% Read camera properties: horizontal field of view, aspect ratio -> vertical field of view
+  %once(owl_has(Camera, srdl2comp:hfov, literal(type(_, HFOVa)))),
+  %term_to_atom(HFOV, HFOVa),
 
-  once(owl_has(Camera, srdl2comp:imageSizeX, literal(type(_, ImgXa)))),
-  term_to_atom(ImgX, ImgXa),
+  %once(owl_has(Camera, srdl2comp:imageSizeX, literal(type(_, ImgXa)))),
+  %term_to_atom(ImgX, ImgXa),
 
-  once(owl_has(Camera, srdl2comp:imageSizeY, literal(type(_, ImgYa)))),
-  term_to_atom(ImgY, ImgYa),
+  %once(owl_has(Camera, srdl2comp:imageSizeY, literal(type(_, ImgYa)))),
+  %term_to_atom(ImgY, ImgYa),
 
-  VFOV is ImgY / ImgX * HFOV,
+  %VFOV is ImgY / ImgX * HFOV,
 
 
-  % Read object pose w.r.t. camera
-  once(owl_has(Camera, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(CamFrameID))),
-  atom_concat('/', CamFrameID, CamFrame),
+  %% Read object pose w.r.t. camera
+  %once(owl_has(Camera, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(CamFrameID))),
+  %atom_concat('/', CamFrameID, CamFrame),
 
-  % TODO: mng_latest_designator_before_time does not refer to Obj
-  (object_pose_at_time(Obj, TimePoint, mat(PoseListObj)); mng_latest_designator_before_time(TimePoint, 'object', PoseListObj)),
-  mng_transform_pose(PoseListObj, '/map', CamFrame, TimePoint, RelObjPose),
+  %% TODO: mng_latest_designator_before_time does not refer to Obj
+  %(object_pose_at_time(Obj, TimePoint, mat(PoseListObj)); mng_latest_designator_before_time(TimePoint, 'object', PoseListObj)),
+  %mng_transform_pose(PoseListObj, '/map', CamFrame, TimePoint, RelObjPose),
 
-  RelObjPose = [_,_,_,ObjX,_,_,_,ObjY,_,_,_,ObjZ,_,_,_,_],
+  %RelObjPose = [_,_,_,ObjX,_,_,_,ObjY,_,_,_,ObjZ,_,_,_,_],
 
-  BearingX is atan2(ObjY, ObjX),
-  BearingY is atan2(ObjZ, ObjX),
+  %BearingX is atan2(ObjY, ObjX),
+  %BearingY is atan2(ObjZ, ObjX),
 
-  abs(BearingX) < HFOV/2,
-  abs(BearingY) < VFOV/2.
+  %abs(BearingX) < HFOV/2,
+  %abs(BearingY) < VFOV/2.
 
 
 
@@ -429,48 +424,48 @@ obj_visible_in_camera(Obj, Camera, TimePoint) :-
 % @param TimePoint  Instance of a knowrob:TimePoint at which the scene is to be evaluated
 % 
 % TODO(daniel): Move to another module
-obj_blocked_by_in_camera(Obj, Blocker, Camera, TimePoint) :-
+%obj_blocked_by_in_camera(Obj, Blocker, Camera, TimePoint) :-
 
-  findall(Camera, owl_individual_of(Camera, srdl2comp:'Camera'), Cameras),
-  member(Camera, Cameras),
+  %findall(Camera, owl_individual_of(Camera, srdl2comp:'Camera'), Cameras),
+  %member(Camera, Cameras),
 
-  % Read camera frame ID
-  once(owl_has(Camera, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(CamFrameID))),
-  atom_concat('/', CamFrameID, CamFrame),
+  %% Read camera frame ID
+  %once(owl_has(Camera, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(CamFrameID))),
+  %atom_concat('/', CamFrameID, CamFrame),
 
 
-  % Read object pose w.r.t. camera
-  (object_pose_at_time(Obj, TimePoint, mat(PoseListObj)); mng_latest_designator_before_time(TimePoint, 'object', PoseListObj)),
-  mng_transform_pose(PoseListObj, '/map', CamFrame, TimePoint, ObjPoseInCamFrame),
-  ObjPoseInCamFrame = [_,_,_,ObjX,_,_,_,ObjY,_,_,_,ObjZ,_,_,_,_],
-  ObjBearingX is atan2(ObjY, ObjX),
-  ObjBearingY is atan2(ObjZ, ObjX),
+  %% Read object pose w.r.t. camera
+  %(object_pose_at_time(Obj, TimePoint, mat(PoseListObj)); mng_latest_designator_before_time(TimePoint, 'object', PoseListObj)),
+  %mng_transform_pose(PoseListObj, '/map', CamFrame, TimePoint, ObjPoseInCamFrame),
+  %ObjPoseInCamFrame = [_,_,_,ObjX,_,_,_,ObjY,_,_,_,ObjZ,_,_,_,_],
+  %ObjBearingX is atan2(ObjY, ObjX),
+  %ObjBearingY is atan2(ObjZ, ObjX),
 
-  % debug
-%   ObjXDeg is ObjBearingX /2 /pi * 360,
-%   ObjYDeg is ObjBearingY /2 /pi * 360,
-%%% PR2 ???? what is this doing here???
-%%% 
-  % Read poses of blocking robot parts w.r.t. camera
-  sub_component('http://knowrob.org/kb/PR2.owl#PR2Robot1', Blocker),
-  rdfs_individual_of(Blocker, 'http://knowrob.org/kb/srdl2-comp.owl#UrdfLink'),
-  owl_has(Blocker, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(PartFrameID)),
-  atom_concat('/', PartFrameID, PartFrame),
+  %% debug
+%%   ObjXDeg is ObjBearingX /2 /pi * 360,
+%%   ObjYDeg is ObjBearingY /2 /pi * 360,
+%%%% PR2 ???? what is this doing here???
+%%%% 
+  %% Read poses of blocking robot parts w.r.t. camera
+  %sub_component('http://knowrob.org/kb/PR2.owl#PR2Robot1', Blocker),
+  %rdfs_individual_of(Blocker, 'http://knowrob.org/kb/srdl2-comp.owl#UrdfLink'),
+  %owl_has(Blocker, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(PartFrameID)),
+  %atom_concat('/', PartFrameID, PartFrame),
 
-%   print(PartFrame),
-  % transform identity pose from robot part frame to camera frame
-  mng_transform_pose([1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1], PartFrame,
-                     CamFrame, TimePoint, BlockerPoseInCamFrame),
-  BlockerPoseInCamFrame = [_,_,_,BlkX,_,_,_,BlkY,_,_,_,BlkZ,_,_,_,_],
-  BlkBearingX is atan2(BlkY, BlkX),
-  BlkBearingY is atan2(BlkZ, BlkX),
+%%   print(PartFrame),
+  %% transform identity pose from robot part frame to camera frame
+  %mng_transform_pose([1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1], PartFrame,
+                     %CamFrame, TimePoint, BlockerPoseInCamFrame),
+  %BlockerPoseInCamFrame = [_,_,_,BlkX,_,_,_,BlkY,_,_,_,BlkZ,_,_,_,_],
+  %BlkBearingX is atan2(BlkY, BlkX),
+  %BlkBearingY is atan2(BlkZ, BlkX),
 
-  % debug
-%   BlkXDeg is BlkBearingX /2 /pi * 360,
-%   BlkYDeg is BlkBearingY /2 /pi * 360,
+  %% debug
+%%   BlkXDeg is BlkBearingX /2 /pi * 360,
+%%   BlkYDeg is BlkBearingY /2 /pi * 360,
 
-  abs(ObjBearingX - BlkBearingX) < 10/360 * 2 * pi,
-  abs(ObjBearingY - BlkBearingY) < 10/360 * 2 * pi.
+  %abs(ObjBearingX - BlkBearingX) < 10/360 * 2 * pi,
+  %abs(ObjBearingY - BlkBearingY) < 10/360 * 2 * pi.
 
 
 
