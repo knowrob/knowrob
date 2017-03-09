@@ -252,6 +252,9 @@ marker_prop_type(points,8).
 marker_prop_type(text_view_facing,9).
 marker_prop_type(mesh_resource,10).
 marker_prop_type(triangle_list,11).
+marker_prop_type(directional_light,999991).
+marker_prop_type(point_light,999992).
+marker_prop_type(spot_light,999993).
 marker_prop_type(sprite_scaled,999994).
 marker_prop_type(background_image,999995).
 marker_prop_type(hud_image,999996).
@@ -622,6 +625,16 @@ marker_new(MarkerName, object(Identifier), MarkerObject, Parent) :-
     ))
   ).
 
+marker_new(MarkerName, spot_light(Identifier), MarkerObject, Parent) :-
+  marker_primitive(spot_light, MarkerName, spot_light(Identifier), MarkerObject, Parent),
+  marker_initialize_object(Identifier, MarkerObject).
+marker_new(MarkerName, (Identifier), MarkerObject, Parent) :-
+  marker_primitive(point_light, MarkerName, point_light(Identifier), MarkerObject, Parent),
+  marker_initialize_object(Identifier, MarkerObject).
+marker_new(MarkerName, directional_light(Identifier), MarkerObject, Parent) :-
+  marker_primitive(directional_light, MarkerName, directional_light(Identifier), MarkerObject, Parent),
+  marker_initialize_object(Identifier, MarkerObject).
+
 marker_new(MarkerName, experiment(Identifier), MarkerObject, Parent) :-
   marker_primitive(cube, MarkerName, object(Identifier), MarkerObject, Parent),
   marker_initialize_object(Identifier, MarkerObject),
@@ -870,6 +883,19 @@ show_next :-
 marker_term(X, experiment(X)) :-
   atom(X),
   rdfs_individual_of(X, knowrob:'Experiment'), !.
+marker_term(X, Term) :-
+  atom(X),
+  rdfs_individual_of(X, knowrob:'Lightbulb'),
+  once(((
+    rdf_has(X, knowrob:lightType, knowrob:'LightTypePoint'),
+    Term = point_light(X)
+  ) ; (
+    rdf_has(X, knowrob:lightType, knowrob:'LightTypeSpot'),
+    Term = spot_light(X)
+  ) ; (
+    rdf_has(X, knowrob:lightType, knowrob:'LightTypeDirectional'),
+    Term = directional_light(X)
+  ))), !.
 marker_term(X, MarkerTerm) :-
   atom(X),
   rdfs_individual_of(X, _), !,
@@ -992,6 +1018,17 @@ marker_update(object(Identifier), MarkerObject, T) :-
     ),
     marker_timestamp(MarkerObject, T) % FIXME: shouldn't it be ChildObject here?
   ))).
+
+
+marker_update(spot_light(Identifier), MarkerObject, T) :-
+  marker_estimate_transform(MarkerObject,Identifier,T,(Translation,Orientation)),
+  marker_pose(MarkerObject,Translation,Orientation).
+marker_update(point_light(Identifier), MarkerObject, T) :-
+  marker_estimate_transform(MarkerObject,Identifier,T,(Translation,Orientation)),
+  marker_pose(MarkerObject,Translation,Orientation).
+marker_update(directional_light(Identifier), MarkerObject, T) :-
+  marker_estimate_transform(MarkerObject,Identifier,T,(Translation,Orientation)),
+  marker_pose(MarkerObject,Translation,Orientation).
 
 marker_update(attached(Marker,AttachedTo), _, T) :-
   marker_update(AttachedTo,T),
