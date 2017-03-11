@@ -125,11 +125,11 @@ marker_has_visual(Identifier) :-
 
 marker_children(Parent, Children) :-
   findall(Child, (
-    rdf_reachable(Part, knowrob:describedInMap, Parent),
     (
-      rdf_reachable(Part, knowrob:'parts', Child);
-      rdf_reachable(Part, srdl2comp:'subComponent', Child);
-      rdf_reachable(Part, srdl2comp:'successorInKinematicChain', Child)
+      rdf_has(Child, knowrob:describedInMap, Parent);
+      rdf_has(Parent, knowrob:'parts', Child);
+      rdf_has(Parent, srdl2comp:'subComponent', Child);
+      rdf_has(Parent, srdl2comp:'successorInKinematicChain', Child)
     ),
     not(Child = Parent)
   ), ChildrenList),
@@ -626,8 +626,22 @@ marker_new(MarkerName, object(Identifier), MarkerObject, Parent) :-
   ).
 
 marker_new(MarkerName, spot_light(Identifier), MarkerObject, Parent) :-
+  % get look at target object (more specific the name of the marker)
+  once(((
+    rdf_has(Identifier, knowrob:lightTarget, LookAt),
+    marker_term(LookAt, LookAtMarker),
+    marker(LookAtMarker, LookAtMarkerObj),
+    jpl_call(LookAtMarkerObj, 'getId', [], LookAtId),
+    term_to_atom(LookAtMarker, LookAtMarkerAtom),
+    atom_concat(LookAtMarkerAtom, LookAtId, LookAtName)
+  ) ; LookAtName='' )),
   marker_primitive(spot_light, MarkerName, spot_light(Identifier), MarkerObject, Parent),
-  marker_initialize_object(Identifier, MarkerObject).
+  marker_initialize_object(Identifier, MarkerObject),
+  marker_text(MarkerObject, LookAtName),
+  % read spot properties from owl
+  ( rdf_has(Identifier, knowrob:lightSpotExponent, Exponent) ; Exponent=1.0 ),
+  ( rdf_has(Identifier, knowrob:lightConeAngle, ConeAngle) ; ConeAngle=3.14159 ),
+  marker_scale(MarkerObject, [Exponent,ConeAngle,1.0]).
 marker_new(MarkerName, (Identifier), MarkerObject, Parent) :-
   marker_primitive(point_light, MarkerName, point_light(Identifier), MarkerObject, Parent),
   marker_initialize_object(Identifier, MarkerObject).
@@ -885,16 +899,16 @@ marker_term(X, experiment(X)) :-
   rdfs_individual_of(X, knowrob:'Experiment'), !.
 marker_term(X, Term) :-
   atom(X),
-  rdfs_individual_of(X, knowrob:'Lightbulb'),
+  rdfs_individual_of(X, knowrob:'LightEmitter'),
   once(((
-    rdf_has(X, knowrob:lightType, knowrob:'LightTypePoint'),
+    rdf_has(X, knowrob:'lightType', knowrob:'LightTypePoint'),
     Term = point_light(X)
   ) ; (
-    rdf_has(X, knowrob:lightType, knowrob:'LightTypeSpot'),
-    Term = spot_light(X)
-  ) ; (
-    rdf_has(X, knowrob:lightType, knowrob:'LightTypeDirectional'),
+    rdf_has(X, knowrob:'lightType', knowrob:'LightTypeDirectional'),
     Term = directional_light(X)
+  ) ; (
+    %rdf_has(X, knowrob:'lightType', knowrob:'LightTypeSpot'),
+    Term = spot_light(X)
   ))), !.
 marker_term(X, MarkerTerm) :-
   atom(X),
