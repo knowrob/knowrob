@@ -2072,6 +2072,15 @@ See also the specialization cotemporal.</rdfs:comment>
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#lightTarget -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightTarget">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#LightEmitter"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://knowrob.org/kb/srdl2-comp.owl#subComponent -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#subComponent"/>
@@ -2333,7 +2342,7 @@ There are various specializations of coordinateValuePredicateOfSystem currently 
     <!-- http://knowrob.org/kb/knowrob.owl#lightProperty -->
 
     <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lightProperty">
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#LightEmitter"/>
     </owl:DatatypeProperty>
     
 
@@ -4586,7 +4595,7 @@ See also xAxisPredicateOfSystem and yAxisPredicateOfSystem.</rdfs:comment>
     <!-- http://knowrob.org/kb/knowrob.owl#Candle -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Candle">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LightingDevice"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LightEmitter"/>
         <rdfs:comment>The collection of pieces of wax, tallow, etc. with embedded wicks designed to be burned to give light. Modern candles are often long and slender. The whole of a candle burns up, unlike a torch, which remains after its fuel has been consumed by the fire.</rdfs:comment>
         <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVikZ5wpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
@@ -6526,6 +6535,15 @@ The two most common types of coordinate systems are CartesianCoordinateSystems a
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#ElectricalLightEmitter -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ElectricalLightEmitter">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LightEmitter"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice">
@@ -8340,6 +8358,14 @@ Note that some events, such as an ice cube melting into a small puddle of water,
     
 
 
+    <!-- http://knowrob.org/kb/knowrob.owl#LightEmitter -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LightEmitter">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#LightingDevice"/>
+    </owl:Class>
+    
+
+
     <!-- http://knowrob.org/kb/knowrob.owl#LightFixture -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LightFixture">
@@ -8373,7 +8399,7 @@ Note that some events, such as an ice cube melting into a small puddle of water,
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Lightbulb">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalComponent"/>
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightingDevice"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalLightEmitter"/>
         <rdfs:comment>A bulb of glass or quartz enclosing material that incandesces or fluoresces when provided with current, thus generating light.</rdfs:comment>
         <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rMgnAuqUkEd2AAABQjYGu0g</rdfs:seeAlso>
     </owl:Class>
