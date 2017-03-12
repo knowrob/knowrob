@@ -642,7 +642,7 @@ marker_new(MarkerName, spot_light(Identifier), MarkerObject, Parent) :-
   ( rdf_has(Identifier, knowrob:lightSpotExponent, Exponent) ; Exponent=1.0 ),
   ( rdf_has(Identifier, knowrob:lightConeAngle, ConeAngle) ; ConeAngle=3.14159 ),
   marker_scale(MarkerObject, [Exponent,ConeAngle,1.0]).
-marker_new(MarkerName, (Identifier), MarkerObject, Parent) :-
+marker_new(MarkerName, point_light(Identifier), MarkerObject, Parent) :-
   marker_primitive(point_light, MarkerName, point_light(Identifier), MarkerObject, Parent),
   marker_initialize_object(Identifier, MarkerObject).
 marker_new(MarkerName, directional_light(Identifier), MarkerObject, Parent) :-
@@ -822,6 +822,7 @@ show(X) :-
   )), !.
 
 show(X) :-
+  atom(X),
   rdfs_individual_of(X, knowrob:'Designator'),
   % TODO: also show object marker
   %marker_term(X, MarkerTerm),
