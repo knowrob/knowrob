@@ -1,31 +1,61 @@
 <?xml version="1.0"?>
-
-
-<!DOCTYPE rdf:RDF [
-    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
-    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
-    <!ENTITY knowrob "http://knowrob.org/kb/knowrob.owl#" >
-    <!ENTITY blocksworld "http://knowrob.org/kb/blocksworld.owl#" >
-    <!ENTITY action-effects "http://knowrob.org/kb/action-effects.owl#" >
-    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
-    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
-]>
-
-
 <rdf:RDF xmlns="http://knowrob.org/kb/blocksworld.owl#"
      xml:base="http://knowrob.org/kb/blocksworld.owl"
-     xmlns:blocksworld="http://knowrob.org/kb/blocksworld.owl#"
-     xmlns:action-effects="http://knowrob.org/kb/action-effects.owl#"
-     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:owl="http://www.w3.org/2002/07/owl#"
-     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
-     xmlns:effects="http://knowrob.org/kb/action-effects.owl#">
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:blocksworld="http://knowrob.org/kb/blocksworld.owl#"
+     xmlns:action-effects="http://knowrob.org/kb/action-effects.owl#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/blocksworld.owl">
         <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
         <owl:imports rdf:resource="package://knowrob_actions/owl/action-effects.owl"/>
     </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#hasEffect -->
+
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#hasEffect"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#targetLocation -->
+
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#targetLocation"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#swrlName -->
+
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#swrlName"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#swrlTargetConcept -->
+
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#swrlTargetConcept"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#swrlType -->
+
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#swrlType"/>
     
 
 
@@ -40,17 +70,98 @@
     
 
 
+    <!-- http://knowrob.org/kb/action-effects.owl#hasEffect -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/action-effects.owl#hasEffect"/>
+    
+
+
     <!-- http://knowrob.org/kb/blocksworld.owl#graspedBy -->
 
-    <owl:ObjectProperty rdf:about="&blocksworld;graspedBy">
-        <rdfs:range rdf:resource="&knowrob;Hand"/>
-        <rdfs:domain rdf:resource="&knowrob;SpatialThing"/>
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/blocksworld.owl#graspedBy">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#Hand"/>
     </owl:ObjectProperty>
+    
 
-    <owl:ObjectProperty rdf:about="&blocksworld;ontop">
-        <rdfs:range rdf:resource="&knowrob;SpatialThing"/>
-        <rdfs:domain rdf:resource="&knowrob;SpatialThing"/>
+
+    <!-- http://knowrob.org/kb/blocksworld.owl#ontop -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/blocksworld.owl#ontop">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
     </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#endTime -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#endTime"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#goalLocation -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#goalLocation"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#objectActedOn -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#startTime -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#startTime"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#temporalExtend -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#temporalExtend"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#temporalParts -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#temporalParts"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#temporalProperty -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#temporalProperty"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/action-effects.owl#object -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/action-effects.owl#object"/>
+    
+
+
+    <!-- http://knowrob.org/kb/action-effects.owl#predicate -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/action-effects.owl#predicate"/>
+    
+
+
+    <!-- http://knowrob.org/kb/action-effects.owl#subject -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/action-effects.owl#subject"/>
     
 
 
@@ -67,28 +178,17 @@
 
     <!-- http://knowrob.org/kb/blocksworld.owl#Stack -->
 
-    <owl:Class rdf:about="&blocksworld;Stack">
-        <rdfs:subClassOf rdf:resource="&knowrob;HoldingAnObject"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/blocksworld.owl#Stack">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#HoldingAnObject"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
-                <owl:allValuesFrom>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="&blocksworld;graspedBy"/>
-                        <owl:allValuesFrom rdf:resource="&knowrob;Hand"/>
-                    </owl:Restriction>
-                </owl:allValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;goalLocation"/>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#goalLocation"/>
                 <owl:allValuesFrom>
                     <owl:Class>
                         <owl:complementOf>
                             <owl:Restriction>
-                                <owl:onProperty rdf:resource="&blocksworld;ontop"/>
-                                <owl:someValuesFrom rdf:resource="&knowrob;SpatialThing"/>
+                                <owl:onProperty rdf:resource="http://knowrob.org/kb/blocksworld.owl#ontop"/>
+                                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
                             </owl:Restriction>
                         </owl:complementOf>
                     </owl:Class>
@@ -96,18 +196,60 @@
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
-          <owl:Restriction>
-              <owl:onProperty rdf:resource="&action-effects;hasEffect"/>
-              <owl:hasValue rdf:resource="&blocksworld;StackEffect_0"/>
-          </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-          <owl:Restriction>
-              <owl:onProperty rdf:resource="&action-effects;hasEffect"/>
-              <owl:hasValue rdf:resource="&blocksworld;StackEffect_1"/>
-          </owl:Restriction>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+                <owl:allValuesFrom>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://knowrob.org/kb/blocksworld.owl#graspedBy"/>
+                        <owl:allValuesFrom rdf:resource="http://knowrob.org/kb/knowrob.owl#Hand"/>
+                    </owl:Restriction>
+                </owl:allValuesFrom>
+            </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Hand -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Hand"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HoldingAnObject -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HoldingAnObject"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SpatialThing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TemporalPart -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TemporalPart"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TimeInterval -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TimeInterval"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TimePoint -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TimePoint"/>
+    
 
 
     <!-- 
@@ -118,181 +260,356 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    <!-- http://knowrob.org/kb/blocksworld.owl#StackEffect_0 -->
+    
 
-    <owl:NamedIndividual rdf:about="&blocksworld;StackEffect_0">
-        <rdf:type rdf:resource="&action-effects;Integrate"/>
-        <action-effects:subject rdf:datatype="&xsd;string">?action &knowrob;objectActedOn</action-effects:subject>
-        <action-effects:object rdf:datatype="&xsd;string">?action &knowrob;targetLocation</action-effects:object>
-        <action-effects:predicate rdf:datatype="&xsd;string">&blocksworld;ontop</action-effects:predicate>
+
+    <!-- http://knowrob.org/kb/blocksworld.owl#BlockBlue_test0 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#BlockBlue_test0">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized"/>
     </owl:NamedIndividual>
     
-    <!-- http://knowrob.org/kb/blocksworld.owl#StackEffect_1 -->
 
-    <owl:NamedIndividual rdf:about="&blocksworld;StackEffect_1">
-        <rdf:type rdf:resource="&action-effects;ClearProperty"/>
-        <action-effects:subject rdf:datatype="&xsd;string">?action &knowrob;objectActedOn</action-effects:subject>
-        <action-effects:predicate rdf:datatype="&xsd;string">&blocksworld;graspedBy</action-effects:predicate>
-    </owl:NamedIndividual>
 
-    <!-- http://knowrob.org/kb/temporal-part-example.owl#timepoint_0 -->
+    <!-- http://knowrob.org/kb/blocksworld.owl#BlockBlue_test1 -->
 
-    <owl:NamedIndividual rdf:about="&blocksworld;timepoint_0">
-        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#BlockBlue_test1">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized"/>
     </owl:NamedIndividual>
     
+
+
+    <!-- http://knowrob.org/kb/blocksworld.owl#BlockBlue_test2 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#BlockBlue_test2">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized"/>
+        <knowrob:temporalParts rdf:resource="http://knowrob.org/kb/blocksworld.owl#BlockBlue_test2@TimeInterval_dfgnk43895"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/blocksworld.owl#BlockGreen_test2 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#BlockGreen_test2">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized"/>
+        <knowrob:temporalParts rdf:resource="http://knowrob.org/kb/blocksworld.owl#BlockGreen_test2@TimeInterval_dfgnk43895"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/blocksworld.owl#BlockRed_test0 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#BlockRed_test0">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized"/>
+        <knowrob:temporalParts rdf:resource="http://knowrob.org/kb/blocksworld.owl#BlockRed_test0@TimeInterval_sfdigug3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/blocksworld.owl#BlockRed_test1 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#BlockRed_test1">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/blocksworld.owl#BlockRed_test2 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#BlockRed_test2">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized"/>
+        <knowrob:temporalParts rdf:resource="http://knowrob.org/kb/blocksworld.owl#BlockRed_test2@TimeInterval_gon49235h"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/blocksworld.owl#Hand_test0 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#Hand_test0">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#Hand"/>
+        <knowrob:temporalParts rdf:resource="http://knowrob.org/kb/blocksworld.owl#Hand_test0@TimeInterval_sfdigug3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/blocksworld.owl#Hand_test2 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#Hand_test2"/>
+    
+
+
+    <!-- http://knowrob.org/kb/blocksworld.owl#Stack_test0 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#Stack_test0">
+        <rdf:type rdf:resource="http://knowrob.org/kb/blocksworld.owl#Stack"/>
+        <knowrob:objectActedOn rdf:resource="http://knowrob.org/kb/blocksworld.owl#BlockRed_test0"/>
+        <knowrob:targetLocation rdf:resource="http://knowrob.org/kb/blocksworld.owl#BlockBlue_test0"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/blocksworld.owl#Stack_test1 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#Stack_test1">
+        <rdf:type rdf:resource="http://knowrob.org/kb/blocksworld.owl#Stack"/>
+        <knowrob:objectActedOn rdf:resource="http://knowrob.org/kb/blocksworld.owl#BlockRed_test1"/>
+        <knowrob:targetLocation rdf:resource="http://knowrob.org/kb/blocksworld.owl#BlockBlue_test1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/blocksworld.owl#Stack_test2 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#Stack_test2">
+        <rdf:type rdf:resource="http://knowrob.org/kb/blocksworld.owl#Stack"/>
+        <knowrob:objectActedOn rdf:resource="http://knowrob.org/kb/blocksworld.owl#BlockRed_test2"/>
+        <knowrob:targetLocation rdf:resource="http://knowrob.org/kb/blocksworld.owl#BlockBlue_test2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/blocksworld.owl#TimeInterval_dfgnk43895 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#TimeInterval_dfgnk43895">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#TimeInterval"/>
+        <knowrob:startTime rdf:resource="http://knowrob.org/kb/blocksworld.owl#timepoint_0"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/blocksworld.owl#TimeInterval_gon49235h -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#TimeInterval_gon49235h">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#TimeInterval"/>
+        <knowrob:startTime rdf:resource="http://knowrob.org/kb/blocksworld.owl#timepoint_0"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/blocksworld.owl#TimeInterval_sfdigug3 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#TimeInterval_sfdigug3">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#TimeInterval"/>
+        <knowrob:startTime rdf:resource="http://knowrob.org/kb/blocksworld.owl#timepoint_0"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/blocksworld.owl#graspedBy -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#graspedBy"/>
+    
+
+
+    <!-- http://knowrob.org/kb/blocksworld.owl#ontop -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#ontop"/>
+    
+
+
+    <!-- http://knowrob.org/kb/blocksworld.owl#timepoint_0 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#timepoint_0">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#TimePoint"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/blocksworld.owl#BlockBlue_test2@TimeInterval_dfgnk43895 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#BlockBlue_test2@TimeInterval_dfgnk43895">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#TemporalPart"/>
+        <knowrob:temporalExtend rdf:resource="http://knowrob.org/kb/blocksworld.owl#TimeInterval_dfgnk43895"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/blocksworld.owl#BlockGreen_test2@TimeInterval_dfgnk43895 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#BlockGreen_test2@TimeInterval_dfgnk43895">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#TemporalPart"/>
+        <ontop rdf:resource="http://knowrob.org/kb/blocksworld.owl#BlockBlue_test2@TimeInterval_dfgnk43895"/>
+        <knowrob:temporalExtend rdf:resource="http://knowrob.org/kb/blocksworld.owl#TimeInterval_dfgnk43895"/>
+        <knowrob:temporalProperty rdf:resource="http://knowrob.org/kb/blocksworld.owl#ontop"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/blocksworld.owl#BlockRed_test0@TimeInterval_sfdigug3 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#BlockRed_test0@TimeInterval_sfdigug3">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#TemporalPart"/>
+        <graspedBy rdf:resource="http://knowrob.org/kb/blocksworld.owl#Hand_test0@TimeInterval_sfdigug3"/>
+        <knowrob:temporalExtend rdf:resource="http://knowrob.org/kb/blocksworld.owl#TimeInterval_sfdigug3"/>
+        <knowrob:temporalProperty rdf:resource="http://knowrob.org/kb/blocksworld.owl#graspedBy"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/blocksworld.owl#BlockRed_test2@TimeInterval_gon49235h -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#BlockRed_test2@TimeInterval_gon49235h">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#TemporalPart"/>
+        <graspedBy rdf:resource="http://knowrob.org/kb/blocksworld.owl#Hand_test2@TimeInterval_gon49235h"/>
+        <knowrob:temporalExtend rdf:resource="http://knowrob.org/kb/blocksworld.owl#TimeInterval_gon49235h"/>
+        <knowrob:temporalProperty rdf:resource="http://knowrob.org/kb/blocksworld.owl#graspedBy"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/blocksworld.owl#Hand_test0@TimeInterval_sfdigug3 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#Hand_test0@TimeInterval_sfdigug3">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#TemporalPart"/>
+        <knowrob:temporalExtend rdf:resource="http://knowrob.org/kb/blocksworld.owl#TimeInterval_sfdigug3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/blocksworld.owl#Hand_test2@TimeInterval_gon49235h -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#Hand_test2@TimeInterval_gon49235h">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#Hand"/>
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#TemporalPart"/>
+        <knowrob:temporalExtend rdf:resource="http://knowrob.org/kb/blocksworld.owl#TimeInterval_gon49235h"/>
+        <knowrob:temporalParts rdf:resource="http://knowrob.org/kb/blocksworld.owl#Hand_test2"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
-    // Test0: Precondition `?objectActedOn graspedBy ?Hand` fulfilled via fluents.
-    //      Stack objectActedOn BlockRed
-    //      Stack targetLocation BlockBlue
-    //      BlockRed graspedBy Hand
+    // Rules
     //
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
-    
-    <owl:NamedIndividual rdf:about="&blocksworld;Stack_test0">
-        <rdf:type rdf:resource="&blocksworld;Stack"/>
-        <knowrob:objectActedOn rdf:resource="&blocksworld;BlockRed_test0"/>
-        <knowrob:targetLocation rdf:resource="&blocksworld;BlockBlue_test0"/>
-        <knowrob:hasEffect rdf:resource="&blocksworld;StackEffect_0"/>
-        <knowrob:hasEffect rdf:resource="&blocksworld;StackEffect_1"/>
-    </owl:NamedIndividual>
 
-    <owl:NamedIndividual rdf:about="&blocksworld;BlockRed_test0">
-        <rdf:type rdf:resource="&knowrob;SpatialThing-Localized"/>
-        <knowrob:temporalParts rdf:resource="&blocksworld;BlockRed_test0@TimeInterval_sfdigug3"/>
-    </owl:NamedIndividual>
-
-    <owl:NamedIndividual rdf:about="&blocksworld;BlockBlue_test0">
-        <rdf:type rdf:resource="&knowrob;SpatialThing-Localized"/>
-    </owl:NamedIndividual>
-
-    <owl:NamedIndividual rdf:about="&blocksworld;Hand_test0">
-        <rdf:type rdf:resource="&knowrob;Hand"/>
-        <knowrob:temporalParts rdf:resource="&blocksworld;Hand_test0@TimeInterval_sfdigug3"/>
-    </owl:NamedIndividual>
-    
-    <owl:NamedIndividual rdf:about="&blocksworld;TimeInterval_sfdigug3">
-        <rdf:type rdf:resource="&knowrob;TimeInterval"/>
-        <knowrob:startTime rdf:resource="&blocksworld;timepoint_0"/>
-    </owl:NamedIndividual>
-    
-    <owl:NamedIndividual rdf:about="&blocksworld;BlockRed_test0@TimeInterval_sfdigug3">
-        <rdf:type rdf:resource="&knowrob;TemporalPart"/>
-        <blocksworld:graspedBy rdf:resource="&blocksworld;Hand_test0@TimeInterval_sfdigug3"/>
-        <knowrob:temporalExtend rdf:resource="&blocksworld;TimeInterval_sfdigug3"/>
-        <knowrob:temporalProperty rdf:resource="&blocksworld;graspedBy"/>
-    </owl:NamedIndividual>
-    
-    <owl:NamedIndividual rdf:about="&blocksworld;Hand_test0@TimeInterval_sfdigug3">
-        <rdf:type rdf:resource="&knowrob;TemporalPart"/>
-        <knowrob:temporalExtend rdf:resource="&blocksworld;TimeInterval_sfdigug3"/>
-    </owl:NamedIndividual>
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Test1: Precondition `graspedBy Hand` not fulfilled.
-    //      Stack objectActedOn BlockRed
-    //      Stack targetLocation BlockBlue
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-    
-    <owl:NamedIndividual rdf:about="&blocksworld;Stack_test1">
-        <rdf:type rdf:resource="&blocksworld;Stack"/>
-        <knowrob:objectActedOn rdf:resource="&blocksworld;BlockRed_test1"/>
-        <knowrob:targetLocation rdf:resource="&blocksworld;BlockBlue_test1"/>
-        <knowrob:hasEffect rdf:resource="&blocksworld;StackEffect_0"/>
-        <knowrob:hasEffect rdf:resource="&blocksworld;StackEffect_1"/>
-    </owl:NamedIndividual>
-
-    <owl:NamedIndividual rdf:about="&blocksworld;BlockRed_test1">
-        <rdf:type rdf:resource="&knowrob;SpatialThing-Localized"/>
-    </owl:NamedIndividual>
-
-    <owl:NamedIndividual rdf:about="&blocksworld;BlockBlue_test1">
-        <rdf:type rdf:resource="&knowrob;SpatialThing-Localized"/>
-    </owl:NamedIndividual>
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Test2: Precondition `not ?SpatialThing ontop ?targetLocation` not fulfilled:
-    //      Stack objectActedOn BlockRed
-    //      Stack targetLocation BlockBlue
-    //      BlockRed graspedBy Hand
-    //      BlockGreen on-Physical BlockBlue
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-    
-    <owl:NamedIndividual rdf:about="&blocksworld;Stack_test2">
-        <rdf:type rdf:resource="&blocksworld;Stack"/>
-        <knowrob:objectActedOn rdf:resource="&blocksworld;BlockRed_test2"/>
-        <knowrob:targetLocation rdf:resource="&blocksworld;BlockBlue_test2"/>
-        <knowrob:hasEffect rdf:resource="&blocksworld;StackEffect_0"/>
-        <knowrob:hasEffect rdf:resource="&blocksworld;StackEffect_1"/>
-    </owl:NamedIndividual>
-
-    <owl:NamedIndividual rdf:about="&blocksworld;BlockRed_test2">
-        <rdf:type rdf:resource="&knowrob;SpatialThing-Localized"/>
-        <knowrob:temporalParts rdf:resource="&blocksworld;BlockRed_test2@TimeInterval_gon49235h"/>
-    </owl:NamedIndividual>
-
-    <owl:NamedIndividual rdf:about="&blocksworld;BlockBlue_test2">
-        <rdf:type rdf:resource="&knowrob;SpatialThing-Localized"/>
-        <knowrob:temporalParts rdf:resource="&blocksworld;BlockBlue_test2@TimeInterval_dfgnk43895"/>
-    </owl:NamedIndividual>
-
-    <owl:NamedIndividual rdf:about="&blocksworld;BlockGreen_test2">
-        <rdf:type rdf:resource="&knowrob;SpatialThing-Localized"/>
-        <knowrob:temporalParts rdf:resource="&blocksworld;BlockGreen_test2@TimeInterval_dfgnk43895"/>
-    </owl:NamedIndividual>
-
-    <owl:NamedIndividual rdf:about="&blocksworld;Hand_test2@TimeInterval_gon49235h">
-        <rdf:type rdf:resource="&knowrob;Hand"/>
-        <knowrob:temporalParts rdf:resource="&blocksworld;Hand_test2"/>
-    </owl:NamedIndividual>
-    
-    <owl:NamedIndividual rdf:about="&blocksworld;TimeInterval_gon49235h">
-        <rdf:type rdf:resource="&knowrob;TimeInterval"/>
-        <knowrob:startTime rdf:resource="&blocksworld;timepoint_0"/>
-    </owl:NamedIndividual>
-    
-    <owl:NamedIndividual rdf:about="&blocksworld;TimeInterval_dfgnk43895">
-        <rdf:type rdf:resource="&knowrob;TimeInterval"/>
-        <knowrob:startTime rdf:resource="&blocksworld;timepoint_0"/>
-    </owl:NamedIndividual>
-    
-    <owl:NamedIndividual rdf:about="&blocksworld;BlockRed_test2@TimeInterval_gon49235h">
-        <rdf:type rdf:resource="&knowrob;TemporalPart"/>
-        <blocksworld:graspedBy rdf:resource="&blocksworld;Hand_test2@TimeInterval_gon49235h"/>
-        <knowrob:temporalExtend rdf:resource="&blocksworld;TimeInterval_gon49235h"/>
-        <knowrob:temporalProperty rdf:resource="&blocksworld;graspedBy"/>
-    </owl:NamedIndividual>
-    
-    <owl:NamedIndividual rdf:about="&blocksworld;Hand_test2@TimeInterval_gon49235h">
-        <rdf:type rdf:resource="&knowrob;TemporalPart"/>
-        <knowrob:temporalExtend rdf:resource="&blocksworld;TimeInterval_gon49235h"/>
-    </owl:NamedIndividual>
-    
-    <owl:NamedIndividual rdf:about="&blocksworld;BlockBlue_test2@TimeInterval_dfgnk43895">
-        <rdf:type rdf:resource="&knowrob;TemporalPart"/>
-        <knowrob:temporalExtend rdf:resource="&blocksworld;TimeInterval_dfgnk43895"/>
-    </owl:NamedIndividual>
-    
-    <owl:NamedIndividual rdf:about="&blocksworld;BlockGreen_test2@TimeInterval_dfgnk43895">
-        <rdf:type rdf:resource="&knowrob;TemporalPart"/>
-        <blocksworld:ontop rdf:resource="&blocksworld;BlockBlue_test2@TimeInterval_dfgnk43895"/>
-        <knowrob:temporalExtend rdf:resource="&blocksworld;TimeInterval_dfgnk43895"/>
-        <knowrob:temporalProperty rdf:resource="&blocksworld;ontop"/>
-    </owl:NamedIndividual>
+    <rdf:Description rdf:about="urn:swrl#act">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="urn:swrl#loc">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description rdf:about="urn:swrl#obj">
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
+    </rdf:Description>
+    <rdf:Description>
+        <knowrob:swrlName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Stacking a block</knowrob:swrlName>
+        <knowrob:swrlTargetConcept rdf:resource="http://knowrob.org/kb/blocksworld.owl#Stack"/>
+        <knowrob:swrlType rdf:resource="http://knowrob.org/kb/knowrob.owl#RuleTypeActionDescription"/>
+        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
+        <swrl:body>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate rdf:resource="http://knowrob.org/kb/blocksworld.owl#Stack"/>
+                        <swrl:argument1 rdf:resource="urn:swrl#act"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#goalLocation"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#act"/>
+                                <swrl:argument2 rdf:resource="urn:swrl#loc"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                <rdf:first>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                        <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/knowrob.owl#objectActedOn"/>
+                                        <swrl:argument1 rdf:resource="urn:swrl#act"/>
+                                        <swrl:argument2 rdf:resource="urn:swrl#obj"/>
+                                    </rdf:Description>
+                                </rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                        <rdf:first>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                                <swrl:classPredicate>
+                                                    <owl:Restriction>
+                                                        <owl:onProperty rdf:resource="http://knowrob.org/kb/blocksworld.owl#ontop"/>
+                                                        <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">0</owl:qualifiedCardinality>
+                                                        <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
+                                                    </owl:Restriction>
+                                                </swrl:classPredicate>
+                                                <swrl:argument1 rdf:resource="urn:swrl#loc"/>
+                                            </rdf:Description>
+                                        </rdf:first>
+                                        <rdf:rest>
+                                            <rdf:Description>
+                                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                                                <rdf:first>
+                                                    <rdf:Description>
+                                                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                                                        <swrl:classPredicate>
+                                                            <owl:Restriction>
+                                                                <owl:onProperty rdf:resource="http://knowrob.org/kb/blocksworld.owl#graspedBy"/>
+                                                                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
+                                                                <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#Hand"/>
+                                                            </owl:Restriction>
+                                                        </swrl:classPredicate>
+                                                        <swrl:argument1 rdf:resource="urn:swrl#obj"/>
+                                                    </rdf:Description>
+                                                </rdf:first>
+                                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                            </rdf:Description>
+                                        </rdf:rest>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:body>
+        <swrl:head>
+            <rdf:Description>
+                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                <rdf:first>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+                        <swrl:classPredicate>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://knowrob.org/kb/blocksworld.owl#graspedBy"/>
+                                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">0</owl:qualifiedCardinality>
+                                <owl:onClass rdf:resource="http://knowrob.org/kb/knowrob.owl#Hand"/>
+                            </owl:Restriction>
+                        </swrl:classPredicate>
+                        <swrl:argument1 rdf:resource="urn:swrl#obj"/>
+                    </rdf:Description>
+                </rdf:first>
+                <rdf:rest>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#AtomList"/>
+                        <rdf:first>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+                                <swrl:propertyPredicate rdf:resource="http://knowrob.org/kb/blocksworld.owl#ontop"/>
+                                <swrl:argument1 rdf:resource="urn:swrl#obj"/>
+                                <swrl:argument2 rdf:resource="urn:swrl#loc"/>
+                            </rdf:Description>
+                        </rdf:first>
+                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                    </rdf:Description>
+                </rdf:rest>
+            </rdf:Description>
+        </swrl:head>
+    </rdf:Description>
 </rdf:RDF>
 
 
 
-<!-- Generated by the OWL API (version 3.5.0) http://owlapi.sourceforge.net -->
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
 
