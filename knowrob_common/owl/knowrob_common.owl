@@ -62,6 +62,7 @@
 
     <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#swrlTargetConcept">
         <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#swrlAnnotation"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
     </owl:AnnotationProperty>
     
 
@@ -70,13 +71,14 @@
 
     <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#swrlType">
         <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#swrlAnnotation"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#RuleType"/>
     </owl:AnnotationProperty>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob_common.owl#todo -->
+    <!-- http://knowrob.org/kb/knowrob.owl#todo -->
 
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob_common.owl#todo">
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#todo">
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     </owl:AnnotationProperty>
     
@@ -1666,6 +1668,14 @@ There is a range of useful specializations of this predicate. For example, for i
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#servesCuisineAtLocation">
         <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#FoodAndBeverageOrganization"/>
         <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#MultiRoomUnit"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#slices -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#slices">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#parts"/>
     </owl:ObjectProperty>
     
 

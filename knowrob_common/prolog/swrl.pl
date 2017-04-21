@@ -42,7 +42,7 @@
       swrl_holds/2,
       swrl_atom_holds/2,
       swrl_project/1,
-      swrl_print/1
+      swrl_phrase/2
     ]).
 
 :- rdf_db:rdf_register_ns(owl, 'http://www.w3.org/2002/07/owl#', [keep(true)]).
@@ -55,6 +55,9 @@
 :- use_module(library('rdfs_computable')).
 :- use_module(library('knowrob_owl')).
 :- use_module(library('knowrob_temporal')).
+
+
+:- rdf_meta swrl_individual_of(r,?,r).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%% RDF-based SWRL representation
@@ -522,119 +525,118 @@ swrl_cardinality_diff(S, P, Cls, Num, Diff) :-
 %%%%%%%%%%%%%%% SWRL formatting
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% TODO: come up with something bidirectional! Would like to generate terms from SWRL expressions.
-%  swrl_format(Term, 'Men(?x) -> Person(?x)').
-%  ->  Term = rule( class(..), class(...) )
+swrl_phrase(Term, Expr) :-
+  ground(Term),
+  phrase(swrl_parser(Term), Tokens),
+  swrl_tokens_format(Tokens, Expr).
+swrl_phrase(Term, Expr) :-
+  atom(Expr),
+  tokenize_atom(Expr, Tokens),
+  phrase(swrl_parser(Term), Tokens).
 
-swrl_print(rule(Head,Body,_)) :-
-  swrl_print(rule(Head,Body)), write('\n').
-swrl_print(rule(Head,Body)) :-
-  swrl_print(Body),
-  write(' -> '),
-  swrl_print(Head). 
-swrl_print([]) :- !.
-swrl_print([Atom|Rest]) :- !,
-  swrl_print(Atom),
-  ignore(( Rest\=[], write(', '), swrl_print(Rest) )).
-swrl_print(not(Cls,S)) :- !,
-  write('(not ('),
-  swrl_print(Cls),
-  write('))('),
-  swrl_print_atom(S),
-  write(')').
-swrl_print(class(Cls,S)) :- !,
-  swrl_print_atom(Cls),
-  write('('),
-  swrl_print_atom(S),
-  write(')').
-swrl_print(restriction(Cls,S)) :- !,
-  swrl_print_atom(Cls),
-  write('('),
-  swrl_print_atom(S),
-  write(')').
-swrl_print(literal(type(_,Atom))) :- write(Atom), !.
-swrl_print(literal(Atom)) :- write(Atom), !.
-swrl_print(property(S,P,literal(type(_,O)))) :- !,
-  swrl_print_atom(P), write('('),
-  swrl_print_atom(S),
-  write(', '),
-  write(O),
-  write(')').
-swrl_print(property(S,P,literal(O))) :- !, 
-  swrl_print_atom(P), write('('),
-  swrl_print_atom(S),
-  write(', '),
-  write(O),
-  write(')').
-swrl_print(property(S,P,O)) :- !, 
-  swrl_print_atom(P), write('('),
-  swrl_print_atom(S),
-  write(', '),
-  swrl_print_atom(O),
-  write(')').
-swrl_print(var(Term)) :- swrl_print(Term).
-swrl_print(Term) :-
-  compound(Term),
-  Term =.. [Predicate|Atoms],
-  write(Predicate), write('('),
-  swrl_print(Atoms),
-  write(')').
-swrl_print(Descr) :-
-  rdf_has(Descr, rdf:type, rdf:'List'),
-  rdf_swrl_atom_list(Descr, List),
-  swrl_print(List).
-swrl_print(Atom) :-
-  swrl_print_atom(Atom).
+swrl_tokens_format(Tokens, Expr) :-
+  once(swrl_tokens_format_(Tokens, Tokens2)),
+  atomic_list_concat(Tokens2,'',Expr).
 
-swrl_print_atom(Union) :-
-  atom(Union),
-  rdf_has(Union, owl:unionOf, Descr), !,
-  write('('),
-  rdf_swrl_atom_list(Descr, List),
-  swrl_print_one_of(List),
-  write(')').
-swrl_print_atom(Atom) :-
-  atom(Atom),
-  rdf_has(Atom, owl:oneOf, Descr), !,
-  write('{'),
-  swrl_print(Descr),
-  write('}').
-swrl_print_atom(Restr) :-
-  atom(Restr),
-  rdf_has(Restr, rdf:type, owl:'Restriction'),
-  rdf_has(Restr, owl:onProperty, P),
-  write('('),
-  swrl_print(P), write(' '),
-  swrl_print_property_restriction(Restr),
-  write(')').
-swrl_print_atom(Atom_iri) :-
-  atom(Atom_iri),
-  rdf_split_url(_, Atom, Atom_iri),
-  ignore(( rdf_has(Atom_iri, rdf:type, swrl:'Variable'), write('?') )),
-  write(Atom).
+swrl_tokens_format_([],[]).
+swrl_tokens_format_(ToksIn,ToksOut) :-
+  swrl_token_spaces(ToksIn, ToksOut1, Rest),
+  swrl_tokens_format_(Rest,ToksOut2),
+  append(ToksOut1, ToksOut2, ToksOut).
 
-swrl_print_one_of([]) :- !.
-swrl_print_one_of([Atom|Rest]) :- !,
-  swrl_print(Atom),
-  ignore(( Rest\=[], write(' or '), swrl_print_one_of(Rest) )).
+swrl_token_spaces(['-','>'|Xs], [' -> '], Xs).
+swrl_token_spaces(['?'|Xs], ['?'], Xs).
+swrl_token_spaces(['('|Xs], ['('], Xs).
+swrl_token_spaces([Tok,','|Xs], [Tok,', '],Xs).
+swrl_token_spaces([','|Xs], [', '],Xs).
+swrl_token_spaces([Tok,')'|Xs], [Tok,')'], Xs).
+swrl_token_spaces([')'|Xs], [')'], Xs).
+swrl_token_spaces(['"',Tok,'"'|Xs], ['"',Tok,'"'], Xs).
+swrl_token_spaces([not,'('|Xs], [not,' ('], Xs).
+swrl_token_spaces([Tok,'('|Xs], [Tok,'('], Xs).
+swrl_token_spaces([X|Xs], [X,' '], Xs).
+swrl_token_spaces([], [], []).
 
-swrl_print_property_restriction(Restr) :-
-  rdf_has(Restr, owl:someValuesFrom, Cls),
-  write('some '), swrl_print(Cls).
-swrl_print_property_restriction(Restr) :-
-  rdf_has(Restr, owl:allValuesFrom, Cls),
-  write('all '), swrl_print(Cls).
-swrl_print_property_restriction(Restr) :-
-  rdf_has(Restr, owl:qualifiedCardinality, literal(type(_,Num))),
-  rdf_has(Restr, owl:onClass, Cls),
-  write('exactly '), write(Num), write(' '), swrl_print(Cls).
-swrl_print_property_restriction(Restr) :-
-  rdf_has(Restr, owl:minQualifiedCardinality, literal(type(_,Num))),
-  rdf_has(Restr, owl:onClass, Cls),
-  write('min '), write(Num), write(' '), swrl_print(Cls).
-swrl_print_property_restriction(Restr) :-
-  rdf_has(Restr, owl:maxQualifiedCardinality, literal(type(_,Num))),
-  rdf_has(Restr, owl:onClass, Cls),
-  write('max '), write(Num), write(' '), swrl_print(Cls).
+swrl_parser([])   --> [].
+swrl_parser(Tree) --> swrl_rule(Tree).
 
+swrl_rule(rule(Head,Body))    --> swrl_conjunction(Body), ['-'], ['>'], swrl_conjunction(Head). 
+swrl_conjunction([Atom|Rest]) --> swrl_literal(Atom), [','], swrl_conjunction(Rest).
+swrl_conjunction([Atom])      --> swrl_literal(Atom).
 
+swrl_literal(not(Cls,S)) -->
+  ['('], ['not'], ['('], swrl_class_atom(Cls), [')'], [')'],
+  ['('], swrl_subject(S), [')'].
+swrl_literal(restr(A,B)) -->
+  ['('], swrl_restr(A), [')'], ['('], swrl_subject(B), [')'].
+swrl_literal(class(A,B)) -->
+  swrl_class_atom(A), ['('], swrl_subject(B), [')'].
+swrl_literal(property(S,P,O)) -->
+  swrl_property(P), ['('], swrl_subject(S), [','], swrl_data_object(O), [')'],
+  { rdfs_individual_of(P, owl:'DatatypeProperty') }.
+swrl_literal(property(S,P,O)) -->
+  swrl_property(P), ['('], swrl_subject(S), [','], swrl_object(O), [')'],
+  { rdfs_individual_of(P, owl:'ObjectProperty') }.
+swrl_literal(BuiltinTerm) -->
+  { (ground(BuiltinTerm), BuiltinTerm =.. [Predicate|Args]) ; true },
+  swrl_builtin(Predicate), ['('], swrl_builtin_args(Args), [')'],
+  { BuiltinTerm =.. [Predicate|Args] }.
+
+% TODO: what about conjunction of classes and nested disjunction?
+swrl_class_atom(Cls)   --> swrl_class_atom_(Cls).
+swrl_class_atom([X,Y]) --> ['('], swrl_class_atom_(X), ['or'], swrl_class_atom_(Y), [')'].
+swrl_class_atom_(Cls)  --> [Cls_name], { swrl_individual_of(Cls, Cls_name, owl:'Class') }.
+
+swrl_subject(S)    --> swrl_var_expr(S).
+swrl_subject(S)    --> swrl_individual(S).
+
+swrl_object(Var)   --> swrl_var_expr(Var).
+swrl_object(Obj)   --> swrl_individual(Obj).
+swrl_object(Cls)   --> swrl_class_atom_(Cls).
+
+swrl_individual(I) --> [I_name], { swrl_individual_of(I, I_name, owl:'NamedIndividual') }.
+
+swrl_property(P)   --> [P_name], { swrl_individual_of(P, P_name, rdf:'Property') }.
+
+swrl_data_object(Var)                                                             --> swrl_var_expr(Var).
+swrl_data_object(literal(type('http://www.w3.org/2001/XMLSchema#integer',Val)))   --> [Val], { integer(Val) }.
+swrl_data_object(literal(type('http://www.w3.org/2001/XMLSchema#float',Val)))     --> [Val], { float(Val) }.
+swrl_data_object(literal(type('http://www.w3.org/2001/XMLSchema#boolean',true)))  --> [true].
+swrl_data_object(literal(type('http://www.w3.org/2001/XMLSchema#boolean',false))) --> [false].
+swrl_data_object(literal(type('http://www.w3.org/2001/XMLSchema#string',Val)))    --> [Val], { atom(Val) }.
+swrl_data_object(literal(Val)) --> [Val], { atom(Val) }.
+
+swrl_restr(some(P,Cls)) -->
+  swrl_property(P), ['some'], swrl_class_atom_(Cls).
+swrl_restr(all(P,Cls)) -->
+  swrl_property(P), ['all'], swrl_class_atom_(Cls).
+swrl_restr(exactly(Num,P,Cls)) -->
+  swrl_property(P), ['exactly'], swrl_number(Num), swrl_class_atom_(Cls).
+swrl_restr(max(Num,P,Cls)) -->
+  swrl_property(P), ['max'], swrl_number(Num), swrl_class_atom_(Cls).
+swrl_restr(min(Num,P,Cls)) -->
+  swrl_property(P), ['min'], swrl_number(Num), swrl_class_atom_(Cls).
+
+swrl_number(Num) --> [Num], { number(Num) }.
+
+swrl_builtin(Predicate)       --> [Predicate],
+  { atom(Predicate), atom_chars(Predicate, [L|_]),  char_type(L, lower) }.
+swrl_builtin_args([Arg|Rest]) --> swrl_builtin_arg(Arg), [','], swrl_builtin_args(Rest).
+swrl_builtin_args([Arg])      --> swrl_builtin_arg(Arg).
+swrl_builtin_arg(Var)         --> swrl_var_expr(Var).
+swrl_builtin_arg(Val)         --> [Val], { number(Val) }.
+swrl_builtin_arg(Val)         --> swrl_string_expr(Val).
+swrl_builtin_arg(Atomic)      --> [Atomic], { atomic(Atomic) }.
+
+swrl_var_expr(var(Var)) --> ['?'], [Var].
+swrl_string_expr(Val)   --> ['"'], [Val], ['"'].
+
+swrl_individual_of(Iri,Name,Type) :-
+  atom(Iri),
+  rdfs_individual_of(Iri, Type),
+  rdf_split_url(_, Name, Iri).
+swrl_individual_of(Iri,Name,Type) :-
+  var(Iri), atom(Name),
+  rdf_current_prefix(_, Uri),
+  rdf_split_url(Uri, Name, Iri),
+  rdfs_individual_of(Iri, Type).
