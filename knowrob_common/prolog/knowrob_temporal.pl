@@ -84,6 +84,7 @@
             interval_during(?,?),
             current_temporal_part(r,r),
             assert_temporal_part(r,r,r,r),
+            assert_temporal_part(r,r,r),
             assert_temporal_part_end(r,r,r,r),
             temporal_part(r,r,t),
             temporal_part_has(r,r,r),

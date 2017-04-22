@@ -38,24 +38,28 @@ test_rule_id(Id, Descr) :-
 
 test(swrl_parse_rules) :-
   forall( rdf_has(Descr, rdf:type, swrl:'Imp'), (
-    rdf_swrl_rule(Descr, rule(Head,Body,_)),
+    rdf_swrl_rule(Descr, rule(Head,Body)),
     Head \= [], Body \= []
   )).
 
 test_swrl_holds(Id, Bindings) :-
   test_rule_id(Id, Descr),
-  rdf_swrl_rule(Descr,rule(Head,Body,Vars)),
+  rdf_swrl_rule(Descr,Rule),
+  swrl_vars(Rule, Vars),
   swrl_var_bindings(Vars,Bindings),
-  swrl_holds(rule(Head,Body,Vars)).
+  swrl_condition_satisfied(Rule,Vars).
 
 test_swrl_project(Id, Bindings) :-
   test_rule_id(Id, Descr),
-  rdf_swrl_rule(Descr,rule(Head,Body,Vars)),
+  rdf_swrl_rule(Descr,Rule),
+  swrl_vars(Rule, Vars),
   swrl_var_bindings(Vars,Bindings),
-  swrl_holds(rule(Head,Body,Vars)),
-  swrl_project(rule(Head,Body,Vars)).
+  swrl_condition_satisfied(Rule,Vars),
+  swrl_implication_project(Rule,Vars).
 
 test(swrl_holds_Person1, [nondet])        :- test_swrl_holds('Person', [['x','http://knowrob.org/kb/swrl_test#Alex']]).
+test(swrl_holds_Person2, [nondet])        :- test_swrl_holds('Person2', [['x','http://knowrob.org/kb/swrl_test#Lea']]).
+test(swrl_holds_Person3, [nondet,fail])   :- test_swrl_holds('Person2', [['x','http://knowrob.org/kb/swrl_test#Alex']]).
 test(swrl_holds_Driver1, [nondet])        :- test_swrl_holds('Driver', [['p','http://knowrob.org/kb/swrl_test#Fred']]).
 test(swrl_holds_Driver2, [nondet,fail])   :- test_swrl_holds('Driver', [['p','http://knowrob.org/kb/swrl_test#Ernest']]).
 test(swrl_holds_DriverFred, [nondet])     :- test_swrl_holds('DriverFred', []).
@@ -81,6 +85,12 @@ test(swrl_project_Person1, [nondet]) :-
   \+ owl_individual_of(X, test_swrl:'Person'),
   test_swrl_project('Person',[['x',X]]),
   owl_individual_of(X, test_swrl:'Person').
+
+test(swrl_project_Person2, [nondet]) :-
+  X='http://knowrob.org/kb/swrl_test#Lea',
+  \+ owl_individual_of(X, test_swrl:'Hermaphrodite'),
+  test_swrl_project('Person2',[['x',X]]),
+  owl_individual_of(X, test_swrl:'Hermaphrodite').
 
 test(swrl_project_Driver1, [nondet]) :-
   X='http://knowrob.org/kb/swrl_test#Fred',
@@ -176,23 +186,31 @@ test(swrl_parse_exactly, [nondet]) :-
     rule(
       [ class(test_swrl:'Singleton', var(x)) ],
       [ class(test_swrl:'Person', var(x)),
-        restr(exactly(0, test_swrl:'hasSibling', test_swrl:'Person'), var(x)) ]
+        class(exactly(0, test_swrl:'hasSibling', test_swrl:'Person'), var(x)) ]
   )).
 
-test(swrl_parse_Person, [nondet]) :-
+test(swrl_parse_Person1, [nondet]) :-
   test_swrl_parse(
     ['(Man or Woman)(?x)', '->', 'Person(?x)'],
     rule(
       [ class(test_swrl:'Person', var(x)) ],
-      [ class([test_swrl:'Man',test_swrl:'Woman'], var(x)) ]
+      [ class(oneOf([test_swrl:'Man',test_swrl:'Woman']), var(x)) ]
+  )).
+
+test(swrl_parse_Person2, [nondet]) :-
+  test_swrl_parse(
+    ['(Man and Woman and Person)(?x)', '->', 'Hermaphrodite(?x)'],
+    rule(
+      [ class(test_swrl:'Hermaphrodite', var(x)) ],
+      [ class(allOf([test_swrl:'Man',test_swrl:'Woman',test_swrl:'Person']), var(x)) ]
   )).
 
 test(swrl_parse_NonHuman, [nondet]) :-
   test_swrl_parse(
-    ['(not (Person))(?x)', '->', 'NonHuman(?x)'],
+    ['(not Person)(?x)', '->', 'NonHuman(?x)'],
     rule(
       [ class(test_swrl:'NonHuman', var(x)) ],
-      [ not(test_swrl:'Person', var(x)) ]
+      [ class(not(test_swrl:'Person'), var(x)) ]
   )).
 
 test(swrl_parse_Adult1, [nondet]) :-
@@ -203,7 +221,7 @@ test(swrl_parse_Adult1, [nondet]) :-
       [ greaterThan(var(age),17) ]
   )).
 
-test(swrl_parse_Adult, [nondet]) :-
+test(swrl_parse_Adult2, [nondet]) :-
   test_swrl_parse(
     ['Person(?p), hasAge(?p, ?age), greaterThan(?age, 17)', '->', 'Adult(?p)'],
     rule(
@@ -211,6 +229,26 @@ test(swrl_parse_Adult, [nondet]) :-
       [ class(test_swrl:'Person', var(p)),
         property(var(p), test_swrl:'hasAge', var(age)),
         greaterThan(var(age),17) ]
+  )).
+
+test(swrl_parse_Adult3, [nondet]) :-
+  test_swrl_parse(
+    ['(Driver or (hasChild value true))(?x)', '->', 'Adult(?x)'],
+    rule(
+      [ class(test_swrl:'Adult', var(x)) ],
+      [ class(oneOf([
+           test_swrl:'Driver',
+           value(test_swrl:'hasChild', literal(type(_, true)))
+        ]), var(x)) ]
+  )).
+
+test(swrl_parse_nested, [nondet]) :-
+  test_swrl_parse(
+    ['(Driver or (not (Car and NonHuman)))(?x)', '->', 'Person(?x)'],
+    rule(
+      [ class(test_swrl:'Person', var(x)) ],
+      [ class(oneOf([test_swrl:'Driver', not(allOf(
+          [test_swrl:'Car',test_swrl:'NonHuman'])) ]), var(x)) ]
   )).
 
 test(swrl_parse_area, [nondet]) :-
