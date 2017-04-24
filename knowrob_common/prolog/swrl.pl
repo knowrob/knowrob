@@ -62,25 +62,59 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% TODO(DB): Allow to assert RDF descriptions from SWRl terms.
 %% TODO(DB): Hook into standard reasoning without projection in RDF triple store?
-%%           - Search for rule with implication that would specify a given relation
-%%           - Check if rule condition holds
+%%           - Search for rule with implication that would specify a given relation for individual ?x
+%%           - Check if rule condition holds for ?x
 %%           - Compute the relation from the implication atom
-%%           - `holds` could be expanded for this
+%%           - expand `holds`
 %%           - Distinguish: ComputableRules and ProjectableRules
 %%               - ComputableRules: implications computed on demand and hooked into standard KnowRob reasoning
 %%               - ProjectableRules: implications computed explicitely and projected into RDF triple store
+
+/*
+knowrob_temporal:holds(S, P, O, I) :- swrl_holds(S, P, O, I).
+
+swrl_holds(S, P, O) :-
+  current_time(Now),
+  swrl_holds(S, P, O, Now).
+
+swrl_holds(S, P, O, _) :-
+  atom(P),
+  % Query for rule with atom and parse it
+  % FIXME: avoid re-parsing rules? reason directly with RDF triples instead of Prolog terms?
+  rdf_swrl_rule_with_implication(Rule, property(S_expr,P,O_expr)),
+  swrl_vars(Rule, Vars),
+  swrl_var(Vars, S_expr, S), % assign subject var
+  swrl_condition_satisfied(Rule, Vars),
+  swrl_var(Vars, O_expr, O). % TODO: data or object property
+*/
 
 %% rdf_swrl_rule(?Descr, ?Term)
 %
 % @Descr The RDF description of a SWRL rule
 % @Term Prolog term describing the SWRL rule
 %
-rdf_swrl_rule(Descr, rule(Head,Body)) :-
+rdf_swrl_rule(Descr, Head :- Body) :-
   rdf_has(Descr, rdf:type, swrl:'Imp'),
   rdf_has(Descr, swrl:body, BodyDescr),
   rdf_has(Descr, swrl:head, HeadDescr),
   rdf_swrl_atom(BodyDescr, Body),
   rdf_swrl_atom(HeadDescr, Head).
+
+/*
+rdf_swrl_rule_with_implication(Rule, property(S,P,O)) :- fail.
+  rdf_swrl_find_rule_with_implication(Desr, property(S,P,O)),
+  rdf_swrl_rule(Rule, Desr).
+rdf_swrl_find_rule_with_implication(RuleDescr, property(S_expr,P,O_expr)) :-
+  atom(P),
+  rdf_has(Descr, rdf:propertyPredicate, P),
+  % TODO: check arguments! maybe implication has a value specified
+  % TODO: bind S_expr, O_expr
+  %rdf_has(Descr, swrl:argument1, S_rdf),
+  %rdf_has(Descr, swrl:argument2, O_rdf),
+  rdf_reachable(Descr, rdf:'Property', RuleDescr), % FIXME: does not work
+  rdf_has(RuleDescr, rdf:type, swrl:'Imp').
+%rdf_swrl_find_rule_with_implication(_, class(Cls,S)) :- fail.
+*/
 
 %% rdf_swrl_atom(?Descr, ?Term)
 %
@@ -230,7 +264,7 @@ rdf_swrl_target_variable(Descr, RuleVar) :-
 % @Body List of Prolog-encoded SWRL atoms
 % @Variables Mapping between SWRL variable names and Prolog variables
 %
-swrl_vars(rule(Head,Body), Variables) :-
+swrl_vars(Head :- Body, Variables) :-
   findall(VarName, (
     (member(Atom,Head) ; member(Atom,Body)),
     swrl_var_names(Atom,VarName)
@@ -296,7 +330,7 @@ swrl_condition_satisfied(Descr, Vars) :-
   rdf_swrl_rule(Descr, Rule),
   swrl_condition_satisfied(Rule, Vars).
 
-swrl_condition_satisfied(rule(_,Body), Vars) :-
+swrl_condition_satisfied(_ :- Body, Vars) :-
   swrl_condition_satisfied(Body,Vars).
 
 swrl_condition_satisfied([], _).
@@ -483,7 +517,7 @@ swrl_implication_project(Descr, Vars) :-
   swrl_condition_satisfied(Rule, Vars),
   swrl_implication_project(Rule, Vars).
 
-swrl_implication_project(rule(Head,_), Vars) :-
+swrl_implication_project(Head :- _, Vars) :-
   forall(
     member(Atom,Head),
     ( swrl_atom_satisfied(Atom,Vars) ;
@@ -679,7 +713,7 @@ swrl_token_spaces([], [], []).
 swrl_parser([])   --> [].
 swrl_parser(Tree) --> swrl_rule(Tree).
 
-swrl_rule(rule(Head,Body))    --> swrl_conjunction(Body), ['-'], ['>'], swrl_conjunction(Head). 
+swrl_rule(Head :- Body)       --> swrl_conjunction(Body), ['-'], ['>'], swrl_conjunction(Head). 
 swrl_conjunction([Atom|Rest]) --> swrl_literal(Atom), [','], swrl_conjunction(Rest).
 swrl_conjunction([Atom])      --> swrl_literal(Atom).
 

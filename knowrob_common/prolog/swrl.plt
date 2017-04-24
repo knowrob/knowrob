@@ -38,7 +38,7 @@ test_rule_id(Id, Descr) :-
 
 test(swrl_parse_rules) :-
   forall( rdf_has(Descr, rdf:type, swrl:'Imp'), (
-    rdf_swrl_rule(Descr, rule(Head,Body)),
+    rdf_swrl_rule(Descr, Head :- Body),
     Head \= [], Body \= []
   )).
 
@@ -143,126 +143,113 @@ test_swrl_parse(ExprList, Term) :-
 test(swrl_parse_Driver, [nondet]) :-
   test_swrl_parse(
     ['Person(?p), hasCar(?p, true)', '->', 'Driver(?p)'],
-    rule(
-      [ class(test_swrl:'Driver',var(p)) ],
+    [ class(test_swrl:'Driver',var(p)) ] :-
       [ class(test_swrl:'Person',var(p)),
       property(var(p), test_swrl:'hasCar', literal(type(xsd:'boolean',true))) ]
-  )).
+  ).
 
 test(swrl_parse_DriverFred, [nondet]) :-
   test_swrl_parse(
     ['Person(Fred), hasCar(Fred, true)', '->', 'Driver(Fred)'],
-    rule(
-      [ class(test_swrl:'Driver',test_swrl:'Fred') ],
+    [ class(test_swrl:'Driver',test_swrl:'Fred') ] :-
       [ class(test_swrl:'Person',test_swrl:'Fred'),
         property(test_swrl:'Fred', test_swrl:'hasCar', literal(type(xsd:'boolean',true))) ]
-  )).
+  ).
 
 test(swrl_parse_brother, [nondet]) :-
   test_swrl_parse(
     ['Person(?p), hasSibling(?p, ?s), Man(?s)', '->', 'hasBrother(?p, ?s)'],
-    rule(
-      [ property(var(p), test_swrl:'hasBrother', var(s)) ],
+    [ property(var(p), test_swrl:'hasBrother', var(s)) ] :-
       [ class(test_swrl:'Person', var(p)),
         property(var(p), test_swrl:'hasSibling', var(s)),
         class(test_swrl:'Man',var(s)) ]
-  )).
+  ).
 
 test(swrl_parse_startsWith, [nondet]) :-
   test_swrl_parse(
     [ 'Person(?p), hasNumber(?p, ?number), startsWith(?number, "+")',
       '->',
       'hasInternationalNumber(?p, true)' ],
-    rule(
-      [ property(var(p), test_swrl:'hasInternationalNumber', literal(type(xsd:boolean,true))) ],
+    [ property(var(p), test_swrl:'hasInternationalNumber', literal(type(xsd:boolean,true))) ] :-
       [ class(test_swrl:'Person', var(p)),
         property(var(p), test_swrl:'hasNumber', var(number)),
         startsWith(var(number),+) ]
-  )).
+  ).
 
 test(swrl_parse_exactly, [nondet]) :-
   test_swrl_parse(
     ['Person(?x), (hasSibling exactly 0 Person)(?x)', '->', 'Singleton(?x)'],
-    rule(
-      [ class(test_swrl:'Singleton', var(x)) ],
+    [ class(test_swrl:'Singleton', var(x)) ] :-
       [ class(test_swrl:'Person', var(x)),
         class(exactly(0, test_swrl:'hasSibling', test_swrl:'Person'), var(x)) ]
-  )).
+  ).
 
 test(swrl_parse_Person1, [nondet]) :-
   test_swrl_parse(
     ['(Man or Woman)(?x)', '->', 'Person(?x)'],
-    rule(
-      [ class(test_swrl:'Person', var(x)) ],
+    [ class(test_swrl:'Person', var(x)) ] :-
       [ class(oneOf([test_swrl:'Man',test_swrl:'Woman']), var(x)) ]
-  )).
+  ).
 
 test(swrl_parse_Person2, [nondet]) :-
   test_swrl_parse(
     ['(Man and Woman and Person)(?x)', '->', 'Hermaphrodite(?x)'],
-    rule(
-      [ class(test_swrl:'Hermaphrodite', var(x)) ],
+    [ class(test_swrl:'Hermaphrodite', var(x)) ] :-
       [ class(allOf([test_swrl:'Man',test_swrl:'Woman',test_swrl:'Person']), var(x)) ]
-  )).
+  ).
 
 test(swrl_parse_NonHuman, [nondet]) :-
   test_swrl_parse(
     ['(not Person)(?x)', '->', 'NonHuman(?x)'],
-    rule(
-      [ class(test_swrl:'NonHuman', var(x)) ],
+    [ class(test_swrl:'NonHuman', var(x)) ] :-
       [ class(not(test_swrl:'Person'), var(x)) ]
-  )).
+  ).
 
 test(swrl_parse_Adult1, [nondet]) :-
   test_swrl_parse(
     ['greaterThan(?age, 17)', '->', 'Adult(?p)'],
-    rule(
-      [ class(test_swrl:'Adult', var(p)) ],
+    [ class(test_swrl:'Adult', var(p)) ] :-
       [ greaterThan(var(age),17) ]
-  )).
+  ).
 
 test(swrl_parse_Adult2, [nondet]) :-
   test_swrl_parse(
     ['Person(?p), hasAge(?p, ?age), greaterThan(?age, 17)', '->', 'Adult(?p)'],
-    rule(
-      [ class(test_swrl:'Adult', var(p)) ],
+    [ class(test_swrl:'Adult', var(p)) ] :-
       [ class(test_swrl:'Person', var(p)),
         property(var(p), test_swrl:'hasAge', var(age)),
         greaterThan(var(age),17) ]
-  )).
+  ).
 
 test(swrl_parse_Adult3, [nondet]) :-
   test_swrl_parse(
     ['(Driver or (hasChild value true))(?x)', '->', 'Adult(?x)'],
-    rule(
-      [ class(test_swrl:'Adult', var(x)) ],
+    [ class(test_swrl:'Adult', var(x)) ] :-
       [ class(oneOf([
            test_swrl:'Driver',
            value(test_swrl:'hasChild', literal(type(_, true)))
         ]), var(x)) ]
-  )).
+  ).
 
 test(swrl_parse_nested, [nondet]) :-
   test_swrl_parse(
     ['(Driver or (not (Car and NonHuman)))(?x)', '->', 'Person(?x)'],
-    rule(
-      [ class(test_swrl:'Person', var(x)) ],
+    [ class(test_swrl:'Person', var(x)) ] :-
       [ class(oneOf([test_swrl:'Driver', not(allOf(
           [test_swrl:'Car',test_swrl:'NonHuman'])) ]), var(x)) ]
-  )).
+  ).
 
 test(swrl_parse_area, [nondet]) :-
   test_swrl_parse(
     [ 'Rectangle(?r), hasWidthInMeters(?r, ?w), hasHeightInMeters(?r, ?h), multiply(?areaInSquareMeters, ?w, ?h)',
       '->',
       'hasAreaInSquareMeters(?r, ?areaInSquareMeters)' ],
-    rule(
-      [ property(var(r), test_swrl:'hasAreaInSquareMeters', var(areaInSquareMeters)) ],
+    [ property(var(r), test_swrl:'hasAreaInSquareMeters', var(areaInSquareMeters)) ] :-
       [ class(test_swrl:'Rectangle', var(r)),
         property(var(r), test_swrl:'hasWidthInMeters', var(w)),
         property(var(r), test_swrl:'hasHeightInMeters', var(h)),
         multiply(var(areaInSquareMeters),var(w),var(h)) ]
-  )).
+  ).
 
 :- end_tests(swrl).
 
