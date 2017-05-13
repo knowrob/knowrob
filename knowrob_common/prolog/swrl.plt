@@ -32,8 +32,8 @@
 :- rdf_db:rdf_register_prefix(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
 
 test_rule_id(Id, Descr) :-
-  ( rdf_has(Descr, rdfs:label, literal(type(_,Id))) ;
-    rdf_has(Descr, rdfs:label, literal(Id)) ),
+  once(( rdf_has(Descr, rdfs:label, literal(type(_,Id))) ;
+         rdf_has(Descr, rdfs:label, literal(Id)) )),
   rdf_has(Descr, rdf:type, swrl:'Imp').
 
 test(swrl_parse_rules) :-
@@ -42,96 +42,66 @@ test(swrl_parse_rules) :-
     Head \= [], Body \= []
   )).
 
-test_swrl_holds(Id, Bindings) :-
+rdf_swrl_load_named_rule(Id) :-
   test_rule_id(Id, Descr),
-  rdf_swrl_rule(Descr,Rule),
-  swrl_vars(Rule, Vars),
-  swrl_var_bindings(Vars,Bindings),
-  swrl_condition_satisfied(Rule,Vars).
+  rdf_swrl_load(Descr).
 
-test_swrl_project(Id, Bindings) :-
-  test_rule_id(Id, Descr),
-  rdf_swrl_rule(Descr,Rule),
-  swrl_vars(Rule, Vars),
-  swrl_var_bindings(Vars,Bindings),
-  swrl_condition_satisfied(Rule,Vars),
-  swrl_implication_project(Rule,Vars).
+test(swrl_Person1, [nondet]) :-
+  \+ swrl_individual_of(test_swrl:'Alex', test_swrl:'Person'),
+  rdf_swrl_load_named_rule('Person'),
+  swrl_individual_of(test_swrl:'Alex', test_swrl:'Person').
 
-test(swrl_holds_Person1, [nondet])        :- test_swrl_holds('Person', [['x','http://knowrob.org/kb/swrl_test#Alex']]).
-test(swrl_holds_Person2, [nondet])        :- test_swrl_holds('Person2', [['x','http://knowrob.org/kb/swrl_test#Lea']]).
-test(swrl_holds_Person3, [nondet,fail])   :- test_swrl_holds('Person2', [['x','http://knowrob.org/kb/swrl_test#Alex']]).
-test(swrl_holds_Driver1, [nondet])        :- test_swrl_holds('Driver', [['p','http://knowrob.org/kb/swrl_test#Fred']]).
-test(swrl_holds_Driver2, [nondet,fail])   :- test_swrl_holds('Driver', [['p','http://knowrob.org/kb/swrl_test#Ernest']]).
-test(swrl_holds_DriverFred, [nondet])     :- test_swrl_holds('DriverFred', []).
-test(swrl_holds_greaterThen, [nondet])    :- test_swrl_holds('greaterThen', [['p','http://knowrob.org/kb/swrl_test#Ernest']]),
-                                             test_swrl_holds('greaterThen', [['p','http://knowrob.org/kb/swrl_test#Fred']]).
-test(swrl_holds_NonHuman1, [nondet])      :- test_swrl_holds('NonHuman', [['x','http://knowrob.org/kb/swrl_test#RedCar']]).
-test(swrl_holds_NonHuman2, [nondet,fail]) :- test_swrl_holds('NonHuman', [['x','http://knowrob.org/kb/swrl_test#Fred']]).
-test(swrl_holds_brother1, [nondet])       :- test_swrl_holds('brother', [['p','http://knowrob.org/kb/swrl_test#Fred'],
-                                                                         ['s','http://knowrob.org/kb/swrl_test#Ernest']]),
-                                             test_swrl_holds('brother', [['p','http://knowrob.org/kb/swrl_test#Ernest'],
-                                                                         ['s','http://knowrob.org/kb/swrl_test#Fred']]).
-test(swrl_holds_brother2, [nondet,fail])  :- test_swrl_holds('brother', [['p','http://knowrob.org/kb/swrl_test#Fred'],
-                                                                         ['s','http://knowrob.org/kb/swrl_test#Alex']]).
-test(swrl_holds_startsWith, [nondet])     :- test_swrl_holds('startsWith', [['p','http://knowrob.org/kb/swrl_test#Fred']]).
-test(swrl_holds_area, [nondet])           :- test_swrl_holds('area', [['r','http://knowrob.org/kb/swrl_test#RectangleBig']]).
-test(swrl_holds_bigrect1, [nondet])       :- test_swrl_holds('BigRectangle', [['r','http://knowrob.org/kb/swrl_test#RectangleBig']]).
-test(swrl_holds_bigrect2, [nondet,fail])  :- test_swrl_holds('BigRectangle', [['r','http://knowrob.org/kb/swrl_test#RectangleSmall']]).
-test(swrl_holds_exactly1, [nondet])       :- test_swrl_holds('exactly', [['x','http://knowrob.org/kb/swrl_test#Lea']]).
-test(swrl_holds_exactly2, [nondet,fail])  :- test_swrl_holds('exactly', [['x','http://knowrob.org/kb/swrl_test#Fred']]).
+test(swrl_Person2, [nondet]) :-
+  \+ swrl_individual_of(test_swrl:'Lea', test_swrl:'Hermaphrodite'),
+  rdf_swrl_load_named_rule('Person2'),
+  swrl_individual_of(test_swrl:'Lea', test_swrl:'Hermaphrodite').
 
-test(swrl_project_Person1, [nondet]) :-
-  X='http://knowrob.org/kb/swrl_test#Alex',
-  \+ owl_individual_of(X, test_swrl:'Person'),
-  test_swrl_project('Person',[['x',X]]),
-  owl_individual_of(X, test_swrl:'Person').
+test(swrl_Driver1, [nondet]) :-
+  \+ swrl_individual_of(test_swrl:'Fred', test_swrl:'Driver'),
+  rdf_swrl_load_named_rule('Driver'),
+  swrl_individual_of(test_swrl:'Fred', test_swrl:'Driver').
 
-test(swrl_project_Person2, [nondet]) :-
-  X='http://knowrob.org/kb/swrl_test#Lea',
-  \+ owl_individual_of(X, test_swrl:'Hermaphrodite'),
-  test_swrl_project('Person2',[['x',X]]),
-  owl_individual_of(X, test_swrl:'Hermaphrodite').
+test(swrl_NonHuman1, [nondet]) :-
+  \+ swrl_individual_of(test_swrl:'RedCar', test_swrl:'NonHuman'),
+  rdf_swrl_load_named_rule('NonHuman'),
+  swrl_individual_of(test_swrl:'RedCar', test_swrl:'NonHuman'),
+  \+ swrl_individual_of(test_swrl:'Fred', test_swrl:'NonHuman').
 
-test(swrl_project_Driver1, [nondet]) :-
-  X='http://knowrob.org/kb/swrl_test#Fred',
-  \+ owl_individual_of(X, test_swrl:'Driver'),
-  test_swrl_project('Driver',[['p',X]]),
-  owl_individual_of(X, test_swrl:'Driver').
+test(swrl_area, [nondet]) :-
+  \+ swrl_has(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _),
+  rdf_swrl_load_named_rule('area'),
+  swrl_has(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
 
-test(swrl_project_NonHuman1, [nondet]) :-
-  X='http://knowrob.org/kb/swrl_test#RedCar',
-  \+ owl_individual_of(X, test_swrl:'NonHuman'),
-  test_swrl_project('NonHuman',[['x',X]]),
-  owl_individual_of(X, test_swrl:'NonHuman').
+test(swrl_BigRectangle1, [nondet]) :-
+  \+ swrl_individual_of(test_swrl:'RectangleBig', test_swrl:'BigRectangle'),
+  rdf_swrl_load_named_rule('BigRectangle'),
+  swrl_individual_of(test_swrl:'RectangleBig', test_swrl:'BigRectangle'),
+  swrl_has(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
 
-test(swrl_project_BigRectangle1, [nondet]) :-
-  X='http://knowrob.org/kb/swrl_test#RectangleBig',
-  \+ owl_individual_of(X, test_swrl:'BigRectangle'),
-  test_swrl_project('BigRectangle',[['r',X]]),
-  owl_individual_of(X, test_swrl:'BigRectangle'),
-  owl_has(X, test_swrl:'hasAreaInSquareMeters', _).
+test(swrl_startsWith, [nondet]) :-
+  \+ swrl_has(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _),
+  rdf_swrl_load_named_rule('startsWith'),
+  swrl_has(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _).
 
-test(swrl_project_startsWith, [nondet]) :-
-  X='http://knowrob.org/kb/swrl_test#Fred',
-  \+ owl_has(X, test_swrl:'hasInternationalNumber', _),
-  test_swrl_project('startsWith',[['p',X]]),
-  owl_has(X, test_swrl:'hasInternationalNumber', _).
+test(swrl_greaterThen, [nondet]) :-
+  \+ swrl_individual_of(test_swrl:'Ernest', test_swrl:'Adult'),
+  rdf_swrl_load_named_rule('greaterThen'),
+  swrl_individual_of(test_swrl:'Ernest', test_swrl:'Adult').
 
-test(swrl_project_exactly, [nondet]) :-
-  X='http://knowrob.org/kb/swrl_test#Lea',
-  \+ owl_individual_of(X, test_swrl:'Singleton'),
-  test_swrl_project('exactly',[['x',X]]),
-  owl_individual_of(X, test_swrl:'Singleton').
+test(swrl_exactly, [nondet]) :-
+  \+ swrl_individual_of(test_swrl:'Lea', test_swrl:'Singleton'),
+  rdf_swrl_load_named_rule('exactly'),
+  swrl_individual_of(test_swrl:'Lea', test_swrl:'Singleton'),
+  \+ swrl_individual_of(test_swrl:'Fred', test_swrl:'Singleton').
 
-test(swrl_project_hasBrother, [nondet]) :-
-  X='http://knowrob.org/kb/swrl_test#Fred',
-  Y='http://knowrob.org/kb/swrl_test#Ernest',
-  \+ owl_has(X, test_swrl:'hasBrother', _),
-  test_swrl_project('brother',[['p',X],['s',Y]]),
-  owl_has(X, test_swrl:'hasBrother', Y).
+test(swrl_hasBrother, [nondet]) :-
+  \+ swrl_has(test_swrl:'Fred', test_swrl:'hasBrother', _),
+  rdf_swrl_load_named_rule('brother'),
+  swrl_has(test_swrl:'Fred', test_swrl:'hasBrother', test_swrl:'Ernest').
 
-:- rdf_meta test_swrl_parse(?,t), test_equal(t,t).
-test_equal(X,Y) :- X = Y.
+test(swrl_assert_rules) :- rdf_swrl_load.
+
+:- rdf_meta test_swrl_parse(?,t).
 
 test_swrl_parse(ExprList, Term) :-
   atomic_list_concat(ExprList, ' ', Expr),
