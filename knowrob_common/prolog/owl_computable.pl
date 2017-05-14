@@ -127,13 +127,6 @@ owl_satisfies_cardinality(Resource, Property, Restriction) :-
 owl_satisfies_cardinality(Resource, _, _) :-
 	rdf_subject(Resource).
 
-non_negative_int(type(Type, Atom), Number) :-
-	rdf_equal(xsd:nonNegativeInteger, Type),
-	catch(atom_number(Atom, Number), _, fail).
-non_negative_int(Atom, Number) :-
-	atom(Atom),
-	catch(atom_number(Atom, Number), _, fail).
-
 
 
      /*******************************
