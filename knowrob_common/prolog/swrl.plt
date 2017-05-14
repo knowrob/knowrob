@@ -46,20 +46,39 @@ rdf_swrl_load_named_rule(Id) :-
   test_rule_id(Id, Descr),
   rdf_swrl_load(Descr).
 
+% % % % % % % % % % % % % % % % % % % % % % % %
+test(swrl_Driver_load, [nondet]) :-
+  \+ swrl_individual_of(test_swrl:'Fred', test_swrl:'Driver'),
+  rdf_swrl_load_named_rule('Driver').
+
+test(swrl_Driver, [nondet]) :-
+  swrl_individual_of(test_swrl:'Fred', test_swrl:'Driver').
+
+test(swrl_Driver_class_unbound, [nondet]) :-
+  swrl_individual_of(test_swrl:'Fred', X),
+  rdf_equal(X, test_swrl:'Driver').
+
+test(swrl_Driver_subject_unbound, [nondet]) :-
+  swrl_individual_of(X, test_swrl:'Driver'),
+  rdf_equal(X, test_swrl:'Fred').
+
+test(swrl_Driver_during, [nondet]) :-
+  current_time(Now),
+  owl_individual_of_during(test_swrl:'Fred', test_swrl:'Driver', Now).
+
+test(swrl_Driver_holds, [nondet]) :-
+  holds(test_swrl:'Fred', rdf:type, test_swrl:'Driver').
+
+% % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_Person1, [nondet]) :-
-  \+ swrl_individual_of(test_swrl:'Alex', test_swrl:'Person'),
+  \+ swrl_holds(test_swrl:'Alex', rdf:type, test_swrl:'Person'),
   rdf_swrl_load_named_rule('Person'),
-  swrl_individual_of(test_swrl:'Alex', test_swrl:'Person').
+  swrl_holds(test_swrl:'Alex', rdf:type, test_swrl:'Person').
 
 test(swrl_Person2, [nondet]) :-
   \+ swrl_individual_of(test_swrl:'Lea', test_swrl:'Hermaphrodite'),
   rdf_swrl_load_named_rule('Person2'),
   swrl_individual_of(test_swrl:'Lea', test_swrl:'Hermaphrodite').
-
-test(swrl_Driver1, [nondet]) :-
-  \+ swrl_individual_of(test_swrl:'Fred', test_swrl:'Driver'),
-  rdf_swrl_load_named_rule('Driver'),
-  swrl_individual_of(test_swrl:'Fred', test_swrl:'Driver').
 
 test(swrl_NonHuman1, [nondet]) :-
   \+ swrl_individual_of(test_swrl:'RedCar', test_swrl:'NonHuman'),
@@ -72,16 +91,21 @@ test(swrl_area, [nondet]) :-
   rdf_swrl_load_named_rule('area'),
   swrl_holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
 
+test(swrl_startsWith, [nondet]) :-
+  \+ swrl_holds(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _),
+  rdf_swrl_load_named_rule('startsWith'),
+  swrl_holds(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _).
+
+test(swrl_hasBrother, [nondet]) :-
+  \+ swrl_holds(test_swrl:'Fred', test_swrl:'hasBrother', _),
+  rdf_swrl_load_named_rule('brother'),
+  swrl_holds(test_swrl:'Fred', test_swrl:'hasBrother', test_swrl:'Ernest').
+
 test(swrl_BigRectangle1, [nondet]) :-
   \+ swrl_individual_of(test_swrl:'RectangleBig', test_swrl:'BigRectangle'),
   rdf_swrl_load_named_rule('BigRectangle'),
   swrl_individual_of(test_swrl:'RectangleBig', test_swrl:'BigRectangle'),
   swrl_holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
-
-test(swrl_startsWith, [nondet]) :-
-  \+ swrl_holds(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _),
-  rdf_swrl_load_named_rule('startsWith'),
-  swrl_holds(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _).
 
 test(swrl_greaterThen, [nondet]) :-
   \+ swrl_individual_of(test_swrl:'Ernest', test_swrl:'Adult'),
@@ -94,12 +118,15 @@ test(swrl_exactly, [nondet]) :-
   swrl_individual_of(test_swrl:'Lea', test_swrl:'Singleton'),
   \+ swrl_individual_of(test_swrl:'Fred', test_swrl:'Singleton').
 
-test(swrl_hasBrother, [nondet]) :-
-  \+ swrl_holds(test_swrl:'Fred', test_swrl:'hasBrother', _),
-  rdf_swrl_load_named_rule('brother'),
-  swrl_holds(test_swrl:'Fred', test_swrl:'hasBrother', test_swrl:'Ernest').
-
+% % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_assert_rules) :- rdf_swrl_load.
+
+% % % % % % % % % % % % % % % % % % % % % % % %
+test(swrl_holds, [nondet]) :-
+  holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _),
+  holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _),
+  holds(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _),
+  holds(test_swrl:'Fred', test_swrl:'hasBrother', test_swrl:'Ernest').
 
 :- rdf_meta test_swrl_parse(?,t).
 

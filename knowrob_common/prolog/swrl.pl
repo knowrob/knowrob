@@ -61,8 +61,13 @@
             swrl_holds(r,r,r,r),
             swrl_holds(r,r,r),
             swrl_match_instance(r,r,r).
-:- dynamic  swrl_individual_of/3,
-            swrl_holds/4.
+:- dynamic  swrl_holds/4,
+            call_mutex/2.
+
+% expand holds predicate
+% FIXME(DB): will not fully work when interval unspecified
+%       - find interval intersection during unification?
+knowrob_temporal:holds(S,P,O,I) :- swrl_holds(S,P,O,I).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%% RDF-based SWRL representation
@@ -182,10 +187,7 @@ rdf_swrl_target_variable(Descr, RuleVar) :-
 % converts them to native Prolog rules.
 %
 rdf_swrl_load :-
-  forall(
-    rdf_swrl_rule(_, Rule),
-    swrl_assert(Rule)
-  ).
+  forall( rdf_swrl_rule(_, Rule), swrl_assert(Rule) ).
 rdf_swrl_load(Descr) :-
   rdf_swrl_rule(Descr, Rule),
   swrl_assert(Rule).
@@ -197,11 +199,11 @@ rdf_swrl_load(Descr) :-
 swrl_individual_of(S,Cls) :-
   current_time(Now),
   swrl_individual_of(S,Cls,Now).
-
-% expand holds predicate
-% FIXME(DB): will not fully work when interval unspecified
-%       - find interval intersection during unification?
-knowrob_temporal:holds(S,P,O,I) :- swrl_holds(S,P,O,I).
+swrl_individual_of(S,Cls,I) :-
+  ground(S), ground(Cls), !,
+  once(owl_individual_of_during(S,Cls,I)).
+swrl_individual_of(S,Cls,I) :-
+  owl_individual_of_during(S,Cls,I).
 
 swrl_holds(S,P,O) :-
   current_time(Now),
@@ -222,13 +224,26 @@ swrl_rule_pl(Fact :- [], Fact_pl, Vars) :-
   !, swrl_implication_pl(Fact, Fact_pl, Vars).
 swrl_rule_pl(Impl :- Cond, Impl_pl :- Cond_pl, Vars) :-
   swrl_implication_pl(Impl, Impl_pl, Vars),
-  swrl_condition_pl(Cond, Cond_pl, Vars).
+  swrl_condition_pl(Cond, Cond_pl_, Vars),
+  % avoid that rules call themself in conditions
+  random(0, 999999999, MutexId),
+  Cond_pl = (
+    thread_self(ThreadId),
+    with_call_mutex(MutexId, ThreadId, Cond_pl_)
+  ).
+
+with_call_mutex(MutexId, ThreadId, Goal) :-
+  \+ call_mutex(MutexId,ThreadId),
+  assert(call_mutex(MutexId,ThreadId)),
+  call( Goal ),
+  retract(call_mutex(MutexId,ThreadId)).
 
 %% swrl_implication_pl
 %
-swrl_implication_pl(class(Cls,S), swrl_individual_of(S_var,Cls_rdf,I_var), Vars) :-
+swrl_implication_pl(class(Cls,S), swrl_holds(S_var,P,Cls_rdf,I_var), Vars) :-
   swrl_var(Vars, S, S_var),
   swrl_var(Vars, 'swrl:interval', I_var),
+  rdf_equal(rdf:type, P),
   assert_rdf_class(Cls, Cls_rdf).
 swrl_implication_pl(property(S,P,O), swrl_holds(S_var,P,O_var,I_var), Vars) :-
   swrl_var(Vars, S, S_var),
@@ -244,7 +259,7 @@ swrl_condition_pl([A,B|Xs], ','(A_pl,Ys), Vars) :-
   swrl_condition_pl([B|Xs], Ys, Vars).
 swrl_condition_pl(class(not(Cls),S), (\+ ClsTerm), Vars) :-
   swrl_condition_pl(class(Cls,S), ClsTerm, Vars).
-swrl_condition_pl(class(Cls,S), owl_individual_of_during(S_var,Cls_rdf,I_var), Vars) :-
+swrl_condition_pl(class(Cls,S), swrl_individual_of(S_var,Cls_rdf,I_var), Vars) :-
   swrl_var(Vars, S, S_var),
   swrl_var(Vars, 'swrl:interval', I_var),
   assert_rdf_class(Cls, Cls_rdf).
@@ -342,7 +357,7 @@ number_list([X|Xs],[Y|Ys]) :-
 %
 assert_rdf_class(Descr, Descr) :- atom(Descr), !.
 assert_rdf_class(Expr, Descr)  :-
-  compund(Expr), rdf_node(Descr),
+  compound(Expr), rdf_node(Descr),
   assert_rdf_class_(Expr, Descr).
 
 assert_rdf_class_(some(P,Cls), Descr) :-
