@@ -40,7 +40,9 @@
       swrl_assert/1,
       swrl_phrase/2,
       swrl_individual_of/2,
-      swrl_has/3
+      swrl_individual_of/3,
+      swrl_holds/3,
+      swrl_holds/4
     ]).
 
 :- rdf_db:rdf_register_ns(owl, 'http://www.w3.org/2002/07/owl#', [keep(true)]).
@@ -55,40 +57,16 @@
 :- use_module(library('knowrob_temporal')).
 
 :- rdf_meta swrl_individual_of(r,r),
-            swrl_has(r,r,r),
-            swrl_individual_of_(r,r,r).
-:- dynamic  swrl_individual_of/2,
-            swrl_has/3.
+            swrl_individual_of(r,r,r),
+            swrl_holds(r,r,r,r),
+            swrl_holds(r,r,r),
+            swrl_match_instance(r,r,r).
+:- dynamic  swrl_individual_of/3,
+            swrl_holds/4.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%% RDF-based SWRL representation
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% TODO(DB): Hook into standard reasoning without projection in RDF triple store?
-%%           - Search for rule with implication that would specify a given relation for individual ?x
-%%           - Check if rule condition holds for ?x
-%%           - Compute the relation from the implication atom
-%%           - expand `holds`
-%%           - Distinguish: ComputableRules and ProjectableRules
-%%               - ComputableRules: implications computed on demand and hooked into standard KnowRob reasoning
-%%               - ProjectableRules: implications computed explicitely and projected into RDF triple store
-
-/*
-knowrob_temporal:holds(S, P, O, I) :- swrl_holds(S, P, O, I).
-
-swrl_holds(S, P, O) :-
-  current_time(Now),
-  swrl_holds(S, P, O, Now).
-
-swrl_holds(S, P, O, _) :-
-  atom(P),
-  % Query for rule with atom and parse it
-  % FIXME: avoid re-parsing rules? reason directly with RDF triples instead of Prolog terms?
-  rdf_swrl_rule_with_implication(Rule, property(S_expr,P,O_expr)),
-  swrl_vars(Rule, Vars),
-  swrl_var(Vars, S_expr, S), % assign subject var
-  swrl_condition_satisfied(Rule, Vars),
-  swrl_var(Vars, O_expr, O). % TODO: data or object property
-*/
 
 %% rdf_swrl_rule(?Descr, ?Term)
 %
@@ -216,12 +194,25 @@ rdf_swrl_load(Descr) :-
 %%%%%%%%%%%%%%% Prolog-encoded SWRL representation
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+swrl_individual_of(S,Cls) :-
+  current_time(Now),
+  swrl_individual_of(S,Cls,Now).
+
+% expand holds predicate
+% FIXME(DB): will not fully work when interval unspecified
+%       - find interval intersection during unification?
+knowrob_temporal:holds(S,P,O,I) :- swrl_holds(S,P,O,I).
+
+swrl_holds(S,P,O) :-
+  current_time(Now),
+  swrl_holds(S,P,O,Now).
+
 %% swrl_assert
 %
 swrl_assert([] :- _).
 swrl_assert([HeadAtom|Xs] :- Body) :-
   swrl_vars([HeadAtom] :- Body, Vars),
-  swrl_rule_pl(HeadAtom :- Body, Rule_pl, Vars),
+  swrl_rule_pl(HeadAtom :- Body, Rule_pl, [var('swrl:interval',_)|Vars]),
   assertz( Rule_pl ),
   swrl_assert(Xs :- Body).
 
@@ -235,12 +226,14 @@ swrl_rule_pl(Impl :- Cond, Impl_pl :- Cond_pl, Vars) :-
 
 %% swrl_implication_pl
 %
-swrl_implication_pl(class(Cls,S), swrl_individual_of(S_var, Cls_rdf), Vars) :-
+swrl_implication_pl(class(Cls,S), swrl_individual_of(S_var,Cls_rdf,I_var), Vars) :-
   swrl_var(Vars, S, S_var),
+  swrl_var(Vars, 'swrl:interval', I_var),
   assert_rdf_class(Cls, Cls_rdf).
-swrl_implication_pl(property(S,P,O), swrl_has(S_var,P,O_var), Vars) :-
+swrl_implication_pl(property(S,P,O), swrl_holds(S_var,P,O_var,I_var), Vars) :-
   swrl_var(Vars, S, S_var),
-  swrl_var(Vars, O, O_var).
+  swrl_var(Vars, O, O_var),
+  swrl_var(Vars, 'swrl:interval', I_var).
 
 %% swrl_condition_pl
 %
@@ -251,44 +244,16 @@ swrl_condition_pl([A,B|Xs], ','(A_pl,Ys), Vars) :-
   swrl_condition_pl([B|Xs], Ys, Vars).
 swrl_condition_pl(class(not(Cls),S), (\+ ClsTerm), Vars) :-
   swrl_condition_pl(class(Cls,S), ClsTerm, Vars).
-swrl_condition_pl(class(Cls,S), owl_individual_of(S_var,Cls_rdf), Vars) :-
+swrl_condition_pl(class(Cls,S), owl_individual_of_during(S_var,Cls_rdf,I_var), Vars) :-
   swrl_var(Vars, S, S_var),
+  swrl_var(Vars, 'swrl:interval', I_var),
   assert_rdf_class(Cls, Cls_rdf).
-swrl_condition_pl(property(S,P,O), holds(S_var,P,O_var), Vars) :-
+swrl_condition_pl(property(S,P,O), holds(S_var,P,O_var,I_var), Vars) :-
   swrl_var(Vars, S, S_var),
-  swrl_var(Vars, O, O_var).
+  swrl_var(Vars, O, O_var),
+  swrl_var(Vars, 'swrl:interval', I_var).
 swrl_condition_pl(Builtin, Builtin_pl, Vars) :-
   swrl_builtin_pl(Builtin, Builtin_pl, Vars).
-
-%%%%%%%%%%%%
-%%%%%%%%%%%%
-
-number_list([],[]).
-number_list([X|Xs],[X|Ys]) :-
-  var(X), !, number_list(Xs,Ys).
-number_list([X|Xs],[X|Ys]) :-
-  number(X), !, number_list(Xs,Ys).
-number_list([X|Xs],[Y|Ys]) :-
-  atom(X), !,
-  atom_number(X,Y),
-  number_list(Xs,Ys).
-number_list([X|Xs],[Y|Ys]) :-
-  strip_literal_type(X, X_striped),
-  atom_number(X_striped,Y),
-  number_list(Xs,Ys).
-
-swrl_arithmetic(N,M,Goal) :- number_list(N,M), call(Goal).
-swrl_leq(A,B)        :- swrl_arithmetic([A,B],[X,Y],(X =< Y)).
-swrl_less(A,B)       :- swrl_arithmetic([A,B],[X,Y],(X < Y)).
-swrl_geq(A,B)        :- swrl_arithmetic([A,B],[X,Y],(X >= Y)).
-swrl_greater(A,B)    :- swrl_arithmetic([A,B],[X,Y],(X > Y)).
-swrl_plus(A,B,C)     :- swrl_arithmetic([A,B,C],[X,Y,Z],(X is Y + Z)).
-swrl_minus(A,B,C)    :- swrl_arithmetic([A,B,C],[X,Y,Z],(X is Y - Z)).
-swrl_divide(A,B,C)   :- swrl_arithmetic([A,B,C],[X,Y,Z],(X is Y / Z)).
-swrl_multiply(A,B,C) :- swrl_arithmetic([A,B,C],[X,Y,Z],(X is Y * Z)).
-swrl_mod(A,B,C)      :- swrl_arithmetic([A,B,C],[X,Y,Z],(X is Y mod Z)).
-swrl_pow(A,B,C)      :- swrl_arithmetic([A,B,C],[X,Y,Z],(X is Y ** Z)).
-swrl_abs(A,B)        :- swrl_arithmetic([A,B],[X,Y],(X is abs(Y))).
 
 %%%%%%%%%%%%
 %%%%%%%%%%%%
@@ -333,7 +298,7 @@ swrl_builtin_pl(stringLength(A,L), atom_length(A_atom, L_num), Vars) :-
   swrl_atom_number(L,L_num,Vars).
 swrl_builtin_pl(upperCase(A,Upper), upcase_atom(A_atom, Upper_atom), Vars) :-
   swrl_atoms([A,Upper], [A_atom,Upper_atom], Vars).
-swrl_builtin_pl(lowerCase(A,Lower), upcase_atom(A_atom, Lower_atom), Vars) :-
+swrl_builtin_pl(lowerCase(A,Lower), downcase_atom(A_atom, Lower_atom), Vars) :-
   swrl_atoms([A,Lower], [A_atom,Lower_atom], Vars).
 swrl_builtin_pl(contains(A,X), sub_atom(A_atom, _, _, _, X_atom), Vars) :-
   swrl_atoms([A,X], [A_atom,X_atom], Vars).
@@ -344,46 +309,74 @@ swrl_builtin_pl(endsWith(A,X), atom_concat(_, X_atom, A_atom), Vars) :-
 % TODO: support for more builtins:
 %    matches, listConcat, member, length, first, rest, empty
 
+swrl_arithmetic(N,M,Goal) :- number_list(N,M), call(Goal).
+swrl_leq(A,B)        :- swrl_arithmetic([A,B],[X,Y],(X =< Y)).
+swrl_less(A,B)       :- swrl_arithmetic([A,B],[X,Y],(X < Y)).
+swrl_geq(A,B)        :- swrl_arithmetic([A,B],[X,Y],(X >= Y)).
+swrl_greater(A,B)    :- swrl_arithmetic([A,B],[X,Y],(X > Y)).
+swrl_plus(A,B,C)     :- swrl_arithmetic([A,B,C],[X,Y,Z],(X is Y + Z)).
+swrl_minus(A,B,C)    :- swrl_arithmetic([A,B,C],[X,Y,Z],(X is Y - Z)).
+swrl_divide(A,B,C)   :- swrl_arithmetic([A,B,C],[X,Y,Z],(X is Y / Z)).
+swrl_multiply(A,B,C) :- swrl_arithmetic([A,B,C],[X,Y,Z],(X is Y * Z)).
+swrl_mod(A,B,C)      :- swrl_arithmetic([A,B,C],[X,Y,Z],(X is Y mod Z)).
+swrl_pow(A,B,C)      :- swrl_arithmetic([A,B,C],[X,Y,Z],(X is Y ** Z)).
+swrl_abs(A,B)        :- swrl_arithmetic([A,B],[X,Y],(X is abs(Y))).
+
+number_list([],[]).
+number_list([X|Xs],[X|Ys]) :-
+  var(X), !, number_list(Xs,Ys).
+number_list([X|Xs],[X|Ys]) :-
+  number(X), !, number_list(Xs,Ys).
+number_list([X|Xs],[Y|Ys]) :-
+  atom(X), !,
+  catch(atom_number(X,Y), _, fail),
+  number_list(Xs,Ys).
+number_list([X|Xs],[Y|Ys]) :-
+  strip_literal_type(X, X_striped),
+  catch(atom_number(X_striped,Y), _, fail),
+  number_list(Xs,Ys).
+
 %% assert_rdf_class
 %
 % Bind IRI of RDF class description to `Descr`
 %
-assert_rdf_class(some(P,Cls), Descr) :-
+assert_rdf_class(Descr, Descr) :- atom(Descr), !.
+assert_rdf_class(Expr, Descr)  :-
+  compund(Expr), rdf_node(Descr),
+  assert_rdf_class_(Expr, Descr).
+
+assert_rdf_class_(some(P,Cls), Descr) :-
   assert_rdf_class(Cls, ClsDescr),
-  rdf_node(Descr),
   rdf_assert(Descr, owl:someValuesFrom, ClsDescr),
   rdf_assert(Descr, owl:onProperty, P).
-assert_rdf_class(all(P,Cls), Descr) :-
+assert_rdf_class_(all(P,Cls), Descr) :-
   assert_rdf_class(Cls, ClsDescr),
-  rdf_node(Descr),
   rdf_assert(Descr, owl:allValuesFrom, ClsDescr),
   rdf_assert(Descr, owl:onProperty, P).
-assert_rdf_class(value(Value,P), Descr) :-
-  rdf_node(Descr),
+assert_rdf_class_(value(Value,P), Descr) :-
   rdf_assert(Descr, owl:hasValue, Value),
   rdf_assert(Descr, owl:onProperty, P).
-assert_rdf_class(exactly(Num,P,Cls), Descr) :-
+assert_rdf_class_(exactly(Num,P,Cls), Descr) :-
   assert_rdf_class(Cls, ClsDescr),
-  rdf_node(Descr),
   rdf_assert(Descr, owl:cardinality, Num),
   rdf_assert(Descr, owl:onProperty, P),
   rdf_assert(Descr, owl:onClass, ClsDescr).
-assert_rdf_class(min(_,_,_), _) :- fail.
-assert_rdf_class(max(Num,P,Cls), _) :-
+assert_rdf_class_(min(Num,P,Cls), Descr) :-
   assert_rdf_class(Cls, ClsDescr),
-  rdf_node(Descr),
+  rdf_assert(Descr, owl:minQualifiedCardinality, Num),
+  rdf_assert(Descr, owl:onProperty, P),
+  rdf_assert(Descr, owl:onClass, ClsDescr).
+assert_rdf_class_(max(Num,P,Cls), Descr) :-
+  assert_rdf_class(Cls, ClsDescr),
   rdf_assert(Descr, owl:maxQualifiedCardinality, Num),
   rdf_assert(Descr, owl:onProperty, P),
   rdf_assert(Descr, owl:onClass, ClsDescr).
-assert_rdf_class(allOf(Cls), Descr) :-
+assert_rdf_class_(allOf(Cls), Descr) :-
   assert_rdf_list(Cls, ClsDescr),
-  rdf_node(Descr),
   rdf_assert(Descr, owl:intersectionOf, ClsDescr).
-assert_rdf_class(oneOf(Cls), Descr) :-
+assert_rdf_class_(oneOf(Cls), Descr) :-
   assert_rdf_list(Cls, ClsDescr),
-  rdf_node(Descr),
   rdf_assert(Descr, owl:unionOf, ClsDescr).
-assert_rdf_class(Descr, Descr) :- atom(Descr).
 
 assert_rdf_list([], rdf:nil).
 assert_rdf_list([X|Xs], Descr) :-
@@ -409,11 +402,8 @@ swrl_vars(Head :- Body, Variables) :-
     swrl_var_names(Atom,VarName)
   ), VarNames),
   list_to_set(VarNames, VarNamesUnique),
-  swrl_vars_pl(VarNamesUnique,Variables).
-
-swrl_vars_pl([], []).
-swrl_vars_pl([Name|RestNames], [var(Name,_)|RestVars]) :-
-  swrl_vars_pl(RestNames, RestVars).
+  maplist(swrl_var_pl(_), VarNamesUnique,Variables).
+swrl_var_pl(_,Y,var(Y,_)).
 
 swrl_var_names(Term, Var) :-
   compound(Term), !,
@@ -431,9 +421,7 @@ swrl_var_names(Var, Var) :-
 % @PrologVar The mapped Prolog variable
 %
 swrl_var(Vars, Name, PrologVar) :-
-  atom(Name),
-  rdf_has(Name, rdf:type, swrl:'Variable'), !,
-  nth0(_, Vars, var(Name,PrologVar)).
+  atom(Name), nth0(_, Vars, var(Name,PrologVar)), !.
 swrl_var(_, Name, Name).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -451,14 +439,14 @@ swrl_atoms([X|Xs], [Y|Ys], Vars) :-
   swrl_atoms(Xs,Ys,Vars).
 
 swrl_atom_number(literal(type(_,A)), A_num, _) :-
-  atom(A), !, atom_number(A, A_num).
+  atom(A), !, catch(atom_number(A,A_num), _, fail).
 swrl_atom_number(var(A), A_num, Vars) :-
   !, swrl_var(Vars, A, A_var),
   ( ground(A_var) ->
     swrl_atom_number(A_var, A_num, Vars)
   ; A_num = A_var ).
 swrl_atom_number(A, A_num, _) :-
-  atom(A), !, atom_number(A, A_num).
+  atom(A), !, catch(atom_number(A,A_num), _, fail).
 swrl_atom_number(A_num, A_num, _) :- number(A_num), !.
 swrl_nums([],[],_).
 swrl_nums([X|Xs],[Y|Ys],Vars) :-
@@ -658,9 +646,6 @@ swrl_cardinality_diff(S, P, Cls, Num, Diff) :-
 %   Term = [ class(test_swrl:'Person',var(p)) ] :-
 %                [ class(test_swrl:'Driver',var(p)) ]
 %
-% The SWRL term can then be used for checking the conditions
-% against and projecting the implications into the RDF triple store.
-%
 % @Term A Prolog term describing a SWRL rule
 % @Expr A SWRL describtion in human readable syntax
 %
@@ -728,7 +713,7 @@ swrl_class_atom(exactly(Num,P,Cls)) --> ['('], swrl_property(P), ['exactly'], sw
 swrl_class_atom(max(Num,P,Cls))     --> ['('], swrl_property(P), ['max'], swrl_number(Num), swrl_class_atom_terminal(Cls), [')'].
 swrl_class_atom(min(Num,P,Cls))     --> ['('], swrl_property(P), ['min'], swrl_number(Num), swrl_class_atom_terminal(Cls), [')'].
 swrl_class_atom(Cls)                --> swrl_class_atom_terminal(Cls).
-swrl_class_atom_terminal(Cls)       --> [Cls_name], { swrl_individual_of_(Cls, Cls_name, owl:'Class') }.
+swrl_class_atom_terminal(Cls)       --> [Cls_name], { swrl_match_instance(Cls, Cls_name, owl:'Class') }.
 
 swrl_class_intersection([Cls])      --> swrl_class_atom(Cls).
 swrl_class_intersection([Cls|Rest]) --> swrl_class_atom(Cls), ['and'], swrl_class_intersection(Rest).
@@ -737,12 +722,12 @@ swrl_class_union([Cls|Rest])        --> swrl_class_atom(Cls), ['or'], swrl_class
 
 swrl_subject(S)    --> swrl_var_expr(S).
 swrl_subject(S)    --> swrl_individual(S).
-swrl_property(P)   --> [P_name], { swrl_individual_of_(P, P_name, rdf:'Property') }.
+swrl_property(P)   --> [P_name], { swrl_match_instance(P, P_name, rdf:'Property') }.
 swrl_object(Var)   --> swrl_var_expr(Var).
 swrl_object(Obj)   --> swrl_individual(Obj).
 swrl_object(Cls)   --> swrl_class_atom_terminal(Cls).
 
-swrl_individual(I) --> [I_name], { swrl_individual_of_(I, I_name, owl:'NamedIndividual') }.
+swrl_individual(I) --> [I_name], { swrl_match_instance(I, I_name, owl:'NamedIndividual') }.
 swrl_number(Num)   --> [Num], { number(Num) }.
 
 swrl_value(Val)   --> swrl_individual(Val).
@@ -773,11 +758,11 @@ swrl_is_builtin(Predicate) :-
   clause(swrl_builtin_pl(Term,_,_),_),
   Term =.. [Predicate|_].
 
-swrl_individual_of_(Iri,Name,Type) :-
+swrl_match_instance(Iri,Name,Type) :-
   atom(Iri),
   rdfs_individual_of(Iri, Type),
   rdf_split_url(_, Name, Iri).
-swrl_individual_of_(Iri,Name,Type) :-
+swrl_match_instance(Iri,Name,Type) :-
   var(Iri), atom(Name),
   rdf_current_prefix(_, Uri),
   rdf_split_url(Uri, Name, Iri),
