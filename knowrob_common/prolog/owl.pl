@@ -38,6 +38,8 @@
 	    owl_cardinality_on_class/3,	% idem BJW
 	    owl_satisfies/2,		% +Spec, +Resource
 	    owl_individual_of/2,	% ?Resource, +Description
+	    owl_individual_of_description/2,
+	    owl_individual_from_range/2,
 
 	    owl_direct_subclass_of/2,	% ?Resource, ?Class
 	    owl_subclass_of/2,		% ?Class, ?Super
@@ -48,7 +50,10 @@
 
       owl_disjoint_with/2,        % ?Class1, ?Class2
 
-	    owl_find/5			% +For, +Dom, ?Props, +Method, -Subj
+	    owl_find/5,			% +For, +Dom, ?Props, +Method, -Subj
+	    
+	    non_negative_integer/4,
+	    non_negative_int/2
 	  ]).
 :- use_module(library(lists)).
 :- use_module(library('semweb/rdf_db')).
@@ -81,6 +86,8 @@
 	owl_cardinality_on_class(r, r, -),
 	owl_satisfies(r, t),
 	owl_individual_of(r, t),
+	owl_individual_of_description(r, t),
+	owl_individual_from_range(r, t),
 	owl_direct_subclass_of(r, r),
 	owl_subclass_of(r, r),
 	owl_has(r, r, o),
