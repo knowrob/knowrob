@@ -31,6 +31,7 @@
 
 :- module(knowrob_temporal,
     [
+      owl_individual_of_during/3,
       holds/1,
       holds/2,
       holds/3,
@@ -65,7 +66,8 @@
 
 % define predicates as rdf_meta predicates
 % (i.e. rdf namespaces are automatically expanded)
-:- rdf_meta holds(t),
+:- rdf_meta owl_individual_of_during(r,r,?),
+            holds(t),
             holds(t,?),
             holds(r,r,t),
             holds(r,r,t,?),
@@ -106,7 +108,7 @@ owl_individual_of_during(_Resource, Nothing, _) :-
   rdf_equal(Nothing, owl:'Nothing'), %!, MT 16032011
   fail.
 owl_individual_of_during(Resource, Description, _) :- % RDFS
-  rdfs_individual_of(Resource, Description).
+  rdfs_individual_of(Resource, Description). 
 owl_individual_of_during(Resource, Class, Interval) :-
   nonvar(Resource),
   setof(C, holds(Resource, rdf:type, C, Interval), Cs), %!, MT 16032011
@@ -126,10 +128,10 @@ owl_individual_of_during(Resource, Class, Interval) :-
 owl_individual_of_during(Resource, Description, _) :- % RDFS
   owl_individual_from_range(Resource, Description).
 
-owl_individual_of_all_during([], _).
-owl_individual_of_all_during([C|T], Resource) :-
-	owl_individual_of_during(Resource, C),
-	owl_individual_of_all_during(T, Resource).
+owl_individual_of_all_during([], _, _).
+owl_individual_of_all_during([C|T], Resource, I) :-
+	owl_individual_of_during(Resource, C, I),
+	owl_individual_of_all_during(T, Resource, I).
 
 
 owl_satisfies_restriction_during(Resource, Restriction, Interval) :-
