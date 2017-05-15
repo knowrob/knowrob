@@ -37,14 +37,15 @@
       rdf_swrl_target_variable/2,
       rdf_swrl_load/0,
       rdf_swrl_load/1,
-      rdf_swrl_load_named_rule/1,
+      rdf_swrl_projection/1,
       swrl_assert/1,
       swrl_phrase/2,
       swrl_phrase_assert/1,
       swrl_individual_of/2,
       swrl_individual_of/3,
       swrl_holds/3,
-      swrl_holds/4
+      swrl_holds/4,
+      swrl_projection/1
     ]).
 
 :- rdf_db:rdf_register_ns(owl, 'http://www.w3.org/2002/07/owl#', [keep(true)]).
@@ -62,6 +63,7 @@
             swrl_individual_of(r,r,r),
             swrl_holds(r,r,r,r),
             swrl_holds(r,r,r),
+            swrl_projection(r),
             swrl_match_instance(r,r,r).
 :- dynamic  swrl_holds/4,
             call_mutex/2.
@@ -190,22 +192,100 @@ rdf_swrl_target_variable(Descr, RuleVar) :-
 %
 rdf_swrl_load :-
   forall( rdf_swrl_rule(_, Rule), swrl_assert(Rule) ).
+
 rdf_swrl_load(Descr) :-
+  atom(Descr),
+  rdf_has(Descr, rdf:type, swrl:'Imp'), !,
   rdf_swrl_rule(Descr, Rule),
   swrl_assert(Rule).
 
-%% rdf_swrl_load_named_rule
-% 
-rdf_swrl_load_named_rule(Id) :-
+rdf_swrl_load(Id) :-
   once(( rdf_has(Descr, rdfs:label, literal(type(_,Id))) ;
          rdf_has(Descr, rdfs:label, literal(Id)) )),
   rdf_has(Descr, rdf:type, swrl:'Imp'),
   rdf_swrl_load(Descr).
 
+%% rdf_swrl_projection
+% 
+rdf_swrl_projection(Descr) :-
+  atom(Descr),
+  rdf_has(Descr, rdf:type, swrl:'Imp'), !,
+  rdf_swrl_rule(Descr,Rule),
+  swrl_projection(Rule).
+
+rdf_swrl_projection(Id) :-
+  once(( rdf_has(Descr, rdfs:label, literal(type(_,Id))) ;
+         rdf_has(Descr, rdfs:label, literal(Id)) )),
+  rdf_has(Descr, rdf:type, swrl:'Imp'),
+  rdf_swrl_projection(Descr).
+
+
+%% rdf_class_pl
+% 
+% Read Prolog representation of class from RDF triple store
+% 
+rdf_class_pl(Cls, not(ClsTerm)) :-
+  rdf_has(Cls, owl:complementOf, ClsDescr), !,
+  rdf_class_pl(ClsDescr, ClsTerm).
+rdf_class_pl(Cls, allOf(Classes)) :-
+  rdf_has(Cls, owl:intersectionOf, ClsDescr), !,
+  rdf_class_list_pl(ClsDescr, Classes).
+rdf_class_pl(Cls, oneOf(Classes)) :-
+  rdf_has(Cls, owl:unionOf, ClsDescr), !,
+  rdf_class_list_pl(ClsDescr, Classes).
+rdf_class_pl(Cls, Restr) :-
+  rdf_has(Cls, rdf:type, owl:'Restriction'), !,
+  rdf_restriction_pl(Cls, Restr).
+rdf_class_pl(Cls, Cls) :- atom(Cls), !.
+
+%% rdf_restriction_pl
+% 
+% Read Prolog representation of restriction from RDF triple store
+% 
+rdf_restriction_pl(Descr, some(P,Cls_pl)) :-
+  rdf_has(Descr, owl:someValuesFrom, Cls), !,
+  rdf_has(Descr, owl:onProperty, P),
+  rdf_class_pl(Cls, Cls_pl).
+rdf_restriction_pl(Descr, all(P,Cls_pl)) :-
+  rdf_has(Descr, owl:allValuesFrom, Cls), !,
+  rdf_has(Descr, owl:onProperty, P),
+  rdf_class_pl(Cls, Cls_pl).
+rdf_restriction_pl(Descr, value(Value,P)) :- 
+  ( rdf_has(Descr, owl:hasValue, literal(type(_,Value))) ;
+    rdf_has(Descr, owl:hasValue, literal(Value)) ;
+    rdf_has(Descr, owl:hasValue, Value) ),
+  rdf_has(Descr, owl:onProperty, P).
+rdf_restriction_pl(Descr, exactly(Num,P,Cls_pl)) :- 
+  ( rdf_has(Descr, owl:cardinality, literal(type(_,Num))) ;
+    rdf_has(Descr, owl:qualifiedCardinality, literal(type(_,Num))) ), !,
+  rdf_has(Descr, owl:onProperty, P),
+  ( rdf_has(Descr, owl:onClass, Cls) ; Cls='http://www.w3.org/2002/07/owl#Thing' ),
+  rdf_class_pl(Cls, Cls_pl).
+rdf_restriction_pl(Descr, max(Num,P,Cls_pl)) :- 
+  rdf_has(Descr, owl:maxQualifiedCardinality, literal(type(_,Num))), !,
+  rdf_has(Descr, owl:onProperty, P),
+  ( rdf_has(Descr, owl:onClass, Cls) ; Cls='http://www.w3.org/2002/07/owl#Thing' ),
+  rdf_class_pl(Cls, Cls_pl).
+rdf_restriction_pl(Descr, min(Num,P,Cls_pl)) :- 
+  rdf_has(Descr, owl:minQualifiedCardinality, literal(type(_,Num))), !,
+  rdf_has(Descr, owl:onProperty, P),
+  ( rdf_has(Descr, owl:onClass, Cls) ; Cls='http://www.w3.org/2002/07/owl#Thing' ),
+  rdf_class_pl(Cls, Cls_pl).
+
+rdf_class_list_pl(Descr, []) :-
+  rdf_equal(Descr, rdf:'nil').
+rdf_class_list_pl(Descr, [First|Rest]) :-
+  rdf_has(Descr, rdf:first, FirstDescr),
+  rdf_class_pl(FirstDescr, First),
+  rdf_has(Descr, rdf:rest, RestDescr),
+rdf_class_list_pl(RestDescr, Rest).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%% Prolog-encoded SWRL representation
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%% swrl_individual_of
+%
 swrl_individual_of(S,Cls) :-
   current_time(Now),
   swrl_individual_of(S,Cls,Now).
@@ -215,6 +295,8 @@ swrl_individual_of(S,Cls,I) :-
 swrl_individual_of(S,Cls,I) :-
   owl_individual_of_during(S,Cls,I).
 
+%% swrl_holds
+%
 swrl_holds(S,P,O) :-
   current_time(Now),
   swrl_holds(S,P,O,Now).
@@ -244,9 +326,11 @@ swrl_rule_pl(Impl :- Cond, Impl_pl :- Cond_pl, Vars) :-
 
 with_call_mutex(MutexId, ThreadId, Goal) :-
   \+ call_mutex(MutexId,ThreadId),
-  assert(call_mutex(MutexId,ThreadId)),
-  call( Goal ),
-  retract(call_mutex(MutexId,ThreadId)).
+  setup_call_cleanup(
+    assert(call_mutex(MutexId,ThreadId)),
+    Goal,
+    retract(call_mutex(MutexId,ThreadId))
+  ).
 
 %% swrl_implication_pl
 %
@@ -267,8 +351,9 @@ swrl_condition_pl([A], A_pl, Vars) :-
 swrl_condition_pl([A,B|Xs], ','(A_pl,Ys), Vars) :-
   swrl_condition_pl(A, A_pl, Vars),
   swrl_condition_pl([B|Xs], Ys, Vars).
+% FIXME(DB): this won't work when subject unbound. Better use OWL class and let `owl_individual_of` handle it.
 swrl_condition_pl(class(not(Cls),S), (\+ ClsTerm), Vars) :-
-  swrl_condition_pl(class(Cls,S), ClsTerm, Vars).
+  !, swrl_condition_pl(class(Cls,S), ClsTerm, Vars).
 swrl_condition_pl(class(Cls,S), swrl_individual_of(S_var,Cls_rdf,I_var), Vars) :-
   swrl_var(Vars, S, S_var),
   swrl_var(Vars, 'swrl:interval', I_var),
@@ -402,6 +487,9 @@ assert_rdf_class_(allOf(Cls), Descr) :-
 assert_rdf_class_(oneOf(Cls), Descr) :-
   assert_rdf_list(Cls, ClsDescr),
   rdf_assert(Descr, owl:unionOf, ClsDescr).
+assert_rdf_class_(not(Cls), Descr) :-
+  assert_rdf_class(Cls, ClsDescr),
+  rdf_assert(Descr, owl:complementOf, ClsDescr).
 
 assert_rdf_list([], rdf:nil).
 assert_rdf_list([X|Xs], Descr) :-
@@ -485,8 +573,7 @@ swrl_nums([X|Xs],[Y|Ys],Vars) :-
 %%%%%%%%%%%%%%% Atom projection
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% swrl_implication_project(+Descr, +Vars)
-%% swrl_implication_project(+Rule, +Vars)
+%% swrl_projection(+Rule)
 %
 % Project implications of a SWRL rule into the RDF triple store managed by KnowRob.
 % The rule is described by the individual `Descr` in the RDF triple store
@@ -496,26 +583,23 @@ swrl_nums([X|Xs],[Y|Ys],Vars) :-
 % by specifying the end time of the corresponding time interval.
 % Thus, no facts are retracted in the projection.
 %
-% @Descr OWL individual of type swrl:'Imp' that describes a SWRL rule
-% @Rule Prolog term describing a SWRL rule
-% @Vars Set of unified variables in the rule
-%
-swrl_implication_project(Descr, Vars) :-
-  atom(Descr),
-  rdf_has(Descr, rdf:type, swrl:'Imp'),
-  rdf_swrl_rule(Descr,Rule),
-  % check condition, bind vars
-  swrl_rule_pl(Rule, _ :- Cond_pl, Vars),
+swrl_projection([HeadAtom|Xs] :- Body) :-
+  current_time(Now),
+  swrl_vars([HeadAtom|Xs] :- Body, Vars), Vars_ = [var('swrl:interval',Now)|Vars],
+  swrl_rule_pl(HeadAtom :- Body,  _ :- Cond_pl, Vars_),
   call( Cond_pl ),
-  swrl_implication_project(Rule, Vars).
+  swrl_projection([HeadAtom|Xs], Vars_).
 
-swrl_implication_project(Head :- _, Vars) :-
-  forall(
-    member(Atom,Head),
-    ( swrl_atom_holds(Atom) ;
-      swrl_atom_project(Atom,Vars) )
-  ).
+swrl_projection([], _).
+swrl_projection([HeadAtom|Xs], Vars) :-
+  % check condition, bind vars
+  (  swrl_atom_holds(HeadAtom,Vars)
+  -> true
+  ;  swrl_atom_project(HeadAtom,Vars) ),
+  swrl_projection(Xs, Vars).
 
+% Check if implication already fulfilled in the RDF triple store
+% (SWRL rules are ignored here!)
 swrl_atom_holds(class(Cls,S), Vars) :-
   swrl_var(Vars, S, S_var),
   swrl_class_atom_satisfied(S_var,Cls).
@@ -524,12 +608,10 @@ swrl_atom_holds(property(S,P,O), Vars) :-
   swrl_var(Vars, O, O_var),
   owl_has(S_var,P,O_var).
 
-%% Class atoms
+%% Project implication atoms
 swrl_atom_project(class(Cls,S), Vars) :- !,
   swrl_var(Vars, S, S_var),
   swrl_class_atom_project(S_var, Cls).
-
-%% Property atoms
 swrl_atom_project(property(S,P,O), Vars) :-
   strip_literal_type(O, O_val),
   swrl_var(Vars, S, S_var),
@@ -604,9 +686,15 @@ swrl_class_atom_project(S, min(N,P,Cls)) :-
   swrl_assert_random(S, P, Cls, Diff).
 
 swrl_class_atom_project(S, Cls) :-
-  atom(Cls), rdfs_individual_of(Cls, owl:'Class'),
-  % FIXME(DB): unwrap OWL class descriptions!
-  assert_temporal_part(S, rdf:'type', nontemporal(Cls)).
+  atom(Cls),
+  % unwrap class descriptions for projection
+  rdf_class_pl(Cls, Cls_pl),
+  ( atom(Cls_pl) -> (
+    rdfs_individual_of(Cls_pl, owl:'Class'),
+    assert_temporal_part(S, rdf:'type', nontemporal(Cls_pl))
+  ) ; (
+    swrl_class_atom_project(S, Cls_pl)
+  )).
 
 %% retract random objects that fulfills relation
 swrl_retract_random(_, _, _, N) :- N =< 0, !.
