@@ -31,10 +31,9 @@
 :- rdf_db:rdf_register_prefix(swrl, 'http://www.w3.org/2003/11/swrl#', [keep(true)]).
 :- rdf_db:rdf_register_prefix(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
 
-test_rule_id(Id, Descr) :-
-  once(( rdf_has(Descr, rdfs:label, literal(type(_,Id))) ;
-         rdf_has(Descr, rdfs:label, literal(Id)) )),
-  rdf_has(Descr, rdf:type, swrl:'Imp').
+% % % % % % % % % % % % % % % % % % % % % % % %
+% % % % Parsing RDF/XML representation of SWRL rules
+% % % % % % % % % % % % % % % % % % % % % % % %
 
 test(swrl_parse_rules) :-
   forall( rdf_has(Descr, rdf:type, swrl:'Imp'), (
@@ -42,11 +41,10 @@ test(swrl_parse_rules) :-
     Head \= [], Body \= []
   )).
 
-rdf_swrl_load_named_rule(Id) :-
-  test_rule_id(Id, Descr),
-  rdf_swrl_load(Descr).
-
 % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % Asserting RDF/XML SWRL rules
+% % % % % % % % % % % % % % % % % % % % % % % %
+
 % % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_Driver_load, [nondet]) :-
   \+ swrl_individual_of(test_swrl:'Fred', test_swrl:'Driver'),
@@ -71,49 +69,63 @@ test(swrl_Driver_holds, [nondet]) :-
   holds(test_swrl:'Fred', rdf:type, test_swrl:'Driver').
 
 % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_Person1, [nondet]) :-
   \+ swrl_holds(test_swrl:'Alex', rdf:type, test_swrl:'Person'),
   rdf_swrl_load_named_rule('Person'),
   swrl_holds(test_swrl:'Alex', rdf:type, test_swrl:'Person').
 
+% % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_Person2, [nondet]) :-
   \+ swrl_individual_of(test_swrl:'Lea', test_swrl:'Hermaphrodite'),
   rdf_swrl_load_named_rule('Person2'),
   swrl_individual_of(test_swrl:'Lea', test_swrl:'Hermaphrodite').
 
+% % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_NonHuman1, [nondet]) :-
   \+ swrl_individual_of(test_swrl:'RedCar', test_swrl:'NonHuman'),
   rdf_swrl_load_named_rule('NonHuman'),
   swrl_individual_of(test_swrl:'RedCar', test_swrl:'NonHuman'),
   \+ swrl_individual_of(test_swrl:'Fred', test_swrl:'NonHuman').
 
+% % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_area, [nondet]) :-
   \+ swrl_holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _),
   rdf_swrl_load_named_rule('area'),
   swrl_holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
 
-test(swrl_startsWith, [nondet]) :-
+% % % % % % % % % % % % % % % % % % % % % % % %
+test(swrl_startsWith_load, [nondet]) :-
   \+ swrl_holds(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _),
-  rdf_swrl_load_named_rule('startsWith'),
-  swrl_holds(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _).
+  rdf_swrl_load_named_rule('startsWith').
 
-test(swrl_hasBrother, [nondet]) :-
+test(swrl_startsWith_holds, [nondet]) :-
+  holds(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _).
+
+% % % % % % % % % % % % % % % % % % % % % % % %
+test(swrl_hasBrother_load, [nondet]) :-
   \+ swrl_holds(test_swrl:'Fred', test_swrl:'hasBrother', _),
-  rdf_swrl_load_named_rule('brother'),
-  swrl_holds(test_swrl:'Fred', test_swrl:'hasBrother', test_swrl:'Ernest').
+  rdf_swrl_load_named_rule('brother').
 
+test(swrl_hasBrother_holds, [nondet]) :-
+  holds(test_swrl:'Fred', test_swrl:'hasBrother', test_swrl:'Ernest').
+
+% % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_BigRectangle1, [nondet]) :-
   \+ swrl_individual_of(test_swrl:'RectangleBig', test_swrl:'BigRectangle'),
   rdf_swrl_load_named_rule('BigRectangle'),
   swrl_individual_of(test_swrl:'RectangleBig', test_swrl:'BigRectangle'),
   swrl_holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
 
+test(swrl_BigRectangle_holds, [nondet]) :-
+  holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
+
+% % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_greaterThen, [nondet]) :-
   \+ swrl_individual_of(test_swrl:'Ernest', test_swrl:'Adult'),
   rdf_swrl_load_named_rule('greaterThen'),
   swrl_individual_of(test_swrl:'Ernest', test_swrl:'Adult').
 
+% % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_exactly, [nondet]) :-
   \+ swrl_individual_of(test_swrl:'Lea', test_swrl:'Singleton'),
   rdf_swrl_load_named_rule('exactly'),
@@ -124,15 +136,9 @@ test(swrl_exactly, [nondet]) :-
 % % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_assert_rules) :- rdf_swrl_load.
 
-% % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % % % % % % % % % % % % % % % % % % % %
-test(swrl_holds, [nondet]) :-
-  holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _),
-  holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _),
-  holds(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _),
-  holds(test_swrl:'Fred', test_swrl:'hasBrother', test_swrl:'Ernest').
 
 % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % Parsing of human readable SWRL expressions into Prolog-based representation
 % % % % % % % % % % % % % % % % % % % % % % % %
 :- rdf_meta test_swrl_parse(?,t).
 
@@ -257,11 +263,16 @@ test(swrl_parse_area, [nondet]) :-
 % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % SWRL rules asserted from human readable expressions
 % % % % % % % % % % % % % % % % % % % % % % % %
-test(swrl_parse_assert_hasUncle, [nondet]) :-
+test(swrl_phrase_hasUncle, [nondet]) :-
   \+ holds(test_swrl:'Lea', test_swrl:'hasUncle', test_swrl:'Ernest'),
-  swrl_phrase(Term, 'hasParent(?x, ?y), hasBrother(?y, ?z) -> hasUncle(?x, ?z)'),
-  swrl_assert(Term),
+  swrl_phrase_assert('hasParent(?x, ?y), hasBrother(?y, ?z) -> hasUncle(?x, ?z)'),
   holds(test_swrl:'Lea', test_swrl:'hasUncle', test_swrl:'Ernest').
+
+% % % % % % % % % % % % % % % % % % % % % % % %
+% % % % Projection of SWRL rule implications into the RDF triple store
+% % % % % % % % % % % % % % % % % % % % % % % %
+test(swrl_project0) :-
+  fail.
 
 :- end_tests(swrl).
 

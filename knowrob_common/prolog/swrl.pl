@@ -37,8 +37,10 @@
       rdf_swrl_target_variable/2,
       rdf_swrl_load/0,
       rdf_swrl_load/1,
+      rdf_swrl_load_named_rule/1,
       swrl_assert/1,
       swrl_phrase/2,
+      swrl_phrase_assert/1,
       swrl_individual_of/2,
       swrl_individual_of/3,
       swrl_holds/3,
@@ -191,6 +193,14 @@ rdf_swrl_load :-
 rdf_swrl_load(Descr) :-
   rdf_swrl_rule(Descr, Rule),
   swrl_assert(Rule).
+
+%% rdf_swrl_load_named_rule
+% 
+rdf_swrl_load_named_rule(Id) :-
+  once(( rdf_has(Descr, rdfs:label, literal(type(_,Id))) ;
+         rdf_has(Descr, rdfs:label, literal(Id)) )),
+  rdf_has(Descr, rdf:type, swrl:'Imp'),
+  rdf_swrl_load(Descr).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%% Prolog-encoded SWRL representation
@@ -691,6 +701,12 @@ swrl_phrase(Term, Expr) :-
   atom(Expr),
   tokenize_atom(Expr, Tokens),
   phrase(swrl_parser(Term), Tokens).
+
+%% swrl_phrase_assert(?Phrase)
+%
+swrl_phrase_assert(Phrase) :-
+  swrl_phrase(Term, Phrase),
+  swrl_assert(Term).
 
 swrl_tokens_format(Tokens, Expr) :-
   once(swrl_tokens_format_(Tokens, Tokens2)),
