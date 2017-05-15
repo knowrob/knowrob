@@ -47,6 +47,7 @@ rdf_swrl_load_named_rule(Id) :-
   rdf_swrl_load(Descr).
 
 % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_Driver_load, [nondet]) :-
   \+ swrl_individual_of(test_swrl:'Fred', test_swrl:'Driver'),
   rdf_swrl_load_named_rule('Driver').
@@ -69,6 +70,7 @@ test(swrl_Driver_during, [nondet]) :-
 test(swrl_Driver_holds, [nondet]) :-
   holds(test_swrl:'Fred', rdf:type, test_swrl:'Driver').
 
+% % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_Person1, [nondet]) :-
   \+ swrl_holds(test_swrl:'Alex', rdf:type, test_swrl:'Person'),
@@ -119,8 +121,10 @@ test(swrl_exactly, [nondet]) :-
   \+ swrl_individual_of(test_swrl:'Fred', test_swrl:'Singleton').
 
 % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_assert_rules) :- rdf_swrl_load.
 
+% % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_holds, [nondet]) :-
   holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _),
@@ -128,6 +132,8 @@ test(swrl_holds, [nondet]) :-
   holds(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _),
   holds(test_swrl:'Fred', test_swrl:'hasBrother', test_swrl:'Ernest').
 
+% % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % %
 :- rdf_meta test_swrl_parse(?,t).
 
 test_swrl_parse(ExprList, Term) :-
@@ -247,6 +253,15 @@ test(swrl_parse_area, [nondet]) :-
         property(var(r), test_swrl:'hasHeightInMeters', var(h)),
         multiply(var(areaInSquareMeters),var(w),var(h)) ]
   ).
+
+% % % % % % % % % % % % % % % % % % % % % % % %
+% % % % SWRL rules asserted from human readable expressions
+% % % % % % % % % % % % % % % % % % % % % % % %
+test(swrl_parse_assert_hasUncle, [nondet]) :-
+  \+ holds(test_swrl:'Lea', test_swrl:'hasUncle', test_swrl:'Ernest'),
+  swrl_phrase(Term, 'hasParent(?x, ?y), hasBrother(?y, ?z) -> hasUncle(?x, ?z)'),
+  swrl_assert(Term),
+  holds(test_swrl:'Lea', test_swrl:'hasUncle', test_swrl:'Ernest').
 
 :- end_tests(swrl).
 

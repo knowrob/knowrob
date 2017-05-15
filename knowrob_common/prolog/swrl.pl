@@ -420,6 +420,7 @@ swrl_vars(Head :- Body, Variables) :-
   maplist(swrl_var_pl(_), VarNamesUnique,Variables).
 swrl_var_pl(_,Y,var(Y,_)).
 
+swrl_var_names(var(Var), Var) :- atom(Var), !.
 swrl_var_names(Term, Var) :-
   compound(Term), !,
   Term =.. [_|Args],
@@ -437,6 +438,8 @@ swrl_var_names(Var, Var) :-
 %
 swrl_var(Vars, Name, PrologVar) :-
   atom(Name), nth0(_, Vars, var(Name,PrologVar)), !.
+swrl_var(Vars, var(X), PrologVar) :-
+  swrl_var(Vars, X, PrologVar), !.
 swrl_var(_, Name, Name).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -487,30 +490,36 @@ swrl_nums([X|Xs],[Y|Ys],Vars) :-
 % @Rule Prolog term describing a SWRL rule
 % @Vars Set of unified variables in the rule
 %
-% FIXME: broken
 swrl_implication_project(Descr, Vars) :-
   atom(Descr),
   rdf_has(Descr, rdf:type, swrl:'Imp'),
   rdf_swrl_rule(Descr,Rule),
-  swrl_condition_satisfied(Rule, Vars),
+  % check condition, bind vars
+  swrl_rule_pl(Rule, _ :- Cond_pl, Vars),
+  call( Cond_pl ),
   swrl_implication_project(Rule, Vars).
 
-% FIXME: broken
 swrl_implication_project(Head :- _, Vars) :-
   forall(
     member(Atom,Head),
-    ( swrl_atom_satisfied(Atom,Vars) ;
+    ( swrl_atom_holds(Atom) ;
       swrl_atom_project(Atom,Vars) )
   ).
 
+swrl_atom_holds(class(Cls,S), Vars) :-
+  swrl_var(Vars, S, S_var),
+  swrl_class_atom_satisfied(S_var,Cls).
+swrl_atom_holds(property(S,P,O), Vars) :-
+  swrl_var(Vars, S, S_var),
+  swrl_var(Vars, O, O_var),
+  owl_has(S_var,P,O_var).
+
 %% Class atoms
-% FIXME: broken
 swrl_atom_project(class(Cls,S), Vars) :- !,
   swrl_var(Vars, S, S_var),
   swrl_class_atom_project(S_var, Cls).
 
 %% Property atoms
-% FIXME: broken
 swrl_atom_project(property(S,P,O), Vars) :-
   strip_literal_type(O, O_val),
   swrl_var(Vars, S, S_var),
@@ -520,7 +529,6 @@ swrl_atom_project(property(S,P,O), Vars) :-
 %%%%%%%%%%%%%%%%%%%%%%%
 %% Class atoms
 
-% FIXME: broken
 swrl_class_atom_project(S, not(allOf(Xs)))        :- once(( member(X,Xs), swrl_class_atom_project(S,not(X)) )).
 swrl_class_atom_project(S, not(oneOf(Xs)))        :- forall( member(X,Xs), swrl_class_atom_project(S,not(X)) ).
 swrl_class_atom_project(S, not(value(P,O)))       :- forall( assert_temporal_part_end(S,P,O), true ).
@@ -544,17 +552,13 @@ swrl_class_atom_project(S, not(Cls)) :-
   atom(Cls), rdfs_individual_of(Cls, owl:'Class'),
   assert_temporal_part_end(S, rdf:'type', nontemporal(Cls)).
 
-% FIXME: broken
 swrl_class_atom_project(S, allOf(Classes)) :-
   % Project each class description in the intersection
   forall( member(Cls, Classes), swrl_class_atom_project(S, Cls) ).
-
-% FIXME: broken
 swrl_class_atom_project(S, oneOf(Classes)) :-
   % Project one random class description in the union
   once(( member(Cls, Classes), swrl_class_atom_project(S, Cls) )).
 
-% FIXME: broken
 swrl_class_atom_project(S, all(P,Cls)) :-
   % Retract all values that are not an instance of Cls
   findall(O, (
@@ -563,20 +567,15 @@ swrl_class_atom_project(S, all(P,Cls)) :-
   ), Values),
   forall( member(O,Values),
           assert_temporal_part_end(S,P,O) ).
-
-% FIXME: broken
 swrl_class_atom_project(S, some(P,Cls)) :-
   % Assert random object fulfilling the relation
   once(( swrl_class_atom_satisfied(S, some(P,Cls)) ;
          swrl_assert_random(S, P, Cls, 1) )).
 
-% FIXME: broken
 swrl_class_atom_project(S, exactly(0,P,Cls)) :- !,
   % Retract all facts about objects fulfilling the class description
   swrl_relation_values(S,P,Cls,Values),
   forall( member(O,Values), assert_temporal_part_end(S,P,O) ).
-
-% FIXME: broken
 swrl_class_atom_project(S, exactly(N,P,Cls)) :-
   % End or begin some random temporal parts with temporal relation P so that the number of
   % active temporal parts is equal to qualified cardinality.
@@ -585,21 +584,18 @@ swrl_class_atom_project(S, exactly(N,P,Cls)) :-
     swrl_retract_random(S, P, Cls, Diff) ;
     swrl_assert_random(S, P, Cls, Diff) ).
 
-% FIXME: broken
 swrl_class_atom_project(S, max(N,P,Cls)) :-
   % End some random temporal parts with temporal relation P so that the number of
   % active temporal parts is below specified max cardinality.
   swrl_cardinality_diff(S, P, Cls, N, Diff),
   swrl_retract_random(S, P, Cls, Diff).
-
-% FIXME: broken
 swrl_class_atom_project(S, min(N,P,Cls)) :-
   swrl_cardinality_diff(S, P, Cls, N, Diff),
   swrl_assert_random(S, P, Cls, Diff).
 
-% FIXME: broken
 swrl_class_atom_project(S, Cls) :-
   atom(Cls), rdfs_individual_of(Cls, owl:'Class'),
+  % FIXME(DB): unwrap OWL class descriptions!
   assert_temporal_part(S, rdf:'type', nontemporal(Cls)).
 
 %% retract random objects that fulfills relation
@@ -643,6 +639,29 @@ swrl_relation_count(S,P,Cls,Count) :-
 swrl_cardinality_diff(S, P, Cls, Num, Diff) :-
   swrl_relation_count(S, P, Cls, CurrentNum),
   Diff is CurrentNum - Num.
+
+%% Class atoms
+swrl_class_atom_satisfied(S, not(Cls)) :-
+  \+ swrl_class_atom_satisfied(S,Cls).
+swrl_class_atom_satisfied(S, allOf(Cls)) :-
+  forall( member(X,Cls), swrl_class_atom_satisfied(S, X) ).
+swrl_class_atom_satisfied(S, oneOf(Cls)) :-
+  once(( member(X,Cls), swrl_class_atom_satisfied(S, X) )).
+swrl_class_atom_satisfied(S, some(P,Cls)) :-
+  once(( owl_has(S,P,O), swrl_class_atom_satisfied(O,Cls) )).
+swrl_class_atom_satisfied(S, all(P,Cls)) :-
+  forall( owl_has(S,P,O), swrl_class_atom_satisfied(O,Cls) ).
+swrl_class_atom_satisfied(S, min(N,P,Cls)) :-
+  findall(O, (owl_has(S,P,O), swrl_class_atom_satisfied(O,Cls)), Os ),
+  length(Os, Os_length), atom_number(N,N_val), Os_length >= N_val.
+swrl_class_atom_satisfied(S, max(N,P,Cls)) :-
+  findall(O, (owl_has(S,P,O), swrl_class_atom_satisfied(O,Cls)), Os ),
+  length(Os, Os_length), atom_number(N,N_val), Os_length =< N_val.
+swrl_class_atom_satisfied(S, exactly(N,P,Cls)) :-
+  findall(O, (owl_has(S,P,O), swrl_class_atom_satisfied(O,Cls)), Os ),
+  atom_number(N,N_val), length(Os,N_val).
+swrl_class_atom_satisfied(S, Cls) :-
+  atom(Cls), owl_individual_of(S, Cls).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%% SWRL phrase to Prolog term and vice versa

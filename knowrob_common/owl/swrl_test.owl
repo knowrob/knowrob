@@ -60,9 +60,21 @@
     
 
 
+    <!-- http://knowrob.org/kb/swrl_test#hasParent -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/swrl_test#hasParent"/>
+    
+
+
     <!-- http://knowrob.org/kb/swrl_test#hasSibling -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/swrl_test#hasSibling"/>
+    
+
+
+    <!-- http://knowrob.org/kb/swrl_test#hasUncle -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/swrl_test#hasUncle"/>
     
 
 
@@ -276,6 +288,7 @@
         <rdf:type rdf:resource="http://knowrob.org/kb/swrl_test#Man"/>
         <rdf:type rdf:resource="http://knowrob.org/kb/swrl_test#Person"/>
         <rdf:type rdf:resource="http://knowrob.org/kb/swrl_test#Woman"/>
+        <hasParent rdf:resource="http://knowrob.org/kb/swrl_test#Fred"/>
     </owl:NamedIndividual>
     
 
