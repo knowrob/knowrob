@@ -35,27 +35,15 @@
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#targetLocation -->
+    <!-- http://knowrob.org/kb/knowrob.owl#swrlActionConcept -->
 
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#targetLocation"/>
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#swrlActionConcept"/>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#swrlName -->
+    <!-- http://knowrob.org/kb/knowrob.owl#swrlActionVariable -->
 
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#swrlName"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#swrlTargetConcept -->
-
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#swrlTargetConcept"/>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#swrlType -->
-
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#swrlType"/>
+    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#swrlActionVariable"/>
     
 
 
@@ -133,35 +121,6 @@
     <!-- http://knowrob.org/kb/knowrob.owl#temporalProperty -->
 
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#temporalProperty"/>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Data properties
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    
-
-
-    <!-- http://knowrob.org/kb/action-effects.owl#object -->
-
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/action-effects.owl#object"/>
-    
-
-
-    <!-- http://knowrob.org/kb/action-effects.owl#predicate -->
-
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/action-effects.owl#predicate"/>
-    
-
-
-    <!-- http://knowrob.org/kb/action-effects.owl#subject -->
-
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/action-effects.owl#subject"/>
     
 
 
@@ -271,54 +230,11 @@
     
 
 
-    <!-- http://knowrob.org/kb/blocksworld.owl#BlockBlue_test1 -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#BlockBlue_test1">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/blocksworld.owl#BlockBlue_test2 -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#BlockBlue_test2">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized"/>
-        <knowrob:temporalParts rdf:resource="http://knowrob.org/kb/blocksworld.owl#BlockBlue_test2@TimeInterval_dfgnk43895"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/blocksworld.owl#BlockGreen_test2 -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#BlockGreen_test2">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized"/>
-        <knowrob:temporalParts rdf:resource="http://knowrob.org/kb/blocksworld.owl#BlockGreen_test2@TimeInterval_dfgnk43895"/>
-    </owl:NamedIndividual>
-    
-
-
     <!-- http://knowrob.org/kb/blocksworld.owl#BlockRed_test0 -->
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#BlockRed_test0">
         <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized"/>
-        <knowrob:temporalParts rdf:resource="http://knowrob.org/kb/blocksworld.owl#BlockRed_test0@TimeInterval_sfdigug3"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/blocksworld.owl#BlockRed_test1 -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#BlockRed_test1">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/blocksworld.owl#BlockRed_test2 -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#BlockRed_test2">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing-Localized"/>
-        <knowrob:temporalParts rdf:resource="http://knowrob.org/kb/blocksworld.owl#BlockRed_test2@TimeInterval_gon49235h"/>
+        <graspedBy rdf:resource="http://knowrob.org/kb/blocksworld.owl#Hand_test0"/>
     </owl:NamedIndividual>
     
 
@@ -327,14 +243,7 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#Hand_test0">
         <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#Hand"/>
-        <knowrob:temporalParts rdf:resource="http://knowrob.org/kb/blocksworld.owl#Hand_test0@TimeInterval_sfdigug3"/>
     </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/blocksworld.owl#Hand_test2 -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#Hand_test2"/>
     
 
 
@@ -342,68 +251,9 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#Stack_test0">
         <rdf:type rdf:resource="http://knowrob.org/kb/blocksworld.owl#Stack"/>
+        <knowrob:goalLocation rdf:resource="http://knowrob.org/kb/blocksworld.owl#BlockBlue_test0"/>
         <knowrob:objectActedOn rdf:resource="http://knowrob.org/kb/blocksworld.owl#BlockRed_test0"/>
-        <knowrob:targetLocation rdf:resource="http://knowrob.org/kb/blocksworld.owl#BlockBlue_test0"/>
     </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/blocksworld.owl#Stack_test1 -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#Stack_test1">
-        <rdf:type rdf:resource="http://knowrob.org/kb/blocksworld.owl#Stack"/>
-        <knowrob:objectActedOn rdf:resource="http://knowrob.org/kb/blocksworld.owl#BlockRed_test1"/>
-        <knowrob:targetLocation rdf:resource="http://knowrob.org/kb/blocksworld.owl#BlockBlue_test1"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/blocksworld.owl#Stack_test2 -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#Stack_test2">
-        <rdf:type rdf:resource="http://knowrob.org/kb/blocksworld.owl#Stack"/>
-        <knowrob:objectActedOn rdf:resource="http://knowrob.org/kb/blocksworld.owl#BlockRed_test2"/>
-        <knowrob:targetLocation rdf:resource="http://knowrob.org/kb/blocksworld.owl#BlockBlue_test2"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/blocksworld.owl#TimeInterval_dfgnk43895 -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#TimeInterval_dfgnk43895">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#TimeInterval"/>
-        <knowrob:startTime rdf:resource="http://knowrob.org/kb/blocksworld.owl#timepoint_0"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/blocksworld.owl#TimeInterval_gon49235h -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#TimeInterval_gon49235h">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#TimeInterval"/>
-        <knowrob:startTime rdf:resource="http://knowrob.org/kb/blocksworld.owl#timepoint_0"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/blocksworld.owl#TimeInterval_sfdigug3 -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#TimeInterval_sfdigug3">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#TimeInterval"/>
-        <knowrob:startTime rdf:resource="http://knowrob.org/kb/blocksworld.owl#timepoint_0"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/blocksworld.owl#graspedBy -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#graspedBy"/>
-    
-
-
-    <!-- http://knowrob.org/kb/blocksworld.owl#ontop -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#ontop"/>
     
 
 
@@ -411,68 +261,6 @@
 
     <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#timepoint_0">
         <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#TimePoint"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/blocksworld.owl#BlockBlue_test2@TimeInterval_dfgnk43895 -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#BlockBlue_test2@TimeInterval_dfgnk43895">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#TemporalPart"/>
-        <knowrob:temporalExtend rdf:resource="http://knowrob.org/kb/blocksworld.owl#TimeInterval_dfgnk43895"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/blocksworld.owl#BlockGreen_test2@TimeInterval_dfgnk43895 -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#BlockGreen_test2@TimeInterval_dfgnk43895">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#TemporalPart"/>
-        <ontop rdf:resource="http://knowrob.org/kb/blocksworld.owl#BlockBlue_test2@TimeInterval_dfgnk43895"/>
-        <knowrob:temporalExtend rdf:resource="http://knowrob.org/kb/blocksworld.owl#TimeInterval_dfgnk43895"/>
-        <knowrob:temporalProperty rdf:resource="http://knowrob.org/kb/blocksworld.owl#ontop"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/blocksworld.owl#BlockRed_test0@TimeInterval_sfdigug3 -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#BlockRed_test0@TimeInterval_sfdigug3">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#TemporalPart"/>
-        <graspedBy rdf:resource="http://knowrob.org/kb/blocksworld.owl#Hand_test0@TimeInterval_sfdigug3"/>
-        <knowrob:temporalExtend rdf:resource="http://knowrob.org/kb/blocksworld.owl#TimeInterval_sfdigug3"/>
-        <knowrob:temporalProperty rdf:resource="http://knowrob.org/kb/blocksworld.owl#graspedBy"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/blocksworld.owl#BlockRed_test2@TimeInterval_gon49235h -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#BlockRed_test2@TimeInterval_gon49235h">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#TemporalPart"/>
-        <graspedBy rdf:resource="http://knowrob.org/kb/blocksworld.owl#Hand_test2@TimeInterval_gon49235h"/>
-        <knowrob:temporalExtend rdf:resource="http://knowrob.org/kb/blocksworld.owl#TimeInterval_gon49235h"/>
-        <knowrob:temporalProperty rdf:resource="http://knowrob.org/kb/blocksworld.owl#graspedBy"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/blocksworld.owl#Hand_test0@TimeInterval_sfdigug3 -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#Hand_test0@TimeInterval_sfdigug3">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#TemporalPart"/>
-        <knowrob:temporalExtend rdf:resource="http://knowrob.org/kb/blocksworld.owl#TimeInterval_sfdigug3"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://knowrob.org/kb/blocksworld.owl#Hand_test2@TimeInterval_gon49235h -->
-
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/blocksworld.owl#Hand_test2@TimeInterval_gon49235h">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#Hand"/>
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#TemporalPart"/>
-        <knowrob:temporalExtend rdf:resource="http://knowrob.org/kb/blocksworld.owl#TimeInterval_gon49235h"/>
-        <knowrob:temporalParts rdf:resource="http://knowrob.org/kb/blocksworld.owl#Hand_test2"/>
     </owl:NamedIndividual>
     
 
@@ -495,9 +283,9 @@
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
     </rdf:Description>
     <rdf:Description>
-        <knowrob:swrlName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Stacking a block</knowrob:swrlName>
-        <knowrob:swrlTargetConcept rdf:resource="http://knowrob.org/kb/blocksworld.owl#Stack"/>
-        <knowrob:swrlType rdf:resource="http://knowrob.org/kb/knowrob.owl#RuleTypeActionDescription"/>
+        <knowrob:swrlActionConcept rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://knowrob.org/kb/blocksworld.owl#Stack</knowrob:swrlActionConcept>
+        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:swrl#act</knowrob:swrlActionVariable>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Stack</rdfs:label>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
         <swrl:body>
             <rdf:Description>
