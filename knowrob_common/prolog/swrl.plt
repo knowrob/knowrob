@@ -31,19 +31,6 @@
 :- rdf_db:rdf_register_prefix(swrl, 'http://www.w3.org/2003/11/swrl#', [keep(true)]).
 :- rdf_db:rdf_register_prefix(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
 
-
-% FIXME(DB): `owl_individual_of` does not work with complement classes!
-%      - move unit test to owl.plt
-% Note: Child is defined as (Person and not Adult)
-test(owl_individual_of_complement_class1, [nondet]) :-
-  owl_individual_of(test_swrl:'Lea', test_swrl:'Child').
-test(owl_individual_of_complement_class2, [nondet]) :-
-  owl_individual_of(Lea, test_swrl:'Child'),
-  rdf_equal(Lea, test_swrl:'Lea').
-test(owl_individual_of_complement_class3, [nondet]) :-
-  owl_individual_of(test_swrl:'Lea', Cls),
-  rdf_equal(Cls, test_swrl:'Child').
-
 % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % Parsing RDF/XML representation of SWRL rules
 % % % % % % % % % % % % % % % % % % % % % % % %
@@ -60,18 +47,18 @@ test(swrl_parse_rules) :-
 
 % % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_Driver_load, [nondet]) :-
-  \+ swrl_individual_of(test_swrl:'Fred', test_swrl:'Driver'),
+  \+ owl_individual_of_during(test_swrl:'Fred', test_swrl:'Driver'),
   rdf_swrl_load('Driver').
 
 test(swrl_Driver, [nondet]) :-
-  swrl_individual_of(test_swrl:'Fred', test_swrl:'Driver').
+  owl_individual_of_during(test_swrl:'Fred', test_swrl:'Driver').
 
 test(swrl_Driver_class_unbound, [nondet]) :-
-  swrl_individual_of(test_swrl:'Fred', X),
+  owl_individual_of_during(test_swrl:'Fred', X),
   rdf_equal(X, test_swrl:'Driver').
 
 test(swrl_Driver_subject_unbound, [nondet]) :-
-  swrl_individual_of(X, test_swrl:'Driver'),
+  owl_individual_of_during(X, test_swrl:'Driver'),
   rdf_equal(X, test_swrl:'Fred').
 
 test(swrl_Driver_during, [nondet]) :-
@@ -81,7 +68,7 @@ test(swrl_Driver_during, [nondet]) :-
 test(swrl_Driver_holds, [nondet]) :-
   holds(test_swrl:'Fred', rdf:type, test_swrl:'Driver').
 
-% % % % % % % % % % % % % % % % % % % % % % % %
+%% % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_Person1, [nondet]) :-
   \+ swrl_holds(test_swrl:'Alex', rdf:type, test_swrl:'Person'),
   rdf_swrl_load('Person'),
@@ -89,35 +76,35 @@ test(swrl_Person1, [nondet]) :-
 
 % % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_Person2, [nondet]) :-
-  \+ swrl_individual_of(test_swrl:'Lea', test_swrl:'Hermaphrodite'),
+  \+ owl_individual_of_during(test_swrl:'Lea', test_swrl:'Hermaphrodite'),
   rdf_swrl_load('Person2'),
-  swrl_individual_of(test_swrl:'Lea', test_swrl:'Hermaphrodite').
+  owl_individual_of_during(test_swrl:'Lea', test_swrl:'Hermaphrodite').
 
-% % % % % % % % % % % % % % % % % % % % % % % %
+%% % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_NonHuman, [nondet]) :-
-  \+ swrl_individual_of(test_swrl:'RedCar', test_swrl:'NonHuman'),
+  \+ owl_individual_of_during(test_swrl:'RedCar', test_swrl:'NonHuman'),
   rdf_swrl_load('NonHuman'),
-  swrl_individual_of(test_swrl:'RedCar', test_swrl:'NonHuman'),
-  \+ swrl_individual_of(test_swrl:'Fred', test_swrl:'NonHuman').
+  owl_individual_of_during(test_swrl:'RedCar', test_swrl:'NonHuman'),
+  \+ owl_individual_of_during(test_swrl:'Fred', test_swrl:'NonHuman').
 
 test(swrl_NonHuman_class_unbound, [nondet]) :-
-  swrl_individual_of(test_swrl:'RedCar', X),
+  owl_individual_of_during(test_swrl:'RedCar', X),
   rdf_equal(X, test_swrl:'NonHuman').
 
 test(swrl_NonHuman_subject_unbound, [nondet]) :-
-  swrl_individual_of(X, test_swrl:'NonHuman'),
+  owl_individual_of_during(X, test_swrl:'NonHuman'),
   rdf_equal(X, test_swrl:'RedCar').
 
 test(swrl_NonHuman_holds, [nondet]) :-
   holds(test_swrl:'RedCar', rdf:type, test_swrl:'NonHuman').
 
-% % % % % % % % % % % % % % % % % % % % % % % %
+%% % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_area, [nondet]) :-
   \+ swrl_holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _),
   rdf_swrl_load('area'),
   swrl_holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
 
-% % % % % % % % % % % % % % % % % % % % % % % %
+%% % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_startsWith_load, [nondet]) :-
   \+ swrl_holds(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _),
   rdf_swrl_load('startsWith').
@@ -135,9 +122,9 @@ test(swrl_hasBrother_holds, [nondet]) :-
 
 % % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_BigRectangle1, [nondet]) :-
-  \+ swrl_individual_of(test_swrl:'RectangleBig', test_swrl:'BigRectangle'),
+  \+ owl_individual_of_during(test_swrl:'RectangleBig', test_swrl:'BigRectangle'),
   rdf_swrl_load('BigRectangle'),
-  swrl_individual_of(test_swrl:'RectangleBig', test_swrl:'BigRectangle'),
+  owl_individual_of_during(test_swrl:'RectangleBig', test_swrl:'BigRectangle'),
   swrl_holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
 
 test(swrl_BigRectangle_holds, [nondet]) :-
@@ -145,16 +132,16 @@ test(swrl_BigRectangle_holds, [nondet]) :-
 
 % % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_greaterThen, [nondet]) :-
-  \+ swrl_individual_of(test_swrl:'Ernest', test_swrl:'Adult'),
+  \+ owl_individual_of_during(test_swrl:'Ernest', test_swrl:'Adult'),
   rdf_swrl_load('greaterThen'),
-  swrl_individual_of(test_swrl:'Ernest', test_swrl:'Adult').
+  owl_individual_of_during(test_swrl:'Ernest', test_swrl:'Adult').
 
 % % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_exactly, [nondet]) :-
-  \+ swrl_individual_of(test_swrl:'Lea', test_swrl:'Singleton'),
+  \+ owl_individual_of_during(test_swrl:'Lea', test_swrl:'Singleton'),
   rdf_swrl_load('exactly'),
-  swrl_individual_of(test_swrl:'Lea', test_swrl:'Singleton'),
-  \+ swrl_individual_of(test_swrl:'Fred', test_swrl:'Singleton').
+  owl_individual_of_during(test_swrl:'Lea', test_swrl:'Singleton'),
+  \+ owl_individual_of_during(test_swrl:'Fred', test_swrl:'Singleton').
 
 % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % Projection of SWRL rule implications into the RDF triple store
@@ -162,54 +149,52 @@ test(swrl_exactly, [nondet]) :-
 
 test(swrl_projection_Driver, [nondet]) :-
   \+ rdf_has(test_swrl:'Fred', rdf:type, test_swrl:'Driver'),
-  rdf_swrl_projection('Driver'),
+  rdf_swrl_project('Driver'),
   rdf_has(test_swrl:'Fred', rdf:type, test_swrl:'Driver').
 
 test(swrl_projection_Person1, [nondet]) :-
   \+ rdf_has(test_swrl:'Alex', rdf:type, test_swrl:'Person'),
-  rdf_swrl_projection('Person'),
+  rdf_swrl_project('Person'),
   rdf_has(test_swrl:'Alex', rdf:type, test_swrl:'Person').
 
 test(swrl_projection_Person2, [nondet]) :-
   \+ rdf_has(test_swrl:'Lea', rdf:type, test_swrl:'Hermaphrodite'),
-  rdf_swrl_projection('Person2'),
+  rdf_swrl_project('Person2'),
   rdf_has(test_swrl:'Lea', rdf:type, test_swrl:'Hermaphrodite').
 
 test(swrl_projection_area, [nondet]) :-
   \+ rdf_has(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _),
-  rdf_swrl_projection('area'),
+  rdf_swrl_project('area'),
   rdf_has(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
 
 test(swrl_projection_startsWith, [nondet]) :-
   \+ rdf_has(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _),
-  rdf_swrl_projection('startsWith'),
+  rdf_swrl_project('startsWith'),
   rdf_has(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _).
 
 test(swrl_projection_BigRectangle1, [nondet]) :-
   \+ rdf_has(test_swrl:'RectangleBig', rdf:type, test_swrl:'BigRectangle'),
-  rdf_swrl_projection('BigRectangle'),
+  rdf_swrl_project('BigRectangle'),
   rdf_has(test_swrl:'RectangleBig', rdf:type, test_swrl:'BigRectangle').
 
 test(swrl_projection_greaterThen, [nondet]) :-
   \+ rdf_has(test_swrl:'Ernest', rdf:type, test_swrl:'Adult'),
-  rdf_swrl_projection('greaterThen'),
+  rdf_swrl_project('greaterThen'),
   rdf_has(test_swrl:'Ernest', rdf:type, test_swrl:'Adult').
 
 test(swrl_projection_hasBrother, [nondet]) :-
   \+ rdf_has(test_swrl:'Fred', test_swrl:'hasBrother', _),
-  rdf_swrl_projection('brother'),
+  rdf_swrl_project('brother'),
   rdf_has(test_swrl:'Fred', test_swrl:'hasBrother', test_swrl:'Ernest').
 
 test(swrl_projection_exactly, [nondet]) :-
-  % TODO(DB): Proving the rule condition is slow. Check the trace and figure out what makes it slow.
   \+ rdf_has(test_swrl:'Lea', rdf:type, test_swrl:'Singleton'),
-  rdf_swrl_projection('exactly'),
+  rdf_swrl_project('exactly'),
   rdf_has(test_swrl:'Lea', rdf:type, test_swrl:'Singleton').
 
 test(swrl_projection_NonHuman1, [nondet]) :-
   \+ rdf_has(test_swrl:'RedCar', rdf:type, test_swrl:'NonHuman'),
-  rdf_swrl_projection('NonHuman'),
-  writeln(swrl_projection_NonHuman1_END),
+  rdf_swrl_project('NonHuman'),
   rdf_has(test_swrl:'RedCar', rdf:type, test_swrl:'NonHuman').
 
 
