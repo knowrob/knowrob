@@ -53,6 +53,7 @@
       assert_temporal_part/3,
       assert_temporal_part/4,
       assert_temporal_part_end/4,
+      assert_temporal_part_end/3,
       current_temporal_part/2,
       temporal_part/3,
       temporal_part_has/3,
@@ -90,6 +91,7 @@
             assert_temporal_part(r,r,r,r),
             assert_temporal_part(r,r,r),
             assert_temporal_part_end(r,r,r,r),
+            assert_temporal_part_end(r,r,r),
             temporal_part(r,r,t),
             temporal_part_has(r,r,r),
             temporal_part_has(r,r,r,t).

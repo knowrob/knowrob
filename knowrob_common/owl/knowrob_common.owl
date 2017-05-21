@@ -49,33 +49,6 @@
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#swrlName -->
-
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#swrlName">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#swrlAnnotation"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    </owl:AnnotationProperty>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#swrlTargetConcept -->
-
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#swrlTargetConcept">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#swrlAnnotation"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-    </owl:AnnotationProperty>
-    
-
-
-    <!-- http://knowrob.org/kb/knowrob.owl#swrlType -->
-
-    <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#swrlType">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#swrlAnnotation"/>
-        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#RuleType"/>
-    </owl:AnnotationProperty>
-    
-
-
     <!-- http://knowrob.org/kb/knowrob.owl#todo -->
 
     <owl:AnnotationProperty rdf:about="http://knowrob.org/kb/knowrob.owl#todo">

@@ -398,6 +398,7 @@
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Variable"/>
     </rdf:Description>
     <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</swrla:isRuleEnabled>
         <rdfs:comment>However, a form of single rule logical disjunction is supported with the use of OWL class union descriptions in rules.</rdfs:comment>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Person</rdfs:label>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
@@ -436,6 +437,7 @@
         </swrl:head>
     </rdf:Description>
     <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</swrla:isRuleEnabled>
         <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</swrla:isRuleEnabled>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Using a boolean data valued property, a rule that asserts that all persons that own a car should be classified as drivers can then be written as</rdfs:comment>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Driver</rdfs:label>
@@ -481,6 +483,7 @@
         </swrl:head>
     </rdf:Description>
     <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</swrla:isRuleEnabled>
         <rdfs:comment>An example SWRL rule using a core SWRL built-in to indicate that a person with an age of greater than 17 is an adult is</rdfs:comment>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">greaterThen</rdfs:label>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
@@ -549,6 +552,7 @@
         </swrl:head>
     </rdf:Description>
     <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</swrla:isRuleEnabled>
         <rdfs:comment>An example SWRL rule expressing that a person with a male sibling has a brother would thus require capturing the concepts of person, female, sibling of and brother of in OWL. Intuitively, the concept of person and male can be captured using an OWL class called Person with a subclass Man; the sibling and brother relationships can be expressed using OWL object properties hasSibling and hasBrother with a domain and range of Person.</rdfs:comment>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">brother</rdfs:label>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
@@ -606,6 +610,7 @@
         </swrl:head>
     </rdf:Description>
     <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</swrla:isRuleEnabled>
         <rdfs:comment>A rule that uses a core SWRL string built-in to determine if a person&apos;s telephone number starts with the international access code &quot;+&quot; can be written as follows</rdfs:comment>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">startsWith</rdfs:label>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
@@ -675,6 +680,7 @@
         </swrl:head>
     </rdf:Description>
     <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</swrla:isRuleEnabled>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">exactly</rdfs:label>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
         <swrl:body>
@@ -722,6 +728,7 @@
         </swrl:head>
     </rdf:Description>
     <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</swrla:isRuleEnabled>
         <rdfs:comment>Named individuals in an ontology can also be referred to directly. For example, one could rewrite the above rule to classify an individual named Fred as a driver as follows</rdfs:comment>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">DriverFred</rdfs:label>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
@@ -766,6 +773,7 @@
         </swrl:head>
     </rdf:Description>
     <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</swrla:isRuleEnabled>
         <rdfs:comment>We can use a similar rule to classify a rectangle with an area of over 100 square meters as a BigRectangle</rdfs:comment>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">BigRectangle</rdfs:label>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
@@ -876,6 +884,7 @@
         </swrl:head>
     </rdf:Description>
     <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</swrla:isRuleEnabled>
         <rdfs:comment>An example rule that uses built-ins with assignment to calculate the area of a rectangle can be be written as follows</rdfs:comment>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">area</rdfs:label>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
@@ -950,6 +959,7 @@
         </swrl:head>
     </rdf:Description>
     <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</swrla:isRuleEnabled>
         <rdfs:comment>While SWRL does not support negated atoms or negation as failure, classical negation is possible in SWRL with the use of owl:complementOf class descriptions in rules. For example, we can write the following rule that asserts that of an individual is not a member of class Person then it should be classified as a member of the class NonHuman.</rdfs:comment>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NonHuman</rdfs:label>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
@@ -997,6 +1007,7 @@
         </swrl:head>
     </rdf:Description>
     <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</swrla:isRuleEnabled>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Person2</rdfs:label>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
         <swrl:body>
@@ -1035,6 +1046,7 @@
         </swrl:head>
     </rdf:Description>
     <rdf:Description>
+        <swrla:isRuleEnabled rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</swrla:isRuleEnabled>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Adult2</rdfs:label>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
         <swrl:body>

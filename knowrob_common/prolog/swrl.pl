@@ -37,12 +37,18 @@
       rdf_swrl_unload/0,
       rdf_swrl_unload/1,
       rdf_swrl_project/1,
+      rdf_swrl_project/2,
+      rdf_swrl_satisfied/1,
+      rdf_swrl_satisfied/2,
       swrl_assert/1,
       swrl_phrase/2,
       swrl_phrase_assert/1,
       swrl_holds/3,
       swrl_holds/4,
-      swrl_project/1
+      swrl_project/1,
+      swrl_project/2,
+      swrl_satisfied/1,
+      swrl_satisfied/2
     ]).
 
 :- rdf_db:rdf_register_ns(owl, 'http://www.w3.org/2002/07/owl#', [keep(true)]).
@@ -229,15 +235,26 @@ rdf_swrl_retract(Descr) :-
   )).
 
 %% rdf_swrl_project(+Descr)
+%% rdf_swrl_project(+Descr,+Vars_user)
 %
 % Project implication of named SWRL rule into the RDF triple store.
 %
 % @Descr RDF identifier of SWRl rule description, or the name of a rule.
 % 
-rdf_swrl_project(Descr) :-
+rdf_swrl_project(Descr) :- rdf_swrl_project(Descr, []).
+rdf_swrl_project(Descr,Vars) :-
   rdf_swrl_description(Descr, Descr_),
   rdf_swrl_rule(Descr_, Rule),
-  swrl_project(Rule).
+  swrl_project(Rule,Vars).
+
+%% rdf_swrl_satisfied(+Descr)
+%% rdf_swrl_satisfied(+Descr,+Vars_user)
+%
+rdf_swrl_satisfied(Descr) :- rdf_swrl_satisfied(Descr, []).
+rdf_swrl_satisfied(Descr, Vars) :-
+  rdf_swrl_description(Descr, Descr_),
+  rdf_swrl_rule(Descr_, Rule),
+  swrl_satisfied(Rule,Vars).
 
 %% Read Prolog representation of class from RDF triple store
 rdf_class_pl(Cls, not(ClsTerm)) :-
@@ -269,18 +286,21 @@ rdf_restriction_pl(Descr, value(Value,P)) :-
     rdf_has(Descr, owl:hasValue, Value) ),
   rdf_has(Descr, owl:onProperty, P).
 rdf_restriction_pl(Descr, exactly(Num,P,Cls_pl)) :- 
-  ( rdf_has(Descr, owl:cardinality, literal(type(_,Num))) ;
-    rdf_has(Descr, owl:qualifiedCardinality, literal(type(_,Num))) ), !,
+  ( rdf_has(Descr, owl:cardinality, literal(type(_,Num_))) ;
+    rdf_has(Descr, owl:qualifiedCardinality, literal(type(_,Num_))) ), !,
+  catch(atom_number(Num_,Num), _, fail),
   rdf_has(Descr, owl:onProperty, P),
   ( rdf_has(Descr, owl:onClass, Cls) ; Cls='http://www.w3.org/2002/07/owl#Thing' ),
   rdf_class_pl(Cls, Cls_pl).
 rdf_restriction_pl(Descr, max(Num,P,Cls_pl)) :- 
-  rdf_has(Descr, owl:maxQualifiedCardinality, literal(type(_,Num))), !,
+  rdf_has(Descr, owl:maxQualifiedCardinality, literal(type(_,Num_))), !,
+  catch(atom_number(Num_,Num), _, fail),
   rdf_has(Descr, owl:onProperty, P),
   ( rdf_has(Descr, owl:onClass, Cls) ; Cls='http://www.w3.org/2002/07/owl#Thing' ),
   rdf_class_pl(Cls, Cls_pl).
 rdf_restriction_pl(Descr, min(Num,P,Cls_pl)) :- 
-  rdf_has(Descr, owl:minQualifiedCardinality, literal(type(_,Num))), !,
+  rdf_has(Descr, owl:minQualifiedCardinality, literal(type(_,Num_))), !,
+  catch(atom_number(Num_,Num), _, fail),
   rdf_has(Descr, owl:onProperty, P),
   ( rdf_has(Descr, owl:onClass, Cls) ; Cls='http://www.w3.org/2002/07/owl#Thing' ),
   rdf_class_pl(Cls, Cls_pl).
@@ -560,11 +580,26 @@ swrl_nums([X|Xs],[Y|Ys],Vars) :-
   swrl_atom_number(X,Y,Vars),
   swrl_nums(Xs,Ys,Vars).
 
+%% swrl_satisfied(+Rule)
+%% swrl_satisfied(+Rule,+Vars_user)
+%
+swrl_satisfied(Rule)            :- swrl_satisfied(Rule, [], _).
+swrl_satisfied(Rule, Vars_user) :- swrl_satisfied(Rule, Vars_user, _).
+swrl_satisfied([HeadAtom|Xs] :- Body, Vars_user, Vars) :-
+  current_time(Now),
+  % create list structure holding the variables
+  swrl_vars([HeadAtom|Xs] :- Body, Vars_rule), Vars = [var('swrl:interval',Now)|Vars_rule],
+  forall( member(var(A,B), Vars_user), swrl_var(Vars, A, B) ),
+  % create Prolog structure of condition term
+  swrl_rule_pl(HeadAtom :- Body,  _ :- Cond_pl, Vars),
+  call( Cond_pl ).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%% Atom projection
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% swrl_project(+Rule)
+%% swrl_project(+Rule,+Vars_user)
 %
 % Project implications of a SWRL rule into the RDF triple store.
 % The rule is described by the individual `Descr` in the RDF triple store
@@ -573,15 +608,13 @@ swrl_nums([X|Xs],[Y|Ys],Vars) :-
 % Negative atoms such as `(not Driver)(?x)` are projected to the temporal parts
 % by specifying the end time of the corresponding time interval.
 %
-swrl_project([HeadAtom|Xs] :- Body) :-
-  current_time(Now),
-  swrl_vars([HeadAtom|Xs] :- Body, Vars), Vars_ = [var('swrl:interval',Now)|Vars],
-  swrl_rule_pl(HeadAtom :- Body,  _ :- Cond_pl, Vars_),
-  call( Cond_pl ),
+swrl_project(Rule) :- swrl_project(Rule, []).
+swrl_project([HeadAtom|Xs] :- Body, Vars_user) :-
+  swrl_satisfied([HeadAtom|Xs] :- Body, Vars_user, Vars),
   forall(
-      member(Atom, [HeadAtom|Xs]),
+      member(Atom, [HeadAtom|Xs]), (
       once(( swrl_atom_satisfied(Atom,Vars) ;
-             swrl_atom_project(Atom,Vars) ))
+             swrl_atom_project(Atom,Vars) )))
   ).
 
 swrl_atom_project(class(Cls,S), Vars) :-

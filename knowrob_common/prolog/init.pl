@@ -56,7 +56,6 @@
 % :- use_module(library('knowrob_units')).
 :- use_module(library('owl_export')).
 :- use_module(library('knowrob_cad_parser')).
-:- use_module(library('knowrob_actions')).
 :- use_module(library('knowrob_temporal')).
 
 
