@@ -32,6 +32,7 @@
 :- module(knowrob_temporal,
     [
       owl_individual_of_during/3,
+      owl_individual_of_during/2,
       holds/1,
       holds/2,
       holds/3,
@@ -67,6 +68,7 @@
 % define predicates as rdf_meta predicates
 % (i.e. rdf namespaces are automatically expanded)
 :- rdf_meta owl_individual_of_during(r,r,?),
+            owl_individual_of_during(r,r),
             holds(t),
             holds(t,?),
             holds(r,r,t),
@@ -98,6 +100,9 @@
 :- multifile holds/4.
 
 
+owl_individual_of_during(Resource, Description) :-
+  current_time(Now),
+  owl_individual_of_during(Resource, Description, Now).
 owl_individual_of_during(Resource, Thing, _) :-
   rdf_equal(Thing, owl:'Thing'), %!, MT 16032011
   (   atom(Resource)
@@ -108,15 +113,18 @@ owl_individual_of_during(_Resource, Nothing, _) :-
   rdf_equal(Nothing, owl:'Nothing'), %!, MT 16032011
   fail.
 owl_individual_of_during(Resource, Description, _) :- % RDFS
-  rdfs_individual_of(Resource, Description). 
+  rdfs_individual_of(Resource, Description).
 owl_individual_of_during(Resource, Class, Interval) :-
-  nonvar(Resource),
-  setof(C, holds(Resource, rdf:type, C, Interval), Cs), %!, MT 16032011
-  member(C, Cs),
-  owl_subclass_of(C, Class).
-owl_individual_of_during(Resource, Class, Interval) :-
-  nonvar(Class), var(Resource),
+  nonvar(Resource), var(Class),
   holds(Resource, rdf:type, Class, Interval).
+owl_individual_of_during(Resource, Class, Interval) :-
+  nonvar(Resource), nonvar(Class), 
+  once(( owl_subclass_of(C, Class),
+         holds(Resource, rdf:type, C, Interval) )).
+owl_individual_of_during(Resource, Class, Interval) :-
+  var(Resource), nonvar(Class), 
+  owl_subclass_of(C, Class),
+  holds(Resource, rdf:type, C, Interval).
 owl_individual_of_during(Resource, Class, Interval) :-
   nonvar(Class), % MT 03122014 -- does not allow generic classification of instances any more, but avoids search through all equivalents of all classes whenever Class is unbound
   rdfs_individual_of(Class, owl:'Class'),
