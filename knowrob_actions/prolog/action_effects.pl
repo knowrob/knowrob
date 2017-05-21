@@ -31,10 +31,11 @@
 */
 :- module(action_effects,
     [
-      action_check_preconditions/1,
-      action_project_effects/1,
-      action_project_effects/2,
-      action_pddl_description/2
+      action_effects_apply/1,
+      action_effect_apply/2,
+      action_precondition_check/1,
+      action_precondition_check/2,
+      comp_hasEffect/2
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -48,51 +49,40 @@
 :- rdf_db:rdf_register_ns(knowrob,       'http://knowrob.org/kb/knowrob.owl#',      [keep(true)]).
 :- rdf_db:rdf_register_ns(action_effects,'http://knowrob.org/kb/action-effects.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(object_change, 'http://knowrob.org/kb/object-change.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(swrl, 'http://www.w3.org/2003/11/swrl#', [keep(true)]).
 
 :-  rdf_meta
-    action_check_preconditions(r),
-    action_project_effects(r),
-    action_project_effects(r,?).
+    action_effects_apply(r),
+    action_effects_apply(r,r),
+    action_precondition_check(r),
+    action_precondition_check(r,r),
+    comp_hasEffect(r,r).
+
+comp_hasEffect(Act, Effect) :-
+  rdf_has(Effect, knowrob:swrlActionConcept, Cls),
+  strip_literal_type(Cls,Cls_),
+  once(owl_individual_of(Act, Cls_)).
+
+knowrob_temporal:holds(Act, 'http://knowrob.org/kb/knowrob.owl#hasEffect', Effect, _) :-
+  comp_hasEffect(Act, Effect).
+
+action_effects_apply(Act) :-
+  forall( comp_hasEffect(Act, Descr),
+          action_effect_apply(Act, Descr) ).
+
+action_effect_apply(Act,Descr) :-
+  rdf_has(Descr, knowrob:swrlActionVariable, VarLiteral),
+  strip_literal_type(VarLiteral, Var),
+  rdf_swrl_project(Descr, [var(Var,Act)]).
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% Action precondition checking based on OWL descriptions
-%
+action_precondition_check(Act) :-
+  action_precondition_check(Act, _), !.
 
-action_check_preconditions(_) :-
-  true. % TODO: implement
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% Action effect projection based on OWL description of effects
-%
-
-%% action_project_effects(+Action)
-%% action_project_effects(+Action, -Effects)
-%
-% Project the effects of @Action into the KB.
-% This boils down to manipulation of the rdf triple store.
-% Since we want to reason about past states we generally use
-% fluent properties and never retract from the KB.
-% The projection method uses the action-effect and fluent
-% ontologies which are part of the KnowRob core KB.
-% Preconditions are not checked.
-%
-% @Action The action of which effects should be projected in the KB
-% @Effects Descriptions of projected effects
-%
-%action_project_effects(Action) :- fail.
-%action_project_effects(Action, Effects) :- fail.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% OWL to PDDL
-%
-
-action_pddl_description(Action_OWL, Action_PDDL) :-
-  fail.
+action_precondition_check(Act, Descr) :-
+  rdf_has(Descr, knowrob:swrlActionVariable, VarLiteral),
+  strip_literal_type(VarLiteral, Var),
+  rdf_swrl_satisfied(Descr, [var(Var,Act)]).
 
 
 % % % % % % % % % % % % % % % %
