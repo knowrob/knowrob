@@ -668,6 +668,10 @@ swrl_class_atom_project(S, not(value(P,O))) :- forall( assert_temporal_part_end(
 
 swrl_class_atom_project(S, Cls) :-
   atom(Cls), rdf_class_pl(Cls, Cls_pl), % unwrap class descriptions for projection
+  once((
+    nonvar(S);
+    rdf_unique_id(owl:'NamedIndividual', S)
+  )),
   ( atom(Cls_pl) ->
     assert_temporal_part(S, rdf:'type', nontemporal(Cls_pl)) ;
     swrl_class_atom_project(S, Cls_pl) ).
