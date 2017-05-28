@@ -58,7 +58,7 @@
       action_toLocation(r,r),
       action_fromLocation(r,r),
       matching_actions(r,r),
-      compare_actions_partial_order(-,r,r).
+      compare_actions_partial_order(-,r,r). % FIXME DB: do we really need term expansion? make this private
 
 :- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
 :- rdf_db:rdf_register_ns(owl, 'http://www.w3.org/2002/07/owl#', [keep(true)]).
@@ -164,9 +164,10 @@ action_fromLocation(Action, Loc) :-
 % @param Plan Plan identifier
 % @param Act Matching actions
 % 
+% FIXME DB: not sure about the purpose, remove?
 matching_actions(Plan, Act) :-
   plan_subevents(Plan, SubEvents),
-  rdf_has(Act, rdf:type, knowrob:'PuttingSomethingSomewhere'),
+  rdf_has(Act, rdf:type, knowrob:'PuttingSomethingSomewhere'), % TODO(DB) what is this doing here?
   member(ActCl, SubEvents),
   owl_individual_of(Act, ActCl).
 

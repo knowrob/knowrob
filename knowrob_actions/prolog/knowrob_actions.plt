@@ -33,6 +33,10 @@
 :- rdf_db:rdf_register_ns(xsd,  'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
 :- rdf_db:rdf_register_ns(blocksworld,  'http://knowrob.org/kb/blocksworld.owl#', [keep(true)]).
 
+test(test_plan_subevents) :- fail.
 
+test(test_plan_subevents_recursive) :- fail.
+
+test(test_plan_objects) :- fail.
 
 :- end_tests(knowrob_actions).
