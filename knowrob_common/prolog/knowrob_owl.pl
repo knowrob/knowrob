@@ -230,7 +230,6 @@ create_restr(Class, Prop, Value, RestrType, SourceRef, Restr) :-
   rdf_assert(Restr, owl:'onProperty', Prop, SourceRef),
   rdf_assert(Restr, RestrType, Value, SourceRef).
 
-
 % TODO: creat_* functions into knowrob_owl_factory module
 %% create_timepoint(+TimeStamp, -TimePoint) is det.
 %
@@ -249,6 +248,10 @@ create_timepoint(TimeStamp, TimePoint) :-
 % Create a interval-identifier for the given start and end time stamps
 %
 %
+
+create_interval(Start, TimeInterval) :-
+  number(Start),
+  create_interval([Start], TimeInterval), !.
 
 create_interval([Start], TimeInterval) :-
   atom(Start), time_term(Start, Start_),
@@ -863,13 +866,11 @@ entity_assert(Entity, [[Key,Value,during,IntervalDescr]|Descr]) :-
   (  rdf_has(PropIri, rdf:type, owl:'DatatypeProperty')
   ->  ( % data property
       rdf_phas(PropIri, rdfs:range, Range), % FIXME: what if range unspecified
-      create_fluent(Entity, Fluent, Interval),
-      fluent_assert(Fluent, PropIri, literal(type(Range,Value)))
+      assert_temporal_part(Entity, PropIri, literal(type(Range,Value)), Interval)
   ) ; ( % nested entity
       rdf_has(PropIri, rdf:type, owl:'ObjectProperty'),
       entity(ValueEntity, Value),
-      create_fluent(Entity, Fluent, Interval),
-      fluent_assert(Fluent, PropIri, ValueEntity)
+      assert_temporal_part(Entity, PropIri, ValueEntity, Interval)
   )),
   entity_assert(Entity, Descr).
 
@@ -1027,7 +1028,7 @@ entity_properties([['http://www.w3.org/2000/01/rdf-schema#subClassOf',_]|Tail], 
 
 entity_properties([['http://knowrob.org/kb/knowrob.owl#temporalParts',Fluent]|Tail], Descr) :-
   findall([Key,Value,during,IntervalDescr], (
-    fluent_has(Fluent, PropIri, PropValue, IntervalIri),
+    temporal_part_has(Fluent, PropIri, PropValue, IntervalIri),
     ( rdf_equal(PropIri, rdf:type)
     -> (
       Key=type,
@@ -1111,7 +1112,7 @@ entity_head(Entity, _, Descr, TypeIri) :-
   %current_time(Instant),
   %once((
   %  rdfs_individual_of(Entity, TypeIri);
-  %  fluent_has(Entity, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', TypeIri, Instant);
+  %  temporal_part_has(Entity, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', TypeIri, Instant);
   %  Entity = TypeIri )),
   
   findall(TypeIri, (

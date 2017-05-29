@@ -18,7 +18,7 @@
 %% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %%
 
-:- begin_tests(action_effects).
+:- begin_tests(knowrob_actions).
 
 :- use_module(library('owl')).
 :- use_module(library('owl_parser')).
@@ -33,15 +33,10 @@
 :- rdf_db:rdf_register_ns(xsd,  'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
 :- rdf_db:rdf_register_ns(blocksworld,  'http://knowrob.org/kb/blocksworld.owl#', [keep(true)]).
 
-red_block_ontop_blue_block :-
-  holds( blocksworld:ontop(blocksworld:'BlockRed_test0', blocksworld:'BlockBlue_test0') ), !.
-red_block_in_hand :-
-  holds( blocksworld:graspedBy(blocksworld:'BlockRed_test0', blocksworld:'Hand_test0') ), !.
+test(test_plan_subevents) :- fail.
 
-test(blocksworld_stack_red_on_blue_apply) :-
-  \+ red_block_ontop_blue_block, red_block_in_hand,
-  action_effects_apply(blocksworld:'Stack_test0').
-test(blocksworld_stack_red_on_blue_effect_ontop) :-
-  red_block_ontop_blue_block.
-test(blocksworld_stack_red_on_blue_effect_not_in_hand) :-
-  \+ red_block_in_hand.
+test(test_plan_subevents_recursive) :- fail.
+
+test(test_plan_objects) :- fail.
+
+:- end_tests(knowrob_actions).
