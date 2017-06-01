@@ -550,10 +550,15 @@ swrl_var_names(Var, Var) :-
 %% Map between name of a SWRL variable and the corresponding
 %% Prolog variable.
 swrl_var(Vars, Name, PrologVar) :-
-  atom(Name), nth0(_, Vars, var(Name,PrologVar)), !.
+  atom(Name), member(var(Name,PrologVar), Vars), !.
 swrl_var(Vars, var(X), PrologVar) :-
   swrl_var(Vars, X, PrologVar), !.
 swrl_var(_, Name, Name).
+
+set_vars(_, []).
+set_vars(Vars, [var(Name,Var)|Rest]) :-
+  swrl_var(Vars, Name, Var),
+  set_vars(Vars, Rest).
 
 swrl_atom(literal(type(_,A)), A, _) :- !.
 swrl_atom(literal(A), A, _).
@@ -589,7 +594,7 @@ swrl_satisfied([HeadAtom|Xs] :- Body, Vars_user, Vars) :-
   current_time(Now),
   % create list structure holding the variables
   swrl_vars([HeadAtom|Xs] :- Body, Vars_rule), Vars = [var('swrl:interval',Now)|Vars_rule],
-  forall( member(var(A,B), Vars_user), swrl_var(Vars, A, B) ),
+  set_vars(Vars, Vars_user),
   % create Prolog structure of condition term
   swrl_rule_pl(HeadAtom :- Body,  _ :- Cond_pl, Vars),
   call( Cond_pl ).

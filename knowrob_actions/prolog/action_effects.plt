@@ -33,15 +33,60 @@
 :- rdf_db:rdf_register_ns(xsd,  'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
 :- rdf_db:rdf_register_ns(blocksworld,  'http://knowrob.org/kb/blocksworld.owl#', [keep(true)]).
 
-red_block_ontop_blue_block :-
+red_on_blue :-
   holds( blocksworld:ontop(blocksworld:'BlockRed_test0', blocksworld:'BlockBlue_test0') ), !.
-red_block_in_hand :-
+blue_on_red :-
+  holds( blocksworld:ontop(blocksworld:'BlockBlue_test0', blocksworld:'BlockRed_test0') ), !.
+red_on_table :-
+  holds( blocksworld:ontop(blocksworld:'BlockRed_test0', blocksworld:'Table_test0') ), !.
+blue_on_table :-
+  holds( blocksworld:ontop(blocksworld:'BlockBlue_test0', blocksworld:'Table_test0') ), !.
+red_in_hand :-
   holds( blocksworld:graspedBy(blocksworld:'BlockRed_test0', blocksworld:'Hand_test0') ), !.
+blue_in_hand :-
+  holds( blocksworld:graspedBy(blocksworld:'BlockBlue_test0', blocksworld:'Hand_test0') ), !.
 
-test(blocksworld_stack_red_on_blue_apply) :-
-  \+ red_block_ontop_blue_block, red_block_in_hand,
-  action_effects_apply(blocksworld:'Stack_test0').
-test(blocksworld_stack_red_on_blue_effect_ontop) :-
-  red_block_ontop_blue_block.
-test(blocksworld_stack_red_on_blue_effect_not_in_hand) :-
-  \+ red_block_in_hand.
+test(take_red0) :-
+  \+ red_in_hand,
+  red_on_table,
+  action_effects_apply(blocksworld:'Take_red'),
+  red_in_hand,
+  \+ red_on_table.
+
+test(put_red_on_blue) :-
+  \+ red_on_blue,
+  red_in_hand,
+  blue_on_table,
+  action_effects_apply(blocksworld:'Put_red_on_blue'),
+  red_on_blue,
+  \+ red_in_hand.
+
+test(take_red1) :-
+  red_on_blue,
+  \+ red_in_hand,
+  action_effects_apply(blocksworld:'Take_red'),
+  red_in_hand,
+  \+ red_on_blue.
+
+test(put_red_on_table) :-
+  \+ red_on_table,
+  red_in_hand,
+  action_effects_apply(blocksworld:'Put_red_on_table'),
+  \+ red_in_hand,
+  red_on_table.
+
+test(take_blue) :-
+  blue_on_table,
+  \+ blue_in_hand,
+  action_effects_apply(blocksworld:'Take_blue'),
+  blue_in_hand,
+  \+ blue_on_table.
+
+test(put_blue_on_red) :-
+  \+ blue_on_red,
+  blue_in_hand,
+  red_on_table,
+  action_effects_apply(blocksworld:'Put_blue_on_red'),
+  blue_on_red,
+  \+ blue_in_hand.
+
