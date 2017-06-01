@@ -37,8 +37,7 @@
       plan_objects/2,
       action_objectActedOn/2,
       action_toLocation/2,
-      action_fromLocation/2,
-      compare_actions_partial_order/3
+      action_fromLocation/2
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -55,8 +54,7 @@
       plan_objects(r,r),
       action_objectActedOn(r,r),
       action_toLocation(r,r),
-      action_fromLocation(r,r),
-      compare_actions_partial_order(-,r,r). % FIXME DB: do we really need term expansion? make this private
+      action_fromLocation(r,r).
 
 :- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
 :- rdf_db:rdf_register_ns(owl, 'http://www.w3.org/2002/07/owl#', [keep(true)]).
