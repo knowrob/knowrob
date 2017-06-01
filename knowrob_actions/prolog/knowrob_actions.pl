@@ -38,7 +38,6 @@
       action_objectActedOn/2,
       action_toLocation/2,
       action_fromLocation/2,
-      matching_actions/2,
       compare_actions_partial_order/3
     ]).
 
@@ -57,7 +56,6 @@
       action_objectActedOn(r,r),
       action_toLocation(r,r),
       action_fromLocation(r,r),
-      matching_actions(r,r),
       compare_actions_partial_order(-,r,r). % FIXME DB: do we really need term expansion? make this private
 
 :- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
@@ -154,22 +152,6 @@ action_fromLocation(Action, Loc) :-
 action_fromLocation(Action, Loc) :-
         owl_direct_subclass_of(Action, Sup),
         owl_restriction(Sup,restriction(knowrob:'fromLocation', some_values_from(Loc))).
-
-
-
-%% matching_actions(?Plan, ?Act) is semidet.
-%
-% Search for action instances that fit the classes described in the imported plan
-%
-% @param Plan Plan identifier
-% @param Act Matching actions
-% 
-% FIXME DB: not sure about the purpose, remove?
-matching_actions(Plan, Act) :-
-  plan_subevents(Plan, SubEvents),
-  rdf_has(Act, rdf:type, knowrob:'PuttingSomethingSomewhere'), % TODO(DB) what is this doing here?
-  member(ActCl, SubEvents),
-  owl_individual_of(Act, ActCl).
 
 
 %% compare_actions_partial_order(-Rel, +Act1, +Act2) is semidet.
