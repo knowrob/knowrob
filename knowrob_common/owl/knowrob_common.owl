@@ -10340,6 +10340,7 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
 
     <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pouring">
         <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#FluidFlow-Translation"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TransportationEvent"/>
     </owl:Class>
     
 
