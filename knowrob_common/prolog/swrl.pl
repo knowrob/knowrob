@@ -616,11 +616,13 @@ swrl_satisfied([HeadAtom|Xs] :- Body, Vars_user, Vars) :-
 swrl_project(Rule) :- swrl_project(Rule, []).
 swrl_project([HeadAtom|Xs] :- Body, Vars_user) :-
   swrl_satisfied([HeadAtom|Xs] :- Body, Vars_user, Vars),
-  forall(
-      member(Atom, [HeadAtom|Xs]), (
-      once(( swrl_atom_satisfied(Atom,Vars) ;
-             swrl_atom_project(Atom,Vars) )))
-  ).
+  swrl_project_([HeadAtom|Xs], Vars).
+
+swrl_project_([], _).
+swrl_project_([Atom|Xs], Vars) :-
+  once(( swrl_atom_satisfied(Atom,Vars) ;
+         swrl_atom_project(Atom,Vars) )),
+  swrl_project_(Xs, Vars).
 
 swrl_atom_project(class(Cls,S), Vars) :-
   swrl_var(Vars, S, S_var),
@@ -675,14 +677,14 @@ swrl_class_atom_project(S, Cls) :-
   atom(Cls), rdf_class_pl(Cls, Cls_pl), % unwrap class descriptions for projection
   once((
     nonvar(S);
-    rdf_unique_id(owl:'NamedIndividual', S)
+    rdf_instance_from_class(owl:'NamedIndividual', S)
   )),
   ( atom(Cls_pl) ->
     assert_temporal_part(S, rdf:'type', nontemporal(Cls_pl)) ;
     swrl_class_atom_project(S, Cls_pl) ).
 swrl_class_atom_project(S, not(Cls)) :-
   atom(Cls), rdfs_individual_of(Cls, owl:'Class'),
-  assert_temporal_part_end(S, rdf:'type', nontemporal(Cls)).
+  assert_temporal_part_end(S, rdf:'type', Cls).
 
 %% retract random objects that fulfills relation
 swrl_retract_random(_, _, _, N) :- N =< 0, !.
