@@ -290,7 +290,7 @@
     </rdf:Description>
     <rdf:Description>
         <knowrob:swrlActionConcept rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://knowrob.org/kb/knowrob.owl#ClosingAContainerArtifact</knowrob:swrlActionConcept>
-        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">act</knowrob:swrlActionVariable>
+        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:swrl#act</knowrob:swrlActionVariable>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ClosingAContainerArtifact</rdfs:label>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
         <swrl:body>
@@ -387,8 +387,8 @@
         </swrl:head>
     </rdf:Description>
     <rdf:Description>
-        <knowrob:swrlActionConcept rdf:resource="http://knowrob.org/kb/knowrob.owl#TurningOffHeatingDevice"/>
-        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">act</knowrob:swrlActionVariable>
+        <knowrob:swrlActionConcept rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://knowrob.org/kb/knowrob.owl#TurningOffHeatingDevice</knowrob:swrlActionConcept>
+        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:swrl#act</knowrob:swrlActionVariable>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">turning off HeatingDevice stops HeatingProcess</rdfs:comment>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TurningOffHeatingDevice</rdfs:label>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
@@ -460,7 +460,7 @@
     </rdf:Description>
     <rdf:Description>
         <knowrob:swrlActionConcept rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://knowrob.org/kb/knowrob.owl#OpeningAContainerArtifact</knowrob:swrlActionConcept>
-        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">act</knowrob:swrlActionVariable>
+        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:swrl#act</knowrob:swrlActionVariable>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OpeningAContainerArtifact</rdfs:label>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
         <swrl:body>
@@ -557,8 +557,8 @@
         </swrl:head>
     </rdf:Description>
     <rdf:Description>
-        <knowrob:swrlActionConcept rdf:resource="http://knowrob.org/kb/knowrob.owl#TurningOffPoweredDevice"/>
-        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">act</knowrob:swrlActionVariable>
+        <knowrob:swrlActionConcept rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://knowrob.org/kb/knowrob.owl#TurningOffPoweredDevice</knowrob:swrlActionConcept>
+        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:swrl#act</knowrob:swrlActionVariable>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">heating and cooling devices come to room temperature when being switched off</rdfs:comment>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TurningOffPoweredDevice</rdfs:label>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
@@ -624,7 +624,7 @@
     </rdf:Description>
     <rdf:Description>
         <knowrob:swrlActionConcept rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://knowrob.org/kb/knowrob.owl#TurningOffPoweredDevice</knowrob:swrlActionConcept>
-        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">act</knowrob:swrlActionVariable>
+        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:swrl#act</knowrob:swrlActionVariable>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TurningOffPoweredDevice</rdfs:label>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
         <swrl:body>
@@ -722,7 +722,7 @@
     </rdf:Description>
     <rdf:Description>
         <knowrob:swrlActionConcept rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://knowrob.org/kb/knowrob.owl#TurningOffWater</knowrob:swrlActionConcept>
-        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">act</knowrob:swrlActionVariable>
+        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:swrl#act</knowrob:swrlActionVariable>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TurningOffWater</rdfs:label>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
         <swrl:body>
@@ -819,8 +819,8 @@
         </swrl:head>
     </rdf:Description>
     <rdf:Description>
-        <knowrob:swrlActionConcept rdf:resource="http://knowrob.org/kb/knowrob.owl#TurningOnHeatingDevice"/>
-        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">act</knowrob:swrlActionVariable>
+        <knowrob:swrlActionConcept rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://knowrob.org/kb/knowrob.owl#TurningOnHeatingDevice</knowrob:swrlActionConcept>
+        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:swrl#act</knowrob:swrlActionVariable>
         <rdfs:comment>Heating starts when device turned on</rdfs:comment>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TurningOnHeatingDevice</rdfs:label>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
@@ -892,7 +892,7 @@
     </rdf:Description>
     <rdf:Description>
         <knowrob:swrlActionConcept rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://knowrob.org/kb/knowrob.owl#TurningOnPoweredDevice</knowrob:swrlActionConcept>
-        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">act</knowrob:swrlActionVariable>
+        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:swrl#act</knowrob:swrlActionVariable>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TurningOnPoweredDevice</rdfs:label>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
         <swrl:body>
@@ -989,8 +989,8 @@
         </swrl:head>
     </rdf:Description>
     <rdf:Description>
-        <knowrob:swrlActionConcept rdf:resource="http://knowrob.org/kb/knowrob.owl#TurningOnPoweredDevice"/>
-        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">act</knowrob:swrlActionVariable>
+        <knowrob:swrlActionConcept rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://knowrob.org/kb/knowrob.owl#TurningOnPoweredDevice</knowrob:swrlActionConcept>
+        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:swrl#act</knowrob:swrlActionVariable>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">cooling devices become cold, heating devices hot when being switched on</rdfs:comment>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TurningOnPoweredDevice</rdfs:label>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
@@ -1050,7 +1050,7 @@
     </rdf:Description>
     <rdf:Description>
         <knowrob:swrlActionConcept rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://knowrob.org/kb/knowrob.owl#TurningOnWater</knowrob:swrlActionConcept>
-        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">act</knowrob:swrlActionVariable>
+        <knowrob:swrlActionVariable rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:swrl#act</knowrob:swrlActionVariable>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TurningOnWater</rdfs:label>
         <rdf:type rdf:resource="http://www.w3.org/2003/11/swrl#Imp"/>
         <swrl:body>
