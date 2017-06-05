@@ -1202,6 +1202,30 @@ Many relative-location predicates can take any SpatialThings (or at least any in
         <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#orderingConstraints"/>
         <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#MathematicalOrdering"/>
     </owl:ObjectProperty>
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#createsOutput -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#createsOutput">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#inputOutputConstraints"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Event"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#resourceType">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#inputOutputConstraints"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
+    </owl:ObjectProperty>
+    
+    
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#requiresInput -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#requiresInput">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#inputOutputConstraints"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Event"/>
+    </owl:ObjectProperty>
     
 
 
@@ -1228,6 +1252,17 @@ Many relative-location predicates can take any SpatialThings (or at least any in
         <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
         <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#MathematicalOrdering"/>
     </owl:ObjectProperty>
+    
+    <!-- http://knowrob.org/kb/knowrob.owl#inputOutputConstraints -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#inputOutputConstraints">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Event"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#InputOutputMapping"/>
+    </owl:ObjectProperty>
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#InputOutputMapping">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#RelationalStructure"/>
+    </owl:Class>
     
 
 
@@ -1444,7 +1479,7 @@ Many relative-location predicates can take any SpatialThings (or at least any in
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#postActors">
         <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#actors"/>
         <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Event"/>
-        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#EnduringThing-Localized"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
     </owl:ObjectProperty>
     
 
@@ -2092,6 +2127,26 @@ See also the specialization cotemporal.</rdfs:comment>
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#worksAtFacility">
         <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Person"/>
         <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#HumanOccupationConstruct"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#processStarted -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#processStarted">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#postActors"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#ActionOnObject"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#Event"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#processStopped -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#processStopped">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#preActors"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#ActionOnObject"/>
+        <rdfs:range rdf:resource="http://knowrob.org/kb/knowrob.owl#Event"/>
     </owl:ObjectProperty>
     
 
@@ -3498,6 +3553,15 @@ See also xAxisPredicateOfSystem and yAxisPredicateOfSystem.</rdfs:comment>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#SpatialThing"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#ongoing -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#ongoing">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#TemporalThing"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
     </owl:DatatypeProperty>
     
 
