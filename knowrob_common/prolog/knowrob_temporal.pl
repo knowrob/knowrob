@@ -121,8 +121,8 @@ owl_individual_of_during(Resource, Class, Interval) :-
   holds(Resource, rdf:type, Class, Interval).
 owl_individual_of_during(Resource, Class, Interval) :-
   nonvar(Resource), nonvar(Class), 
-  once(( owl_subclass_of(C, Class),
-         holds(Resource, rdf:type, C, Interval) )).
+  once(( holds(Resource, rdf:type, C, Interval),
+         owl_subclass_of(C, Class) )).
 owl_individual_of_during(Resource, Class, Interval) :-
   var(Resource), nonvar(Class), 
   owl_subclass_of(C, Class),
