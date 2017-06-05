@@ -353,6 +353,10 @@ create_temporal_part(S, P, TemporalPart) :-
 assert_temporal_part(S, P, O) :-
   current_time(Now),
   assert_temporal_part(S, P, O, Now).
+assert_temporal_part(S, P, O, _) :-
+  nonvar(S),
+  once(owl_individual_of(S, knowrob:'TemporalThing')),
+  assert_nontemporal_value(S,P,O), !.
 assert_temporal_part(S, P, O, I) :-
   create_temporal_part(S, P, TemporalPart),
   assert_temporal_part_value(TemporalPart, P, O),
@@ -367,19 +371,19 @@ assert_temporal_part(S, P, O, I) :-
 % TODO: setting data valued property should be part of knowrob_owl
 assert_nontemporal_value(S, P, Value) :-
   atomic(Value),
-  rdf_has(P, rdf:type, owl:'DatatypeProperty'), !,
+  rdf_has(P, rdf:type, owl:'DatatypeProperty'),
   (  rdf_phas(P, rdfs:range, Range)
   -> rdf_assert(S, P, literal(type(Range,Value)))
   ;  rdf_assert(S, P, literal(Value))
-  ).
+  ), !.
 assert_nontemporal_value(S, P, nontemporal(Value)) :-
   rdf_assert(S, P, Value), !.
 assert_nontemporal_value(S, P, Value) :-
   compound(Value),
-  rdf_has(P, rdf:type, owl:'DatatypeProperty'), !,
-  rdf_assert(S, P, Value).
+  rdf_has(P, rdf:type, owl:'DatatypeProperty'),
+  rdf_assert(S, P, Value), !.
 assert_nontemporal_value(S, P, O) :-
-  rdf_assert(S, P, O).
+  rdf_assert(S, P, O), !.
 
 % TODO: setting data valued property should be part of knowrob_owl
 assert_temporal_part_value(TemporalPart, P, Value) :-
@@ -455,6 +459,9 @@ assert_temporal_part_end(S, P, O, End) :-
   % remove the nontemporal property if exists
   ignore(( temporal_part_value(S, P, O),
            rdf_retractall(S, P, O) )).
+assert_temporal_part_end(S, _, _, _) :-
+  nonvar(S),
+  once(owl_individual_of(S, knowrob:'TemporalThing')), !.
 assert_temporal_part_end(S, P, O, End) :-
   number(End),
   % Make relation temporal if the relation was not described temporally before
