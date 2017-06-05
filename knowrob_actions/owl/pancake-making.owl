@@ -364,13 +364,13 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
-                <owl:allValuesFrom rdf:resource="&knowrob;Dough"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;Dough"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;toLocation"/>
-                <owl:allValuesFrom rdf:resource="&knowrob;PancakeMaker"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;PancakeMaker"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
