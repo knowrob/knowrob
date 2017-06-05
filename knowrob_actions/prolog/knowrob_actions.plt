@@ -47,7 +47,6 @@ test(plan_pancake_objects, [nondet]) :-
   member('http://knowrob.org/kb/knowrob.owl#Egg-Chickens', Objs),
   member('http://knowrob.org/kb/knowrob.owl#CowsMilk-Product', Objs),
   member('http://knowrob.org/kb/knowrob.owl#WheatFlour', Objs),
-  member('http://knowrob.org/kb/knowrob.owl#Dough', Objs),
   member('http://knowrob.org/kb/knowrob.owl#EggYolk-Food', Objs),
   member('http://knowrob.org/kb/knowrob.owl#Dough', Objs),
   member('http://knowrob.org/kb/knowrob.owl#Baked', Objs).
