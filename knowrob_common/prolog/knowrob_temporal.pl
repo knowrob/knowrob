@@ -153,7 +153,7 @@ owl_satisfies_restriction_during(Resource, Restriction, Interval) :-
   ->  holds(Resource, Property, Value, Interval)
   ;   rdf_has(Restriction, owl:allValuesFrom, Class)
   ->  setof(V, holds(Resource, Property, V, Interval), Vs),
-      all_individual_of(Vs, Class)
+      owl_individual_of(Vs, Class)
   ;   rdf_has(Restriction, owl:someValuesFrom, Class)
   ->  holds(Resource, Property, Value, Interval),
       owl_individual_of(Value, Class)
@@ -470,6 +470,8 @@ temporal_part_value(S, P, O) :-
   -> strip_literal_type(X, O)
   ;  once(( rdf_has(O,knowrob:'temporalParts',X); O=X ))
   ).
+temporal_part_value(S, P, nontemporal(O)) :-
+  temporal_part_value(S, P, O), !.
 temporal_part_value(S, P, O) :-
   nonvar(O),
   strip_literal_type(O, O_stripped),
