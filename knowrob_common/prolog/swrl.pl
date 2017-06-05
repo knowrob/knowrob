@@ -378,13 +378,19 @@ swrl_implication_pl(property(S,P,O), swrl_holds(S_var,P,O_var,I_var), Vars) :-
   swrl_var(Vars, O, O_var),
   swrl_var(Vars, 'swrl:interval', I_var).
 
+owl_individual_of_during_(S,Cls,I) :-
+  ground([S,Cls,I]), !,
+  once(owl_individual_of_during(S,Cls,I)).
+owl_individual_of_during_(S,Cls,I) :-
+  owl_individual_of_during(S,Cls,I).
+  
 %% swrl_condition_pl
 swrl_condition_pl([A], A_pl, Vars) :-
   swrl_condition_pl(A, A_pl, Vars).
 swrl_condition_pl([A,B|Xs], ','(A_pl,Ys), Vars) :-
   swrl_condition_pl(A, A_pl, Vars),
   swrl_condition_pl([B|Xs], Ys, Vars).
-swrl_condition_pl(class(Cls,S), owl_individual_of_during(S_var,Cls_rdf,I_var), Vars) :-
+swrl_condition_pl(class(Cls,S), owl_individual_of_during_(S_var,Cls_rdf,I_var), Vars) :-
   swrl_var(Vars, S, S_var),
   swrl_var(Vars, 'swrl:interval', I_var),
   assert_rdf_class(Cls, Cls_rdf).
@@ -615,6 +621,9 @@ swrl_satisfied([HeadAtom|Xs] :- Body, Vars_user, Vars) :-
 %
 swrl_project(Rule) :- swrl_project(Rule, []).
 swrl_project([HeadAtom|Xs] :- Body, Vars_user) :-
+  % TODO: call swrl_satisfied for all head atoms before calling first swrl_project_!
+  %         - because: maybe some heads use implications of this rule!
+  % FIXME: seems this call is slow for some rules...
   swrl_satisfied([HeadAtom|Xs] :- Body, Vars_user, Vars),
   swrl_project_([HeadAtom|Xs], Vars).
 
