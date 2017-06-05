@@ -334,24 +334,24 @@
     <!-- http://knowrob.org/kb/pancake-making.owl#MixPancakeDough -->
 
     <owl:Class rdf:about="http://knowrob.org/kb/pancake-making.owl#MixPancakeDough">
+        <rdfs:subClassOf rdf:resource="&knowrob;Mixing"/>
         <rdfs:subClassOf>
-            <owl:Class>
-                <owl:intersectionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="&knowrob;Mixing"/>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
-                        <owl:someValuesFrom rdf:resource="&knowrob;CowsMilk-Product"/>
-                    </owl:Restriction>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
-                        <owl:someValuesFrom rdf:resource="&knowrob;WheatFlour"/>
-                    </owl:Restriction>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
-                        <owl:someValuesFrom rdf:resource="&knowrob;EggYolk-Food"/>
-                    </owl:Restriction>
-                </owl:intersectionOf>
-            </owl:Class>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;CowsMilk-Product"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;WheatFlour"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;EggYolk-Food"/>
+            </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
 
@@ -362,18 +362,16 @@
     <owl:Class rdf:about="http://knowrob.org/kb/pancake-making.owl#PourDoughOntoPancakeMaker">
         <rdfs:subClassOf rdf:resource="&knowrob;PouringSomethingOnto"/>
         <rdfs:subClassOf>
-            <owl:Class>
-                <owl:intersectionOf rdf:parseType="Collection">
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
-                        <owl:someValuesFrom rdf:resource="&knowrob;Dough"/>
-                    </owl:Restriction>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="&knowrob;toLocation"/>
-                        <owl:someValuesFrom rdf:resource="&knowrob;PancakeMaker"/>
-                    </owl:Restriction>
-                </owl:intersectionOf>
-            </owl:Class>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;objectActedOn"/>
+                <owl:allValuesFrom rdf:resource="&knowrob;Dough"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;toLocation"/>
+                <owl:allValuesFrom rdf:resource="&knowrob;PancakeMaker"/>
+            </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
 </rdf:RDF>
