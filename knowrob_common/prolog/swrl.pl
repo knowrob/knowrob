@@ -161,7 +161,7 @@ rdf_swrl_atom_list(Descr, [First|Rest]) :-
   rdf_has(Descr, rdf:rest, RestDescr),
   rdf_swrl_atom_list(RestDescr, Rest).
 
-%% rdf_swrl_name(?Descr)
+%% rdf_swrl_name(?Descr,?Name)
 %
 % `Name` is the rdfs:label value of the RDF SWRL rule `Descr`.
 %
@@ -169,8 +169,8 @@ rdf_swrl_atom_list(Descr, [First|Rest]) :-
 % @Name The rdfs:label of the rule.
 %
 rdf_swrl_name(Descr, Name) :-
-  rdf_has(Descr, rdfs:label, Val),
-  strip_literal_type(Val, Name).
+  rdf_has(Descr, rdfs:label, literal(type(_,Name))), 
+  rdf_has(Descr, rdf:type, swrl:'Imp'), !.
 
 %% rdf_swrl_enabled(?Descr)
 %
@@ -378,6 +378,10 @@ swrl_implication_pl(property(S,P,O), swrl_holds(S_var,P,O_var,I_var), Vars) :-
   swrl_var(Vars, O, O_var),
   swrl_var(Vars, 'swrl:interval', I_var).
 
+owl_individual_of_during_(S,_,_) :-
+  ground(S),
+  rdfs_individual_of(S, knowrob:'TemporalPart'), !,
+  fail.
 owl_individual_of_during_(S,Cls,I) :-
   ground([S,Cls,I]), !,
   once(owl_individual_of_during(S,Cls,I)).
