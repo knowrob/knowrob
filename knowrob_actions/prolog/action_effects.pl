@@ -67,8 +67,10 @@ knowrob_temporal:holds(Act, 'http://knowrob.org/kb/knowrob.owl#hasEffect', Effec
   comp_hasEffect(Act, Effect).
 
 action_effects_apply(Act) :-
+  % FIXME: ignore is not so nice, but some effects may only be applied under certain conditions.
+  % TODO: specify startTime/endTime of started/stopped processes
   forall( comp_hasEffect(Act, Descr),
-          action_effect_apply(Act, Descr) ).
+          ignore( action_effect_apply(Act, Descr) )).
 
 action_effect_apply(Act,Descr) :-
   rdf_has(Descr, knowrob:swrlActionVariable, VarLiteral),

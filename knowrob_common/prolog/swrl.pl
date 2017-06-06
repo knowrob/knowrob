@@ -161,7 +161,7 @@ rdf_swrl_atom_list(Descr, [First|Rest]) :-
   rdf_has(Descr, rdf:rest, RestDescr),
   rdf_swrl_atom_list(RestDescr, Rest).
 
-%% rdf_swrl_name(?Descr)
+%% rdf_swrl_name(?Descr,?Name)
 %
 % `Name` is the rdfs:label value of the RDF SWRL rule `Descr`.
 %
@@ -169,8 +169,8 @@ rdf_swrl_atom_list(Descr, [First|Rest]) :-
 % @Name The rdfs:label of the rule.
 %
 rdf_swrl_name(Descr, Name) :-
-  rdf_has(Descr, rdfs:label, Val),
-  strip_literal_type(Val, Name).
+  rdf_has(Descr, rdfs:label, literal(type(_,Name))), 
+  rdf_has(Descr, rdf:type, swrl:'Imp'), !.
 
 %% rdf_swrl_enabled(?Descr)
 %
@@ -378,13 +378,23 @@ swrl_implication_pl(property(S,P,O), swrl_holds(S_var,P,O_var,I_var), Vars) :-
   swrl_var(Vars, O, O_var),
   swrl_var(Vars, 'swrl:interval', I_var).
 
+owl_individual_of_during_(S,_,_) :-
+  ground(S),
+  rdfs_individual_of(S, knowrob:'TemporalPart'), !,
+  fail.
+owl_individual_of_during_(S,Cls,I) :-
+  ground([S,Cls,I]), !,
+  once(owl_individual_of_during(S,Cls,I)).
+owl_individual_of_during_(S,Cls,I) :-
+  owl_individual_of_during(S,Cls,I).
+  
 %% swrl_condition_pl
 swrl_condition_pl([A], A_pl, Vars) :-
   swrl_condition_pl(A, A_pl, Vars).
 swrl_condition_pl([A,B|Xs], ','(A_pl,Ys), Vars) :-
   swrl_condition_pl(A, A_pl, Vars),
   swrl_condition_pl([B|Xs], Ys, Vars).
-swrl_condition_pl(class(Cls,S), owl_individual_of_during(S_var,Cls_rdf,I_var), Vars) :-
+swrl_condition_pl(class(Cls,S), owl_individual_of_during_(S_var,Cls_rdf,I_var), Vars) :-
   swrl_var(Vars, S, S_var),
   swrl_var(Vars, 'swrl:interval', I_var),
   assert_rdf_class(Cls, Cls_rdf).
@@ -550,10 +560,15 @@ swrl_var_names(Var, Var) :-
 %% Map between name of a SWRL variable and the corresponding
 %% Prolog variable.
 swrl_var(Vars, Name, PrologVar) :-
-  atom(Name), nth0(_, Vars, var(Name,PrologVar)), !.
+  atom(Name), member(var(Name,PrologVar), Vars), !.
 swrl_var(Vars, var(X), PrologVar) :-
   swrl_var(Vars, X, PrologVar), !.
 swrl_var(_, Name, Name).
+
+set_vars(_, []).
+set_vars(Vars, [var(Name,Var)|Rest]) :-
+  swrl_var(Vars, Name, Var),
+  set_vars(Vars, Rest).
 
 swrl_atom(literal(type(_,A)), A, _) :- !.
 swrl_atom(literal(A), A, _).
@@ -589,7 +604,7 @@ swrl_satisfied([HeadAtom|Xs] :- Body, Vars_user, Vars) :-
   current_time(Now),
   % create list structure holding the variables
   swrl_vars([HeadAtom|Xs] :- Body, Vars_rule), Vars = [var('swrl:interval',Now)|Vars_rule],
-  forall( member(var(A,B), Vars_user), swrl_var(Vars, A, B) ),
+  set_vars(Vars, Vars_user),
   % create Prolog structure of condition term
   swrl_rule_pl(HeadAtom :- Body,  _ :- Cond_pl, Vars),
   call( Cond_pl ).
@@ -610,12 +625,17 @@ swrl_satisfied([HeadAtom|Xs] :- Body, Vars_user, Vars) :-
 %
 swrl_project(Rule) :- swrl_project(Rule, []).
 swrl_project([HeadAtom|Xs] :- Body, Vars_user) :-
+  % TODO: call swrl_satisfied for all head atoms before calling first swrl_project_!
+  %         - because: maybe some heads use implications of this rule!
+  % FIXME: seems this call is slow for some rules...
   swrl_satisfied([HeadAtom|Xs] :- Body, Vars_user, Vars),
-  forall(
-      member(Atom, [HeadAtom|Xs]), (
-      once(( swrl_atom_satisfied(Atom,Vars) ;
-             swrl_atom_project(Atom,Vars) )))
-  ).
+  swrl_project_([HeadAtom|Xs], Vars).
+
+swrl_project_([], _).
+swrl_project_([Atom|Xs], Vars) :-
+  once(( swrl_atom_satisfied(Atom,Vars) ;
+         swrl_atom_project(Atom,Vars) )),
+  swrl_project_(Xs, Vars).
 
 swrl_atom_project(class(Cls,S), Vars) :-
   swrl_var(Vars, S, S_var),
@@ -670,14 +690,14 @@ swrl_class_atom_project(S, Cls) :-
   atom(Cls), rdf_class_pl(Cls, Cls_pl), % unwrap class descriptions for projection
   once((
     nonvar(S);
-    rdf_unique_id(owl:'NamedIndividual', S)
+    rdf_instance_from_class(owl:'NamedIndividual', S)
   )),
   ( atom(Cls_pl) ->
     assert_temporal_part(S, rdf:'type', nontemporal(Cls_pl)) ;
     swrl_class_atom_project(S, Cls_pl) ).
 swrl_class_atom_project(S, not(Cls)) :-
   atom(Cls), rdfs_individual_of(Cls, owl:'Class'),
-  assert_temporal_part_end(S, rdf:'type', nontemporal(Cls)).
+  assert_temporal_part_end(S, rdf:'type', Cls).
 
 %% retract random objects that fulfills relation
 swrl_retract_random(_, _, _, N) :- N =< 0, !.

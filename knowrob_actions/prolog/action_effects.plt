@@ -25,23 +25,116 @@
 :- use_module(library('action_effects')).
 
 :- owl_parse('package://knowrob_actions/owl/action-effects.owl').
+:- owl_parse('package://knowrob_actions/owl/action-effects-kitchen.owl').
+:- owl_parse('package://knowrob_actions/owl/action-effects-devices.owl').
 :- owl_parse('package://knowrob_actions/owl/blocksworld.owl').
+:- owl_parse('package://knowrob_actions/owl/pancake-making.owl').
+:- owl_parse('package://knowrob_actions/owl/pancake-making-test.owl').
 
 :- rdf_db:rdf_register_ns(rdf,  'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
 :- rdf_db:rdf_register_ns(owl,  'http://www.w3.org/2002/07/owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(xsd,  'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
 :- rdf_db:rdf_register_ns(blocksworld,  'http://knowrob.org/kb/blocksworld.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(pancake,  'http://knowrob.org/kb/pancake-making.owl#', [keep(true)]).
 
-red_block_ontop_blue_block :-
-  holds( blocksworld:ontop(blocksworld:'BlockRed_test0', blocksworld:'BlockBlue_test0') ), !.
-red_block_in_hand :-
-  holds( blocksworld:graspedBy(blocksworld:'BlockRed_test0', blocksworld:'Hand_test0') ), !.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%% Blocksworld
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-test(blocksworld_stack_red_on_blue_apply) :-
-  \+ red_block_ontop_blue_block, red_block_in_hand,
-  action_effects_apply(blocksworld:'Stack_test0').
-test(blocksworld_stack_red_on_blue_effect_ontop) :-
-  red_block_ontop_blue_block.
-test(blocksworld_stack_red_on_blue_effect_not_in_hand) :-
-  \+ red_block_in_hand.
+red_on_blue   :- holds( blocksworld:ontop(blocksworld:'BlockRed_test0', blocksworld:'BlockBlue_test0') ), !.
+blue_on_red   :- holds( blocksworld:ontop(blocksworld:'BlockBlue_test0', blocksworld:'BlockRed_test0') ), !.
+red_on_table  :- holds( blocksworld:ontop(blocksworld:'BlockRed_test0', blocksworld:'Table_test0') ), !.
+blue_on_table :- holds( blocksworld:ontop(blocksworld:'BlockBlue_test0', blocksworld:'Table_test0') ), !.
+red_in_hand   :- holds( blocksworld:graspedBy(blocksworld:'BlockRed_test0', blocksworld:'Hand_test0') ), !.
+blue_in_hand  :- holds( blocksworld:graspedBy(blocksworld:'BlockBlue_test0', blocksworld:'Hand_test0') ), !.
+
+test(take_red0) :-
+  \+ red_in_hand,
+  red_on_table,
+  action_effects_apply(blocksworld:'Take_red'),
+  red_in_hand,
+  \+ red_on_table.
+
+test(put_red_on_blue) :-
+  \+ red_on_blue,
+  red_in_hand,
+  blue_on_table,
+  action_effects_apply(blocksworld:'Put_red_on_blue'),
+  red_on_blue,
+  \+ red_in_hand.
+
+test(take_red1) :-
+  red_on_blue,
+  \+ red_in_hand,
+  action_effects_apply(blocksworld:'Take_red'),
+  red_in_hand,
+  \+ red_on_blue.
+
+test(put_red_on_table) :-
+  \+ red_on_table,
+  red_in_hand,
+  action_effects_apply(blocksworld:'Put_red_on_table'),
+  \+ red_in_hand,
+  red_on_table.
+
+test(take_blue) :-
+  blue_on_table,
+  \+ blue_in_hand,
+  action_effects_apply(blocksworld:'Take_blue'),
+  blue_in_hand,
+  \+ blue_on_table.
+
+test(put_blue_on_red) :-
+  \+ blue_on_red,
+  blue_in_hand,
+  red_on_table,
+  action_effects_apply(blocksworld:'Put_blue_on_red'),
+  blue_on_red,
+  \+ blue_in_hand.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%% Pancake Making
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+test(pancake_making_turn_on_maker) :-
+  % turning on the pancake maker creates heating process
+  action_effects_apply(pancake:'TurningOnPancakeMaker_0'),
+  rdf_has(pancake:'TurningOnPancakeMaker_0', knowrob:processStarted, Heating),
+  rdfs_individual_of(Heating, knowrob:'HeatingProcess').
+  
+test(pancake_making_crack_egg) :-
+  % create some egg yolk and egg shells
+  action_effects_apply(pancake:'CrackingAnEgg_0'),
+  rdf_has(pancake:'CrackingAnEgg_0', knowrob:outputsCreated, Yolk),
+  rdfs_individual_of(Yolk, knowrob:'EggYolk-Food').
+  
+test(pancake_making_mix_dough) :-
+  % create dough by mixing flour and milk
+  plan_constrained_objects(pancake:'MakingPancakes', pancake:'MixPancakeDough_0',
+        [pancake:'CrackingAnEgg_0']),
+  rdf_has(pancake:'MixPancakeDough_0', knowrob:objectActedOn, Yolk),
+  rdfs_individual_of(Yolk, knowrob:'EggYolk-Food'),
+  action_effects_apply(pancake:'MixPancakeDough_0'),
+  rdf_has(pancake:'MixPancakeDough_0', knowrob:outputsCreated, Dough),
+  rdfs_individual_of(Dough, knowrob:'Dough'),
+  % just assert that dough is on pancake maker as required by baking rules
+  rdf_assert(Dough, knowrob:thermicallyConnectedTo, pancake:'PancakeMaker_0'),
+  rdf_assert(pancake:'PancakeMaker_0', knowrob:thermicallyConnectedTo, Dough).
+  
+test(pancake_making_pour_dough) :-
+  % pour ontop of pancake maker
+  plan_constrained_objects(pancake:'MakingPancakes', pancake:'PourDoughOntoPancakeMaker_0',
+        [pancake:'CrackingAnEgg_0', pancake:'MixPancakeDough_0']),
+  rdf_has(pancake:'PourDoughOntoPancakeMaker_0', knowrob:objectActedOn, Dough),
+  rdfs_individual_of(Dough, knowrob:'Dough'),
+  action_effects_apply(pancake:'PourDoughOntoPancakeMaker_0'),
+  rdf_has(pancake:'PourDoughOntoPancakeMaker_0', knowrob:processStarted, Baking),
+  rdfs_individual_of(Baking, knowrob:'BakingFood').
+  
+test(pancake_making_flip_pancake) :-
+  action_effects_apply(pancake:'FlippingAPancake_0').
+  
+% TODO: project baking process effect so that Dough becomes Baked.
+
+:- end_tests(action_effects).

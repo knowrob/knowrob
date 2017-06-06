@@ -63,7 +63,6 @@
         action_outputs(r,r),
         resource_provided_by_actionseq(r, ?),
         resource_available(r),
-        plan_subevents(r,r),
         action_effects(r,r).
 
 
@@ -80,7 +79,7 @@
 project_and_debug(Plan, OrigActionSeq, ResultActSeq) :-
 
   % read action seq
-  object_change:plan_subevents(Plan, OrigActionSeq),
+  knowrob_actions:plan_subevents(Plan, OrigActionSeq),
 
   integrate_additional_actions(OrigActionSeq, ResultActSeq).
   % TODO: check if end result is ok
@@ -243,146 +242,3 @@ resource_available(Resource) :-
 resource_provided_by_actionseq(Resource, [SubActions|SubAction]) :-
   action_outputs(SubAction, Resource),
   add_subactions_for_action(SubAction, SubActions).
-
-
-
-
-
-
-
-%
-% project_and_debug(Plan, ActionSeq, Result) :-
-%
-%   object_change:plan_subevents(Plan, SubEvents),
-%
-%   % project
-%   findall(Inst, (member(Sub, SubEvents), object_change:project_action_class(Sub, Inst, Post)), Actions),
-%
-%   % check if result created
-%   findall(P, class_properties(Plan, knowrob:'taskToAchieve', P), Ps), member(Post, Ps),
-%   ( (owl_individual_of(Result, Post), member(A, Actions), owl_has(A, knowrob:postActors, Result)) ->
-%       (AddActions=[]) ;
-%       (additional_actions_req_for_output(Post, AddActions) )),
-%
-%   flatten([AddActions|Actions], ActionSeq).
-%
-%
-%
-% additional_actions_req_for_output(Post, Actions) :-
-%   findall(A, action_outputs(A, Post), As), member(Action, As),
-%   add_subactions_for_action(Action, SubActions),
-%   append(SubActions, [Action], Actions),
-%
-%   findall(_, (member(Sub, Actions), object_change:project_action_class(Sub, _, _)), _).
-
-
-
-
-
-
-
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-%
-%   vv   COPIED FROM OTHER MODULES -- TO BE REMOVED   vv
-%
-
-
-%% plan_subevents(+Plan, ?SubEvents) is semidet.
-%
-% Read all sub-event classes of the imported plan, i.e. single actions that need to be taken
-%
-% @param Plan Plan identifier
-% @param SubEvents List of sub-events of the plan
-%
-plan_subevents(Plan, SubEvents) :-
-  findall(SubEvent, ( owl_has(Plan, rdfs:subClassOf, D),
-                      owl_has(D, owl:intersectionOf, I),
-                      rdfs_member(R, I),
-                      rdf_has(R, owl:onProperty, knowrob:'subAction'),
-                      rdf_has(R, owl:someValuesFrom, SubEvent)), Sub),
-  predsort(compare_actions_partial_order, Sub, SubEvents).
-
-
-%% plan_subevents_recursive(+Plan, ?SubEvents) is semidet.
-%
-% Recursively read all sub-event classes of the imported plan, i.e. single actions that need to be taken
-%
-% @param Plan Plan identifier
-% @param SubEvents List of sub-events of the plan
-%
-plan_subevents_recursive(Plan, SubEvents) :-
-  plan_subevents_recursive_1(Plan, Sub),
-  flatten(Sub,SubEvents).
-
-% simple case: no subevents, return action itself
-plan_subevents_recursive_1(Plan, []) :-
-  plan_subevents(Plan, []).
-
-% if there are subevents, iterate
-plan_subevents_recursive_1(Plan, [Plan|SubSubEvents]) :-
-  plan_subevents(Plan, SubEvents),
-
-  findall(SubSubEvent, (member(SubEvent, SubEvents),
-                       plan_subevents_recursive_1(SubEvent, SubSubEvent)), SubSubEvents).
-
-
-%% compare_actions_partial_order(-Rel, +Act1, +Act2) is semidet.
-%
-% Compare predicate to be used in predsort for sorting a list of actions
-% based on partial-order constraints
-%
-% Checks if there is an ordering constraint that has these two actions as before/after
-% TODO: can we check if these constraints belong to the current task?
-%
-compare_actions_partial_order('<', Act1, Act2) :-
-  owl_has(Constraint, knowrob:occursBeforeInOrdering, Act1),
-  owl_has(Constraint, knowrob:occursAfterInOrdering, Act2),!.
-
-compare_actions_partial_order('>', Act1, Act2) :-
-  owl_has(Constraint, knowrob:occursBeforeInOrdering, Act2),
-  owl_has(Constraint, knowrob:occursAfterInOrdering, Act1),!.
-
-% default: keep ordering if there are no matching ordering constraints
-compare_actions_partial_order('<', _, _).
-
-
-
-
-%% class_properties(?Class, ?Prop, ?Values) is nondet.
-%
-% Collect all property values of someValuesFrom-restrictions of a class
-%
-% @param Class   Class whose restrictions are being considered
-% @param Prop    Property whose restrictions in Class are being considered
-% @param Values  List of all classes that appear in a restriction of a superclass of Class along Property
-
-% class_properties(Class, Prop, Val) :-         % read directly asserted properties
-%   class_properties_1(Class, Prop, Val).
-% class_properties(Class, Prop, Val) :-         % also consider properties of superclasses
-%   nonvar(Class),
-%   owl_subclass_of(Class, Super), Class\=Super,
-%   class_properties_1(Super, Prop, Val).
-%
-% % read restrictions defined for Class for Prop or a sub-property of Prop
-% class_properties_1(Class, Prop, Val) :-
-%   nonvar(Class),
-%   owl_direct_subclass_of(Class, Sup),
-%   owl_direct_subclass_of(Sup, Sup2),
-%   ( (nonvar(Prop)) -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
-%   owl_restriction(Sup2,restriction(SubProp, some_values_from(Val))).
-%
-% class_properties_1(Class, Prop, Val) :-
-%   nonvar(Class),
-%   owl_direct_subclass_of(Class, Sup),
-%   ( (nonvar(Prop)) -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
-%   owl_restriction(Sup,restriction(SubProp, some_values_from(Val))).
-%
-% class_properties_1(Class, Prop, Val) :-
-%   var(Class),
-%   ( (nonvar(Prop)) -> (rdfs_subproperty_of(SubProp, Prop)) ; (SubProp = Prop)),
-%   owl_restriction(Sup,restriction(SubProp, some_values_from(Val))),
-%   owl_direct_subclass_of(Class, Sup).
-
-
