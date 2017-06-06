@@ -108,11 +108,23 @@ test(pancake_making_crack_egg) :-
   action_effects_apply(pancake:'CrackingAnEgg_0'),
   rdf_has(pancake:'CrackingAnEgg_0', knowrob:outputsCreated, Yolk),
   rdfs_individual_of(Yolk, knowrob:'EggYolk-Food').
+
+:- rdf_meta test_unsattisifed_restriction(r, t).
+test_unsattisifed_restriction(Resource, Restr) :-
+  owl_unsatisfied_restriction(Resource, RestrId),
+  owl_restriction(RestrId, Restr), !.
   
 test(pancake_making_mix_dough) :-
+  % objectActedOn restriction not satisfied yet!
+  test_unsattisifed_restriction(pancake:'MixPancakeDough_0',
+      restriction(knowrob:'objectActedOn', some_values_from(knowrob:'EggYolk-Food'))),
   % create dough by mixing flour and milk
   plan_constrained_objects(pancake:'MakingPancakes', pancake:'MixPancakeDough_0',
         [pancake:'CrackingAnEgg_0']),
+  % objectActedOn restriction now satisfied!
+  \+ test_unsattisifed_restriction(pancake:'MixPancakeDough_0',
+      restriction(knowrob:'objectActedOn', some_values_from(knowrob:'EggYolk-Food'))),
+  % Check projection in store
   rdf_has(pancake:'MixPancakeDough_0', knowrob:objectActedOn, Yolk),
   rdfs_individual_of(Yolk, knowrob:'EggYolk-Food'),
   action_effects_apply(pancake:'MixPancakeDough_0'),
