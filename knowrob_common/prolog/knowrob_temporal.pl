@@ -63,7 +63,7 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('owl')).
-:- use_module(library('swrl')). % FIXME DB: swrl also imports knowrob_temporal
+:- use_module(library('swrl')).
 :- use_module(library('rdfs_computable')).
 :- use_module(library('knowrob_owl')).
 
@@ -119,16 +119,10 @@ owl_individual_of_during(Resource, Description) :-
   current_time(Now),
   owl_individual_of_during(Resource, Description, Now).
 
-owl_individual_of_during(Resource, Thing, _) :-
-  rdf_equal(Thing, owl:'Thing'), %!, MT 16032011
-  (   atom(Resource)
-  ->  true
-  ;   rdf_subject(Resource)
-  ).
+owl_individual_of_during(Resource, 'http://www.w3.org/2002/07/owl#Thing', _) :-
+  ( atom(Resource) -> true ; rdf_subject(Resource) ).
 
-owl_individual_of_during(_Resource, Nothing, _) :-
-  rdf_equal(Nothing, owl:'Nothing'), %!, MT 16032011
-  fail.
+owl_individual_of_during(_, 'http://www.w3.org/2002/07/owl#Nothing', _) :- fail. %!, MT 16032011
   
 owl_individual_of_during(Resource, Description, Interval) :- % RDFS + SWRL
   nonvar(Resource), nonvar(Description),
@@ -146,23 +140,19 @@ owl_individual_of_during(Resource, Description, I0) :- % RDFS
   ;  Resource = X
   ).
 
-owl_individual_of_during(Resource, Description, Interval) :- % SWRL + OWL subclass inference
+owl_individual_of_during(Resource, Description, Interval) :- % SWRL
   var(Resource), nonvar(Description),
   owl_subclass_of(Class, Description),
   swrl:swrl_holds(Resource, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', Class, Interval).
   
-owl_individual_of_during(Resource, Description, Interval) :- % RDFS + OWL subclass inference
+owl_individual_of_during(Resource, Description, Interval) :- % RDFS + SWRL
   nonvar(Resource), var(Description),
-  bagof(C, (
-    rdfs_individual_of_during(Resource, Class, Interval),
+  bagof(C, ((
+    rdfs_individual_of_during(Resource, Class, Interval) ;
+    swrl:swrl_holds(Resource, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', Class, Interval) ),
     owl_subclass_of(Class, C)
   ), Cs),
   member(Description, Cs).
-
-owl_individual_of_during(Resource, Description, Interval) :- % SWRL + OWL subclass inference
-  nonvar(Resource), var(Description),
-  swrl:swrl_holds(Resource, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', Class, Interval),
-  owl_subclass_of(Class, Description).
 
 owl_individual_of_during(Resource, Class, Interval) :-
   nonvar(Class), % MT 03122014 -- does not allow generic classification of instances any more, but avoids search through all equivalents of all classes whenever Class is unbound
