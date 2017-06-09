@@ -34,7 +34,6 @@
     [
       rdf_wup_similarity/3,
       rdf_wup_similarity_given_LCS/4,
-
       rdf_path_distance/3,
       rdf_shortest_path/3,
       rdf_paths/3,
@@ -42,21 +41,19 @@
     ]).
 
 :- use_module(library('semweb/rdf_db')).
+
+% TODO DB: not all these predicates need term expansion!
 :-  rdf_meta
-	  rdf_wup_similarity(r,r,-),
-	  rdf_wup_similarity_given_LCS(r,r,r,-),
-	  rdf_shortest_dist_up(r,r,-),
-	  rdf_shortest_dist_up_superclasses(t,r,t,-),
-	  rdf_most_specific_classes(t,-),
-	  rdf_most_specific_classes(t,t,-),
-	  rdf_superclass_of_any_class_in_list(r,t),
-	  rdf_least_common_ancestors(t,-),
-
-	  rdf_superclass_list(t,t),
-	  rdf_common_ancestor(t, -),
-
-	  %old:
-      %rdf_wup_distance(r,r,-),
+      rdf_wup_similarity(r,r,-),
+      rdf_wup_similarity_given_LCS(r,r,r,-),
+      rdf_shortest_dist_up(r,r,-),
+      rdf_shortest_dist_up_superclasses(t,r,t,-),
+      rdf_most_specific_classes(t,-),
+      rdf_most_specific_classes(t,t,-),
+      rdf_superclass_of_any_class_in_list(r,t),
+      rdf_least_common_ancestors(t,-),
+      rdf_superclass_list(t,t),
+      rdf_common_ancestor(t, -),
       rdf_path_distance(r,r,-),
       rdf_ich_distance(r,r,-),
       rdf_shortest_path(r,r,-),
@@ -77,15 +74,10 @@
 % @param B second of the two classes
 % @param Sim similarty measure between 0 (not similar) and 1 (most similar)
 % 
+rdf_wup_similarity(A, A, 1) :- !.
 rdf_wup_similarity(A, B, Sim) :-
-  (
-      A = B
-  ->
-      Sim is 1 %A=B=owl:'Thing' would give a division by 0 otherwise
-  ;
-      rdf_common_ancestor([A, B], LCS),
-              rdf_wup_similarity_given_LCS(A, B, LCS, Sim)
-      ).
+    rdf_common_ancestor([A, B], LCS),
+    rdf_wup_similarity_given_LCS(A, B, LCS, Sim).
 
 
 %% rdf_wup_similarity_given_LCS(+A:rdf_class, +B:rdf_class, +LCS:rdf_class, -Sim:float).
@@ -128,33 +120,23 @@ rdf_shortest_dist_up(A, B, Dist) :-
 % @param DoneList   Contains all classes searched so far, they will be excluded from the search
 % @param Dist       Shortest distance from any class in SearchList to Goal, will be false if no such path exists
 % 
+rdf_shortest_dist_up_superclasses(SearchList, Goal, _, 0) :-
+    member(Goal, SearchList), !.
 rdf_shortest_dist_up_superclasses(SearchList, Goal, DoneList, Dist) :-
-    (
-        member(Goal, SearchList)
-    ->
-        Dist is 0 %done
-    ;
-        findall(NewSuperClasses,
-        (
-                member(Class, SearchList),
-                findall(SuperClass,
-                                (
-                                        rdf_has(Class, rdfs:subClassOf, SuperClass),
-                                        \+ member(SuperClass, DoneList)
-                                ),
-                        NewSuperClasses)
-                ), NewSuperClassesLists),
-                flatten(NewSuperClassesLists, NewSearchList),
-                (
-                        NewSearchList = [] %if no new classes in searchlist, then Goal is not reachable -> return false
-                ->
-                        false  %done
-                ;
-                        append(DoneList, SearchList, NewDoneList),
-                        rdf_shortest_dist_up_superclasses(NewSearchList, Goal, NewDoneList, NewDist),
-                        Dist is NewDist + 1
-                )
-          ).
+    findall(NewSuperClasses, (
+        member(Class, SearchList),
+        findall(SuperClass, (
+                              rdf_has(Class, rdfs:subClassOf, SuperClass),
+                              \+ member(SuperClass, DoneList)
+                            ), NewSuperClasses)
+    ), NewSuperClassesLists),
+    flatten(NewSuperClassesLists, NewSearchList),
+    (  NewSearchList = [] %if no new classes in searchlist, then Goal is not reachable -> return false
+    -> false  %done
+    ;  append(DoneList, SearchList, NewDoneList),
+       rdf_shortest_dist_up_superclasses(NewSearchList, Goal, NewDoneList, NewDist),
+       Dist is NewDist + 1
+    ).
 
 %% rdf_most_specific_classes(+List:list, -CMs:list).
 %
@@ -168,12 +150,10 @@ rdf_most_specific_classes(List, CMs) :-
 
 rdf_most_specific_classes_([],_, []).
 rdf_most_specific_classes_([C1|Cs], All, CMs) :-
-        (
-                rdf_superclass_of_any_class_in_list(C1, All)
-        ->
-                rdf_most_specific_classes_(Cs, All, CMs)
-        ;
-                rdf_most_specific_classes_(Cs, All, NewCMs), CMs = [C1|NewCMs]
+    (  rdf_superclass_of_any_class_in_list(C1, All)
+    -> rdf_most_specific_classes_(Cs, All, CMs)
+    ;  rdf_most_specific_classes_(Cs, All, NewCMs),
+       CMs = [C1|NewCMs]
     ).
 
 %% rdf_superclass_of_any_class_in_list(+C:rdf_class, -[C1|Cs]:list)
