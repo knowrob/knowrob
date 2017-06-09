@@ -63,6 +63,7 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('owl')).
+:- use_module(library('swrl')). % FIXME DB: swrl also imports knowrob_temporal
 :- use_module(library('rdfs_computable')).
 :- use_module(library('knowrob_owl')).
 
@@ -102,31 +103,67 @@
 :- multifile holds/4.
 
 
+rdfs_individual_of_during(Resource, Description, Interval) :-
+  nonvar(Resource),
+  rdfs_individual_of(Resource, Description) ; (
+     rdf_has(Resource, knowrob:temporalParts, X),
+     rdfs_individual_of(X, Description),
+     \+ rdf_equal(Description, knowrob:'TemporalPart'),
+     rdf_has(X, knowrob:temporalExtend, TemporalExtend),
+     interval_during(Interval, TemporalExtend)
+  ).
+
+% TODO DB: support computable rdf:type property?
+
 owl_individual_of_during(Resource, Description) :-
   current_time(Now),
   owl_individual_of_during(Resource, Description, Now).
+
 owl_individual_of_during(Resource, Thing, _) :-
   rdf_equal(Thing, owl:'Thing'), %!, MT 16032011
   (   atom(Resource)
   ->  true
   ;   rdf_subject(Resource)
   ).
+
 owl_individual_of_during(_Resource, Nothing, _) :-
   rdf_equal(Nothing, owl:'Nothing'), %!, MT 16032011
   fail.
-owl_individual_of_during(Resource, Description, _) :- % RDFS
-  rdfs_individual_of(Resource, Description).
-owl_individual_of_during(Resource, Class, Interval) :-
-  nonvar(Resource), var(Class),
-  holds(Resource, rdf:type, Class, Interval).
-owl_individual_of_during(Resource, Class, Interval) :-
-  nonvar(Resource), nonvar(Class), 
-  once(( holds(Resource, rdf:type, C, Interval),
-         owl_subclass_of(C, Class) )).
-owl_individual_of_during(Resource, Class, Interval) :-
-  var(Resource), nonvar(Class), 
-  owl_subclass_of(C, Class),
-  holds(Resource, rdf:type, C, Interval).
+  
+owl_individual_of_during(Resource, Description, Interval) :- % RDFS + SWRL
+  nonvar(Resource), nonvar(Description),
+  ( rdfs_individual_of_during(Resource, Description, Interval) ;
+  ( owl_subclass_of(Class, Description),
+    swrl:swrl_holds(Resource, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', Class, Interval)
+  )), !.
+  
+owl_individual_of_during(Resource, Description, I0) :- % RDFS
+  var(Resource), nonvar(Description),
+  rdfs_individual_of(X, Description),
+  (  rdf_has(X, knowrob:temporalExtend, I1)
+  -> interval_during(I0, I1),
+     rdf_has(Resource, knowrob:temporalParts, X)
+  ;  Resource = X
+  ).
+
+owl_individual_of_during(Resource, Description, Interval) :- % SWRL + OWL subclass inference
+  var(Resource), nonvar(Description),
+  owl_subclass_of(Class, Description),
+  swrl:swrl_holds(Resource, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', Class, Interval).
+  
+owl_individual_of_during(Resource, Description, Interval) :- % RDFS + OWL subclass inference
+  nonvar(Resource), var(Description),
+  bagof(C, (
+    rdfs_individual_of_during(Resource, Class, Interval),
+    owl_subclass_of(Class, C)
+  ), Cs),
+  member(Description, Cs).
+
+owl_individual_of_during(Resource, Description, Interval) :- % SWRL + OWL subclass inference
+  nonvar(Resource), var(Description),
+  swrl:swrl_holds(Resource, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', Class, Interval),
+  owl_subclass_of(Class, Description).
+
 owl_individual_of_during(Resource, Class, Interval) :-
   nonvar(Class), % MT 03122014 -- does not allow generic classification of instances any more, but avoids search through all equivalents of all classes whenever Class is unbound
   rdfs_individual_of(Class, owl:'Class'),
@@ -138,8 +175,10 @@ owl_individual_of_during(Resource, Class, Interval) :-
       findall(SC, rdf_has(Class, rdfs:subClassOf, SC), SuperClasses),
       owl_individual_of_all_during(SuperClasses, Resource, Interval)
   ).
+
 owl_individual_of_during(Resource, Description, _) :- % RDFS
   owl_individual_from_range(Resource, Description).
+
 
 owl_individual_of_all_during([], _, _).
 owl_individual_of_all_during([C|T], Resource, I) :-
@@ -233,9 +272,9 @@ holds(S, P, O) :-
   holds(S, P, O, [T,T]).
 
 holds(S, P, O, I) :-
-  ( atom(S) ; var(S) ),
+  once(( atom(S) ; var(S) )),
   (  atom(P)
-  -> rdf_triple(P, S, O)
+  -> rdf_triple(P, S, O) % FIXME: redundant results!
   ;  owl_has(S,P,O)
 % FIXME: inspect does not infer class properties of individuals!
 %   e.g., that a fridge instance is storage place for perishable
@@ -249,7 +288,7 @@ holds(S, P, O, I) :-
   ).
   
 holds(S, P, O, I) :-
-  ( atom(S) ; var(S) ),
+  once(( atom(S) ; var(S) )),
   temporal_part_has(S, P, O, TimeInterval),
   time_term(TimeInterval, Interval),
   (  var(I)
@@ -331,6 +370,10 @@ current_temporal_part(Obj,TemporalPart) :-
 temporal_part(Obj,TemporalPart,TemporalExtend) :-
   rdf_has(Obj, knowrob:'temporalParts', TemporalPart),
   rdf_has(TemporalPart, knowrob:'temporalExtend', TemporalExtend).
+
+temporal_part_during(Obj,TemporalPart,TemporalExtend) :-
+  temporal_part(Obj,TemporalPart,I),
+  interval_during(TemporalExtend, I).
 
 create_temporal_part(S, P, TemporalPart) :-
   rdf_instance_from_class(knowrob:'TemporalPart', TemporalPart),
