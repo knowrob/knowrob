@@ -63,7 +63,6 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('owl')).
-:- use_module(library('swrl')).
 :- use_module(library('rdfs_computable')).
 :- use_module(library('knowrob_owl')).
 
@@ -103,24 +102,31 @@
 :- multifile holds/4.
 
 
+since_ever(Interval) :- (nonvar(Interval) ; create_interval([0.0], Interval)), !.
+during_temporal_extend(I0, I1) :- var(I0), I0 = I1, !.
+during_temporal_extend(I0, I1) :- interval_during(I0, I1).
+
+
 rdfs_individual_of_during(Resource, Description, Interval) :-
   nonvar(Resource),
-  rdfs_individual_of(Resource, Description) ; (
+  (  rdfs_individual_of(Resource, Description),
+     since_ever(Interval)
+  ) ; (
      rdf_has(Resource, knowrob:temporalParts, X),
      rdfs_individual_of(X, Description),
-     \+ rdf_equal(Description, knowrob:'TemporalPart'),
      rdf_has(X, knowrob:temporalExtend, TemporalExtend),
-     interval_during(Interval, TemporalExtend)
-  ).
+     during_temporal_extend(Interval, TemporalExtend)
+  ),
+  \+ rdf_equal(Description, knowrob:'TemporalPart').
 
 % TODO DB: support computable rdf:type property?
 
-owl_individual_of_during(Resource, Description) :-
-  current_time(Now),
-  owl_individual_of_during(Resource, Description, Now).
-
-owl_individual_of_during(Resource, 'http://www.w3.org/2002/07/owl#Thing', _) :-
-  ( atom(Resource) -> true ; rdf_subject(Resource) ).
+%% owl_individual_of_during(?Resource, ?Description, ?Interval)
+%
+% Temporal reasoning over class membership.
+%
+owl_individual_of_during(Resource, 'http://www.w3.org/2002/07/owl#Thing', Interval) :-
+  ( atom(Resource) -> true ; rdf_subject(Resource) ), since_ever(Interval).
 
 owl_individual_of_during(_, 'http://www.w3.org/2002/07/owl#Nothing', _) :- fail. %!, MT 16032011
   
@@ -135,7 +141,7 @@ owl_individual_of_during(Resource, Description, I0) :- % RDFS
   var(Resource), nonvar(Description),
   rdfs_individual_of(X, Description),
   (  rdf_has(X, knowrob:temporalExtend, I1)
-  -> interval_during(I0, I1),
+  -> during_temporal_extend(I0, I1),
      rdf_has(Resource, knowrob:temporalParts, X)
   ;  Resource = X
   ).
@@ -168,6 +174,10 @@ owl_individual_of_during(Resource, Class, Interval) :-
 
 owl_individual_of_during(Resource, Description, _) :- % RDFS
   owl_individual_from_range(Resource, Description).
+
+owl_individual_of_during(Resource, Description) :-
+  current_time(Now),
+  owl_individual_of_during(Resource, Description, Now).
 
 
 owl_individual_of_all_during([], _, _).
