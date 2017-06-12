@@ -32,13 +32,11 @@
 
 :- module(knowrob_cad_parser,
     [
-		get_model_path/2
+        get_model_path/2
     ]).
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
-:- use_module(library('rdfs_computable')).
-:- use_module(library('jpl')).
 
 
 :- rdf_meta get_model_path(r,?).
@@ -50,15 +48,15 @@
 % @param Identifer  Object instance or class identifier
 % @param Path       Found path
 get_model_path(Identifier,Path) :-
+  rdf_has(Identifier,knowrob:pathToCadModel,Val),
+  strip_literal_type(Val,Path), !.
 
-  % Identifier is an instance, specification includes xsd:type
-  (rdf_has(Identifier,knowrob:pathToCadModel,literal(type(_,Path))) ; 
-  rdfs_individual_of(Identifier, Class), class_properties(Class, knowrob:pathToCadModel,literal(type(_,Path)));
+get_model_path(Identifier,Path) :-
+  rdfs_individual_of(Identifier, Class),
+  class_properties(Class, knowrob:pathToCadModel,Val),
+  strip_literal_type(Val,Path), !.
 
-  % Identifier is an instance, no xsd:type specified (included for compatibility reasons)
-  rdf_has(Identifier,knowrob:pathToCadModel,literal(Path)) ; 
-  rdfs_individual_of(Identifier, Class), class_properties(Class, knowrob:pathToCadModel,literal(Path))),! ;
-
-  % Identifier is a class
-  class_properties(Identifier, knowrob:pathToCadModel,literal(type(_,Path))),!.
+get_model_path(Identifier,Path) :-
+  class_properties(Identifier, knowrob:pathToCadModel,Val),
+  strip_literal_type(Val,Path), !.
 

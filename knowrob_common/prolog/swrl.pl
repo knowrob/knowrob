@@ -53,6 +53,7 @@
 
 :- rdf_db:rdf_register_ns(owl, 'http://www.w3.org/2002/07/owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(rdfs, 'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
+:- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
 :- rdf_db:rdf_register_ns(xml, 'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
 :- rdf_db:rdf_register_ns(swrla, 'http://swrl.stanford.edu/ontologies/3.3/swrla.owl#', [keep(true)]).
 
@@ -625,10 +626,10 @@ swrl_satisfied([HeadAtom|Xs] :- Body, Vars_user, Vars) :-
 %
 swrl_project(Rule) :- swrl_project(Rule, []).
 swrl_project([HeadAtom|Xs] :- Body, Vars_user) :-
-  % TODO: call swrl_satisfied for all head atoms before calling first swrl_project_!
-  %         - because: maybe some heads use implications of this rule!
-  % FIXME: seems this call is slow for some rules...
-  swrl_satisfied([HeadAtom|Xs] :- Body, Vars_user, Vars),
+  bagof( Binding,
+    swrl_satisfied([HeadAtom|Xs] :- Body, Vars_user, Binding),
+    Bindings ),
+  member(Vars, Bindings),
   swrl_project_([HeadAtom|Xs], Vars).
 
 swrl_project_([], _).
@@ -693,11 +694,11 @@ swrl_class_atom_project(S, Cls) :-
     rdf_instance_from_class(owl:'NamedIndividual', S)
   )),
   ( atom(Cls_pl) ->
-    assert_temporal_part(S, rdf:'type', nontemporal(Cls_pl)) ;
+    assert_temporal_part(S, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', nontemporal(Cls_pl)) ;
     swrl_class_atom_project(S, Cls_pl) ).
 swrl_class_atom_project(S, not(Cls)) :-
   atom(Cls), rdfs_individual_of(Cls, owl:'Class'),
-  assert_temporal_part_end(S, rdf:'type', Cls).
+  assert_temporal_part_end(S, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', Cls).
 
 %% retract random objects that fulfills relation
 swrl_retract_random(_, _, _, N) :- N =< 0, !.
