@@ -33,6 +33,7 @@
 	  [ owl_restriction_on/2,	% ?Class, ?Restriction
 	    owl_merged_restriction/3,	% ?Class, ?Property, ?Restriction
 	    owl_restriction/2,		% +Resource, -Restriction
+	    owl_unsatisfied_restriction/2,	% +Resource, ?Restriction
 	    owl_description/2,		% +Resource, -Description
 	    owl_cardinality_on_subject/3, % +Subject, +Predicate, -Card
 	    owl_cardinality_on_class/3,	% idem BJW
@@ -80,7 +81,8 @@
 :- rdf_meta
 	owl_restriction_on(r, t),
 	owl_merged_restriction(r, r, t),
-	owl_restriction(r, -),
+	owl_restriction(r, t),
+	owl_unsatisfied_restriction(r, r),
 	owl_description(r, -),
 	owl_cardinality_on_subject(r, r, -),
 	owl_cardinality_on_class(r, r, -),
@@ -306,7 +308,7 @@ cardinality_on_class(Class, Predicate, cardinality(Min, Max)) :-
 
 %%	owl_satisfies_restriction(?Resource, +Restriction)
 %
-%	True if Restriction satisfies the restriction imposed by Restriction.
+%	True if Resource satisfies the restriction imposed by Restriction.
 %	The current implementation makes the following assumptions:
 %
 %		* Only one of owl:hasValue, owl:allValuesFrom or owl:someValuesFrom
@@ -325,6 +327,23 @@ owl_satisfies_restriction(Resource, Restriction) :-
 	;   rdf_subject(Resource)
 	),
 	owl_satisfies_cardinality(Resource, Restriction).
+
+%%	owl_unsatisfied_restriction(?Resource, +Restriction)
+%	
+%	True if Resource does not not satisfy the restriction imposed by Restriction.
+%	
+
+owl_unsatisfied_restriction(Resource, Restriction) :-
+	ground(Restriction), ground(Resource), !,
+	\+ owl_satisfies_restriction(Resource, Restriction).
+owl_unsatisfied_restriction(Resource, Restriction) :-
+	ground(Resource),
+	setof(Cls, (
+		rdfs_individual_of(Resource, Cls),
+		rdfs_individual_of(Cls, owl:'Restriction')
+	), Restrictions),
+	member(Restriction, Restrictions),
+	\+ owl_satisfies_restriction(Resource, Restriction).
 
 all_individual_of([], _).
 all_individual_of([H|T], Class) :-
