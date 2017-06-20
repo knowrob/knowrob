@@ -29,11 +29,11 @@
 
 package org.knowrob.json_prolog.solutions;
 
-import java.util.Hashtable;
+import java.util.Map;
 
 public interface PrologSolutions {
   boolean hasMoreSolutions() throws Exception;
-  Hashtable<String, jpl.Term> nextSolution() throws Exception;
+  java.util.Map<String, org.jpl7.Term> nextSolution() throws Exception;
   void close() throws Exception;
   void reset() throws Exception;
 }

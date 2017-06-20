@@ -29,23 +29,23 @@
 
 package org.knowrob.json_prolog.solutions;
 
-import java.util.Hashtable;
+import java.util.Map;
 
 import org.knowrob.json_prolog.query.ThreadedQuery;
 
-import jpl.Term;
+import org.jpl7.Term;
 
 public final class PrologAllSolutions implements PrologSolutions {
 
   private int currentIndex = 0;
-  Hashtable<String, jpl.Term>[] solutions = null;
+  Map<String, Term>[] solutions = null;
   ThreadedQuery query = null;
   
   public PrologAllSolutions(ThreadedQuery query) throws Exception {
 	  this.query = query;
   }
   
-  private Hashtable<String, jpl.Term>[] getSolutions() throws Exception {
+  private Map<String, Term>[] getSolutions() throws Exception {
 	  // Compute solutions
 	  if(solutions == null) {
 		  solutions = query.allSolutions();
@@ -66,8 +66,8 @@ public final class PrologAllSolutions implements PrologSolutions {
   }
 
   @Override
-  public Hashtable<String, Term> nextSolution() throws Exception {
-    Hashtable<String, jpl.Term> result = getSolutions()[currentIndex];
+  public Map<String, Term> nextSolution() throws Exception {
+    Map<String, Term> result = getSolutions()[currentIndex];
     currentIndex++;
     return result;
   }

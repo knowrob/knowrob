@@ -1,6 +1,6 @@
 package org.knowrob.json_prolog.query;
 
-import jpl.Query;
+import org.jpl7.Query;
 
 public class QueryClosedException extends Exception {
 	private static final long serialVersionUID = -2345651829510699915L;
