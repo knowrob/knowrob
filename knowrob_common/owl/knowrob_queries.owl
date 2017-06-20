@@ -1,0 +1,178 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://knowrob.org/kb/knowrob_queries.owl#"
+     xml:base="http://knowrob.org/kb/knowrob_queries.owl"
+     xmlns:qudt="http://qudt.org/schema/qudt#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:computable="http://knowrob.org/kb/computable.owl#">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/knowrob_queries.owl">
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_communication.owl"/>
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_common.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#queryAbout -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#queryAbout">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Query"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#groupName -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#groupName">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#nameString"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#nameString -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#nameString"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#queryName -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#queryName">
+        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#nameString"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Query"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Querying"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#queryString -->
+
+    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#queryString">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Query"/>
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Querying"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Query -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Query"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Querying -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Querying"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Query_AFDjpriotj643 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#Query_AFDjpriotj643">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#Query"/>
+        <groupName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Episodic Memory</groupName>
+        <queryName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">What was the goal of this action?</queryName>
+        <queryString rdf:datatype="http://www.w3.org/2001/XMLSchema#string">task_goal(Individual, Goal).</queryString>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Query_DFGnk49ngdsb -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#Query_DFGnk49ngdsb">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#Query"/>
+        <groupName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Episodic Memory</groupName>
+        <queryName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In which time interval did this action occur?</queryName>
+        <queryString rdf:datatype="http://www.w3.org/2001/XMLSchema#string">interval(Action, I).</queryString>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Query_FSDno48956 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#Query_FSDno48956">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#Query"/>
+        <groupName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Episodic Memory</groupName>
+        <queryName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">What are the subactions of this action?</queryName>
+        <queryString rdf:datatype="http://www.w3.org/2001/XMLSchema#string">subtask_all(Individual, Subtasks).</queryString>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Query_GDBHFHRK6S75R -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#Query_GDBHFHRK6S75R">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#Query"/>
+        <groupName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Symbolic knowledge</groupName>
+        <queryAbout rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <queryName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">What are the object properties?</queryName>
+        <queryString rdf:datatype="http://www.w3.org/2001/XMLSchema#string">findall(_X, (owl_has(Individual, _Property, _Value), property_name(_Property, _PropertyName), property_value(_Value, _PropertyValue), atomic_list_concat([&apos;   &apos;,_PropertyName,_PropertyValue], &apos; &apos;, _X) ), _PropertyNames), atomic_list_concat([&apos;&apos;|_PropertyNames], &apos;\n&apos;, Properties)</queryString>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Query_RBNU745gvFSVG -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#Query_RBNU745gvFSVG">
+        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#Query"/>
+        <groupName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Designator Properties</groupName>
+        <queryAbout rdf:resource="http://knowrob.org/kb/knowrob.owl#Designator"/>
+        <queryName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">What are the designator properties?</queryName>
+        <queryString rdf:datatype="http://www.w3.org/2001/XMLSchema#string">mng_designator(Individual, ObjDesignator), findall(_X, (mng_designator_props(ObjDesignator, _Property, _Value), atomic_list_concat([&apos;   &apos;,_Property,_Value], &apos; &apos;, _X) ), _PropertyNames), atomic_list_concat([&apos;&apos;|_PropertyNames], &apos;\n&apos;, Properties)</queryString>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+

@@ -35,11 +35,10 @@
       plan_subevents/2,
       plan_subevents_recursive/2,
       plan_objects/2,
+      plan_constrained_objects/3,
       action_objectActedOn/2,
       action_toLocation/2,
-      action_fromLocation/2,
-      matching_actions/2,
-      compare_actions_partial_order/3
+      action_fromLocation/2
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -54,11 +53,10 @@
       plan_subevents(r,-),
       plan_subevents_recursive(r,r),
       plan_objects(r,r),
+      plan_constrained_objects(r,r,t),
       action_objectActedOn(r,r),
       action_toLocation(r,r),
-      action_fromLocation(r,r),
-      matching_actions(r,r),
-      compare_actions_partial_order(-,r,r).
+      action_fromLocation(r,r).
 
 :- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
 :- rdf_db:rdf_register_ns(owl, 'http://www.w3.org/2002/07/owl#', [keep(true)]).
@@ -95,6 +93,38 @@ plan_subevents_recursive(Plan, SubAction) :-
     plan_subevents_recursive(Sub, SubAction).
 
 
+%% plan_constrained_objects(+Plan, +Action, +PrevActions)
+%
+% Link outputs of previous actions to `Action` via `objectActedOn` property
+% based on the description of IO constraints.
+%
+% @param Plan        Plan identifier
+% @param Action      Action identifier
+% @param PrevActions List of previous actions performed within the plan
+%
+plan_constrained_objects(Plan, Action, PrevActions) :-
+  findall(Obj, plan_constrained_objects(Plan, Action, PrevActions, Obj), Objs),
+  forall(member(Obj,Objs), rdf_assert(Action, knowrob:objectActedOn, Obj)).
+  
+plan_constrained_objects(Plan, Action, PrevActions, Obj) :-
+  % FIXME: check if this constraint is part of plan!
+  %class_properties(Plan, knowrob:inputOutputConstraint, Constraint),
+  rdf_has(Constraint, knowrob:requiresInput, Cls),
+  rdfs_individual_of(Action, Cls),
+  % read the outputs created by previous actions
+  plan_constrained_object(Constraint, PrevActions, Obj).
+
+plan_constrained_object(Constraint, PrevActions, Object) :-
+  rdf_has(Constraint, knowrob:createsOutput, OtherCls),
+  member(OtherAction, PrevActions),
+  % TODO: take latest action output if multiple actions of same type were performed
+  rdfs_individual_of(OtherAction, OtherCls), !,
+  % query the (typed) output created
+  rdf_has(OtherAction, knowrob:outputsCreated, Object),
+  (  rdf_has(Constraint, knowrob:resourceType, OutputType)
+  -> owl_individual_of(Object, OutputType)
+  ;  true ).
+
 
 %% plan_objects(+Plan, -Objects) is semidet.
 %
@@ -120,10 +150,10 @@ plan_objects(Plan, Objects) :-
 action_objectActedOn(Action, Object) :-
         owl_direct_subclass_of(Action, Sup),
         owl_direct_subclass_of(Sup, Sup2),
-        owl_restriction(Sup2,restriction(knowrob:'objectActedOn', some_values_from(Object))).
+        owl_restriction(Sup2,restriction('http://knowrob.org/kb/knowrob.owl#objectActedOn', some_values_from(Object))).
 action_objectActedOn(Action, Object) :-
         owl_direct_subclass_of(Action, Sup),
-        owl_restriction(Sup,restriction(knowrob:'objectActedOn', some_values_from(Object))).
+        owl_restriction(Sup,restriction('http://knowrob.org/kb/knowrob.owl#objectActedOn', some_values_from(Object))).
 
 %% action_toLocation(?Action, ?Loc) is nondet.
 %
@@ -135,10 +165,10 @@ action_objectActedOn(Action, Object) :-
 action_toLocation(Action, Loc) :-
         owl_direct_subclass_of(Action, Sup),
         owl_direct_subclass_of(Sup, Sup2),
-        owl_restriction(Sup2,restriction(knowrob:'toLocation', some_values_from(Loc))).
+        owl_restriction(Sup2,restriction('http://knowrob.org/kb/knowrob.owl#toLocation', some_values_from(Loc))).
 action_toLocation(Action, Loc) :-
         owl_direct_subclass_of(Action, Sup),
-        owl_restriction(Sup,restriction(knowrob:'toLocation', some_values_from(Loc))).
+        owl_restriction(Sup,restriction('http://knowrob.org/kb/knowrob.owl#toLocation', some_values_from(Loc))).
 
 %% action_fromLocation(?Action, ?Loc) is nondet.
 %
@@ -150,25 +180,10 @@ action_toLocation(Action, Loc) :-
 action_fromLocation(Action, Loc) :-
         owl_direct_subclass_of(Action, Sup),
         owl_direct_subclass_of(Sup, Sup2),
-        owl_restriction(Sup2,restriction(knowrob:'fromLocation', some_values_from(Loc))).
+        owl_restriction(Sup2,restriction('http://knowrob.org/kb/knowrob.owl#fromLocation', some_values_from(Loc))).
 action_fromLocation(Action, Loc) :-
         owl_direct_subclass_of(Action, Sup),
-        owl_restriction(Sup,restriction(knowrob:'fromLocation', some_values_from(Loc))).
-
-
-
-%% matching_actions(?Plan, ?Act) is semidet.
-%
-% Search for action instances that fit the classes described in the imported plan
-%
-% @param Plan Plan identifier
-% @param Act Matching actions
-% 
-matching_actions(Plan, Act) :-
-  plan_subevents(Plan, SubEvents),
-  rdf_has(Act, rdf:type, knowrob:'PuttingSomethingSomewhere'),
-  member(ActCl, SubEvents),
-  owl_individual_of(Act, ActCl).
+        owl_restriction(Sup,restriction('http://knowrob.org/kb/knowrob.owl#fromLocation', some_values_from(Loc))).
 
 
 %% compare_actions_partial_order(-Rel, +Act1, +Act2) is semidet.

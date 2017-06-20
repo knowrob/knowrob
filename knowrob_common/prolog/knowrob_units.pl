@@ -62,32 +62,17 @@
 % there are results in a different, but compatible unit (e.g. meters and
 % centimeters), they are converted and returned.
 
-:- user:expand_term((rdf_triple_hook(Property, Frame, Value):-
-
-    % if value is partially given (e.g. literal(type(unit:Meter, Val)) ),
-    % try to call the respective computable without the binding and to
-    % convert the results into the correct form
-
-    nonvar(Value),
-    Value = literal(type(OutputType, OutputVal)),
-    rdf_triple(Property, Frame, TempVal),
-
-    % try to convert the results into the specified format
-    convert_to_unit(TempVal, OutputType, OutputVal))
-
-  , X), assert(user:(X)).
+:- user:expand_term((rdf_triple_hook(Property, Frame, literal(type(OutputType, OutputVal))):-
+        % if value is partially given (e.g. literal(type(unit:Meter, Val)) ),
+        % try to call the respective computable without the binding and to
+        % convert the results into the correct form
+        rdf_triple(Property, Frame, TempVal),
+        % try to convert the results into the specified format
+        convert_to_unit(TempVal, OutputType, OutputVal)), X),
+    assert(user:(X)).
 
 
-
-
-
-
-
-
-convert_to_unit(Input, OutputType, Res) :-
-
-    % split input into type and value
-    Input = literal(type(InputType, InputVal)),
+convert_to_unit(literal(type(InputType, InputVal)), OutputType, Res) :-
 
     % check if values can be converted at all (equal quantity kind)
     rdf_has(InputType,  qudt:quantityKind, QKind), % TODO: OR: input float or double
@@ -108,8 +93,6 @@ convert_to_unit(Input, OutputType, Res) :-
     term_to_atom(OffO,  OutputConvOffset),
 
     Res is (((I * MultI + OffI) - OffO) / MultO).
-
-
 
 % default case: input is given as standard xsd type, assume SI base unit
 
@@ -132,10 +115,4 @@ convert_to_unit(Input, OutputType, Res) :-
     term_to_atom(OffO,  OutputConvOffset),
 
     Res is (((I * MultI + OffI) - OffO) / MultO).
-
-
-
-
-
-
 
