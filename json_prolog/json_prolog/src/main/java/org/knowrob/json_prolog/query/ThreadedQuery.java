@@ -29,10 +29,10 @@
 
 package org.knowrob.json_prolog.query;
 
-import java.util.Hashtable;
+import java.util.Map;
 import java.util.LinkedList;
 
-import jpl.Term;
+import org.jpl7.Term;
 
 /**
  * A prolog query that is processed in a separate thread.
@@ -47,9 +47,9 @@ public class ThreadedQuery implements Runnable {
 
 	private String queryString = null;
 
-	private Term queryTerm = null;
+	private org.jpl7.Term queryTerm = null;
 	
-	private jpl.Query query = null;
+	private org.jpl7.Query query = null;
 	
 	private boolean isStarted = false;
 	
@@ -67,7 +67,7 @@ public class ThreadedQuery implements Runnable {
 		this.queryString = queryString;
 	}
 	
-	public ThreadedQuery(Term term) {
+	public ThreadedQuery(org.jpl7.Term term) {
 		this.queryTerm = term;
 	}
 
@@ -92,10 +92,10 @@ public class ThreadedQuery implements Runnable {
 		// Create a query (bound to this thread)
 		try {
 			if(queryString!=null) {
-				query = new jpl.Query(queryString);
+				query = new org.jpl7.Query(queryString);
 			}
 			else if(queryTerm!=null) {
-				query = new jpl.Query(queryTerm);
+				query = new org.jpl7.Query(queryTerm);
 			}
 			else {
 				throw new RuntimeException("No query defined!");
@@ -228,12 +228,12 @@ public class ThreadedQuery implements Runnable {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Hashtable<String, Term> nextSolution() throws Exception {
-		return (Hashtable<String, Term>)runCommand(new NextSolutionCommand());
+	public java.util.Map<String, Term> nextSolution() throws Exception {
+		return (java.util.Map<String, Term>)runCommand(new NextSolutionCommand());
 	}
 
 	@SuppressWarnings("unchecked")
-	public Hashtable<String, Term>[] allSolutions() throws Exception {
-		return (Hashtable<String, Term>[])runCommand(new AllSolutionsCommand());
+	public Map<String, Term>[] allSolutions() throws Exception {
+		return (Map<String, Term>[])runCommand(new AllSolutionsCommand());
 	}
 }

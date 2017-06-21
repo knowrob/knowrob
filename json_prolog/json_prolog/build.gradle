@@ -34,7 +34,7 @@ dependencies {
   compile 'org.ros.rosjava_messages:geometry_msgs:1.10.+'
   compile 'org.knowrob.knowrob_common:knowrob_common:[0.1,)'
 
-  compile 'jpl:jpl:3.1.4-alpha'
+  compile 'jpl:jpl:7.0.1'
   compile 'net.sf.json-lib:json-lib:2.4:jdk15'
 }
 

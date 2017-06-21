@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Asil Kaan Bozcuoglu
+ * Copyright (C) 2014 Moritz Tenorth
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,16 +15,12 @@
  */
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '2.14.1'
+    gradleVersion = '2.14.1'
 }
 
 buildscript {
-  apply from: "https://github.com/rosjava/rosjava_bootstrap/raw/kinetic/buildscript.gradle"
-  dependencies {
-       classpath 'org.codehaus.groovy:groovy-backports-compat23:2.3.5'
-  }
+    apply from: "https://github.com/rosjava/rosjava_bootstrap/raw/kinetic/buildscript.gradle"
 }
-
 
 apply plugin: 'catkin'
 project.catkin.tree.generate()

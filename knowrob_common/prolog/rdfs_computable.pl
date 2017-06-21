@@ -263,22 +263,25 @@ rdfs_computable_instance_of(Instance, Class) :-
 rdfs_computable_instance_of(Instance, Class) :-
   nonvar(Class),
   var(Instance),
-  ((findall(I, rdfs_computable_sql_instance_of(I,    Class), Is), member(Instance, Is)) ;
-   (findall(I, rdfs_computable_prolog_instance_of(I, Class), Is), member(Instance, Is))).
+  findall(I, rdfs_computable_prolog_instance_of(I, Class), Is), member(Instance, Is).
+%  ((findall(I, rdfs_computable_sql_instance_of(I,    Class), Is), member(Instance, Is)) ;
+%   (findall(I, rdfs_computable_prolog_instance_of(I, Class), Is), member(Instance, Is))).
 
 % determine classes
 rdfs_computable_instance_of(Instance, Class) :-
   var(Class),
   nonvar(Instance),
-  ((findall(C, rdfs_computable_sql_instance_of(Instance,    C), Cs), member(Class, Cs));
-   (findall(C, rdfs_computable_prolog_instance_of(Instance, C), Cs), member(Class, Cs))).
+  findall(C, rdfs_computable_prolog_instance_of(Instance, C), Cs), member(Class, Cs).
+%  ((findall(C, rdfs_computable_sql_instance_of(Instance,    C), Cs), member(Class, Cs));
+%   (findall(C, rdfs_computable_prolog_instance_of(Instance, C), Cs), member(Class, Cs))).
 
 % check type
 rdfs_computable_instance_of(Instance, Class) :-
   nonvar(Class),
   nonvar(Instance),
-  ((findall(C, rdfs_computable_sql_instance_of(Instance,    C), Cs), member(Cls, Cs), rdfs_subclass_of(Cls, Class));
-   (findall(C, rdfs_computable_prolog_instance_of(Instance, C), Cs), member(Cls, Cs), rdfs_subclass_of(Cls, Class))).
+  findall(C, rdfs_computable_prolog_instance_of(Instance, C), Cs), member(Cls, Cs), rdfs_subclass_of(Cls, Class).
+%  ((findall(C, rdfs_computable_sql_instance_of(Instance,    C), Cs), member(Cls, Cs), rdfs_subclass_of(Cls, Class));
+%   (findall(C, rdfs_computable_prolog_instance_of(Instance, C), Cs), member(Cls, Cs), rdfs_subclass_of(Cls, Class))).
 
 
 
@@ -373,62 +376,64 @@ rdfs_computable_cache_frames(Property, Value, Frame) :- rdf_assert(Property, Fra
 % in our domain we have far too many individuals to consider all
 % of them at once. So restrictions should be done before.
 %
-rdfs_computable_sql_instance_of(Instance, Class) :-
+% Daniel: commented because odbc_query undefined
+%rdfs_computable_sql_instance_of(Instance, Class) :-
 
-  nonvar(Class),!,
-  atom(Class),
-  rdf_split_url(Namespace, _, Class),
+  %nonvar(Class),!,
+  %atom(Class),
+  %rdf_split_url(Namespace, _, Class),
 
-  % find computable classes
-  rdfs_computable_sql_class(Class, ComputableClass),
+  %% find computable classes
+  %rdfs_computable_sql_class(Class, ComputableClass),
 
-  % read the command
-  ( var(Instance)
-  -> rdf_has(ComputableClass,computable:'command',literal(type(_,Command)))
-  ;  rdf_has(ComputableClass,computable:'testCommand',literal(type(_,TestCommand))),
-       atom(Instance),
-       rdf_split_url(Namespace, MyInstance, Instance),
-       concat_atom(TestCommandList, '~instance~', TestCommand),
-       concat_atom(['\'', MyInstance, '\''], InstanceStr),
-       concat_atom(TestCommandList, InstanceStr, Command)
-  ),
+  %% read the command
+  %( var(Instance)
+  %-> rdf_has(ComputableClass,computable:'command',literal(type(_,Command)))
+  %;  rdf_has(ComputableClass,computable:'testCommand',literal(type(_,TestCommand))),
+       %atom(Instance),
+       %rdf_split_url(Namespace, MyInstance, Instance),
+       %concat_atom(TestCommandList, '~instance~', TestCommand),
+       %concat_atom(['\'', MyInstance, '\''], InstanceStr),
+       %concat_atom(TestCommandList, InstanceStr, Command)
+  %),
 
-  % send command to the DB
-  rdf_has(ComputableClass,computable:'user',literal(type(_,User))),
-  rdf_has(ComputableClass,computable:'password',literal(type(_,PASSWD))),
-  rdf_has(ComputableClass,computable:'database',literal(type(_,DB))),
-  odbc_connect(DB,Connection,[user(User),password(PASSWD),open(once)]),
+  %% send command to the DB
+  %rdf_has(ComputableClass,computable:'user',literal(type(_,User))),
+  %rdf_has(ComputableClass,computable:'password',literal(type(_,PASSWD))),
+  %rdf_has(ComputableClass,computable:'database',literal(type(_,DB))),
+  %odbc_connect(DB,Connection,[user(User),password(PASSWD),open(once)]),
 
-  ( var(Instance)
-  -> odbc_query(Connection, Command, row(MyInstance)),
-      % create the instance in the KB
-      rdf_split_url(Namespace, MyInstance, Instance),
-      rdf_assert(Instance, rdf:type, Class)
-   ; odbc_query(Connection, Command, row(MyInstance))).
+  %( var(Instance)
+  %-> odbc_query(Connection, Command, row(MyInstance)),
+      %% create the instance in the KB
+      %rdf_split_url(Namespace, MyInstance, Instance),
+      %rdf_assert(Instance, rdf:type, Class)
+   %; odbc_query(Connection, Command, row(MyInstance))).
 
 
 
-rdfs_computable_sql_instance_of(Instance, Class) :-
+% Daniel: commented because odbc_query undefined
+%rdfs_computable_sql_instance_of(Instance, Class) :-
 
-  nonvar(Instance),!,
-  atom(Instance),
-  rdf_split_url(_, MyInstance, Instance),
+  %nonvar(Instance),!,
+  %atom(Instance),
+  %rdf_split_url(_, MyInstance, Instance),
 
-  % find computable classes
-  rdfs_computable_sql_class(Class, ComputableClass),
+  %% find computable classes
+  %rdfs_computable_sql_class(Class, ComputableClass),
 
-  % read the command
-  rdf_has(ComputableClass,computable:'testCommand',literal(type(_,TestCommand))),
-  concat_atom(TestCommandList, '~instance~', TestCommand),
-  concat_atom(['\'', MyInstance, '\''], InstanceStr),
-  concat_atom(TestCommandList, InstanceStr, Command),
+  %% read the command
+  %rdf_has(ComputableClass,computable:'testCommand',literal(type(_,TestCommand))),
+  %concat_atom(TestCommandList, '~instance~', TestCommand),
+  %concat_atom(['\'', MyInstance, '\''], InstanceStr),
+  %concat_atom(TestCommandList, InstanceStr, Command),
 
-  % send command to the DB
-  rdf_has(ComputableClass,computable:'user',literal(type(_,User))),
-  rdf_has(ComputableClass,computable:'password',literal(type(_,PASSWD))),
-  rdf_has(ComputableClass,computable:'database',literal(type(_,DB))),
-  odbc_connect(DB,Connection,[user(User),password(PASSWD),open(once)]),
-  odbc_query(Connection, Command, row(MyInstance)).
+  %% send command to the DB
+  %rdf_has(ComputableClass,computable:'user',literal(type(_,User))),
+  %rdf_has(ComputableClass,computable:'password',literal(type(_,PASSWD))),
+  %rdf_has(ComputableClass,computable:'database',literal(type(_,DB))),
+  %odbc_connect(DB,Connection,[user(User),password(PASSWD),open(once)]),
+  %odbc_query(Connection, Command, row(MyInstance)).
 
 
 
@@ -492,42 +497,43 @@ rdfs_computable_prolog_instance_of(Instance, Class) :-
 %
 % SQLProperty implementation for rdfs_computable_triple(Property, Frame, Value)
 %
-rdfs_computable_sql_triple(Property, Frame, Value) :-
-  rdfs_computable_sql_property(Property, ComputableProperty),
-  atom(Property),
-  rdf_split_url(Namespace, _, Property),
-  ( nonvar(Frame)
-  -> rdf_has(ComputableProperty,computable:'valueSelect',literal(type(_,FrameCommand))),
-      atom(Frame),
-      rdf_split_url(_, MyFrame, Frame),
-      concat_atom(FrameCommandList, '~frame~', FrameCommand),
-      concat_atom(FrameCommandList, MyFrame, Command),
-      Row = row(X)
-  ; nonvar(Value)
-  ->  rdf_has(ComputableProperty,computable:'frameSelect',literal(type(_,ValueCommand))),
-      rdfs_computable_value_from_url(Property, Value, MyValue),
-      concat_atom(ValueCommandList, '~value~', ValueCommand),
-      concat_atom(ValueCommandList, MyValue, Command),
-      Row = row(MyFrame)
-  ;   rdf_has(ComputableProperty,computable:'frameValueSelect',literal(type(_,Command))),
-      Row = row(MyFrame,X)
-  ),
-  rdf_has(ComputableProperty,computable:'user',literal(type(_,User))),
-  rdf_has(ComputableProperty,computable:'password',literal(type(_,PASSWD))),
-  rdf_has(ComputableProperty,computable:'database',literal(type(_,DB))),
-  odbc_connect(DB,Connection,[user(User),password(PASSWD),open(once)]),
-  odbc_query(Connection, Command, Row),
-  (nonvar(Value), nonvar(Frame)
-  -> rdfs_computable_value_from_url(Property, Value, X)
-  ; true),
-  (var(Value)
-  -> rdfs_computable_value_from_url(Property, PrologValue, X),
-    rdfs_prolog_to_rdf(Property, PrologValue, Value)
-  ; true),
-  (var(Frame)
-  -> rdf_split_url(Namespace, MyFrame, PrologFrame),
-    rdfs_prolog_to_rdf(Property, PrologFrame, Frame)
-  ; true).
+% Daniel: commented because odbc_query undefined
+%rdfs_computable_sql_triple(Property, Frame, Value) :-
+  %rdfs_computable_sql_property(Property, ComputableProperty),
+  %atom(Property),
+  %rdf_split_url(Namespace, _, Property),
+  %( nonvar(Frame)
+  %-> rdf_has(ComputableProperty,computable:'valueSelect',literal(type(_,FrameCommand))),
+      %atom(Frame),
+      %rdf_split_url(_, MyFrame, Frame),
+      %concat_atom(FrameCommandList, '~frame~', FrameCommand),
+      %concat_atom(FrameCommandList, MyFrame, Command),
+      %Row = row(X)
+  %; nonvar(Value)
+  %->  rdf_has(ComputableProperty,computable:'frameSelect',literal(type(_,ValueCommand))),
+      %rdfs_computable_value_from_url(Property, Value, MyValue),
+      %concat_atom(ValueCommandList, '~value~', ValueCommand),
+      %concat_atom(ValueCommandList, MyValue, Command),
+      %Row = row(MyFrame)
+  %;   rdf_has(ComputableProperty,computable:'frameValueSelect',literal(type(_,Command))),
+      %Row = row(MyFrame,X)
+  %),
+  %rdf_has(ComputableProperty,computable:'user',literal(type(_,User))),
+  %rdf_has(ComputableProperty,computable:'password',literal(type(_,PASSWD))),
+  %rdf_has(ComputableProperty,computable:'database',literal(type(_,DB))),
+  %odbc_connect(DB,Connection,[user(User),password(PASSWD),open(once)]),
+  %odbc_query(Connection, Command, Row),
+  %(nonvar(Value), nonvar(Frame)
+  %-> rdfs_computable_value_from_url(Property, Value, X)
+  %; true),
+  %(var(Value)
+  %-> rdfs_computable_value_from_url(Property, PrologValue, X),
+    %rdfs_prolog_to_rdf(Property, PrologValue, Value)
+  %; true),
+  %(var(Frame)
+  %-> rdf_split_url(Namespace, MyFrame, PrologFrame),
+    %rdfs_prolog_to_rdf(Property, PrologFrame, Frame)
+  %; true).
 
 
 %% rdfs_computable_prolog_triple(?Property, ?Frame, ?Value).

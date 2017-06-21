@@ -514,7 +514,7 @@ jpl_matrix_list(JplMat, [X00, X01, X02, X03,
 
 
 
-mng_object_pose_at_time(Object, Instant, Pose, I) :-
+mng_object_pose_at_time(Object, Instant, Pose, Instant) :-
   nonvar(Instant),
   rdf_has(Object, srdl2comp:'urdfName', literal(UrdfName)),
   \+ rdfs_individual_of(Object, knowrob:'TemporalPart'),
@@ -617,15 +617,18 @@ assert_object_perception(Object, Designator) :-
   mng_designator_location(DesigJava, DesigPose),
   
   % assert perceived object properties
-  create_fluent(Object, Fluent, I),
   create_pose(mat(DesigPose), Pose),
-  rdf_assert(Fluent, knowrob:designator, Designator),
   
   % TODO: more generic object property handling
   %         - consider all keys that can be mapped to properties
   % TODO: assert bounding box, shape, color fluent
-  fluent_assert(Fluent, rdf:type, nontemporal(TypeIri)),
-  fluent_assert(Fluent, knowrob:pose, nontemporal(Pose)).
+  assert_temporal_part(Object, rdf:type, nontemporal(TypeIri), I),
+  assert_temporal_part(Object, knowrob:pose, nontemporal(Pose), I),
+  % TODO: revisit this, for example live perceptions are not supported atm
+  once((
+  temporal_part(Object,TemporalPart,TemporalExtend),
+  interval_during(I,TemporalExtend), % TODO check equality
+  rdf_assert(TemporalPart, knowrob:designator, Designator))).
 
 
 mng_desig_object(Designator, Object) :-

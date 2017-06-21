@@ -32,7 +32,7 @@ package org.knowrob.json_prolog;
 import java.util.HashMap;
 import java.util.Vector;
 
-import jpl.Term;
+import org.jpl7.Term;
 
 import org.knowrob.json_prolog.query.JSONQuery;
 import org.knowrob.json_prolog.query.JSONQuery.InvalidJSONQuery;

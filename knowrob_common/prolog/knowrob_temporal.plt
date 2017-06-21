@@ -31,8 +31,7 @@
 
 :- rdf_db:rdf_register_prefix(knowrob_temporal_test, 'http://knowrob.org/kb/knowrob_temporal_test.owl#', [keep(true)]).
 
-:- rdf_meta fluent_begin(r,r,t,r),
-            fluent_test_assert(r,r,t).
+:- rdf_meta temporal_part_test_assert(r,r,t).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Interval algebra
@@ -73,78 +72,66 @@ test(interval_during10, [fail]) :-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Fluents
 
-fluent_begin(S,P,O,Time) :-
-  create_fluent(S, TemporalPart0, Time),
-  fluent_assert(TemporalPart0, P, O),
-  (  rdf_has(P, rdf:type, owl:'ObjectProperty')
-  -> (
-      owl_has(O, knowrob:temporalParts, TemporalPart1),
-      rdf_has(TemporalPart0, P, TemporalPart1)
-  ) ; (
-      rdf_has(TemporalPart0, P, O)
-  )),
-  interval(TemporalPart0, [Time]).
-
-fluent_test_assert(S,P,[O1,O2]) :-
-  fluent_begin(S, P, O1, 0.0),
+temporal_part_test_assert(S,P,[O1,O2]) :-
+  assert_temporal_part(S, P, O1, 0.0),
   %% Assert [?P, 10.0, during, [an, interval, [0.0]]]
-  fluent_has(S, P, O1),
+  temporal_part_has(S, P, O1),
   holds(S, P, O1, 20.0),
   holds(S, P, O1, [0.0,60.0]),
   %% Assert [?P, 0.0, during, [an, interval, [0.0,20.0]]],
-  fluent_assert_end(S, P, 20.0),
-  fluent_has(S, P, O1),
+  assert_temporal_part_end(S, P, O1, 20.0),
+  temporal_part_has(S, P, O1),
   holds(S, P, O1, 20.0),
   holds(S, P, O1, [0.0,20.0]),
   not( holds(S, P, O1, [0.0,60.0]) ),
   %% Assert [?P, 15.0, during, [an, interval, [20.0]]]
-  fluent_begin(S, P, O2, 20.0),
-  fluent_has(S, P, O2), !.
+  assert_temporal_part(S, P, O2, 20.0),
+  temporal_part_has(S, P, O2), !.
 
-test(fluent_assert_data) :-
+test(temporal_part_assert_data) :-
   Value1_=literal(type(xsd:'float',10.0)), rdf_global_term(Value1_, Value1),
   Value2_=literal(type(xsd:'float',15.0)), rdf_global_term(Value2_, Value2),
   rdf_assert(knowrob_temporal_test:'Dough_vs5hgsg0', rdf:type, knowrob:'Dough'),
-  fluent_test_assert(knowrob_temporal_test:'Dough_vs5hgsg0', knowrob:temperatureOfObject, [Value1,Value2]).
+  temporal_part_test_assert(knowrob_temporal_test:'Dough_vs5hgsg0', knowrob:temperatureOfObject, [Value1,Value2]).
 
-test(fluent_assert_object) :-
+test(temporal_part_assert_object) :-
   Value1_=knowrob_temporal_test:'Container_vs5hgsg0', rdf_global_term(Value1_, Value1),
   Value2_=knowrob_temporal_test:'Container_SFmvd9df', rdf_global_term(Value2_, Value2),
   rdf_assert(knowrob_temporal_test:'Dough_vs5hgsg0', rdf:type, knowrob:'Dough'),
   rdf_assert(Value1, rdf:type, knowrob:'Container'),
   rdf_assert(Value2, rdf:type, knowrob:'Container'),
-  fluent_test_assert(knowrob_temporal_test:'Dough_vs5hgsg0', knowrob:insideOf, [Value1,Value2]).
+  temporal_part_test_assert(knowrob_temporal_test:'Dough_vs5hgsg0', knowrob:insideOf, [Value1,Value2]).
 
 
-test(fluent_has, [nondet]) :-
-  fluent_has(knowrob_temporal_test:'Dough_vs5hgsg0', knowrob:temperatureOfObject,
+test(temporal_part_has, [nondet]) :-
+  temporal_part_has(knowrob_temporal_test:'Dough_vs5hgsg0', knowrob:temperatureOfObject,
              literal(type(xsd:'float',10.0)), I),
   interval(I, [0.0,20.0]).
 
-test(fluent_has_O_unbound, [nondet]) :-
-  fluent_has(knowrob_temporal_test:'Dough_vs5hgsg0', knowrob:temperatureOfObject, O, I),
+test(temporal_part_has_O_unbound, [nondet]) :-
+  temporal_part_has(knowrob_temporal_test:'Dough_vs5hgsg0', knowrob:temperatureOfObject, O, I),
   interval(I, [0.0,20.0]),
   O = literal(type(_,10.0)).
 
-test(fluent_has_S_P_O_unbound, [nondet]) :-
-  fluent_has(S, P, O, I),
+test(temporal_part_has_S_P_O_unbound, [nondet]) :-
+  temporal_part_has(S, P, O, I),
   rdf_equal(S, knowrob_temporal_test:'Dough_vs5hgsg0'),
   rdf_equal(P, knowrob:'temperatureOfObject'),
   interval(I, [0.0,20.0]),
   O = literal(type(_,10.0)).
 
-test(fluent_has_type) :-
-  fluent_has(knowrob_temporal_test:'EnduringThing-Localized_GSFgh4u6', rdf:type, Type),
+test(temporal_part_has_type) :-
+  temporal_part_has(knowrob_temporal_test:'EnduringThing-Localized_GSFgh4u6', rdf:type, Type),
   rdf_equal(Type, knowrob:'Cup'), !.
 
-test(fluent_has_type_holds) :-
+test(temporal_part_has_type_holds) :-
   holds(knowrob_temporal_test:'EnduringThing-Localized_GSFgh4u6', rdf:type, knowrob:'Cup'), !.
 
-test(fluent_has_type_descr) :-
+test(temporal_part_has_type_descr) :-
   entity(knowrob_temporal_test:'EnduringThing-Localized_GSFgh4u6', Descr),
   entity_has(Descr, type, cup), !.
 
-test(fluent_type_match) :-
+test(temporal_part_type_match) :-
   entity(knowrob_temporal_test:'EnduringThing-Localized_GSFgh4u6', [an, object, [type, cup]]), !.
 
 

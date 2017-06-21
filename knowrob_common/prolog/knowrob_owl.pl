@@ -32,14 +32,17 @@
 
 :- module(knowrob_owl,
     [
+      entity_description/1,
       entity/2,
       entity_has/3,
       entity_type/2,
       entity_compute/2,
       entity_assert/2,
+      entity_retract/1,
       entity_iri/3,
       entity_write/1,
       entity_format/2,
+      with_owl_description/3,
       class_properties/3,
       class_properties_some/3,
       class_properties_all/3,
@@ -77,12 +80,15 @@
 :- multifile entity_type/2,
              entity_compute/2.
 
-:- rdf_meta entity(r,?),
+:- rdf_meta entity_description(t),
+            entity(r,?),
             entity_property(+,?,?),
             entity_type(r,?),
             entity_compute(r,?),
             entity_assert(r,?),
+            entity_retract(r),
             entity_iri(r,r),
+            with_owl_description(r,r,t),
             class_properties(r,r,t),
             class_properties_some(r,r,t),
             class_properties_all(r,r,t),
@@ -224,7 +230,6 @@ create_restr(Class, Prop, Value, RestrType, SourceRef, Restr) :-
   rdf_assert(Restr, owl:'onProperty', Prop, SourceRef),
   rdf_assert(Restr, RestrType, Value, SourceRef).
 
-
 % TODO: creat_* functions into knowrob_owl_factory module
 %% create_timepoint(+TimeStamp, -TimePoint) is det.
 %
@@ -243,6 +248,10 @@ create_timepoint(TimeStamp, TimePoint) :-
 % Create a interval-identifier for the given start and end time stamps
 %
 %
+
+create_interval(Start, TimeInterval) :-
+  number(Start),
+  create_interval([Start], TimeInterval), !.
 
 create_interval([Start], TimeInterval) :-
   atom(Start), time_term(Start, Start_),
@@ -570,6 +579,15 @@ comp_designatedThing(Designator, Obj) :-
 % TODO: implement
 concept(_, _) :- fail.
 
+%% entity_description(+Descr) is det.
+%
+% Type checking an entity description.
+%
+% @param Descr An entity description or something else
+%
+entity_description([A,Type|_]) :-
+  entity_type([A,Type], _).
+
 %% entity(?Entity, +Descr) is nondet.
 %
 % Query for entity matching an entity description or build
@@ -809,7 +827,7 @@ entity_assert(Entity, [A,Type|Descr]) :-
   nonvar(Type),
   entity_type([A,Type], TypeIri_),
   (( entity_has(Descr,type,AType),
-     entity_iri(AType, ATypeIri),
+     entity_iri(ATypeIri, AType, camelcase),
      rdf_reachable(ATypeIri, rdfs:subClassOf, TypeIri_) )
   -> TypeIri = ATypeIri
   ;  TypeIri = TypeIri_ ),
@@ -848,17 +866,52 @@ entity_assert(Entity, [[Key,Value,during,IntervalDescr]|Descr]) :-
   (  rdf_has(PropIri, rdf:type, owl:'DatatypeProperty')
   ->  ( % data property
       rdf_phas(PropIri, rdfs:range, Range), % FIXME: what if range unspecified
-      create_fluent(Entity, Fluent, Interval),
-      fluent_assert(Fluent, PropIri, literal(type(Range,Value)))
+      assert_temporal_part(Entity, PropIri, literal(type(Range,Value)), Interval)
   ) ; ( % nested entity
       rdf_has(PropIri, rdf:type, owl:'ObjectProperty'),
       entity(ValueEntity, Value),
-      create_fluent(Entity, Fluent, Interval),
-      fluent_assert(Fluent, PropIri, ValueEntity)
+      assert_temporal_part(Entity, PropIri, ValueEntity, Interval)
   )),
   entity_assert(Entity, Descr).
 
 entity_assert(_, []).
+
+%% entity_retract(+Entity) is nondet.
+%
+% Assert entity description in RDF triple store as new individual.
+%
+% @param Entity IRI of matching entity
+%
+entity_retract(Entity) :-
+  % Retract without recursion
+  forall( owl_has(Entity, knowrob:temporalParts, TemporalPart),
+          rdf_retractall(TemporalPart, _, _)),
+  rdf_retractall(Entity, _, _).
+
+
+%% with_owl_description(+Description, ?Individual, +Goal) is nondet.
+%
+% Ensures entity description is asserted and binds the name to
+% Individual before goal is called.
+% Temporary assertions are retracted in a cleanup goal.
+%
+% @param Description Entity description or individual
+% @param Individual Entity individual
+% Goal The goal with OWL entity asserted
+%
+with_owl_description(Description, Individual, Goal) :-
+  atom(Description)
+  -> (
+    Individual = Description,
+    call( Goal )
+  ) ; (
+    is_list(Description),
+    setup_call_cleanup(
+      entity_assert(Individual, Description),
+      call( Goal ),
+      entity_retract(Individual)
+    )
+  ).
 
 
 %% entity_format(+Descr, -String) is nondet.
@@ -975,7 +1028,7 @@ entity_properties([['http://www.w3.org/2000/01/rdf-schema#subClassOf',_]|Tail], 
 
 entity_properties([['http://knowrob.org/kb/knowrob.owl#temporalParts',Fluent]|Tail], Descr) :-
   findall([Key,Value,during,IntervalDescr], (
-    fluent_has(Fluent, PropIri, PropValue, IntervalIri),
+    temporal_part_has(Fluent, PropIri, PropValue, IntervalIri),
     ( rdf_equal(PropIri, rdf:type)
     -> (
       Key=type,
@@ -1059,7 +1112,7 @@ entity_head(Entity, _, Descr, TypeIri) :-
   %current_time(Instant),
   %once((
   %  rdfs_individual_of(Entity, TypeIri);
-  %  fluent_has(Entity, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', TypeIri, Instant);
+  %  temporal_part_has(Entity, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', TypeIri, Instant);
   %  Entity = TypeIri )),
   
   findall(TypeIri, (
@@ -1130,6 +1183,7 @@ entity_iri(Iri, Descr, Formatter) :-
 entity_iri(Iri, Description, Formatter) :-
   var(Iri),
   entity_ns(Description, NS, NameUnderscore),
+  % FIXME: call falls if NameUnderscore is in fact Camelcase
   call(Formatter, NameUnderscore, Name),
   atom_concat(NS, Name, Iri).
 

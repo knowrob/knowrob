@@ -1,39 +1,24 @@
 <?xml version="1.0"?>
-
-
-<!DOCTYPE rdf:RDF [
-    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
-    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
-    <!ENTITY SRDL "http://knowrob.org/kb/SRDL.owl#" >
-    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
-    <!ENTITY knowrob "http://knowrob.org/kb/knowrob.owl#" >
-    <!ENTITY roboearth "http://www.roboearth.org/kb/roboearth.owl#">
-    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
-    <!ENTITY srdl2-cap "http://knowrob.org/kb/srdl2-cap.owl#" >
-    <!ENTITY srdl2-action "http://knowrob.org/kb/srdl2-action.owl#" >
-    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
-]>
-
-
 <rdf:RDF xmlns="http://knowrob.org/kb/srdl2-action.owl#"
      xml:base="http://knowrob.org/kb/srdl2-action.owl"
-     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
      xmlns:SRDL="http://knowrob.org/kb/SRDL.owl#"
      xmlns:srdl2-cap="http://knowrob.org/kb/srdl2-cap.owl#"
-     xmlns:owl="http://www.w3.org/2002/07/owl#"
-     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:roboearth="http://www.roboearth.org/kb/roboearth.owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:srdl2-action="http://knowrob.org/kb/srdl2-action.owl#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/srdl2-action.owl">
         <owl:imports rdf:resource="package://knowrob_srdl/owl/srdl2-cap.owl"/>
     </owl:Ontology>
+    
 
 
-
-    <!--
+    <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Object Properties
@@ -41,16 +26,16 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-
+    
 
 
     <!-- http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability -->
 
-    <owl:ObjectProperty rdf:about="&srdl2-cap;dependsOnCapability"/>
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
+    
 
 
-
-    <!--
+    <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
     // Classes
@@ -58,279 +43,559 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-
+    
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#CarryingWhileLocomoting -->
 
-    <owl:Class rdf:about="&knowrob;CarryingWhileLocomoting">
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CarryingWhileLocomoting">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-cap;dependsOnCapability"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-cap;BaseMotionCapability"/>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#BaseMotionCapability"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-
+    
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#ClosingABottle -->
 
-    <owl:Class rdf:about="&knowrob;ClosingABottle">
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ClosingABottle">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-cap;dependsOnCapability"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-cap;ClosingABottleCapability"/>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#ClosingABottleCapability"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
+    
 
-    <!-- http://knowrob.org/kb/knowrob.owl#re_explore -->
-
-    <owl:Class rdf:about="&roboearth;re_explore">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-cap;dependsOnCapability"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-cap;VisualSLAMCapability"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
 
     <!-- http://knowrob.org/kb/knowrob.owl#ClosingACupboard -->
 
-    <owl:Class rdf:about="&knowrob;ClosingACupboard">
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ClosingACupboard">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-cap;dependsOnCapability"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-cap;ClosingADoorCapability"/>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#ClosingADoorCapability"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-
+    
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#ClosingADoor -->
 
-    <owl:Class rdf:about="&knowrob;ClosingADoor">
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ClosingADoor">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-cap;dependsOnCapability"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-cap;ClosingADoorCapability"/>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#ClosingADoorCapability"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
+    
 
-    <!-- http://knowrob.org/kb/knowrob.owl#Perceiving -->
-
-    <owl:Class rdf:about="&knowrob;Perceiving">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-cap;dependsOnCapability"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-cap;ObjectRecognitionCapability"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
 
     <!-- http://knowrob.org/kb/knowrob.owl#ClosingADrawer -->
 
-    <owl:Class rdf:about="&knowrob;ClosingADrawer">
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ClosingADrawer">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-cap;dependsOnCapability"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-cap;ClosingADrawerCapability"/>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#ClosingADrawerCapability"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-
+    
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#ClosingAGripper -->
 
-    <owl:Class rdf:about="&knowrob;ClosingAGripper">
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ClosingAGripper">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-cap;dependsOnCapability"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-cap;GripperMotionCapability"/>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#GripperMotionCapability"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
+    
 
-    <!-- http://knowrob.org/kb/knowrob.owl#ClosingAGripper -->
 
-    <owl:Class rdf:about="&knowrob;OpeningAGripper">
+    <!-- http://knowrob.org/kb/knowrob.owl#Driving -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Driving">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-cap;dependsOnCapability"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-cap;GripperMotionCapability"/>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#DrivingCapability"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
+    
 
+
+    <!-- http://knowrob.org/kb/knowrob.owl#GeneralizedTransfer -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#GeneralizedTransfer"/>
+    
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#GraspingSomething -->
 
-    <owl:Class rdf:about="&knowrob;GraspingSomething">
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#GraspingSomething">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-cap;dependsOnCapability"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-cap;GraspingCapability"/>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#GraspingCapability"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
+    
 
+
+    <!-- http://knowrob.org/kb/knowrob.owl#LookingForSomething -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#LookingForSomething">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Mounting-Installing -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Mounting-Installing"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#MovementThroughAir -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MovementThroughAir">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#AirLocomotionCapability"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#OpeningAGripper -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#OpeningAGripper">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#GripperMotionCapability"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Perceiving -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Perceiving">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#PerceptionCapability"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#PickingUpAnObject -->
 
-    <owl:Class rdf:about="&knowrob;PickingUpAnObject">
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PickingUpAnObject">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-cap;dependsOnCapability"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-cap;PickingUpAnObjectCapability"/>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#PickingUpAnObjectCapability"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-
+    
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#Pouring-MakingSomethingAvailable -->
 
-    <owl:Class rdf:about="&knowrob;Pouring-MakingSomethingAvailable">
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pouring-MakingSomethingAvailable">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-cap;dependsOnCapability"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-cap;PouringSomethingCapability"/>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#PouringSomethingCapability"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-
+    
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#Pouring-PourFromOneContainerIntoAnother -->
 
-    <owl:Class rdf:about="&knowrob;Pouring-PourFromOneContainerIntoAnother">
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Pouring-PourFromOneContainerIntoAnother">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-cap;dependsOnCapability"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-cap;PouringSomethingCapability"/>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#PouringSomethingCapability"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-
+    
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#PuttingDownAnObject -->
 
-    <owl:Class rdf:about="&knowrob;PuttingDownAnObject">
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PuttingDownAnObject">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-cap;dependsOnCapability"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-cap;PuttingDownAnObjectCapability"/>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#PuttingDownAnObjectCapability"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
-
+    
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#Reaching -->
 
-    <owl:Class rdf:about="&knowrob;Reaching">
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Reaching">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-cap;dependsOnCapability"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-cap;ArmMotionCapability"/>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#ArmMotionCapability"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
+    
 
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TransferIn -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TransferIn"/>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TransferOut -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#TransferOut"/>
+    
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#Translation-LocationChange -->
 
-    <owl:Class rdf:about="&knowrob;Translation-LocationChange">
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Translation-LocationChange">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&srdl2-cap;dependsOnCapability"/>
-                <owl:someValuesFrom rdf:resource="&srdl2-cap;BaseMotionCapability"/>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#LocomotionCapability"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
+    
 
+
+    <!-- http://knowrob.org/kb/knowrob.owl#VisualPerception -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#VisualPerception">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-action.owl#InstallingComponent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-action.owl#InstallingComponent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TransferIn"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-action.owl#ModifyingComponent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#InstallingComponentCapability"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-action.owl#InstallingHardwareComponent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-action.owl#InstallingHardwareComponent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Mounting-Installing"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-action.owl#InstallingComponent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#InstallingHardwareCapability"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-action.owl#InstallingSoftwareComponent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-action.owl#InstallingSoftwareComponent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-action.owl#InstallingComponent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#InstallingSoftwareCapability"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-action.owl#ModifyingComponent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-action.owl#ModifyingComponent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#GeneralizedTransfer"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-action.owl#MountingARobot -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-action.owl#MountingARobot">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-action.owl#InstallingHardwareComponent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-action.owl#RepairingComponent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-action.owl#RepairingComponent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-action.owl#ModifyingComponent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-action.owl#UninstallingComponent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-action.owl#UninstallingComponent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TransferOut"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-action.owl#ModifyingComponent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#UninstallingComponentCapability"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-action.owl#UninstallingHardwareComponent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-action.owl#UninstallingHardwareComponent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-action.owl#UninstallingComponent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#UninstallingHardwareCapability"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-action.owl#UninstallingSoftwareComponent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-action.owl#UninstallingSoftwareComponent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-action.owl#UninstallingComponent"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#UninstallingSoftwareCapability"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-action.owl#UnmountingARobot -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-action.owl#UnmountingARobot">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-action.owl#UninstallingHardwareComponent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-action.owl#UpdatingSoftwareComponent -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-action.owl#UpdatingSoftwareComponent">
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#TransferIn"/>
+        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-action.owl#ModifyingComponent"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-cap.owl#AirLocomotionCapability -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#AirLocomotionCapability"/>
+    
 
 
     <!-- http://knowrob.org/kb/srdl2-cap.owl#ArmMotionCapability -->
 
-    <owl:Class rdf:about="&srdl2-cap;ArmMotionCapability"/>
-
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#ArmMotionCapability"/>
+    
 
 
     <!-- http://knowrob.org/kb/srdl2-cap.owl#BaseMotionCapability -->
 
-    <owl:Class rdf:about="&srdl2-cap;BaseMotionCapability"/>
-
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#BaseMotionCapability"/>
+    
 
 
     <!-- http://knowrob.org/kb/srdl2-cap.owl#ClosingABottleCapability -->
 
-    <owl:Class rdf:about="&srdl2-cap;ClosingABottleCapability"/>
-
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#ClosingABottleCapability"/>
+    
 
 
     <!-- http://knowrob.org/kb/srdl2-cap.owl#ClosingADoorCapability -->
 
-    <owl:Class rdf:about="&srdl2-cap;ClosingADoorCapability"/>
-
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#ClosingADoorCapability"/>
+    
 
 
     <!-- http://knowrob.org/kb/srdl2-cap.owl#ClosingADrawerCapability -->
 
-    <owl:Class rdf:about="&srdl2-cap;ClosingADrawerCapability"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#ClosingADrawerCapability"/>
+    
 
+
+    <!-- http://knowrob.org/kb/srdl2-cap.owl#DrivingCapability -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#DrivingCapability"/>
+    
 
 
     <!-- http://knowrob.org/kb/srdl2-cap.owl#GraspingCapability -->
 
-    <owl:Class rdf:about="&srdl2-cap;GraspingCapability"/>
-
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#GraspingCapability"/>
+    
 
 
     <!-- http://knowrob.org/kb/srdl2-cap.owl#GripperMotionCapability -->
 
-    <owl:Class rdf:about="&srdl2-cap;GripperMotionCapability"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#GripperMotionCapability"/>
+    
 
 
+    <!-- http://knowrob.org/kb/srdl2-cap.owl#InstallingComponentCapability -->
 
-    <!-- http://knowrob.org/kb/srdl2-cap.owl#PickingUpAnObjectCapability -->
-
-    <owl:Class rdf:about="&srdl2-cap;PickingUpAnObjectCapability"/>
-
-
-
-    <!-- http://knowrob.org/kb/srdl2-cap.owl#PouringSomethingCapability -->
-
-    <owl:Class rdf:about="&srdl2-cap;PouringSomethingCapability"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#InstallingComponentCapability"/>
+    
 
 
+    <!-- http://knowrob.org/kb/srdl2-cap.owl#InstallingHardwareCapability -->
 
-    <!-- http://knowrob.org/kb/srdl2-cap.owl#PuttingDownAnObjectCapability -->
-
-    <owl:Class rdf:about="&srdl2-cap;PuttingDownAnObjectCapability"/>
-
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#InstallingHardwareCapability"/>
+    
 
 
-    <!-- http://knowrob.org/kb/srdl2-cap.owl#VisualSLAMCapability -->
+    <!-- http://knowrob.org/kb/srdl2-cap.owl#InstallingSoftwareCapability -->
 
-    <owl:Class rdf:about="&srdl2-cap;VisualSLAMCapability"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#InstallingSoftwareCapability"/>
+    
 
+
+    <!-- http://knowrob.org/kb/srdl2-cap.owl#LocomotionCapability -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#LocomotionCapability"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-cap.owl#ObjectRecognitionCapability -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#ObjectRecognitionCapability"/>
+    
 
 
     <!-- http://knowrob.org/kb/srdl2-cap.owl#PerceptionCapability -->
 
-    <owl:Class rdf:about="&srdl2-cap;ObjectRecognitionCapability"/>
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#PerceptionCapability"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-cap.owl#PickingUpAnObjectCapability -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#PickingUpAnObjectCapability"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-cap.owl#PouringSomethingCapability -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#PouringSomethingCapability"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-cap.owl#PuttingDownAnObjectCapability -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#PuttingDownAnObjectCapability"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-cap.owl#UninstallingComponentCapability -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#UninstallingComponentCapability"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-cap.owl#UninstallingHardwareCapability -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#UninstallingHardwareCapability"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-cap.owl#UninstallingSoftwareCapability -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#UninstallingSoftwareCapability"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#VisualPerceptionCapability"/>
+    
+
+
+    <!-- http://knowrob.org/kb/srdl2-cap.owl#VisualSLAMCapability -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-cap.owl#VisualSLAMCapability"/>
+    
+
+
+    <!-- http://www.roboearth.org/kb/roboearth.owl#re_explore -->
+
+    <owl:Class rdf:about="http://www.roboearth.org/kb/roboearth.owl#re_explore">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#dependsOnCapability"/>
+                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-cap.owl#VisualSLAMCapability"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
 </rdf:RDF>
 
 
 
-<!-- Generated by the OWL API (version 3.1.0.20069) http://owlapi.sourceforge.net -->
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
 

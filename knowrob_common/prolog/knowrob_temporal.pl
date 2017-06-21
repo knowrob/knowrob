@@ -31,6 +31,8 @@
 
 :- module(knowrob_temporal,
     [
+      owl_individual_of_during/3,
+      owl_individual_of_during/2,
       holds/1,
       holds/2,
       holds/3,
@@ -48,13 +50,14 @@
       interval_finishes/2,
       interval_overlaps/2,
       interval_during/2,
-      create_fluent/2,
-      create_fluent/3,
-      fluent_assert/3,
-      fluent_has/3,
-      fluent_has/4,
-      fluent_assert_end/3,
-      fluent_assert_end/2
+      assert_temporal_part/3,
+      assert_temporal_part/4,
+      assert_temporal_part_end/4,
+      assert_temporal_part_end/3,
+      current_temporal_part/2,
+      temporal_part/3,
+      temporal_part_has/3,
+      temporal_part_has/4
     ]).
 
 :- use_module(library('semweb/rdf_db')).
@@ -65,7 +68,9 @@
 
 % define predicates as rdf_meta predicates
 % (i.e. rdf namespaces are automatically expanded)
-:- rdf_meta holds(t),
+:- rdf_meta owl_individual_of_during(r,r,?),
+            owl_individual_of_during(r,r),
+            holds(t),
             holds(t,?),
             holds(r,r,t),
             holds(r,r,t,?),
@@ -82,18 +87,149 @@
             interval_finishes(?,?),
             interval_overlaps(?,?),
             interval_during(?,?),
-            fluent_has(r,r,t,?),
-            fluent_has(r,r,t),
-            create_fluent(r,t),
-            create_fluent(r,r,t),
-            fluent_assert(r,r,t),
-            fluent_assert_end(r,r,r),
-            fluent_assert_end(r,r).
+            current_temporal_part(r,r),
+            assert_temporal_part(r,r,r,r),
+            assert_temporal_part(r,r,r),
+            assert_temporal_part_end(r,r,r,r),
+            assert_temporal_part_end(r,r,r),
+            temporal_part(r,r,t),
+            temporal_part_has(r,r,r),
+            temporal_part_has(r,r,r,t).
 
 % define holds as meta-predicate and allow the definitions
 % to be in different source files
 :- meta_predicate holds(0, ?, ?, ?, ?).
 :- multifile holds/4.
+
+
+since_ever(Interval) :- (nonvar(Interval) ; create_interval([0.0], Interval)), !.
+during_temporal_extend(I0, I1) :- var(I0), I0 = I1, !.
+during_temporal_extend(I0, I1) :- interval_during(I0, I1).
+
+
+rdfs_individual_of_during(Resource, Description, Interval) :-
+  nonvar(Resource),
+  (  rdfs_individual_of(Resource, Description),
+     since_ever(Interval)
+  ) ; (
+     rdf_has(Resource, knowrob:temporalParts, X),
+     rdfs_individual_of(X, Description),
+     rdf_has(X, knowrob:temporalExtend, TemporalExtend),
+     during_temporal_extend(Interval, TemporalExtend)
+  ),
+  \+ rdf_equal(Description, knowrob:'TemporalPart').
+
+% TODO DB: support computable rdf:type property?
+
+%% owl_individual_of_during(?Resource, ?Description, ?Interval)
+%
+% Temporal reasoning over class membership.
+%
+owl_individual_of_during(Resource, 'http://www.w3.org/2002/07/owl#Thing', Interval) :-
+  ( atom(Resource) -> true ; rdf_subject(Resource) ), since_ever(Interval).
+
+owl_individual_of_during(_, 'http://www.w3.org/2002/07/owl#Nothing', _) :- fail. %!, MT 16032011
+  
+owl_individual_of_during(Resource, Description, Interval) :- % RDFS + SWRL
+  nonvar(Resource), nonvar(Description),
+  ( rdfs_individual_of_during(Resource, Description, Interval) ;
+  ( owl_subclass_of(Class, Description),
+    swrl:swrl_holds(Resource, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', Class, Interval)
+  )), !.
+  
+owl_individual_of_during(Resource, Description, I0) :- % RDFS
+  var(Resource), nonvar(Description),
+  rdfs_individual_of(X, Description),
+  (  rdf_has(X, knowrob:temporalExtend, I1)
+  -> during_temporal_extend(I0, I1),
+     rdf_has(Resource, knowrob:temporalParts, X)
+  ;  Resource = X
+  ).
+
+owl_individual_of_during(Resource, Description, Interval) :- % SWRL
+  var(Resource), nonvar(Description),
+  owl_subclass_of(Class, Description),
+  swrl:swrl_holds(Resource, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', Class, Interval).
+  
+owl_individual_of_during(Resource, Description, Interval) :- % RDFS + SWRL
+  nonvar(Resource), var(Description),
+  bagof(C, ((
+    rdfs_individual_of_during(Resource, Class, Interval) ;
+    swrl:swrl_holds(Resource, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', Class, Interval) ),
+    owl_subclass_of(Class, C)
+  ), Cs),
+  member(Description, Cs).
+
+owl_individual_of_during(Resource, Class, Interval) :-
+  nonvar(Class), % MT 03122014 -- does not allow generic classification of instances any more, but avoids search through all equivalents of all classes whenever Class is unbound
+  rdfs_individual_of(Class, owl:'Class'),
+  (   rdf_has(Class, owl:equivalentClass, EQ)
+  ->  owl_individual_of_during(Resource, EQ, Interval)
+  ;   rdfs_individual_of(Class, owl:'Restriction')
+  ->  owl_satisfies_restriction_during(Resource, Class, Interval)
+  ;   owl_individual_of_description(Resource, Class),
+      findall(SC, rdf_has(Class, rdfs:subClassOf, SC), SuperClasses),
+      owl_individual_of_all_during(SuperClasses, Resource, Interval)
+  ).
+
+owl_individual_of_during(Resource, Description, _) :- % RDFS
+  owl_individual_from_range(Resource, Description).
+
+owl_individual_of_during(Resource, Description) :-
+  current_time(Now),
+  owl_individual_of_during(Resource, Description, Now).
+
+
+owl_individual_of_all_during([], _, _).
+owl_individual_of_all_during([C|T], Resource, I) :-
+	owl_individual_of_during(Resource, C, I),
+	owl_individual_of_all_during(T, Resource, I).
+
+
+owl_satisfies_restriction_during(Resource, Restriction, Interval) :-
+  rdf_has(Restriction, owl:onProperty, Property),
+  (   rdf_has(Restriction, owl:hasValue, Value)
+  ->  holds(Resource, Property, Value, Interval)
+  ;   rdf_has(Restriction, owl:allValuesFrom, Class)
+  ->  setof(V, holds(Resource, Property, V, Interval), Vs),
+      owl_individual_of(Vs, Class)
+  ;   rdf_has(Restriction, owl:someValuesFrom, Class)
+  ->  holds(Resource, Property, Value, Interval),
+      owl_individual_of(Value, Class)
+  ;   rdf_subject(Resource)
+  ),
+  owl_satisfies_cardinality_during(Resource, Restriction, Interval).
+
+owl_satisfies_cardinality_during(Resource, Restriction, Interval) :-
+  rdf_has(Restriction, owl:onProperty, Property),
+  owl_satisfies_cardinality_during(Resource, Property, Restriction, Interval).
+owl_satisfies_cardinality_during(Resource, Property, Restriction, Interval) :-
+  rdf_has(Restriction, owl:cardinality, literal(Atom)), !,
+  non_negative_int(Atom, Card),
+  findall(V, holds(Resource, Property, V, Interval), Vs0),
+  sort(Vs0, Vs),			% remove duplicates
+  length(Vs, Card).
+owl_satisfies_cardinality_during(Resource, Property, Restriction, Interval) :-
+  rdf_has(Restriction, owl:minCardinality, literal(MinAtom)),
+  non_negative_int(MinAtom, Min), !,
+  findall(V, holds(Resource, Property, V, Interval), Vs0),
+  sort(Vs0, Vs),			% remove duplicates
+  length(Vs, Count),
+  Count >= Min,
+  (   rdf_has(Restriction, owl:maxCardinality, literal(MaxAtom)),
+      atom_number(MaxAtom, Max)
+  ->  Count =< Max
+  ;   true
+  ).
+owl_satisfies_cardinality_during(Resource, Property, Restriction, Interval) :-
+  rdf_has(Restriction, owl:maxCardinality, literal(MaxAtom)),
+  non_negative_int(MaxAtom, Max), !,
+  findall(V, holds(Resource, Property, V, Interval), Vs0),
+  sort(Vs0, Vs),			% remove duplicates
+  length(Vs, Count),
+  Count =< Max.
+owl_satisfies_cardinality_during(Resource, _, _, _) :-
+  rdf_subject(Resource).
 
 %% holds(+Term, ?T)
 %% holds(+Term)
@@ -107,6 +243,7 @@
 %          representing a time interval.
 %
 holds(Term) :-
+  % TODO: just call owl_has instead
   current_time(T),
   holds(Term,T).
 
@@ -130,13 +267,14 @@ holds(Term, I) :-
   )), !.
 
 holds(S, P, O) :-
+  % TODO: just call owl_has instead
   current_time(T),
   holds(S, P, O, [T,T]).
 
 holds(S, P, O, I) :-
-  ( atom(S) ; var(S) ),
+  once(( atom(S) ; var(S) )),
   (  atom(P)
-  -> rdf_triple(P, S, O)
+  -> rdf_triple(P, S, O) % FIXME: redundant results!
   ;  owl_has(S,P,O)
 % FIXME: inspect does not infer class properties of individuals!
 %   e.g., that a fridge instance is storage place for perishable
@@ -150,8 +288,8 @@ holds(S, P, O, I) :-
   ).
   
 holds(S, P, O, I) :-
-  ( atom(S) ; var(S) ),
-  fluent_has(S, P, O, TimeInterval),
+  once(( atom(S) ; var(S) )),
+  temporal_part_has(S, P, O, TimeInterval),
   time_term(TimeInterval, Interval),
   (  var(I)
   -> I = Interval
@@ -208,118 +346,213 @@ occurs(Evt, I, Type) :-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % methods for asserting fluent relations
 
-create_fluent(Obj, Fluent) :-
+%% current_temporal_part(?Obj,?TemporalPart) is nondet.
+%
+% true for any OWL individual `Obj` that has a temporal part `TemporalPart`
+% whose relation still holds at the moment.
+%
+% @param Obj             The object with temporal relations
+% @param TemporalPart    A temporal part of the object
+% 
+current_temporal_part(Obj,TemporalPart) :-
+  temporal_part(Obj, TemporalPart, TemporalExtend),
+  \+ rdf_has(TemporalExtend, knowrob:endTime, _).
+
+%% temporal_part(?Obj,?TemporalPart,?TemporalExtend) is nondet.
+%
+% true for any OWL individual `Obj` that has a temporal part `TemporalPart`
+% whose temporal extend is described by `TemporalExtend`.
+%
+% @param Obj             The object with temporal relations
+% @param TemporalPart    A temporal part of the object
+% @param TemporalExtend  The temporal extend of the temporal part
+% 
+temporal_part(Obj,TemporalPart,TemporalExtend) :-
+  rdf_has(Obj, knowrob:'temporalParts', TemporalPart),
+  rdf_has(TemporalPart, knowrob:'temporalExtend', TemporalExtend).
+
+temporal_part_during(Obj,TemporalPart,TemporalExtend) :-
+  temporal_part(Obj,TemporalPart,I),
+  interval_during(TemporalExtend, I).
+
+create_temporal_part(S, P, TemporalPart) :-
+  rdf_instance_from_class(knowrob:'TemporalPart', TemporalPart),
+  rdf_assert(S, knowrob:'temporalParts', TemporalPart),
+  rdf_assert(TemporalPart, knowrob:'temporalProperty', P).
+
+
+%% assert_temporal_part(+S,+P,+O) is nondet.
+%% assert_temporal_part(+S,+P,+O,+I) is nondet.
+%
+% Asserts a temporal relation between `S` and `O` using the relation
+% predicate `P` that holds during the time interval `I`. `O` is either an OWL individual,
+% a term `nontemporal(Iri)` or a typed data value.
+%
+% @param S    The subject of the relation
+% @param P    The relation predicate
+% @param O    The object of the relation or a typed data value
+% @param I    The time interval during which the relation holds
+% 
+assert_temporal_part(S, P, O) :-
   current_time(Now),
-  create_fluent(Obj, Fluent, [Now]), !.
-
-create_fluent(Obj, Fluent, [Begin,End]) :-
-  number(Begin), number(End),
-  create_interval([Begin,End], I),
-  create_fluent(Obj, Fluent, I), !.
-
-create_fluent(Obj, Fluent, [Begin]) :-
-  number(Begin),
-  create_timepoint(Begin, IntervalStart),
-  rdf_instance_from_class(knowrob:'TimeInterval', I),
-  rdf_assert(I, knowrob:'startTime', IntervalStart),
-  create_fluent(Obj, Fluent, I), !.
-
-create_fluent(Obj, Fluent, TimeInst) :-
-  atom(TimeInst),
-  rdfs_individual_of(TimeInst, knowrob:'Timepoint'),
-  time_term(TimeInst, Time),
-  create_fluent(Obj, Fluent, [Time]), !.
-
-create_fluent(Obj, Fluent, Time) :-
-  number(Time),
-  create_fluent(Obj, Fluent, [Time]), !.
-
-create_fluent(Obj, Fluent, I) :-
-  atom(I),
-  rdfs_individual_of(I, knowrob:'TimeInterval'),
-  rdf_instance_from_class(knowrob:'TemporalPart', Fluent),
-  rdf_assert(Obj, knowrob:'temporalParts', Fluent),
-  rdf_assert(Fluent, knowrob:'temporalExtend', I).
-
-%fluent_assert(S, P, O, I, SubjectPart) :-
-%  atom(I),
-%  rdfs_individual_of(I, knowrob:'TimeInterval'),
-%  once((nonvar(SubjectPart) ; rdf_instance_from_class(knowrob:'TemporalPart', SubjectPart))),
-%  rdf_instance_from_class(knowrob:'TemporalPart', SubjectPart),
-%  rdf_assert(S, knowrob:'temporalParts', SubjectPart),
-%  rdf_assert(SubjectPart, knowrob:'temporalProperty', P),
-%  rdf_assert(SubjectPart, knowrob:'temporalExtend', I),
-%  fluent_assert_object(SubjectPart, P, O, I).
-
-
-fluent_assert(S, P, nontemporal(O)) :-
-  rdfs_individual_of(S, knowrob:'TemporalPart'),
-  rdf_assert(S, knowrob:'temporalProperty', P),
-  rdf_assert(S, P, O), !.
-
-fluent_assert(S, P, O) :-
-  rdfs_individual_of(S, knowrob:'TemporalPart'),
-  rdfs_individual_of(O, knowrob:'TemporalPart'),
-  rdf_assert(S, P, O), !.
-
-fluent_assert(S, P, O) :-
-  rdf_has(P, rdf:type, owl:'ObjectProperty'),
-  rdf_has(S, knowrob:'temporalExtend', I),
-  rdf_instance_from_class(knowrob:'TemporalPart', ObjectPart),
-  rdf_assert(O, knowrob:'temporalParts', ObjectPart),
-  % TODO: handle inverse of P, add as temporalProperty?
-  rdf_assert(ObjectPart, knowrob:'temporalExtend', I),
-  rdf_assert(S, knowrob:'temporalProperty', P),
-  rdf_assert(S, P, ObjectPart), !.
-
-fluent_assert(S, P, O) :-
-  rdfs_individual_of(S, knowrob:'TemporalPart'),
-  rdf_assert(S, knowrob:'temporalProperty', P),
-  rdf_assert(S, P, O).
-
-
-fluent_assert_end(S, P) :-
-  current_time(Now),
-  fluent_assert_end(S, P, Now), !.
-
-fluent_assert_end(S, P, Time) :-
-  number(Time),
-  forall((
-    rdf_has(S, knowrob:'temporalParts',SubjectPart),
-    rdf_has(SubjectPart, P, _)
-  ), (
-    rdf_has(SubjectPart, knowrob:'temporalExtend', I),
-    not( rdf_has(I, knowrob:'endTime', _) ),
-    create_timepoint(Time, IntervalEnd),
-    rdf_assert(I, knowrob:'endTime', IntervalEnd)
+  assert_temporal_part(S, P, O, Now).
+assert_temporal_part(S, P, O, _) :-
+  nonvar(S),
+  once(owl_individual_of(S, knowrob:'TemporalThing')),
+  assert_nontemporal_value(S,P,O), !.
+assert_temporal_part(S, P, O, I) :-
+  create_temporal_part(S, P, TemporalPart),
+  assert_temporal_part_value(TemporalPart, P, O),
+  assert_temporal_part_extend(TemporalPart, I),
+  % Also assert nontemporal if temporal part is not finished by now.
+  % This allows nontemporal reasoners to work with descriptions generated here.
+  ignore((
+    current_temporal_part(S,TemporalPart),
+    assert_nontemporal_value(S,P,O)
   )).
 
+% TODO: setting data valued property should be part of knowrob_owl
+assert_nontemporal_value(S, P, Value) :-
+  atomic(Value),
+  rdf_has(P, rdf:type, owl:'DatatypeProperty'),
+  (  rdf_phas(P, rdfs:range, Range)
+  -> rdf_assert(S, P, literal(type(Range,Value)))
+  ;  rdf_assert(S, P, literal(Value))
+  ), !.
+assert_nontemporal_value(S, P, nontemporal(Value)) :-
+  rdf_assert(S, P, Value), !.
+assert_nontemporal_value(S, P, Value) :-
+  compound(Value),
+  rdf_has(P, rdf:type, owl:'DatatypeProperty'),
+  rdf_assert(S, P, Value), !.
+assert_nontemporal_value(S, P, O) :-
+  rdf_assert(S, P, O), !.
 
-fluent_property(TemporalPart, PropertyIri) :-
-  rdf_has(TemporalPart, knowrob:temporalProperty, PropertyIri).
+% TODO: setting data valued property should be part of knowrob_owl
+assert_temporal_part_value(TemporalPart, P, Value) :-
+  atomic(Value),
+  rdf_has(P, rdf:type, owl:'DatatypeProperty'), !,
+  (  rdf_phas(P, rdfs:range, Range)
+  -> rdf_assert(TemporalPart, P, literal(type(Range,Value)))
+  ;  rdf_assert(TemporalPart, P, literal(Value))
+  ).
+assert_temporal_part_value(TemporalPart_S, P, nontemporal(Value)) :-
+  rdf_assert(TemporalPart_S, P, Value), !.
+assert_temporal_part_value(TemporalPart, P, Value) :-
+  compound(Value), % FIXME: weak check
+  rdf_has(P, rdf:type, owl:'DatatypeProperty'), !,
+  rdf_assert(TemporalPart, P, Value).
+assert_temporal_part_value(TemporalPart_S, P, Value) :-
+  create_temporal_part(Value, P, TemporalPart_O), !,
+  rdf_assert(TemporalPart_S, P, TemporalPart_O),
+  rdf_assert(Value, knowrob:'temporalParts', TemporalPart_O).
+
+% TODO: this findall/forall looks ugly
+assert_temporal_part_extend(TemporalPart, I) :-
+  create_interval(I, Interval),
+  findall(X, (
+      rdf_has(TemporalPart,_,X),
+      rdfs_individual_of(X, knowrob:'TemporalPart')
+  ), Parts),
+  forall( member(Part, [TemporalPart|Parts]),
+          rdf_assert(Part, knowrob:'temporalExtend', Interval)
+  ).
+retract_temporal_extend(TemporalPart) :-
+  findall(X, (
+      rdf_has(TemporalPart,_,X),
+      rdfs_individual_of(X, knowrob:'TemporalPart')
+  ), Parts),
+  forall( member(Part, [TemporalPart|Parts]),
+          rdf_retractall(Part, knowrob:'temporalExtend', _)
+  ).
+
+%% assert_temporal_part_end(+S,?P,?O) is nondet.
+%% assert_temporal_part_end(+S,?P,?O,+End) is nondet.
+%
+% Assert that a given relation `P(S,O)` stopped holding starting from
+% specified time instant `End` (or current time if `End` is not specified).
+% The assertion specifies the `endTime` of the temporal extend of the 
+% temporal part that describes this relation.
+% Additionally any non-temporal representation of this relation will be retracted
+% (so that standard reasoners won't yield this relation anymore).
+%
+% @param S    The subject of the relation
+% @param P    The relation predicate
+% @param O    The object of the relation or a data-typed value
+% @param End  The time instant at which the relation stopped holding
+% 
+assert_temporal_part_end(S, P, O) :-
+  current_time(Now),
+  assert_temporal_part_end(S, P, O, Now).
+assert_temporal_part_end(S, P, O, End) :-
+  atom(End),
+  atom_number(End, End_num),
+  assert_temporal_part_end(S, P, O, End_num).
+assert_temporal_part_end(S, P, O, End) :-
+  number(End),
+  current_temporal_part(S,S_temporal),
+  rdf_has(S_temporal, knowrob:'temporalProperty', P),
+  rdf_has(S_temporal, knowrob:'temporalExtend', I),
+  temporal_part_value(S_temporal, P, O),
+  % update temporal extend
+  rdf_has(I, knowrob:'startTime', BeginIri),
+  time_term(BeginIri, Begin),
+  retract_temporal_extend(S_temporal),
+  assert_temporal_part_extend(S_temporal, [Begin,End]),
+  % remove the nontemporal property if exists
+  ignore(( temporal_part_value(S, P, O),
+           rdf_retractall(S, P, O) )).
+assert_temporal_part_end(S, _, _, _) :-
+  nonvar(S),
+  once(owl_individual_of(S, knowrob:'TemporalThing')), !.
+assert_temporal_part_end(S, P, O, End) :-
+  number(End),
+  % Make relation temporal if the relation was not described temporally before
+  temporal_part_value(S, P, O),
+  rdf_retractall(S, P, O),
+  assert_temporal_part(S, P, O, [0.0,End]).
+
+%% temporal_part_value(?S, ?P, ?O)
+temporal_part_value(S, P, O) :-
+  var(O),
+  rdf_has(S, P, X),
+  (  rdf_has(P, rdf:type, owl:'DatatypeProperty')
+  -> strip_literal_type(X, O)
+  ;  once(( rdf_has(O,knowrob:'temporalParts',X); O=X ))
+  ).
+temporal_part_value(S, P, nontemporal(O)) :-
+  temporal_part_value(S, P, O), !.
+temporal_part_value(S, P, O) :-
+  nonvar(O),
+  strip_literal_type(O, O_stripped),
+  rdf_has(S, P, X),
+  (  rdf_has(P, rdf:type, owl:'DatatypeProperty')
+  -> strip_literal_type(X, O_stripped)
+  ;  once(( rdf_has(O,knowrob:'temporalParts',X); O=X ))
+  ).
 
 
-%% fluent_has(?Subject, ?Predicate, ?Object, ?Interval)
+%% temporal_part_has(?Subject, ?Predicate, ?Object, ?Interval)
 %
 % True if this relation is specified via knowrob:TemporalPart
 % or can be deduced using OWL inference rules.
 % 
-fluent_has(S, P, O) :- fluent_has(S, P, O, _). % FIXME: redundant results!
+temporal_part_has(S, P, O) :- temporal_part_has(S, P, O, _). % FIXME: redundant results!
 
-fluent_has(S, P, O, I) :-
+temporal_part_has(S, P, O, I) :-
   rdfs_individual_of(S, knowrob:'SpatialThing-Localized'),
   rdf_has(S, knowrob:'temporalParts', TemporalPart),
-  fluent_has(TemporalPart, P, O, I).
+  temporal_part_has(TemporalPart, P, O, I).
 
-fluent_has(S, P, O, I) :-
-  nonvar(S),
-  rdfs_individual_of(S, knowrob:'TemporalPart'),
-  rdf_has(S, knowrob:temporalExtend, Ext),
+temporal_part_has(S, P, O, I) :-
+  atom(S),
+  rdf_has(S, knowrob:'temporalProperty', P),
+  
+  rdf_has(S, knowrob:'temporalExtend', Ext),
   (var(I)
   -> I=Ext 
   ;  interval_during(I, Ext)),
   
-  rdf_has(S, knowrob:temporalProperty, P),
   rdf_has(S, P, S_O),
   
   (rdf_equal(P, rdf:type)
@@ -329,7 +562,13 @@ fluent_has(S, P, O, I) :-
   
   (rdfs_individual_of(S_O, knowrob:'TemporalPart')
   -> once(owl_has(O, knowrob:temporalParts, S_O))
-  ;  O = S_O).
+  ; (
+    ( ground(O) -> (
+      strip_literal_type(S_O,S_O_stripped),
+      strip_literal_type(O,O_stripped),
+      O_stripped = S_O_stripped ) ;
+    ( O = S_O ))
+  )).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

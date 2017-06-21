@@ -113,6 +113,11 @@ spatially_holds_interval(S, P, O, Begin, End) :-
   call(P, S, O, Begin),
   call(P, S, O, End).
 
+spatial_thing(Thing) :-
+  % if unbound limit search to human scale objects
+  ground(Thing)
+  -> rdfs_individual_of(Thing, knowrob:'SpatialThing-Localized')
+  ;  rdfs_individual_of(Thing, knowrob:'HumanScaleObject').
 
 %% on_Physical(?Top, ?Bottom) is nondet.
 %
@@ -129,11 +134,11 @@ on_Physical(Top, Bottom) :-
     on_Physical_at_time(Top, Bottom, Instant).
     
 on_Physical_at_time(Top, Bottom, Instant) :-
-    rdfs_individual_of(Top, knowrob:'SpatialThing-Localized'),
+    spatial_thing(Top),
     % get object center for Top
     object_pose_at_time(Top, Instant, pose([TX,TY,TZ], _)),
     
-    rdfs_individual_of(Bottom, knowrob:'SpatialThing-Localized'),
+    spatial_thing(Bottom),
     Top \= Bottom,
     % query for objects at center point
     objectAtPoint2D(TX,TY,Bottom,Instant),
@@ -176,8 +181,6 @@ knowrob_temporal:holds(Top, 'http://knowrob.org/kb/knowrob.owl#on-Physical', Bot
 %%%     Top \= Bottom.
 
 
-
-
 %% comp_above_of(?Top, ?Bottom) is nondet.
 %
 % Check if Top is in the area of and above Bottom.
@@ -193,12 +196,12 @@ comp_above_of(Top, Bottom) :-
     comp_above_of_at_time(Top, Bottom, Instant).
 
 comp_above_of_at_time(Top, Bottom, Instant) :-
-    rdfs_individual_of(Top, knowrob:'SpatialThing-Localized'),
+    spatial_thing(Top),
     
     % get object center for Top
     object_pose_at_time(Top, Instant, pose([TX,TY,TZ], _)),
     
-    rdfs_individual_of(Bottom, knowrob:'SpatialThing-Localized'),
+    spatial_thing(Bottom),
     Top \= Bottom,
 
     % query for objects at center point
@@ -248,10 +251,10 @@ comp_toTheLeftOf_at_time(Left, Right, Instant) :-
     %
     % TODO: adapt this to take rotations and object dimensions into account
     %
-    rdfs_individual_of(Left, knowrob:'SpatialThing-Localized'),
+    spatial_thing(Left),
     object_pose_at_time(Left, Instant, pose([LX,LY,LZ], _)),
     
-    rdfs_individual_of(Right, knowrob:'SpatialThing-Localized'),
+    spatial_thing(Right),
     Left \= Right,
     object_pose_at_time(Right, Instant, pose([RX,RY,RZ], _)),
 
@@ -319,10 +322,10 @@ comp_inFrontOf_at_time(Front, Back, Instant) :-
     %
     % TODO: adapt this to take rotations and object dimensions into account
     %
-    rdfs_individual_of(Front, knowrob:'SpatialThing-Localized'),
+    spatial_thing(Front),
     object_pose_at_time(Front, Instant, pose([FX,_,_], _)),
     
-    rdfs_individual_of(Back, knowrob:'SpatialThing-Localized'),
+    spatial_thing(Back),
     Front \= Back,
     object_pose_at_time(Back, Instant, pose([BX,_,_], _)),
 
@@ -348,10 +351,10 @@ comp_inCenterOf(Inner, Outer) :-
     comp_inCenterOf_at_time(Inner, Outer, Instant).
 
 comp_inCenterOf_at_time(Inner, Outer, Instant) :-
-    rdfs_individual_of(Inner, knowrob:'SpatialThing-Localized'),
+    spatial_thing(Inner),
     object_pose_at_time(Inner, Instant, pose([IX,IY,IZ], _)),
     
-    rdfs_individual_of(Outer, knowrob:'SpatialThing-Localized'),
+    spatial_thing(Outer),
     Inner \= Outer,
     object_pose_at_time(Outer, Instant, pose([OX,OY,OZ], _)),
 
@@ -379,7 +382,7 @@ in_ContGeneric(InnerObj, OuterObj) :-
     in_ContGeneric_at_time(InnerObj, OuterObj, Instant).
 
 in_ContGeneric_at_time(InnerObj, OuterObj, Instant) :-
-    rdfs_individual_of(InnerObj, knowrob:'EnduringThing-Localized'),
+    spatial_thing(InnerObj),
     object_pose_at_time(InnerObj, Instant, pose([IX,IY,IZ], _)),
     object_dimensions(InnerObj, ID, IW, IH),
     

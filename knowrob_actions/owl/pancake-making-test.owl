@@ -1,0 +1,429 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY pancake "http://knowrob.org/kb/pancake-making.owl#" >
+    <!ENTITY knowrob "http://knowrob.org/kb/knowrob.owl#" >
+    <!ENTITY computable "http://knowrob.org/kb/computable.owl#" >
+]>
+
+
+<rdf:RDF xmlns="http://knowrob.org/kb/pancake-making-test.owl#"
+     xml:base="http://knowrob.org/kb/pancake-making-test.owl"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#">
+    <owl:Ontology rdf:about="http://knowrob.org/kb/pancake-making-test.owl">
+        <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
+        <owl:imports rdf:resource="package://knowrob_actions/owl/pancake-making.owl"/>
+    </owl:Ontology>
+
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#eventOccursAt -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;eventOccursAt"/>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#objectActedOn -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;objectActedOn"/>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#startTime -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;startTime"/>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#subAction -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;subAction"/>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#taskToAchieve -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;taskToAchieve"/>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#toLocation -->
+
+    <owl:ObjectProperty rdf:about="&knowrob;toLocation"/>
+
+
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#depthOfObject -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;depthOfObject"/>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#heightOfObject -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;heightOfObject"/>
+    
+
+
+    <!-- http://qudt.org/schema/qudt#DegreeCelsius -->
+
+    <rdfs:Datatype rdf:about="http://qudt.org/schema/qudt#DegreeCelsius"/>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#widthOfObject -->
+
+    <owl:DatatypeProperty rdf:about="&knowrob;widthOfObject"/>
+
+
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Baked -->
+
+    <owl:Class rdf:about="&knowrob;Baked"/>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#CowsMilk-Product -->
+
+    <owl:Class rdf:about="&knowrob;CowsMilk-Product"/>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Cracking -->
+
+    <owl:Class rdf:about="&knowrob;Cracking"/>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#DinnerPlate -->
+
+    <owl:Class rdf:about="&knowrob;DinnerPlate"/>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Dough -->
+
+    <owl:Class rdf:about="&knowrob;Dough"/>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Egg-Chickens -->
+
+    <owl:Class rdf:about="&knowrob;Egg-Chickens"/>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#EggYolk-Food -->
+
+    <owl:Class rdf:about="&knowrob;EggYolk-Food"/>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#FlippingAnObject -->
+
+    <owl:Class rdf:about="&knowrob;FlippingAnObject"/>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#KitchenTable -->
+
+    <owl:Class rdf:about="&knowrob;KitchenTable"/>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#Mixing -->
+
+    <owl:Class rdf:about="&knowrob;Mixing"/>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PancakeMaker -->
+
+    <owl:Class rdf:about="&knowrob;PancakeMaker"/>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PancakeMix -->
+
+    <owl:Class rdf:about="&knowrob;PancakeMix"/>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PouringSomethingOnto -->
+
+    <owl:Class rdf:about="&knowrob;PouringSomethingOnto"/>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PreparingFoodOrDrink -->
+
+    <owl:Class rdf:about="&knowrob;PreparingFoodOrDrink"/>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#PuttingSomethingOnto -->
+
+    <owl:Class rdf:about="&knowrob;PuttingSomethingOnto"/>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#RotationMatrix3D -->
+
+    <owl:Class rdf:about="&knowrob;RotationMatrix3D"/>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TimePoint -->
+
+    <owl:Class rdf:about="&knowrob;TimePoint"/>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#TurningOnPoweredDevice -->
+
+    <owl:Class rdf:about="&knowrob;TurningOnPoweredDevice"/>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#VisualPerception -->
+
+    <owl:Class rdf:about="&knowrob;VisualPerception"/>
+
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#WheatFlour -->
+
+    <owl:Class rdf:about="&knowrob;WheatFlour"/>
+
+
+
+    <!-- http://knowrob.org/kb/pancake-making.owl#CrackingAnEgg -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/pancake-making.owl#CrackingAnEgg"/>
+
+
+
+    <!-- http://knowrob.org/kb/pancake-making.owl#FlippingAPancake -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/pancake-making.owl#FlippingAPancake"/>
+
+
+
+    <!-- http://knowrob.org/kb/pancake-making.owl#MakingPancakes -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/pancake-making.owl#MakingPancakes"/>
+    
+
+    <!-- http://knowrob.org/kb/pancake-making.owl#MixEggAndDough -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/pancake-making.owl#MixEggAndDough"/>
+
+
+
+    <!-- http://knowrob.org/kb/pancake-making.owl#MixFlourAndMilk -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/pancake-making.owl#MixFlourAndMilk"/>
+
+
+
+    <!-- http://knowrob.org/kb/pancake-making.owl#PourDoughOntoPancakeMaker -->
+
+    <owl:Class rdf:about="http://knowrob.org/kb/pancake-making.owl#PourDoughOntoPancakeMaker"/>
+
+
+
+    <!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+    
+
+    <!-- http://knowrob.org/kb/pancake-making.owl#PancakeMaker_0 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/pancake-making.owl#PancakeMaker_0">
+        <rdf:type rdf:resource="&knowrob;PancakeMaker"/>
+        <knowrob:stateOfObject rdf:resource="&knowrob;DeviceStateOff"/>
+        <knowrob:workingTemperature rdf:datatype="http://qudt.org/schema/qudt#DegreeCelsius">100</knowrob:workingTemperature>
+    </owl:NamedIndividual>
+
+
+
+    <!-- http://knowrob.org/kb/pancake-making.owl#egg1 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/pancake-making.owl#Egg-Chickens_0">
+        <rdf:type rdf:resource="&knowrob;Egg-Chickens"/>
+        <knowrob:depthOfObject rdf:datatype="&xsd;float">0.05</knowrob:depthOfObject>
+        <knowrob:widthOfObject rdf:datatype="&xsd;float">0.05</knowrob:widthOfObject>
+        <knowrob:heightOfObject rdf:datatype="&xsd;float">0.05</knowrob:heightOfObject>
+    </owl:NamedIndividual>
+
+
+
+    <!-- http://knowrob.org/kb/pancake-making.owl#Milk_0 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/pancake-making.owl#Milk_0">
+        <rdf:type rdf:resource="&knowrob;CowsMilk-Product"/>
+    </owl:NamedIndividual>
+
+    <!-- http://knowrob.org/kb/pancake-making.owl#pancakemix1 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/pancake-making.owl#WheatFlour_0">
+        <rdf:type rdf:resource="&knowrob;WheatFlour"/>
+    </owl:NamedIndividual>
+
+    <!-- http://knowrob.org/kb/pancake-making.owl#TurningOnPancakeMaker_0 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/pancake-making.owl#TurningOnPancakeMaker_0">
+        <rdf:type rdf:resource="&knowrob;TurningOnHeatingDevice"/>
+        <knowrob:objectActedOn rdf:resource="http://knowrob.org/kb/pancake-making.owl#PancakeMaker_0"/>
+        <knowrob:startTime rdf:resource="http://knowrob.org/kb/pancake-making.owl#timepoint_1298634548"/>
+        <knowrob:endTime rdf:resource="http://knowrob.org/kb/pancake-making.owl#timepoint_1298634549"/>
+    </owl:NamedIndividual>
+
+    
+    <!-- http://knowrob.org/kb/pancake-making.owl#CrackingAnEgg_0 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/pancake-making.owl#CrackingAnEgg_0">
+        <rdf:type rdf:resource="&pancake;CrackingAnEgg"/>
+        <knowrob:objectActedOn rdf:resource="http://knowrob.org/kb/pancake-making.owl#Egg-Chickens_0"/>
+        <knowrob:startTime rdf:resource="http://knowrob.org/kb/pancake-making.owl#timepoint_1298634568"/>
+        <knowrob:endTime rdf:resource="http://knowrob.org/kb/pancake-making.owl#timepoint_1298634588"/>
+    </owl:NamedIndividual>
+
+    <!-- http://knowrob.org/kb/pancake-making.owl#Mixing_0 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/pancake-making.owl#MixPancakeDough_0">
+        <rdf:type rdf:resource="&pancake;MixPancakeDough"/>
+        <knowrob:objectActedOn rdf:resource="http://knowrob.org/kb/pancake-making.owl#Milk_0"/>
+        <knowrob:objectActedOn rdf:resource="http://knowrob.org/kb/pancake-making.owl#WheatFlour_0"/>
+        <knowrob:startTime rdf:resource="http://knowrob.org/kb/pancake-making.owl#timepoint_1298634588"/>
+        <knowrob:endTime rdf:resource="http://knowrob.org/kb/pancake-making.owl#timepoint_1298634608"/>
+    </owl:NamedIndividual>
+
+    <!-- http://knowrob.org/kb/pancake-making.owl#PourDoughOntoPancakeMaker_0 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/pancake-making.owl#PourDoughOntoPancakeMaker_0">
+        <rdf:type rdf:resource="&pancake;PourDoughOntoPancakeMaker"/>
+        <knowrob:toLocation rdf:resource="http://knowrob.org/kb/pancake-making.owl#PancakeMaker_0"/>
+        <knowrob:startTime rdf:resource="http://knowrob.org/kb/pancake-making.owl#timepoint_1298634608"/>
+        <knowrob:endTime rdf:resource="http://knowrob.org/kb/pancake-making.owl#timepoint_1298634618"/>
+    </owl:NamedIndividual>
+
+    <!-- http://knowrob.org/kb/pancake-making.owl#PourDoughOntoPancakeMaker_0 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/pancake-making.owl#FlippingAPancake_0">
+        <rdf:type rdf:resource="&pancake;FlippingAPancake"/>
+        <knowrob:startTime rdf:resource="http://knowrob.org/kb/pancake-making.owl#timepoint_1298634708"/>
+        <knowrob:endTime rdf:resource="http://knowrob.org/kb/pancake-making.owl#timepoint_1298634708"/>
+    </owl:NamedIndividual>
+    
+    
+
+    <!-- http://knowrob.org/kb/pancake-making.owl#timepoint_1298634618 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/pancake-making.owl#timepoint_1298634618">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
+
+    <!-- http://knowrob.org/kb/pancake-making.owl#timepoint_1298634708 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/pancake-making.owl#timepoint_1298634708">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
+
+
+    <!-- http://knowrob.org/kb/pancake-making.owl#timepoint_1286380475 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/pancake-making.owl#timepoint_1286380475">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- http://knowrob.org/kb/pancake-making.owl#timepoint_1298634548 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/pancake-making.owl#timepoint_1298634548">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- http://knowrob.org/kb/pancake-making.owl#timepoint_1298634568 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/pancake-making.owl#timepoint_1298634568">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- http://knowrob.org/kb/pancake-making.owl#timepoint_1298634588 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/pancake-making.owl#timepoint_1298634588">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- http://knowrob.org/kb/pancake-making.owl#timepoint_1298634608 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/pancake-making.owl#timepoint_1298634608">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
+
+
+
+    <!-- http://knowrob.org/kb/pancake-making.owl#timepoint_1298634628 -->
+
+    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/pancake-making.owl#timepoint_1298634628">
+        <rdf:type rdf:resource="&knowrob;TimePoint"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.1.0.20069) http://owlapi.sourceforge.net -->
+
