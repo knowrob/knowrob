@@ -624,15 +624,6 @@ kr_rdf_list_to_prolog(RDF, [H|T2]) :-
 		 *	  AUX PREDS (CIRC)	*
 		 *******************************/
 
-kr_circular_subproperty(SubProperty, SuperProperties) :- 
-        member(SuperProperty, SuperProperties),
-        owl_same_as(SubProperty, SuperProperty).
-
-kr_circular_subproperty(SubProperty, SuperProperties) :-
-        rdf_has(SubSubProperty, rdfs:subPropertyOf, SubProperty),
-        append(SuperProperties, [SubProperty], NewSuperProperties),
-        kr_circular_subproperty(SubSubProperty, NewSuperProperties).
-
 % An element in a property chain is either an object property or a description
 % containing an owl:inverseOf some object property.
 get_chain_property(Ch, Pr) :-
@@ -760,9 +751,8 @@ owl_same_as(X, Y, Visited) :-
 %	@bug	owl_has_direct/3 also uses SWRL rules.  This should be
 %		moved elsewhere.
 
-%%      MP 06/2017: also add support for reasoning based on subPropertyOf and PropertyChain axioms of object properties
+%%      MP 06/2017: also add support for reasoning based on PropertyChain axioms of object properties
 %%	TODO: add support for Equivalent properties and mixes of sub properties/Equivalent ones
-%%      TODO: add support for subPropertyOf for data properties
 
 owl_has_direct(S, P, O) :-
         owl_has_direct_internal(S, P, O).
@@ -778,6 +768,14 @@ owl_has_direct(S, P, O) :-
         ),
         owl_has_direct_internal(O, P2, S).
 
+owl_has_direct(S, P, O) :-
+        (   rdf_has(P, owl:inverseOf, P2)
+        ->  true
+        ;   rdf_has(P2, owl:inverseOf, P)
+        ),
+        rdfs_individual_of(P2, owl:'SymmetricProperty'),
+        owl_has_direct_internal(S, P2, O).
+
 %----------------------------------------------------------
 % added by BJW for use of OWL with SWRL rules, highly experimental
 % see http://www.daml.org/rules/proposal/rules-all.html for SWRL.
@@ -792,21 +790,7 @@ owl_has_direct(S, P, O) :-
 
 %% Simplest branch: find an explicitly stored rdf triple (S, P, O)
 owl_has_direct_internal(S, P, O) :-
-	rdf(S, P, O).
-
-%% If P is bound to an object property, look for a sub property SP st. an explicitly stored (S, SP, O) triple can be found
-%% ASSUMPTION: no circular sub property relations between properties.
-owl_has_direct_internal(S, P, O) :-
-        nonvar(P),
-        owl_individual_of(P, owl:'ObjectProperty'),
-        rdf_has(SP, rdfs:subPropertyOf, P),
-% Ensure we avoid circular sub property relations
-        \+ kr_circular_subproperty(SP, [P]),
-% Need at least the full owl_has_direct predicate here, because the inverse of the sub property may be explicitly stored,
-% rather than the sub property itself. This should be safe however as long as there are no sub property cycles; every entry
-% into this branch pushes us lower into the object property hierarchy.
-% TODO: consider using owl_has here, because the sub property may be inferrable through transitivity.
-        owl_has_direct(S, SP, O).
+	rdf_has(S, P, O).
 
 %% If P is bound to an object property, see if any of its PropertyChain axioms is able to produce explicitly known triples.
 %% ASSUMPTION: no circular PropertyChain axioms (example, P defined as A o B and A defined as P o B)
