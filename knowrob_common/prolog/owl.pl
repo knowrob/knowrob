@@ -817,25 +817,13 @@ owl_has_property_chain(S, PropChain, O) :-
 owl_has_property_chain_S2O(O, [], O).
 
 owl_has_property_chain_S2O(S, [P|RestChain], O) :-
-        owl_individual_of(P, owl:'ObjectProperty'),
         owl_has(S, P, Oi),
-        owl_has_property_chain_S2O(Oi, RestChain, O).
-
-owl_has_property_chain_S2O(S, [P|RestChain], O) :-
-        owl_has(P, owl:inverseOf, PI),
-        owl_has(Oi, PI, S),
         owl_has_property_chain_S2O(Oi, RestChain, O).
 
 owl_has_property_chain_O2S(S, [], S).
 
 owl_has_property_chain_O2S(O, [P|RestChain], S) :-
-        owl_individual_of(P, owl:'ObjectProperty'),
         owl_has(Si, P, O),
-        owl_has_property_chain_O2S(Si, RestChain, S).
-
-owl_has_property_chain_O2S(O, [P|RestChain], S) :-
-        owl_has(P, owl:inverseOf, PI),
-        owl_has(O, PI, Si),
         owl_has_property_chain_O2S(Si, RestChain, S).
 
 owl_use_rule(S, P, O):-
