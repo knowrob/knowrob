@@ -41,6 +41,7 @@
 	    owl_individual_of_description/2,
 	    owl_individual_from_range/2,
 
+
 	    owl_direct_subclass_of/2,	% ?Resource, ?Class
 	    owl_subclass_of/2,		% ?Class, ?Super
 
@@ -593,6 +594,52 @@ intersection_of(Nil, _) :-
 
 
 		 /*******************************
+		 *	  AUX PREDS (CIRC)	*
+		 *******************************/
+
+% An element in a property chain is either an object property or a description
+% containing an owl:inverseOf some object property.
+owl_chain_property(Ch, Pr) :-
+        var(Ch),
+        nonvar(Pr),
+        Ch = Pr.
+        
+owl_chain_property(Ch, Pr) :-
+        nonvar(Ch),
+        owl_individual_of(Ch, owl:'ObjectProperty'),
+        Ch = Pr.
+owl_chain_property(Ch, Pr) :-
+        nonvar(Ch),
+        \+ owl_individual_of(Ch, owl:'ObjectProperty'),
+        rdf_has(Ch, owl:inverseOf, Pr).
+
+kr_get_props([], Props, Props).
+
+kr_get_props([ChainFirst|RestChain], CrProps, Props) :-
+        owl_chain_property(ChainFirst, Property),
+        kr_get_props(RestChain, [Property|CrProps], Props).
+
+kr_get_props(PropChain, Props) :-
+        kr_get_props(PropChain, [], Props).
+
+kr_circular_chain(ChainProperties, PreviousProperties) :-
+        member(P, PreviousProperties),
+        member(P, ChainProperties).
+
+kr_circular_chain(ChainProperties, PreviousProperties) :-
+        member(P, PreviousProperties),
+        rdf_has(P, owl:inverseOf, IP),
+        member(IP, ChainProperties).
+
+kr_circular_chain(ChainProperties, PreviousProperties) :-
+        member(CP, ChainProperties),
+        rdf_has(CP, owl:propertyChainAxiom, RDFList),
+        rdfs_list_to_prolog_list(RDFList, CPChain),
+        kr_get_props(CPChain, CPProps),
+        append(PreviousProperties, ChainProperties, NewPreviousProperties),
+        kr_circular_chain(CPProps, NewPreviousProperties).
+
+		 /*******************************
 		 *	  OWL PROPERTIES	*
 		 *******************************/
 
@@ -682,20 +729,26 @@ owl_same_as(X, Y, Visited) :-
 %	@bug	owl_has_direct/3 also uses SWRL rules.  This should be
 %		moved elsewhere.
 
+%%      MP 06/2017: also add support for reasoning based on PropertyChain axioms of object properties
+%%	TODO: add support for Equivalent properties and mixes of sub properties/Equivalent ones
+
 owl_has_direct(S, P, O) :-
-	rdf(S, P, O).
-owl_has_direct(S, P, O) :-
-	(   rdf_has(P, owl:inverseOf, P2)
-	->  true
-	;   rdf_has(P2, owl:inverseOf, P)
-	),
-	rdf_has(O, P2, S).		% TBD: must call owl_has_direct/3
+        owl_has_direct_internal(S, P, O).
+
 owl_has_direct(S, P, O) :-
 	rdfs_individual_of(P, owl:'SymmetricProperty'),
-	rdf(O, P, S).
-owl_has_direct(S, P, O) :-
-	owl_use_has_value(S, P, O).
+	owl_has_direct_internal(O, P, S).
 
+owl_has_direct(S, P, O) :-
+        (   rdf_has(P, owl:inverseOf, P2)
+        ->  true
+        ;   rdf_has(P2, owl:inverseOf, P)
+        ),
+        (   owl_has_direct_internal(O, P2, S)
+        ->  true
+        ;   rdfs_individual_of(P2, owl:'SymmetricProperty'),
+            owl_has_direct_internal(S, P2, O)
+        ).
 
 %----------------------------------------------------------
 % added by BJW for use of OWL with SWRL rules, highly experimental
@@ -708,6 +761,64 @@ owl_has_direct(S, P, O) :-
 
 owl_has_direct(S, P, O) :-
 	owl_use_rule(S, P, O).
+
+%% Simplest branch: find an explicitly stored rdf triple (S, P, O)
+owl_has_direct_internal(S, P, O) :-
+	rdf_has(S, P, O).
+
+%% If P is bound to an object property, see if any of its PropertyChain axioms is able to produce explicitly known triples.
+%% ASSUMPTION: no circular PropertyChain axioms (example, P defined as A o B and A defined as P o B)
+owl_has_direct_internal(S, P, O) :-
+        nonvar(P),
+        owl_individual_of(P, owl:'ObjectProperty'),
+        rdf_has(P, owl:propertyChainAxiom, RDFList),
+        rdfs_list_to_prolog_list(RDFList, PropChain),
+% We need this because the PropChain contains a list of either individuals of type owl:'ObjectProperty', 
+% or individuals who are not object properties but have owl:inverseOf some owl:'ObjectProperty',
+% and also we need a simple list of the props appearing in a property chain.
+        kr_get_props(PropChain, Props),
+% Ensure we avoid circular property chains
+        \+ kr_circular_chain(Props, [P]),
+        owl_has_property_chain(S, PropChain, O).
+
+%% No longer needed. We now attempt direct and inverse properties using the owl_has_direct above, and defined a predicate
+%% owl_has_direct_internal that never looks for inverse properties, to avoid infinite backtracking. This fixes the TBD below.
+% owl_has_direct(S, P, O) :-
+%	(   rdf_has(P, owl:inverseOf, P2)
+%	->  true
+%	;   rdf_has(P2, owl:inverseOf, P)
+%	),
+%	rdf_has(O, P2, S).		% TBD: must call owl_has_direct/3
+
+%% Copied above
+% owl_has_direct(S, P, O) :-
+% 	rdfs_individual_of(P, owl:'SymmetricProperty'),
+% 	rdf(O, P, S).
+
+owl_has_direct_internal(S, P, O) :-
+	owl_use_has_value(S, P, O).
+
+owl_has_property_chain(S, PropChain, O) :-
+        nonvar(S),
+        owl_has_property_chain_S2O(S, PropChain, O).
+
+owl_has_property_chain(S, PropChain, O) :-
+        var(S),
+        nonvar(O),
+        reverse(PropChain, PropChainRev),
+        owl_has_property_chain_O2S(O, PropChainRev, S).
+
+owl_has_property_chain_S2O(O, [], O).
+
+owl_has_property_chain_S2O(S, [P|RestChain], O) :-
+        owl_has(S, P, Oi),
+        owl_has_property_chain_S2O(Oi, RestChain, O).
+
+owl_has_property_chain_O2S(S, [], S).
+
+owl_has_property_chain_O2S(O, [P|RestChain], S) :-
+        owl_has(Si, P, O),
+        owl_has_property_chain_O2S(Si, RestChain, S).
 
 owl_use_rule(S, P, O):-
 	rdf(Rule, rdf:type, swrl:'Impl'),     % pick a rule
