@@ -42,12 +42,6 @@
 	    owl_individual_from_range/2,
 
 
-
-owl_chain_property/2,
-kr_get_props/3,
-kr_circular_chain/2,
-
-
 	    owl_direct_subclass_of/2,	% ?Resource, ?Class
 	    owl_subclass_of/2,		% ?Class, ?Super
 
