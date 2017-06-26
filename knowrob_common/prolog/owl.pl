@@ -173,8 +173,8 @@ restriction_facet(RestrictionID, R) :-
 restriction_facet(RestrictionID, has_value(Value)) :-
 	rdf_has(RestrictionID, owl:hasValue, Value).
 restriction_facet(R, cardinality(Min, Max)) :-
-	(   rdf_has(R, owl:cardinality, literal(Atom))
-	->  non_negative_integer(Atom, Min, R, owl:cardinality),
+	(   rdf_has(R, owl:qualifiedCardinality, literal(Atom))
+	->  non_negative_integer(Atom, Min, R, owl:qualifiedCardinality),
 	    Max = Min
 	;   rdf_has(R, owl:minCardinality, literal(MinAtom))
 	->  non_negative_integer(MinAtom, Min, R, owl:minCardinality),
@@ -316,17 +316,23 @@ cardinality_on_class(Class, Predicate, cardinality(Min, Max)) :-
 
 owl_satisfies_restriction(Resource, Restriction) :-
 	rdf_has(Restriction, owl:onProperty, Property),
-	(   rdf_has(Restriction, owl:hasValue, Value)
-	->  owl_has(Resource, Property, Value)
-	;   rdf_has(Restriction, owl:allValuesFrom, Class)
-	->  setof(V, owl_has(Resource, Property, V), Vs),
-	    all_individual_of(Vs, Class)
-	;   rdf_has(Restriction, owl:someValuesFrom, Class)
-	->  owl_has(Resource, Property, Value),
-	    owl_individual_of(Value, Class)
-	;   rdf_subject(Resource)
-	),
+	owl_satisfies_restriction(Resource, Property, Restriction),
 	owl_satisfies_cardinality(Resource, Restriction).
+
+owl_satisfies_restriction(Resource, Property, Restriction) :-
+	rdf_has(Restriction, owl:hasValue, Value), !,
+	owl_has(Resource, Property, Value).
+owl_satisfies_restriction(Resource, Property, Restriction) :-
+	rdf_has(Restriction, owl:allValuesFrom, Class), !,
+	once(( bagof(V, owl_has(Resource, Property, V), Vs) ; Vs=[] )),
+	all_individual_of(Vs, Class).
+owl_satisfies_restriction(Resource, Property, Restriction) :-
+	rdf_has(Restriction, owl:someValuesFrom, Class), !,
+	owl_has(Resource, Property, Value),
+	owl_individual_of(Value, Class).
+owl_satisfies_restriction(Resource, _, _) :-
+	rdf_subject(Resource).
+
 
 %%	owl_unsatisfied_restriction(?Resource, +Restriction)
 %	
@@ -342,6 +348,7 @@ owl_unsatisfied_restriction(Resource, Restriction) :-
 		rdfs_individual_of(Resource, Cls),
 		rdfs_individual_of(Cls, owl:'Restriction')
 	), Restrictions),
+	% FIXME: there may be restritctions specializing others
 	member(Restriction, Restrictions),
 	\+ owl_satisfies_restriction(Resource, Restriction).
 
@@ -363,13 +370,23 @@ owl_satisfies_cardinality(Resource, Property, Restriction) :-
 	once(( rdf_has(Restriction, owl:cardinality, literal(Atom)) ;
 	       rdf_has(Restriction, owl:qualifiedCardinality, literal(Atom)) )), !,
 	non_negative_int(Atom, Card),
-	findall(V, rdf_has(Resource, Property, V), Vs0),
+	once(( rdf_has(Restriction, owl:onClass, Cls) ;
+	       Cls='http://www.w3.org/2002/07/owl#Thing' )),
+	findall(V, (
+		rdf_has(Resource, Property, V),
+		once(owl_individual_of(V,Cls))
+	), Vs0),
 	sort(Vs0, Vs),			% remove duplicates
 	length(Vs, Card).
 owl_satisfies_cardinality(Resource, Property, Restriction) :-
 	rdf_has(Restriction, owl:minCardinality, literal(MinAtom)),
 	non_negative_int(MinAtom, Min), !,
-	findall(V, owl_has(Resource, Property, V), Vs0),
+	once(( rdf_has(Restriction, owl:onClass, Cls) ;
+	       Cls='http://www.w3.org/2002/07/owl#Thing' )),
+	findall(V, (
+		rdf_has(Resource, Property, V),
+		once(owl_individual_of(V,Cls))
+	), Vs0),
 	sort(Vs0, Vs),			% remove duplicates
 	length(Vs, Count),
 	Count >= Min,
@@ -381,7 +398,12 @@ owl_satisfies_cardinality(Resource, Property, Restriction) :-
 owl_satisfies_cardinality(Resource, Property, Restriction) :-
 	rdf_has(Restriction, owl:maxCardinality, literal(MaxAtom)),
 	non_negative_int(MaxAtom, Max), !,
-	findall(V, owl_has(Resource, Property, V), Vs0),
+	once(( rdf_has(Restriction, owl:onClass, Cls) ;
+	       Cls='http://www.w3.org/2002/07/owl#Thing' )),
+	findall(V, (
+		rdf_has(Resource, Property, V),
+		once(owl_individual_of(V,Cls))
+	), Vs0),
 	sort(Vs0, Vs),			% remove duplicates
 	length(Vs, Count),
 	Count =< Max.
