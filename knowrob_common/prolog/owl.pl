@@ -374,7 +374,7 @@ owl_satisfies_cardinality(Resource, Property, Restriction) :-
 	once(( rdf_has(Restriction, owl:onClass, Cls) ;
 	       Cls='http://www.w3.org/2002/07/owl#Thing' )),
 	findall(V, (
-		rdf_has(Resource, Property, V),
+		owl_has(Resource, Property, V), % need to use owl_has here for property chains
 		once(owl_individual_of(V,Cls))
 	), Vs0),
 	sort(Vs0, Vs),			% remove duplicates
@@ -385,7 +385,7 @@ owl_satisfies_cardinality(Resource, Property, Restriction) :-
 	once(( rdf_has(Restriction, owl:onClass, Cls) ;
 	       Cls='http://www.w3.org/2002/07/owl#Thing' )),
 	findall(V, (
-		rdf_has(Resource, Property, V),
+		owl_has(Resource, Property, V), % need to use owl_has here for property chains
 		once(owl_individual_of(V,Cls))
 	), Vs0),
 	sort(Vs0, Vs),			% remove duplicates
@@ -402,7 +402,7 @@ owl_satisfies_cardinality(Resource, Property, Restriction) :-
 	once(( rdf_has(Restriction, owl:onClass, Cls) ;
 	       Cls='http://www.w3.org/2002/07/owl#Thing' )),
 	findall(V, (
-		rdf_has(Resource, Property, V),
+		owl_has(Resource, Property, V), % need to use owl_has here for property chains
 		once(owl_individual_of(V,Cls))
 	), Vs0),
 	sort(Vs0, Vs),			% remove duplicates
