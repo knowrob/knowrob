@@ -647,11 +647,11 @@ owl_chain_property(Ch, Pr) :-
         
 owl_chain_property(Ch, Pr) :-
         nonvar(Ch),
-        owl_individual_of(Ch, owl:'ObjectProperty'),
+        rdfs_individual_of(Ch, owl:'ObjectProperty'),
         Ch = Pr.
 owl_chain_property(Ch, Pr) :-
         nonvar(Ch),
-        \+ owl_individual_of(Ch, owl:'ObjectProperty'),
+        \+ rdfs_individual_of(Ch, owl:'ObjectProperty'),
         rdf_has(Ch, owl:inverseOf, Pr).
 
 kr_get_props([], Props, Props).
@@ -811,7 +811,7 @@ owl_has_direct_internal(S, P, O) :-
 %% ASSUMPTION: no circular PropertyChain axioms (example, P defined as A o B and A defined as P o B)
 owl_has_direct_internal(S, P, O) :-
         nonvar(P),
-        owl_individual_of(P, owl:'ObjectProperty'),
+        rdfs_individual_of(P, owl:'ObjectProperty'),
         rdf_has(P, owl:propertyChainAxiom, RDFList),
         rdfs_list_to_prolog_list(RDFList, PropChain),
 % We need this because the PropChain contains a list of either individuals of type owl:'ObjectProperty', 
