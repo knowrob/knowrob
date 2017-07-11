@@ -80,12 +80,12 @@ plan_subevents(Plan, SubEvents) :-
 % @param SubEvents Sub-events of the plan
 %
 plan_subevents_recursive(Plan, SubAction) :-
-    class_properties(Plan, knowrob:subAction, SubAction).
+  class_properties(Plan, knowrob:subAction, SubAction).
 
 plan_subevents_recursive(Plan, SubAction) :-
-    class_properties(Plan, knowrob:subAction, Sub),
-    Sub \= Plan,
-    plan_subevents_recursive(Sub, SubAction).
+  class_properties(Plan, knowrob:subAction, Sub),
+  Sub \= Plan,
+  plan_subevents_recursive(Sub, SubAction).
 
 
 %% plan_constrained_objects(+Plan, +Action, +PrevActions)
@@ -134,7 +134,6 @@ plan_objects(Plan, Objects) :-
   findall(Obj,
     (member(SubEvent, SubEvents),
      action_objectActedOn(SubEvent, Obj)), Objects).
-
 
 
 %% project_and_debug(+Plan, -OrigActionSeq, -ResultActSeq)
