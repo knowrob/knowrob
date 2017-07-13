@@ -35,6 +35,7 @@
 	    owl_restriction/2,		% +Resource, -Restriction
 	    owl_unsatisfied_restriction/2,	% +Resource, ?Restriction
 	    owl_description/2,		% +Resource, -Description
+	    owl_property_range_on_subject/3,		% +Subject, +Pred, -Range
 	    owl_cardinality_on_subject/4, % +Subject, +Predicate, +Description, -Card
 	    owl_cardinality_on_class/3,	% idem BJW
 	    owl_cardinality/3,
@@ -87,6 +88,7 @@
 	owl_restriction(r, t),
 	owl_unsatisfied_restriction(r, r),
 	owl_description(r, -),
+	owl_property_range_on_subject(r, r, -),
 	owl_cardinality_on_subject(r, r, r, -),
 	owl_cardinality_on_class(r, r, -),
 	owl_cardinality(r,r,?),
@@ -277,10 +279,11 @@ merge_values_from(all, C1, all, C2, all, C) :-
 	rdfs_subclass_of(C, C1),
 	rdfs_subclass_of(C, C2).
 
-%%	owl_property_range_on_subject(+Subject, +Pred, -Range:intersection_of(Ranges)) is semidet.
+%%	owl_property_range_on_subject(+Subject, +Pred, -Ranges) is semidet.
 
-owl_property_range_on_subject(Subject, Predicate, intersection_of(Ranges)) :-
-	findall(Range, range_on_subject(Subject, Predicate, Range), Ranges).
+owl_property_range_on_subject(Subject, Predicate, Ranges) :-
+	findall(Range, range_on_subject(Subject, Predicate, Range), X),
+	(X=[] -> Ranges=['http://www.w3.org/2002/07/owl#Thing'] ; Ranges=X).
 
 range_on_subject(_, Predicate, Range) :-
 	rdf_phas(Predicate, rdfs:range, Range).
@@ -291,9 +294,7 @@ range_on_subject(Subject, Predicate, Range) :-
 	rdfs_individual_of(RestrictionID, owl:'Restriction'),
 	rdf_has(RestrictionID, owl:onProperty, Predicate),
 	( restriction_facet(RestrictionID, all_values_from(Range)) ;
-	  restriction_facet(RestrictionID, class(Range)) ;
-	  restriction_facet(RestrictionID, has_value(Range)) ;
-	  restriction_facet(RestrictionID, cardinality(_,_,Range)) ).
+	  restriction_facet(RestrictionID, has_value(Range)) ).
 
 %range_on_subject(Subject, Predicate, Range) :-
 	%part_of(Subject, Part),
@@ -525,6 +526,8 @@ owl_cardinality(Resource, Property, Card) :-
 %	</rdfs:Class>
 %	==
 
+owl_description(Restriction, Restriction) :- compound(Restriction), !.
+
 owl_description(ID, Restriction) :-
 	(   rdf_equal(owl:'Thing', ID)
 	->  Restriction = thing
@@ -549,7 +552,6 @@ owl_description(ID, Restriction) :-
 	    ;	Restriction = class(ID)
 	    )
 	).
-
 
 		 /*******************************
 		 *	   OWL_SATISFIES	*
@@ -1084,6 +1086,7 @@ list_head(List, Head) :-
 %
 %	Transitive version of owl_direct_subclass_of/2.
 
+owl_subclass_of(Class, 'http://www.w3.org/2002/07/owl#Thing') :- nonvar(Class), !.
 owl_subclass_of(Class, Super) :-
 	rdf_equal(rdfs:'Resource', Resource),
 	Super == Resource, !,
