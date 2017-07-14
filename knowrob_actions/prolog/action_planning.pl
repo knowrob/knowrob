@@ -30,11 +30,12 @@
 
 */
 
-%% TODO DB: looks like code graveyard here. no useful predicate exported.
-
-:- module(object_change,
+:- module(action_planning,
     [
-      action_effects/2
+      plan_subevents/2,
+      plan_subevents_recursive/2,
+      plan_objects/2,
+      plan_constrained_objects/3
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -44,26 +45,95 @@
 :- use_module(library('knowrob_owl')).
 
 :- use_module(library('action_effects')).
-:- use_module(library('process_effects')).
+:- use_module(library('knowrob_actions')).
 
-
-:- owl_parse('package://knowrob_actions/owl/object-change.owl').
-% :- owl_parse('package://knowrob_actions/owl/pancake-making.owl').
-
-:- rdf_db:rdf_register_ns(knowrob,      'http://knowrob.org/kb/knowrob.owl#',      [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(object_change, 'http://knowrob.org/kb/object-change.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(pancake, 'http://knowrob.org/kb/pancake-making.owl#', [keep(true)]).
 
 :-  rdf_meta
-        project_and_debug(r,r,r),
-        project_action_class(r,r,r),
-        add_subactions_for_action(r, ?),
-        action_inputs(r,r),
-        action_missing_inputs(r,r),
-        action_outputs(r,r),
-        resource_provided_by_actionseq(r, ?),
-        resource_available(r),
-        action_effects(r,r).
+      plan_subevents(r,-),
+      plan_subevents_recursive(r,r),
+      plan_objects(r,r),
+      plan_constrained_objects(r,r,t).
+
+
+%% plan_subevents(+Plan, ?SubEvents) is semidet.
+%
+% Read all sub-event classes of the imported plan, i.e. single actions that need to be taken
+%
+% @tbd  Unify with plan_subevents_recursive (return list or single instances)
+% @param Plan Plan identifier
+% @param SubEvents List of sub-events of the plan
+%
+plan_subevents(Plan, SubEvents) :-
+  findall(SubAction, (class_properties(Plan, knowrob:subAction, SubAction)), Sub),
+  predsort(knowrob_actions:compare_actions_partial_order, Sub, SubEvents).
+
+
+
+%% plan_subevents_recursive(+Plan, ?SubEvents) is semidet.
+%
+% Recursively read all sub-action classes of the imported plan, i.e. single actions that need to be taken
+%
+% @param Plan      Plan identifier
+% @param SubEvents Sub-events of the plan
+%
+plan_subevents_recursive(Plan, SubAction) :-
+  class_properties(Plan, knowrob:subAction, SubAction).
+
+plan_subevents_recursive(Plan, SubAction) :-
+  class_properties(Plan, knowrob:subAction, Sub),
+  Sub \= Plan,
+  plan_subevents_recursive(Sub, SubAction).
+
+
+%% plan_constrained_objects(+Plan, +Action, +PrevActions)
+%
+% Link outputs of previous actions to `Action` via `objectActedOn` property
+% based on the description of IO constraints.
+%
+% @param Plan        Plan identifier
+% @param Action      Action identifier
+% @param PrevActions List of previous actions performed within the plan
+%
+plan_constrained_objects(Plan, Action, PrevActions) :-
+  findall(Obj, plan_constrained_objects(Plan, Action, PrevActions, Obj), Objs),
+  forall(member(Obj,Objs), rdf_assert(Action, knowrob:objectActedOn, Obj)).
+  
+plan_constrained_objects(Plan, Action, PrevActions, Obj) :-
+  % FIXME: make sure action was successfull?
+  % FIXME: check if this constraint is part of plan!
+  %class_properties(Plan, knowrob:inputOutputConstraint, Constraint),
+  rdf_has(Constraint, knowrob:requiresInput, Cls),
+  rdfs_individual_of(Action, Cls),
+  % read the outputs created by previous actions
+  plan_constrained_object(Constraint, PrevActions, Obj).
+
+plan_constrained_object(Constraint, PrevActions, Object) :-
+  rdf_has(Constraint, knowrob:createsOutput, OtherCls),
+  member(OtherAction, PrevActions),
+  % TODO: take latest action output if multiple actions of same type were performed
+  rdfs_individual_of(OtherAction, OtherCls), !,
+  % query the (typed) output created
+  rdf_has(OtherAction, knowrob:outputsCreated, Object),
+  (  rdf_has(Constraint, knowrob:resourceType, OutputType)
+  -> owl_individual_of(Object, OutputType)
+  ;  true ).
+
+
+%% plan_objects(+Plan, -Objects) is semidet.
+%
+% Read all objects mentioned in sub-actions of the imported plan
+%
+% @param Plan Plan identifier
+% @param SubEvents List of objects of the plan
+% 
+plan_objects(Plan, Objects) :-
+  plan_subevents(Plan, SubEvents),
+  findall(Obj,
+    (member(SubEvent, SubEvents),
+     action_objectActedOn(SubEvent, Obj)), Objects).
 
 
 %% project_and_debug(+Plan, -OrigActionSeq, -ResultActSeq)
@@ -76,17 +146,17 @@
 % @param ResultActSeq   Debugged action sequence, including actions that have been added
 %                       in order to match the input specifications of all actions
 %
-project_and_debug(Plan, OrigActionSeq, ResultActSeq) :-
+%project_and_debug(Plan, OrigActionSeq, ResultActSeq) :-
 
-  % read action seq
-  knowrob_actions:plan_subevents(Plan, OrigActionSeq),
+  %% read action seq
+  %knowrob_actions:plan_subevents(Plan, OrigActionSeq),
 
-  integrate_additional_actions(OrigActionSeq, ResultActSeq).
-  % TODO: check if end result is ok
-    % if yes, finish
-    % if not: - check if inputs can be provided by another action
-    %         - add this action at the earliest stage where its inputs are ok
-    %         - remove projection results, start projection again
+  %integrate_additional_actions(OrigActionSeq, ResultActSeq).
+  %% TODO: check if end result is ok
+    %% if yes, finish
+    %% if not: - check if inputs can be provided by another action
+    %%         - add this action at the earliest stage where its inputs are ok
+    %%         - remove projection results, start projection again
 
 
 
@@ -101,14 +171,14 @@ project_and_debug(Plan, OrigActionSeq, ResultActSeq) :-
 %                       so that all inputs of an action are filled with either existing objects
 %                       or by the output of another action
 %
-integrate_additional_actions([],[]).
-integrate_additional_actions([A|ActSeq], ResultActSeq) :-
+%integrate_additional_actions([],[]).
+%integrate_additional_actions([A|ActSeq], ResultActSeq) :-
 
-  add_subactions_for_action(A, AddActions),
-  project_action_class(A, _, _),!,
-  integrate_additional_actions(ActSeq, RestActSeq),
-  append(AddActions, [A], ResultActSeq1),
-  append(ResultActSeq1, RestActSeq, ResultActSeq).
+  %add_subactions_for_action(A, AddActions),
+  %project_action_class(A, _, _),!,
+  %integrate_additional_actions(ActSeq, RestActSeq),
+  %append(AddActions, [A], ResultActSeq1),
+  %append(ResultActSeq1, RestActSeq, ResultActSeq).
 
 
 
@@ -120,47 +190,48 @@ integrate_additional_actions([A|ActSeq], ResultActSeq) :-
 % @param Inst         Generated action instance
 % @param PostActors   Created outputs
 %
-project_action_class(Action, Inst, PostActors) :-
+%project_action_class(Action, Inst, PostActors) :-
 
-  % create instance of the action
-  rdf_instance_from_class(Action, knowrob_projection, Inst),
+  %% create instance of the action
+  %rdf_instance_from_class(Action, knowrob_projection, Inst),
 
-  % startTime: now
-  get_timepoint(NOW),
-  rdf_assert(Inst, knowrob:'startTime', NOW, knowrob_projection),
+  %% startTime: now
+  %get_timepoint(NOW),
+  %rdf_assert(Inst, knowrob:'startTime', NOW, knowrob_projection),
 
-  % bind the action properties from the class description to object instances
-  findall([P,OT], ( class_properties(Action, P, OT)), PrObjTs),
+  %% bind the action properties from the class description to object instances
+  %findall([P,OT], ( class_properties(Action, P, OT)), PrObjTs),
 
-  findall(ObjInst, (member([P, OT], PrObjTs),
-                    obj_inst(OT, ObjInst),
-                    rdf_assert(Inst, P, ObjInst, knowrob_projection)), _),
+  %findall(ObjInst, (member([P, OT], PrObjTs),
+                    %obj_inst(OT, ObjInst),
+                    %rdf_assert(Inst, P, ObjInst, knowrob_projection)), _),
 
-  % project action effects
-  (action_effects(Inst, PostActors);true).
-
-
-%% action_effects(+Action, -PostActors)
-%
-% Perform projection of action effects and those of processes that have
-% been triggered as indirect effects
-%
-% @param Action     Action instance
-% @param PostActors Effects of the action
-%
-action_effects(Action, PostActors) :-
-
-  % project what is happening when performing the action
-  project_action_effects(Action), % FIXME: use new action projection predicate
-
-  % check for processes that got triggered
-  (project_process_effects;true),
-
-  rdf_has(Action, knowrob:postActors, PostActors).
+  %% project action effects
+  %(action_effects(Inst, PostActors);true).
 
 
-obj_inst(OT, ObjInst) :-
-  owl_individual_of(ObjInst, OT),!. % just take the first instance of the resp. kind
+%%% action_effects(+Action, -PostActors)
+%%
+%% Perform projection of action effects and those of processes that have
+%% been triggered as indirect effects
+%%
+%% @param Action     Action instance
+%% @param PostActors Effects of the action
+%%
+%action_effects(Action, PostActors) :-
+
+  %% project what is happening when performing the action
+  %project_action_effects(Action), % FIXME: use new action projection predicate
+
+  %% check for processes that got triggered
+  %(project_process_effects;true),
+
+  %rdf_has(Action, knowrob:postActors, PostActors).
+
+
+%obj_inst(OT, ObjInst) :-
+  %owl_individual_of(ObjInst, OT),
+  %\+ rdfs_individual_of(ObjInst, knowrob:'TemporalPart'),!. % just take the first instance of the resp. kind
 
 
 
@@ -173,63 +244,14 @@ obj_inst(OT, ObjInst) :-
 % @param SubActions List of additional actions that need to be performed before
 %                   Action to generate the missing inputs (possibly empty)
 %
-add_subactions_for_action(Action, []) :-
-  action_missing_inputs(Action, []),!.
+%add_subactions_for_action(Action, []) :-
+  %action_missing_inputs(Action, []),!.
 
-add_subactions_for_action(Action, SubActions) :-
+%add_subactions_for_action(Action, SubActions) :-
 
-  action_missing_inputs(Action, Ms),
-  setof(Sub, ((member(M, Ms), resource_provided_by_actionseq(M, Sub)) ; fail), Subs),
-  flatten(Subs, SubActions).
-
-
-
-
-%% action_inputs(+Action, -Input)
-%
-% Required inputs for an action
-%
-% @param Action   Action class
-% @param Input    Input linked via a preActors restriction
-%
-action_inputs(Action, Input) :-
-  class_properties(Action, knowrob:'preActors', Input).
-
-
-
-%% action_missing_inputs(+Action, -Missing)
-%
-% Missing inputs of an action (required, but not available)
-%
-% @param Action   Action class
-% @param Missing  Input linked via a preActors restriction, but not available
-%
-action_missing_inputs(Action, Missing) :-
-  findall(Pre, (action_inputs(Action, Pre), \+ resource_available(Pre)), Missing).
-
-
-%% action_outputs(+Action, -Output)
-%
-% Outputs of an action
-%
-% @param Action   Action class
-% @param Output   Output linked via a postActors restriction
-%
-action_outputs(Action, Output) :-
-  class_properties(A, knowrob:'postActors', Output),
-  owl_subclass_of(Action, A).
-%TODO: check class subsumption (allow more complex requirements)
-
-
-
-%% resource_available(+Resource)
-%
-% Resource is available (TODO: check destruction etc)
-%
-% @param Resource Resource whose availability is to be checked (e.g. object class, check if instance of that class exists)
-%
-resource_available(Resource) :-
-  owl_individual_of(_, Resource).
+  %action_missing_inputs(Action, Ms),
+  %setof(Sub, ((member(M, Ms), resource_provided_by_actionseq(M, Sub)) ; fail), Subs),
+  %flatten(Subs, SubActions).
 
 
 %% resource_provided_by_actionseq(Resource, [SubActions|SubAction])
@@ -239,6 +261,6 @@ resource_available(Resource) :-
 % @param Resource     Resource whose availability is to be checked (e.g. object class)
 % @param SubActions   List of action classes that need to be performed in order to obtain Resource
 %
-resource_provided_by_actionseq(Resource, [SubActions|SubAction]) :-
-  action_outputs(SubAction, Resource),
-  add_subactions_for_action(SubAction, SubActions).
+%resource_provided_by_actionseq(Resource, [SubActions|SubAction]) :-
+  %action_outputs(SubAction, Resource),
+  %add_subactions_for_action(SubAction, SubActions).

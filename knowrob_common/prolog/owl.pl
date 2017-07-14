@@ -33,13 +33,18 @@
 	  [ owl_restriction_on/2,	% ?Class, ?Restriction
 	    owl_merged_restriction/3,	% ?Class, ?Property, ?Restriction
 	    owl_restriction/2,		% +Resource, -Restriction
+	    owl_unsatisfied_restriction/2,	% +Resource, ?Restriction
 	    owl_description/2,		% +Resource, -Description
-	    owl_cardinality_on_subject/3, % +Subject, +Predicate, -Card
+	    owl_property_range_on_subject/3,		% +Subject, +Pred, -Range
+	    owl_cardinality_on_subject/4, % +Subject, +Predicate, +Description, -Card
 	    owl_cardinality_on_class/3,	% idem BJW
+	    owl_cardinality/3,
+	    owl_cardinality/4,
 	    owl_satisfies/2,		% +Spec, +Resource
 	    owl_individual_of/2,	% ?Resource, +Description
 	    owl_individual_of_description/2,
 	    owl_individual_from_range/2,
+
 
 	    owl_direct_subclass_of/2,	% ?Resource, ?Class
 	    owl_subclass_of/2,		% ?Class, ?Super
@@ -80,10 +85,14 @@
 :- rdf_meta
 	owl_restriction_on(r, t),
 	owl_merged_restriction(r, r, t),
-	owl_restriction(r, -),
+	owl_restriction(r, t),
+	owl_unsatisfied_restriction(r, r),
 	owl_description(r, -),
-	owl_cardinality_on_subject(r, r, -),
+	owl_property_range_on_subject(r, r, -),
+	owl_cardinality_on_subject(r, r, r, -),
 	owl_cardinality_on_class(r, r, -),
+	owl_cardinality(r,r,?),
+	owl_cardinality(r,r,r,?),
 	owl_satisfies(r, t),
 	owl_individual_of(r, t),
 	owl_individual_of_description(r, t),
@@ -170,9 +179,11 @@ restriction_facet(RestrictionID, R) :-
 	).
 restriction_facet(RestrictionID, has_value(Value)) :-
 	rdf_has(RestrictionID, owl:hasValue, Value).
-restriction_facet(R, cardinality(Min, Max)) :-
-	(   rdf_has(R, owl:cardinality, literal(Atom))
-	->  non_negative_integer(Atom, Min, R, owl:cardinality),
+restriction_facet(R, cardinality(Min, Max, Class)) :-
+	once(( rdf_has(R, owl:onClass, Class) ;
+	       Class='http://www.w3.org/2002/07/owl#Thing' )),
+	(   rdf_has(R, owl:qualifiedCardinality, literal(Atom))
+	->  non_negative_integer(Atom, Min, R, owl:qualifiedCardinality),
 	    Max = Min
 	;   rdf_has(R, owl:minCardinality, literal(MinAtom))
 	->  non_negative_integer(MinAtom, Min, R, owl:minCardinality),
@@ -268,29 +279,96 @@ merge_values_from(all, C1, all, C2, all, C) :-
 	rdfs_subclass_of(C, C1),
 	rdfs_subclass_of(C, C2).
 
+%%	owl_property_range_on_subject(+Subject, +Pred, -Ranges) is semidet.
+
+owl_property_range_on_subject(Subject, Predicate, Ranges) :-
+	findall(Range, range_on_subject(Subject, Predicate, Range), X),
+	(X=[] -> Ranges=['http://www.w3.org/2002/07/owl#Thing'] ; Ranges=X).
+
+range_on_subject(_, Predicate, Range) :-
+	rdf_phas(Predicate, rdfs:range, Range).
+
+range_on_subject(Subject, Predicate, Range) :-
+	rdf_has(Subject, rdf:type, Class),
+	owl_direct_subclass_of(Class, RestrictionID),
+	rdfs_individual_of(RestrictionID, owl:'Restriction'),
+	rdf_has(RestrictionID, owl:onProperty, Predicate),
+	( restriction_facet(RestrictionID, all_values_from(Range)) ;
+	  restriction_facet(RestrictionID, has_value(Range)) ).
+
+%range_on_subject(Subject, Predicate, Range) :-
+	%part_of(Subject, Part),
+	%rdf_has(Part, rdf:type, Class),
+	%owl_direct_subclass_of(Class, RestrictionID),
+	%rdfs_individual_of(RestrictionID, owl:'Restriction'),
+	%owl_description(PartRestrictionID, PartRestriction),
+	%range_on_subject_part(Part, PartRestriction, (Subject,Predicate), Range)
+
+%range_on_subject_part(Goal,
+	%restriction(Predicate,all_values_from(Range)), (Goal,Predicate), Range).
+%range_on_subject_part(S, restriction(P,intersection_of(List)), Goal, Range) :-
+	%owl_has_direct(S,P,O),
+	%member(Descr,List),
+	%owl_description(Descr, restriction(P_next,Facet)),
+	%cardinality_on_subject_part(O, restriction(P_next,Facet), Goal, Range).
 
 		 /*******************************
 		 *	    CARDINALITY		*
 		 *******************************/
 
-%%	owl_cardinality_on_subject(+Subject, +Pred, -Card:cardinality(Min, Max)) is semidet.
+%%	owl_cardinality_on_subject(+Subject, +Pred, +Descr, -Card:cardinality(Min, Max)) is semidet.
 %
 %	Deduces the minimum and maximum cardinality for a property of a
 %	resource.  This predicate may fail if no information is available.
 %
 %	NOTE: used to use rdf_subclass_of.  Will owl_direct_subclass_of lead to
 %	cycles?
+% TODO(DB): Restrictions on related objects could restrict cardinality/domain of Predicate for Subject!
 
-owl_cardinality_on_subject(Subject, Predicate, Cardinality) :-
-	findall(C, cardinality_on_subject(Subject, Predicate, C), L),
+owl_cardinality_on_subject(Subject, Predicate, Range, Cardinality) :-
+	findall(C, cardinality_on_subject(Subject, Predicate, Range, C), L),
 	join_decls(L, [Cardinality]).
 
-cardinality_on_subject(Subject, Predicate, cardinality(Min, Max)) :-
+cardinality_on_subject(_, Predicate, _, cardinality(0,1)) :-
+	rdfs_individual_of(Predicate, owl:'FunctionalProperty').
+
+cardinality_on_subject(Subject, Predicate, Range, cardinality(Min, Max)) :-
 	rdf_has(Subject, rdf:type, Class),
 	owl_direct_subclass_of(Class, RestrictionID),
 	rdfs_individual_of(RestrictionID, owl:'Restriction'),
 	rdf_has(RestrictionID, owl:onProperty, Predicate),
-	restriction_facet(RestrictionID, cardinality(Min, Max)).
+	restriction_facet(RestrictionID, cardinality(Min, Max, Descr)),
+	owl_subclass_of(Range, Descr).
+
+%cardinality_on_subject(Subject, Predicate, Range, Card) :-
+	%part_of(Subject, Part),
+	%%% compute a path between the objects
+	%% for all restrictions declared for Part
+	%rdf_has(Part, rdf:type, Class),
+	%owl_direct_subclass_of(Class, PartRestrictionID),
+	%rdfs_individual_of(PartRestrictionID, owl:'Restriction'),
+	%%% find part of the restriction that restricts cardinality of Predicate
+	%owl_description(PartRestrictionID, PartRestriction),
+	%cardinality_on_subject_part(Part, PartRestriction, (Subject,Predicate), Card).
+
+%cardinality_on_subject_part(Goal,
+	%restriction(Predicate,cardinality(Min,Max,Cls)), (Goal,Predicate), cardinality(Min,Max)).
+%cardinality_on_subject_part(S, restriction(P,intersection_of(List)), Goal, Card) :-
+	%owl_has_direct(S,P,O),
+	%member(Descr,List),
+	%owl_description(Descr, restriction(P_next,Facet)),
+	%cardinality_on_subject_part(O, restriction(P_next,Facet), Goal, Card).
+
+%part_of(S, Part) :- part_of(S, Part, []).
+%part_of(S, Part, Cache) :-
+  %\+ member(S, Cache),
+  %related(S,P,O),
+  %( Part=O ; part_of(O, Part, [S|Cache]) ).
+
+%related(S,P,O) :-
+  %bagof((P,O), owl_has(S, P, O), POs),
+  %member((P,O),POs),
+  %rdfs_individual_of(P, owl:'ObjectProperty').
 
 %%	owl_cardinality_on_class(+Class, ?Predicate, -Card:cardinality(Min, Max)) is semidet.
 
@@ -298,15 +376,18 @@ owl_cardinality_on_class(Class, Predicate, Cardinality) :-
 	findall(C, cardinality_on_class(Class, Predicate, C), L),
 	join_decls(L, [Cardinality]).
 
+cardinality_on_class(_, Predicate, cardinality(0,1)) :-
+	rdfs_individual_of(Predicate, owl:'FunctionalProperty').
+
 cardinality_on_class(Class, Predicate, cardinality(Min, Max)) :-
 	owl_direct_subclass_of(Class, RestrictionID),
 	rdfs_individual_of(RestrictionID, owl:'Restriction'),
 	rdf_has(RestrictionID, owl:onProperty, Predicate),
-	restriction_facet(RestrictionID, cardinality(Min, Max)).
+	restriction_facet(RestrictionID, cardinality(Min, Max, _)).
 
 %%	owl_satisfies_restriction(?Resource, +Restriction)
 %
-%	True if Restriction satisfies the restriction imposed by Restriction.
+%	True if Resource satisfies the restriction imposed by Restriction.
 %	The current implementation makes the following assumptions:
 %
 %		* Only one of owl:hasValue, owl:allValuesFrom or owl:someValuesFrom
@@ -314,17 +395,43 @@ cardinality_on_class(Class, Predicate, cardinality(Min, Max)) :-
 
 owl_satisfies_restriction(Resource, Restriction) :-
 	rdf_has(Restriction, owl:onProperty, Property),
-	(   rdf_has(Restriction, owl:hasValue, Value)
-	->  owl_has(Resource, Property, Value)
-	;   rdf_has(Restriction, owl:allValuesFrom, Class)
-	->  setof(V, owl_has(Resource, Property, V), Vs),
-	    all_individual_of(Vs, Class)
-	;   rdf_has(Restriction, owl:someValuesFrom, Class)
-	->  owl_has(Resource, Property, Value),
-	    owl_individual_of(Value, Class)
-	;   rdf_subject(Resource)
-	),
+	% TODO(DB): it seems this was implemented against outdated OWL standard
+	%           that does not allow to specify range of cardinality restricted properties.
+	%           I hacked it in but potentially will cause problems in legacy code (i.e. card descriptions).
+	owl_satisfies_restriction(Resource, Property, Restriction),
 	owl_satisfies_cardinality(Resource, Restriction).
+
+owl_satisfies_restriction(Resource, Property, Restriction) :-
+	rdf_has(Restriction, owl:hasValue, Value), !,
+	owl_has(Resource, Property, Value).
+owl_satisfies_restriction(Resource, Property, Restriction) :-
+	rdf_has(Restriction, owl:allValuesFrom, Class), !,
+	once(( bagof(V, owl_has(Resource, Property, V), Vs) ; Vs=[] )),
+	all_individual_of(Vs, Class).
+owl_satisfies_restriction(Resource, Property, Restriction) :-
+	rdf_has(Restriction, owl:someValuesFrom, Class), !,
+	owl_has(Resource, Property, Value),
+	owl_individual_of(Value, Class).
+owl_satisfies_restriction(Resource, _, _) :-
+	rdf_subject(Resource).
+
+%%	owl_unsatisfied_restriction(?Resource, +Restriction)
+%	
+%	True if Resource does not satisfy the restriction imposed by Restriction.
+%	
+
+owl_unsatisfied_restriction(Resource, Restriction) :-
+	ground(Restriction), ground(Resource), !,
+	\+ owl_satisfies_restriction(Resource, Restriction).
+owl_unsatisfied_restriction(Resource, Restriction) :-
+	ground(Resource),
+	setof(Cls, (
+		rdfs_individual_of(Resource, Cls),
+		rdfs_individual_of(Cls, owl:'Restriction')
+	), Restrictions),
+	% FIXME: there may be restritctions specializing others
+	member(Restriction, Restrictions),
+	\+ owl_satisfies_restriction(Resource, Restriction).
 
 all_individual_of([], _).
 all_individual_of([H|T], Class) :-
@@ -344,15 +451,15 @@ owl_satisfies_cardinality(Resource, Property, Restriction) :-
 	once(( rdf_has(Restriction, owl:cardinality, literal(Atom)) ;
 	       rdf_has(Restriction, owl:qualifiedCardinality, literal(Atom)) )), !,
 	non_negative_int(Atom, Card),
-	findall(V, rdf_has(Resource, Property, V), Vs0),
-	sort(Vs0, Vs),			% remove duplicates
-	length(Vs, Card).
+	once(( rdf_has(Restriction, owl:onClass, Cls) ;
+	       Cls='http://www.w3.org/2002/07/owl#Thing' )),
+	owl_cardinality(Resource, Property, Cls, Card).
 owl_satisfies_cardinality(Resource, Property, Restriction) :-
 	rdf_has(Restriction, owl:minCardinality, literal(MinAtom)),
 	non_negative_int(MinAtom, Min), !,
-	findall(V, owl_has(Resource, Property, V), Vs0),
-	sort(Vs0, Vs),			% remove duplicates
-	length(Vs, Count),
+	once(( rdf_has(Restriction, owl:onClass, Cls) ;
+	       Cls='http://www.w3.org/2002/07/owl#Thing' )),
+	owl_cardinality(Resource, Property, Cls, Count),
 	Count >= Min,
 	(   rdf_has(Restriction, owl:maxCardinality, literal(MaxAtom)),
 	    atom_number(MaxAtom, Max)
@@ -362,9 +469,9 @@ owl_satisfies_cardinality(Resource, Property, Restriction) :-
 owl_satisfies_cardinality(Resource, Property, Restriction) :-
 	rdf_has(Restriction, owl:maxCardinality, literal(MaxAtom)),
 	non_negative_int(MaxAtom, Max), !,
-	findall(V, owl_has(Resource, Property, V), Vs0),
-	sort(Vs0, Vs),			% remove duplicates
-	length(Vs, Count),
+	once(( rdf_has(Restriction, owl:onClass, Cls) ;
+	       Cls='http://www.w3.org/2002/07/owl#Thing' )),
+	owl_cardinality(Resource, Property, Cls, Count),
 	Count =< Max.
 owl_satisfies_cardinality(Resource, _, _) :-
 	rdf_subject(Resource).
@@ -375,6 +482,18 @@ non_negative_int(type(Type, Atom), Number) :-
 non_negative_int(Atom, Number) :-
 	atom(Atom),
 	catch(atom_number(Atom, Number), _, fail).
+
+%%	owl_cardinality(+Resource, +Property, +Cls, -Card) is det.
+owl_cardinality(Resource, Property, Cls, Card) :-
+	once((bagof(V, (
+		owl_has(Resource, Property, V), % need to use owl_has here for property chains
+		once(owl_individual_of(V,Cls))
+	), Vs) ; Vs=[])),
+	length(Vs, Card).
+%%	owl_cardinality(+Resource, +Property, -Card) is det.
+owl_cardinality(Resource, Property, Card) :-
+	once((bagof(V, owl_has(Resource, Property, V), Vs) ; Vs=[])),
+	length(Vs, Card).
 
 
 		 /*******************************
@@ -407,6 +526,8 @@ non_negative_int(Atom, Number) :-
 %	</rdfs:Class>
 %	==
 
+owl_description(Restriction, Restriction) :- compound(Restriction), !.
+
 owl_description(ID, Restriction) :-
 	(   rdf_equal(owl:'Thing', ID)
 	->  Restriction = thing
@@ -431,7 +552,6 @@ owl_description(ID, Restriction) :-
 	    ;	Restriction = class(ID)
 	    )
 	).
-
 
 		 /*******************************
 		 *	   OWL_SATISFIES	*
@@ -593,6 +713,52 @@ intersection_of(Nil, _) :-
 
 
 		 /*******************************
+		 *	  AUX PREDS (CIRC)	*
+		 *******************************/
+
+% An element in a property chain is either an object property or a description
+% containing an owl:inverseOf some object property.
+owl_chain_property(Ch, Pr) :-
+        var(Ch),
+        nonvar(Pr),
+        Ch = Pr.
+        
+owl_chain_property(Ch, Pr) :-
+        nonvar(Ch),
+        rdfs_individual_of(Ch, owl:'ObjectProperty'),
+        Ch = Pr.
+owl_chain_property(Ch, Pr) :-
+        nonvar(Ch),
+        \+ rdfs_individual_of(Ch, owl:'ObjectProperty'),
+        rdf_has(Ch, owl:inverseOf, Pr).
+
+kr_get_props([], Props, Props).
+
+kr_get_props([ChainFirst|RestChain], CrProps, Props) :-
+        owl_chain_property(ChainFirst, Property),
+        kr_get_props(RestChain, [Property|CrProps], Props).
+
+kr_get_props(PropChain, Props) :-
+        kr_get_props(PropChain, [], Props).
+
+kr_circular_chain(ChainProperties, PreviousProperties) :-
+        member(P, PreviousProperties),
+        member(P, ChainProperties).
+
+kr_circular_chain(ChainProperties, PreviousProperties) :-
+        member(P, PreviousProperties),
+        rdf_has(P, owl:inverseOf, IP),
+        member(IP, ChainProperties).
+
+kr_circular_chain(ChainProperties, PreviousProperties) :-
+        member(CP, ChainProperties),
+        rdf_has(CP, owl:propertyChainAxiom, RDFList),
+        rdfs_list_to_prolog_list(RDFList, CPChain),
+        kr_get_props(CPChain, CPProps),
+        append(PreviousProperties, ChainProperties, NewPreviousProperties),
+        kr_circular_chain(CPProps, NewPreviousProperties).
+
+		 /*******************************
 		 *	  OWL PROPERTIES	*
 		 *******************************/
 
@@ -682,20 +848,26 @@ owl_same_as(X, Y, Visited) :-
 %	@bug	owl_has_direct/3 also uses SWRL rules.  This should be
 %		moved elsewhere.
 
+%%      MP 06/2017: also add support for reasoning based on PropertyChain axioms of object properties
+%%	TODO: add support for Equivalent properties and mixes of sub properties/Equivalent ones
+
 owl_has_direct(S, P, O) :-
-	rdf(S, P, O).
-owl_has_direct(S, P, O) :-
-	(   rdf_has(P, owl:inverseOf, P2)
-	->  true
-	;   rdf_has(P2, owl:inverseOf, P)
-	),
-	rdf_has(O, P2, S).		% TBD: must call owl_has_direct/3
+        owl_has_direct_internal(S, P, O).
+
 owl_has_direct(S, P, O) :-
 	rdfs_individual_of(P, owl:'SymmetricProperty'),
-	rdf(O, P, S).
-owl_has_direct(S, P, O) :-
-	owl_use_has_value(S, P, O).
+	owl_has_direct_internal(O, P, S).
 
+owl_has_direct(S, P, O) :-
+        (   rdf_has(P, owl:inverseOf, P2)
+        ->  true
+        ;   rdf_has(P2, owl:inverseOf, P)
+        ),
+        (   owl_has_direct_internal(O, P2, S)
+        ->  true
+        ;   rdfs_individual_of(P2, owl:'SymmetricProperty'),
+            owl_has_direct_internal(S, P2, O)
+        ).
 
 %----------------------------------------------------------
 % added by BJW for use of OWL with SWRL rules, highly experimental
@@ -708,6 +880,64 @@ owl_has_direct(S, P, O) :-
 
 owl_has_direct(S, P, O) :-
 	owl_use_rule(S, P, O).
+
+%% Simplest branch: find an explicitly stored rdf triple (S, P, O)
+owl_has_direct_internal(S, P, O) :-
+	rdf_has(S, P, O).
+
+%% If P is bound to an object property, see if any of its PropertyChain axioms is able to produce explicitly known triples.
+%% ASSUMPTION: no circular PropertyChain axioms (example, P defined as A o B and A defined as P o B)
+owl_has_direct_internal(S, P, O) :-
+        nonvar(P),
+        rdfs_individual_of(P, owl:'ObjectProperty'),
+        rdf_has(P, owl:propertyChainAxiom, RDFList),
+        rdfs_list_to_prolog_list(RDFList, PropChain),
+% We need this because the PropChain contains a list of either individuals of type owl:'ObjectProperty', 
+% or individuals who are not object properties but have owl:inverseOf some owl:'ObjectProperty',
+% and also we need a simple list of the props appearing in a property chain.
+        kr_get_props(PropChain, Props),
+% Ensure we avoid circular property chains
+        \+ kr_circular_chain(Props, [P]),
+        owl_has_property_chain(S, PropChain, O).
+
+%% No longer needed. We now attempt direct and inverse properties using the owl_has_direct above, and defined a predicate
+%% owl_has_direct_internal that never looks for inverse properties, to avoid infinite backtracking. This fixes the TBD below.
+% owl_has_direct(S, P, O) :-
+%	(   rdf_has(P, owl:inverseOf, P2)
+%	->  true
+%	;   rdf_has(P2, owl:inverseOf, P)
+%	),
+%	rdf_has(O, P2, S).		% TBD: must call owl_has_direct/3
+
+%% Copied above
+% owl_has_direct(S, P, O) :-
+% 	rdfs_individual_of(P, owl:'SymmetricProperty'),
+% 	rdf(O, P, S).
+
+owl_has_direct_internal(S, P, O) :-
+	owl_use_has_value(S, P, O).
+
+owl_has_property_chain(S, PropChain, O) :-
+        nonvar(S),
+        owl_has_property_chain_S2O(S, PropChain, O).
+
+owl_has_property_chain(S, PropChain, O) :-
+        var(S),
+        nonvar(O),
+        reverse(PropChain, PropChainRev),
+        owl_has_property_chain_O2S(O, PropChainRev, S).
+
+owl_has_property_chain_S2O(O, [], O).
+
+owl_has_property_chain_S2O(S, [P|RestChain], O) :-
+        owl_has(S, P, Oi),
+        owl_has_property_chain_S2O(Oi, RestChain, O).
+
+owl_has_property_chain_O2S(S, [], S).
+
+owl_has_property_chain_O2S(O, [P|RestChain], S) :-
+        owl_has(Si, P, O),
+        owl_has_property_chain_O2S(Si, RestChain, S).
 
 owl_use_rule(S, P, O):-
 	rdf(Rule, rdf:type, swrl:'Impl'),     % pick a rule
@@ -856,6 +1086,7 @@ list_head(List, Head) :-
 %
 %	Transitive version of owl_direct_subclass_of/2.
 
+owl_subclass_of(Class, 'http://www.w3.org/2002/07/owl#Thing') :- nonvar(Class), !.
 owl_subclass_of(Class, Super) :-
 	rdf_equal(rdfs:'Resource', Resource),
 	Super == Resource, !,

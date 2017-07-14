@@ -54,6 +54,7 @@
       rdf_instance_from_class/3,
       rdf_phas/3,
       rdf_atom_no_ns/2,
+      rdf_unique_id/2,
       get_timepoint/1,
       get_timepoint/2,
       create_timepoint/2,
@@ -202,7 +203,6 @@ rdf_unique_id(Class, UniqID) :-
   ((rdf(Instance,_,_);rdf(_,_,Instance)) ->
     (rdf_unique_id(Class, UniqID));
     (UniqID = Instance)).
-
 
 
 %% create_restr(+Class, +Prop, +Value, +RestrType, +SourceRef, -Restr) is det.
