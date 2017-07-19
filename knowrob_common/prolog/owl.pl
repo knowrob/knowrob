@@ -111,7 +111,8 @@
 	owl_inverse_property(r, r),
 	owl_same_as(r, r),
 	owl_disjoint_with(r, r),
-	owl_find(+, t, t, +, -).
+	owl_find(+, t, t, +, -),
+	rdf_assert_literal(r, r, +).
 
 
 		 /*******************************
@@ -217,29 +218,29 @@ restriction_facet(R, cardinality(Min, Max, Class)) :-
 %
 owl_restriction_assert(restriction(P,all_values_from(Cls)), Id) :-
   owl_description_assert(Cls, ClsId),
-  rdf_instance_from_class(owl:'Restriction', Id),
+  knowrob_owl:rdf_instance_from_class('http://www.w3.org/2002/07/owl#Restriction', Id),
   rdf_assert(Id, owl:onProperty, P),
   rdf_assert(Id, owl:allValuesFrom, ClsId), !.
 owl_restriction_assert(restriction(P,some_values_from(Cls)), Id) :-
   owl_description_assert(Cls, ClsId),
-  rdf_instance_from_class(owl:'Restriction', Id),
+  knowrob_owl:rdf_instance_from_class('http://www.w3.org/2002/07/owl#Restriction', Id),
   rdf_assert(Id, owl:onProperty, P),
   rdf_assert(Id, owl:someValuesFrom, ClsId), !.
 owl_restriction_assert(restriction(P,cardinality(Card,Card,Cls)), Id) :- !,
   owl_description_assert(Cls, ClsId),
-  rdf_instance_from_class(owl:'Restriction', Id),
+  knowrob_owl:rdf_instance_from_class('http://www.w3.org/2002/07/owl#Restriction', Id),
   rdf_assert(Id, owl:onProperty, P),
   rdf_assert(Id, owl:onClass, ClsId),
   rdf_assert_literal(Id, owl:cardinality, Card), !.
 owl_restriction_assert(restriction(P,cardinality(Min,Max,Cls)), Id) :-
   owl_description_assert(Cls, ClsId),
-  rdf_instance_from_class(owl:'Restriction', Id),
+  knowrob_owl:rdf_instance_from_class('http://www.w3.org/2002/07/owl#Restriction', Id),
   rdf_assert(Id, owl:onProperty, P),
   rdf_assert(Id, owl:onClass, ClsId),
   once(( Min is 0 ;  rdf_assert_literal(Id, owl:minCardinality, Min) )),
   once(( Max = inf ; rdf_assert_literal(Id, owl:maxCardinality, Max) )), !.
 owl_restriction_assert(restriction(P,has_value(V)), Id) :-
-  rdf_instance_from_class(owl:'Restriction', Id),
+  knowrob_owl:rdf_instance_from_class('http://www.w3.org/2002/07/owl#Restriction', Id),
   rdf_assert(Id, owl:onProperty, P),
   rdf_assert(Id, owl:hasValue, V), !.
 
@@ -705,32 +706,32 @@ owl_description_assert(nothing, 'http://www.w3.org/2002/07/owl#Nothing') :- !.
 owl_description_assert(restriction(P,Facet), Id) :-
   owl_restriction_assert(restriction(P,Facet), Id), !.
 owl_description_assert(union_of(List), Id) :-
-  rdf_instance_from_class(owl:'Class', Id),
+  knowrob_owl:rdf_instance_from_class('http://www.w3.org/2002/07/owl#Class', Id),
   owl_description_list_assert(List,ListId),
   rdf_assert(Id, owl:unionOf, ListId), !.
 owl_description_assert(intersection_of(List), Id) :-
-  rdf_instance_from_class(owl:'Class', Id),
+  knowrob_owl:rdf_instance_from_class('http://www.w3.org/2002/07/owl#Class', Id),
   owl_description_list_assert(List,ListId),
   rdf_assert(Id, owl:intersectionOf, ListId), !.
 owl_description_assert(complement_of(Cls), Id) :-
-  rdf_instance_from_class(owl:'Class', Id),
+  knowrob_owl:rdf_instance_from_class('http://www.w3.org/2002/07/owl#Class', Id),
   owl_description_assert(Cls,ClsId),
   rdf_assert(Id, owl:complementOf, ClsId), !.
 owl_description_assert(one_of(List), Id) :-
-  rdf_instance_from_class(owl:'Class', Id),
+  knowrob_owl:rdf_instance_from_class('http://www.w3.org/2002/07/owl#Class', Id),
   owl_description_list_assert(List,ListId),
   rdf_assert(Id, owl:oneOf, ListId), !.
 
 owl_description_list_assert([], 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil') :- !.
 owl_description_list_assert(List, ListId) :-
-  rdf_instance_from_class(rdf:'List', ListId),
+  knowrob_owl:rdf_instance_from_class('http://www.w3.org/1999/02/22-rdf-syntax-ns#List', ListId),
   owl_description_list_assert_(ListId, List).
 
 owl_description_list_assert_(Id, [First|Rest]) :-
   owl_description_assert(First, FirstId),
   owl_description_list_assert(Rest, RestId),
-  rdf_assert(Id, rdf:'first', FirstId),
-  rdf_assert(Id, rdf:'rest', RestId).
+  rdf_assert(Id, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#first', FirstId),
+  rdf_assert(Id, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#rest', RestId).
 
 rdf_assert_literal(S,P,V) :-
   once(( (atom(V), V_atom=V) ; atom_number(V_atom,V) )),
