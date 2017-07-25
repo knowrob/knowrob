@@ -366,9 +366,8 @@ owl_property_range_on_class(Class, Predicate, Range) :-
 		range_on_class(Class, Predicate, R) ;
 		rdf_phas(Predicate, rdfs:range, R)
 	), Ranges),
-	owl_most_specific(Ranges, Ranges_specific),
 	findall(R, (
-		member(X, Ranges_specific),
+		owl_most_specific(Ranges, X),
 		once(( range_on_cardinality(Class, Predicate, X, R) ; R=X ))
 	), Ranges_cardinality),
 	(  Ranges_cardinality=[]
@@ -1300,16 +1299,17 @@ owl_terminal_subclass_of(Class, Terminal) :-
 	Class \= SC,
 	owl_terminal_subclass_of(SC, Terminal).
 
-%%	owl_most_specific(+Types, -List) is semidet.
+%%	owl_most_specific(+Types, -Specific) is semidet.
 %
-owl_most_specific(Types, List) :-
+owl_most_specific(Types, Specific) :-
 	bagof(Cls, (
 		member(Cls, ['http://www.w3.org/2002/07/owl#Thing'|Types]),
 		forall(( % ensure there is no class in Types that is more specific then Cls
 			member(Cls_other, Types),
 			Cls \= Cls_other
 		), \+ owl_subclass_of(Cls_other, Cls))
-	), List).
+	), List),
+	member(Specific, List).
 
 %%	owl_most_specific_predicate(+Predicates, -P) is semidet.
 %
@@ -1328,7 +1328,7 @@ owl_common_ancestor(Types, Common) :-
 		owl_subclass_of(Cls_a, X),
 		forall( member(Cls_b, Types), owl_subclass_of(Cls_b, X) )
 	), CommonTypes),
-	owl_most_specific(CommonTypes, [Common|_]).
+	owl_most_specific(CommonTypes, Common).
 
 owl_gen_supers(Class, _, Class).
 owl_gen_supers(Class, Visited, Super) :-
