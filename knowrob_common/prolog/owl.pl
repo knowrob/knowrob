@@ -1046,11 +1046,10 @@ owl_has_direct(S, P, O) :-
         ->  true
         ;   rdf_has(P2, owl:inverseOf, P)
         ),
-        (   owl_has_direct_internal(O, P2, S)
-        ->  true
-        ;   rdfs_individual_of(P2, owl:'SymmetricProperty'),
+        (   owl_has_direct_internal(O, P2, S) ; (
+            rdfs_individual_of(P2, owl:'SymmetricProperty'),
             owl_has_direct_internal(S, P2, O)
-        ).
+        )).
 
 %----------------------------------------------------------
 % added by BJW for use of OWL with SWRL rules, highly experimental
@@ -1078,9 +1077,10 @@ owl_has_direct_internal(S, P, O) :-
 % We need this because the PropChain contains a list of either individuals of type owl:'ObjectProperty', 
 % or individuals who are not object properties but have owl:inverseOf some owl:'ObjectProperty',
 % and also we need a simple list of the props appearing in a property chain.
-        kr_get_props(PropChain, Props),
+% FIXME(DB): I have problems with this check. I guess because there are named inverse properties in my case
+        %kr_get_props(PropChain, Props),
 % Ensure we avoid circular property chains
-        \+ kr_circular_chain(Props, [P]),
+        %\+ kr_circular_chain(Props, [P]),
         owl_has_property_chain(S, PropChain, O).
 
 %% No longer needed. We now attempt direct and inverse properties using the owl_has_direct above, and defined a predicate
