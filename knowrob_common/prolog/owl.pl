@@ -1270,7 +1270,9 @@ list_head(List, Head) :-
 %
 %	Transitive version of owl_direct_subclass_of/2.
 
-owl_subclass_of(Class, 'http://www.w3.org/2002/07/owl#Thing') :- nonvar(Class), !.
+owl_subclass_of(Class, 'http://www.w3.org/2002/07/owl#Thing') :-
+	nonvar(Class),
+	rdfs_individual_of(Class, owl:'Class').
 owl_subclass_of(Class, Super) :-
 	rdf_equal(rdfs:'Resource', Resource),
 	Super == Resource, !,
