@@ -101,7 +101,7 @@ plan_constrained_objects(Plan, Action, PrevActions) :-
   findall(Obj, plan_constrained_objects(Plan, Action, PrevActions, Obj), Objs),
   forall(member(Obj,Objs), rdf_assert(Action, knowrob:objectActedOn, Obj)).
   
-plan_constrained_objects(Plan, Action, PrevActions, Obj) :-
+plan_constrained_objects(_Plan, Action, PrevActions, Obj) :-
   % FIXME: make sure action was successfull?
   % FIXME: check if this constraint is part of plan!
   %class_properties(Plan, knowrob:inputOutputConstraint, Constraint),
