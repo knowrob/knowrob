@@ -190,8 +190,9 @@ rdf_instance_from_class(Class, SourceRef, Instance) :-
 
 rdf_unique_id(Class, UniqID) :-
 
-  append("$1$", _, Seed),
-  crypt(Class, Seed),
+  phrase("$1$", PreSeed, _),
+  crypt(Class, PreSeed),
+  random_permutation(PreSeed, Seed),
   format(atom(Hash), '~s~n', [Seed]),
   sub_atom(Hash, 3, 8, _, Sub),
 
