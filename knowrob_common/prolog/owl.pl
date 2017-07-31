@@ -53,6 +53,7 @@
 	    owl_inverse_property/2,
 	    owl_most_specific_predicate/2,
 	    owl_most_specific/2,
+	    owl_common_ancestor/2,
 	    owl_direct_subclass_of/2,	% ?Resource, ?Class
 	    owl_subclass_of/2,		% ?Class, ?Super
 	    owl_has/3,			% ?Subject, ?Predicate, ?Object
@@ -107,6 +108,7 @@
 	owl_has(r, r, o),
 	owl_most_specific_predicate(t,t),
 	owl_most_specific(t,t),
+	owl_common_ancestor(t,r),
 	owl_has_direct(r, r, o),
 	owl_inverse_property(r, r),
 	owl_same_as(r, r),
@@ -409,12 +411,12 @@ range_on_class(Class, Predicate, Range) :-
 	rdfs_list_to_prolog_list(Set, Members),
 	findall(R, (
 		member(Descr, Members),
-		range_on_class(Descr, Predicate, R)
+		range_on_class(Descr, Predicate, R),
+		\+ rdf_equal(R, owl:'Thing')
 	), Ranges),
 	% if each union member restricts the range
 	length(Ranges, N), length(Members, N),
-	owl_common_ancestor(Ranges, Range),
-	\+ rdf_equal(Range, owl:'Thing').
+	owl_description_assert(union_of(Ranges), Range).
 
 range_on_class(Class, Predicate, Range) :-
 	rdf_has(Class, owl:intersectionOf, Set),
@@ -1323,10 +1325,11 @@ owl_most_specific_predicate(Predicates, P) :-
 %%	owl_common_ancestor(+Types, Common) is semidet.
 %
 owl_common_ancestor(Types, Common) :-
+	member(Cls_a, Types),
 	bagof(X, (
-		member(Cls_a, Types),
-		owl_subclass_of(Cls_a, X),
-		forall( member(Cls_b, Types), owl_subclass_of(Cls_b, X) )
+		rdfs_subclass_of(Cls_a, X),
+		\+ rdfs_individual_of(X, owl:'Restriction'),
+		forall( member(Cls_b, Types), rdfs_subclass_of(Cls_b, X) )
 	), CommonTypes),
 	owl_most_specific(CommonTypes, Common).
 
