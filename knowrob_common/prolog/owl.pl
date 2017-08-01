@@ -83,7 +83,8 @@
 	user:goal_expansion/2.
 
 :- dynamic
-	owl_property_range_cached/3.
+	owl_property_range_cached/3,
+	owl_cardinality_cached/4.
 
 :- rdf_meta
 	owl_restriction_on(r, t),
@@ -343,8 +344,8 @@ owl_property_range_on_resource(Resource, Predicate, Range) :-
 %%	owl_property_range_on_subject(+Subject, +Pred, -Range) is semidet.
 %
 owl_property_range_on_subject(Subject, Predicate, Range) :-
-	range_on_subject(Subject, Predicate, R) *->
-		Range=R ; Range='http://www.w3.org/2002/07/owl#Thing'.
+	range_on_subject(Subject, Predicate, Range) *->
+		true ; Range='http://www.w3.org/2002/07/owl#Thing'.
 
 range_on_subject(Subject, Predicate, Range) :-
 	% infer range based on value type of functional property
@@ -382,13 +383,13 @@ owl_property_range_on_class_(Class, Predicate, Range) :-
 		range_on_class(Class, Predicate, R) ;
 		rdf_phas(Predicate, rdfs:range, R)
 	), Ranges),
-	( range_on_cardinality_(Class, Predicate, Ranges, R) *->
-		Range=R ; Range='http://www.w3.org/2002/07/owl#Thing' ).
+	( range_on_cardinality_(Class, Predicate, Ranges, Range) *->
+		true ; Range='http://www.w3.org/2002/07/owl#Thing' ).
 
 range_on_cardinality_(Class, Predicate, Ranges, Range) :-
 	owl_most_specific(Ranges, R_specific),
-	( range_on_cardinality(Class, Predicate, R_specific, R_card) *->
-		Range=R_card ; Range=R_specific ).
+	( range_on_cardinality(Class, Predicate, R_specific, Range) *->
+		true ; Range=R_specific ).
 
 range_on_cardinality(_, _, 'http://www.w3.org/2002/07/owl#Thing',
                            'http://www.w3.org/2002/07/owl#Thing') :- !.
@@ -461,9 +462,8 @@ range_on_restriction(restriction(P,         Facet),                  Predicate, 
 	% and check if this inferred class description has a range restriction
 	% for `Predicate`.
 	range_on_class(Cls, P_inv, Cls_P_inv_range),
-	(  range_on_class(Cls_P_inv_range, Predicate, X) *->
-	   Range_inv=X ;
-	   Range_inv  = 'http://www.w3.org/2002/07/owl#Thing' ),
+	(  range_on_class(Cls_P_inv_range, Predicate, Range_inv) *->
+	   true ; Range_inv  = 'http://www.w3.org/2002/07/owl#Thing' ),
 	(  Range_inv \= 'http://www.w3.org/2002/07/owl#Thing' ->
 	   Range=Range_inv ; (
 	   owl_inverse_property(Predicate, Predicate_inv),
@@ -490,20 +490,15 @@ owl_cardinality_on_resource(Resource, Predicate, Range, Cardinality) :-
 %	Deduces the minimum and maximum cardinality for a property of a
 %	resource.  This predicate may fail if no information is available.
 %
-% TODO(DB): infer min cardinality by counting (S,P,O) triples?
 
 owl_cardinality_on_subject(Subject, Predicate, Range, Cardinality) :-
-	findall(C, (
-		cardinality_on_property(Predicate, C) ;
-		cardinality_on_subject(Subject, Predicate, Range, C)
-	), L),
+	findall(C, cardinality_on_subject(Subject, Predicate, Range, C), L),
 	join_decls(L, [Cardinality]).
 
 cardinality_on_subject(Subject, Predicate, Range, C) :-
 	rdf_has(Subject, rdf:type, Class),
-	once( rdf_has(Class, rdfs:subClassOf, _) ),
-	( cardinality_on_class(Class, Predicate, Range, C)
-	; cardinality_from_sibling_range(Class, Predicate, Range, C) ).
+	Class \= 'http://www.w3.org/2002/07/owl#NamedIndividual',
+	owl_cardinality_on_class(Class, Predicate, Range, C).
 
 %%	owl_cardinality_on_class(+Class, ?Predicate, ?Range, -Card:cardinality(Min, Max)) is semidet.
 %
@@ -511,6 +506,15 @@ cardinality_on_subject(Subject, Predicate, Range, C) :-
 %		--> accumulate max values and take difference to superclass min value (only if all direct subclasses restricted)
 %
 owl_cardinality_on_class(Class, Predicate, Range, Cardinality) :-
+	owl_cardinality_cached(Class, Predicate, Range, Cardinality_cached) ->
+	Cardinality = Cardinality_cached; (
+		% cache miss -> infer cardinality
+		owl_cardinality_on_class_(Class,Predicate,Range,Cardinality_inferred),
+		assertz(owl_cardinality_cached(Class,Predicate,Range,Cardinality_inferred)),
+		Cardinality = Cardinality_inferred
+	).
+
+owl_cardinality_on_class_(Class, Predicate, Range, Cardinality) :-
 	ground(Range),
 	findall(C, (
 		  cardinality_on_property(Predicate, C)
@@ -520,7 +524,6 @@ owl_cardinality_on_class(Class, Predicate, Range, Cardinality) :-
 	join_decls(L, [Cardinality]).
 
 cardinality_on_class(Class, Predicate, Range, cardinality(Min, Max)) :-
-	once( rdf_has(Class, rdfs:subClassOf, _) ),
 	rdfs_subclass_of(Class, RestrictionID),
 	rdfs_individual_of(RestrictionID, owl:'Restriction'),
 	rdf_has(RestrictionID, owl:onProperty, P),
@@ -687,7 +690,7 @@ owl_cardinality(Resource, Property, Card) :-
 %	</rdfs:Class>
 %	==
 
-owl_description(Restriction, Restriction) :- compound(Restriction), !.
+owl_description(Descr, Descr) :- compound(Descr), !.
 owl_description('http://www.w3.org/2002/07/owl#Thing',   thing)   :- !.
 owl_description('http://www.w3.org/2002/07/owl#Nothing', nothing) :- !.
 owl_description(ID, Restriction) :-
@@ -836,10 +839,7 @@ in_all_domains([H|T], Resource) :-
 %	according the the OWL-Description entailment rules.
 
 owl_individual_of(Resource, 'http://www.w3.org/2002/07/owl#Thing') :-
-	(   atom(Resource)
-	->  true
-	;   rdf_subject(Resource)
-	).
+	once(( atom(Resource) ; rdf_subject(Resource) )).
 owl_individual_of(_Resource, 'http://www.w3.org/2002/07/owl#Nothing') :-
 	fail. %!, MT 16032011
 owl_individual_of(Resource, Description) :-			% RDFS
@@ -1055,14 +1055,14 @@ owl_has_direct(S, P, O) :-
 	owl_has_direct_internal(O, P, S).
 
 owl_has_direct(S, P, O) :-
-        (   rdf_has(P, owl:inverseOf, P2)
-        ->  true
-        ;   rdf_has(P2, owl:inverseOf, P)
-        ),
-        (   owl_has_direct_internal(O, P2, S) ; (
-            rdfs_individual_of(P2, owl:'SymmetricProperty'),
-            owl_has_direct_internal(S, P2, O)
-        )).
+	(  rdf_has(P, owl:inverseOf, P2)
+	-> true
+	;  rdf_has(P2, owl:inverseOf, P)
+	),
+	(  owl_has_direct_internal(O, P2, S) ; (
+	   rdfs_individual_of(P2, owl:'SymmetricProperty'),
+	   owl_has_direct_internal(S, P2, O)
+	)).
 
 %----------------------------------------------------------
 % added by BJW for use of OWL with SWRL rules, highly experimental
