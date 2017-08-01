@@ -82,6 +82,9 @@
 :- multifile
 	user:goal_expansion/2.
 
+:- dynamic
+	owl_property_range_cached/3.
+
 :- rdf_meta
 	owl_restriction_on(r, t),
 	owl_restriction_implied_class(r, r),
@@ -340,10 +343,8 @@ owl_property_range_on_resource(Resource, Predicate, Range) :-
 %%	owl_property_range_on_subject(+Subject, +Pred, -Range) is semidet.
 %
 owl_property_range_on_subject(Subject, Predicate, Range) :-
-	findall(R, range_on_subject(Subject, Predicate, R), Ranges),
-	(  Ranges=[]
-	-> Range='http://www.w3.org/2002/07/owl#Thing'
-	;  member(Range, Ranges) ).
+	range_on_subject(Subject, Predicate, R) *->
+		Range=R ; Range='http://www.w3.org/2002/07/owl#Thing'.
 
 range_on_subject(Subject, Predicate, Range) :-
 	% infer range based on value type of functional property
@@ -353,36 +354,51 @@ range_on_subject(Subject, Predicate, Range) :-
 	once(( rdf_has(Subject, Predicate, O) ;
 	       rdf_has(O, Predicate_inv, Subject) )),
 	rdf_has(O, rdf:type, Range),
-	Range \= 'http://www.w3.org/2002/07/owl#Thing',
 	Range \= 'http://www.w3.org/2002/07/owl#NamedIndividual'.
 
 range_on_subject(Subject, Predicate, Range) :-
 	rdf_has(Subject, rdf:type, Class),
-	range_on_class(Class, Predicate, Range).
-
+	Class \= 'http://www.w3.org/2002/07/owl#NamedIndividual',
+	owl_property_range_on_class(Class, Predicate, Range).
 
 %%	owl_property_range_on_class(+Subject, +Pred, -Range) is semidet.
 %
+% NOTE(DB): Ranges on classes are only inferred once and then cached because inferring
+%           the range based on cardinality restrictions is very slow.
+% TODO(DB): only keep last n inferred ranges in the cache
+% TODO(DB): clear property range cache whenever a new ontology was loaded
+%
 owl_property_range_on_class(Class, Predicate, Range) :-
+	owl_property_range_cached(Class, Predicate, Ranges_cached) ->
+	member(Range, Ranges_cached) ; (
+		% cache miss -> infer range
+		findall(X, owl_property_range_on_class_(Class,Predicate,X), Ranges_inferred),
+		assertz(owl_property_range_cached(Class,Predicate,Ranges_inferred)),
+		member(Range, Ranges_inferred)
+	).
+
+owl_property_range_on_class_(Class, Predicate, Range) :-
 	findall(R, (
 		range_on_class(Class, Predicate, R) ;
 		rdf_phas(Predicate, rdfs:range, R)
 	), Ranges),
-	findall(R, (
-		owl_most_specific(Ranges, X),
-		once(( range_on_cardinality(Class, Predicate, X, R) ; R=X ))
-	), Ranges_cardinality),
-	(  Ranges_cardinality=[]
-	-> Range='http://www.w3.org/2002/07/owl#Thing'
-	;  member(Range, Ranges_cardinality) ).
+	( range_on_cardinality_(Class, Predicate, Ranges, R) *->
+		Range=R ; Range='http://www.w3.org/2002/07/owl#Thing' ).
+
+range_on_cardinality_(Class, Predicate, Ranges, Range) :-
+	owl_most_specific(Ranges, R_specific),
+	( range_on_cardinality(Class, Predicate, R_specific, R_card) *->
+		Range=R_card ; Range=R_specific ).
 
 range_on_cardinality(_, _, 'http://www.w3.org/2002/07/owl#Thing',
                            'http://www.w3.org/2002/07/owl#Thing') :- !.
 range_on_cardinality(Class, Predicate, RangeIn, RangeOut) :-
 	% for each range, find terminal classes that are subclass of range
-	% FIXME: this is potentially very slow when there is a large nuber of terminal subclasses
-	findall(X, owl_terminal_subclass_of(RangeIn, X), Terminals),
-	length(Terminals, NumTerminals), NumTerminals > 1,
+	bagof(X, owl_terminal_subclass_of(RangeIn, X), Terminals),
+	length(Terminals, NumTerminals),
+	% FIXME: There are potentially many terminal subclasses.
+	%        Limit search to classes that have not more then 19 terminal subclasses
+	NumTerminals < 20, % bad smell magic number
 	once(((
 		% if class restriction, use infered inverse predicate range for cardinality computation
 		rdfs_individual_of(Class, owl:'Restriction'),
@@ -393,11 +409,10 @@ range_on_cardinality(Class, Predicate, RangeIn, RangeOut) :-
 	);(
 		CardCls = Class
 	))),
-	% infer cardinality for each terminal class [AxleSnapInFBack:1,AxleSnapInFFront:0,AxleSnapInM:1]
+	% infer cardinality for each terminal class [A:1,B:0,C:1]
 	findall(X, (
 		member(X,Terminals),
-		( owl_cardinality_on_class(CardCls, Predicate, X, cardinality(Min,_))
-		-> Min > 0 ; true )
+		( owl_cardinality_on_class(CardCls, Predicate, X, cardinality(Min,_)) -> Min > 0 ; true )
 	), RangesOut),
 	% if a terminal class was eliminated with cardinality=0 then create union class of remaining
 	length(RangesOut, NumCandidates), NumCandidates < NumTerminals,
@@ -412,7 +427,7 @@ range_on_class(Class, Predicate, Range) :-
 	findall(R, (
 		member(Descr, Members),
 		range_on_class(Descr, Predicate, R),
-		\+ rdf_equal(R, owl:'Thing')
+		R \= 'http://www.w3.org/2002/07/owl#Thing'
 	), Ranges),
 	% if each union member restricts the range
 	length(Ranges, N), length(Members, N),
@@ -435,20 +450,22 @@ range_on_class(Class, Predicate, Range) :-
 range_on_restriction(restriction(Predicate, has_value(Range)),       Predicate, Range) :- !.
 range_on_restriction(restriction(Predicate, all_values_from(Range)), Predicate, Range) :- !.
 range_on_restriction(restriction(P,         Facet),                  Predicate, Range) :-
-	% infer range from inverse restrictions
 	P \= Predicate,
 	once(( Facet=all_values_from(Cls) ;
-		   Facet=some_values_from(Cls) ;
-		 ( Facet=cardinality(Min,_,Cls), Min > 0 ) )),
+	       Facet=some_values_from(Cls) ;
+	     ( Facet=cardinality(Min,_,Cls), Min > 0 ) )),
 	Cls \= 'http://www.w3.org/2001/XMLSchema#anyURI',
+	Cls \= 'http://www.w3.org/2002/07/owl#Thing',
 	owl_inverse_property(P, P_inv),
-	range_on_class(Cls, P_inv, Cls_P_inv_range), % FIXME: may causes infinite loops
-	once((
-		range_on_class(Cls_P_inv_range, Predicate, Range_inv) ;
-		Range_inv = 'http://www.w3.org/2002/07/owl#Thing'
-	)),
-	(  Range_inv \= 'http://www.w3.org/2002/07/owl#Thing'
-	-> Range=Range_inv ; (
+	% check if restricted class has range restriction for inverse property `P`,
+	% and check if this inferred class description has a range restriction
+	% for `Predicate`.
+	range_on_class(Cls, P_inv, Cls_P_inv_range),
+	(  range_on_class(Cls_P_inv_range, Predicate, X) *->
+	   Range_inv=X ;
+	   Range_inv  = 'http://www.w3.org/2002/07/owl#Thing' ),
+	(  Range_inv \= 'http://www.w3.org/2002/07/owl#Thing' ->
+	   Range=Range_inv ; (
 	   owl_inverse_property(Predicate, Predicate_inv),
 	   owl_description_assert(restriction(Predicate_inv,
 	                          some_values_from(Cls_P_inv_range)), Range)
@@ -621,8 +638,7 @@ owl_satisfies_cardinality(Resource, Property, Restriction) :-
 owl_satisfies_cardinality(Resource, _, _) :-
 	rdf_subject(Resource).
 
-non_negative_int(type(Type, Atom), Number) :-
-	rdf_equal(xsd:nonNegativeInteger, Type),
+non_negative_int(type('http://www.w3.org/2001/XMLSchema#nonNegativeInteger', Atom), Number) :-
 	catch(atom_number(Atom, Number), _, fail).
 non_negative_int(Atom, Number) :-
 	atom(Atom),
@@ -672,13 +688,10 @@ owl_cardinality(Resource, Property, Card) :-
 %	==
 
 owl_description(Restriction, Restriction) :- compound(Restriction), !.
-
+owl_description('http://www.w3.org/2002/07/owl#Thing',   thing)   :- !.
+owl_description('http://www.w3.org/2002/07/owl#Nothing', nothing) :- !.
 owl_description(ID, Restriction) :-
-	(   rdf_equal(owl:'Thing', ID)
-	->  Restriction = thing
-	;   rdf_equal(owl:'Nothing', ID)
-	->  Restriction = nothing
-	;   rdf_has(ID, rdf:type, owl:'Restriction')
+	(   rdf_has(ID, rdf:type, owl:'Restriction')
 	->  owl_restriction(ID, Restriction)
 	;   rdf_has(ID, rdf:type, owl:'Class')
 	->  (   (   rdf_has(ID, owl:unionOf, Set)
@@ -822,15 +835,13 @@ in_all_domains([H|T], Resource) :-
 %	Test  or  generate  the  resources    that  satisfy  Description
 %	according the the OWL-Description entailment rules.
 
-owl_individual_of(Resource, Thing) :-
-	rdf_equal(Thing, owl:'Thing'), %!, MT 16032011
+owl_individual_of(Resource, 'http://www.w3.org/2002/07/owl#Thing') :-
 	(   atom(Resource)
 	->  true
 	;   rdf_subject(Resource)
 	).
-owl_individual_of(_Resource, Nothing) :-
-	rdf_equal(Nothing, owl:'Nothing'), %!, MT 16032011
-	fail.
+owl_individual_of(_Resource, 'http://www.w3.org/2002/07/owl#Nothing') :-
+	fail. %!, MT 16032011
 owl_individual_of(Resource, Description) :-			% RDFS
 	rdfs_individual_of(Resource, Description).
 owl_individual_of(Resource, Class) :-
@@ -1293,13 +1304,9 @@ owl_subclass_of(Class, Super) :-
 owl_subclass_of(_, _) :-
 	throw(error(instantiation_error, _)).
 
-owl_terminal_subclass_of(Terminal, Terminal) :-
-	\+ rdf_has(_, rdfs:'subClassOf', Terminal), !.
 owl_terminal_subclass_of(Class, Terminal) :-
-	rdf_has(SC, rdfs:'subClassOf', Class),
-	rdfs_individual_of(SC, owl:'Class'),
-	Class \= SC,
-	owl_terminal_subclass_of(SC, Terminal).
+	rdf_has(Sub, rdfs:'subClassOf', Class) *->
+		owl_terminal_subclass_of(Sub, Terminal) ; Terminal=Class.
 
 %%	owl_most_specific(+Types, -Specific) is semidet.
 %
