@@ -31,12 +31,14 @@
 
 :- module(t20_owl,
 	  [ owl_restriction_on/2,	% ?Class, ?Restriction
+	    owl_restriction_on/3,	% ?Class, ?Property, ?Restriction
 	    owl_restriction_implied_class/2,
 	    owl_merged_restriction/3,	% ?Class, ?Property, ?Restriction
 	    owl_restriction/2,		% +Resource, -Restriction,
 	    owl_restriction_assert/2,		% +Restriction, -Resource,
 	    owl_unsatisfied_restriction/2,	% +Resource, ?Restriction
 	    owl_description/2,		% +Resource, -Description
+	    owl_description_recursive/2,		% +Resource, -Description
 	    owl_description_assert/2,		% +Restriction, -Resource,
 	    owl_property_range_on_resource/3,	% +Resource, +Pred, -Range
 	    owl_property_range_on_subject/3,	% +Subject, +Pred, -Range
@@ -88,12 +90,14 @@
 
 :- rdf_meta
 	owl_restriction_on(r, t),
+	owl_restriction_on(r, r, r),
 	owl_restriction_implied_class(r, r),
 	owl_merged_restriction(r, r, t),
 	owl_restriction(r, t),
 	owl_restriction_assert(t, r),
 	owl_unsatisfied_restriction(r, r),
 	owl_description(r, -),
+  owl_description_recursive(r, -),
 	owl_description_assert(t, t),
 	owl_property_range_on_resource(r, r, -),
 	owl_property_range_on_subject(r, r, -),
@@ -170,6 +174,13 @@ owl_restriction_on(Class, Restriction) :-
 	    ;	rdf_equal(Range, rdfs:'Resource')
 	    )
 	).
+
+%% owl_restriction_on(?Resource, ?Property, ?Restriction)
+%
+owl_restriction_on(Resource, Property, Restriction) :-
+  rdfs_individual_of(Resource, Cls),
+  rdfs_individual_of(Cls, owl:'Restriction'),
+  rdf_has(Restriction, owl:onProperty, Property).
 
 owl_restriction_implied_class(RestrictionID, Class) :-
 	rdf_has(RestrictionID, owl:allValuesFrom, Class), !.
@@ -713,6 +724,27 @@ owl_description(ID, Restriction) :-
 	    ;	Restriction = class(ID)
 	    )
 	).
+
+
+%%	owl_description_recursice(+DescriptionID, -Prolog) is det.
+%
+%	Same as owl_description, but continues for nested descirptions.
+%
+owl_description_recursive(Resource,Descr) :-
+  owl_description(Resource,Resource_x),
+  owl_description_recursive_(Resource_x,Descr), !.
+owl_description_recursive_(complement_of(Cls), complement_of(Cls_descr)) :-
+  owl_description_recursive(Cls, Cls_descr), !.
+owl_description_recursive_(restriction(P,some_values_from(Cls)),
+                           restriction(P,some_values_from(Cls_descr))) :-
+  owl_description_recursive(Cls, Cls_descr), !.
+owl_description_recursive_(restriction(P,all_values_from(Cls)),
+                           restriction(P,all_values_from(Cls_descr))) :-
+  owl_description_recursive(Cls, Cls_descr), !.
+owl_description_recursive_(restriction(P,cardinality(Min,Max,Cls)),
+                           restriction(P,cardinality(Min,Max,Cls_descr))) :-
+  owl_description_recursive(Cls, Cls_descr), !.
+owl_description_recursive_(Cls, Cls).
 
 %%	owl_description_assert(+Prolog, -Resource) is det.
 %
