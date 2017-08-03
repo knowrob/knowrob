@@ -57,6 +57,7 @@
       rdf_unique_id/2,
       rdf_readable/2,
       rdf_write_readable/1,
+      rdfs_type_of/2,
       get_timepoint/1,
       get_timepoint/2,
       create_timepoint/2,
@@ -104,6 +105,7 @@
             rdf_atom_no_ns(r,?),
             rdf_readable(r,-),
             rdf_write_readable(r),
+            rdfs_type_of(r,r),
             create_timepoint(+,r),
             create_poset(+,r),
             get_timepoint(r),
@@ -175,6 +177,15 @@ rdf_readable_internal(X,Y) :- atom(X), rdf_split_url(_, Y, X).
 rdf_readable_internal(X,X) :- atom(X).
 rdf_readable_internal(X,Y) :- compound(X), rdf_readable(X,Y).
 
+%% rdfs_type_of(?Resource, ?Type).
+rdfs_type_of(Resource, Cls) :-
+  rdf_has(Resource, rdf:type, Cls),
+  Cls \= 'http://www.w3.org/2002/07/owl#NamedIndividual',
+  % ensure there is no class in Types that is more specific then Cls
+  forall((
+     rdf_has(Resource, rdf:type, Cls_other),
+     Cls \= Cls_other
+  ), \+ rdfs_subclass_of(Cls_other, Cls)).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
