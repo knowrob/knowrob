@@ -53,6 +53,7 @@
 	    owl_individual_of_description/2,
 	    owl_individual_from_range/2,
 	    owl_inverse_property/2,
+	    owl_inverse_property_chain/2,
 	    owl_most_specific_predicate/2,
 	    owl_most_specific/2,
 	    owl_common_ancestor/2,
@@ -119,6 +120,7 @@
 	owl_common_ancestor(t,r),
 	owl_has_direct(r, r, o),
 	owl_inverse_property(r, r),
+	owl_inverse_property_chain(t, t),
 	owl_same_as(r, r),
 	owl_disjoint_with(r, r),
 	owl_find(+, t, t, +, -),
@@ -410,6 +412,7 @@ range_on_cardinality(Class, Predicate, RangeIn, RangeOut) :-
 	length(Terminals, NumTerminals),
 	% FIXME: There are potentially many terminal subclasses.
 	%        Limit search to classes that have not more then 19 terminal subclasses
+	%        Maybe better limit depth of search in owl_terminal_subclass_of?
 	NumTerminals < 20, % bad smell magic number
 	once(((
 		% if class restriction, use infered inverse predicate range for cardinality computation
@@ -421,7 +424,7 @@ range_on_cardinality(Class, Predicate, RangeIn, RangeOut) :-
 	);(
 		CardCls = Class
 	))),
-	% infer cardinality for each terminal class [A:1,B:0,C:1]
+	% infer cardinality for each terminal class
 	findall(X, (
 		member(X,Terminals),
 		( owl_cardinality_on_class(CardCls, Predicate, X, cardinality(Min,_)) -> Min > 0 ; true )
@@ -474,7 +477,7 @@ range_on_restriction(restriction(P,         Facet),                  Predicate, 
 	% for `Predicate`.
 	range_on_class(Cls, P_inv, Cls_P_inv_range),
 	(  range_on_class(Cls_P_inv_range, Predicate, Range_inv) *->
-	   true ; Range_inv  = 'http://www.w3.org/2002/07/owl#Thing' ),
+	   true ; Range_inv = 'http://www.w3.org/2002/07/owl#Thing' ),
 	(  Range_inv \= 'http://www.w3.org/2002/07/owl#Thing' ->
 	   Range=Range_inv ; (
 	   owl_inverse_property(Predicate, Predicate_inv),
@@ -882,7 +885,7 @@ owl_individual_of(Resource, Class) :-
 	member(C, Cs),
 	owl_subclass_of(C, Class).
 owl_individual_of(Resource, Class) :-
-        nonvar(Class), % MT 03122014 -- does not allow generic classification of instances any more, but avoids search through all equivalents of all classes whenever Class is unbound
+	nonvar(Class), % MT 03122014 -- does not allow generic classification of instances any more, but avoids search through all equivalents of all classes whenever Class is unbound
 	rdfs_individual_of(Class, owl:'Class'),
 	(   rdf_has(Class, owl:equivalentClass, EQ)
 	->  owl_individual_of(Resource, EQ)
@@ -939,53 +942,6 @@ intersection_of(List, Resource) :-
 intersection_of(Nil, _) :-
 	rdf_equal(rdf:nil, Nil).
 
-
-		 /*******************************
-		 *	  AUX PREDS (CIRC)	*
-		 *******************************/
-
-% An element in a property chain is either an object property or a description
-% containing an owl:inverseOf some object property.
-owl_chain_property(Ch, Pr) :-
-        var(Ch),
-        nonvar(Pr),
-        Ch = Pr.
-        
-owl_chain_property(Ch, Pr) :-
-        nonvar(Ch),
-        rdfs_individual_of(Ch, owl:'ObjectProperty'),
-        Ch = Pr.
-owl_chain_property(Ch, Pr) :-
-        nonvar(Ch),
-        \+ rdfs_individual_of(Ch, owl:'ObjectProperty'),
-        rdf_has(Ch, owl:inverseOf, Pr).
-
-kr_get_props([], Props, Props).
-
-kr_get_props([ChainFirst|RestChain], CrProps, Props) :-
-        owl_chain_property(ChainFirst, Property),
-        kr_get_props(RestChain, [Property|CrProps], Props).
-
-kr_get_props(PropChain, Props) :-
-        kr_get_props(PropChain, [], Props).
-
-kr_circular_chain(ChainProperties, PreviousProperties) :-
-        member(P, PreviousProperties),
-        member(P, ChainProperties).
-
-kr_circular_chain(ChainProperties, PreviousProperties) :-
-        member(P, PreviousProperties),
-        rdf_has(P, owl:inverseOf, IP),
-        member(IP, ChainProperties).
-
-kr_circular_chain(ChainProperties, PreviousProperties) :-
-        member(CP, ChainProperties),
-        rdf_has(CP, owl:propertyChainAxiom, RDFList),
-        rdfs_list_to_prolog_list(RDFList, CPChain),
-        kr_get_props(CPChain, CPProps),
-        append(PreviousProperties, ChainProperties, NewPreviousProperties),
-        kr_circular_chain(CPProps, NewPreviousProperties).
-
 		 /*******************************
 		 *	  OWL PROPERTIES	*
 		 *******************************/
@@ -1000,9 +956,7 @@ owl_has(S, P, O) :-
 	->  rdf_current_predicate(P)
 	;   true
 	),
-% 	rdf_reachable(SP, rdfs:subPropertyOf, P),
-% 	owl_has_transitive(S, SP, O).
-  owl_has_transitive(S, P, O).
+	owl_has_transitive(S, P, O).
 
 
 %%	owl_has_transitive(?Subject, ?Predicate, ?Object)
@@ -1080,7 +1034,7 @@ owl_same_as(X, Y, Visited) :-
 %%	TODO: add support for Equivalent properties and mixes of sub properties/Equivalent ones
 
 owl_has_direct(S, P, O) :-
-        owl_has_direct_internal(S, P, O).
+	owl_has_direct_internal(S, P, O).
 
 owl_has_direct(S, P, O) :-
 	rdfs_individual_of(P, owl:'SymmetricProperty'),
@@ -1096,18 +1050,6 @@ owl_has_direct(S, P, O) :-
 	   owl_has_direct_internal(S, P2, O)
 	)).
 
-%----------------------------------------------------------
-% added by BJW for use of OWL with SWRL rules, highly experimental
-% see http://www.daml.org/rules/proposal/rules-all.html for SWRL.
-% It implements simple Prolog-like inferencing were order of antecedents
-%  may matter and some assumptions about instantiation of variables are
-%  made (see comments below).
-% Currently is doesnot cater for arbitrary OWL descriptions mixed with
-% SWRL.
-
-%owl_has_direct(S, P, O) :-
-%	owl_use_rule(S, P, O).
-
 %% Simplest branch: find an explicitly stored rdf triple (S, P, O)
 owl_has_direct_internal(S, P, O) :-
 	rdf_has(S, P, O).
@@ -1115,141 +1057,32 @@ owl_has_direct_internal(S, P, O) :-
 %% If P is bound to an object property, see if any of its PropertyChain axioms is able to produce explicitly known triples.
 %% ASSUMPTION: no circular PropertyChain axioms (example, P defined as A o B and A defined as P o B)
 owl_has_direct_internal(S, P, O) :-
-        nonvar(P),
-        rdfs_individual_of(P, owl:'ObjectProperty'),
-        rdf_has(P, owl:propertyChainAxiom, RDFList),
-        rdfs_list_to_prolog_list(RDFList, PropChain),
-% We need this because the PropChain contains a list of either individuals of type owl:'ObjectProperty', 
-% or individuals who are not object properties but have owl:inverseOf some owl:'ObjectProperty',
-% and also we need a simple list of the props appearing in a property chain.
-% FIXME(DB): I have problems with this check. I guess because there are named inverse properties in my case
-        %kr_get_props(PropChain, Props),
-% Ensure we avoid circular property chains
-        %\+ kr_circular_chain(Props, [P]),
-        owl_has_property_chain(S, PropChain, O).
-
-%% No longer needed. We now attempt direct and inverse properties using the owl_has_direct above, and defined a predicate
-%% owl_has_direct_internal that never looks for inverse properties, to avoid infinite backtracking. This fixes the TBD below.
-% owl_has_direct(S, P, O) :-
-%	(   rdf_has(P, owl:inverseOf, P2)
-%	->  true
-%	;   rdf_has(P2, owl:inverseOf, P)
-%	),
-%	rdf_has(O, P2, S).		% TBD: must call owl_has_direct/3
-
-%% Copied above
-% owl_has_direct(S, P, O) :-
-% 	rdfs_individual_of(P, owl:'SymmetricProperty'),
-% 	rdf(O, P, S).
+	rdf_has(P, owl:propertyChainAxiom, RDFList),
+	rdfs_list_to_prolog_list(RDFList, PropChain),
+	owl_has_property_chain(S, PropChain, O).
 
 owl_has_direct_internal(S, P, O) :-
 	owl_use_has_value(S, P, O).
 
-owl_has_property_chain(S, PropChain, O) :-
-        nonvar(S),
-        owl_has_property_chain_S2O(S, PropChain, O).
 
 owl_has_property_chain(S, PropChain, O) :-
-        var(S),
-        nonvar(O),
-        reverse(PropChain, PropChainRev),
-        owl_has_property_chain_O2S(O, PropChainRev, S).
+	nonvar(S), !,
+	owl_has_property_chain_S2O(S, PropChain, O).
+owl_has_property_chain(S, PropChain, O) :-
+	reverse(PropChain, PropChainRev),
+	owl_has_property_chain_O2S(O, PropChainRev, S).
 
 owl_has_property_chain_S2O(O, [], O).
-
 owl_has_property_chain_S2O(S, [P|RestChain], O) :-
-        owl_has(S, P, Oi),
-        owl_has_property_chain_S2O(Oi, RestChain, O).
+	owl_has(S, P, Oi),
+	owl_has_property_chain_S2O(Oi, RestChain, O).
 
 owl_has_property_chain_O2S(S, [], S).
-
 owl_has_property_chain_O2S(O, [P|RestChain], S) :-
-        owl_has(Si, P, O),
-        owl_has_property_chain_O2S(Si, RestChain, S).
+	owl_has(Si, P, O),
+	owl_has_property_chain_O2S(Si, RestChain, S).
 
-%owl_use_rule(S, P, O):-
-	%rdf(Rule, rdf:type, swrl:'Impl'),     % pick a rule
-	%rdf(Rule, swrl:head, HeadList),
-	%rdfs_member(IPA, HeadList),           % can we use the rule?
-	%rdf(IPA, rdf:type, swrl:'IndividualPropertyAtom'),
-	%rdf(IPA, swrl:propertyPredicate, P),  % IndividualPropertyAtom
-	%rdf(Rule, swrl:body, BodyList),	      % yes
-	%rdfs_list_to_prolog_list(BodyList, BL),
-	%rdf_has(IPA, swrl:argument1, A1),
-	%rdf_has(IPA, swrl:argument2, A2),
-	%(   nonvar(S)
-	%->  (	nonvar(O) -> SL = [A1/S, A2/O]
-	    %;	SL= [A1/S]
-	    %)
-	%;   nonvar(O)
-	%->  SL = [A2/O]
-	%;   SL = []
-	%),
-	%owl_evaluate_body(BL, SL, Subst),
-	%ignore(member(A1/S, Subst)), % make sure S and O are instantiated
-	%ignore(member(A2/O, Subst)). % could probably be done more elegantly
 
-%owl_evaluate_body([], Subst, Subst).
-%owl_evaluate_body([IPA| Rest], SL, Subst):-
-	%rdf(IPA, rdf:type, swrl:'IndividualPropertyAtom'),
-	%rdf(IPA, swrl:propertyPredicate, P), % IPA = IndividualPropertyAtom
-	%rdf_has(IPA, swrl:argument1, A1),    % maybe rdf instead of rdf_has? BJW
-	%rdf_has(IPA, swrl:argument2, A2),
-	%owl_has_swrl(A1, P, A2, SL, Subst1),
-	%owl_evaluate_body(Rest, Subst1, Subst).
-%owl_evaluate_body([DF| Rest], SL, Subst):-
-	%rdf(DF, rdf:type, swrl:'DifferentIndividualsAtom'),
-	%rdf_has(DF, swrl:argument1, A1),
-	%instantiated(A1, S, SL),	% assume both arguments are instantiated
-	%rdf_has(DF, swrl:argument2, A2),
-	%instantiated(A2, O, SL),	% this assumption is to be discussed
-	%\+ owl_same_as(S,O),
-	%owl_evaluate_body(Rest, SL, Subst).
-%owl_evaluate_body([SF| Rest], SL, Subst):-
-	%rdf(SF, rdf:type, swrl:'SameIndividualAtom'),
-	%rdf_has(SF, swrl:argument1, A1),
-	%instantiated(A1, S, SL),	% assume both arguments are instantiated
-	%rdf_has(SF, swrl:argument2, A2),
-	%instantiated(A2, O, SL),	% this assumption is to be discussed
-	%owl_same_as(S,O),		%
-	%owl_evaluate_body(Rest, SL, Subst).
-%owl_evaluate_body([CA| Rest], SL, Subst):-
-	%rdf(CA, rdf:type, swrl:'ClassAtom'),
-	%rdf_has(CA, swrl:argument1, A1),
-	%(   instantiated(A1, S, SL) -> SL1=SL
-	%;   SL1 = [A1/S|SL]),
-	%rdf(CA, swrl:classPredicate, Class),
-	%owl_individual_of(S, Class),
-	%owl_evaluate_body(Rest, SL1, Subst).
-
-%owl_has_swrl(A1, P, A2, Subst, Subst):-	% this can probably be done better BJW
-	%instantiated(A1, S, Subst),
-	%instantiated(A2, O, Subst),!,	% dont backtrack here, proof complete
-	%owl_has(S, P, O).
-%owl_has_swrl(A1, P, A2, Subst, [A1/S|Subst]):-
-	%is_swrl_variable(A1),
-	%instantiated(A2, O, Subst),
-	%owl_has(S, P, O).
-%owl_has_swrl(A1, P, A2, Subst, [A2/O| Subst] ):-
-	%instantiated(A1, S, Subst),
-	%is_swrl_variable(A2),
-	%owl_has(S, P, O).
-%owl_has_swrl(A1, P, A2, Subst, [A1/S, A2/O| Subst]):-  % too general?
-	%\+ instantiated(A1, S, Subst),
-	%\+ instantiated(A2, O, Subst),
-	%owl_has(S, P, O).
-
-%is_swrl_variable(V):-
-	%rdf_has(V, rdf:type, swrl:'Variable').
-
-%instantiated(A, A, _Subst):-
-	%\+ rdf_has(A, rdf:type, swrl:'Variable').
-%instantiated(A, S, Subst):-
-	%rdf_has(A, rdf:type, swrl:'Variable'),
-	%member(A/S, Subst).
-
-%end additions BJW
-%----------------------------------------------------------
 owl_use_has_value(S, P, O) :-
 	nonvar(P), !,
 	rdf_has(Super, owl:onProperty, P),
@@ -1262,7 +1095,6 @@ owl_use_has_value(S, P, O) :-
 	rdfs_individual_of(Super, owl:'Restriction'),
 	rdf_has(Super, owl:onProperty, P),
 	rdf_has(Super, owl:hasValue, O).
-
 
 		 /*******************************
 		 *     OWL CLASS HIERARCHY	*
@@ -1343,14 +1175,11 @@ owl_terminal_subclass_of(Class, Terminal) :-
 %%	owl_most_specific(+Types, -Specific) is semidet.
 %
 owl_most_specific(Types, Specific) :-
-	bagof(Cls, (
-		member(Cls, ['http://www.w3.org/2002/07/owl#Thing'|Types]),
-		forall(( % ensure there is no class in Types that is more specific then Cls
-			member(Cls_other, Types),
-			Cls \= Cls_other
-		), \+ owl_subclass_of(Cls_other, Cls))
-	), List),
-	member(Specific, List).
+	member(Specific, ['http://www.w3.org/2002/07/owl#Thing'|Types]),
+	forall(( % ensure there is no class in Types that is more specific then Cls
+		member(Cls_other, Types),
+		Specific \= Cls_other
+	), \+ owl_subclass_of(Cls_other, Specific)).
 
 %%	owl_most_specific_predicate(+Predicates, -P) is semidet.
 %
@@ -1415,11 +1244,21 @@ owl_test_subclass(Class, Super) :-
 %% owl_inverse_property(?P, ?P_inv)
 %
 owl_inverse_property(P, P_inv) :-
-  ( rdf_has(P, owl:inverseOf, P_inv) ;
-    rdf_has(P_inv, owl:inverseOf, P) ), !.
+	( rdf_has(P, owl:inverseOf, P_inv) ;
+	  rdf_has(P_inv, owl:inverseOf, P) ), !.
 owl_inverse_property(P, P_inv) :-
-  rdf_instance_from_class('http://www.w3.org/2002/07/owl#Description', P_inv),
-  rdf_assert(P_inv, owl:inverseOf, P).
+	rdf_instance_from_class('http://www.w3.org/2002/07/owl#Description', P_inv),
+	rdf_assert(P_inv, owl:inverseOf, P).
+
+%% owl_inverse_property_chain(?P, ?P_inv)
+%
+owl_inverse_property_chain(PropChain, PropChain_inv) :-
+	reverse(PropChain, PropChain_reversed),
+	owl_inverse_property_chain_(PropChain_reversed,PropChain_inv).
+owl_inverse_property_chain_([], []) :- !.
+owl_inverse_property_chain_([P|Rest],[P_inv|Rest_inv]) :-
+	owl_inverse_property(P, P_inv),
+	owl_inverse_property_chain_(Rest,Rest_inv).
 
 
 %% owl_disjoint_with(?Class1, ?Class2)
