@@ -307,6 +307,7 @@ rdf_restriction_pl(Descr, min(Num,P,Cls_pl)) :-
   rdf_class_pl(Cls, Cls_pl).
 
 % Read Prolog representation of lists from RDF triple store
+% FIXME: use rdfs_list_to_prolog_list ?
 rdf_class_list_pl(Descr, []) :-
   rdf_equal(Descr, rdf:'nil').
 rdf_class_list_pl(Descr, [First|Rest]) :-
