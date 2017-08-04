@@ -178,7 +178,7 @@ pose_into_global_coord(RelativePose, ReferencePose, GlobalPose) :-
 pose4d_into_global_coord(RelativePose4d, ReferencePose4d, GlobalPose4d) :-
 
     jpl_new('javax.vecmath.Matrix4d', [], GlobalPose4d),
-    jpl_call(GlobalPose4d, 'mul', [RelativePose4d, ReferencePose4d], _),!.
+    jpl_call(GlobalPose4d, 'mul', [ReferencePose4d, RelativePose4d], _),!.
 
 
 % if ReferencePose unset but poseRelativeTo given, use this one instead
