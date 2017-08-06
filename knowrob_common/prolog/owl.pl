@@ -453,6 +453,9 @@ range_on_cardinality(Class, Predicate, RangeIn, RangeOut) :-
 	;  owl_description_assert(union_of(RangesOut), RangeOut)
 	).
 
+range_on_class('http://www.w3.org/2002/07/owl#Thing', _,
+               'http://www.w3.org/2002/07/owl#Thing') :- !.
+
 range_on_class(Class, Predicate, Range) :-
 	rdf_has(Class, owl:unionOf, Set),
 	rdfs_list_to_prolog_list(Set, Members),
@@ -492,8 +495,9 @@ range_on_restriction(restriction(P,         Facet),                  Predicate, 
 	% check if restricted class has range restriction for inverse property `P`,
 	% and check if this inferred class description has a range restriction
 	% for `Predicate`.
-	range_on_class(Cls, P_inv, Cls_P_inv_range),
-	(  range_on_class(Cls_P_inv_range, Predicate, Range_inv) *->
+	owl_property_range_on_class(Cls, P_inv, Cls_P_inv_range),
+	Cls_P_inv_range \= 'http://www.w3.org/2002/07/owl#Thing',
+	(  owl_property_range_on_class(Cls_P_inv_range, Predicate, Range_inv) *->
 	   true ; Range_inv = 'http://www.w3.org/2002/07/owl#Thing' ),
 	(  Range_inv \= 'http://www.w3.org/2002/07/owl#Thing' ->
 	   Range=Range_inv ; (
