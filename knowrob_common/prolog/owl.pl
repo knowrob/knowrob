@@ -399,6 +399,8 @@ range_on_subject(Subject, Predicate, Range) :-
 % TODO(DB): only keep last n inferred ranges in the cache
 % TODO(DB): use `rdf_generation` to check if cache needs to be whiped!
 %
+owl_property_range_on_class('http://www.w3.org/2002/07/owl#Thing', _,
+                            'http://www.w3.org/2002/07/owl#Thing') :- !.
 owl_property_range_on_class(Class, Predicate, Range) :-
 	owl_property_range_cached(Class, Predicate, Ranges_cached) ->
 	member(Range, Ranges_cached) ; (
@@ -452,9 +454,6 @@ range_on_cardinality(Class, Predicate, RangeIn, RangeOut) :-
 	-> RangeOut=X
 	;  owl_description_assert(union_of(RangesOut), RangeOut)
 	).
-
-range_on_class('http://www.w3.org/2002/07/owl#Thing', _,
-               'http://www.w3.org/2002/07/owl#Thing') :- !.
 
 range_on_class(Class, Predicate, Range) :-
 	rdf_has(Class, owl:unionOf, Set),
