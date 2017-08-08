@@ -32,7 +32,8 @@
 :- module(t20_owl,
 	  [ owl_restriction_on/2,	% ?Class, ?Restriction
 	    owl_restriction_on/3,	% ?Class, ?Property, ?Restriction
-	    owl_restriction_implied_class/2,
+	    owl_restriction_object_domain/2,
+	    owl_restriction_subject_type/2,
 	    owl_merged_restriction/3,	% ?Class, ?Property, ?Restriction
 	    owl_restriction/2,		% +Resource, -Restriction,
 	    owl_restriction_assert/2,		% +Restriction, -Resource,
@@ -92,7 +93,8 @@
 :- rdf_meta
 	owl_restriction_on(r, t),
 	owl_restriction_on(r, r, r),
-	owl_restriction_implied_class(r, r),
+	owl_restriction_object_domain(r, r),
+	owl_restriction_subject_type(r, r),
 	owl_merged_restriction(r, r, t),
 	owl_restriction(r, t),
 	owl_restriction_assert(t, r),
@@ -161,9 +163,6 @@
 %		* has_value(Value)
 %		* cardinality(Min, Max, Class)
 
-:- rdf_meta
-	rdf_phas(r,r,o).
-
 owl_restriction_on(Class, Restriction) :-
 	owl_subclass_of(Class, Super),
 	(   rdfs_individual_of(Super, owl:'Restriction'),
@@ -184,18 +183,25 @@ owl_restriction_on(Resource, Property, Restriction) :-
   rdfs_individual_of(Cls, owl:'Restriction'),
   rdf_has(Restriction, owl:onProperty, Property).
 
-owl_restriction_implied_class(RestrictionID, Class) :-
-	rdf_has(RestrictionID, owl:allValuesFrom, Class), !.
-owl_restriction_implied_class(RestrictionID, Class) :-
-	rdf_has(RestrictionID, owl:someValuesFrom, Class), !.
-owl_restriction_implied_class(RestrictionID, Class) :-
-	restriction_facet(RestrictionID, cardinality(Min, _, Class)),
+%% owl_restriction_object_domain(?Resource, ?Domain)
+%
+owl_restriction_object_domain(RestrictionID, Domain) :-
+	rdf_has(RestrictionID, owl:allValuesFrom, Domain), !.
+owl_restriction_object_domain(RestrictionID, Domain) :-
+	rdf_has(RestrictionID, owl:hasValue, Domain), !.
+owl_restriction_object_domain(RestrictionID, Domain) :-
+	rdf_has(RestrictionID, owl:someValuesFrom, Domain), !.
+owl_restriction_object_domain(RestrictionID, Domain) :-
+	restriction_facet(RestrictionID, cardinality(Min, _, Domain)),
 	Min > 0, !.
 
-rdf_phas(Property, P, O) :-
-	rdfs_subproperty_of(Property, Super),
-	rdf_has(Super, P, O2), !,
-	O = O2.
+%% owl_restriction_subject_type(?Restriction, ?SubjectType)
+%
+owl_restriction_subject_type(Restriction, SubjectType) :-
+  rdf_has(Restriction, owl:onProperty, P),
+  owl_restriction_object_domain(Restriction, Domain),
+  owl_inverse_property(P,P_inv),
+  owl_property_range_on_resource(Domain, P_inv, SubjectType).
 
 %%	owl_restriction(+Resource, -Prolog) is det.
 %
@@ -340,6 +346,13 @@ satisfies_restriction(values_from(some, _), _).
 satisfies_restriction(values_from(all, Class), Value) :-
 	rdfs_individual_of(Value, Class).
 
+:- rdf_meta rdf_phas(r,r,o).
+
+rdf_phas(Property, P, O) :-
+	rdfs_subproperty_of(Property, Super),
+	rdf_has(Super, P, O2), !,
+	O = O2.
+
 %	merge_values_from(+AllSome2, +C1, +AllSome2, +C2, -AllSome, -C)
 %
 %	Merge multiple allValuesFrom and someValuesFrom restrictions.
@@ -386,6 +399,8 @@ range_on_subject(Subject, Predicate, Range) :-
 % TODO(DB): only keep last n inferred ranges in the cache
 % TODO(DB): use `rdf_generation` to check if cache needs to be whiped!
 %
+owl_property_range_on_class('http://www.w3.org/2002/07/owl#Thing', _,
+                            'http://www.w3.org/2002/07/owl#Thing') :- !.
 owl_property_range_on_class(Class, Predicate, Range) :-
 	owl_property_range_cached(Class, Predicate, Ranges_cached) ->
 	member(Range, Ranges_cached) ; (
@@ -422,9 +437,9 @@ range_on_cardinality(Class, Predicate, RangeIn, RangeOut) :-
 		% if class restriction, use infered inverse predicate range for cardinality computation
 		rdfs_individual_of(Class, owl:'Restriction'),
 		rdf_has(Class, owl:onProperty, P_restr),
-		owl_restriction_implied_class(Class, Restr_cls),
+		owl_restriction_object_domain(Class, Obj_Domain),
 		owl_inverse_property(P_restr, P_inv),
-		owl_property_range_on_class(Restr_cls, P_inv, CardCls)
+		owl_property_range_on_resource(Obj_Domain, P_inv, CardCls)
 	);(
 		CardCls = Class
 	))),
@@ -479,8 +494,9 @@ range_on_restriction(restriction(P,         Facet),                  Predicate, 
 	% check if restricted class has range restriction for inverse property `P`,
 	% and check if this inferred class description has a range restriction
 	% for `Predicate`.
-	range_on_class(Cls, P_inv, Cls_P_inv_range),
-	(  range_on_class(Cls_P_inv_range, Predicate, Range_inv) *->
+	owl_property_range_on_class(Cls, P_inv, Cls_P_inv_range),
+	Cls_P_inv_range \= 'http://www.w3.org/2002/07/owl#Thing',
+	(  owl_property_range_on_class(Cls_P_inv_range, Predicate, Range_inv) *->
 	   true ; Range_inv = 'http://www.w3.org/2002/07/owl#Thing' ),
 	(  Range_inv \= 'http://www.w3.org/2002/07/owl#Thing' ->
 	   Range=Range_inv ; (
