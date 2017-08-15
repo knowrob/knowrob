@@ -41,6 +41,7 @@
 	    owl_description/2,		% +Resource, -Description
 	    owl_description_recursive/2,		% +Resource, -Description
 	    owl_description_assert/2,		% +Restriction, -Resource,
+	    owl_description_list_assert/2,
 	    owl_property_range_on_resource/3,	% +Resource, +Pred, -Range
 	    owl_property_range_on_subject/3,	% +Subject, +Pred, -Range
 	    owl_property_range_on_class/3,		% +Class, +Pred, -Range
@@ -60,6 +61,7 @@
 	    owl_common_ancestor/2,
 	    owl_direct_subclass_of/2,	% ?Resource, ?Class
 	    owl_subclass_of/2,		% ?Class, ?Super
+	    owl_subproperty_of/2,
 	    owl_has/3,			% ?Subject, ?Predicate, ?Object
 	    owl_has_direct/3,		% ?Subject, ?Predicate, ?Object
 	    owl_same_as/2,		% ?X, ?Y
@@ -116,6 +118,7 @@
 	owl_individual_from_range(r, t),
 	owl_direct_subclass_of(r, r),
 	owl_subclass_of(r, r),
+	owl_subproperty_of(r, r),
 	owl_has(r, r, o),
 	owl_most_specific_predicate(t,t),
 	owl_most_specific(t,t),
@@ -1191,6 +1194,15 @@ owl_subclass_of(_, _) :-
 owl_terminal_subclass_of(Class, Terminal) :-
 	rdf_has(Sub, rdfs:'subClassOf', Class) *->
 		owl_terminal_subclass_of(Sub, Terminal) ; Terminal=Class.
+
+%%	owl_subproperty_of(+Sub, -Super) is nondet.
+%
+owl_subproperty_of(Sub,Super) :-
+	rdfs_subproperty_of(Sub,Super).
+owl_subproperty_of(Sub,Super) :-
+	rdf_has(Sub, owl:inverseOf, Sub_inv),
+	rdf_has(Super, owl:inverseOf, Super_inv),
+	rdfs_subproperty_of(Sub_inv,Super_inv).
 
 %%	owl_most_specific(+Types, -Specific) is semidet.
 %
