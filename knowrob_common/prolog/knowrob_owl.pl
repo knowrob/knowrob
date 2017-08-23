@@ -55,6 +55,9 @@
       rdf_phas/3,
       rdf_atom_no_ns/2,
       rdf_unique_id/2,
+      rdf_readable/2,
+      rdf_write_readable/1,
+      rdfs_type_of/2,
       get_timepoint/1,
       get_timepoint/2,
       create_timepoint/2,
@@ -100,6 +103,9 @@
             rdf_instance_from_class(r,r),
             rdf_instance_from_class(r,r,r),
             rdf_atom_no_ns(r,?),
+            rdf_readable(r,-),
+            rdf_write_readable(r),
+            rdfs_type_of(r,r),
             create_timepoint(+,r),
             create_poset(+,r),
             get_timepoint(r),
@@ -150,6 +156,36 @@ rdf_phas(Property, P, O) :-
 
 rdf_atom_no_ns(Iri, Name) :- rdf_split_url(_, Name, Iri).
 
+%% rdf_write_readable(+Resource).
+rdf_write_readable(X) :- rdf_readable(X,Readable), write(Readable).
+
+%% rdf_readable(+Resource, -Readable).
+%
+% Utility predicate to convert RDF terms into a readable representation.
+%
+rdf_readable(class(Cls),Out) :- rdf_readable_internal(Cls,Out), !.
+rdf_readable(Descr,Out) :-
+  (is_list(Descr) -> X=Descr ; Descr=..X),
+  findall(Y_, (member(X_,X), once(rdf_readable_internal(X_,Y_))), Y),
+  Out=Y.
+rdf_readable_internal(P,P_readable) :-
+  atom(P), rdf_has(P, owl:inverseOf, P_inv),
+  rdf_readable_internal(P_inv, P_inv_),
+  atomic_list_concat(['inverse_of(',P_inv_,')'], '', P_readable), !.
+rdf_readable_internal(class(X),Y) :- rdf_readable_internal(X,Y).
+rdf_readable_internal(X,Y) :- atom(X), rdf_split_url(_, Y, X).
+rdf_readable_internal(X,X) :- atom(X).
+rdf_readable_internal(X,Y) :- compound(X), rdf_readable(X,Y).
+
+%% rdfs_type_of(?Resource, ?Type).
+rdfs_type_of(Resource, Cls) :-
+  rdf_has(Resource, rdf:type, Cls),
+  Cls \= 'http://www.w3.org/2002/07/owl#NamedIndividual',
+  % ensure there is no class in Types that is more specific then Cls
+  forall((
+     rdf_has(Resource, rdf:type, Cls_other),
+     Cls \= Cls_other
+  ), \+ rdfs_subclass_of(Cls_other, Cls)).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
@@ -190,11 +226,10 @@ rdf_instance_from_class(Class, SourceRef, Instance) :-
 
 
 rdf_unique_id(Class, UniqID) :-
-
-  phrase("$1$", Seed, _),
-  crypt(Class, Seed),
-  format(atom(Hash), '~s~n', [Seed]),
-  sub_atom(Hash, 3, 8, _, Sub),
+  % generate 8 random alphabetic characters
+  randseq(8, 25, Seq_random),
+  maplist(plus(65), Seq_random, Alpha_random),
+  atom_codes(Sub, Alpha_random),
 
   atom_concat(Class,  '_', Class2),
   atom_concat(Class2, Sub, Instance),
