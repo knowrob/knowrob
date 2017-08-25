@@ -73,7 +73,7 @@ public class JSONQuery {
         result.put(e.getKey(), e.getValue().doubleValue());
       else if (e.getValue().isInteger())
         result.put(e.getKey(), e.getValue().intValue());
-      else if (e.getValue().isCompound() && !e.getValue().isAtom()) {
+      else if ((e.getValue().isCompound() && !e.getValue().isAtom()) || e.getValue().isListNil()) {
         if (isList(e.getValue()))
           result.put(e.getKey(), encodeList(e.getValue()));
         else
