@@ -686,14 +686,14 @@ non_negative_int(Atom, Number) :-
 
 %%	owl_cardinality(+Resource, +Property, +Cls, -Card) is det.
 owl_cardinality(Resource, Property, Cls, Card) :-
-	once((bagof(V, (
+	once((setof(V, (
 		owl_has(Resource, Property, V), % need to use owl_has here for property chains
 		once(owl_individual_of(V,Cls))
 	), Vs) ; Vs=[])),
 	length(Vs, Card).
 %%	owl_cardinality(+Resource, +Property, -Card) is det.
 owl_cardinality(Resource, Property, Card) :-
-	once((bagof(V, owl_has(Resource, Property, V), Vs) ; Vs=[])),
+	once((setof(V, owl_has(Resource, Property, V), Vs) ; Vs=[])),
 	length(Vs, Card).
 
 
