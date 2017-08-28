@@ -5,3 +5,4 @@ bin
 build
 .gradle
 doc
+*.pyc
