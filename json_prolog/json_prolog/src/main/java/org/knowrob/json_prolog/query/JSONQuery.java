@@ -73,13 +73,14 @@ public class JSONQuery {
         result.put(e.getKey(), e.getValue().doubleValue());
       else if (e.getValue().isInteger())
         result.put(e.getKey(), e.getValue().intValue());
-      else if ((e.getValue().isCompound() && !e.getValue().isAtom()) || e.getValue().isListNil()) {
+      else if (e.getValue().isCompound() && !e.getValue().isAtom()) {
         if (isList(e.getValue()))
           result.put(e.getKey(), encodeList(e.getValue()));
         else
           result.put(e.getKey(), encodeCompoundTerm(e.getValue()));
-      }
-      else {
+      } else if (e.getValue().name().equals("[]")){
+        result.put(e.getKey(), e.getValue().name());
+      } else {
         // Warp atom in single quotes in order to avoid that the value is
         // converted to some JSON data structure (e.g., JSONObject, JSONArray, ...)
         result.put(e.getKey(), "'"+e.getValue().name()+"'");
