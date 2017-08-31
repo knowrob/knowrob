@@ -53,9 +53,11 @@
 	    owl_satisfies/2,		% +Spec, +Resource
 	    owl_individual_of/2,	% ?Resource, +Description
 	    owl_individual_of_description/2,
+	    owl_individual_of_all/2,
 	    owl_individual_from_range/2,
 	    owl_inverse_property/2,
 	    owl_inverse_property_chain/2,
+	    owl_inverse_functional/1,
 	    owl_most_specific_predicate/2,
 	    owl_most_specific/2,
 	    owl_common_ancestor/2,
@@ -115,6 +117,7 @@
 	owl_satisfies(r, t),
 	owl_individual_of(r, t),
 	owl_individual_of_description(r, t),
+	owl_individual_of_all(t,r),
 	owl_individual_from_range(r, t),
 	owl_direct_subclass_of(r, r),
 	owl_subclass_of(r, r),
@@ -125,6 +128,7 @@
 	owl_common_ancestor(t,r),
 	owl_has_direct(r, r, o),
 	owl_inverse_property(r, r),
+	owl_inverse_functional(r),
 	owl_inverse_property_chain(t, t),
 	owl_same_as(r, r),
 	owl_disjoint_with(r, r),
@@ -1292,6 +1296,11 @@ owl_inverse_property_chain_([P|Rest],[P_inv|Rest_inv]) :-
 	owl_inverse_property(P, P_inv),
 	owl_inverse_property_chain_(Rest,Rest_inv).
 
+%% owl_inverse_functional(?P)
+%
+owl_inverse_functional(P) :-
+  rdfs_subproperty_of(P, Super),
+  rdfs_individual_of(Super, owl:'InverseFunctionalProperty'), !.
 
 %% owl_disjoint_with(?Class1, ?Class2)
 %
