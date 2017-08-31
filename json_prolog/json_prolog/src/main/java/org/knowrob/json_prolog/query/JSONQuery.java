@@ -81,7 +81,7 @@ public class JSONQuery {
       } else if (e.getValue().name().equals("[]")){
         result.put(e.getKey(), e.getValue().name());
       } else {
-        // Warp atom in single quotes in order to avoid that the value is
+        // Wrap atom in single quotes in order to avoid that the value is
         // converted to some JSON data structure (e.g., JSONObject, JSONArray, ...)
         result.put(e.getKey(), "'"+e.getValue().name()+"'");
       }
