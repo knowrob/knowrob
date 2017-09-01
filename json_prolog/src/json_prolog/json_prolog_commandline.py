@@ -2,9 +2,58 @@
 import os
 import rospy
 import readline
+
+import sys
+
 from json_prolog import PrologException, Prolog
 
 HISTORY_NAME = os.path.expanduser('~/.json_prolog_commandline_history')
+HISTORY_LENGTH = 300
+
+def read_single_keypress():
+    """Waits for a single keypress on stdin.
+
+    This is a silly function to call if you need to do it a lot because it has
+    to store stdin's current setup, setup stdin for reading single keystrokes
+    then read the single keystroke then revert stdin back after reading the
+    keystroke.
+
+    Returns the character of the key that was pressed (zero on
+    KeyboardInterrupt which can happen when a signal gets handled)
+
+    """
+    import termios, fcntl, sys, os
+    fd = sys.stdin.fileno()
+    # save old state
+    flags_save = fcntl.fcntl(fd, fcntl.F_GETFL)
+    attrs_save = termios.tcgetattr(fd)
+    # make raw - the way to do this comes from the termios(3) man page.
+    attrs = list(attrs_save)  # copy the stored version to update
+    # iflag
+    attrs[0] &= ~(termios.IGNBRK | termios.BRKINT | termios.PARMRK
+                  | termios.ISTRIP | termios.INLCR | termios.IGNCR
+                  | termios.ICRNL | termios.IXON)
+    # oflag
+    attrs[1] &= ~termios.OPOST
+    # cflag
+    attrs[2] &= ~(termios.CSIZE | termios.PARENB)
+    attrs[2] |= termios.CS8
+    # lflag
+    attrs[3] &= ~(termios.ECHONL | termios.ECHO | termios.ICANON
+                  | termios.ISIG | termios.IEXTEN)
+    termios.tcsetattr(fd, termios.TCSANOW, attrs)
+    # turn off non-blocking
+    fcntl.fcntl(fd, fcntl.F_SETFL, flags_save & ~os.O_NONBLOCK)
+    # read a single keystroke
+    try:
+        ret = sys.stdin.read(1)  # returns a single character
+    except KeyboardInterrupt:
+        ret = 0
+    finally:
+        # restore old state
+        termios.tcsetattr(fd, termios.TCSAFLUSH, attrs_save)
+        fcntl.fcntl(fd, fcntl.F_SETFL, flags_save)
+    return ret
 
 
 class PQ(object):
@@ -12,43 +61,60 @@ class PQ(object):
         rospy.wait_for_service('/json_prolog/query')
         self.prolog = Prolog()
 
-    def prolog_query(self, q):
-        query = self.prolog.query(q)
-        solutions = [x for x in query.solutions()]
-        query.finish()
-        self.print_all_solutions(solutions)
+    def start_prolog_query(self, q):
+        self.query = self.prolog.query(q)
 
-    def print_all_solutions(self, solutions):
-        if len(solutions) == 0:
-            print('false.')
+    def finish_prolog_query(self):
+        self.query.finish()
+
+    def next_solution(self):
+        for solution in self.query.solutions():
+            yield solution
+
+    def print_solution(self, solution):
+        if solution == dict():
+            print('true.')
         else:
-            for s in solutions:
-                if s == dict():
-                    print('true.')
+            sys.stdout.write(',\n'.join(['{}: {}'.format(k, v) for k, v in solution.items()]))
+
+    def start_commandline(self):
+        try:
+            while not rospy.is_shutdown():
+                cmd = raw_input('?- ')
+                if cmd == 'quit.':
+                    break
+                elif cmd == '':
+                    continue
                 else:
-                    for k, v in s.items():
-                        print('{}: {}'.format(k, v))
+                    try:
+                        pq.start_prolog_query(cmd)
+                        print_false = True
+                        for solution in self.next_solution():
+                            print_false = False
+                            self.print_solution(solution)
+                            if solution == dict():
+                                break
+                            cmd = read_single_keypress()
+                            if cmd == '.':
+                                print('.')
+                                break
+                            print(' ;')
+                            print('')
+                        pq.finish_prolog_query()
+                        if print_false:
+                            print('false.')
+                    except PrologException as e:
+                        print(e)
+        except Exception as e:
+            print(e)
+        finally:
+            readline.write_history_file(HISTORY_NAME)
 
 
 if __name__ == '__main__':
     if os.path.isfile(HISTORY_NAME):
         readline.read_history_file(HISTORY_NAME)
-    rospy.init_node('pq')
+    readline.set_history_length(HISTORY_LENGTH)
+    rospy.init_node('json_prolog_commandline')
     pq = PQ()
-    cmd = ''
-    try:
-        while not rospy.is_shutdown():
-            cmd = raw_input('?- ')
-            if cmd == 'quit.':
-                break
-            elif cmd == '':
-                continue
-            else:
-                try:
-                    pq.prolog_query(cmd)
-                except PrologException as e:
-                    print(e)
-    except Exception as e:
-        print(e)
-    finally:
-        readline.write_history_file(HISTORY_NAME)
+    pq.start_commandline()
