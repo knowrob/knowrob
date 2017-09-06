@@ -60,6 +60,12 @@ class PQ(object):
     def __init__(self):
         rospy.wait_for_service('/json_prolog/query')
         self.prolog = Prolog()
+        self.load_namespace()
+
+    def load_namespace(self):
+        q = 'findall([_X, _Y], rdf_current_ns(_X, _Y), NS)'
+        solution = self.prolog.once(q)
+
 
     def start_prolog_query(self, q):
         self.query = self.prolog.query(q)
@@ -73,7 +79,7 @@ class PQ(object):
 
     def print_solution(self, solution):
         if solution == dict():
-            print('true.')
+            sys.stdout.write('true')
         else:
             sys.stdout.write(',\n'.join(['{}: {}'.format(k, v) for k, v in solution.items()]))
 
@@ -90,19 +96,21 @@ class PQ(object):
                         pq.start_prolog_query(cmd)
                         print_false = True
                         for solution in self.next_solution():
+                            if not print_false:
+                                print(' ;')
+                                print('')
                             print_false = False
                             self.print_solution(solution)
                             if solution == dict():
                                 break
                             cmd = read_single_keypress()
                             if cmd == '.':
-                                print('.')
                                 break
-                            print(' ;')
-                            print('')
                         pq.finish_prolog_query()
                         if print_false:
                             print('false.')
+                        else:
+                            print('.')
                     except PrologException as e:
                         print(e)
         except Exception as e:
