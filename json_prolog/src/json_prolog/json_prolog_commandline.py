@@ -2,9 +2,7 @@
 import os
 import rospy
 import readline
-
 import sys
-
 from json_prolog import PrologException, Prolog
 
 HISTORY_NAME = os.path.expanduser('~/.json_prolog_commandline_history')
@@ -54,6 +52,7 @@ def read_single_keypress():
         termios.tcsetattr(fd, termios.TCSAFLUSH, attrs_save)
         fcntl.fcntl(fd, fcntl.F_SETFL, flags_save)
     return ret
+
 
 
 class PQ(object):
@@ -117,6 +116,23 @@ class PQ(object):
             print(e)
         finally:
             readline.write_history_file(HISTORY_NAME)
+
+    def prolog_query(self, q):
+        query = self.prolog.query(q)
+        solutions = [x for x in query.solutions()]
+        query.finish()
+        self.print_all_solutions(solutions)
+
+    def print_all_solutions(self, solutions):
+        if len(solutions) == 0:
+            print('false.')
+        else:
+            for s in solutions:
+                if s == dict():
+                    print('true.')
+                else:
+                    for k, v in s.items():
+                        print('{}: {}'.format(k, v))
 
 
 if __name__ == '__main__':

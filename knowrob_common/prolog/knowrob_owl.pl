@@ -1161,7 +1161,7 @@ entity_head(Entity, _, Descr, TypeIri) :-
   -> true
   ; (
     findall(E, (
-      owl_individual_of_all(E, Types),
+      owl_individual_of_all(Types, E),
       \+ owl_individual_of(E, knowrob:'TemporalPart')
     ), Entities),
     % avoid redundant results of owl_individual_of
@@ -1182,11 +1182,6 @@ entity_head(Entity, [A,Type], _, TypeIri) :-
       not(rdf_reachable(BTypeIri, rdfs:subClassOf, TypeIri))
     )
   )).
-
-owl_individual_of_all(Individual, [TypeIri|Types]) :-
-  owl_individual_of(Individual, TypeIri),
-  owl_individual_of_all(Individual, Types).
-owl_individual_of_all(_, []).
 
 
 %% Read entity namespace

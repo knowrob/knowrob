@@ -211,15 +211,19 @@ intersection_of(List, Resource) :-
 intersection_of(Nil, _) :-
   rdf_equal(rdf:nil, Nil).
   
+
 owl_use_has_value(S, P, O) :-
 	nonvar(P), !,
 	rdf_has(Super, owl:onProperty, P),
 	rdf_has(Super, owl:hasValue, O),
-	owl_direct_subclass_of(Type, Super),
+	% NOTE(DB): not possible to infer has-value restrictions of superclasses using owl_direct_subclass_of
+	owl_subclass_of(Type, Super),
+	%owl_direct_subclass_of(Type, Super),
 	rdf_has(S, rdf:type, Type).
 owl_use_has_value(S, P, O) :-
 	rdf_has(S, rdf:type, Type),
-	owl_direct_subclass_of(Type, Super),
+	owl_subclass_of(Type, Super),
+	%owl_direct_subclass_of(Type, Super),
 	rdfs_individual_of(Super, owl:'Restriction'),
 	rdf_has(Super, owl:onProperty, P),
 	rdf_has(Super, owl:hasValue, O).

@@ -274,7 +274,7 @@ holds(S, P, O) :-
 holds(S, P, O, I) :-
   once(( atom(S) ; var(S) )),
   (  atom(P)
-  -> rdf_triple(P, S, O) % FIXME: redundant results!
+  -> owl_triple(S,P,O)
   ;  owl_has(S,P,O)
 % FIXME: inspect does not infer class properties of individuals!
 %   e.g., that a fridge instance is storage place for perishable
