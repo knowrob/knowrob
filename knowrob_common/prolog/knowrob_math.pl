@@ -34,6 +34,11 @@
     [
       eval_owl_term/2,
       quaternion_multiply/3,
+      quaternion_inverse/2,
+      quaternion_transform/3,
+      transform_multiply/3,
+      transform_compute_relative/3,
+      transform_data/2,
       parse_vector/2
     ]).
 
@@ -125,3 +130,44 @@ quaternion_multiply(Q0,Q1,Multiplied) :-
   jpl_list_to_array(Q1, Q1_array),
   jpl_call('org.knowrob.utils.MathUtil', 'quaternionMultiply', [Q0_array, Q1_array], Out_array),
   jpl_array_to_list(Out_array, Multiplied).
+
+quaternion_inverse(Q,Q_inv) :-
+  jpl_list_to_array(Q, Q_array),
+  jpl_call('org.knowrob.utils.MathUtil', 'quaternionInverse', [Q_array], Out_array),
+  jpl_array_to_list(Out_array, Q_inv).
+
+quaternion_transform(Q,T,T_transformed) :-
+  jpl_list_to_array(Q, Q_array),
+  jpl_list_to_array(T, T_array),
+  jpl_call('org.knowrob.utils.MathUtil', 'quaternionTransform', [Q_array,T_array], Out_array),
+  jpl_array_to_list(Out_array, T_transformed).
+
+transform_multiply([RefFrame,       _, [Lx,Ly,Lz], [LQx, LQy, LQz, LQw]],
+                   [       _, TgFrame, [Rx,Ry,Rz], [RQx, RQy, RQz, RQw]],
+                   [RefFrame, TgFrame, [Nx,Ny,Nz], [NQx, NQy, NQz, NQw]]) :-
+  NQw is LQw*RQw - LQx*RQx - LQy*RQy - LQz*RQz,
+  NQx is LQw*RQx + LQx*RQw + LQy*RQz - LQz*RQy,
+  NQy is LQw*RQy - LQx*RQz + LQy*RQw + LQz*RQx,
+  NQz is LQw*RQz + LQx*RQy - LQy*RQx + LQz*RQw,
+  RRx is 2*(Rx*(0.5 - LQy*LQy - LQz*LQz) + Ry*(LQx*LQy - LQw*LQz) + Rz*(LQw*LQy + LQx*LQz)),
+  RRy is 2*(Rx*(LQw*LQz + LQx*LQy) + Ry*(0.5 - LQx*LQx - LQz*LQz) + Rz*(LQy*LQz - LQw*LQx)),
+  RRz is 2*(Rx*(LQx*LQz - LQw*LQy) + Ry*(LQw*LQx + LQy*LQz) + Rz*(0.5 - LQx*LQx - LQy*LQy)),
+  Nx is Lx + RRx,
+  Ny is Ly + RRy,
+  Nz is Lz + RRz.
+  
+transform_compute_relative([_,TgFrame, [T1x,T1y,T1z],Q1],
+                           [_,RefFrame,[T2x,T2y,T2z],Q2],
+                           [RefFrame,TgFrame,TN,QN]) :-
+  quaternion_inverse(Q2, Q2_inv),
+  quaternion_multiply(Q1, Q2_inv, QN),
+  Diff_x is T2x - T1x,
+  Diff_y is T2y - T1y,
+  Diff_z is T2z - T1z,
+  quaternion_transform(Q1, [Diff_x,Diff_y,Diff_z], TN).
+
+transform_data(TransformId, (Translation, Rotation)) :-
+  rdf_has(TransformId, knowrob:'translation', literal(type(_,Translation_atom))),
+  rdf_has(TransformId, knowrob:'quaternion', literal(type(_,Rotation_atom))),
+  knowrob_math:parse_vector(Translation_atom, Translation),
+  knowrob_math:parse_vector(Rotation_atom, Rotation).
