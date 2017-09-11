@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import re
 import os
 import rospy
 import readline
@@ -7,6 +8,8 @@ from json_prolog import PrologException, Prolog
 
 HISTORY_NAME = os.path.expanduser('~/.json_prolog_commandline_history')
 HISTORY_LENGTH = 300
+RE_SPACE = re.compile('.*\s+$', re.M)
+
 
 def read_single_keypress():
     """Waits for a single keypress on stdin.
@@ -54,23 +57,36 @@ def read_single_keypress():
     return ret
 
 
-
 class PQ(object):
     def __init__(self):
         rospy.wait_for_service('/json_prolog/query')
         self.prolog = Prolog()
+        self.predicates = []
         self.load_namespace()
+        self.load_all_predicates()
 
     def load_namespace(self):
         q = 'findall([_X, _Y], rdf_current_ns(_X, _Y), NS)'
         solution = self.prolog.once(q)
+        print('namespaces:')
+        for ns in solution['NS']:
+            print('{}: {}'.format(ns[0], ns[1]))
+        print('-----------')
 
+    def load_all_predicates(self):
+        q = 'findall(X, current_predicate(X/_);current_module(X), L)'
+        solution = self.prolog.once(q)
+        self.predicates = [str(x) for x in solution['L']]
 
     def start_prolog_query(self, q):
+        self.q = q
         self.query = self.prolog.query(q)
 
     def finish_prolog_query(self):
         self.query.finish()
+        if self.q.startswith('register_ros_package'):
+            self.load_namespace()
+            self.load_all_predicates()
 
     def next_solution(self):
         for solution in self.query.solutions():
@@ -134,11 +150,29 @@ class PQ(object):
                     for k, v in s.items():
                         print('{}: {}'.format(k, v))
 
+    def completer(self, text, state):
+        buffer = readline.get_line_buffer()
+        line = readline.get_line_buffer().split()
+
+        if not line:
+            return [c + ' ' for c in self.predicates][state]
+
+        # account for last argument ending in a space
+        if RE_SPACE.match(buffer):
+            line.append('')
+
+        cmd = re.split(r',|\(|\[|\+|\=|\-', line[-1])[-1]
+        results = [c for c in self.predicates if c.startswith(cmd)] + [None]
+
+        return results[state]
+
 
 if __name__ == '__main__':
+    rospy.init_node('json_prolog_commandline')
     if os.path.isfile(HISTORY_NAME):
         readline.read_history_file(HISTORY_NAME)
     readline.set_history_length(HISTORY_LENGTH)
-    rospy.init_node('json_prolog_commandline')
+    readline.parse_and_bind("tab: complete")
     pq = PQ()
+    readline.set_completer(pq.completer)
     pq.start_commandline()
