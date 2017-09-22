@@ -237,21 +237,11 @@ object_pose_at_time(Obj, Time, Pose) :-
   object_pose_at_time(Obj, Time, Pose, [Time,Time]).
 
 object_pose_at_time(Obj, Time, pose([X,Y,Z], [QW,QX,QY,QZ]), Interval) :-
-  object_pose_holds(Obj, Time, Pose, Interval),
+  !, object_pose_holds(Obj, Time, Pose, Interval),
   object_pose(Pose, Time, pose([X,Y,Z], [QW,QX,QY,QZ])).
 
 object_pose_at_time(Obj, Time, mat(Matrix), Interval) :-
-  object_pose_holds(Obj, Time, Pose, Interval),
-  object_pose(Pose, Time, mat(Matrix)).
-
-object_pose_at_time(Obj, Time, pose([X,Y,Z], [QW,QX,QY,QZ]), Interval) :-
-  owl_individual_of(Obj, srdl2comp:'UrdfComponent'),
-  interval_during(Time, Interval),
-  object_pose(Pose, Time, pose([X,Y,Z], [QW,QX,QY,QZ])).
-
-object_pose_at_time(Obj, Time, mat(Matrix), Interval) :-
-  owl_individual_of(Obj, srdl2comp:'UrdfComponent'),
-  interval_during(Time, Interval),
+  !, object_pose_holds(Obj, Time, Pose, Interval),
   object_pose(Pose, Time, mat(Matrix)).
 
 object_pose_at_time(Obj, Time, Pose, Interval) :-
