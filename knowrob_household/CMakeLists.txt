@@ -5,7 +5,7 @@ project(knowrob_household)
 
 find_package(catkin REQUIRED COMPONENTS knowrob_common)
 
-catkin_rosjava_setup(installApp publishMavenJavaPublicationToMavenRepository writeClasspath)
+#catkin_rosjava_setup(installApp publishMavenJavaPublicationToMavenRepository writeClasspath)
 
 catkin_package(
     CATKIN_DEPENDS knowrob_common
