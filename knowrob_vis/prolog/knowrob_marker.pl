@@ -188,7 +188,8 @@ marker_lookup_transform(MarkerObject, Identifier, TargetFrame, T, (Translation,O
   marker_tf_frame(MarkerObject, Identifier, TfFrame),
   not( atom_prefix(TfFrame, 'http') ),
   mng_lookup_transform(TargetFrame, TfFrame, T, Pose),
-  matrix_rotation(Pose, Orientation),
+  matrix_rotation(Pose, [QX,QY,QZ,QW]),
+  Orientation = [QW,QX,QY,QZ],
   matrix_translation(Pose, Translation), !.
 
 %marker_lookup_transform(MarkerObject, Identifier, TargetFrame, T, (Translation,Orientation)) :-
@@ -1006,7 +1007,8 @@ marker_update(pointer(From,To), MarkerObject, T) :-
   marker_tf_frame(MarkerObject, From, FromResolved),
   marker_tf_frame(MarkerObject, To, ToResolved),
   mng_lookup_transform(FromResolved, ToResolved, T, Pose),
-  matrix_rotation(Pose, Orientation),
+  matrix_rotation(Pose, [QX,QY,QZ,QW]),
+  Orientation = [QW,QX,QY,QZ],
   matrix_translation(Pose, Translation),
   marker_pose(MarkerObject,Translation,Orientation).
 
@@ -1535,7 +1537,8 @@ marker_pose(Marker, pose(Position,Orientation)) :-
 
 marker_pose(Marker, mat(Matrix)) :-
   matrix_translation(Matrix, Position),
-  matrix_rotation(Matrix, Orientation),
+  matrix_rotation(Pose, [QX,QY,QZ,QW]),
+  Orientation = [QW,QX,QY,QZ],
   marker_call(Marker, pose(Position,Orientation), (get_marker_pose,set_marker_pose)).
 
 marker_pose(Marker, Position, Orientation) :-

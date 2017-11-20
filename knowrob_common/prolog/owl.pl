@@ -71,7 +71,7 @@
 	    owl_find/5,			% +For, +Dom, ?Props, +Method, -Subj
 	    non_negative_integer/4,
 	    non_negative_int/2,
-	    rdf_assert_literal(r,r,+)
+	    rdf_assert_literal/3
 	  ]).
 :- use_module(library(lists)).
 :- use_module(library('semweb/rdf_db')).
