@@ -208,7 +208,6 @@ and what they most likely contain
     <!-- http://knowrob.org/kb/knowrob.owl#Cupboard -->
 
     <owl:Class rdf:about="&knowrob;Cupboard">
-        <rdfs:subClassOf rdf:resource="&knowrob;Box-Container"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-containerFor"/>
@@ -440,10 +439,6 @@ and what they most likely contain
     <!-- http://knowrob.org/kb/knowrob.owl#Oven -->
 
     <owl:Class rdf:about="&knowrob;Oven">
-        <rdfs:subClassOf rdf:resource="&knowrob;Box-Container"/>
-        <rdfs:subClassOf rdf:resource="&knowrob;FurniturePiece"/>
-        <rdfs:subClassOf rdf:resource="&knowrob;HeatingDevice"/>
-        <rdfs:subClassOf rdf:resource="&knowrob;HouseholdAppliance"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-deviceUsedFor"/>
