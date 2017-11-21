@@ -64,6 +64,7 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('owl')).
 :- use_module(library('rdfs_computable')).
+:- use_module(library('owl_computable')).
 :- use_module(library('knowrob_owl')).
 
 % define predicates as rdf_meta predicates

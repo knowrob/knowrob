@@ -237,12 +237,20 @@ object_pose_at_time(Obj, Time, Pose) :-
   object_pose_at_time(Obj, Time, Pose, [Time,Time]).
 
 object_pose_at_time(Obj, Time, pose([X,Y,Z], [QW,QX,QY,QZ]), Interval) :-
-  !, object_pose_holds(Obj, Time, Pose, Interval),
-  object_pose(Pose, Time, pose([X,Y,Z], [QW,QX,QY,QZ])).
+  object_pose_holds(Obj, Time, Pose, Interval),
+  object_pose(Pose, Time, pose([X,Y,Z], [QW,QX,QY,QZ])),!.
 
 object_pose_at_time(Obj, Time, mat(Matrix), Interval) :-
-  !, object_pose_holds(Obj, Time, Pose, Interval),
-  object_pose(Pose, Time, mat(Matrix)).
+  object_pose_holds(Obj, Time, Pose, Interval),
+  object_pose(Pose, Time, mat(Matrix)),!.
+
+object_pose_at_time(Obj, Time, pose([X,Y,Z], [QW,QX,QY,QZ]), Interval) :-
+  interval_during(Time, Interval),
+  object_pose(Obj, Time, pose([X,Y,Z], [QW,QX,QY,QZ])),!.
+
+object_pose_at_time(Obj, Time, mat(Matrix), Interval) :-
+  interval_during(Time, Interval),
+  object_pose(Obj, Time, mat(Matrix)),!.
 
 object_pose_at_time(Obj, Time, Pose, Interval) :-
   object_pose_holds(Obj, Time, Pose, Interval).
@@ -300,7 +308,7 @@ object_pose_holds(Obj, Time, Pose, Interval) :-
 % TransformationMatrix
 object_pose(Matrix, _, pose([X,Y,Z], [QW,QX,QY,QZ])) :-
   is_list(Matrix), !,
-  matrix_rotation(Matrix, [QW,QX,QY,QZ]),
+  matrix_rotation(Matrix, [QX,QY,QZ,QW]),
   matrix_translation(Matrix, [X,Y,Z]).
 
 object_pose(Matrix, _, mat(Matrix)) :-
@@ -311,7 +319,7 @@ object_pose(Matrix, _, mat(Matrix)) :-
 object_pose(Pose, Instant, pose([X,Y,Z], [QW,QX,QY,QZ])) :-
   rdf_has(Pose, srdl2comp:'urdfName', literal(URDFName)),
   mng_lookup_transform('/map', URDFName, Instant, Transform), % FIXME: /map
-  matrix_rotation(Transform, [QW,QX,QY,QZ]),
+  matrix_rotation(Transform, [QX,QY,QZ,QW]),
   matrix_translation(Transform, [MX,MY,MZ]),
   % apply offset if specified
   ( position_to_list(Pose, [OX,OY,OZ])
@@ -340,7 +348,7 @@ object_pose(Pose, _, mat(Mat)) :-
 object_pose(Pose, _, pose([X,Y,Z], [QW,QX,QY,QZ])) :-
   rdfs_individual_of(Pose, knowrob:'Matrix'),
   rotmat_to_list(Pose, Matrix),
-  matrix_rotation(Matrix, [QW,QX,QY,QZ]),
+  matrix_rotation(Matrix, [QX,QY,QZ,QW]),
   matrix_translation(Matrix, [X,Y,Z]), !.
 
 object_pose(Pose, _, mat(Matrix)) :-

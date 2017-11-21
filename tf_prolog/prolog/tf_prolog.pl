@@ -93,11 +93,14 @@ start_tf_listener :-
     jpl_call('tfjava.TFListener', 'getInstance', [], Client),
     assert(tf_listener(Client)).
 
+get_tf_listener(Client) :-
+    tf_listener(Client), !.
+get_tf_listener(Client) :-
+    start_tf_listener,
+    tf_listener(Client).
+
 % do not automatically start tf listener
 % :- start_tf_listener.
-
-
-
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -117,7 +120,7 @@ start_tf_listener :-
 % @param TF              Reference to a StampedTransform object
 %
 lookup_transform(TargetFrame, SourceFrame, TimeSecs, TF) :-
-    tf_listener(Client),
+    get_tf_listener(Client),
     secs_to_rostime(TimeSecs, TimeRos),
     jpl_call(Client, 'lookupTransform', [TargetFrame, SourceFrame, TimeRos], TF).
 
@@ -134,7 +137,7 @@ lookup_transform(TargetFrame, SourceFrame, TimeSecs, TF) :-
 % @param TF              Reference to a StampedTransform object
 %
 lookup_transform(TargetFrame, TargetTimeSecs, SourceFrame, SourceTimeSecs, FixedFrame, TF) :-
-    tf_listener(Client),
+    get_tf_listener(Client),
     secs_to_rostime(TargetTimeSecs, TargetTimeRos),
     secs_to_rostime(SourceTimeSecs, SourceTimeRos),
     jpl_call(Client, 'lookupTransform', [TargetFrame, TargetTimeRos, SourceFrame, SourceTimeRos, FixedFrame], TF).
