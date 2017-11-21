@@ -97,25 +97,25 @@ which objects they are usable and for which actions
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#Bowl-Eating -->
+    <!-- http://knowrob.org/kb/knowrob.owl#Bowl -->
 
-    <owl:Class rdf:about="&knowrob;Bowl-Eating">
-        <rdfs:subClassOf rdf:resource="&knowrob;Bowl-Generic"/>
-        <rdfs:subClassOf rdf:resource="&knowrob;EatingVessel"/>
-    </owl:Class>
+    <owl:Class rdf:about="&knowrob;Bowl"/>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#Bowl-Generic -->
+    <!-- http://knowrob.org/kb/knowrob.owl#Bowl-Eating -->
 
-    <owl:Class rdf:about="&knowrob;Bowl-Generic"/>
+    <owl:Class rdf:about="&knowrob;Bowl-Eating">
+        <rdfs:subClassOf rdf:resource="&knowrob;Bowl"/>
+        <rdfs:subClassOf rdf:resource="&knowrob;EatingVessel"/>
+    </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#Bowl-Mixing -->
 
     <owl:Class rdf:about="&knowrob;Bowl-Mixing">
-        <rdfs:subClassOf rdf:resource="&knowrob;Bowl-Generic"/>
+        <rdfs:subClassOf rdf:resource="&knowrob;Bowl"/>
         <rdfs:subClassOf rdf:resource="&knowrob;FoodVessel"/>
         <rdfs:subClassOf>
             <owl:Restriction>
@@ -130,7 +130,7 @@ which objects they are usable and for which actions
     <!-- http://knowrob.org/kb/knowrob.owl#Bowl-Serving -->
 
     <owl:Class rdf:about="&knowrob;Bowl-Serving">
-        <rdfs:subClassOf rdf:resource="&knowrob;Bowl-Generic"/>
+        <rdfs:subClassOf rdf:resource="&knowrob;Bowl"/>
         <rdfs:subClassOf rdf:resource="&knowrob;ServingVessel"/>
     </owl:Class>
     
@@ -148,14 +148,14 @@ which objects they are usable and for which actions
         <rdfs:subClassOf rdf:resource="&knowrob;CookingVessel"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-itemUsedFor"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;BakingFood"/>
+                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-containerFor"/>
+                <owl:allValuesFrom rdf:resource="&knowrob;Cake"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-containerFor"/>
-                <owl:allValuesFrom rdf:resource="&knowrob;Cake"/>
+                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-itemUsedFor"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;BakingFood"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <owl:disjointWith rdf:resource="&knowrob;StoveTopCookingPot"/>
@@ -228,12 +228,6 @@ which objects they are usable and for which actions
         <rdfs:subClassOf rdf:resource="&knowrob;CookingUtensil"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-toolUsedFor"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;CuttingAPieceOfFood"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-usableWith"/>
                 <owl:someValuesFrom>
                     <owl:Class>
@@ -243,6 +237,12 @@ which objects they are usable and for which actions
                         </owl:unionOf>
                     </owl:Class>
                 </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-toolUsedFor"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;CuttingAPieceOfFood"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVil2JwpEbGdrcN5Y29ycA</rdfs:seeAlso>
@@ -311,14 +311,14 @@ which objects they are usable and for which actions
         <rdfs:subClassOf rdf:resource="&knowrob;CookingUtensil"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-toolUsedFor"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;RollingDough"/>
+                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-usableWith"/>
+                <owl:allValuesFrom rdf:resource="&knowrob;Dough"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-usableWith"/>
-                <owl:allValuesFrom rdf:resource="&knowrob;Dough"/>
+                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-toolUsedFor"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;RollingDough"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -445,6 +445,12 @@ which objects they are usable and for which actions
         <rdfs:subClassOf rdf:resource="&knowrob;HandTool"/>
         <rdfs:subClassOf>
             <owl:Restriction>
+                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-usableWith"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;FoodOrDrinkOrIngredient"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-toolUsedFor"/>
                 <owl:someValuesFrom>
                     <owl:Class>
@@ -454,12 +460,6 @@ which objects they are usable and for which actions
                         </owl:unionOf>
                     </owl:Class>
                 </owl:someValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-usableWith"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;FoodOrDrinkOrIngredient"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <owl:disjointWith rdf:resource="&knowrob;FoodVessel"/>
@@ -532,14 +532,14 @@ which objects they are usable and for which actions
         <rdfs:subClassOf rdf:resource="&knowrob;StoveTopCookingPot"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-itemUsedFor"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;BoilingFood"/>
+                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-containerFor"/>
+                <owl:allValuesFrom rdf:resource="&knowrob;Water"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-containerFor"/>
-                <owl:allValuesFrom rdf:resource="&knowrob;Water"/>
+                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-itemUsedFor"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;BoilingFood"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -615,14 +615,14 @@ which objects they are usable and for which actions
         <rdfs:subClassOf rdf:resource="&knowrob;StoveTopCookingPot"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-containerFor"/>
-                <owl:allValuesFrom rdf:resource="&knowrob;Food"/>
+                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-itemUsedFor"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;BakingFood"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-itemUsedFor"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;BakingFood"/>
+                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-containerFor"/>
+                <owl:allValuesFrom rdf:resource="&knowrob;Food"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -718,14 +718,14 @@ which objects they are usable and for which actions
         <rdfs:subClassOf rdf:resource="&knowrob;FoodUtensil"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;madeOf"/>
-                <owl:allValuesFrom rdf:resource="&knowrob;Metal"/>
+                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-toolUsedFor"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;EatingEvent"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-toolUsedFor"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;EatingEvent"/>
+                <owl:onProperty rdf:resource="&knowrob;madeOf"/>
+                <owl:allValuesFrom rdf:resource="&knowrob;Metal"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -775,14 +775,14 @@ which objects they are usable and for which actions
         <rdfs:subClassOf rdf:resource="&knowrob;CookingUtensil"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-usableWith"/>
-                <owl:allValuesFrom rdf:resource="&knowrob;Baked"/>
+                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-toolUsedFor"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;FlippingAnObject"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-toolUsedFor"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;FlippingAnObject"/>
+                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-usableWith"/>
+                <owl:allValuesFrom rdf:resource="&knowrob;Baked"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -890,14 +890,14 @@ which objects they are usable and for which actions
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-containerFor"/>
-                <owl:allValuesFrom rdf:resource="&knowrob;Drink"/>
+                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-itemUsedFor"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;KeepingSomethingWarm"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-itemUsedFor"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;KeepingSomethingWarm"/>
+                <owl:onProperty rdf:resource="&knowrob;typePrimaryFunction-containerFor"/>
+                <owl:allValuesFrom rdf:resource="&knowrob;Drink"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
