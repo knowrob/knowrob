@@ -21,8 +21,8 @@
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
-     xmlns:qudt="http://qudt.org/schema/qudt#">
+     xmlns:qudt="http://qudt.org/schema/qudt#"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/groceries.owl">
         <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_common.owl"/>
     </owl:Ontology>
@@ -119,14 +119,6 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
-
-
-    <!-- http://knowrob.org/kb/groceries.owl#HotBeverage -->
-
-    <owl:Class rdf:about="&knowrob;HotBeverage">
-        <rdfs:subClassOf rdf:resource="&knowrob;Drink"/>
-    </owl:Class>
     
 
 
@@ -518,14 +510,14 @@
         <rdfs:subClassOf rdf:resource="&knowrob;Restaurant-Organization"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;servesCuisineAtLocation"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;CoffeeShopSpace"/>
+                <owl:onProperty rdf:resource="&knowrob;servesCuisine"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;Coffee-Beverage"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;servesCuisine"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;Coffee-Beverage"/>
+                <owl:onProperty rdf:resource="&knowrob;servesCuisineAtLocation"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;CoffeeShopSpace"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -754,7 +746,6 @@
 
     <owl:Class rdf:about="&knowrob;EdibleFruit">
         <rdfs:subClassOf rdf:resource="&knowrob;FruitOrVegetableFood"/>
-        <rdfs:subClassOf rdf:resource="&knowrob;SolidFood"/>
         <rdfs:comment rdf:datatype="&xsd;string">The collection of individual edible fruits, often eaten whole by people or used in cooking. Note that this is the common-sense notion of fruit, so tomatoes, olives, legumes are NOT EdibleFruit. See also Fruit.</rdfs:comment>
         <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjllZwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
@@ -848,13 +839,13 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;servesCuisine"/>
+                <owl:onProperty rdf:resource="&knowrob;restaurantTypeSpecializingInCuisine"/>
                 <owl:someValuesFrom rdf:resource="&knowrob;AmericanStyleFastFoodCuisine"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&knowrob;restaurantTypeSpecializingInCuisine"/>
+                <owl:onProperty rdf:resource="&knowrob;servesCuisine"/>
                 <owl:someValuesFrom rdf:resource="&knowrob;AmericanStyleFastFoodCuisine"/>
             </owl:Restriction>
         </rdfs:subClassOf>
@@ -1009,8 +1000,8 @@
     <!-- http://knowrob.org/kb/knowrob.owl#FruitOrVegetableFood -->
 
     <owl:Class rdf:about="&knowrob;FruitOrVegetableFood">
-        <rdfs:subClassOf rdf:resource="&knowrob;EdibleStuff"/>
         <rdfs:subClassOf rdf:resource="&knowrob;Perishable"/>
+        <rdfs:subClassOf rdf:resource="&knowrob;SolidFood"/>
         <rdfs:subClassOf rdf:resource="&knowrob;UnpreparedFood"/>
         <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVjmFpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
         <rdfs:comment>A specialization of EdibleStuff and an instance of FoodGroup. Each instance of FruitOrVegetableFood is a fruit or a vegetable.</rdfs:comment>
@@ -1118,6 +1109,14 @@
 
     <owl:Class rdf:about="&knowrob;Heated">
         <rdfs:subClassOf rdf:resource="&knowrob;PreparedFood"/>
+    </owl:Class>
+    
+
+
+    <!-- http://knowrob.org/kb/knowrob.owl#HotBeverage -->
+
+    <owl:Class rdf:about="&knowrob;HotBeverage">
+        <rdfs:subClassOf rdf:resource="&knowrob;Drink"/>
     </owl:Class>
     
 
@@ -1668,13 +1667,13 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;hasIngredient"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;Bread"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;GreenSalad"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="&knowrob;hasIngredient"/>
-                <owl:someValuesFrom rdf:resource="&knowrob;GreenSalad"/>
+                <owl:someValuesFrom rdf:resource="&knowrob;Bread"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment>A DefaultDisjointEdibleStuffType and specialization of FingerFood. Each instance of Sandwich is a SolidFoodArtifact consisting of a bun or roll or a couple of slices of bread with food (e.g. meat, cheese, vegetables, peanut butter, jelly) in between.</rdfs:comment>
@@ -1852,7 +1851,7 @@
     <!-- http://knowrob.org/kb/knowrob.owl#Sugar -->
 
     <owl:Class rdf:about="&knowrob;Sugar">
-        <rdfs:subClassOf rdf:resource="&knowrob;Food"/>
+        <rdfs:subClassOf rdf:resource="&knowrob;FoodIngredientOnly"/>
         <rdfs:subClassOf rdf:resource="&knowrob;Granular"/>
     </owl:Class>
     
@@ -2051,9 +2050,7 @@
     <!-- http://knowrob.org/kb/knowrob.owl#Water -->
 
     <owl:Class rdf:about="&knowrob;Water">
-        <rdfs:subClassOf rdf:resource="&knowrob;ColorlessThing"/>
         <rdfs:subClassOf rdf:resource="&knowrob;Drink"/>
-        <rdfs:subClassOf rdf:resource="&knowrob;EnduringThing-Localized"/>
     </owl:Class>
     
 

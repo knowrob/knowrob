@@ -10038,6 +10038,13 @@ As the above examples illustrate, it is not the case that everthing that has a t
         <rdfs:subClassOf rdf:resource="&knowrob_common;TrashContainer"/>
     </owl:Class>
     
+    
+    <!-- http://knowrob.org/kb/knowrob.owl#Water -->
+
+    <owl:Class rdf:about="&knowrob_common;Water">
+        <rdfs:subClassOf rdf:resource="&knowrob_common;ColorlessThing"/>
+        <rdfs:subClassOf rdf:resource="&knowrob_common;LiquidTangibleThing"/>
+    </owl:Class>
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#WaterPropeller -->
