@@ -52,6 +52,8 @@
       interval_during/2,
       assert_temporal_part/3,
       assert_temporal_part/4,
+      assert_temporal_part/5,
+      assert_temporal_part_end/5,
       assert_temporal_part_end/4,
       assert_temporal_part_end/3,
       current_temporal_part/2,
@@ -89,8 +91,10 @@
             interval_overlaps(?,?),
             interval_during(?,?),
             current_temporal_part(r,r),
+            assert_temporal_part(r,r,r,r,+),
             assert_temporal_part(r,r,r,r),
             assert_temporal_part(r,r,r),
+            assert_temporal_part_end(r,r,r,r,+),
             assert_temporal_part_end(r,r,r,r),
             assert_temporal_part_end(r,r,r),
             temporal_part(r,r,t),
@@ -377,13 +381,16 @@ temporal_part_during(Obj,TemporalPart,TemporalExtend) :-
   interval_during(TemporalExtend, I).
 
 create_temporal_part(S, P, TemporalPart) :-
+  create_temporal_part(S, P, TemporalPart, user).
+create_temporal_part(S, P, TemporalPart, Graph) :-
   rdf_instance_from_class(knowrob:'TemporalPart', TemporalPart),
-  rdf_assert(S, knowrob:'temporalParts', TemporalPart),
-  rdf_assert(TemporalPart, knowrob:'temporalProperty', P).
+  rdf_assert(S, knowrob:'temporalParts', TemporalPart, Graph),
+  rdf_assert(TemporalPart, knowrob:'temporalProperty', P, Graph).
 
 
 %% assert_temporal_part(+S,+P,+O) is nondet.
 %% assert_temporal_part(+S,+P,+O,+I) is nondet.
+%% assert_temporal_part(+S,+P,+O,+I,+Graph) is nondet.
 %
 % Asserts a temporal relation between `S` and `O` using the relation
 % predicate `P` that holds during the time interval `I`. `O` is either an OWL individual,
@@ -393,72 +400,81 @@ create_temporal_part(S, P, TemporalPart) :-
 % @param P    The relation predicate
 % @param O    The object of the relation or a typed data value
 % @param I    The time interval during which the relation holds
+% @param Graph  The RDF graph name
 % 
 assert_temporal_part(S, P, O) :-
   current_time(Now),
   assert_temporal_part(S, P, O, Now).
-assert_temporal_part(S, P, O, _) :-
+assert_temporal_part(S, P, O, I) :-
+  assert_temporal_part(S, P, O, I, user).
+assert_temporal_part(S, P, O, _, Graph) :-
   nonvar(S),
   once(owl_individual_of(S, knowrob:'TemporalThing')),
-  assert_nontemporal_value(S,P,O), !.
-assert_temporal_part(S, P, O, I) :-
-  create_temporal_part(S, P, TemporalPart),
-  assert_temporal_part_value(TemporalPart, P, O),
-  assert_temporal_part_extend(TemporalPart, I),
+  assert_nontemporal_value(S,P,O,Graph), !.
+assert_temporal_part(S, P, O, I, Graph) :-
+  create_temporal_part(S, P, TemporalPart, Graph),
+  assert_temporal_part_value(TemporalPart, P, O, Graph),
+  assert_temporal_part_extend(TemporalPart, I, Graph),
   % Also assert nontemporal if temporal part is not finished by now.
   % This allows nontemporal reasoners to work with descriptions generated here.
   ignore((
     current_temporal_part(S,TemporalPart),
-    assert_nontemporal_value(S,P,O)
+    assert_nontemporal_value(S,P,O, Graph)
   )).
 
 % TODO: setting data valued property should be part of knowrob_owl
-assert_nontemporal_value(S, P, Value) :-
+assert_nontemporal_value(S, P, O) :-
+  assert_nontemporal_value(S, P, O, user).
+assert_nontemporal_value(S, P, Value, Graph) :-
   atomic(Value),
   rdf_has(P, rdf:type, owl:'DatatypeProperty'),
   (  rdf_phas(P, rdfs:range, Range)
-  -> rdf_assert(S, P, literal(type(Range,Value)))
-  ;  rdf_assert(S, P, literal(Value))
+  -> rdf_assert(S, P, literal(type(Range,Value)), Graph)
+  ;  rdf_assert(S, P, literal(Value), Graph)
   ), !.
-assert_nontemporal_value(S, P, nontemporal(Value)) :-
-  rdf_assert(S, P, Value), !.
-assert_nontemporal_value(S, P, Value) :-
+assert_nontemporal_value(S, P, nontemporal(Value), Graph) :-
+  rdf_assert(S, P, Value, Graph), !.
+assert_nontemporal_value(S, P, Value, Graph) :-
   compound(Value),
   rdf_has(P, rdf:type, owl:'DatatypeProperty'),
-  rdf_assert(S, P, Value), !.
-assert_nontemporal_value(S, P, O) :-
-  rdf_assert(S, P, O), !.
+  rdf_assert(S, P, Value, Graph), !.
+assert_nontemporal_value(S, P, O, Graph) :-
+  rdf_assert(S, P, O, Graph), !.
 
 % TODO: setting data valued property should be part of knowrob_owl
 assert_temporal_part_value(TemporalPart, P, Value) :-
+  assert_temporal_part_value(TemporalPart, P, Value, user).
+assert_temporal_part_value(TemporalPart, P, Value, Graph) :-
   atomic(Value),
   rdf_has(P, rdf:type, owl:'DatatypeProperty'), !,
   (  rdf_phas(P, rdfs:range, Range)
-  -> rdf_assert(TemporalPart, P, literal(type(Range,Value)))
-  ;  rdf_assert(TemporalPart, P, literal(Value))
+  -> rdf_assert(TemporalPart, P, literal(type(Range,Value)), Graph)
+  ;  rdf_assert(TemporalPart, P, literal(Value), Graph)
   ).
-assert_temporal_part_value(TemporalPart_S, P, nontemporal(Value)) :-
-  rdf_assert(TemporalPart_S, P, Value), !.
-assert_temporal_part_value(TemporalPart, P, Value) :-
+assert_temporal_part_value(TemporalPart_S, P, nontemporal(Value), Graph) :-
+  rdf_assert(TemporalPart_S, P, Value, Graph), !.
+assert_temporal_part_value(TemporalPart, P, Value, Graph) :-
   compound(Value), % FIXME: weak check
   rdf_has(P, rdf:type, owl:'DatatypeProperty'), !,
-  rdf_assert(TemporalPart, P, Value).
-assert_temporal_part_value(TemporalPart_S, P, Value) :-
+  rdf_assert(TemporalPart, P, Value, Graph).
+assert_temporal_part_value(TemporalPart_S, P, Value, Graph) :-
   create_temporal_part(Value, P, TemporalPart_O), !,
-  rdf_assert(TemporalPart_S, P, TemporalPart_O),
-  rdf_assert(Value, knowrob:'temporalParts', TemporalPart_O).
+  rdf_assert(TemporalPart_S, P, TemporalPart_O, Graph),
+  rdf_assert(Value, knowrob:'temporalParts', TemporalPart_O, Graph).
 
 % TODO: this findall/forall looks ugly
 assert_temporal_part_extend(TemporalPart, I) :-
+  assert_temporal_part_extend(TemporalPart, I, user).
+assert_temporal_part_extend(TemporalPart, I, Graph) :-
   create_interval(I, Interval),
   findall(X, (
       rdf_has(TemporalPart,_,X),
       rdfs_individual_of(X, knowrob:'TemporalPart')
   ), Parts),
   forall( member(Part, [TemporalPart|Parts]),
-          rdf_assert(Part, knowrob:'temporalExtend', Interval)
+          rdf_assert(Part, knowrob:'temporalExtend', Interval, Graph)
   ).
-retract_temporal_extend(TemporalPart) :-
+retract_temporal_extend(TemporalPart, _Graph) :-
   findall(X, (
       rdf_has(TemporalPart,_,X),
       rdfs_individual_of(X, knowrob:'TemporalPart')
@@ -469,6 +485,7 @@ retract_temporal_extend(TemporalPart) :-
 
 %% assert_temporal_part_end(+S,?P,?O) is nondet.
 %% assert_temporal_part_end(+S,?P,?O,+End) is nondet.
+%% assert_temporal_part_end(+S,?P,?O,+End,+Graph) is nondet.
 %
 % Assert that a given relation `P(S,O)` stopped holding starting from
 % specified time instant `End` (or current time if `End` is not specified).
@@ -481,15 +498,18 @@ retract_temporal_extend(TemporalPart) :-
 % @param P    The relation predicate
 % @param O    The object of the relation or a data-typed value
 % @param End  The time instant at which the relation stopped holding
+% @param Graph  The RDF graph name
 % 
 assert_temporal_part_end(S, P, O) :-
   current_time(Now),
   assert_temporal_part_end(S, P, O, Now).
 assert_temporal_part_end(S, P, O, End) :-
+  assert_temporal_part_end(S, P, O, End, user).
+assert_temporal_part_end(S, P, O, End, Graph) :-
   atom(End),
   atom_number(End, End_num),
-  assert_temporal_part_end(S, P, O, End_num).
-assert_temporal_part_end(S, P, O, End) :-
+  assert_temporal_part_end(S, P, O, End_num, Graph).
+assert_temporal_part_end(S, P, O, End, Graph) :-
   number(End),
   current_temporal_part(S,S_temporal),
   rdf_has(S_temporal, knowrob:'temporalProperty', P),
@@ -498,20 +518,20 @@ assert_temporal_part_end(S, P, O, End) :-
   % update temporal extend
   rdf_has(I, knowrob:'startTime', BeginIri),
   time_term(BeginIri, Begin),
-  retract_temporal_extend(S_temporal),
-  assert_temporal_part_extend(S_temporal, [Begin,End]),
+  retract_temporal_extend(S_temporal, Graph),
+  assert_temporal_part_extend(S_temporal, [Begin,End], Graph),
   % remove the nontemporal property if exists
   ignore(( temporal_part_value(S, P, O),
            rdf_retractall(S, P, O) )).
-assert_temporal_part_end(S, _, _, _) :-
+assert_temporal_part_end(S, _, _, _, _Graph) :-
   nonvar(S),
   once(owl_individual_of(S, knowrob:'TemporalThing')), !.
-assert_temporal_part_end(S, P, O, End) :-
+assert_temporal_part_end(S, P, O, End, Graph) :-
   number(End),
   % Make relation temporal if the relation was not described temporally before
   temporal_part_value(S, P, O),
   rdf_retractall(S, P, O),
-  assert_temporal_part(S, P, O, [0.0,End]).
+  assert_temporal_part(S, P, O, [0.0,End], Graph).
 
 %% temporal_part_value(?S, ?P, ?O)
 temporal_part_value(S, P, O) :-
