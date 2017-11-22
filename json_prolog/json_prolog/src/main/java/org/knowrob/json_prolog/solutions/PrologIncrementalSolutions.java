@@ -29,11 +29,11 @@
 
 package org.knowrob.json_prolog.solutions;
 
-import java.util.Hashtable;
+import java.util.Map;
 
 import org.knowrob.json_prolog.query.ThreadedQuery;
 
-import jpl.Term;
+import org.jpl7.Term;
 
 public class PrologIncrementalSolutions implements PrologSolutions {
   private ThreadedQuery query;
@@ -52,7 +52,7 @@ public class PrologIncrementalSolutions implements PrologSolutions {
   }
 
   @Override
-  public Hashtable<String, Term> nextSolution() throws Exception {
+  public java.util.Map<String, Term> nextSolution() throws Exception {
     return query.nextSolution();
   }
 

@@ -31,8 +31,8 @@ package org.knowrob.json_prolog.query;
 
 import net.sf.json.*;
 import net.sf.json.util.JSONUtils;
-import jpl.JPLException;
-import jpl.Term;
+import org.jpl7.JPLException;
+import org.jpl7.Term;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -62,24 +62,22 @@ public class JSONQuery {
   }
 
   
-  static public JSONObject encodeResult(Hashtable<String, Term> bindings) {
+  static public JSONObject encodeResult(Map<java.lang.String,org.jpl7.Term> bindings) {
     JSONObject result = new JSONObject();
 
-    Iterator<Map.Entry<String, Term>> it = bindings.entrySet().iterator();
+    Iterator<Map.Entry<String, org.jpl7.Term>> it = bindings.entrySet().iterator();
     while (it.hasNext()) {
-      Map.Entry<String, Term> e = it.next();
+      Map.Entry<String, org.jpl7.Term> e = it.next();
 
       if (e.getValue().isFloat())
         result.put(e.getKey(), e.getValue().doubleValue());
       else if (e.getValue().isInteger())
         result.put(e.getKey(), e.getValue().intValue());
-      else if (e.getValue().isCompound() && !e.getValue().isAtom()) {
+      else if ((e.getValue().isCompound() && !e.getValue().isAtom()) || e.getValue().isListNil()) {
         if (isList(e.getValue()))
           result.put(e.getKey(), encodeList(e.getValue()));
         else
           result.put(e.getKey(), encodeCompoundTerm(e.getValue()));
-      } else if (e.getValue().name().equals("[]")){
-        result.put(e.getKey(), e.getValue().name());
       } else {
         // Wrap atom in single quotes in order to avoid that the value is
         // converted to some JSON data structure (e.g., JSONObject, JSONArray, ...)
@@ -101,34 +99,34 @@ public class JSONQuery {
     String[] split_predicate = predicate.split(":");
     if(split_predicate.length == 1) {
       if(val.size() > 1)
-        return new jpl.Compound(predicate, decodeJSONArray(val, 1));
+        return new org.jpl7.Compound(predicate, decodeJSONArray(val, 1));
       else
-        return new jpl.Atom(predicate);
+        return new org.jpl7.Atom(predicate);
     }
     else if(split_predicate.length == 2) {
       if(val.size() > 1)
-        return new jpl.Compound(":", new Term[] {
-            new jpl.Atom(split_predicate[0]), 
-            new jpl.Compound(split_predicate[1], decodeJSONArray(val, 1)) });
+        return new org.jpl7.Compound(":", new Term[] {
+            new org.jpl7.Atom(split_predicate[0]), 
+            new org.jpl7.Compound(split_predicate[1], decodeJSONArray(val, 1)) });
       else
-        return new jpl.Compound(":", new Term[] {
-            new jpl.Atom(split_predicate[0]), 
-            new jpl.Atom(split_predicate[1]) });
+        return new org.jpl7.Compound(":", new Term[] {
+            new org.jpl7.Atom(split_predicate[0]), 
+            new org.jpl7.Atom(split_predicate[1]) });
     }
     else
       throw new InvalidJSONQuery("Predicate encoding wrong. Found more than one ':' in " + predicate);
   }
 
-  public static Term[] decodeJSONArray(JSONArray val) throws InvalidJSONQuery {
+  public static org.jpl7.Term[] decodeJSONArray(JSONArray val) throws InvalidJSONQuery {
     return decodeJSONArray(val, 0);
   }
 
-  static private Term[] decodeJSONArray(JSONArray val, int startIndex)
+  static private org.jpl7.Term[] decodeJSONArray(JSONArray val, int startIndex)
       throws InvalidJSONQuery {
     if(startIndex >= val.size())
-      return new Term[0];
+      return new org.jpl7.Term[0];
 
-    Term[] terms = new Term[val.size() - startIndex];
+    org.jpl7.Term[] terms = new org.jpl7.Term[val.size() - startIndex];
 
     for (int i = startIndex; i < val.size(); i++) {
       if (JSONUtils.isString(val.get(i)))
@@ -142,7 +140,7 @@ public class JSONQuery {
       else if (JSONUtils.isObject(val.get(i)))
         terms[i - startIndex] = decodeJSONValue(val.getJSONObject(i));
       else if (JSONUtils.isArray(val.get(i)))
-    	terms[i - startIndex] = jpl.Util.termArrayToList(decodeJSONArray(val.getJSONArray(i)));
+    	terms[i - startIndex] = org.jpl7.Util.termArrayToList(decodeJSONArray(val.getJSONArray(i)));
       else
         throw new InvalidJSONQuery("decodeJSONArray: unable to parse "
             + val.toString());
@@ -150,7 +148,7 @@ public class JSONQuery {
     return terms;
   }
 
-  static Term decodeJSONValue(String val) {
+  static org.jpl7.Term decodeJSONValue(String val) {
 
 	  // wrap string in single quotes if it contains special characters
 	  val = val.replace("\\", "");
@@ -158,30 +156,30 @@ public class JSONQuery {
 	  if(!matcher.find()) {
 		  val="'"+val+"'";
 	  }
-	 return jpl.Util.textToTerm(val);
+	 return org.jpl7.Util.textToTerm(val);
   }
 
-  static Term decodeJSONValue(boolean val) {
+  static org.jpl7.Term decodeJSONValue(boolean val) {
     // Hack. No idea if we need to serialize bools and how.
-    return new jpl.Integer(val ? 1 : 0);
+    return new org.jpl7.Integer(val ? 1 : 0);
   }
 
-  static Term decodeJSONValue(double val) {
-    return new jpl.Float(val);
+  static org.jpl7.Term decodeJSONValue(double val) {
+    return new org.jpl7.Float(val);
   }
 
-  static Term decodeJSONValue(int val) {
-    return new jpl.Integer(val);
+  static org.jpl7.Term decodeJSONValue(int val) {
+    return new org.jpl7.Integer(val);
   }
 
-  public static Term decodeJSONValue(JSONObject val) throws InvalidJSONQuery {
+  public static org.jpl7.Term decodeJSONValue(JSONObject val) throws InvalidJSONQuery {
     if (val.has("variable"))
-      return new jpl.Variable(val.getString("variable"));
+      return new org.jpl7.Variable(val.getString("variable"));
     else if (val.has("term"))
       return makeCompoundTerm(val.getJSONArray("term"));
     else if (val.has("list")) {
       JSONArray json_elements = val.getJSONArray("list");
-      return jpl.Util.termArrayToList(decodeJSONArray(json_elements));
+      return org.jpl7.Util.termArrayToList(decodeJSONArray(json_elements));
     } else
       throw new InvalidJSONQuery("decodeJSONValue: unable to parse "
           + val.toString());
@@ -231,7 +229,7 @@ public class JSONQuery {
     try {
       term.listLength();
       return true;
-    } catch (JPLException e) {
+    } catch (org.jpl7.JPLException e) {
       return false;
     }
   }

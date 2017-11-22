@@ -226,12 +226,6 @@ rdf_instance_from_class(Class, SourceRef, Instance) :-
 
 
 rdf_unique_id(Class, UniqID) :-
-  %phrase("$1$", PreSeed, _),
-  %crypt(Class, PreSeed),
-  %random_permutation(PreSeed, Seed),
-  %format(atom(Hash), '~s~n', [Seed]),
-  %sub_atom(Hash, 3, 8, _, Sub),
-  
   % generate 8 random alphabetic characters
   randseq(8, 25, Seq_random),
   maplist(plus(65), Seq_random, Alpha_random),

@@ -3,7 +3,7 @@
   <name>json_prolog</name>
   <version>0.1.0</version>
   <description>The json_prolog packages provides an interface to SWI Prolog
-    through ROS services. It is implemented in Java by using rosjava and JPL.
+    through ROS services. It is implemented in Java by using rosjava and jpl7.JPL.
   </description>
 
   <maintainer email="knowrob@tenorth.de">Moritz Tenorth</maintainer>
