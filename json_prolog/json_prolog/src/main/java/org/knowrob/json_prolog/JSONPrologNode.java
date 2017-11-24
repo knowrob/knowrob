@@ -151,7 +151,7 @@ public class JSONPrologNode extends AbstractNodeMain {
 			//	response.setMessage("Failed to close incremental query.");
 			//	return;
 			//}
-			
+		        	
 			if ( queries.get(request.getId()) != null ) {
 				response.setOk(false);
 				response.setMessage("Already processing a query with id " + request.getId());
@@ -201,8 +201,7 @@ public class JSONPrologNode extends AbstractNodeMain {
 				//	response.setMessage("Failed to close incremental query.");
 				//	return;
 				//}
-				
-				synchronized(jpl.Query.class) {
+				synchronized(this){
 					if (queries.get(request.getId()) != null ) {
 						response.setOk(false);
 						response.setMessage("Already processing a query with id " + request.getId());
@@ -214,7 +213,6 @@ public class JSONPrologNode extends AbstractNodeMain {
 						ThreadedQuery currentQuery = new ThreadedQuery(
 								"expand_goal(("+userQuery+"),_Q), call(_Q)");
 						String currentQueryId = request.getId();
-						
 						// Add the query to the thread pool
 						queryThreadPool.submit(currentQuery);
 						
@@ -276,8 +274,8 @@ public class JSONPrologNode extends AbstractNodeMain {
 		@Override
 		public void build(json_prolog_msgs.PrologNextSolutionRequest request, json_prolog_msgs.PrologNextSolutionResponse response) {
 			try {
-				synchronized(jpl.Query.class) {
-					PrologSolutions currentQuery = queries.get(request.getId());
+				PrologSolutions currentQuery = queries.get(request.getId());
+				synchronized(currentQuery){
 					if (currentQuery == null) {
 						response.setStatus(json_prolog_msgs.PrologNextSolutionResponse.WRONG_ID);
 					}
@@ -295,7 +293,7 @@ public class JSONPrologNode extends AbstractNodeMain {
 								response.setStatus(json_prolog_msgs.PrologNextSolutionResponse.OK);
 							}
 						}
-					}
+				       }
 				}
 
 			}
