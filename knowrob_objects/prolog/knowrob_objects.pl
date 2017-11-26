@@ -382,6 +382,9 @@ object_dimensions(Obj, Depth, Width, Height) :-
   owl_has(Obj, srdl2comp:'box_size', literal(type(_, ScaleVector))),
   parse_vector(ScaleVector, [Depth, Width, Height]).
 
+object_dimensions(Obj, 0, 0, 0) :-
+  rdfs_individual_of(Obj, knowrob:'Point'), !.
+
 %% class_dimensions(?Class, ?Depth, ?Width, ?Height) is nondet.
 %
 % Get the width, depth and height of the class.
