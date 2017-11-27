@@ -37,6 +37,7 @@
       quaternion_inverse/2,
       quaternion_transform/3,
       transform_multiply/3,
+      multiply_transforms/3,
       transform_compute_relative/3,
       transform_data/2,
       parse_vector/2
@@ -145,6 +146,21 @@ quaternion_transform(Q,T,T_transformed) :-
 transform_multiply([RefFrame,       _, [Lx,Ly,Lz], [LQx, LQy, LQz, LQw]],
                    [       _, TgFrame, [Rx,Ry,Rz], [RQx, RQy, RQz, RQw]],
                    [RefFrame, TgFrame, [Nx,Ny,Nz], [NQx, NQy, NQz, NQw]]) :-
+  NQw is LQw*RQw - LQx*RQx - LQy*RQy - LQz*RQz,
+  NQx is LQw*RQx + LQx*RQw + LQy*RQz - LQz*RQy,
+  NQy is LQw*RQy - LQx*RQz + LQy*RQw + LQz*RQx,
+  NQz is LQw*RQz + LQx*RQy - LQy*RQx + LQz*RQw,
+  RRx is 2*(Rx*(0.5 - LQy*LQy - LQz*LQz) + Ry*(LQx*LQy - LQw*LQz) + Rz*(LQw*LQy + LQx*LQz)),
+  RRy is 2*(Rx*(LQw*LQz + LQx*LQy) + Ry*(0.5 - LQx*LQx - LQz*LQz) + Rz*(LQy*LQz - LQw*LQx)),
+  RRz is 2*(Rx*(LQx*LQz - LQw*LQy) + Ry*(LQw*LQx + LQy*LQz) + Rz*(0.5 - LQx*LQx - LQy*LQy)),
+  Nx is Lx + RRx,
+  Ny is Ly + RRy,
+  Nz is Lz + RRz.
+
+% FIXME: remove this again
+multiply_transforms([RefFrame,       _, [Lx,Ly,Lz], [LQx, LQy, LQz, LQw]],
+                   [       _, TgFrame, [Rx,Ry,Rz], [RQw, RQx, RQy, RQz]],
+                   [RefFrame, TgFrame, [Nx,Ny,Nz], [NQw, NQx, NQy, NQz]]) :-
   NQw is LQw*RQw - LQx*RQx - LQy*RQy - LQz*RQz,
   NQx is LQw*RQx + LQx*RQw + LQy*RQz - LQz*RQy,
   NQy is LQw*RQy - LQx*RQz + LQy*RQw + LQz*RQx,
