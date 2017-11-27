@@ -218,10 +218,10 @@ public class MarkerObject {
 	
 	public double[] getOrientation() {
 		return new double[] {
-			markerMsg.getPose().getOrientation().getW(),
 			markerMsg.getPose().getOrientation().getX(),
 			markerMsg.getPose().getOrientation().getY(),
-			markerMsg.getPose().getOrientation().getZ()
+			markerMsg.getPose().getOrientation().getZ(),
+			markerMsg.getPose().getOrientation().getW()
 		};
 	}
 	
@@ -233,10 +233,10 @@ public class MarkerObject {
 	}
 	
 	public void setOrientation(double []orientation) {
-		markerMsg.getPose().getOrientation().setW(orientation[0]);
-		markerMsg.getPose().getOrientation().setX(orientation[1]);
-		markerMsg.getPose().getOrientation().setY(orientation[2]);
-		markerMsg.getPose().getOrientation().setZ(orientation[3]);
+		markerMsg.getPose().getOrientation().setX(orientation[0]);
+		markerMsg.getPose().getOrientation().setY(orientation[1]);
+		markerMsg.getPose().getOrientation().setZ(orientation[2]);
+		markerMsg.getPose().getOrientation().setW(orientation[3]);
 		queueRepublish();
 	}
 	
@@ -248,10 +248,10 @@ public class MarkerObject {
 	}
 	
 	public void setOrientation(float []orientation) {
-		markerMsg.getPose().getOrientation().setW(orientation[0]);
-		markerMsg.getPose().getOrientation().setX(orientation[1]);
-		markerMsg.getPose().getOrientation().setY(orientation[2]);
-		markerMsg.getPose().getOrientation().setZ(orientation[3]);
+		markerMsg.getPose().getOrientation().setX(orientation[0]);
+		markerMsg.getPose().getOrientation().setY(orientation[1]);
+		markerMsg.getPose().getOrientation().setZ(orientation[2]);
+		markerMsg.getPose().getOrientation().setW(orientation[3]);
 		queueRepublish();
 	}
 

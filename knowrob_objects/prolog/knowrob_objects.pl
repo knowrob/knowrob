@@ -203,9 +203,9 @@ storagePlaceForBecause(St, ObjType, ObjT) :-
 % @param Obj       Instance of a subclass of SpatialThing-Localized
 % @param PoseList  Row-based representation of the object by translation and quaternion list[7]
 % 
-current_object_pose(Obj, [TX,TY,TZ,QW,QX,QY,QZ]) :-
+current_object_pose(Obj, [TX,TY,TZ,QX,QY,QZ,QW]) :-
   current_time(T),
-  object_pose_at_time(Obj, T, pose([TX, TY, TZ], [QW,QX,QY,QZ])),!.
+  object_pose_at_time(Obj, T, pose([TX, TY, TZ], [QX,QY,QZ,QW])),!.
 
 %% current_object_pose(+ObjInstance, -PoseList) is nondet.
 %
@@ -236,17 +236,17 @@ object_pose_at_time(Obj, Time, Pose) :-
   number(Time),
   object_pose_at_time(Obj, Time, Pose, [Time,Time]).
 
-object_pose_at_time(Obj, Time, pose([X,Y,Z], [QW,QX,QY,QZ]), Interval) :-
+object_pose_at_time(Obj, Time, pose([X,Y,Z], [QX,QY,QZ,QW]), Interval) :-
   object_pose_holds(Obj, Time, Pose, Interval),
-  object_pose(Pose, Time, pose([X,Y,Z], [QW,QX,QY,QZ])),!.
+  object_pose(Pose, Time, pose([X,Y,Z], [QX,QY,QZ,QW])),!.
 
 object_pose_at_time(Obj, Time, mat(Matrix), Interval) :-
   object_pose_holds(Obj, Time, Pose, Interval),
   object_pose(Pose, Time, mat(Matrix)),!.
 
-object_pose_at_time(Obj, Time, pose([X,Y,Z], [QW,QX,QY,QZ]), Interval) :-
+object_pose_at_time(Obj, Time, pose([X,Y,Z], [QX,QY,QZ,QW]), Interval) :-
   interval_during(Time, Interval),
-  object_pose(Obj, Time, pose([X,Y,Z], [QW,QX,QY,QZ])),!.
+  object_pose(Obj, Time, pose([X,Y,Z], [QX,QY,QZ,QW])),!.
 
 object_pose_at_time(Obj, Time, mat(Matrix), Interval) :-
   interval_during(Time, Interval),
@@ -311,7 +311,7 @@ object_pose_holds(Obj, Time, Pose, Interval) :-
 
 
 % TransformationMatrix
-object_pose(Matrix, _, pose([X,Y,Z], [QW,QX,QY,QZ])) :-
+object_pose(Matrix, _, pose([X,Y,Z], [QX,QY,QZ,QW])) :-
   is_list(Matrix), !,
   matrix_rotation(Matrix, [QX,QY,QZ,QW]),
   matrix_translation(Matrix, [X,Y,Z]).
@@ -321,7 +321,7 @@ object_pose(Matrix, _, mat(Matrix)) :-
 
 % TODO: rename to read pose? move to knowrob_owl
 % TF pose
-object_pose(Pose, Instant, pose([X,Y,Z], [QW,QX,QY,QZ])) :-
+object_pose(Pose, Instant, pose([X,Y,Z], [QX,QY,QZ,QW])) :-
   rdf_has(Pose, srdl2comp:'urdfName', literal(URDFName)),
   mng_lookup_transform('/map', URDFName, Instant, Transform), % FIXME: /map
   matrix_rotation(Transform, [QX,QY,QZ,QW]),
@@ -341,16 +341,16 @@ object_pose(Pose, Instant, mat(Mat)) :-
   ;  Mat = Mat_ ), !.
 
 % Quaternion and position
-object_pose(Pose, _, pose([X,Y,Z], [QW,QX,QY,QZ])) :-
+object_pose(Pose, _, pose([X,Y,Z], [QX,QY,QZ,QW])) :-
   position_to_list(Pose, [X,Y,Z]),
-  quaternion_to_list(Pose, [QW,QX,QY,QZ]), !.
+  quaternion_to_list(Pose, [QX,QY,QZ,QW]), !.
 
 object_pose(Pose, _, mat(Mat)) :-
   position_to_list(Pose, [X,Y,Z]),
-  quaternion_to_list(Pose, [QW,QX,QY,QZ]),
-  matrix([X,Y,Z], [QW,QX,QY,QZ], Mat), !.
+  quaternion_to_list(Pose, [QX,QY,QZ,QW]),
+  matrix([X,Y,Z], [QX,QY,QZ,QW], Mat), !.
 
-object_pose(Pose, _, pose([X,Y,Z], [QW,QX,QY,QZ])) :-
+object_pose(Pose, _, pose([X,Y,Z], [QX,QY,QZ,QW])) :-
   rdfs_individual_of(Pose, knowrob:'Matrix'),
   rotmat_to_list(Pose, Matrix),
   matrix_rotation(Matrix, [QX,QY,QZ,QW]),
