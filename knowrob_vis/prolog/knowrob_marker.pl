@@ -189,7 +189,7 @@ marker_lookup_transform(MarkerObject, Identifier, TargetFrame, T, (Translation,O
   not( atom_prefix(TfFrame, 'http') ),
   mng_lookup_transform(TargetFrame, TfFrame, T, Pose),
   matrix_rotation(Pose, [QX,QY,QZ,QW]),
-  Orientation = [QX,QY,QZ,QW],
+  Orientation = [QW,QX,QY,QZ],
   matrix_translation(Pose, Translation), !.
 
 %marker_lookup_transform(MarkerObject, Identifier, TargetFrame, T, (Translation,Orientation)) :-
@@ -1008,7 +1008,7 @@ marker_update(pointer(From,To), MarkerObject, T) :-
   marker_tf_frame(MarkerObject, To, ToResolved),
   mng_lookup_transform(FromResolved, ToResolved, T, Pose),
   matrix_rotation(Pose, [QX,QY,QZ,QW]),
-  Orientation = [QX,QY,QZ,QW],
+  Orientation = [QW,QX,QY,QZ],
   matrix_translation(Pose, Translation),
   marker_pose(MarkerObject,Translation,Orientation).
 
@@ -1024,7 +1024,7 @@ marker_update(cylinder_tf(From,To), MarkerObject, T) :-
   QX is -DY, QY is DX, QZ is 0.0, QW is Distance + DZ,
   X is 0.5*(X0+X1), Y is 0.5*(Y0+Y1), Z is 0.5*(Z0+Z1),
   marker_scale(MarkerObject, [0.1,0.1,Distance]),
-  marker_pose(MarkerObject, [X,Y,Z], [QX,QY,QZ,QW]),
+  marker_pose(MarkerObject, [X,Y,Z], [QW,QX,QY,QZ]),
   marker_show(MarkerObject), !.
 
 marker_update(cylinder_tf(_,_), MarkerObject, _) :-
@@ -1538,7 +1538,7 @@ marker_pose(Marker, pose(Position,Orientation)) :-
 marker_pose(Marker, mat(Matrix)) :-
   matrix_translation(Matrix, Position),
   matrix_rotation(Pose, [QX,QY,QZ,QW]),
-  Orientation = [QX,QY,QZ,QW],
+  Orientation = [QW,QX,QY,QZ],
   marker_call(Marker, pose(Position,Orientation), (get_marker_pose,set_marker_pose)).
 
 marker_pose(Marker, Position, Orientation) :-
@@ -1779,9 +1779,9 @@ get_marker_translation(MarkerObj, [X,Y,Z]) :-
   jpl_call(MarkerObj, 'getTranslation', [], TranslationArray),
   jpl_array_to_list(TranslationArray,[X,Y,Z]).
 
-get_marker_orientation(MarkerObj, [QX,QY,QZ,QW]) :-
+get_marker_orientation(MarkerObj, [QW,QX,QY,QZ]) :-
   jpl_call(MarkerObj, 'getOrientation', [], OrientationArray),
-  jpl_array_to_list(OrientationArray,[QX,QY,QZ,QW]).
+  jpl_array_to_list(OrientationArray,[QW,QX,QY,QZ]).
 
 get_marker_pose(MarkerObj, pose(Translation,Orientation)) :-
   get_marker_translation(MarkerObj, Translation),
@@ -1791,8 +1791,8 @@ set_marker_translation(MarkerObj, [X,Y,Z]) :-
   jpl_new(array(double), [X,Y,Z], Array),
   jpl_call(MarkerObj, 'setTranslation', [Array], _).
 
-set_marker_orientation(MarkerObj, [QX,QY,QZ,QW]) :-
-  jpl_new(array(double), [QX,QY,QZ,QW], Array),
+set_marker_orientation(MarkerObj, [QW,QX,QY,QZ]) :-
+  jpl_new(array(double), [QW,QX,QY,QZ], Array),
   jpl_call(MarkerObj, 'setOrientation', [Array], _).
 
 set_marker_pose(MarkerObj, pose(Translation,Orientation)) :-
