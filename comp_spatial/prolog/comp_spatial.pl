@@ -116,7 +116,7 @@ spatially_holds_interval(S, P, O, Begin, End) :-
 spatial_thing(Thing) :-
   % if unbound limit search to human scale objects
   ground(Thing)
-  -> rdfs_individual_of(Thing, knowrob:'SpatialThing-Localized')
+  -> rdfs_individual_of(Thing, knowrob:'SpatialThing')
   ;  rdfs_individual_of(Thing, knowrob:'HumanScaleObject').
 
 %% on_Physical(?Top, ?Bottom) is nondet.
@@ -382,6 +382,7 @@ in_ContGeneric(InnerObj, OuterObj) :-
     in_ContGeneric_at_time(InnerObj, OuterObj, Instant).
 
 in_ContGeneric_at_time(InnerObj, OuterObj, Instant) :-
+    
     spatial_thing(InnerObj),
     object_pose_at_time(InnerObj, Instant, pose([IX,IY,IZ], _)),
     object_dimensions(InnerObj, ID, IW, IH),
