@@ -8962,7 +8962,7 @@ See also Line, Surface, and SpaceChunk.</rdfs:comment>
 
     <owl:Class rdf:about="&knowrob_common;SinkingAGripper">
         <rdfs:subClassOf rdf:resource="&knowrob_common;ActionOnGripper"/>
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob_common.owl#SinkingAnObject"/>
+        <rdfs:subClassOf rdf:resource="&knowrob_common;SinkingAnObject"/>
     </owl:Class>
     
 
@@ -10274,17 +10274,17 @@ As the above examples illustrate, it is not the case that everthing that has a t
     
 
 
-    <!-- http://knowrob.org/kb/knowrob_common.owl#DescendingEvent -->
+    <!-- http://knowrob.org/kb/knowrob.owl#DescendingEvent -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#DescendingEvent">
+    <owl:Class rdf:about="&knowrob_common;DescendingEvent">
         <rdfs:subClassOf rdf:resource="&knowrob_common;Translation-LocationChange"/>
     </owl:Class>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob_common.owl#FetchAndDeliver -->
+    <!-- http://knowrob.org/kb/knowrob.owl#FetchAndDeliver -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#FetchAndDeliver">
+    <owl:Class rdf:about="&knowrob_common;FetchAndDeliver">
         <rdfs:subClassOf rdf:resource="&knowrob_common;TransportationEvent"/>
         <rdfs:comment rdf:datatype="&xsd;string">Sequence of PickingUpAnObject and
 PuttingDownAnObject.</rdfs:comment>
@@ -10292,9 +10292,9 @@ PuttingDownAnObject.</rdfs:comment>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob_common.owl#MovingToLocation -->
+    <!-- http://knowrob.org/kb/knowrob.owl#MovingToLocation -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#MovingToLocation">
+    <owl:Class rdf:about="&knowrob_common;MovingToLocation">
         <rdfs:subClassOf rdf:resource="&knowrob_common;Translation-LocationChange"/>
         <rdfs:subClassOf>
             <owl:Restriction>
@@ -10307,10 +10307,10 @@ PuttingDownAnObject.</rdfs:comment>
     
 
 
-    <!-- http://knowrob.org/kb/knowrob_common.owl#SinkingAnObject -->
+    <!-- http://knowrob.org/kb/knowrob.owl#SinkingAnObject -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob_common.owl#SinkingAnObject">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob_common.owl#DescendingEvent"/>
+    <owl:Class rdf:about="&knowrob_common;SinkingAnObject">
+        <rdfs:subClassOf rdf:resource="&knowrob_common;DescendingEvent"/>
     </owl:Class>
     
 
