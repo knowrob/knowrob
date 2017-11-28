@@ -713,8 +713,8 @@ entity_(Entity, [[name,EntityName]|Descr]) :-
 
 entity_(Entity, [[type,restriction(P,Restr)|_]|Descr]) :-
   %% FIXME: don't assert
-  nonvar(P), nonvar(Restr),
-  entity_has_restriction(Entity, restriction(P,Restr)), !,
+  nonvar(P), nonvar(Restr), !,
+  entity_has_restriction(Entity, restriction(P,Restr)),
   entity_(Entity, Descr).
 
 %% ignore type, types are handled in `entity_head`
