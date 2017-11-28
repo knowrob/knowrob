@@ -1244,12 +1244,15 @@ entity_iri(Entity, Type) :-
 entity_has_restriction(X, restriction(P,Facet2)) :-
   rdfs_individual_of(X, Type),
   rdf_global_term(P,P_glob),
-  rdf_has(Type,owl:'onProperty',P_glob),
+  rdf_has(Type,owl:'onProperty',Q_glob),
+  rdfs_subproperty_of(P_glob,Q_glob),
   owl_description(Type, restriction(_,Facet1)),
   match_facet(Facet1,Facet2).
 match_facet(some_values_from(A1), some_values_from(A2)) :-
   rdf_global_term(A1,A1_glob),
-  rdf_equal(A1_glob,A2), !.
+  rdf_global_term(A2,A2_glob),
+  rdfs_subclass_of(A1_glob,A2_glob), !.
 match_facet(all_values_from(A1), all_values_from(A2)) :-
   rdf_global_term(A1,A1_glob),
-  rdf_equal(A1_glob,A2), !.
+  rdf_global_term(A2,A2_glob),
+  rdfs_subclass_of(A1_glob,A2_glob), !.
