@@ -90,6 +90,8 @@
       comp_yCoord/2,
       comp_zCoord/2,
       comp_orientation/2,
+      comp_pose/2,
+      comp_pose_at_time/3,
       instantiate_at_position/3,
       update_instance_from_class_def/2,
       object_queries/2,
@@ -103,6 +105,7 @@
 :- use_module(library('knowrob_owl')).
 :- use_module(library('knowrob_math')).
 :- use_module(library('knowrob_perception')).
+:- use_module(library('knowrob_temporal')).
 :- use_module(library('owl_parser')).
 
 :- owl_parser:owl_parse('package://knowrob_objects/owl/knowrob_objects.owl').
@@ -125,6 +128,8 @@
     object_assert_dimensions(r, +, +, +),
     object_assert_color(r, +),
     comp_orientation(r, r),
+    comp_pose(r, r),
+    comp_pose_at_time(r, r, +),
     instantiate_at_position(r,+,r),
     transform_relative_to(r,r,-),
     update_instance_from_class_def(r,r),
@@ -150,6 +155,33 @@
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(xsd, 'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
 :- rdf_db:rdf_register_ns(srdl2comp, 'http://knowrob.org/kb/srdl2-comp.owl#', [keep(true)]).
+
+
+
+comp_pose(Obj, Pose) :-
+    get_timepoint(Instant),
+    comp_pose_at_time(Obj, Pose, Instant).
+
+comp_pose_at_time(Obj, Pose, Instant) :-
+  object_detection(Obj, Instant, Detection),
+  rdf_triple(knowrob:eventOccursAt, Detection, Pose), !.
+  
+comp_pose_at_time(Obj, Pose, Instant) :-
+  nonvar(Obj),
+    % get object center for Top
+    % FIXME: not only mongo!
+    knowrob_mongo:mng_object_pose_at_time(Obj, Instant, MngPose, Instant),
+    object_pose(MngPose, Instant, pose([X,Y,Z],[QX,QY,QZ,QW])),
+    atomic_list_concat(['http://knowrob.org/kb/knowrob.owl#Pose'|[X,Y,Z,QX,QY,QZ,QW]], '_', Pose),
+    atomic_list_concat([X,Y,Z], ' ', Translation),
+    atomic_list_concat([QX,QY,QZ,QW], ' ', Quaternion),
+    rdf_assert(Pose, rdf:type, knowrob:'Pose'),
+    rdf_assert(Pose, knowrob:'translation', literal(type(string,Translation))),
+    rdf_assert(Pose, knowrob:'quaternion', literal(type(string,Quaternion))).
+
+knowrob_temporal:holds(Obj, 'http://knowrob.org/kb/knowrob.owl#pose', Pose, Interval) :-
+  interval_start(Interval,Instant), % FIXME
+  comp_pose_at_time(Obj, Pose, Instant).
 
 
 %% storagePlaceFor(St, ObjT) is nondet.
