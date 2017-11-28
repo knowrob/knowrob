@@ -1243,10 +1243,13 @@ entity_iri(Entity, Type) :-
 % FIXME: owl_subclass_of should handle this
 entity_has_restriction(X, restriction(P,Facet2)) :-
   rdfs_individual_of(X, Type),
-  rdf_has(Type,owl:'onProperty',P),
+  rdf_global_term(P,P_glob),
+  rdf_has(Type,owl:'onProperty',P_glob),
   owl_description(Type, restriction(_,Facet1)),
   match_facet(Facet1,Facet2).
 match_facet(some_values_from(A1), some_values_from(A2)) :-
-  owl_subclass_of(A1,A2), !.
+  rdf_global_term(A1,A1_glob),
+  owl_subclass_of(A1_glob,A2), !.
 match_facet(all_values_from(A1), all_values_from(A2)) :-
-  owl_subclass_of(A1,A2), !.
+  rdf_global_term(A1,A1_glob),
+  owl_subclass_of(A1_glob,A2), !.
