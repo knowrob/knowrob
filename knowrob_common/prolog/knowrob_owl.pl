@@ -1249,7 +1249,7 @@ entity_has_restriction(X, restriction(P,Facet2)) :-
   match_facet(Facet1,Facet2).
 match_facet(some_values_from(A1), some_values_from(A2)) :-
   rdf_global_term(A1,A1_glob),
-  owl_subclass_of(A1_glob,A2), !.
+  rdf_equal(A1_glob,A2), !.
 match_facet(all_values_from(A1), all_values_from(A2)) :-
   rdf_global_term(A1,A1_glob),
-  owl_subclass_of(A1_glob,A2), !.
+  rdf_equal(A1_glob,A2), !.
