@@ -1551,7 +1551,7 @@ marker_pose(Marker, pose(Position,Orientation)) :-
 
 marker_pose(Marker, mat(Matrix)) :-
   matrix_translation(Matrix, Position),
-  matrix_rotation(Pose, [QX,QY,QZ,QW]),
+  matrix_rotation(Matrix, [QX,QY,QZ,QW]),
   Orientation = [QW,QX,QY,QZ],
   marker_call(Marker, pose(Position,Orientation), (get_marker_pose,set_marker_pose)).
 
@@ -1803,12 +1803,22 @@ get_marker_pose(MarkerObj, pose(Translation,Orientation)) :-
 
 set_marker_translation(MarkerObj, [X,Y,Z]) :-
   jpl_new(array(double), [X,Y,Z], Array),
-  jpl_call(MarkerObj, 'setTranslation', [Array], _).
+  jpl_call(MarkerObj, 'setTranslation', [Array], _), !.
+set_marker_translation(MarkerObj, Pos) :-
+  atom(Pos), parse_vector(Pos, Pos_v),
+  set_marker_translation(MarkerObj, Pos_v).
 
 set_marker_orientation(MarkerObj, [QW,QX,QY,QZ]) :-
   jpl_new(array(double), [QW,QX,QY,QZ], Array),
   jpl_call(MarkerObj, 'setOrientation', [Array], _).
+set_marker_orientation(MarkerObj, O) :-
+  atom(O), parse_vector(O, O_v),
+  set_marker_translation(MarkerObj, O_v).
 
 set_marker_pose(MarkerObj, pose(Translation,Orientation)) :-
   set_marker_translation(MarkerObj, Translation),
-  set_marker_orientation(MarkerObj, Orientation).
+  set_marker_orientation(MarkerObj, Orientation), !.
+set_marker_pose(MarkerObj, pose(Pose)) :-
+  atom(Pose),
+  transform_data(Pose, pose(T,Q)),
+  set_marker_pose(MarkerObj, pose(T,Q)).
