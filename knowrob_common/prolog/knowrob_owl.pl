@@ -1163,7 +1163,9 @@ entity_head(Entity, _, Descr, TypeIri) :-
   %  Entity = TypeIri )),
   
   findall(TypeIri, (
-    entity_has(Descr, type, TypeDescr), once(
+    entity_has(Descr, type, TypeDescr),
+    \+ TypeDescr = restriction(_,_),
+    once(
     entity_iri(TypeIri, TypeDescr, camelcase) ;
     rdf_global_term(TypeDescr, TypeIri) )
     % TODO: ensure it's really a type
