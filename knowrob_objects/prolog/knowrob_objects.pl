@@ -271,6 +271,11 @@ object_pose_holds(Pose, _, Pose, [0.0]) :-
   nonvar(Pose), rdfs_individual_of(Pose, knowrob:'Matrix'), !.
 
 object_pose_holds(Obj, Time, Pose, Interval) :-
+  nonvar(Obj),
+  rdf_has(Obj, srdl2comp:baseLinkOfComposition, BaseLink),
+  object_pose_holds(BaseLink, Time, Pose, Interval), !.
+
+object_pose_holds(Obj, Time, Pose, Interval) :-
   ( nonvar(Obj)
   -> (
     holds(Obj, 'http://knowrob.org/kb/knowrob.owl#pose', Pose, Interval),
