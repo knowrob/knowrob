@@ -91,6 +91,7 @@
       comp_zCoord/2,
       comp_orientation/2,
       comp_pose/2,
+      comp_pose_at_time/2,
       instantiate_at_position/3,
       update_instance_from_class_def/2,
       object_queries/2,
@@ -128,6 +129,7 @@
     object_assert_color(r, +),
     comp_orientation(r, r),
     comp_pose(r, r),
+    comp_pose_at_time(r, r),
     instantiate_at_position(r,+,r),
     transform_relative_to(r,r,-),
     update_instance_from_class_def(r,r),
@@ -158,7 +160,7 @@
 
 comp_pose(Obj, Pose) :-
     get_timepoint(Instant),
-    comp_pose_at_time(Top, Bottom, Instant).
+    comp_pose_at_time(Obj, Pose, Instant).
 
 comp_pose_at_time(Obj, Pose, Instant) :-
   nonvar(Obj),
