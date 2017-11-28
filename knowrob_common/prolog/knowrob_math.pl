@@ -171,6 +171,22 @@ multiply_transforms([RefFrame,       _, [Lx,Ly,Lz], [LQw, LQx, LQy, LQz]],
   Nx is Lx + RRx,
   Ny is Ly + RRy,
   Nz is Lz + RRz.
+multiply_transforms([X1,Y1,T1,Q1],
+                    [X2,Y2,T2,Q2],
+                    [X3,Y3,T3,Q3]) :-
+  atom(T1), T1 \= [],
+  atom(Q1), Q1 \= [],
+  parse_vector(T1,T1_v),
+  parse_vector(Q1,Q1_v),
+  multiply_transforms([X1,Y1,T1_v,Q1_v], [X2,Y2,T2,Q2], [X3,Y3,T3,Q3]), !.
+multiply_transforms([X1,Y1,T1,Q1],
+                    [X2,Y2,T2,Q2],
+                    [X3,Y3,T3,Q3]) :-
+  atom(T2), T2 \= [],
+  atom(Q2), Q2 \= [],
+  parse_vector(T2,T2_v),
+  parse_vector(Q2,Q2_v),
+  multiply_transforms([X1,Y1,T1,Q1], [X2,Y2,T2_v,Q2_v], [X3,Y3,T3,Q3]), !.
   
 transform_compute_relative([_,TgFrame, [T1x,T1y,T1z],Q1],
                            [_,RefFrame,[T2x,T2y,T2z],Q2],
