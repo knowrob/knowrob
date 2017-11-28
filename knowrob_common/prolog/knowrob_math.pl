@@ -158,7 +158,7 @@ transform_multiply([RefFrame,       _, [Lx,Ly,Lz], [LQx, LQy, LQz, LQw]],
   Nz is Lz + RRz.
 
 % FIXME: remove this again
-multiply_transforms([RefFrame,       _, [Lx,Ly,Lz], [LQx, LQy, LQz, LQw]],
+multiply_transforms([RefFrame,       _, [Lx,Ly,Lz], [LQw, LQx, LQy, LQz]],
                    [       _, TgFrame, [Rx,Ry,Rz], [RQw, RQx, RQy, RQz]],
                    [RefFrame, TgFrame, [Nx,Ny,Nz], [NQw, NQx, NQy, NQz]]) :-
   NQw is LQw*RQw - LQx*RQx - LQy*RQy - LQz*RQz,
