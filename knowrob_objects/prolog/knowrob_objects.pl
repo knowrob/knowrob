@@ -161,7 +161,7 @@ comp_pose(Obj, Pose) :-
     comp_pose_at_time(Top, Bottom, Instant).
 
 comp_pose_at_time(Obj, Pose, Instant) :-
-    spatial_thing(Top),
+  nonvar(Obj),
     % get object center for Top
     % FIXME: not only mongo!
     knowrob_mongo:mng_object_pose_at_time(Obj, Instant, MngPose, Instant),
