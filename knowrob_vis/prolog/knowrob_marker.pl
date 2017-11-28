@@ -1431,7 +1431,7 @@ marker_property(Marker, pose(Position,Orientation)) :-
   marker_pose(Marker, Position_v, Orientation).
 
 marker_property(Marker, pose(Position,Orientation)) :-
-  atom(Orientation), Orientation \= [], ,
+  atom(Orientation), Orientation \= [], !,
   parse_vector(Orientation, Orientation_v),
   marker_pose(Marker, Position, Orientation_v)!.
 
