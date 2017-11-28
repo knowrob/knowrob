@@ -1426,6 +1426,16 @@ marker_property(Marker, scale(Scale)) :-
   marker_scale(Marker, Scale).
 
 marker_property(Marker, pose(Position,Orientation)) :-
+  atom(Position), Position \= [], !,
+  parse_vector(Position, Position_v),
+  marker_pose(Marker, Position_v, Orientation).
+
+marker_property(Marker, pose(Position,Orientation)) :-
+  atom(Orientation), Orientation \= [], ,
+  parse_vector(Orientation, Orientation_v),
+  marker_pose(Marker, Position, Orientation_v)!.
+
+marker_property(Marker, pose(Position,Orientation)) :-
   marker_pose(Marker, Position, Orientation).
 
 marker_property(Marker, pose(mat(Mat))) :-
