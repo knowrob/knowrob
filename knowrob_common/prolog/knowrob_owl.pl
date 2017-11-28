@@ -713,7 +713,9 @@ entity_(Entity, [[name,EntityName]|Descr]) :-
 
 entity_(Entity, [[type,restriction(P,Restr)|_]|Descr]) :-
   %% FIXME: don't assert
-  entity_has_restriction(Entity, restriction(P,Restr)), !.
+  nonvar(P), nonvar(Restr),
+  entity_has_restriction(Entity, restriction(P,Restr)), !,
+  entity_(Entity, Descr).
 
 %% ignore type, types are handled in `entity_head`
 entity_(Entity, [[type,Type|_]|Descr]) :-
@@ -1237,7 +1239,7 @@ entity_iri(Entity, Type) :-
   rdfs_individual_of(Entity,Type).
 
 % FIXME: owl_subclass_of should handle this
-entity_has_restriction(X, restriction(P,Facet2))
+entity_has_restriction(X, restriction(P,Facet2)) :-
   rdfs_individual_of(X, Type),
   rdf_has(Type,owl:'onProperty',P),
   owl_description(Type, restriction(_,Facet1)),
