@@ -1810,7 +1810,7 @@ set_marker_translation(MarkerObj, Pos) :-
 
 set_marker_orientation(MarkerObj, [QW,QX,QY,QZ]) :-
   jpl_new(array(double), [QW,QX,QY,QZ], Array),
-  jpl_call(MarkerObj, 'setOrientation', [Array], _).
+  jpl_call(MarkerObj, 'setOrientation', [Array], _), !.
 set_marker_orientation(MarkerObj, O) :-
   atom(O), parse_vector(O, O_v),
   set_marker_translation(MarkerObj, O_v).
