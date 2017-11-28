@@ -711,6 +711,10 @@ entity_(Entity, [[name,EntityName]|Descr]) :-
   entity_name([name,EntityName], Entity),
   entity_(Entity, Descr).
 
+entity_(Entity, [[type,restriction(P,Restr)|_]|Descr]) :-
+  %% FIXME: don't assert
+  entity_has_restriction(Entity, restriction(P,Restr)), !.
+
 %% ignore type, types are handled in `entity_head`
 entity_(Entity, [[type,Type|_]|Descr]) :-
   nonvar(Type), !,
@@ -1231,3 +1235,14 @@ entity_iri(Entity, Type) :-
 
 entity_iri(Entity, Type) :-
   rdfs_individual_of(Entity,Type).
+
+% FIXME: owl_subclass_of should handle this
+entity_has_restriction(X, restriction(P,Facet2))
+  rdfs_individual_of(X, Type),
+  rdf_has(Type,owl:'onProperty',P),
+  owl_description(Type, restriction(_,Facet1)),
+  match_facet(Facet1,Facet2).
+match_facet(some_values_from(A1), some_values_from(A2)) :-
+  owl_subclass_of(A1,A2), !.
+match_facet(all_values_from(A1), all_values_from(A2)) :-
+  owl_subclass_of(A1,A2), !.
