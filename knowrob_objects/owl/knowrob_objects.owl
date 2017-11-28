@@ -21,6 +21,14 @@
   </owl:Ontology>
 
 
+    <computable:PrologProperty rdf:about="#computePose">
+        <computable:command rdf:datatype="&xsd;string">comp_pose</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;pose"/>
+    </computable:PrologProperty>
+
+
     <computable:PrologProperty rdf:about="#computeOrientation">
         <computable:command rdf:datatype="&xsd;string">comp_orientation</computable:command>
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
