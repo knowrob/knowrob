@@ -1425,6 +1425,10 @@ marker_property(Marker, color(Color)) :-
 marker_property(Marker, scale(Scale)) :-
   marker_scale(Marker, Scale).
 
+marker_property(Marker, pose(Pose)) :-
+  transform_data(Pose, (Position,Orientation)),
+  marker_property(Marker, pose(Position,Orientation)), !.
+
 marker_property(Marker, pose(Position,Orientation)) :-
   atom(Position), Position \= [], !,
   parse_vector(Position, Position_v),
