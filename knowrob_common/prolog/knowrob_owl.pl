@@ -712,7 +712,6 @@ entity_(Entity, [[name,EntityName]|Descr]) :-
   entity_(Entity, Descr).
 
 entity_(Entity, [[type,restriction(P,Restr)|_]|Descr]) :-
-  %% FIXME: don't assert
   nonvar(P), nonvar(Restr), !,
   entity_has_restriction(Entity, restriction(P,Restr)),
   entity_(Entity, Descr).
