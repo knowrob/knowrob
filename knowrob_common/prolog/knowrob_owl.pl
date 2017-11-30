@@ -705,6 +705,11 @@ entity_(Entity, [[name,EntityName]|Descr]) :-
   entity_name([name,EntityName], Entity),
   entity_(Entity, Descr).
 
+entity_(Entity, [[type,restriction(P,Restr)|_]|Descr]) :-
+  nonvar(P), nonvar(Restr), !,
+  entity_has_restriction(Entity, restriction(P,Restr)),
+  entity_(Entity, Descr).
+
 %% ignore type, types are handled in `entity_head`
 entity_(Entity, [[type,Type|_]|Descr]) :-
   nonvar(Type), !,
@@ -1151,7 +1156,9 @@ entity_head(Entity, _, Descr, TypeIri) :-
   %  Entity = TypeIri )),
   
   findall(TypeIri, (
-    entity_has(Descr, type, TypeDescr), once(
+    entity_has(Descr, type, TypeDescr),
+    \+ TypeDescr = restriction(_,_),
+    once(
     entity_iri(TypeIri, TypeDescr, camelcase) ;
     rdf_global_term(TypeDescr, TypeIri) )
     % TODO: ensure it's really a type
@@ -1225,3 +1232,20 @@ entity_iri(Entity, Type) :-
 
 entity_iri(Entity, Type) :-
   rdfs_individual_of(Entity,Type).
+
+% FIXME: owl_subclass_of should handle this
+entity_has_restriction(X, restriction(P,Facet2)) :-
+  rdfs_individual_of(X, Type),
+  rdf_global_term(P,P_glob),
+  rdf_has(Type,owl:'onProperty',Q_glob),
+  rdfs_subproperty_of(P_glob,Q_glob),
+  owl_description(Type, restriction(_,Facet1)),
+  match_facet(Facet1,Facet2).
+match_facet(some_values_from(A1), some_values_from(A2)) :-
+  rdf_global_term(A1,A1_glob),
+  rdf_global_term(A2,A2_glob),
+  rdfs_subclass_of(A1_glob,A2_glob), !.
+match_facet(all_values_from(A1), all_values_from(A2)) :-
+  rdf_global_term(A1,A1_glob),
+  rdf_global_term(A2,A2_glob),
+  rdfs_subclass_of(A1_glob,A2_glob), !.

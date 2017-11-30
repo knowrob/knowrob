@@ -110,6 +110,22 @@ test(query_refrigerator, [nondet]) :-
   entity(Cont, [an, object, [type, refrigerator]]),
   rdf_equal(Cont, test_owl:'Refrigerator_fg45543').
 
+test(query_containerFo1, [nondet,fail]) :-
+  entity_assert(Obj, [an, object, [type, storage_construct]]),
+  entity(Obj, [an, object,
+    [type, storage_construct],
+    [type, restriction(
+      knowrob:'typePrimaryFunction-containerFor',
+      some_values_from(knowrob:'Perishable'))]]).
+  
+test(query_containerFor2, [nondet]) :-
+  entity(Obj, [an, object,
+    [type, storage_construct],
+    [type, restriction(
+      knowrob:'typePrimaryFunction-containerFor',
+      some_values_from(knowrob:'Perishable'))]]),
+  rdf_equal(Cont, test_owl:'Refrigerator_fg45543').
+
 test(query_primary_storage_place1, [nondet]) :-
   entity(Obj, [an, object,
     [knowrob:'typePrimaryFunction-StoragePlaceFor', knowrob:'Perishable']]),

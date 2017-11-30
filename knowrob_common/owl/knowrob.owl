@@ -34,7 +34,7 @@
         <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_common.owl"/>
         <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_communication.owl"/>
         <owl:imports rdf:resource="package://knowrob_common/owl/knowrob_queries.owl"/>
-        <owl:imports rdf:resource="package://knowrob_household/owl/kitchen.owl"/>
+        <owl:imports rdf:resource="package://knowrob_household/owl/household.owl"/>
     </owl:Ontology>
 </rdf:RDF>
 
