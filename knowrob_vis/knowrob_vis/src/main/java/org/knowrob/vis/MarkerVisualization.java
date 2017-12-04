@@ -1193,10 +1193,10 @@ public class MarkerVisualization extends AbstractNodeMain {
 			m.getPose().getPosition().setY(Float.parseFloat(position[1]));
 			m.getPose().getPosition().setZ(Float.parseFloat(position[2]));
 
-			m.getPose().getOrientation().setW(Float.parseFloat(rotation[0]));
-			m.getPose().getOrientation().setX(Float.parseFloat(rotation[1]));
-			m.getPose().getOrientation().setY(Float.parseFloat(rotation[2]));
-			m.getPose().getOrientation().setZ(Float.parseFloat(rotation[3]));
+			m.getPose().getOrientation().setX(Float.parseFloat(rotation[0]));
+			m.getPose().getOrientation().setY(Float.parseFloat(rotation[1]));
+			m.getPose().getOrientation().setZ(Float.parseFloat(rotation[2]));
+			m.getPose().getOrientation().setW(Float.parseFloat(rotation[3]));
 			
 			m.getScale().setX(Float.parseFloat(scale[0]));
 			m.getScale().setY(Float.parseFloat(scale[1]));
