@@ -37,7 +37,6 @@
       quaternion_inverse/2,
       quaternion_transform/3,
       transform_multiply/3,
-      multiply_transforms/3,
       transform_compute_relative/3,
       transform_data/2,
       parse_vector/2
