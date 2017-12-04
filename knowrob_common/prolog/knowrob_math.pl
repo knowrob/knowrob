@@ -156,37 +156,6 @@ transform_multiply([RefFrame,       _, [Lx,Ly,Lz], [LQx, LQy, LQz, LQw]],
   Nx is Lx + RRx,
   Ny is Ly + RRy,
   Nz is Lz + RRz.
-
-% FIXME: remove this again
-multiply_transforms([RefFrame,       _, [Lx,Ly,Lz], [LQw, LQx, LQy, LQz]],
-                   [       _, TgFrame, [Rx,Ry,Rz], [RQw, RQx, RQy, RQz]],
-                   [RefFrame, TgFrame, [Nx,Ny,Nz], [NQw, NQx, NQy, NQz]]) :-
-  NQw is LQw*RQw - LQx*RQx - LQy*RQy - LQz*RQz,
-  NQx is LQw*RQx + LQx*RQw + LQy*RQz - LQz*RQy,
-  NQy is LQw*RQy - LQx*RQz + LQy*RQw + LQz*RQx,
-  NQz is LQw*RQz + LQx*RQy - LQy*RQx + LQz*RQw,
-  RRx is 2*(Rx*(0.5 - LQy*LQy - LQz*LQz) + Ry*(LQx*LQy - LQw*LQz) + Rz*(LQw*LQy + LQx*LQz)),
-  RRy is 2*(Rx*(LQw*LQz + LQx*LQy) + Ry*(0.5 - LQx*LQx - LQz*LQz) + Rz*(LQy*LQz - LQw*LQx)),
-  RRz is 2*(Rx*(LQx*LQz - LQw*LQy) + Ry*(LQw*LQx + LQy*LQz) + Rz*(0.5 - LQx*LQx - LQy*LQy)),
-  Nx is Lx + RRx,
-  Ny is Ly + RRy,
-  Nz is Lz + RRz.
-multiply_transforms([X1,Y1,T1,Q1],
-                    [X2,Y2,T2,Q2],
-                    [X3,Y3,T3,Q3]) :-
-  atom(T1), T1 \= [],
-  atom(Q1), Q1 \= [],
-  parse_vector(T1,T1_v),
-  parse_vector(Q1,Q1_v),
-  multiply_transforms([X1,Y1,T1_v,Q1_v], [X2,Y2,T2,Q2], [X3,Y3,T3,Q3]), !.
-multiply_transforms([X1,Y1,T1,Q1],
-                    [X2,Y2,T2,Q2],
-                    [X3,Y3,T3,Q3]) :-
-  atom(T2), T2 \= [],
-  atom(Q2), Q2 \= [],
-  parse_vector(T2,T2_v),
-  parse_vector(Q2,Q2_v),
-  multiply_transforms([X1,Y1,T1,Q1], [X2,Y2,T2_v,Q2_v], [X3,Y3,T3,Q3]), !.
   
 transform_compute_relative([_,TgFrame, [T1x,T1y,T1z],Q1],
                            [_,RefFrame,[T2x,T2y,T2z],Q2],
