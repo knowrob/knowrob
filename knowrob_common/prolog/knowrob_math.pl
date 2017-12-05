@@ -32,6 +32,8 @@
 
 :- module(knowrob_math,
     [
+      transform_invert_topology/2,   % invert child-parent frame relation
+      transform_reference_frame/2,   % the reference frame name
       eval_owl_term/2,
       quaternion_multiply/3,
       quaternion_inverse/2,
@@ -48,7 +50,10 @@
 :- use_module(library('owl')).
 :- use_module(library('rdfs_computable')).
 
-:- rdf_meta(eval_owl_term(r,?)).
+:-  rdf_meta
+    transform_reference_frame(r,?),
+    transform_invert_topology(r,r),
+    eval_owl_term(r,?).
 
 :- owl_parse('package://knowrob_common/owl/knowrob_math.owl').
 
@@ -171,3 +176,48 @@ transform_data(TransformId, (Translation, Rotation)) :-
   rdf_has(TransformId, knowrob:'quaternion', literal(type(_,Rotation_atom))),
   knowrob_math:parse_vector(Translation_atom, Translation),
   knowrob_math:parse_vector(Rotation_atom, Rotation).
+
+%% transform_invert_topology(+Child, +Parent)
+%
+% Make Parent relative to Child by inverting the 
+% current pose of child which is relative to parent.
+%
+transform_invert_topology(Child, Parent) :-
+  belief_at_relative_to(Child, Parent, RelativePose),
+  transform_data(RelativePose, ([TX,TY,TZ],Q)),
+  quaternion_inverse(Q,Q_inv),
+  X is -TX, Y is -TY, Z is -TZ,
+  quaternion_transform(Q_inv,[X,Y,Z],T_inv),
+  belief_at_internal(Parent, (T_inv,Q_inv), Child).
+
+%% transform_reference_frame(+TransformId, ?Ref)
+%
+transform_reference_frame([Ref, _, _, _], Ref) :- !.
+transform_reference_frame(TransformId, Ref) :-
+  rdf_has(TransformId, knowrob:'relativeTo', RefObjId),
+  rdf_has(RefObjId, srdl2comp:'urdfName', literal(Ref)), !.
+transform_reference_frame(_TransformId, 'map').
+
+%% transform_close_to(+Transform1, +Transform2, +Dmax)
+%
+% TODO: support to compare transforms with different reference frame!
+transform_close_to(
+  [ReferenceFrame, _, [X1,Y1,Z1], _],
+  [ReferenceFrame, _, [X2,Y2,Z2], _], Dmax) :-
+  Dx is X1 - X2,
+  Dy is Y1 - Y2,
+  Dz is Z1 - Z2,
+  Dsq is Dx*Dx + Dy*Dy + Dz*Dz,
+  DmaxSq is Dmax*Dmax,
+  Dsq =< DmaxSq.
+
+%% create_transform(+Translation, +Rotation, -TransformId)
+%
+create_transform(Translation, Rotation, TransformId) :-
+  % note: we don't assert to belief_state graph here because pose data is memorized
+  %       subsymbolically, as a TF message dump in a noSQL DB
+  rdf_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', TransformId),
+  atomic_list_concat(Translation, ' ', Translation_atom),
+  atomic_list_concat(Rotation, ' ', Rotation_atom),
+  rdf_assert(TransformId, knowrob:'translation', literal(type(xsd:string,Translation_atom))),
+  rdf_assert(TransformId, knowrob:'quaternion', literal(type(xsd:string,Rotation_atom))).
