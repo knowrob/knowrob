@@ -204,7 +204,7 @@ public class JSONPrologNode extends AbstractNodeMain {
 				//	return;
 				//}
 				
-				synchronized(org.jpl7.Query.class) {
+				synchronized(this) {
 					if (queries.get(request.getId()) != null ) {
 						response.setOk(false);
 						response.setMessage("Already processing a query with id " + request.getId());
@@ -278,8 +278,8 @@ public class JSONPrologNode extends AbstractNodeMain {
 		@Override
 		public void build(json_prolog_msgs.PrologNextSolutionRequest request, json_prolog_msgs.PrologNextSolutionResponse response) {
 			try {
-				synchronized(org.jpl7.Query.class) {
-					PrologSolutions currentQuery = queries.get(request.getId());
+                                PrologSolutions currentQuery = queries.get(request.getId());
+				synchronized(currentQuery) {
 					if (currentQuery == null) {
 						response.setStatus(json_prolog_msgs.PrologNextSolutionResponse.WRONG_ID);
 					}
