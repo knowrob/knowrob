@@ -15,14 +15,11 @@
  */
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '2.14.1'
+  gradleVersion = '2.2.1'
 }
 
 buildscript {
   apply from: "https://github.com/rosjava/rosjava_bootstrap/raw/kinetic/buildscript.gradle"
-  dependencies {
-       classpath 'org.codehaus.groovy:groovy-backports-compat23:2.3.5'
-  }
 }
 
 
