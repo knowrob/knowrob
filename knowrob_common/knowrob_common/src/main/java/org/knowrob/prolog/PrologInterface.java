@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Vector;
 
 import com.google.common.base.Joiner;
@@ -42,8 +43,9 @@ import com.google.common.base.Joiner;
 import org.knowrob.owl.OWLThing;
 import org.knowrob.utils.ros.RosUtilities;
 
-import jpl.*;
-
+import org.jpl7.JPL;
+import org.jpl7.Query;
+import org.jpl7.Term;
 
 public class PrologInterface {
     
@@ -62,17 +64,17 @@ public class PrologInterface {
     	if(!initialized) {
 
     		try {
-    			Vector<String> args= new Vector<String>(Arrays.asList(jpl.fli.Prolog.get_default_init_args()));
+    			Vector<String> args= new Vector<String>(Arrays.asList(org.jpl7.fli.Prolog.get_default_init_args()));
     			//            args.add( "-G256M" );
     			//args.add( "-q" );
     			args.add( "-nosignals" );
 
     			String rosprolog = RosUtilities.rospackFind("rosprolog");
-    			jpl.fli.Prolog.set_default_init_args( args.toArray( new String[0] ) );
+    			org.jpl7.fli.Prolog.set_default_init_args( args.toArray( new String[0] ) );
 
     			// load the appropriate startup file for this context
-    			new jpl.Query("ensure_loaded('"+rosprolog+"/prolog/init.pl"+"')").oneSolution();
-    			new jpl.Query("register_ros_package('"+initPackage+"')").oneSolution();
+    			new org.jpl7.Query("ensure_loaded('"+rosprolog+"/prolog/init.pl"+"')").oneSolution();
+    			new org.jpl7.Query("register_ros_package('"+initPackage+"')").oneSolution();
 
     			initialized = true;
     			
@@ -93,14 +95,14 @@ public class PrologInterface {
 
 		if(!PrologInterface.isInitialized()) {
 			try {
-				Vector<String> args= new Vector<String>(Arrays.asList(jpl.fli.Prolog.get_default_init_args()));
+				Vector<String> args= new Vector<String>(Arrays.asList(org.jpl7.fli.Prolog.get_default_init_args()));
 				// args.add( "-G256M" );
 				// args.add( "-q" );
 				args.add( "-nosignals" );
-				jpl.fli.Prolog.set_default_init_args( args.toArray( new String[0] ) );
+				org.jpl7.fli.Prolog.set_default_init_args( args.toArray( new String[0] ) );
 
 				// load the appropriate startup file for this context
-				new jpl.Query("ensure_loaded('"+initFile+"')").oneSolution();
+				new org.jpl7.Query("ensure_loaded('"+initFile+"')").oneSolution();
 
 				PrologInterface.setInitialized(true);
 				
@@ -120,11 +122,10 @@ public class PrologInterface {
     
 	public static HashMap<String, Vector<String>> executeQuery(String query) {
 		HashMap<String, Vector<String>> result = new HashMap< String, Vector<String> >();
-		Hashtable[] solutions;
+		Map<String, Term>[] solutions;
 
 		synchronized(PrologInterface.class) {
     		Query q = new Query( "expand_goal(("+query+"),_9), call(_9)" );
-
     		if(!q.hasSolution())
     			return null;
     		
@@ -140,7 +141,7 @@ public class PrologInterface {
     		// Build the result
     		for (int i=0; i<solutions.length; i++) {
     			@SuppressWarnings("rawtypes")
-				Hashtable solution = solutions[i];
+				Map<String, Term> solution = solutions[i];
     			for (Object key: solution.keySet()) {
     				String keyStr = key.toString();
     				if (!result.containsKey( keyStr )) {
