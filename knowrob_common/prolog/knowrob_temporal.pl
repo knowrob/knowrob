@@ -269,7 +269,7 @@ holds(Term, I) :-
   ) ; (
      Term =.. [P,S,O],
      holds(S, P, O, I)
-  )), !.
+  )).
 
 holds(S, P, O) :-
   % TODO: just call owl_has instead
@@ -279,26 +279,23 @@ holds(S, P, O) :-
 holds(S, P, O, I) :-
   once(( atom(S) ; var(S) )),
   (  atom(P)
-  -> owl_triple(S,P,O)
-  ;  owl_has(S,P,O)
-% FIXME: inspect does not infer class properties of individuals!
-%   e.g., that a fridge instance is storage place for perishable
-%  ; inspect(S,P,O)
+  % P bound
+  -> (   temporal_part_has(S,P,O,I_x)
+     *-> time_term(I_x,Ext)
+     ;   owl_triple(S,P,O) )
+  % P unbound
+  ;  (   owl_has(S,P,O), (
+         temporal_part_has(S,P,O,I_x)
+     *-> time_term(I_x,Ext)
+     ;   Ext=[0.0]
+     ))
   ),
   \+ rdfs_individual_of(S, knowrob:'TemporalPart'),
   \+ rdfs_individual_of(O, knowrob:'TemporalPart'),
-  (  var(I)
-  -> I = [0.0]
-  ;  true
-  ).
-  
-holds(S, P, O, I) :-
-  once(( atom(S) ; var(S) )),
-  temporal_part_has(S, P, O, TimeInterval),
-  time_term(TimeInterval, Interval),
-  (  var(I)
-  -> I = Interval
-  ;  interval_during(I, Interval)
+  % ...
+  (  ground(I)
+  -> interval_during(I, Ext)
+  ;  I = Ext
   ).
 
 /*  
