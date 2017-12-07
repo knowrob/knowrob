@@ -37,7 +37,7 @@
       belief_at/2,                  % query the current pose of an object
       belief_at_update/2,           % assign new pose to object
       belief_at_update/3,
-      belief_at_global/2,           % query the current pose of an object in map frame
+      belief_at_global/2,           % query the current pose of an object in global frame
       belief_at_relative_to/3,      % query the current pose of an object relative to some parent object
       belief_at_internal/2,         % TODO: these should not be exposed
       belief_at_internal/3,
@@ -76,6 +76,9 @@
 % - don't use srdl2comp! should use more general property.
 %   Also what about the FrameOfReference class in knowrob ontology?
 % - don't expect map frame
+% - auto-instantiate object parts according to class restrictions
+%        - only fixed parts share frame of reference with Obj
+%        - align with knowrob_assembly ontology!
 
 %% belief_existing_objects(-ObjectIds:list) is det
 %
@@ -103,10 +106,6 @@ belief_forget :-
 %
 % @param ObjType the type of the new object
 % @param Obj the object asserted
-%
-% TODO auto-instantiate object parts according to class restrictions
-%        - only fixed parts share frame of reference with Obj
-%        - align with knowrob_assembly ontology!
 %
 belief_new_object(ObjType, Obj) :-
   rdf_instance_from_class(ObjType, belief_state, Obj),
