@@ -41,7 +41,9 @@
       transform_multiply/3,
       transform_compute_relative/3,
       transform_data/2,
-      parse_vector/2
+      parse_vector/2,
+      transform_close_to/3,
+      create_transform/3
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -60,6 +62,7 @@
 :- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
 :- rdf_db:rdf_register_ns(owl, 'http://www.w3.org/2002/07/owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(srdl2comp, 'http://knowrob.org/kb/srdl2-comp.owl#', [keep(true)]).
 
 
 
