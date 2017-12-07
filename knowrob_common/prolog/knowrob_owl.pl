@@ -323,6 +323,7 @@ create_interval([Start, End], TimeInterval) :-
 %% create_pose(+Term, -Iri) is nondet.
 %
 %
+% TODO: redundant with knowrob_math:create_transform
 create_pose(pose([X,Y,Z], [QW,QX,QY,QZ]), Pose) :-
   create_pose(pose('http://knowrob.org/kb/knowrob.owl#MapFrame', [X,Y,Z], [QW,QX,QY,QZ]), Pose), !.
 
