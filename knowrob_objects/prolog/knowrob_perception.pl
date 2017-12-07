@@ -65,7 +65,7 @@ create_visual_perception(Perception) :-
 create_visual_perception(ModelType, Perception) :-
   create_visual_perception(Perception),
   % set the perceivedUsingModel relation
-  rdf_assert(Perception, knowrob:perceivedUsingModel, ModelType)).
+  rdf_assert(Perception, knowrob:perceivedUsingModel, ModelType).
 
 %% perception_set_object(?A, ?B) is det.
 %
@@ -91,7 +91,7 @@ perception_set_object(Object, Perception) :-
 % @param Perception  Perception instance
 % @param Pose        Pose of the perceived object
 % 
-perception_set_pose(Perception, Pose) :-
+perception_set_pose(Pose, Pose) :-
   atom(Pose),
   rdfs_individual_of(Pose, knowrob:'Pose'), !.
 perception_set_pose(Perception, [ReferenceFrame, _, Translation, Rotation]) :-
