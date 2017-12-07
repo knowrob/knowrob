@@ -19,8 +19,6 @@
 
 :- begin_tests(knowrob_objects).
 
-:- register_ros_package(knowrob_mongo).
-
 :- use_module(library(semweb/rdf_db)).
 :- use_module(library('owl')).
 :- use_module(library('owl_parser')).
@@ -45,10 +43,9 @@ test(storagePlaceFor3) :-
   storagePlaceFor(test_knowrob_objects:'Dishwasher1', knowrob:'FoodVessel'), !.
 
 test(storagePlaceForBecause1) :-
-  storagePlaceForBecause(test_knowrob_objects:'Dishwasher1', test_knowrob_objects:'Cup1', knowrob:'FoodVessel'), !.
-
-test(storagePlaceForBecause2) :-
-  storagePlaceForBecause(test_knowrob_objects:'Dishwasher1', test_knowrob_objects:'Cup1', knowrob:'FoodVessel'), !.
+  storagePlaceForBecause(test_knowrob_objects:'Dishwasher1', test_knowrob_objects:'Cup1',X),
+  owl_description(X,union_of([class('http://knowrob.org/kb/knowrob.owl#FoodUtensil'),
+                              class('http://knowrob.org/kb/knowrob.owl#FoodVessel')])), !.
 
 test(current_object_pose) :-
   current_object_pose(test_knowrob_objects:'Cup1',
@@ -75,24 +72,12 @@ test(object_dimensions) :-
   object_dimensions(test_knowrob_objects:'Handle1', 0.015, 0.015, 0.015),
   !.
 
-test(delete_object_information1) :-
-  delete_object_information(test_knowrob_objects:'Handle1').
-
-test(delete_object_information2, [fail]) :-
-  rdf_has(_, _, test_knowrob_objects:'Handle1').
-
-test(delete_object_information_recursive1) :-
-  delete_object_information_recursive(test_knowrob_objects:'Dishwasher1').
-
-test(delete_object_information_recursive2, [fail]) :-
-  rdf_has(test_knowrob_objects:'Dishwasher1', knowrob:'parts', _).
-
 test(object_assert_color) :-
   object_assert_color(test_knowrob_objects:'Cup1', '0.3 0.5 0.6 1'),
-  object_color(test_knowrob_objects:'Cup1', '0.3 0.5 0.6 1').
+  object_color(test_knowrob_objects:'Cup1', [0.3, 0.5, 0.6, 1]).
 
 test(object_color) :-
-  object_color(test_knowrob_objects:'Cup1', '0.3 0.5 0.6 1').
+  object_color(test_knowrob_objects:'Cup1', [0.3, 0.5, 0.6, 1]).
 
 test(object_assert_dimensions) :-
   object_assert_dimensions(test_knowrob_objects:'Cup2', 0.032, 0.032, 0.12),

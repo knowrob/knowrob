@@ -31,8 +31,6 @@
 
 :- module(knowrob_objects,
     [
-      storagePlaceFor/2,
-      storagePlaceForBecause/3,
       current_object_pose/2,
       object_pose_at_time/3,
       object_pose_at_time/4,
@@ -48,6 +46,8 @@
       delete_joint_information/1,
       comp_pose/2,
       comp_pose_at_time/3,
+      storagePlaceFor/2,
+      storagePlaceForBecause/3,
       object_queries/2,
       object_query/4
     ]).
@@ -64,11 +64,7 @@
 
 :- owl_parser:owl_parse('package://knowrob_objects/owl/knowrob_objects.owl').
 
-
-
 :-  rdf_meta
-    storagePlaceFor(r,r),
-    storagePlaceForBecause(r,r,r),
     current_object_pose(r,-),
     current_object_pose(r,r,-),
     object_pose_at_time(r,r,?),
@@ -85,9 +81,10 @@
     update_joint_information(r, r, +, ?, +, +, +),
     read_joint_information(r, r, r, r, -, -, -, -, -),
     delete_joint_information(r),
+    storagePlaceFor(r,r),
+    storagePlaceForBecause(r,r,r),
     object_query(r,?,?,?),
     object_queries(r,?).
-
 
 :- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
 :- rdf_db:rdf_register_ns(owl, 'http://www.w3.org/2002/07/owl#', [keep(true)]).
@@ -95,7 +92,8 @@
 :- rdf_db:rdf_register_ns(xsd, 'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
 :- rdf_db:rdf_register_ns(srdl2comp, 'http://knowrob.org/kb/srdl2-comp.owl#', [keep(true)]).
 
-
+% TODO
+% - don't use srdl2comp! should use more general property.
 
 comp_pose(Obj, Pose) :-
     get_timepoint(Instant),
@@ -123,50 +121,6 @@ comp_pose_at_time(Obj, Pose, Instant) :-
 
 knowrob_temporal:holds(Obj, 'http://knowrob.org/kb/knowrob.owl#pose', Pose, [Interval,Interval]) :- comp_pose_at_time(Obj, Pose, Instant).
 
-
-%% storagePlaceFor(St, ObjT) is nondet.
-%
-% Computes the nominal storage location of an object based on assertions for
-% typePrimaryFunction-StoragePlaceFor for any of its superclasses. For example,
-% a Refrigerator is asserted as ...-StoragePlaceFor perishable items, so
-% instances of Refrigerator will therefore be returned for e.g. dairy products
-% or meat products.
-%
-% @param St       Instance of a knowrob:'StorageConstruct'
-% @param Obj      Object class or instance
-% 
-storagePlaceFor(St, ObjT) :-
-  storagePlaceForBecause(St, ObjT, _).
-
-%% storagePlaceForBecause(St, ObjType, ObjT) is nondet.
-%
-% Computes the nominal storage location of an object based on assertions for
-% typePrimaryFunction-StoragePlaceFor for any of its superclasses. For example,
-% a Refrigerator is asserted as ...-StoragePlaceFor perishable items, so
-% instances of Refrigerator will therefore be returned for e.g. dairy products
-% or meat products.
-%
-% In addition to the storage place, this predicate further returns the superclass
-% of Obj for which this information is asserted (e.g. Perishable)
-%
-% @param St       Instance of a knowrob:'StorageConstruct'
-% @param Obj      Object class or instance
-% @param ObjType  Class for which information about the storage place has been asserted
-%
-
-% two instances
-storagePlaceForBecause(St, Obj, ObjT) :-
-  owl_subclass_of(StT, knowrob:'StorageConstruct'),
-  owl_restriction_on(StT, restriction(knowrob:'typePrimaryFunction-StoragePlaceFor', some_values_from(ObjT))),
-  owl_individual_of(Obj, ObjT),
-  owl_individual_of(St, StT).
-
-% obj type, storage instance
-storagePlaceForBecause(St, ObjType, ObjT) :-
-  owl_subclass_of(StT, knowrob:'StorageConstruct'),
-  owl_restriction_on(StT, restriction(knowrob:'typePrimaryFunction-StoragePlaceFor', some_values_from(ObjT))),
-  owl_individual_of(St, StT),
-  owl_subclass_of(ObjType, ObjT).
 
 %% current_object_pose(+ObjInstance, -PoseList) is nondet.
 %
@@ -212,20 +166,20 @@ object_pose_at_time(Obj, Time, pose([X,Y,Z], [QX,QY,QZ,QW]), Interval) :-
   object_pose_holds(Obj, Time, Pose, Interval),
   object_pose(Pose, Time, pose([X,Y,Z], [QX,QY,QZ,QW])),!.
 
+object_pose_at_time(Obj, Time, pose([X,Y,Z], [QX,QY,QZ,QW]), Interval) :-
+  interval_during(Time, Interval), % FIXME: what is this case?
+  object_pose(Obj, Time, pose([X,Y,Z], [QX,QY,QZ,QW])),!.
+
 object_pose_at_time(Obj, Time, mat(Matrix), Interval) :-
   object_pose_holds(Obj, Time, Pose, Interval),
   object_pose(Pose, Time, mat(Matrix)),!.
 
-object_pose_at_time(Obj, Time, pose([X,Y,Z], [QX,QY,QZ,QW]), Interval) :-
-  interval_during(Time, Interval),
-  object_pose(Obj, Time, pose([X,Y,Z], [QX,QY,QZ,QW])),!.
-
 object_pose_at_time(Obj, Time, mat(Matrix), Interval) :-
-  interval_during(Time, Interval),
+  interval_during(Time, Interval), % FIXME: what is this case?
   object_pose(Obj, Time, mat(Matrix)),!.
 
 object_pose_at_time(Obj, Time, Pose, Interval) :-
-  object_pose_holds(Obj, Time, Pose, Interval).
+  object_pose_holds(Obj, Time, Pose, Interval). % FIXME: what is this case?
 
 
 object_pose_holds(Pose, _, Pose, [0.0]) :-
@@ -240,7 +194,7 @@ object_pose_holds(Obj, Time, Pose, Interval) :-
   object_pose_holds(BaseLink, Time, Pose, Interval), !.
 
 object_pose_holds(Obj, Time, Pose, Interval) :-
-  holds(Obj, 'http://knowrob.org/kb/knowrob.owl#pose', Pose, Interval),
+  holds( knowrob:pose(Obj,Pose), Interval ),
   interval_during(Time, Interval), !.
 
 
@@ -274,9 +228,9 @@ object_pose(Pose, _, mat(Matrix)) :-
   rotmat_to_list(Pose, Matrix), !.
 
 
-%% object_dimensions(?Obj, ?Depth, ?Width, ?Height) is nondet.
+%% object_dimensions(?Obj:iri, ?Depth:float, ?Width:float, ?Height:float) is semidet
 %
-% Get the width, depth and height of the object.
+% True if Width x Height x Depth are (exactly) the extends of the bounding box of Obj.
 %
 % @param Obj    Instance of a subclass of EnduringThing-Localized
 % @param Depth  Depth of the bounding box (x-dimension)
@@ -298,12 +252,12 @@ object_dimensions(Obj, Depth, Width, Height) :-
 
 object_dimensions(Obj, Depth, Width, Height) :-
   owl_has(Obj, srdl2comp:'box_size', literal(type(_, ScaleVector))),
-  parse_vector(ScaleVector, [Depth, Width, Height]).
+  parse_vector(ScaleVector, [Depth, Width, Height]), !.
 
 object_dimensions(Obj, 0, 0, 0) :-
   rdfs_individual_of(Obj, knowrob:'Point'), !.
 
-%% object_assert_dimensions(+Obj, +D, +W, +H) is nondet.
+%% object_assert_dimensions(+Obj:iri, +Depth:float, +Width:float, +Height:float) is det
 %
 % Assert object dimension properties.
 %
@@ -312,20 +266,16 @@ object_dimensions(Obj, 0, 0, 0) :-
 % @param Width  Width of the bounding box (y-dimension)
 % @param Height Height of the bounding box (z-dimension)
 % 
-object_assert_dimensions(Obj, D, W, H) :-
-  atomic_list_concat([D, W, H], ' ', V),
+object_assert_dimensions(Obj, Depth, Width, Height) :-
+  atomic_list_concat([Depth, Width, Height], ' ', V),
   rdf_assert(Obj, knowrob:'boundingBoxSize', literal(type(xsd:string, V))).
 
-%% object_color(?Obj, ?Col) is nondet.
+%% object_color(?Obj:iri, ?Col:list) is det
 %
 % Get the main color of the object.
 % The color is returned as [float red, green, blue, alpha], on a scale of 0-1.
 % If there is no color given for an object in the knowledge base,
 % then a default [0.5, 0.5, 0.5, 1] is returned.
-%
-% @param ObjectId    anyURI, the object id
-% @param Color   the transform data
-%
 %
 % @param Obj  Instance of a subclass of EnduringThing-Localized
 % @param Col  Main color of the object
@@ -335,35 +285,37 @@ object_color(Obj, Col) :-
   parse_vector(ColAtom, Col), !.
 object_color(_Obj, [0.5, 0.5, 0.5, 1.0]).
 
-%% object_color(?Obj, ?Col) is nondet.
+%% object_assert_color(+Obj:iri, +Col:list) is det
 %
 % Assert object main color property.
 %
 % @param Obj  Instance of a subclass of EnduringThing-Localized
 % @param Col  Main color of the object
 % 
-object_assert_color(ObjInstance, [R,G,B]) :-
-  object_assert_color(ObjInstance, [R,G,B,1.0]).
-
-object_assert_color(ObjInstance, [R,G,B,A]) :-
+object_assert_color(Obj, [R,G,B]) :-
+  object_assert_color(Obj, [R,G,B,1.0]), !.
+object_assert_color(Obj, [R,G,B,A]) :-
   atomic_list_concat([R,G,B,A], ' ', ColRGBA),
-  object_assert_color(ObjInstance, ColRGBA).
-    
-object_assert_color(ObjInstance, Col) :-
+  object_assert_color(Obj, ColRGBA), !.
+object_assert_color(Obj, Col) :-
    atom(Col),
-   rdf_assert(ObjInstance, knowrob:'mainColorOfObject',literal(type(xsd:string, Col))).
+   rdf_assert(Obj, knowrob:'mainColorOfObject',literal(type(xsd:string, Col))), !.
 
-%% object_mesh_path(+ObjectId, -FilePath) is det.
+%% object_mesh_path(+Obj:iri, -FilePath:atom) is det.
 %
-% Returns a path to a mesh file (stl or dae) for the ObjectId.
+% True if FilePath is a path to a mesh file (stl or dae) for Obj.
 %
-% @param ObjectId    anyURI, the object id
-% @param FilePath    anyURI, the path (usually a package:// path)
+% @param Obj        Instance of a subclass of EnduringThing-Localized
+% @param FilePath   the path (usually a package:// path)
 %
-object_mesh_path(ObjectId, FilePath) :-
+object_mesh_path(Obj, FilePath) :-
   holds(knowrob:pathToCadModel(ObjectId, literal(type(_, FilePath)))).
 
 % distance in 3d
+% TODO: distance computable instead!
+%    - add distance datatype property
+%    - use qudt unit
+%    - there are classes called Distance and such, remove them?
 object_distance(A,B,D):-
   current_object_pose(A, [AX,AY,AZ,_,_,_,_]),
   current_object_pose(B, [BX,BY,BZ,_,_,_,_]),
@@ -372,7 +324,59 @@ object_distance(A,B,D):-
   DZ is AZ - BZ,
   D is sqrt( ((DX*DX) + (DY*DY)) + (DZ*DZ)).
 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % Reasoning about function and storage location of objects
+% TODO: add utility rules resoning about object function (i.e., how to use it for action?)
 
+%% storagePlaceFor(St, ObjT) is nondet.
+%
+% Computes the nominal storage location of an object based on assertions for
+% typePrimaryFunction-containerFor for any of its superclasses. For example,
+% a Refrigerator is asserted as ...-containerFor perishable items, so
+% instances of Refrigerator will therefore be returned for e.g. dairy products
+% or meat products.
+%
+% @param St       Instance of a knowrob:'StorageConstruct'
+% @param Obj      Object class or instance
+% 
+storagePlaceFor(St, ObjT) :-
+  storagePlaceForBecause(St, ObjT, _).
+
+%% storagePlaceForBecause(St, ObjType, ObjT) is nondet.
+%
+% Computes the nominal storage location of an object based on assertions for
+% typePrimaryFunction-containerFor for any of its superclasses. For example,
+% a Refrigerator is asserted as ...-containerFor perishable items, so
+% instances of Refrigerator will therefore be returned for e.g. dairy products
+% or meat products.
+%
+% In addition to the storage place, this predicate further returns the superclass
+% of Obj for which this information is asserted (e.g. Perishable)
+%
+% @param St       Instance of a knowrob:'StorageConstruct'
+% @param Obj      Object class or instance
+% @param ObjType  Class for which information about the storage place has been asserted
+%
+
+% two instances
+storagePlaceForBecause(St, Obj, ObjT) :-
+  owl_subclass_of(StT, knowrob:'StorageConstruct'),
+  owl_restriction_on(StT, restriction(knowrob:'typePrimaryFunction-containerFor', some_values_from(ObjT))),
+  owl_individual_of(Obj, ObjT),
+  owl_individual_of(St, StT).
+
+% obj type, storage instance
+storagePlaceForBecause(St, ObjType, ObjT) :-
+  owl_subclass_of(StT, knowrob:'StorageConstruct'),
+  owl_restriction_on(StT, restriction(knowrob:'typePrimaryFunction-containerFor', some_values_from(ObjT))),
+  owl_individual_of(St, StT),
+  owl_subclass_of(ObjType, ObjT).
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % Joints of objects
+  
 %% create_joint_information(+Type, +Parent, +Child, +Pose, +Direction, +Radius, +Qmin, +Qmax, -Joint) is det.
 %
 % Create a joint of class Type at pose Pose, linking Parent and Child
@@ -497,8 +501,6 @@ update_joint_information(Joint, Type, Pose, Dir, Radius, Qmin, Qmax) :-
       rdf_assert(Joint, knowrob:'turnRadius', literal(type(xsd:float, Radius)))
     ) ).
 
-
-
 %% read_joint_information(+Joint, -Type, -Parent, -Child, -Pose, -Direction, -Radius, -Qmin, -Qmax) is nondet.
 %
 % Read information stored about a particular joint.
@@ -535,8 +537,6 @@ read_joint_information(Joint, Type, Parent, Child, Pose, Direction, Radius, Qmin
   rdf_has(Joint, knowrob:'minJointValue', literal(type(xsd:float, Qmin))),
   rdf_has(Joint, knowrob:'maxJointValue', literal(type(xsd:float, Qmax))).
 
-
-
 %% delete_joint_information(Joint) is det.
 %
 % Remove joint instance and all information stored about this joint
@@ -568,41 +568,55 @@ delete_joint_information(Joint) :-
   rdf_retractall(Joint, _, _),
   rdf_retractall(_, _, Joint).
 
-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % Asking queries about objects.
 % % % % % note: Possible queries may be stated in the ontology.
 
-object_queries(Individual, QueriesSorted) :-
-  findall([Category,Title,Query], object_query(Individual,Category,Title,Query), Queries),
-  sort(Queries, QueriesSorted).
+%% object_queries(+Obj:iri, -Queries:list) is det
+%
+% gather facts about queries that can be asked about an object.
+% queries are represented as [string category, string title, string query].
+% Category and title are primary used for displaying possible queries
+% to the user.
+%
+% @param Obj the object name
+% @param Queries list of queries that can be asked about Obj
+%
+object_queries(Obj, Queries) :-
+  findall([Category,Title,Query],
+          object_query(Obj,Category,Title,Query),
+          QueriesUnsorted),
+  sort(QueriesUnsorted, Queries).
 
-object_query(Individual, QueryGroup, QueryTitle, Query) :-
-  atom(Individual),
-  rdf_has(QueryIndividual, knowrob:'queryAbout', Individual),
+%% object_query(+Obj:iri, ?QueryGroup:atom, ?QueryTitle:atom, ?Query:atom) is det
+%
+% True for objects Obj for which a query exists belonging to the group QueryGroup
+% and labeled with QueryTitle.
+%
+% @param Obj the object name
+% @param QueryGroup category of query
+% @param QueryTitle name of the query
+% @param Query the Prolog-encoded query string
+%
+object_query(Obj, QueryGroup, QueryTitle, Query) :-
+  atom(Obj),
+  % queries about specific individuals
+  rdf_has(QueryIndividual, knowrob:'queryAbout', Obj),
   rdf_has(QueryIndividual, knowrob:'groupName', literal(type(_,QueryGroup))),
   rdf_has(QueryIndividual, knowrob:'queryName', literal(type(_,QueryTitle))),
   rdf_has(QueryIndividual, knowrob:'queryString', literal(type(_,QueryTail))),
-  atomic_list_concat(['Individual=''', Individual, ''''], '', QueryHead),
+  atomic_list_concat(['Individual=''', Obj, ''''], '', QueryHead),
   atomic_list_concat([QueryHead,QueryTail], ', ', Query).
 
-object_query(Individual, QueryGroup, QueryTitle, Query) :-
-  atom(Individual),
-  rdfs_individual_of(Individual, IndividualClass),
+object_query(Obj, QueryGroup, QueryTitle, Query) :-
+  atom(Obj),
+  % queries about specific types
+  rdfs_individual_of(Obj, IndividualClass),
+  % FIXME: queryAbout some Class is non OWL! use restrictions instead!
   rdf_has(QueryIndividual, knowrob:'queryAbout', IndividualClass),
   rdf_has(QueryIndividual, knowrob:'groupName', literal(type(_,QueryGroup))),
   rdf_has(QueryIndividual, knowrob:'queryName', literal(type(_,QueryTitle))),
   rdf_has(QueryIndividual, knowrob:'queryString', literal(type(_,QueryTail))),
-  atomic_list_concat(['Individual=''', Individual, ''''], '', QueryHead),
+  atomic_list_concat(['Individual=''', Obj, ''''], '', QueryHead),
   atomic_list_concat([QueryHead,QueryTail], ', ', Query).
-
-% TODO: time intervals should be entities in the KB instead.
-% then this can be removed.
-%object_query(interval(T0,T1), 'Episodic Memory', 'Which actions occurred during this interval?', QueryAtom) :-
-%  QueryTerm=(
-%    rdfs_individual_of(Event, knowrob:'PurposefulAction'),
-%    interval(Event, [Ev0, Ev1]),
-%    ( time_between(Ev0,T0,T1) ; time_between(Ev1,T0,T1) )
-%  ),
-%  term_to_atom(QueryTerm,QueryAtom).
