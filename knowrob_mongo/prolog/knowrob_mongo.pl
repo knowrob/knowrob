@@ -55,7 +55,6 @@
 :- use_module(library('jpl')).
 :- use_module(library('knowrob_objects')).
 :- use_module(library('knowrob_perception')).
-:- use_module(library('knowrob_coordinates')).
 :- use_module(library('knowrob_mongo_interface')).
 :- use_module(library('srdl2')).
 
