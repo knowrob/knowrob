@@ -107,7 +107,7 @@
             rdf_write_readable(r),
             rdfs_type_of(r,r),
             create_timepoint(+,r),
-            create_poset(+,r),
+            create_pose(+,r),
             get_timepoint(r),
             get_timepoint(+,r),
             create_restr(r, r, r, r, +, r),
