@@ -40,7 +40,9 @@
       mng_robot_pose_at_time/4,
       mng_comp_pose/2,
       mng_comp_pose/3,
-      mng_comp_pose_at_time/4
+      mng_comp_pose_at_time/4,
+      comp_mng_pose/2,
+      comp_mng_pose/3
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -67,7 +69,9 @@
     mng_robot_pose_at_time(r, +, r, r),
     mng_comp_pose(r, r),
     mng_comp_pose(r, r,r),
-    mng_comp_pose_at_time(r, +, r, r).
+    mng_comp_pose_at_time(r, +, r, r),
+    comp_mng_pose(r,-),
+    comp_mng_pose_at_time(r,-,+).
 
 %% mng_lookup_transform(+Target, +Source, +TimePoint, -Transform) is nondet.
 %
@@ -260,6 +264,35 @@ mng_obj_pose_at_time(Obj, SourceFrame, TargetFrame, TimePoint, Pose) :-
   set_object_perception(Obj, Perception),
   rdf_assert(Perception, knowrob:eventOccursAt, Pose).
 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% hook mongo TF data into computable property knowrob:pose by expanding `holds`
+
+%% comp_mng_pose
+comp_mng_pose(Obj, Pose) :-
+  get_timepoint(Instant),
+  comp_mng_pose_at_time(Obj, Pose, Instant).
+
+%% comp_mng_pose_at_time
+comp_mng_pose_at_time(Obj, Pose, Instant) :-
+  nonvar(Obj),
+  past_instant(Instant),
+  mng_object_pose_at_time(Obj, Instant, MngPose, Instant),
+  object_pose(MngPose, Instant, PoseTerm),
+  create_pose(PoseTerm, Pose).
+
+%% comp_mng_pose_during
+% TODO(daniel): support interval queries: yield all different poses in given time interval.
+%               smart mongo query with stepwise computation could nicely hook into Prolog backtracking.
+comp_mng_pose_during(Obj, Pose, [Instant,Instant]) :-
+  comp_mng_pose_during(Obj, Pose, Instant).
+
+knowrob_temporal:holds(Obj, 'http://knowrob.org/kb/knowrob.owl#pose', Pose, Interval) :- comp_mng_pose_during(Obj, Pose, Instant).
+
+past_instant(Instant) :-
+  get_timepoint(Now),
+  % TODO(daniel): how far can we "travel back" with c++ TF listener?
+  Now > Instant + 60.0.
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
