@@ -20,11 +20,32 @@
     <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
   </owl:Ontology>
 
-    <computable:PrologProperty rdf:about="#computePose">
-        <computable:command rdf:datatype="&xsd;string">comp_pose</computable:command>
+    <computable:PrologProperty rdf:about="#compute_detectedPose">
+        <computable:command rdf:datatype="&xsd;string">comp_detected_pose</computable:command>
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
         <computable:target rdf:resource="&knowrob;pose"/>
+    </computable:PrologProperty>
+
+    <computable:PrologProperty rdf:about="#compute_depthOfObject">
+        <computable:command rdf:datatype="&xsd;string">comp_depthOfObject</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;depthOfObject"/>
+    </computable:PrologProperty>
+
+    <computable:PrologProperty rdf:about="#compute_heightOfObject">
+        <computable:command rdf:datatype="&xsd;string">comp_heightOfObject</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;heightOfObject"/>
+    </computable:PrologProperty>
+
+    <computable:PrologProperty rdf:about="#compute_widthOfObject">
+        <computable:command rdf:datatype="&xsd;string">comp_widthOfObject</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;widthOfObject"/>
     </computable:PrologProperty>
 
 </rdf:RDF>
