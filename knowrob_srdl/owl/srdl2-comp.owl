@@ -1,17 +1,32 @@
 <?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY qudt-unit "http://qudt.org/vocab/unit#" >
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY swrl "http://www.w3.org/2003/11/swrl#" >
+    <!ENTITY srdl2 "http://knowrob.org/kb/srdl2.owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY knowrob "http://knowrob.org/kb/knowrob.owl#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY srdl2-comp "http://knowrob.org/kb/srdl2-comp.owl#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
 <rdf:RDF xmlns="http://knowrob.org/kb/srdl2-comp.owl#"
      xml:base="http://knowrob.org/kb/srdl2-comp.owl"
-     xmlns:srdl2="http://knowrob.org/kb/srdl2.owl#"
-     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:owl="http://www.w3.org/2002/07/owl#"
-     xmlns:xml="http://www.w3.org/XML/1998/namespace"
-     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
-     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
-     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
-     xmlns:srdl2-comp="http://knowrob.org/kb/srdl2-comp.owl#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:qudt-unit="http://qudt.org/vocab/unit#">
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:qudt-unit="http://qudt.org/vocab/unit#"
+     xmlns:srdl2="http://knowrob.org/kb/srdl2.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#"
+     xmlns:srdl2-comp="http://knowrob.org/kb/srdl2-comp.owl#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/srdl2-comp.owl">
         <owl:imports rdf:resource="package://knowrob_srdl/owl/srdl2.owl"/>
     </owl:Ontology>
@@ -31,7 +46,7 @@
 
     <!-- http://www.w3.org/2000/01/rdf-schema#comment -->
 
-    <owl:AnnotationProperty rdf:about="http://www.w3.org/2000/01/rdf-schema#comment"/>
+    <owl:AnnotationProperty rdf:about="&rdfs;comment"/>
     
 
 
@@ -48,31 +63,31 @@
 
     <!-- http://qudt.org/vocab/unit#DegreeAngle -->
 
-    <rdfs:Datatype rdf:about="http://qudt.org/vocab/unit#DegreeAngle"/>
+    <rdfs:Datatype rdf:about="&qudt-unit;DegreeAngle"/>
     
 
 
     <!-- http://qudt.org/vocab/unit#Hertz -->
 
-    <rdfs:Datatype rdf:about="http://qudt.org/vocab/unit#Hertz"/>
+    <rdfs:Datatype rdf:about="&qudt-unit;Hertz"/>
     
 
 
     <!-- http://qudt.org/vocab/unit#Kilogram -->
 
-    <rdfs:Datatype rdf:about="http://qudt.org/vocab/unit#Kilogram"/>
+    <rdfs:Datatype rdf:about="&qudt-unit;Kilogram"/>
     
 
 
     <!-- http://qudt.org/vocab/unit#Meter -->
 
-    <rdfs:Datatype rdf:about="http://qudt.org/vocab/unit#Meter"/>
+    <rdfs:Datatype rdf:about="&qudt-unit;Meter"/>
     
 
 
     <!-- http://qudt.org/vocab/unit#Unitless -->
 
-    <rdfs:Datatype rdf:about="http://qudt.org/vocab/unit#Unitless"/>
+    <rdfs:Datatype rdf:about="&qudt-unit;Unitless"/>
     
 
 
@@ -89,146 +104,146 @@
 
     <!-- http://knowrob.org/kb/knowrob.owl#queryAbout -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/knowrob.owl#queryAbout"/>
+    <owl:ObjectProperty rdf:about="&knowrob;queryAbout"/>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#baseLinkOfComposition -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#baseLinkOfComposition">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#linkInComposition"/>
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#precedingLink"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ComponentComposition"/>
-        <rdfs:range rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#UrdfLink"/>
+    <owl:ObjectProperty rdf:about="&srdl2-comp;baseLinkOfComposition">
         <rdfs:comment>Pointer to the base link of a composition
 Semantics: The link pointed to is the unique base link (=the first link in kinematic chain) of a component composition</rdfs:comment>
+        <rdfs:domain rdf:resource="&srdl2-comp;ComponentComposition"/>
+        <rdfs:range rdf:resource="&srdl2-comp;UrdfLink"/>
+        <rdfs:subPropertyOf rdf:resource="&srdl2-comp;linkInComposition"/>
+        <rdfs:subPropertyOf rdf:resource="&srdl2-comp;precedingLink"/>
     </owl:ObjectProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#dependsOnComponent -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#dependsOnComponent">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/srdl2.owl#dependsOn"/>
-        <rdfs:range rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
+    <owl:ObjectProperty rdf:about="&srdl2-comp;dependsOnComponent">
+        <rdfs:range rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:subPropertyOf rdf:resource="&srdl2;dependsOn"/>
     </owl:ObjectProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#endLinkOfComposition -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#endLinkOfComposition">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#linkInComposition"/>
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#succeedingLink"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ComponentComposition"/>
-        <rdfs:range rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#UrdfLink"/>
+    <owl:ObjectProperty rdf:about="&srdl2-comp;endLinkOfComposition">
         <rdfs:comment>Pointer to the end link of a composition
 Semantics: The link pointed to is an end link (= the last link in kinematic chain) of a component composition, there may be several end links (e.g. fingers of a hand)</rdfs:comment>
+        <rdfs:domain rdf:resource="&srdl2-comp;ComponentComposition"/>
+        <rdfs:range rdf:resource="&srdl2-comp;UrdfLink"/>
+        <rdfs:subPropertyOf rdf:resource="&srdl2-comp;linkInComposition"/>
+        <rdfs:subPropertyOf rdf:resource="&srdl2-comp;succeedingLink"/>
     </owl:ObjectProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#linkInComposition -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#linkInComposition"/>
+    <owl:ObjectProperty rdf:about="&srdl2-comp;linkInComposition"/>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#precedingLink -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#precedingLink">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#predecessorInKinematicChain"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#UrdfJoint"/>
-        <rdfs:range rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#UrdfLink"/>
+    <owl:ObjectProperty rdf:about="&srdl2-comp;precedingLink">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;UrdfJoint"/>
+        <rdfs:range rdf:resource="&srdl2-comp;UrdfLink"/>
+        <rdfs:subPropertyOf rdf:resource="&srdl2-comp;predecessorInKinematicChain"/>
     </owl:ObjectProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#predecessorInKinematicChain -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#predecessorInKinematicChain">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#superComponent"/>
-        <owl:inverseOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#successorInKinematicChain"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#HardwareComponent"/>
-        <rdfs:range rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#HardwareComponent"/>
+    <owl:ObjectProperty rdf:about="&srdl2-comp;predecessorInKinematicChain">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;HardwareComponent"/>
+        <rdfs:range rdf:resource="&srdl2-comp;HardwareComponent"/>
+        <owl:inverseOf rdf:resource="&srdl2-comp;successorInKinematicChain"/>
+        <rdfs:subPropertyOf rdf:resource="&srdl2-comp;superComponent"/>
     </owl:ObjectProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#prededingJoint -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#prededingJoint">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#predecessorInKinematicChain"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#UrdfLink"/>
-        <rdfs:range rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#UrdfJoint"/>
+    <owl:ObjectProperty rdf:about="&srdl2-comp;prededingJoint">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+        <rdfs:range rdf:resource="&srdl2-comp;UrdfJoint"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;UrdfLink"/>
+        <rdfs:subPropertyOf rdf:resource="&srdl2-comp;predecessorInKinematicChain"/>
     </owl:ObjectProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#subComponent -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#subComponent">
-        <owl:inverseOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#superComponent"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
+    <owl:ObjectProperty rdf:about="&srdl2-comp;subComponent">
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&srdl2-comp;Component"/>
+        <owl:inverseOf rdf:resource="&srdl2-comp;superComponent"/>
     </owl:ObjectProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#succeedingJoint -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#succeedingJoint">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#successorInKinematicChain"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#UrdfLink"/>
-        <rdfs:range rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#UrdfJoint"/>
+    <owl:ObjectProperty rdf:about="&srdl2-comp;succeedingJoint">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+        <rdfs:range rdf:resource="&srdl2-comp;UrdfJoint"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;UrdfLink"/>
+        <rdfs:subPropertyOf rdf:resource="&srdl2-comp;successorInKinematicChain"/>
     </owl:ObjectProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#succeedingLink -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#succeedingLink">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#successorInKinematicChain"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#UrdfJoint"/>
-        <rdfs:range rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#UrdfLink"/>
+    <owl:ObjectProperty rdf:about="&srdl2-comp;succeedingLink">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;UrdfJoint"/>
+        <rdfs:range rdf:resource="&srdl2-comp;UrdfLink"/>
+        <rdfs:subPropertyOf rdf:resource="&srdl2-comp;successorInKinematicChain"/>
     </owl:ObjectProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#successorInKinematicChain -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#successorInKinematicChain">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#subComponent"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#HardwareComponent"/>
-        <rdfs:range rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#HardwareComponent"/>
+    <owl:ObjectProperty rdf:about="&srdl2-comp;successorInKinematicChain">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;HardwareComponent"/>
+        <rdfs:range rdf:resource="&srdl2-comp;HardwareComponent"/>
+        <rdfs:subPropertyOf rdf:resource="&srdl2-comp;subComponent"/>
     </owl:ObjectProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#superComponent -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#superComponent">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+    <owl:ObjectProperty rdf:about="&srdl2-comp;superComponent">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
     </owl:ObjectProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2.owl#dependsOn -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2.owl#dependsOn"/>
+    <owl:ObjectProperty rdf:about="&srdl2;dependsOn"/>
     
 
 
     <!-- http://knowrob.org/kb/srdl2.owl#providesModelFor -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/srdl2.owl#providesModelFor">
-        <rdfs:range rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <owl:ObjectProperty rdf:about="&srdl2;providesModelFor">
+        <rdfs:range rdf:resource="&owl;Class"/>
     </owl:ObjectProperty>
     
 
@@ -246,836 +261,837 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
 
     <!-- http://knowrob.org/kb/knowrob.owl#groupName -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#groupName"/>
+    <owl:DatatypeProperty rdf:about="&knowrob;groupName"/>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#lengthOfObject -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#lengthOfObject"/>
+    <owl:DatatypeProperty rdf:about="&knowrob;lengthOfObject"/>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#massOfObject -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#massOfObject"/>
+    <owl:DatatypeProperty rdf:about="&knowrob;massOfObject"/>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#queryName -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#queryName"/>
+    <owl:DatatypeProperty rdf:about="&knowrob;queryName"/>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#queryString -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#queryString"/>
+    <owl:DatatypeProperty rdf:about="&knowrob;queryString"/>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#radius -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/knowrob.owl#radius"/>
+    <owl:DatatypeProperty rdf:about="&knowrob;radius"/>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Cx -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Cx">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;Cx">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#CxPrime -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#CxPrime">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;CxPrime">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Cy -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Cy">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;Cy">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#alwaysOn -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#alwaysOn">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;alwaysOn">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#bodyName -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#bodyName">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;bodyName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#box_size -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#box_size">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;box_size">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:subPropertyOf rdf:resource="&knowrob;boundingBoxSize"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#bumperTopicName -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#bumperTopicName">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#topicName"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;bumperTopicName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:subPropertyOf rdf:resource="&srdl2-comp;topicName"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#calibration_falling -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#calibration_falling">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;calibration_falling">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#calibration_rising -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#calibration_rising">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;calibration_rising">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#cameraInfoTopicName -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#cameraInfoTopicName">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#topicName"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;cameraInfoTopicName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:subPropertyOf rdf:resource="&srdl2-comp;topicName"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#cameraName -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#cameraName">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;cameraName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#cylinder_length -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#cylinder_length">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#lengthOfObject"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;cylinder_length">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:subPropertyOf rdf:resource="&knowrob;lengthOfObject"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#cylinder_radius -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#cylinder_radius">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#radius"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;cylinder_radius">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:subPropertyOf rdf:resource="&knowrob;radius"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#displayRays -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#displayRays">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;displayRays">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#distortion_k1 -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#distortion_k1">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;distortion_k1">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#distortion_k2 -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#distortion_k2">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;distortion_k2">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#distortion_k3 -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#distortion_k3">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;distortion_k3">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#distortion_t1 -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#distortion_t1">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;distortion_t1">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#distortion_t2 -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#distortion_t2">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;distortion_t2">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#farClip -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#farClip">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;farClip">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#farClipDist -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#farClipDist">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;farClipDist">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#filterTextureName -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#filterTextureName">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;filterTextureName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#focal_length -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#focal_length">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;focal_length">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#fov -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#fov">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;fov">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#frameName -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#frameName">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;frameName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#fudgeFactor -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#fudgeFactor">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;fudgeFactor">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#gaussianNoise -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#gaussianNoise">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;gaussianNoise">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#geom -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#geom">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;geom">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#hackBaseline -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#hackBaseline">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;hackBaseline">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#hfov -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#hfov">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;hfov">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#imageFormat -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#imageFormat">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;imageFormat">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#imageSizeX -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#imageSizeX">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;imageSizeX">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#imageTopicName -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#imageTopicName">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#topicName"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;imageTopicName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:subPropertyOf rdf:resource="&srdl2-comp;topicName"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#inertia_ixx -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#inertia_ixx">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Kilogram"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;inertia_ixx">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Kilogram"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#inertia_ixy -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#inertia_ixy">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Kilogram"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;inertia_ixy">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Kilogram"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#inertia_ixz -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#inertia_ixz">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Kilogram"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;inertia_ixz">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Kilogram"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#inertia_iyy -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#inertia_iyy">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Kilogram"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;inertia_iyy">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Kilogram"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#inertia_iyz -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#inertia_iyz">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Kilogram"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;inertia_iyz">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Kilogram"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#inertia_izz -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#inertia_izz">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Kilogram"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;inertia_izz">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Kilogram"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#initial_joint_position -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#initial_joint_position">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;initial_joint_position">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#interface_bumper -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#interface_bumper">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;interface_bumper">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#interface_camera -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#interface_camera">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;interface_camera">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#interface_laser -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#interface_laser">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;interface_laser">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#kd -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#kd">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;kd">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#kp -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#kp">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;kp">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#laserCount -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#laserCount">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;laserCount">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#mass_value -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#mass_value">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/knowrob.owl#massOfObject"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Kilogram"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;mass_value">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:subPropertyOf rdf:resource="&knowrob;massOfObject"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Kilogram"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#material -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#material">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;material">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#material_name -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#material_name">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;material_name">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#maxAngle -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#maxAngle">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#DegreeAngle"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;maxAngle">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;DegreeAngle"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#maxRange -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#maxRange">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Meter"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;maxRange">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Meter"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#mesh_filename -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#mesh_filename">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;mesh_filename">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#mimic_joint -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#mimic_joint">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;mimic_joint">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#mimic_multiplier -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#mimic_multiplier">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;mimic_multiplier">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#mimic_offset -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#mimic_offset">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;mimic_offset">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#minAngle -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#minAngle">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#DegreeAngle"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;minAngle">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;DegreeAngle"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#minRange -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#minRange">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Meter"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;minRange">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Meter"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#mu1 -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#mu1">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;mu1">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#mu2 -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#mu2">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;mu2">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#nearClip -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#nearClip">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;nearClip">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#nearClipDist -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#nearClipDist">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;nearClipDist">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#origin -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#origin">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;origin">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#origin_rpy -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#origin_rpy">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#origin"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;origin_rpy">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:subPropertyOf rdf:resource="&srdl2-comp;origin"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#origin_xyz -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#origin_xyz">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#origin"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;origin_xyz">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:subPropertyOf rdf:resource="&srdl2-comp;origin"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#pollServiceName -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#pollServiceName">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;pollServiceName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#projectorTopicName -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#projectorTopicName">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#topicName"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;projectorTopicName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:subPropertyOf rdf:resource="&srdl2-comp;topicName"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#provideFeedback -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#provideFeedback">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;provideFeedback">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#rangeCount -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#rangeCount">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Meter"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;rangeCount">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Meter"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#rayCount -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#rayCount">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;rayCount">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#resRange -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#resRange">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Meter"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;resRange">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Meter"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#selfCollide -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#selfCollide">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;selfCollide">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;boolean"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#stopKd -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#stopKd">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;stopKd">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#stopKp -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#stopKp">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Unitless"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;stopKp">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Unitless"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#textureName -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#textureName">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;textureName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#textureTopicName -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#textureTopicName">
-        <rdfs:subPropertyOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#topicName"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;textureTopicName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:subPropertyOf rdf:resource="&srdl2-comp;topicName"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#tfPrefix -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#tfPrefix">
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Agent-Generic"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;tfPrefix">
         <rdfs:comment>TF Prefix to use for TF lookups</rdfs:comment>
+        <rdfs:domain rdf:resource="&knowrob;Agent-Generic"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#topicName -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#topicName">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;topicName">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#updateRate -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#updateRate">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <rdfs:range rdf:resource="http://qudt.org/vocab/unit#Hertz"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;updateRate">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="&srdl2-comp;Component"/>
+        <rdfs:range rdf:resource="&qudt-unit;Hertz"/>
     </owl:DatatypeProperty>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#urdfName -->
 
-    <owl:DatatypeProperty rdf:about="http://knowrob.org/kb/srdl2-comp.owl#urdfName">
-        <rdfs:domain rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#UrdfComponent"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <owl:DatatypeProperty rdf:about="&srdl2-comp;urdfName">
         <rdfs:comment>Relation to store the original name of a link or joint in the URF file</rdfs:comment>
+        <rdfs:domain rdf:resource="&srdl2-comp;UrdfComponent"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
@@ -1093,104 +1109,104 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
 
     <!-- http://knowrob.org/kb/knowrob.owl#Agent-Generic -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Agent-Generic"/>
+    <owl:Class rdf:about="&knowrob;Agent-Generic"/>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#Arm -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Arm"/>
+    <owl:Class rdf:about="&knowrob;Arm"/>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#CommunicationDevice -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#CommunicationDevice"/>
+    <owl:Class rdf:about="&knowrob;CommunicationDevice"/>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#ElectricalDevice -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#ElectricalDevice"/>
+    <owl:Class rdf:about="&knowrob;ElectricalDevice"/>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#EnduringThing-Localized -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#EnduringThing-Localized">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#HardwareComponent"/>
+    <owl:Class rdf:about="&knowrob;EnduringThing-Localized">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;HardwareComponent"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#HolderGripper -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HolderGripper"/>
+    <owl:Class rdf:about="&knowrob;HolderGripper"/>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#HumanScaleObject -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#HumanScaleObject"/>
+    <owl:Class rdf:about="&knowrob;HumanScaleObject"/>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#Map -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Map"/>
+    <owl:Class rdf:about="&knowrob;Map"/>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#MechanicalDevice -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#MechanicalDevice"/>
+    <owl:Class rdf:about="&knowrob;MechanicalDevice"/>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#PartiallyTangible -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PartiallyTangible"/>
+    <owl:Class rdf:about="&knowrob;PartiallyTangible"/>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#PhysicalDevice -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#PhysicalDevice"/>
+    <owl:Class rdf:about="&knowrob;PhysicalDevice"/>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#Query -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#Query"/>
+    <owl:Class rdf:about="&knowrob;Query"/>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#SoftwareObject -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#SoftwareObject">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#SoftwareComponent"/>
+    <owl:Class rdf:about="&knowrob;SoftwareObject">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;SoftwareComponent"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#WirelessCommunicationDevice -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/knowrob.owl#WirelessCommunicationDevice"/>
+    <owl:Class rdf:about="&knowrob;WirelessCommunicationDevice"/>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Accelerometer -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Accelerometer">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Sensor-Device"/>
+    <owl:Class rdf:about="&srdl2-comp;Accelerometer">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;Sensor-Device"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#ArmComponent -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ArmComponent">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Arm"/>
+    <owl:Class rdf:about="&srdl2-comp;ArmComponent">
+        <rdfs:subClassOf rdf:resource="&knowrob;Arm"/>
         <rdfs:comment>Arms or similiar components that consist of some links connected by joints, are fixed to the robot body, can move around in space and have usually affixed a hand or sth similiar to manipulate the world</rdfs:comment>
     </owl:Class>
     
@@ -1198,12 +1214,12 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#ArmMotionController -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ArmMotionController">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#MotionControllerComponent"/>
+    <owl:Class rdf:about="&srdl2-comp;ArmMotionController">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;MotionControllerComponent"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ArmComponent"/>
+                <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
+                <owl:someValuesFrom rdf:resource="&srdl2-comp;ArmComponent"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment>Software components for arm motion planning and control</rdfs:comment>
@@ -1213,8 +1229,8 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Base -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Base">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#RobotBodyPart"/>
+    <owl:Class rdf:about="&srdl2-comp;Base">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;RobotBodyPart"/>
         <rdfs:comment>Base component that connects robot to environment (mostly the ground)</rdfs:comment>
     </owl:Class>
     
@@ -1222,48 +1238,48 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#BaseMotionController -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#BaseMotionController">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#MotionControllerComponent"/>
+    <owl:Class rdf:about="&srdl2-comp;BaseMotionController">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;MotionControllerComponent"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#BeaconMap -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#BeaconMap">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#TopologicalMap"/>
+    <owl:Class rdf:about="&srdl2-comp;BeaconMap">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;TopologicalMap"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#BluetoothDevice -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#BluetoothDevice">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#WirelessCommunicationDevice"/>
+    <owl:Class rdf:about="&srdl2-comp;BluetoothDevice">
+        <rdfs:subClassOf rdf:resource="&knowrob;WirelessCommunicationDevice"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#CADModelMatching -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#CADModelMatching">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ShapeBasedObjectRecognition"/>
+    <owl:Class rdf:about="&srdl2-comp;CADModelMatching">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;ShapeBasedObjectRecognition"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#CADModelMatchingTo3Ddata -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#CADModelMatchingTo3Ddata">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#CADModelMatching"/>
+    <owl:Class rdf:about="&srdl2-comp;CADModelMatchingTo3Ddata">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;CADModelMatching"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#dependsOnComponent"/>
+                <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
                 <owl:someValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ThreeDimensionalLaserScanner"/>
-                            <rdf:Description rdf:about="http://knowrob.org/kb/srdl2-comp.owl#TimeOfFlightCamera"/>
+                            <rdf:Description rdf:about="&srdl2-comp;ThreeDimensionalLaserScanner"/>
+                            <rdf:Description rdf:about="&srdl2-comp;TimeOfFlightCamera"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:someValuesFrom>
@@ -1275,12 +1291,12 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#CADModelMatchingToImage -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#CADModelMatchingToImage">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#CADModelMatching"/>
+    <owl:Class rdf:about="&srdl2-comp;CADModelMatchingToImage">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;CADModelMatching"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Camera"/>
+                <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
+                <owl:someValuesFrom rdf:resource="&srdl2-comp;Camera"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -1289,8 +1305,8 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#CPLExecutive -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#CPLExecutive">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#TaskLevelExecutive"/>
+    <owl:Class rdf:about="&srdl2-comp;CPLExecutive">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;TaskLevelExecutive"/>
         <rdfs:comment>Invokes and monitors perception and actions</rdfs:comment>
     </owl:Class>
     
@@ -1298,44 +1314,44 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Camera -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Camera">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalDevice"/>
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#VisualSensor"/>
+    <owl:Class rdf:about="&srdl2-comp;Camera">
+        <rdfs:subClassOf rdf:resource="&knowrob;ElectricalDevice"/>
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;VisualSensor"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Clock -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Clock">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#MechanicalDevice"/>
-        <rdfs:comment>A specialization of MechanicalDevice. Each instance of Clock is a device designed to be used to keep track of time.</rdfs:comment>
+    <owl:Class rdf:about="&srdl2-comp;Clock">
+        <rdfs:subClassOf rdf:resource="&knowrob;MechanicalDevice"/>
         <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/Clock</rdfs:seeAlso>
+        <rdfs:comment>A specialization of MechanicalDevice. Each instance of Clock is a device designed to be used to keep track of time.</rdfs:comment>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#CollisionMap -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#CollisionMap">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#EnvironmentMap"/>
+    <owl:Class rdf:about="&srdl2-comp;CollisionMap">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;EnvironmentMap"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#ColorCamera -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ColorCamera">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Camera"/>
-        <owl:disjointWith rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#MonochromeCamera"/>
+    <owl:Class rdf:about="&srdl2-comp;ColorCamera">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;Camera"/>
+        <owl:disjointWith rdf:resource="&srdl2-comp;MonochromeCamera"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#CommunicationComponent -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#CommunicationComponent">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SoftwareObject"/>
+    <owl:Class rdf:about="&srdl2-comp;CommunicationComponent">
+        <rdfs:subClassOf rdf:resource="&knowrob;SoftwareObject"/>
         <rdfs:comment>Software components that allows to communicate. Depends on the respective hardware component for exchanging messages</rdfs:comment>
     </owl:Class>
     
@@ -1343,25 +1359,25 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Component -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
+    <owl:Class rdf:about="&srdl2-comp;Component"/>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#ComponentComposition -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ComponentComposition">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#HardwareComponent"/>
+    <owl:Class rdf:about="&srdl2-comp;ComponentComposition">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;HardwareComponent"/>
         <rdfs:subClassOf>
             <owl:Class>
                 <owl:intersectionOf rdf:parseType="Collection">
                     <owl:Restriction>
-                        <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#endLinkOfComposition"/>
-                        <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#UrdfLink"/>
+                        <owl:onProperty rdf:resource="&srdl2-comp;endLinkOfComposition"/>
+                        <owl:someValuesFrom rdf:resource="&srdl2-comp;UrdfLink"/>
                     </owl:Restriction>
                     <owl:Restriction>
-                        <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#baseLinkOfComposition"/>
-                        <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                        <owl:onClass rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#UrdfLink"/>
+                        <owl:onProperty rdf:resource="&srdl2-comp;baseLinkOfComposition"/>
+                        <owl:onClass rdf:resource="&srdl2-comp;UrdfLink"/>
+                        <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
                     </owl:Restriction>
                 </owl:intersectionOf>
             </owl:Class>
@@ -1374,56 +1390,56 @@ Example: hand that is made of several links and joints</rdfs:comment>
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#ComputationCore -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ComputationCore">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ComputerHardwareComponent"/>
-        <rdfs:comment>A specialization of ComputerHardwareComponent. Each instance of this collection is a computer processor which is in the shell (part of the ComputerMainBox) and contains the CentralProcessingUnit.</rdfs:comment>
+    <owl:Class rdf:about="&srdl2-comp;ComputationCore">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;ComputerHardwareComponent"/>
         <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/ComputerProcessor</rdfs:seeAlso>
+        <rdfs:comment>A specialization of ComputerHardwareComponent. Each instance of this collection is a computer processor which is in the shell (part of the ComputerMainBox) and contains the CentralProcessingUnit.</rdfs:comment>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#ComputerHardwareComponent -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ComputerHardwareComponent">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ComputerHardwareItem"/>
-        <rdfs:comment>The collection of all computer components. A type of ComputerHardwareItem. The collection ComputerHardwareComponent is a ComputerHardwareDeviceType and a SpatiallyDisjointObjectType.</rdfs:comment>
+    <owl:Class rdf:about="&srdl2-comp;ComputerHardwareComponent">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;ComputerHardwareItem"/>
         <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/ComputerHardwareComponent</rdfs:seeAlso>
+        <rdfs:comment>The collection of all computer components. A type of ComputerHardwareItem. The collection ComputerHardwareComponent is a ComputerHardwareDeviceType and a SpatiallyDisjointObjectType.</rdfs:comment>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#ComputerHardwareItem -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ComputerHardwareItem">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalDevice"/>
-        <rdfs:comment>A specialization of ElectronicDevice. Each instance of this collection is either an entire Computer, or a device used with or in computers to accomplish some computing-related task (for instance, computer terminals, printers, keyboards, etc.).</rdfs:comment>
+    <owl:Class rdf:about="&srdl2-comp;ComputerHardwareItem">
+        <rdfs:subClassOf rdf:resource="&knowrob;ElectricalDevice"/>
         <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/ComputerHardwareItem</rdfs:seeAlso>
+        <rdfs:comment>A specialization of ElectronicDevice. Each instance of this collection is either an entire Computer, or a device used with or in computers to accomplish some computing-related task (for instance, computer terminals, printers, keyboards, etc.).</rdfs:comment>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#ComputerStorageDevice -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ComputerStorageDevice">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ComputerHardwareComponent"/>
-        <rdfs:comment>The collection of devices used by computers to store information, e.g., floppy disks, direct access storage devices (DASD), optical disk devices, microfilm libraries, and 5.25 inch hard drives.</rdfs:comment>
+    <owl:Class rdf:about="&srdl2-comp;ComputerStorageDevice">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;ComputerHardwareComponent"/>
         <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/ComputerStorageDevice</rdfs:seeAlso>
+        <rdfs:comment>The collection of devices used by computers to store information, e.g., floppy disks, direct access storage devices (DASD), optical disk devices, microfilm libraries, and 5.25 inch hard drives.</rdfs:comment>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#ContinuousUrdfJoint -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ContinuousUrdfJoint">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#UrdfJoint"/>
+    <owl:Class rdf:about="&srdl2-comp;ContinuousUrdfJoint">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;UrdfJoint"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#ControllerComponent -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ControllerComponent">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SoftwareObject"/>
+    <owl:Class rdf:about="&srdl2-comp;ControllerComponent">
+        <rdfs:subClassOf rdf:resource="&knowrob;SoftwareObject"/>
         <rdfs:comment>Software components that controls the robot&apos;s motions, from single motions up to the task level</rdfs:comment>
     </owl:Class>
     
@@ -1431,78 +1447,78 @@ Example: hand that is made of several links and joints</rdfs:comment>
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#DlrHitHand -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#DlrHitHand">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#HandComponent"/>
+    <owl:Class rdf:about="&srdl2-comp;DlrHitHand">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;HandComponent"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#EnvironmentExplorationController -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#EnvironmentExplorationController">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#BaseMotionController"/>
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#NavigationComponent"/>
+    <owl:Class rdf:about="&srdl2-comp;EnvironmentExplorationController">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;BaseMotionController"/>
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;NavigationComponent"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#EnvironmentMap -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#EnvironmentMap">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#Map"/>
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SoftwareObject"/>
+    <owl:Class rdf:about="&srdl2-comp;EnvironmentMap">
+        <rdfs:subClassOf rdf:resource="&knowrob;Map"/>
+        <rdfs:subClassOf rdf:resource="&knowrob;SoftwareObject"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#FingertipPressureSensorArray -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#FingertipPressureSensorArray">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#PressureSensor"/>
+    <owl:Class rdf:about="&srdl2-comp;FingertipPressureSensorArray">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;PressureSensor"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#FixedHardDrive -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#FixedHardDrive">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#HardDrive"/>
+    <owl:Class rdf:about="&srdl2-comp;FixedHardDrive">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;HardDrive"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#FixedUrdfJoint -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#FixedUrdfJoint">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#UrdfJoint"/>
+    <owl:Class rdf:about="&srdl2-comp;FixedUrdfJoint">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;UrdfJoint"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#FlirThermalCamera -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#FlirThermalCamera">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#InfraredCamera"/>
+    <owl:Class rdf:about="&srdl2-comp;FlirThermalCamera">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;InfraredCamera"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#FloatingUrdfJoint -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#FloatingUrdfJoint">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#UrdfJoint"/>
+    <owl:Class rdf:about="&srdl2-comp;FloatingUrdfJoint">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;UrdfJoint"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#GraspController -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#GraspController">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#MotionControllerComponent"/>
+    <owl:Class rdf:about="&srdl2-comp;GraspController">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;MotionControllerComponent"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ManipulationEntity"/>
+                <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
+                <owl:someValuesFrom rdf:resource="&srdl2-comp;ManipulationEntity"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment>Software components for grasp planning and control</rdfs:comment>
@@ -1512,26 +1528,26 @@ Example: hand that is made of several links and joints</rdfs:comment>
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#GripperComponent -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#GripperComponent">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#HolderGripper"/>
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#PressingManipulationEntity"/>
-        <owl:disjointWith rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#HandComponent"/>
+    <owl:Class rdf:about="&srdl2-comp;GripperComponent">
+        <rdfs:subClassOf rdf:resource="&knowrob;HolderGripper"/>
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;PressingManipulationEntity"/>
+        <owl:disjointWith rdf:resource="&srdl2-comp;HandComponent"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#HandComponent -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#HandComponent">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#PressingManipulationEntity"/>
+    <owl:Class rdf:about="&srdl2-comp;HandComponent">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;PressingManipulationEntity"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#HardDrive -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#HardDrive">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#MagneticComputerStorageDevice"/>
+    <owl:Class rdf:about="&srdl2-comp;HardDrive">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;MagneticComputerStorageDevice"/>
         <rdfs:comment>This is the collection of all Hard Disks. These are usually fixed magnetic disks which are used for memory storage by a HardDiskDrive.</rdfs:comment>
     </owl:Class>
     
@@ -1539,45 +1555,45 @@ Example: hand that is made of several links and joints</rdfs:comment>
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#HardwareComponent -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#HardwareComponent">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
-        <owl:disjointWith rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#SoftwareComponent"/>
+    <owl:Class rdf:about="&srdl2-comp;HardwareComponent">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;Component"/>
+        <owl:disjointWith rdf:resource="&srdl2-comp;SoftwareComponent"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#HokuyoURG04LX -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#HokuyoURG04LX">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#TwoDimensionalLaserScanner"/>
+    <owl:Class rdf:about="&srdl2-comp;HokuyoURG04LX">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;TwoDimensionalLaserScanner"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#HokuyoUTM-30LX -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#HokuyoUTM-30LX">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#TwoDimensionalLaserScanner"/>
+    <owl:Class rdf:about="&srdl2-comp;HokuyoUTM-30LX">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;TwoDimensionalLaserScanner"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#HolonomicBase -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#HolonomicBase">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#MobileBase"/>
+    <owl:Class rdf:about="&srdl2-comp;HolonomicBase">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;MobileBase"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#ImageFeatureBasedObjectRecognition -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ImageFeatureBasedObjectRecognition">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ObjectRecognitionComponent"/>
+    <owl:Class rdf:about="&srdl2-comp;ImageFeatureBasedObjectRecognition">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;ObjectRecognitionComponent"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Camera"/>
+                <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
+                <owl:someValuesFrom rdf:resource="&srdl2-comp;Camera"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -1586,73 +1602,73 @@ Example: hand that is made of several links and joints</rdfs:comment>
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#InertialSensor -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#InertialSensor">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Sensor-Device"/>
+    <owl:Class rdf:about="&srdl2-comp;InertialSensor">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;Sensor-Device"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#InfraredCamera -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#InfraredCamera">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Camera"/>
+    <owl:Class rdf:about="&srdl2-comp;InfraredCamera">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;Camera"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#KukaLWR4 -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#KukaLWR4">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ArmComponent"/>
+    <owl:Class rdf:about="&srdl2-comp;KukaLWR4">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;ArmComponent"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#KukaOmnidirPlatform -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#KukaOmnidirPlatform">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#HolonomicBase"/>
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#WheeledBase"/>
+    <owl:Class rdf:about="&srdl2-comp;KukaOmnidirPlatform">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;HolonomicBase"/>
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;WheeledBase"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#LEDTextureProjector -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#LEDTextureProjector">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#TextureProjector"/>
+    <owl:Class rdf:about="&srdl2-comp;LEDTextureProjector">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;TextureProjector"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#LanDevice -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#LanDevice">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#CommunicationDevice"/>
+    <owl:Class rdf:about="&srdl2-comp;LanDevice">
+        <rdfs:subClassOf rdf:resource="&knowrob;CommunicationDevice"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#LaserScanner -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#LaserScanner">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#VisualSensor"/>
+    <owl:Class rdf:about="&srdl2-comp;LaserScanner">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;VisualSensor"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#LaserScannerMap -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#LaserScannerMap">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#MapBuiltFromSensorData"/>
+    <owl:Class rdf:about="&srdl2-comp;LaserScannerMap">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;MapBuiltFromSensorData"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#LearningComponent -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#LearningComponent">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SoftwareObject"/>
+    <owl:Class rdf:about="&srdl2-comp;LearningComponent">
+        <rdfs:subClassOf rdf:resource="&knowrob;SoftwareObject"/>
         <rdfs:comment>Software components for learning something</rdfs:comment>
     </owl:Class>
     
@@ -1660,8 +1676,8 @@ Example: hand that is made of several links and joints</rdfs:comment>
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#LocalizationComponent -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#LocalizationComponent">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SoftwareObject"/>
+    <owl:Class rdf:about="&srdl2-comp;LocalizationComponent">
+        <rdfs:subClassOf rdf:resource="&knowrob;SoftwareObject"/>
         <rdfs:comment>Software components that allow the robot to localize itself</rdfs:comment>
     </owl:Class>
     
@@ -1669,8 +1685,8 @@ Example: hand that is made of several links and joints</rdfs:comment>
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#MagneticComputerStorageDevice -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#MagneticComputerStorageDevice">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#NonVolatileMemory"/>
+    <owl:Class rdf:about="&srdl2-comp;MagneticComputerStorageDevice">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;NonVolatileMemory"/>
         <rdfs:comment>The collection of all magnetic storage devices. A type of NonVolatileMemory and MagneticDevice. The collection MagneticComputerStorageDevice is a #$ManufacturedGoodsType and a SpatiallyDisjointObjectType.</rdfs:comment>
         <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/MagneticComputerStorageDevice</rdfs:seeAlso>
     </owl:Class>
@@ -1679,8 +1695,8 @@ Example: hand that is made of several links and joints</rdfs:comment>
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#ManipulationEntity -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ManipulationEntity">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#RobotBodyPart"/>
+    <owl:Class rdf:about="&srdl2-comp;ManipulationEntity">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;RobotBodyPart"/>
         <rdfs:comment>Entity that is attached to an arm and that can manipulate the world/ use different tools</rdfs:comment>
     </owl:Class>
     
@@ -1688,16 +1704,16 @@ Example: hand that is made of several links and joints</rdfs:comment>
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#MapBuiltFromSensorData -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#MapBuiltFromSensorData">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#EnvironmentMap"/>
+    <owl:Class rdf:about="&srdl2-comp;MapBuiltFromSensorData">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;EnvironmentMap"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#MappingComponent -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#MappingComponent">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SoftwareObject"/>
+    <owl:Class rdf:about="&srdl2-comp;MappingComponent">
+        <rdfs:subClassOf rdf:resource="&knowrob;SoftwareObject"/>
         <rdfs:comment>Software components that build environment maps from sensor data</rdfs:comment>
     </owl:Class>
     
@@ -1705,34 +1721,34 @@ Example: hand that is made of several links and joints</rdfs:comment>
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Memory -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Memory">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#VolatileMemory"/>
-        <rdfs:seeAlso>Random access memory. Cf. rAMSize.</rdfs:seeAlso>
+    <owl:Class rdf:about="&srdl2-comp;Memory">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;VolatileMemory"/>
         <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/RAM</rdfs:seeAlso>
+        <rdfs:seeAlso>Random access memory. Cf. rAMSize.</rdfs:seeAlso>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#MetricMap -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#MetricMap">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#EnvironmentMap"/>
+    <owl:Class rdf:about="&srdl2-comp;MetricMap">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;EnvironmentMap"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Microstrain3DM-GX2IMU -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Microstrain3DM-GX2IMU">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#InertialSensor"/>
+    <owl:Class rdf:about="&srdl2-comp;Microstrain3DM-GX2IMU">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;InertialSensor"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#MobileBase -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#MobileBase">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Base"/>
+    <owl:Class rdf:about="&srdl2-comp;MobileBase">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;Base"/>
         <rdfs:comment>A base that allows a robot to move and change its position</rdfs:comment>
     </owl:Class>
     
@@ -1740,25 +1756,25 @@ Example: hand that is made of several links and joints</rdfs:comment>
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#MonochromeCamera -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#MonochromeCamera">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Camera"/>
+    <owl:Class rdf:about="&srdl2-comp;MonochromeCamera">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;Camera"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#MonocularCamera -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#MonocularCamera">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Camera"/>
-        <owl:disjointWith rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#StereoCamera"/>
+    <owl:Class rdf:about="&srdl2-comp;MonocularCamera">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;Camera"/>
+        <owl:disjointWith rdf:resource="&srdl2-comp;StereoCamera"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#MotionControllerComponent -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#MotionControllerComponent">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ControllerComponent"/>
+    <owl:Class rdf:about="&srdl2-comp;MotionControllerComponent">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;ControllerComponent"/>
         <rdfs:comment>Software components for planning motions of components of the robot (arms, hands,...)</rdfs:comment>
     </owl:Class>
     
@@ -1766,21 +1782,21 @@ Example: hand that is made of several links and joints</rdfs:comment>
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#NarrowAngleCamera -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#NarrowAngleCamera">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Camera"/>
-        <owl:disjointWith rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#WideAngleCamera"/>
+    <owl:Class rdf:about="&srdl2-comp;NarrowAngleCamera">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;Camera"/>
+        <owl:disjointWith rdf:resource="&srdl2-comp;WideAngleCamera"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#NavigationComponent -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#NavigationComponent">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SoftwareObject"/>
+    <owl:Class rdf:about="&srdl2-comp;NavigationComponent">
+        <rdfs:subClassOf rdf:resource="&knowrob;SoftwareObject"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#LocalizationComponent"/>
+                <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
+                <owl:someValuesFrom rdf:resource="&srdl2-comp;LocalizationComponent"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment>Software components for path planning and navigation</rdfs:comment>
@@ -1790,67 +1806,67 @@ Example: hand that is made of several links and joints</rdfs:comment>
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#NonVolatileMemory -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#NonVolatileMemory">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ComputerStorageDevice"/>
-        <rdfs:comment>A specialization of ComputerStorageDevice. Each instance of NonVolatileMemory is a computer storage device that has the ability to retain data even when not powered.</rdfs:comment>
+    <owl:Class rdf:about="&srdl2-comp;NonVolatileMemory">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;ComputerStorageDevice"/>
         <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/NonVolatileMemory</rdfs:seeAlso>
+        <rdfs:comment>A specialization of ComputerStorageDevice. Each instance of NonVolatileMemory is a computer storage device that has the ability to retain data even when not powered.</rdfs:comment>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#ObjectArticulationModel -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ObjectArticulationModel">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ObjectSpecification"/>
+    <owl:Class rdf:about="&srdl2-comp;ObjectArticulationModel">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;ObjectSpecification"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#ObjectMap -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ObjectMap">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#MetricMap"/>
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#TopologicalMap"/>
+    <owl:Class rdf:about="&srdl2-comp;ObjectMap">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;MetricMap"/>
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;TopologicalMap"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#ObjectRecognitionComponent -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ObjectRecognitionComponent">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#PerceptionComponent"/>
+    <owl:Class rdf:about="&srdl2-comp;ObjectRecognitionComponent">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;PerceptionComponent"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#ObjectRecognitionModel -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ObjectRecognitionModel">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ObjectSpecification"/>
+    <owl:Class rdf:about="&srdl2-comp;ObjectRecognitionModel">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;ObjectSpecification"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#ObjectSpecification -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ObjectSpecification">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SoftwareObject"/>
+    <owl:Class rdf:about="&srdl2-comp;ObjectSpecification">
+        <rdfs:subClassOf rdf:resource="&knowrob;SoftwareObject"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#OccupancyGridMap -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#OccupancyGridMap">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#MetricMap"/>
+    <owl:Class rdf:about="&srdl2-comp;OccupancyGridMap">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;MetricMap"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#PerceptionComponent -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#PerceptionComponent">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SoftwareObject"/>
+    <owl:Class rdf:about="&srdl2-comp;PerceptionComponent">
+        <rdfs:subClassOf rdf:resource="&knowrob;SoftwareObject"/>
         <rdfs:comment>Software components that interpret sensor data to perceive the environment</rdfs:comment>
     </owl:Class>
     
@@ -1858,56 +1874,56 @@ Example: hand that is made of several links and joints</rdfs:comment>
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#PhilipsArm -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#PhilipsArm">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ArmComponent"/>
+    <owl:Class rdf:about="&srdl2-comp;PhilipsArm">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;ArmComponent"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#PlanarUrdfJoint -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#PlanarUrdfJoint">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#UrdfJoint"/>
+    <owl:Class rdf:about="&srdl2-comp;PlanarUrdfJoint">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;UrdfJoint"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#PointMap -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#PointMap">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#MetricMap"/>
+    <owl:Class rdf:about="&srdl2-comp;PointMap">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;MetricMap"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Pr2Arm -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Pr2Arm">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ArmComponent"/>
+    <owl:Class rdf:about="&srdl2-comp;Pr2Arm">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;ArmComponent"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Pr2Base -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Pr2Base">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#WheeledBase"/>
+    <owl:Class rdf:about="&srdl2-comp;Pr2Base">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;WheeledBase"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Pr2Gripper -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Pr2Gripper">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#GripperComponent"/>
+    <owl:Class rdf:about="&srdl2-comp;Pr2Gripper">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;GripperComponent"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#PressingManipulationEntity -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#PressingManipulationEntity">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ManipulationEntity"/>
+    <owl:Class rdf:about="&srdl2-comp;PressingManipulationEntity">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;ManipulationEntity"/>
         <rdfs:comment>A manipulation entity that can exercise force on an object</rdfs:comment>
     </owl:Class>
     
@@ -1915,56 +1931,56 @@ Example: hand that is made of several links and joints</rdfs:comment>
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#PressureSensor -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#PressureSensor">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Sensor-Device"/>
+    <owl:Class rdf:about="&srdl2-comp;PressureSensor">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;Sensor-Device"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#PrismaticUrdfJoint -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#PrismaticUrdfJoint">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#UrdfJoint"/>
+    <owl:Class rdf:about="&srdl2-comp;PrismaticUrdfJoint">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;UrdfJoint"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Projector -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Projector">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#ElectricalDevice"/>
+    <owl:Class rdf:about="&srdl2-comp;Projector">
+        <rdfs:subClassOf rdf:resource="&knowrob;ElectricalDevice"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#RemovableHardDrive -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#RemovableHardDrive">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#HardDrive"/>
+    <owl:Class rdf:about="&srdl2-comp;RemovableHardDrive">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;HardDrive"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#RevoluteUrdfJoint -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#RevoluteUrdfJoint">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#UrdfJoint"/>
+    <owl:Class rdf:about="&srdl2-comp;RevoluteUrdfJoint">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;UrdfJoint"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#RobotBodyPart -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#RobotBodyPart">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#HumanScaleObject"/>
+    <owl:Class rdf:about="&srdl2-comp;RobotBodyPart">
+        <rdfs:subClassOf rdf:resource="&knowrob;HumanScaleObject"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#RosComponent -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#RosComponent">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SoftwareObject"/>
+    <owl:Class rdf:about="&srdl2-comp;RosComponent">
+        <rdfs:subClassOf rdf:resource="&knowrob;SoftwareObject"/>
         <rdfs:comment>Software components that are provided as ROS nodes</rdfs:comment>
     </owl:Class>
     
@@ -1972,32 +1988,32 @@ Example: hand that is made of several links and joints</rdfs:comment>
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#SIFTbasedObjectRecognition -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#SIFTbasedObjectRecognition">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ImageFeatureBasedObjectRecognition"/>
+    <owl:Class rdf:about="&srdl2-comp;SIFTbasedObjectRecognition">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;ImageFeatureBasedObjectRecognition"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#SURFbasedObjectRecognition -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#SURFbasedObjectRecognition">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ImageFeatureBasedObjectRecognition"/>
+    <owl:Class rdf:about="&srdl2-comp;SURFbasedObjectRecognition">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;ImageFeatureBasedObjectRecognition"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#SemanticEnvironmentMap -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#SemanticEnvironmentMap">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ObjectMap"/>
+    <owl:Class rdf:about="&srdl2-comp;SemanticEnvironmentMap">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;ObjectMap"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Sensor -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Sensor">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PartiallyTangible"/>
+    <owl:Class rdf:about="&srdl2-comp;Sensor">
+        <rdfs:subClassOf rdf:resource="&knowrob;PartiallyTangible"/>
         <rdfs:comment>The collection of devices, biological or artificial, that gather information. Note: If a well-known named part of such an entity does the data-gathering, then generally only those parts are considered sensors, not the whole entity. E.g., even though a person gathers information, we generally do not consider them to be a sensor, but rather the sensors are their eyes, ears, skin, etc. In a context such as an ophthalmology convention, `well-known part&apos; has a different binding, and they would consider just certain parts of the eye to be sensors.</rdfs:comment>
         <rdfs:seeAlso>http://sw.opencyc.org/concept/Mx4rvVieWpwpEbGdrcN5Y29ycA</rdfs:seeAlso>
     </owl:Class>
@@ -2006,10 +2022,10 @@ Example: hand that is made of several links and joints</rdfs:comment>
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Sensor-Device -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Sensor-Device">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalDevice"/>
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#RobotBodyPart"/>
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Sensor"/>
+    <owl:Class rdf:about="&srdl2-comp;Sensor-Device">
+        <rdfs:subClassOf rdf:resource="&knowrob;PhysicalDevice"/>
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;RobotBodyPart"/>
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;Sensor"/>
         <rdfs:comment>The intersection of Sensor and PhysicalDevice. Instances of this collection are devices which detect changes in their physical environment.</rdfs:comment>
         <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/Sensor_Device</rdfs:seeAlso>
     </owl:Class>
@@ -2018,20 +2034,20 @@ Example: hand that is made of several links and joints</rdfs:comment>
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#ShapeBasedObjectRecognition -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ShapeBasedObjectRecognition">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ObjectRecognitionComponent"/>
+    <owl:Class rdf:about="&srdl2-comp;ShapeBasedObjectRecognition">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;ObjectRecognitionComponent"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#SimpleGraspPlanner -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#SimpleGraspPlanner">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#GraspController"/>
+    <owl:Class rdf:about="&srdl2-comp;SimpleGraspPlanner">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;GraspController"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#dependsOnComponent"/>
-                <owl:someValuesFrom rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#TimeOfFlightCamera"/>
+                <owl:onProperty rdf:resource="&srdl2-comp;dependsOnComponent"/>
+                <owl:someValuesFrom rdf:resource="&srdl2-comp;TimeOfFlightCamera"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment>Grasp planner for one-handed grasps and unknown objects
@@ -2042,8 +2058,8 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#SimulationComponent -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#SimulationComponent">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#SoftwareObject"/>
+    <owl:Class rdf:about="&srdl2-comp;SimulationComponent">
+        <rdfs:subClassOf rdf:resource="&knowrob;SoftwareObject"/>
         <rdfs:comment>Software components that allow the robot to simulate its environment or its actions</rdfs:comment>
     </owl:Class>
     
@@ -2051,48 +2067,48 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#SoftwareComponent -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#SoftwareComponent">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Component"/>
+    <owl:Class rdf:about="&srdl2-comp;SoftwareComponent">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;Component"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#SonarMap -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#SonarMap">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#MapBuiltFromSensorData"/>
+    <owl:Class rdf:about="&srdl2-comp;SonarMap">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;MapBuiltFromSensorData"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#StereoCamera -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#StereoCamera">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Camera"/>
+    <owl:Class rdf:about="&srdl2-comp;StereoCamera">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;Camera"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#StereoCameraMap -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#StereoCameraMap">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#MapBuiltFromSensorData"/>
+    <owl:Class rdf:about="&srdl2-comp;StereoCameraMap">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;MapBuiltFromSensorData"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#SwissRangerSR4000 -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#SwissRangerSR4000">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#TimeOfFlightCamera"/>
+    <owl:Class rdf:about="&srdl2-comp;SwissRangerSR4000">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;TimeOfFlightCamera"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#TaskLevelExecutive -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#TaskLevelExecutive">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ControllerComponent"/>
+    <owl:Class rdf:about="&srdl2-comp;TaskLevelExecutive">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;ControllerComponent"/>
         <rdfs:comment>Software components for task-level planning and action execution</rdfs:comment>
     </owl:Class>
     
@@ -2100,64 +2116,64 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#TextureProjector -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#TextureProjector">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Projector"/>
+    <owl:Class rdf:about="&srdl2-comp;TextureProjector">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;Projector"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#ThreeAxisAccelerometer -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ThreeAxisAccelerometer">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Accelerometer"/>
+    <owl:Class rdf:about="&srdl2-comp;ThreeAxisAccelerometer">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;Accelerometer"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#ThreeDimensionalLaserScanner -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ThreeDimensionalLaserScanner">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#LaserScanner"/>
+    <owl:Class rdf:about="&srdl2-comp;ThreeDimensionalLaserScanner">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;LaserScanner"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#ThreeDimensionalMap -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ThreeDimensionalMap">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#EnvironmentMap"/>
+    <owl:Class rdf:about="&srdl2-comp;ThreeDimensionalMap">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;EnvironmentMap"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Tilting2DLaserScanner -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Tilting2DLaserScanner">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#TwoDimensionalLaserScanner"/>
+    <owl:Class rdf:about="&srdl2-comp;Tilting2DLaserScanner">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;TwoDimensionalLaserScanner"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#TimeOfFlightCamera -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#TimeOfFlightCamera">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#VisualSensor"/>
+    <owl:Class rdf:about="&srdl2-comp;TimeOfFlightCamera">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;VisualSensor"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#TopologicalMap -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#TopologicalMap">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#EnvironmentMap"/>
+    <owl:Class rdf:about="&srdl2-comp;TopologicalMap">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;EnvironmentMap"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Torso -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Torso">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#RobotBodyPart"/>
+    <owl:Class rdf:about="&srdl2-comp;Torso">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;RobotBodyPart"/>
         <rdfs:comment>Rigid link on which parts are fixed but that itself is not movable</rdfs:comment>
     </owl:Class>
     
@@ -2165,49 +2181,49 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#TwoDimensionalLaserScanner -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#TwoDimensionalLaserScanner">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#LaserScanner"/>
+    <owl:Class rdf:about="&srdl2-comp;TwoDimensionalLaserScanner">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;LaserScanner"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#TwoDimensionalMap -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#TwoDimensionalMap">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#EnvironmentMap"/>
+    <owl:Class rdf:about="&srdl2-comp;TwoDimensionalMap">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;EnvironmentMap"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#UrdfComponent -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#UrdfComponent">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#PhysicalDevice"/>
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#HardwareComponent"/>
+    <owl:Class rdf:about="&srdl2-comp;UrdfComponent">
+        <rdfs:subClassOf rdf:resource="&knowrob;PhysicalDevice"/>
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;HardwareComponent"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#UrdfJoint -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#UrdfJoint">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#UrdfComponent"/>
+    <owl:Class rdf:about="&srdl2-comp;UrdfJoint">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;UrdfComponent"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#UrdfLink -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#UrdfLink">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#UrdfComponent"/>
+    <owl:Class rdf:about="&srdl2-comp;UrdfLink">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;UrdfComponent"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#VectorFieldArmController -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#VectorFieldArmController">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ArmMotionController"/>
+    <owl:Class rdf:about="&srdl2-comp;VectorFieldArmController">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;ArmMotionController"/>
         <rdfs:comment>Provides basic obstacle avoidance</rdfs:comment>
     </owl:Class>
     
@@ -2215,40 +2231,40 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#VidereStereoOnChip -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#VidereStereoOnChip">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#StereoCamera"/>
+    <owl:Class rdf:about="&srdl2-comp;VidereStereoOnChip">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;StereoCamera"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#VisualSensor -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#VisualSensor">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Sensor-Device"/>
+    <owl:Class rdf:about="&srdl2-comp;VisualSensor">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;Sensor-Device"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#VisualSlamMap -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#VisualSlamMap">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#MapBuiltFromSensorData"/>
+    <owl:Class rdf:about="&srdl2-comp;VisualSlamMap">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;MapBuiltFromSensorData"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#VisualSlamMappingComponent -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#VisualSlamMappingComponent">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#PerceptionComponent"/>
+    <owl:Class rdf:about="&srdl2-comp;VisualSlamMappingComponent">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;PerceptionComponent"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#VolatileMemory -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#VolatileMemory">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ComputerStorageDevice"/>
+    <owl:Class rdf:about="&srdl2-comp;VolatileMemory">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;ComputerStorageDevice"/>
         <rdfs:comment>A specialization of ComputerStorageDevice. Each instance of VolatileMemory is a computer storage device that must be powered in order to retain data.</rdfs:comment>
         <rdfs:seeAlso>http://sw.opencyc.org/2012/05/10/concept/en/VolatileMemory</rdfs:seeAlso>
     </owl:Class>
@@ -2257,45 +2273,45 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#WheeledBase -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#WheeledBase">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#MobileBase"/>
+    <owl:Class rdf:about="&srdl2-comp;WheeledBase">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;MobileBase"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#WideAngleCamera -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#WideAngleCamera">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#Camera"/>
+    <owl:Class rdf:about="&srdl2-comp;WideAngleCamera">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;Camera"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#WirelessLan -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#WirelessLan">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/knowrob.owl#WirelessCommunicationDevice"/>
+    <owl:Class rdf:about="&srdl2-comp;WirelessLan">
+        <rdfs:subClassOf rdf:resource="&knowrob;WirelessCommunicationDevice"/>
     </owl:Class>
     
 
 
     <!-- http://knowrob.org/kb/srdl2-comp.owl#Xeoni7QuadCoreProcessor -->
 
-    <owl:Class rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Xeoni7QuadCoreProcessor">
-        <rdfs:subClassOf rdf:resource="http://knowrob.org/kb/srdl2-comp.owl#ComputationCore"/>
+    <owl:Class rdf:about="&srdl2-comp;Xeoni7QuadCoreProcessor">
+        <rdfs:subClassOf rdf:resource="&srdl2-comp;ComputationCore"/>
     </owl:Class>
     
 
 
     <!-- http://www.w3.org/2002/07/owl#Class -->
 
-    <owl:Class rdf:about="http://www.w3.org/2002/07/owl#Class"/>
+    <owl:Class rdf:about="&owl;Class"/>
     
 
 
     <!-- http://www.w3.org/2002/07/owl#Thing -->
 
-    <owl:Class rdf:about="http://www.w3.org/2002/07/owl#Thing"/>
+    <owl:Class rdf:about="&owl;Thing"/>
     
 
 
@@ -2312,44 +2328,44 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
 
     <!-- http://knowrob.org/kb/knowrob.owl#Query_CMdogt45HVDSr3 -->
 
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#Query_CMdogt45HVDSr3">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#Query"/>
-        <knowrob:groupName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Semantic Robot Description Language (SRDL)</knowrob:groupName>
-        <knowrob:queryName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">What is the update rate?</knowrob:queryName>
-        <knowrob:queryString rdf:datatype="http://www.w3.org/2001/XMLSchema#string">rdf_has(Individual, srdl2comp:&apos;update_rate&apos;, literal(type(Unit,Rate))).</knowrob:queryString>
+    <owl:NamedIndividual rdf:about="&knowrob;Query_CMdogt45HVDSr3">
+        <rdf:type rdf:resource="&knowrob;Query"/>
+        <knowrob:groupName rdf:datatype="&xsd;string">Semantic Robot Description Language (SRDL)</knowrob:groupName>
+        <knowrob:queryName rdf:datatype="&xsd;string">What is the update rate?</knowrob:queryName>
+        <knowrob:queryString rdf:datatype="&xsd;string">rdf_has(Individual, srdl2comp:&apos;update_rate&apos;, literal(type(Unit,Rate))).</knowrob:queryString>
     </owl:NamedIndividual>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#Query_CS9jret09436bds -->
 
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#Query_CS9jret09436bds">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#Query"/>
-        <knowrob:groupName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Semantic Robot Description Language (SRDL)</knowrob:groupName>
-        <knowrob:queryName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Is the camera always active?</knowrob:queryName>
-        <knowrob:queryString rdf:datatype="http://www.w3.org/2001/XMLSchema#string">rdf_has(Individual, srdl2comp:&apos;always_on&apos;, literal(type(_,true))).</knowrob:queryString>
+    <owl:NamedIndividual rdf:about="&knowrob;Query_CS9jret09436bds">
+        <rdf:type rdf:resource="&knowrob;Query"/>
+        <knowrob:queryName rdf:datatype="&xsd;string">Is the camera always active?</knowrob:queryName>
+        <knowrob:groupName rdf:datatype="&xsd;string">Semantic Robot Description Language (SRDL)</knowrob:groupName>
+        <knowrob:queryString rdf:datatype="&xsd;string">rdf_has(Individual, srdl2comp:&apos;always_on&apos;, literal(type(_,true))).</knowrob:queryString>
     </owl:NamedIndividual>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#Query_SDFn4483bdR -->
 
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#Query_SDFn4483bdR">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#Query"/>
-        <knowrob:groupName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Semantic Robot Description Language (SRDL)</knowrob:groupName>
-        <knowrob:queryName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">What is the camera resolution?</knowrob:queryName>
-        <knowrob:queryString rdf:datatype="http://www.w3.org/2001/XMLSchema#string">rdf_has(Individual, srdl2comp:&apos;imageSizeX&apos;, literal(type(_,Width))),rdf_has(Individual, srdl2comp:&apos;imageSizeY&apos;, literal(type(_,Height))).</knowrob:queryString>
+    <owl:NamedIndividual rdf:about="&knowrob;Query_SDFn4483bdR">
+        <rdf:type rdf:resource="&knowrob;Query"/>
+        <knowrob:groupName rdf:datatype="&xsd;string">Semantic Robot Description Language (SRDL)</knowrob:groupName>
+        <knowrob:queryName rdf:datatype="&xsd;string">What is the camera resolution?</knowrob:queryName>
+        <knowrob:queryString rdf:datatype="&xsd;string">rdf_has(Individual, srdl2comp:&apos;imageSizeX&apos;, literal(type(_,Width))),rdf_has(Individual, srdl2comp:&apos;imageSizeY&apos;, literal(type(_,Height))).</knowrob:queryString>
     </owl:NamedIndividual>
     
 
 
     <!-- http://knowrob.org/kb/knowrob.owl#Query_VBWURGFsdNF0d -->
 
-    <owl:NamedIndividual rdf:about="http://knowrob.org/kb/knowrob.owl#Query_VBWURGFsdNF0d">
-        <rdf:type rdf:resource="http://knowrob.org/kb/knowrob.owl#Query"/>
-        <knowrob:groupName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Semantic Robot Description Language (SRDL)</knowrob:groupName>
-        <knowrob:queryName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">What are the frustum parameters?</knowrob:queryName>
-        <knowrob:queryString rdf:datatype="http://www.w3.org/2001/XMLSchema#string">rdf_has(Individual, srdl2comp:&apos;hfov&apos;, literal(type(_,FOV))), rdf_has(Individual, srdl2comp:&apos;near&apos;, literal(type(_,Near))), rdf_has(Individual, srdl2comp:&apos;far&apos;, literal(type(_,Far))).</knowrob:queryString>
+    <owl:NamedIndividual rdf:about="&knowrob;Query_VBWURGFsdNF0d">
+        <rdf:type rdf:resource="&knowrob;Query"/>
+        <knowrob:groupName rdf:datatype="&xsd;string">Semantic Robot Description Language (SRDL)</knowrob:groupName>
+        <knowrob:queryName rdf:datatype="&xsd;string">What are the frustum parameters?</knowrob:queryName>
+        <knowrob:queryString rdf:datatype="&xsd;string">rdf_has(Individual, srdl2comp:&apos;hfov&apos;, literal(type(_,FOV))), rdf_has(Individual, srdl2comp:&apos;near&apos;, literal(type(_,Near))), rdf_has(Individual, srdl2comp:&apos;far&apos;, literal(type(_,Far))).</knowrob:queryString>
     </owl:NamedIndividual>
     
 
@@ -2363,26 +2379,26 @@ takes into account object form, obstacles (as perceived by TOF camera), feedback
      -->
 
     <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ArmComponent"/>
-            <rdf:Description rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Base"/>
-            <rdf:Description rdf:about="http://knowrob.org/kb/srdl2-comp.owl#ManipulationEntity"/>
-            <rdf:Description rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Sensor"/>
-            <rdf:Description rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Torso"/>
+            <rdf:Description rdf:about="&srdl2-comp;Base"/>
+            <rdf:Description rdf:about="&srdl2-comp;GripperComponent"/>
+            <rdf:Description rdf:about="&srdl2-comp;Sensor"/>
         </owl:members>
     </rdf:Description>
     <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Base"/>
-            <rdf:Description rdf:about="http://knowrob.org/kb/srdl2-comp.owl#GripperComponent"/>
-            <rdf:Description rdf:about="http://knowrob.org/kb/srdl2-comp.owl#Sensor"/>
+            <rdf:Description rdf:about="&srdl2-comp;ArmComponent"/>
+            <rdf:Description rdf:about="&srdl2-comp;Base"/>
+            <rdf:Description rdf:about="&srdl2-comp;ManipulationEntity"/>
+            <rdf:Description rdf:about="&srdl2-comp;Sensor"/>
+            <rdf:Description rdf:about="&srdl2-comp;Torso"/>
         </owl:members>
     </rdf:Description>
 </rdf:RDF>
 
 
 
-<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+<!-- Generated by the OWL API (version 3.5.0) http://owlapi.sourceforge.net -->
 
