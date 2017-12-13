@@ -42,7 +42,7 @@
       belief_at_internal/2,         % TODO: these should not be exposed
       belief_at_internal/3,
       belief_perceived_at/4,        % convinience rule to be called by perception system to inform about perceptions
-      belief_dirty_object/1,       % causes marker messages to be generated
+      belief_dirty_object/1,        % causes marker messages to be generated
       belief_forget/0
     ]).
 
