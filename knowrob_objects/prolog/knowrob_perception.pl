@@ -1,4 +1,7 @@
-/** <module> Methods for creating object instances based on perceptual information
+/** <module> Asserting and reasoning about perception events.
+  These events allow temporal representation of the object pose via reification:
+  VisualPerception events may have eventOccursAt properties that are used for 
+  computing the pose property of an object.
 
   Copyright (C) 2011-2014 Moritz Tenorth
   Copyright (C) 2017      Daniel Beßler
@@ -32,11 +35,17 @@
 
 :- module(knowrob_perception,
     [
+      comp_detected_pose/2,
+      comp_detected_pose_at_time/3,
       create_visual_perception/1,
       create_visual_perception/2,
       perception_set_object/2,
       perception_set_pose/2,
-      object_detection/3
+      object_detection/3,
+      create_joint_information/9,
+      update_joint_information/7,
+      read_joint_information/9,
+      delete_joint_information/1
     ]).
 
 :- use_module(library('semweb/rdf_db')).
@@ -45,10 +54,53 @@
 :- use_module(library('rdfs_computable')).
 :- use_module(library('knowrob_owl')).
 
-:- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
-:- rdf_db:rdf_register_ns(owl, 'http://www.w3.org/2002/07/owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(xsd, 'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
+
+:-  rdf_meta
+    create_joint_information(r, r, r, +, ?, +, +, +, r),
+    update_joint_information(r, r, +, ?, +, +, +),
+    read_joint_information(r, r, r, r, -, -, -, -, -),
+    delete_joint_information(r),
+    comp_detected_pose(r,-),
+    comp_detected_pose_at_time(r,-,+).
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % Pose of perceived objects
+
+%% comp_detected_pose
+comp_detected_pose(Obj, Pose) :-
+  get_timepoint(Instant),
+  comp_detected_pose_at_time(Obj, Pose, Instant).
+
+%% comp_detected_pose_at_time
+comp_detected_pose_at_time(Obj, Pose, Instant) :-
+  object_detection(Obj, Instant, Detection),
+  rdf_triple(knowrob:eventOccursAt, Detection, Pose), !.
+
+%% comp_detected_pose_during
+comp_detected_pose_during(Obj, Pose, [Instant,Instant]) :-
+  ground(Instant), !,
+  comp_detected_pose_at_time(Obj, Pose, Instant).
+
+comp_detected_pose_during(Obj, Pose, [Begin,End]) :-
+  ground([Begin,End]), !,
+  object_detection(Obj, Begin, Detection),
+  ( rdf_triple(knowrob:eventOccursAt, Detection, Pose) ; (
+    detection_endtime(Detection, DetectionEnd),
+    DetectionEnd < End,
+    comp_detected_pose_during(Obj, Pose, [DetectionEnd,End])
+  )).
+
+comp_detected_pose_during(Obj, Pose, [Begin,End]) :-
+  % \+ ground([Begin,End]),
+  object_detection(Obj, Begin, Detection),
+  once((
+    rdf_triple(knowrob:eventOccursAt, Detection, Pose),
+    detection_endtime(Detection, End))).
+
+knowrob_temporal:holds(Obj, 'http://knowrob.org/kb/knowrob.owl#pose', Pose, Interval) :-
+  comp_detected_pose_during(Obj, Pose, Interval).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -97,7 +149,8 @@ perception_set_pose(Pose, Pose) :-
 perception_set_pose(Perception, [ReferenceFrame, _, Translation, Rotation]) :-
   rdf_has(Ref, srdl2comp:'urdfName', literal(ReferenceFrame)),
   create_transform(Translation, Rotation, TransformId),
-  rdf_assert(TransformId, knowrob:'relativeTo', Ref), !.
+  rdf_assert(TransformId, knowrob:'relativeTo', Ref),
+  rdf_assert(Perception, knowrob:'eventOccursAt', TransformId), !.
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -114,10 +167,15 @@ perception_set_pose(Perception, [ReferenceFrame, _, Translation, Rotation]) :-
 object_detection(Object, Time, Detection) :-
     rdf_has(Detection, knowrob:objectActedOn, Object),
     rdfs_individual_of(Detection,  knowrob:'VisualPerception'),
-    interval(Detection, DetectionInterval),
+    detection_starttime(Detection, DetectionTime),
     ( var(Time)
-      -> Time = DetectionInterval
-      ;  interval_during(Time, DetectionInterval)
+      -> Time = DetectionTime
+      ; (
+         time_term(Time,Time_v),
+         Time_v >= DetectionTime,
+         detection_endtime(Detection, DetectionEndTime),
+         Time_v =< DetectionEndTime
+        )
     ).
 
 %% latest_detection_of_instance(+Object, -LatestDetection) is nondet.
@@ -328,3 +386,199 @@ compare_object_detections(Delta, P1, P2) :-
     nth0(2, P1, St1),
     nth0(2, P2, St2),
     compare(Delta, St2, St1).
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % Joints of objects. These can be asserted via TouchPerception events.
+  
+%% create_joint_information(+Type, +Parent, +Child, +Pose, +Direction, +Radius, +Qmin, +Qmax, -Joint) is det.
+%
+% Create a joint of class Type at pose Pose, linking Parent and Child
+% Qmin and Qmax are joint limits as used in the ROS articulation stack
+%
+% Usage:
+% create_joint_information('HingedJoint', knowrob:'cupboard1', knowrob:'door1', [1,0,0,...], [], 0.23, 0.42, -Joint)
+% create_joint_information('PrismaticJoint', knowrob:'cupboard1', knowrob:'drawer1', [1,0,0,...], [1,0,0], 0.23, 0.42, -Joint)
+%
+% @param Type       Type of the joint instance (knowrob:HingedJoint or knowrob:PrismaticJoint)
+% @param Parent     Parent object instance (e.g. cupboard)
+% @param Child      Child object instance (e.g. door)
+% @param Pose       Pose matrix of the joint as list float[16]
+% @param Direction  Direction vector of the joint. float[3] for prismatic joints, [] for rotational joints
+% @param Radius     Radius of a rotational joint
+% @param Qmin       Minimal configuration value (joint limit)
+% @param Qmax       Minimal configuration value (joint limit)
+% @param Joint      Joint instance that has been created
+%
+create_joint_information(Type, Parent, Child, Pose, Dir, Radius, Qmin, Qmax, Joint) :-
+
+  % create individual
+  create_object_perception(Type, Pose, ['TouchPerception'], Joint),
+
+  % set parent and child
+  rdf_assert(Parent, knowrob:'properPhysicalParts', Joint),
+  rdf_assert(Joint, knowrob:'connectedTo-Rigidly', Child),
+  rdf_assert(Joint, knowrob:'connectedTo-Rigidly', Parent),
+
+  % set joint limits
+  rdf_assert(Joint, knowrob:'minJointValue', literal(type(xsd:float, Qmin))),
+  rdf_assert(Joint, knowrob:'maxJointValue', literal(type(xsd:float, Qmax))),
+
+  % set joint-specific information
+  ( (Type = 'PrismaticJoint') -> (
+
+      Dir = [DirX, DirY, DirZ],
+
+      rdf_assert(Parent, knowrob:'prismaticallyConnectedTo', Child),
+
+      rdf_instance_from_class(knowrob:'Vector', DirVec),
+      rdf_assert(DirVec, knowrob:'vectorX', literal(type(xsd:float, DirX))),
+      rdf_assert(DirVec, knowrob:'vectorY', literal(type(xsd:float, DirY))),
+      rdf_assert(DirVec, knowrob:'vectorZ', literal(type(xsd:float, DirZ))),
+
+      rdf_assert(Joint, knowrob:'direction', DirVec)
+
+    ) ; (
+      rdf_assert(Parent, knowrob:'hingedTo', Child),
+      rdf_assert(Joint, knowrob:'turnRadius', literal(type(xsd:float, Radius)))
+    ) ).
+
+%% update_joint_information(+Joint, +Type, +Pose, +Direction, +Radius, +Qmin, +Qmax)
+%
+% Update type, pose and articulation information for a joint after creation.
+% Leaves Parent and Child untouched, i.e. assumes that only the estimated
+% joint parameters have changed.
+%
+% @param Joint      Joint instance to be updated
+% @param Type       Type of the joint instance (knowrob:HingedJoint or knowrob:PrismaticJoint)
+% @param Pose       Pose matrix of the joint as list float[16]
+% @param Direction  Direction vector of the joint. float[3] for prismatic joints, [] for rotational joints
+% @param Radius     Radius of a rotational joint
+% @param Qmin       Minimal configuration value (joint limit)
+% @param Qmax       Minimal configuration value (joint limit)
+%
+update_joint_information(Joint, Type, Pose, Dir, Radius, Qmin, Qmax) :-
+
+  % % % % % % % % % % % % % % % % % % %
+  % update joint type
+  rdf_retractall(Joint, rdf:type, _),
+  rdf_assert(Joint, rdf:type, Type),
+
+  % % % % % % % % % % % % % % % % % % %
+  % update pose by creating a new perception instance (remembering the old data)
+  knowrob_perception:create_perception_instance(['TouchPerception'], Perception),
+  knowrob_perception:set_perception_pose(Perception, Pose),
+  knowrob_perception:set_object_perception(Joint, Perception),
+
+  % % % % % % % % % % % % % % % % % % %
+  % update joint limits
+  rdf_retractall(Joint, knowrob:'minJointValue', _),
+  rdf_retractall(Joint, knowrob:'maxJointValue', _),
+  rdf_assert(Joint, knowrob:'minJointValue', literal(type(xsd:float, Qmin))),
+  rdf_assert(Joint, knowrob:'maxJointValue', literal(type(xsd:float, Qmax))),
+
+  % % % % % % % % % % % % % % % % % % %
+  % update connectedTo:
+
+  % determine parent/child
+  rdf_has(Parent, knowrob:'properPhysicalParts', Joint),
+  rdf_has(Joint, knowrob:'connectedTo-Rigidly', Parent),
+  rdf_has(Joint, knowrob:'connectedTo-Rigidly', Child),!,
+
+  % retract old connections between parent and child
+  rdf_retractall(Parent, knowrob:'prismaticallyConnectedTo', Child),
+  rdf_retractall(Parent, knowrob:'hingedTo', Child),
+
+  % remove direction vector if set
+  ((rdf_has(Joint, knowrob:direction, OldDirVec),
+    rdf_retractall(OldDirVec, _, _),
+    rdf_retractall(_, _, OldDirVec)
+    ) ; true),
+
+  % set new articulation information
+  ( (Type = 'PrismaticJoint') -> (
+
+      Dir = [DirX, DirY, DirZ],
+
+      rdf_assert(Parent, knowrob:'prismaticallyConnectedTo', Child),
+
+      rdf_instance_from_class(knowrob:'Vector', DirVec),
+      rdf_assert(DirVec, knowrob:'vectorX', literal(type(xsd:float, DirX))),
+      rdf_assert(DirVec, knowrob:'vectorY', literal(type(xsd:float, DirY))),
+      rdf_assert(DirVec, knowrob:'vectorZ', literal(type(xsd:float, DirZ))),
+
+      rdf_assert(Joint, knowrob:'direction', DirVec)
+
+    ) ; (
+      rdf_assert(Parent, knowrob:'hingedTo', Child),
+      (rdf_retractall(Joint, knowrob:'turnRadius', _); true),
+      rdf_assert(Joint, knowrob:'turnRadius', literal(type(xsd:float, Radius)))
+    ) ).
+
+%% read_joint_information(+Joint, -Type, -Parent, -Child, -Pose, -Direction, -Radius, -Qmin, -Qmax) is nondet.
+%
+% Read information stored about a particular joint.
+%
+% @param Joint      Joint instance to be read
+% @param Type       Type of the joint instance (knowrob:HingedJoint or knowrob:PrismaticJoint)
+% @param Parent     Parent object instance (e.g. cupboard)
+% @param Child      Child object instance (e.g. door)
+% @param Pose       Pose matrix of the joint as list float[16]
+% @param Direction  Direction vector of the joint. float[3] for prismatic joints, [] for rotational joints
+% @param Radius     Radius of a rotational joint
+% @param Qmin       Minimal configuration value (joint limit)
+% @param Qmax       Minimal configuration value (joint limit)
+%
+read_joint_information(Joint, Type, Parent, Child, Pose, Direction, Radius, Qmin, Qmax) :-
+
+  rdf_has(Joint, rdf:type, Type),
+
+  rdf_has(Parent, knowrob:'properPhysicalParts', Joint),
+  rdf_has(Joint, knowrob:'connectedTo', Parent),
+  rdf_has(Joint, knowrob:'connectedTo', Child),
+
+  current_object_pose(Joint, Pose),
+
+  ((rdf_has(Joint, knowrob:'direction', DirVec),
+    rdf_has(DirVec, knowrob:'vectorX', literal(type(xsd:float, DirX))),
+    rdf_has(DirVec, knowrob:'vectorY', literal(type(xsd:float, DirY))),
+    rdf_has(DirVec, knowrob:'vectorZ', literal(type(xsd:float, DirZ))),
+    Direction=[DirX, DirY, DirZ]);
+    (Direction=[])),
+
+  (rdf_has(Joint, knowrob:'turnRadius', literal(type(xsd:float, Radius))); (true,!)),
+
+  rdf_has(Joint, knowrob:'minJointValue', literal(type(xsd:float, Qmin))),
+  rdf_has(Joint, knowrob:'maxJointValue', literal(type(xsd:float, Qmax))).
+
+%% delete_joint_information(Joint) is det.
+%
+% Remove joint instance and all information stored about this joint
+%
+% @param Joint Joint instance to be deleted
+%
+delete_joint_information(Joint) :-
+
+  % remove pose/perception instances
+  % removes timepoint, pose, perception itself
+  findall(Perception, (rdf_has(Perception, knowrob:objectActedOn, Joint),
+                       rdf_retractall(Perception, _, _)), _),
+
+  % remove connection between parent and child
+  rdf_retractall(Parent, knowrob:'properPhysicalParts', Joint),
+  rdf_retractall(Joint, knowrob:'connectedTo-Rigidly', Parent),
+  rdf_retractall(Joint, knowrob:'connectedTo-Rigidly', Child),
+
+  rdf_retractall(Parent, knowrob:'prismaticallyConnectedTo', Child),
+  rdf_retractall(Parent, knowrob:'hingedTo', Child),
+
+  % remove direction vector if set
+  ((rdf_has(Joint, knowrob:direction, OldDirVec),
+    rdf_retractall(OldDirVec, _, _),
+    rdf_retractall(_, _, OldDirVec)
+    ) ; true),
+
+  % remove everything directly connected to the joint instance
+  rdf_retractall(Joint, _, _),
+  rdf_retractall(_, _, Joint).
+
