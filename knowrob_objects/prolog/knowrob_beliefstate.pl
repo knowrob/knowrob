@@ -56,7 +56,6 @@
 :- use_module(library('knowrob_objects')).
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#',  [keep(true)]).
-:- rdf_db:rdf_register_ns(srdl2comp, 'http://knowrob.org/kb/srdl2-comp.owl#', [keep(true)]).
 
 :-  rdf_meta
     belief_existing_object_at(r,+,+,r),
@@ -73,9 +72,6 @@
     belief_dirty_object(t).
 
 % TODO
-% - don't use srdl2comp! should use more general property.
-%   Also what about the FrameOfReference class in knowrob ontology?
-% - don't expect map frame
 % - auto-instantiate object parts according to class restrictions
 %        - only fixed parts share frame of reference with Obj
 %        - align with knowrob_assembly ontology!
@@ -112,7 +108,8 @@ belief_new_object(ObjType, Obj) :-
   rdf_assert(Obj, rdf:type, owl:'NamedIndividual', belief_state),
   % set TF frame to object name
   rdf_split_url(_, ObjName, Obj),
-  rdf_assert(Obj, srdl2comp:'urdfName', literal(ObjName), belief_state),
+  % TODO: change to knowrob:frameName
+  rdf_assert(Obj, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(ObjName), belief_state),
   ignore(once((
     %% HACK get this info from somewhere else!
     rdfs_individual_of(Map, knowrob:'SemanticEnvironmentMap'),
@@ -218,11 +215,12 @@ belief_perceived_at(ObjType, Transform, _, Obj) :-
 % @param Obj         the object id
 % @param Transform   the transform data
 %
-belief_at(Obj, ['map', TargetFrame, Translation, Rotation]) :-
-  belief_at_global(Obj, ['map', TargetFrame, Translation, Rotation]), !.
+belief_at(Obj, [MapFrame, TargetFrame, Translation, Rotation]) :-
+  map_frame_name(MapFrame),
+  belief_at_global(Obj, [MapFrame, TargetFrame, Translation, Rotation]), !.
 belief_at(Obj, [ReferenceFrame, TargetFrame, Translation, Rotation]) :-
   ground(ReferenceFrame), !,
-  rdf_has(Ref, srdl2comp:'urdfName', literal(ReferenceFrame)),
+  rdf_has(Ref, knowrob:'frameName', literal(ReferenceFrame)),
   belief_at_relative_to(Obj, Ref, [ReferenceFrame, TargetFrame, Translation, Rotation]), !.
 belief_at(Obj, [ReferenceFrame, _, Translation, Rotation]) :-
   holds( knowrob:pose(Obj,TransformId) ),
@@ -262,7 +260,7 @@ belief_at_relative_to(Child, Parent, RelPose) :-
 % @param GlobalPose   the transform data in map frame
 %
 belief_at_global(Obj, GlobalPose) :-
-  rdf_has(Obj, srdl2comp:'urdfName', literal(ChildFrame)),
+  rdf_has(Obj, knowrob:'frameName', literal(ChildFrame)),
   holds( knowrob:pose(Obj,TransformId) ),
   transform_data(TransformId, (T,Q)),
   ( rdf_has(TransformId, knowrob:'relativeTo', Parent) -> (
@@ -271,9 +269,9 @@ belief_at_global(Obj, GlobalPose) :-
     %  robot moved until then.
     %  in this case camera pose 2min ago should be used.
     belief_at_global(Parent, GlobalTransform),
-    rdf_has(Parent, srdl2comp:'urdfName', literal(ParentFrame)),
+    rdf_has(Parent, knowrob:'frameName', literal(ParentFrame)),
     transform_multiply(GlobalTransform, [ParentFrame,ChildFrame,T,Q], GlobalPose)
-  ) ; GlobalPose=['map',ChildFrame,T,Q]).
+  ) ; ( map_frame_name(MapFrame), GlobalPose=[MapFrame,ChildFrame,T,Q]) ).
 
 %% belief_at_update(+Obj:iri, +Transform:list) is semidet
 %
@@ -290,10 +288,11 @@ belief_at_global(Obj, GlobalPose) :-
 belief_at_update(Obj, (Translation, Rotation)) :- !,
   belief_at_internal(Obj, (Translation, Rotation)),
   belief_dirty_object([Obj]).
-belief_at_update(Obj, ['map',_,Translation,Rotation]) :- !, 
+belief_at_update(Obj, [MapFrame,_,Translation,Rotation]) :-
+  map_frame_name(MapFrame), !, 
   belief_at_update(Obj, (Translation, Rotation)).
 belief_at_update(Obj, [ReferenceFrame,_,Translation,Rotation]) :-
-  ( rdf_has(RelativeTo, srdl2comp:'urdfName', literal(ReferenceFrame)) ; (
+  ( rdf_has(RelativeTo, knowrob:'frameName', literal(ReferenceFrame)) ; (
     write('WARN: Unable to find entity with frame "'), write(ReferenceFrame), writeln('", ignoring belief update.'),
     fail
   )),

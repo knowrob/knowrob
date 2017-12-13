@@ -58,6 +58,8 @@
       rdf_readable/2,
       rdf_write_readable/1,
       rdfs_type_of/2,
+      map_frame/1,
+      map_frame_name/1,
       get_timepoint/1,
       get_timepoint/2,
       create_timepoint/2,
@@ -605,6 +607,12 @@ comp_designatedThing(Designator, Obj) :-
   rdf_has(TemporalParts, knowrob:designator, Designator),
   rdf_has(Obj, knowrob:temporalParts, TemporalParts).
 
+%% map_frame
+map_frame('http://knowrob.org/kb/knowrob.owl#MapFrame').
+%% map_frame_name
+map_frame_name(FrameName) :-
+  rdf_has(knowrob:'MapFrame', knowrob:'frameName', literal(type(_,FrameName))), !.
+map_frame_name('map').
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

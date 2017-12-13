@@ -1090,6 +1090,7 @@ Semantics: The link pointed to is an end link (= the last link in kinematic chai
 
     <owl:DatatypeProperty rdf:about="&srdl2-comp;urdfName">
         <rdfs:comment>Relation to store the original name of a link or joint in the URF file</rdfs:comment>
+        <rdfs:subPropertyOf rdf:resource="&knowrob;frameName"/>
         <rdfs:domain rdf:resource="&srdl2-comp;UrdfComponent"/>
         <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
