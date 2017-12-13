@@ -247,6 +247,7 @@ owl_satisfies_cardinality_during(Resource, _, _, _) :-
 % @param T Can be TimeInterval or TimePoint individual, a number or a list of two numbers
 %          representing a time interval.
 %
+% TODO: allow to request data values in different formats. In particular vectors as prolog terms, ...
 holds(Term) :-
   % TODO: just call owl_has instead
   current_time(T),
