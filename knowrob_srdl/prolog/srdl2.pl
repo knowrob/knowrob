@@ -49,6 +49,8 @@
         comp_restricted_action/3,
         comp_installable_for_action/4,
         comp_installable_on_robot/3,
+        comp_baselink_pose/2,
+        comp_baselink_pose_at_time/3,
         sub_component/2,
         succeeding_link/2,
         robot_tf_prefix/2,
@@ -92,6 +94,8 @@
         comp_restricted_action(r,r,r),
         comp_installable_for_action(r,r,r,-),
         comp_installable_on_robot(r,r,r),
+        comp_baselink_pose(r,-),
+        comp_baselink_pose_at_time(r,-,+),
         sub_component(r,r),
         succeeding_link(r,r).
 
@@ -555,6 +559,22 @@ comp_installable_on_robot(Comp, CompC, Robot) :-
       [object_acted_on, [an, object, [name, Comp] ]]
   ],
   action_feasible_on_robot(srdl2act:'InstallingHardwareComponent', ActionD, Robot).
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% Pose of semantic components
+
+%% comp_baselink_pose
+comp_baselink_pose(Obj, Pose) :-
+  get_timepoint(Instant),
+  comp_baselink_pose_at_time(Obj, Pose, Instant).
+
+%% comp_baselink_pose_at_time
+comp_baselink_pose_at_time(Obj, Pose, Interval) :-
+  nonvar(Obj),
+  rdf_has(Obj, srdl2comp:baseLinkOfComposition, BaseLink),
+  holds(BaseLink, knowrob:pose, Pose, Interval), !.
+
+knowrob_temporal:holds(Obj, 'http://knowrob.org/kb/knowrob.owl#pose', Pose, Interval) :- comp_baselink_pose_at_time(Obj, Pose, Interval).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
