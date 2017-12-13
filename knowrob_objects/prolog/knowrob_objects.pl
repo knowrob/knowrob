@@ -1,6 +1,7 @@
 /** <module> Utilities for reasoning about objects
 
   Copyright (C) 2011-2014 Moritz Tenorth
+  Copyright (C) 2017 Daniel Beßler
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -34,22 +35,19 @@
       current_object_pose/2,
       object_pose_at_time/3,
       object_pose_at_time/4,
-      object_color/2,
-      object_mesh_path/2,
-      object_dimensions/4,
       object_distance/3,
+      object_color/2,
+      object_dimensions/4,
+      object_mesh_path/2,
       object_assert_dimensions/4,
       object_assert_color/2,
-      create_joint_information/9,
-      update_joint_information/7,
-      read_joint_information/9,
-      delete_joint_information/1,
-      comp_pose/2,
-      comp_pose_at_time/3,
       storagePlaceFor/2,
       storagePlaceForBecause/3,
+      object_query/4,
       object_queries/2,
-      object_query/4
+      comp_depthOfObject/2,
+      comp_widthOfObject/2,
+      comp_heightOfObject/2
     ]).
 
 :- use_module(library('semweb/rdf_db')).
@@ -58,7 +56,6 @@
 :- use_module(library('rdfs_computable')).
 :- use_module(library('knowrob_owl')).
 :- use_module(library('knowrob_math')).
-:- use_module(library('knowrob_perception')).
 :- use_module(library('knowrob_temporal')).
 :- use_module(library('owl_parser')).
 
@@ -66,209 +63,83 @@
 
 :-  rdf_meta
     current_object_pose(r,-),
-    current_object_pose(r,r,-),
     object_pose_at_time(r,r,?),
     object_pose_at_time(r,r,?,?),
-    object_pose(+,+,-),
-    object_color(r, ?),
-    object_dimensions(r, ?, ?, ?),
     object_distance(r,r,-),
+    object_dimensions(r, ?, ?, ?),
+    object_color(r, ?),
+    object_mesh_path(r, ?),
     object_assert_dimensions(r, +, +, +),
     object_assert_color(r, +),
-    comp_pose(r, r),
-    comp_pose_at_time(r, r, +),
-    create_joint_information(r, r, r, +, ?, +, +, +, r),
-    update_joint_information(r, r, +, ?, +, +, +),
-    read_joint_information(r, r, r, r, -, -, -, -, -),
-    delete_joint_information(r),
     storagePlaceFor(r,r),
     storagePlaceForBecause(r,r,r),
     object_query(r,?,?,?),
-    object_queries(r,?).
+    object_queries(r,?),
+    comp_depthOfObject(r,t),
+    comp_widthOfObject(r,t),
+    comp_heightOfObject(r,t).
 
-:- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
-:- rdf_db:rdf_register_ns(owl, 'http://www.w3.org/2002/07/owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(xsd, 'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
-:- rdf_db:rdf_register_ns(srdl2comp, 'http://knowrob.org/kb/srdl2-comp.owl#', [keep(true)]).
 
-% TODO
-% - don't use srdl2comp! should use more general property.
-
-comp_pose(Obj, Pose) :-
-    get_timepoint(Instant),
-    comp_pose_at_time(Obj, Pose, Instant).
-
-comp_pose_at_time(Obj, Pose, Instant) :-
-  not( is_list(Instant) ), % FIXME: howto handle interval case?
-  object_detection(Obj, Instant, Detection),
-  rdf_triple(knowrob:eventOccursAt, Detection, Pose),
-  rdf_has(Detection, knowrob:startTime, StartTime),
-  time_term(StartTime, Begin),
-  % query time interval of next object perception
-  (  rdf_has(Next, knowrob:previousDetectionOfObject, Detection)
-  -> (
-      rdf_has(Next, knowrob:startTime, EndTime),
-      time_term(EndTime, End),
-      PoseInterval = [Begin,End]
-  ) ; (
-      PoseInterval = [Begin]
-  )),
-  (  ground(Interval)
-  -> interval_during(Interval, PoseInterval)
-  ;  Interval = PoseInterval
-  ), !.
-
-knowrob_temporal:holds(Obj, 'http://knowrob.org/kb/knowrob.owl#pose', Pose, [Interval,Interval]) :- comp_pose_at_time(Obj, Pose, Instant).
-
-
-%% current_object_pose(+ObjInstance, -PoseList) is nondet.
+%% current_object_pose(+Obj:iri, -PoseTerm:list) is semidet
 %
-% Get the pose of an object based on the latest perception
+% Get the current pose of an object.
 %
-% @param Obj       Instance of a subclass of SpatialThing-Localized
-% @param PoseList  Row-based representation of the object by translation and quaternion list[7]
+% @param Obj       Instance of SpatialThing
+% @param PoseTerm  float[7] (translation, quaternion) or float[16] (row-based matrix elements)
 % 
-current_object_pose(Obj, [TX,TY,TZ,QX,QY,QZ,QW]) :-
+current_object_pose(Obj, [TX,TY,TZ,QX,QY,QZ,QW]) :- !,
   current_time(T),
   object_pose_at_time(Obj, T, pose([TX, TY, TZ], [QX,QY,QZ,QW])),!.
 
-%% current_object_pose(+ObjInstance, -PoseList) is nondet.
-%
-% Get the pose of an object based on the latest perception
-%
-% @param Obj       Instance of a subclass of SpatialThing-Localized
-% @param PoseList  Row-based representation of the object's 4x4 pose matrix as list[16]
-% 
-current_object_pose(Obj, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]) :-
+current_object_pose(Obj, PoseTerm) :-
   current_time(T),
-  object_pose_at_time(Obj, T, mat([M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33])),!.
+  object_pose_at_time(Obj, T, mat(PoseTerm)),!.
 
-%% object_pose_at_time(+ObjInstance, +Time, -Position, -Quaternion) is nondet.
+%% object_pose_at_time(+Obj:iri, +Instant:float, ?PoseTerm:term) is semidet
+%% object_pose_at_time(+Obj:iri, +Instant:float, ?PoseTerm:term, -Interval:list) is semidet
 %
-% Get the pose of an object based on the latest perception before Time
+% Get the pose of an object at the specified time instant.
+% PoseTerm is either
+%    pose([float tx, ty, tz], [float qx, qy, qz, qw]]), or
+%    mat([float m11 ... m44])
 %
-% @param Obj         Instance of a subclass of SpatialThing-Localized
-% @param Time        Instance of a TimePoint
-% @param Position    list[3] that represents the position of the object
-% @param Quaternion  list[4] that represents the rotation of the object
+% @param Obj         Instance of SpatialThing
+% @param Instant     The time instant (float or Timepoint:iri)
+% @param PoseTerm    The pose term pose(..) or mat(..)
+% @param Interval    Interval during which the pose holds in the form of [float start, end] or [float start]
 % 
-object_pose_at_time(Obj, Time, Pose) :-
-  atom(Time),
-  time_term(Time, Time_val),
-  object_pose_at_time(Obj, Time_val, Pose, [Time_val,Time_val]).
+object_pose_at_time(Obj, Instant, PoseTerm) :-
+  atom(Obj),
+  object_pose_at_time(Obj, Instant, PoseTerm, _).
 
-object_pose_at_time(Obj, Time, Pose) :-
-  number(Time),
-  object_pose_at_time(Obj, Time, Pose, [Time,Time]).
+object_pose_at_time(Obj, _Instant, PoseTerm, [0.0]) :-
+  atom(Obj),
+  ( rdfs_individual_of(Obj, knowrob:'Pose') ;
+    rdfs_individual_of(Obj, knowrob:'Matrix') ), !,
+  pose_term(Obj, PoseTerm).
 
-object_pose_at_time(Obj, Time, pose([X,Y,Z], [QX,QY,QZ,QW]), Interval) :-
-  object_pose_holds(Obj, Time, Pose, Interval),
-  object_pose(Pose, Time, pose([X,Y,Z], [QX,QY,QZ,QW])),!.
+object_pose_at_time(Obj, Instant, PoseTerm, Interval) :-
+  atom(Obj),
+  holds(Obj, knowrob:pose, Pose, Interval),
+  interval_during(Instant, Interval), !,
+  pose_term(Pose, PoseTerm).
 
-object_pose_at_time(Obj, Time, pose([X,Y,Z], [QX,QY,QZ,QW]), Interval) :-
-  interval_during(Time, Interval), % FIXME: what is this case?
-  object_pose(Obj, Time, pose([X,Y,Z], [QX,QY,QZ,QW])),!.
-
-object_pose_at_time(Obj, Time, mat(Matrix), Interval) :-
-  object_pose_holds(Obj, Time, Pose, Interval),
-  object_pose(Pose, Time, mat(Matrix)),!.
-
-object_pose_at_time(Obj, Time, mat(Matrix), Interval) :-
-  interval_during(Time, Interval), % FIXME: what is this case?
-  object_pose(Obj, Time, mat(Matrix)),!.
-
-object_pose_at_time(Obj, Time, Pose, Interval) :-
-  object_pose_holds(Obj, Time, Pose, Interval). % FIXME: what is this case?
-
-
-object_pose_holds(Pose, _, Pose, [0.0]) :-
-  nonvar(Pose), rdfs_individual_of(Pose, knowrob:'Pose'), !.
-
-object_pose_holds(Pose, _, Pose, [0.0]) :-
-  nonvar(Pose), rdfs_individual_of(Pose, knowrob:'Matrix'), !.
-
-object_pose_holds(Obj, Time, Pose, Interval) :-
-  nonvar(Obj),
-  rdf_has(Obj, srdl2comp:baseLinkOfComposition, BaseLink),
-  object_pose_holds(BaseLink, Time, Pose, Interval), !.
-
-object_pose_holds(Obj, Time, Pose, Interval) :-
-  holds( knowrob:pose(Obj,Pose), Interval ),
-  interval_during(Time, Interval), !.
-
-
-% TransformationMatrix
-object_pose(Matrix, _, pose([X,Y,Z], [QX,QY,QZ,QW])) :-
-  is_list(Matrix), !,
-  matrix_rotation(Matrix, [QX,QY,QZ,QW]),
-  matrix_translation(Matrix, [X,Y,Z]).
-
-object_pose(Matrix, _, mat(Matrix)) :-
-  is_list(Matrix), !.
-
-% Quaternion and position
-object_pose(Pose, _, pose([X,Y,Z], [QX,QY,QZ,QW])) :-
-  position_to_list(Pose, [X,Y,Z]),
-  quaternion_to_list(Pose, [QX,QY,QZ,QW]), !.
-
-object_pose(Pose, _, mat(Mat)) :-
-  position_to_list(Pose, [X,Y,Z]),
-  quaternion_to_list(Pose, [QX,QY,QZ,QW]),
-  matrix([X,Y,Z], [QX,QY,QZ,QW], Mat), !.
-
-object_pose(Pose, _, pose([X,Y,Z], [QX,QY,QZ,QW])) :-
-  rdfs_individual_of(Pose, knowrob:'Matrix'),
-  rotmat_to_list(Pose, Matrix),
-  matrix_rotation(Matrix, [QX,QY,QZ,QW]),
-  matrix_translation(Matrix, [X,Y,Z]), !.
-
-object_pose(Pose, _, mat(Matrix)) :-
-  rdfs_individual_of(Pose, knowrob:'Matrix'),
-  rotmat_to_list(Pose, Matrix), !.
-
-
-%% object_dimensions(?Obj:iri, ?Depth:float, ?Width:float, ?Height:float) is semidet
-%
-% True if Width x Height x Depth are (exactly) the extends of the bounding box of Obj.
-%
-% @param Obj    Instance of a subclass of EnduringThing-Localized
-% @param Depth  Depth of the bounding box (x-dimension)
-% @param Width  Width of the bounding box (y-dimension)
-% @param Height Height of the bounding box (z-dimension)
+%% object_distance(+A:iri, +B:iri, ?Distance:float) is semidet
 % 
-% FIXME: shouldn't it be W-H-D ?
-object_dimensions(Obj, Depth, Width, Height) :-
-  owl_has(Obj, knowrob:'boundingBoxSize', literal(type(_, ScaleVector))),
-  parse_vector(ScaleVector, [Depth, Width, Height]),!.
-  
-object_dimensions(Obj, Depth, Width, Height) :-
-  owl_has(Obj, knowrob:depthOfObject,  literal(type(_, Depth_))),
-  owl_has(Obj, knowrob:widthOfObject,  literal(type(_, Width_))),
-  owl_has(Obj, knowrob:heightOfObject, literal(type(_, Height_))),
-  ((number(Depth_), Depth=Depth_); atom_number(Depth_, Depth)),
-  ((number(Width_), Width=Width_); atom_number(Width_, Width)),
-  ((number(Height_), Height=Height_); atom_number(Height_, Height)),!.
-
-object_dimensions(Obj, Depth, Width, Height) :-
-  owl_has(Obj, srdl2comp:'box_size', literal(type(_, ScaleVector))),
-  parse_vector(ScaleVector, [Depth, Width, Height]), !.
-
-object_dimensions(Obj, 0, 0, 0) :-
-  rdfs_individual_of(Obj, knowrob:'Point'), !.
-
-%% object_assert_dimensions(+Obj:iri, +Depth:float, +Width:float, +Height:float) is det
+% Computes eucledean distance between A and B.
 %
-% Assert object dimension properties.
+% @param A         Instance of SpatialThing
+% @param B         Instance of SpatialThing
+% @param Distance  The current distance between A and B
 %
-% @param Obj    Instance of a subclass of EnduringThing-Localized
-% @param Depth  Depth of the bounding box (x-dimension)
-% @param Width  Width of the bounding box (y-dimension)
-% @param Height Height of the bounding box (z-dimension)
-% 
-object_assert_dimensions(Obj, Depth, Width, Height) :-
-  atomic_list_concat([Depth, Width, Height], ' ', V),
-  rdf_assert(Obj, knowrob:'boundingBoxSize', literal(type(xsd:string, V))).
+object_distance(A,B,D):-
+  current_object_pose(A, [AX,AY,AZ,_,_,_,_]),
+  current_object_pose(B, [BX,BY,BZ,_,_,_,_]),
+  DX is AX - BX,
+  DY is AY - BY,
+  DZ is AZ - BZ,
+  D is sqrt( ((DX*DX) + (DY*DY)) + (DZ*DZ)), !.
 
 %% object_color(?Obj:iri, ?Col:list) is det
 %
@@ -281,7 +152,7 @@ object_assert_dimensions(Obj, Depth, Width, Height) :-
 % @param Col  Main color of the object
 % 
 object_color(Obj, Col) :-
-  holds(knowrob:mainColorOfObject(Obj, literal(type(_, ColAtom)))),
+  holds(Obj, knowrob:mainColorOfObject, literal(type(xsd:string, ColAtom))),
   parse_vector(ColAtom, Col), !.
 object_color(_Obj, [0.5, 0.5, 0.5, 1.0]).
 
@@ -298,8 +169,57 @@ object_assert_color(Obj, [R,G,B,A]) :-
   atomic_list_concat([R,G,B,A], ' ', ColRGBA),
   object_assert_color(Obj, ColRGBA), !.
 object_assert_color(Obj, Col) :-
-   atom(Col),
-   rdf_assert(Obj, knowrob:'mainColorOfObject',literal(type(xsd:string, Col))), !.
+  atom(Col),
+  rdf_assert(Obj, knowrob:mainColorOfObject, literal(type(xsd:string, Col))), !.
+
+%% object_dimensions(?Obj:iri, ?Depth:float, ?Width:float, ?Height:float) is semidet
+%
+% True if Depth x Width x Height are (exactly) the extends of the bounding box of Obj.
+% NOTE that we use ROS conventions here: Coordinate systems in ROS are
+% always right-handed, with X forward, Y left, and Z up. 
+%
+% @param Obj    Instance of SpatialThing
+% @param Depth  Depth of the bounding box (x-dimension)
+% @param Width  Width of the bounding box (y-dimension)
+% @param Height Height of the bounding box (z-dimension)
+% 
+object_dimensions(Obj, Depth, Width, Height) :-
+  object_boundingBox(Obj, Depth, Width, Height),!.
+  
+object_dimensions(Obj, Depth, Width, Height) :-
+  holds(Obj, knowrob:depthOfObject,  literal(type(_, Depth_))),  atom_number(Depth_,  Depth),
+  holds(Obj, knowrob:widthOfObject,  literal(type(_, Width_))),  atom_number(Width_,  Width),
+  holds(Obj, knowrob:heightOfObject, literal(type(_, Height_))), atom_number(Height_, Height), !.
+
+object_boundingBox(Obj, Depth, Width, Height) :-
+  holds(Obj, knowrob:boundingBoxSize, literal(type(xsd:string, ScaleVector))),
+  parse_vector(ScaleVector, [Depth, Width, Height]),!.
+
+%% comp_depthOfObject(+Obj:iri, ?Depth:term) is semidet
+%% comp_widthOfObject(+Obj:iri, ?Depth:term) is semidet
+%% comp_heightOfObject(+Obj:iri, ?Depth:term) is semidet
+%
+% Computes dimension components from boundingBox properties of an object.
+%
+comp_depthOfObject(Obj, literal(type('http://www.w3.org/2001/XMLSchema#float', Depth))) :-
+  object_boundingBox(Obj, Val, _, _), atom_number(Depth, Val).
+comp_widthOfObject(Obj, literal(type('http://www.w3.org/2001/XMLSchema#float', Width))) :-
+  object_boundingBox(Obj, _, Val, _), atom_number(Width, Val).
+comp_heightOfObject(Obj, literal(type('http://www.w3.org/2001/XMLSchema#float', Height))) :-
+  object_boundingBox(Obj, _, _, Val), atom_number(Height, Val).
+
+%% object_assert_dimensions(+Obj:iri, +Depth:float, +Width:float, +Height:float) is det
+%
+% Assert object dimension properties.
+%
+% @param Obj    Instance of a subclass of EnduringThing-Localized
+% @param Depth  Depth of the bounding box (x-dimension)
+% @param Width  Width of the bounding box (y-dimension)
+% @param Height Height of the bounding box (z-dimension)
+% 
+object_assert_dimensions(Obj, Depth, Width, Height) :-
+  atomic_list_concat([Depth, Width, Height], ' ', V),
+  rdf_assert(Obj, knowrob:boundingBoxSize, literal(type(xsd:string, V))).
 
 %% object_mesh_path(+Obj:iri, -FilePath:atom) is det.
 %
@@ -309,20 +229,7 @@ object_assert_color(Obj, Col) :-
 % @param FilePath   the path (usually a package:// path)
 %
 object_mesh_path(Obj, FilePath) :-
-  holds(knowrob:pathToCadModel(ObjectId, literal(type(_, FilePath)))).
-
-% distance in 3d
-% TODO: distance computable instead!
-%    - add distance datatype property
-%    - use qudt unit
-%    - there are classes called Distance and such, remove them?
-object_distance(A,B,D):-
-  current_object_pose(A, [AX,AY,AZ,_,_,_,_]),
-  current_object_pose(B, [BX,BY,BZ,_,_,_,_]),
-  DX is AX - BX,
-  DY is AY - BY,
-  DZ is AZ - BZ,
-  D is sqrt( ((DX*DX) + (DY*DY)) + (DZ*DZ)).
+  holds(Obj, knowrob:pathToCadModel, literal(type(xsd:string, FilePath))).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -375,203 +282,7 @@ storagePlaceForBecause(St, ObjType, ObjT) :-
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % Joints of objects
-  
-%% create_joint_information(+Type, +Parent, +Child, +Pose, +Direction, +Radius, +Qmin, +Qmax, -Joint) is det.
-%
-% Create a joint of class Type at pose Pose, linking Parent and Child
-% Qmin and Qmax are joint limits as used in the ROS articulation stack
-%
-% Usage:
-% create_joint_information('HingedJoint', knowrob:'cupboard1', knowrob:'door1', [1,0,0,...], [], 0.23, 0.42, -Joint)
-% create_joint_information('PrismaticJoint', knowrob:'cupboard1', knowrob:'drawer1', [1,0,0,...], [1,0,0], 0.23, 0.42, -Joint)
-%
-% @param Type       Type of the joint instance (knowrob:HingedJoint or knowrob:PrismaticJoint)
-% @param Parent     Parent object instance (e.g. cupboard)
-% @param Child      Child object instance (e.g. door)
-% @param Pose       Pose matrix of the joint as list float[16]
-% @param Direction  Direction vector of the joint. float[3] for prismatic joints, [] for rotational joints
-% @param Radius     Radius of a rotational joint
-% @param Qmin       Minimal configuration value (joint limit)
-% @param Qmax       Minimal configuration value (joint limit)
-% @param Joint      Joint instance that has been created
-%
-create_joint_information(Type, Parent, Child, Pose, Dir, Radius, Qmin, Qmax, Joint) :-
-
-  % create individual
-  create_object_perception(Type, Pose, ['TouchPerception'], Joint),
-
-  % set parent and child
-  rdf_assert(Parent, knowrob:'properPhysicalParts', Joint),
-  rdf_assert(Joint, knowrob:'connectedTo-Rigidly', Child),
-  rdf_assert(Joint, knowrob:'connectedTo-Rigidly', Parent),
-
-  % set joint limits
-  rdf_assert(Joint, knowrob:'minJointValue', literal(type(xsd:float, Qmin))),
-  rdf_assert(Joint, knowrob:'maxJointValue', literal(type(xsd:float, Qmax))),
-
-  % set joint-specific information
-  ( (Type = 'PrismaticJoint') -> (
-
-      Dir = [DirX, DirY, DirZ],
-
-      rdf_assert(Parent, knowrob:'prismaticallyConnectedTo', Child),
-
-      rdf_instance_from_class(knowrob:'Vector', DirVec),
-      rdf_assert(DirVec, knowrob:'vectorX', literal(type(xsd:float, DirX))),
-      rdf_assert(DirVec, knowrob:'vectorY', literal(type(xsd:float, DirY))),
-      rdf_assert(DirVec, knowrob:'vectorZ', literal(type(xsd:float, DirZ))),
-
-      rdf_assert(Joint, knowrob:'direction', DirVec)
-
-    ) ; (
-      rdf_assert(Parent, knowrob:'hingedTo', Child),
-      rdf_assert(Joint, knowrob:'turnRadius', literal(type(xsd:float, Radius)))
-    ) ).
-
-%% update_joint_information(+Joint, +Type, +Pose, +Direction, +Radius, +Qmin, +Qmax)
-%
-% Update type, pose and articulation information for a joint after creation.
-% Leaves Parent and Child untouched, i.e. assumes that only the estimated
-% joint parameters have changed.
-%
-% @param Joint      Joint instance to be updated
-% @param Type       Type of the joint instance (knowrob:HingedJoint or knowrob:PrismaticJoint)
-% @param Pose       Pose matrix of the joint as list float[16]
-% @param Direction  Direction vector of the joint. float[3] for prismatic joints, [] for rotational joints
-% @param Radius     Radius of a rotational joint
-% @param Qmin       Minimal configuration value (joint limit)
-% @param Qmax       Minimal configuration value (joint limit)
-%
-update_joint_information(Joint, Type, Pose, Dir, Radius, Qmin, Qmax) :-
-
-  % % % % % % % % % % % % % % % % % % %
-  % update joint type
-  rdf_retractall(Joint, rdf:type, _),
-  rdf_assert(Joint, rdf:type, Type),
-
-  % % % % % % % % % % % % % % % % % % %
-  % update pose by creating a new perception instance (remembering the old data)
-  knowrob_perception:create_perception_instance(['TouchPerception'], Perception),
-  knowrob_perception:set_perception_pose(Perception, Pose),
-  knowrob_perception:set_object_perception(Joint, Perception),
-
-  % % % % % % % % % % % % % % % % % % %
-  % update joint limits
-  rdf_retractall(Joint, knowrob:'minJointValue', _),
-  rdf_retractall(Joint, knowrob:'maxJointValue', _),
-  rdf_assert(Joint, knowrob:'minJointValue', literal(type(xsd:float, Qmin))),
-  rdf_assert(Joint, knowrob:'maxJointValue', literal(type(xsd:float, Qmax))),
-
-  % % % % % % % % % % % % % % % % % % %
-  % update connectedTo:
-
-  % determine parent/child
-  rdf_has(Parent, knowrob:'properPhysicalParts', Joint),
-  rdf_has(Joint, knowrob:'connectedTo-Rigidly', Parent),
-  rdf_has(Joint, knowrob:'connectedTo-Rigidly', Child),!,
-
-  % retract old connections between parent and child
-  rdf_retractall(Parent, knowrob:'prismaticallyConnectedTo', Child),
-  rdf_retractall(Parent, knowrob:'hingedTo', Child),
-
-  % remove direction vector if set
-  ((rdf_has(Joint, knowrob:direction, OldDirVec),
-    rdf_retractall(OldDirVec, _, _),
-    rdf_retractall(_, _, OldDirVec)
-    ) ; true),
-
-  % set new articulation information
-  ( (Type = 'PrismaticJoint') -> (
-
-      Dir = [DirX, DirY, DirZ],
-
-      rdf_assert(Parent, knowrob:'prismaticallyConnectedTo', Child),
-
-      rdf_instance_from_class(knowrob:'Vector', DirVec),
-      rdf_assert(DirVec, knowrob:'vectorX', literal(type(xsd:float, DirX))),
-      rdf_assert(DirVec, knowrob:'vectorY', literal(type(xsd:float, DirY))),
-      rdf_assert(DirVec, knowrob:'vectorZ', literal(type(xsd:float, DirZ))),
-
-      rdf_assert(Joint, knowrob:'direction', DirVec)
-
-    ) ; (
-      rdf_assert(Parent, knowrob:'hingedTo', Child),
-      (rdf_retractall(Joint, knowrob:'turnRadius', _); true),
-      rdf_assert(Joint, knowrob:'turnRadius', literal(type(xsd:float, Radius)))
-    ) ).
-
-%% read_joint_information(+Joint, -Type, -Parent, -Child, -Pose, -Direction, -Radius, -Qmin, -Qmax) is nondet.
-%
-% Read information stored about a particular joint.
-%
-% @param Joint      Joint instance to be read
-% @param Type       Type of the joint instance (knowrob:HingedJoint or knowrob:PrismaticJoint)
-% @param Parent     Parent object instance (e.g. cupboard)
-% @param Child      Child object instance (e.g. door)
-% @param Pose       Pose matrix of the joint as list float[16]
-% @param Direction  Direction vector of the joint. float[3] for prismatic joints, [] for rotational joints
-% @param Radius     Radius of a rotational joint
-% @param Qmin       Minimal configuration value (joint limit)
-% @param Qmax       Minimal configuration value (joint limit)
-%
-read_joint_information(Joint, Type, Parent, Child, Pose, Direction, Radius, Qmin, Qmax) :-
-
-  rdf_has(Joint, rdf:type, Type),
-
-  rdf_has(Parent, knowrob:'properPhysicalParts', Joint),
-  rdf_has(Joint, knowrob:'connectedTo', Parent),
-  rdf_has(Joint, knowrob:'connectedTo', Child),
-
-  current_object_pose(Joint, Pose),
-
-  ((rdf_has(Joint, knowrob:'direction', DirVec),
-    rdf_has(DirVec, knowrob:'vectorX', literal(type(xsd:float, DirX))),
-    rdf_has(DirVec, knowrob:'vectorY', literal(type(xsd:float, DirY))),
-    rdf_has(DirVec, knowrob:'vectorZ', literal(type(xsd:float, DirZ))),
-    Direction=[DirX, DirY, DirZ]);
-    (Direction=[])),
-
-  (rdf_has(Joint, knowrob:'turnRadius', literal(type(xsd:float, Radius))); (true,!)),
-
-  rdf_has(Joint, knowrob:'minJointValue', literal(type(xsd:float, Qmin))),
-  rdf_has(Joint, knowrob:'maxJointValue', literal(type(xsd:float, Qmax))).
-
-%% delete_joint_information(Joint) is det.
-%
-% Remove joint instance and all information stored about this joint
-%
-% @param Joint Joint instance to be deleted
-%
-delete_joint_information(Joint) :-
-
-  % remove pose/perception instances
-  % removes timepoint, pose, perception itself
-  findall(Perception, (rdf_has(Perception, knowrob:objectActedOn, Joint),
-                       rdf_retractall(Perception, _, _)), _),
-
-  % remove connection between parent and child
-  rdf_retractall(Parent, knowrob:'properPhysicalParts', Joint),
-  rdf_retractall(Joint, knowrob:'connectedTo-Rigidly', Parent),
-  rdf_retractall(Joint, knowrob:'connectedTo-Rigidly', Child),
-
-  rdf_retractall(Parent, knowrob:'prismaticallyConnectedTo', Child),
-  rdf_retractall(Parent, knowrob:'hingedTo', Child),
-
-  % remove direction vector if set
-  ((rdf_has(Joint, knowrob:direction, OldDirVec),
-    rdf_retractall(OldDirVec, _, _),
-    rdf_retractall(_, _, OldDirVec)
-    ) ; true),
-
-  % remove everything directly connected to the joint instance
-  rdf_retractall(Joint, _, _),
-  rdf_retractall(_, _, Joint).
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % Asking queries about objects.
-% % % % % note: Possible queries may be stated in the ontology.
 
 %% object_queries(+Obj:iri, -Queries:list) is det
 %
@@ -620,3 +331,33 @@ object_query(Obj, QueryGroup, QueryTitle, Query) :-
   rdf_has(QueryIndividual, knowrob:'queryString', literal(type(_,QueryTail))),
   atomic_list_concat(['Individual=''', Obj, ''''], '', QueryHead),
   atomic_list_concat([QueryHead,QueryTail], ', ', Query).
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % Utility predicates
+
+% quaternion and position
+pose_term(Pose, pose([X,Y,Z], [QX,QY,QZ,QW])) :-
+  position_to_list(Pose, [X,Y,Z]),
+  quaternion_to_list(Pose, [QX,QY,QZ,QW]), !.
+pose_term(Pose, mat(Mat)) :-
+  position_to_list(Pose, [X,Y,Z]),
+  quaternion_to_list(Pose, [QX,QY,QZ,QW]),
+  matrix([X,Y,Z], [QX,QY,QZ,QW], Mat), !.
+
+% list of transfoamtion matrix elements
+pose_term(Matrix, pose([X,Y,Z], [QX,QY,QZ,QW])) :-
+  is_list(Matrix), !,
+  matrix_rotation(Matrix, [QX,QY,QZ,QW]),
+  matrix_translation(Matrix, [X,Y,Z]).
+pose_term(Matrix, mat(Matrix)) :- is_list(Matrix), !.
+
+% transformation matrix individual
+pose_term(Pose, pose([X,Y,Z], [QX,QY,QZ,QW])) :-
+  rdfs_individual_of(Pose, knowrob:'Matrix'),
+  rotmat_to_list(Pose, Matrix),
+  matrix_rotation(Matrix, [QX,QY,QZ,QW]),
+  matrix_translation(Matrix, [X,Y,Z]), !.
+pose_term(Pose, mat(Matrix)) :-
+  rdfs_individual_of(Pose, knowrob:'Matrix'),
+  rotmat_to_list(Pose, Matrix), !.
