@@ -23,11 +23,11 @@
         <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
     </owl:Ontology>
     
-    <computable:PrologProperty rdf:about="#compute_hasEffect">
-        <computable:command rdf:datatype="&xsd;string">action_effects:comp_hasEffect</computable:command>
+    <computable:PrologProperty rdf:about="#compute_actionEffectRule">
+        <computable:command rdf:datatype="&xsd;string">action_effects:comp_actionEffectRule</computable:command>
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-        <computable:target rdf:resource="&knowrob;hasEffect"/>
+        <computable:target rdf:resource="&knowrob;actionEffectRule"/>
     </computable:PrologProperty>
 
 
@@ -77,7 +77,7 @@
 
     <!-- http://knowrob.org/kb/action-effects.owl#hasEffect -->
 
-    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/action-effects.owl#hasEffect">
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/action-effects.owl#actionEffectRule">
         <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Action"/>
     </owl:ObjectProperty>
 

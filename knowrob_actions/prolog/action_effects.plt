@@ -97,6 +97,18 @@ test(put_blue_on_red) :-
 %%%%%% Pancake Making
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+test(turning_on_effect_device_state_on, [nondet]) :-
+  action_effect_on_object(ActionClass, updated(knowrob:stateOfObject,knowrob:'DeviceStateOn')),
+  rdf_equal(ActionClass, knowrob:'TurningOnPoweredDevice').
+
+test(baking_effect_baked, [nondet]) :-
+  action_effect_on_object(ActionClass, created(knowrob:'Baked')),
+  rdf_equal(ActionClass, knowrob:'BakingFood').
+
+test(cracking_effect_destroyed_egg, [nondet]) :-
+  action_effect_on_object(ActionClass, destroyed),
+  rdf_equal(ActionClass, knowrob:'Cracking').
+
 test(pancake_making_turn_on_maker) :-
   % turning on the pancake maker creates heating process
   action_effects_apply(pancake:'TurningOnPancakeMaker_0'),
@@ -106,8 +118,8 @@ test(pancake_making_turn_on_maker) :-
 test(pancake_making_crack_egg) :-
   % create some egg yolk and egg shells
   action_effects_apply(pancake:'CrackingAnEgg_0'),
-  rdf_has(pancake:'CrackingAnEgg_0', knowrob:outputsCreated, Yolk),
-  rdfs_individual_of(Yolk, knowrob:'EggYolk-Food').
+  once((rdf_has(pancake:'CrackingAnEgg_0', knowrob:outputsCreated, Yolk),
+        rdfs_individual_of(Yolk, knowrob:'EggYolk-Food'))).
 
 :- rdf_meta test_unsattisifed_restriction(r, t).
 test_unsattisifed_restriction(Resource, Restr) :-
@@ -125,11 +137,11 @@ test(pancake_making_mix_dough) :-
   \+ test_unsattisifed_restriction(pancake:'MixPancakeDough_0',
       restriction(knowrob:'objectActedOn', some_values_from(knowrob:'EggYolk-Food'))),
   % Check projection in store
-  rdf_has(pancake:'MixPancakeDough_0', knowrob:objectActedOn, Yolk),
-  rdfs_individual_of(Yolk, knowrob:'EggYolk-Food'),
+  once((rdf_has(pancake:'MixPancakeDough_0', knowrob:objectActedOn, Yolk),
+        rdfs_individual_of(Yolk, knowrob:'EggYolk-Food'))),
   action_effects_apply(pancake:'MixPancakeDough_0'),
-  rdf_has(pancake:'MixPancakeDough_0', knowrob:outputsCreated, Dough),
-  rdfs_individual_of(Dough, knowrob:'Dough'),
+  once((rdf_has(pancake:'MixPancakeDough_0', knowrob:outputsCreated, Dough),
+        rdfs_individual_of(Dough, knowrob:'Dough'))),
   % just assert that dough is on pancake maker as required by baking rules
   rdf_assert(Dough, knowrob:thermicallyConnectedTo, pancake:'PancakeMaker_0'),
   rdf_assert(pancake:'PancakeMaker_0', knowrob:thermicallyConnectedTo, Dough).

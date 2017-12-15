@@ -1,6 +1,7 @@
 /** <module> Prediction of action effects
 
-  Copyright (C) 2011 Moritz Tenorth, 2016 Daniel Beßler
+  Copyright (C) 2011 Moritz Tenorth
+  Copyright (C) 2016-2017 Daniel Beßler
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -25,7 +26,7 @@
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@author Moritz Tenorth, Daniel Beßler
+@author Moritz Tenorth
 @license BSD
 
 */
@@ -33,83 +34,148 @@
     [
       action_effects_apply/1,
       action_effect_apply/2,
+      action_effect_on_object/2,
       action_precondition_check/1,
       action_precondition_check/2,
-      comp_hasEffect/2
+      comp_actionEffectRule/2
     ]).
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
-:- use_module(library('rdfs_computable')).
 :- use_module(library('knowrob_owl')).
-:- use_module(library('knowrob_temporal')).
 :- use_module(library('owl')).
+:- use_module(library('swrl')).
 
-
-:- rdf_db:rdf_register_ns(knowrob,       'http://knowrob.org/kb/knowrob.owl#',      [keep(true)]).
-:- rdf_db:rdf_register_ns(action_effects,'http://knowrob.org/kb/action-effects.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(object_change, 'http://knowrob.org/kb/object-change.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(swrl, 'http://www.w3.org/2003/11/swrl#', [keep(true)]).
 
 :-  rdf_meta
     action_effects_apply(r),
-    action_effects_apply(r,r),
+    action_effect_apply(r,r),
+    action_effect_on_object(r,t),
     action_precondition_check(r),
     action_precondition_check(r,r),
-    comp_hasEffect(r,r).
+    comp_actionEffectRule(r,r).
 
-comp_hasEffect(Act, Effect) :-
-  rdf_has(Effect, knowrob:swrlActionConcept, Cls),
-  strip_literal_type(Cls,Cls_),
-  once(owl_individual_of(Act, Cls_)).
+%% comp_actionEffectRule(+Action:iri, ?Effect:iri)
+%
+% Effect is a RDF description of a SWRL rule that 
+% describes how the effect of Action can be projected
+% into the knowledge base.
+%
+% @param Action Instance of knowrob:Action
+% @param Effect RDF name of SWRL rule
+%
+comp_actionEffectRule(Action, Effect) :-
+  rdfs_individual_of(Action, ActionClass),
+  rdf_has(Effect, knowrob:swrlActionConcept, literal(type(_,ActionClass))).
 
-knowrob_temporal:holds(Act, 'http://knowrob.org/kb/knowrob.owl#hasEffect', Effect, _) :-
-  comp_hasEffect(Act, Effect).
+%% action_effect_on_object(?ActionClass:iri, ?EffectTerm:term) is nondet
+%
+% Reasoning about which ActionClass (when the action is successfully performed)
+% will have a desired effect on the object manipulated during the action.
+% EffectTerm is a Prolog term describing the effect:
+%  - updated(P,O): If value O is specified for property P
+%  - created(Type): If Type is a new type of the manipulated object
+%  - destroyed(Type): If Type is not a type of the manipulated object anymore after the action was performed
+%  - destroyed: If the object is not spatially existing anymore
+%
+% `created` and `destroyed` effect terms follow the convention that type assertions
+% are represented in rule heads as `Type(?obj)`, and type retractions as `(not Type)(?obj)`.
+% 
+% For example:
+%     action_effect_on_object(knowrob:'TurningOnPoweredDevice',
+%            updated(knowrob:stateOfObject,knowrob:'DeviceStateOn'))
+%     action_effect_on_object(knowrob:'BakingFood',
+%            created(knowrob:'Baked'))
+%     action_effect_on_object(knowrob:'Cracking',
+%            destroyed)
+%
+action_effect_on_object(ActionClass, updated(P,O)) :-
+  % find SWRL action rule and the variable denoting the manipulated object within the rule
+  action_effect_objectActedOn(ActionClass, Var_objectActedOn, Head :- Body),
+  % the implication of the rule must assert a new value for property P
+  member(property(Var_objectActedOn, P_rule, O_rule), Head),
+  rdfs_subproperty_of(P, P_rule),
+  % and the value type must match the specified value/type O
+  swrl_type_of(Head :- Body, O_rule, O).
 
+action_effect_on_object(ActionClass, created(Type)) :-
+  action_effect_objectActedOn(ActionClass, Var_objectActedOn, Head :- _Body),
+  member(class(Type_rule, Var_objectActedOn), Head),
+  % TODO: Type could be Prolog term representing owl_class! (same for destroy case below)
+  once(owl_subclass_of(Type, Type_rule)).
+
+action_effect_on_object(ActionClass, destroyed) :-
+  action_effect_on_object(ActionClass, destroyed('http://knowrob.org/kb/knowrob.owl#SpatialThing')).
+action_effect_on_object(ActionClass, destroyed(Type)) :-
+  action_effect_objectActedOn(ActionClass, Var_objectActedOn, Head :- _Body),
+  member(class(X, Var_objectActedOn), Head),
+  rdf_has(X, owl:complementOf, Type_rule),
+  once(owl_subclass_of(Type, Type_rule)).
+
+%% action_effects_apply(+Act:iri)
+%
+% Apply all the effects that are known to apply if Act is performed successfully.
+%
+% @param Act Instance of knowrob:'Action'
+%
 action_effects_apply(Act) :-
-  % FIXME: ignore is not so nice, but some effects may only be applied under certain conditions.
-  % TODO: specify startTime/endTime of started/stopped processes
-  forall( comp_hasEffect(Act, Descr),
+  % NOTE: `ignore` is not nice here, but some effects may only be applied under certain conditions in the rule body.
+  forall( comp_actionEffectRule(Act, Descr),
           ignore( action_effect_apply(Act, Descr) )).
 
-action_effect_apply(Act,Descr) :-
-  rdf_has(Descr, knowrob:swrlActionVariable, VarLiteral),
+%% action_effect_apply(+Act:iri,+Effect:iri)
+%
+% Effect is a RDF SWRL rule that expresses an effect of Act.
+% The implications of the rule (i.e., the rule head) is
+% projected to the RDF triple store with this call.
+%
+% SWRL action effect rules have additional annotations used to
+% reason about the context in which the rule applies (i.e., the action class).
+% These rules usually start with a statement `Action(?act)` which assigns an action instance
+% to the rule. The action instance Act provided will be bound to this action variable in the rule.
+%
+% @param Act Instance of knowrob:'Action'
+% @param Effect RDF description of SWRL action effect rule
+%
+% TODO: handling of started/stopped processes
+%           - specify startTime/endTime
+action_effect_apply(Act,Effect) :-
+  rdf_has(Effect, knowrob:swrlActionVariable, VarLiteral),
   strip_literal_type(VarLiteral, Var),
-  rdf_swrl_project(Descr, [var(Var,Act)]).
+  rdf_swrl_project(Effect, [var(Var,Act)]).
 
 
+%% action_precondition_check(+Act:iri)
+%% action_precondition_check(+Act:iri,+Effect:iri)
+%
+% True if Act is an action without unsatisfied preconditions, or
+% if Effect is a satisfied precondition of Act.
+%
+% @param Act Instance of knowrob:'Action'
+% @param Effect RDF description of SWRL action effect rule
+%
 action_precondition_check(Act) :-
   action_precondition_check(Act, _), !.
 
-action_precondition_check(Act, Descr) :-
-  rdf_has(Descr, knowrob:swrlActionVariable, VarLiteral),
+action_precondition_check(Act, Effect) :-
+  rdf_has(Effect, knowrob:swrlActionVariable, VarLiteral),
   strip_literal_type(VarLiteral, Var),
-  rdf_swrl_satisfied(Descr, [var(Var,Act)]).
+  rdf_swrl_satisfied(Effect, [var(Var,Act)]).
 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % %  Utility predicates
 
-% % % % % % % % % % % % % % % %
-% Cutting off a piece
-% @deprecated
-%project_action_effects(Action) :-
+action_effect_objectActedOn(ActionClass, ObjVar, Head :- Body) :-
+  rdf_has(Effect, knowrob:swrlActionConcept, literal(type(_,ActionClass))),
+  rdf_swrl_rule(Effect, Head :- Body),
+  rdf_has(Effect, knowrob:swrlActionVariable, literal(type(_,ActVar))),
+  member(property(ActVar, 'http://knowrob.org/kb/knowrob.owl#objectActedOn', ObjVar), Body).
 
-  %owl_individual_of(Action, knowrob:'CuttingOffAPiece'),
-  %\+ owl_has(Action, knowrob:outputsCreated, _),
-
-
-  % TODO(DB): this is not accurate, pieces of things may have a slightly different class 
-  %           then the input object. For example cutting a bread yields a slice of bread, not a new "bread".
-  %           Also seems to be hard to express in SWRL. Will need to have annotations that map concepts
-  %           to their slices concept so that this can generically be handled in rules.
-  %owl_has(Action, knowrob:objectActedOn, Obj),
-  %rdf_has(Obj, rdf:type, ObjType),
-  %ObjType \= 'http://www.w3.org/2002/07/owl#NamedIndividual',!,
-
-  %% new objects
-  %rdf_instance_from_class(ObjType, knowrob_projection, Slice),
-
-  %% new relations
-  %rdf_assert(Action, knowrob:outputsRemaining, Obj, knowrob_projection),
-  %rdf_assert(Action, knowrob:outputsCreated, Slice, knowrob_projection),
-
-  %print(Obj),print(' -> '), print(Slice), print('\n').
-
+swrl_type_of(_, O, O) :- !.
+swrl_type_of(_, literal(type(_,X)), O) :- strip_literal_type(O,X),!.
+swrl_type_of(_, O, literal(type(_,X))) :- strip_literal_type(O,X),!.
+swrl_type_of(_Head :- Body, Var, Type) :-
+  member(class(Type_rule, Var), Body),
+  once(owl_subclass_of(Type, Type_rule)).
