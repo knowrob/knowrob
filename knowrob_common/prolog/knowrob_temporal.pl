@@ -277,13 +277,17 @@ holds(S, P, O) :-
   current_time(T),
   holds(S, P, O, [T,T]).
 
+% FIXME: computables computed here (owl_triple) may not hold for interval I but starting from a later instance
+%   - ignore computables entirely here and require expanded holds?
+%   - better: "temporally computable predicates": include time, holds clause that expands to temporal computables
 holds(S, P, O, I) :-
   once(( atom(S) ; var(S) )),
   (  atom(P)
   % P bound
   -> (   temporal_part_has(S,P,O,I_x)
      *-> time_term(I_x,Ext)
-     ;   owl_triple(S,P,O) )
+     ;   owl_triple(S,P,O)
+     )
   % P unbound
   ;  (   owl_has(S,P,O), (
          temporal_part_has(S,P,O,I_x)
