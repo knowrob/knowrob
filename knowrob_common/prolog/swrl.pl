@@ -55,6 +55,7 @@
 :- rdf_db:rdf_register_ns(rdfs, 'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
 :- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
 :- rdf_db:rdf_register_ns(xml, 'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
+:- rdf_db:rdf_register_prefix(swrl, 'http://www.w3.org/2003/11/swrl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(swrla, 'http://swrl.stanford.edu/ontologies/3.3/swrla.owl#', [keep(true)]).
 
 :- use_module(library('semweb/rdf_db')).
