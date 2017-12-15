@@ -27,24 +27,9 @@
 :- owl_parser:owl_parse('package://knowrob_map_data/owl/ccrl2_semantic_map.owl').
 :- owl_parser:owl_parse('package://comp_spatial/owl/comp_spatial.owl').
 :- owl_parser:owl_parse('package://comp_spatial/owl/test_comp_spatial.owl').
-:- owl_parser:owl_parse('package://knowrob_srdl/owl/srdl2-comp.owl').
 
-
-:- rdf_db:rdf_register_ns(rdf,  'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
-:- rdf_db:rdf_register_ns(owl,  'http://www.w3.org/2002/07/owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(xsd,  'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
 :- rdf_db:rdf_register_ns(test_sp, 'http://knowrob.org/kb/test_comp_spatial.owl#', [keep(true)]).
-
-
-test(queryByName) :-
-  entity(A, [an, object, [name, test_sp:'cup2']]),
-  rdf_equal(A, test_sp:'cup2'),!.
-test(queryByName1, [fail]) :-
-  entity(A, [an, object, [name, test_sp:'cup2']]),
-  rdf_equal(A, knowrob:'CounterTop205'),!.
-test(queryByName2, [fail]) :-
-  entity(knowrob:'CounterTop205', [an, object, [name, test_sp:'cup2']]), !.
 
 
 test(inCenterOf1) :-
