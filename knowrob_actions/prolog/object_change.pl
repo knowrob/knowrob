@@ -37,32 +37,24 @@
       comp_thermicallyConnectedTo/2
     ]).
 
-:- use_module(library('semweb/rdfs')).
-:- use_module(library('semweb/rdf_db')).
-:- use_module(library('rdfs_computable')).
 :- use_module(library('owl_parser')).
 :- use_module(library('knowrob_owl')).
 
-
 :- owl_parse('package://knowrob_actions/owl/object-change.owl').
-% :- owl_parse('package://knowrob_actions/owl/pancake-making.owl').
 
-:- rdf_db:rdf_register_ns(knowrob,      'http://knowrob.org/kb/knowrob.owl#',      [keep(true)]).
-:- rdf_db:rdf_register_ns(object_change, 'http://knowrob.org/kb/object-change.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
 :-  rdf_meta
         transformed_into(r, r),
         transformed_into_transitive(r, r),
         comp_thermicallyConnectedTo(r,r).
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % object transformations
 %
 
-
-%% transformed_into(?From, ?To)
+%% transformed_into(?From:iri, ?To:iri)
 %
 % Compute which objects have been transformed into which other ones
 % by actions or processes. This predicate operates on the object
@@ -85,7 +77,7 @@ transformed_into(From, To) :-
     owl_has(Event, knowrob:outputsCreated, To)).
 
 
-%% transformed_into_transitive(?From, ?To)
+%% transformed_into_transitive(?From:iri, ?To:iri)
 %
 % Transitive version of the transformed_into predicate that tracks
 % in- and outputs of actions over several steps and different
@@ -102,14 +94,12 @@ transformed_into_transitive(From, To) :-
   From\=Sth,
   transformed_into_transitive(Sth, To).
 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % process-relevant object relations
 %
 
-%% comp_thermicallyConnectedTo(?Obj1, ?Obj2)
+%% comp_thermicallyConnectedTo(?Obj1:iri, ?Obj2:iri)
 %
 % Compute if a heat path exists between two objects. This is the case if
 % they are either on top of each other or if one contains the other one
@@ -117,12 +107,11 @@ transformed_into_transitive(From, To) :-
 % @param Obj1 Object instance
 % @param Obj2 Object instance
 %
-comp_thermicallyConnectedTo(Obj1, Obj2) :-
+comp_thermicallyConnectedTo(Obj1, Obj2) :- once(
   rdf_triple(knowrob:'on-Physical', Obj1, Obj2);
-  rdf_triple(knowrob:'on-Physical', Obj2, Obj1).
+  rdf_triple(knowrob:'on-Physical', Obj2, Obj1)).
 
-
-comp_thermicallyConnectedTo(Obj1, Obj2) :-
+comp_thermicallyConnectedTo(Obj1, Obj2) :- once(
   rdf_triple(knowrob:'in-ContGeneric', Obj1, Obj2);
-  rdf_triple(knowrob:'in-ContGeneric', Obj2, Obj1).
+  rdf_triple(knowrob:'in-ContGeneric', Obj2, Obj1)).
 

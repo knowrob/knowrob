@@ -1,5 +1,6 @@
 /*
   Copyright (C) 2010-2014 Moritz Tenorth
+  Copyright (C) 2017 Daniel Beßler
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without

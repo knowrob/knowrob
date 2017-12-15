@@ -24,15 +24,9 @@
 :- use_module(library('owl_parser')).
 :- use_module(library('action_effects')).
 
-:- owl_parse('package://knowrob_actions/owl/action-effects.owl').
-:- owl_parse('package://knowrob_actions/owl/blocksworld.owl').
 :- owl_parse('package://knowrob_actions/owl/pancake-making.owl').
 
-:- rdf_db:rdf_register_ns(rdf,  'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
-:- rdf_db:rdf_register_ns(owl,  'http://www.w3.org/2002/07/owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(xsd,  'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
-:- rdf_db:rdf_register_ns(blocksworld,  'http://knowrob.org/kb/blocksworld.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(pancake,  'http://knowrob.org/kb/pancake-making.owl#', [keep(true)]).
 
 test(plan_pancake_events, [nondet]) :-
