@@ -133,8 +133,7 @@ action_missing_inputs(Action, Missing) :-
 % @param Output   Output linked via a postActors restriction
 %
 action_outputs(Action, Output) :-
-  class_properties(A, knowrob:'postActors', Output),
-  owl_subclass_of(Action, A).
+  class_properties(Action, knowrob:'postActors', Output).
 %TODO: check class subsumption (allow more complex requirements)
 
 %% resource_available(+Resource)
@@ -145,6 +144,7 @@ action_outputs(Action, Output) :-
 %
 resource_available(Resource) :-
   owl_individual_of(ObjInst, Resource),
+  % HACK
   \+ rdfs_individual_of(ObjInst, knowrob:'TemporalPart').
 
 

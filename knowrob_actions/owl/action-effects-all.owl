@@ -11,6 +11,7 @@
      xmlns:computable="http://knowrob.org/kb/computable.owl#">
     <owl:Ontology rdf:about="http://knowrob.org/kb/action-effects-all.owl">
         <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
+        <owl:imports rdf:resource="package://knowrob_actions/owl/action-effects.owl"/>
         <owl:imports rdf:resource="package://knowrob_actions/owl/action-effects-devices.owl"/>
         <owl:imports rdf:resource="package://knowrob_actions/owl/action-effects-spatial.owl"/>
         <owl:imports rdf:resource="package://knowrob_actions/owl/action-effects-kitchen.owl"/>
