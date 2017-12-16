@@ -70,13 +70,12 @@
     comp_finishesI(r, r),
     comp_finishesInvI(r, r).
 
-
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('rdfs_computable')).
 :- use_module(library('knowrob_temporal')).
 
-:- rdf_db:rdf_register_ns(knowrob,      'http://knowrob.org/kb/knowrob.owl#',      [keep(true)]).
+:- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(comp_temporal, 'http://knowrob.org/kb/comp_temporal.owl#', [keep(true)]).
 
 
@@ -95,17 +94,6 @@ comp_temporallySubsumes(Long, Short) :-
   (Long_ST=<Short_ST), (Short_ST=<Long_ET),
   (Long_ST=<Short_ET), (Short_ET=<Long_ET).
 
-
-%%  comp_after(Pre, After) is nondet.
-%
-% Check if the time point Pre is before the time point After
-%
-% @param Pre Identifier of the earlier time point
-% @param After Identifier of the later time point
-%
-comp_after(Pre, After) :-
-  interval_after(Pre, After).
-
 %%  comp_duration(Event, Duration) is nondet.
 %
 % Calculate the duration of the the TemporalThing Event
@@ -113,14 +101,13 @@ comp_after(Pre, After) :-
 % @param Event Identifier of a TemporalThing
 % @param Duration Duration of the event
 %
+% TODO: should be literal(type(qudt:'MinuteTime', Duration))
 comp_duration(Event, Duration) :-
   interval(Event, [ST,ET]),
   Duration is (ET-ST).
 
-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % Allen's 13 temporal relations for intervals
-
 
 %% comp_equalI(?I1,?I2) is semidet.
 %
@@ -133,43 +120,6 @@ comp_equalI(I1,I2) :-
    interval(I1,[ST,ET]),
    interval(I2,[ST,ET]).
 
-   
-%% comp_beforeI(I1,I2) is semidet.
-%
-%  Interval I1 takes place before I2
-%
-% @param I1 Instance of a knowrob:TimeInterval
-% @param I2 Instance of a knowrob:TimeInterval
-% 
-comp_beforeI(I1,I2) :-
-   interval_before(I1,I2).
-
-   
-
-%% comp_afterI(I1,I2) is semidet.
-%
-% Interval I1 takes place after I2
-%
-% @param I1 Instance of a knowrob:TimeInterval
-% @param I2 Instance of a knowrob:TimeInterval
-% 
-comp_afterI(I1,I2) :-
-   interval_before(I2,I1).
-
-
-   
-%% comp_overlapsI(I1,I2) is semidet.
-%
-% Interval I1  overlaps temporally with I2
-%
-% @param I1 Instance of a knowrob:TimeInterval
-% @param I2 Instance of a knowrob:TimeInterval
-% 
-comp_overlapsI(I1,I2) :-
-   interval_overlaps(I1,I2).
-
-
-   
 %% comp_overlapsInvI(I1,I2) is semidet.
 %
 % Interval I2  overlaps temporally with I1
@@ -180,20 +130,6 @@ comp_overlapsI(I1,I2) :-
 comp_overlapsInvI(I1,I2) :-
    interval_overlaps(I2,I1).
 
-
-   
-%% comp_meetsI(I1,I2) is semidet.
-%
-% Intervals I1 and I2 meet, i.e. the end time of I1 is equal to the start time of I2
-%
-% @param I1 Instance of a knowrob:TimeInterval
-% @param I2 Instance of a knowrob:TimeInterval
-% 
-comp_meetsI(I1,I2) :-
-   interval_meets(I1,I2).
-
-
-   
 %% comp_meetsInvI(I1,I2) is semidet.
 %
 % Intervals I1 and I2 meet, i.e. the end time of I2 is equal to the start time of I1
@@ -204,20 +140,6 @@ comp_meetsI(I1,I2) :-
 comp_meetsInvI(I1,I2) :-
    interval_meets(I2,I1).
 
-
-   
-%% comp_duringI(I1,I2) is semidet.
-%
-% Interval I1 is inside interval I2, i.e. it starts later and finishes earlier than I2.
-%
-% @param I1 Instance of a knowrob:TimeInterval
-% @param I2 Instance of a knowrob:TimeInterval
-% 
-comp_duringI(I1,I2) :-
-   interval_during(I1,I2).
-
-
-   
 %% comp_duringInvI(I1,I2) is semidet.
 %
 % Interval I2 is inside interval I1, i.e. it starts later and finishes earlier than I1.
@@ -228,20 +150,6 @@ comp_duringI(I1,I2) :-
 comp_duringInvI(I1,I2) :-
    interval_during(I2,I1).
 
-
-   
-%% comp_startsI(I1,I2) is semidet.
-%
-% Interval I1 starts interval I2, i.e. both have the same start time, but I1 finishes earlier
-%
-% @param I1 Instance of a knowrob:TimeInterval
-% @param I2 Instance of a knowrob:TimeInterval
-% 
-comp_startsI(I1,I2) :-
-   interval_starts(I1,I2).
-
-
-   
 %% comp_startsInvI(I1,I2) is semidet.
 %
 % Interval I2 starts interval I1, i.e. both have the same start time, but I2 finishes earlier
@@ -252,20 +160,6 @@ comp_startsI(I1,I2) :-
 comp_startsInvI(I1,I2) :-
    interval_starts(I2,I1).
 
-
-   
-%% comp_finishesI(I1,I2) is semidet.
-%
-% Interval I1 finishes interval I2, i.e. both have the same end time, but I1 starts later
-%
-% @param I1 Instance of a knowrob:TimeInterval
-% @param I2 Instance of a knowrob:TimeInterval
-% 
-comp_finishesI(I1,I2) :-
-   interval_finishes(I1,I2).
-
-
-   
 %% comp_finishesInvI(I1,I2) is semidet.
 %
 % Interval I2 finishes interval I1, i.e. both have the same end time, but I2 starts later
