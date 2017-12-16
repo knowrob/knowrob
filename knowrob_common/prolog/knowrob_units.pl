@@ -66,6 +66,7 @@
         % if value is partially given (e.g. literal(type(unit:Meter, Val)) ),
         % try to call the respective computable without the binding and to
         % convert the results into the correct form
+        ground([Property,Frame,OutputType]),
         rdf_triple(Property, Frame, TempVal),
         % try to convert the results into the specified format
         convert_to_unit(TempVal, OutputType, OutputVal)), X),
