@@ -64,6 +64,7 @@
 :- use_module(library('rdfs_computable')).
 :- use_module(library('knowrob_owl')).
 :- use_module(library('knowrob_temporal')).
+:- use_module(library('knowrob_units')).
 
 :- rdf_meta swrl_holds(r,r,r,r),
             swrl_holds(r,r,r),
@@ -573,6 +574,13 @@ set_vars(Vars, [var(Name,Var)|Rest]) :-
   swrl_var(Vars, Name, Var),
   set_vars(Vars, Rest).
 
+swrl_vars_resolve([], [], _) :- !.
+swrl_vars_resolve([var(X)|Xs], [Y|Ys], Vars) :- !,
+  swrl_var(Vars, X, Y),
+  swrl_vars_resolve(Xs, Ys, Vars).
+swrl_vars_resolve([X|Xs], [X|Ys], Vars) :-
+  swrl_vars_resolve(Xs, Ys, Vars).
+
 swrl_atom(literal(type(_,A)), A, _) :- !.
 swrl_atom(literal(A), A, _).
 swrl_atom(var(A), A_val, Vars) :-
@@ -593,10 +601,33 @@ swrl_atom_number(var(A), A_num, Vars) :-
 swrl_atom_number(A, A_num, _) :-
   atom(A), !, catch(atom_number(A,A_num), _, fail).
 swrl_atom_number(A_num, A_num, _) :- number(A_num), !.
-swrl_nums([],[],_).
-swrl_nums([X|Xs],[Y|Ys],Vars) :-
+
+swrl_nums(In, Out, Vars) :-
+  % resolve occuring SWRL variables
+  swrl_vars_resolve(In, In_resolved, Vars),
+  % align the types of values
+  swrl_nums_convert_unit(In_resolved, In_aligned),
+  swrl_nums_aligned(In_aligned, Out, Vars).
+swrl_nums_aligned([],[],_).
+swrl_nums_aligned([X|Xs],[Y|Ys],Vars) :-
+  % TODO: allow units in buildins instead of removing the information here
   swrl_atom_number(X,Y,Vars),
-  swrl_nums(Xs,Ys,Vars).
+  swrl_nums_aligned(Xs,Ys,Vars).
+
+% align the units of numbers occuring in SWRL rule
+swrl_nums_convert_unit([Head|Tail], [Head|Aligned]) :-
+  swrl_nums_convert_unit(Head, Tail, Aligned).
+swrl_nums_convert_unit(literal(type(Requested, _)), [X|Xs], [Y|Ys]) :- !,
+  ( X = literal(type(X_type, X_value)) -> (
+    swrl_convert_unit(X_type, X_value, Requested, Value),
+    Y = literal(type(Requested, Value))
+  ) ; Y = X ),
+  swrl_nums_convert_unit(literal(type(Requested, _)), Xs, Ys).
+swrl_nums_convert_unit(_, X, X).
+
+swrl_convert_unit(InputType, InputVal, InputType, InputVal) :- !.
+swrl_convert_unit(InputType, InputVal, OutputType, OutputVal) :-
+  convert_to_unit(literal(type(InputType, InputVal)), OutputType, OutputVal).
 
 %% swrl_satisfied(+Rule)
 %% swrl_satisfied(+Rule,+Vars_user)
