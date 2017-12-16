@@ -82,6 +82,14 @@
     <owl:ObjectProperty rdf:about="http://knowrob.org/kb/action-effects.owl#actionEffectRule">
         <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Action"/>
     </owl:ObjectProperty>
+
+
+
+    <!-- http://knowrob.org/kb/action-effects.owl#actionEffectProjected -->
+
+    <owl:ObjectProperty rdf:about="http://knowrob.org/kb/action-effects.owl#actionEffectProjected">
+        <rdfs:domain rdf:resource="http://knowrob.org/kb/knowrob.owl#Action"/>
+    </owl:ObjectProperty>
     
 
 

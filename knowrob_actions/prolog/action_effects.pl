@@ -48,6 +48,7 @@
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(swrl, 'http://www.w3.org/2003/11/swrl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(action_effects,  'http://knowrob.org/kb/action-effects.owl#', [keep(true)]).
 
 :-  rdf_meta
     action_effects_apply(r),
@@ -56,6 +57,9 @@
     action_precondition_check(r),
     action_precondition_check(r,r),
     comp_actionEffectRule(r,r).
+
+% TODO: event system for processes started by actions and their effects
+%         - allow robot to react on predictable effects of processes
 
 %% comp_actionEffectRule(+Action:iri, ?Effect:iri)
 %
@@ -139,13 +143,34 @@ action_effects_apply(Act) :-
 % @param Act Instance of knowrob:'Action'
 % @param Effect RDF description of SWRL action effect rule
 %
-% TODO: handling of started/stopped processes
-%           - specify startTime/endTime
+action_effect_apply(Act,Effect) :-
+  rdf(Act, action_effects:actionEffectProjected, Effect, action_projection), !.
 action_effect_apply(Act,Effect) :-
   rdf_has(Effect, knowrob:swrlActionVariable, VarLiteral),
   strip_literal_type(VarLiteral, Var),
-  rdf_swrl_project(Effect, [var(Var,Act)]).
+  rdf_swrl_project(Effect, [var(Var,Act)]),
+  % start/stop processes
+  forall(rdf_has(Act, knowrob:processStarted, Started),
+         action_effect_start_process(Started)),
+  forall(rdf_has(Act, knowrob:processStopped, Stopped),
+         action_effect_stop_process(Stopped)),
+  % remember that this effect was projected before to avoid
+  % that it is projected again.
+  rdf_assert(Act, action_effects:actionEffectProjected, Effect, action_projection).
 
+action_effect_start_process(Proc) :-
+  rdf_has(Proc, knowrob:startTime, _), !.
+action_effect_start_process(Proc) :-
+  get_timepoint(Now),
+  create_timepoint(Now,Timepoint),
+  rdf_assert(Proc, knowrob:startTime, Timepoint).
+
+action_effect_stop_process(Proc) :-
+  rdf_has(Proc, knowrob:endTime, _), !.
+action_effect_stop_process(Proc) :-
+  get_timepoint(Now),
+  create_timepoint(Now,Timepoint),
+  rdf_assert(Proc, knowrob:endTime, Timepoint).
 
 %% action_precondition_check(+Act:iri)
 %% action_precondition_check(+Act:iri,+Effect:iri)

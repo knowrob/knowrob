@@ -141,9 +141,10 @@ plan_objects(Plan, Objects) :-
 % 
 plan_start_action(ActionClass, ActionInstance) :-
   plan_step(Now),
+  create_timepoint(Now,Timepoint),
   % create instance of the action
   rdf_instance_from_class(ActionClass, ActionInstance),
-  rdf_assert(ActionInstance, knowrob:'startTime', Now).
+  rdf_assert(ActionInstance, knowrob:'startTime', Timepoint).
 
 %% plan_start_action(+ActionInstance:iri) is semidet.
 %
@@ -153,8 +154,9 @@ plan_start_action(ActionClass, ActionInstance) :-
 % 
 plan_finish_action(ActionInstance) :-
   plan_step(Now),
+  create_timepoint(Now,Timepoint),
   % specify endTime and project the action effects
-  rdf_assert(ActionInstance, knowrob:'endTime', Now),
+  rdf_assert(ActionInstance, knowrob:'endTime', Timepoint),
   action_effects_apply(ActionInstance).
 
 %% plan_step(-Now:float) is semidet.
@@ -164,14 +166,14 @@ plan_finish_action(ActionInstance) :-
 plan_step(Now) :-
   get_timepoint(Now),
   forall(plan_active_process(Process),
-         plan_process_update(Process)).
+         action_effects_apply(Process)).
 
 plan_active_process(Process) :-
-  rdfs_individual_of(Process, knowrob:'Process'), % TODO: add this class!
-  \+ rdf_has(Process, knowrob:'endTime', _).
-
-plan_process_update(Process) :-
-  % TODO: processes can end themselfs using knowrob:processStopped
-  % TODO: howto avoid that rules are not projected multiple times?
-  action_effects_apply(Process).
-
+  findall(Process, (
+      % processes are started by some action
+      rdf_has(_, knowrob:processStarted, Process),
+      % processes are active if no endTime is specified
+      \+ rdf_has(Process, knowrob:'endTime', _)
+  ), X),
+  list_to_set(X, Processes),
+  member(Process, Processes).

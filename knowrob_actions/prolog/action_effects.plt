@@ -62,6 +62,7 @@ test(put_red_on_blue) :-
 test(take_red1) :-
   red_on_blue,
   \+ red_in_hand,
+  rdf_retractall(blocksworld:'Take_red', _, _, action_projection), % force re-projection
   action_effects_apply(blocksworld:'Take_red'),
   red_in_hand,
   \+ red_on_blue.
