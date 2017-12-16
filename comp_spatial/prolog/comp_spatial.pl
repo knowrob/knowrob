@@ -1,10 +1,10 @@
 /** <module> Predicates for spatial reasoning
 
   This module contains all computables that calculate qualitative spatial relations
-  between objects to allow for spatial reasoning. In addition, there are computables
-  to extract components of a matrix or position vector.
+  between objects to allow for spatial reasoning.
 
   Copyright (C) 2009-13 Moritz Tenorth, Lars Kunze
+  Copyright (C) 2017 Daniel Beßler
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -55,11 +55,8 @@
 :- use_module(library('knowrob_objects')).
 :- use_module(library('knowrob_temporal')).
 
-
 :- rdf_db:rdf_register_ns(knowrob,      'http://knowrob.org/kb/knowrob.owl#',      [keep(true)]).
 :- rdf_db:rdf_register_ns(comp_spatial, 'http://knowrob.org/kb/comp_spatial.owl#', [keep(true)]).
-
-
 
 % define predicates as rdf_meta predicates
 % (i.e. rdf namespaces are automatically expanded)
@@ -86,22 +83,22 @@
 
 
 spatially_holds_interval(S, P, O, I) :-
-  var(I),
+  var(I), !,
   call(P, S, O, I).
 spatially_holds_interval(S, P, O, I) :-
   % I is a time instant
   nonvar(I),
-  time_term(I, Instant),
+  time_term(I, Instant), !,
   call(P, S, O, Instant).
 spatially_holds_interval(S, P, O, I) :-
   % I is a closed interval
   nonvar(I),
-  interval(I, [Begin, End]),
+  interval(I, [Begin, End]), !,
   spatially_holds_interval(S, P, O, Begin, End).
 spatially_holds_interval(S, P, O, I) :-
   % I is an opened interval
   nonvar(I),
-  interval(I, [Begin]),
+  interval(I, [Begin]), !,
   get_timepoint(End),
   spatially_holds_interval(S, P, O, Begin, End).
 spatially_holds_interval(S, P, O, Begin, End) :-
@@ -150,36 +147,6 @@ on_Physical_at_time(Top, Bottom, Instant) :-
 
 knowrob_temporal:holds(Top, 'http://knowrob.org/kb/knowrob.owl#on-Physical', Bottom, Interval) :-
     spatially_holds_interval(Top, on_Physical_at_time, Bottom, Interval).
-
-%%% knowrob_temporal:holds(on_Physical(Top, Bottom), T) :-
-%%%
-%%%     object_detection(Top, T, VPT),
-%%%     object_detection(Bottom, T, VPB),
-%%%
-%%%     rdf_triple(knowrob:eventOccursAt, VPT,    TopMatrix),
-%%%     rdf_triple(knowrob:eventOccursAt, VPB, BottomMatrix),
-%%%
-%%%     rdf_triple(knowrob:m03, TopMatrix, literal(type(_,TCx))),atom_to_term(TCx,TX,_),
-%%%     rdf_triple(knowrob:m13, TopMatrix, literal(type(_,TCy))),atom_to_term(TCy,TY,_),
-%%%     rdf_triple(knowrob:m23, TopMatrix, literal(type(_,TCz))),atom_to_term(TCz,TZ,_),
-%%%
-%%%     rdf_triple(knowrob:m03, BottomMatrix, literal(type(_,BCx))),atom_to_term(BCx,BX,_),
-%%%     rdf_triple(knowrob:m13, BottomMatrix, literal(type(_,BCy))),atom_to_term(BCy,BY,_),
-%%%     rdf_triple(knowrob:m23, BottomMatrix, literal(type(_,BCz))),atom_to_term(BCz,BZ,_),
-%%%
-%%%     % read the dimensions of the bottom entity
-%%%     rdf_triple(knowrob:widthOfObject, Bottom, literal(type(_,Bw))),atom_to_term(Bw,BW,_),
-%%%     rdf_triple(knowrob:depthOfObject, Bottom, literal(type(_,Bd))),atom_to_term(Bd,BD,_),
-%%%
-%%%     % the criterion is if the difference between them is less than epsilon=5cm
-%%%     =<( BZ, TZ ),
-%%%
-%%%     % additional criterion: center of the top entity has to be inside the
-%%%     % area of the bottom entity
-%%%     =<( (BX - 0.5*BD), TX ), >=( (BX + 0.5*BD), TX ),
-%%%     =<( (BY - 0.5*BW), TY ), >=( (BY + 0.5*BW), TY ),
-%%%     Top \= Bottom.
-
 
 %% comp_above_of(?Top, ?Bottom) is nondet.
 %
@@ -401,35 +368,6 @@ in_ContGeneric_at_time(InnerObj, OuterObj, Instant) :-
 knowrob_temporal:holds(Inner, 'http://knowrob.org/kb/knowrob.owl#in-ContGeneric', Outer, Interval) :-
     spatially_holds_interval(Inner, in_ContGeneric_at_time, Outer, Interval).
 
-
-
-% MT: tried to use matrix transformation library to perform easier computation of 'inside'
-% using bounding box. Problem; does not work as long as not both objects are bound
-%
-% holds(in_ContGeneric(InnerObj, OuterObj), T) :-
-%
-%
-% TODO: take time into account
-%
-%     nonvar(InnerObj), nonvar(OuterObj),
-%     transform_relative_to(InnerObj, OuterObj, [_,_,_,IrelOX,_,_,_,IrelOY,_,_,_,IrelOZ,_,_,_,_]),
-%
-%     % read the dimensions of the outer entity
-%     rdf_triple(knowrob:widthOfObject, OuterObj, LOW),strip_literal_type(LOW,Ow),atom_to_term(Ow,OW,_),
-%     rdf_triple(knowrob:heightOfObject,OuterObj, LOH),strip_literal_type(LOH,Oh),atom_to_term(Oh,OH,_),
-%     rdf_triple(knowrob:depthOfObject, OuterObj, LOD),strip_literal_type(LOD,Od),atom_to_term(Od,OD,_),
-%
-%
-%     % is InnerInOuterCoordList inside bounding box of outer object?
-%
-%     >=( OD, IrelOX),
-%     >=( OW, IrelOY),
-%     >=( OH, IrelOZ),
-%
-%     InnerObj \= OuterObj.
-
-
-
 % % % % % % % % % % % % % % % % % % % %
 % matrix and vector computations (relating the homography-based
 % position representation with the old center-point-based one)
@@ -447,9 +385,6 @@ comp_center(Obj, Center) :-
   atom_concat('translation_', L, P),
   rdf_split_url(G, P, Center).
 
-
-
-      
 %% objectAtPoint2D(+Point2D, ?Obj) is nondet.
 %
 % Compute which objects are positioned at the (x,y) coordinate of Point2D
@@ -462,9 +397,6 @@ objectAtPoint2D(Point2D, Obj) :-
     rdf_triple(knowrob:xCoord, Point2D, PCxx), strip_literal_type(PCxx, PCx), atom_to_term(PCx,PX,_),
     rdf_triple(knowrob:yCoord, Point2D, PCyy), strip_literal_type(PCyy, PCy), atom_to_term(PCy,PY,_),
     objectAtPoint2D(PX,PY,Obj).
-
-%
-%
 
 %% objectAtPoint2D(+PX, +PY, ?Obj) is nondet.
 %
@@ -531,15 +463,3 @@ objectAtPoint2D(PX, PY, Obj, Instant) :-
 
     =<(0,DOT1), =<(DOT1, DOTV1),
     =<(0,DOT2), =<(DOT2, DOTV2).
-
-
-% compatibility with Prolog < 5.8
-:- if(\+current_predicate(atomic_list_concat, _)).
-
-  atomic_list_concat(List, Atom) :-
-    concat_atom(List, Atom).
-
-  atomic_list_concat(List, Separator, Atom) :-
-    concat_atom(List, Separator, Atom).
-
-:- endif.
