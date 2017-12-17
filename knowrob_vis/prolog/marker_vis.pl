@@ -869,6 +869,31 @@ marker_update_children(MarkerObject, T) :-
     marker_timestamp(ChildObject, T)
   ))).
 
+% TODO(daniel): also generate a speech marker message if for the timestamp
+%    there is an active speech act for the updated marker.
+%show_speech(Agent,Instant) :-
+  %rdf_has(Ev, knowrob:'sender', Agent),
+  %rdfs_individual_of(Ev, knowrob:'SpeechAct'),
+  %occurs(Ev, Instant),
+  %rdf_has(Ev, knowrob:'content', literal(type(_,Text))),
+  %rdf_has(Ev, knowrob:'sender', Agent),
+  %% find head
+  %sub_component(pr2:'PR2Robot1', Head),
+  %rdfs_individual_of(Head, knowrob:'Head-Vertebrate'),
+  %rdf_has(Head, srdl2comp:urdfName, URDFVal),
+  %strip_literal_type(URDFVal,URDF),
+  %map_frame_name(MapFrame),
+  %mng_lookup_transform(MapFrame, URDF, Instant, Transform),
+  %matrix_translation(Transform, [X,Y,Z]),
+  %Z_Offset is Z + 0.2,
+  %marker(sprite_text('PR2_SPEECH'), MarkerObj),
+  %marker_color(sprite_text('PR2_SPEECH'), [1.0,1.0,1.0]),
+  %marker_translation(MarkerObj, [X,Y,Z_Offset]),
+  %% Create styled html text
+  %format(atom(TextHtml), '<div style="font-size: 18px; font-style: italic; font-family: Oswald,Arial,Helvetica,sans-serif; text-align: center;">~w</div>', [Text]),
+  %marker_text(MarkerObj, TextHtml),
+  %marker_scale(MarkerObj, [1.0,1.0,1.0]).
+
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
 % Highlighting marker
@@ -1046,8 +1071,9 @@ marker_query_individual(_, individual(Individual), QueryGroup, QueryTitle, Query
 % @param Marker MarkerObject instance or a term that identifies the marker (e.g., trajectory('/base_link'))
 % @param Props List of properties (e.g., [type(T)|Tail])
 %
-marker_properties(Marker, [X|Args]) :-
-  marker_property(Marker, X),
+marker_properties(Marker, [Key:Val|Args]) :-
+  Prop ..= [Key,Val],
+  marker_property(Marker, Prop),
   marker_properties(Marker, Args).
 marker_properties(_, []).
 

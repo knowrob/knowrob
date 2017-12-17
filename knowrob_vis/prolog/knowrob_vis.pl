@@ -35,6 +35,7 @@
       show/0,
       show/1,
       show/2,
+      show/3,
       show_next/0,
       highlight/1,
       highlight/2,
@@ -46,90 +47,81 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('rdfs_computable')).
 :- use_module(library('jpl')).
+:- use_module(library('marker_vis')).
+:- use_module(library('data_vis')).
 
 :- rdf_meta 
       show(t),
       show(t,r),
+      show(t,r,t),
       camera_pose(r,r),
       camera_transform(r).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % Convinience predicate for different types of visualizations
 
+%% show is det
+%% show(+VisualThing) is det
+%% show(+VisualThing, +Instant) is det
+%% show(+VisualThing, +Instant, +Properties) is det
+%
+% VisualThing is a thing with a visual interpretation
+% and some way to generate a ROS visualization message for it.
+% This includes marker_visualization messages and data_vis messages.
+% VisualThing may be a RDF IRI of some OWL individual,
+% a marker term (e.g., "object(Iri)"), or a data vis object (e.g., "timeline(Identifier)").
+% All existing markers are updated for the current timepoint if
+% VisualThing is left unspecified.
+% Properties is a list of properties passed to
+% the respective submodules (i.e., marker or data visualization).
+% If VisualThing is a list then each element is expected to be a term
+% describing one visualization artifact.
+%
 show :- marker_update.
 
-show(X) :-
-  is_list(X), !,
+show(VisualThing) :-
+  is_list(VisualThing), !,
   show_next,
-  forall( member(MarkerDescr, X), (
+  forall( member(MarkerDescr, VisualThing), (
     T =.. [show|MarkerDescr], call(T)
   )), !.
 
-show(X) :-
-  rdfs_individual_of(X, knowrob:'Designator'),
-  designator_publish(X),
-  (( rdf_has(Act, knowrob:objectActedOn, X),
-     rdf_has(Act, knowrob:capturedImage, _) )
-  -> designator_publish_image(Act)
-  ;  true ), !.
-
-show(X) :-
+show(VisualThing) :-
   get_timepoint(Instant),
-  show(X,Instant,[]), !.
+  show(VisualThing,Instant,[]), !.
 
-show(X, Properties) :-
+show(VisualThing, Properties) :-
   is_list(Properties),
   get_timepoint(Instant),
-  show(X,Instant,Properties), !.
+  show(VisualThing,Instant,Properties), !.
 
-show(X, Instant) :-
-  show(X, Instant, []), !.
+show(VisualThing, Instant) :-
+  show(VisualThing, Instant, []), !.
 
-show(X, Instant, Properties) :-
-  is_list(Properties),
-  
-  marker_term(X, MarkerTerm),
+show(VisualThing, Instant, Properties) :-
+  marker_term(VisualThing, MarkerTerm), !,
   marker(MarkerTerm, MarkerObj),
   marker_update(MarkerObj,Instant),
-  
-  % TODO: X could also be a term agent(?Identifier) or object(?Identifier)
-  (( atom(X), rdfs_individual_of(X, knowrob:'EmbodiedAgent') )
-  -> ignore(show_speech(X,Instant)) ; true ),
-  
   marker_properties(MarkerObj, Properties).
 
+show(DataVisTerm, _, Properties) :-
+  data_vis(DataVisTerm, Properties), !.
+
+%% show_next is det
+%
+% Unhighlights objects and removes displayed trajectories.
 show_next :-
   marker_highlight_remove(all),
   marker_remove(trajectories).
 
-show_speech(Agent,Instant) :-
-  rdf_has(Ev, knowrob:'sender', Agent),
-  rdfs_individual_of(Ev, knowrob:'SpeechAct'),
-  occurs(Ev, Instant),
-  rdf_has(Ev, knowrob:'content', literal(type(_,Text))),
-  rdf_has(Ev, knowrob:'sender', Agent),
-  % find head
-  sub_component(pr2:'PR2Robot1', Head),
-  rdfs_individual_of(Head, knowrob:'Head-Vertebrate'),
-  rdf_has(Head, srdl2comp:urdfName, URDFVal),
-  strip_literal_type(URDFVal,URDF),
-  map_frame_name(MapFrame),
-  mng_lookup_transform(MapFrame, URDF, Instant, Transform),
-  matrix_translation(Transform, [X,Y,Z]),
-  Z_Offset is Z + 0.2,
-  marker(sprite_text('PR2_SPEECH'), MarkerObj),
-  marker_color(sprite_text('PR2_SPEECH'), [1.0,1.0,1.0]),
-  marker_translation(MarkerObj, [X,Y,Z_Offset]),
-  % Create styled html text
-  format(atom(TextHtml), '<div style="font-size: 18px; font-style: italic; font-family: Oswald,Arial,Helvetica,sans-serif; text-align: center;">~w</div>', [Text]),
-  marker_text(MarkerObj, TextHtml),
-  marker_scale(MarkerObj, [1.0,1.0,1.0]).
-
-highlight(X) :-
-  marker_term(X, MarkerTerm),
+%% highlight(+VisualThing) is det
+%
+% Queues a VisualThing to be highlighted in the respective canvas.
+highlight(VisualThing) :-
+  marker_term(VisualThing, MarkerTerm),
   marker_highlight(MarkerTerm).
-highlight(X,Color) :-
-  marker_term(X, MarkerTerm),
+highlight(VisualThing,Color) :-
+  marker_term(VisualThing, MarkerTerm),
   marker_highlight(MarkerTerm,Color).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
