@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-15 Moritz Tenorth, Arne Stefes, Daniel Beßler
+ * Copyright (c) 2013-15 Moritz Tenorth, Arne Stefes
  *
  * All rights reserved.
  *

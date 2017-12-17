@@ -1,6 +1,7 @@
 /** <module> Methods for visualizing parts of the knowledge base
 
-  Copyright (C) 2011-2015 Daniel Beßler, Moritz Tenorth, Asil Kaan Bozcuoğlu
+  Copyright (C) 2015 Daniel Beßler
+  Copyright (C) 2015 Asil Kaan Bozcuoğlu
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -25,11 +26,11 @@
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-  @author Daniel Beßler, Moritz Tenorth, Asil Kaan Bozcuoğlu
+  @author Daniel Beßler
   @license BSD
 */
 
-:- module(knowrob_marker,
+:- module(marker_vis,
     [
       show/0,
       show/1,
@@ -151,9 +152,7 @@ marker_succeeding_links(Link0, Links) :-
   ), Links).
 
 marker_srdl_tf_frame(Identifier, UrdfName) :-
-  rdf_has(Identifier, srdl2comp:'urdfName', literal(UrdfName)), !.
-marker_srdl_tf_frame(Identifier, UrdfName) :-
-  rdf_has(Identifier, knowrob:'urdfName', literal(UrdfName)), !.
+  rdf_has(Identifier, knowrob:'frameName', literal(UrdfName)), !.
 marker_srdl_tf_frame(Identifier, UrdfName) :-
   not( atom_prefix(Identifier, 'http') ),
   UrdfName = Identifier.
@@ -179,61 +178,10 @@ marker_lookup_transform(MarkerObject, Identifier, T, (Translation,Orientation)) 
 marker_lookup_transform(_, Identifier, T, (Translation,Orientation)) :-
   object_pose_at_time(Identifier, T, pose(Translation, Orientation)), !.
 
-% TODO: remove case, should be covered by object_pose_at_time
-marker_lookup_transform(MarkerObject, Identifier, T, (Translation,Orientation)) :-
-  marker_lookup_transform(MarkerObject, Identifier, '/map', T, (Translation,Orientation)), !.
-
-% TODO: remove case, should be covered by object_pose_at_time
-marker_lookup_transform(MarkerObject, Identifier, TargetFrame, T, (Translation,Orientation)) :-
-  marker_tf_frame(MarkerObject, Identifier, TfFrame),
-  not( atom_prefix(TfFrame, 'http') ),
-  mng_lookup_transform(TargetFrame, TfFrame, T, Pose),
-  matrix_rotation(Pose, Orientation),
-  matrix_translation(Pose, Translation), !.
-
-%marker_lookup_transform(MarkerObject, Identifier, TargetFrame, T, (Translation,Orientation)) :-
-%  rdfs_individual_of(Identifier, knowrob:'Designator'),
-%  mng_designator_location(Identifier, PoseMatrix),
-%  matrix_translation(PoseMatrix, Translation),
-%  matrix_rotation(PoseMatrix, Orientation).
-
-marker_transform_estimation_add(Predicate) :-
-  assert(v_marker_transform_estimate(Predicate)).
-
-marker_transform_estimation_remove(Predicate) :-
-  retract(v_marker_transform_estimate(Predicate)).
-
-% HACK: Force object to be visually above given Z value
-marker_push_visually_above(Identifier, _, ([X0,Y0,Z0],R), ([X0,Y0,Z1],R)) :-
-  rdf_has(Identifier, knowrob:'visuallyAbove', literal(type(_,ValueAtom))),
-  atom_number(ValueAtom, Value),
-  Value > Z0, Z1 is Value.
-  
-marker_push_visually_above(Identifier, T, PoseIn, PoseOut) :-
-  rdfs_individual_of(Identifier, knowrob:'Designator'),
-  rdf_split_url(Prefix, ObjName, Identifier),
-  atomic_list_concat([Prefix,'Object_',ObjName], Object),
-  rdfs_individual_of(Object, knowrob:'SpatialThing-Localized'),
-  marker_push_visually_above(Object, T, PoseIn, PoseOut).
-
-:- marker_transform_estimation_add(marker_push_visually_above).
-
-marker_transform_estimate(Identifier, T, Pose_in, Pose_out) :-
-  findall(P, v_marker_transform_estimate(P), EstimateMethods),
-  marker_transform_estimate(Identifier, T, Pose_in, Pose_out, EstimateMethods).
-marker_transform_estimate(Identifier, T, Pose_in, Pose_out, [Method|Rest]) :-
-  once(( call(Method, Identifier, T, Pose_in, Pose0) ; Pose0 = Pose_in )),
-  marker_transform_estimate(Identifier, T, Pose0, Pose_out, Rest).
-marker_transform_estimate(_, _, Pose_in, Pose_in, []).
-
-marker_estimate_transform(MarkerObject, Identifier, T, Pose_out) :-
-  (  marker_lookup_transform(MarkerObject, Identifier, T, Pose0)
-  -> (
-    marker_transform_estimate(Identifier, T, Pose0, Pose_out),
-    marker_show(MarkerObject)
-  ) ; (
-    marker_hide(MarkerObject)
-  )).
+marker_transform_at_time(MarkerObject, Identifier, T, Pose) :-
+  marker_lookup_transform(MarkerObject, Identifier, T, Pose)
+  -> marker_show(MarkerObject)
+  ;  marker_hide(MarkerObject).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
@@ -970,16 +918,15 @@ marker_update(MarkerTerm, time(T,Arg)) :-
 % @param MarkerObject The MarkerObject instance
 % @param T A time atom (e.g., 'timepoint_1396512604'), time number (e.g., 1396512604) or an interval (e.g., interval(1396512604, 1396512608, 0.5)).
 %
-% TODO: update all visual properties (using fluents)
 marker_update(object_without_children(Identifier), MarkerObject, T) :-
   ignore(once((
-    marker_estimate_transform(MarkerObject,Identifier,T,(Translation,Orientation)),
+    marker_transform_at_time(MarkerObject,Identifier,T,(Translation,Orientation)),
     marker_pose(MarkerObject,Translation,Orientation)
   ))).
 
 marker_update(object(Identifier), MarkerObject, T) :-
   ignore(once((
-    marker_estimate_transform(MarkerObject,Identifier,T,(Translation,Orientation)),
+    marker_transform_at_time(MarkerObject,Identifier,T,(Translation,Orientation)),
     marker_pose(MarkerObject,Translation,Orientation)
   ))),
   jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
@@ -999,7 +946,7 @@ marker_update(attached(Marker,AttachedTo), _, T) :-
   marker_pose(Marker,Translation,Orientation).
 
 marker_update(link(Link), MarkerObject, T) :-
-  marker_estimate_transform(MarkerObject,Link,T,(Translation,Orientation)),
+  marker_transform_at_time(MarkerObject,Link,T,(Translation,Orientation)),
   marker_pose(MarkerObject,Translation,Orientation).
 
 marker_update(pointer(From,To), MarkerObject, T) :-
@@ -1122,7 +1069,7 @@ marker_update_trajectory(trajectory(Link), MarkerObject, interval(T0,T1,dt(Inter
   atom_concat(MarkerName, SampleId, SampleName),
   jpl_call(MarkerObject, 'createMarker', [SampleName], ChildMarker),
   assert( v_marker_object(SampleName, SampleName, ChildMarker, MarkerObject) ),
-  marker_estimate_transform(ChildMarker, Link, T0, (Translation,Orientation)),
+  marker_transform_at_time(ChildMarker, Link, T0, (Translation,Orientation)),
   marker_pose(ChildMarker, Translation, Orientation),
   marker_timestamp(ChildMarker, T0),
   T_next is T0 + Interval,
@@ -1157,7 +1104,7 @@ marker_trajectory_sample(MarkerObject, Link, interval(T0,T1,count(Count)), Traje
   marker_trajectory_sample(MarkerObject, Link, interval(T0,T1,dt(Interval)), Trajectory).
 marker_trajectory_sample(MarkerObject, Link, interval(T0,T1,dt(Interval)), [Pose|Rest]) :-
   T0 =< T1,
-  marker_estimate_transform(MarkerObject, Link, T0, Pose),
+  marker_transform_at_time(MarkerObject, Link, T0, Pose),
   T0_next is T0 + Interval,
   marker_trajectory_sample(MarkerObject, Link, interval(T0_next,T1,dt(Interval)), Rest).
 
