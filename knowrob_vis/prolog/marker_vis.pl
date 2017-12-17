@@ -65,7 +65,6 @@
       marker_highlight_toggle/1,
       
       marker_primitive/5,
-      
       marker_queries/2
     ]).
     
@@ -533,19 +532,15 @@ marker_new(MarkerName, experiment(Identifier), MarkerObject, Parent) :-
   marker_child_name(experiment(Identifier), MarkerName,
                     object(Map), MapName),
   marker_new(MapName, object(Map), _, MarkerObject),
-  %% TODO: or require markerType annotations for robots and humans?
-  % agents
-  forall(
-    % TODO: add property robotActor
+  % TODO: knowrob:robotActor, knowrob:humanActor don't exist
+  forall( % robots
     owl_has(Map, knowrob:robotActor, Agent), ignore((
       marker_child_name(experiment(Identifier), MarkerName,
                         agent(Agent), AgentName),
       marker(AgentName, agent(Agent), _, MarkerObject)
     ))
   ),
-  % humans
-  forall(
-    % TODO: add property humanActor
+  forall( % humans
     owl_has(Map, knowrob:humanActor, Human), ignore((
       marker_child_name(experiment(Identifier), MarkerName,
                         stickman(Human), HumanName),
@@ -627,10 +622,6 @@ marker_new(MarkerName, sprite_scaled(Id), MarkerObject, Parent) :-
 marker_new(MarkerName, background_image(Id), MarkerObject, Parent) :-
   marker_new(MarkerName, black(background_image,background_image(Id)), MarkerObject, Parent).
 
-
-% TODO: don't create a marker for each particle!
-% TODO: remove/add markers when pile size changes
-% FIXME: one particle left out (first or last index), does TF data start at 1 or 0 ?
 marker_new_particles(_, _, _, Count, Count) :- !.
 marker_new_particles(Parent, Obj, UrdfFormat, Count, Index) :-
   format(atom(Urdf), UrdfFormat, [Index]),
@@ -645,7 +636,6 @@ marker_new_particles(Parent, Obj, UrdfFormat, Count, Index) :-
   % create next marker
   NextIndex is Index + 1,
   marker_new_particles(Parent, Obj, UrdfFormat, Count, NextIndex).
-
 
 marker_child_name(ParentTerm, ParentName, ChildTerm, ChildName) :-
   term_to_atom(ParentTerm, N), N = ParentName,

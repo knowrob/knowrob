@@ -1,4 +1,4 @@
-package org.knowrob.vis;
+package org.knowrob.utils.ros;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.ComponentSampleModel;
