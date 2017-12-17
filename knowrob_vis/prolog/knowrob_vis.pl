@@ -35,6 +35,9 @@
       show/0,
       show/1,
       show/2,
+      show_next/0,
+      highlight/1,
+      highlight/2,
       camera_pose/2,
       visualisation_server/0
     ]).
@@ -94,7 +97,10 @@ show(X, Instant, Properties) :-
   -> ignore(show_speech(X,Instant)) ; true ),
   
   marker_properties(MarkerObj, Properties).
-  
+
+show_next :-
+  marker_highlight_remove(all),
+  marker_remove(trajectories).
 
 show_speech(Agent,Instant) :-
   rdf_has(Ev, knowrob:'sender', Agent),
@@ -107,8 +113,8 @@ show_speech(Agent,Instant) :-
   rdfs_individual_of(Head, knowrob:'Head-Vertebrate'),
   rdf_has(Head, srdl2comp:urdfName, URDFVal),
   strip_literal_type(URDFVal,URDF),
-  % FIXME: /map bad assumption
-  mng_lookup_transform('/map', URDF, Instant, Transform),
+  map_frame_name(MapFrame),
+  mng_lookup_transform(MapFrame, URDF, Instant, Transform),
   matrix_translation(Transform, [X,Y,Z]),
   Z_Offset is Z + 0.2,
   marker(sprite_text('PR2_SPEECH'), MarkerObj),
@@ -119,6 +125,12 @@ show_speech(Agent,Instant) :-
   marker_text(MarkerObj, TextHtml),
   marker_scale(MarkerObj, [1.0,1.0,1.0]).
 
+highlight(X) :-
+  marker_term(X, MarkerTerm),
+  marker_highlight(MarkerTerm).
+highlight(X,Color) :-
+  marker_term(X, MarkerTerm),
+  marker_highlight(MarkerTerm,Color).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % Canvas camera manipulation

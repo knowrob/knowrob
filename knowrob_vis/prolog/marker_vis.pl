@@ -32,10 +32,6 @@
 
 :- module(marker_vis,
     [
-      show_next/0,
-      highlight/1,
-      highlight/2,
-      
       marker_publish/0,
       marker_republish/0,
       marker/2,
@@ -52,10 +48,12 @@
       marker_scale/2,
       marker_mesh_resource/2,
       marker_pose/2,
+      marker_points/2,
       marker_tf_prefix/2,
       marker_translation/2,
       marker_text/2,
       marker_color/2,
+      marker_colors/2,
       marker_has_visual/2,
       
       marker_hide/1,
@@ -68,10 +66,7 @@
       
       marker_primitive/5,
       
-      marker_queries/2,
-      
-      marker_distance/3,
-      marker_trajectory_length/2
+      marker_queries/2
     ]).
     
 :- use_module(library('semweb/rdfs')).
@@ -102,9 +97,7 @@
             marker_tf_prefix(t,?),
             marker_text(t,?),
             marker_properties(t,?),
-            marker_queries(+,-),
-            marker_trajectory_length(t,?),
-            marker_distance(t,t,?).
+            marker_queries(+,-).
 
 % define marker_new and marker_update as meta-predicate and allow the definitions
 % to be in different source files
@@ -262,24 +255,6 @@ marker_create(MarkerTerm, MarkerObject, Parent) :-
   compound(MarkerTerm),
   term_to_atom(MarkerTerm, MarkerAtom),
   marker_create(MarkerAtom, MarkerTerm, MarkerObject, Parent).
-
-%% marker_create_sequence(+Prefix, +Parent, +Count, -MarkerObjects) is det.
-%
-% Creates @Count new MarkerObject instances identified by indexed @Prefix.
-%
-% @param Prefix The marker name prefix
-% @param Parent The parent Java object (i.e., MarkerPublisher or MarkerObject instance)
-% @param Count The number of new MarkerObject instances
-% @param MarkerObjects List of new MarkerObject instances
-%
-marker_create_sequence(Prefix, Parent, Count, [X|Xs]) :-
-  Count > 0,
-  atom_concat(Prefix, Count, MarkerName),
-  jpl_call(Parent, 'createMarker', [MarkerName], X),
-  assert( v_marker_object(MarkerName, MarkerName, X, Parent) ),
-  Count_next is Count - 1,
-  marker_create_sequence(Prefix, Parent, Count_next, Xs).
-marker_create_sequence(_, _, 0, []).
 
 %% marker_object(?Name,?Object,?Parent,?Term) is nondet.
 %% marker_object(?Name,?Object,?Parent) is nondet.
@@ -506,23 +481,8 @@ marker_new(MarkerName, link(Link), MarkerObject, Parent) :-
   marker_primitive(arrow, MarkerName, link(Link), MarkerObject, Parent).
 
 marker_new(MarkerName, trajectory(Link), MarkerObject, Parent) :-
-  marker_primitive(sphere, MarkerName, trajectory(Link), MarkerObject, Parent),
-  marker_color(MarkerObject, [1.0,1.0,0.0,1.0]),
-  marker_has_visual(MarkerObject, false).
-
-marker_new(MarkerName, average_trajectory(Link), MarkerObject, Parent) :-
-  marker_primitive(sphere, MarkerName, average_trajectory(Link), MarkerObject, Parent),
-  marker_color(MarkerObject, [1.0,1.0,0.0,1.0]),
-  marker_has_visual(MarkerObject, false).
-
-marker_new(MarkerName, trail(Link), MarkerObject, Parent) :-
-  marker_primitive(sphere, MarkerName, trajectory(Link), MarkerObject, Parent),
-  marker_color(MarkerObject, [1.0,1.0,0.0,1.0]),
-  marker_has_visual(MarkerObject, false).
-
-marker_new(MarkerName, average_trajectory(Link), MarkerObject, Parent) :-
-  marker_primitive(arrow, MarkerName, average_trajectory(Link), MarkerObject, Parent),
-  marker_has_visual(MarkerObject, false).
+  marker_primitive(points, MarkerName, trajectory(Link), MarkerObject, Parent),
+  marker_color(MarkerObject, [1.0,1.0,0.0,1.0]).
 
 marker_new(MarkerName, pointer(From,To), MarkerObject, Parent) :-
   marker_primitive(arrow, MarkerName, pointer(From,To), MarkerObject, Parent).
@@ -723,19 +683,7 @@ marker_show(Marker) :-
   marker(Marker, MarkerObject),
   marker_show(MarkerObject).
 
-
-highlight(X) :-
-  marker_term(X, MarkerTerm),
-  marker_highlight(MarkerTerm).
-highlight(X,Color) :-
-  marker_term(X, MarkerTerm),
-  marker_highlight(MarkerTerm,Color).
-
-show_next :-
-  marker_highlight_remove(all),
-  marker_remove(trajectories).
-
-
+%% marker_term
 marker_term(X, experiment(X)) :-
   atom(X),
   rdfs_individual_of(X, knowrob:'Experiment'), !.
@@ -854,10 +802,8 @@ marker_update(object(Identifier), MarkerObject, T) :-
   jpl_array_to_list(ChildrenArray,Children),
   forall(member(ChildObject,Children), once((
     v_marker_object(_, ChildTerm, ChildObject, _),
-    (  marker_update(ChildTerm, ChildObject, T)
-    -> true
-    ;  marker_hide(ChildObject)
-    ),
+    once(( marker_update(ChildTerm, ChildObject, T) ; 
+           marker_hide(ChildObject) )),
     marker_timestamp(MarkerObject, T) % FIXME: shouldn't it be ChildObject here?
   ))).
 
@@ -881,8 +827,9 @@ marker_update(pointer(From,To), MarkerObject, T) :-
 marker_update(cylinder_tf(From,To), MarkerObject, T) :-
   marker_tf_frame(MarkerObject, From, FromResolved),
   marker_tf_frame(MarkerObject, To, ToResolved),
-  mng_lookup_transform('/map', FromResolved, T, Pose0),
-  mng_lookup_transform('/map', ToResolved, T, Pose1),
+  map_frame_name(MapFrame),
+  mng_lookup_transform(MapFrame, FromResolved, T, Pose0),
+  mng_lookup_transform(MapFrame, ToResolved, T, Pose1),
   matrix_translation(Pose0, [X0,Y0,Z0]),
   matrix_translation(Pose1, [X1,Y1,Z1]),
   DX is X1-X0, DY is Y1-Y0, DZ is Z1-Z0,
@@ -896,52 +843,13 @@ marker_update(cylinder_tf(From,To), MarkerObject, T) :-
 marker_update(cylinder_tf(_,_), MarkerObject, _) :-
   marker_hide(MarkerObject).
 
-marker_update(trajectory(Link), MarkerObject, T1) :-
-  number(T1),
-  jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
-  jpl_array_to_list(ChildrenArray,Children),
-  length(Children, MarkerCount),
-  (  MarkerCount > 1
-  -> (
-    Children = [M0|[M1|_]],
-    marker_timestamp(M0, T_Marker0),
-    marker_timestamp(M1, T_Marker1),
-    T_step is T_Marker1 - T_Marker0,
-    T0 is T1 - T_step * MarkerCount,
-    marker_update(trajectory(Link), MarkerObject, interval(T0,T1,dt(T_step)))
-  ) ; (
-    T0 is T1 - 10.0,
-    marker_update(trajectory(Link), MarkerObject, interval(T0,T1,dt(0.5)))
-  )).
-
 marker_update(trajectory(Link), MarkerObject, interval(T0,T1)) :-
   marker_update(trajectory(Link), MarkerObject, interval(T0,T1,dt(0.5))).
 
-marker_update(trajectory(Link), MarkerObject, interval(T0,T1,Interval)) :-
-  jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
-  jpl_array_to_list(ChildrenArray,Children),
-  jpl_call(MarkerObject, 'clear', [], _),
-  forall( member(ChildObject,Children), ignore(marker_remove(ChildObject)) ),
-  marker_update_trajectory(trajectory(Link), MarkerObject, interval(T0,T1,Interval)).
-
-marker_update(trail(Link), MarkerObject, T) :-
-  marker_update(trajectory(Link), MarkerObject, T),
-  % Alpha fade the trail
-  jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
-  jpl_array_to_list(ChildrenArray,Children),
-  length(Children, MarkerCount),
-  ignore((
-    MarkerCount > 1,
-    Alpha_Step is 1.0 / MarkerCount,
-    marker_alpha(Children, 0.0, Alpha_Step)
-  )).
-
-marker_update(average_trajectory(Link), MarkerObject, interval(T0,T1,Interval)) :-
-  jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
-  jpl_array_to_list(ChildrenArray,Children),
-  jpl_call(MarkerObject, 'clear', [], _), % TODO: marker_remove should remove from parent!
-  forall( member(ChildObject,Children), ignore(marker_remove(ChildObject)) ),
-  marker_update_trajectory(average_trajectory(Link), MarkerObject, interval(T0,T1,Interval)).
+marker_update(trajectory(Link), MarkerObject, interval(T0,T1,Dt)) :-
+  object_trajectory(Object, [T0,T1], TrajectoryData, Dt),
+  findall(P, member([P,_],TrajectoryData), TrajectoryPositions),
+  marker_points(MarkerObject, TrajectoryPositions).
 
 %marker_update(speech(Id), MarkerObject, T) :-
 %  marker_object(_, MarkerObject, Parent),
@@ -970,123 +878,6 @@ marker_update_children(MarkerObject, T) :-
     marker_update(ChildTerm, ChildObject, T),
     marker_timestamp(ChildObject, T)
   ))).
-
-%% marker_update_trajectory(+MarkerTerm, +MarkerObject, +T) is det.
-%
-% Updates the trajectory marker @MarkerObject that is identified by @MarkerTerm
-% for the time identified by @T.
-%
-% @param MarkerTerm A term that identifies the marker (e.g., trajectory('/base_link'))
-% @param MarkerObject The MarkerObject instance
-% @param T A time atom (e.g., 'timepoint_1396512604'), time number (e.g., 1396512604) or an interval (e.g., interval(1396512604, 1396512608, dt(0.5))).
-%
-marker_update_trajectory(trajectory(Link), MarkerObject, interval(T0,T1,count(Count))) :-
-  Interval is (T1 - T0) / Count,
-  marker_update_trajectory(trajectory(Link), MarkerObject, interval(T0,T1,dt(Interval))).
-marker_update_trajectory(trajectory(Link), MarkerObject, interval(T0,T1,dt(Interval))) :-
-  T0 =< T1,
-  v_marker_object(MarkerName, _, MarkerObject, _),
-  atom_concat(Link, T0, SampleId),
-  atom_concat(MarkerName, SampleId, SampleName),
-  jpl_call(MarkerObject, 'createMarker', [SampleName], ChildMarker),
-  assert( v_marker_object(SampleName, SampleName, ChildMarker, MarkerObject) ),
-  marker_transform_at_time(ChildMarker, Link, T0, (Translation,Orientation)),
-  marker_pose(ChildMarker, Translation, Orientation),
-  marker_timestamp(ChildMarker, T0),
-  T_next is T0 + Interval,
-  marker_update_trajectory(trajectory(Link), MarkerObject, interval(T_next,T1,dt(Interval))).
-marker_update_trajectory(trajectory(_), _, interval(T0,T1,_)) :- T0 > T1.
-
-marker_update_trajectory(average_trajectory(Link), MarkerObject, interval(T0,T1,count(N))) :-
-  marker_trajectories_sample(MarkerObject, Link, interval(T0,T1,count(N)), TrajectoryList),
-  marker_trajectory_average(TrajectoryList, AverageTrajectory, 0, N),
-  marker_update_trajectory(average_trajectory(Link), MarkerObject, 0, AverageTrajectory).
-
-marker_update_trajectory(average_trajectory(_), _, _, []).
-marker_update_trajectory(average_trajectory(Link), MarkerObject, Index, [(Translation,Orientation)|Rest]) :-
-  atom_concat(Link, Index, MarkerName),
-  jpl_call(MarkerObject, 'createMarker', [MarkerName], ChildMarker), !,
-  assert( v_marker_object(MarkerName, MarkerName, ChildMarker, MarkerObject) ),
-  marker_pose(ChildMarker, pose(Translation,Orientation)),
-  Index_Next is Index + 1,
-  marker_update_trajectory(average_trajectory(Link), MarkerObject, Index_Next, Rest).
-
-% TODO: Should be moved to another module
-marker_trajectories_sample(_, _, interval([],_,_), []).
-marker_trajectories_sample(_, _, interval(_,[],_), []).
-marker_trajectories_sample(MarkerObject, Link, interval([T0|T0s],[T1|T1s],Interval), [Trajectory|Rest]) :-
-  marker_trajectory_sample(MarkerObject, Link, interval(T0,T1,Interval), Trajectory),
-  marker_trajectories_sample(MarkerObject, Link, interval(T0s,T1s,Interval), Rest).
-
-% TODO: Should be moved to another module
-marker_trajectory_sample(_, _, interval(T0,T1,_), []) :- T0 > T1.
-marker_trajectory_sample(MarkerObject, Link, interval(T0,T1,count(Count)), Trajectory) :-
-  Interval is (T1 - T0) / Count,
-  marker_trajectory_sample(MarkerObject, Link, interval(T0,T1,dt(Interval)), Trajectory).
-marker_trajectory_sample(MarkerObject, Link, interval(T0,T1,dt(Interval)), [Pose|Rest]) :-
-  T0 =< T1,
-  marker_transform_at_time(MarkerObject, Link, T0, Pose),
-  T0_next is T0 + Interval,
-  marker_trajectory_sample(MarkerObject, Link, interval(T0_next,T1,dt(Interval)), Rest).
-
-% TODO: Should be moved to another module
-marker_trajectory_average(_, [], Index, Index).
-marker_trajectory_average(TrajectoryList, [AvgPose|Rest], Index, N) :-
-  Index < N,
-  findall(Pose, (
-    member(Trajectory, TrajectoryList),
-    nth0(Index, Trajectory, Pose)
-  ), Poses),
-  length(Poses,NumSamples), NumSamples > 0,
-  marker_pose_average(Poses, AvgPose),
-  Index_Next is Index + 1,
-  marker_trajectory_average(TrajectoryList, Rest, Index_Next, N).
-
-% TODO: Should be moved to another module
-marker_pose_average(PoseList, (AvgPos,AvgOrientation)) :-
-  marker_position_average(PoseList, AvgPos),
-  marker_orientation_average(PoseList, AvgOrientation).
-
-% TODO: Should be moved to another module
-marker_position_average(PoseList, [X_Avg,Y_Avg,Z_Avg]) :-
-  findall(X, member(([X,_,_],_), PoseList), Xs),
-  findall(Y, member(([_,Y,_],_), PoseList), Ys),
-  findall(Z, member(([_,_,Z],_), PoseList), Zs),
-  length(PoseList, NumSamples),
-  sumlist(Xs, X_Sum), X_Avg is X_Sum / NumSamples,
-  sumlist(Ys, Y_Sum), Y_Avg is Y_Sum / NumSamples,
-  sumlist(Zs, Z_Sum), Z_Avg is Z_Sum / NumSamples.
-
-% TODO: Should be moved to another module
-% FIXME: Use lerp for finding average orientation
-marker_orientation_average(PoseList, [X_Avg,Y_Avg,Z_Avg,W_Avg]) :-
-  findall(X, member((_,[X,_,_,_]), PoseList), Xs),
-  findall(Y, member((_,[_,Y,_,_]), PoseList), Ys),
-  findall(Z, member((_,[_,_,Z,_]), PoseList), Zs),
-  findall(W, member((_,[_,_,_,W]), PoseList), Ws),
-  length(PoseList, NumSamples),
-  sumlist(Ws, W_Sum), W_Avg is W_Sum / NumSamples,
-  sumlist(Xs, X_Sum), X_Avg is X_Sum / NumSamples,
-  sumlist(Ys, Y_Sum), Y_Avg is Y_Sum / NumSamples,
-  sumlist(Zs, Z_Sum), Z_Avg is Z_Sum / NumSamples.
-
-marker_trajectory_length(MarkerTerm, Length) :-
-  marker(MarkerTerm, MarkerObject),
-  jpl_call(MarkerObject, 'getChildren', [], ChildrenArray),
-  jpl_array_to_list(ChildrenArray,Children),
-  marker_trajectory_length(Children, Length).
-
-marker_trajectory_length([M0|[M1|Rest]], Distance) :-
-  marker_distance(M0, M1, D0),
-  marker_trajectory_length([M1|Rest], D1),
-  Distance is D0 + D1.
-marker_trajectory_length([_], 0.0).
-marker_trajectory_length([], 0.0).
-
-marker_distance(Marker0, Marker1, Distance) :-
-  marker_translation(Marker0, [X0,Y0,Z0]),
-  marker_translation(Marker1, [X1,Y1,Z1]),
-  Distance is sqrt( (X1-X0)^2 + (Y1-Y0)^2 + (Z1-Z0)^2 ).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
@@ -1217,9 +1008,6 @@ marker_query(MarkerName, object(Individual), QueryGroup, QueryTitle, Query) :-
 marker_query(MarkerName, object_without_children(Individual), QueryGroup, QueryTitle, Query) :-
   marker_query_individual(MarkerName, individual(Individual), QueryGroup, QueryTitle, Query).
 
-% TODO: recursive relations with intendation
-% marker_query(MarkerName, individual(Individual), QueryGroup, 'Relations (recursive)', ()).
-
 marker_query(MarkerName, _, 'Marker Visualization', 'What is the name of this marker?', QueryAtom) :-
   atom_concat('Name = ', MarkerName, QueryAtom).
 
@@ -1290,6 +1078,9 @@ marker_property(Marker, color(Color)) :-
 
 marker_property(Marker, scale(Scale)) :-
   marker_scale(Marker, Scale).
+
+marker_property(Marker, points(Points)) :-
+  marker_points(Marker, Points).
 
 marker_property(Marker, pose(Pose)) :-
   transform_data(Pose, (Position,Orientation)),
@@ -1403,6 +1194,14 @@ marker_alpha([], _, _).
 %
 marker_mesh_resource(Marker, Mesh) :-
   marker_call(Marker,Mesh,(get_marker_mesh,set_marker_mesh)).
+
+%% marker_points(+Marker, ?Points) is det.
+marker_points(Marker, Points) :-
+  marker_call(Marker, Points, (get_marker_points,set_marker_points)).
+
+%% marker_colors(+Marker, ?Colors) is det.
+marker_colors(Marker, Colors) :-
+  marker_call(Marker, Colors, (get_marker_colors,set_marker_colors)).
 
 %% marker_pose(+Marker, ?Value) is det.
 %
@@ -1653,6 +1452,22 @@ set_marker_alpha(MarkerObj, A) :-
 set_marker_alpha(MarkerObj, A) :-
   number(A),
   jpl_call(MarkerObj, 'setAlpha', [A], _).
+
+get_marker_colors(MarkerObj, Colors) :-
+  jpl_call(MarkerObj, 'getColors', [], ColorsArray),
+  jpl_array_to_list(ColorsArray,Colors).
+
+set_marker_colors(MarkerObj, Colors) :-
+  jpl_new(array(double), Colors, ColorsArray),
+  jpl_call(MarkerObj, 'setColors', [ColorsArray], _).
+
+get_marker_points(MarkerObj, Points) :-
+  jpl_call(MarkerObj, 'getPoints', [], PointsArray),
+  jpl_array_to_list(PointsArray,Points).
+
+set_marker_points(MarkerObj, Points) :-
+  jpl_new(array(double), Points, PointsArray),
+  jpl_call(MarkerObj, 'setPoints', [PointsArray], _).
 
 get_marker_translation(MarkerObj, [X,Y,Z]) :-
   jpl_call(MarkerObj, 'getTranslation', [], TranslationArray),
