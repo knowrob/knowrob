@@ -32,8 +32,11 @@
 
 :- module(knowrob_vis,
     [
-      visualisation_server/0,
-      camera_pose/2
+      show/0,
+      show/1,
+      show/2,
+      camera_pose/2,
+      visualisation_server/0
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -41,28 +44,80 @@
 :- use_module(library('rdfs_computable')).
 :- use_module(library('jpl')).
 
-:- rdf_meta camera_pose(r,r),
-            camera_transform(r).
+:- rdf_meta 
+      show(t),
+      show(t,r),
+      camera_pose(r,r),
+      camera_transform(r).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % Visualization server management
+% % % Convinience predicate for different types of visualizations
 
-%% visualisation_server is det.
-%
-% Launch the visualization server
-%
-visualisation_server :-
-  visualisation_server(_).
+show :- marker_update.
 
-visualisation_server(WebServer) :-
-    (\+ current_predicate(v_server, _)),
-    jpl_new('org.knowrob.vis.WebServer', [], WebServer),
-    jpl_list_to_array(['org.knowrob.vis.WebServer'], Arr),
-    jpl_call('org.knowrob.utils.ros.RosUtilities', runRosjavaNode, [WebServer, Arr], _),
-    assert(v_server(WebServer)),!.
-visualisation_server(WebServer) :-
-    current_predicate(v_server, _),
-    v_server(WebServer).
+show(X) :-
+  is_list(X), !,
+  show_next,
+  forall( member(MarkerDescr, X), (
+    T =.. [show|MarkerDescr], call(T)
+  )), !.
+
+show(X) :-
+  rdfs_individual_of(X, knowrob:'Designator'),
+  designator_publish(X),
+  (( rdf_has(Act, knowrob:objectActedOn, X),
+     rdf_has(Act, knowrob:capturedImage, _) )
+  -> designator_publish_image(Act)
+  ;  true ), !.
+
+show(X) :-
+  get_timepoint(Instant),
+  show(X,Instant,[]), !.
+
+show(X, Properties) :-
+  is_list(Properties),
+  get_timepoint(Instant),
+  show(X,Instant,Properties), !.
+
+show(X, Instant) :-
+  show(X, Instant, []), !.
+
+show(X, Instant, Properties) :-
+  is_list(Properties),
+  
+  marker_term(X, MarkerTerm),
+  marker(MarkerTerm, MarkerObj),
+  marker_update(MarkerObj,Instant),
+  
+  % TODO: X could also be a term agent(?Identifier) or object(?Identifier)
+  (( atom(X), rdfs_individual_of(X, knowrob:'EmbodiedAgent') )
+  -> ignore(show_speech(X,Instant)) ; true ),
+  
+  marker_properties(MarkerObj, Properties).
+  
+
+show_speech(Agent,Instant) :-
+  rdf_has(Ev, knowrob:'sender', Agent),
+  rdfs_individual_of(Ev, knowrob:'SpeechAct'),
+  occurs(Ev, Instant),
+  rdf_has(Ev, knowrob:'content', literal(type(_,Text))),
+  rdf_has(Ev, knowrob:'sender', Agent),
+  % find head
+  sub_component(pr2:'PR2Robot1', Head),
+  rdfs_individual_of(Head, knowrob:'Head-Vertebrate'),
+  rdf_has(Head, srdl2comp:urdfName, URDFVal),
+  strip_literal_type(URDFVal,URDF),
+  % FIXME: /map bad assumption
+  mng_lookup_transform('/map', URDF, Instant, Transform),
+  matrix_translation(Transform, [X,Y,Z]),
+  Z_Offset is Z + 0.2,
+  marker(sprite_text('PR2_SPEECH'), MarkerObj),
+  marker_color(sprite_text('PR2_SPEECH'), [1.0,1.0,1.0]),
+  marker_translation(MarkerObj, [X,Y,Z_Offset]),
+  % Create styled html text
+  format(atom(TextHtml), '<div style="font-size: 18px; font-style: italic; font-family: Oswald,Arial,Helvetica,sans-serif; text-align: center;">~w</div>', [Text]),
+  marker_text(MarkerObj, TextHtml),
+  marker_scale(MarkerObj, [1.0,1.0,1.0]).
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -90,4 +145,24 @@ camera_interface(Camera) :-
 camera_interface(Camera) :-
     current_predicate(v_camera_interface, _),
     v_camera_interface(Camera).
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % Visualization server management
+
+%% visualisation_server is det.
+%
+% Launch the visualization server
+%
+visualisation_server :-
+  visualisation_server(_).
+
+visualisation_server(WebServer) :-
+    (\+ current_predicate(v_server, _)),
+    jpl_new('org.knowrob.vis.WebServer', [], WebServer),
+    jpl_list_to_array(['org.knowrob.vis.WebServer'], Arr),
+    jpl_call('org.knowrob.utils.ros.RosUtilities', runRosjavaNode, [WebServer, Arr], _),
+    assert(v_server(WebServer)),!.
+visualisation_server(WebServer) :-
+    current_predicate(v_server, _),
+    v_server(WebServer).
 

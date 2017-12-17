@@ -32,133 +32,158 @@
 
 :- module(data_vis,
     [
-      diagram_canvas/0,
-      clear_diagram_canvas/0,
-      add_diagram/9,
-      add_diagram/10,
-      add_barchart/3,
-      add_piechart/3,
-      add_timeline/5,
-      remove_diagram/1
+      data_vis/2,
+      data_vis/3,
+      data_vis_remove/2,
+      data_vis_clear/0,
+      timeline/1
     ]).
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
-:- use_module(library('rdfs_computable')).
 :- use_module(library('jpl')).
 
-
-:- rdf_meta add_diagram(+,+,+,+,+,+,+,+,+),
-            remove_diagram(+).
-
-:- assert(d_canvas(fail)).
-%diagram_canvas :-
-%    d_canvas(fail),
-%    jpl_new('org.knowrob.vis.DiagramVisualization', [], Canvas),
-%    retract(d_canvas(fail)),
-%    assert(d_canvas(Canvas)),!.
-%diagram_canvas(Canvas) :-
-%    d_canvas(Canvas).
-
-diagram_canvas :-
-    d_canvas(fail),
-    jpl_new('org.knowrob.vis.DiagramVisualization', [], Canvas),
-    jpl_list_to_array(['org.knowrob.vis.DiagramVisualization'], Arr),
-    jpl_call('org.knowrob.utils.ros.RosUtilities', runRosjavaNode, [Canvas, Arr], _),
-    retract(d_canvas(fail)),
-    assert(d_canvas(Canvas)),!.
-diagram_canvas(Canvas) :-
-    d_canvas(Canvas).
-
-:- diagram_canvas.
-
-
-%% add_diagram(+Id, +Title, +Type, +Xlabel, +Ylabel, +Width, +Height, +Fontsize, +ValueList) is nondet.
+%% data_vis(+Term:term, +Data:term) is det
+%% data_vis(+Term:term, +Data:term, +Properties:list) is det
 %
-% Add object to the scene with its position at time 'Time'
+% Creates a new data_vis message and publishes it via "/data_vis_msgs"
+% ROS topic.
+% Term is one of piechart(Identifier), barchart(Identifier),
+% treechart(Identifier), timeline(Identifier), or linechart(Identifier).
+% Data is either data(Data) or data(Data,Labels).
+% Properties is a list of properties for the data_vis message of the form key:value.
+% Allowed keys are: title, xlabel, ylabel, width, height, fontsize.
 %
-% @param Identifier Unique string identifier for this diagram
-% @param Title      Title of this chart
-% @param Type       Type of the diagram (piechart, barchart or treechart)
-% @param Xlabel     Label for the X axis
-% @param Ylabel     Label for the Y axis
-% @param Width      Width of the diagram in px
-% @param Height     Height of the diagram in px
-% @param Fontsize   Fontsize for the labels
-% @param RowLabels  List of labels for the data rows (optional)
-% @param ValueList  List of data ranges, each of the form [[a,b],['1','2']]
+% @param Term the data_vis term
+% @param Data the data to be visualized
+% @param Properties list of data_vis properties
 %
-add_diagram(Id, Title, Type, Xlabel, Ylabel, Width, Height, Fontsize, ValueList) :-
-  add_diagram(Id, Title, Type, Xlabel, Ylabel, Width, Height, Fontsize, @(null), ValueList).
+data_vis(Term, Data) :-
+  data_vis(Term, Data, []).
+data_vis(Term, Data, Properties) :-
+  data_vis_object(Term, Object),
+  data_vis_set_data(Object, Data),
+  data_vis_set_properties(Object, Properties),
+  data_vis_publish.
+
+%% timeline(+Events:list) is det
+%
+% Creates a new data_vis timeline message and publishes it via "/data_vis_msgs"
+% ROS topic.
+%
+% @params Events list of temporal extended things
+timeline(Events) :-
+  findall(Time, (
+     member(Evt, Events),
+     interval(Evt, Interval),
+     atomic_list_concat(Interval, '_', Time)
+  ), EventExtends),
+  data_vis(timeline(event_timeline),
+           data([[Events,EventExtends]])).
+
+%% data_vis_clear is det
+%
+% Republishes each data_vis object with empty data
+% so that visualization clients can remove them.
+% TODO(daniel): Why not include mode field in message? e.g. (ADD,REMOVE,UPDATE)
+%
+data_vis_clear :-
+  data_vis_remove_objects.
+
+%% data_vis_remove is det
+%
+% Republishes a data_vis object with empty data
+% so that visualization clients can remove it.
+%
+data_vis_remove(Identifier) :-
+  data_vis_remove_object(Identifier).
+
+%% data_vis_object
+data_vis_object(piechart(Identifier), Object) :-
+  data_vis_new_object(Identifier, Object),
+  data_vis_set_type(Object, 0).
+data_vis_object(barchart(Identifier), Object) :-
+  data_vis_new_object(Identifier, Object),
+  data_vis_set_type(Object, 1).
+data_vis_object(treechart(Identifier), Object) :-
+  data_vis_new_object(Identifier, Object),
+  data_vis_set_type(Object, 2).
+data_vis_object(timeline(Identifier), Object) :-
+  data_vis_new_object(Identifier, Object),
+  data_vis_set_type(Object, 3),
+  data_vis_set_property(Object, xlabel:'Time'),
+  data_vis_set_property(Object, ylabel:'Events'),
+  data_vis_set_property(Object, fontsize:'12px').
+data_vis_object(linechart(Identifier), Object) :-
+  data_vis_new_object(Identifier, Object),
+  data_vis_set_type(Object, 4).
+
+%% data_vis_set_type
+data_vis_set_type(DataVisObject, Type) :-
+  jpl_call(DataVisObject, setType, [Type], _).
+
+%% data_vis_set_data
+data_vis_set_data(DataVisObject, data(Data)) :-
+  lists_to_arrays(Data, DataArr),
+  jpl_call(DataVisObject, setData, [DataArr], _).
+data_vis_set_data(DataVisObject, data(Data, Labels)) :-
+  lists_to_arrays(Data, DataArr),
+  lists_to_arrays(Labels, LabelsArr),
+  jpl_call(DataVisObject, setData, [DataArr,LabelsArr], _).
+
+%% data_vis_set_property
+data_vis_set_property(DataVisObject, title:Title) :-
+  jpl_call(DataVisObject, setTitle, [Title], _), !.
+data_vis_set_property(DataVisObject, xlabel:Label) :-
+  jpl_call(DataVisObject, setXLabel, [Label], _), !.
+data_vis_set_property(DataVisObject, ylabel:Label) :-
+  jpl_call(DataVisObject, setYLabel, [Label], _), !.
+data_vis_set_property(DataVisObject, width:Label) :-
+  jpl_call(DataVisObject, setWidth, [Label], _), !.
+data_vis_set_property(DataVisObject, height:Label) :-
+  jpl_call(DataVisObject, setHeight, [Label], _), !.
+data_vis_set_property(DataVisObject, fontsize:Label) :-
+  jpl_call(DataVisObject, setFontsize, [Label], _), !.
+data_vis_set_property(DataVisObject, _).
+
+%% data_vis_set_properties
+data_vis_set_properties(_, []) :- !.
+data_vis_set_properties(DataVisObject, [Prop|Rest]) :-
+  data_vis_set_property(DataVisObject, Prop),
+  data_vis_set_properties(DataVisObject, Rest).
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+%
+% ROS node for marker visualization
+%
+
+data_visualisation :-
+  data_visualisation(_).
   
-add_diagram(Id, Title, Type, Xlabel, Ylabel, Width, Height, Fontsize, RowLabels, ValueList) :-
-  once((
-    d_canvas(Canvas),
-    lists_to_arrays(ValueList, ValueArr),
-    once((lists_to_arrays(RowLabels, RowLabelArr) ; RowLabelArr = @(null))),
-    jpl_call(Canvas, 'addDiagram', [Id, Title, Type, Xlabel, Ylabel, Width, Height, Fontsize, RowLabelArr, ValueArr], _)
-  )).
+data_visualisation(DataVis) :-
+  (\+ current_predicate(v_data_vis, _)),
+  jpl_call('org.knowrob.vis.DataVisPublisher', get, [], DataVis),
+  jpl_list_to_array(['org.knowrob.vis.DataVisPublisher'], Arr),
+  jpl_call('org.knowrob.utils.ros.RosUtilities', runRosjavaNode, [DataVis, Arr], _),
+  assert(v_data_vis(MarkerVis)),!.
 
+data_visualisation(MarkerVis) :-
+  current_predicate(v_data_vis, _),
+  v_data_vis(MarkerVis).
 
-%% help_timeline(+SVal, +EVal, -Res)
-%
-% Helpfunction for add_timeline that concatenates Start and End time to one atom so it can be passed to add_diagram in the same fashion as the other data types
-help_timeline(SVal, EVal, Res) :-
-  atom_concat(SVal, '_', Tmp),
-  atom_concat(Tmp, EVal, Res).
+data_vis_publish :-
+  data_visualisation(DataVis),
+  jpl_call(DataVis, publish, [], _).
 
-%% add_timeline(+Id, +Title, +EventsList, +StartList, +EndList) is nondet.
-%
-% Simplified predicate for adding a timeline with default values
-%
-% @param Identifier Unique string identifier for this diagram
-% @param Title      Title of this chart
-% @param ValueList  List of data ranges, each of the form [[a,b],['1','2']]
-%
-add_timeline(Id, Title, EventsList, StartList, EndList) :-
-  %Concatenate Start and endtimes so they can be given to add_diagram as one value
-  maplist(help_timeline,StartList,EndList, TimeList),
-  %Call add_diagram with the appropriate settings
-  add_diagram(Id, Title, 'timeline', 'Time', 'Events', 250, 250, '12px', [[EventsList,TimeList]]).
+data_vis_new_object(Identifier, DataVisObject):-
+  data_visualisation(DataVis),
+  jpl_call(DataVis, createDataVisObject, [Identifier], DataVisObject).
 
-%% add_piechart(+Id, +Title, +ValueList) is nondet.
-%
-% Simplified predicate for adding a piechart with default values
-%
-% @param Identifier Unique string identifier for this diagram
-% @param Title      Title of this chart
-% @param ValueList  List of data ranges, each of the form [[a,b],['1','2']]
-%
-add_piechart(Id, Title, ValueList) :-
-    add_diagram(Id, Title, 'piechart', '', '', 250, 250, '9px', ValueList).
+data_vis_remove_object(Identifier):-
+  data_visualisation(DataVis),
+  jpl_call(DataVis, removeDataVisObject, [Identifier], _).
 
+data_vis_remove_objects :-
+  data_visualisation(DataVis),
+  jpl_call(DataVis, removeDataVisObjects, [], _).
 
-%% add_barchart(+Id, +Title, +ValueList) is nondet.
-%
-% Simplified predicate for adding a barchart with default values
-%
-% @param Identifier Unique string identifier for this diagram
-% @param Title      Title of this chart
-% @param ValueList  List of data ranges, each of the form [[a,b],['1','2']]
-%
-add_barchart(Id, Title, ValueList) :-
-    add_diagram(Id, Title, 'barchart', '', '', 250, 250, '9px', ValueList).
-
-    
-%% remove_diagram(+Id) is det.
-%
-% Remove the diagram specified by 'id'
-%
-% @param Id Unique string identifier for the chart to be removed
-% 
-remove_diagram(Id) :-
-    d_canvas(Canvas),
-    jpl_call(Canvas, 'removeDiagram', [Id], _),!.
-
-%% clear_diagram_canvas is det.
-%
-% Remove all diagrams from the canvas.
-% 
-clear_diagram_canvas :-
-    d_canvas(Canvas),
-    jpl_call(Canvas, 'clear', [], _).
