@@ -35,6 +35,7 @@
       current_object_pose/2,
       object_pose_at_time/3,
       object_pose_at_time/4,
+      object_trajectory/4,
       object_distance/3,
       object_color/2,
       object_dimensions/4,
@@ -65,6 +66,7 @@
     current_object_pose(r,-),
     object_pose_at_time(r,r,?),
     object_pose_at_time(r,r,?,?),
+    object_trajectory(r,t,+,-),
     object_distance(r,r,-),
     object_dimensions(r, ?, ?, ?),
     object_color(r, ?),
@@ -124,6 +126,20 @@ object_pose_at_time(Obj, Instant, PoseTerm, Interval) :-
   holds(Obj, knowrob:pose, Pose, Interval),
   interval_during(Instant, Interval), !,
   pose_term(Pose, PoseTerm).
+
+%% object_trajectory(+Obj, +Interval, +Dt, -Trajectory) is semidet
+%
+object_trajectory(Obj, Interval, num_samples(Count), Trajectory) :-
+  interval(Interval, [Begin,End]),
+  Dt is (T1 - T0) / Count,
+  object_trajectory(Obj, Interval, dt(Dt), Trajectory).
+
+object_trajectory(_, [Begin,End], _, []) :- Begin > End, !.
+object_trajectory(Obj, [Begin,End], dt(Dt), [X|Xs]) :-
+  Begin =< End, Next is Begin + Dt,
+  % TODO(daniel): this could yield many mongo queries. find more efficient way of sampling trajectories.
+  object_pose_at_time(Obj, Begin, X),
+  object_trajectory(Obj, [Next,End], dt(Dt), Xs).
 
 %% object_distance(+A:iri, +B:iri, ?Distance:float) is semidet
 % 
