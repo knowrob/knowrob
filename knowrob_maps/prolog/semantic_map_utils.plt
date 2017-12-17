@@ -27,7 +27,7 @@
 :- use_module(library('knowrob_objects')).
 :- use_module(library('knowrob_perception')).
 
-:- owl_parser:owl_parse('package://knowrob_map_data/owl/ccrl2_semantic_map.owl').
+:- owl_parser:owl_parse('package://knowrob_maps/owl/ccrl2_semantic_map.owl').
 :- owl_parser:owl_parse('package://knowrob_srdl/owl/srdl2-comp.owl').
 
 :- rdf_db:rdf_register_ns(xsd,      'http://www.w3.org/2001/XMLSchema#', [keep(true)]).

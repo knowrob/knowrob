@@ -9,7 +9,6 @@
     <!ENTITY knowrob "http://knowrob.org/kb/knowrob.owl#" >
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
-    <!ENTITY ias_map "http://knowrob.org/kb/ias_semantic_map.owl#" >
     <!ENTITY protege "http://protege.stanford.edu/plugins/owl/protege#" >
 ]>
 

@@ -1,12 +1,14 @@
 
 cmake_minimum_required(VERSION 2.8.3)
-project(knowrob_map_data)
+project(knowrob_maps)
 
 
-find_package(catkin REQUIRED COMPONENTS knowrob_map_tools)
+find_package(catkin REQUIRED COMPONENTS comp_spatial)
+
+catkin_python_setup()
 
 catkin_package(
-    CATKIN_DEPENDS knowrob_map_tools
+    CATKIN_DEPENDS comp_spatial rospy
 )
 
 install(DIRECTORY launch/
@@ -17,3 +19,10 @@ install(DIRECTORY owl/
   
 install(DIRECTORY prolog/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/prolog)
+  
+install(PROGRAMS
+  scripts/urdf_to_sem
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+  
+install(DIRECTORY src
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})

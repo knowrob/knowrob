@@ -6,11 +6,11 @@
 import argparse
 import sys
 
-import knowrob_semantic_maps
+import knowrob_maps
 
 
 def execute(args):
-    if knowrob_semantic_maps.urdf_to_sem(args.urdf, args.sem, args.overwrite, args.suffix):
+    if knowrob_maps.urdf_to_sem(args.urdf, args.sem, args.overwrite, args.suffix):
         return 0
     else:
         return 1

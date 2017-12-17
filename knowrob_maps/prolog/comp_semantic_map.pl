@@ -86,7 +86,7 @@ POSSIBILITY OF SUCH DAMAGE.
 :- use_module(library('semweb/rdfs_computable')).
 :- use_module(library('thea/owl_parser')).
 
-:- owl_parser:owl_parse('../owl/comp_semantic_map.owl', false, false, true).
+:- owl_parser:owl_parse('package://knowrob_maps/owl/comp_semantic_map.owl', false, false, true).
 
 :- rdf_db:rdf_register_ns(knowrob,      'http://knowrob.org/kb/knowrob.owl#',      [keep(true)]).
 :- rdf_db:rdf_register_ns(comp_sem_map, 'http://knowrob.org/kb/comp_semantic_map.owl#', [keep(true)]).
@@ -185,7 +185,6 @@ lookForObj(Obj,Obj):-
 % computable wrappers for all predicates below obj -> objT? 
 
 lookForObjT(ObjT, Obj):-
-  % TODO: call `entity` instead, would also include logged designators
   owl_subclass_of(ObjT, knowrob:'SpatialThing-Localized'),
   owl_has(Obj, rdf:type, ObjT).
   %rdf_triple(knowrob:orientation, Obj, Loc).
@@ -264,7 +263,6 @@ createdAtLocationTBecause(ObjT, LocT, EvtT) :-
 createdInEventT(ObjT, EvtT) :-
   owl_subclass_of(ObjT, knowrob:'SpatialThing-Localized'),
   owl_subclass_of(EvtT, knowrob:'ActionOnObject'),
-  % FIXME: does not work with new action projection
   owl_restriction_on(EvtT, restriction(knowrob:'outputsCreated', some_values_from(ObjT))).
 
 

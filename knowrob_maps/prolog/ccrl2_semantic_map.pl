@@ -1,5 +1,6 @@
-/*
-  Copyright (C) 2009-2014 Lars Kunze, Lorenz Moesenlechner, Moritz Tenorth
+/** 
+
+  Copyright (C) 2009 Lars Kunze, Lorenz Moesenlechner, Moritz Tenorth
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -29,9 +30,15 @@
 
 */
 
-:- register_ros_package(comp_spatial).
+:- use_module(library('semweb/rdfs_computable')).
+:- use_module(library('semweb/rdf_db')).
+:- use_module(library('semweb/rdfs')).
+:- use_module(library('thea/owl_parser')).
+:- use_module(library('semweb/owl')).
+:- use_module(library('semweb/rdf_edit')).
+:- use_module(library('semweb/actionmodel')).
 
-:- register_ros_package(knowrob_map_tools).
+:- owl_parser:owl_parse('package://knowrob_maps/owl/ccrl2_semantic_map.owl', false, false, true).
 
-:- use_module(library('semantic_map_utils')).
-
+:- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(ias_map, 'http://knowrob.org/kb/ccrl2_semantic_map.owl#', [keep(true)]).

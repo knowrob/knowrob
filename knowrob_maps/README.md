@@ -1,4 +1,4 @@
-knowrob_map_tools
+knowrob_maps
 ===
 
 Additional predicates for manipulating semantic maps and reasoning about them
@@ -9,7 +9,7 @@ Additional predicates for manipulating semantic maps and reasoning about them
   A script to convert URDF to knowrob:SemanticEnvironmentMap
 
   ``` bash
-$ rosrun knowrob_map_tools urdf_to_sem
+$ rosrun knowrob_maps urdf_to_sem
 
 usage: urdf_to_sem [-h] [-n NAMESPACE] [-s SUFFIX] [-f] urdf [sem]
 
@@ -31,7 +31,7 @@ optional arguments:
     - 1. Convert URDF model to SemanticEnvironmentMap
   
     ```bash
-    $ rosrun knowrob_map_tools urdf_to_sem -s PM580j -n iai-map kitchen.urdf kitchen.owl
+    $ rosrun knowrob_maps urdf_to_sem -s PM580j -n iai-map kitchen.urdf kitchen.owl
     ```
 
     - 2. Load Ontology

@@ -29,6 +29,8 @@
 
 */
 
-:- register_ros_package(knowrob_map_tools).
-:- register_ros_package(knowrob_map_data).
+:- register_ros_package(comp_spatial).
+:- register_ros_package(knowrob_maps).
+
+:- use_module(library('semantic_map_utils')).
 
