@@ -4,17 +4,18 @@
   <description>Additional predicates for manipulating semantic maps and
                reasoning about them
   </description>
-  <maintainer email="knowrob@tenorth.de">Moritz Tenorth</maintainer>
+  <maintainer email="danielb@cs.uni-bremen.de">Daniel Beßler</maintainer>
 
   <license>BSD</license>
 
-  <url type="website">http://www.ros.org/wiki/knowrob_maps</url>
+  <url type="website">http://www.ros.org/wiki/knowrob</url>
   <url type="bugtracker">https://github.com/knowrob/knowrob/issues</url>
 
   <author>Lars Kunze</author>
   <author>Lorenz Moesenlechner</author>
   <author>Moritz Tenorth</author>
   <author email="furushchev@jsk.imi.i.u-tokyo.ac.jp">Yuki Furuta</author>
+  <author email="danielb@cs.uni-bremen.de">Daniel Beßler</author>
 
   <buildtool_depend>catkin</buildtool_depend>
 
