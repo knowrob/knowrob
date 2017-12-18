@@ -75,7 +75,7 @@ owl_parse_1(URL,Imported) :-
 
     % determine package name and resolve path
     selectchk(Pkg, PathList, LocalPath),
-    rospack_package_path(Pkg, PkgPath),
+    ros_package_path(Pkg, PkgPath),
 
     % build global path and load OWL file
     atomic_list_concat([PkgPath|LocalPath], '/',  GlobalPath),
