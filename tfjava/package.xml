@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package>
-  <name>tf_prolog</name>
+  <name>tfjava</name>
   <version>0.1.0</version>
   <description>
-    The tf_prolog package provides Java and Prolog client libraries for the
+    The tfjava package provides Java and Prolog client libraries for the
     tf system.
   </description>
 

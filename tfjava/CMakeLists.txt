@@ -1,6 +1,6 @@
 
 cmake_minimum_required(VERSION 2.8.3)
-project(tf_prolog)
+project(tfjava)
 
 find_package(catkin REQUIRED COMPONENTS rosprolog rosjava_build_tools)
 

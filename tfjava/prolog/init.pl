@@ -32,4 +32,4 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % dependencies
 
-:- use_module(library('tf_prolog')).
+:- use_module(library('tfjava')).

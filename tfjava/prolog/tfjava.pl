@@ -35,7 +35,7 @@
 
 */
 
-:- module(tf_prolog,
+:- module(tfjava,
     [
         start_tf_listener/0,
 

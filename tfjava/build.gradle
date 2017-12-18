@@ -33,7 +33,7 @@ allprojects {
       A github url provides a good standard unique name for your project
       Example below, but you may wish to switch to your own unique url.
     */
-    group 'org.knowrob.tf_prolog'
+    group 'org.knowrob.tfjava'
     version = project.catkin.pkg.version
 }
 
