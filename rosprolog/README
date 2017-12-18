@@ -1,10 +1,16 @@
 
-rosprolog is a simple wrapper around swi-prolog that uses an additional user-init file.
-Two new predicates are added in this file:
+rosprolog is a wrapper around swi-prolog that uses an additional user-init file.
+Some new predicates are added in this file:
+ * register_ros_package( <ros-package-name> )
+   Loads the initialization file from $(rospack find <ros-package-name>)/prolog/<prolog-file-path>.
  * use_ros_module( <ros-package-name>, '<prolog-file-path>' )
    Load a prolog module from $(rospack find <ros-package-name>)/prolog/<prolog-file-path>.
- * rospack_package_path( Package, Path )
+ * ros_package_path( Package, Path )
    Get the absolute path of a package.
+ * ros_info( Msg ), ros_warning( Msg ), ros_error( Msg )
+   Send logging messages to ROS master.
+ * tf_lookup_transform( Target, Source, Transform ), ...
+   TFTransformListener interface.
 
 To run rosprolog, use:
 rosrun rosprolog rosprolog
