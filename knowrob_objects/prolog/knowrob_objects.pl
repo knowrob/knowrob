@@ -131,7 +131,7 @@ object_pose_at_time(Obj, Instant, PoseTerm, Interval) :-
 %
 object_trajectory(Obj, Interval, num_samples(Count), Trajectory) :-
   interval(Interval, [Begin,End]),
-  Dt is (T1 - T0) / Count,
+  Dt is (End - Begin) / Count,
   object_trajectory(Obj, Interval, dt(Dt), Trajectory).
 
 object_trajectory(_, [Begin,End], _, []) :- Begin > End, !.
@@ -206,6 +206,16 @@ object_dimensions(Obj, Depth, Width, Height) :-
   holds(Obj, knowrob:depthOfObject,  literal(type(_, Depth_))),  atom_number(Depth_,  Depth),
   holds(Obj, knowrob:widthOfObject,  literal(type(_, Width_))),  atom_number(Width_,  Width),
   holds(Obj, knowrob:heightOfObject, literal(type(_, Height_))), atom_number(Height_, Height), !.
+
+object_dimensions(Obj, Depth, Width, Height) :-
+  % The depth of a knob defaults to 3cm here. This information
+  % should either be asserted somewhere else or be set as a property
+  % when importing the semantic map.
+  holds( Obj, knowrob:radius, literal(type(_, Radius_)) ),
+  atom_number(Radius_, Radius),
+  Width is 2 * Radius,
+  Height is Width,
+  Depth is Height.
 
 object_boundingBox(Obj, Depth, Width, Height) :-
   holds(Obj, knowrob:boundingBoxSize, literal(type(xsd:string, ScaleVector))),
