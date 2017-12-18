@@ -47,7 +47,6 @@
       object_query/4,
       object_queries/2,
       comp_tf_pose/2,
-      comp_tf_pose_at_time/3,
       comp_depthOfObject/2,
       comp_widthOfObject/2,
       comp_heightOfObject/2
