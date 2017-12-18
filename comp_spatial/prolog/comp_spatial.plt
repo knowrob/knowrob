@@ -24,7 +24,7 @@
 :- use_module(library('owl_parser')).
 :- use_module(library('comp_spatial')).
 
-:- owl_parser:owl_parse('package://knowrob_map_data/owl/ccrl2_semantic_map.owl').
+:- owl_parser:owl_parse('package://knowrob_maps/owl/ccrl2_semantic_map.owl').
 :- owl_parser:owl_parse('package://comp_spatial/owl/comp_spatial.owl').
 :- owl_parser:owl_parse('package://comp_spatial/owl/test_comp_spatial.owl').
 
