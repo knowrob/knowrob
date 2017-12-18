@@ -1,5 +1,6 @@
 /*
   Copyright (C) 2009-14 Lorenz Mösenlechner, Moritz Tenorth
+  Copyright (C) 2017 Daniel Beßler
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -31,6 +32,24 @@
 
 :- use_module(library('process')).
 
+%% ros_param_get_string(+Key,-Value) is semidet
+%% ros_param_get_double(+Key,-Value) is semidet
+%% ros_param_get_int(+Key,-Value) is semidet
+%
+% Read parameter from ROS parameter server.
+%%
+%% ros_param_set_string(+Key,+Value) is semidet
+%% ros_param_set_double(+Key+Value) is semidet
+%% ros_param_set_int(+Key,+Value) is semidet
+%
+% Write parameter to ROS parameter server.
+%%
+%% ros_info(+Msg) is det
+%% ros_warning(+Msg) is det
+%% ros_error(+Msg) is det
+%
+% Debug via ROS master.
+%%
 %% ros_package_path(+Package, -Path) is semidet
 %
 % Locate ROS packages on the harddisk using 'rospack find'
@@ -38,12 +57,6 @@
 %% ros_package_command(+Command, -Output) is semidet
 %
 % Runs a rospack command of the form 'rospack ...'
-%%
-%% ros_info(+Msg) is det
-%% ros_warning(+Msg) is det
-%% ros_error(+Msg) is det
-%
-% Debug via ROS master.
 %%
 %% tf_lookup_transform(+TargetFrame, +SourceFrame, -Transform) is semidet
 %

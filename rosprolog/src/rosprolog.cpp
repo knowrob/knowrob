@@ -19,6 +19,48 @@ PREDICATE(ros_init, 0) {
 }
 
 /*********************************/
+/********** Parameters ***********/
+/*********************************/
+
+PREDICATE(ros_param_get_string, 2) {
+  std::string key((char*)PL_A1);
+  std::string value;
+  ros::param::get(key, value);
+  PL_A2 = value.c_str();
+  return TRUE;
+}
+PREDICATE(ros_param_get_int, 2) {
+  std::string key((char*)PL_A1);
+  int value;
+  ros::param::get(key, value);
+  PL_A2 = value;
+  return TRUE;
+}
+PREDICATE(ros_param_get_double, 2) {
+  std::string key((char*)PL_A1);
+  double value;
+  ros::param::get(key, value);
+  PL_A2 = value;
+  return TRUE;
+}
+
+PREDICATE(ros_param_set_string, 2) {
+  std::string key((char*)PL_A1);
+  ros::param::set(key,(char*)PL_A2);
+  return TRUE;
+}
+PREDICATE(ros_param_set_double, 2) {
+  std::string key((char*)PL_A1);
+  ros::param::set(key,(double)PL_A2);
+  return TRUE;
+}
+PREDICATE(ros_param_set_int, 2) {
+  std::string key((char*)PL_A1);
+  ros::param::set(key,(int)PL_A2);
+  return TRUE;
+}
+
+/*********************************/
 /********** Logging **************/
 /*********************************/
 
