@@ -31,19 +31,40 @@
 
 :- use_module(library('process')).
 
-%% rospack_package_path(+Package, -Path) is nondet.
+%% ros_package_path(+Package, -Path) is semidet
 %
 % Locate ROS packages on the harddisk using 'rospack find'
+%%
+%% ros_package_command(+Command, -Output) is semidet
+%
+% Runs a rospack command of the form 'rospack ...'
+%%
+%% ros_info(+Msg) is det
+%% ros_warning(+Msg) is det
+%% ros_error(+Msg) is det
+%
+% Debug via ROS master.
+%%
+%% tf_lookup_transform(+TargetFrame, +SourceFrame, -Transform) is semidet
+%
+% True if Transform is the current transform from TargetFrame to SourceFrame.
+% Transform is a term "pose([X,Y,Z],[QX,QY,QZ,QW])".
+%%
+%% tf_listener_start is det
 % 
-% @param Package  Name of a ROS package
-% @param Path     Global path of Package determined by 'rospack find'
+% Start listening to TF topic.
+%%
+%% tf_transform_point(+SourceFrame, +TargetFrame, +PointIn, -PointOut) is semidet
+%% tf_transform_quaternion(+SourceFrame, +TargetFrame, +QuaternionIn, -QuaternionOut) is semidet
+%% tf_transform_pose(+SourceFrame, +TargetFrame, +PoseIn, -PoseOut) is semidet
 % 
-rospack_package_path(Package, Path) :-
-  nonvar(Package),
-  process_create(path('rospack'), ['find', Package], [stdout(pipe(RospackOutput)), process(PID)]),
-  read_line_to_codes(RospackOutput, C),
-  string_to_list(Path, C),
-  process_wait(PID, _).
+% Transforms input from SourceFrame to TargetFrame.
+% PointIn is a list [float x, y, z].
+% QuaternionIn is a list [float qx, qy, qz, qw].
+% PoseIn is a term pose([float x, y, z], [float qx, qy, qz, qw]).
+%%
+:- use_foreign_library('librosprolog.so').
+:- ros_init.
 
 %% init_ros_package(+PackagePath) is nondet.
 %
@@ -73,7 +94,7 @@ register_ros_package(Package, _) :-
   ros_package_initialized(Package), !.
 
 register_ros_package(Package, AbsoluteDirectory) :-
-  rospack_package_path(Package, PackagePath),
+  ros_package_path(Package, PackagePath),
   nonvar(PackagePath),
   atom_concat(PackagePath, '/prolog/', AbsoluteDirectory),
   asserta(library_directory(AbsoluteDirectory)),
