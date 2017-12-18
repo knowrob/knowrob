@@ -46,6 +46,8 @@
       storagePlaceForBecause/3,
       object_query/4,
       object_queries/2,
+      comp_tf_pose/2,
+      comp_tf_pose_at_time/3,
       comp_depthOfObject/2,
       comp_widthOfObject/2,
       comp_heightOfObject/2
@@ -256,6 +258,27 @@ object_assert_dimensions(Obj, Depth, Width, Height) :-
 %
 object_mesh_path(Obj, FilePath) :-
   holds(Obj, knowrob:pathToCadModel, literal(type(xsd:string, FilePath))).
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % Pose from TF
+
+%% comp_tf_pose
+comp_tf_pose(Obj, Pose) :-
+  get_timepoint(Instant),
+  comp_tf_pose_at_time(Obj, Pose, Instant).
+
+%% comp_tf_pose_at_time
+comp_tf_pose_at_time(Obj, Pose, Instant) :-
+  rdf_has(Obj, knowrob:frameName, ObjFrame),
+  get_timepoint(Now),
+  20 > abs(Now - Instant),
+  map_frame_name(MapFrameName),
+  tf_lookup_transform(MapFrameName, ObjFrame, PoseTerm),
+  create_pose(PoseTerm, Pose), !.
+
+knowrob_temporal:holds(Obj, 'http://knowrob.org/kb/knowrob.owl#pose', Pose, [Begin,_]) :-
+  comp_tf_pose_at_time(Obj, Pose, Begin).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
