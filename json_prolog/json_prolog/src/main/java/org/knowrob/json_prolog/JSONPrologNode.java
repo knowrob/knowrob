@@ -50,6 +50,8 @@ import org.ros.node.service.ServiceResponseBuilder;
 
 /**
  * ROS service interface to rosprolog
+ *
+ * @todo Concurrent processing of threadsafe queries.
  * 
  * @author Lorenz Moesenlechner
  * @author Moritz Tenorth
@@ -144,14 +146,7 @@ public class JSONPrologNode extends AbstractNodeMain {
 	private class QueryCallback implements ServiceResponseBuilder<
 				json_prolog_msgs.PrologQueryRequest,json_prolog_msgs.PrologQueryResponse> {
 		@Override
-		public void build(json_prolog_msgs.PrologQueryRequest request, json_prolog_msgs.PrologQueryResponse response) {
-			// TODO(daniel): why should we close? Could be two different clients
-			//if(!closeIncrementalQuery(response)) {
-			//	response.setOk(false);
-			//	response.setMessage("Failed to close incremental query.");
-			//	return;
-			//}
-		        	
+		public void build(json_prolog_msgs.PrologQueryRequest request, json_prolog_msgs.PrologQueryResponse response) {	
 			if ( queries.get(request.getId()) != null ) {
 				response.setOk(false);
 				response.setMessage("Already processing a query with id " + request.getId());
@@ -195,13 +190,7 @@ public class JSONPrologNode extends AbstractNodeMain {
 		public void build(json_prolog_msgs.PrologQueryRequest request,
 						json_prolog_msgs.PrologQueryResponse response) {
 			try {
-				// TODO(daniel): why should we close? Could be two different clients
-				//if(!closeIncrementalQuery(response)) {
-				//	response.setOk(false);
-				//	response.setMessage("Failed to close incremental query.");
-				//	return;
-				//}
-				synchronized(this){
+				synchronized(jpl.Query.class){
 					if (queries.get(request.getId()) != null ) {
 						response.setOk(false);
 						response.setMessage("Already processing a query with id " + request.getId());
@@ -234,32 +223,6 @@ public class JSONPrologNode extends AbstractNodeMain {
 		}
 	}
 
-	private boolean closeIncrementalQuery(PrologQueryResponse response) {
-		// If there is an incremental query active, just close it
-		if (hasIncrementalQuery) {
-			String queryId = null;
-			
-			for(Entry<String, PrologSolutions> e : queries.entrySet()) {
-				if(e.getValue() instanceof PrologIncrementalSolutions) {
-					queryId = e.getKey();
-					break;
-				}
-			}
-			
-			if(queryId==null) {
-				return false;
-			}
-			else {
-				removeQuery(queryId);
-				return true;
-			}
-		}
-		else {
-			return true;
-		}
-	}
-
-
 	/**
 	 * Callback for the NextSolution service
 	 * 
@@ -274,8 +237,12 @@ public class JSONPrologNode extends AbstractNodeMain {
 		@Override
 		public void build(json_prolog_msgs.PrologNextSolutionRequest request, json_prolog_msgs.PrologNextSolutionResponse response) {
 			try {
-				PrologSolutions currentQuery = queries.get(request.getId());
-				synchronized(currentQuery){
+				// FIXME(daniel): Yields deadlock if json_prolog is called within the query again.
+				//                JPL7 has the limitation that hasMoreSolutions(), hasMoreElements(), nextSolution(),
+				//                nextElement(), or rewind() should not be invoked concurrently.
+				// @see http://jpl7.org/740/JavaApiOverview.jsp#Multi-Threaded%20Queries
+				synchronized(jpl.Query.class){
+					PrologSolutions currentQuery = queries.get(request.getId());
 					if (currentQuery == null) {
 						response.setStatus(json_prolog_msgs.PrologNextSolutionResponse.WRONG_ID);
 					}
@@ -293,7 +260,7 @@ public class JSONPrologNode extends AbstractNodeMain {
 								response.setStatus(json_prolog_msgs.PrologNextSolutionResponse.OK);
 							}
 						}
-				       }
+					}
 				}
 
 			}
