@@ -1,6 +1,7 @@
 /** <module> Computables related to a semantic map.
 
 Copyright (c) 2011, Lars Kunze <kunzel@cs.tum.edu>
+Copyright (c) 2017, Daniel Beßler
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -34,479 +35,220 @@ POSSIBILITY OF SUCH DAMAGE.
 
 :- module(comp_semantic_map,
     [
-     comp_number_of_levels/2,
-     comp_number_of_stories/2,
-     comp_has_rooms/2,
-     nth_level_of_building/3,
-     
-     lookForObj/2,
-     lookForObjT/2,
-
-     lookForSimilarObjT/2,
-     lookForMostSimilarObjT/2,
-     lookForKMostSimilarObjT/3,
-     lookForSimilarObjTGtWup/3,
-     lookForSimilarObjTBecause/3,
-     lookForMostSimilarObjTBecause/3,
-     lookForKMostSimilarObjTBecause/4,
-     lookForSimilarObjTGtWupBecause/4,
-
-     searchFoodOrDrinkTypeAtLocation/2,
-     searchFoodOrDrinkTypeAtLocationType/2,
-     searchFoodOrDrinkTypeInStorageConstruct/2,
-     searchFoodOrDrinkTypeAtServiceLocation/2,
-
-
-     object_info/2,
-     get_url/2,
-     get_room/2,
-     get_level/2,
-    
-     in_room/2,
-     same_room/2,
-     in_level/2,
-     same_level/2,
-     get_sorted_path_costs/3,
-     path_cost/3,
-     intra_level_cost/3,
-     inter_level_cost/3,
-     level_distance/3,
-    
-     create_perception_instance/1,
-     create_object_instance/2,
-     set_object_perception/2,
-     set_perception_pose/2,
-     update_pose/2
-
-    
+     building_number_of_levels/2,  % number of floors
+     building_number_of_stories/2, % number of levels above ground
+     building_has_rooms/2,         % true if a room is part of the building
+     building_path_cost/3,         % cost estimate for navigation between two different rooms/levels
+     building_best_path_cost/3,
+     map_object_in_level/2,        % true if object is inside of level bounding box
+     map_object_in_room/2,         % true if object is inside of room bounding box
+     map_object_most_similar/2,    % find (most) similar object
+     map_object_similar/2,
+     map_object_similar/3
      ]).
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs_computable')).
-:- use_module(library('thea/owl_parser')).
 
 :- owl_parser:owl_parse('package://knowrob_maps/owl/comp_semantic_map.owl', false, false, true).
 
 :- rdf_db:rdf_register_ns(knowrob,      'http://knowrob.org/kb/knowrob.owl#',      [keep(true)]).
 :- rdf_db:rdf_register_ns(comp_sem_map, 'http://knowrob.org/kb/comp_semantic_map.owl#', [keep(true)]).
 
-
 % define predicates as rdf_meta predicates
 % (i.e. rdf namespaces are automatically expanded)
 :-  rdf_meta
-  comp_number_of_levels(r,-),
-  comp_number_of_stories(r,-),
-  nth_level_of_building(@,r,r),
-  
-  searchFoodOrDrinkTypeAtLocation(r,r),
-  searchFoodOrDrinkTypeAtLocationType(r,r),
-  searchFoodOrDrinkTypeInStorageConstruct(r,r),
-  searchFoodOrDrinkTypeAtServiceLocation(r,r),
+  building_number_of_levels(r,-),
+  building_number_of_stories(r,-),
+  building_has_rooms(r,-),
+  building_path_cost(r,r,-),
+  building_best_path_cost(r,t,-),
+  map_object_in_room(r, r),
+  map_object_in_level(r, r),
+  map_object_most_similar(r,r),
+  map_object_similar(r,r),
+  map_object_similar(r,r,+).
 
-  lookForObj(r, r),
-  lookForObjT(r, r),
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% Spatial layout of maps
 
-  lookForSimilarObjT(r, r),
-  lookForMostSimilarObjT(r, r),
-  lookForKMostSimilarObjT(r, -, r),
-  lookForSimilarObjTGtWup(r, -, r),
-
-  lookForSimilarObjTBecause(r, r, r),
-  lookForMostSimilarObjTBecause(r, r, r),
-  lookForKMostSimilarObjTBecause(r, -, r, r),
-  lookForSimilarObjTGtWupBecause(r, -, r, r),
-
-  object_info(r,-),
-  get_url(r, -),
-  get_room(r, -),
-  get_level(r, -),
-  
-  in_room(r, r),
-  same_room(r, r),
-  in_level(r, r),
-  same_level(r, r),
-  get_sorted_path_costs(r, -, -),
-  path_cost(r,r,-),
-  intra_level_cost(r,r,-),
-  inter_level_cost(r,r,-),
-  level_distance(r,r,-),
-
-  create_object_instance(r,r),
-  update_pose(r,-),
-  create_perception_instance(-),
-  set_object_perception(r,r),
-  set_perception_pose(r,-),
-
-  data_value(r,r,-).
-
-% Example query:
-% setof(_O, lookForObjT(knowrob:'Cup', _O), _Objs),
-% get_sorted_path_costs('http://www.jsk.t.u-tokyo.ac.jp/jsk_map.owl#cup-3', _Objs, _Sorted),
-% member([_Cost,_Obj], _Sorted),
-% object_info(_Obj,_Info),
-% append([_Obj,_Cost],_Info,Result).
-
-
-comp_number_of_levels(B, N):-
-  setof(L, (owl_has(B, rdf:type,knowrob:'Building'),
-            rdf_triple(knowrob:'hasLevels',B, L)), Ls),
+%% building_number_of_levels(?Map:iri, ?N:int) is semidet
+%
+% True if N is the number of levels in Map.
+%
+% @param Map The semantic map 
+% @param N The number of levels
+%
+building_number_of_levels(Map, N):-
+  rdfs_individual_of(Map, rdf:type, knowrob:'Building'),
+  setof(L, rdf_triple(knowrob:'hasLevels', Map, L), Ls),
   length(Ls, N).
 
-comp_number_of_stories(B, N) :-
-  setof(L, (owl_has(B, rdf:type, knowrob:'Building'),
-            rdf_triple(knowrob:'hasLevels',B, L),
+%% building_number_of_stories(?Map:iri, ?N:int) is semidet
+%
+% True if N is the number of stories in Map.
+%
+% @param Map The semantic map 
+% @param N The number of stories
+%
+building_number_of_stories(Map, N) :-
+  rdfs_individual_of(Map, rdf:type, knowrob:'Building'),
+  setof(L, (rdf_triple(knowrob:'hasLevels', Map, L),
             owl_has(L, rdf:type, knowrob:'AboveGroundLevelInAConstruction')), Ls),
   length(Ls, N).
 
-comp_has_rooms(I, R) :-
-  rdf_reachable(C, rdfs:subClassOf, knowrob:'ConstructionArtifact'),
-  rdf_has(I, rdf:type, C),
-  rdf_triple(knowrob:'hasLevels',I, L),
-  rdf_triple(knowrob:'hasRooms',L, R).
+%% building_has_rooms(+Map:iri, ?Room:iri) is semidet
+%
+% True if Room is a Room of some level in Map.
+%
+% @param Map The semantic map 
+% @param Room The room in Map
+%
+building_has_rooms(Map, Room) :-
+  rdfs_individual_of(Map, rdf:type, knowrob:'Building'),
+  once((
+    rdf_triple(knowrob:'hasLevels', Map, Level),
+    rdf_triple(knowrob:'hasRooms', Level, Room))).
 
-nth_level_of_building(Number, Building, Level) :-
-  owl_has(Building, knowrob:hasLevels, Level), 
-  owl_has(Level, knowrob:floorNumber, literal(N)),
-  atom_number(N, Number).
+building_floor_number(Floor, Number):-
+  rdfs_individual_of(Floor, knowrob:'LevelOfAConstruction'),
+  rdf_triple(knowrob:floorNumber, Floor, NA),
+  strip_literal_type(NA, AtomA),
+  atom_number(AtomA, Number).
 
-% todo add computable
-%comp_in_room(_O, _R).
-%comp_in_level(_O, _L).
+%% building_path_cost(+From:iri, +To:iri, -Cost:float) is semidet
+%
+% Cost is the estimatated cost for navigating from From to To.
+%
+% @param From Some semantic map entity
+% @param To Some semantic map entity
+% @param Cost The cost for navigation
+%
+building_path_cost(From, To, Cost):-
+  map_object_same_level(From, To),!,
+  intra_level_cost(From, To, Cost).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-lookForObj(Obj,Obj):-
-  owl_individual_of(Obj, knowrob:'SpatialThing-Localized').
-  %rdf_triple(knowrob:orientation, Obj, Loc).
-
-% computable wrappers for all predicates below obj -> objT? 
-
-lookForObjT(ObjT, Obj):-
-  owl_subclass_of(ObjT, knowrob:'SpatialThing-Localized'),
-  owl_has(Obj, rdf:type, ObjT).
-  %rdf_triple(knowrob:orientation, Obj, Loc).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% locations of objects with similar type using WUP 
-
-lookForSimilarObjT(ObjT, Loc):-
-  lookForSimilarObjTBecause(ObjT, Loc, _).
-
-lookForSimilarObjTBecause(ObjT, Loc, [S,T]):-
-  similarObjTypes(ObjT,SimTypes),
-  member([S,T], SimTypes),
-  lookForObjT(T,Loc).
-
-lookForMostSimilarObjT(ObjT, Loc):-
-  lookForMostSimilarObjTBecause(ObjT, Loc, _).
-
-lookForMostSimilarObjTBecause(ObjT, Loc, Because):-
-  lookForKMostSimilarObjTBecause(ObjT, 1, Loc, Because).
-
-lookForKMostSimilarObjT(ObjT, K, Loc):-
-  lookForKMostSimilarObjTBecause(ObjT, K, Loc, _).
-  
-lookForKMostSimilarObjTBecause(ObjT, K, Loc, [S, T]):-
-  similarObjTypes(ObjT,SimTypes),
-  nth0(N, SimTypes, [S,T]),
-  N < K,
-  lookForObjT(T,Loc).
-
-lookForSimilarObjTGtWup(ObjT, Wup, Loc):-
-  lookForSimilarObjTGtWupBecause(ObjT, Wup, Loc, _).
-
-lookForSimilarObjTGtWupBecause(ObjT, Wup, Loc, [S,T]):-
-  similarObjTypes(ObjT,SimTypes),
-  member([S,T], SimTypes),
-  S >= Wup,
-  lookForObjT(T,Loc).
-  
-similarObjTypes(ObjT, DecreasingSimTypes):- 
-  % find all located instances (with orientation)
-  % in the map and compare their types with ObjT
-  % return sorted list of [Similarity, Type] tuples
-  findall(T, (lookForObj(O,_L), owl_has(O, rdf:type, T)), TypesL),
-  list_to_set(TypesL, TypesS),
-  findall([Sim,T], (member(T,TypesS), rdf_wup_similarity(ObjT, T, Sim)), SimTypes),
-  sort(SimTypes, IncreasingSimTypes),
-  reverse(IncreasingSimTypes, DecreasingSimTypes).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% searchSpaceForObj(Obj, Loc):-
-%   owl_individual_of(Obj, knowrob:'SpatialThing-Localized'),
-%   owl_has(Obj, rdf:type, ObjT),
-%   searchSpaceForObjT(ObjT,Loc).
-
-% searchSpaceForObjT(ObjT, Loc):-
-%   searchSpaceForObjTBecauseEvtT(ObjT, _, _, Loc).
-
-% look at places where instances of this objT are created.
-lookForCreationEvtOfObjT(ObjT, Loc):-
-  lookForCreationEvtOfObjTBecause(ObjT, _, _, Loc).
-
-lookForCreationEvtOfObjTBecause(ObjT, EvtT, LocT, Loc):-
-  createdAtLocationTBecause(ObjT, LocT, EvtT),
-  lookForObjT(LocT,Loc).
-
-createdAtLocationTBecause(ObjT, LocT, EvtT) :-
-  createdInEventT(ObjT, EvtT),
-  findall(SubL, (owl_restriction_on(EvtT, restriction(knowrob:eventOccursAt, some_values_from(L))), owl_subclass_of(SubL,L) ), Locations),
-  list_to_set(Locations, LocationsSet),
-  member(LocT, LocationsSet).
-
-createdInEventT(ObjT, EvtT) :-
-  owl_subclass_of(ObjT, knowrob:'SpatialThing-Localized'),
-  owl_subclass_of(EvtT, knowrob:'ActionOnObject'),
-  owl_restriction_on(EvtT, restriction(knowrob:'outputsCreated', some_values_from(ObjT))).
-
-
-% prepareFoodAt(Obj, LocT) :-
-%   foodCreatedAtLocationType(Obj, LocT),
-%   owl_subclass_of(R, knowrob:'Kitchen').
-% all ingredients and tools available
-% have  capability to prepare item
-
-% not working as is
-% servedAtLocBy(ObjT,MAT,Res):-
-%                                 %  createdInRestaurant(Obj, Res, EvT):-
-%   owl_subclass_of(ObjT, knowrob:'FoodOrDrink'),
-%   createdAtLocationTBecause(ObjT, LocT, _EvT),
-%                                 % look for food in a restaurant
-%   owl_subclass_of(R, knowrob:'Restaurant-Organization'),
-%   owl_restriction_on(R, restriction(knowrob:servesCuisineAtLocation, some_values_from(LocT))),
-%   owl_individual_of(Loc,LoT),
-%   lookForObj(Loc,MAT),
-%   owl_restriction_on(R, restriction(knowrob:servesCuisine, some_values_from(CuisineT))),
-%   owl_restriction_on(ObjT, restriction(knowrob:commonFoodTypeOfCuisine, some_values_from(CuisineT))),
-%   findall(Ri, owl_individual_of(Ri, R), Rs),
-%   list_to_set(Rs,RsSet),
-%   member(Res, RsSet).
-  
-
-
-lookForStoragePlaceForObjT(ObjT, Loc):-
-  lookForStoragePlaceForObjTBecause(ObjT, _, _ ,Loc).
-
-lookForStoragePlaceForObjTBecause(ObjT, SPForType, LocT, Loc):-
-  owl_subclass_of(LocT,    knowrob:'StorageConstruct'),
-  owl_restriction_on(LocT, restriction(knowrob:'typePrimaryFunction-StoragePlaceFor', some_values_from(SPForType))),
-  owl_subclass_of(ObjT, SPForType),
-  lookForObjT(LocT, Loc).
-
-
-searchFoodOrDrinkTypeAtLocation(FoodOrDrink, Location) :-
-  searchFoodOrDrinkTypeAtLocationType(FoodOrDrink, LocationT),
-  owl_individual_of(Location, LocationT).
-  
-
-searchFoodOrDrinkTypeAtLocationType(FoodOrDrinkT, LocationT) :-
-  ( searchFoodOrDrinkTypeInStorageConstruct(FoodOrDrinkT, LocationT) ;
-    searchFoodOrDrinkTypeAtServiceLocation(FoodOrDrinkT, LocationT)).
-
-searchFoodOrDrinkTypeInStorageConstruct(FoodOrDrinkT, LocationT) :-
-  owl_subclass_of(FoodOrDrinkT, knowrob:'FoodOrDrink'),
-  owl_subclass_of(LocationT,    knowrob:'StorageConstruct'),
-  owl_restriction_on(LocationT, restriction(knowrob:'typePrimaryFunction-StoragePlaceFor', some_values_from(ObjT))),
-  owl_subclass_of(FoodOrDrinkT, ObjT).
-
-searchFoodOrDrinkTypeAtServiceLocation(FoodOrDrinkT, LocationT) :-
-  owl_subclass_of(FoodOrDrinkT, knowrob:'FoodOrDrink'),
-  owl_restriction_on(FoodOrDrinkT, restriction(knowrob:'commonFoodTypeOfCuisine', some_values_from(CuisineT))),
-  owl_subclass_of(FoodAndBeverageOrganizationT, knowrob:'FoodAndBeverageOrganization'),
-  owl_restriction_on(FoodAndBeverageOrganizationT, restriction(knowrob:'servesCuisine', some_values_from(CuisineT))),
-  owl_subclass_of(LocationT, knowrob:'MultiRoomUnit'),
-  owl_restriction_on(FoodAndBeverageOrganizationT, restriction(knowrob:'servesCuisineAtLocation', some_values_from(LocationT))).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Helper predicates
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-object_info(Obj,[Url, Room, Level]):-
-  get_url(Obj, Url),
-  get_room(Obj, Room),
-  get_level(Obj, Level).
-  
-
-get_url(Obj, Url):-
-  ( owl_has(Obj, knowrob:'linkToImageFile', URL)
-  -> strip_literal_type(URL,Url)
-  ; Url = false
-  ).
-
-get_room(Obj, Room):-
-  ( in_room(Obj, ROOM )
-  -> Room = ROOM
-  ; Room = false
-  ).
-
-get_level(Obj, Level):-
-  ( in_level(Obj, LEVEL)
-  -> Level = LEVEL
-  ; Level = false
-  ).
-
-get_cost(Cur, Goal, Cost):-
-  path_cost(Cur,Goal,Cost).
-  
- 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Precidates for calculating distances between poses
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% this precidate should be in a package like knowrob_owl_addons
-% somehow not working, but why?
-data_value(DataProperty,Ind,Value):-
-  rdf_triple(DataProperty, Ind, LiteralType),
-  strip_literal_type(LiteralType,AtomVal),
-  atom_to_term(AtomVal,Value,_).
-
-in_room(Place, Room):-
-  setof(R, owl_individual_of(R, knowrob:'RoomInAConstruction'), Rs),
-  member(Room, Rs),
-  setof(P, owl_individual_of(P, knowrob:'HumanScaleObject'), Ps),
-  member(Place,Ps),
-  rdf_triple(knowrob:'in-ContGeneric',Place, Room).
-
-same_room(A, B):-
-  in_room(A,R),
-  in_room(B,R).
-
-in_level(Place, Level):-
-  setof(L, owl_individual_of(L, knowrob:'LevelOfAConstruction'), Ls),
-  member(Level, Ls),
-  setof(P, owl_individual_of(P, knowrob:'SpatialThing-Localized'), Ps),
-  member(Place,Ps),
-  rdf_triple(knowrob:'in-ContGeneric',Place, Level).
-
-same_level(A, B):-
-  in_level(A,L),
-  in_level(B,L).
- 
-get_sorted_path_costs(Current, GoalList, SortedGoals):-
-  findall([Cost,G], ( member(G, GoalList), path_cost(Current,G,Cost)), PCs),
-  sort(PCs,SortedGoals).
-
-path_cost(Current,Goal,Cost):-
-  same_level(Current,Goal),
-  intra_level_cost(Current,Goal,Cost),!.
-
-path_cost(Current,Goal,Cost):-
-  \+same_level(Current,Goal),
+building_path_cost(From, To, Cost):-
   setof(E, owl_individual_of(E,knowrob:'Elevator'), Es),
-  member(E1, Es),
-  same_level(Current,E1),
-  path_cost(Current,E1,C1),
-  member(E2, Es),
-  same_level(Goal,E2),
-  path_cost(Goal,E2,C2),
-  in_level(Current,CurrentLevel),
-  in_level(Goal,GoalLevel),
-  inter_level_cost(CurrentLevel, GoalLevel, C3),
+  member(E1, Es), map_objects_same_level(From,E1),
+  member(E2, Es), map_objects_same_level(To,E2),
+  building_path_cost(From,E1,C1),
+  building_path_cost(To,E2,C2),
+  map_object_in_level(From,FromLevel),
+  map_object_in_level(To,ToLevel),
+  inter_level_cost(FromLevel, ToLevel, C3),
   Cost is C1 + C2 + C3.
+ 
+%% building_best_path_cost(+From:iri, +GoalList:list, -Best:iri) is semidet
+%
+% Best is the map object out of GoalList with lowest navigation cost starting from
+% the map object From.
+%
+% @param From Some semantic map entity
+% @param GoalList List of semantic map entities
+% @param Best Semantic map entity with lowest navigation cost
+%
+building_best_path_cost(From, GoalList, Best):-
+  findall([Cost,G], (
+    member(G, GoalList),
+    building_path_cost(From, G, Cost)
+  ), PCs),
+  sort(PCs,SortedGoals),
+  member([_,Best],SortedGoals), !.
   
-intra_level_cost(A,B,D):-
-  % todo: replace by more accurate heuristic
-  % call to path planner? only if available, otherwise heuristic
-  object_distance(A,B,D).
-
-inter_level_cost(A,B,Cost):-
-  level_distance(A,B,LevelDistance),
-  data_value(knowrob:heightOfObject,A, LevelHeight),
+intra_level_cost(A,B,D) :- object_distance(A,B,D).
+inter_level_cost(A,B,Cost) :-
+  building_floor_number(A, A_num),
+  building_floor_number(B, B_num),
+  LevelDistance is abs(A_num - B_num),
+  object_dimensions(A, _, _, LevelHeight),
   LevelCost is LevelDistance * LevelHeight,
   % + waiting time for calling, intermediate stops, etc
   Cost is LevelCost.
-  
-level_distance(A,B,D):-
-  setof(L, owl_individual_of(L,knowrob:'LevelOfAConstruction'), Ls),
-  member(A,Ls),
-  member(B,Ls),
-  rdf_triple(knowrob:floorNumber, A, NA),
-  rdf_triple(knowrob:floorNumber, B, NB),
-  strip_literal_type(NA,AtomA), atom_to_term(AtomA, TermA, _),
-  strip_literal_type(NB,AtomB), atom_to_term(AtomB, TermB, _),
-  D is abs(TermA -TermB).
 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% Searching for objects in semantic maps
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Predicates to create new instances, set and update their poses.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%% create_perception_instance(-Perception) is det.
+%% map_object_in_room(?Object:iri, ?Room:iri) is nondet
 %
-% Create perception instance 
+% True if Object is inside of Room.
 %
-% @deprecated
-create_perception_instance(Perception) :-
-
-  rdf_instance_from_class('http://knowrob.org/kb/knowrob.owl#Perceiving', Perception),
-
-  % create detection time point
-  get_timepoint(TimePoint),
-  rdf_assert(Perception, knowrob:startTime, TimePoint).
-
-
-%% create_object_instance(+Type, +ID) is det.
+% @param Object Instance of knowrob:HumanScaleObject
+% @param Room Instance of knowrob:RoomInAConstruction
 %
-% Create object instance having type 
+map_object_in_room(Object, Room):-
+  rdfs_individual_of(Room, knowrob:'RoomInAConstruction'),
+  rdfs_individual_of(Object, knowrob:'HumanScaleObject'),
+  rdf_triple(knowrob:'in-ContGeneric', Object, Room).
+
+%% map_object_in_level(?Object:iri, ?Level:iri) is nondet
 %
-% @deprecated
-create_object_instance(Type, Obj) :-
-
-  (rdf_has(Obj, rdf:type, Type), !) ;
-
-  (rdf_assert(Obj, rdf:type, Type),
-   rdf_assert(Obj, knowrob:'widthOfObject',  literal(type('http://www.w3.org/2001/XMLSchema#float','0.0'))),
-   rdf_assert(Obj, knowrob:'heightOfObject', literal(type('http://www.w3.org/2001/XMLSchema#float','0.0'))),
-   rdf_assert(Obj, knowrob:'depthOfObject',  literal(type('http://www.w3.org/2001/XMLSchema#float','0.0')))).
-   
-
-%% set_object_perception(?A, ?B) is det.
+% True if Object is inside of Level.
 %
-% Link the object instance to the perception instance
+% @param Object Instance of knowrob:HumanScaleObject
+% @param Level Instance of knowrob:LevelOfAConstruction
 %
-set_object_perception(Object, Perception) :-
-  rdf_assert(Perception, knowrob:objectActedOn, Object).
+map_object_in_level(Place, Level):-
+  rdfs_individual_of(Level, knowrob:'LevelOfAConstruction'),
+  rdfs_individual_of(Place, knowrob:'SpatialThing-Localized'),
+  rdf_triple(knowrob:'in-ContGeneric',Place, Level).
 
+map_objects_same_room(A, B)  :- map_object_in_room(A,R),  map_object_in_room(B,R).
+map_objects_same_level(A, B) :- map_object_in_level(A,L), map_object_in_level(B,L).
 
-%% set_perception_pose(+Perception, +PoseList) is det.
+%% map_object_most_similar(+Object:iri, -MostSimilarObject:iri) is semidet
 %
-% Set the pose of an object perception
+% True if MostSimilarObject is the most similar semantic map object
+% compared to Object.
 %
-% @deprecated
-set_perception_pose(Perception, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]) :-
-
-  % set the pose
-  atomic_list_concat(['rotMat3D_',M00,'_',M01,'_',M02,'_',M03,'_',M10,'_',M11,'_',M12,'_',M13,'_',M20,'_',M21,'_',M22,'_',M23,'_',M30,'_',M31,'_',M32,'_',M33], LocIdentifier),
-
-  atom_concat('http://knowrob.org/kb/knowrob.owl#', LocIdentifier, Loc),
-  rdf_assert(Loc, rdf:type, knowrob:'RotationMatrix3D'),
-  rdf_assert(Perception, knowrob:eventOccursAt, Loc).
-
-%% set_perception_pose(+Perception, +PoseList) is det.
+% @param Object Instance of knowrob:HumanScaleObject
+% @param MostSimilarObject Instance of knowrob:HumanScaleObject
 %
-% Set the pose of an object perception
+map_object_most_similar(Object, MostSimilarObject) :-
+  map_object_similar(Object, [_,SimilarObject], 0), !.
+
+%% map_object_similar(+Object:iri, -SimilarObject:iri) is semidet
 %
-% @deprecated
-update_pose(Object, Pose):-
+% True if SimilarObject is a similar to Object.
+%
+% @param Object Instance of knowrob:HumanScaleObject
+% @param SimilarObject Instance of knowrob:HumanScaleObject
+%
+map_object_similar(Object, SimilarObject) :-
+  map_object_similar(Object, [_,SimilarObject], 1).
 
-  % Object should already exist to update a pose,
-  % i.e. have at least a type
-  % it would also be possible to remove this check, but then,
-  % if object does not exist it would be asserterd
-  owl_has(Object, rdf:type, _Type),!,
- 
-  create_perception_instance(Perception),
+%% map_object_similar(+Object:iri, -Similar:term, +Threshold:float) is semidet
+%
+% True if Similar is a list [Similarity,SimilarObject] and Similarity is
+% the similarity estimate between Object and SimilarObject.
+% Similarity must be higher then Threshold.
+% This predicate will yield the most similar objects first.
+%
+% @param Object Instance of knowrob:HumanScaleObject
+% @param SimilarObject Instance of knowrob:HumanScaleObject
+%
+map_object_similar(Object, [Similarity,SimilarObject], Threshold) :-
+  map_root_object(Map, Object),
+  map_object_type(Object, Type), !,
+  % for each similar type
+  map_object_wup_similarity(Type, Threshold, SimilarTypes),
+  member([Similarity,SimilarType], SimilarTypes),
+  rdfs_individual_of(SimilarObject, SimilarType),
+  map_root_object(Map, SimilarObject).
 
-  set_perception_pose(Perception, Pose),
-  
-  set_object_perception(Object, Perception).
-
-    
+%% map_object_wup_similarity
+map_object_wup_similarity(ObjT, Threshold, DecreasingSimTypes) :-
+  % find existing types
+  findall(T, (
+    map_root_object(_, O),
+    map_object_type(O, T)), TypesL),
+  list_to_set(TypesL, TypesS),
+  % compute similarity
+  findall([Sim,T], (
+    member(T,TypesS),
+    rdf_wup_similarity(ObjT, T, Sim),
+    Sim > Threshold
+  ), SimTypes),
+  sort(SimTypes, IncreasingSimTypes),
+  reverse(IncreasingSimTypes, DecreasingSimTypes).

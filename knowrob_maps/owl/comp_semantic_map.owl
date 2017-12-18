@@ -19,46 +19,51 @@
     xmlns:knowrob="&knowrob;#"
     xml:base="http://knowrob.org/kb/comp_semantic_map.owl">
   <owl:Ontology rdf:about="">
-    <owl:imports rdf:resource="package://ias_knowledge_base/owl/knowrob.owl"/>
+    <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
   </owl:Ontology>
 
     <computable:PrologProperty rdf:about="#computeNumberOfLevels">
-        <computable:command rdf:datatype="&xsd;string">comp_number_of_levels</computable:command>
+        <computable:command rdf:datatype="&xsd;string">building_number_of_levels</computable:command>
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-        <computable:target rdf:resource="#numberOfLevels"/>
+        <computable:target rdf:resource="&knowrob;#numberOfLevels"/>
     </computable:PrologProperty>
 
     <computable:PrologProperty rdf:about="#computeNumberOfStories">
-        <computable:command rdf:datatype="&xsd;string">comp_number_of_stories</computable:command>
+        <computable:command rdf:datatype="&xsd;string">building_number_of_stories</computable:command>
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-        <computable:target rdf:resource="#numberOfStories"/>
+        <computable:target rdf:resource="&knowrob;#numberOfStories"/>
     </computable:PrologProperty>
 
     <computable:PrologProperty rdf:about="#computeHasRoom">
-      <computable:command rdf:datatype="&xsd;string">comp_has_rooms</computable:command>
+      <computable:command rdf:datatype="&xsd;string">building_has_rooms</computable:command>
       <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
       <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-      <computable:target rdf:resource="#hasRooms"/>
+      <computable:target rdf:resource="&knowrob;#hasRooms"/>
     </computable:PrologProperty>
 
-    <owl:DatatypeProperty rdf:about="#numberOfLevels">
-      <rdfs:domain rdf:resource="&knowrob;#Building"/>
-      <rdfs:range rdf:resource="&xsd;positiveInteger"/>
-      <rdfs:subPropertyOf rdf:resource="&knowrob;#numberOfLevels"/>
-    </owl:DatatypeProperty>
-    
-    <owl:DatatypeProperty rdf:about="#numberOfStories">
-      <rdfs:domain rdf:resource="&knowrob;#Building"/>
-      <rdfs:range rdf:resource="&xsd;positiveInteger"/>
-      <rdfs:subPropertyOf rdf:resource="&knowrob;#numberOfStories"/>
-    </owl:DatatypeProperty>
+    <computable:PrologProperty rdf:about="#computeInRoom">
+      <computable:command rdf:datatype="&xsd;string">map_object_in_room</computable:command>
+      <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+      <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+      <computable:target rdf:resource="&knowrob;#in-BuildingRoom"/>
+    </computable:PrologProperty>
 
-    <owl:DatatypeProperty rdf:about="#hasRooms">
-      <rdfs:domain rdf:resource="&knowrob;#ConstructionArtifact"/>
-      <rdfs:range rdf:resource="&knowrob;#RoomInAConstruction"/>
-      <rdfs:subPropertyOf rdf:resource="&knowrob;#hasRooms"/>
-    </owl:DatatypeProperty>
-        
+    <computable:PrologProperty rdf:about="#computeInRoom">
+      <computable:command rdf:datatype="&xsd;string">map_object_in_level</computable:command>
+      <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+      <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+      <computable:target rdf:resource="&knowrob;#in-BuildingLevel"/>
+    </computable:PrologProperty>
+
+    <owl:ObjectProperty rdf:about="&knowrob;#in-BuildingRoom">
+        <rdfs:range rdf:resource="&knowrob_common;RoomInAConstruction"/>
+        <rdfs:subPropertyOf rdf:resource="&knowrob;in-ContGeneric"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="&knowrob;#in-BuildingLevel">
+        <rdfs:range rdf:resource="&knowrob_common;LevelOfAConstruction"/>
+        <rdfs:subPropertyOf rdf:resource="&knowrob;in-ContGeneric"/>
+    </owl:ObjectProperty>
 </rdf:RDF>

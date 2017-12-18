@@ -30,15 +30,12 @@
 
 */
 
-:- use_module(library('semweb/rdfs_computable')).
-:- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
-:- use_module(library('thea/owl_parser')).
-:- use_module(library('semweb/owl')).
-:- use_module(library('semweb/rdf_edit')).
-:- use_module(library('semweb/actionmodel')).
+:- use_module(library('semweb/rdf_db')).
+:- use_module(library('owl_parser')).
+:- use_module(library('owl')).
 
-:- owl_parser:owl_parse('package://knowrob_maps/owl/ccrl2_semantic_map.owl', false, false, true).
+:- owl_parser:owl_parse('package://knowrob_maps/owl/ccrl2_semantic_map.owl').
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(ias_map, 'http://knowrob.org/kb/ccrl2_semantic_map.owl#', [keep(true)]).

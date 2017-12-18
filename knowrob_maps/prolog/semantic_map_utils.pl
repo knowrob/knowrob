@@ -1,6 +1,6 @@
 /** <module> Predicates for reading elements of a semantic map
 
-  Copyright (C) 2009 13 Lars Kunze, Lorenz Moesenlechner, Moritz Tenorth
+  Copyright (C) 2009-13 Lars Kunze, Lorenz Moesenlechner, Moritz Tenorth
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,6 @@
     [
       map_instance/1,
       map_name/1,
-      map_read_all/1,
       map_read_all/2,
       map_object_info/1,
       map_object_type/2,
@@ -48,7 +47,6 @@
       map_joint_name/3
     ]).
 
-
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('owl')).
 :- use_module(library('owl_parser')).
@@ -56,11 +54,9 @@
 :- use_module(library('knowrob_objects')).
 :- use_module(library('knowrob_perception')).
 
-
 :-  rdf_meta
       map_instance(r),
       map_name(r),
-      map_read_all(-),
       map_read_all(-,r),
       map_root_object(r,r),
       map_root_objects(r,?),
@@ -73,8 +69,6 @@
       map_connection_type(r,r,+),
       map_joint_name(r,r,r).
 
-
-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % Map root and child objects
 
@@ -86,10 +80,8 @@
 % @param Map   Instance of a knowrob:SemanticEnvironmentMap
 % @param Objs  List of instances of the root objects in the map
 % 
-% @deprecated
 map_root_objects(Map, Objs) :-
     setof( Obj, map_root_object(Map, Obj), Objs).
-
 
 %% map_root_object(Map, Obj) is nondet.
 %
@@ -99,10 +91,8 @@ map_root_objects(Map, Objs) :-
 % @param Map  Instance of a knowrob:SemanticEnvironmentMap
 % @param Objs Instance of a root object in the map
 % 
-% @deprecated
 map_root_object(Map, Obj) :-
     owl_has(Obj, knowrob:describedInMap, Map).
-
     
 %% map_child_objects(+Parent, -Children) is nondet.
 %
@@ -114,7 +104,6 @@ map_root_object(Map, Obj) :-
 map_child_objects(Parent, Children) :-
     setof(Child, map_child_object(Parent, Child), Children).
 
-
 %% map_child_object(?Parent, ?Child) is nondet.
 %
 % Read all object instances asserted as properPhysicalParts of Parent
@@ -122,17 +111,13 @@ map_child_objects(Parent, Children) :-
 % @param Parent   Object instance
 % @param Child    Object instance
 % 
-% TODO: use holds for properPhysicalParts relation
 map_child_object(Parent, Child) :-
     rdf_reachable(Parent, knowrob:properPhysicalParts, Child),
     Parent \= Child,
     not( owl_individual_of(Child, knowrob:'Connection-Physical') ).
 
-    
-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % Read object properties
-
 
 %% map_object_info(-Info) is nondet.
 %
@@ -146,9 +131,7 @@ map_object_info([Inst, Type, Pose, [D, W, H]]) :-
     owl_individual_of(Inst, knowrob:'SpatialThing'),
     map_object_type(Inst, Type),
     current_object_pose(Inst, Pose),
-    map_object_dimensions(Inst, W, D, H).
-
-
+    map_object_dimensions(Inst, D, W, H).
 
 %% map_object_type(?Obj, ?Type) is nondet.
 %
@@ -159,9 +142,7 @@ map_object_info([Inst, Type, Pose, [D, W, H]]) :-
 %  
 map_object_type(Obj, Type) :-
     holds(Obj, rdf:type, Type),
-    owl_subclass_of(Type, knowrob:'SpatialThing').
-
-
+    once(owl_subclass_of(Type, knowrob:'SpatialThing')).
 
 %% map_object_label(?Obj, ?Label) is nondet.
 %
@@ -173,41 +154,17 @@ map_object_type(Obj, Type) :-
 map_object_label(Obj, Label) :-
     owl_has(Obj, rdfs:label, literal(type(_, Label)) ).
 
-
-
-%% map_object_dimensions(Obj, W, D, H)is nondet.
+%% map_object_dimensions(Obj, D, W, H)is nondet.
 %
-% Read the dimensions (width, depth, height) of an object.
+% Read the dimensions (depth, width, height) of an object.
 % 
 % @param Obj    Object instance
-% @param W      Object Width (y dimension)
 % @param D      Object depth (x dimension)
+% @param W      Object Width (y dimension)
 % @param H      Object height (z dimension)
 %  
-map_object_dimensions(Obj, W, D, H) :-
+map_object_dimensions(Obj, D, W, H) :-
     object_dimensions(Obj, D, W, H).
-
-%map_object_dimensions(Obj, W, D, H) :-
-%    owl_has(Obj, knowrob:'widthOfObject', literal(type(_, W_))),
-%    atom_number(W_, W),
-%    owl_has(Obj, knowrob:'depthOfObject', literal(type(_, D_))),
-%    atom_number(D_, D),
-%    owl_has(Obj, knowrob:'heightOfObject', literal(type(_, H_))),
-%    atom_number(H_, H).
-
-map_object_dimensions( Obj, W, D, H ) :-
-    % The depth of a knob defaults to 3cm here. This information
-    % should either be asserted somewhere else or be set as a property
-    % when importing the semantic map.
-    holds( Obj, knowrob:radius, literal(type(_, Radius_)) ),
-    atom_number(Radius_, Radius),
-    W is 2 * Radius,
-    H is 2 * Radius,
-    D is 0.03.
-
-
-
-
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % Read joints and connections between object parts
@@ -235,8 +192,6 @@ map_connection_type( Parent, Parent, 'PrismaticJoint' ) :-
 map_connection_type( Parent, Child, 'Fixed' ) :-
     holds( Parent, knowrob:'properPhysicalParts', Child ).
 
-
-
 %% map_joint_name(Parent, Child, Name) is nondet.
 %
 % Read the ID Name of a joint connecting Parent and Child
@@ -249,8 +204,6 @@ map_joint_name( Parent, Child, Name ) :-
     holds( Parent, knowrob:'properPhysicalParts', Child ),
     holds( Child, knowrob:'properPhysicalParts', Name ),
     owl_individual_of( Name, knowrob:'Connection-Physical' ).
-
-
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % Read map instance and content
@@ -271,17 +224,7 @@ map_instance(Map) :-
 % @param Map  Instance of a knowrob:SemanticEnvironmentMap
 % 
 map_name(Map) :-
-  rdf_has(Map,rdf:type,knowrob:'SemanticEnvironmentMap').
-
-%% map_read_all(-MapElems) is nondet.
-%
-% Read all top-level objects in SemanticEnvironmentMap0 (hard-coded default value)
-% into a list of lists of form [Element, Parent, PoseList].
-% 
-% @param ObjList  List of all objects
-% 
-map_read_all([R0|EntityList]) :-
-    map_read_all([R0|EntityList], 'http://knowrob.org/kb/ias_semantic_map.owl#SemanticEnvironmentMap0').
+    rdf_has(Map,rdf:type,knowrob:'SemanticEnvironmentMap').
 
 %% map_read_all(-MapElems, ?MapInstance) is nondet.
 %
@@ -291,7 +234,6 @@ map_read_all([R0|EntityList]) :-
 % @param ObjList  List of all objects
 % @param Map      Instance of a knowrob:SemanticEnvironmentMap
 % 
-% @deprecated
 map_read_all([R0|EntityList], MapInstance) :-
     map_read_entity(MapInstance, 'null', R0),
     setof(TopLevelObj, owl_has(TopLevelObj, knowrob:describedInMap, MapInstance), TopLevelObjs),
@@ -316,6 +258,3 @@ map_read_entity(E, Parent, [E_no_ns, Parent_no_ns, Pose]) :-
      (Parent_no_ns = Parent) ;
      rdf_split_url(_, Parent_no_ns, Parent)),
     current_object_pose( E, Pose ).
-
-
-
