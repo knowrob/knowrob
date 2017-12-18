@@ -49,7 +49,7 @@
 
 
     <computable:PrologProperty rdf:about="#compute_baseLinkPose">
-        <computable:command rdf:datatype="&xsd;string">comp_baselink_pose</computable:command>
+        <computable:command rdf:datatype="&xsd;string">knowrob_srdl:comp_baselink_pose</computable:command>
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
         <computable:target rdf:resource="&knowrob;pose"/>
