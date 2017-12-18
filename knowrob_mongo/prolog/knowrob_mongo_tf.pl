@@ -35,9 +35,9 @@
       mng_lookup_transform/4,
       mng_lookup_position/4,
       mng_transform_pose/5,
-      mng_robot_pose/2,
-      mng_robot_pose/3,
-      mng_robot_pose_at_time/4,
+      %mng_robot_pose/2,
+      %mng_robot_pose/3,
+      %mng_robot_pose_at_time/4,
       mng_comp_pose/2,
       mng_comp_pose/3,
       mng_comp_pose_at_time/4,
@@ -53,20 +53,18 @@
 :- use_module(library('knowrob_owl')).
 :- use_module(library('knowrob_mongo')).
 :- use_module(library('knowrob_mongo_interface')).
-:- use_module(library('srdl2')).
 
 :- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
 :- rdf_db:rdf_register_ns(owl, 'http://www.w3.org/2002/07/owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(xsd, 'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
-:- rdf_db:rdf_register_ns(srdl2comp, 'http://knowrob.org/kb/srdl2-comp.owl#', [keep(true)]).
 
 :-  rdf_meta
     mng_lookup_transform(+,+,r,-),
     mng_lookup_position(+,+,r,-),
-    mng_robot_pose(r, r),
-    mng_robot_pose(r, r,r),
-    mng_robot_pose_at_time(r, +, r, r),
+    %mng_robot_pose(r, r),
+    %mng_robot_pose(r, r,r),
+    %mng_robot_pose_at_time(r, +, r, r),
     mng_comp_pose(r, r),
     mng_comp_pose(r, r,r),
     mng_comp_pose_at_time(r, +, r, r),
@@ -151,12 +149,12 @@ mng_transform_pose(PoseListIn, SourceFrame, TargetFrame, TimePoint, PoseListOut)
 % @param Robot        Instance of a robot in SRDL
 % @param Pose         Instance of a knowrob:RotationMatrix3D with the pose data
 %
-mng_robot_pose(Robot, Pose) :-
-  mng_robot_pose(Robot, Pose, 'map').
+%mng_robot_pose(Robot, Pose) :-
+  %mng_robot_pose(Robot, Pose, 'map').
   
-mng_robot_pose(Robot, Pose, Target) :-
-  get_timepoint(TimePoint),
-  mng_robot_pose_at_time(Robot, Target, TimePoint, Pose).
+%mng_robot_pose(Robot, Pose, Target) :-
+  %get_timepoint(TimePoint),
+  %mng_robot_pose_at_time(Robot, Target, TimePoint, Pose).
 
 
 %% mng_robot_pose_at_time(Robot, TargetFrame, TimePoint, Pose) is nondet.
@@ -168,14 +166,14 @@ mng_robot_pose(Robot, Pose, Target) :-
 % @param TimePoint    Instance of knowrob:TimePoint
 % @param Pose         Instance of a knowrob:RotationMatrix3D with the pose data
 %
-mng_robot_pose_at_time(Robot, TargetFrame, TimePoint, Pose) :-
-  findall(S, (sub_component(Robot, S),
-              owl_individual_of(S, srdl2comp:'UrdfLink')), Ss),
+%mng_robot_pose_at_time(Robot, TargetFrame, TimePoint, Pose) :-
+  %findall(S, (sub_component(Robot, S),
+              %owl_individual_of(S, srdl2comp:'UrdfLink')), Ss),
 
-  sort(Ss, Ssorted),
-  findall(P, (member(Sub, Ssorted),mng_comp_pose_at_time(Sub, TargetFrame, TimePoint, P)), Ps),
+  %sort(Ss, Ssorted),
+  %findall(P, (member(Sub, Ssorted),mng_comp_pose_at_time(Sub, TargetFrame, TimePoint, P)), Ps),
 
-  nth0(0, Ps, Pose).
+  %nth0(0, Ps, Pose).
 
 
 
@@ -205,7 +203,7 @@ mng_comp_pose(RobotPart, Pose, Target) :-
 %
 mng_comp_pose_at_time(RobotPart, TargetFrame, TimePoint, Pose) :-
 
-  owl_has(RobotPart, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(SourceFrameID)),
+  owl_has(RobotPart, 'http://knowrob.org/kb/knowrob.owl#frameName', literal(SourceFrameID)),
   ( atom_prefix(SourceFrameID,'/') ->
     SourceResolved = SourceFrameID      
     ; atom_concat('/',SourceFrameID, SourceResolved) 
@@ -252,7 +250,7 @@ mng_obj_pose_at_time(Obj, SourceFrame, TargetFrame, TimePoint, Pose) :-
 
   mng_transform_pose(PoseListIn, SourceFrame, TargetFrame, TimePoint, PoseListOut),
   create_pose(mat(PoseListOut), Pose),
-  rdf_assert(Pose, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', TargetFrame),
+  rdf_assert(Pose, 'http://knowrob.org/kb/knowrob.owl#frameName', TargetFrame),
 
   rdf_instance_from_class('http://knowrob.org/kb/knowrob.owl#Proprioception', Perception),
   

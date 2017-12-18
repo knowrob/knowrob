@@ -516,7 +516,7 @@ jpl_matrix_list(JplMat, [X00, X01, X02, X03,
 
 mng_object_pose_at_time(Object, Instant, Pose, Instant) :-
   nonvar(Instant),
-  rdf_has(Object, srdl2comp:'urdfName', literal(UrdfName)),
+  rdf_has(Object, knowrob:'frameName', literal(UrdfName)),
   \+ rdfs_individual_of(Object, knowrob:'TemporalPart'),
   atom_ensure_prefix(UrdfName, '/', UrdfNameResolved),
   % FIXME: /map frame 

@@ -51,7 +51,7 @@ test(map_root_object) :-
 
   
 test(map_object_dimensions) :-
-  map_object_dimensions(knowrob:'CounterTop205', 0.57500005, 2.0500002, 0.02),!.
+  map_object_dimensions(knowrob:'CounterTop205', 2.0500002, 0.57500005, 0.02),!.
 
 
 test(map_child_object) :-
