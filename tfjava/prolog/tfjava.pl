@@ -49,7 +49,7 @@
 % tf_listener/1 contains a handle to the tf listener
 :- dynamic tf_listener/1.
 
-%% tfjava_start_listener is det.
+%% tfjava_start_listener is det
 %
 % starts the tf listener, which runs in a separate thread
 %
@@ -64,14 +64,14 @@ tfjava_listener(Client) :-
     tfjava_start_listener,
     tf_listener(Client).
 
-%% tfjava_lookup_transform(+TargetFrame, +SourceFrame, -TF, +TimeSecs) is nondet.
+%% tfjava_lookup_transform(+TargetFrame, +SourceFrame, -Pose, +Instant) is nondet.
 %
-% lookup transform for the time TimeSecs
+% Lookup transform of SourceFrame relative to TargetFrame at time Instant.
 %
 % @param TargetFrame     Tf frame the source matrix is to be transformed into
 % @param SourceFrame     Tf frame the source matrix is described in
-% @param TimeSecs        Time point at which the transformation is to be determined
-% @param TF              Reference to a StampedTransform object
+% @param Pose            Term of form pose([float x,y,z],[float qx,qy,qz,qw])
+% @param Instant         Time point at which the transformation is to be determined
 %
 tfjava_lookup_transform(TargetFrame,
                         SourceFrame,
@@ -89,13 +89,15 @@ tfjava_lookup_transform(TargetFrame,
   jpl_call(Quat4d, 'z', [], QZ),
   jpl_call(Quat4d, 'w', [], QW)..
 
-%% tfjava_transform_point(+StampedPtIn, +FixedFrame, +TargetFrame, +TargetTimeSecs, -StampedPtOut) is nondet.
+%% tfjava_transform_point(+SourceFrame, +TargetFrame, +PointIn, -PointOut, -Instant) is nondet
 %
-% Transform a point into the TargetFrame with time traveling
+% Transform a point into TargetFrame at time Instant.
 %
-% @param StampedPtIn    Reference to a Stamped<Point3d> containing the input point
-% @param TargetFrame    Tf frame the source matrix is to be transformed into
-% @param StampedPtOut   Reference to a Stamped<Point3d> containing the transformed point
+% @param SourceFrame     Tf frame the source matrix is described in
+% @param TargetFrame     Tf frame the source matrix is to be transformed into
+% @param PointIn         List of form [float x,y,z]
+% @param PointOut        List of form [float x,y,z]
+% @param Instant         Time point at which the transformation is to be determined
 %
 tfjava_transform_point(SourceFrame,
                        TargetFrame,
@@ -118,13 +120,15 @@ tfjava_transform_point(SourceFrame,
   jpl_get(Data, 'z', Z_Out).
 
 
-%% tfjava_transform_pose(+StampedMatIn, +TargetFrame, -StampedMatOut) is nondet.
+%% tfjava_transform_pose(+SourceFrame, +TargetFrame, +PoseIn, -PoseOut, -Instant) is nondet
 %
-% Transform a pose into the TargetFrame
+% Transform a pose into TargetFrame at time Instant.
 %
-% @param StampedMatIn    Reference to a Stamped<Matrix4d> containing the input pose
+% @param SourceFrame     Tf frame the source matrix is described in
 % @param TargetFrame     Tf frame the source matrix is to be transformed into
-% @param StampedMatOut   Reference to a Stamped<Matrix4d> containing the transformed pose
+% @param PoseIn          Term of form pose([float x,y,z],[float qx,qy,qz,qw])
+% @param PoseOut         Term of form pose([float x,y,z],[float qx,qy,qz,qw])
+% @param Instant         Time point at which the transformation is to be determined
 %
 tfjava_transform_pose(SourceFrame,
                       TargetFrame,
