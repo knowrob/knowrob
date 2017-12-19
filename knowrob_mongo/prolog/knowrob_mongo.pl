@@ -1,6 +1,7 @@
 /** 
 
-  Copyright (C) 2013 Moritz Tenorth, 2015 Daniel Beßler
+  Copyright (C) 2013 Moritz Tenorth
+  Copyright (C) 2015 Daniel Beßler
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -32,20 +33,28 @@
 */
 :- module(knowrob_mongo,
     [
-      mng_db/1,
-      mng_republisher/1,
+      mng_interface/1,      % get handle to the java object of the mongo client
+      mng_db/1,             % set the database state
       mng_timestamp/2,
+      mng_value_object/2,   % converts between mongo and prolog representations
+      mng_query/2,          % querying the db based on patterns of data records
+      mng_query/3,
       mng_query_latest/4,
       mng_query_latest/5,
       mng_query_earliest/4,
       mng_query_earliest/5,
-      mng_query/2,
-      mng_query/3,
-      mng_value_object/2,
-      mng_ros_message/2,
-      mng_ros_message/4,
+      mng_query_incremental/3,
+      mng_cursor/3,         % get a cursor to your query for some advanced processing beyond the mng_query* predicates
+      mng_cursor_read/2,
+      mng_cursor_process/2,
+      mng_cursor_descending/3,
+      mng_cursor_ascending/3,
+      mng_cursor_limit/3,
+      mng_republisher/1,    % get handle to the java object of the mongo republisher
       mng_republish/3,
-      mng_republish/5
+      mng_republish/5,
+      mng_ros_message/2,
+      mng_ros_message/4
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -55,12 +64,11 @@
 :- use_module(library('jpl')).
 :- use_module(library('knowrob_objects')).
 :- use_module(library('knowrob_perception')).
-:- use_module(library('knowrob_mongo_interface')).
-
 
 :-  rdf_meta
-    mng_db(+),
+    mng_interface(-),
     mng_republisher(-),
+    mng_db(+),
     mng_timestamp(r,r),
     mng_query_latest(+,?,+,r),
     mng_query_latest(+,?,+,r,+),
@@ -68,27 +76,31 @@
     mng_query_earliest(+,?,+,r,+),
     mng_query(+,?),
     mng_query(+,?,+),
+    mng_query_incremental(+,+,+),
     mng_value_object(+,-),
     mng_ros_message(t,-),
     mng_ros_message(+,+,+,-),
     mng_republish(t,+,-),
     mng_republish(+,+,+,+,-).
 
-
-:- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
-:- rdf_db:rdf_register_ns(owl, 'http://www.w3.org/2002/07/owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(xsd, 'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
 
-mng_republisher(Republisher) :-
-    (\+ current_predicate(v_mng_republisher, _)),
-    jpl_call('org.knowrob.interfaces.mongo.MongoMessages', get, [], Republisher),
-    jpl_list_to_array(['org.knowrob.interfaces.mongo.MongoMessages'], Arr),
-    jpl_call('org.knowrob.utils.ros.RosUtilities', runRosjavaNode, [Republisher, Arr], _),
-    assert(v_mng_republisher(Republisher)),!.
-mng_republisher(Republisher) :-
-    current_predicate(v_mng_republisher, _),
-    v_mng_republisher(Republisher).
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% querying the mongo database
+
+%% mng_interface(-Mongo) is det
+%
+% Get handle to the java object of mongo client.
+%
+mng_interface(Mongo) :-
+    (\+ current_predicate(v_mng_interface, _)),
+    jpl_new('org.knowrob.interfaces.mongo.MongoDBInterface', [], Mongo),
+    assert(v_mng_interface(Mongo)),!.
+mng_interface(Mongo) :-
+    current_predicate(v_mng_interface, _),
+    v_mng_interface(Mongo).
 
 %% mng_db(+DBName) is nondet.
 %
@@ -97,7 +109,7 @@ mng_republisher(Republisher) :-
 % @param DBName  The name of the db (e.g., 'roslog')
 %
 mng_db(DBName) :-
-  mongo_interface(Mongo),
+  mng_interface(Mongo),
   jpl_call(Mongo, 'setDatabase', [DBName], _).
 
 %% mng_timestamp(+Date, -Stamp) is nondet.
@@ -109,10 +121,10 @@ mng_db(DBName) :-
 % @param Stamp       Floating point timestamp that represents the date
 %
 mng_timestamp(Date, Stamp) :-
-  mongo_interface(DB),
+  mng_interface(DB),
   jpl_call(DB, 'getMongoTimestamp', [Date], Stamp).
 
-%% mng_db_cursor(+Collection, +Pattern, -DBCursor)
+%% mng_cursor(+Collection, +Pattern, -DBCursor)
 %
 % Query for DB cursor in collection @Collection.
 % The resulting DB object(s) must match the query pattern @Pattern.
@@ -121,8 +133,8 @@ mng_timestamp(Date, Stamp) :-
 % @param DBCursor The resulting DB cursor
 % @param Pattern The query pattern
 %
-mng_db_cursor(Collection, Pattern, DBCursor) :-
-  mongo_interface(DB),
+mng_cursor(Collection, Pattern, DBCursor) :-
+  mng_interface(DB),
   findall(Key, member([Key,_,_],Pattern), Keys),
   findall(Rel, member([_,Rel,_],Pattern), Relations),
   findall(Obj, (
@@ -158,56 +170,68 @@ mng_query_latest(Collection, DBObj, TimeKey, TimeValue) :-
   mng_query_latest(Collection, DBObj, TimeKey, TimeValue, []).
 
 mng_query_latest(Collection, DBObj, TimeKey, TimeValue, Pattern) :-
-  mng_db_cursor(Collection, [[TimeKey, '<', date(TimeValue)]|Pattern], DBCursor),
-  mng_descending(DBCursor, TimeKey, DBCursorDescending),
-  mng_read_cursor(DBCursorDescending, DBObj).
+  mng_cursor(Collection, [[TimeKey, '<', date(TimeValue)]|Pattern], DBCursor),
+  mng_cursor_descending(DBCursor, TimeKey, DBCursorDescending),
+  mng_cursor_read(DBCursorDescending, DBObj).
 
 mng_query_earliest(Collection, DBObj, TimeKey, TimeValue) :-
   mng_query_earliest(Collection, DBObj, TimeKey, TimeValue, []).
 
 mng_query_earliest(Collection, DBObj, TimeKey, TimeValue, Pattern) :-
-  mng_db_cursor(Collection, [[TimeKey, '>', date(TimeValue)]|Pattern], DBCursor),
-  mng_ascending(DBCursor, TimeKey, DBCursorAscending),
-  mng_read_cursor(DBCursorAscending, DBObj).
+  mng_cursor(Collection, [[TimeKey, '>', date(TimeValue)]|Pattern], DBCursor),
+  mng_cursor_ascending(DBCursor, TimeKey, DBCursorAscending),
+  mng_cursor_read(DBCursorAscending, DBObj).
 
 mng_query(Collection, DBObj) :-
-  mongo_interface(DB),
+  mng_interface(DB),
   jpl_call(DB, 'query', [Collection], DBCursor),
   not(DBCursor = @(null)),
-  mng_read_cursor(DBCursor, DBObj).
+  mng_cursor_read(DBCursor, DBObj).
 
 mng_query(Collection, DBObj, Pattern) :-
-  mng_db_cursor(Collection, Pattern, DBCursor),
-  mng_read_cursor(DBCursor, DBObj).
+  mng_cursor(Collection, Pattern, DBCursor),
+  mng_cursor_read(DBCursor, DBObj).
 
-%% mng_descending(+DBCursor, +Key)
-%% mng_ascending(+DBCursor, +Key)
+%% mng_query_incremental(+Collection, +Goal, +Pattern) is semidet
+%
+% Incrementally compute DB objects matching Pattern, and
+% call Goal for each result.
+% The DBObject is appended as last argument to Goal.
+% For example `Goal=my_predicate(X)` turns to `call(my_predicate(X,DBObject))`
+% for each resulting DB object.
+%
+mng_query_incremental(Collection, Goal, Pattern) :-
+  mng_cursor(Collection, Pattern, DBCursor),
+  mng_cursor_process(DBCursor, Goal).
+
+%% mng_cursor_descending(+DBCursor, +Key)
+%% mng_cursor_ascending(+DBCursor, +Key)
 %
 % Sorts the DB cursor @DBCursor w.r.t. the DB object key @Key.
 %
 % @param DBCursor The DB cursor
 % @param Key The sort key
 %
-mng_descending(DBCursor, Key, DBCursorDescending) :-
-  mongo_interface(DB),
+mng_cursor_descending(DBCursor, Key, DBCursorDescending) :-
+  mng_interface(DB),
   jpl_call(DB, 'descending', [DBCursor, Key], DBCursorDescending).
 
-mng_ascending(DBCursor, Key, DBCursorAscending) :-
-  mongo_interface(DB),
+mng_cursor_ascending(DBCursor, Key, DBCursorAscending) :-
+  mng_interface(DB),
   jpl_call(DB, 'ascending', [DBCursor, Key], DBCursorAscending).
 
-mng_limit(DBCursor, N, DBCursorLimited) :-
-  mongo_interface(DB),
+mng_cursor_limit(DBCursor, N, DBCursorLimited) :-
+  mng_interface(DB),
   jpl_call(DB, 'limit', [DBCursor, N], DBCursorLimited).
 
-%% mng_read_cursor(+DBCursor, -DBObj)
+%% mng_cursor_read(+DBCursor, -DBObj)
 %
 % Read DB objects from cursor.
 %
 % @param DBCursor The DB cursor
 % @param DBObj The resulting DB object(s)
 %
-mng_read_cursor(DBCursor, DBObj) :-
+mng_cursor_read(DBCursor, DBObj) :-
   (  mng_db_object(DBCursor, DBObj)
   -> ( % close cursor and succeed
     jpl_call(DBCursor, 'close', [], _)
@@ -216,9 +240,26 @@ mng_read_cursor(DBCursor, DBObj) :-
      fail
   )).
 
-%% mng_read_cursor(+DBCursor, one(-DBObj))
-%% mng_read_cursor(+DBCursor, all(-DBObj))
-%% mng_read_cursor(+DBCursor, some(-DBObj,-Count))
+%% mng_cursor_process(+DBCursor, +Goal) is semidet
+%
+% Incrementally compute DB objects from DBCursor, and
+% call Goal for each result.
+% The DBObject is appended as last argument to Goal.
+% For example `Goal=my_predicate(X)` turns to `call(my_predicate(X,DBObject))`
+% for each resulting DB object.
+%
+mng_cursor_process(DBCursor, Goal) :-
+  repeat,
+  (( mng_db_object(DBCursor, one(DBObj)),
+     call(Goal, DBObj) )
+  -> fail % jump back to repeat
+  ;  !    % continue and don't jump back again
+  ),
+  jpl_call(DBCursor, 'close', [], _).
+
+%% mng_cursor_read(+DBCursor, one(-DBObj))
+%% mng_cursor_read(+DBCursor, all(-DBObj))
+%% mng_cursor_read(+DBCursor, some(-DBObj,-Count))
 %
 % Read DB objects from cursor.
 %
@@ -226,20 +267,20 @@ mng_read_cursor(DBCursor, DBObj) :-
 % @param DBObj The resulting DB object(s)
 %
 mng_db_object(DBCursor, one(DBObj)) :-
-  mongo_interface(DB),
-  mng_limit(DBCursor, 1, DBCursorLimited),
+  mng_interface(DB),
+  mng_cursor_limit(DBCursor, 1, DBCursorLimited),
   jpl_call(DB, 'one', [DBCursorLimited], DBObj),
   not(DBObj = @(null)).
 
 mng_db_object(DBCursor, some(DBObjs, Count)) :-
-  mongo_interface(DB),
-  mng_limit(DBCursor, Count, DBCursorLimited),
+  mng_interface(DB),
+  mng_cursor_limit(DBCursor, Count, DBCursorLimited),
   jpl_call(DB, 'some', [DBCursorLimited, Count], DBObjsArray),
   not(DBObjsArray = @(null)),
   jpl_array_to_list(DBObjsArray, DBObjs).
 
 mng_db_object(DBCursor, all(DBObjs)) :-
-  mongo_interface(DB),
+  mng_interface(DB),
   jpl_call(DB, 'all', [DBCursor], DBObjsArray),
   not(DBObjsArray = @(null)),
   jpl_array_to_list(DBObjsArray, DBObjs).
@@ -278,21 +319,23 @@ mng_value_object(Val, Val) :-
 mng_value_object(Val, _) :-
   print_message(warning, domain_error(mng_value_object, [Val])), fail.
 
-%% mng_ros_message(+DBObj, -Msg)
-%% mng_ros_message(+DBObj, +TypeJava, +TypeString, -Msg)
-%
-% Generate a ROS message based on Mongo DB object.
-%
-% @param DBObj The DB object (result of a query)
-% @param TypeJava The Java class of the message
-% @param TypeString The message type identifier
-% @param Msg The generated message
-%
-mng_ros_message(DBObj, Msg) :-
-  mng_republish(DBObj, '', Msg).
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% republishing of stored messages
 
-mng_ros_message(DBObj, TypeJava, TypeString, Msg) :-
-  mng_republish(DBObj, TypeJava, TypeString, '', Msg).
+%% mng_republisher(-Republisher) is det
+%
+% Get handle to the java object of mongo republisher.
+%
+mng_republisher(Republisher) :-
+    (\+ current_predicate(v_mng_republisher, _)),
+    jpl_call('org.knowrob.interfaces.mongo.MongoMessages', get, [], Republisher),
+    jpl_list_to_array(['org.knowrob.interfaces.mongo.MongoMessages'], Arr),
+    jpl_call('org.knowrob.utils.ros.RosUtilities', runRosjavaNode, [Republisher, Arr], _),
+    assert(v_mng_republisher(Republisher)),!.
+mng_republisher(Republisher) :-
+    current_predicate(v_mng_republisher, _),
+    v_mng_republisher(Republisher).
 
 %% mng_republish(bool(+DBObj), +Topic, -Msg)
 %% mng_republish(str(+DBObj), +Topic, -Msg)
@@ -345,124 +388,28 @@ mng_republish(camera(DBObj), Topic, Msg) :-
 mng_republish(tf(DBObj), Topic, Msg) :-
   mng_republish(DBObj, 'tf.tfMessage', 'tf/tfMessage', Topic, Msg).
 
+mng_republish(DBObj, TypeJava, TypeString, '', Msg) :- !,
+  mng_republisher(Republisher),
+  jpl_classname_to_class(TypeJava, MsgClass),
+  jpl_call(Republisher, 'create', [DBObj,MsgClass,TypeString], Msg).
+
 mng_republish(DBObj, TypeJava, TypeString, Topic, Msg) :-
   mng_republisher(Republisher),
   jpl_classname_to_class(TypeJava, MsgClass),
   jpl_call(Republisher, 'publish', [DBObj,MsgClass,TypeString,Topic], Msg).
 
-mng_republish(DBObj, TypeJava, TypeString, '', Msg) :-
-  mng_republisher(Republisher),
-  jpl_classname_to_class(TypeJava, MsgClass),
-  jpl_call(Republisher, 'create', [DBObj,MsgClass,TypeString], Msg).
-
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% Higher-level reasoning methods
+%% mng_ros_message(+DBObj, -Msg)
+%% mng_ros_message(+DBObj, +TypeJava, +TypeString, -Msg)
 %
-
-%% obj_visible_in_camera(+Obj, ?Camera, +TimePoint) is nondet.
+% Generate a ROS message based on Mongo DB object.
 %
-% Check if Obj is visible by Camera at time TimePoint by reading the camera
-% properties from the robot's SRDL description and computing whether the
-% object center is inside the view frustrum.
+% @param DBObj The DB object (result of a query)
+% @param TypeJava The Java class of the message
+% @param TypeString The message type identifier
+% @param Msg The generated message
 %
-% @param Obj        Instance of an object in the scene
-% @param Camera     Instance of an srdl2comp:Camera
-% @param TimePoint  Instance of a knowrob:TimePoint at which the scene is to be evaluated
-% 
-% TODO(daniel): Move to another module
-%obj_visible_in_camera(Obj, Camera, TimePoint) :-
+mng_ros_message(DBObj, Msg) :-
+  mng_republish(DBObj, '', Msg).
 
-  %findall(Camera, owl_individual_of(Camera, srdl2comp:'Camera'), Cameras),
-  %member(Camera, Cameras),
-
-  %% Read camera properties: horizontal field of view, aspect ratio -> vertical field of view
-  %once(owl_has(Camera, srdl2comp:hfov, literal(type(_, HFOVa)))),
-  %term_to_atom(HFOV, HFOVa),
-
-  %once(owl_has(Camera, srdl2comp:imageSizeX, literal(type(_, ImgXa)))),
-  %term_to_atom(ImgX, ImgXa),
-
-  %once(owl_has(Camera, srdl2comp:imageSizeY, literal(type(_, ImgYa)))),
-  %term_to_atom(ImgY, ImgYa),
-
-  %VFOV is ImgY / ImgX * HFOV,
-
-
-  %% Read object pose w.r.t. camera
-  %once(owl_has(Camera, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(CamFrameID))),
-  %atom_concat('/', CamFrameID, CamFrame),
-
-  %% TODO: mng_latest_designator_before_time does not refer to Obj
-  %(object_pose_at_time(Obj, TimePoint, mat(PoseListObj)); mng_latest_designator_before_time(TimePoint, 'object', PoseListObj)),
-  %mng_transform_pose(PoseListObj, '/map', CamFrame, TimePoint, RelObjPose),
-
-  %RelObjPose = [_,_,_,ObjX,_,_,_,ObjY,_,_,_,ObjZ,_,_,_,_],
-
-  %BearingX is atan2(ObjY, ObjX),
-  %BearingY is atan2(ObjZ, ObjX),
-
-  %abs(BearingX) < HFOV/2,
-  %abs(BearingY) < VFOV/2.
-
-
-
-
-%% obj_blocked_by_in_camera(?Obj, ?Blocker, ?Camera, +TimePoint) is nondet.
-% 
-% Check if the view on Obj from Camera at time TimePoint is blocked by object
-% Blocker by reading the camera properties from the robot's SRDL description
-% and by computing whether the difference in bearing between the two objects'
-% center points from the camera viewpoint is less than ten degrees.
-%
-% @param Obj        Instance of an object in the scene
-% @param Blocker    Instance of an object in the scene
-% @param Camera     Instance of an srdl2comp:Camera
-% @param TimePoint  Instance of a knowrob:TimePoint at which the scene is to be evaluated
-% 
-% TODO(daniel): Move to another module
-%obj_blocked_by_in_camera(Obj, Blocker, Camera, TimePoint) :-
-
-  %findall(Camera, owl_individual_of(Camera, srdl2comp:'Camera'), Cameras),
-  %member(Camera, Cameras),
-
-  %% Read camera frame ID
-  %once(owl_has(Camera, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(CamFrameID))),
-  %atom_concat('/', CamFrameID, CamFrame),
-
-
-  %% Read object pose w.r.t. camera
-  %(object_pose_at_time(Obj, TimePoint, mat(PoseListObj)); mng_latest_designator_before_time(TimePoint, 'object', PoseListObj)),
-  %mng_transform_pose(PoseListObj, '/map', CamFrame, TimePoint, ObjPoseInCamFrame),
-  %ObjPoseInCamFrame = [_,_,_,ObjX,_,_,_,ObjY,_,_,_,ObjZ,_,_,_,_],
-  %ObjBearingX is atan2(ObjY, ObjX),
-  %ObjBearingY is atan2(ObjZ, ObjX),
-
-  %% debug
-%%   ObjXDeg is ObjBearingX /2 /pi * 360,
-%%   ObjYDeg is ObjBearingY /2 /pi * 360,
-%%%% PR2 ???? what is this doing here???
-%%%% 
-  %% Read poses of blocking robot parts w.r.t. camera
-  %sub_component('http://knowrob.org/kb/PR2.owl#PR2Robot1', Blocker),
-  %rdfs_individual_of(Blocker, 'http://knowrob.org/kb/srdl2-comp.owl#UrdfLink'),
-  %owl_has(Blocker, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(PartFrameID)),
-  %atom_concat('/', PartFrameID, PartFrame),
-
-%%   print(PartFrame),
-  %% transform identity pose from robot part frame to camera frame
-  %mng_transform_pose([1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1], PartFrame,
-                     %CamFrame, TimePoint, BlockerPoseInCamFrame),
-  %BlockerPoseInCamFrame = [_,_,_,BlkX,_,_,_,BlkY,_,_,_,BlkZ,_,_,_,_],
-  %BlkBearingX is atan2(BlkY, BlkX),
-  %BlkBearingY is atan2(BlkZ, BlkX),
-
-  %% debug
-%%   BlkXDeg is BlkBearingX /2 /pi * 360,
-%%   BlkYDeg is BlkBearingY /2 /pi * 360,
-
-  %abs(ObjBearingX - BlkBearingX) < 10/360 * 2 * pi,
-  %abs(ObjBearingY - BlkBearingY) < 10/360 * 2 * pi.
-
-
-
+mng_ros_message(DBObj, TypeJava, TypeString, Msg) :-
+  mng_republish(DBObj, TypeJava, TypeString, '', Msg).
