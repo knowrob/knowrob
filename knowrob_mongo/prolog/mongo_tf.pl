@@ -35,8 +35,7 @@
     [
       mng_lookup_transform/4,
       mng_transform_pose/5,
-      mng_comp_pose/2,
-      mng_comp_pose_at_time/4
+      mng_comp_pose/3
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -51,8 +50,7 @@
 :-  rdf_meta
     mng_lookup_transform(+,+,-,+),
     mng_transform_pose(+,+,+,-,+),
-    mng_comp_pose(r, r),
-    mng_comp_pose_at_time(r, +, r, r).
+    mng_comp_pose(r,r,+).
 
 %% mng_lookup_transform(+TargetFrame, +SourceFrame, -Pose, +Instant) is nondet.
 %
@@ -121,26 +119,12 @@ mng_transform_pose(SourceFrame,
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % hook mongo TF data into computable property knowrob:pose by expanding `holds`
 
-%% comp_mng_pose
-mng_comp_pose(Obj, Pose) :-
-  get_timepoint(Instant),
-  comp_mng_pose_at_time(Obj, Pose, Instant).
-
 %% comp_mng_pose_at_time
-mng_comp_pose_at_time(Obj, Pose, Instant) :-
+mng_comp_pose(Obj, Pose, [Instant,Instant]) :-
   nonvar(Obj),
-  % TODO: think about this
+  % only compute poses for time instants in the past
   get_timepoint(Now), Now > Instant + 20.0,
-  past_instant(Instant),
   map_frame_name(MapFrame),
   rdf_has(Obj, knowrob:frameName, ObjFrame),
   mng_lookup_transform(MapFrame, ObjFrame, PoseTerm, Instant),
   create_pose(PoseTerm, Pose).
-
-%% comp_mng_pose_during
-% TODO(daniel): support interval queries: yield all different poses in given time interval.
-%               smart mongo query with stepwise computation could nicely hook into Prolog backtracking.
-mng_comp_pose_during(Obj, Pose, [Instant,Instant]) :-
-  mng_comp_pose_during(Obj, Pose, Instant).
-
-knowrob_temporal:holds(Obj, 'http://knowrob.org/kb/knowrob.owl#pose', Pose, Interval) :- mng_comp_pose_during(Obj, Pose, Interval).

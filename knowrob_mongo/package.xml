@@ -4,10 +4,11 @@
   <version>0.1.0</version>
   <description>The knowrob_mongo package</description>
 
-  <maintainer email="knowrob@tenorth.de">Moritz Tenorth</maintainer>
+  <maintainer email="danielb@cs.uni-bremen.de">Daniel Beßler</maintainer>
 
   <author>Asil Bozcuoglu</author>
   <author>Moritz Tenorth</author>
+  <author email="danielb@cs.uni-bremen.de">Daniel Beßler</author>
   
   <license>BSD</license>
   

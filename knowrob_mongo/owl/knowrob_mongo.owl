@@ -20,11 +20,11 @@
     <owl:imports rdf:resource="package://knowrob_common/owl/knowrob.owl"/>
   </owl:Ontology>
 
-    <computable:PrologProperty rdf:about="#compute_mngPose">
-        <computable:command rdf:datatype="&xsd;string">comp_mng_pose</computable:command>
+    <computable:PrologTemporalProperty rdf:about="#compute_mngPose">
+        <computable:command rdf:datatype="&xsd;string">knowrob_mongo:mng_comp_pose</computable:command>
         <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
         <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
         <computable:target rdf:resource="&knowrob;pose"/>
-    </computable:PrologProperty>
+    </computable:PrologTemporalProperty>
 
 </rdf:RDF>
