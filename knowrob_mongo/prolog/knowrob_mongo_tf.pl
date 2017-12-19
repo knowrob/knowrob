@@ -52,12 +52,8 @@
 :- use_module(library('jpl')).
 :- use_module(library('knowrob_owl')).
 :- use_module(library('knowrob_mongo')).
-:- use_module(library('knowrob_mongo_interface')).
 
-:- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
-:- rdf_db:rdf_register_ns(owl, 'http://www.w3.org/2002/07/owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(xsd, 'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
 
 :-  rdf_meta
     mng_lookup_transform(+,+,r,-),
@@ -88,7 +84,7 @@ mng_lookup_transform(Target, Source, TimePoint, Transform) :-
 mng_lookup_transform(Target, Source, TimePoint, Transform) :-
   number(TimePoint),
 
-  mongo_interface(DB),
+  mng_interface(DB),
   jpl_call(DB, 'lookupTransform', [Target, Source, TimePoint], StampedTransform),
   % Make sure transform is not null!
   not( jpl_null(StampedTransform) ),
@@ -136,7 +132,7 @@ mng_transform_pose(PoseListIn, SourceFrame, TargetFrame, TimePoint, PoseListOut)
   % create intermediate matrix 
   jpl_new('tfjava.Stamped', [MatrixOut, '/', TimeInt], StampedOut),
 
-  mongo_interface(DB),
+  mng_interface(DB),
   jpl_call(DB, 'transformPose', [TargetFrame, StampedIn, StampedOut], @(true)),
   
   jpl_call(StampedOut, 'getData', [], MatrixOut2),

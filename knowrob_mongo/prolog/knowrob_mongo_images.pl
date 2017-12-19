@@ -1,6 +1,5 @@
 /** 
-
-  Copyright (C) 2013 Moritz Tenorth, 2015 Daniel Beßler
+  Copyright (C) 2015 Daniel Beßler
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -25,7 +24,6 @@
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@author Moritz Tenorth
 @author Daniel Beßler
 @license BSD
 */
@@ -39,19 +37,18 @@
 
 :- use_module(library('jpl')).
 :- use_module(library('knowrob_mongo')).
-:- use_module(library('knowrob_mongo_interface')).
 
 :-  rdf_meta
     mng_image_latest(r,-),
     mng_image_base64(+,-).
 
-mng_image_latest(Time, DBObj) :-
-  mng_query_latest('kinect_head_rgb_image_color', one(DBObj), 'header.stamp', Time).
+mng_kinect_head_rgb_image_color(Instant, DBObj) :-
+  mng_query_latest('kinect_head_rgb_image_color', one(DBObj), 'header.stamp', Instant).
 
 mng_image_base64(DBObj, Base64) :-
   mng_republisher(_),
-  jpl_call('org.knowrob.vis.ImageEncoding', 'encodeBase64', [DBObj], Base64).
+  jpl_call('org.knowrob.utils.ros.MongoImageEncoding', 'encodeBase64', [DBObj], Base64).
 
 mng_compresssed_image_base64(DBObj, Base64) :-
   mng_republisher(_),
-  jpl_call('org.knowrob.vis.ImageEncoding', 'encodeBase64_compressed', [DBObj], Base64).
+  jpl_call('org.knowrob.utils.ros.MongoImageEncoding', 'encodeBase64_compressed', [DBObj], Base64).

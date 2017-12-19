@@ -55,8 +55,10 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.QueryBuilder;
 
+import org.apache.log4j.Logger;
 
 public class MongoDBInterface {
+	final static Logger logger = Logger.getLogger(MongoDBInterface.class);
 
 	TFMemory mem;
 
@@ -162,8 +164,7 @@ public class MongoDBInterface {
 					else if("exist".equals(rel) || "exists".equals(rel))
 						query = query.and(key).exists(val);
 					else {
-						// TODO: proper logging
-						System.err.println("Unknown mongo relation: " + rel);
+						logger.error("Unknown mongo relation: " + rel);
 					}
 				}
 			}
@@ -171,8 +172,8 @@ public class MongoDBInterface {
 			return query(collection, query);
 		}
 		catch (Exception e) {
-			// TODO: handle exception
-			System.err.println("MONGO query failed: " + e.getMessage());
+			// TODO: throw exception
+			logger.error("MONGO query failed: " + e.getMessage());
 			e.printStackTrace();
 			return null;
 		}
@@ -191,8 +192,8 @@ public class MongoDBInterface {
 			return cursor;
 		}
 		catch (Exception e) {
-			// TODO: handle exception
-			System.err.println("MONGO query failed: " + e.getMessage());
+			// TODO: throw exception
+			logger.error("MONGO query failed: " + e.getMessage());
 			e.printStackTrace();
 			return null;
 		}
@@ -203,7 +204,8 @@ public class MongoDBInterface {
 			return cursor.sort(new BasicDBObject(key, 1));
 		}
 		catch(Exception e) {
-			System.err.println("Failed to sort cursor: " + e.getMessage());
+			// TODO: throw exception
+			logger.error("Failed to sort cursor: " + e.getMessage());
 			e.printStackTrace();
 			return null;
 		}
@@ -214,7 +216,8 @@ public class MongoDBInterface {
 			return cursor.sort(new BasicDBObject(key, -1));
 		}
 		catch(Exception e) {
-			System.err.println("Failed to sort cursor: " + e.getMessage());
+			// TODO: throw exception
+			logger.error("Failed to sort cursor: " + e.getMessage());
 			e.printStackTrace();
 			return null;
 		}
@@ -225,7 +228,8 @@ public class MongoDBInterface {
 			return cursor.limit(number);
 		}
 		catch(Exception e) {
-			System.err.println("Failed to limit cursor: " + e.getMessage());
+			// TODO: throw exception
+			logger.error("Failed to limit cursor: " + e.getMessage());
 			e.printStackTrace();
 			return null;
 		}

@@ -59,12 +59,8 @@
 :- use_module(library('rdfs_computable')).
 :- use_module(library('jpl')).
 :- use_module(library('knowrob_mongo')).
-:- use_module(library('knowrob_mongo_interface')).
 
-:- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
-:- rdf_db:rdf_register_ns(owl, 'http://www.w3.org/2002/07/owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(xsd, 'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
 
 :-  rdf_meta
     mng_designator(r,?),
@@ -87,7 +83,7 @@
     mng_decision_tree(-).
 
 mng_db_call(Method, Args, Result) :-
-  mongo_interface(DB),
+  mng_interface(DB),
   jpl_call(DB, Method, Args, Result).
 
 mng_designator_id(Designator, DesigID) :-
