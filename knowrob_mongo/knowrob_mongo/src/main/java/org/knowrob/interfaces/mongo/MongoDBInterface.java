@@ -273,52 +273,6 @@ public class MongoDBInterface {
 	}
 	
 	/**
-	 * Read designators based on the given filter pattern. The strings in the
-	 * keys and values lists are AND-joined to form query expressions for MongoDB.
-	 * 
-	 * K = ['designator.TYPE','designator.GOAL.TO','designator.GOAL.OBJ.TYPE']
-	 * V = [NAVIGATION,SEE,PANCAKEMIX].
-	 * 
-	 * @param keys Strings describing fields in a document using the dot notation 
-	 * @param values Strings of values that these fields need to have
-	 * @return List of @Designator data structures that match the query expressions
-	 */
-	public Designator[] queryDesignatorsByPattern(String[] keys, String[] values) {
-		
-		DBCollection coll = getDatabase().getCollection(COLLECTION_LOGGED_DESIGNATORS);
-		
-		QueryBuilder qb = QueryBuilder.start("designator").exists("_id");
-		for(int i=0; i<keys.length; i++) {
-			
-			// HACK
-			//values[i] = values[i].replace("_", "");
-			
-			qb = qb.and(keys[i]).is(Pattern.compile(values[i],Pattern.CASE_INSENSITIVE)); // pattern for case insensitive matching
-		}
-		
-		DBObject query = qb.get();
-		
-		DBObject cols  = new BasicDBObject();
-		cols.put("__recorded", 1 );		
-		cols.put("designator", 1 );
-
-		DBCursor cursor = coll.find(query, cols);
-
-		Designator[] res = new Designator[cursor.size()];
-		int r=0;
-		
-		while(cursor.hasNext()) {
-			DBObject row = cursor.next();
-			java.util.Date instant = (java.util.Date) row.get("__recorded");
-			Designator desig = new Designator(instant).readFromDBObject((BasicDBObject) row.get("designator"));
-			res[r++]=desig;
-		}
-		cursor.close();
-		
-		return res;
-	}
-	
-	/**
 	 * Find distinct designator values for given DB key.
 	 * @param key The DB key
 	 * @return Array of different values

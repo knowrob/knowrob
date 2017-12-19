@@ -1,6 +1,7 @@
 /** 
 
-  Copyright (C) 2013 Moritz Tenorth, 2015 Daniel Beßler
+  Copyright (C) 2013 Moritz Tenorth
+  Copyright (C) 2015 Daniel Beßler
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -33,20 +34,12 @@
 :- module(mongo_tf,
     [
       mng_lookup_transform/4,
-      mng_lookup_position/4,
       mng_transform_pose/5,
-      %mng_robot_pose/2,
-      %mng_robot_pose/3,
-      %mng_robot_pose_at_time/4,
       mng_comp_pose/2,
-      mng_comp_pose/3,
-      mng_comp_pose_at_time/4,
-      comp_mng_pose/2,
-      comp_mng_pose/3
+      mng_comp_pose_at_time/4
     ]).
 
 :- use_module(library('semweb/rdfs')).
-:- use_module(library('owl_parser')).
 :- use_module(library('owl')).
 :- use_module(library('rdfs_computable')).
 :- use_module(library('jpl')).
@@ -56,267 +49,98 @@
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
 :-  rdf_meta
-    mng_lookup_transform(+,+,r,-),
-    mng_lookup_position(+,+,r,-),
-    %mng_robot_pose(r, r),
-    %mng_robot_pose(r, r,r),
-    %mng_robot_pose_at_time(r, +, r, r),
+    mng_lookup_transform(+,+,-,+),
+    mng_transform_pose(+,+,+,-,+),
     mng_comp_pose(r, r),
-    mng_comp_pose(r, r,r),
-    mng_comp_pose_at_time(r, +, r, r),
-    comp_mng_pose(r,-),
-    comp_mng_pose_at_time(r,-,+).
+    mng_comp_pose_at_time(r, +, r, r).
 
-%% mng_lookup_transform(+Target, +Source, +TimePoint, -Transform) is nondet.
+%% mng_lookup_transform(+TargetFrame, +SourceFrame, -Pose, +Instant) is nondet.
 %
-% Determine the transform from Source to Target at TimePoint based on the logged
+% Determine the transform from Source to Target at time Instant based on the logged
 % tf data.
 % 
-% @param Target     Target frame ID
-% @param Source     Source frame ID
-% @param TimePoint  Instance of knowrob:TimePoint
-% @param Transform  Transformation matrix as list[16]
+% @param TargetFrame  Target frame ID
+% @param SourceFrame  Source frame ID
+% @param Pose         The pose in the form of pose([float x,y,z],[float qx,qy,qz,qw])
+% @param Instant      The time instant
 %
-mng_lookup_transform(Target, Source, TimePoint, Transform) :-
-  atom(TimePoint), time_term(TimePoint, T),
-  mng_lookup_transform(Target, Source, T, Transform).
+mng_lookup_transform(TargetFrame, SourceFrame, pose([X,Y,Z],[QX,QY,QZ,QW]), Instant) :-
+  mng_interface(Mongo),
+  time_term(Instant, T),
+  jpl_call(Mongo, 'lookupTransform',
+          [TargetFrame, SourceFrame, T], StampedTransform),
+  \+ jpl_null(StampedTransform),
+  jpl_call(StampedTransform, 'getTranslation', [], Vector3d),
+  jpl_call(Vector3d, 'x', [], X),
+  jpl_call(Vector3d, 'y', [], Y),
+  jpl_call(Vector3d, 'z', [], Z),
+  jpl_call(StampedTransform, 'getRotation', [], Quat4d),
+  jpl_call(Quat4d, 'x', [], QX),
+  jpl_call(Quat4d, 'y', [], QY),
+  jpl_call(Quat4d, 'z', [], QZ),
+  jpl_call(Quat4d, 'w', [], QW).
 
-mng_lookup_transform(Target, Source, TimePoint, Transform) :-
-  number(TimePoint),
-
-  mng_interface(DB),
-  jpl_call(DB, 'lookupTransform', [Target, Source, TimePoint], StampedTransform),
-  % Make sure transform is not null!
-  not( jpl_null(StampedTransform) ),
-
-  jpl_call(StampedTransform, 'getMatrix4', [], TransformMatrix4d),
-  knowrob_coordinates:matrix4d_to_list(TransformMatrix4d, Transform).
-
-%% mng_lookup_position(+Target, +Source, +TimePoint, -Position) is nondet.
+%% mng_transform_pose(+SourceFrame, +TargetFrame, +PoseIn, -PoseOut, -Instant) is nondet
 %
-% Determine the position from Source to Target at TimePoint based on the logged
-% tf data.
-% 
-% @param Target     Target frame ID
-% @param Source     Source frame ID
-% @param TimePoint  Instance of knowrob:TimePoint
-% @param Position   Position as list[3]
+% Transform a pose into TargetFrame at time Instant.
 %
-mng_lookup_position(Target, Source, TimePoint, Position) :-
-  mng_lookup_transform(Target, Source, TimePoint, Transform),
-  nth0( 3, Transform, X),
-  nth0( 7, Transform, Y),
-  nth0(11, Transform, Z),
-  Position = [ X, Y, Z ].
-
-%% mng_transform_pose(+PoseListIn, +SourceFrame, +TargetFrame, +TimePoint, -PoseListOut) is nondet.
-% 
-% Transform PoseListIn from SourceFrame into TargetFrame based on the logged tf data.
-% 
-% @param PoseListIn    Pose matrix in SourceFrame to be transformed into TargetFrame, as row-based list[16]
-% @param SourceFrame   Source frame ID
-% @param TargetFrame   Target frame ID
-% @param TimePoint     Instance of knowrob:TimePoint
-% @param PoseListOut   Pose matrix as row-based list[16]
+% @param SourceFrame     Tf frame the source matrix is described in
+% @param TargetFrame     Tf frame the source matrix is to be transformed into
+% @param PoseIn          Term of form pose([float x,y,z],[float qx,qy,qz,qw])
+% @param PoseOut         Term of form pose([float x,y,z],[float qx,qy,qz,qw])
+% @param Instant         Time point at which the transformation is to be determined
 %
-mng_transform_pose(PoseListIn, SourceFrame, TargetFrame, TimePoint, PoseListOut) :-
-  
-  time_term(TimePoint, Time),
-  number(Time),
-  TimeInt is round(Time),
-
-  knowrob_coordinates:list_to_matrix4d(PoseListIn, MatrixIn),
-  jpl_new('tfjava.Stamped', [MatrixIn, SourceFrame, TimeInt], StampedIn),
-
-  knowrob_coordinates:list_to_matrix4d([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1], MatrixOut),
-  % create intermediate matrix 
-  jpl_new('tfjava.Stamped', [MatrixOut, '/', TimeInt], StampedOut),
-
-  mng_interface(DB),
-  jpl_call(DB, 'transformPose', [TargetFrame, StampedIn, StampedOut], @(true)),
-  
-  jpl_call(StampedOut, 'getData', [], MatrixOut2),
-  knowrob_coordinates:matrix4d_to_list(MatrixOut2, PoseListOut).
-
-%% mng_robot_pose(+Robot, -Pose) is nondet.
-%
-% Compute the pose of all components of the robot at the current point in time.
-%
-% @param Robot        Instance of a robot in SRDL
-% @param Pose         Instance of a knowrob:RotationMatrix3D with the pose data
-%
-%mng_robot_pose(Robot, Pose) :-
-  %mng_robot_pose(Robot, Pose, 'map').
-  
-%mng_robot_pose(Robot, Pose, Target) :-
-  %get_timepoint(TimePoint),
-  %mng_robot_pose_at_time(Robot, Target, TimePoint, Pose).
-
-
-%% mng_robot_pose_at_time(Robot, TargetFrame, TimePoint, Pose) is nondet.
-%
-% Compute the pose of all components of the robot at the given point in time.
-%
-% @param Robot        Instance of a robot in SRDL
-% @param TargetFrame  Atom with tf frame ID in which the pose shall be returned (e.g. '/map')
-% @param TimePoint    Instance of knowrob:TimePoint
-% @param Pose         Instance of a knowrob:RotationMatrix3D with the pose data
-%
-%mng_robot_pose_at_time(Robot, TargetFrame, TimePoint, Pose) :-
-  %findall(S, (sub_component(Robot, S),
-              %owl_individual_of(S, srdl2comp:'UrdfLink')), Ss),
-
-  %sort(Ss, Ssorted),
-  %findall(P, (member(Sub, Ssorted),mng_comp_pose_at_time(Sub, TargetFrame, TimePoint, P)), Ps),
-
-  %nth0(0, Ps, Pose).
-
-
-
-%% mng_comp_pose(+RobotPart, -Pose) is nondet.
-%
-% Read the pose of RobotPart in /map coordinates from logged tf data, default to 'now'
-%
-% @param RobotPart  Instance of a robot part with the 'urdfName' property set
-% @param Pose       Instance of a knowrob:RotationMatrix3D with the pose data
-%
-mng_comp_pose(RobotPart, Pose) :-
-  mng_comp_pose(RobotPart,  Pose , '/map' ).
-
-mng_comp_pose(RobotPart, Pose, Target) :-
-  get_timepoint(TimePoint),
-  mng_comp_pose_at_time(RobotPart, Target, TimePoint, Pose).
-
-  
-%% mng_comp_pose_at_time(+RobotPart, +TargetFrame, +TimePoint, -Pose) is nondet.
-%
-% Read the pose of RobotPart in the given coordinate frame from logged tf data
-%
-% @param RobotPart    Instance of a robot part with the 'urdfName' property set
-% @param TargetFrame  Atom with tf frame ID in which the pose shall be returned (e.g. '/map')
-% @param TimePoint    Instance of knowrob:TimePoint
-% @param Pose         Instance of a knowrob:RotationMatrix3D with the pose data
-%
-mng_comp_pose_at_time(RobotPart, TargetFrame, TimePoint, Pose) :-
-
-  owl_has(RobotPart, 'http://knowrob.org/kb/knowrob.owl#frameName', literal(SourceFrameID)),
-  ( atom_prefix(SourceFrameID,'/') ->
-    SourceResolved = SourceFrameID      
-    ; atom_concat('/',SourceFrameID, SourceResolved) 
-  ),    
-  ( robot_part_tf_prefix(RobotPart, TfPrefix) ->
-    ( atom_prefix(TfPrefix,'/') ->
-      ( TfPrefix == '/' ->
-    TfResolved = ''
-    ;TfResolved = TfPrefix      
-      )
-      ; atom_concat('/',TfPrefix, TfResolved) 
-    ),
-    atom_concat(TfResolved, SourceResolved,SourceFrame)
-    ;SourceFrame = SourceResolved
-  ),
-  
-  %%FIXME @Bender this should be replaced with the tfPrefix SPEED THIS UP
-  mng_obj_pose_at_time(RobotPart, SourceFrame, TargetFrame, TimePoint, Pose).
-
-  
-  
-
-%% mng_obj_pose_at_time(+Obj, +SourceFrame, +TargetFrame, +TimePoint, -Pose) is nondet.
-%
-% Read the pose of Obj and transform it into the coordinates given by
-% TargetFrame  based on logged tf data
-%
-% @param Obj          Object instance
-% @param SourceFrame  Atom with tf frame ID in what the object's pose is given
-% @param TargetFrame  Atom with tf frame ID in which the pose shall be returned (e.g. '/map')
-% @param TimePoint    Instance of knowrob:TimePoint
-% @param Pose         Instance of a knowrob:RotationMatrix3D with the pose data
-%
-% @deprecated
-mng_obj_pose_at_time(Obj, SourceFrame, TargetFrame, TimePoint, Pose) :-
-
-  % read object pose in original coordinates at TimePoint
-  % MT: deactivated since, when called the second time, this will return different
-  %     results because the pose is asserted below
-%   (object_pose_at_time(Obj, TimePoint, PoseListIn)
-%      -> true ;
-        PoseListIn = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
-%         ),
-
-  mng_transform_pose(PoseListIn, SourceFrame, TargetFrame, TimePoint, PoseListOut),
-  create_pose(mat(PoseListOut), Pose),
-  rdf_assert(Pose, 'http://knowrob.org/kb/knowrob.owl#frameName', TargetFrame),
-
-  rdf_instance_from_class('http://knowrob.org/kb/knowrob.owl#Proprioception', Perception),
-  
-  ( number(TimePoint) ->
-    create_timepoint(TimePoint, TimePoint_) ;
-    TimePoint_ = TimePoint ),
-  rdf_assert(Perception, knowrob:startTime, TimePoint_),
-
-  set_object_perception(Obj, Perception),
-  rdf_assert(Perception, knowrob:eventOccursAt, Pose).
+mng_transform_pose(SourceFrame,
+                   TargetFrame,
+                   pose(PosIn,RotIn),
+                   pose(PosOut,RotOut),
+                   Instant) :-
+  mng_interface(Mongo),
+  time_term(Instant, T),
+  % create StampedMatIn
+  jpl_list_to_array(PosIn,PosInArr),
+  jpl_list_to_array(RotIn,RotInArr),
+  jpl_call('org.knowrob.utils.MathUtil', 'matrix',
+          [PosInArr,RotInArr], PoseInArray),
+  jpl_call('tfjava.Utils', 'poseArrayToStampedMatrix4d',
+          [PoseInArray, SourceFrame, T], StampedMatIn),
+  % create StampedMatOut
+  jpl_call('tfjava.Utils', 'getStampedIdentityMatrix4d',
+          [], StampedMatOut),
+  % transform the pose
+  jpl_call(Mongo, 'transformPose',
+          [TargetFrame, StampedMatIn, StampedMatOut], @(true)),
+  % read position and orientation
+  jpl_call('tfjava.Utils', 'stampedMatrix4dToPoseArray',
+          [StampedMatOut], PoseOutArray),
+  jpl_array_to_list(PoseOutArray, PoseOut),
+  matrix_rotation(PoseOut,RotOut),
+  matrix_translation(PoseOut,PosOut).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % hook mongo TF data into computable property knowrob:pose by expanding `holds`
 
 %% comp_mng_pose
-comp_mng_pose(Obj, Pose) :-
+mng_comp_pose(Obj, Pose) :-
   get_timepoint(Instant),
   comp_mng_pose_at_time(Obj, Pose, Instant).
 
 %% comp_mng_pose_at_time
-comp_mng_pose_at_time(Obj, Pose, Instant) :-
+mng_comp_pose_at_time(Obj, Pose, Instant) :-
   nonvar(Obj),
+  % TODO: think about this
+  get_timepoint(Now), Now > Instant + 20.0,
   past_instant(Instant),
-  mng_object_pose_at_time(Obj, Instant, MngPose, Instant),
-  object_pose(MngPose, Instant, PoseTerm),
+  map_frame_name(MapFrame),
+  rdf_has(Obj, knowrob:frameName, ObjFrame),
+  mng_lookup_transform(MapFrame, ObjFrame, PoseTerm, Instant),
   create_pose(PoseTerm, Pose).
 
 %% comp_mng_pose_during
 % TODO(daniel): support interval queries: yield all different poses in given time interval.
 %               smart mongo query with stepwise computation could nicely hook into Prolog backtracking.
-comp_mng_pose_during(Obj, Pose, [Instant,Instant]) :-
-  comp_mng_pose_during(Obj, Pose, Instant).
+mng_comp_pose_during(Obj, Pose, [Instant,Instant]) :-
+  mng_comp_pose_during(Obj, Pose, Instant).
 
-knowrob_temporal:holds(Obj, 'http://knowrob.org/kb/knowrob.owl#pose', Pose, Interval) :- comp_mng_pose_during(Obj, Pose, Instant).
-
-past_instant(Instant) :-
-  get_timepoint(Now),
-  % TODO(daniel): how far can we "travel back" with c++ TF listener?
-  Now > Instant + 60.0.
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% knowrob_owl entity descriptions
-
-% TODO(daniel): howto unit test?
-% ?- register_ros_package(knowrob_mongo).
-% ?- mng_db('Pick-and-Place_pr2-general-pick-and-place_0').
-% ?- entity(Pose, [a, pose, [urdf_name, '/laser_tilt_mount_link'], [temporal_extend, [a, timepoint, 1396512420.0]]]).
-
-knowrob_owl:entity_compute(Entity, [a,pose|Descr]) :-
-  entity_has(Descr, urdf_name, UrdfName),
-  entity_has(Descr, temporal_extend, IntervalDescr),
-  % TODO(daniel): allow specification of reference frame
-  ReferenceFrame='http://knowrob.org/kb/knowrob.owl#MapFrame',
-  TFMapFrame='/map', % FIXME bad assumption
-  pose_compute(Pose, TFMapFrame, UrdfName, IntervalDescr),
-  matrix_rotation(Pose, [QW,QX,QY,QZ]),
-  matrix_translation(Pose, [X,Y,Z]),
-  create_pose(pose(ReferenceFrame, [X,Y,Z], [QW,QX,QY,QZ]), Entity).
-
-pose_compute(Pose, SourceFrame, UrdfName, [a,timepoint|Descr]) :-
-  entity(TimeIri, [a,timepoint|Descr]),
-  time_term(TimeIri, Time),
-  mng_lookup_transform(SourceFrame, UrdfName, Time, Pose), !.
-
-% FIXME: support looking up all poses that occur during given interval
-%pose_compute(Pose, SourceFrame, UrdfName, [an|[interval|Descr]]) :-
-%  entity(TimeIri, Descr), time_term(TimeIri, Interval),
-%  mng_lookup_transform(SourceFrame, UrdfName, Interval, Pose).
-
-% TODO: trajectory entity_compute
-%knowrob_owl:entity_compute(Entity, [a|[trajectory|Descr]]) :-
+knowrob_temporal:holds(Obj, 'http://knowrob.org/kb/knowrob.owl#pose', Pose, Interval) :- mng_comp_pose_during(Obj, Pose, Interval).

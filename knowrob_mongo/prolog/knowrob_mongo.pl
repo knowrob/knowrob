@@ -36,6 +36,7 @@
       mng_interface/1,      % get handle to the java object of the mongo client
       mng_db/1,             % set the database state
       mng_timestamp/2,
+      mng_distinct_values/3,
       mng_value_object/2,   % converts between mongo and prolog representations
       mng_query/2,          % querying the db based on patterns of data records
       mng_query/3,
@@ -66,6 +67,7 @@
     mng_republisher(-),
     mng_db(+),
     mng_timestamp(r,r),
+    mng_distinct_values(+,+,-),
     mng_query_latest(+,?,+,r),
     mng_query_latest(+,?,+,r,+),
     mng_query_earliest(+,?,+,r),
@@ -118,6 +120,19 @@ mng_db(DBName) :-
 mng_timestamp(Date, Stamp) :-
   mng_interface(DB),
   jpl_call(DB, 'getMongoTimestamp', [Date], Stamp).
+
+%% mng_distinct_values(+Collection, +Key, -Values) is nondet.
+% 
+% Determine distinct field values
+%
+% @param Collection The name of the MONGO DB collection
+% @param Key    The field key
+% @param Values List of distinct values
+% 
+mng_distinct_values(Collection, Key, Values) :-
+  mng_interface(DB),
+  jpl_call(DB, 'distinctValues', [Collection,Key], ValuesArr),
+  jpl_array_to_list(ValuesArr, Values).
 
 %% mng_cursor(+Collection, +Pattern, -DBCursor)
 %
