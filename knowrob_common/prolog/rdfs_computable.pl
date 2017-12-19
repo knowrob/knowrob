@@ -95,13 +95,6 @@ rdf_triple(Property, Frame, Value) :-
     rdf_has(Frame, computable:'rest', RestProperty),
     rdf_triple(rdfs:range, RestProperty, Value)), X),
   assert(user:(X)).
-% FIXME(daniel): am namespace not defined!
-%:- user:expand_term((rdf_triple_hook(Property, Frame, Value):-
-%    rdf_equal(Property, rdfs:range),
-%    rdfs_instance_of(Frame, am:'Feature'),
-%    rdf_has(Frame, computable:'rest', RestProperty),
-%    rdf_triple(rdfs:range, RestProperty, Value)), X),
-%  assert(user:(X)).
 :- user:expand_term((rdf_triple_hook(Property, Frame, Value):-
     rdf_equal(Property, rdfs:domain),
     rdfs_instance_of(Frame, computable:'PropertyConcatenation'),
@@ -118,8 +111,6 @@ rdf_triple(Property, Frame, Value) :-
 :- rdf_meta
    rdf_lineage_class_hierarchy(r, ?),
    rdf_class_compare(?, r, r).
-
-
 
 %% rdfs_instance_of(?Resource, ?Class) is nondet.
 %
@@ -145,9 +136,6 @@ rdfs_instance_of(Resource, Class) :-
          member(Resource, Resources))).
 
 
-
-
-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
@@ -159,76 +147,24 @@ rdfs_instance_of(Resource, Class) :-
 % Search for computable classes with the target Class
 %
 rdfs_computable_class(Class, ComputableClass) :-
-
-%  MT: commented unused SQL computable code for performance reasons
-%   rdfs_computable_sql_class(Class, ComputableClass);
-  rdfs_computable_prolog_class(Class, ComputableClass).
-
-
-%% rdfs_computable_sql_class(+Class, -ComputableClass) is nondet.
-%
-% Implementation of rdfs_computable_class for SqlClasses.
-%
-rdfs_computable_sql_class(Class, ComputableClass) :-
-
-  findall(CC, rdf_has(CC,computable:'target',Class), ComputableClasses),
-  member(ComputableClass, ComputableClasses),
-  once(rdfs_individual_of(ComputableClass,computable:'SqlClass')).
-
-
-%% rdfs_computable_prolog_class(+Class, -ComputableClass) is nondet.
-%
-% Implementation of rdfs_computable_class for PrologClasses.
-%
-rdfs_computable_prolog_class(Class, ComputableClass) :-
-
   findall(CC, rdf_has(CC,computable:'target',Class), ComputableClasses),
   member(ComputableClass, ComputableClasses),
   once(rdfs_individual_of(ComputableClass,computable:'PrologClass')).
-
-
-
 
 %% rdfs_computable_property(+Property, -ComputableProperty) is nondet.
 %
 % Search ComputableProperty with the target Property.
 %
 rdfs_computable_property(Property, ComputableProperty) :-
-%  MT: commented unused SQL computable code for performance reasons
-%   rdfs_computable_sql_property(Property, ComputableProperty) ;
-  rdfs_computable_prolog_property(Property, ComputableProperty).
-
-
-%% rdfs_computable_sql_property(+Property, -ComputableProperty) is nondet.
-%
-% Implementation of rdfs_computable_Property for SQLProperties.
-%
-rdfs_computable_sql_property(Property, ComputableProperty) :-
-
-  findall(CP, rdf_has(CP,computable:'target',Property), ComputableProperties),
-  member(ComputableProperty, ComputableProperties),
-  once(rdfs_individual_of(ComputableProperty,computable:'SqlProperty')).
-
-
-%% rdfs_computable_prolog_property(+Property, -ComputableProperty) is nondet.
-%
-% Implementation of rdfs_computable_Property for PrologProperties.
-%
-rdfs_computable_prolog_property(Property, ComputableProperty) :-
-
   findall(CP, rdf_has(CP,computable:'target',Property), ComputableProperties),
   member(ComputableProperty, ComputableProperties),
   once(rdfs_individual_of(ComputableProperty,computable:'PrologProperty')).
-
-
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %
 % Perform computation (caching, call the different types of computables)
 %
-
-
 
 %% rdfs_computable_instance_of_subclass(?Instance, ?Class) is nondet.
 %
@@ -264,26 +200,18 @@ rdfs_computable_instance_of(Instance, Class) :-
   nonvar(Class),
   var(Instance),
   findall(I, rdfs_computable_prolog_instance_of(I, Class), Is), member(Instance, Is).
-%  ((findall(I, rdfs_computable_sql_instance_of(I,    Class), Is), member(Instance, Is)) ;
-%   (findall(I, rdfs_computable_prolog_instance_of(I, Class), Is), member(Instance, Is))).
 
 % determine classes
 rdfs_computable_instance_of(Instance, Class) :-
   var(Class),
   nonvar(Instance),
   findall(C, rdfs_computable_prolog_instance_of(Instance, C), Cs), member(Class, Cs).
-%  ((findall(C, rdfs_computable_sql_instance_of(Instance,    C), Cs), member(Class, Cs));
-%   (findall(C, rdfs_computable_prolog_instance_of(Instance, C), Cs), member(Class, Cs))).
 
 % check type
 rdfs_computable_instance_of(Instance, Class) :-
   nonvar(Class),
   nonvar(Instance),
   findall(C, rdfs_computable_prolog_instance_of(Instance, C), Cs), member(Cls, Cs), rdfs_subclass_of(Cls, Class).
-%  ((findall(C, rdfs_computable_sql_instance_of(Instance,    C), Cs), member(Cls, Cs), rdfs_subclass_of(Cls, Class));
-%   (findall(C, rdfs_computable_prolog_instance_of(Instance, C), Cs), member(Cls, Cs), rdfs_subclass_of(Cls, Class))).
-
-
 
 %% rdfs_computable_triple(+Property, ?Frame, ?Value)
 %
@@ -341,129 +269,67 @@ rdfs_computable_triple(Property, Frame, Value) :-
 
 % The real work is done here
 rdfs_computable_triple_1(Property, Frame, Value) :-
-
-%  MT: commented unused SQL computable code for performance reasons
-%     catch(rdfs_computable_sql_triple(Property,    Frame, Value), error(instantiation_error, _), fail) ;
   catch(rdfs_computable_prolog_triple(Property, Frame, Value), error(instantiation_error, _), fail).
 
+%% rdfs_computable_prolog_triple(?Property, ?Frame, ?Value).
+%
+% Evaluation of RDF triples using Prolog
+%
+rdfs_computable_prolog_triple(Property, Frame, Value) :-
+  nonvar(Property),
+  % get the associated prolog computable
+  rdfs_computable_property(Property, ComputableProperty),
+  % get the Prolog predicate that is used for evaluation:
+  rdf_has(ComputableProperty, computable:command, literal(type(_, Cmd))),
+  % handle the case that the predicate is defined in another module
+  ((term_to_atom(Module:Pred, Cmd)) ->
+    (Command=Module:Pred) ;
+    (Command=user:Cmd)),
+  % execute the Prolog predicate (namespace expansion etc.)
+  (
+    (nonvar(Value)) -> (
+      (rdfs_computable_prolog_call(ComputableProperty, Command, Frame, Value))
+    ) ; (
+      (rdfs_computable_prolog_call(ComputableProperty, Command, Frame, PrologValue),
+        % result: PrologValue
+        (PrologValue=[_|_]
+        -> member(Temp, PrologValue),
+          rdfs_prolog_to_rdf(Property, Temp, Value)
+        ; PrologValue=[]
+        -> fail
+        ; rdfs_prolog_to_rdf(Property, PrologValue, Value))
+      ))
+  ).
+
+rdfs_computable_prolog_call(ComputableProperty, Command, Frame, Value) :-
+  rdfs_individual_of(ComputableProperty,computable:'PrologTemporalProperty'), !,
+  get_timepoint(Instant),
+  call(Command, Frame, Value, [Instant,Instant]).
+rdfs_computable_prolog_call(_, Command, Frame, Value) :-
+  call(Command, Frame, Value).
 
 % Helpers for caching...
 rdfs_computable_cache_values(Property, Frame, Value) :- rdf_assert(Property, Frame, Value, cache).
 rdfs_computable_cache_frames(Property, Value, Frame) :- rdf_assert(Property, Frame, Value, cache).
 
-
-
-
-
-
-
-
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-%
-% Implementation: Computable classes
-%
-
-
-%%
-% rdfs_computable_sql_instance_of(?Instance, ?Class).
-%
-% Implementation of rdfs_computable_instance_of for SqlClasses.
-%
-% Either Instance or Class has to be a nonvar.
-% This makes almost no sense to do in a both-var-case because
-% in our domain we have far too many individuals to consider all
-% of them at once. So restrictions should be done before.
-%
-% Daniel: commented because odbc_query undefined
-%rdfs_computable_sql_instance_of(Instance, Class) :-
-
-  %nonvar(Class),!,
-  %atom(Class),
-  %rdf_split_url(Namespace, _, Class),
-
-  %% find computable classes
-  %rdfs_computable_sql_class(Class, ComputableClass),
-
-  %% read the command
-  %( var(Instance)
-  %-> rdf_has(ComputableClass,computable:'command',literal(type(_,Command)))
-  %;  rdf_has(ComputableClass,computable:'testCommand',literal(type(_,TestCommand))),
-       %atom(Instance),
-       %rdf_split_url(Namespace, MyInstance, Instance),
-       %concat_atom(TestCommandList, '~instance~', TestCommand),
-       %concat_atom(['\'', MyInstance, '\''], InstanceStr),
-       %concat_atom(TestCommandList, InstanceStr, Command)
-  %),
-
-  %% send command to the DB
-  %rdf_has(ComputableClass,computable:'user',literal(type(_,User))),
-  %rdf_has(ComputableClass,computable:'password',literal(type(_,PASSWD))),
-  %rdf_has(ComputableClass,computable:'database',literal(type(_,DB))),
-  %odbc_connect(DB,Connection,[user(User),password(PASSWD),open(once)]),
-
-  %( var(Instance)
-  %-> odbc_query(Connection, Command, row(MyInstance)),
-      %% create the instance in the KB
-      %rdf_split_url(Namespace, MyInstance, Instance),
-      %rdf_assert(Instance, rdf:type, Class)
-   %; odbc_query(Connection, Command, row(MyInstance))).
-
-
-
-% Daniel: commented because odbc_query undefined
-%rdfs_computable_sql_instance_of(Instance, Class) :-
-
-  %nonvar(Instance),!,
-  %atom(Instance),
-  %rdf_split_url(_, MyInstance, Instance),
-
-  %% find computable classes
-  %rdfs_computable_sql_class(Class, ComputableClass),
-
-  %% read the command
-  %rdf_has(ComputableClass,computable:'testCommand',literal(type(_,TestCommand))),
-  %concat_atom(TestCommandList, '~instance~', TestCommand),
-  %concat_atom(['\'', MyInstance, '\''], InstanceStr),
-  %concat_atom(TestCommandList, InstanceStr, Command),
-
-  %% send command to the DB
-  %rdf_has(ComputableClass,computable:'user',literal(type(_,User))),
-  %rdf_has(ComputableClass,computable:'password',literal(type(_,PASSWD))),
-  %rdf_has(ComputableClass,computable:'database',literal(type(_,DB))),
-  %odbc_connect(DB,Connection,[user(User),password(PASSWD),open(once)]),
-  %odbc_query(Connection, Command, row(MyInstance)).
-
-
-
 %% rdfs_computable_prolog_instance_of(?Instance, ?Class).
 %
 % Implementation of rdfs_computable_instance_of for PrologClasses.
 %
-%
 rdfs_computable_prolog_instance_of(Instance, Class) :-
-
-%  \+ (rdf_has(Instance, rdf:type, Class)),
-
   % get the associated prolog computable
   rdfs_computable_prolog_class(Class, ComputableClass),
-
   % get the Prolog predicate that is used for evaluation:
   rdf_has(ComputableClass, computable:command, literal(type(_, Cmd))),
-
   % handle the case that the predicate is defined in another module
   ((term_to_atom(Module:Pred, Cmd)) ->
     (Command=Module:Pred) ;
     (Command=Cmd)),
-
   (
     (nonvar(Instance))
     ->  call(Command, Instance, Class);
   (
-
     call(Command, MyInstance, Class),
-
     % check if MyInstance is already a global RDF URI
     ((rdf_split_url('', _, MyInstance)) -> (
       rdf_split_url(Namespace, _, Class),
@@ -475,114 +341,7 @@ rdfs_computable_prolog_instance_of(Instance, Class) :-
     ))
      )).
 
-%     % result: PrologValue
-%     ( PrologValue=[_|_]
-%     -> member(Temp, PrologValue),
-%       rdfs_prolog_to_rdf(Property, Temp, Instance)
-%     ; PrologValue=[]
-%     -> fail
-%     ; rdfs_prolog_to_rdf(Property, PrologValue, Instance)))).
-
-
-
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-%
-% Implementation: Computable properties
-%
-
-
-%% rdfs_computable_sql_triple(Property, Frame, Value).
-%
-% SQLProperty implementation for rdfs_computable_triple(Property, Frame, Value)
-%
-% Daniel: commented because odbc_query undefined
-%rdfs_computable_sql_triple(Property, Frame, Value) :-
-  %rdfs_computable_sql_property(Property, ComputableProperty),
-  %atom(Property),
-  %rdf_split_url(Namespace, _, Property),
-  %( nonvar(Frame)
-  %-> rdf_has(ComputableProperty,computable:'valueSelect',literal(type(_,FrameCommand))),
-      %atom(Frame),
-      %rdf_split_url(_, MyFrame, Frame),
-      %concat_atom(FrameCommandList, '~frame~', FrameCommand),
-      %concat_atom(FrameCommandList, MyFrame, Command),
-      %Row = row(X)
-  %; nonvar(Value)
-  %->  rdf_has(ComputableProperty,computable:'frameSelect',literal(type(_,ValueCommand))),
-      %rdfs_computable_value_from_url(Property, Value, MyValue),
-      %concat_atom(ValueCommandList, '~value~', ValueCommand),
-      %concat_atom(ValueCommandList, MyValue, Command),
-      %Row = row(MyFrame)
-  %;   rdf_has(ComputableProperty,computable:'frameValueSelect',literal(type(_,Command))),
-      %Row = row(MyFrame,X)
-  %),
-  %rdf_has(ComputableProperty,computable:'user',literal(type(_,User))),
-  %rdf_has(ComputableProperty,computable:'password',literal(type(_,PASSWD))),
-  %rdf_has(ComputableProperty,computable:'database',literal(type(_,DB))),
-  %odbc_connect(DB,Connection,[user(User),password(PASSWD),open(once)]),
-  %odbc_query(Connection, Command, Row),
-  %(nonvar(Value), nonvar(Frame)
-  %-> rdfs_computable_value_from_url(Property, Value, X)
-  %; true),
-  %(var(Value)
-  %-> rdfs_computable_value_from_url(Property, PrologValue, X),
-    %rdfs_prolog_to_rdf(Property, PrologValue, Value)
-  %; true),
-  %(var(Frame)
-  %-> rdf_split_url(Namespace, MyFrame, PrologFrame),
-    %rdfs_prolog_to_rdf(Property, PrologFrame, Frame)
-  %; true).
-
-
-%% rdfs_computable_prolog_triple(?Property, ?Frame, ?Value).
-%
-% Evaluation of RDF triples using Prolog
-%
-rdfs_computable_prolog_triple(Property, Frame, Value) :-
-  nonvar(Property),
-
-  % get the associated prolog computable
-  rdfs_computable_prolog_property(Property, ComputableProperty),
-
-  % get the Prolog predicate that is used for evaluation:
-  rdf_has(ComputableProperty, computable:command, literal(type(_, Cmd))),
-
-  % handle the case that the predicate is defined in another module
-  ((term_to_atom(Module:Pred, Cmd)) ->
-    (Command=Module:Pred) ;
-    (Command=user:Cmd)),
-
-  % execute the Prolog predicate (namespace expansion etc.)
-  (
-    (nonvar(Value)) -> (
-      (call(Command, Frame, Value))
-    ) ; (
-      (call(Command, Frame, PrologValue),
-        % result: PrologValue
-        (PrologValue=[_|_]
-        -> member(Temp, PrologValue),
-          rdfs_prolog_to_rdf(Property, Temp, Value)
-        ; PrologValue=[]
-        -> fail
-        ; rdfs_prolog_to_rdf(Property, PrologValue, Value))
-      ))
-  ).
-
-
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-%
-% Helper predicates: Convert results
-%
-
-
-%
 % Convert between Prolog and RDF values (i.e. name spaces, assert types etc)
-%
-%
 rdfs_prolog_to_rdf(Property, PrologValue, RDFValue) :-
   rdf_phas(Property, rdfs:range, Range),
   
@@ -613,28 +372,9 @@ rdfs_prolog_to_rdf(Property, PrologValue, RDFValue) :-
     ; print(['The value ',PrologValue,' is not in the oneOf range list ',OneOfList]), fail))
   ; print(['Cannot determine the type for ', PrologValue, ' in the range ', Range])).
 
-%%
-% rdfs_computable_value_from_url(+Property, ?Value, ?MyValue) :-
-%
-% Extract the value from an url depending on the property.
-% If property is a owl:DatatypeProperty do no conversion else do a rdf_split split.
-%%
-rdfs_computable_value_from_url(Property, Value, MyValue) :-
-  rdf_has(Property, rdf:type, owl:'DatatypeProperty')
-  -> MyValue = Value
-  ; ( atom(Property), atom(Value),
-     rdf_split_url(Namespace, _, Property),
-     rdf_split_url(Namespace, MyValue, Value), !)
-  ; MyValue = Value.
-
-
-
-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-%
-% Helper predicates: Property concatenations
-%
+% Property concatenations
 
 %%
 % Create a propertyConcatenation from a prolog list
@@ -675,15 +415,21 @@ rdfs_computable_compute_property_concatenation(Parameter, Frame, ParameterValue)
 % rdfs_computable_compute_parameter(Parameter, Frame, ParameterValue) :-
 %  rdf_triple(Parameter, Frame, ParameterValue).
 
-
-
-
-
-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% Class hierarchy
+% TODO: should not be here
+
+%% rdf_common_ancestor(+Classes, ?Ancestor).
 %
-% Helper predicates: Class hierarchy
+% Get one of the most specific common ancestors of rdf_classes.
+%
+rdf_common_ancestor([C], C).
+rdf_common_ancestor([C1, C2| Cs], C) :-
+  rdf_superclass_list([C1, C2| Cs], SCs),
+  intersection_of_sets(SCs, CSCs),
+  most_specific_class(CSCs, C0),
+  C = C0.
 %
 
 %%
@@ -705,17 +451,6 @@ most_specific_class([C1,C2|Cs], C) :-
   rdfs_subclass_of(C2, C1)
   -> most_specific_class([C2|Cs], C)
   ; most_specific_class([C1|Cs], C). % Either not comparable or C2 is superclass of C1
-
-%% rdf_common_ancestor(+Classes, ?Ancestor).
-%
-% Get one of the most specific common ancestors of rdf_classes.
-%
-rdf_common_ancestor([C], C).
-rdf_common_ancestor([C1, C2| Cs], C) :-
-  rdf_superclass_list([C1, C2| Cs], SCs),
-  intersection_of_sets(SCs, CSCs),
-  most_specific_class(CSCs, C0),
-  C = C0.
 
 rdf_class_compare(Delta, Class0, Class1) :-
   rdfs_subclass_of(Class0, Class1)

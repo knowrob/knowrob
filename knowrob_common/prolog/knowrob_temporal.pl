@@ -249,7 +249,6 @@ owl_satisfies_cardinality_during(Resource, _, _, _) :-
 %
 % TODO: allow to request data values in different formats. In particular vectors as prolog terms, ...
 holds(Term) :-
-  % TODO: just call owl_has instead
   current_time(T),
   holds(Term,T).
 
@@ -273,20 +272,16 @@ holds(Term, I) :-
   )).
 
 holds(S, P, O) :-
-  % TODO: just call owl_has instead
   current_time(T),
   holds(S, P, O, [T,T]).
 
-% FIXME: computables computed here (owl_triple) may not hold for interval I but starting from a later instance
-%   - ignore computables entirely here and require expanded holds?
-%   - better: "temporally computable predicates": include time, holds clause that expands to temporal computables
 holds(S, P, O, I) :-
   once(( atom(S) ; var(S) )),
   (  atom(P)
   % P bound
   -> (   temporal_part_has(S,P,O,I_x)
      *-> time_term(I_x,Ext)
-     ;   owl_triple(S,P,O)
+     ;   owl_triple(S,P,O) % FIXME: add time argument to owl_triple
      )
   % P unbound
   ;  (   owl_has(S,P,O), (
@@ -302,24 +297,6 @@ holds(S, P, O, I) :-
   -> interval_during(I, Ext)
   ;  I = Ext
   ).
-
-/*  
-holds(S, P, O, I) :-
-  (var(S)
-  -> (
-    class_properties(S, P, O)%,
-    %rdfs_individual_of(S, Cls)
-  ) ; (
-    % FIXME(daniel): this terribly slows down inference. Tried with comp_spatial tests
-    %rdfs_individual_of(S, Cls),
-    %class_properties(S, P, O)
-    class_properties(S, P, O)
-  )),
-  (  var(I)
-  -> I = [0.0]
-  ;  true
-  ).*/
-
 
 %% occurs(?Evt) is nondet.
 %% occurs(?Evt,?T) is nondet.

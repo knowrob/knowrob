@@ -217,8 +217,8 @@ owl_use_has_value(S, P, O) :-
 	rdf_has(Super, owl:onProperty, P),
 	rdf_has(Super, owl:hasValue, O),
 	% NOTE(DB): not possible to infer has-value restrictions of superclasses using owl_direct_subclass_of
-	owl_subclass_of(Type, Super),
 	%owl_direct_subclass_of(Type, Super),
+	owl_subclass_of(Type, Super),
 	rdf_has(S, rdf:type, Type).
 owl_use_has_value(S, P, O) :-
 	rdf_has(S, rdf:type, Type),
