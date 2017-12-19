@@ -30,7 +30,7 @@
 @license BSD
 */
 
-:- module(knowrob_mongo_tf,
+:- module(mongo_tf,
     [
       mng_lookup_transform/4,
       mng_lookup_position/4,

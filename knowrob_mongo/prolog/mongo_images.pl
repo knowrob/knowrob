@@ -28,27 +28,45 @@
 @license BSD
 */
 
-:- module(knowrob_mongo_images,
+:- module(mongo_images,
     [
-        mng_image_latest/2,
+        mng_kinect_head_rgb_image_color/2,
         mng_image_base64/2,
-        mng_compresssed_image_base64/2
+        mng_image_base64_compresssed/2
     ]).
 
 :- use_module(library('jpl')).
 :- use_module(library('knowrob_mongo')).
 
 :-  rdf_meta
-    mng_image_latest(r,-),
-    mng_image_base64(+,-).
+    mng_kinect_head_rgb_image_color(+,-),
+    mng_image_base64(+,-),
+    mng_image_base64_compresssed(+,-).
 
+%% mng_kinect_head_rgb_image_color(+Instant, -DBObj) is semidet
+%
+% Query for latest image message published on kinect_head_rgb_image_color topic before Instant
+% and unify DBObj with the Java object that holds the image information.
+%
 mng_kinect_head_rgb_image_color(Instant, DBObj) :-
   mng_query_latest('kinect_head_rgb_image_color', one(DBObj), 'header.stamp', Instant).
 
+%% mng_image_base64(+DBObj, -Base64) is semidet
+%
+% Unifies Base64 with the base64 encoded atom that corresponds
+% to the pixels of the uncomporessed image DB record DBObj.
+% DBObject is a recorded message of type sensor_msgs/Image.
+%
 mng_image_base64(DBObj, Base64) :-
   mng_republisher(_),
   jpl_call('org.knowrob.utils.ros.MongoImageEncoding', 'encodeBase64', [DBObj], Base64).
 
-mng_compresssed_image_base64(DBObj, Base64) :-
+%% mng_image_base64_compresssed(+DBObj, -Base64) is semidet
+%
+% Unifies Base64 with the base64 encoded atom that corresponds
+% to the pixels of the comporessed image DB record DBObj.
+% DBObject is a recorded message of type sensor_msgs/CompressedImage.
+%
+mng_image_base64_compresssed(DBObj, Base64) :-
   mng_republisher(_),
   jpl_call('org.knowrob.utils.ros.MongoImageEncoding', 'encodeBase64_compressed', [DBObj], Base64).

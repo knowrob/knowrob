@@ -58,12 +58,8 @@
     ]).
 
 :- use_module(library('semweb/rdfs')).
-:- use_module(library('owl_parser')).
 :- use_module(library('owl')).
-:- use_module(library('rdfs_computable')).
 :- use_module(library('jpl')).
-:- use_module(library('knowrob_objects')).
-:- use_module(library('knowrob_perception')).
 
 :-  rdf_meta
     mng_interface(-),
@@ -84,7 +80,6 @@
     mng_republish(+,+,+,+,-).
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
-
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -378,6 +373,9 @@ mng_republish(int64(DBObj), Topic, Msg) :-
 
 mng_republish(image(DBObj), Topic, Msg) :-
   mng_republish(DBObj, 'sensor_msgs.Image', 'sensor_msgs/Image', Topic, Msg).
+
+mng_republish(compressed_image(DBObj), Topic, Msg) :-
+  mng_republish(DBObj, 'sensor_msgs.CompressedImage', 'sensor_msgs/CompressedImage', Topic, Msg).
 
 mng_republish(pcl(DBObj), Topic, Msg) :-
   mng_republish(DBObj, 'sensor_msgs.PointCloud', 'sensor_msgs/PointCloud', Topic, Msg).

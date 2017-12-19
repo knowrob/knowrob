@@ -33,8 +33,8 @@
 :- register_ros_package(knowrob_objects).
 
 :- use_module(library(knowrob_mongo)).
-:- use_module(library(knowrob_mongo_designators)).
-:- use_module(library(knowrob_mongo_images)).
-:- use_module(library(knowrob_mongo_tf)).
+:- use_module(library(mongo_designators)).
+:- use_module(library(mongo_images)).
+:- use_module(library(mongo_tf)).
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).

@@ -30,7 +30,7 @@
 @license BSD
 */
 
-:- module(knowrob_mongo_designators,
+:- module(mongo_designators,
     [
       mng_designator/2,
       mng_designator/3,
@@ -54,7 +54,6 @@
     ]).
 
 :- use_module(library('semweb/rdfs')).
-:- use_module(library('owl_parser')).
 :- use_module(library('owl')).
 :- use_module(library('rdfs_computable')).
 :- use_module(library('jpl')).
