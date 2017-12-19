@@ -54,7 +54,9 @@
         sub_component/2,
         succeeding_link/2,
         robot_tf_prefix/2,
-        robot_part_tf_prefix/2
+        robot_part_tf_prefix/2,
+        srdl_inFieldOfView/2,
+        srdl_inFieldOfView_at_time/3
   ]).
 
 :- use_module(library('semweb/rdf_db')).
@@ -96,6 +98,8 @@
         comp_installable_on_robot(r,r,r),
         comp_baselink_pose(r,-),
         comp_baselink_pose_at_time(r,-,+),
+        srdl_inFieldOfView(r,-),
+        srdl_inFieldOfView_at_time(r,-,+),
         sub_component(r,r),
         succeeding_link(r,r).
 
@@ -577,11 +581,68 @@ comp_baselink_pose_at_time(Obj, Pose, Interval) :-
 knowrob_temporal:holds(Obj, 'http://knowrob.org/kb/knowrob.owl#pose', Pose, Interval) :- comp_baselink_pose_at_time(Obj, Pose, Interval).
 
 
+
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% Higher-level reasoning methods
+%
+
+%% srdl_inFieldOfView(+Agent, ?Object) is nondet.
+%% srdl_inFieldOfView_at_time(+Agent, ?Object, +Instant) is nondet.
+%
+% Check if Obj is visible by Agent at time Instant by reading the camera
+% properties from the robot's SRDL description and computing whether the
+% object center is inside the view frustrum.
+%
+% @param Agent      Some agent with a srdl:Camera component
+% @param Obj        Instance of an object in the scene
+% @param Instant    The time instant
+% 
+srdl_inFieldOfView(Agent, Object) :-
+  get_timepoint(Instant),
+  srdl_inFieldOfView_at_time(Agent, Object, Instant).
+
+srdl_inFieldOfView_at_time(Agent, Object, Instant) :-
+  nonvar(Agent),
+  % read camera properties
+  agent_camera(Agent, Camera),
+  camera_image_size(Camera, [ImgX,ImgY]),
+  camera_hfov(Camera, HFOV),
+  VFOV is ImgY / ImgX * HFOV,
+  % find object pose in camera frame
+  rdf_has(Camera, knowrob:frameName, CameraFrame),
+  object_pose_at_time(Camera, Instant, pose(CamPos_world, CamRot_world)),
+  rdf_has(Object, knowrob:frameName, ObjectFrame),
+  object_pose_at_time(Object, Instant, pose(ObjPos_world, ObjRot_world)),
+  transform_compute_relative(
+      [_,ObjectFrame, ObjPos_world, ObjRot_world],
+      [_,CameraFrame, CamPos_world, CamRot_world],
+      [CameraFrame, ObjectFrame, [ObjX,ObjY,ObjZ], _]),
+  % make the visibility test
+  BearingX is atan2(ObjY, ObjX),
+  BearingY is atan2(ObjZ, ObjX),
+  abs(BearingX) < HFOV/2,
+  abs(BearingY) < VFOV/2.
+
+knowrob_temporal:holds(Agent, 'http://knowrob.org/kb/knowrob.owl#inFieldOfView', Object, [Instant,Instant]) :-
+  srdl_inFieldOfView_at_time(Agent, Object, Instant).
+
+agent_camera(Camera, Camera) :-
+  owl_individual_of(Camera, srdl2comp:'Camera'), !.
+agent_camera(Agent, Camera) :-
+  sub_component(Agent, Camera),
+  owl_individual_of(Camera, srdl2comp:'Camera'), !.
+
+camera_image_size(Camera, [ImgX,ImgY,ImgZ]) :-
+  owl_has(Camera, srdl2comp:imageSizeX, literal(type(_, ImgXa))), atom_number(ImgXa, ImgX),
+  owl_has(Camera, srdl2comp:imageSizeY, literal(type(_, ImgYa))), atom_number(ImgYa, ImgY),
+  owl_has(Camera, srdl2comp:imageSizeZ, literal(type(_, ImgZa))), atom_number(ImgZa, ImgZ), !.
+camera_hfov(Camera, HFOV) :-
+  owl_has(Camera, srdl2comp:hfov, literal(type(_, HFOVa))), atom_number(HFOVa, HFOV), !.
+
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % OWL/ DL Predicates
 
-
-  
 %% plan_subevents_recursive(+Plan, ?SubEvents) is semidet.
 %
 % Recursively read all sub-action classes of the imported plan, i.e. single actions that need to be taken

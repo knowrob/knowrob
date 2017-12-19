@@ -55,6 +55,13 @@
         <computable:target rdf:resource="&knowrob;pose"/>
     </computable:PrologProperty>
 
+    <computable:PrologProperty rdf:about="#compute_inFieldOfView">
+        <computable:command rdf:datatype="&xsd;string">knowrob_srdl:srdl_inFieldOfView</computable:command>
+        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
+        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
+        <computable:target rdf:resource="&knowrob;inFieldOfView"/>
+    </computable:PrologProperty>
+
 
 
 
