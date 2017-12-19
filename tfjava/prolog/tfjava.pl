@@ -79,6 +79,7 @@ tfjava_lookup_transform(TargetFrame,
                         Instant) :-
   tfjava_listener(Client),
   jpl_call(Client, 'lookupTransform', [TargetFrame, SourceFrame, Instant], TF),
+  \+ jpl_null(TF),
   jpl_call(TF, 'getTranslation', [], Vector3d),
   jpl_call(Vector3d, 'x', [], X),
   jpl_call(Vector3d, 'y', [], Y),
@@ -87,7 +88,7 @@ tfjava_lookup_transform(TargetFrame,
   jpl_call(Quat4d, 'x', [], QX),
   jpl_call(Quat4d, 'y', [], QY),
   jpl_call(Quat4d, 'z', [], QZ),
-  jpl_call(Quat4d, 'w', [], QW)..
+  jpl_call(Quat4d, 'w', [], QW).
 
 %% tfjava_transform_point(+SourceFrame, +TargetFrame, +PointIn, -PointOut, -Instant) is nondet
 %
