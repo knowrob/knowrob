@@ -73,34 +73,32 @@ comp_detected_pose(Obj, Pose) :-
   get_timepoint(Instant),
   comp_detected_pose_at_time(Obj, Pose, Instant).
 
-%% comp_detected_pose_at_time
-comp_detected_pose_at_time(Obj, Pose, Instant) :-
-  object_detection(Obj, Instant, Detection),
-  rdf_triple(knowrob:eventOccursAt, Detection, Pose), !.
-
-%% comp_detected_pose_during
-comp_detected_pose_during(Obj, Pose, [Instant,Instant]) :-
+comp_detected_pose(Obj, Pose, [Instant,Instant]) :-
   ground(Instant), !,
   comp_detected_pose_at_time(Obj, Pose, Instant).
 
-comp_detected_pose_during(Obj, Pose, [Begin,End]) :-
+comp_detected_pose(Obj, Pose, [Begin,End]) :-
   ground([Begin,End]), !,
   object_detection(Obj, Begin, Detection),
   ( rdf_triple(knowrob:eventOccursAt, Detection, Pose) ; (
     detection_endtime(Detection, DetectionEnd),
     DetectionEnd < End,
-    comp_detected_pose_during(Obj, Pose, [DetectionEnd,End])
+    comp_detected_pose(Obj, Pose, [DetectionEnd,End])
   )).
 
-comp_detected_pose_during(Obj, Pose, [Begin,End]) :-
+comp_detected_pose(Obj, Pose, [Begin,End]) :-
   % \+ ground([Begin,End]),
   object_detection(Obj, Begin, Detection),
   once((
     rdf_triple(knowrob:eventOccursAt, Detection, Pose),
     detection_endtime(Detection, End))).
 
-knowrob_temporal:holds(Obj, 'http://knowrob.org/kb/knowrob.owl#pose', Pose, Interval) :-
-  comp_detected_pose_during(Obj, Pose, Interval).
+%% comp_detected_pose_at_time
+comp_detected_pose_at_time(Obj, Pose, Instant) :-
+  object_detection(Obj, Instant, Detection),
+  rdf_triple(knowrob:eventOccursAt, Detection, Pose), !.
+
+%% comp_detected_pose_during
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

@@ -47,6 +47,7 @@
       object_query/4,
       object_queries/2,
       comp_tf_pose/2,
+      comp_tf_pose/3,
       comp_depthOfObject/2,
       comp_widthOfObject/2,
       comp_heightOfObject/2
@@ -265,19 +266,15 @@ object_mesh_path(Obj, FilePath) :-
 %% comp_tf_pose
 comp_tf_pose(Obj, Pose) :-
   current_time(Instant),
-  comp_tf_pose_at_time(Obj, Pose, Instant).
+  comp_tf_pose(Obj, Pose, [Instant,Instant]).
 
-%% comp_tf_pose_at_time
-comp_tf_pose_at_time(Obj, Pose, Instant) :-
+comp_tf_pose(Obj, Pose, [Begin,_]) :-
   rdf_has(Obj, knowrob:frameName, ObjFrame),
   current_time(Now),
   ( var(Instant) -> Instant = Now ;   20 > abs(Now - Instant) ),
   map_frame_name(MapFrameName),
   tf_lookup_transform(MapFrameName, ObjFrame, PoseTerm),
   create_pose(PoseTerm, Pose), !.
-
-knowrob_temporal:holds(Obj, 'http://knowrob.org/kb/knowrob.owl#pose', Pose, [Begin,_]) :-
-  comp_tf_pose_at_time(Obj, Pose, Begin).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
