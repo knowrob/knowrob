@@ -52,14 +52,7 @@
 	  best_location_dtree(r,-),
 	  objects_at_location(r,-),
 	  class_of_object(r,r),
-	  classes_of_objects(t,t),
-	  highlight_best_location_maxMaxWup(r,+),
-	  highlight_best_location_dtree(r,+),
-	  print_objects_at_location(r,r),
-	  display_object_images_at_location(r).
-
-
-:- rdf_db:rdf_register_ns(germandeli, 'http://knowrob.org/kb/germandeli.owl#', [keep(true)]).
+	  classes_of_objects(t,t).
 
 
 %% best_location_maxMaxWup(+Object, -BestLocation).
@@ -179,9 +172,7 @@ classes_of_objects(Classes, Objects) :-
 % 
 class_of_object(Class, Object) :-
 	owl_has(Object, rdf:type, Class),
-	owl_subclass_of(Class, 'http://knowrob.org/kb/knowrob.owl#SpatialThing'), %only consider relevant object classes
-	! %if there are multiple, just take the first one for now
-	.
+	owl_subclass_of(Class, 'http://knowrob.org/kb/knowrob.owl#SpatialThing'), !.
 
 %% all_locations(-Locations)
 %
@@ -241,9 +232,6 @@ max_similarity_object_location(SimFct, Class, List, Max) :-
 % @param Similarities similarities of Class with each element of [H|T]
 similarities(_, _,[], []).
 similarities(SimFct, Class, [H|T], Similarities) :-
-    %to_global(H, HGlobal),
-    %to_global(Class, ClassGlobal),
-    %call(SimFct, ClassGlobal, HGlobal, Similarity),
     call(SimFct, Class, H, Similarity),
     similarities(SimFct, Class, T, SimilaritiesTail),
     append([Similarity] , SimilaritiesTail, Similarities).
@@ -267,99 +255,3 @@ to_global(Class, Global) :-
 
 to_local(Class, Local) :-
 	(rdf_global_id(Short,Class) -> Local = Short ; Local = Class).
-
-
-%-------------------------------------------------------------------------
-% visualization utilities:
-
-
-% visualize with mod_vis:
-% init mod_vis:
-% register_ros_package(mod_vis).
-% use_module(library('mod_vis')).
-% mod_vis:visualisation_canvas(C).
-
-%% highlight_best_location_maxMaxWup(+Object, +Canvas)
-%
-% Infer best location using maxMaxWup and highlight it in 3d visualization
-highlight_best_location_maxMaxWup(Object, Canvas) :-
- mod_vis:reset_highlighting(Canvas),
- forall(best_location_maxMaxWup(Object, L),(
- 	to_global(L, LGlobal),
- 	to_local(L, LLocal),
- 	format('Best location: ~w', [LLocal]), nl,
- 	print_objects_at_location(L, Object),nl,
- 	mod_vis:highlight_object(LGlobal, (@true),0,70,130,Canvas)
- 	)).
-
-%% highlight_best_location_dtree(+Object, +Canvas)
-%
-% Infer best location using dtree and highlight it in 3d visualization
-% 
-highlight_best_location_dtree(Object, Canvas) :-
- mod_vis:reset_highlighting(Canvas),
- forall(best_location_dtree(Object, L), (
-	 to_global(L, LGlobal),
-	 to_local(L, LLocal),
- 	 format('Best location: ~w', [LLocal]), nl,
- 	 print_objects_at_location(L, Object),nl,
-	 mod_vis:highlight_object(LGlobal, (@true),0,70,130,Canvas)
-	 )).
-
-
-% Display image of object:
-% get a single product ID, read it from the ontology
-get_class_product_ID_ontology(Class, PID) :-
-		rdf_has(Class,_,O),
-		rdf_has(O, rdf:type, 'http://www.w3.org/2002/07/owl#Restriction'),
-		rdf_has(O, owl:onProperty, germandeli:productID),
-		rdf_has(O, owl:hasValue, R),
-		R = literal(type('http://www.w3.org/2001/XMLSchema#string',PID)).
-
-get_image_filename(Class, Filename) :-
-    get_class_product_ID_ontology(Class, PID),
-    sformat(Filename,'~w.jpg', [PID]).
-
-% Display image for object class if available in  (image name is $germandeli_product_id.jpg)
-show_object_images(Classes, ImageDir) :-
-    working_directory(CWD, CWD),
-    findall(PathAtom, (member(Class, Classes),
-    	(get_image_filename(Class, Filename) -> (
-    		format(string(Path),'~w/product_images/~w', [ImageDir, Filename]),
-    		format('show image: ~w',[Path]),nl,
-    		term_to_atom(Path, PathAtom))
-    	; (PathAtom = [], format('Warning: no product ID set for ~w -> no product image', [Class])))
-    ), PathAtomList),
-    flatten(PathAtomList, PathAtomListFlat),
-    write(PathAtomListFlat),nl,
-    mod_vis:show_images(PathAtomListFlat, _).
-
-%% display_object_images_at_location(+Location, +ImageDir).
-% 
-% Display all objects at a location in canvas for which images are available in ImageDir
-% display_object_images_at_location(knowrob:'Refrigerator67').
-% 
-display_object_images_at_location(Location, ImageDir) :-
-    to_global(Location, LocationGlobal),
-    objects_at_location(LocationGlobal, ObjectsAtLocation),
-    findall(ClassAtLocation, (member(ObjectAtLocation, ObjectsAtLocation),
-	    class_of_object(ClassAtLocation, ObjectAtLocation)
-    ), AllClasses), show_object_images(AllClasses, ImageDir).
-
-%% print_objects_at_location(+Location, +Object)
-%
-% Print all objects and their classes at the given location, print similarities to Object
-print_objects_at_location(Location, Object) :-
-    to_global(Object, ObjectGlobal),
-    (class_of_object(Class1, ObjectGlobal) -> Class = Class1 ; Class = ObjectGlobal),
-    objects_at_location(Location, ObjectsAtLocation),
-    to_local(Location, LocationLocal),
-    format('Objects at location ~w:', [LocationLocal]), nl,
-    write('WUP similarity: object (class)'),nl,
-    forall(member(ObjectAtLocation, ObjectsAtLocation), (
-	    class_of_object(ClassAtLocation, ObjectAtLocation),
-	    comp_similarity:rdf_wup_similarity(Class, ClassAtLocation, WupSim),
-	    to_local(ClassAtLocation, ClassAtLocationLocal),
-	    to_local(ObjectAtLocation, ObjectAtLocationLocal),
-	    format('~5f: ~w (~w)', [WupSim, ObjectAtLocationLocal, ClassAtLocationLocal]), nl
-    )).
