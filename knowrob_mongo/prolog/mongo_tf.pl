@@ -121,7 +121,7 @@ mng_transform_pose(SourceFrame,
 
 %% comp_mng_pose_at_time
 mng_comp_pose(Obj, Pose, [Instant,Instant]) :-
-  nonvar(Obj),
+  nonvar(Obj), nonvar(Instant),
   % only compute poses for time instants in the past
   get_timepoint(Now), Now > Instant + 20.0,
   map_frame_name(MapFrame),

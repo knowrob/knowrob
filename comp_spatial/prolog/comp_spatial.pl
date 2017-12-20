@@ -36,14 +36,23 @@
 :- module(comp_spatial,
     [
       on_Physical/2,
+      on_Physical/3,
       in_ContGeneric/2,
+      in_ContGeneric/3,
       comp_toTheRightOf/2,
+      comp_toTheRightOf/3,
       comp_toTheLeftOf/2,
+      comp_toTheLeftOf/3,
       comp_toTheSideOf/2,
+      comp_toTheSideOf/3,
       comp_inFrontOf/2,
+      comp_inFrontOf/3,
       comp_inCenterOf/2,
+      comp_inCenterOf/3,
       comp_below_of/2,
+      comp_below_of/3,
       comp_above_of/2,
+      comp_above_of/3,
       comp_center/2,
       objectAtPoint2D/2,
       objectAtPoint2D/3
@@ -128,7 +137,10 @@ spatial_thing(Thing) :-
 %
 on_Physical(Top, Bottom) :-
     get_timepoint(Instant),
-    on_Physical_at_time(Top, Bottom, Instant).
+    on_Physical(Top, Bottom, [Instant,Instant]).
+
+on_Physical(Top, Bottom, Interval) :-
+    spatially_holds_interval(Top, on_Physical_at_time, Bottom, Interval).
     
 on_Physical_at_time(Top, Bottom, Instant) :-
     spatial_thing(Top),
@@ -145,9 +157,6 @@ on_Physical_at_time(Top, Bottom, Instant) :-
     % the criterion is if the difference between them is less than epsilon=5cm
     <( BZ, TZ).
 
-knowrob_temporal:holds(Top, 'http://knowrob.org/kb/knowrob.owl#on-Physical', Bottom, Interval) :-
-    spatially_holds_interval(Top, on_Physical_at_time, Bottom, Interval).
-
 %% comp_above_of(?Top, ?Bottom) is nondet.
 %
 % Check if Top is in the area of and above Bottom.
@@ -160,7 +169,10 @@ knowrob_temporal:holds(Top, 'http://knowrob.org/kb/knowrob.owl#on-Physical', Bot
 %
 comp_above_of(Top, Bottom) :-
     get_timepoint(Instant),
-    comp_above_of_at_time(Top, Bottom, Instant).
+    comp_above_of(Top, Bottom, [Instant,Instant]).
+
+comp_above_of(Top, Bottom, Interval) :-
+    spatially_holds_interval(Top, comp_above_of_at_time, Bottom, Interval).
 
 comp_above_of_at_time(Top, Bottom, Instant) :-
     spatial_thing(Top),
@@ -180,9 +192,6 @@ comp_above_of_at_time(Top, Bottom, Instant) :-
     % the criterion is if the difference between them is less than epsilon=5cm
     <( BZ, TZ).
 
-knowrob_temporal:holds(Top, 'http://knowrob.org/kb/knowrob.owl#above-Generally', Bottom, Interval) :-
-    spatially_holds_interval(Top, comp_above_of_at_time, Bottom, Interval).
-
 
 %% comp_below_of(?Bottom, ?Top) is nondet.
 %
@@ -195,9 +204,7 @@ knowrob_temporal:holds(Top, 'http://knowrob.org/kb/knowrob.owl#above-Generally',
 % @param Top Identifier of the upper Object
 %
 comp_below_of(Bottom, Top) :- comp_above_of(Top, Bottom).
-
-knowrob_temporal:holds(Bottom, 'http://knowrob.org/kb/knowrob.owl#below-Generally', Top, Interval) :-
-    spatially_holds_interval(Top, comp_above_of_at_time, Bottom, Interval).
+comp_below_of(Bottom, Top, Interval) :- comp_above_of(Top, Bottom, Interval).
 
 
 %% comp_toTheLeftOf(?Left, ?Right) is nondet.
@@ -212,7 +219,10 @@ knowrob_temporal:holds(Bottom, 'http://knowrob.org/kb/knowrob.owl#below-Generall
 %
 comp_toTheLeftOf(Left, Right) :-
     get_timepoint(Instant),
-    comp_toTheLeftOf_at_time(Left, Right, Instant).
+    comp_above_of(Left, Right, [Instant,Instant]).
+
+comp_toTheLeftOf(Left, Right, Interval) :-
+    spatially_holds_interval(Left, comp_toTheLeftOf_at_time, Right, Interval).
 
 comp_toTheLeftOf_at_time(Left, Right, Instant) :-
     %
@@ -229,9 +239,6 @@ comp_toTheLeftOf_at_time(Left, Right, Instant) :-
     =<( RY, LY ),              % right obj has a smaller y coord than the left one (on the table)
     =<( abs( LZ - RZ), 0.30).  % less than 30cm height diff
 
-knowrob_temporal:holds(Left, 'http://knowrob.org/kb/knowrob.owl#toTheLeftOf', Right, Interval) :-
-    spatially_holds_interval(Left, comp_toTheLeftOf_at_time, Right, Interval).
-
 
 %% comp_toTheRightOf(?Right,?Left) is nondet.
 %
@@ -245,9 +252,7 @@ knowrob_temporal:holds(Left, 'http://knowrob.org/kb/knowrob.owl#toTheLeftOf', Ri
 % @see comp_toTheLeftOf
 %
 comp_toTheRightOf(Right, Left) :- comp_toTheLeftOf(Left, Right).
-
-knowrob_temporal:holds(Right, 'http://knowrob.org/kb/knowrob.owl#toTheRightOf', Left, Interval) :-
-    spatially_holds_interval(Left, comp_toTheLeftOf_at_time, Right, Interval).
+comp_toTheRightOf(Right, Left, Interval) :- comp_toTheLeftOf(Left, Right, Interval).
 
 
 %% comp_toTheSideOf(?A, ?B) is nondet.
@@ -265,9 +270,8 @@ knowrob_temporal:holds(Right, 'http://knowrob.org/kb/knowrob.owl#toTheRightOf', 
 comp_toTheSideOf(A, B) :-
     once(comp_toTheRightOf(A, B); comp_toTheLeftOf(A, B)).
 
-knowrob_temporal:holds(A, 'http://knowrob.org/kb/knowrob.owl#toTheSideOf', B, Interval) :-
-    once(knowrob_temporal:holds(A, knowrob:'toTheRightOf', B, Interval) ;
-         knowrob_temporal:holds(A, knowrob:'toTheLeftOf', B, Interval)).
+comp_toTheSideOf(A, B, I) :-
+    once(comp_toTheRightOf(A, B, I); comp_toTheLeftOf(A, B, I)).
 
 
 %% comp_inFrontOf(?Front, ?Back) is nondet.
@@ -283,7 +287,10 @@ knowrob_temporal:holds(A, 'http://knowrob.org/kb/knowrob.owl#toTheSideOf', B, In
 %
 comp_inFrontOf(Front, Back) :-
     get_timepoint(Instant),
-    comp_inFrontOf_at_time(Front, Back, Instant).
+    comp_inFrontOf(Front, Back, [Instant,Instant]).
+
+comp_inFrontOf(Front, Back, Interval) :-
+    spatially_holds_interval(Front, comp_inFrontOf_at_time, Back, Interval).
 
 comp_inFrontOf_at_time(Front, Back, Instant) :-
     %
@@ -297,9 +304,6 @@ comp_inFrontOf_at_time(Front, Back, Instant) :-
     object_pose_at_time(Back, Instant, pose([BX,_,_], _)),
 
     =<( BX, FX ).      % front obj has a higher x coord.
-    
-knowrob_temporal:holds(Front, 'http://knowrob.org/kb/knowrob.owl#inFrontOf-Generally', Back, Interval) :-
-    spatially_holds_interval(Front, comp_inFrontOf_at_time, Back, Interval).
 
 
 %% comp_inCenterOf(?Inner, ?Outer) is nondet.
@@ -315,7 +319,10 @@ knowrob_temporal:holds(Front, 'http://knowrob.org/kb/knowrob.owl#inFrontOf-Gener
 %
 comp_inCenterOf(Inner, Outer) :-
     get_timepoint(Instant),
-    comp_inCenterOf_at_time(Inner, Outer, Instant).
+    comp_inFrontOf(Inner, Outer, [Instant,Instant]).
+
+comp_inCenterOf(Inner, Outer, Interval) :-
+    spatially_holds_interval(Inner, comp_inCenterOf_at_time, Outer, Interval).
 
 comp_inCenterOf_at_time(Inner, Outer, Instant) :-
     spatial_thing(Inner),
@@ -328,9 +335,6 @@ comp_inCenterOf_at_time(Inner, Outer, Instant) :-
     =<( abs( IX - OX), 0.20),  % less than 20cm x diff
     =<( abs( IY - OY), 0.20),  % less than 20cm y diff
     =<( abs( IZ - OZ), 0.20).  % less than 20cm z diff
-    
-knowrob_temporal:holds(Inner, 'http://knowrob.org/kb/knowrob.owl#inCenterOf', Outer, Interval) :-
-    spatially_holds_interval(Inner, comp_inCenterOf_at_time, Outer, Interval).
 
 
 %% in_ContGeneric(?InnerObj, ?OuterObj) is nondet.
@@ -346,7 +350,10 @@ knowrob_temporal:holds(Inner, 'http://knowrob.org/kb/knowrob.owl#inCenterOf', Ou
 %
 in_ContGeneric(InnerObj, OuterObj) :-
     get_timepoint(Instant),
-    in_ContGeneric_at_time(InnerObj, OuterObj, Instant).
+    in_ContGeneric(InnerObj, OuterObj, [Instant,Instant]).
+
+in_ContGeneric(InnerObj, OuterObj, Interval) :-
+    spatially_holds_interval(InnerObj, in_ContGeneric_at_time, OuterObj, Interval).
 
 in_ContGeneric_at_time(InnerObj, OuterObj, Instant) :-
     
@@ -364,9 +371,6 @@ in_ContGeneric_at_time(InnerObj, OuterObj, Instant) :-
     >=( (IX - 0.5*ID), (OX - 0.5*OD)-0.05), =<( (IX + 0.5*ID),  (OX + 0.5*OD)+0.05 ),
     >=( (IY - 0.5*IW), (OY - 0.5*OW)-0.05 ), =<( (IY + 0.5*IW), (OY + 0.5*OW)+0.05 ),
     >=( (IZ - 0.5*IH), (OZ - 0.5*OH)-0.05 ), =<( (IZ + 0.5*IH), (OZ + 0.5*OH)+0.05 ).
-
-knowrob_temporal:holds(Inner, 'http://knowrob.org/kb/knowrob.owl#in-ContGeneric', Outer, Interval) :-
-    spatially_holds_interval(Inner, in_ContGeneric_at_time, Outer, Interval).
 
 % % % % % % % % % % % % % % % % % % % %
 % matrix and vector computations (relating the homography-based
