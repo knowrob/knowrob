@@ -31,8 +31,10 @@
 
 :- module(knowrob_temporal,
     [
+      rdf_triple_during/4,
+      rdfs_instance_of_during/3,
       owl_individual_of_during/3,
-      owl_individual_of_during/2,
+      owl_has_during/4,
       holds/1,
       holds/2,
       holds/3,
@@ -71,8 +73,10 @@
 
 % define predicates as rdf_meta predicates
 % (i.e. rdf namespaces are automatically expanded)
-:- rdf_meta owl_individual_of_during(r,r,?),
-            owl_individual_of_during(r,r),
+:- rdf_meta rdf_triple_during(r,r,t),
+            rdfs_instance_of_during(r,r,t),
+            owl_individual_of_during(r,r,?),
+            owl_has_during(r,r,t,?),
             holds(t),
             holds(t,?),
             holds(r,r,t),
@@ -106,135 +110,9 @@
 :- meta_predicate holds(0, ?, ?, ?, ?).
 :- multifile holds/4.
 
-
-since_ever(Interval) :- (nonvar(Interval) ; create_interval([0.0], Interval)), !.
-during_temporal_extend(I0, I1) :- var(I0), I0 = I1, !.
-during_temporal_extend(I0, I1) :- interval_during(I0, I1).
-
-
-rdfs_individual_of_during(Resource, Description, Interval) :-
-  nonvar(Resource),
-  (  rdfs_individual_of(Resource, Description),
-     since_ever(Interval)
-  ) ; (
-     rdf_has(Resource, knowrob:temporalParts, X),
-     rdfs_individual_of(X, Description),
-     rdf_has(X, knowrob:temporalExtend, TemporalExtend),
-     during_temporal_extend(Interval, TemporalExtend)
-  ),
-  \+ rdf_equal(Description, knowrob:'TemporalPart').
-
-% TODO DB: support computable rdf:type property?
-
-%% owl_individual_of_during(?Resource, ?Description, ?Interval)
-%
-% Temporal reasoning over class membership.
-%
-owl_individual_of_during(Resource, 'http://www.w3.org/2002/07/owl#Thing', Interval) :-
-  ( atom(Resource) -> true ; rdf_subject(Resource) ), since_ever(Interval).
-
-owl_individual_of_during(_, 'http://www.w3.org/2002/07/owl#Nothing', _) :- fail. %!, MT 16032011
-  
-owl_individual_of_during(Resource, Description, Interval) :- % RDFS + SWRL
-  nonvar(Resource), nonvar(Description),
-  ( rdfs_individual_of_during(Resource, Description, Interval) ;
-  ( owl_subclass_of(Class, Description),
-    swrl:swrl_holds(Resource, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', Class, Interval)
-  )), !.
-  
-owl_individual_of_during(Resource, Description, I0) :- % RDFS
-  var(Resource), nonvar(Description),
-  rdfs_individual_of(X, Description),
-  (  rdf_has(X, knowrob:temporalExtend, I1)
-  -> during_temporal_extend(I0, I1),
-     rdf_has(Resource, knowrob:temporalParts, X)
-  ;  Resource = X
-  ).
-
-owl_individual_of_during(Resource, Description, Interval) :- % SWRL
-  var(Resource), nonvar(Description),
-  owl_subclass_of(Class, Description),
-  swrl:swrl_holds(Resource, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', Class, Interval).
-  
-owl_individual_of_during(Resource, Description, Interval) :- % RDFS + SWRL
-  nonvar(Resource), var(Description),
-  bagof(C, ((
-    rdfs_individual_of_during(Resource, Class, Interval) ;
-    swrl:swrl_holds(Resource, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', Class, Interval) ),
-    owl_subclass_of(Class, C)
-  ), Cs),
-  member(Description, Cs).
-
-owl_individual_of_during(Resource, Class, Interval) :-
-  nonvar(Class), % MT 03122014 -- does not allow generic classification of instances any more, but avoids search through all equivalents of all classes whenever Class is unbound
-  rdfs_individual_of(Class, owl:'Class'),
-  (   rdf_has(Class, owl:equivalentClass, EQ)
-  ->  owl_individual_of_during(Resource, EQ, Interval)
-  ;   rdfs_individual_of(Class, owl:'Restriction')
-  ->  owl_satisfies_restriction_during(Resource, Class, Interval)
-  ;   owl_individual_of_description(Resource, Class),
-      findall(SC, rdf_has(Class, rdfs:subClassOf, SC), SuperClasses),
-      owl_individual_of_all_during(SuperClasses, Resource, Interval)
-  ).
-
-owl_individual_of_during(Resource, Description, _) :- % RDFS
-  owl_individual_from_range(Resource, Description).
-
-owl_individual_of_during(Resource, Description) :-
-  current_time(Now),
-  owl_individual_of_during(Resource, Description, Now).
-
-
-owl_individual_of_all_during([], _, _).
-owl_individual_of_all_during([C|T], Resource, I) :-
-	owl_individual_of_during(Resource, C, I),
-	owl_individual_of_all_during(T, Resource, I).
-
-
-owl_satisfies_restriction_during(Resource, Restriction, Interval) :-
-  rdf_has(Restriction, owl:onProperty, Property),
-  (   rdf_has(Restriction, owl:hasValue, Value)
-  ->  holds(Resource, Property, Value, Interval)
-  ;   rdf_has(Restriction, owl:allValuesFrom, Class)
-  ->  setof(V, holds(Resource, Property, V, Interval), Vs),
-      owl_individual_of(Vs, Class)
-  ;   rdf_has(Restriction, owl:someValuesFrom, Class)
-  ->  holds(Resource, Property, Value, Interval),
-      owl_individual_of(Value, Class)
-  ;   rdf_subject(Resource)
-  ),
-  owl_satisfies_cardinality_during(Resource, Restriction, Interval).
-
-owl_satisfies_cardinality_during(Resource, Restriction, Interval) :-
-  rdf_has(Restriction, owl:onProperty, Property),
-  owl_satisfies_cardinality_during(Resource, Property, Restriction, Interval).
-owl_satisfies_cardinality_during(Resource, Property, Restriction, Interval) :-
-  rdf_has(Restriction, owl:cardinality, literal(Atom)), !,
-  non_negative_int(Atom, Card),
-  findall(V, holds(Resource, Property, V, Interval), Vs0),
-  sort(Vs0, Vs),			% remove duplicates
-  length(Vs, Card).
-owl_satisfies_cardinality_during(Resource, Property, Restriction, Interval) :-
-  rdf_has(Restriction, owl:minCardinality, literal(MinAtom)),
-  non_negative_int(MinAtom, Min), !,
-  findall(V, holds(Resource, Property, V, Interval), Vs0),
-  sort(Vs0, Vs),			% remove duplicates
-  length(Vs, Count),
-  Count >= Min,
-  (   rdf_has(Restriction, owl:maxCardinality, literal(MaxAtom)),
-      atom_number(MaxAtom, Max)
-  ->  Count =< Max
-  ;   true
-  ).
-owl_satisfies_cardinality_during(Resource, Property, Restriction, Interval) :-
-  rdf_has(Restriction, owl:maxCardinality, literal(MaxAtom)),
-  non_negative_int(MaxAtom, Max), !,
-  findall(V, holds(Resource, Property, V, Interval), Vs0),
-  sort(Vs0, Vs),			% remove duplicates
-  length(Vs, Count),
-  Count =< Max.
-owl_satisfies_cardinality_during(Resource, _, _, _) :-
-  rdf_subject(Resource).
+		 /*******************************
+		 *	 high-level predicates		*
+		 *******************************/
 
 %% holds(+Term, ?T)
 %% holds(+Term)
@@ -247,7 +125,6 @@ owl_satisfies_cardinality_during(Resource, _, _, _) :-
 % @param T Can be TimeInterval or TimePoint individual, a number or a list of two numbers
 %          representing a time interval.
 %
-% TODO: allow to request data values in different formats. In particular vectors as prolog terms, ...
 holds(Term) :-
   current_time(T),
   holds(Term,T).
@@ -276,27 +153,7 @@ holds(S, P, O) :-
   holds(S, P, O, [T,T]).
 
 holds(S, P, O, I) :-
-  once(( atom(S) ; var(S) )),
-  (  atom(P)
-  % P bound
-  -> (   temporal_part_has(S,P,O,I_x)
-     *-> time_term(I_x,Ext)
-     ;   owl_triple(S,P,O) % FIXME: add time argument to owl_triple
-     )
-  % P unbound
-  ;  (   owl_has(S,P,O), (
-         temporal_part_has(S,P,O,I_x)
-     *-> time_term(I_x,Ext)
-     ;   Ext=[0.0]
-     ))
-  ),
-  \+ rdfs_individual_of(S, knowrob:'TemporalPart'),
-  \+ rdfs_individual_of(O, knowrob:'TemporalPart'),
-  % ...
-  (  ground(I)
-  -> interval_during(I, Ext)
-  ;  I = Ext
-  ).
+  owl_has_during(S, P, O, I).
 
 %% occurs(?Evt) is nondet.
 %% occurs(?Evt,?T) is nondet.
@@ -307,6 +164,7 @@ holds(S, P, O, I) :-
 % @param Evt Identifier of the event
 % @param T   Timepoint or time interval
 % 
+% TODO: make occurs a multifile predicate
 occurs(Evt) :-
   current_time(T),
   occurs(Evt, T).
@@ -322,13 +180,68 @@ occurs(Evt, I, Type) :-
   -> interval_during(I, EvtI)
   ;  I = EvtI ).
 
-%% TODO: make occurs a multifile predicate
+		 /*******************************
+		 *	 	  OWL expansion			*
+		 *******************************/
 
+owl_individual_of_during(Resource, Description, Interval) :-
+  owl_temporal_db(Interval, DB),
+  owl_individual_of(Resource, Description, DB).
 
+owl_has_during(S, P, O, Interval) :-
+  owl_temporal_db(Interval, DB),
+  owl_has(S, P, O, DB).
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% methods for asserting fluent relations
+		 /*******************************
+		 *	   Temporal semantics		*
+		 *******************************/
+
+owl_temporal_db(I, db(rdf_triple_during(I),rdfs_instance_of_during(I))).
+
+%% rdfs_instance_of_during
+rdfs_instance_of_during(Resource, Description, Interval) :-
+  nonvar(Resource),
+  (  rdfs_individual_of(Resource, Description), % TODO: support computable instances
+     since_ever(Interval)
+  ) ; (
+     rdf_has(Resource, knowrob:temporalParts, X),
+     rdfs_individual_of(X, Description),
+     rdf_has(X, knowrob:temporalExtend, TemporalExtend),
+     during_temporal_extend(Interval, TemporalExtend)
+  ),
+  \+ rdf_equal(Description, knowrob:'TemporalPart').
+
+since_ever(Interval) :- (nonvar(Interval) ; create_interval([0.0], Interval)), !.
+during_temporal_extend(I0, I1) :- var(I0), I0 = I1, !.
+during_temporal_extend(I0, I1) :- interval_during(I0, I1).
+
+%% rdf_triple_during
+rdf_triple_during(S, P, O, Interval) :-
+  var(Interval),
+  ( temporal_part_has(S,P,O,_,TemporalExtend) *->
+    time_term(TemporalExtend, Interval) ; (
+    % assume non temporal property if no temporal part exists
+    rdf_has(S,P,O),
+    Interval=[0.0]
+  )).
+
+rdf_triple_during(S, P, O, Interval) :-
+  nonvar(Interval),
+  ( temporal_part_has(S,P,O,Interval,_) *->
+    true ;
+    % assume non temporal property if no temporal part exists
+    rdf_has(S,P,O)
+  ).
+
+rdf_triple_during(Property, Frame, Value, Interval) :-
+  rdfs_subproperty_of(SubProperty, Property),
+  % TODO: allow non temporal if interval is [Now,Now]
+  rdfs_individual_of(SubProperty, computable:'PrologTemporalProperty'), !,
+  catch( % TODO: handle caching!
+    rdfs_computable_prolog_triple(SubProperty, Frame, Value, [Interval]),
+    error(instantiation_error, _),
+    fail
+  ).
 
 %% current_temporal_part(?Obj,?TemporalPart) is nondet.
 %
@@ -540,18 +453,21 @@ temporal_part_value(S, P, O) :-
 temporal_part_has(S, P, O) :- temporal_part_has(S, P, O, _). % FIXME: redundant results!
 
 temporal_part_has(S, P, O, I) :-
+  temporal_part_has(S, P, O, I, _).
+
+temporal_part_has(S, P, O, I, Lifespan) :-
   rdfs_individual_of(S, knowrob:'SpatialThing-Localized'),
   rdf_has(S, knowrob:'temporalParts', TemporalPart),
-  temporal_part_has(TemporalPart, P, O, I).
+  temporal_part_has(TemporalPart, P, O, I, Lifespan).
 
-temporal_part_has(S, P, O, I) :-
+temporal_part_has(S, P, O, [Begin,End], [Lifespan_begin, Lifespan_end]) :-
   atom(S),
   rdf_has(S, knowrob:'temporalProperty', P),
   
-  rdf_has(S, knowrob:'temporalExtend', Ext),
-  (var(I)
-  -> I=Ext 
-  ;  interval_during(I, Ext)),
+  interval(S, [Lifespan_begin, Lifespan_end]),
+  once((nonvar(Begin) ; Begin is Lifespan_begin)),
+  once((nonvar(End) ; End is Lifespan_end)),
+  interval_during([Lifespan_begin, Lifespan_end], [Begin,End]),
   
   rdf_has(S, P, S_O),
   
@@ -570,9 +486,9 @@ temporal_part_has(S, P, O, I) :-
     ( O = S_O ))
   )).
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% Allen's interval algebra
+		 /*******************************
+		 *	Allen's interval algebra	*
+		 *******************************/
 
 %% interval(I,[ST,ET]) is semidet.
 %

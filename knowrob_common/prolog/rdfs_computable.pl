@@ -78,13 +78,11 @@
 % (rdfs_computable_compute_property_concatenation, rdf_has, rdfs_computable_triple).
 %
 rdf_triple(Property, Frame, Value) :-
+  rdf_has(Frame, Property, Value).
 
-  findall(SubProp, rdfs:rdfs_subproperty_of(SubProp, Property), SubProperties),
-  member(SubProperty, SubProperties),
-
-  ( (findall([Frame,Value], rdf_has(Frame, SubProperty, Value), Res),
-     member(R, Res),nth0(0, R, Frame), nth0(1, R, Value) )
-  ; rdfs_computable_compute_property_concatenation(SubProperty, Frame, Value)
+rdf_triple(Property, Frame, Value) :-
+  rdfs_subproperty_of(SubProperty, Property),
+  ( rdfs_computable_compute_property_concatenation(SubProperty, Frame, Value)
   ; catch( rdfs_computable_triple(SubProperty, Frame, Value), error(instantiation_error, _), fail)
   ; user:rdf_triple_hook(SubProperty, Frame, Value)
   ).
@@ -109,7 +107,6 @@ rdf_triple(Property, Frame, Value) :-
   , X), assert(user:(X)).
 
 :- rdf_meta
-   rdf_lineage_class_hierarchy(r, ?),
    rdf_class_compare(?, r, r).
 
 %% rdfs_instance_of(?Resource, ?Class) is nondet.
@@ -224,61 +221,69 @@ rdfs_computable_instance_of(Instance, Class) :-
 rdfs_computable_triple(Property, _, _) :-
   var(Property),!,
   throw(error(instantiation_error, _)).
+  
 rdfs_computable_triple(Property, Frame, Value) :-
-  nonvar(Frame)
+  \+ rdfs_computable_cachable(Property),!,
+  rdfs_computable_triple_1(Property, Frame, Value).
 
-  -> ( nonvar(Value)  % both frame and value bound:
-    -> ( rdf(Property, Frame, Value, cache)
-      -> true
-      ; ( rdfs_computable_triple_1(Property, Frame, Value),
-          ((rdf_has(CP, computable:target, Property), rdf_has(CP, computable:cache, literal(type('http://www.w3.org/2001/XMLSchema#string', cache))))
-          -> rdf_assert(Property, Frame, Value, cache)
-          ; true)))
+rdfs_computable_triple(Property, Frame, Value) :-
+  nonvar(Frame), nonvar(Value), % both frame and value bound:
+  ( rdf(Property, Frame, Value, cache) -> true ; ( % cache miss
+    rdfs_computable_triple_1(Property, Frame, Value),
+    rdfs_computable_cache_values(Property, Frame, Value)
+  )).
 
-    ; ( % frame bound, value unbound
-    
-      rdf(computable:cachedAllValuesFor, Property, Frame, cache)
+rdfs_computable_triple(Property, Frame, Value) :-
+  nonvar(Frame), var(Value), % frame bound, value unbound
+  (  rdf(computable:cachedAllValuesFor, Property, Frame, cache)
+  -> rdf(Property, Frame, Value, cache) ; (
+     % compute values and cache them
+     setof(MyValue, rdfs_computable_triple_1(Property, Frame, MyValue), Values),
+     rdf_assert(computable:cachedAllValuesFor, Property, Frame, cache),
+     maplist(rdfs_computable_cache_values(Property, Frame), Values),
+     member(Value, Values)
+  )).
+      
+rdfs_computable_triple(Property, Frame, Value) :-
+  var(Frame), nonvar(Value), % frame unbound, value bound
+  (  rdf(Property, Value, computable:cachedAllFramesFor, cache)
+  -> rdf(Property, Frame, Value, cache) ; (
+     setof(MyFrame, rdfs_computable_triple_1(Property, MyFrame, Value), Frames),
+     rdf_assert(Property, Value, computable:cachedAllFramesFor, cache),
+     maplist(rdfs_computable_cache_frames(Property, Value), Frames),
+     member(Frame, Frames)
+  )).
 
-      -> ( % return cached values
-        setof(MyValue, rdf(Property, Frame, MyValue, cache), Values),
-        member(Value, Values)
-
-      ) ; (% compute values and cache them
-        setof(MyValue, rdfs_computable_triple_1(Property, Frame, MyValue), Values),
-        ( (rdf_has(CP, computable:target, Property), rdf_has(CP, computable:cache, literal(type('http://www.w3.org/2001/XMLSchema#string', cache))))
-          -> rdf_assert(computable:cachedAllValuesFor, Property, Frame, cache),
-             maplist(rdfs_computable_cache_values(Property, Frame), Values)
-          ; true),
-        member(Value, Values)
-      )))
-  ; nonvar(Value)
-    -> ( % frame unbound, value bound
-        rdf(Property, Value, computable:cachedAllFramesFor, cache)
-
-      -> setof(MyFrame, rdf(Property, MyFrame, Value, cache), Frames),
-        member(Frame, Frames)
-
-      ; setof(MyFrame, rdfs_computable_triple_1(Property, MyFrame, Value), Frames),
-        ( (rdf_has(CP, computable:target, Property), rdf_has(CP, computable:cache, literal(type('http://www.w3.org/2001/XMLSchema#string', cache))))
-          -> rdf_assert(Property, Value, computable:cachedAllFramesFor, cache),
-             maplist(rdfs_computable_cache_frames(Property, Value), Frames)
-          ; true),
-        member(Frame, Frames))
-    ; % both frame and value unbound -> no caching
-      rdfs_computable_triple_1(Property, Frame, Value).
+rdfs_computable_triple(Property, Frame, Value) :-
+  var(Frame), var(Value), % both frame and value unbound -> no caching
+  rdfs_computable_triple_1(Property, Frame, Value).
 
 % The real work is done here
 rdfs_computable_triple_1(Property, Frame, Value) :-
-  catch(rdfs_computable_prolog_triple(Property, Frame, Value), error(instantiation_error, _), fail).
+  nonvar(Property),
+  catch(
+    rdfs_computable_prolog_triple(Property, Frame, Value),
+    error(instantiation_error, _),
+    fail
+  ).
 
 %% rdfs_computable_prolog_triple(?Property, ?Frame, ?Value).
 %
 % Evaluation of RDF triples using Prolog
 %
 rdfs_computable_prolog_triple(Property, Frame, Value) :-
-  nonvar(Property),
-  % get the associated prolog computable
   rdfs_computable_property(Property, ComputableProperty),
+  ( rdfs_individual_of(ComputableProperty,computable:'PrologTemporalProperty') -> (
+    get_timepoint(Instant),
+    rdfs_computable_prolog_triple(Property, Frame, Value, [[Instant,Instant]], ComputableProperty) );
+    rdfs_computable_prolog_triple(Property, Frame, Value, [], ComputableProperty)
+  ).
+
+rdfs_computable_prolog_triple(Property, Frame, Value, CmdArgs) :-
+  rdfs_computable_property(Property, ComputableProperty),
+  rdfs_computable_prolog_triple(Property, Frame, Value, CmdArgs, ComputableProperty).
+
+rdfs_computable_prolog_triple(Property, Frame, Value, CmdArgs, ComputableProperty) :-
   % get the Prolog predicate that is used for evaluation:
   rdf_has(ComputableProperty, computable:command, literal(type(_, Cmd))),
   % handle the case that the predicate is defined in another module
@@ -288,9 +293,9 @@ rdfs_computable_prolog_triple(Property, Frame, Value) :-
   % execute the Prolog predicate (namespace expansion etc.)
   (
     (nonvar(Value)) -> (
-      (rdfs_computable_prolog_call(ComputableProperty, Command, Frame, Value))
+      (rdfs_computable_prolog_call(ComputableProperty, Command, Frame, Value, CmdArgs))
     ) ; (
-      (rdfs_computable_prolog_call(ComputableProperty, Command, Frame, PrologValue),
+      (rdfs_computable_prolog_call(ComputableProperty, Command, Frame, PrologValue, CmdArgs),
         % result: PrologValue
         (PrologValue=[_|_]
         -> member(Temp, PrologValue),
@@ -301,14 +306,15 @@ rdfs_computable_prolog_triple(Property, Frame, Value) :-
       ))
   ).
 
-rdfs_computable_prolog_call(ComputableProperty, Command, Frame, Value) :-
-  rdfs_individual_of(ComputableProperty,computable:'PrologTemporalProperty'), !,
-  get_timepoint(Instant),
-  call(Command, Frame, Value, [Instant,Instant]).
-rdfs_computable_prolog_call(_, Command, Frame, Value) :-
-  call(Command, Frame, Value).
+rdfs_computable_prolog_call(_, Command, Frame, Value, AdditionalArgs) :-
+  append([Frame, Value], AdditionalArgs, Args),
+  Goal=..[Command, Args],
+  call(Goal).
 
 % Helpers for caching...
+rdfs_computable_cachable(Property) :-
+  rdf_has(CP, computable:target, Property),
+  rdf_has(CP, computable:cache, literal(type(_, cache))).
 rdfs_computable_cache_values(Property, Frame, Value) :- rdf_assert(Property, Frame, Value, cache).
 rdfs_computable_cache_frames(Property, Value, Frame) :- rdf_assert(Property, Frame, Value, cache).
 

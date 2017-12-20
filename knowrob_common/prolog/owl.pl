@@ -52,6 +52,7 @@
 	    owl_cardinality/4,
 	    owl_satisfies/2,		% +Spec, +Resource
 	    owl_individual_of/2,	% ?Resource, +Description
+	    owl_individual_of/3,
 	    owl_individual_of_description/2,
 	    owl_individual_of_all/2,
 	    owl_individual_from_range/2,
@@ -65,6 +66,7 @@
 	    owl_subclass_of/2,		% ?Class, ?Super
 	    owl_subproperty_of/2,
 	    owl_has/3,			% ?Subject, ?Predicate, ?Object
+	    owl_has/4,
 	    owl_has_direct/3,		% ?Subject, ?Predicate, ?Object
 	    owl_same_as/2,		% ?X, ?Y
 	    owl_disjoint_with/2,        % ?Class1, ?Class2
@@ -133,7 +135,8 @@
 	owl_same_as(r, r),
 	owl_disjoint_with(r, r),
 	owl_find(+, t, t, +, -),
-	rdf_assert_literal(r, r, +).
+	rdf_assert_literal(r, r, +),
+	owl_db_has(+,r,r,t).
 
 
 		 /*******************************
@@ -618,31 +621,34 @@ owl_unsatisfied_restriction(Resource, Restriction) :-
 %		  is present.
 
 owl_satisfies_restriction(Resource, Restriction) :-
+	owl_rdf_db(DB),
+	owl_satisfies_restriction(Resource, Restriction, DB).
+owl_satisfies_restriction(Resource, Restriction, DB) :-
 	rdf_has(Restriction, owl:onProperty, Property),
-	once( owl_satisfies_restriction_internal(Resource, Property, Restriction) ),
-	once( owl_satisfies_cardinality(Resource, Restriction) ), !.
-owl_satisfies_restriction_internal(Resource, Property, Restriction) :-
+	once( owl_satisfies_restriction_internal(Resource, Property, Restriction, DB) ),
+	once( owl_satisfies_cardinality(Resource, Restriction, DB) ), !.
+owl_satisfies_restriction_internal(Resource, Property, Restriction, DB) :-
 	rdf_has(Restriction, owl:hasValue, Value), !,
-	owl_has(Resource, Property, Value).
-owl_satisfies_restriction_internal(Resource, Property, Restriction) :-
+	owl_has(Resource, Property, Value, DB).
+owl_satisfies_restriction_internal(Resource, Property, Restriction, DB) :-
 	rdf_has(Restriction, owl:allValuesFrom, Class), !,
-	once(( bagof(V, owl_has(Resource, Property, V), Vs) ; Vs=[] )),
-	all_individual_of(Vs, Class).
-owl_satisfies_restriction_internal(Resource, Property, Restriction) :-
+	once(( bagof(V, owl_has(Resource, Property, V, DB), Vs) ; Vs=[] )),
+	all_individual_of(Vs, Class, DB).
+owl_satisfies_restriction_internal(Resource, Property, Restriction, DB) :-
 	rdf_has(Restriction, owl:someValuesFrom, Class), !,
-	owl_has(Resource, Property, Value),
-	owl_individual_of(Value, Class).
-owl_satisfies_restriction_internal(Resource, Property, Restriction) :-
+	owl_has(Resource, Property, Value, DB),
+	owl_individual_of(Value, Class, DB).
+owl_satisfies_restriction_internal(Resource, Property, Restriction, DB) :-
 	rdf_has(Restriction, owl:onClass, Class), !,
-	owl_has(Resource, Property, Value),
-	owl_individual_of(Value, Class).
-owl_satisfies_restriction_internal(Resource, _, _) :-
+	owl_has(Resource, Property, Value, DB),
+	owl_individual_of(Value, Class, DB).
+owl_satisfies_restriction_internal(Resource, _, _, _) :-
 	rdf_subject(Resource).
 
-all_individual_of([], _).
-all_individual_of([H|T], Class) :-
-	owl_individual_of(H, Class), !,
-	all_individual_of(T, Class).
+all_individual_of([], _, _).
+all_individual_of([H|T], Class, DB) :-
+	owl_individual_of(H, Class, DB), !,
+	all_individual_of(T, Class, DB).
 
 %	owl_satisfies_cardinality(?Resource[, +Property], +Restriction)
 %
@@ -650,36 +656,40 @@ all_individual_of([H|T], Class) :-
 %	Property imposed by Restriction.
 
 owl_satisfies_cardinality(Resource, Restriction) :-
-	rdf_has(Restriction, owl:onProperty, Property),
-	owl_satisfies_cardinality(Resource, Property, Restriction).
+	owl_rdf_db(DB),
+	owl_satisfies_cardinality(Resource, Restriction, DB).
 
-owl_satisfies_cardinality(Resource, Property, Restriction) :-
+owl_satisfies_cardinality(Resource, Restriction, DB) :-
+	rdf_has(Restriction, owl:onProperty, Property),
+	owl_satisfies_cardinality(Resource, Property, Restriction, DB).
+
+owl_satisfies_cardinality(Resource, Property, Restriction, DB) :-
 	once(( rdf_has(Restriction, owl:cardinality, literal(Atom)) ;
 	       rdf_has(Restriction, owl:qualifiedCardinality, literal(Atom)) )), !,
 	non_negative_int(Atom, Card),
 	once(( rdf_has(Restriction, owl:onClass, Cls) ;
 	       Cls='http://www.w3.org/2002/07/owl#Thing' )),
-	owl_cardinality(Resource, Property, Cls, Card).
-owl_satisfies_cardinality(Resource, Property, Restriction) :-
+	owl_cardinality(Resource, Property, Cls, Card, DB).
+owl_satisfies_cardinality(Resource, Property, Restriction, DB) :-
 	rdf_has(Restriction, owl:minCardinality, literal(MinAtom)),
 	non_negative_int(MinAtom, Min), !,
 	once(( rdf_has(Restriction, owl:onClass, Cls) ;
 	       Cls='http://www.w3.org/2002/07/owl#Thing' )),
-	owl_cardinality(Resource, Property, Cls, Count),
+	owl_cardinality(Resource, Property, Cls, Count, DB),
 	Count >= Min,
 	(   rdf_has(Restriction, owl:maxCardinality, literal(MaxAtom)),
 	    atom_number(MaxAtom, Max)
 	->  Count =< Max
 	;   true
 	).
-owl_satisfies_cardinality(Resource, Property, Restriction) :-
+owl_satisfies_cardinality(Resource, Property, Restriction, DB) :-
 	rdf_has(Restriction, owl:maxCardinality, literal(MaxAtom)),
 	non_negative_int(MaxAtom, Max), !,
 	once(( rdf_has(Restriction, owl:onClass, Cls) ;
 	       Cls='http://www.w3.org/2002/07/owl#Thing' )),
-	owl_cardinality(Resource, Property, Cls, Count),
+	owl_cardinality(Resource, Property, Cls, Count, DB),
 	Count =< Max.
-owl_satisfies_cardinality(Resource, _, _) :-
+owl_satisfies_cardinality(Resource, _, _, _) :-
 	rdf_subject(Resource).
 
 non_negative_int(type('http://www.w3.org/2001/XMLSchema#nonNegativeInteger', Atom), Number) :-
@@ -690,9 +700,12 @@ non_negative_int(Atom, Number) :-
 
 %%	owl_cardinality(+Resource, +Property, +Cls, -Card) is det.
 owl_cardinality(Resource, Property, Cls, Card) :-
+	owl_rdf_db(DB),
+	owl_cardinality(Resource, Property, Cls, Card, DB).
+owl_cardinality(Resource, Property, Cls, Card, DB) :-
 	once((setof(V, (
-		owl_has(Resource, Property, V), % need to use owl_has here for property chains
-		once(owl_individual_of(V,Cls))
+		owl_has(Resource, Property, V, DB), % need to use owl_has here for property chains
+		once(owl_individual_of(V,Cls,DB))
 	), Vs) ; Vs=[])),
 	length(Vs, Card).
 %%	owl_cardinality(+Resource, +Property, -Card) is det.
@@ -900,29 +913,32 @@ in_all_domains([H|T], Resource) :-
 %	Test  or  generate  the  resources    that  satisfy  Description
 %	according the the OWL-Description entailment rules.
 
-owl_individual_of(Resource, 'http://www.w3.org/2002/07/owl#Thing') :-
+owl_individual_of(Resource, Description) :-
+	owl_rdf_db(DB),
+	owl_individual_of(Resource, Description, DB).
+owl_individual_of(Resource, 'http://www.w3.org/2002/07/owl#Thing', _) :-
 	once(( atom(Resource) ; rdf_subject(Resource) )).
-owl_individual_of(_Resource, 'http://www.w3.org/2002/07/owl#Nothing') :-
+owl_individual_of(_Resource, 'http://www.w3.org/2002/07/owl#Nothing', _) :-
 	fail. %!, MT 16032011
-owl_individual_of(Resource, Description) :-			% RDFS
-	rdfs_individual_of(Resource, Description).
-owl_individual_of(Resource, Class) :-
+owl_individual_of(Resource, Description, DB) :-			% RDFS
+	owl_db_individual_of(DB, Resource, Description).
+owl_individual_of(Resource, Class, DB) :-
 	nonvar(Resource),
-	setof(C, rdf_has(Resource, rdf:type, C), Cs), %!, MT 16032011
+	setof(C, owl_db_has(DB, Resource, rdf:type, C), Cs), %!, MT 16032011
 	member(C, Cs),
 	owl_subclass_of(C, Class).
-owl_individual_of(Resource, Class) :-
+owl_individual_of(Resource, Class, DB) :-
 	nonvar(Class), % MT 03122014 -- does not allow generic classification of instances any more, but avoids search through all equivalents of all classes whenever Class is unbound
 	rdfs_individual_of(Class, owl:'Class'),
 	(   rdf_has(Class, owl:equivalentClass, EQ)
-	->  owl_individual_of(Resource, EQ)
+	->  owl_individual_of(Resource, EQ, DB)
 	;   rdfs_individual_of(Class, owl:'Restriction')
-	->  owl_satisfies_restriction(Resource, Class)
-	;   owl_individual_of_description(Resource, Class),
+	->  owl_satisfies_restriction(Resource, Class, DB)
+	;   owl_individual_of_description(Resource, Class, DB),
 	    findall(SC, rdf_has(Class, rdfs:subClassOf, SC), SuperClasses),
-	    owl_individual_of_all(SuperClasses, Resource)
+	    owl_individual_of_all(SuperClasses, Resource, DB)
 	).
-owl_individual_of(Resource, Description) :-			% RDFS
+owl_individual_of(Resource, Description, _) :-			% RDFS
 	owl_individual_from_range(Resource, Description).
 
 
@@ -931,24 +947,30 @@ owl_individual_of(Resource, Description) :-			% RDFS
 % 	@tbd	Can a description have multiple of these facets?
 
 owl_individual_of_description(Resource, Description) :-
+	owl_rdf_db(DB),
+	owl_individual_of_description(Resource, Description, DB).
+owl_individual_of_description(Resource, Description, DB) :-
 	(   rdf_has(Description, owl:unionOf, Set)
 	->  rdfs_member(Sub, Set),
-	    owl_individual_of(Resource, Sub)
+	    owl_individual_of(Resource, Sub, DB)
 	;   rdf_has(Description, owl:intersectionOf, Set)
 	->  intersection_of(Set, Resource)
 	;   rdf_has(Description, owl:complementOf, Arg)
 	->  rdf_subject(Resource),
-	    \+ owl_individual_of(Resource, Arg)
+	    \+ owl_individual_of(Resource, Arg, DB)
 	;   rdf_has(Description, owl:oneOf, Arg)
 	->  rdfs_member(Resource, Arg)
 	;   fail			% not an OWL description % MT: changed to 'fail' -> TODO: check if this makes problems if the super-class *is* a restriction
 	).
 
 
-owl_individual_of_all([], _).
-owl_individual_of_all([C|T], Resource) :-
-	owl_individual_of(Resource, C),
-	owl_individual_of_all(T, Resource).
+owl_individual_of_all(T, Resource) :-
+	owl_rdf_db(DB),
+	owl_individual_of_all(T, Resource, DB).
+owl_individual_of_all([], _, _).
+owl_individual_of_all([C|T], Resource, DB) :-
+	owl_individual_of(Resource, C, DB),
+	owl_individual_of_all(T, Resource, DB).
 
 
 owl_individual_from_range(Resource, Class) :-
@@ -979,11 +1001,15 @@ intersection_of(Nil, _) :-
 %	inference rules.  It adds transitivity to owl_has_direct/3.
 
 owl_has(S, P, O) :-
+	owl_rdf_db(DB),
+	owl_has_transitive(S, P, O, DB).
+
+owl_has(S, P, O, DB) :-
 	(   var(P)
 	->  rdf_current_predicate(P)
 	;   true
 	),
-	owl_has_transitive(S, P, O).
+	owl_has_transitive(S, P, O, DB).
 
 
 %%	owl_has_transitive(?Subject, ?Predicate, ?Object)
@@ -992,18 +1018,22 @@ owl_has(S, P, O) :-
 %	relation.
 
 owl_has_transitive(S, P, O) :-
-	rdfs_individual_of(P, owl:'TransitiveProperty'), !,
-	owl_has_transitive(S, P, O, [P]).
-owl_has_transitive(S, P, O) :-
-	owl_has_equivalent(S, P, O).
+	owl_rdf_db(DB),
+	owl_has_transitive(S, P, O, DB).
 
-owl_has_transitive(S, P, O, Visited) :-
+owl_has_transitive(S, P, O, DB) :-
+	rdfs_individual_of(P, owl:'TransitiveProperty'), !,
+	owl_has_transitive_(S, P, O, DB, [P]).
+owl_has_transitive(S, P, O, DB) :-
+	owl_has_equivalent(S, P, O, DB).
+
+owl_has_transitive_(S, P, O, DB, Visited) :-
   rdf_reachable(SP, rdfs:subPropertyOf, P),
-	owl_has_equivalent(S, SP, O1),          % MT: pulled the rdfs_subprop_of in here to allow transitive sup-property chains
+	owl_has_equivalent(S, SP, O1, DB),          % MT: pulled the rdfs_subprop_of in here to allow transitive sup-property chains
 	O1 \= literal(_),                       %     of the form P -> SP1 -> SP2 -> P ->... with SP1, SP2 transitive sub-properties of P
 	\+ memberchk(O1, Visited),
 	(   O = O1
-	;   owl_has_transitive(O1, P, O, [O1|Visited])
+	;   owl_has_transitive_(O1, P, O, DB, [O1|Visited])
 	).
 
 %	owl_has_equivalent(?Subject, ?Predicate, ?Object)
@@ -1011,17 +1041,21 @@ owl_has_transitive(S, P, O, Visited) :-
 %	Adds owl:sameAs on Subject and Object to owl_has_direct/3
 
 owl_has_equivalent(S, P, O) :-
+	owl_rdf_db(DB),
+	owl_has_equivalent(S, P, O, DB).
+
+owl_has_equivalent(S, P, O, DB) :-
 	nonvar(S), !,
 	owl_same_as(S, S1),
-	owl_has_direct(S1, P, O0),
+	owl_has_direct(S1, P, O0, DB),
 	owl_same_as(O0, O).
-owl_has_equivalent(S, P, O) :-
+owl_has_equivalent(S, P, O, DB) :-
 	nonvar(O), !,
 	owl_same_as(O1, O),
-	owl_has_direct(S0, P, O1),
+	owl_has_direct(S0, P, O1, DB),
 	owl_same_as(S0, S).
-owl_has_equivalent(S, P, O) :-
-	owl_has_direct(S0, P, O0),
+owl_has_equivalent(S, P, O, DB) :-
+	owl_has_direct(S0, P, O0, DB),
 	owl_same_as(S0, S),
 	owl_same_as(O0, O).
 
@@ -1054,62 +1088,62 @@ owl_same_as(X, Y, Visited) :-
 %	symmetric properties and being subtype of  a restriction with an
 %	owl:hasValue statement on this property.
 %
-%	@bug	owl_has_direct/3 also uses SWRL rules.  This should be
-%		moved elsewhere.
-
-%%      MP 06/2017: also add support for reasoning based on PropertyChain axioms of object properties
 %%	TODO: add support for Equivalent properties and mixes of sub properties/Equivalent ones
 
 owl_has_direct(S, P, O) :-
-	owl_has_direct_internal(S, P, O).
+	owl_rdf_db(DB),
+	owl_satisfies_restriction(S, P, O, DB).
 
-owl_has_direct(S, P, O) :-
+owl_has_direct(S, P, O, DB) :-
+	owl_has_direct_internal(S, P, O, DB).
+
+owl_has_direct(S, P, O, DB) :-
 	rdfs_individual_of(P, owl:'SymmetricProperty'),
-	owl_has_direct_internal(O, P, S).
+	owl_has_direct_internal(O, P, S, DB).
 
-owl_has_direct(S, P, O) :-
+owl_has_direct(S, P, O, DB) :-
 	(  rdf_has(P, owl:inverseOf, P2)
 	-> true
 	;  rdf_has(P2, owl:inverseOf, P)
 	),
-	(  owl_has_direct_internal(O, P2, S) ; (
+	(  owl_has_direct_internal(O, P2, S, DB) ; (
 	   rdfs_individual_of(P2, owl:'SymmetricProperty'),
-	   owl_has_direct_internal(S, P2, O)
+	   owl_has_direct_internal(S, P2, O, DB)
 	)).
 
 %% Simplest branch: find an explicitly stored rdf triple (S, P, O)
-owl_has_direct_internal(S, P, O) :-
-	rdf_has(S, P, O).
+owl_has_direct_internal(S, P, O, DB) :-
+	owl_db_has(DB, S, P, O).
 
 %% If P is bound to an object property, see if any of its PropertyChain axioms is able to produce explicitly known triples.
 %% ASSUMPTION: no circular PropertyChain axioms (example, P defined as A o B and A defined as P o B)
-owl_has_direct_internal(S, P, O) :-
+owl_has_direct_internal(S, P, O, DB) :-
 	rdf_has(P, owl:propertyChainAxiom, RDFList),
 	rdfs_list_to_prolog_list(RDFList, PropChain),
-	owl_has_property_chain(S, PropChain, O).
+	owl_has_property_chain(S, PropChain, O, DB).
 
-owl_has_direct_internal(S, P, O) :-
+owl_has_direct_internal(S, P, O, _) :-
 	owl_use_has_value(S, P, O).
 
-
-owl_has_property_chain(S, PropChain, O) :-
+%% owl_has_property_chain
+owl_has_property_chain(S, PropChain, O, DB) :-
 	nonvar(S), !,
-	owl_has_property_chain_S2O(S, PropChain, O).
-owl_has_property_chain(S, PropChain, O) :-
+	owl_has_property_chain_S2O(S, PropChain, O, DB).
+owl_has_property_chain(S, PropChain, O, DB) :-
 	reverse(PropChain, PropChainRev),
-	owl_has_property_chain_O2S(O, PropChainRev, S).
+	owl_has_property_chain_O2S(O, PropChainRev, S, DB).
 
-owl_has_property_chain_S2O(O, [], O).
-owl_has_property_chain_S2O(S, [P|RestChain], O) :-
-	owl_has(S, P, Oi),
-	owl_has_property_chain_S2O(Oi, RestChain, O).
+owl_has_property_chain_S2O(O, [], O, _).
+owl_has_property_chain_S2O(S, [P|RestChain], O, DB) :-
+	owl_has(S, P, Oi, DB),
+	owl_has_property_chain_S2O(Oi, RestChain, O, DB).
 
-owl_has_property_chain_O2S(S, [], S).
-owl_has_property_chain_O2S(O, [P|RestChain], S) :-
-	owl_has(Si, P, O),
-	owl_has_property_chain_O2S(Si, RestChain, S).
+owl_has_property_chain_O2S(S, [], S, _).
+owl_has_property_chain_O2S(O, [P|RestChain], S, DB) :-
+	owl_has(Si, P, O, DB),
+	owl_has_property_chain_O2S(Si, RestChain, S, DB).
 
-
+%% owl_use_has_value
 owl_use_has_value(S, P, O) :-
 	nonvar(P), !,
 	rdf_has(Super, owl:onProperty, P),
@@ -1125,6 +1159,25 @@ owl_use_has_value(S, P, O) :-
 	rdfs_individual_of(Super, owl:'Restriction'),
 	rdf_has(Super, owl:onProperty, P),
 	rdf_has(Super, owl:hasValue, O).
+
+		 /*******************************
+		 *	   DB ACCESS	*
+		 *******************************/
+
+owl_rdf_db(db(rdf_has,rdfs_individual_of)).
+
+owl_db_has(db(Has,_), S, P, O) :-
+	prepend_arguments(Has, [S,P,O], Goal),
+	call(Goal).
+
+owl_db_individual_of(db(_,IndividualOf), S, Description) :-
+	prepend_arguments(IndividualOf, [S,Description], Goal),
+	call(Goal).
+
+prepend_arguments(Goal, NewArgs, GoalWithArgs) :-
+  Goal=..[Head|Args],
+  append(NewArgs, Args, Y),
+  GoalWithArgs=..[Head|Y].
 
 		 /*******************************
 		 *     OWL CLASS HIERARCHY	*
