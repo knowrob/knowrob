@@ -837,7 +837,7 @@ marker_update(trajectory(Link), MarkerObject, interval(T0,T1)) :-
   marker_update(trajectory(Link), MarkerObject, interval(T0,T1,dt(0.5))).
 
 marker_update(trajectory(Link), MarkerObject, interval(T0,T1,Dt)) :-
-  object_trajectory(Object, [T0,T1], TrajectoryData, Dt),
+  object_trajectory(Link, [T0,T1], TrajectoryData, Dt),
   findall(P, member([P,_],TrajectoryData), TrajectoryPositions),
   marker_points(MarkerObject, TrajectoryPositions).
 
@@ -1072,7 +1072,7 @@ marker_query_individual(_, individual(Individual), QueryGroup, QueryTitle, Query
 % @param Props List of properties (e.g., [type(T)|Tail])
 %
 marker_properties(Marker, [Key:Val|Args]) :-
-  Prop ..= [Key,Val],
+  Prop=..[Key,Val],
   marker_property(Marker, Prop),
   marker_properties(Marker, Args).
 marker_properties(_, []).

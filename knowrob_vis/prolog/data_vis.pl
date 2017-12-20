@@ -113,11 +113,11 @@ data_vis_set_data(DataVisObject, Data) :-
   data_vis_set_property(DataVisObject, data:Data).
 
 %% data_vis_set_property
-data_vis_set_property(DataVisObject, data:[Title,Labels]) :-
+data_vis_set_property(DataVisObject, data:[Data,Labels]) :-
   lists_to_arrays(Data, DataArr),
   lists_to_arrays(Labels, LabelsArr),
   jpl_call(DataVisObject, setData, [DataArr,LabelsArr], _), !.
-data_vis_set_property(DataVisObject, data:Title) :-
+data_vis_set_property(DataVisObject, data:Data) :-
   lists_to_arrays(Data, DataArr),
   jpl_call(DataVisObject, setData, [DataArr], _), !.
 data_vis_set_property(DataVisObject, title:Title) :-
@@ -132,7 +132,7 @@ data_vis_set_property(DataVisObject, height:Label) :-
   jpl_call(DataVisObject, setHeight, [Label], _), !.
 data_vis_set_property(DataVisObject, fontsize:Label) :-
   jpl_call(DataVisObject, setFontsize, [Label], _), !.
-data_vis_set_property(DataVisObject, _).
+data_vis_set_property(_, _).
 
 %% data_vis_set_properties
 data_vis_set_properties(_, []) :- !.
@@ -153,11 +153,11 @@ data_visualisation(DataVis) :-
   jpl_call('org.knowrob.vis.DataVisPublisher', get, [], DataVis),
   jpl_list_to_array(['org.knowrob.vis.DataVisPublisher'], Arr),
   jpl_call('org.knowrob.utils.ros.RosUtilities', runRosjavaNode, [DataVis, Arr], _),
-  assert(v_data_vis(MarkerVis)),!.
+  assert(v_data_vis(DataVis)),!.
 
-data_visualisation(MarkerVis) :-
+data_visualisation(DataVis) :-
   current_predicate(v_data_vis, _),
-  v_data_vis(MarkerVis).
+  v_data_vis(DataVis).
 
 data_vis_publish :-
   data_visualisation(DataVis),
