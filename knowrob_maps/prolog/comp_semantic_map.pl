@@ -41,7 +41,9 @@ POSSIBILITY OF SUCH DAMAGE.
      building_path_cost/3,         % cost estimate for navigation between two different rooms/levels
      building_best_path_cost/3,
      map_object_in_level/2,        % true if object is inside of level bounding box
+     map_object_in_level/3,
      map_object_in_room/2,         % true if object is inside of room bounding box
+     map_object_in_room/3,
      map_object_most_similar/2,    % find (most) similar object
      map_object_similar/2,
      map_object_similar/3
@@ -180,7 +182,12 @@ inter_level_cost(A,B,Cost) :-
 map_object_in_room(Object, Room):-
   rdfs_individual_of(Room, knowrob:'RoomInAConstruction'),
   rdfs_individual_of(Object, knowrob:'HumanScaleObject'),
-  rdf_triple(knowrob:'in-ContGeneric', Object, Room).
+  holds(Object, knowrob:'in-ContGeneric', Room).
+
+map_object_in_room(Object, Room, Interval):-
+  rdfs_individual_of(Room, knowrob:'RoomInAConstruction'),
+  rdfs_individual_of(Object, knowrob:'HumanScaleObject'),
+  holds(Object, knowrob:'in-ContGeneric', Room, Interval).
 
 %% map_object_in_level(?Object:iri, ?Level:iri) is nondet
 %
@@ -192,7 +199,12 @@ map_object_in_room(Object, Room):-
 map_object_in_level(Place, Level):-
   rdfs_individual_of(Level, knowrob:'LevelOfAConstruction'),
   rdfs_individual_of(Place, knowrob:'SpatialThing-Localized'),
-  rdf_triple(knowrob:'in-ContGeneric',Place, Level).
+  holds(Object, knowrob:'in-ContGeneric', Level).
+
+map_object_in_level(Place, Level):-
+  rdfs_individual_of(Level, knowrob:'LevelOfAConstruction'),
+  rdfs_individual_of(Place, knowrob:'SpatialThing-Localized'),
+  holds(Object, knowrob:'in-ContGeneric', Level, Interval).
 
 map_objects_same_room(A, B)  :- map_object_in_room(A,R),  map_object_in_room(B,R).
 map_objects_same_level(A, B) :- map_object_in_level(A,L), map_object_in_level(B,L).

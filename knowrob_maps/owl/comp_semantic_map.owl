@@ -43,19 +43,19 @@
       <computable:target rdf:resource="&knowrob;#hasRooms"/>
     </computable:PrologProperty>
 
-    <computable:PrologProperty rdf:about="#computeInRoom">
+    <computable:PrologTemporalProperty rdf:about="#computeInRoom">
       <computable:command rdf:datatype="&xsd;string">map_object_in_room</computable:command>
       <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
       <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
       <computable:target rdf:resource="&knowrob;#in-BuildingRoom"/>
-    </computable:PrologProperty>
+    </computable:PrologTemporalProperty>
 
-    <computable:PrologProperty rdf:about="#computeInRoom">
+    <computable:PrologTemporalProperty rdf:about="#computeInRoom">
       <computable:command rdf:datatype="&xsd;string">map_object_in_level</computable:command>
       <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
       <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
       <computable:target rdf:resource="&knowrob;#in-BuildingLevel"/>
-    </computable:PrologProperty>
+    </computable:PrologTemporalProperty>
 
     <owl:ObjectProperty rdf:about="&knowrob;#in-BuildingRoom">
         <rdfs:range rdf:resource="&knowrob_common;RoomInAConstruction"/>
