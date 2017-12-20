@@ -264,14 +264,14 @@ object_mesh_path(Obj, FilePath) :-
 
 %% comp_tf_pose
 comp_tf_pose(Obj, Pose) :-
-  get_timepoint(Instant),
+  current_time(Instant),
   comp_tf_pose_at_time(Obj, Pose, Instant).
 
 %% comp_tf_pose_at_time
 comp_tf_pose_at_time(Obj, Pose, Instant) :-
   rdf_has(Obj, knowrob:frameName, ObjFrame),
-  get_timepoint(Now),
-  20 > abs(Now - Instant),
+  current_time(Now),
+  ( var(Instant) -> Instant = Now ;   20 > abs(Now - Instant) ),
   map_frame_name(MapFrameName),
   tf_lookup_transform(MapFrameName, ObjFrame, PoseTerm),
   create_pose(PoseTerm, Pose), !.
