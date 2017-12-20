@@ -50,13 +50,13 @@
         comp_installable_for_action/4,
         comp_installable_on_robot/3,
         comp_baselink_pose/2,
-        comp_baselink_pose_at_time/3,
+        comp_baselink_pose/3,
         sub_component/2,
         succeeding_link/2,
         robot_tf_prefix/2,
         robot_part_tf_prefix/2,
         srdl_inFieldOfView/2,
-        srdl_inFieldOfView_at_time/3
+        srdl_inFieldOfView/3
   ]).
 
 :- use_module(library('semweb/rdf_db')).
@@ -570,18 +570,12 @@ comp_installable_on_robot(Comp, CompC, Robot) :-
 %% comp_baselink_pose
 comp_baselink_pose(Obj, Pose) :-
   get_timepoint(Instant),
-  comp_baselink_pose_at_time(Obj, Pose, Instant).
+  comp_baselink_pose_at_time(Obj, Pose, [Instant,Instant]).
 
-%% comp_baselink_pose_at_time
-comp_baselink_pose_at_time(Obj, Pose, Interval) :-
+comp_baselink_pose(Obj, Pose, Interval) :-
   nonvar(Obj),
   rdf_has(Obj, srdl2comp:baseLinkOfComposition, BaseLink),
   holds(BaseLink, knowrob:pose, Pose, Interval), !.
-
-knowrob_temporal:holds(Obj, 'http://knowrob.org/kb/knowrob.owl#pose', Pose, Interval) :- comp_baselink_pose_at_time(Obj, Pose, Interval).
-
-
-
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % Higher-level reasoning methods
@@ -600,6 +594,9 @@ knowrob_temporal:holds(Obj, 'http://knowrob.org/kb/knowrob.owl#pose', Pose, Inte
 % 
 srdl_inFieldOfView(Agent, Object) :-
   get_timepoint(Instant),
+  srdl_inFieldOfView_at_time(Agent, Object, Instant).
+
+srdl_inFieldOfView(Agent, Object, [Instant,Instant]) :-
   srdl_inFieldOfView_at_time(Agent, Object, Instant).
 
 srdl_inFieldOfView_at_time(Agent, Object, Instant) :-
@@ -623,9 +620,6 @@ srdl_inFieldOfView_at_time(Agent, Object, Instant) :-
   BearingY is atan2(ObjZ, ObjX),
   abs(BearingX) < HFOV/2,
   abs(BearingY) < VFOV/2.
-
-knowrob_temporal:holds(Agent, 'http://knowrob.org/kb/knowrob.owl#inFieldOfView', Object, [Instant,Instant]) :-
-  srdl_inFieldOfView_at_time(Agent, Object, Instant).
 
 agent_camera(Camera, Camera) :-
   owl_individual_of(Camera, srdl2comp:'Camera'), !.
