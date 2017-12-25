@@ -324,15 +324,15 @@ missing_cap_for_action(Action, Robot, Cap) :-
 %
 
 required_cap_for_action(Action, Cap) :-
-  class_properties(Action, srdl2cap:'dependsOnCapability', Cap).
+  owl_class_properties(Action, srdl2cap:'dependsOnCapability', Cap).
 
 required_cap_for_action(Action, Cap) :-
-  class_properties(Action, srdl2cap:'dependsOnCapability', Cp),
-  class_properties(Cp, srdl2cap:'dependsOnCapability', Cap).
+  owl_class_properties(Action, srdl2cap:'dependsOnCapability', Cp),
+  owl_class_properties(Cp, srdl2cap:'dependsOnCapability', Cap).
 
 required_cap_for_action(Action, Cap) :-
   plan_subevents_recursive(Action, SubAction),
-  class_properties(SubAction, srdl2cap:'dependsOnCapability', Cap).
+  owl_class_properties(SubAction, srdl2cap:'dependsOnCapability', Cap).
 
 
 %% cap_available_on_robot(Cap, Robot) is nondet.
@@ -359,7 +359,7 @@ cap_available_on_robot(Cap, Robot) :-
 cap_available_on_robot(Cap, Robot) :-
     owl_subclass_of(RobotClass, knowrob:'Robot'),
     rdfs_individual_of(Robot, RobotClass),
-    class_properties(RobotClass, srdl2cap:'hasCapability', SubCap),
+    owl_class_properties(RobotClass, srdl2cap:'hasCapability', SubCap),
 
     % If sub-properties are available, their super-capabilites are also
     % available. Make sure, however, not to scale beyond 'Capability'.
@@ -374,10 +374,10 @@ cap_available_on_robot(Cap, Robot) :-
     owl_subclass_of(Cap, srdl2cap:'Capability'),
     \+ rdf_equal(Cap, srdl2cap:'Capability'),
 
-    forall( class_properties(Cap, srdl2comp:'dependsOnComponent', CompT),
+    forall( owl_class_properties(Cap, srdl2comp:'dependsOnComponent', CompT),
             comp_type_available(Robot, CompT) ),
 
-    forall( class_properties(Cap, srdl2cap:'dependsOnCapability', SubCap),
+    forall( owl_class_properties(Cap, srdl2cap:'dependsOnCapability', SubCap),
             cap_available_on_robot(SubCap, Robot) ).
 
 
@@ -436,16 +436,16 @@ insufficient_comp_for_action(ActionC, ActionD, Robot, Comp) :-
 
 % components directly required by an action and all of its sub-actions
 required_comp_for_action(Action, Comp) :-
-  class_properties(Action, srdl2comp:'dependsOnComponent', Comp).
+  owl_class_properties(Action, srdl2comp:'dependsOnComponent', Comp).
 
 required_comp_for_action(Action, Comp) :-
   plan_subevents_recursive(Action, SubAction),
-  class_properties(SubAction, srdl2comp:'dependsOnComponent', Comp).
+  owl_class_properties(SubAction, srdl2comp:'dependsOnComponent', Comp).
 
 % components indirectly required by required capabilities
 required_comp_for_action(Action, Comp) :-
   required_cap_for_action(Action, Cap),
-  class_properties(Cap, srdl2comp:'dependsOnComponent', Comp).
+  owl_class_properties(Cap, srdl2comp:'dependsOnComponent', Comp).
 
 
 %% comp_restricted_action(+Comp, ?ActionC, ?RestrictedC) is nondet.
@@ -460,7 +460,7 @@ required_comp_for_action(Action, Comp) :-
 comp_restricted_action(Comp, ActionC, RestrictedC) :-
   findall(R, (
     owl_individual_of(Comp, CompC),
-    class_properties(CompC, 'http://knowrob.org/kb/knowrob.owl#actionable', R),
+    owl_class_properties(CompC, 'http://knowrob.org/kb/knowrob.owl#actionable', R),
     owl_subclass_of(R, ActionC)
   ), Rs),
   list_to_set(Rs, RestrictedSet),
@@ -569,7 +569,7 @@ comp_installable_on_robot(Comp, CompC, Robot) :-
 
 %% comp_baselink_pose
 comp_baselink_pose(Obj, Pose) :-
-  get_timepoint(Instant),
+  current_time(Instant),
   comp_baselink_pose_at_time(Obj, Pose, [Instant,Instant]).
 
 comp_baselink_pose(Obj, Pose, Interval) :-
@@ -593,7 +593,7 @@ comp_baselink_pose(Obj, Pose, Interval) :-
 % @param Instant    The time instant
 % 
 srdl_inFieldOfView(Agent, Object) :-
-  get_timepoint(Instant),
+  current_time(Instant),
   srdl_inFieldOfView_at_time(Agent, Object, Instant).
 
 srdl_inFieldOfView(Agent, Object, [Instant,Instant]) :-
@@ -645,10 +645,10 @@ camera_hfov(Camera, HFOV) :-
 % @param SubEvents Sub-events of the plan
 %
 plan_subevents_recursive(Plan, SubAction) :-
-    class_properties(Plan, knowrob:subAction, SubAction).
+    owl_class_properties(Plan, knowrob:subAction, SubAction).
 
 plan_subevents_recursive(Plan, SubAction) :-
-    class_properties(Plan, knowrob:subAction, Sub),
+    owl_class_properties(Plan, knowrob:subAction, Sub),
     Sub \= Plan,
     plan_subevents_recursive(Sub, SubAction).
     
