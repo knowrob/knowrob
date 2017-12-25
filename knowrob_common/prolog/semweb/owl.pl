@@ -629,15 +629,15 @@ owl_satisfies_restriction(Resource, Restriction, DB) :-
 	once( owl_satisfies_cardinality(Resource, Restriction, DB) ), !.
 owl_satisfies_restriction_internal(Resource, Property, Restriction, DB) :-
 	rdf_has(Restriction, owl:hasValue, Value), !,
-	owl_has(Resource, Property, Value, DB).
+	once( owl_has(Resource, Property, Value, DB) ).
 owl_satisfies_restriction_internal(Resource, Property, Restriction, DB) :-
 	rdf_has(Restriction, owl:allValuesFrom, Class), !,
 	once(( bagof(V, owl_has(Resource, Property, V, DB), Vs) ; Vs=[] )),
 	all_individual_of(Vs, Class, DB).
 owl_satisfies_restriction_internal(Resource, Property, Restriction, DB) :-
 	rdf_has(Restriction, owl:someValuesFrom, Class), !,
-	owl_has(Resource, Property, Value, DB),
-	owl_individual_of(Value, Class, DB).
+	once(( owl_has(Resource, Property, Value, DB),
+	       owl_individual_of(Value, Class, DB) )).
 owl_satisfies_restriction_internal(Resource, _, _, _) :-
 	rdf_subject(Resource).
 
