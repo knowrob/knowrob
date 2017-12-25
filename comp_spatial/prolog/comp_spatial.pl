@@ -108,7 +108,7 @@ spatially_holds_interval(S, P, O, I) :-
   % I is an opened interval
   nonvar(I),
   interval(I, [Begin]), !,
-  get_timepoint(End),
+  current_time(End),
   spatially_holds_interval(S, P, O, Begin, End).
 spatially_holds_interval(S, P, O, Begin, End) :-
   % NOTE: this is an approximation, just checking if the relations holds
@@ -136,7 +136,7 @@ spatial_thing(Thing) :-
 % @param Bottom Identifier of the lower Object
 %
 on_Physical(Top, Bottom) :-
-    get_timepoint(Instant),
+    current_time(Instant),
     on_Physical(Top, Bottom, [Instant,Instant]).
 
 on_Physical(Top, Bottom, Interval) :-
@@ -168,7 +168,7 @@ on_Physical_at_time(Top, Bottom, Instant) :-
 % @param Bottom Identifier of the lower Object
 %
 comp_above_of(Top, Bottom) :-
-    get_timepoint(Instant),
+    current_time(Instant),
     comp_above_of(Top, Bottom, [Instant,Instant]).
 
 comp_above_of(Top, Bottom, Interval) :-
@@ -218,7 +218,7 @@ comp_below_of(Bottom, Top, Interval) :- comp_above_of(Top, Bottom, Interval).
 % @param Right Identifier of the right Object
 %
 comp_toTheLeftOf(Left, Right) :-
-    get_timepoint(Instant),
+    current_time(Instant),
     comp_above_of(Left, Right, [Instant,Instant]).
 
 comp_toTheLeftOf(Left, Right, Interval) :-
@@ -286,7 +286,7 @@ comp_toTheSideOf(A, B, I) :-
 % @param Back Identifier of the back Object
 %
 comp_inFrontOf(Front, Back) :-
-    get_timepoint(Instant),
+    current_time(Instant),
     comp_inFrontOf(Front, Back, [Instant,Instant]).
 
 comp_inFrontOf(Front, Back, Interval) :-
@@ -318,7 +318,7 @@ comp_inFrontOf_at_time(Front, Back, Instant) :-
 % @param Outer Identifier of the outer Object
 %
 comp_inCenterOf(Inner, Outer) :-
-    get_timepoint(Instant),
+    current_time(Instant),
     comp_inFrontOf(Inner, Outer, [Instant,Instant]).
 
 comp_inCenterOf(Inner, Outer, Interval) :-
@@ -349,7 +349,7 @@ comp_inCenterOf_at_time(Inner, Outer, Instant) :-
 % @param OuterObj Identifier of the outer Object
 %
 in_ContGeneric(InnerObj, OuterObj) :-
-    get_timepoint(Instant),
+    current_time(Instant),
     in_ContGeneric(InnerObj, OuterObj, [Instant,Instant]).
 
 in_ContGeneric(InnerObj, OuterObj, Interval) :-
@@ -412,7 +412,7 @@ objectAtPoint2D(Point2D, Obj) :-
 % @bug        THIS IS BROKEN FOR ALL NON-STANDARD ROTATIONS if the upper left matrix is partly zero
 %
 objectAtPoint2D(PX,PY,Obj) :-
-    get_timepoint(Instant),
+    current_time(Instant),
     objectAtPoint2D(PX,PY,Obj, Instant).
  
 objectAtPoint2D(PX, PY, Obj, Instant) :-
