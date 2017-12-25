@@ -123,8 +123,8 @@ mng_transform_pose(SourceFrame,
 mng_comp_pose(Obj, Pose, [Instant,Instant]) :-
   nonvar(Obj), nonvar(Instant),
   % only compute poses for time instants in the past
-  get_timepoint(Now), Now > Instant + 20.0,
+  current_time(Now), Now > Instant + 20.0,
   map_frame_name(MapFrame),
   rdf_has(Obj, knowrob:frameName, ObjFrame),
   mng_lookup_transform(MapFrame, ObjFrame, PoseTerm, Instant),
-  create_pose(PoseTerm, Pose).
+  knowrob_instance_from_class(knowrob:'Pose', [pose=PoseTerm], Pose).
