@@ -161,15 +161,15 @@ action_effect_apply(Act,Effect) :-
 action_effect_start_process(Proc) :-
   rdf_has(Proc, knowrob:startTime, _), !.
 action_effect_start_process(Proc) :-
-  get_timepoint(Now),
-  create_timepoint(Now,Timepoint),
+  current_time(Now),
+  knowrob_instance_from_class(knowrob:'TimePoint', [instant=Now], Timepoint),
   rdf_assert(Proc, knowrob:startTime, Timepoint).
 
 action_effect_stop_process(Proc) :-
   rdf_has(Proc, knowrob:endTime, _), !.
 action_effect_stop_process(Proc) :-
-  get_timepoint(Now),
-  create_timepoint(Now,Timepoint),
+  current_time(Now),
+  knowrob_instance_from_class(knowrob:'TimePoint', [instant=Now], Timepoint),
   rdf_assert(Proc, knowrob:endTime, Timepoint).
 
 %% action_precondition_check(+Act:iri)

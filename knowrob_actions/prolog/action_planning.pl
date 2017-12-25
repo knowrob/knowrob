@@ -70,7 +70,7 @@
 % @param SubEvents List of sub-events of the plan
 %
 plan_subevents(Plan, SubEvents) :-
-  findall(SubAction, (class_properties(Plan, knowrob:subAction, SubAction)), Sub),
+  findall(SubAction, (owl_class_properties(Plan, knowrob:subAction, SubAction)), Sub),
   predsort(knowrob_actions:compare_actions_partial_order, Sub, SubEvents).
 
 %% plan_subevents_recursive(+Plan:iri, ?SubEvents:list) is semidet.
@@ -81,10 +81,10 @@ plan_subevents(Plan, SubEvents) :-
 % @param SubEvents Sub-events of the plan
 %
 plan_subevents_recursive(Plan, SubAction) :-
-  class_properties(Plan, knowrob:subAction, SubAction).
+  owl_class_properties(Plan, knowrob:subAction, SubAction).
 
 plan_subevents_recursive(Plan, SubAction) :-
-  class_properties(Plan, knowrob:subAction, Sub),
+  owl_class_properties(Plan, knowrob:subAction, Sub),
   Sub \= Plan,
   plan_subevents_recursive(Sub, SubAction).
 
@@ -103,7 +103,7 @@ plan_constrained_objects(Plan, Action, PrevActions) :-
   
 plan_constrained_objects(_Plan, Action, PrevActions, Obj) :-
   % TODO: check if this constraint is part of plan!
-  %class_properties(Plan, knowrob:inputOutputConstraint, Constraint),
+  %owl_class_properties(Plan, knowrob:inputOutputConstraint, Constraint),
   rdfs_individual_of(Action, Cls),
   rdf_has(Constraint, knowrob:requiresInput, Cls),
   % read the outputs created by previous actions
@@ -141,7 +141,7 @@ plan_objects(Plan, Objects) :-
 % 
 plan_start_action(ActionClass, ActionInstance) :-
   plan_step(Now),
-  create_timepoint(Now,Timepoint),
+  knowrob_instance_from_class(knowrob:'TimePoint', [instant=Now], Timepoint),
   % create instance of the action
   rdf_instance_from_class(ActionClass, ActionInstance),
   rdf_assert(ActionInstance, knowrob:'startTime', Timepoint).
@@ -154,7 +154,7 @@ plan_start_action(ActionClass, ActionInstance) :-
 % 
 plan_finish_action(ActionInstance) :-
   plan_step(Now),
-  create_timepoint(Now,Timepoint),
+  knowrob_instance_from_class(knowrob:'TimePoint', [instant=Now], Timepoint),
   % specify endTime and project the action effects
   rdf_assert(ActionInstance, knowrob:'endTime', Timepoint),
   action_effects_apply(ActionInstance).
@@ -164,7 +164,7 @@ plan_finish_action(ActionInstance) :-
 % Updates ongoing processes.
 %
 plan_step(Now) :-
-  get_timepoint(Now),
+  current_time(Now),
   forall(plan_active_process(Process),
          action_effects_apply(Process)).
 

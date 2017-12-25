@@ -111,7 +111,7 @@ action_fromLocation(Action, Loc) :-
 % @param Input    Input linked via a preActors restriction
 %
 action_inputs(Action, Input) :-
-  class_properties(Action, knowrob:'preActors', Input).
+  owl_class_properties(Action, knowrob:'preActors', Input).
 
 %% action_missing_inputs(+Action, -Missing)
 %
@@ -131,7 +131,7 @@ action_missing_inputs(Action, Missing) :-
 % @param Output   Output linked via a postActors restriction
 %
 action_outputs(Action, Output) :-
-  class_properties(Action, knowrob:'postActors', Output).
+  owl_class_properties(Action, knowrob:'postActors', Output).
 %TODO: check class subsumption (allow more complex requirements)
 
 %% resource_available(+Resource)
