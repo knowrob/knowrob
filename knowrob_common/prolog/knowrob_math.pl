@@ -42,8 +42,7 @@
       transform_compute_relative/3,
       transform_data/2,
       parse_vector/2,
-      transform_close_to/3,
-      create_transform/3
+      transform_close_to/3
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -214,13 +213,3 @@ transform_close_to(
   DmaxSq is Dmax*Dmax,
   Dsq =< DmaxSq.
 
-%% create_transform(+Translation, +Rotation, -TransformId)
-%
-create_transform(Translation, Rotation, TransformId) :-
-  % note: we don't assert to belief_state graph here because pose data is memorized
-  %       subsymbolically, as a TF message dump in a noSQL DB
-  rdf_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', TransformId),
-  atomic_list_concat(Translation, ' ', Translation_atom),
-  atomic_list_concat(Rotation, ' ', Rotation_atom),
-  rdf_assert(TransformId, knowrob:'translation', literal(type(xsd:string,Translation_atom))),
-  rdf_assert(TransformId, knowrob:'quaternion', literal(type(xsd:string,Rotation_atom))).
