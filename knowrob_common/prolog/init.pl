@@ -51,11 +51,12 @@
 
 :- use_module(library('atoms')).
 :- use_module(library('comp_similarity')).
+:- use_module(library('knowrob_rdfs')).
 :- use_module(library('knowrob_owl')).
+:- use_module(library('entities')).
 :- use_module(library('swrl')).
 % :- use_module(library('knowrob_units')).
 :- use_module(library('owl_export')).
-:- use_module(library('knowrob_cad_parser')).
 :- use_module(library('knowrob_temporal')).
 :- use_module(library('knowrob_math')).
 
