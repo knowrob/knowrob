@@ -10497,18 +10497,6 @@ As the above examples illustrate, it is not the case that everthing that has a t
     
 
 
-    <!-- http://knowrob.org/kb/knowrob.owl#designatedThing -->
-
-    <owl:NamedIndividual rdf:about="&knowrob_common;designatedThing">
-        <rdf:type rdf:resource="&computable;PrologProperty"/>
-        <computable:cache rdf:datatype="&xsd;string">dontCache</computable:cache>
-        <computable:command rdf:datatype="&xsd;string">knowrob_owl:comp_designatedThing</computable:command>
-        <computable:visible rdf:datatype="&xsd;string">unvisible</computable:visible>
-        <computable:target rdf:resource="&knowrob_common;designatedThing"/>
-    </owl:NamedIndividual>
-    
-
-
     <!-- http://www.w3.org/2002/07/owl#Thing -->
 
     <owl:NamedIndividual rdf:about="&owl;Thing"/>
