@@ -209,7 +209,7 @@ rdf_swrl_assert(Descr,Rule) :-
 rdf_swrl_unload :-
   forall( rdf_swrl_store(Descr, Rule), (
       retract( rdf_swrl_store(Descr,Rule) ),
-      retract( Rule )
+      ignore(retract( Rule ))
   )).
 
 %% rdf_swrl_unload(+Descr)
@@ -225,7 +225,7 @@ rdf_swrl_unload(Descr) :-
 rdf_swrl_retract(Descr) :-
   forall( rdf_swrl_store(Descr, Rule), (
       retract( rdf_swrl_store(Descr,Rule) ),
-      retract( Rule )
+      ignore(retract( Rule ))
   )).
 
 %% rdf_swrl_project(+Descr)
