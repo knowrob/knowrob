@@ -36,6 +36,7 @@
 :- module(knowrob_perception,
     [
       comp_detected_pose/2,
+      comp_detected_pose/3,
       comp_detected_pose_at_time/3,
       create_visual_perception/1,
       create_visual_perception/2,
@@ -70,8 +71,8 @@
 
 %% comp_detected_pose
 comp_detected_pose(Obj, Pose) :-
-  get_timepoint(Instant),
-  comp_detected_pose_at_time(Obj, Pose, Instant).
+  current_time(Instant),
+  comp_detected_pose_at_time(Obj, Pose, [Instant,Instant]).
 
 comp_detected_pose(Obj, Pose, [Instant,Instant]) :-
   ground(Instant), !,
@@ -109,8 +110,7 @@ comp_detected_pose_at_time(Obj, Pose, Instant) :-
 %
 create_visual_perception(Perception) :-
   rdf_instance_from_class('http://knowrob.org/kb/knowrob.owl#VisualPerception', Perception),
-  % create detection time point
-  get_timepoint(TimePoint),
+  knowrob_instance_from_class(knowrob:'TimePoint', TimePoint),
   rdf_assert(Perception, knowrob:startTime, TimePoint).
 create_visual_perception(ModelType, Perception) :-
   create_visual_perception(Perception),
@@ -369,7 +369,7 @@ detection_endtime(Detection, EndTime) :-
     term_to_atom(EndTime, EndTAtom),! );
 
   % otherwise take the current time (plus a second to avoid glitches)
-  ( get_time(ET), EndTime is ET + 1.0).
+  ( current_time(ET), EndTime is ET + 1.0).
 
 %% compare_object_detections(-Delta, +P1, +P2) is det.
 %

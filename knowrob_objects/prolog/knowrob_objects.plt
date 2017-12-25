@@ -23,6 +23,7 @@
 :- use_module(library('owl')).
 :- use_module(library('owl_parser')).
 :- use_module(library('knowrob_objects')).
+:- use_module(library('knowrob_perception')).
 
 :- owl_parser:owl_parse('package://knowrob_objects/owl/knowrob_objects.owl').
 :- owl_parser:owl_parse('package://knowrob_objects/owl/test_knowrob_objects.owl').

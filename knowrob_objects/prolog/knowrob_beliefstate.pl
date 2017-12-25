@@ -312,7 +312,7 @@ belief_at_internal_(Obj, (Translation, Rotation), TransformId) :-
   forall(rdf_has(Obj, knowrob:'pose', Pose),
          rdf_retractall(Pose, _, _)),
   rdf_retractall(Obj, knowrob:'pose', _),
-  create_transform(Translation, Rotation, TransformId),
+  knowrob_instance_from_class(knowrob:'Pose', [pose=(Translation,Rotation)], TransformId),
   rdf_assert(Obj, knowrob:'pose', TransformId).
 
 %% belief_dirty_object(-ObjectIds) is det

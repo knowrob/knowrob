@@ -125,9 +125,11 @@ object_pose_at_time(Obj, _Instant, PoseTerm, [0.0]) :-
 
 object_pose_at_time(Obj, Instant, PoseTerm, Interval) :-
   atom(Obj),
-  holds(Obj, knowrob:pose, Pose, Interval),
-  interval_during(Instant, Interval), !,
-  pose_term(Pose, PoseTerm).
+  % FIXME want to get the intetrvale here
+  holds(Obj, knowrob:pose, Pose, Instant),
+  Interval=[Instant], % FIXME wrong
+  %interval(Pose, Interval), !, % FIXME won't work with pose, pose only aptial!
+  pose_term(Pose, PoseTerm), !.
 
 %% object_trajectory(+Obj, +Interval, +Dt, -Trajectory) is semidet
 %
@@ -268,13 +270,13 @@ comp_tf_pose(Obj, Pose) :-
   current_time(Instant),
   comp_tf_pose(Obj, Pose, [Instant,Instant]).
 
-comp_tf_pose(Obj, Pose, [Begin,_]) :-
+comp_tf_pose(Obj, Pose, [Instant,_]) :-
   rdf_has(Obj, knowrob:frameName, ObjFrame),
   current_time(Now),
   ( var(Instant) -> Instant = Now ;   20 > abs(Now - Instant) ),
   map_frame_name(MapFrameName),
   tf_lookup_transform(MapFrameName, ObjFrame, PoseTerm),
-  create_pose(PoseTerm, Pose), !.
+  knowrob_instance_from_class(knowrob:'Pose', [pose=PoseTerm], Pose), !.
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
