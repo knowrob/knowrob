@@ -34,10 +34,10 @@
 :- register_ros_package(knowrob_objects).
 :- register_ros_package(knowrob_actions).
 
-:- use_module(library('knowrob_actions')).
-:- use_module(library('action_effects')).
-:- use_module(library('action_planning')).
-:- use_module(library('object_change')).
+:- use_module(library('knowrob/actions')).
+:- use_module(library('knowrob/action_effects')).
+:- use_module(library('knowrob/action_planning')).
+:- use_module(library('knowrob/object_change')).
 
 :- owl_parser:owl_parse('package://knowrob_actions/owl/action-effects.owl').
 :- owl_parser:owl_parse('package://knowrob_actions/owl/object-change.owl').

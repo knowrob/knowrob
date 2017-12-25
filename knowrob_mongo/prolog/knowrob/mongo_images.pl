@@ -1,5 +1,5 @@
-/*
-  Copyright (C) 2013 Moritz Tenorth
+/** 
+  Copyright (C) 2015 Daniel Beßler
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -24,17 +24,49 @@
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@author Moritz Tenorth
+@author Daniel Beßler
 @license BSD
-
 */
 
-:- register_ros_package(knowrob_common).
-:- register_ros_package(knowrob_objects).
+:- module(mongo_images,
+    [
+        mng_kinect_head_rgb_image_color/2,
+        mng_image_base64/2,
+        mng_image_base64_compresssed/2
+    ]).
 
+:- use_module(library('jpl')).
 :- use_module(library('knowrob/mongo')).
-:- use_module(library('knowrob/mongo_designators')).
-:- use_module(library('knowrob/mongo_images')).
-:- use_module(library('knowrob/mongo_tf')).
 
-:- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
+:-  rdf_meta
+    mng_kinect_head_rgb_image_color(+,-),
+    mng_image_base64(+,-),
+    mng_image_base64_compresssed(+,-).
+
+%% mng_kinect_head_rgb_image_color(+Instant, -DBObj) is semidet
+%
+% Query for latest image message published on kinect_head_rgb_image_color topic before Instant
+% and unify DBObj with the Java object that holds the image information.
+%
+mng_kinect_head_rgb_image_color(Instant, DBObj) :-
+  mng_query_latest('kinect_head_rgb_image_color', one(DBObj), 'header.stamp', Instant).
+
+%% mng_image_base64(+DBObj, -Base64) is semidet
+%
+% Unifies Base64 with the base64 encoded atom that corresponds
+% to the pixels of the uncomporessed image DB record DBObj.
+% DBObject is a recorded message of type sensor_msgs/Image.
+%
+mng_image_base64(DBObj, Base64) :-
+  mng_republisher(_),
+  jpl_call('org.knowrob.utils.ros.MongoImageEncoding', 'encodeBase64', [DBObj], Base64).
+
+%% mng_image_base64_compresssed(+DBObj, -Base64) is semidet
+%
+% Unifies Base64 with the base64 encoded atom that corresponds
+% to the pixels of the comporessed image DB record DBObj.
+% DBObject is a recorded message of type sensor_msgs/CompressedImage.
+%
+mng_image_base64_compresssed(DBObj, Base64) :-
+  mng_republisher(_),
+  jpl_call('org.knowrob.utils.ros.MongoImageEncoding', 'encodeBase64_compressed', [DBObj], Base64).

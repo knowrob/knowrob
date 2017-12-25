@@ -48,11 +48,11 @@
     ]).
 
 :- use_module(library('semweb/rdfs')).
-:- use_module(library('owl')).
-:- use_module(library('owl_parser')).
-:- use_module(library('rdfs_computable')).
-:- use_module(library('knowrob_objects')).
-:- use_module(library('knowrob_perception')).
+:- use_module(library('semweb/owl')).
+:- use_module(library('semweb/owl_parser')).
+:- use_module(library('knowrob/computable')).
+:- use_module(library('knowrob/objects')).
+:- use_module(library('knowrob/perception')).
 
 :-  rdf_meta
       map_instance(r),

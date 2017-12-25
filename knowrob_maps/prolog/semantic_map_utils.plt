@@ -20,12 +20,12 @@
 
 :- begin_tests(semantic_map_utils).
 
-:- use_module(library('owl')).
-:- use_module(library('owl_parser')).
-:- use_module(library('comp_spatial')).
-:- use_module(library('rdfs_computable')).
-:- use_module(library('knowrob_objects')).
-:- use_module(library('knowrob_perception')).
+:- use_module(library('semweb/owl')).
+:- use_module(library('semweb/owl_parser')).
+:- use_module(library('knowrob/comp_spatial')).
+:- use_module(library('knowrob/computable')).
+:- use_module(library('knowrob/objects')).
+:- use_module(library('knowrob/perception')).
 
 :- owl_parser:owl_parse('package://knowrob_maps/owl/ccrl2_semantic_map.owl').
 :- owl_parser:owl_parse('package://knowrob_srdl/owl/srdl2-comp.owl').

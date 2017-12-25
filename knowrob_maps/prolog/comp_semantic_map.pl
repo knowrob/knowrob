@@ -51,7 +51,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
-:- use_module(library('semweb/rdfs_computable')).
+:- use_module(library('knowrob/computable')).
 
 :- owl_parser:owl_parse('package://knowrob_maps/owl/comp_semantic_map.owl', false, false, true).
 

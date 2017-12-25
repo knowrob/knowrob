@@ -42,23 +42,23 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_portray')).
 
-:- use_module(library('owl')).
-:- use_module(library('owl_parser')).
-:- use_module(library('rdfs_computable')).
-:- use_module(library('util')).
+:- use_module(library('semweb/owl')).
+:- use_module(library('semweb/owl_parser')).
+:- use_module(library('semweb/owl_export')).
 
-:- use_module(library('delay')).
+:- use_module(library('knowrob/util')).
+:- use_module(library('knowrob/utility/delay')).
+:- use_module(library('knowrob/utility/atoms')).
 
-:- use_module(library('atoms')).
-:- use_module(library('comp_similarity')).
-:- use_module(library('knowrob_rdfs')).
-:- use_module(library('knowrob_owl')).
-:- use_module(library('entities')).
-:- use_module(library('swrl')).
-% :- use_module(library('knowrob_units')).
-:- use_module(library('owl_export')).
-:- use_module(library('knowrob_temporal')).
-:- use_module(library('knowrob_math')).
+:- use_module(library('knowrob/comp_similarity')).
+:- use_module(library('knowrob/rdfs')).
+:- use_module(library('knowrob/computable')).
+:- use_module(library('knowrob/owl')).
+:- use_module(library('knowrob/entity')).
+:- use_module(library('knowrob/swrl')).
+% :- use_module(library('knowrob/units')).
+:- use_module(library('knowrob/temporal')).
+:- use_module(library('knowrob/knowrob_math')).
 
 
 % parse OWL files, register name spaces
@@ -77,7 +77,7 @@
 :- set_prolog_flag(float_format, '%.12g').
 
 % load and configure unit testing environment
-:- use_module(library(plunit)).
+:- use_module(library('knowrob/utility/plunit')).
 :- set_test_options([load('always'),
                      run('make'),
                      silent(false),

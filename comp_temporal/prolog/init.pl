@@ -33,8 +33,8 @@
 :- register_ros_package(knowrob_common).
 :- register_ros_package(comp_temporal).
 
-:- use_module(library('comp_temporal')).
-:- use_module(library('knowrob_temporal')).
+:- use_module(library('knowrob/comp_temporal')).
+:- use_module(library('knowrob/temporal')).
 
 
 % parse OWL files, register name spaces

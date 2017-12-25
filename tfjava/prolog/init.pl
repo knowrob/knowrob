@@ -32,4 +32,4 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % dependencies
 
-:- use_module(library('tfjava')).
+:- use_module(library('knowrob/tfjava')).

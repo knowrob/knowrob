@@ -32,8 +32,8 @@
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
-:- use_module(library('owl_parser')).
-:- use_module(library('owl')).
+:- use_module(library('semweb/owl_parser')).
+:- use_module(library('semweb/owl')).
 
 :- owl_parser:owl_parse('package://knowrob_maps/owl/ccrl2_semantic_map.owl').
 
