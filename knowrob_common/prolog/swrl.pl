@@ -43,8 +43,6 @@
       swrl_assert/1,
       swrl_phrase/2,
       swrl_phrase_assert/1,
-      swrl_holds/3,
-      swrl_holds/4,
       swrl_project/1,
       swrl_project/2,
       swrl_satisfied/1,
@@ -57,28 +55,21 @@
 :- rdf_db:rdf_register_ns(xml, 'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
 :- rdf_db:rdf_register_prefix(swrl, 'http://www.w3.org/2003/11/swrl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(swrla, 'http://swrl.stanford.edu/ontologies/3.3/swrla.owl#', [keep(true)]).
+:- rdf_db:rdf_register_ns(computable, 'http://knowrob.org/kb/computable.owl#').
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('owl')).
 :- use_module(library('rdfs_computable')).
 :- use_module(library('knowrob_owl')).
+:- use_module(library('knowrob_rdfs')).
 :- use_module(library('knowrob_temporal')).
 :- use_module(library('knowrob_units')).
 
-:- rdf_meta swrl_holds(r,r,r,r),
-            swrl_holds(r,r,r),
-            swrl_project(r),
+:- rdf_meta swrl_project(r),
             swrl_match_instance(r,r,r).
-:- dynamic  swrl_holds/4,
-            call_mutex/2,
-            rdf_swrl_store/2,
-            swrl_individual_cache/3.
-
-% expand holds predicate
-% TODO (DB): Support queries with unspecified interval
-knowrob_temporal:holds(S,P,O,I) :-
-  ground(I), swrl_holds(S,P,O,I).
+:- dynamic  call_mutex/2,
+            rdf_swrl_store/2.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%% RDF-based SWRL representation
@@ -322,15 +313,6 @@ rdf_class_list_pl(RestDescr, Rest).
 %%%%%%%%%%%%%%% Prolog-encoded SWRL representation
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% swrl_holds(S,P,O)
-%
-% True if relation `P` holds between subject `S` and object `O`
-% according to a SWRL rule.
-%
-swrl_holds(S,P,O) :-
-  current_time(Now),
-  swrl_holds(S,P,O,Now).
-
 %% swrl_assert(+Rule)
 %
 % Assert SWRL rule in the Prolog KB.
@@ -347,16 +329,40 @@ swrl_assert(Rule) :- swrl_assert(Rule,_).
 % @Rule_pl Prolog rule that corresponds to a SWRL rule.
 %
 swrl_assert([] :- _, []).
-swrl_assert([HeadAtom|Xs] :- Body, [Rule_pl|Rest]) :-
+swrl_assert([HeadAtom|Xs] :- Body, [Asserted|Rest]) :-
   swrl_vars([HeadAtom] :- Body, Vars),
   swrl_rule_pl(HeadAtom :- Body, Rule_pl, [var('swrl:interval',_)|Vars]),
-  assertz( Rule_pl ),
+  swrl_rule_pl_implication(Rule_pl, swrl_holds(S_X,P_X,O_X,I_X)),
+  % assert prolog rule
+  rdf_split_url(_, P_name, P_X),
+  atom_concat('swrl_comp_', P_name, PredicateName),
+  Predicate=..[PredicateName,S_X,O_X,I_X],
+  ( Rule_pl=(_:-Condition) ->
+    Asserted=(Predicate:-Condition);
+    Asserted=Predicate ),
+  assertz( Asserted ),
+  % create computable property description
+  atom_concat('swrl:', PredicateName, Command),
+  swrl_create_computable(Command, P_X, _),
   swrl_assert(Xs :- Body, Rest).
+
+swrl_create_computable(Command, Predicate, Computable) :-
+  rdfs_computable_property(Predicate, Computable),
+  rdf_has(Computable, computable:'command', literal(type(xsd:string, Command))), !.
+swrl_create_computable(Command, Predicate, Computable) :-
+  rdf_instance_from_class(computable:'PrologTemporalProperty', Computable),
+  rdf_assert(Computable, computable:command, literal(type(xsd:string,Command))),
+  rdf_assert(Computable, computable:cache, literal(type(xsd:string,dontCache))),
+  rdf_assert(Computable, computable:visible, literal(type(xsd:string,unvisible))),
+  rdf_assert(Computable, computable:target, Predicate).
+  
+swrl_rule_pl_implication(Implication :- _, Implication) :- !.
+swrl_rule_pl_implication(Implication, Implication).
 
 %% swrl_rule_pl
 swrl_rule_pl(Fact :- [], Fact_pl, Vars) :-
   !, swrl_implication_pl(Fact, Fact_pl, Vars).
-swrl_rule_pl(Impl :- Cond, Impl_pl :- with_call_mutex(MutexId, Cond_pl), Vars) :-
+swrl_rule_pl(Impl :- Cond, Impl_pl :- swrl:with_call_mutex(MutexId, Cond_pl), Vars) :-
   swrl_implication_pl(Impl, Impl_pl, Vars),
   swrl_condition_pl(Cond, Cond_pl, Vars),
   random(0, 999999999, MutexId).
@@ -381,16 +387,6 @@ swrl_implication_pl(property(S,P,O), swrl_holds(S_var,P,O_var,I_var), Vars) :-
   swrl_var(Vars, S, S_var),
   swrl_var(Vars, O, O_var),
   swrl_var(Vars, 'swrl:interval', I_var).
-
-owl_individual_of_during_(S,_,_) :-
-  ground(S),
-  rdfs_individual_of(S, knowrob:'TemporalPart'), !,
-  fail.
-owl_individual_of_during_(S,Cls,I) :-
-  ground([S,Cls,I]), !,
-  once(owl_individual_of_during(S,Cls,I)).
-owl_individual_of_during_(S,Cls,I) :-
-  owl_individual_of_during(S,Cls,I).
   
 %% swrl_condition_pl
 swrl_condition_pl([A], A_pl, Vars) :-
@@ -398,11 +394,11 @@ swrl_condition_pl([A], A_pl, Vars) :-
 swrl_condition_pl([A,B|Xs], ','(A_pl,Ys), Vars) :-
   swrl_condition_pl(A, A_pl, Vars),
   swrl_condition_pl([B|Xs], Ys, Vars).
-swrl_condition_pl(class(Cls,S), owl_individual_of_during_(S_var,Cls_rdf,I_var), Vars) :-
+swrl_condition_pl(class(Cls,S), owl_individual_of_during(S_var,Cls_rdf,I_var), Vars) :-
   swrl_var(Vars, S, S_var),
   swrl_var(Vars, 'swrl:interval', I_var),
   assert_rdf_class(Cls, Cls_rdf).
-swrl_condition_pl(property(S,P,O), holds(S_var,P,O_var,I_var), Vars) :-
+swrl_condition_pl(property(S,P,O), owl_has_during(S_var,P,O_var,I_var), Vars) :-
   swrl_var(Vars, S, S_var),
   swrl_var(Vars, O, O_var),
   swrl_var(Vars, 'swrl:interval', I_var).
@@ -602,32 +598,13 @@ swrl_atom_number(A, A_num, _) :-
   atom(A), !, catch(atom_number(A,A_num), _, fail).
 swrl_atom_number(A_num, A_num, _) :- number(A_num), !.
 
-swrl_nums(In, Out, Vars) :-
-  % resolve occuring SWRL variables
-  swrl_vars_resolve(In, In_resolved, Vars),
-  % align the types of values
-  swrl_nums_convert_unit(In_resolved, In_aligned),
-  swrl_nums_aligned(In_aligned, Out, Vars).
-swrl_nums_aligned([],[],_).
-swrl_nums_aligned([X|Xs],[Y|Ys],Vars) :-
-  % TODO: allow units in buildins instead of removing the information here
+swrl_nums([],[],_).
+swrl_nums([X|Xs],[Y|Ys],Vars) :-
   swrl_atom_number(X,Y,Vars),
-  swrl_nums_aligned(Xs,Ys,Vars).
+  swrl_nums(Xs,Ys,Vars).
 
-% align the units of numbers occuring in SWRL rule
-swrl_nums_convert_unit([Head|Tail], [Head|Aligned]) :-
-  swrl_nums_convert_unit(Head, Tail, Aligned).
-swrl_nums_convert_unit(literal(type(Requested, _)), [X|Xs], [Y|Ys]) :- !,
-  ( X = literal(type(X_type, X_value)) -> (
-    swrl_convert_unit(X_type, X_value, Requested, Value),
-    Y = literal(type(Requested, Value))
-  ) ; Y = X ),
-  swrl_nums_convert_unit(literal(type(Requested, _)), Xs, Ys).
-swrl_nums_convert_unit(_, X, X).
-
-swrl_convert_unit(InputType, InputVal, InputType, InputVal) :- !.
-swrl_convert_unit(InputType, InputVal, OutputType, OutputVal) :-
-  convert_to_unit(literal(type(InputType, InputVal)), OutputType, OutputVal).
+% TODO: convert units of datatype properties
+%convert_to_unit(literal(type(InputType, InputVal)), OutputType, OutputVal).
 
 %% swrl_satisfied(+Rule)
 %% swrl_satisfied(+Rule,+Vars_user)
@@ -662,6 +639,7 @@ swrl_project([HeadAtom|Xs] :- Body, Vars_user) :-
   bagof( Binding,
     swrl_satisfied([HeadAtom|Xs] :- Body, Vars_user, Binding),
     Bindings ),
+  length(Bindings, NumBindings),
   member(Vars, Bindings),
   swrl_project_([HeadAtom|Xs], Vars).
 

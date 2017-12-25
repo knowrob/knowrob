@@ -70,9 +70,9 @@ test(swrl_Driver_holds, [nondet]) :-
 
 %% % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_Person1, [nondet]) :-
-  \+ swrl_holds(test_swrl:'Alex', rdf:type, test_swrl:'Person'),
+  \+ owl_individual_of_during(test_swrl:'Alex', test_swrl:'Person'),
   rdf_swrl_load('Person'),
-  swrl_holds(test_swrl:'Alex', rdf:type, test_swrl:'Person').
+  owl_individual_of_during(test_swrl:'Alex', test_swrl:'Person').
 
 % % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_Person2, [nondet]) :-
@@ -100,13 +100,13 @@ test(swrl_NonHuman_holds, [nondet]) :-
 
 %% % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_area, [nondet]) :-
-  \+ swrl_holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _),
+  \+ holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _),
   rdf_swrl_load('area'),
-  swrl_holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
+  holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
 
 %% % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_startsWith_load, [nondet]) :-
-  \+ swrl_holds(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _),
+  \+ holds(test_swrl:'Fred', test_swrl:'hasInternationalNumber', _),
   rdf_swrl_load('startsWith').
 
 test(swrl_startsWith_holds, [nondet]) :-
@@ -114,7 +114,7 @@ test(swrl_startsWith_holds, [nondet]) :-
 
 % % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_hasBrother_load, [nondet]) :-
-  \+ swrl_holds(test_swrl:'Fred', test_swrl:'hasBrother', _),
+  \+ holds(test_swrl:'Fred', test_swrl:'hasBrother', _),
   rdf_swrl_load('brother').
 
 test(swrl_hasBrother_holds, [nondet]) :-
@@ -125,7 +125,7 @@ test(swrl_BigRectangle1, [nondet]) :-
   \+ owl_individual_of_during(test_swrl:'RectangleBig', test_swrl:'BigRectangle'),
   rdf_swrl_load('BigRectangle'),
   owl_individual_of_during(test_swrl:'RectangleBig', test_swrl:'BigRectangle'),
-  swrl_holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
+  holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
 
 test(swrl_BigRectangle_holds, [nondet]) :-
   holds(test_swrl:'RectangleBig', test_swrl:'hasAreaInSquareMeters', _).
@@ -143,6 +143,7 @@ test(swrl_exactly, [nondet]) :-
   owl_individual_of_during(test_swrl:'Lea', test_swrl:'Singleton'),
   \+ owl_individual_of_during(test_swrl:'Fred', test_swrl:'Singleton').
 
+test(test_rdf_swrl_unload, [nondet]) :- rdf_swrl_unload.
 % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % Projection of SWRL rule implications into the RDF triple store
 % % % % % % % % % % % % % % % % % % % % % % % %

@@ -210,11 +210,15 @@ owl_individual_of_during(Resource, Description) :-
 
 owl_individual_of_during(Resource, Description, Interval) :-
   owl_temporal_db(Interval, DB),
-  owl_individual_of(Resource, Description, DB).
+  ( ground([Resource,Description,Interval]) ->
+    once(owl_individual_of(Resource, Description, DB)) ; 
+    owl_individual_of(Resource, Description, DB) ).
 
 owl_has_during(S, P, O, Interval) :-
   owl_temporal_db(Interval, DB),
-  owl_has(S, P, O, DB).
+  ( ground([S,P,O,Interval]) ->
+    once(owl_has(S, P, O, DB)) ; 
+    owl_has(S, P, O, DB) ).
 
 		 /*******************************
 		 *	   Temporal semantics		*
@@ -222,18 +226,42 @@ owl_has_during(S, P, O, Interval) :-
 
 %% rdfs_instance_of_during
 rdfs_instance_of_during(Resource, Description, Interval) :-
-  nonvar(Resource),
-  (  rdfs_individual_of(Resource, Description), % TODO: support computable instances
-     once((nonvar(Interval) ; knowrob_instance_from_class(knowrob:'TimeInterval', [begin=0.0], Interval)))
+  var(Resource), !,
+  rdfs_individual_of(X, Description),
+  ( rdfs_individual_of(X, knowrob:'TemporalPart') -> (
+    temporal_part_during(X, Interval),
+    rdf_has(Resource, knowrob:temporalParts, X)
   ) ; (
-     rdf_has(Resource, knowrob:temporalParts, X),
-     rdfs_individual_of(X, Description),
-     rdf_has(X, knowrob:temporalExtend, TemporalExtend),
-     ( var(Interval) -> Interval=TemporalExtend ;
-                        interval_during(TemporalExtend, Interval) )
-  ),
-  \+ rdf_equal(Description, knowrob:'TemporalPart').
+    rdfs_instance_of_during1(X, Description, Interval),
+    Resource = X
+  )).
 
+rdfs_instance_of_during(Resource, Description, Interval) :-
+  rdfs_individual_of(Resource, Description),
+  rdfs_instance_of_during1(Resource, Description, Interval).
+
+rdfs_instance_of_during(Resource, Description, Interval) :-
+  rdf_has(Resource, knowrob:temporalParts, X),
+  rdfs_individual_of(X, Description),
+  temporal_part_during(X, Interval).
+
+rdfs_instance_of_during1(Resource, Description, Interval) :-
+  \+ ( % TODO: this is a bit ugly
+    rdf_has(Resource, knowrob:temporalParts, X),
+    rdfs_individual_of(X, Description)
+  ),
+  ( nonvar(Interval) ->
+    true ;
+    knowrob_instance_from_class(knowrob:'TimeInterval', [begin=0.0], Interval)
+  ).
+
+temporal_part_during(TemporalPart, Interval) :-
+  rdf_has(TemporalPart, knowrob:temporalExtend, TemporalExtend),
+  ( nonvar(Interval) ->
+    interval_during(TemporalExtend, Interval) ;
+    Interval=TemporalExtend
+  ).
+      
 %% rdf_triple_during
 rdf_triple_during(P, S, O, Interval) :-
   var(Interval),
@@ -257,15 +285,21 @@ rdf_triple_during(Property, Frame, Value, Interval) :-
   rdfs_subproperty_of(SubProperty, Property),
   rdfs_computable_property(SubProperty, ComputableProperty),
   ( rdfs_individual_of(ComputableProperty, computable:'PrologTemporalProperty') -> 
-    % FIXME: possible redundancy because rdfs_computable_property called again in rdfs_computable_temporal_triple
-    rdfs_computable_temporal_triple(Property, Frame, Value, Interval) ;
-    rdfs_computable_triple(Property, Frame, Value)
+    rdfs_computable_temporal_triple(Property, Frame, Value, Interval, ComputableProperty) ;
+    rdfs_computable_temporal_triple(Property, Frame, Value, ComputableProperty)
   ).
 
-rdfs_computable_temporal_triple(Property, Frame, Value, Interval) :-
+rdfs_computable_temporal_triple(Property, Frame, Value, Interval, ComputableProperty) :-
   interval(Interval, Interval_v),
   catch( % TODO: handle caching!
-    rdfs_computable_prolog_triple(Property, Frame, Value, [Interval_v]),
+    rdfs_computable_prolog_triple(Property, Frame, Value, [Interval_v], ComputableProperty),
+    error(instantiation_error, _),
+    fail
+  ).
+
+rdfs_computable_temporal_triple(Property, Frame, Value, ComputableProperty) :-
+  catch( % TODO: handle caching!
+    rdfs_computable_prolog_triple(Property, Frame, Value, [], ComputableProperty),
     error(instantiation_error, _),
     fail
   ).
@@ -483,12 +517,10 @@ temporal_part_has(S, P, O, I) :-
   temporal_part_has(S, P, O, I, _).
 
 temporal_part_has(S, P, O, I, Lifespan) :-
-  rdfs_individual_of(S, knowrob:'SpatialThing-Localized'),
   rdf_has(S, knowrob:'temporalParts', TemporalPart),
   temporal_part_has(TemporalPart, P, O, I, Lifespan).
 
 temporal_part_has(S, P, O, Interval, Lifespan) :-
-  atom(S),
   rdf_has(S, knowrob:'temporalProperty', P),
   
   rdf_has(S, knowrob:'temporalExtend', Ext),

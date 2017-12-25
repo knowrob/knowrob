@@ -186,32 +186,6 @@ test(generate_location_description) :-
   once(entity_has(Descr, 'on-physical', _)).
 
 
-%% Designators
-
-test(query_visual_perception, [nondet]) :-
-  entity(Act, [an, action,
-    [type, visual_perception]
-  ]),
-  rdf_equal(Act, test_owl:'VisualPerception_fg45543').
-
-test(query_designated_thing, [nondet]) :-
-  entity(Act, [an, action,
-    [type, visual_perception],
-    [perception_result, [a, thing, [knowrob:'designatedThing', Obj]]]
-  ]),
-  rdf_equal(Act, test_owl:'VisualPerception_fg45543'),
-  rdf_equal(Obj, test_owl:'Cup_sfd498th').
-
-test(query_designated_thing_2, [nondet]) :-
-  entity(Act, [an, action,
-    [type, visual_perception],
-    [perception_result, Desig]
-  ]),
-  holds( knowrob:'designatedThing'(Desig, Obj) ),
-  rdf_equal(Act, test_owl:'VisualPerception_fg45543'),
-  rdf_equal(Obj, test_owl:'Cup_sfd498th').
-
-
 %% Fluents
 
 test(assert_temporal_part) :-

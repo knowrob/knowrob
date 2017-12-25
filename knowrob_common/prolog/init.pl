@@ -76,8 +76,6 @@
 
 :- set_prolog_flag(float_format, '%.12g').
 
-
-
 % load and configure unit testing environment
 :- use_module(library(plunit)).
 :- set_test_options([load('always'),

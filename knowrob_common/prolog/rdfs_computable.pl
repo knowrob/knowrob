@@ -38,6 +38,7 @@
       rdfs_computable_triple/3,      % calculate the value of computable properties
       rdfs_computable_prolog_triple/3,
       rdfs_computable_prolog_triple/4,
+      rdfs_computable_prolog_triple/5,
       rdfs_computable_has/3,
       rdfs_instance_of/2,            % combine rdfs_computable_instance_of (with subclass handling) and rdfs:rdfs_individual_of
       rdf_triple/3,                  % combine rdfs_computable_triple with rdf:rdf_has
@@ -142,8 +143,7 @@ rdfs_instance_of(Resource, Class) :-
 % Search for computable classes with the target Class
 %
 rdfs_computable_class(Class, ComputableClass) :-
-  findall(CC, rdf_has(CC,computable:'target',Class), ComputableClasses),
-  member(ComputableClass, ComputableClasses),
+  rdf_has(ComputableClass, computable:'target', Class),
   once(rdfs_individual_of(ComputableClass,computable:'PrologClass')).
 
 %% rdfs_computable_property(+Property, -ComputableProperty) is nondet.
@@ -151,8 +151,7 @@ rdfs_computable_class(Class, ComputableClass) :-
 % Search ComputableProperty with the target Property.
 %
 rdfs_computable_property(Property, ComputableProperty) :-
-  findall(CP, rdf_has(CP,computable:'target',Property), ComputableProperties),
-  member(ComputableProperty, ComputableProperties),
+  rdf_has(ComputableProperty,computable:'target',Property),
   once(rdfs_individual_of(ComputableProperty,computable:'PrologProperty')).
 rdfs_computable_property(ComputableProperty, ComputableProperty) :-
   ground(ComputableProperty),
@@ -290,7 +289,7 @@ rdfs_computable_prolog_triple(Property, Frame, Value, CmdArgs, ComputablePropert
     (Command=user:Cmd)),
   % execute the Prolog predicate (namespace expansion etc.)
   (
-    (nonvar(Value)) -> (
+    nonvar(Value) -> (
       (rdfs_computable_prolog_call(ComputableProperty, Command, Frame, Value, CmdArgs))
     ) ; (
       (rdfs_computable_prolog_call(ComputableProperty, Command, Frame, PrologValue, CmdArgs),
@@ -380,7 +379,10 @@ rdfs_prolog_to_rdf(Property, PrologValue, RDFValue) :-
     ; member(PrologValue, OneOfList)
     -> RDFValue = PrologValue
     ; print(['The value ',PrologValue,' is not in the oneOf range list ',OneOfList]), fail))
-  ; print(['Cannot determine the type for ', PrologValue, ' in the range ', Range])).
+  ; print(['Cannot determine the type for ', PrologValue, ' in the range ', Range])), !.
+
+
+rdfs_prolog_to_rdf(_, V, V).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -425,3 +427,24 @@ rdfs_computable_compute_property_concatenation(Parameter, Frame, ParameterValue)
 % rdfs_computable_compute_parameter(Parameter, Frame, ParameterValue) :-
 %  rdf_triple(Parameter, Frame, ParameterValue).
 
+knowrob_owl:knowrob_instance_from_class('http://knowrob.org/kb/computable.owl#PrologTemporalProperty', Args, Computable) :- !,
+  rdf_instance_from_class(computable:'PrologTemporalProperty', Computable),
+  create_prolog_property(Computable, Args).
+
+knowrob_owl:knowrob_instance_from_class('http://knowrob.org/kb/computable.owl#PrologProperty', Args, Computable) :- !,
+  rdf_instance_from_class(computable:'PrologProperty', Computable),
+  create_prolog_property(Computable, Args).
+
+create_prolog_property(_, []) :- !.
+create_prolog_property(Computable, [command:Value|Rest]) :- !,
+  rdf_assert(Computable, computable:command, literal(type(xsd:string,Value))),
+  create_prolog_property(Computable, Rest).
+create_prolog_property(Computable, [cache:Value|Rest]) :- !,
+  rdf_assert(Computable, computable:cache, literal(type(xsd:string,Value))),
+  create_prolog_property(Computable, Rest).
+create_prolog_property(Computable, [visible:Value|Rest]) :- !,
+  rdf_assert(Computable, computable:visible, literal(type(xsd:string,Value))),
+  create_prolog_property(Computable, Rest).
+create_prolog_property(Computable, [target:Value|Rest]) :- !,
+  rdf_assert(Computable, computable:target, Value),
+  create_prolog_property(Computable, Rest).

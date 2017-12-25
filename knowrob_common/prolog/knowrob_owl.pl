@@ -84,6 +84,11 @@ quaternion_to_list(r,-),
             knowrob_instance_from_class(r,-),
             knowrob_instance_from_class(r,t,-).
 
+% define holds as meta-predicate and allow the definitions
+% to be in different source files
+:- meta_predicate knowrob_instance_from_class(0, ?, ?, ?).
+:- multifile knowrob_instance_from_class/3.
+
 :- rdf_db:rdf_register_ns(knowrob,'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
 %% rotmat_to_list(+RotMatInstance, -PoseList) is nondet.
