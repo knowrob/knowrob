@@ -83,7 +83,7 @@ temporal_part_test_assert(S,P,[O1,O2]) :-
   temporal_part_has(S, P, O1),
   holds(S, P, O1, 20.0),
   holds(S, P, O1, [0.0,20.0]),
-  not( holds(S, P, O1, [0.0,60.0]) ),
+  \+ holds(S, P, O1, [0.0,60.0]),
   %% Assert [?P, 15.0, during, [an, interval, [20.0]]]
   assert_temporal_part(S, P, O2, 20.0),
   temporal_part_has(S, P, O2), !.
