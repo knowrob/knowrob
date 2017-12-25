@@ -638,10 +638,6 @@ owl_satisfies_restriction_internal(Resource, Property, Restriction, DB) :-
 	rdf_has(Restriction, owl:someValuesFrom, Class), !,
 	owl_has(Resource, Property, Value, DB),
 	owl_individual_of(Value, Class, DB).
-owl_satisfies_restriction_internal(Resource, Property, Restriction, DB) :-
-	rdf_has(Restriction, owl:onClass, Class), !,
-	owl_has(Resource, Property, Value, DB),
-	owl_individual_of(Value, Class, DB).
 owl_satisfies_restriction_internal(Resource, _, _, _) :-
 	rdf_subject(Resource).
 
