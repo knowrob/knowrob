@@ -36,17 +36,20 @@
       rdfs_computable_instance_of/2, % query computable instances of a class
       rdfs_computable_property/2,    % is the specified property computable?
       rdfs_computable_triple/3,      % calculate the value of computable properties
+      rdfs_computable_prolog_triple/3,
+      rdfs_computable_prolog_triple/4,
+      rdfs_computable_has/3,
       rdfs_instance_of/2,            % combine rdfs_computable_instance_of (with subclass handling) and rdfs:rdfs_individual_of
       rdf_triple/3,                  % combine rdfs_computable_triple with rdf:rdf_has
       rdfs_assert_prop_conc/2,       % assert property concatenations in a row
-      rdfs_assert_prop_conc/3,
-      rdf_common_ancestor/2
+      rdfs_assert_prop_conc/3
     ]).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 % :- use_module(library('odbc')).
 :- use_module(library('lists')).
 :- use_module(library('knowrob_owl')).
+:- use_module(library('knowrob_rdfs')).
 
 :- rdf_register_ns(computable, 'http://knowrob.org/kb/computable.owl#').
 :- rdf_meta
@@ -57,13 +60,10 @@
   rdfs_instance_of(t,t),
   rdf_triple(t,t,t),
   rdfs_assert_prop_conc(t,-),
-  rdfs_assert(t,-,?),
-  rdf_common_ancestor(t,r).
+  rdf_class_compare(?, r, r).
 
 :- dynamic user:rdf_triple_hook/3.
 :- multifile user:rdf_triple_hook/3.
-
-
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -71,6 +71,7 @@
 % Query predicates
 %
 
+rdfs_computable_has(Frame, Property, Value) :- rdf_triple(Property, Frame, Value).
 
 %% rdf_triple(?Property, ?Frame, ?Value) is nondet.
 %
@@ -105,9 +106,6 @@ rdf_triple(Property, Frame, Value) :-
     (nonvar(Frame); nonvar(Value)),
     rdfs_instance_of(Frame, Value))
   , X), assert(user:(X)).
-
-:- rdf_meta
-   rdf_class_compare(?, r, r).
 
 %% rdfs_instance_of(?Resource, ?Class) is nondet.
 %
@@ -156,6 +154,9 @@ rdfs_computable_property(Property, ComputableProperty) :-
   findall(CP, rdf_has(CP,computable:'target',Property), ComputableProperties),
   member(ComputableProperty, ComputableProperties),
   once(rdfs_individual_of(ComputableProperty,computable:'PrologProperty')).
+rdfs_computable_property(ComputableProperty, ComputableProperty) :-
+  ground(ComputableProperty),
+  rdfs_individual_of(ComputableProperty, computable:'PrologProperty'), !.
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -215,9 +216,6 @@ rdfs_computable_instance_of(Instance, Class) :-
 % Unify the property triple for a computable property.
 % Full caching is enabled for everything but (+,-,-).
 %
-%
-% TODO: check where findall could make sense
-%
 rdfs_computable_triple(Property, _, _) :-
   var(Property),!,
   throw(error(instantiation_error, _)).
@@ -274,7 +272,7 @@ rdfs_computable_triple_1(Property, Frame, Value) :-
 rdfs_computable_prolog_triple(Property, Frame, Value) :-
   rdfs_computable_property(Property, ComputableProperty),
   ( rdfs_individual_of(ComputableProperty,computable:'PrologTemporalProperty') -> (
-    get_timepoint(Instant),
+    current_time(Instant),
     rdfs_computable_prolog_triple(Property, Frame, Value, [[Instant,Instant]], ComputableProperty) );
     rdfs_computable_prolog_triple(Property, Frame, Value, [], ComputableProperty)
   ).
@@ -308,8 +306,14 @@ rdfs_computable_prolog_triple(Property, Frame, Value, CmdArgs, ComputablePropert
 
 rdfs_computable_prolog_call(_, Command, Frame, Value, AdditionalArgs) :-
   append([Frame, Value], AdditionalArgs, Args),
-  Goal=..[Command, Args],
-  call(Goal).
+  ( Command=Module:Predicate
+  -> (
+    Goal=..[Predicate|Args],
+    call(Module:Goal)
+  ) ; (
+    Goal=..[Command|Args],
+    call(Goal)
+  )).
 
 % Helpers for caching...
 rdfs_computable_cachable(Property) :-
@@ -420,51 +424,4 @@ rdfs_computable_compute_property_concatenation(Parameter, Frame, ParameterValue)
 %
 % rdfs_computable_compute_parameter(Parameter, Frame, ParameterValue) :-
 %  rdf_triple(Parameter, Frame, ParameterValue).
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% Class hierarchy
-% TODO: should not be here
-
-%% rdf_common_ancestor(+Classes, ?Ancestor).
-%
-% Get one of the most specific common ancestors of rdf_classes.
-%
-rdf_common_ancestor([C], C).
-rdf_common_ancestor([C1, C2| Cs], C) :-
-  rdf_superclass_list([C1, C2| Cs], SCs),
-  intersection_of_sets(SCs, CSCs),
-  most_specific_class(CSCs, C0),
-  C = C0.
-%
-
-%%
-% Helper predicates for rdf_common_ancestor/2.
-%
-rdf_superclass_list([], []).
-rdf_superclass_list([C|CRest], [SCs| SCRest]) :-
-  findall(SC, rdfs_subclass_of(C, SC), SCs),
-  rdf_superclass_list(CRest, SCRest).
-
-intersection_of_sets([], []).
-intersection_of_sets([L], L).
-intersection_of_sets([L0, L1|LRest], Intersection) :-
-  intersection(L0, L1, L),
-  intersection_of_sets([L|LRest], Intersection).
-
-most_specific_class([C], C).
-most_specific_class([C1,C2|Cs], C) :-
-  rdfs_subclass_of(C2, C1)
-  -> most_specific_class([C2|Cs], C)
-  ; most_specific_class([C1|Cs], C). % Either not comparable or C2 is superclass of C1
-
-rdf_class_compare(Delta, Class0, Class1) :-
-  rdfs_subclass_of(Class0, Class1)
-  -> (rdfs_subclass_of(Class1, Class0)
-    -> Delta = '='
-    ; Delta = '<'
-    )
-  ; rdfs_subclass_of(Class1, Class0)
-  -> Delta = '>'
-  ; throw(error(not_comparable,_)).
 
