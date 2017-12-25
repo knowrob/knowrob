@@ -32,8 +32,10 @@
 :- module(knowrob_temporal,
     [
       rdf_triple_during/4,
+      rdfs_has_during/4,
       rdfs_instance_of_during/3,
       owl_individual_of_during/3,
+      owl_individual_of_during/2,
       owl_has_during/4,
       holds/1,
       holds/2,
@@ -68,13 +70,14 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('owl')).
 :- use_module(library('rdfs_computable')).
-:- use_module(library('owl_computable')).
 :- use_module(library('knowrob_owl')).
+:- use_module(library('knowrob_rdfs')).
 
 % define predicates as rdf_meta predicates
 % (i.e. rdf namespaces are automatically expanded)
 :- rdf_meta rdf_triple_during(r,r,t),
             rdfs_instance_of_during(r,r,t),
+            owl_individual_of_during(r,r),
             owl_individual_of_during(r,r,?),
             owl_has_during(r,r,t,?),
             holds(t),
@@ -110,6 +113,8 @@
 :- meta_predicate holds(0, ?, ?, ?, ?).
 :- multifile holds/4.
 
+:- rdf_db:rdf_register_ns(knowrob,'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
+
 		 /*******************************
 		 *	 high-level predicates		*
 		 *******************************/
@@ -127,7 +132,7 @@
 %
 holds(Term) :-
   current_time(T),
-  holds(Term,T).
+  holds(Term, [T,T]).
 
 holds(Term, I) :-
   var(Term),
@@ -153,7 +158,17 @@ holds(S, P, O) :-
   holds(S, P, O, [T,T]).
 
 holds(S, P, O, I) :-
-  owl_has_during(S, P, O, I).
+  ground([S,P,O,I]), !,
+  once(holds_(S, P, O, I)).
+
+holds(S, P, O, I) :-
+  holds_(S, P, O, I).
+
+holds_(S, P, O, T) :- atom(T), !, interval(T,I), owl_has_during(S, P, O, I).
+
+holds_(S, P, O, T) :- number(T), !, owl_has_during(S, P, O, [T,T]).
+
+holds_(S, P, O, I) :- owl_has_during(S, P, O, I).
 
 %% occurs(?Evt) is nondet.
 %% occurs(?Evt,?T) is nondet.
@@ -184,6 +199,15 @@ occurs(Evt, I, Type) :-
 		 *	 	  OWL expansion			*
 		 *******************************/
 
+rdfs_has_during(S, P, O, I) :- rdf_triple_during(P, S, O, I).
+
+owl_temporal_db(I, db(rdfs_has_during(I),
+                      rdfs_instance_of_during(I))).
+
+owl_individual_of_during(Resource, Description) :-
+  current_time(Now),
+  owl_individual_of_during(Resource, Description, [Now,Now]).
+
 owl_individual_of_during(Resource, Description, Interval) :-
   owl_temporal_db(Interval, DB),
   owl_individual_of(Resource, Description, DB).
@@ -196,27 +220,22 @@ owl_has_during(S, P, O, Interval) :-
 		 *	   Temporal semantics		*
 		 *******************************/
 
-owl_temporal_db(I, db(rdf_triple_during(I),rdfs_instance_of_during(I))).
-
 %% rdfs_instance_of_during
 rdfs_instance_of_during(Resource, Description, Interval) :-
   nonvar(Resource),
   (  rdfs_individual_of(Resource, Description), % TODO: support computable instances
-     since_ever(Interval)
+     once((nonvar(Interval) ; knowrob_instance_from_class(knowrob:'TimeInterval', [begin=0.0], Interval)))
   ) ; (
      rdf_has(Resource, knowrob:temporalParts, X),
      rdfs_individual_of(X, Description),
      rdf_has(X, knowrob:temporalExtend, TemporalExtend),
-     during_temporal_extend(Interval, TemporalExtend)
+     ( var(Interval) -> Interval=TemporalExtend ;
+                        interval_during(TemporalExtend, Interval) )
   ),
   \+ rdf_equal(Description, knowrob:'TemporalPart').
 
-since_ever(Interval) :- (nonvar(Interval) ; create_interval([0.0], Interval)), !.
-during_temporal_extend(I0, I1) :- var(I0), I0 = I1, !.
-during_temporal_extend(I0, I1) :- interval_during(I0, I1).
-
 %% rdf_triple_during
-rdf_triple_during(S, P, O, Interval) :-
+rdf_triple_during(P, S, O, Interval) :-
   var(Interval),
   ( temporal_part_has(S,P,O,_,TemporalExtend) *->
     time_term(TemporalExtend, Interval) ; (
@@ -225,7 +244,7 @@ rdf_triple_during(S, P, O, Interval) :-
     Interval=[0.0]
   )).
 
-rdf_triple_during(S, P, O, Interval) :-
+rdf_triple_during(P, S, O, Interval) :-
   nonvar(Interval),
   ( temporal_part_has(S,P,O,Interval,_) *->
     true ;
@@ -234,15 +253,23 @@ rdf_triple_during(S, P, O, Interval) :-
   ).
 
 rdf_triple_during(Property, Frame, Value, Interval) :-
+  ground(Property),
   rdfs_subproperty_of(SubProperty, Property),
-  % TODO: allow non temporal if interval is [Now,Now]
-  rdfs_individual_of(SubProperty, computable:'PrologTemporalProperty'), !,
+  rdfs_computable_property(SubProperty, ComputableProperty),
+  ( rdfs_individual_of(ComputableProperty, computable:'PrologTemporalProperty') -> 
+    % FIXME: possible redundancy because rdfs_computable_property called again in rdfs_computable_temporal_triple
+    rdfs_computable_temporal_triple(Property, Frame, Value, Interval) ;
+    rdfs_computable_triple(Property, Frame, Value)
+  ).
+
+rdfs_computable_temporal_triple(Property, Frame, Value, Interval) :-
+  interval(Interval, Interval_v),
   catch( % TODO: handle caching!
-    rdfs_computable_prolog_triple(SubProperty, Frame, Value, [Interval]),
+    rdfs_computable_prolog_triple(Property, Frame, Value, [Interval_v]),
     error(instantiation_error, _),
     fail
   ).
-
+  
 %% current_temporal_part(?Obj,?TemporalPart) is nondet.
 %
 % true for any OWL individual `Obj` that has a temporal part `TemporalPart`
@@ -358,7 +385,7 @@ assert_temporal_part_value(TemporalPart_S, P, Value, Graph) :-
 assert_temporal_part_extend(TemporalPart, I) :-
   assert_temporal_part_extend(TemporalPart, I, user).
 assert_temporal_part_extend(TemporalPart, I, Graph) :-
-  create_interval(I, Interval),
+  knowrob_instance_from_class(knowrob:'TimeInterval', I, Interval),
   findall(X, (
       rdf_has(TemporalPart,_,X),
       rdfs_individual_of(X, knowrob:'TemporalPart')
@@ -450,7 +477,7 @@ temporal_part_value(S, P, O) :-
 % True if this relation is specified via knowrob:TemporalPart
 % or can be deduced using OWL inference rules.
 % 
-temporal_part_has(S, P, O) :- temporal_part_has(S, P, O, _). % FIXME: redundant results!
+temporal_part_has(S, P, O) :- temporal_part_has(S, P, O, _).
 
 temporal_part_has(S, P, O, I) :-
   temporal_part_has(S, P, O, I, _).
@@ -460,14 +487,15 @@ temporal_part_has(S, P, O, I, Lifespan) :-
   rdf_has(S, knowrob:'temporalParts', TemporalPart),
   temporal_part_has(TemporalPart, P, O, I, Lifespan).
 
-temporal_part_has(S, P, O, [Begin,End], [Lifespan_begin, Lifespan_end]) :-
+temporal_part_has(S, P, O, Interval, Lifespan) :-
   atom(S),
   rdf_has(S, knowrob:'temporalProperty', P),
   
-  interval(S, [Lifespan_begin, Lifespan_end]),
-  once((nonvar(Begin) ; Begin is Lifespan_begin)),
-  once((nonvar(End) ; End is Lifespan_end)),
-  interval_during([Lifespan_begin, Lifespan_end], [Begin,End]),
+  rdf_has(S, knowrob:'temporalExtend', Ext),
+  interval(Ext, Lifespan),
+  ( ground(Interval) ->
+    interval_during(Interval, Lifespan) ;
+    Interval=Lifespan ),
   
   rdf_has(S, P, S_O),
   
@@ -621,11 +649,13 @@ interval_overlaps(I0, I1) :-
   interval(I1, I1_val),
   interval_start(I0_val, Begin0),
   interval_start(I1_val, Begin1),
-  Begin0 < Begin1, % begins before the start of
-  (interval_end(I0_val, End0) -> End0 > Begin1 ; true),
-  (interval_end(I1_val, End1) -> (
-    nonvar(End0), End0 < End1
-  ) ; true).
+  ignore(interval_end(I0_val, End0)),
+  ignore(interval_end(I1_val, End1)),
+  ((var(End0), var(End1));
+   (var(End0) -> Begin0 < End1;
+   (var(End1) -> Begin1 < End0;
+   (Begin0=<End1, End0>=Begin1)
+   ))).
 
 %  ( interval(I0, [Begin0,End0]);
 %    interval(I0, [Begin0]) ),
