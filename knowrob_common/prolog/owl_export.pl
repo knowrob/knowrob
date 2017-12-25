@@ -344,7 +344,7 @@ read_action_info(Action, ActionInfosSorted) :-
   append([Action], SubActions, Actions),
 
   % read all properties for each of them
-  findall(Value, (member(Act, Actions), class_properties(Act, _, Value)), ActionProperties),
+  findall(Value, (member(Act, Actions), owl_class_properties(Act, _, Value)), ActionProperties),
 
   % read everything related to these things by an ObjectProperty
   findall(PropVal, (member(ActProp, ActionProperties),
@@ -372,7 +372,7 @@ read_objclass_info(ObjClass, ObjClassInfosSorted) :-
   findall(M, (rdf_has(M, 'http://www.roboearth.org/kb/roboearth.owl#providesModelFor', ObjClass)), Models),
 
   % read all parts of the object class to be exported
-  findall(ObjPart, (class_properties_transitive_nosup(ObjClass, knowrob:parts, ObjPart), not(is_bnode(ObjPart))), ObjParts),
+  findall(ObjPart, (owl_class_properties_transitive_nosup(ObjClass, knowrob:parts, ObjPart), not(is_bnode(ObjPart))), ObjParts),
 
 %   append([[ObjClass], ObjParts, ObjSuperClasses], ObjClassDefs),
   append([[ObjClass], ObjParts], ObjClassDefs),
@@ -380,7 +380,7 @@ read_objclass_info(ObjClass, ObjClassInfosSorted) :-
 
   % read all properties for each of them
   findall(ObjPr, (member(ObjCl,ObjClassDefsSorted),
-                  class_properties_nosup(ObjCl, P, ObjPr),
+                  owl_class_properties_nosup(ObjCl, P, ObjPr),
                   not(rdfs_subproperty_of(P, owl:subClassOf))), ObjProperties),
 
   % read everything related to these things by an ObjectProperty
