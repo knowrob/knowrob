@@ -12,10 +12,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-//import com.mongodb.BasicDBObject;
-
 import org.apache.commons.codec.binary.Base64;
-//import org.knowrob.interfaces.mongo.MongoMessages;
 
 /**
  * Constants and Macros related to encoding of ROS Image messages.
@@ -214,28 +211,6 @@ public class ImageEncoding {
 			return null;
 		}
 	}
-	
-	// TODO: move to knowrob_mongo
-	//public static String encodeBase64(BasicDBObject mngObj) {
-	//	try {
-	//		return encodeBase64(MongoMessages.get().create(mngObj, sensor_msgs.Image.class, "sensor_msgs/Image"));
-	//	}
-	//	catch(Exception e) {
-	//		e.printStackTrace();
-	//		return null;
-	//	}
-	//}
-	
-	// TODO: move to knowrob_mongo
-	//public static String encodeBase64_compressed(BasicDBObject mngObj) {
-	//	try {
-	//		return encodeBase64(MongoMessages.get().create(mngObj, sensor_msgs.CompressedImage.class, "sensor_msgs/CompressedImage"));
-	//	}
-	//	catch(Exception e) {
-	//		e.printStackTrace();
-	//		return null;
-	//	}
-	//}
 	
     public static BufferedImage messageToBufferedImage(sensor_msgs.Image imgMsg) {
     	// TODO(daniel): support other message formats
