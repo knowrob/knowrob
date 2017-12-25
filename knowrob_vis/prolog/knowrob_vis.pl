@@ -87,12 +87,12 @@ show(VisualThing) :-
   )), !.
 
 show(VisualThing) :-
-  get_timepoint(Instant),
+  current_time(Instant),
   show(VisualThing,Instant,[]), !.
 
 show(VisualThing, Properties) :-
   is_list(Properties),
-  get_timepoint(Instant),
+  current_time(Instant),
   show(VisualThing,Instant,Properties), !.
 
 show(VisualThing, Instant) :-

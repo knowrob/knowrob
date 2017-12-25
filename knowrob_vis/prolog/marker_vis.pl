@@ -294,8 +294,8 @@ marker_initialize_object(Identifier,MarkerObject) :-
     % TODO: use existing instance if available
     mng_designator_timestamp(Identifier, T),
     mng_designator_location(Identifier, LocList),
-    create_timepoint(T, Timepoint),
-    create_pose(mat(LocList), Loc),
+    knowrob_instance_from_class(knowrob:'TimePoint', [instant=T], Timepoint),
+    knowrob_instance_from_class(knowrob:'Pose', [mat=LocList], Loc),
     add_object_as_semantic_instance(Identifier, Loc, Timepoint, Instance),
     marker_initialize_object(Instance,MarkerObject)
   )),
@@ -690,7 +690,7 @@ marker_term(X, X).
 % Updates all markers for the current local time.
 %
 marker_update :-
-  get_timepoint(T),
+  current_time(T),
   marker_update(T).
 
 %% marker_update(+T) is det.
@@ -714,7 +714,7 @@ marker_update(T) :-
 % @param MarkerTerm A term that identifies the marker (e.g., trajectory('/base_link'))
 %
 marker_update(MarkerTerm) :-
-  get_timepoint(T),
+  current_time(T),
   marker_update(MarkerTerm,T).
 
 %% marker_update(+MarkerTerm, +T) is det.
