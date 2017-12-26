@@ -912,23 +912,20 @@ in_all_domains([H|T], Resource) :-
 owl_individual_of(Resource, Description) :-
 	owl_rdf_db(DB),
 	owl_individual_of(Resource, Description, DB).
-owl_individual_of(Resource, 'http://www.w3.org/2002/07/owl#Thing', _) :-
-	once(( atom(Resource) ; rdf_subject(Resource) )).
-owl_individual_of(_Resource, 'http://www.w3.org/2002/07/owl#Nothing', _) :-
-	fail. %!, MT 16032011
-owl_individual_of(Resource, Description, DB) :-			% RDFS
-	owl_db_individual_of(DB, Resource, Description).
-%owl_individual_of(Resource, Class, DB) :-
-	%nonvar(Resource),
-	%setof(C, owl_db_has(DB, Resource, rdf:type, C), Cs), %!, MT 16032011
-	%member(C, Cs),
-	%owl_subclass_of(C, Class).
-%owl_individual_of(Resource, Class, DB) :-
-	%var(Resource),
-	%owl_db_has(DB, Resource, rdf:type, Class).
-owl_individual_of(Resource, Class, DB) :-
-	owl_db_has(DB, Resource, rdf:type, Class).
-owl_individual_of(Resource, Class, DB) :-
+owl_individual_of(Resource, Description, DB) :-
+	ground([Resource,Description]) ->
+		once(owl_individual_of_internal(Resource, Description, DB));
+		owl_individual_of_internal(Resource, Description, DB).
+
+owl_individual_of_internal(Resource, Thing, _) :-
+	ground(Thing),
+	rdf_equal(owl:'Thing', Thing), !,
+	rdf_subject(Resource).
+owl_individual_of_internal(_Resource, Nothing, _) :-
+	ground(Nothing),
+	rdf_equal(owl:'Nothing', Nothing),
+	fail, !. % MT 16032011
+owl_individual_of_internal(Resource, Class, DB) :-
 	nonvar(Class), % MT 03122014 -- does not allow generic classification of instances any more, but avoids search through all equivalents of all classes whenever Class is unbound
 	rdfs_individual_of(Class, owl:'Class'),
 	(   rdf_has(Class, owl:equivalentClass, EQ)
@@ -939,7 +936,9 @@ owl_individual_of(Resource, Class, DB) :-
 	    findall(SC, rdf_has(Class, rdfs:subClassOf, SC), SuperClasses),
 	    owl_individual_of_all(SuperClasses, Resource, DB)
 	).
-owl_individual_of(Resource, Description, _) :-			% RDFS
+owl_individual_of_internal(Resource, Description, DB) :-
+	owl_db_individual_of(DB, Resource, Description).
+owl_individual_of_internal(Resource, Description, _) :-
 	owl_individual_from_range(Resource, Description).
 
 
