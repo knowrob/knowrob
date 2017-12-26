@@ -114,23 +114,18 @@ rdf_triple(Property, Frame, Value) :-
 % combine rdfs_computable_instance_of (with subclass handling) and rdfs:rdfs_individual_of
 %
 rdfs_instance_of(Resource, Class) :-
+  nonvar(Resource),
+  ( nonvar(Class) -> once((
+    % check if Resource belongs to Class
+    rdfs_individual_of(Resource, Class) ;
+    rdfs_computable_instance_of_subclass(Resource, Class))) ;
+    % compute the class of the given instance
+    rdfs_individual_of(Resource, MyClass) ).
 
-  nonvar(Resource)
-
-  -> ( nonvar(Class)
-
-       % check if Resource belongs to Class
-       -> ((rdfs_individual_of(Resource, Class) ;
-            rdfs_computable_instance_of_subclass(Resource, Class)),!)
-
-       % compute the class of the given instance
-       ;  (findall(MyClass, (rdfs_individual_of(Resource, MyClass)), Classes),
-           member(Class, Classes)) )
-
-  ; (nonvar(Class)    % compute all instances of this class
-    -> ( findall(MyResource, (rdfs_individual_of(MyResource, Class);
-                              rdfs_computable_instance_of_subclass(MyResource, Class)), Resources),
-         member(Resource, Resources))).
+rdfs_instance_of(Resource, Class) :-
+  var(Resource), nonvar(Class), (
+  rdfs_individual_of(Resource, Class);
+  rdfs_computable_instance_of_subclass(Resource, Class)).
 
 rdfs_instance_of(Resource, Class) :-
   rdf_equal(rdf:type, Property),
@@ -192,27 +187,21 @@ rdfs_computable_instance_of_subclass(_,_) :-  % both are Variables
 % At least one of Instance and Class needs to be nonvar.
 %
 rdfs_computable_instance_of(Instance, Class) :-
-  var(Class),
-  var(Instance),!,
+  var(Class), var(Instance),!,
   throw(error(instantiation_error, _)).
-
-% compute instances
 rdfs_computable_instance_of(Instance, Class) :-
-  nonvar(Class),
-  var(Instance),
-  findall(I, rdfs_computable_prolog_instance_of(I, Class), Is), member(Instance, Is).
-
-% determine classes
+  nonvar(Class), var(Instance), !, % compute instances
+  findall(I, rdfs_computable_prolog_instance_of(I, Class), Is),
+  member(Instance, Is).
 rdfs_computable_instance_of(Instance, Class) :-
-  var(Class),
-  nonvar(Instance),
-  findall(C, rdfs_computable_prolog_instance_of(Instance, C), Cs), member(Class, Cs).
-
-% check type
+  var(Class), nonvar(Instance), !, % determine classes
+  findall(C, rdfs_computable_prolog_instance_of(Instance, C), Cs),
+  member(Class, Cs).
 rdfs_computable_instance_of(Instance, Class) :-
-  nonvar(Class),
-  nonvar(Instance),
-  findall(C, rdfs_computable_prolog_instance_of(Instance, C), Cs), member(Cls, Cs), rdfs_subclass_of(Cls, Class).
+  nonvar(Class), nonvar(Instance), !, % check type
+  findall(C, rdfs_computable_prolog_instance_of(Instance, C), Cs),
+  member(Cls, Cs),
+  rdfs_subclass_of(Cls, Class).
 
 %% rdfs_computable_triple(+Property, ?Frame, ?Value)
 %
@@ -228,7 +217,7 @@ rdfs_computable_triple(Property, Frame, Value) :-
   rdfs_computable_triple_1(Property, Frame, Value).
 
 rdfs_computable_triple(Property, Frame, Value) :-
-  nonvar(Frame), nonvar(Value), % both frame and value bound:
+  nonvar(Frame), nonvar(Value), % both frame and value bound
   ( rdf(Property, Frame, Value, cache) -> true ; ( % cache miss
     rdfs_computable_triple_1(Property, Frame, Value),
     rdfs_computable_cache_values(Property, Frame, Value)
@@ -329,8 +318,8 @@ rdfs_computable_prolog_instance_of(Instance, Class) :-
     (Command=Module:Pred) ;
     (Command=Cmd)),
   (
-    (nonvar(Instance))
-    ->  call(Command, Instance, Class);
+    nonvar(Instance) ->
+    call(Command, Instance, Class);
   (
     call(Command, MyInstance, Class),
     % check if MyInstance is already a global RDF URI
