@@ -156,7 +156,7 @@ action_effect_apply(Act,Effect) :-
          action_effect_stop_process(Stopped)),
   % remember that this effect was projected before to avoid
   % that it is projected again.
-  rdf_assert(Act, action_effects:actionEffectProjected, Effect, action_projection).
+  rdf_assert(Act, action_effects:actionEffectProjected, Effect, action_projection), !.
 
 action_effect_start_process(Proc) :-
   rdf_has(Proc, knowrob:startTime, _), !.
