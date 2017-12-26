@@ -918,13 +918,15 @@ owl_individual_of(_Resource, 'http://www.w3.org/2002/07/owl#Nothing', _) :-
 	fail. %!, MT 16032011
 owl_individual_of(Resource, Description, DB) :-			% RDFS
 	owl_db_individual_of(DB, Resource, Description).
+%owl_individual_of(Resource, Class, DB) :-
+	%nonvar(Resource),
+	%setof(C, owl_db_has(DB, Resource, rdf:type, C), Cs), %!, MT 16032011
+	%member(C, Cs),
+	%owl_subclass_of(C, Class).
+%owl_individual_of(Resource, Class, DB) :-
+	%var(Resource),
+	%owl_db_has(DB, Resource, rdf:type, Class).
 owl_individual_of(Resource, Class, DB) :-
-	nonvar(Resource),
-	setof(C, owl_db_has(DB, Resource, rdf:type, C), Cs), %!, MT 16032011
-	member(C, Cs),
-	owl_subclass_of(C, Class).
-owl_individual_of(Resource, Class, DB) :-
-	var(Resource),
 	owl_db_has(DB, Resource, rdf:type, Class).
 owl_individual_of(Resource, Class, DB) :-
 	nonvar(Class), % MT 03122014 -- does not allow generic classification of instances any more, but avoids search through all equivalents of all classes whenever Class is unbound

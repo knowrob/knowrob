@@ -636,16 +636,11 @@ swrl_satisfied([HeadAtom|Xs] :- Body, Vars_user, Vars) :-
 %
 swrl_project(Rule) :- swrl_project(Rule, []).
 swrl_project([HeadAtom|Xs] :- Body, Vars_user) :-
-writeln(swrl_project1),
   bagof( Binding,
     swrl_satisfied([HeadAtom|Xs] :- Body, Vars_user, Binding),
     Bindings ),
-write(swrl_project2),
-length(Bindings, L), write(' bindings:'), writeln(L),
   member(Vars, Bindings),
-writeln(swrl_project21),
-  swrl_project_([HeadAtom|Xs], Vars),
-writeln(swrl_project22).
+  swrl_project_([HeadAtom|Xs], Vars).
 
 swrl_project_([], _).
 swrl_project_([Atom|Xs], Vars) :-

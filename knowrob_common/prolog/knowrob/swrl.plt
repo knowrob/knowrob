@@ -195,10 +195,7 @@ test(swrl_projection_hasBrother, [nondet]) :-
 
 test(swrl_projection_exactly, [nondet]) :-
   \+ rdf_has(test_swrl:'Lea', rdf:type, test_swrl:'Singleton'),
-  writeln(swrl_projection_exactly1),
-  gtrace,
   rdf_swrl_project('exactly'),
-  writeln(swrl_projection_exactly2),
   rdf_has(test_swrl:'Lea', rdf:type, test_swrl:'Singleton').
 
 test(swrl_projection_NonHuman1, [nondet]) :-
