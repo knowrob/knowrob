@@ -131,6 +131,9 @@ rdfs_instance_of(Resource, Class) :-
                               rdfs_computable_instance_of_subclass(MyResource, Class)), Resources),
          member(Resource, Resources))).
 
+rdfs_instance_of(Resource, Class) :-
+  rdf_equal(rdf:type, Property),
+  rdfs_computable_prolog_triple(Resource, Property, Class).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
