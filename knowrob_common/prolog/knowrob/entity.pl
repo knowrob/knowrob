@@ -297,7 +297,6 @@ entity_type(Entity, TypeBase, Type) :-
 entity_assert(Entity, [a,timepoint|Descr]) :- entity(Entity, [a,timepoint|Descr]), !. 
 entity_assert(Entity, [an,interval|Descr]) :- entity(Entity, [an,interval|Descr]), !.
 entity_assert(Entity, [a,location|Descr]) :-  entity(Entity, [a,location|Descr]), !.
-% FIXME: above does not allow to call entity_assert for nested entites
 
 entity_assert(Entity, [a, pose, Pos, Rot]) :-
   knowrob_instance_from_class(knowrob:'Pose', [pose=(Pos,Rot)], Entity), !.
@@ -490,12 +489,11 @@ interval_intersect([Begin0,End], [Begin1], [Begin,End]) :-
   Begin is max(Begin0, Begin1).
 
 
-%% Fluid properties that match temporal relation.
+%% Fluent properties that match temporal relation.
 entity_temporally_holds(_, []).
 entity_temporally_holds(FluentInterval, [TemporalRelation,IntervalDescr|Tail]) :-
   (  interval_operator(TemporalRelation,Operator)
   -> (
-    % TODO: also support entitiy descriptions!!
     interval(IntervalDescr, IntervalDescr_val),
     call(Operator, FluentInterval, IntervalDescr_val)
   ) ; true ),
@@ -545,7 +543,7 @@ entity_properties([[PropIri,IntervalIri]|Tail],
   once((nonvar(IntervalIri);nonvar(Interval))),
   interval(IntervalIri,Interval),
   entity_iri(PropIri, Key, lower_camelcase),
-  entity_properties(Tail, DescrTail), !. % FIXME: does this disable to have events as value keys?
+  entity_properties(Tail, DescrTail), !.
 
 entity_properties([[PropIri,PropValue]|Tail], [[Key,Value]|DescrTail]) :-
   entity_iri(PropIri, Key, lower_camelcase),
@@ -594,14 +592,6 @@ entity_generate(Entity, [A,TypeBase], TypeBaseIri, [A,TypeBase|[[type,TypeName]|
 %% Match [a|an, ?entity_type]
 entity_head(Entity, _, Descr, TypeIri) :-
   var(Entity),
-  
-  % TODO: match all entities that ever were classified with Type?
-  % TODO: handle during?
-  %current_time(Instant),
-  %once((
-  %  rdfs_individual_of(Entity, TypeIri);
-  %  temporal_part_has(Entity, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', TypeIri, Instant);
-  %  Entity = TypeIri )),
   
   findall(TypeIri, (
     entity_has(Descr, type, TypeDescr),
@@ -668,7 +658,7 @@ entity_iri(Iri, Descr, Formatter) :-
 entity_iri(Iri, Description, Formatter) :-
   var(Iri),
   entity_ns(Description, NS, NameUnderscore),
-  % FIXME: call falls if NameUnderscore is in fact Camelcase
+  % FIXME: call fails if NameUnderscore is in fact Camelcase
   call(Formatter, NameUnderscore, Name),
   atom_concat(NS, Name, Iri).
 
@@ -681,7 +671,7 @@ entity_iri(Entity, Type) :-
 entity_iri(Entity, Type) :-
   rdfs_individual_of(Entity,Type).
 
-% FIXME: owl_subclass_of should handle this
+% TODO: owl_subclass_of should handle this
 entity_has_restriction(X, restriction(P,Facet2)) :-
   rdfs_individual_of(X, Type),
   rdf_global_term(P,P_glob),
