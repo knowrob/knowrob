@@ -33,7 +33,7 @@
 :- module(knowrob_owl,
     [
       owl_instance_of/2,
-      owl_triple/3,             % ?Subject, ?Predicate, ?Object
+      owl_triple/3,
       owl_class_properties/3,
       owl_class_properties_some/3,
       owl_class_properties_all/3,
