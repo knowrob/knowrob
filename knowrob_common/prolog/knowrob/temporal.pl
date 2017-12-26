@@ -224,9 +224,10 @@ owl_has_during(S, P, O, Interval) :-
 		 *	   Temporal semantics		*
 		 *******************************/
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% rdfs_instance_of_during
 rdfs_instance_of_during(Resource, Description, Interval) :-
-  var(Resource), !,
+  var(Resource),
   rdfs_individual_of(X, Description),
   ( rdfs_individual_of(X, knowrob:'TemporalPart') -> (
     temporal_part_during(X, Interval),
@@ -237,13 +238,23 @@ rdfs_instance_of_during(Resource, Description, Interval) :-
   )).
 
 rdfs_instance_of_during(Resource, Description, Interval) :-
+  nonvar(Resource),
   rdfs_individual_of(Resource, Description),
   rdfs_instance_of_during1(Resource, Description, Interval).
 
 rdfs_instance_of_during(Resource, Description, Interval) :-
+  nonvar(Resource),
   rdf_has(Resource, knowrob:temporalParts, X),
   rdfs_individual_of(X, Description),
   temporal_part_during(X, Interval).
+
+% computable rdf:type
+rdfs_instance_of_during(Resource, Description, Interval) :-
+  rdf_equal(rdf:type, Property),
+  ( nonvar(Description) ->
+    rdfs_subclass_of(Type, Description) ;
+    Type = Description ),
+  computable_triple(Property, Resource, Type, Interval).
 
 rdfs_instance_of_during1(Resource, Description, Interval) :-
   \+ ( % TODO: this is a bit ugly
@@ -258,10 +269,11 @@ rdfs_instance_of_during1(Resource, Description, Interval) :-
 temporal_part_during(TemporalPart, Interval) :-
   rdf_has(TemporalPart, knowrob:temporalExtend, TemporalExtend),
   ( nonvar(Interval) ->
-    interval_during(TemporalExtend, Interval) ;
+    interval_during(Interval, TemporalExtend) ;
     Interval=TemporalExtend
   ).
-      
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% rdf_triple_during
 rdf_triple_during(P, S, O, Interval) :-
   var(Interval),
@@ -283,10 +295,13 @@ rdf_triple_during(P, S, O, Interval) :-
 rdf_triple_during(Property, Frame, Value, Interval) :-
   ground(Property),
   rdfs_subproperty_of(SubProperty, Property),
-  rdfs_computable_property(SubProperty, ComputableProperty),
+  computable_triple(SubProperty, Frame, Value, Interval).
+
+computable_triple(Property, Resource, Type, Interval) :-
+  rdfs_computable_property(Property, ComputableProperty),
   ( rdfs_individual_of(ComputableProperty, computable:'PrologTemporalProperty') -> 
-    rdfs_computable_temporal_triple(Property, Frame, Value, Interval, ComputableProperty) ;
-    rdfs_computable_temporal_triple(Property, Frame, Value, ComputableProperty)
+    rdfs_computable_temporal_triple(Property, Resource, Type, Interval, ComputableProperty) ;
+    rdfs_computable_temporal_triple(Property, Resource, Type, ComputableProperty)
   ).
 
 rdfs_computable_temporal_triple(Property, Frame, Value, Interval, ComputableProperty) :-
