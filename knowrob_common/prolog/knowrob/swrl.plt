@@ -146,7 +146,9 @@ test(swrl_exactly, [nondet]) :-
   owl_individual_of_during(test_swrl:'Lea', test_swrl:'Singleton'),
   \+ owl_individual_of_during(test_swrl:'Fred', test_swrl:'Singleton').
 
+% % % % % % % % % % % % % % % % % % % % % % % %
 test(test_rdf_swrl_unload, [nondet]) :- rdf_swrl_unload.
+
 % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % Projection of SWRL rule implications into the RDF triple store
 % % % % % % % % % % % % % % % % % % % % % % % %
@@ -186,20 +188,23 @@ test(swrl_projection_greaterThen, [nondet]) :-
   rdf_swrl_project('greaterThen'),
   rdf_has(test_swrl:'Ernest', rdf:type, test_swrl:'Adult').
 
-%test(swrl_projection_hasBrother, [nondet]) :-
-  %\+ rdf_has(test_swrl:'Fred', test_swrl:'hasBrother', _),
-  %rdf_swrl_project('brother'),
-  %rdf_has(test_swrl:'Fred', test_swrl:'hasBrother', test_swrl:'Ernest').
+test(swrl_projection_hasBrother, [nondet]) :-
+  \+ rdf_has(test_swrl:'Fred', test_swrl:'hasBrother', _),
+  rdf_swrl_project('brother'),
+  rdf_has(test_swrl:'Fred', test_swrl:'hasBrother', test_swrl:'Ernest').
 
-%test(swrl_projection_exactly, [nondet]) :-
-  %\+ rdf_has(test_swrl:'Lea', rdf:type, test_swrl:'Singleton'),
-  %rdf_swrl_project('exactly'),
-  %rdf_has(test_swrl:'Lea', rdf:type, test_swrl:'Singleton').
+test(swrl_projection_exactly, [nondet]) :-
+  \+ rdf_has(test_swrl:'Lea', rdf:type, test_swrl:'Singleton'),
+  writeln(swrl_projection_exactly1),
+  gtrace,
+  rdf_swrl_project('exactly'),
+  writeln(swrl_projection_exactly2),
+  rdf_has(test_swrl:'Lea', rdf:type, test_swrl:'Singleton').
 
-%test(swrl_projection_NonHuman1, [nondet]) :-
-  %\+ rdf_has(test_swrl:'RedCar', rdf:type, test_swrl:'NonHuman'),
-  %rdf_swrl_project('NonHuman'),
-  %rdf_has(test_swrl:'RedCar', rdf:type, test_swrl:'NonHuman').
+test(swrl_projection_NonHuman1, [nondet]) :-
+  \+ rdf_has(test_swrl:'RedCar', rdf:type, test_swrl:'NonHuman'),
+  rdf_swrl_project('NonHuman'),
+  rdf_has(test_swrl:'RedCar', rdf:type, test_swrl:'NonHuman').
 
 
 % % % % % % % % % % % % % % % % % % % % % % % %
