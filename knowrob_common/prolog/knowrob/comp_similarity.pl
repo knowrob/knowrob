@@ -42,25 +42,13 @@
 
 :- use_module(library('semweb/rdf_db')).
 
-% TODO DB: not all these predicates need term expansion!
 :-  rdf_meta
       rdf_wup_similarity(r,r,-),
       rdf_wup_similarity_given_LCS(r,r,r,-),
-      rdf_shortest_dist_up(r,r,-),
-      rdf_shortest_dist_up_superclasses(t,r,t,-),
-      rdf_most_specific_classes(t,-),
-      rdf_most_specific_classes(t,t,-),
-      rdf_superclass_of_any_class_in_list(r,t),
-      rdf_least_common_ancestors(t,-),
-      rdf_superclass_list(t,t),
-      rdf_common_ancestor(t, -),
       rdf_path_distance(r,r,-),
-      rdf_ich_distance(r,r,-),
       rdf_shortest_path(r,r,-),
       rdf_paths(r,r,t),
       rdf_most_similar(r,r,+,-).
-
-
 
 %% rdf_wup_similarity(+A:rdf_class, +B:rdf_class, -Sim:float).
 %
@@ -170,18 +158,6 @@ rdf_superclass_of_any_class_in_list(C, [C1|Cs]) :-
     -> true
     ; rdf_superclass_of_any_class_in_list(C, Cs).
 
-%% least_common_ancestors(+Classes, ?CommonAncestors).
-%
-% Get the set of the most specific common ancestors of rdf_classes.
-% example: least_common_ancestors([knowrob:'Oven', knowrob:'Refrigerator'], As).
-% 
-rdf_least_common_ancestors(Classes, CommonAncestors) :-
-  rdf_superclass_list(Classes, SuperClassesLists),
-  intersection_of_sets(SuperClassesLists, SuperClassesIntersection),
-  rdf_most_specific_classes(SuperClassesIntersection, CommonAncestors).
-
-
-
 %
 % Helper predicates for rdf_common_ancestor/2.
 %
@@ -212,13 +188,6 @@ rdf_common_ancestor([C1, C2| Cs], C) :-
   intersection_of_sets(SCs, CSCs),
   most_specific_class(CSCs, C0),
   C = C0.
-
-
-
-
-
-
-
 
 %% rdf_path_distance(+A, +B, -Dist).
 %

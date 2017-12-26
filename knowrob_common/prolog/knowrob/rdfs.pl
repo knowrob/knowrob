@@ -37,14 +37,19 @@
       rdf_instance_from_class/3,
       rdf_unique_id/2,
       rdf_phas/3,
+      rdf_has_prolog/3,
+      rdf_value_prolog/3,
       rdfs_type_of/2,
       rdf_common_ancestor/2
     ]).
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
+:- use_module(library('knowrob/knowrob_math')).
 
 :- rdf_meta rdf_phas(r,r,o),
+            rdf_has_prolog(r,r,t),
+            rdf_value_prolog(r,t,?),
             rdf_instance_from_class(r,r),
             rdf_instance_from_class(r,r,r),
             rdfs_type_of(r,r),
@@ -114,6 +119,28 @@ rdf_unique_id(Class, UniqID) :-
 rdf_phas(Property, P, O) :-
 	rdfs_subproperty_of(Property, Super),
 	rdf_has(Super, P, O).
+
+%% rdf_has_prolog
+rdf_has_prolog(S,P,O) :-
+  rdf_has(S,P,O_rdf),
+  rdf_value_prolog(P,O_rdf,O).
+
+%% rdf_value_prolog
+rdf_value_prolog('http://knowrob.org/kb/knowrob.owl#boundingBoxSize', literal(type(_,Val)), Vec) :- % TODO: make subproperty of knowrob:vector
+  knowrob_math:parse_vector(Val, Vec), !.
+rdf_value_prolog('http://knowrob.org/kb/knowrob.owl#mainColorOfObject', literal(type(_,Val)), Vec) :- % TODO: make subproperty of knowrob:vector
+  knowrob_math:parse_vector(Val, Vec), !.
+rdf_value_prolog(P, literal(type(_,Val)), Vec) :-
+  rdfs_subproperty_of(P, knowrob:vector),
+  knowrob_math:parse_vector(Val, Vec), !.
+rdf_value_prolog(_, literal(type('http://www.w3.org/2001/XMLSchema#float',Atom)), Number) :-
+  atom_number(Atom, Number), !.
+rdf_value_prolog(_, literal(type('http://www.w3.org/2001/XMLSchema#double',Atom)), Number) :-
+  atom_number(Atom, Number), !.
+rdf_value_prolog(_, literal(type('http://www.w3.org/2001/XMLSchema#integer',Atom)), Number) :-
+  atom_number(Atom, Number), !.
+rdf_value_prolog(_, literal(type(_,Atom)), Atom) :- !.
+rdf_value_prolog(_, V, V).
 
 		 /*******************************
 		 *		  Class hierarchy		*

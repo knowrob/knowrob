@@ -59,7 +59,8 @@
 :- use_module(library('semweb/owl_parser')).
 :- use_module(library('knowrob/computable')).
 :- use_module(library('knowrob/owl')).
-:- use_module(library('knowrob/knowrob_math')).
+:- use_module(library('knowrob/rdfs')).
+:- use_module(library('knowrob/transforms')).
 :- use_module(library('knowrob/temporal')).
 
 :- owl_parser:owl_parse('package://knowrob_objects/owl/knowrob_objects.owl').
@@ -172,8 +173,8 @@ object_distance(A,B,D):-
 % @param Col  Main color of the object
 % 
 object_color(Obj, Col) :-
-  holds(Obj, knowrob:mainColorOfObject, literal(type(xsd:string, ColAtom))),
-  parse_vector(ColAtom, Col), !.
+  holds(Obj, knowrob:mainColorOfObject, Color_rdf),
+  rdf_value_prolog(knowrob:mainColorOfObject, Color_rdf, Col),!.
 object_color(_Obj, [0.5, 0.5, 0.5, 1.0]).
 
 %% object_assert_color(+Obj:iri, +Col:list) is det
@@ -222,8 +223,8 @@ object_dimensions(Obj, Depth, Width, Height) :-
   Depth is Height.
 
 object_boundingBox(Obj, Depth, Width, Height) :-
-  holds(Obj, knowrob:boundingBoxSize, literal(type(xsd:string, ScaleVector))),
-  parse_vector(ScaleVector, [Depth, Width, Height]),!.
+  holds(Obj, knowrob:boundingBoxSize, Size_rdf),
+  rdf_value_prolog(knowrob:boundingBoxSize, Size_rdf, [Depth, Width, Height]),!.
 
 %% comp_depthOfObject(+Obj:iri, ?Depth:term) is semidet
 %% comp_widthOfObject(+Obj:iri, ?Depth:term) is semidet
@@ -385,11 +386,11 @@ object_query(Obj, QueryGroup, QueryTitle, Query) :-
 
 % quaternion and position
 pose_term(Pose, pose([X,Y,Z], [QX,QY,QZ,QW])) :-
-  position_to_list(Pose, [X,Y,Z]),
-  quaternion_to_list(Pose, [QX,QY,QZ,QW]), !.
+  rdf_has_prolog(Pose, knowrob:translation, [X,Y,Z]),
+  rdf_has_prolog(Pose, knowrob:quaternion, [QX,QY,QZ,QW]), !.
 pose_term(Pose, mat(Mat)) :-
-  position_to_list(Pose, [X,Y,Z]),
-  quaternion_to_list(Pose, [QX,QY,QZ,QW]),
+  rdf_has_prolog(Pose, knowrob:translation, [X,Y,Z]),
+  rdf_has_prolog(Pose, knowrob:quaternion, [QX,QY,QZ,QW]),
   matrix([X,Y,Z], [QX,QY,QZ,QW], Mat), !.
 
 % list of transfoamtion matrix elements
@@ -408,3 +409,24 @@ pose_term(Pose, pose([X,Y,Z], [QX,QY,QZ,QW])) :-
 pose_term(Pose, mat(Matrix)) :-
   rdfs_individual_of(Pose, knowrob:'Matrix'),
   rotmat_to_list(Pose, Matrix), !.
+
+rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]) :-
+  rdf_has_prolog(Pose, knowrob:m00, M00),
+  rdf_has_prolog(Pose, knowrob:m01, M01),
+  rdf_has_prolog(Pose, knowrob:m02, M02),
+  rdf_has_prolog(Pose, knowrob:m03, M03),
+  
+  rdf_has_prolog(Pose, knowrob:m10, M10),
+  rdf_has_prolog(Pose, knowrob:m11, M11),
+  rdf_has_prolog(Pose, knowrob:m12, M12),
+  rdf_has_prolog(Pose, knowrob:m13, M13),
+  
+  rdf_has_prolog(Pose, knowrob:m20, M20),
+  rdf_has_prolog(Pose, knowrob:m21, M21),
+  rdf_has_prolog(Pose, knowrob:m22, M22),
+  rdf_has_prolog(Pose, knowrob:m23, M23),
+  
+  rdf_has_prolog(Pose, knowrob:m30, M30),
+  rdf_has_prolog(Pose, knowrob:m31, M31),
+  rdf_has_prolog(Pose, knowrob:m32, M32),
+  rdf_has_prolog(Pose, knowrob:m33, M33),!.

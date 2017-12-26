@@ -73,6 +73,7 @@
 :- use_module(library('jpl')).
 :- use_module(library('lists')). % for sum_list
 :- use_module(library('knowrob/computable')).
+:- use_module(library('knowrob/transforms')).
 :- use_module(library('knowrob/knowrob_math')).
 
 :- rdf_meta marker(t,?),
@@ -319,8 +320,7 @@ marker_initialize_object(Identifier,MarkerObject) :-
   )),
   ignore((
     object_color(Identifier, Color),
-    parse_vector(Color, ColorList),
-    marker_color(MarkerObject, ColorList)
+    marker_color(MarkerObject, Color)
   )).
 
 %% marker_primitive(+Type, +MarkerTerm, -MarkerObject, +Parent) is det.

@@ -62,13 +62,6 @@ test(object_pose_at_time) :-
                        0.0,         0.0,        1.0, 0.816479,
                        0.0,         0.0,        0.0, 1.0])).
 
-test(rotmat_to_list) :-
-  rotmat_to_list(test_knowrob_objects:'RotationMatrix3D_1',
-                 [0.99607825, -0.08847681, 0.0, 1.1171718,
-                  0.08847681,  0.99607825, 0.0, 0.44037533,
-                  0.0,         0.0,        1.0, 0.4702375,
-                  0.0,         0.0,        0.0, 1.0]).
-
 test(object_dimensions) :-
   object_dimensions(test_knowrob_objects:'Handle1', 0.015, 0.015, 0.015),
   !.

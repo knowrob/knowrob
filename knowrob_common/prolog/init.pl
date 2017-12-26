@@ -58,7 +58,7 @@
 :- use_module(library('knowrob/swrl')).
 % :- use_module(library('knowrob/units')).
 :- use_module(library('knowrob/temporal')).
-:- use_module(library('knowrob/knowrob_math')).
+:- use_module(library('knowrob/transforms')).
 
 
 % parse OWL files, register name spaces

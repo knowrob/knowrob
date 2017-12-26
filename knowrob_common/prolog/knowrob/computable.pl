@@ -120,7 +120,7 @@ rdfs_instance_of(Resource, Class) :-
     rdfs_individual_of(Resource, Class) ;
     rdfs_computable_instance_of_subclass(Resource, Class))) ;
     % compute the class of the given instance
-    rdfs_individual_of(Resource, MyClass) ).
+    rdfs_individual_of(Resource, Class) ).
 
 rdfs_instance_of(Resource, Class) :-
   var(Resource), nonvar(Class), (

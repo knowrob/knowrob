@@ -47,7 +47,7 @@
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
-:- use_module(library('knowrob/knowrob_math')).
+:- use_module(library('knowrob/transforms')).
 :- use_module(library('knowrob/computable')).
 
 % define meta-predicates and allow the definitions
@@ -575,8 +575,8 @@ entity_generate(Entity, [an,interval], _, [an,interval,Interval]) :-
   interval(Entity,Interval), !.
 
 entity_generate(Pose, [a, pose], _, [a, pose, [X,Y,Z], [QW,QX,QY,QZ]]) :-
-  position_to_list(Pose, [X,Y,Z]),
-  quaternion_to_list(Pose, [QW,QX,QY,QZ]), !.
+  rdf_has_prolog(Pose, knowrob:translation, [X,Y,Z]),
+  rdf_has_prolog(Pose, knowrob:quaternion, [QW,QX,QY,QZ]), !.
 
 entity_generate(Entity, [A,TypeBase], TypeBaseIri, [A,TypeBase|[[type,TypeName]|PropDescr]]) :-
   (( rdf_has(Entity, rdf:type, Type),

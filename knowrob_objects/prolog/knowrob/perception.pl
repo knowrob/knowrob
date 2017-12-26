@@ -145,7 +145,7 @@ perception_set_pose(Pose, Pose) :-
   atom(Pose),
   rdfs_individual_of(Pose, knowrob:'Pose'), !.
 perception_set_pose(Perception, [ReferenceFrame, _, Translation, Rotation]) :-
-  rdf_has(Ref, srdl2comp:'urdfName', literal(ReferenceFrame)),
+  rdf_has(Ref, knowrob:'frameName', literal(ReferenceFrame)),
   create_transform(Translation, Rotation, TransformId),
   rdf_assert(TransformId, knowrob:'relativeTo', Ref),
   rdf_assert(Perception, knowrob:'eventOccursAt', TransformId), !.
