@@ -36,7 +36,6 @@
       entity/2,
       entity_has/3,
       entity_type/2,
-      entity_compute/2,
       entity_assert/2,
       entity_retract/1,
       entity_iri/3,
@@ -53,16 +52,13 @@
 
 % define meta-predicates and allow the definitions
 % to be in different source files
-:- meta_predicate entity_type(0, ?, ?),
-                  entity_compute(0, ?, ?).
-:- multifile entity_type/2,
-             entity_compute/2.
+:- meta_predicate entity_type(0, ?, ?).
+:- multifile entity_type/2.
 
 :- rdf_meta entity_description(t),
             entity(r,?),
             entity_property(+,?,?),
             entity_type(r,?),
-            entity_compute(r,?),
             entity_assert(r,?),
             entity_retract(r),
             entity_iri(r,r),
@@ -189,7 +185,7 @@ entity_(Entity, [[type,Type|_]|Descr]) :-
 
 %% key-value property
 % TODO: support specification of property units
-%    - [an, object, [height, 20, qudt:meter, during [0.0,20.0]]]
+%    - [an, object, [height, 20, qudt:meter, during, Interval]]
 entity_(Entity, [[Key,Value|ValDescr]|Descr]) :-
   nonvar(Key),
   entity_iri(PropIri, Key, lower_camelcase),
@@ -242,13 +238,6 @@ entity_object_value(Iri, Value) :-
   rdf_global_term(Value, Iri), !.
 
 
-%% Compute entity from external source such as a database
-entity_body(Entity, [A, Type|Descr]) :-
-  var(Entity),
-  % TODO: skip if existing before computing
-  % in that case computing still makes sense in order to update
-  % with latest designators
-  once(entity_compute(Entity, [A, Type|Descr])).
 %% Handle description
 entity_body(Entity, [A, Type|Descr]) :-
   entity_head(Entity, [A,Type], Descr, _),
@@ -296,18 +285,6 @@ entity_type(Entity, TypeBase, Entity) :-
 entity_type(Entity, TypeBase, Type) :-
   rdf_has(Entity, rdf:type, Type),
   rdf_reachable(Type, rdfs:subClassOf, TypeBase).
-
-
-%% entity_compute(?Entity, ?Descr) is nondet.
-%
-% Compute entities matching given description.
-% This is actually supposed to modify the RDF triple store.
-%
-% @param Entity IRI of matching entity
-% @param Descr An entity description
-%
-entity_compute(_, [a|[timepoint|_]]) :- fail.
-entity_compute(_, [an|[interval|_]]) :- fail.
 
 
 %% entity_assert(-Entity, +Descr) is nondet.
