@@ -1,6 +1,7 @@
 /** <module> Reasoning using procedural attachments, called "computables"
 
   Copyright (C) 2008-10 Bernhard Kirchlechner, Moritz Tenorth
+  Copyright (C) 2017 Daniel Beßler
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -45,9 +46,9 @@
       rdfs_assert_prop_conc/2,       % assert property concatenations in a row
       rdfs_assert_prop_conc/3
     ]).
+
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
-% :- use_module(library('odbc')).
 :- use_module(library('lists')).
 :- use_module(library('knowrob/owl')).
 :- use_module(library('knowrob/rdfs')).
@@ -291,20 +292,10 @@ rdfs_computable_prolog_triple(Property, Frame, Value, CmdArgs, ComputablePropert
     (Command=Module:Pred) ;
     (Command=user:Cmd)),
   % execute the Prolog predicate (namespace expansion etc.)
-  (
-    nonvar(Value) -> (
-      (rdfs_computable_prolog_call(ComputableProperty, Command, Frame, Value, CmdArgs))
-    ) ; (
-      (rdfs_computable_prolog_call(ComputableProperty, Command, Frame, PrologValue, CmdArgs),
-        % result: PrologValue
-        (PrologValue=[_|_]
-        -> member(Temp, PrologValue),
-          rdfs_prolog_to_rdf(Property, Temp, Value)
-        ; PrologValue=[]
-        -> fail
-        ; rdfs_prolog_to_rdf(Property, PrologValue, Value))
-      ))
-  ).
+  ( nonvar(Value) ->
+    rdfs_computable_prolog_call(ComputableProperty, Command, Frame, Value, CmdArgs); (
+    rdfs_computable_prolog_call(ComputableProperty, Command, Frame, PrologValue, CmdArgs),
+    rdfs_prolog_to_rdf(Property, PrologValue, Value))).
 
 rdfs_computable_prolog_call(_, Command, Frame, Value, AdditionalArgs) :-
   append([Frame, Value], AdditionalArgs, Args),
@@ -353,38 +344,21 @@ rdfs_computable_prolog_instance_of(Instance, Class) :-
     ))
      )).
 
-% Convert between Prolog and RDF values (i.e. name spaces, assert types etc)
-rdfs_prolog_to_rdf(Property, PrologValue, RDFValue) :-
-  rdf_phas(Property, rdfs:range, Range),
-  
-  ((rdfs_individual_of(Range, rdf:'Class')
-    ; rdfs_individual_of(Range, owl:'Class'))
-  -> %RDFValue = PrologValue
-
-     % add namespace if not present yet
-
-    ((\+ atom(PrologValue) -> term_to_atom(PrologValue, PrologValueTerm); (PrologValueTerm = PrologValue))),
-
-     ( (rdf_split_url('', _, PrologValueTerm)) ->
-       (rdf_split_url(NS, _, Range),
-       atom_concat(NS, PrologValue, RDFValue),
-       !,rdf_assert(RDFValue, rdf:type, Range));
-      (RDFValue = PrologValue))
-
-  ; rdf_global_id(NS:_, Range),
-    NS = xsd
-  -> RDFValue = literal(type(Range, PrologValue))
-  ; rdf_has(Range, rdf:type, owl:'DataRange')
-  -> (rdf_has(Range, rdf:oneOf, OneOf),
-    rdfs_list_to_prolog_list(OneOf, OneOfList), (
-    member(literal(type(Type, PrologValue)), OneOfList)
-    -> RDFValue = literal(type(Type, PrologValue))
-    ; member(PrologValue, OneOfList)
-    -> RDFValue = PrologValue
-    ; print(['The value ',PrologValue,' is not in the oneOf range list ',OneOfList]), fail))
-  ; print(['Cannot determine the type for ', PrologValue, ' in the range ', Range])), !.
-
-
+% Convert between Prolog and RDF values
+rdfs_prolog_to_rdf(_, [], _)       :- fail, !.
+rdfs_prolog_to_rdf(P, [X_pl|_], X) :- rdfs_prolog_to_rdf(P, X_pl, X).
+rdfs_prolog_to_rdf(P, [_|Xs], X)   :- rdfs_prolog_to_rdf(P, Xs, X).
+rdfs_prolog_to_rdf(_, X, X)        :- atom(X), rdf_split_url(_,_,X), !.
+rdfs_prolog_to_rdf(_, literal(type(T,V)),
+                      literal(type(T,V))) :- !.
+rdfs_prolog_to_rdf(P, PrologValue, RDFValue) :-
+  rdf_phas(P, rdfs:range, Range),
+  rdf_global_id(xsd:_, Range),
+  term_to_atom(PrologValue, ValueAtom),
+  RDFValue=literal(type(Range, ValueAtom)), !.
+rdfs_prolog_to_rdf(_, PrologValue, literal(type('http://www.w3.org/2001/XMLSchema#float', ValueAtom))) :-
+  number(PrologValue),
+  term_to_atom(PrologValue, ValueAtom), !.
 rdfs_prolog_to_rdf(_, V, V).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -429,25 +403,3 @@ rdfs_computable_compute_property_concatenation(Parameter, Frame, ParameterValue)
 %
 % rdfs_computable_compute_parameter(Parameter, Frame, ParameterValue) :-
 %  rdf_triple(Parameter, Frame, ParameterValue).
-
-knowrob_owl:knowrob_instance_from_class('http://knowrob.org/kb/computable.owl#PrologTemporalProperty', Args, Computable) :- !,
-  rdf_instance_from_class(computable:'PrologTemporalProperty', Computable),
-  create_prolog_property(Computable, Args).
-
-knowrob_owl:knowrob_instance_from_class('http://knowrob.org/kb/computable.owl#PrologProperty', Args, Computable) :- !,
-  rdf_instance_from_class(computable:'PrologProperty', Computable),
-  create_prolog_property(Computable, Args).
-
-create_prolog_property(_, []) :- !.
-create_prolog_property(Computable, [command:Value|Rest]) :- !,
-  rdf_assert(Computable, computable:command, literal(type(xsd:string,Value))),
-  create_prolog_property(Computable, Rest).
-create_prolog_property(Computable, [cache:Value|Rest]) :- !,
-  rdf_assert(Computable, computable:cache, literal(type(xsd:string,Value))),
-  create_prolog_property(Computable, Rest).
-create_prolog_property(Computable, [visible:Value|Rest]) :- !,
-  rdf_assert(Computable, computable:visible, literal(type(xsd:string,Value))),
-  create_prolog_property(Computable, Rest).
-create_prolog_property(Computable, [target:Value|Rest]) :- !,
-  rdf_assert(Computable, computable:target, Value),
-  create_prolog_property(Computable, Rest).
