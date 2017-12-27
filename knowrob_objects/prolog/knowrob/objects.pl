@@ -277,7 +277,7 @@ comp_tf_pose(Obj, Pose, [Instant,_]) :-
   ( var(Instant) -> Instant = Now ;   20 > abs(Now - Instant) ),
   map_frame_name(MapFrameName),
   tf_lookup_transform(MapFrameName, ObjFrame, PoseTerm),
-  knowrob_instance_from_class(knowrob:'Pose', [pose=PoseTerm], Pose), !.
+  owl_instance_from_class(knowrob:'Pose', [pose=PoseTerm], Pose), !.
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

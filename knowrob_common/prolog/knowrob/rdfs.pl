@@ -33,6 +33,7 @@
 
 :- module(knowrob_rdfs,
     [
+    % TODO: some should be prefixed rdfs
       rdf_instance_from_class/2,
       rdf_instance_from_class/3,
       rdf_unique_id/2,

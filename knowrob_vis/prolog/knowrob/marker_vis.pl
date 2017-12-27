@@ -295,8 +295,8 @@ marker_initialize_object(Identifier,MarkerObject) :-
     % TODO: use existing instance if available
     mng_designator_timestamp(Identifier, T),
     mng_designator_location(Identifier, LocList),
-    knowrob_instance_from_class(knowrob:'TimePoint', [instant=T], Timepoint),
-    knowrob_instance_from_class(knowrob:'Pose', [mat=LocList], Loc),
+    owl_instance_from_class(knowrob:'TimePoint', [instant=T], Timepoint),
+    owl_instance_from_class(knowrob:'Pose', [mat=LocList], Loc),
     add_object_as_semantic_instance(Identifier, Loc, Timepoint, Instance),
     marker_initialize_object(Instance,MarkerObject)
   )),

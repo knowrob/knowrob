@@ -263,7 +263,7 @@ rdfs_instance_of_during1(Resource, Description, Interval) :-
   ),
   ( nonvar(Interval) ->
     true ;
-    knowrob_instance_from_class(knowrob:'TimeInterval', [begin=0.0], Interval)
+    owl_instance_from_class(knowrob:'TimeInterval', [begin=0.0], Interval)
   ).
 
 temporal_part_during(TemporalPart, Interval) :-
@@ -434,7 +434,7 @@ assert_temporal_part_value(TemporalPart_S, P, Value, Graph) :-
 assert_temporal_part_extend(TemporalPart, I) :-
   assert_temporal_part_extend(TemporalPart, I, user).
 assert_temporal_part_extend(TemporalPart, I, Graph) :-
-  knowrob_instance_from_class(knowrob:'TimeInterval', I, Interval),
+  owl_instance_from_class(knowrob:'TimeInterval', I, Interval),
   findall(X, (
       rdf_has(TemporalPart,_,X),
       rdfs_individual_of(X, knowrob:'TemporalPart')

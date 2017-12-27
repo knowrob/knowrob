@@ -141,7 +141,7 @@ plan_objects(Plan, Objects) :-
 % 
 plan_start_action(ActionClass, ActionInstance) :-
   plan_step(Now),
-  knowrob_instance_from_class(knowrob:'TimePoint', [instant=Now], Timepoint),
+  owl_instance_from_class(knowrob:'TimePoint', [instant=Now], Timepoint),
   % create instance of the action
   rdf_instance_from_class(ActionClass, ActionInstance),
   rdf_assert(ActionInstance, knowrob:'startTime', Timepoint).
@@ -154,7 +154,7 @@ plan_start_action(ActionClass, ActionInstance) :-
 % 
 plan_finish_action(ActionInstance) :-
   plan_step(Now),
-  knowrob_instance_from_class(knowrob:'TimePoint', [instant=Now], Timepoint),
+  owl_instance_from_class(knowrob:'TimePoint', [instant=Now], Timepoint),
   % specify endTime and project the action effects
   rdf_assert(ActionInstance, knowrob:'endTime', Timepoint),
   action_effects_apply(ActionInstance).

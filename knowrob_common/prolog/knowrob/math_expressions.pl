@@ -30,10 +30,9 @@
 
 */
 
-:- module(knowrob_math,
+:- module(knowrob_math_expressions,
     [
-      eval_owl_term/2,
-      parse_vector/2
+      eval_owl_term/2
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -44,7 +43,7 @@
 :-  rdf_meta
     eval_owl_term(r,?).
 
-:- owl_parse('package://knowrob_common/owl/knowrob_math.owl').
+:- owl_parse('package://knowrob_common/owl/math-expressions.owl').
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
@@ -52,7 +51,6 @@ eval_owl_term(OWL, Val) :-
     rdf_has(OWL, rdf:type, knowrob:'ValueTerm'),
     rdf_has(OWL, knowrob:termvalue, literal(type(xsd:double,ValAtom))),
     term_to_atom(Val, ValAtom).
-
 
 eval_owl_term(OWL, Val) :-
     rdf_has(OWL, rdf:type, knowrob:'AdditionTerm'),
@@ -63,7 +61,6 @@ eval_owl_term(OWL, Val) :-
     eval_owl_term(Op2, Val2),
     
     Val is Val1 + Val2.
-    
 
 eval_owl_term(OWL, Val) :-
     rdf_has(OWL, rdf:type, knowrob:'SubtractionTerm'),
@@ -74,8 +71,7 @@ eval_owl_term(OWL, Val) :-
     eval_owl_term(Op2, Val2),
     
     Val is Val1 - Val2.
-    
-    
+
 eval_owl_term(OWL, Val) :-
     rdf_has(OWL, rdf:type, knowrob:'MultiplicationTerm'),
     rdf_has(OWL, knowrob:op1, Op1),
@@ -86,7 +82,6 @@ eval_owl_term(OWL, Val) :-
     
     Val is Val1 * Val2.
 
-    
 eval_owl_term(OWL, Val) :-
     rdf_has(OWL, rdf:type, knowrob:'DivisionTerm'),
     rdf_has(OWL, knowrob:op1, Op1),
@@ -96,21 +91,3 @@ eval_owl_term(OWL, Val) :-
     eval_owl_term(Op2, Val2),
     
     Val is Val1 / Val2.
-
-parse_vector([X|Y], [X|Y]).
-parse_vector(In, Numbers) :-
-  parse_vector(In, Numbers, ' ').
-parse_vector(In, Numbers, Delimiter) :-
-  atom(In),
-  normalize_space(atom(In_Normalized),In),
-  atomic_list_concat(Atoms, Delimiter, In_Normalized),
-  findall(Num, (
-    member(Atom,Atoms),
-    atom_number(Atom,Num)
-  ), Numbers),
-  length(Atoms,L),
-  length(Numbers,L).
-  %jpl_call('org.knowrob.utils.MathUtil', 'parseVector', [In, ' '], OutArr),
-  %not(OutArr = @(null)),
-  %jpl_array_to_list(OutArr, Out).
-

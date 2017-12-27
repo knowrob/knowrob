@@ -110,7 +110,7 @@ comp_detected_pose_at_time(Obj, Pose, Instant) :-
 %
 create_visual_perception(Perception) :-
   rdf_instance_from_class('http://knowrob.org/kb/knowrob.owl#VisualPerception', Perception),
-  knowrob_instance_from_class(knowrob:'TimePoint', TimePoint),
+  owl_instance_from_class(knowrob:'TimePoint', TimePoint),
   rdf_assert(Perception, knowrob:startTime, TimePoint).
 create_visual_perception(ModelType, Perception) :-
   create_visual_perception(Perception),

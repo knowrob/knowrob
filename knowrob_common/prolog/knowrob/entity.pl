@@ -32,15 +32,11 @@
 
 :- module(entities,
     [
-      entity_description/1,
       entity/2,
       entity_has/3,
-      entity_type/2,
       entity_assert/2,
       entity_retract/1,
-      entity_iri/3,
       entity_write/1,
-      entity_format/2,
       with_owl_description/3
     ]).
 
@@ -50,18 +46,10 @@
 :- use_module(library('knowrob/transforms')).
 :- use_module(library('knowrob/computable')).
 
-% define meta-predicates and allow the definitions
-% to be in different source files
-:- meta_predicate entity_type(0, ?, ?).
-:- multifile entity_type/2.
-
-:- rdf_meta entity_description(t),
-            entity(r,?),
+:- rdf_meta entity(r,?),
             entity_property(+,?,?),
-            entity_type(r,?),
             entity_assert(r,?),
             entity_retract(r),
-            entity_iri(r,r),
             with_owl_description(r,r,t).
 
 :- rdf_db:rdf_register_ns(knowrob,'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
@@ -69,26 +57,6 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % methods for querying OWL entities
-
-%% concept(?Concept, +Descr) is nondet.
-%
-% Query for concept matching an concept description or build
-% description for concept.
-%
-% @param Concept IRI of matching entity
-% @param Descr An concept description or OWL class IRI
-%
-% TODO: implement
-concept(_, _) :- fail.
-
-%% entity_description(+Descr) is det.
-%
-% Type checking an entity description.
-%
-% @param Descr An entity description or something else
-%
-entity_description([A,Type|_]) :-
-  entity_type([A,Type], _).
 
 %% entity(?Entity, +Descr) is nondet.
 %
@@ -119,44 +87,44 @@ entity(Entity, Descr) :-
 %% Time point entities
 entity_(Entity, [a, timepoint, Time]) :-
   number(Time), 
-  knowrob_instance_from_class(knowrob:'TimePoint', [instant=Time], Entity), !.
+  owl_instance_from_class(knowrob:'TimePoint', [instant=Time], Entity), !.
 entity_(Entity, [a, timepoint, [value,TimeValue]]) :-
   nonvar(TimeValue),
-  knowrob_instance_from_class(knowrob:'TimePoint', [instant=TimeValue], Entity), !.
+  owl_instance_from_class(knowrob:'TimePoint', [instant=TimeValue], Entity), !.
 entity_(Entity, [a, timepoint, [name,Name]]) :-
   nonvar(Name),
   rdf_global_term(Name, Entity),
   time_term(Entity, TimeValue),
-  knowrob_instance_from_class(knowrob:'TimePoint', [instant=TimeValue], Entity), !.
+  owl_instance_from_class(knowrob:'TimePoint', [instant=TimeValue], Entity), !.
 
 %% Time interval entities
 entity_(Entity, [an, interval, [Begin, End]]) :-
-  knowrob_instance_from_class(knowrob:'TimeInterval', [begin=Begin,end=End], Entity), !.
+  owl_instance_from_class(knowrob:'TimeInterval', [begin=Begin,end=End], Entity), !.
 entity_(Entity, [an, interval, [Begin]]) :-
-  knowrob_instance_from_class(knowrob:'TimeInterval', [begin=Begin], Entity), !.
+  owl_instance_from_class(knowrob:'TimeInterval', [begin=Begin], Entity), !.
 entity_(Entity, [an, interval|Descr]) :-
   entity_has(Descr, start_time, BeginDescr),
   entity(Begin, BeginDescr),
   (( entity_has(Descr, end_time, EndDescr),
      entity(End, EndDescr),
-     knowrob_instance_from_class(knowrob:'TimeInterval', [begin=Begin,end=End], Entity) );
-     knowrob_instance_from_class(knowrob:'TimeInterval', [begin=Begin], Entity) ), !.
+     owl_instance_from_class(knowrob:'TimeInterval', [begin=Begin,end=End], Entity) );
+     owl_instance_from_class(knowrob:'TimeInterval', [begin=Begin], Entity) ), !.
 
 %% Pose entities
 entity_(Entity, [a, pose, Pos, Rot]) :-
-  knowrob_instance_from_class(knowrob:'Pose', [pose=(Pos,Rot)], Entity), !.
+  owl_instance_from_class(knowrob:'Pose', [pose=(Pos,Rot)], Entity), !.
 entity_(Entity, [a|[pose|Descr]]) :-
   entity_has(Descr, translation, Pos),
   entity_has(Descr, quaternion, Rot),
   (  entity_has(Descr, reference_frame, Frame)
-  -> knowrob_instance_from_class(knowrob:'Pose', [pose=(Frame,Pos,Rot)], Entity)
-  ;  knowrob_instance_from_class(knowrob:'Pose', [pose=(Pos,Rot)], Entity) ), !.
+  -> owl_instance_from_class(knowrob:'Pose', [pose=(Frame,Pos,Rot)], Entity)
+  ;  owl_instance_from_class(knowrob:'Pose', [pose=(Pos,Rot)], Entity) ), !.
 
 %% Location entities
 entity_(Entity, [a, location|Descr]) :-
   entity_axioms(Descr, 'http://knowrob.org/kb/knowrob.owl#spatiallyRelated', Axioms),
   length(Axioms, L), (L > 0),
-  knowrob_instance_from_class(knowrob:'SpaceRegion', [axioms=Axioms], Entity), !.
+  owl_instance_from_class(knowrob:'SpaceRegion', [axioms=Axioms], Entity), !.
 
 %% Entity type description `a|an pose|location|...`
 entity_(Entity, [a, Type|Descr]) :-
@@ -299,16 +267,16 @@ entity_assert(Entity, [an,interval|Descr]) :- entity(Entity, [an,interval|Descr]
 entity_assert(Entity, [a,location|Descr]) :-  entity(Entity, [a,location|Descr]), !.
 
 entity_assert(Entity, [a, pose, Pos, Rot]) :-
-  knowrob_instance_from_class(knowrob:'Pose', [pose=(Pos,Rot)], Entity), !.
+  owl_instance_from_class(knowrob:'Pose', [pose=(Pos,Rot)], Entity), !.
 entity_assert(Entity, [a, pose|Descr]) :-
   entity_has(Descr, translation, Pos),
   entity_has(Descr, quaternion, Rot),
   (  entity_has(Descr, relative_to, RelObjDescr)
   -> (
     entity(RelObj, RelObjDescr),
-    knowrob_instance_from_class(knowrob:'Pose', [pose=(RelObj,Pos,Rot)], Entity)
+    owl_instance_from_class(knowrob:'Pose', [pose=(RelObj,Pos,Rot)], Entity)
   ) ; (
-    knowrob_instance_from_class(knowrob:'Pose', [pose=(Pos,Rot)], Entity) )
+    owl_instance_from_class(knowrob:'Pose', [pose=(Pos,Rot)], Entity) )
   ), !.
 
 entity_assert(Entity, [A,Type|Descr]) :-
@@ -400,17 +368,6 @@ with_owl_description(Description, Individual, Goal) :-
       entity_retract(Individual)
     )
   ).
-
-
-%% entity_format(+Descr, -String) is nondet.
-%
-% Format entity for pretty printing.
-%
-% @param Descr An entity description
-% @param String Formatted string
-%
-entity_format(Descr, String) :-
-  with_output_to(string(String), entity_write(Descr)).
 
 %% entity_write(+Descr) is nondet.
 %

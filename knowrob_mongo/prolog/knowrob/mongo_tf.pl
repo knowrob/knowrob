@@ -127,4 +127,4 @@ mng_comp_pose(Obj, Pose, [Instant,Instant]) :-
   map_frame_name(MapFrame),
   rdf_has(Obj, knowrob:frameName, ObjFrame),
   mng_lookup_transform(MapFrame, ObjFrame, PoseTerm, Instant),
-  knowrob_instance_from_class(knowrob:'Pose', [pose=PoseTerm], Pose).
+  owl_instance_from_class(knowrob:'Pose', [pose=PoseTerm], Pose).

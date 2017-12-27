@@ -37,8 +37,6 @@
       rdfs_computable_instance_of/2, % query computable instances of a class
       rdfs_computable_property/2,    % is the specified property computable?
       rdfs_computable_triple/3,      % calculate the value of computable properties
-      rdfs_computable_prolog_triple/3,
-      rdfs_computable_prolog_triple/4,
       rdfs_computable_prolog_triple/5,
       rdfs_computable_has/3,
       rdfs_instance_of/2,            % combine rdfs_computable_instance_of (with subclass handling) and rdfs:rdfs_individual_of

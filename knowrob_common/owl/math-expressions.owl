@@ -13,8 +13,8 @@
 ]>
 
 
-<rdf:RDF xmlns="http://knowrob.org/kb/knowrob_math.owl#"
-     xml:base="http://knowrob.org/kb/knowrob_math.owl"
+<rdf:RDF xmlns="http://knowrob.org/kb/math-expressions.owl#"
+     xml:base="http://knowrob.org/kb/math-expressions.owl"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:swrl="http://www.w3.org/2003/11/swrl#"
      xmlns:computable="http://knowrob.org/kb/computable.owl#"
@@ -23,7 +23,7 @@
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:qudt="http://qudt.org/schema/qudt#"
      xmlns:knowrob="http://knowrob.org/kb/knowrob.owl#">
-    <owl:Ontology rdf:about="http://knowrob.org/kb/knowrob_math.owl"/>
+    <owl:Ontology rdf:about="http://knowrob.org/kb/math-expressions.owl"/>
 
 
     

@@ -44,8 +44,8 @@
       owl_write_readable/1,
       owl_readable/2,
       owl_computable_db/1,
-      knowrob_instance_from_class/2,
-      knowrob_instance_from_class/3
+      owl_instance_from_class/2,
+      owl_instance_from_class/3
     ]).
 
 :- use_module(library('semweb/rdf_db')).
@@ -67,13 +67,13 @@
             owl_readable(r,-),
             owl_write_readable(r),
             owl_computable_db(-),
-            knowrob_instance_from_class(r,-),
-            knowrob_instance_from_class(r,t,-).
+            owl_instance_from_class(r,-),
+            owl_instance_from_class(r,t,-).
 
 % define holds as meta-predicate and allow the definitions
 % to be in different source files
-:- meta_predicate knowrob_instance_from_class(0, ?, ?, ?).
-:- multifile knowrob_instance_from_class/3.
+:- meta_predicate owl_instance_from_class(0, ?, ?, ?).
+:- multifile owl_instance_from_class/3.
 
 :- rdf_db:rdf_register_ns(knowrob,'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
@@ -278,18 +278,18 @@ owl_readable_internal(X,Y) :- compound(X), rdf_readable(X,Y).
 		 *		  ABOX ASSERTIONS		*
 		 *******************************/
 
-knowrob_instance_from_class(Class, Instance) :-
-  ( knowrob_instance_from_class(Class, [], Instance);
+owl_instance_from_class(Class, Instance) :-
+  ( owl_instance_from_class(Class, [], Instance);
     rdf_instance_from_class(Class, Instance)), !.
 
 %%%%%%%%%%%%%%%%%%%
 %% knowrob:TimePoint
 
-knowrob_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimePoint', [], TimePoint) :- !,
+owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimePoint', [], TimePoint) :- !,
   current_time(T),
-  knowrob_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimePoint', [instant=T], TimePoint).
+  owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimePoint', [instant=T], TimePoint).
 
-knowrob_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimePoint', [instant=T], TimePoint) :- !,
+owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimePoint', [instant=T], TimePoint) :- !,
   time_term(T,T_value),
   atom_concat('http://knowrob.org/kb/knowrob.owl#timepoint_', T_value, TimePoint),
   rdf_assert(TimePoint, rdf:type, knowrob:'TimePoint').
@@ -297,38 +297,38 @@ knowrob_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimePoint', [inst
 %%%%%%%%%%%%%%%%%%%
 %% knowrob:TimeInterval
 
-knowrob_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimeInterval', [begin=Start], TimeInterval) :- !,
+owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimeInterval', [begin=Start], TimeInterval) :- !,
   time_term(Start, Start_v), 
-  knowrob_instance_from_class(knowrob:'TimePoint', [instant=Start_v], StartI),
+  owl_instance_from_class(knowrob:'TimePoint', [instant=Start_v], StartI),
   atomic_list_concat(['http://knowrob.org/kb/knowrob.owl#TimeInterval',Start_v], '_', TimeInterval),
   rdf_assert(TimeInterval, rdf:type, knowrob:'TimeInterval'),
   rdf_assert(TimeInterval, knowrob:'startTime', StartI).
 
-knowrob_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimeInterval', [begin=Start,end=End], TimeInterval) :- !,
+owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimeInterval', [begin=Start,end=End], TimeInterval) :- !,
   time_term(Start, Start_v), time_term(End, End_v), 
-  knowrob_instance_from_class(knowrob:'TimePoint', [instant=Start_v], StartI),
-  knowrob_instance_from_class(knowrob:'TimePoint', [instant=End_v], EndI),
+  owl_instance_from_class(knowrob:'TimePoint', [instant=Start_v], StartI),
+  owl_instance_from_class(knowrob:'TimePoint', [instant=End_v], EndI),
   atomic_list_concat(['http://knowrob.org/kb/knowrob.owl#TimeInterval',Start_v,End_v], '_', TimeInterval),
   rdf_assert(TimeInterval, rdf:type, knowrob:'TimeInterval'),
   rdf_assert(TimeInterval, knowrob:'startTime', StartI),
   rdf_assert(TimeInterval, knowrob:'endTime', EndI).
 
-knowrob_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimeInterval', I, TimeInterval) :-
+owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimeInterval', I, TimeInterval) :-
   number(I), !,
-  knowrob_instance_from_class(knowrob:'TimeInterval', [begin=I], TimeInterval).
+  owl_instance_from_class(knowrob:'TimeInterval', [begin=I], TimeInterval).
 
-knowrob_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimeInterval', I, TimeInterval) :-
+owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimeInterval', I, TimeInterval) :-
   interval(I, [Start,End]), !,
-  knowrob_instance_from_class(knowrob:'TimeInterval', [begin=Start,end=End], TimeInterval).
+  owl_instance_from_class(knowrob:'TimeInterval', [begin=Start,end=End], TimeInterval).
 
-knowrob_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimeInterval', I, TimeInterval) :-
+owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#TimeInterval', I, TimeInterval) :-
   interval(I, [Start]), !,
-  knowrob_instance_from_class(knowrob:'TimeInterval', [begin=Start], TimeInterval).
+  owl_instance_from_class(knowrob:'TimeInterval', [begin=Start], TimeInterval).
 
 %%%%%%%%%%%%%%%%%%%
 %% knowrob:Pose
 
-knowrob_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [pose=(Frame,[X,Y,Z],[QW,QX,QY,QZ])], Pose) :- !,
+owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [pose=(Frame,[X,Y,Z],[QW,QX,QY,QZ])], Pose) :- !,
   rdfs_individual_of(Frame, knowrob:'SpatialThing-Localized'),
   rdf_split_url(_, Ref, Frame),
   atomic_list_concat(['http://knowrob.org/kb/knowrob.owl#Pose'|[Ref,X,Y,Z,QW,QX,QY,QZ]], '_', Pose),
@@ -339,25 +339,25 @@ knowrob_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [pose=(Fra
   rdf_assert(Pose, knowrob:'quaternion', literal(type(string,Quaternion))),
   rdf_assert(Pose, knowrob:'relativeTo', Frame).
 
-knowrob_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [pose=(Pos,Rot)], Pose) :- !,
-  knowrob_instance_from_class(knowrob:'Pose',
+owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [pose=(Pos,Rot)], Pose) :- !,
+  owl_instance_from_class(knowrob:'Pose',
       [pose=(knowrob:'MapFrame', Pos, Rot)], Pose).
 
-knowrob_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [mat=(Data)], Pose) :- !,
+owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [mat=(Data)], Pose) :- !,
   matrix_translation(Data, Pos),
   matrix_rotation(Data, Rot),
-  knowrob_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [pose=(Pos, Rot)], Pose).
+  owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [pose=(Pos, Rot)], Pose).
 
-knowrob_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [pose=pose(A,B,C)], Pose) :- !,
-  knowrob_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [pose=(A,B,C)], Pose).
+owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [pose=pose(A,B,C)], Pose) :- !,
+  owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [pose=(A,B,C)], Pose).
 
-knowrob_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [pose=pose(A,B)], Pose) :- !,
-  knowrob_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [pose=(A,B)], Pose).
+owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [pose=pose(A,B)], Pose) :- !,
+  owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [pose=(A,B)], Pose).
 
 %%%%%%%%%%%%%%%%%%%
 %% knowrob:'FrameOfReference'
 
-knowrob_instance_from_class('http://knowrob.org/kb/knowrob.owl#FrameOfReference', [urdf=Name], Frame) :- !,
+owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#FrameOfReference', [urdf=Name], Frame) :- !,
   atomic_list_concat(['http://knowrob.org/kb/knowrob.owl#FrameOfReference'|[Name]], '_', Frame),
   rdf_assert(Frame, rdf:type, knowrob:'FrameOfReference'),
   rdf_assert(Frame, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(type(xsd:string, Name))).
@@ -365,7 +365,7 @@ knowrob_instance_from_class('http://knowrob.org/kb/knowrob.owl#FrameOfReference'
 %%%%%%%%%%%%%%%%%%%
 %% knowrob:'SpaceRegion'
 
-knowrob_instance_from_class('http://knowrob.org/kb/knowrob.owl#SpaceRegion', [axioms=Axioms], SpaceRegion) :- !,
+owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#SpaceRegion', [axioms=Axioms], SpaceRegion) :- !,
   location_name_args_(Axioms,Args),
   atomic_list_concat(['http://knowrob.org/kb/knowrob.owl#SpaceRegion'|Args], '_', SpaceRegion),
   rdf_assert(SpaceRegion, rdf:type, knowrob:'SpaceRegion'),

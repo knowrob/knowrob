@@ -162,14 +162,14 @@ action_effect_start_process(Proc) :-
   rdf_has(Proc, knowrob:startTime, _), !.
 action_effect_start_process(Proc) :-
   current_time(Now),
-  knowrob_instance_from_class(knowrob:'TimePoint', [instant=Now], Timepoint),
+  owl_instance_from_class(knowrob:'TimePoint', [instant=Now], Timepoint),
   rdf_assert(Proc, knowrob:startTime, Timepoint).
 
 action_effect_stop_process(Proc) :-
   rdf_has(Proc, knowrob:endTime, _), !.
 action_effect_stop_process(Proc) :-
   current_time(Now),
-  knowrob_instance_from_class(knowrob:'TimePoint', [instant=Now], Timepoint),
+  owl_instance_from_class(knowrob:'TimePoint', [instant=Now], Timepoint),
   rdf_assert(Proc, knowrob:endTime, Timepoint).
 
 %% action_precondition_check(+Act:iri)

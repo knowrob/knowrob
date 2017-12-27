@@ -332,3 +332,22 @@ mkdir(Path, [Head|Tail]) :-
   path_concat(Path, Head, ChildPath),
   mkdir(ChildPath, Tail).
 mkdir(_, []).
+
+parse_vector([X|Y], [X|Y]).
+parse_vector(In, Numbers) :-
+  parse_vector(In, Numbers, ' ').
+parse_vector(In, Numbers, Delimiter) :-
+  atom(In),
+  normalize_space(atom(In_Normalized),In),
+  atomic_list_concat(Atoms, Delimiter, In_Normalized),
+  findall(Num, (
+    member(Atom,Atoms),
+    atom_number(Atom,Num)
+  ), Numbers),
+  length(Atoms,L),
+  length(Numbers,L).
+  %jpl_call('org.knowrob.utils.MathUtil', 'parseVector', [In, ' '], OutArr),
+  %not(OutArr = @(null)),
+  %jpl_array_to_list(OutArr, Out).
+
+

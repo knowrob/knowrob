@@ -58,6 +58,9 @@
     transform_reference_frame(r,?),
     transform_invert_topology(r,r).
 
+% TODO unified pose representation
+% [Ref, Target, Pos, Rot] vs. pose(Pos, Rot) vs. mat(Mat)
+
 :- rdf_db:rdf_register_ns(knowrob,'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
 %% map_frame
