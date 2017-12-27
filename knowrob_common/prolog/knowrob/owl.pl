@@ -32,18 +32,17 @@
 
 :- module(knowrob_owl,
     [
-      owl_instance_of/2,
-      owl_triple/3,
-      owl_class_properties/3,
-      owl_class_properties_some/3,
-      owl_class_properties_all/3,
-      owl_class_properties_value/3,
-      owl_class_properties_nosup/3,
-      owl_class_properties_transitive_nosup/3,
-      owl_inspect/3,
-      owl_write_readable/1,
-      owl_readable/2,
-      owl_computable_db/1,
+      owl_compute_individual_of/2,      % ?Resource, ?Description
+      owl_compute_has/3,                % ?Subject, ?Predicate, ?Object
+      owl_class_properties/3,           % ?Class, ?Prop, ?Val
+      owl_class_properties_some/3,      % ?Class, ?Prop, ?Val
+      owl_class_properties_all/3,       % ?Class, ?Prop, ?Val
+      owl_class_properties_value/3,     % ?Class, ?Prop, ?Val
+      owl_class_properties_nosup/3,     % ?Class, ?Prop, ?Val
+      owl_class_properties_transitive_nosup/3, % ?Class, ?Prop, ?Val
+      owl_inspect/3,                    % ?Thing, ?P, ?O
+      owl_write_readable/1,             % +Resource
+      owl_readable/2,                   % +Resource, -Readable
       owl_instance_from_class/2,
       owl_instance_from_class/3
     ]).
@@ -55,8 +54,8 @@
 :- use_module(library('knowrob/rdfs')).
 :- use_module(library('knowrob/transforms')).
 
-:- rdf_meta owl_instance_of(r, t),
-            owl_triple(r, r, o),
+:- rdf_meta owl_compute_individual_of(r, t),
+            owl_compute_has(r, r, o),
             owl_class_properties(r,r,t),
             owl_class_properties_some(r,r,t),
             owl_class_properties_all(r,r,t),
@@ -66,7 +65,6 @@
             owl_inspect(r,r,r),
             owl_readable(r,-),
             owl_write_readable(r),
-            owl_computable_db(-),
             owl_instance_from_class(r,-),
             owl_instance_from_class(r,t,-).
 
@@ -84,21 +82,21 @@
 %% owl_computable_db
 owl_computable_db(db(rdfs_computable_has,rdfs_instance_of)).
 
-%%  owl_instance_of(?Resource, +Description) is nondet.
+%% owl_compute_individual_of(?Resource, +Description) is nondet.
 %
 % Test  or  generate  the  resources    that  satisfy  Description
 % according the the OWL-Description entailment rules.
-
-owl_instance_of(Resource, Description) :-
+%
+owl_compute_individual_of(Resource, Description) :-
   owl_computable_db(DB),
   owl_individual_of(Resource, Description, DB).
 
-%%	owl_has(?Subject, ?Predicate, ?Object)
+%% owl_compute_has(?Subject, ?Predicate, ?Object)
 %
-%	True if this relation is specified or can be deduced using OWL
-%	inference rules.  It adds transitivity to owl_has_direct/3.
-
-owl_triple(S, P, O) :-
+% True if this relation is specified or can be deduced using OWL
+% inference rules.  It adds transitivity to owl_has_direct/3.
+%
+owl_compute_has(S, P, O) :-
   owl_computable_db(DB),
   owl_has(S, P, O, DB).
 
@@ -235,7 +233,7 @@ owl_class_properties_transitive_nosup(Class, Prop, SubComp) :-
 % @param O      OWL class, individual or literal value specified as property P of Thing
 % 
 owl_inspect(Thing, P, O) :-
-  rdf_has(Thing, rdf:type, owl:'NamedIndividual'),
+  rdf_has(Thing, rdf:type, owl:'NamedIndividual'), !,
   owl_has(Thing, P, Olit),
   strip_literal_type(Olit, O).
   
@@ -278,6 +276,11 @@ owl_readable_internal(X,Y) :- compound(X), rdf_readable(X,Y).
 		 *		  ABOX ASSERTIONS		*
 		 *******************************/
 
+
+%% owl_instance_from_class(+Class, -Instance) is det
+%
+% Asserts new instance Instance with rdf:type Class.
+%
 owl_instance_from_class(Class, Instance) :-
   ( owl_instance_from_class(Class, [], Instance);
     rdf_instance_from_class(Class, Instance)), !.

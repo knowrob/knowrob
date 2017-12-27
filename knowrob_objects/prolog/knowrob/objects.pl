@@ -174,7 +174,7 @@ object_distance(A,B,D):-
 % 
 object_color(Obj, Col) :-
   holds(Obj, knowrob:mainColorOfObject, Color_rdf),
-  rdf_value_prolog(knowrob:mainColorOfObject, Color_rdf, Col),!.
+  rdfs_value_prolog(knowrob:mainColorOfObject, Color_rdf, Col),!.
 object_color(_Obj, [0.5, 0.5, 0.5, 1.0]).
 
 %% object_assert_color(+Obj:iri, +Col:list) is det
@@ -224,7 +224,7 @@ object_dimensions(Obj, Depth, Width, Height) :-
 
 object_boundingBox(Obj, Depth, Width, Height) :-
   holds(Obj, knowrob:boundingBoxSize, Size_rdf),
-  rdf_value_prolog(knowrob:boundingBoxSize, Size_rdf, [Depth, Width, Height]),!.
+  rdfs_value_prolog(knowrob:boundingBoxSize, Size_rdf, [Depth, Width, Height]),!.
 
 %% comp_depthOfObject(+Obj:iri, ?Depth:term) is semidet
 %% comp_widthOfObject(+Obj:iri, ?Depth:term) is semidet

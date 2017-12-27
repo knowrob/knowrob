@@ -146,8 +146,7 @@ action_effects_apply(Act) :-
 action_effect_apply(Act,Effect) :-
   rdf(Act, action_effects:actionEffectProjected, Effect, action_projection), !.
 action_effect_apply(Act,Effect) :-
-  rdf_has(Effect, knowrob:swrlActionVariable, VarLiteral),
-  strip_literal_type(VarLiteral, Var),
+  rdf_has_prolog(Effect, knowrob:swrlActionVariable, Var),
   rdf_swrl_project(Effect, [var(Var,Act)]),
   % start/stop processes
   forall(rdf_has(Act, knowrob:processStarted, Started),
@@ -185,8 +184,7 @@ action_precondition_check(Act) :-
   action_precondition_check(Act, _), !.
 
 action_precondition_check(Act, Effect) :-
-  rdf_has(Effect, knowrob:swrlActionVariable, VarLiteral),
-  strip_literal_type(VarLiteral, Var),
+  rdf_has_prolog(Effect, knowrob:swrlActionVariable, Var),
   rdf_swrl_satisfied(Effect, [var(Var,Act)]).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

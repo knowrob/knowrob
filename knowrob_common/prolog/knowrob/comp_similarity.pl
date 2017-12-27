@@ -64,7 +64,7 @@
 % 
 rdf_wup_similarity(A, A, 1) :- !.
 rdf_wup_similarity(A, B, Sim) :-
-    rdf_common_ancestor([A, B], LCS),
+    rdfs_common_ancestor([A, B], LCS),
     rdf_wup_similarity_given_LCS(A, B, LCS, Sim).
 
 
@@ -125,69 +125,6 @@ rdf_shortest_dist_up_superclasses(SearchList, Goal, DoneList, Dist) :-
        rdf_shortest_dist_up_superclasses(NewSearchList, Goal, NewDoneList, NewDist),
        Dist is NewDist + 1
     ).
-
-%% rdf_most_specific_classes(+List:list, -CMs:list).
-%
-% Return all classes in List as CMs that do not have any (real) subclasses in List
-%
-% @param List list of classes
-% @param CMs Most specific superclasses of all classes in List
-% 
-rdf_most_specific_classes(List, CMs) :-
-    rdf_most_specific_classes_(List, List, CMs).
-
-rdf_most_specific_classes_([],_, []).
-rdf_most_specific_classes_([C1|Cs], All, CMs) :-
-    (  rdf_superclass_of_any_class_in_list(C1, All)
-    -> rdf_most_specific_classes_(Cs, All, CMs)
-    ;  rdf_most_specific_classes_(Cs, All, NewCMs),
-       CMs = [C1|NewCMs]
-    ).
-
-%% rdf_superclass_of_any_class_in_list(+C:rdf_class, -[C1|Cs]:list)
-%
-% checks if the class C is superclass of any class in the list
-% return false if the only superclass is itself
-%
-% @param C class to test against the list
-% @param [C1|Cs] list of classes
-% 
-rdf_superclass_of_any_class_in_list(_, []) :- false.
-rdf_superclass_of_any_class_in_list(C, [C1|Cs]) :-
-    rdfs_subclass_of(C1, C), \+ C1 = C
-    -> true
-    ; rdf_superclass_of_any_class_in_list(C, Cs).
-
-%
-% Helper predicates for rdf_common_ancestor/2.
-%
-rdf_superclass_list([], []).
-rdf_superclass_list([C|CRest], [SCs| SCRest]) :-
-  findall(SC, rdfs_subclass_of(C, SC), SCs),
-  rdf_superclass_list(CRest, SCRest).
-
-% intersection_of_sets([], []).
-intersection_of_sets([L], L).
-intersection_of_sets([L0, L1|LRest], Intersection) :-
-  intersection(L0, L1, L),
-  intersection_of_sets([L|LRest], Intersection).
-
-most_specific_class([C], C).
-most_specific_class([C1,C2|Cs], C) :-
-  rdfs_subclass_of(C2, C1)
-  -> most_specific_class([C2|Cs], C)
-  ; most_specific_class([C1|Cs], C). % Either not comparable or C2 is superclass of C1
-
-%% rdf_common_ancestor(+Classes, ?Ancestor).
-%
-% Get one of the most specific common ancestors of rdf_classes.
-%
-rdf_common_ancestor([C], C).
-rdf_common_ancestor([C1, C2| Cs], C) :-
-  rdf_superclass_list([C1, C2| Cs], SCs),
-  intersection_of_sets(SCs, CSCs),
-  most_specific_class(CSCs, C0),
-  C = C0.
 
 %% rdf_path_distance(+A, +B, -Dist).
 %

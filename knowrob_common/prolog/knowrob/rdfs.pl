@@ -33,17 +33,16 @@
 
 :- module(knowrob_rdfs,
     [
-    % TODO: some should be prefixed rdfs
       rdf_instance_from_class/2,
       rdf_instance_from_class/3,
       rdf_unique_id/2,
       rdf_phas/3,
       rdf_has_prolog/3,
-      rdf_value_prolog/3,
+      rdf_vector_prolog/2,
+      rdfs_value_prolog/3,
       rdfs_type_of/2,
-      rdf_common_ancestor/2,
-      strip_literal_type/2,
-      rdf_vector_prolog/2
+      rdfs_common_ancestor/2,
+      strip_literal_type/2
     ]).
 
 :- use_module(library('semweb/rdfs')).
@@ -51,11 +50,11 @@
 
 :- rdf_meta rdf_phas(r,r,o),
             rdf_has_prolog(r,r,t),
-            rdf_value_prolog(r,t,?),
+            rdfs_value_prolog(r,t,?),
             rdf_instance_from_class(r,r),
             rdf_instance_from_class(r,r,r),
             rdfs_type_of(r,r),
-            rdf_common_ancestor(t,r).
+            rdfs_common_ancestor(t,r).
 
 :- rdf_db:rdf_register_ns(knowrob,'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
@@ -109,7 +108,7 @@ rdf_unique_id(Class, UniqID) :-
     (UniqID = Instance)).
 
 		 /*******************************
-		 *		  Propeties				*
+		 *		  Properties				*
 		 *******************************/
 
 %% rdf_phas(+Property, ?P, ?O) is nondet
@@ -125,26 +124,34 @@ rdf_phas(Property, P, O) :-
 	rdf_has(Super, P, O).
 
 %% rdf_has_prolog
+%
+% Calls rdf_has and converts data values to
+% Prolog representation (e.g., xsd:float to Prolog number).
+%
 rdf_has_prolog(S,P,O) :-
   rdf_has(S,P,O_rdf),
-  rdf_value_prolog(P,O_rdf,O).
+  rdfs_value_prolog(P,O_rdf,O).
 
-%% rdf_value_prolog
-rdf_value_prolog('http://knowrob.org/kb/knowrob.owl#boundingBoxSize', literal(type(_,Val)), Vec) :- % TODO: make subproperty of knowrob:vector
+%% rdfs_value_prolog(+Property, +RDFValue, -PrologValue)
+%
+% Converts RDF value to native Prolog representation.
+%
+% TODO: convert to standard SI unit
+rdfs_value_prolog('http://knowrob.org/kb/knowrob.owl#boundingBoxSize', literal(type(_,Val)), Vec) :- % TODO: make subproperty of knowrob:vector
   rdf_vector_prolog(Val, Vec), !.
-rdf_value_prolog('http://knowrob.org/kb/knowrob.owl#mainColorOfObject', literal(type(_,Val)), Vec) :- % TODO: make subproperty of knowrob:vector
+rdfs_value_prolog('http://knowrob.org/kb/knowrob.owl#mainColorOfObject', literal(type(_,Val)), Vec) :- % TODO: make subproperty of knowrob:vector
   rdf_vector_prolog(Val, Vec), !.
-rdf_value_prolog(P, literal(type(_,Val)), Vec) :-
+rdfs_value_prolog(P, literal(type(_,Val)), Vec) :-
   rdfs_subproperty_of(P, knowrob:vector),
   rdf_vector_prolog(Val, Vec), !.
-rdf_value_prolog(_, literal(type('http://www.w3.org/2001/XMLSchema#float',Atom)), Number) :-
+rdfs_value_prolog(_, literal(type('http://www.w3.org/2001/XMLSchema#float',Atom)), Number) :-
   atom_number(Atom, Number), !.
-rdf_value_prolog(_, literal(type('http://www.w3.org/2001/XMLSchema#double',Atom)), Number) :-
+rdfs_value_prolog(_, literal(type('http://www.w3.org/2001/XMLSchema#double',Atom)), Number) :-
   atom_number(Atom, Number), !.
-rdf_value_prolog(_, literal(type('http://www.w3.org/2001/XMLSchema#integer',Atom)), Number) :-
+rdfs_value_prolog(_, literal(type('http://www.w3.org/2001/XMLSchema#integer',Atom)), Number) :-
   atom_number(Atom, Number), !.
-rdf_value_prolog(_, literal(type(_,Atom)), Atom) :- !.
-rdf_value_prolog(_, V, V).
+rdfs_value_prolog(_, literal(type(_,Atom)), Atom) :- !.
+rdfs_value_prolog(_, V, V).
 
 %% strip_literal_type(+Input,-Output)
 %
@@ -154,6 +161,7 @@ strip_literal_type(literal(type(_, Value)), Value) :- !.
 strip_literal_type(literal(Value), Value) :- !.
 strip_literal_type(Value, Value).
 
+%% rdf_vector_prolog(+In, -Out) is semidet
 rdf_vector_prolog([X|Y], [X|Y]).
 rdf_vector_prolog(In, Numbers) :-
   rdf_vector_prolog(In, Numbers, ' ').
@@ -183,12 +191,12 @@ rdfs_type_of(Resource, Type) :-
      Type \= Cls_other
   ), \+ rdfs_subclass_of(Cls_other, Type)).
 
-%% rdf_common_ancestor(+Classes, ?Ancestor).
+%% rdfs_common_ancestor(+Classes, ?Ancestor).
 %
 % Get one of the most specific common ancestors of rdf_classes.
 %
-rdf_common_ancestor([C], C).
-rdf_common_ancestor([C1, C2| Cs], C) :-
+rdfs_common_ancestor([C], C).
+rdfs_common_ancestor([C1, C2| Cs], C) :-
   rdf_superclass_list([C1, C2| Cs], SCs),
   intersection_of_sets(SCs, CSCs),
   most_specific_class(CSCs, C0),
