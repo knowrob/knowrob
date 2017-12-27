@@ -260,7 +260,7 @@ rdfs_instance_of_during(Resource, Description, Interval) :-
   ( nonvar(Description) ->
     rdfs_subclass_of(Type, Description) ;
     Type = Description ),
-  computable_triple(Property, Resource, Type, Interval).
+  rdfs_computable_triple_during(Property, Resource, Type, Interval).
 
 rdfs_instance_of_during1(Resource, Description, Interval) :-
   \+ ( % TODO: this is a bit ugly
@@ -301,29 +301,7 @@ rdf_triple_during(P, S, O, Interval) :-
 rdf_triple_during(Property, Frame, Value, Interval) :-
   ground(Property),
   rdfs_subproperty_of(SubProperty, Property),
-  computable_triple(SubProperty, Frame, Value, Interval).
-
-computable_triple(Property, Resource, Type, Interval) :-
-  rdfs_computable_property(Property, ComputableProperty),
-  ( rdfs_individual_of(ComputableProperty, computable:'PrologTemporalProperty') -> 
-    rdfs_computable_temporal_triple(Property, Resource, Type, Interval, ComputableProperty) ;
-    rdfs_computable_temporal_triple(Property, Resource, Type, ComputableProperty)
-  ).
-
-rdfs_computable_temporal_triple(Property, Frame, Value, Interval, ComputableProperty) :-
-  interval(Interval, Interval_v),
-  catch( % TODO: handle caching!
-    rdfs_computable_prolog_triple(Property, Frame, Value, [Interval_v], ComputableProperty),
-    error(instantiation_error, _),
-    fail
-  ).
-
-rdfs_computable_temporal_triple(Property, Frame, Value, ComputableProperty) :-
-  catch( % TODO: handle caching!
-    rdfs_computable_prolog_triple(Property, Frame, Value, [], ComputableProperty),
-    error(instantiation_error, _),
-    fail
-  ).
+  rdfs_computable_triple_during(SubProperty, Frame, Value, Interval).
   
 %% current_temporal_part(?Obj,?TemporalPart) is nondet.
 %
