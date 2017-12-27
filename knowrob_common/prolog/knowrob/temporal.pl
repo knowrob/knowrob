@@ -44,6 +44,12 @@
       occurs/1,
       occurs/2,
       occurs/3,
+      time_term/2,
+      time_between/3,
+      time_between/2,
+      time_later_then/2,
+      time_earlier_then/2,
+      current_time/1,
       interval/2,
       interval_start/2,
       interval_end/2,
@@ -560,6 +566,102 @@ temporal_part_has(S, P, O, Interval, Lifespan) :-
       O_stripped = S_O_stripped ) ;
     ( O = S_O ))
   )).
+
+		 /*******************************
+		 *		Time instants			*
+		 *******************************/
+
+current_time(T) :-
+  set_prolog_flag(float_format, '%.12g'),
+  get_time(T).
+
+% Use identity if first argument is a number
+time_term(Timepoint, Timepoint) :-
+  number(Timepoint), !.
+
+time_term([Begin,End], [Begin,End]) :-
+  number(Begin), number(End), !.
+
+time_term([Begin], [Begin]) :-
+  number(Begin), !.
+
+time_term(Timeinterval, Interval) :-
+  atom(Timeinterval),
+  rdfs_individual_of(Timeinterval, knowrob:'TimeInterval'),
+  rdf_has(Timeinterval, knowrob:'startTime', Timepoint0),
+  time_term(Timepoint0, Begin),
+  (  rdf_has(Timeinterval, knowrob:'endTime', Timepoint1)
+  -> (time_term(Timepoint1, End), Interval=[Begin,End])
+  ;  Interval=[Begin]
+  ), !.
+
+time_term(Timepoint, Time) :-
+  atom(Timepoint),
+  (  rdf_split_url(_, TimePointLocal, Timepoint),
+     atom_concat('timepoint_', TimeAtom, TimePointLocal)
+  -> term_to_atom(Time, TimeAtom)
+  ;  (  atom_concat('timepoint_', TimepointAtom, Timepoint)
+     -> term_to_atom(Time, TimepointAtom)
+     ;  term_to_atom(Time, Timepoint)
+     )
+  ).
+
+%% time_between(+T, +T0, +T1)
+% True iff T0 <= T <= T1
+%
+time_between(Timeinterval, T0, T1) :-
+  atom(Timeinterval),
+  rdfs_individual_of(Timeinterval, knowrob:'TimeInterval'),
+  time_term(Timeinterval , Interval),
+  time_between(Interval, T0, T1), !.
+
+time_between([T2,T3], T0, T1) :-
+  time_between(T2, T0, T1),
+  time_between(T3, T0, T1), !.
+
+time_between(T, T0, T1) :-
+  not(is_list(T)), 
+  time_earlier_then(T0, T),
+  time_earlier_then(T, T1).
+
+time_between(T, Timeinterval) :-
+  atom(Timeinterval),
+  rdfs_individual_of(Timeinterval, knowrob:'TimeInterval'),
+  time_term(Timeinterval , Interval),
+  time_between(T, Interval), !.
+
+time_between(T, [Begin,End]) :-
+  time_between(T, Begin, End).
+
+time_between(T, [Begin]) :-
+  time_later_then(T, [Begin]).
+
+
+%% time_later_then(+T0, +T1)
+% True iff T0 >= T1
+%
+time_later_then(T0, T1) :-
+  time_term(T0, T0_term),
+  time_term(T1, T1_term),
+  time_later_then_(T0_term, T1_term), !.
+time_later_then_([_], [_])     :- false.
+time_later_then_([T0], [_,T1])   :- T1 =< T0, !.
+time_later_then_([_,T0], [T1])   :- T1 =< T0, !.
+time_later_then_([_,T0], [_,T1]) :- T1 =< T0, !.
+time_later_then_(T0, T1) :- number(T0), number(T1), T1 =< T0, !.
+
+%% time_earlier_then(+T0, +T1)
+% True iff T0 <= T1
+%
+time_earlier_then(T0, T1) :-
+  time_term(T0, T0_term),
+  time_term(T1, T1_term),
+  time_earlier_then_(T0_term, T1_term), !.
+time_earlier_then_([_], [_])     :- false.
+time_earlier_then_([T0], [_,T1])   :- T0 =< T1, !.
+time_earlier_then_([_,T0], [T1])   :- T0 =< T1, !.
+time_earlier_then_([_,T0], [_,T1]) :- T0 =< T1, !.
+time_earlier_then_(T0, T1) :- number(T0), number(T1), T0 =< T1, !.
 
 		 /*******************************
 		 *	Allen's interval algebra	*

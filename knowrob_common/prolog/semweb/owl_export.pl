@@ -48,6 +48,7 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl')).
+:- use_module(library('knowrob/utility/filesystem')). % FIXME do not import this
 :- use_module(library('knowrob/computable')). % FIXME do not import this
 :- use_module(library('knowrob/owl')). % FIXME do not import this
 :- use_module(library('knowrob/actions')). % FIXME do not import this

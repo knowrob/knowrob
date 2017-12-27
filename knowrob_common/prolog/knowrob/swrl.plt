@@ -23,7 +23,6 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('semweb/owl_parser')).
-:- use_module(library('knowrob/util')).
 :- use_module(library('knowrob/swrl')).
 :- use_module(library('knowrob/entity')).
 :- use_module(library('knowrob/temporal')).

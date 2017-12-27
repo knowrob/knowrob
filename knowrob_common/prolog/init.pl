@@ -46,7 +46,6 @@
 :- use_module(library('semweb/owl_parser')).
 :- use_module(library('semweb/owl_export')).
 
-:- use_module(library('knowrob/util')).
 :- use_module(library('knowrob/utility/delay')).
 :- use_module(library('knowrob/utility/atoms')).
 

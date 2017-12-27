@@ -41,12 +41,13 @@
       rdf_has_prolog/3,
       rdf_value_prolog/3,
       rdfs_type_of/2,
-      rdf_common_ancestor/2
+      rdf_common_ancestor/2,
+      strip_literal_type/2,
+      rdf_vector_prolog/2
     ]).
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
-:- use_module(library('knowrob/knowrob_math')).
 
 :- rdf_meta rdf_phas(r,r,o),
             rdf_has_prolog(r,r,t),
@@ -55,6 +56,8 @@
             rdf_instance_from_class(r,r,r),
             rdfs_type_of(r,r),
             rdf_common_ancestor(t,r).
+
+:- rdf_db:rdf_register_ns(knowrob,'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
 		 /*******************************
 		 *		  ASSERTIONS			*
@@ -128,12 +131,12 @@ rdf_has_prolog(S,P,O) :-
 
 %% rdf_value_prolog
 rdf_value_prolog('http://knowrob.org/kb/knowrob.owl#boundingBoxSize', literal(type(_,Val)), Vec) :- % TODO: make subproperty of knowrob:vector
-  knowrob_math:parse_vector(Val, Vec), !.
+  rdf_vector_prolog(Val, Vec), !.
 rdf_value_prolog('http://knowrob.org/kb/knowrob.owl#mainColorOfObject', literal(type(_,Val)), Vec) :- % TODO: make subproperty of knowrob:vector
-  knowrob_math:parse_vector(Val, Vec), !.
+  rdf_vector_prolog(Val, Vec), !.
 rdf_value_prolog(P, literal(type(_,Val)), Vec) :-
   rdfs_subproperty_of(P, knowrob:vector),
-  knowrob_math:parse_vector(Val, Vec), !.
+  rdf_vector_prolog(Val, Vec), !.
 rdf_value_prolog(_, literal(type('http://www.w3.org/2001/XMLSchema#float',Atom)), Number) :-
   atom_number(Atom, Number), !.
 rdf_value_prolog(_, literal(type('http://www.w3.org/2001/XMLSchema#double',Atom)), Number) :-
@@ -142,6 +145,23 @@ rdf_value_prolog(_, literal(type('http://www.w3.org/2001/XMLSchema#integer',Atom
   atom_number(Atom, Number), !.
 rdf_value_prolog(_, literal(type(_,Atom)), Atom) :- !.
 rdf_value_prolog(_, V, V).
+
+%% strip_literal_type(+Input,-Output)
+%
+% Strip the literal(type(..., Value)) and return value if present, else return the original.
+%
+strip_literal_type(literal(type(_, Value)), Value) :- !.
+strip_literal_type(literal(Value), Value) :- !.
+strip_literal_type(Value, Value).
+
+rdf_vector_prolog([X|Y], [X|Y]).
+rdf_vector_prolog(In, Numbers) :-
+  rdf_vector_prolog(In, Numbers, ' ').
+rdf_vector_prolog(In, Numbers, Delimiter) :-
+  atom(In),
+  normalize_space(atom(In_Normalized),In),
+  atomic_list_concat(Atoms, Delimiter, In_Normalized),
+  maplist(atom_number, Atoms, Numbers).
 
 		 /*******************************
 		 *		  Class hierarchy		*

@@ -314,7 +314,7 @@ marker_initialize_object(Identifier,MarkerObject) :-
     
     ( rdf_has(Identifier, srdl2comp:'mesh_scale', literal(type(_,Scale)))
     -> (
-      parse_vector(Scale, ScaleVec),
+      rdf_vector_prolog(Scale, ScaleVec),
       marker_scale(MarkerObject, ScaleVec)
     ) ; true )
   )),
@@ -1104,12 +1104,12 @@ marker_property(Marker, pose(Pose)) :-
 
 marker_property(Marker, pose(Position,Orientation)) :-
   atom(Position), Position \= [], !,
-  parse_vector(Position, Position_v),
+  rdf_vector_prolog(Position, Position_v),
   marker_pose(Marker, Position_v, Orientation).
 
 marker_property(Marker, pose(Position,Orientation)) :-
   atom(Orientation), Orientation \= [], !,
-  parse_vector(Orientation, Orientation_v),
+  rdf_vector_prolog(Orientation, Orientation_v),
   marker_pose(Marker, Position, Orientation_v).
 
 marker_property(Marker, pose(Position,Orientation)) :-
@@ -1501,14 +1501,14 @@ set_marker_translation(MarkerObj, [X,Y,Z]) :-
   jpl_new(array(double), [X,Y,Z], Array),
   jpl_call(MarkerObj, 'setTranslation', [Array], _), !.
 set_marker_translation(MarkerObj, Pos) :-
-  atom(Pos), parse_vector(Pos, Pos_v),
+  atom(Pos), rdf_vector_prolog(Pos, Pos_v),
   set_marker_translation(MarkerObj, Pos_v).
 
 set_marker_orientation(MarkerObj, [QX,QY,QZ,QW]) :-
   jpl_new(array(double), [QX,QY,QZ,QW], Array),
   jpl_call(MarkerObj, 'setOrientation', [Array], _), !.
 set_marker_orientation(MarkerObj, O) :-
-  atom(O), parse_vector(O, O_v),
+  atom(O), rdf_vector_prolog(O, O_v),
   set_marker_translation(MarkerObj, O_v).
 
 set_marker_pose(MarkerObj, pose(Translation,Orientation)) :-
