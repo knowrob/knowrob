@@ -92,27 +92,31 @@ rdf_triple(Property, Frame, Value) :-
   ; catch( rdfs_computable_triple(SubProperty, Frame, Value), error(instantiation_error, _), fail)
   ).
 
-%% rdfs_instance_of(?Resource, ?Class) is nondet.
+%% rdfs_instance_of_during(?Resource, ?RDF_Type) is nondet
 %
-% combine rdfs_computable_instance_of (with subclass handling) and rdfs:rdfs_individual_of
+% True if RDF_Type is the type of Resource during Interval
+% according to RDFS, or computable semantics.
 %
-rdfs_instance_of(Resource, Class) :-
+% @param Resource RDF resource iri
+% @param RDF_Type RDF type iri
+% 
+rdfs_instance_of(Resource, RDF_Type) :-
   nonvar(Resource),
-  ( nonvar(Class) -> once((
-    % check if Resource belongs to Class
-    rdfs_individual_of(Resource, Class) ;
-    rdfs_computable_instance_of_subclass(Resource, Class))) ;
+  ( nonvar(RDF_Type) -> once((
+    % check if Resource belongs to RDF_Type
+    rdfs_individual_of(Resource, RDF_Type) ;
+    rdfs_computable_instance_of_subclass(Resource, RDF_Type))) ;
     % compute the class of the given instance
-    rdfs_individual_of(Resource, Class) ).
+    rdfs_individual_of(Resource, RDF_Type) ).
 
-rdfs_instance_of(Resource, Class) :-
-  var(Resource), nonvar(Class), (
-  rdfs_individual_of(Resource, Class);
-  rdfs_computable_instance_of_subclass(Resource, Class)).
+rdfs_instance_of(Resource, RDF_Type) :-
+  var(Resource), nonvar(RDF_Type), (
+  rdfs_individual_of(Resource, RDF_Type);
+  rdfs_computable_instance_of_subclass(Resource, RDF_Type)).
 
-rdfs_instance_of(Resource, Class) :-
+rdfs_instance_of(Resource, RDF_Type) :-
   rdf_equal(rdf:type, Property),
-  rdfs_computable_triple_during(Resource, Property, Class).
+  rdfs_computable_triple_during(Resource, Property, RDF_Type).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

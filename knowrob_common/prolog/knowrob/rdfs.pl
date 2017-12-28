@@ -38,6 +38,8 @@
       rdf_unique_id/2,
       rdf_phas/3,
       rdf_has_prolog/3,
+      rdf_assert_prolog/3,
+      rdf_assert_prolog/4,
       rdf_vector_prolog/2,
       rdfs_value_prolog/3,
       rdfs_type_of/2,
@@ -131,6 +133,20 @@ rdf_phas(Property, P, O) :-
 rdf_has_prolog(S,P,O) :-
   rdf_has(S,P,O_rdf),
   rdfs_value_prolog(P,O_rdf,O).
+
+%% rdf_assert_prolog
+%
+rdf_assert_prolog(S,P,O) :- rdf_assert_prolog(S,P,O,user).
+rdf_assert_prolog(S,P,O,Graph) :-
+  rdf_has(P, rdf:type, owl:'DatatypeProperty'), !,
+  strip_literal_type(O,Value),
+  (  rdf_phas(P, rdfs:range, Range)
+  -> rdf_assert(S, P, literal(type(Range,Value)), Graph)
+  ;  rdf_assert(S, P, literal(Value), Graph)
+  ).
+rdf_assert_prolog(S,P,O,Graph) :-
+  rdf_assert(S,P,O,Graph).
+  
 
 %% rdfs_value_prolog(+Property, +RDFValue, -PrologValue)
 %

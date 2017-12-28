@@ -31,35 +31,20 @@
 
 :- module(knowrob_temporal,
     [
-      rdf_triple_during/4,
-      rdfs_has_during/4,
-      rdfs_instance_of_during/3,
-      owl_individual_of_during/3,
-      owl_individual_of_during/2,
-      owl_has_during/4,
-      holds/1,
-      holds/2,
-      holds/3,
-      holds/4,
-      occurs/1,
-      occurs/2,
-      occurs/3,
-      time_term/2,
-      time_between/3,
-      time_between/2,
-      time_later_then/2,
-      time_earlier_then/2,
-      current_time/1,
-      interval/2,
-      interval_start/2,
-      interval_end/2,
-      interval_before/2,
-      interval_after/2,
-      interval_meets/2,
-      interval_starts/2,
-      interval_finishes/2,
-      interval_overlaps/2,
-      interval_during/2,
+      current_time/1,  % -CurrentTime
+      holds/1,   % ?Predicate(?Subject,?Object)
+      holds/2,   % ?Predicate(?Subject,?Object), +Interval
+      holds/3,   % ?Subject, ?Predicate, ?Object
+      holds/4,   % ?Subject, ?Predicate, ?Object, +Interval
+      occurs/1,  % ?Event
+      occurs/2,  % ?Event, ?Time      
+      occurs/3,  % ?Event, ?Time, ?Type
+      owl_individual_of_during/3,  % ?Resource, ?Description, ?Interval
+      owl_individual_of_during/2,  % ?Resource, ?Description
+      owl_has_during/4,            % ?Subject, ?Predicate, ?Object, ?Interval
+      rdfs_instance_of_during/3,   % ?Resource, ?Description, ?Interval
+      rdfs_has_during/4,           % ?Subject, ?Predicate, ?Object, ?Interval
+      rdf_triple_during/4,         % ?Predicate, ?Subject, ?Object, ?Interval
       assert_temporal_part/3,
       assert_temporal_part/4,
       assert_temporal_part/5,
@@ -69,7 +54,22 @@
       current_temporal_part/2,
       temporal_part/3,
       temporal_part_has/3,
-      temporal_part_has/4
+      temporal_part_has/4,
+      time_term/2,
+      time_between/3,
+      time_between/2,
+      time_later_then/2,
+      time_earlier_then/2,
+      interval/2,
+      interval_start/2,
+      interval_end/2,
+      interval_before/2,
+      interval_after/2,
+      interval_meets/2,
+      interval_starts/2,
+      interval_finishes/2,
+      interval_overlaps/2,
+      interval_during/2
     ]).
 
 :- use_module(library('semweb/rdf_db')).
@@ -114,25 +114,20 @@
             temporal_part_has(r,r,r),
             temporal_part_has(r,r,r,t).
 
-% define holds as meta-predicate and allow the definitions
-% to be in different source files
-:- meta_predicate holds(0, ?, ?, ?, ?).
-:- multifile holds/4.
-
 :- rdf_db:rdf_register_ns(knowrob,'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
 		 /*******************************
 		 *	 high-level predicates		*
 		 *******************************/
 
-%% holds(+Term, ?T)
 %% holds(+Term)
+%% holds(+Term, ?Interval)
 %
-% True iff @Term holds during @T. Where @T is a TimeInterval or TimePoint individual,
+% True iff Term holds during Interval. Where Interval is a TimeInterval or TimePoint individual,
 % a number or a list of two numbers representing a time interval.
 %
-% @param Term Must be of the form: "PROPERTY(SUBJECT, OBJECT)".
-%             For example: `Term = knowrob:insideOf(example:'DinnerPlate_fdigh245', example:'Drawer_bsdgwe8trg')`.
+% @param Term Must be of the form: PROPERTY(SUBJECT, OBJECT).
+%             For example: Term = knowrob:insideOf(example:'DinnerPlate_fdigh245', example:'Drawer_bsdgwe8trg').
 % @param T Can be TimeInterval or TimePoint individual, a number or a list of two numbers
 %          representing a time interval.
 %
@@ -163,43 +158,42 @@ holds(S, P, O) :-
   current_time(T),
   holds(S, P, O, [T,T]).
 
-holds(S, P, O, I) :-
-  ground([S,P,O,I]), !,
-  once(holds_(S, P, O, I)).
+holds(S, P, O, T) :-
+  atom(T), !,
+  interval(T,I),
+  owl_has_during(S, P, O, I).
+
+holds(S, P, O, T) :-
+  number(T), !,
+  owl_has_during(S, P, O, [T,T]).
 
 holds(S, P, O, I) :-
-  holds_(S, P, O, I).
+  owl_has_during(S, P, O, I).
 
-holds_(S, P, O, T) :- atom(T), !, interval(T,I), owl_has_during(S, P, O, I).
-
-holds_(S, P, O, T) :- number(T), !, owl_has_during(S, P, O, [T,T]).
-
-holds_(S, P, O, I) :- owl_has_during(S, P, O, I).
-
-%% occurs(?Evt) is nondet.
-%% occurs(?Evt,?T) is nondet.
+%% occurs(?Evt) is nondet
+%% occurs(?Evt,?Time) is nondet
+%% occurs(?Evt,?Time,?Type) is nondet
 %
-% True iff @Evt occurs during @T. Where @T is a TimeInterval or TimePoint individual,
+% True iff Evt occurs during Time. Where Time is a TimeInterval or TimePoint individual,
 % a number or a list of two numbers representing a time interval.
 %
 % @param Evt Identifier of the event
-% @param T   Timepoint or time interval
+% @param Time Timepoint or time interval
+% @param Type The event type iri
 % 
-% TODO: make occurs a multifile predicate
 occurs(Evt) :-
-  current_time(T),
-  occurs(Evt, T).
+  current_time(CurrentTime),
+  occurs(Evt, CurrentTime, knowrob:'Event').
 
-% Read event instance from RDF triple store
-occurs(Evt, I) :-
-  occurs(Evt, I, knowrob:'Event').
+occurs(Evt, Time) :-
+  occurs(Evt, Time, knowrob:'Event').
 
-occurs(Evt, I, Type) :-
+occurs(Evt, Interval, Type) :-
   rdfs_individual_of(Evt, Type),
   interval(Evt, EvtI),
-  (  ground(I)
-  -> interval_during(I, EvtI)
-  ;  I = EvtI ).
+  (  ground(Interval)
+  -> interval_during(Interval, EvtI)
+  ;  Interval = EvtI ).
 
 		 /*******************************
 		 *	 	  OWL expansion			*
@@ -210,6 +204,18 @@ rdfs_has_during(S, P, O, I) :- rdf_triple_during(P, S, O, I).
 owl_temporal_db(I, db(rdfs_has_during(I),
                       rdfs_instance_of_during(I))).
 
+%% owl_individual_of_during(?Resource,?Description) is nondet
+%% owl_individual_of_during(?Resource,?Description,Interval) is nondet
+%
+% True if Resource satisfies Description during Interval
+% (or at the moment if not specified)
+% according the the OWL-Description entailment rules,
+% with additional computable and temporal semantics.
+%
+% @param Resource OWL resource identifier
+% @param Description OWL class description
+% @param Interval The interval during which the Resource satisfies Description
+% 
 owl_individual_of_during(Resource, Description) :-
   current_time(Now),
   owl_individual_of_during(Resource, Description, [Now,Now]).
@@ -220,6 +226,16 @@ owl_individual_of_during(Resource, Description, Interval) :-
     once(owl_individual_of(Resource, Description, DB)) ; 
     owl_individual_of(Resource, Description, DB) ).
 
+%% owl_has_during(?Subject, ?Predicate, ?Object, ?Interval)
+%
+% True if this relation is specified, or can be deduced using OWL
+% inference rules, computable semantics, or temporal semantics.
+%
+% @param Subject OWL resource iri
+% @param Predicate Property iri
+% @param Object OWL resource iri or datatype value
+% @param Interval The interval during which the relation holds
+%
 owl_has_during(S, P, O, Interval) :-
   owl_temporal_db(Interval, DB),
   ( ground([S,P,O,Interval]) ->
@@ -230,42 +246,49 @@ owl_has_during(S, P, O, Interval) :-
 		 *	   Temporal semantics		*
 		 *******************************/
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% rdfs_instance_of_during
-rdfs_instance_of_during(Resource, Description, Interval) :-
+%% rdfs_instance_of_during(?Resource, ?RDF_Type, Interval) is nondet
+%
+% True if RDF_Type is the type of Resource during Interval
+% according to RDFS, computable, or temporal semantics.
+%
+% @param Resource RDF resource iri
+% @param RDF_Type RDF type iri
+% @param Interval The interval during which RDF_Type is the type of Resource
+% 
+rdfs_instance_of_during(Resource, RDF_Type, Interval) :-
   var(Resource),
-  rdfs_individual_of(X, Description),
+  rdfs_individual_of(X, RDF_Type),
   ( rdfs_individual_of(X, knowrob:'TemporalPart') -> (
     temporal_part_during(X, Interval),
     rdf_has(Resource, knowrob:temporalParts, X)
   ) ; (
-    rdfs_instance_of_during1(X, Description, Interval),
+    rdfs_instance_of_during1(X, RDF_Type, Interval),
     Resource = X
   )).
 
-rdfs_instance_of_during(Resource, Description, Interval) :-
+rdfs_instance_of_during(Resource, RDF_Type, Interval) :-
   nonvar(Resource),
-  rdfs_individual_of(Resource, Description),
-  rdfs_instance_of_during1(Resource, Description, Interval).
+  rdfs_individual_of(Resource, RDF_Type),
+  rdfs_instance_of_during1(Resource, RDF_Type, Interval).
 
-rdfs_instance_of_during(Resource, Description, Interval) :-
+rdfs_instance_of_during(Resource, RDF_Type, Interval) :-
   nonvar(Resource),
   rdf_has(Resource, knowrob:temporalParts, X),
-  rdfs_individual_of(X, Description),
+  rdfs_individual_of(X, RDF_Type),
   temporal_part_during(X, Interval).
 
 % computable rdf:type
-rdfs_instance_of_during(Resource, Description, Interval) :-
+rdfs_instance_of_during(Resource, RDF_Type, Interval) :-
   rdf_equal(rdf:type, Property),
-  ( nonvar(Description) ->
-    rdfs_subclass_of(Type, Description) ;
-    Type = Description ),
+  ( nonvar(RDF_Type) ->
+    rdfs_subclass_of(Type, RDF_Type) ;
+    Type = RDF_Type ),
   rdfs_computable_triple_during(Property, Resource, Type, Interval).
 
-rdfs_instance_of_during1(Resource, Description, Interval) :-
+rdfs_instance_of_during1(Resource, RDF_Type, Interval) :-
   \+ ( % TODO: this is a bit ugly
     rdf_has(Resource, knowrob:temporalParts, X),
-    rdfs_individual_of(X, Description)
+    rdfs_individual_of(X, RDF_Type)
   ),
   ( nonvar(Interval) ->
     true ;
@@ -279,8 +302,17 @@ temporal_part_during(TemporalPart, Interval) :-
     Interval=TemporalExtend
   ).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% rdf_triple_during
+%% rdf_triple_during(?Property, ?Frame, ?Value, ?Interval) is nondet.
+%
+% True if the RDF triple store contains (Frame Property Value),
+% or if the triple can be derived from computable predicates,
+% or temporal semantics.
+%
+% @param Property The property iri
+% @param Frame RDF resource iri
+% @param Value RDF resource iri or datatype value
+% @param Interval The interval during which the triple holds
+%
 rdf_triple_during(P, S, O, Interval) :-
   var(Interval),
   ( temporal_part_has(S,P,O,_,TemporalExtend) *->
@@ -374,41 +406,20 @@ assert_temporal_part(S, P, O, I, Graph) :-
     assert_nontemporal_value(S,P,O, Graph)
   )).
 
-% TODO: setting data valued property should be part of knowrob_owl
 assert_nontemporal_value(S, P, O) :-
   assert_nontemporal_value(S, P, O, user).
-assert_nontemporal_value(S, P, Value, Graph) :-
-  atomic(Value),
-  rdf_has(P, rdf:type, owl:'DatatypeProperty'),
-  (  rdf_phas(P, rdfs:range, Range)
-  -> rdf_assert(S, P, literal(type(Range,Value)), Graph)
-  ;  rdf_assert(S, P, literal(Value), Graph)
-  ), !.
 assert_nontemporal_value(S, P, nontemporal(Value), Graph) :-
   rdf_assert(S, P, Value, Graph), !.
 assert_nontemporal_value(S, P, Value, Graph) :-
-  compound(Value),
-  rdf_has(P, rdf:type, owl:'DatatypeProperty'),
-  rdf_assert(S, P, Value, Graph), !.
-assert_nontemporal_value(S, P, O, Graph) :-
-  rdf_assert(S, P, O, Graph), !.
+  rdf_assert_prolog(S, P, Value, Graph).
 
-% TODO: setting data valued property should be part of knowrob_owl
 assert_temporal_part_value(TemporalPart, P, Value) :-
   assert_temporal_part_value(TemporalPart, P, Value, user).
 assert_temporal_part_value(TemporalPart, P, Value, Graph) :-
-  atomic(Value),
   rdf_has(P, rdf:type, owl:'DatatypeProperty'), !,
-  (  rdf_phas(P, rdfs:range, Range)
-  -> rdf_assert(TemporalPart, P, literal(type(Range,Value)), Graph)
-  ;  rdf_assert(TemporalPart, P, literal(Value), Graph)
-  ).
+  rdf_assert_prolog(TemporalPart, P, Value, Graph).
 assert_temporal_part_value(TemporalPart_S, P, nontemporal(Value), Graph) :-
   rdf_assert(TemporalPart_S, P, Value, Graph), !.
-assert_temporal_part_value(TemporalPart, P, Value, Graph) :-
-  compound(Value), % FIXME: weak check
-  rdf_has(P, rdf:type, owl:'DatatypeProperty'), !,
-  rdf_assert(TemporalPart, P, Value, Graph).
 assert_temporal_part_value(TemporalPart_S, P, Value, Graph) :-
   create_temporal_part(Value, P, TemporalPart_O), !,
   rdf_assert(TemporalPart_S, P, TemporalPart_O, Graph),
@@ -521,20 +532,21 @@ temporal_part_has(S, P, O, I, Lifespan) :-
 
 temporal_part_has(S, P, O, Interval, Lifespan) :-
   rdf_has(S, knowrob:'temporalProperty', P),
-  
+  % find the lifespan of the property assertion
   rdf_has(S, knowrob:'temporalExtend', Ext),
   interval(Ext, Lifespan),
   ( ground(Interval) ->
     interval_during(Interval, Lifespan) ;
     Interval=Lifespan ),
-  
+  % read from the triple store
   rdf_has(S, P, S_O),
-  
+  % ignore some specific type statements in case of
+  % temporal type assertions
   (rdf_equal(P, rdf:type)
   -> \+ rdf_equal(S_O, owl:'NamedIndividual'),
      \+ rdf_equal(S_O, knowrob:'TemporalPart')
   ;  true),
-  
+  % format the property value
   (rdfs_individual_of(S_O, knowrob:'TemporalPart')
   -> once(owl_has(O, knowrob:temporalParts, S_O))
   ; (
@@ -549,11 +561,16 @@ temporal_part_has(S, P, O, Interval, Lifespan) :-
 		 *		Time instants			*
 		 *******************************/
 
-current_time(T) :-
+%% current_time(-CurrentTime)
+%
+% Unifies CurrentTime with the current time in seconds.
+%
+current_time(CurrentTime) :-
   set_prolog_flag(float_format, '%.12g'),
-  get_time(T).
+  get_time(CurrentTime).
 
-% Use identity if first argument is a number
+%% time_term(+Timepoint, -TimeTerm)
+%
 time_term(Timepoint, Timepoint) :-
   number(Timepoint), !.
 
@@ -585,6 +602,7 @@ time_term(Timepoint, Time) :-
   ).
 
 %% time_between(+T, +T0, +T1)
+%
 % True iff T0 <= T <= T1
 %
 time_between(Timeinterval, T0, T1) :-
@@ -616,6 +634,7 @@ time_between(T, [Begin]) :-
 
 
 %% time_later_then(+T0, +T1)
+%
 % True iff T0 >= T1
 %
 time_later_then(T0, T1) :-
@@ -629,6 +648,7 @@ time_later_then_([_,T0], [_,T1]) :- T1 =< T0, !.
 time_later_then_(T0, T1) :- number(T0), number(T1), T1 =< T0, !.
 
 %% time_earlier_then(+T0, +T1)
+%
 % True iff T0 <= T1
 %
 time_earlier_then(T0, T1) :-
@@ -783,14 +803,6 @@ interval_overlaps(I0, I1) :-
    (var(End1) -> Begin1 < End0;
    (Begin0=<End1, End0>=Begin1)
    ))).
-
-%  ( interval(I0, [Begin0,End0]);
-%    interval(I0, [Begin0]) ),
-%  (( interval(I1, [Begin1,End1]),
-%     ( nonvar(End0), (End0 < End1) ));   % ends before the end of
-%     interval(I1, [Begin1]) ),
-%  (var(End0) ; (End0 > Begin1)),         % ends after the start of
-%  (Begin0 < Begin1).                   % begins before the start of
 
 %% interval_during(I0,I1) is semidet.
 %

@@ -1,4 +1,4 @@
-/** <module> Utilities for handling OWL information in KnowRob.
+/** <module> Utilities for handling transforms in KnowRob.
 
   Copyright (C) 2017 Daniel Beßler
   All rights reserved.
@@ -33,7 +33,7 @@
 :- module(knowrob_transforms,
     [
       map_frame/1,
-      map_frame_name/1,             % name of world coordinate frame
+      map_frame_name/1,             % +Name
       transform_reference_frame/2,  % +Transform, ?ReferenceFrame
       transform_data/2,             % +Transform, ?(Translation, Rotation)
       transform_multiply/3,         % +Transform1, +Transform2, -Product

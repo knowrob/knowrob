@@ -82,19 +82,27 @@
 %% owl_computable_db
 owl_computable_db(db(rdfs_computable_has,rdfs_instance_of)).
 
-%% owl_compute_individual_of(?Resource, +Description) is nondet.
+%% owl_compute_individual_of(?Resource, ?Description) is nondet
 %
-% Test  or  generate  the  resources    that  satisfy  Description
-% according the the OWL-Description entailment rules.
+% True if Resource satisfies Description
+% according the the OWL-Description entailment rules,
+% with additional computable semantics.
 %
+% @param Resource OWL resource identifier
+% @param Description OWL class description
+% 
 owl_compute_individual_of(Resource, Description) :-
   owl_computable_db(DB),
   owl_individual_of(Resource, Description, DB).
 
 %% owl_compute_has(?Subject, ?Predicate, ?Object)
 %
-% True if this relation is specified or can be deduced using OWL
-% inference rules.  It adds transitivity to owl_has_direct/3.
+% True if this relation is specified, or can be deduced using OWL
+% inference rules, or computable semantics.
+%
+% @param Subject OWL resource iri
+% @param Predicate Property iri
+% @param Object OWL resource iri or datatype value
 %
 owl_compute_has(S, P, O) :-
   owl_computable_db(DB),
