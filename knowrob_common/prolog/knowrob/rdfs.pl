@@ -70,6 +70,7 @@
 %
 % @param Class   Class describing the type of the instance
 % @param Inst    Identifier of the generated instance of Class
+%
 rdf_instance_from_class(Class, Instance) :-
     rdf_instance_from_class(Class, _, Instance).
 
@@ -81,6 +82,7 @@ rdf_instance_from_class(Class, Instance) :-
 % @param Class     Class describing the type of the instance
 % @param SourceRef Atom as source reference for rdf_assert
 % @param Inst      Identifier of the generated instance of Class
+%
 rdf_instance_from_class(Class, SourceRef, Instance) :-
   ( is_uri(Class) ->
     T=Class ;
@@ -93,10 +95,11 @@ rdf_instance_from_class(Class, SourceRef, Instance) :-
 %% rdf_unique_id(+Class, -UniqID) is det
 %
 % UniqID is a IRI that uses Class as prefix and is
-% not yet used in the RDF DB.
+% not yet used in the RDF triple store.
 %
 % @param Class Class IRI
 % @param UniqID Unused IRI with prefix Class
+%
 rdf_unique_id(Class, UniqID) :-
   % generate 8 random alphabetic characters
   randseq(8, 25, Seq_random),
@@ -121,20 +124,32 @@ rdf_unique_id(Class, UniqID) :-
 % @param Property A RDF property
 % @param P A RDF property
 % @param O A RDF resource
+%
 rdf_phas(Property, P, O) :-
 	rdfs_subproperty_of(Property, Super),
 	rdf_has(Super, P, O).
 
-%% rdf_has_prolog
+%% rdf_has_prolog(?Subject,?Predicate,?Value)
 %
 % Calls rdf_has and converts data values to
 % Prolog representation (e.g., xsd:float to Prolog number).
+%
+% @param Subject RDF resource iri
+% @param Predicate RDF predicate iri
+% @param Value RDF iri or Prolog encoded data value
 %
 rdf_has_prolog(S,P,O) :-
   rdf_has(S,P,O_rdf),
   rdfs_value_prolog(P,O_rdf,O).
 
-%% rdf_assert_prolog
+%% rdf_assert_prolog(?Subject,?Predicate,?Value)
+%
+% Asserts a triple to the RDF datastore,
+% and accepts some Prolog encoded data values.
+%
+% @param Subject RDF resource iri
+% @param Predicate RDF predicate iri
+% @param Value RDF iri or Prolog encoded data value
 %
 rdf_assert_prolog(S,P,O) :- rdf_assert_prolog(S,P,O,user).
 rdf_assert_prolog(S,P,O,Graph) :-

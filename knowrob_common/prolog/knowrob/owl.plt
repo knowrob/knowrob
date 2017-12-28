@@ -31,12 +31,6 @@
 
 :- rdf_db:rdf_register_prefix(test_owl, 'http://knowrob.org/kb/knowrob_owl_test.owl#', [keep(true)]).
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%% OWL reasoning
-%% TODO: write some OWL reasoning tests
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% OWL entity descriptions
 
@@ -213,20 +207,5 @@ test(generate_temporal_part_description) :-
   rdfs_individual_of(Obj, knowrob:'Dough'),
   entity(Obj, Descr_),
   Descr_=Descr.
-
-%[an, object, [manipulated_by, pr2, during, [a, timepoint, now]]]
-
-% Pouring content of water bottle into cup
-%[an, object, [type, cup], [not(contains), [an object, [type, water]]]]
-
-%:- entity(BottleIndividual, [an, object, [type, bottle], [grasped_by, ....]]).
-%:- % rdf_assert(BottleIndividual, knowrob:contains, WaterIndividual).
-%:- entity(CupIndividual, [an, object, [type, cup], [contains, [an object, [type, water]]]]).
-%:- % rdf_assert(ActionIndividual, knowrob:targetLocation, CupIndividual).
-%:- % rdf_assert(ActionIndividual, knowrob:objectActedon, BottleIndividual).
-%:- action_project_effect(ActionIndividual).
-%:- % rdf_assert(CupIndividual, knowrob:contains, WaterIndividual).
-
-%[an, object, [type, counter_top]]
   
 :- end_tests(knowrob_owl).

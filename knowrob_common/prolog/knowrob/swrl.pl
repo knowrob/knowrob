@@ -1,4 +1,4 @@
-/** <module> SWRL rules
+/** <module> Integration of SWRL rules into KnowRob
 
   Copyright (C) 2017 Daniel Beßler
   All rights reserved.
@@ -49,10 +49,6 @@
       swrl_satisfied/2
     ]).
 
-:- rdf_db:rdf_register_ns(owl, 'http://www.w3.org/2002/07/owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(rdfs, 'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
-:- rdf_db:rdf_register_ns(rdf, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#', [keep(true)]).
-:- rdf_db:rdf_register_ns(xml, 'http://www.w3.org/2001/XMLSchema#', [keep(true)]).
 :- rdf_db:rdf_register_prefix(swrl, 'http://www.w3.org/2003/11/swrl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(swrla, 'http://swrl.stanford.edu/ontologies/3.3/swrla.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(computable, 'http://knowrob.org/kb/computable.owl#').
@@ -71,9 +67,9 @@
 :- dynamic  call_mutex/2,
             rdf_swrl_store/2.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%% RDF-based SWRL representation
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		 /********************************
+		 * RDF-based SWRL representation *
+		 ********************************/
 
 %% rdf_swrl_rule(?Descr, ?Term)
 %
@@ -309,9 +305,9 @@ rdf_class_list_pl(Descr, [First|Rest]) :-
   rdf_has(Descr, rdf:rest, RestDescr),
 rdf_class_list_pl(RestDescr, Rest).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%% Prolog-encoded SWRL representation
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		 /***********************************
+		 * Prolog-based SWRL representation *
+		 ************************************/
 
 %% swrl_assert(+Rule)
 %
@@ -620,9 +616,9 @@ swrl_satisfied([HeadAtom|Xs] :- Body, Vars_user, Vars) :-
   swrl_rule_pl(HeadAtom :- Body,  _ :- Cond_pl, Vars),
   call( Cond_pl ).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%% Atom projection
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		 /************************************
+		  *   Projection of SWRL rules       *
+		  ************************************/
 
 %% swrl_project(+Rule)
 %% swrl_project(+Rule,+Vars_user)
@@ -770,9 +766,9 @@ swrl_class_atom_satisfied(S, exactly(N,P,Cls)) :-
 swrl_class_atom_satisfied(S, Cls) :-
   atom(Cls), owl_individual_of(S, Cls).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%% SWRL phrases
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		 /************************************
+		  *            SWRL phrases          *
+		  ************************************/
 
 %% swrl_phrase(?Term, ?Expr)
 %
