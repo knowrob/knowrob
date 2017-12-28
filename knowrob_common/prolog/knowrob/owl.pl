@@ -347,8 +347,7 @@ owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [pose=(Pos,Rot
       [pose=(knowrob:'MapFrame', Pos, Rot)], Pose).
 
 owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [mat=(Data)], Pose) :- !,
-  matrix_translation(Data, Pos),
-  matrix_rotation(Data, Rot),
+  matrix(Data, Pos, Rot),
   owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [pose=(Pos, Rot)], Pose).
 
 owl_instance_from_class('http://knowrob.org/kb/knowrob.owl#Pose', [pose=pose(A,B,C)], Pose) :- !,

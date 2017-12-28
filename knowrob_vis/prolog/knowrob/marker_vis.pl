@@ -811,8 +811,7 @@ marker_update(pointer(From,To), MarkerObject, T) :-
   marker_tf_frame(MarkerObject, From, FromResolved),
   marker_tf_frame(MarkerObject, To, ToResolved),
   mng_lookup_transform(FromResolved, ToResolved, T, Pose),
-  matrix_rotation(Pose, Orientation),
-  matrix_translation(Pose, Translation),
+  matrix(Pose, Translation, Orientation),
   marker_pose(MarkerObject,Translation,Orientation).
 
 marker_update(cylinder_tf(From,To), MarkerObject, T) :-
@@ -821,8 +820,8 @@ marker_update(cylinder_tf(From,To), MarkerObject, T) :-
   map_frame_name(MapFrame),
   mng_lookup_transform(MapFrame, FromResolved, T, Pose0),
   mng_lookup_transform(MapFrame, ToResolved, T, Pose1),
-  matrix_translation(Pose0, [X0,Y0,Z0]),
-  matrix_translation(Pose1, [X1,Y1,Z1]),
+  matrix(Pose0, [X0,Y0,Z0], _),
+  matrix(Pose1, [X1,Y1,Z1], _),
   DX is X1-X0, DY is Y1-Y0, DZ is Z1-Z0,
   Distance is sqrt(DX*DX + DY*DY + DZ*DZ),
   QX is -DY, QY is DX, QZ is 0.0, QW is Distance + DZ,
@@ -1232,8 +1231,7 @@ marker_pose(Marker, pose(Position,Orientation)) :-
   marker_call(Marker, pose(Position,Orientation), (get_marker_pose,set_marker_pose)).
 
 marker_pose(Marker, mat(Matrix)) :-
-  matrix_translation(Matrix, Position),
-  matrix_rotation(Matrix, Orientation),
+  matrix(Matrix, Position, Orientation),
   marker_call(Marker, pose(Position,Orientation), (get_marker_pose,set_marker_pose)).
 
 marker_pose(Marker, Position, Orientation) :-

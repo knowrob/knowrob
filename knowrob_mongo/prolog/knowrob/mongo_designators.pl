@@ -143,8 +143,7 @@ mng_designator_location(Designator, pose(Pos,Rot)) :-
   jpl_call('tfjava.Utils', 'stampedMatrix4dToPoseArray',
           [StampedMat], TransformationArray),
   jpl_array_to_list(TransformationArray, Transformation),
-  matrix_rotation(Transformation,Pos),
-  matrix_translation(Transformation,Rot).
+  matrix(Transformation,Pos,Rot).
 
 %% mng_designator_object_type(+Designator, ?Type) is nondet.
 %

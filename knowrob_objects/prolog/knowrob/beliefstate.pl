@@ -258,7 +258,7 @@ belief_at_relative_to(Child, Parent, RelPose) :-
 belief_at_relative_to(Child, Parent, RelPose, Instant) :-
   belief_at_global(Child,  ChildGlobal, Instant),
   belief_at_global(Parent, ParentGlobal, Instant),
-  transform_compute_relative(ChildGlobal, ParentGlobal, RelPose).
+  transform_between(ChildGlobal, ParentGlobal, RelPose).
 
 %% belief_at_global(+Obj:iri, ?GlobalPose:list) is semidet
 %

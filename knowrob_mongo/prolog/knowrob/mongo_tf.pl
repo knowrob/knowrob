@@ -112,8 +112,7 @@ mng_transform_pose(SourceFrame,
   jpl_call('tfjava.Utils', 'stampedMatrix4dToPoseArray',
           [StampedMatOut], PoseOutArray),
   jpl_array_to_list(PoseOutArray, PoseOut),
-  matrix_rotation(PoseOut,RotOut),
-  matrix_translation(PoseOut,PosOut).
+  matrix(PoseOut,PosOut,RotOut).
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

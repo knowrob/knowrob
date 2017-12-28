@@ -611,7 +611,7 @@ srdl_inFieldOfView_at_time(Agent, Object, Instant) :-
   object_pose_at_time(Camera, Instant, [MapFrame, _, CamPos_world, CamRot_world]),
   rdf_has(Object, knowrob:frameName, ObjectFrame),
   object_pose_at_time(Object, Instant, [MapFrame, _, ObjPos_world, ObjRot_world]),
-  transform_compute_relative(
+  transform_between(
       [_,ObjectFrame, ObjPos_world, ObjRot_world],
       [_,CameraFrame, CamPos_world, CamRot_world],
       [CameraFrame, ObjectFrame, [ObjX,ObjY,ObjZ], _]),
