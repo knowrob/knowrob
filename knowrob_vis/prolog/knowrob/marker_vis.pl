@@ -164,7 +164,8 @@ marker_lookup_transform(MarkerObject, Identifier, T, (Translation,Orientation)) 
   marker_lookup_transform(MarkerObject, Object, T, (Translation,Orientation)), !.
 
 marker_lookup_transform(_, Identifier, T, (Translation,Orientation)) :-
-  object_pose_at_time(Identifier, T, pose(Translation, Orientation)), !.
+  map_frame_name(MapFrame),
+  object_pose_at_time(Identifier, T, [MapFrame, _, Translation, Orientation]), !.
 
 marker_transform_at_time(MarkerObject, Identifier, T, Pose) :-
   marker_lookup_transform(MarkerObject, Identifier, T, Pose)

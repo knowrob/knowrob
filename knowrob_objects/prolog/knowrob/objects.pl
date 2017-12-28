@@ -34,9 +34,9 @@
     [
       current_object_pose/2,
       object_pose_at_time/3,
-      object_pose_at_time/4,
       object_trajectory/4,
       object_distance/3,
+      object_frame_name/2,
       object_color/2,
       object_dimensions/4,
       object_mesh_path/2,
@@ -62,17 +62,18 @@
 :- use_module(library('knowrob/rdfs')).
 :- use_module(library('knowrob/transforms')).
 :- use_module(library('knowrob/temporal')).
+:- use_module(library('knowrob/beliefstate')).
 
 :- owl_parser:owl_parse('package://knowrob_objects/owl/knowrob_objects.owl').
 
 :-  rdf_meta
     current_object_pose(r,-),
     object_pose_at_time(r,r,?),
-    object_pose_at_time(r,r,?,?),
     object_trajectory(r,t,+,-),
     object_distance(r,r,-),
     object_dimensions(r, ?, ?, ?),
     object_color(r, ?),
+    object_frame_name(r,?),
     object_mesh_path(r, ?),
     object_assert_dimensions(r, +, +, +),
     object_assert_color(r, +),
@@ -91,15 +92,9 @@
 % Get the current pose of an object.
 %
 % @param Obj       Instance of SpatialThing
-% @param PoseTerm  float[7] (translation, quaternion) or float[16] (row-based matrix elements)
+% @param PoseTerm  The pose term [atom Reference, atom Target, [float x,y,z], [float qx,qy,qz,qw]]
 % 
-current_object_pose(Obj, [TX,TY,TZ,QX,QY,QZ,QW]) :- !,
-  current_time(T),
-  object_pose_at_time(Obj, T, pose([TX, TY, TZ], [QX,QY,QZ,QW])),!.
-
-current_object_pose(Obj, PoseTerm) :-
-  current_time(T),
-  object_pose_at_time(Obj, T, mat(PoseTerm)),!.
+current_object_pose(Obj, PoseTerm) :- belief_at(Obj, PoseTerm).
 
 %% object_pose_at_time(+Obj:iri, +Instant:float, ?PoseTerm:term) is semidet
 %% object_pose_at_time(+Obj:iri, +Instant:float, ?PoseTerm:term, -Interval:list) is semidet
@@ -111,26 +106,15 @@ current_object_pose(Obj, PoseTerm) :-
 %
 % @param Obj         Instance of SpatialThing
 % @param Instant     The time instant (float or Timepoint:iri)
-% @param PoseTerm    The pose term pose(..) or mat(..)
-% @param Interval    Interval during which the pose holds in the form of [float start, end] or [float start]
+% @param PoseTerm    The pose term [atom Reference, atom Target, [float x,y,z], [float qx,qy,qz,qw]]
 % 
-object_pose_at_time(Obj, Instant, PoseTerm) :-
-  atom(Obj),
-  object_pose_at_time(Obj, Instant, PoseTerm, _).
+object_pose_at_time(Obj, Instant, PoseTerm) :- belief_at(Obj, PoseTerm, [Instant,Instant]).
 
-object_pose_at_time(Obj, _Instant, PoseTerm, [0.0]) :-
-  atom(Obj),
-  ( rdfs_individual_of(Obj, knowrob:'Pose') ;
-    rdfs_individual_of(Obj, knowrob:'Matrix') ), !,
-  pose_term(Obj, PoseTerm).
-
-object_pose_at_time(Obj, Instant, PoseTerm, Interval) :-
-  atom(Obj),
-  % FIXME want to get the intetrvale here
-  holds(Obj, knowrob:pose, Pose, Instant),
-  Interval=[Instant], % FIXME wrong
-  %interval(Pose, Interval), !, % FIXME won't work with pose, pose only aptial!
-  pose_term(Pose, PoseTerm), !.
+%object_pose_at_time(Obj, _Instant, PoseTerm) :-
+  %atom(Obj),
+  %( rdfs_individual_of(Obj, knowrob:'Pose') ;
+    %rdfs_individual_of(Obj, knowrob:'Matrix') ), !,
+  %pose_term(Obj, PoseTerm).
 
 %% object_trajectory(+Obj, +Interval, +Dt, -Trajectory) is semidet
 %
@@ -146,6 +130,11 @@ object_trajectory(Obj, [Begin,End], dt(Dt), [X|Xs]) :-
   object_pose_at_time(Obj, Begin, X),
   object_trajectory(Obj, [Next,End], dt(Dt), Xs).
 
+object_frame_name(Obj,Frame) :-
+  rdf_has_prolog(Obj,knowrob:frameName,Frame), !.
+object_frame_name(Obj,Frame) :-
+  atom(Obj), rdf_split_url(_,Frame,Obj).
+
 %% object_distance(+A:iri, +B:iri, ?Distance:float) is semidet
 % 
 % Computes eucledean distance between A and B.
@@ -155,8 +144,9 @@ object_trajectory(Obj, [Begin,End], dt(Dt), [X|Xs]) :-
 % @param Distance  The current distance between A and B
 %
 object_distance(A,B,D):-
-  current_object_pose(A, [AX,AY,AZ,_,_,_,_]),
-  current_object_pose(B, [BX,BY,BZ,_,_,_,_]),
+  map_frame_name(MapFrame),
+  current_object_pose(A, [MapFrame,_,[AX,AY,AZ],_]),
+  current_object_pose(B, [MapFrame,_,[BX,BY,BZ],_]),
   DX is AX - BX,
   DY is AY - BY,
   DZ is AZ - BZ,
@@ -379,54 +369,3 @@ object_query(Obj, QueryGroup, QueryTitle, Query) :-
   rdf_has(QueryIndividual, knowrob:'queryString', literal(type(_,QueryTail))),
   atomic_list_concat(['Individual=''', Obj, ''''], '', QueryHead),
   atomic_list_concat([QueryHead,QueryTail], ', ', Query).
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% % % % % Utility predicates
-
-% quaternion and position
-pose_term(Pose, pose([X,Y,Z], [QX,QY,QZ,QW])) :-
-  rdf_has_prolog(Pose, knowrob:translation, [X,Y,Z]),
-  rdf_has_prolog(Pose, knowrob:quaternion, [QX,QY,QZ,QW]), !.
-pose_term(Pose, mat(Mat)) :-
-  rdf_has_prolog(Pose, knowrob:translation, [X,Y,Z]),
-  rdf_has_prolog(Pose, knowrob:quaternion, [QX,QY,QZ,QW]),
-  matrix([X,Y,Z], [QX,QY,QZ,QW], Mat), !.
-
-% list of transfoamtion matrix elements
-pose_term(Matrix, pose([X,Y,Z], [QX,QY,QZ,QW])) :-
-  is_list(Matrix), !,
-  matrix_rotation(Matrix, [QX,QY,QZ,QW]),
-  matrix_translation(Matrix, [X,Y,Z]).
-pose_term(Matrix, mat(Matrix)) :- is_list(Matrix), !.
-
-% transformation matrix individual
-pose_term(Pose, pose([X,Y,Z], [QX,QY,QZ,QW])) :-
-  rdfs_individual_of(Pose, knowrob:'Matrix'),
-  rotmat_to_list(Pose, Matrix),
-  matrix_rotation(Matrix, [QX,QY,QZ,QW]),
-  matrix_translation(Matrix, [X,Y,Z]), !.
-pose_term(Pose, mat(Matrix)) :-
-  rdfs_individual_of(Pose, knowrob:'Matrix'),
-  rotmat_to_list(Pose, Matrix), !.
-
-rotmat_to_list(Pose, [M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33]) :-
-  rdf_has_prolog(Pose, knowrob:m00, M00),
-  rdf_has_prolog(Pose, knowrob:m01, M01),
-  rdf_has_prolog(Pose, knowrob:m02, M02),
-  rdf_has_prolog(Pose, knowrob:m03, M03),
-  
-  rdf_has_prolog(Pose, knowrob:m10, M10),
-  rdf_has_prolog(Pose, knowrob:m11, M11),
-  rdf_has_prolog(Pose, knowrob:m12, M12),
-  rdf_has_prolog(Pose, knowrob:m13, M13),
-  
-  rdf_has_prolog(Pose, knowrob:m20, M20),
-  rdf_has_prolog(Pose, knowrob:m21, M21),
-  rdf_has_prolog(Pose, knowrob:m22, M22),
-  rdf_has_prolog(Pose, knowrob:m23, M23),
-  
-  rdf_has_prolog(Pose, knowrob:m30, M30),
-  rdf_has_prolog(Pose, knowrob:m31, M31),
-  rdf_has_prolog(Pose, knowrob:m32, M32),
-  rdf_has_prolog(Pose, knowrob:m33, M33),!.

@@ -69,7 +69,7 @@ test(map_child_objects) :-
 test(map_object_info) :-
   map_object_info(['http://knowrob.org/kb/knowrob.owl#CounterTop205',
                    'http://knowrob.org/kb/knowrob.owl#CounterTop',
-                   [-0.08847681,-0.99607825,0.0,1.1006587,0.99607825,-0.08847681,0.0,0.54706275,0.0,0.0,1.0,0.84,0.0,0.0,0.0,1.0],
+                   [map,counter_top_sink_link,[1.1006587,0.54706275,0.84],[0.0,0.0,0.7377251659437472,0.6751011750548789]],
                    [2.0500002,0.57500005,0.02]]), !.
 
 test(map_object_type) :-

@@ -600,6 +600,7 @@ srdl_inFieldOfView(Agent, Object, [Instant,Instant]) :-
 
 srdl_inFieldOfView_at_time(Agent, Object, Instant) :-
   nonvar(Agent),
+  map_frame_name(MapFrame),
   % read camera properties
   agent_camera(Agent, Camera),
   camera_image_size(Camera, [ImgX,ImgY]),
@@ -607,9 +608,9 @@ srdl_inFieldOfView_at_time(Agent, Object, Instant) :-
   VFOV is ImgY / ImgX * HFOV,
   % find object pose in camera frame
   rdf_has(Camera, knowrob:frameName, CameraFrame),
-  object_pose_at_time(Camera, Instant, pose(CamPos_world, CamRot_world)),
+  object_pose_at_time(Camera, Instant, [MapFrame, _, CamPos_world, CamRot_world]),
   rdf_has(Object, knowrob:frameName, ObjectFrame),
-  object_pose_at_time(Object, Instant, pose(ObjPos_world, ObjRot_world)),
+  object_pose_at_time(Object, Instant, [MapFrame, _, ObjPos_world, ObjRot_world]),
   transform_compute_relative(
       [_,ObjectFrame, ObjPos_world, ObjRot_world],
       [_,CameraFrame, CamPos_world, CamRot_world],

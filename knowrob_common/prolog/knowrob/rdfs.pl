@@ -151,6 +151,7 @@ rdfs_value_prolog(_, literal(type('http://www.w3.org/2001/XMLSchema#double',Atom
 rdfs_value_prolog(_, literal(type('http://www.w3.org/2001/XMLSchema#integer',Atom)), Number) :-
   atom_number(Atom, Number), !.
 rdfs_value_prolog(_, literal(type(_,Atom)), Atom) :- !.
+rdfs_value_prolog(_, literal(Atom), Atom) :- !.
 rdfs_value_prolog(_, V, V).
 
 %% strip_literal_type(+Input,-Output)

@@ -521,7 +521,7 @@ update_joint_information(Joint, Type, Pose, Dir, Radius, Qmin, Qmax) :-
 % @param Type       Type of the joint instance (knowrob:HingedJoint or knowrob:PrismaticJoint)
 % @param Parent     Parent object instance (e.g. cupboard)
 % @param Child      Child object instance (e.g. door)
-% @param Pose       Pose matrix of the joint as list float[16]
+% @param Pose       Pose term
 % @param Direction  Direction vector of the joint. float[3] for prismatic joints, [] for rotational joints
 % @param Radius     Radius of a rotational joint
 % @param Qmin       Minimal configuration value (joint limit)

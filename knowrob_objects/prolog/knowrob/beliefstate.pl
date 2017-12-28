@@ -35,10 +35,13 @@
       belief_existing_object_at/4,  % query known object near some pose
       belief_new_object/2,          % assert a new object in the belief state
       belief_at/2,                  % query the current pose of an object
+      belief_at/3,
       belief_at_update/2,           % assign new pose to object
       belief_at_update/3,
       belief_at_global/2,           % query the current pose of an object in global frame
+      belief_at_global/3,
       belief_at_relative_to/3,      % query the current pose of an object relative to some parent object
+      belief_at_relative_to/4,
       belief_at_internal/2,         % TODO: these should not be exposed
       belief_at_internal/3,
       belief_perceived_at/4,        % convinience rule to be called by perception system to inform about perceptions
@@ -108,8 +111,7 @@ belief_new_object(ObjType, Obj) :-
   rdf_assert(Obj, rdf:type, owl:'NamedIndividual', belief_state),
   % set TF frame to object name
   rdf_split_url(_, ObjName, Obj),
-  % TODO: change to knowrob:frameName
-  rdf_assert(Obj, 'http://knowrob.org/kb/srdl2-comp.owl#urdfName', literal(ObjName), belief_state),
+  rdf_assert(Obj, knowrob:'frameName', literal(ObjName), belief_state),
   ignore(once((
     %% HACK get this info from somewhere else!
     rdfs_individual_of(Map, knowrob:'SemanticEnvironmentMap'),
@@ -168,6 +170,7 @@ belief_class_of(Obj, NewObjType) :-
 belief_existing_object_at(ObjType, Transform, Threshold, Obj) :-
   % check for typed object
   belief_class_at_location(ObjType, Transform, Threshold, Obj), !.
+
 belief_existing_object_at(ObjType, Transform, Threshold, Obj) :-
   % check for any type
   belief_existing_objects(KnownObjects),
@@ -197,6 +200,7 @@ belief_object_at_location(ObjectId, NewPose, Dmax) :-
 belief_perceived_at(ObjType, Transform, Threshold, Obj) :-
   belief_existing_object_at(ObjType, Transform, Threshold, Obj),
   belief_class_of(Obj, ObjType), !.
+
 belief_perceived_at(ObjType, Transform, _, Obj) :-
   belief_new_object(ObjType, Obj),
   belief_at_update(Obj, Transform).
@@ -215,15 +219,22 @@ belief_perceived_at(ObjType, Transform, _, Obj) :-
 % @param Obj         the object id
 % @param Transform   the transform data
 %
-belief_at(Obj, [MapFrame, TargetFrame, Translation, Rotation]) :-
-  map_frame_name(MapFrame),
-  belief_at_global(Obj, [MapFrame, TargetFrame, Translation, Rotation]), !.
-belief_at(Obj, [ReferenceFrame, TargetFrame, Translation, Rotation]) :-
-  ground(ReferenceFrame), !,
-  rdf_has(Ref, knowrob:'frameName', literal(ReferenceFrame)),
-  belief_at_relative_to(Obj, Ref, [ReferenceFrame, TargetFrame, Translation, Rotation]), !.
-belief_at(Obj, [ReferenceFrame, _, Translation, Rotation]) :-
-  holds( knowrob:pose(Obj,TransformId) ),
+belief_at(Obj, Transform) :-
+  current_time(Instant),
+  belief_at(Obj, Transform, Instant).
+
+belief_at(Obj, [MapFrame, TargetFrame, Translation, Rotation], Instant) :-
+  map_frame_name(MapFrame), !,
+  belief_at_global(Obj, [MapFrame, TargetFrame, Translation, Rotation], Instant).
+
+belief_at(Obj, [ReferenceFrame, TargetFrame, Translation, Rotation], Instant) :-
+  ground(ReferenceFrame),
+  object_frame_name(Ref, ReferenceFrame), !,
+  belief_at_relative_to(Obj, Ref, [ReferenceFrame, TargetFrame, Translation, Rotation], Instant).
+
+belief_at(Obj, [ReferenceFrame, TargetFrame, Translation, Rotation], Instant) :-
+  holds( knowrob:pose(Obj,TransformId), Instant ),
+  object_frame_name(Obj, TargetFrame),
   transform_reference_frame(TransformId, ReferenceFrame), 
   transform_data(TransformId, (Translation, Rotation)), !.
   
@@ -241,12 +252,12 @@ belief_at(Obj, [ReferenceFrame, _, Translation, Rotation]) :-
 % @param RelPose   the pose of Child in Parent frame
 %
 belief_at_relative_to(Child, Parent, RelPose) :-
-  % TODO: avoid that pose potentially is computed twice (i.e., below clause)
-  holds( knowrob:pose(Child,RelPose) ),
-  rdf_has(RelPose, knowrob:'relativeTo', Parent), !.
-belief_at_relative_to(Child, Parent, RelPose) :-
-  belief_at_global(Child,  ChildGlobal),
-  belief_at_global(Parent, ParentGlobal),
+  current_time(Instant),
+  belief_at_relative_to(Child, Parent, RelPose, Instant).
+
+belief_at_relative_to(Child, Parent, RelPose, Instant) :-
+  belief_at_global(Child,  ChildGlobal, Instant),
+  belief_at_global(Parent, ParentGlobal, Instant),
   transform_compute_relative(ChildGlobal, ParentGlobal, RelPose).
 
 %% belief_at_global(+Obj:iri, ?GlobalPose:list) is semidet
@@ -260,18 +271,18 @@ belief_at_relative_to(Child, Parent, RelPose) :-
 % @param GlobalPose   the transform data in map frame
 %
 belief_at_global(Obj, GlobalPose) :-
-  rdf_has(Obj, knowrob:'frameName', literal(ChildFrame)),
-  holds( knowrob:pose(Obj,TransformId) ),
+  current_time(Instant),
+  belief_at_global(Obj, GlobalPose, Instant).
+
+belief_at_global(Obj, GlobalPose, Instant) :-
+  object_frame_name(Obj, ChildFrame),
+  holds( knowrob:pose(Obj,TransformId), Instant ),
   transform_data(TransformId, (T,Q)),
   ( rdf_has(TransformId, knowrob:'relativeTo', Parent) -> (
-    % FIXME: TransformId could be relative to Parent in the past, but not anymore in the present.
-    %  e.g., object was perceived in camera frame 2min ago, but
-    %  robot moved until then.
-    %  in this case camera pose 2min ago should be used.
-    belief_at_global(Parent, GlobalTransform),
-    rdf_has(Parent, knowrob:'frameName', literal(ParentFrame)),
+    belief_at_global(Parent, GlobalTransform, Instant),
+    object_frame_name(Parent, ParentFrame),
     transform_multiply(GlobalTransform, [ParentFrame,ChildFrame,T,Q], GlobalPose)
-  ) ; ( map_frame_name(MapFrame), GlobalPose=[MapFrame,ChildFrame,T,Q]) ).
+  ) ; ( map_frame_name(MapFrame), GlobalPose=[MapFrame,ChildFrame,T,Q]) ), !.
 
 %% belief_at_update(+Obj:iri, +Transform:list) is semidet
 %
@@ -288,15 +299,20 @@ belief_at_global(Obj, GlobalPose) :-
 belief_at_update(Obj, (Translation, Rotation)) :- !,
   belief_at_internal(Obj, (Translation, Rotation)),
   belief_dirty_object([Obj]).
+
 belief_at_update(Obj, [MapFrame,_,Translation,Rotation]) :-
   map_frame_name(MapFrame), !, 
   belief_at_update(Obj, (Translation, Rotation)).
+
 belief_at_update(Obj, [ReferenceFrame,_,Translation,Rotation]) :-
-  ( rdf_has(RelativeTo, knowrob:'frameName', literal(ReferenceFrame)) ; (
-    write('WARN: Unable to find entity with frame "'), write(ReferenceFrame), writeln('", ignoring belief update.'),
+  ( object_frame_name(RelativeTo, ReferenceFrame) ; (
+    write('WARN: Unable to find entity with frame "'),
+    write(ReferenceFrame),
+    writeln('", ignoring belief update.'),
     fail
   )),
   belief_at_update(Obj, (Translation, Rotation), RelativeTo).
+
 belief_at_update(Obj, TransformData, RelativeTo) :-
   belief_at_internal(Obj, TransformData, RelativeTo),
   belief_dirty_object([Obj]).
@@ -306,14 +322,19 @@ belief_at_update(Obj, TransformData, RelativeTo) :-
 belief_at_internal(Obj, TransformData, RelativeTo) :-
   belief_at_internal_(Obj, TransformData, TransformId), !,
   rdf_assert(TransformId, knowrob:'relativeTo', RelativeTo).
+
 belief_at_internal(Obj, TransformData) :-
   belief_at_internal_(Obj, TransformData, _).
+
 belief_at_internal_(Obj, (Translation, Rotation), TransformId) :-
-  forall(rdf_has(Obj, knowrob:'pose', Pose),
-         rdf_retractall(Pose, _, _)),
-  rdf_retractall(Obj, knowrob:'pose', _),
   owl_instance_from_class(knowrob:'Pose', [pose=(Translation,Rotation)], TransformId),
-  rdf_assert(Obj, knowrob:'pose', TransformId).
+  current_time(Now),
+  ( rdf_has(Obj, knowrob:pose, OldPose) ->
+    assert_temporal_part_end(Obj, knowrob:pose, OldPose, Now, belief_state) ;
+    true
+  ),
+  assert_temporal_part(Obj, knowrob:pose,
+    nontemporal(TransformId), Now, belief_state).
 
 %% belief_dirty_object(-ObjectIds) is det
 %

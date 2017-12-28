@@ -49,18 +49,14 @@ test(storagePlaceForBecause1) :-
                               class('http://knowrob.org/kb/knowrob.owl#FoodVessel')])), !.
 
 test(current_object_pose) :-
-  current_object_pose(test_knowrob_objects:'Cup1',
-                      [0.99607825, -0.08847681, 0.0, 1.1277804,
-                       0.08847681,  0.99607825, 0.0, 2.6304414,
-                       0.0,         0.0,        1.0, 0.816479,
-                       0.0,         0.0,        0.0, 1.0]).
+  current_object_pose(test_knowrob_objects:'Cup1', ['map','Cup1',
+      [1.1277804,2.6304414,0.816479],
+      [0.0,0.0,0.04428184028938965,0.9990190820981245]]).
 
 test(object_pose_at_time) :-
-  object_pose_at_time(test_knowrob_objects:'Cup1', knowrob:'timepoint_1331040458',
-                      mat([0.99607825, -0.08847681, 0.0, 1.1277804,
-                       0.08847681,  0.99607825, 0.0, 2.6304414,
-                       0.0,         0.0,        1.0, 0.816479,
-                       0.0,         0.0,        0.0, 1.0])).
+  object_pose_at_time(test_knowrob_objects:'Cup1', knowrob:'timepoint_1331040458', ['map','Cup1',
+      [1.1277804,2.6304414,0.816479],
+      [0.0,0.0,0.04428184028938965,0.9990190820981245]]).
 
 test(object_dimensions) :-
   object_dimensions(test_knowrob_objects:'Handle1', 0.015, 0.015, 0.015),

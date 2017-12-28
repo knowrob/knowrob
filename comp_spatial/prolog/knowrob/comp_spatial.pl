@@ -144,15 +144,16 @@ on_Physical(Top, Bottom, Interval) :-
     
 on_Physical_at_time(Top, Bottom, Instant) :-
     spatial_thing(Top),
+    map_frame_name(MapFrame),
     % get object center for Top
-    object_pose_at_time(Top, Instant, pose([TX,TY,TZ], _)),
+    object_pose_at_time(Top, Instant, (MapFrame, _, [TX,TY,TZ], _)),
     
     spatial_thing(Bottom),
     Top \= Bottom,
     % query for objects at center point
     objectAtPoint2D(TX,TY,Bottom,Instant),
     % get height of objects at center point
-    object_pose_at_time(Bottom, Instant, pose([_,_,BZ], _)),
+    object_pose_at_time(Bottom, Instant, (MapFrame, _, [_,_,BZ], _)),
 
     % the criterion is if the difference between them is less than epsilon=5cm
     <( BZ, TZ).
@@ -176,9 +177,10 @@ comp_above_of(Top, Bottom, Interval) :-
 
 comp_above_of_at_time(Top, Bottom, Instant) :-
     spatial_thing(Top),
+    map_frame_name(MapFrame),
     
     % get object center for Top
-    object_pose_at_time(Top, Instant, pose([TX,TY,TZ], _)),
+    object_pose_at_time(Top, Instant, (MapFrame, _, [TX,TY,TZ], _)),
     
     spatial_thing(Bottom),
     Top \= Bottom,
@@ -187,7 +189,7 @@ comp_above_of_at_time(Top, Bottom, Instant) :-
     objectAtPoint2D(TX,TY,Bottom,Instant),
 
     % get height of objects at center point
-    object_pose_at_time(Bottom, Instant, pose([_,_,BZ], _)),
+    object_pose_at_time(Bottom, Instant, (MapFrame, _, [_,_,BZ], _)),
 
     % the criterion is if the difference between them is less than epsilon=5cm
     <( BZ, TZ).
@@ -229,11 +231,12 @@ comp_toTheLeftOf_at_time(Left, Right, Instant) :-
     % TODO: adapt this to take rotations and object dimensions into account
     %
     spatial_thing(Left),
-    object_pose_at_time(Left, Instant, pose([LX,LY,LZ], _)),
+    map_frame_name(MapFrame),
+    object_pose_at_time(Left, Instant, (MapFrame, _, [LX,LY,LZ], _)),
     
     spatial_thing(Right),
     Left \= Right,
-    object_pose_at_time(Right, Instant, pose([RX,RY,RZ], _)),
+    object_pose_at_time(Right, Instant, (MapFrame, _, [RX,RY,RZ], _)),
 
     =<( abs( LX - RX), 0.30),  % less than 30cm y diff
     =<( RY, LY ),              % right obj has a smaller y coord than the left one (on the table)
@@ -297,11 +300,12 @@ comp_inFrontOf_at_time(Front, Back, Instant) :-
     % TODO: adapt this to take rotations and object dimensions into account
     %
     spatial_thing(Front),
-    object_pose_at_time(Front, Instant, pose([FX,_,_], _)),
+    map_frame_name(MapFrame),
+    object_pose_at_time(Front, Instant, (MapFrame, _, [FX,_,_], _)),
     
     spatial_thing(Back),
     Front \= Back,
-    object_pose_at_time(Back, Instant, pose([BX,_,_], _)),
+    object_pose_at_time(Back, Instant, (MapFrame, _, [BX,_,_], _)),
 
     =<( BX, FX ).      % front obj has a higher x coord.
 
@@ -326,11 +330,12 @@ comp_inCenterOf(Inner, Outer, Interval) :-
 
 comp_inCenterOf_at_time(Inner, Outer, Instant) :-
     spatial_thing(Inner),
-    object_pose_at_time(Inner, Instant, pose([IX,IY,IZ], _)),
+    map_frame_name(MapFrame),
+    object_pose_at_time(Inner, Instant, (MapFrame, _, [IX,IY,IZ], _)),
     
     spatial_thing(Outer),
     Inner \= Outer,
-    object_pose_at_time(Outer, Instant, pose([OX,OY,OZ], _)),
+    object_pose_at_time(Outer, Instant, (MapFrame, _, [OX,OY,OZ], _)),
 
     =<( abs( IX - OX), 0.20),  % less than 20cm x diff
     =<( abs( IY - OY), 0.20),  % less than 20cm y diff
@@ -358,12 +363,13 @@ in_ContGeneric(InnerObj, OuterObj, Interval) :-
 in_ContGeneric_at_time(InnerObj, OuterObj, Instant) :-
     
     spatial_thing(InnerObj),
-    object_pose_at_time(InnerObj, Instant, pose([IX,IY,IZ], _)),
+    map_frame_name(MapFrame),
+    object_pose_at_time(InnerObj, Instant, (MapFrame, _, [IX,IY,IZ], _)),
     object_dimensions(InnerObj, ID, IW, IH),
     
     rdfs_individual_of(OuterObj, knowrob:'Container'),
     InnerObj \= OuterObj,
-    object_pose_at_time(OuterObj, Instant, pose([OX,OY,OZ], _)),
+    object_pose_at_time(OuterObj, Instant, (MapFrame, _, [OX,OY,OZ], _)),
     object_dimensions(OuterObj, OD, OW, OH),
     
     % InnerObj is contained by OuterObj if (center_i+0.5*dim_i)<=(center_o+0.5*dim_o)
