@@ -65,14 +65,13 @@
 :- use_module(library('semweb/owl')).
 :- use_module(library('knowrob/owl')).
 :- use_module(library('knowrob/computable')).
-
+:- use_module(library('knowrob/action_planning')).
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(srdl2, 'http://knowrob.org/kb/srdl2.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(srdl2comp, 'http://knowrob.org/kb/srdl2-comp.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(srdl2cap, 'http://knowrob.org/kb/srdl2-cap.owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(srdl2act, 'http://knowrob.org/kb/srdl2-action.owl#', [keep(true)]).
-
 
 :- rdf_meta
         action_feasible_on_robot(r,r),
@@ -612,8 +611,8 @@ srdl_inFieldOfView_at_time(Agent, Object, Instant) :-
   rdf_has(Object, knowrob:frameName, ObjectFrame),
   object_pose_at_time(Object, Instant, [MapFrame, _, ObjPos_world, ObjRot_world]),
   transform_between(
-      [_,ObjectFrame, ObjPos_world, ObjRot_world],
-      [_,CameraFrame, CamPos_world, CamRot_world],
+      [x,ObjectFrame, ObjPos_world, ObjRot_world],
+      [x,CameraFrame, CamPos_world, CamRot_world],
       [CameraFrame, ObjectFrame, [ObjX,ObjY,ObjZ], _]),
   % make the visibility test
   BearingX is atan2(ObjY, ObjX),
@@ -621,8 +620,6 @@ srdl_inFieldOfView_at_time(Agent, Object, Instant) :-
   abs(BearingX) < HFOV/2,
   abs(BearingY) < VFOV/2.
 
-agent_camera(Camera, Camera) :-
-  owl_individual_of(Camera, srdl2comp:'Camera'), !.
 agent_camera(Agent, Camera) :-
   sub_component(Agent, Camera),
   owl_individual_of(Camera, srdl2comp:'Camera'), !.
@@ -633,22 +630,4 @@ camera_image_size(Camera, [ImgX,ImgY,ImgZ]) :-
   owl_has(Camera, srdl2comp:imageSizeZ, literal(type(_, ImgZa))), atom_number(ImgZa, ImgZ), !.
 camera_hfov(Camera, HFOV) :-
   owl_has(Camera, srdl2comp:hfov, literal(type(_, HFOVa))), atom_number(HFOVa, HFOV), !.
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% OWL/ DL Predicates
-
-%% plan_subevents_recursive(+Plan, ?SubEvents) is semidet.
-%
-% Recursively read all sub-action classes of the imported plan, i.e. single actions that need to be taken
-%
-% @param Plan      Plan identifier
-% @param SubEvents Sub-events of the plan
-%
-plan_subevents_recursive(Plan, SubAction) :-
-    owl_class_properties(Plan, knowrob:subAction, SubAction).
-
-plan_subevents_recursive(Plan, SubAction) :-
-    owl_class_properties(Plan, knowrob:subAction, Sub),
-    Sub \= Plan,
-    plan_subevents_recursive(Sub, SubAction).
     
