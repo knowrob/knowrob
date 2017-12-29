@@ -63,7 +63,8 @@ data_vis(Term, Properties) :-
 % Creates a new data_vis timeline message and publishes it via "/data_vis_msgs"
 % ROS topic.
 %
-% @params Events list of temporal extended things
+% @param Events list of temporal extended things
+%
 timeline(Events) :-
   findall(Time, (
      member(Evt, Events),

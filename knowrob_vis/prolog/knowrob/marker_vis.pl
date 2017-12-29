@@ -74,7 +74,6 @@
 :- use_module(library('lists')). % for sum_list
 :- use_module(library('knowrob/computable')).
 :- use_module(library('knowrob/transforms')).
-:- use_module(library('knowrob/knowrob_math')).
 
 :- rdf_meta marker(t,?),
             marker(t,?,?),
@@ -105,6 +104,8 @@
 %                  marker_update(0, ?, ?, ?, ?).
 :- multifile marker_new/4,
              marker_update/3.
+
+:- rdf_db:rdf_register_ns(srdl2comp, 'http://knowrob.org/kb/srdl2-comp.owl#', [keep(true)]).
 
 marker_has_visual(Identifier) :-
   not(owl_individual_of(Identifier, srdl2comp:'UrdfJoint')),
@@ -623,6 +624,7 @@ marker_new(MarkerName, sprite_scaled(Id), MarkerObject, Parent) :-
 marker_new(MarkerName, background_image(Id), MarkerObject, Parent) :-
   marker_new(MarkerName, black(background_image,background_image(Id)), MarkerObject, Parent).
 
+% TODO: this should be rather handled by one marker message with point array
 marker_new_particles(_, _, _, Count, Count) :- !.
 marker_new_particles(Parent, Obj, UrdfFormat, Count, Index) :-
   format(atom(Urdf), UrdfFormat, [Index]),

@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(knowrob_vis)
 
-find_package(catkin REQUIRED COMPONENTS rosjava_build_tools data_vis_msgs knowrob_common)
+find_package(catkin REQUIRED COMPONENTS rosjava_build_tools data_vis_msgs knowrob_common knowrob_srdl)
 
 catkin_rosjava_setup(installApp publishMavenJavaPublicationToMavenRepository writeClasspath)
 
