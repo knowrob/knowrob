@@ -141,9 +141,15 @@ entity_(Entity, [[name,EntityName]|Descr]) :-
   entity_name([name,EntityName], Entity),
   entity_(Entity, Descr).
 
-entity_(Entity, [[type,restriction(P,Restr)|_]|Descr]) :-
+entity_(Entity, [[type,restriction(P,Facet2)|_]|Descr]) :-
   nonvar(P), nonvar(Restr), !,
-  entity_has_restriction(Entity, restriction(P,Restr)),
+  rdf_global_term(P,P_glob),
+  % find restrictions on P
+  owl_restriction_on(Entity, Q_glob, Restr),
+  rdfs_subproperty_of(P_glob, Q_glob),
+  % unify the facets
+  owl_description(Restr, restriction(_,Facet1)),
+  match_facet(Facet1,Facet2),
   entity_(Entity, Descr).
 
 %% ignore type, types are handled in `entity_head`
@@ -153,6 +159,7 @@ entity_(Entity, [[type,Type|_]|Descr]) :-
 
 %% key-value property
 % TODO: support specification of property units
+%    - [an, object, [height, 20, qudt:meter]]
 %    - [an, object, [height, 20, qudt:meter, during, Interval]]
 entity_(Entity, [[Key,Value|ValDescr]|Descr]) :-
   nonvar(Key),
@@ -288,7 +295,7 @@ entity_assert(Entity, [A,Type|Descr]) :-
   -> TypeIri = ATypeIri
   ;  TypeIri = TypeIri_ ),
   (( entity_has(Descr, name, Entity_),
-     rdf_global_term(Entity_, Entity), % TODO: fallback to knowrob prefix
+     rdf_global_term(Entity_, Entity),
      rdf_assert(Entity, rdf:type, TypeIri) );
      rdf_instance_from_class(TypeIri, Entity) ),
   entity_assert(Entity, Descr), !.
@@ -306,7 +313,8 @@ entity_assert(Entity, [[Key,Value]|Descr]) :-
   entity_iri(PropIri, Key, lower_camelcase),
   (  rdf_has(PropIri, rdf:type, owl:'ObjectProperty')
   ->  ( % nested entity
-      entity(ValueEntity, Value), % TODO: support recursive option (call enity_assert instead)
+      % TODO: support recursive asserting (i.e., call enity_assert instead)
+      entity(ValueEntity, Value),
       rdf_assert(Entity, PropIri, ValueEntity)
   ) ; ( % data property
       rdf_has(PropIri, rdf:type, owl:'DatatypeProperty'),
@@ -558,7 +566,6 @@ entity_head(Entity, _, Descr, TypeIri) :-
     once(
     entity_iri(TypeIri, TypeDescr, camelcase) ;
     rdf_global_term(TypeDescr, TypeIri) )
-    % TODO: ensure it's really a type
   ), Types),
   
   ( Types=[]
@@ -617,7 +624,6 @@ entity_iri(Iri, Descr, Formatter) :-
 entity_iri(Iri, Description, Formatter) :-
   var(Iri),
   entity_ns(Description, NS, NameUnderscore),
-  % FIXME: call fails if NameUnderscore is in fact Camelcase
   call(Formatter, NameUnderscore, Name),
   atom_concat(NS, Name, Iri).
 
@@ -630,14 +636,6 @@ entity_iri(Entity, Type) :-
 entity_iri(Entity, Type) :-
   rdfs_individual_of(Entity,Type).
 
-% TODO: owl_subclass_of should handle this
-entity_has_restriction(X, restriction(P,Facet2)) :-
-  rdfs_individual_of(X, Type),
-  rdf_global_term(P,P_glob),
-  rdf_has(Type,owl:'onProperty',Q_glob),
-  rdfs_subproperty_of(P_glob,Q_glob),
-  owl_description(Type, restriction(_,Facet1)),
-  match_facet(Facet1,Facet2).
 match_facet(some_values_from(A1), some_values_from(A2)) :-
   rdf_global_term(A1,A1_glob),
   rdf_global_term(A2,A2_glob),

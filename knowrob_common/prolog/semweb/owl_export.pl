@@ -48,17 +48,14 @@
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl')).
-:- use_module(library('knowrob/utility/filesystem')). % FIXME do not import this
-:- use_module(library('knowrob/computable')). % FIXME do not import this
-:- use_module(library('knowrob/owl')). % FIXME do not import this
-:- use_module(library('knowrob/actions')). % FIXME do not import this
-% :- use_module(library('knowrob_coordinates')).
-
+% TODO 'knowrob/*' modules should not be used here
+:- use_module(library('knowrob/utility/filesystem')).
+:- use_module(library('knowrob/owl')).
+:- use_module(library('knowrob/actions')).
 
 :- rdf_db:rdf_register_ns(owl,    'http://www.w3.org/2002/07/owl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(rdfs,   'http://www.w3.org/2000/01/rdf-schema#', [keep(true)]).
 :- rdf_db:rdf_register_ns(knowrob,'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
-:- rdf_db:rdf_register_ns(roboearth,'http://www.roboearth.org/kb/roboearth.owl#', [keep(true)]).
 
 
 :- rdf_meta export_object(r,r),
@@ -66,8 +63,6 @@
       export_map(r,r),
       export_action(r,r),
       rdf_unique_class_id(r, +, r).
-
-
 
 
 :- assert(instance_nr(0)).
@@ -85,9 +80,7 @@ rdf_unique_class_id(BaseClass, SourceRef, ID) :-
   assert(instance_nr(Index1)),!.
 
 
-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-
 
 
 %% export_object(+Obj, -File)
@@ -368,9 +361,6 @@ read_action_info(Action, ActionInfosSorted) :-
 read_objclass_info(ObjClass, ObjClassInfosSorted) :-
 
 %   findall(ObjSuperClass, (owl_direct_subclass_of(ObjClass, ObjSuperClass), not(is_bnode(ObjSuperClass))), ObjSuperClasses),
-
-  % read models for this object class
-  findall(M, (rdf_has(M, 'http://www.roboearth.org/kb/roboearth.owl#providesModelFor', ObjClass)), Models),
 
   % read all parts of the object class to be exported
   findall(ObjPart, (owl_class_properties_transitive_nosup(ObjClass, knowrob:parts, ObjPart), not(is_bnode(ObjPart))), ObjParts),
