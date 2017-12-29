@@ -142,7 +142,7 @@ entity_(Entity, [[name,EntityName]|Descr]) :-
   entity_(Entity, Descr).
 
 entity_(Entity, [[type,restriction(P,Facet2)|_]|Descr]) :-
-  nonvar(P), nonvar(Restr), !,
+  nonvar(P), nonvar(Facet2), !,
   rdf_global_term(P,P_glob),
   % find restrictions on P
   owl_restriction_on(Entity, Q_glob, Restr),

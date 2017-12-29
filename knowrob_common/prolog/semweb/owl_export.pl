@@ -379,7 +379,7 @@ read_objclass_info(ObjClass, ObjClassInfosSorted) :-
                     rdf_has(ObjProp, P, PropVal), not(P='http://www.w3.org/2000/01/rdf-schema#subClassOf'),
                     not(is_bnode(PropVal))), ObjClassPropProperties),
 
-  append([Models, ObjClassDefsSorted, ObjProperties, ObjClassPropProperties], ObjClassInfos),
+  append([ObjClassDefsSorted, ObjProperties, ObjClassPropProperties], ObjClassInfos),
 
   flatten(ObjClassInfos, ObjClassInfosFlat),
   sort(ObjClassInfosFlat, ObjClassInfosSorted).
