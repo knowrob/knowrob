@@ -87,37 +87,43 @@
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
-%% current_object_pose(+Obj:iri, -PoseTerm:list) is semidet
+%% current_object_pose(+Obj:iri, -Pose:list) is semidet
 %
 % Get the current pose of an object.
 %
-% @param Obj       Instance of SpatialThing
-% @param PoseTerm  The pose term [atom Reference, atom Target, [float x,y,z], [float qx,qy,qz,qw]]
+% @param Obj   Instance of SpatialThing
+% @param Pose  The pose term [atom Reference, atom Target, [float x,y,z], [float qx,qy,qz,qw]]
 % 
-current_object_pose(Obj, PoseTerm) :- belief_at(Obj, PoseTerm).
+current_object_pose(Obj, Pose) :- belief_at(Obj, Pose).
 
-%% object_pose_at_time(+Obj:iri, +Instant:float, ?PoseTerm:term) is semidet
-%% object_pose_at_time(+Obj:iri, +Instant:float, ?PoseTerm:term, -Interval:list) is semidet
+%% object_pose_at_time(+Obj:iri, +Instant:float, ?Pose:term) is semidet
 %
-% Get the pose of an object at the specified time instant.
-% PoseTerm is either
-%    pose([float tx, ty, tz], [float qx, qy, qz, qw]]), or
-%    mat([float m11 ... m44])
+% True if Pose is the pose of Obj at time Instant.
+% Poses may be requested in particular reference frames
+% by partially specifying Pose. For instance, to request the pose in camera frame:
+%    Pose=['head_rgb_camera',ObjFrame,Position,Orientation]
 %
-% @param Obj         Instance of SpatialThing
-% @param Instant     The time instant (float or Timepoint:iri)
-% @param PoseTerm    The pose term [atom Reference, atom Target, [float x,y,z], [float qx,qy,qz,qw]]
+% @param Obj     Instance of SpatialThing
+% @param Instant The time instant (float or Timepoint:iri)
+% @param Pose    The pose [atom Reference, atom Target, [float x,y,z], [float qx,qy,qz,qw]]
 % 
-object_pose_at_time(Obj, Instant, PoseTerm) :- belief_at(Obj, PoseTerm, [Instant,Instant]).
+object_pose_at_time(Obj, Instant, Pose) :- belief_at(Obj, Pose, [Instant,Instant]).
 
-%object_pose_at_time(Obj, _Instant, PoseTerm) :-
-  %atom(Obj),
-  %( rdfs_individual_of(Obj, knowrob:'Pose') ;
-    %rdfs_individual_of(Obj, knowrob:'Matrix') ), !,
-  %pose_term(Obj, PoseTerm).
-
-%% object_trajectory(+Obj, +Interval, +Dt, -Trajectory) is semidet
+%% object_trajectory(+Obj, +Interval, +Density, -Trajectory) is semidet
 %
+% Sample trajectory of Obj's origin frame within Interval.
+% The trajectory either has Count (Density=num_samples(Count)) samples,
+% or Delta (Density=dt(Delta)) temporal distance between samples (in seconds).
+% Trajectory is a list of poses
+%   [reference_frame, source_frame, position, orientation]
+%
+% @param Obj Instance of SpatialThing
+% @param Interval Interval of the trajectory
+% @param Density Trajectory density
+% @param Trajectory Sample trajectory (list of pose terms)
+%
+% TODO(daniel): Implement more efficient way of sampling trajectories.
+%               - create interface for mongo to query many transforms at once
 object_trajectory(Obj, Interval, num_samples(Count), Trajectory) :-
   interval(Interval, [Begin,End]),
   Dt is (End - Begin) / Count,
@@ -126,14 +132,21 @@ object_trajectory(Obj, Interval, num_samples(Count), Trajectory) :-
 object_trajectory(_, [Begin,End], _, []) :- Begin > End, !.
 object_trajectory(Obj, [Begin,End], dt(Dt), [X|Xs]) :-
   Begin =< End, Next is Begin + Dt,
-  % TODO(daniel): this could yield many mongo queries. find more efficient way of sampling trajectories.
   object_pose_at_time(Obj, Begin, X),
   object_trajectory(Obj, [Next,End], dt(Dt), Xs).
 
-object_frame_name(Obj,Frame) :-
-  rdf_has_prolog(Obj,knowrob:frameName,Frame), !.
-object_frame_name(Obj,Frame) :-
-  atom(Obj), rdf_split_url(_,Frame,Obj).
+%% object_frame_name(+Obj:iri, ?FrameName:atom) is det
+%
+% True if FrameName is the name of origin frame of the object.
+% Fallback is to use the IRI suffix of Obj.
+% 
+% @param Obj Instance of SpatialThing
+% @param FrameName The frame name
+%
+object_frame_name(Obj,FrameName) :-
+  rdf_has_prolog(Obj,knowrob:frameName,FrameName), !.
+object_frame_name(Obj,FrameName) :-
+  atom(Obj), rdf_split_url(_,FrameName,Obj).
 
 %% object_distance(+A:iri, +B:iri, ?Distance:float) is semidet
 % 
@@ -264,7 +277,7 @@ comp_tf_pose(Obj, Pose) :-
 comp_tf_pose(Obj, Pose, [Instant,_]) :-
   rdf_has(Obj, knowrob:frameName, ObjFrame),
   current_time(Now),
-  ( var(Instant) -> Instant = Now ;   20 > abs(Now - Instant) ),
+  ( var(Instant) -> Instant = Now ; 1 > abs(Now - Instant) ),
   map_frame_name(MapFrameName),
   tf_lookup_transform(MapFrameName, ObjFrame, PoseTerm),
   owl_instance_from_class(knowrob:'Pose', [pose=PoseTerm], Pose), !.

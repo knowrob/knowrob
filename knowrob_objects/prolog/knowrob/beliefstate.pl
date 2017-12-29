@@ -45,7 +45,7 @@
       belief_at_internal/2,         % TODO: these should not be exposed
       belief_at_internal/3,
       belief_perceived_at/4,        % convinience rule to be called by perception system to inform about perceptions
-      belief_dirty_object/1,        % causes marker messages to be generated
+      belief_republish_objects/1,   % causes marker messages to be generated
       belief_forget/0
     ]).
 
@@ -57,6 +57,8 @@
 :- use_module(library('knowrob/rdfs')).
 :- use_module(library('knowrob/transforms')).
 :- use_module(library('knowrob/objects')).
+
+:- use_foreign_library('libknowrob_objects.so').
 
 :- rdf_db:rdf_register_ns(knowrob, 'http://knowrob.org/kb/knowrob.owl#',  [keep(true)]).
 
@@ -72,12 +74,14 @@
     belief_at_global(r,-),
     belief_at_relative_to(r,r,-),
     belief_perceived_at(r,+,+,r),
-    belief_dirty_object(t).
+    belief_republish_objects(t).
 
 % TODO
 % - auto-instantiate object parts according to class restrictions
 %        - only fixed parts share frame of reference with Obj
 %        - align with knowrob_assembly ontology!
+% - use octree (or so) to find the nearest object perceived before
+%      instead of going through complete belief state.
 
 %% belief_existing_objects(-ObjectIds:list) is det
 %
@@ -163,8 +167,6 @@ belief_class_of(Obj, NewObjType) :-
 % @param Threshold   a distance below which two translations are thought to be the same
 % @param Obj         the object id
 %
-% TODO use octree (or so) to find the nearest object perceived before
-%      instead of going through complete belief state.
 % TODO make the threshold argument a ros param instead
 %
 belief_existing_object_at(ObjType, Transform, Threshold, Obj) :-
@@ -298,7 +300,7 @@ belief_at_global(Obj, GlobalPose, Instant) :-
 %
 belief_at_update(Obj, (Translation, Rotation)) :- !,
   belief_at_internal(Obj, (Translation, Rotation)),
-  belief_dirty_object([Obj]).
+  belief_republish_objects([Obj]).
 
 belief_at_update(Obj, [MapFrame,_,Translation,Rotation]) :-
   map_frame_name(MapFrame), !, 
@@ -315,7 +317,7 @@ belief_at_update(Obj, [ReferenceFrame,_,Translation,Rotation]) :-
 
 belief_at_update(Obj, TransformData, RelativeTo) :-
   belief_at_internal(Obj, TransformData, RelativeTo),
-  belief_dirty_object([Obj]).
+  belief_republish_objects([Obj]).
 
 %% belief_at_internal(+Obj, +TransformData, +RelativeTo) is det.
 %
@@ -336,21 +338,6 @@ belief_at_internal_(Obj, (Translation, Rotation), TransformId) :-
   assert_temporal_part(Obj, knowrob:pose,
     nontemporal(TransformId), Now, belief_state).
 
-%% belief_dirty_object(-ObjectIds) is det
+%% belief_republish_objects(+ObjectIds) is det
 %
-% TODO: use jpl, or cpp ROS interface
-belief_dirty_object(ObjectIds) :-
-  findall(O, (
-    member(X, ObjectIds), 
-    atom_string(X, Oxx),
-    string_concat('"', Oxx, Ox),
-    string_concat(Ox, '"', O)
-  ), Os),
-  atomic_list_concat(Os, ',', OsS),
-  atom_string("'[", LB),
-  string_concat(LB, OsS, PS),
-  atom_string("]'", RB),
-  string_concat(PS, RB, ParStr),
-  atom_string("rosservice call /object_state_publisher/mark_dirty_object ", CmdKern),
-  string_concat(CmdKern, ParStr, Cmd),
-  thread_create(shell(Cmd), _, []).
+belief_republish_objects([O|Os]) :- mark_dirty_objects([O|Os]).
