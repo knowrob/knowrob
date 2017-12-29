@@ -310,8 +310,9 @@ entity_assert(Entity, [[Key,Value]|Descr]) :-
       rdf_assert(Entity, PropIri, ValueEntity)
   ) ; ( % data property
       rdf_has(PropIri, rdf:type, owl:'DatatypeProperty'),
-      rdf_phas(PropIri, rdfs:range, Range), % FIXME: what if range unspecified
-      rdf_assert(Entity, PropIri, literal(type(Range,Value)))
+      ( rdf_phas(PropIri, rdfs:range, Range) ->
+        rdf_assert(Entity, PropIri, literal(type(Range,Value))) ;
+        rdf_assert(Entity, PropIri, literal(Value)) )
   )),
   entity_assert(Entity, Descr).
 
@@ -321,8 +322,9 @@ entity_assert(Entity, [[Key,Value,during,IntervalDescr]|Descr]) :-
   entity(Interval, IntervalDescr),
   (  rdf_has(PropIri, rdf:type, owl:'DatatypeProperty')
   ->  ( % data property
-      rdf_phas(PropIri, rdfs:range, Range), % FIXME: what if range unspecified
-      assert_temporal_part(Entity, PropIri, literal(type(Range,Value)), Interval)
+      rdf_phas(PropIri, rdfs:range, Range) ->
+        assert_temporal_part(Entity, PropIri, literal(type(Range,Value)), Interval) ;
+        assert_temporal_part(Entity, PropIri, literal(Value), Interval)
   ) ; ( % nested entity
       rdf_has(PropIri, rdf:type, owl:'ObjectProperty'),
       entity(ValueEntity, Value),
