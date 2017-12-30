@@ -1,17 +1,23 @@
-Based on [[rviz Markers][http://www.ros.org/wiki/rviz/DisplayTypes/Marker]], this visualization module can display 3D information in a browser-based canvas that has been built using the [[ros3djs library][https://github.com/RobotWebTools/ros3djs]].
+knowrob_vis
+===
+
+Based on 
+[rviz Markers](http://www.ros.org/wiki/rviz/DisplayTypes/Marker),
+this visualization module can display 3D information in a browser-based canvas that has been built using the
+[ros3djs library](https://github.com/RobotWebTools/ros3djs).
 
 ### Usage
 
 First, setup the rosbridge communication interface and initialiaze the `knowrob_vis` package.
-==
-roslaunch rosbridge_server rosbridge_websocket.launch
-rosrun rosprolog  rosprolog knowrob_vis
-==
-  
-Markers must be explicitly published by the user with following query ([[openEASE][http://www.open-ease.org/]] does this automatically).
-==
-marker_publish.
-==
+
+    roslaunch rosbridge_server rosbridge_websocket.launch
+    rosrun rosprolog  rosprolog knowrob_vis
+
+
+Markers must be explicitly published by the user with following query ([openEASE](http://www.open-ease.org/) does this automatically).
+
+    marker_publish.
+
 
 ### Marker Types
 
