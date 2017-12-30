@@ -25,66 +25,21 @@
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@author Lorenz Mösenlechner, Moritz Tenorth
-@license BSD
-
+  @author Lorenz Mösenlechner
+  @author Moritz Tenorth
+  @author Daniel Beßler
+  @license BSD
 */
 
 :- use_module(library('process')).
-
-%% ros_param_get_string(+Key,-Value) is semidet
-%% ros_param_get_double(+Key,-Value) is semidet
-%% ros_param_get_int(+Key,-Value) is semidet
-%
-% Read parameter from ROS parameter server.
-%%
-%% ros_param_set_string(+Key,+Value) is semidet
-%% ros_param_set_double(+Key+Value) is semidet
-%% ros_param_set_int(+Key,+Value) is semidet
-%
-% Write parameter to ROS parameter server.
-%%
-%% ros_info(+Msg) is det
-%% ros_warning(+Msg) is det
-%% ros_error(+Msg) is det
-%
-% Debug via ROS master.
-%%
-%% ros_package_path(+Package, -Path) is semidet
-%
-% Locate ROS packages on the harddisk using 'rospack find'
-%%
-%% ros_package_command(+Command, -Output) is semidet
-%
-% Runs a rospack command of the form 'rospack ...'
-%%
-%% tf_lookup_transform(+TargetFrame, +SourceFrame, -Transform) is semidet
-%
-% True if Transform is the current transform from TargetFrame to SourceFrame.
-% Transform is a term "pose([X,Y,Z],[QX,QY,QZ,QW])".
-%%
-%% tf_listener_start is det
-% 
-% Start listening to TF topic.
-%%
-%% tf_transform_point(+SourceFrame, +TargetFrame, +PointIn, -PointOut) is semidet
-%% tf_transform_quaternion(+SourceFrame, +TargetFrame, +QuaternionIn, -QuaternionOut) is semidet
-%% tf_transform_pose(+SourceFrame, +TargetFrame, +PoseIn, -PoseOut) is semidet
-% 
-% Transforms input from SourceFrame to TargetFrame.
-% PointIn is a list [float x, y, z].
-% QuaternionIn is a list [float qx, qy, qz, qw].
-% PoseIn is a term pose([float x, y, z], [float qx, qy, qz, qw]).
-%%
-:- use_foreign_library('librosprolog.so').
-:- ros_init.
+:- use_module('roscpp').
 
 %% init_ros_package(+PackagePath) is nondet.
 %
-% Initialize a KnowRob package by consulting the prolog/init.pl file
+% Initialize a KnowRob package by consulting the init.pl file.
 % 
 % @param PackagePath  Path towards the package to be initialized
-% 
+%
 init_ros_package( PackagePath ) :-
   atom_concat(PackagePath, 'init.pl', InitFile),
   exists_file(InitFile),
@@ -95,8 +50,9 @@ init_ros_package( _ ).
 %% register_ros_package(+Package) is nondet.
 %% register_ros_package(+Package, ?AbsoluteDirectory) is nondet.
 %
-% Find and initialize a KnowRob package, i.e. locate the package on the
-% harddisk, add the path to the library search path, and consult the init.pl
+% Find and initialize a KnowRob package.
+% Locate the package on the harddisk, add the path
+% to the library search path, and consult the init.pl
 % file that (recursively) initializes the package and its dependencies.
 % 
 % @param Package            Name of a ROS package
@@ -119,6 +75,9 @@ register_ros_package(Package, AbsoluteDirectory) :-
 register_ros_package(Package) :-
   register_ros_package(Package, _).
 
+%% use_ros_module(+Package, +FilePath) is nondet.
+%
+% Registers Package and uses the module at FilePath.
 use_ros_module(Package, FilePath) :-
   register_ros_package(Package, AbsoluteDirectory),
   atom_concat(AbsoluteDirectory, FilePath, AbsoluteFilePath),
@@ -137,6 +96,7 @@ init_classpath :-
 %% rosprolog_classpaths(+Paths) is nondet.
 % 
 % Read all classpath files from workspaces referenced in ROS_PACKAGE_PATH
+% to set up Java environment.
 %
 % @param Paths The CLASSPATH environment variable
 % 

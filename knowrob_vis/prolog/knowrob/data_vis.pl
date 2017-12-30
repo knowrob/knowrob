@@ -1,5 +1,4 @@
-/** <module> Methods for visualizing parts of the knowledge base
-
+/*
   Copyright (C) 2015 Moritz Tenorth
   Copyright (C) 2017 Daniel Beßler
   All rights reserved.
@@ -25,9 +24,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-  @author Moritz Tenorth
-  @license BSD
 */
 
 :- module(data_vis,
@@ -36,14 +32,24 @@
       data_vis_remove/1,
       timeline/1
     ]).
+/** <module> Methods for data visualization
+  
+  The visualization artifacts are supposed to be generated client side.
+  KnowRob only generates a data structure holding the data and
+  data visualization clients can connect to the topic on which
+  KnowRob publishes the visualization data.
 
+  @author Moritz Tenorth
+  @author Daniel Beßler
+  @license BSD
+*/
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('jpl')).
 
 %% data_vis(+Term:term, +Properties:list) is det
 %
-% Creates a new data_vis message and publishes it via "/data_vis_msgs"
+% Creates a new data_vis message and publishes it via _|/data_vis_msgs|_
 % ROS topic.
 % Term is one of piechart(Identifier), barchart(Identifier),
 % treechart(Identifier), timeline(Identifier), or linechart(Identifier).
@@ -60,7 +66,7 @@ data_vis(Term, Properties) :-
 
 %% timeline(+Events:list) is det
 %
-% Creates a new data_vis timeline message and publishes it via "/data_vis_msgs"
+% Creates a new data_vis timeline message and publishes it via _|/data_vis_msgs|_
 % ROS topic.
 %
 % @param Events list of temporal extended things
@@ -75,7 +81,7 @@ timeline(Events) :-
            data([[Events,EventExtends]])).
 
 
-%% data_vis_remove is det
+%% data_vis_remove(+Identifier) is det.
 %
 % Republishes a data_vis object with empty data
 % so that visualization clients can remove it.

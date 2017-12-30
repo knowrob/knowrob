@@ -1,5 +1,4 @@
-/** <module> Integration of OWL reasoners via the OWLAPI
-
+/*
   Copyright (C) 2012 Moritz Tenorth
   All rights reserved.
 
@@ -24,10 +23,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Moritz Tenorth
-@license BSD
-
 */
 
 

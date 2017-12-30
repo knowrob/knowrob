@@ -1,5 +1,4 @@
-/** 
-
+/*
   Copyright (C) 2013 Moritz Tenorth
   Copyright (C) 2015 Daniel Beßler
   All rights reserved.
@@ -25,11 +24,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Moritz Tenorth
-@author Daniel Beßler
-@license BSD
-
 */
 :- module(knowrob_mongo,
     [
@@ -57,7 +51,12 @@
       mng_ros_message/2,
       mng_ros_message/4
     ]).
+/** <module> Integration of mongo data into symbolic reasoning in KnowRob
 
+@author Moritz Tenorth
+@author Daniel Beßler
+@license BSD
+*/
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('jpl')).
@@ -101,7 +100,8 @@ mng_interface(Mongo) :-
 
 %% mng_db(+DBName) is nondet.
 %
-% Change mongo database used for future queries
+% Change mongo database state used by KnowRob.
+% Note: This is currently not threadsafe!
 %
 % @param DBName  The name of the db (e.g., 'roslog')
 %
@@ -123,7 +123,7 @@ mng_timestamp(Date, Stamp) :-
 
 %% mng_distinct_values(+Collection, +Key, -Values) is nondet.
 % 
-% Determine distinct field values
+% Determine distinct values of the records with Key in Collection.
 %
 % @param Collection The name of the MONGO DB collection
 % @param Key    The field key
@@ -136,8 +136,9 @@ mng_distinct_values(Collection, Key, Values) :-
 
 %% mng_cursor(+Collection, +Pattern, -DBCursor)
 %
-% Query for DB cursor in collection @Collection.
-% The resulting DB object(s) must match the query pattern @Pattern.
+% Create a DB cursor of query results for records in
+% Collection.
+% The resulting DB object(s) match the query pattern Pattern.
 %
 % @param Collection The name of the MONGO DB collection
 % @param DBCursor The resulting DB cursor
@@ -158,17 +159,17 @@ mng_cursor(Collection, Pattern, DBCursor) :-
   jpl_call(DB, 'query', [Collection, KeysArray, RelationsArray, ValuesArray], DBCursor),
   not(DBCursor = @(null)).
 
-%% mng_query_latest(+Collection, -DBObj, +TimeKey, +TimeValue)
-%% mng_query_latest(+Collection, -DBObj, +TimeKey, +TimeValue, +Pattern)
-%% mng_query_earliest(+Collection, -DBObj, +TimeKey, +TimeValue)
-%% mng_query_earliest(+Collection, -DBObj, +TimeKey, +TimeValue, +Pattern)
-%% mng_query(+Collection, -DBObj)
-%% mng_query(+Collection, -DBObj, +Pattern)
+%% mng_query_latest(+Collection, -DBObj, +TimeKey, +TimeValue).
+%% mng_query_latest(+Collection, -DBObj, +TimeKey, +TimeValue, +Pattern).
+%% mng_query_earliest(+Collection, -DBObj, +TimeKey, +TimeValue).
+%% mng_query_earliest(+Collection, -DBObj, +TimeKey, +TimeValue, +Pattern).
+%% mng_query(+Collection, -DBObj).
+%% mng_query(+Collection, -DBObj, +Pattern).
 %
-% Query for DB object in collection @Collection.
+% Query for DB object in Collection.
 % If a query pattern is given then the resulting DB object(s) must match this pattern.
-% @DBObj is a term of the form: one(X), all(X) or some(X,Count) where Count is an integer.
-% The results are sorted ascending or descending w.r.t. the key @TimeKey if given.
+% DBObj is a term of the form: one(X), all(X) or some(X,Count) where Count is an integer.
+% The results are sorted ascending or descending w.r.t. the key TimeKey if given.
 %
 % @param Collection The name of the MONGO DB collection
 % @param DBObj The resulting DB object(s)
@@ -214,13 +215,15 @@ mng_query_incremental(Collection, Goal, Pattern) :-
   mng_cursor(Collection, Pattern, DBCursor),
   mng_cursor_process(DBCursor, Goal).
 
-%% mng_cursor_descending(+DBCursor, +Key)
-%% mng_cursor_ascending(+DBCursor, +Key)
+%% mng_cursor_descending(+In, +Key, -Out).
+%% mng_cursor_ascending(+In, +Key, -Out).
 %
-% Sorts the DB cursor @DBCursor w.r.t. the DB object key @Key.
+% Sorts the DB cursor In w.r.t. Key, the sorted collection
+% can be accessed via the new DB cursor Out.
 %
-% @param DBCursor The DB cursor
+% @param In Input DB cursor
 % @param Key The sort key
+% @param Out Output DB cursor
 %
 mng_cursor_descending(DBCursor, Key, DBCursorDescending) :-
   mng_interface(DB),
@@ -230,6 +233,10 @@ mng_cursor_ascending(DBCursor, Key, DBCursorAscending) :-
   mng_interface(DB),
   jpl_call(DB, 'ascending', [DBCursor, Key], DBCursorAscending).
 
+%% mng_cursor_limit(+In:javaobject, +N:integer, -Out:javaobject).
+%
+% Out is the same mongo DB cursor as In but limited to N results.
+%
 mng_cursor_limit(DBCursor, N, DBCursorLimited) :-
   mng_interface(DB),
   jpl_call(DB, 'limit', [DBCursor, N], DBCursorLimited).
@@ -267,11 +274,10 @@ mng_cursor_process(DBCursor, Goal) :-
   ),
   jpl_call(DBCursor, 'close', [], _).
 
-%% mng_cursor_read(+DBCursor, one(-DBObj))
-%% mng_cursor_read(+DBCursor, all(-DBObj))
-%% mng_cursor_read(+DBCursor, some(-DBObj,-Count))
+%% mng_cursor_read(+DBCursor, +DBObjects).
 %
 % Read DB objects from cursor.
+% DBObjects is one of one(DBObj), all(DBObj), or some(DBObj,Count).
 %
 % @param DBCursor The DB cursor
 % @param DBObj The resulting DB object(s)
@@ -295,8 +301,7 @@ mng_db_object(DBCursor, all(DBObjs)) :-
   not(DBObjsArray = @(null)),
   jpl_array_to_list(DBObjsArray, DBObjs).
 
-%% mng_value_object(date(+Val), ObjJava)
-%% mng_value_object(+Val, ObjJava)
+%% mng_value_object(+Val, ObjJava).
 %
 % Convert value to Java type compatible with MONGO queries.
 %
@@ -347,25 +352,19 @@ mng_republisher(Republisher) :-
     current_predicate(v_mng_republisher, _),
     v_mng_republisher(Republisher).
 
-%% mng_republish(bool(+DBObj), +Topic, -Msg)
-%% mng_republish(str(+DBObj), +Topic, -Msg)
-%% mng_republish(float32(+DBObj), +Topic, -Msg)
-%% mng_republish(float64(+DBObj), +Topic, -Msg)
-%% mng_republish(int32(+DBObj), +Topic, -Msg)
-%% mng_republish(int64(+DBObj), +Topic, -Msg)
-%% mng_republish(image(+DBObj), +Topic, -Msg)
-%% mng_republish(pcl(+DBObj), +Topic, -Msg)
-%% mng_republish(camera(+DBObj), +Topic, -Msg)
-%% mng_republish(tf(+DBObj), +Topic, -Msg)
-%% mng_republish(+DBObj, +TypeJava, +TypeString, +Topic, -Msg)
+%% mng_republish(+TypedDBObj, +Topic, -Msg).
+%% mng_republish(+DBObj, +TypeJava, +TypeString, +Topic, -Msg).
 %
 % Generate a ROS message based on Mongo DB object
-% and publishes the message on specified topic.
+% and publish the message on a specified topic.
+% TypedDBObj is one of bool(DBObj), str(DBObj), float32(DBObj),
+% float64(DBObj), int32(DBObj), int64(DBObj), image(DBObj),
+% pcl(DBObj), camera(DBObj), or tf(DBObj).
 %
-% @param DBObj The DB object (result of a query)
+% @param TypedDBObj The DB object (result of a query)
 % @param Topic The message topic
-% @param TypeJava The Java class of the message
-% @param TypeString The message type identifier
+% @param TypeJava The Java class of the message (e.g., 'std_msgs.Bool')
+% @param TypeString The message type identifier (e.g., 'std_msgs/Bool')
 % @param Msg The generated message
 %
 mng_republish(bool(DBObj), Topic, Msg) :-
@@ -411,14 +410,14 @@ mng_republish(DBObj, TypeJava, TypeString, Topic, Msg) :-
   jpl_classname_to_class(TypeJava, MsgClass),
   jpl_call(Republisher, 'publish', [DBObj,MsgClass,TypeString,Topic], Msg).
 
-%% mng_ros_message(+DBObj, -Msg)
-%% mng_ros_message(+DBObj, +TypeJava, +TypeString, -Msg)
+%% mng_ros_message(+DBObj, -Msg).
+%% mng_ros_message(+DBObj, +TypeJava, +TypeString, -Msg).
 %
 % Generate a ROS message based on Mongo DB object.
 %
 % @param DBObj The DB object (result of a query)
-% @param TypeJava The Java class of the message
-% @param TypeString The message type identifier
+% @param TypeJava The Java class of the message (e.g., 'std_msgs.Bool')
+% @param TypeString The message type identifier (e.g., 'std_msgs/Bool')
 % @param Msg The generated message
 %
 mng_ros_message(DBObj, Msg) :-

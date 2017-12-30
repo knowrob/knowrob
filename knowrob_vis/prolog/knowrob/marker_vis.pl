@@ -1,5 +1,4 @@
-/** <module> Methods for visualizing parts of the knowledge base
-
+/*
   Copyright (C) 2015 Daniel Beßler
   Copyright (C) 2015 Asil Kaan Bozcuoğlu
   All rights reserved.
@@ -25,9 +24,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-  @author Daniel Beßler
-  @license BSD
 */
 
 :- module(marker_vis,
@@ -67,7 +63,11 @@
       marker_primitive/5,
       marker_queries/2
     ]).
-    
+/** <module> Integration RViz marker visualization messages
+
+  @author Daniel Beßler
+  @license BSD
+*/
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('jpl')).
@@ -241,7 +241,7 @@ marker_republish :-
 
 %% marker_create(+MarkerName, +MarkerTerm, -MarkerObject, +Parent) is det.
 %
-% Creates a new MarkerObject instance that is identified by @MarkerTerm.
+% Creates a new MarkerObject instance that is identified by MarkerTerm.
 %
 % @param MarkerName A atom that identifies the new marker (e.g., 'PR2')
 % @param MarkerTerm A term that identifies the new marker (e.g., trajectory('/base_link'))
@@ -325,7 +325,7 @@ marker_initialize_object(Identifier,MarkerObject) :-
     marker_color(MarkerObject, Color)
   )).
 
-%% marker_primitive(+Type, +MarkerTerm, -MarkerObject, +Parent) is det.
+%% marker_primitive(+Type, +MarkerName, +MarkerTerm, -MarkerObject, +Parent) is det.
 %
 % Creates MarkerObject instance with primitive geometry shape (e.g., cube, sphere, ...)
 % and some default properties.
@@ -342,15 +342,13 @@ marker_primitive(Type, MarkerName, MarkerTerm, MarkerObject, Parent) :-
   marker_color(MarkerObject, [0.6,0.6,0.6,1.0]),
   marker_scale(MarkerObject, [0.05,0.05,0.05]).
 
-%% marker_remove(all) is det.
-%% marker_remove(trajectories) is det.
-%% marker_remove(MarkerTerm) is det.
+%% marker_remove(+MarkerTerm) is det.
 %
 % Removes MarkerObject instances that match given term.
 % marker_remove(all) removes all known markers.
 % marker_remove(trajectories) removes all known trajectory markers.
 % marker_remove(MarkerTerm) removes all markers that can be unified with
-% the compund term @MarkerTerm.
+% the compound term MarkerTerm.
 % 
 % @param MarkerTerm Marker identification term.
 %
@@ -393,9 +391,9 @@ marker_remove(MarkerName) :-
     marker_remove(MarkerObject)
   ).
 
-%% marker(+MarkerTerm,?MarkerChildTerm) is nondet.
+%% marker_child(+MarkerTerm,?MarkerChildTerm) is nondet.
 %
-% Query the children markers of the marker identified by @MarkerTerm.
+% Query the children markers of the marker identified by MarkerTerm.
 % 
 % @param MarkerTerm A term that identifies the marker (e.g., trajectory('/base_link'))
 % @param MarkerChildTerm A term that identifies the marker child
@@ -412,8 +410,8 @@ marker_child(MarkerObject, MarkerChildTerm) :-
 %% marker(?MarkerTerm,?MarkerObject) is det.
 %% marker(?MarkerTerm,?MarkerObject,?Markername) is det.
 %
-% Selects @MarkerObject instance that corresponds to @MarkerTerm.
-% Possibly creates a new @MarkerObject if @MarkerTerm is unknown.
+% Selects MarkerObject instance that corresponds to MarkerTerm.
+% Possibly creates a new MarkerObject if MarkerTerm is unknown.
 % The MarkerPublisher instance is automatically selected as parent
 % if the marker object is newly created with this call.
 % 
@@ -441,10 +439,10 @@ marker(MarkerTerm, MarkerObject, MarkerName) :-
   marker_visualisation(MarkerVis),
   marker(MarkerName, MarkerTerm, MarkerObject, MarkerVis).
 
-%% marker(?MarkerTerm,?MarkerObject,+Parent) is det.
+%% marker(?MarkerName,?MarkerTerm,?MarkerObject,+Parent) is det.
 %
-% Selects @MarkerObject instance that corresponds to @MarkerTerm.
-% Possibly creates a new @MarkerObject if @MarkerTerm is unknown.
+% Selects MarkerObject instance that corresponds to MarkerTerm.
+% Possibly creates a new MarkerObject if MarkerTerm is unknown.
 % 
 % @param MarkerTerm A term that identifies the marker (e.g., trajectory('/base_link'))
 % @param MarkerObject The MarkerObject instance
@@ -689,19 +687,16 @@ marker_term(X, MarkerTerm) :-
 marker_term(X, X).
 
 %% marker_update is det.
+%% marker_update(+T) is det.
 %
-% Updates all markers for the current local time.
+% Updates all markers for the current local time or the time instant T.
+%
+% @param T A time atom (e.g., 'timepoint_1396512604'), time number (e.g., 1396512604).
 %
 marker_update :-
   current_time(T),
   marker_update(T).
 
-%% marker_update(+T) is det.
-%
-% Updates all markers for the time identified by @T.
-%
-% @param T A time atom (e.g., 'timepoint_1396512604'), time number (e.g., 1396512604).
-%
 marker_update(T) :-
   ( atom(T) ; number(T) ),
   time_term(T, T_value),
@@ -711,23 +706,20 @@ marker_update(T) :-
   ), !.
 
 %% marker_update(+MarkerTerm) is det.
+%% marker_update(+MarkerTerm, +T) is det.
+%% marker_update(+MarkerTerm, +MarkerObject, +T) is det.
 %
-% Updates the marker identified by @MarkerTerm.
+% Updates the marker identified by MarkerTerm
+% for the time instant T (or the current time).
 %
 % @param MarkerTerm A term that identifies the marker (e.g., trajectory('/base_link'))
+% @param MarkerObject The MarkerObject instance
+% @param T A time atom (e.g., 'timepoint_1396512604'), time number (e.g., 1396512604) or an interval (e.g., interval(1396512604, 1396512608[, 0.5])).
 %
 marker_update(MarkerTerm) :-
   current_time(T),
   marker_update(MarkerTerm,T).
 
-%% marker_update(+MarkerTerm, +T) is det.
-%
-% Updates the marker identified by @MarkerTerm
-% for the time identified by @T.
-%
-% @param MarkerTerm A term that identifies the marker (e.g., trajectory('/base_link'))
-% @param T A time atom (e.g., 'timepoint_1396512604'), time number (e.g., 1396512604) or an interval (e.g., interval(1396512604, 1396512608[, 0.5])).
-%
 marker_update(MarkerObject, T) :-
   jpl_is_object(MarkerObject),
   marker(MarkerTerm, MarkerObject),
@@ -771,15 +763,6 @@ marker_update(MarkerTerm, time(T,Arg)) :-
     marker_update(Term, MarkerObject, Arg)
   ))), !.
 
-%% marker_update(+MarkerTerm, +MarkerObject, +T) is det.
-%
-% Updates the marker @MarkerObject that is identified by @MarkerTerm
-% for the time identified by @T.
-%
-% @param MarkerTerm A term that identifies the marker (e.g., trajectory('/base_link'))
-% @param MarkerObject The MarkerObject instance
-% @param T A time atom (e.g., 'timepoint_1396512604'), time number (e.g., 1396512604) or an interval (e.g., interval(1396512604, 1396512608, 0.5)).
-%
 marker_update(object_without_children(Identifier), MarkerObject, T) :-
   ignore(once((
     marker_transform_at_time(MarkerObject,Identifier,T,(Translation,Orientation)),
@@ -902,22 +885,18 @@ marker_update_children(MarkerObject, T) :-
 %
 
 %% marker_highlight(+MarkerObject) is det.
+%% marker_highlight(+MarkerObject, +Color) is det.
 %
-% Highlight markers identified by @MarkerObject with default highlight color.
+% Highlight markers identified by MarkerObject with given highlight color Color
+% or the default color.
 %
 % @param MarkerObject MarkerObject instance or a term that identifies the marker (e.g., trajectory('/base_link'))
+% @param Color 3D/4D number list or HTML color atom (e.g., '#ff0000')
 %
 marker_highlight(MarkerObject) :-
   jpl_list_to_array([1.0,0.0,0.0,1.0], ColorArray),
   marker_highlight(MarkerObject, ColorArray).
 
-%% marker_highlight(+MarkerObject, +Color) is det.
-%
-% Highlight markers identified by @MarkerObject with given highlight color @Color.
-%
-% @param MarkerObject MarkerObject instance or a term that identifies the marker (e.g., trajectory('/base_link'))
-% @param Color 3D/4D number list or HTML color atom (e.g., '#ff0000')
-%
 marker_highlight(MarkerObject, [R,G,B]) :-
   jpl_list_to_array([R,G,B,1.0], ColorArray),
   marker_highlight(MarkerObject, ColorArray).
@@ -969,7 +948,7 @@ marker_highlight(MarkerObject, ColorArg) :-
 
 %% marker_highlight_remove(+MarkerObject) is det.
 %
-% Removes highlights from markers identified by @MarkerObject.
+% Removes highlights from markers identified by MarkerObject.
 %
 % @param MarkerObject MarkerObject instance or a term that identifies the marker (e.g., trajectory('/base_link'))
 %
@@ -1015,6 +994,13 @@ marker_highlight_toggle(MarkerName) :-
 % Marker queries
 %
 
+%% marker_queries(+MarkerName, ?Queries).
+%
+% Find all query representations that can be asked about this marker.
+% These are queries described in an OWL ontology that can be asked about particular
+% classes or individuals.
+% Queries is a list of [atom Category,Title,Query].
+%
 marker_queries(MarkerName, Queries) :-
   v_marker_object(MarkerName, MarkerTerm, _, _),
   findall([Category,Title,Query], marker_query(MarkerName,MarkerTerm,Category,Title,Query), Queries).
@@ -1131,7 +1117,7 @@ marker_property(Marker, timestamp(T)) :-
 
 %% marker_timestamp(+Marker, ?Value) is det.
 %
-% Read or set the timestamp property of marker @Marker.
+% Read or set the timestamp property of marker Marker.
 %
 % @param Marker MarkerObject instance or a term that identifies the marker (e.g., trajectory('/base_link'))
 % @param Value The property value
@@ -1141,7 +1127,7 @@ marker_timestamp(Marker, T) :-
 
 %% marker_duration(+Marker, ?Value) is det.
 %
-% Read or set the duration property of marker @Marker.
+% Read or set the duration property of marker Marker.
 %
 % @param Marker MarkerObject instance or a term that identifies the marker (e.g., trajectory('/base_link'))
 % @param Value The property value
@@ -1151,7 +1137,7 @@ marker_duration(Marker, Text) :-
 
 %% marker_type(+Marker, ?Value) is det.
 %
-% Read or set the type property of marker @Marker.
+% Read or set the type property of marker Marker.
 %
 % @param Marker MarkerObject instance or a term that identifies the marker (e.g., trajectory('/base_link'))
 % @param Value The property value
@@ -1161,7 +1147,7 @@ marker_type(Marker, Type) :-
 
 %% marker_scale(+Marker, ?Value) is det.
 %
-% Read or set the scale property of marker @Marker.
+% Read or set the scale property of marker Marker.
 %
 % @param Marker MarkerObject instance or a term that identifies the marker (e.g., trajectory('/base_link'))
 % @param Value The property value
@@ -1171,7 +1157,7 @@ marker_scale(Marker, Scale) :-
 
 %% marker_color(+Marker, ?Value) is det.
 %
-% Read or set the color property of marker @Marker.
+% Read or set the color property of marker Marker.
 %
 % @param Marker MarkerObject instance or a term that identifies the marker (e.g., trajectory('/base_link'))
 % @param Value The property value
@@ -1181,7 +1167,7 @@ marker_color(Marker, Color) :-
 
 %% marker_alpha(+Marker, ?Value) is det.
 %
-% Read or set the alpha property of marker @Marker.
+% Read or set the alpha property of marker Marker.
 %
 % @param Marker MarkerObject instance or a term that identifies the marker (e.g., trajectory('/base_link'))
 % @param Value The property value
@@ -1191,10 +1177,10 @@ marker_alpha(Marker, Alpha) :-
 
 %% marker_alpha(+MarkerList, +Alpha, +AlphaStep) is det.
 %
-% Apply alpha fade on markers in @MarkerList.
+% Apply alpha fade on markers in MarkerList.
 %
 % @param MarkerList List of MarkerObject instances or terms that identify the marker (e.g., trajectory('/base_link'))
-% @param Alpha The alpha value for the first marker in @MarkerList
+% @param Alpha The alpha value for the first marker in MarkerList
 % @param AlphaStep Delta alpha value
 %
 marker_alpha([Child|Rest], Alpha, AlphaStep) :-
@@ -1205,7 +1191,7 @@ marker_alpha([], _, _).
 
 %% marker_mesh_resource(+Marker, ?Value) is det.
 %
-% Read or set the mesh_resource property of marker @Marker.
+% Read or set the mesh_resource property of marker Marker.
 %
 % @param Marker MarkerObject instance or a term that identifies the marker (e.g., trajectory('/base_link'))
 % @param Value The property value
@@ -1223,7 +1209,7 @@ marker_colors(Marker, Colors) :-
 
 %% marker_pose(+Marker, ?Value) is det.
 %
-% Read or set the pose property of marker @Marker.
+% Read or set the pose property of marker Marker.
 % @Value must be unifyable with pose(Position,Orientation).
 %
 % @param Marker MarkerObject instance or a term that identifies the marker (e.g., trajectory('/base_link'))
@@ -1241,7 +1227,7 @@ marker_pose(Marker, Position, Orientation) :-
 
 %% marker_orientation(+Marker, ?Value) is det.
 %
-% Read or set the orientation property of marker @Marker.
+% Read or set the orientation property of marker Marker.
 %
 % @param Marker MarkerObject instance or a term that identifies the marker (e.g., trajectory('/base_link'))
 % @param Value The property value
@@ -1251,7 +1237,7 @@ marker_orientation(Marker, Orientation) :-
 
 %% marker_translation(+Marker, ?Value) is det.
 %
-% Read or set the translation property of marker @Marker.
+% Read or set the translation property of marker Marker.
 %
 % @param Marker MarkerObject instance or a term that identifies the marker (e.g., trajectory('/base_link'))
 % @param Value The property value
@@ -1261,7 +1247,7 @@ marker_translation(Marker, Position) :-
 
 %% marker_tf_prefix(+Marker, ?Value) is det.
 %
-% Read or set the TF prefix property of marker @Marker.
+% Read or set the TF prefix property of marker Marker.
 %
 % @param Marker MarkerObject instance or a term that identifies the marker (e.g., trajectory('/base_link'))
 % @param Value The property value
@@ -1271,7 +1257,7 @@ marker_tf_prefix(Marker, Prefix) :-
 
 %% marker_text(+Marker, ?Value) is det.
 %
-% Read or set the text property of marker @Marker.
+% Read or set the text property of marker Marker.
 %
 % @param Marker MarkerObject instance or a term that identifies the marker (e.g., trajectory('/base_link'))
 % @param Value The property value
@@ -1281,7 +1267,7 @@ marker_text(Marker, Text) :-
 
 %% marker_has_visual(+Marker, ?Value) is det.
 %
-% Read or set the has_visual property of marker @Marker.
+% Read or set the has_visual property of marker Marker.
 %
 % @param Marker MarkerObject instance or a term that identifies the marker (e.g., trajectory('/base_link'))
 % @param Value The property value
@@ -1289,10 +1275,10 @@ marker_text(Marker, Text) :-
 marker_has_visual(Marker, V) :-
   marker_call(Marker,V,(get_marker_has_visual,set_marker_has_visual)).
 
-%% marker_call(+Marker, ?Value, (Get,Set)) is det.
+%% marker_call(+Marker, ?Value, +GetterSetter) is det.
 %
-% Read or set a property of marker(s) @Marker.
-% @Marker can also be a list of markers.
+% Read or set a property of marker(s) Marker.
+% Marker can also be a list of markers.
 %
 % @param Marker MarkerObject instance or a term that identifies the marker (e.g., trajectory('/base_link'))
 % @param Value The property value

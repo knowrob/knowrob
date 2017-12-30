@@ -1,5 +1,4 @@
-/** <module> Reasoning using procedural attachments, called "computables"
-
+/*
   Copyright (C) 2008-10 Bernhard Kirchlechner, Moritz Tenorth
   Copyright (C) 2017 Daniel Beßler
   All rights reserved.
@@ -25,10 +24,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Bernhard Kirchlechner, Moritz Tenorth
-@license BSD
-
 */
 
 :- module(rdfs_computable,
@@ -44,6 +39,13 @@
       rdfs_assert_prop_conc/2,       % assert property concatenations in a row
       rdfs_assert_prop_conc/3
     ]).
+/** <module> Reasoning using procedural attachments, called "computables"
+
+@author Bernhard Kirchlechner
+@author Moritz Tenorth
+@author Daniel Beßler
+@license BSD
+*/
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
@@ -72,7 +74,7 @@
 % Query predicates
 %
 
-%% rdfs_computable_has(?Frame, ?Property, ?Value) is nondet
+%% rdfs_computable_has(?Frame, ?Property, ?Value) is nondet.
 %
 % Maps to rdf_triple(Property, Frame, Value).
 %
@@ -92,7 +94,7 @@ rdf_triple(Property, Frame, Value) :-
   ; catch( rdfs_computable_triple(SubProperty, Frame, Value), error(instantiation_error, _), fail)
   ).
 
-%% rdfs_instance_of_during(?Resource, ?RDF_Type) is nondet
+%% rdfs_instance_of(?Resource, ?RDF_Type) is nondet.
 %
 % True if RDF_Type is the type of Resource during Interval
 % according to RDFS, or computable semantics.
@@ -187,7 +189,7 @@ rdfs_computable_instance_of(Instance, Class) :-
   member(Cls, Cs),
   rdfs_subclass_of(Cls, Class).
 
-%% rdfs_computable_triple(+Property, ?Frame, ?Value)
+%% rdfs_computable_triple(+Property, ?Frame, ?Value).
 %
 % Unify the property triple for a computable property.
 % Full caching is enabled for everything but (+,-,-)
@@ -249,7 +251,7 @@ rdfs_computable_cachable(Property) :-
 rdfs_computable_cache_values(Property, Frame, Value) :- rdf_assert(Property, Frame, Value, cache).
 rdfs_computable_cache_frames(Property, Value, Frame) :- rdf_assert(Property, Frame, Value, cache).
 
-%% rdfs_computable_triple_during(?Property, ?Frame, ?Value).
+%% rdfs_computable_triple_during(?Property, ?Frame, ?Value, +Interval).
 %
 % Unify the property triple for a computable property.
 % No caching is performed.
@@ -334,6 +336,8 @@ rdfs_prolog_to_rdf(_, V, V).
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % Property concatenations
 
+%% rdfs_assert_prop_conc(+List,-Resource).
+%% rdfs_assert_prop_conc(+List,-Resource,+Graph).
 % Create a propertyConcatenation from a prolog list
 rdfs_assert_prop_conc(List, Ressource) :-
   rdfs_assert_prop_conc(List, Ressource, user).

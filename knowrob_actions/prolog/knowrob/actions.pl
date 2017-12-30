@@ -1,5 +1,4 @@
-/** <module> Methods for reasoning about action descriptions
-  
+/*
   Copyright (C) 2011 Moritz Tenorth
   All rights reserved.
 
@@ -24,10 +23,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Moritz Tenorth
-@license BSD
-
 */
 
 :- module(knowrob_actions,
@@ -39,7 +34,11 @@
       action_outputs/2,
       action_missing_inputs/2
     ]).
+/** <module> Methods for reasoning about action descriptions
 
+@author Moritz Tenorth
+@license BSD
+*/
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl')).

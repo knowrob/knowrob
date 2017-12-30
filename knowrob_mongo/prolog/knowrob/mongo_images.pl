@@ -1,4 +1,4 @@
-/** 
+/*
   Copyright (C) 2015 Daniel Beßler
   All rights reserved.
 
@@ -23,9 +23,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Daniel Beßler
-@license BSD
 */
 
 :- module(mongo_images,
@@ -34,6 +31,11 @@
         mng_image_base64/2,
         mng_image_base64_compresssed/2
     ]).
+/** <module> Looking up images in a mongo DB
+
+@author Daniel Beßler
+@license BSD
+*/
 
 :- use_module(library('jpl')).
 :- use_module(library('knowrob/mongo')).

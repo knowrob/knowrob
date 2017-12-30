@@ -1,5 +1,4 @@
-/** <module> knowrob_beliefstate: maintaining symbolic beliefs about perceived objects.
-
+/*
   Copyright (C) 2017 Daniel Beßler
   Copyright (C) 2017 Mihai Pomarlan
 
@@ -24,9 +23,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-  @author Daniel Beßler
-  @license BSD
 */
 
 :- module(knowrob_beliefstate,
@@ -48,6 +44,11 @@
       belief_republish_objects/1,   % causes marker messages to be generated
       belief_forget/0
     ]).
+/** <module> Maintaining symbolic beliefs about perceived objects.
+  
+  @author Daniel Beßler
+  @license BSD
+*/
 
 :- use_module(library('lists')).
 :- use_module(library('semweb/rdfs')).
@@ -83,7 +84,7 @@
 % - use octree (or so) to find the nearest object perceived before
 %      instead of going through complete belief state.
 
-%% belief_existing_objects(-ObjectIds:list) is det
+%% belief_existing_objects(-ObjectIds:list) is det.
 %
 % Returns a list of perceived objects that are known to the KB.
 %
@@ -95,7 +96,7 @@ belief_existing_objects(ObjectIds) :-
       rdfs_individual_of(J, knowrob:'SpatialThing')), X),
   list_to_set(X,ObjectIds).
 
-%% belief_forget is det
+%% belief_forget is det.
 %
 % Retracts all facts asserted to the "belief_state" RDF graph.
 %
@@ -103,7 +104,7 @@ belief_forget :-
   forall( rdf(J, _, _, belief_state),
           retractall(J,_,_) ).
 
-%% belief_new_object(+ObjType:iri, -Obj:iri) is det
+%% belief_new_object(+ObjType:iri, -Obj:iri) is det.
 %
 % Asserts a new object to the "belief_state" RDF graph.
 %
@@ -126,7 +127,7 @@ belief_new_object(ObjType, Obj) :-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % Beliefs about the class of things
 
-%% belief_class_of(+Obj:iri, +ObjType:iri) is semidet
+%% belief_class_of(+Obj:iri, +ObjType:iri) is semidet.
 %
 % From now on, belief that Obj is of type ObjType.
 % Old beliefs are withdrawn but still memorized as
@@ -153,7 +154,7 @@ belief_class_of(Obj, NewObjType) :-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % Beliefs about the spatial location of things
 
-%% belief_existing_object_at(+ObjType:iri, +Transform:list, +Threshold:float, -Obj:iri) is semidet
+%% belief_existing_object_at(+ObjType:iri, +Transform:list, +Threshold:float, -Obj:iri) is semidet.
 %
 % Checks whether one of the already known objects of ObjType is located close to Transform.
 % The check uses Threshold as a threshold for comparing translation distance.
@@ -166,8 +167,6 @@ belief_class_of(Obj, NewObjType) :-
 % @param Transform   the transform data
 % @param Threshold   a distance below which two translations are thought to be the same
 % @param Obj         the object id
-%
-% TODO make the threshold argument a ros param instead
 %
 belief_existing_object_at(ObjType, Transform, Threshold, Obj) :-
   % check for typed object
@@ -188,7 +187,7 @@ belief_object_at_location(ObjectId, NewPose, Dmax) :-
   belief_at(ObjectId, OldPose),
   transform_close_to(NewPose, OldPose, Dmax).
 
-%% belief_perceived_at(+ObjType:iri, +Transform:list, +Threshold:float, -Obj:iri) is det
+%% belief_perceived_at(+ObjType:iri, +Transform:list, +Threshold:float, -Obj:iri) is det.
 %
 % Convenience predicate that first tries to find some existing object
 % Obj at the pose Transform and if this fails asserts a new object
@@ -207,19 +206,20 @@ belief_perceived_at(ObjType, Transform, _, Obj) :-
   belief_new_object(ObjType, Obj),
   belief_at_update(Obj, Transform).
 
-%% belief_at(+Obj:iri, ?Transform:list) is semidet
+%% belief_at(+Obj:iri, ?Transform:list) is semidet.
+%% belief_at(+Obj:iri, ?Transform:list, +Instant:time) is semidet.
 %
-% True if Transform is the currently active transform of Obj.
+% True if Transform is the active transform of Obj at time Instant (or the current time).
 % The transform is specified as
 % [atom reference_frame, atom target_frame, [float x, y, z], [float x, y, z, w]],
 % where translations are given in meters.
 %
-% The asserted pose is used as is if Transform is unbound,
-% and if some frame of reference is specified in Transform the necessary
+% If some frame of reference is specified in Transform the necessary
 % transformations are made automatically.
 %
 % @param Obj         the object id
 % @param Transform   the transform data
+% @param Instant     the time instant RDF iri or timestamp
 %
 belief_at(Obj, Transform) :-
   current_time(Instant),
@@ -240,7 +240,8 @@ belief_at(Obj, [ReferenceFrame, TargetFrame, Translation, Rotation], Instant) :-
   transform_reference_frame(TransformId, ReferenceFrame), 
   transform_data(TransformId, (Translation, Rotation)), !.
   
-%% belief_at_relative_to(+Child:iri, +Parent:iri, -RelPose:list) is semidet
+%% belief_at_relative_to(+Child:iri, +Parent:iri, -RelPose:list) is semidet.
+%% belief_at_relative_to(+Child:iri, +Parent:iri, -RelPose:list, +Instant:time) is semidet.
 %
 % Computes the pose of Child expressed using Parent as the frame of reference.
 % This is, for example, useful if it is known that Child will stay fixed in
@@ -252,6 +253,7 @@ belief_at(Obj, [ReferenceFrame, TargetFrame, Translation, Rotation], Instant) :-
 % @param Child     the child id
 % @param Parent    the parent id
 % @param RelPose   the pose of Child in Parent frame
+% @param Instant     the time instant RDF iri or timestamp
 %
 belief_at_relative_to(Child, Parent, RelPose) :-
   current_time(Instant),
@@ -262,15 +264,17 @@ belief_at_relative_to(Child, Parent, RelPose, Instant) :-
   belief_at_global(Parent, ParentGlobal, Instant),
   transform_between(ChildGlobal, ParentGlobal, RelPose).
 
-%% belief_at_global(+Obj:iri, ?GlobalPose:list) is semidet
+%% belief_at_global(+Obj:iri, ?GlobalPose:list) is semidet.
+%% belief_at_global(+Obj:iri, ?GlobalPose:list, +Instant:time) is semidet.
 %
-% True if GlobalPose is the current pose of Obj expressed in global coordinates.
+% True if GlobalPose is the pose of Obj expressed in global coordinates at time Instant (or the current time).
 % The pose is specified as
 % [atom reference_frame, atom target_frame, [float x, y, z], [float x, y, z, w]],
 % where translations are given in meters.
 %
 % @param Obj          the object id
 % @param GlobalPose   the transform data in map frame
+% @param Instant     the time instant RDF iri or timestamp
 %
 belief_at_global(Obj, GlobalPose) :-
   current_time(Instant),
@@ -286,7 +290,8 @@ belief_at_global(Obj, GlobalPose, Instant) :-
     transform_multiply(GlobalTransform, [ParentFrame,ChildFrame,T,Q], GlobalPose)
   ) ; ( map_frame_name(MapFrame), GlobalPose=[MapFrame,ChildFrame,T,Q]) ), !.
 
-%% belief_at_update(+Obj:iri, +Transform:list) is semidet
+%% belief_at_update(+Obj:iri, +Transform:list) is semidet.
+%% belief_at_update(+Obj:iri, +Transform:list, +RelativeTo:iri) is semidet.
 %
 % From now on belief that Obj is located at Transform.
 % The transform is specified as
@@ -297,6 +302,7 @@ belief_at_global(Obj, GlobalPose, Instant) :-
 %
 % @param Obj         the object id
 % @param Transform   the transform data in map frame
+% @param RelativeTo  the reference object of the transform
 %
 belief_at_update(Obj, (Translation, Rotation)) :- !,
   belief_at_internal(Obj, (Translation, Rotation)),

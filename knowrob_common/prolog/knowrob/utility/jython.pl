@@ -1,5 +1,4 @@
-/** <module> Jython integration
-
+/*
   Copyright (C) 2009 Bernhard Kirchlechner
   All rights reserved.
 
@@ -24,10 +23,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Bernhard Kirchlechner
-@license BSD
-
 */
 
 :- module(jython,
@@ -38,6 +33,11 @@
       jython_to_prolog/2
     ]).
 :- use_module(library(jpl)).
+/** <module> Jython integration
+
+@author Bernhard Kirchlechner
+@license BSD
+*/
 
 %% jython_init(+Path, -Interpreter)
 %%

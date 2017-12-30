@@ -1,8 +1,4 @@
-/** <module> Methods for exporting triples into OWL files
-
-  This module contains methods for exporting triples into OWL files,
-  for instance object definitions, environment maps, or task specifications.
-
+/*
   Copyright (C) 2011 Moritz Tenorth
   Copyright (C) 2016 Daniel Beßler
   All rights reserved.
@@ -28,10 +24,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Moritz Tenorth, Daniel Beßler
-@license BSD
-
 */
 
 :- module(owl_export,
@@ -44,6 +36,14 @@
       export_map/2,
       export_action/2
     ]).
+/** <module> Methods for exporting triples into OWL files
+
+This module contains methods for exporting triples into OWL files,
+for instance object definitions, environment maps, or task specifications.
+
+@author Moritz Tenorth, Daniel Beßler
+@license BSD
+*/
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).

@@ -1,5 +1,4 @@
-/** <module> Computables that calculate semantic similarities between objects.
-
+/*
   Copyright (C) 2010-11 Moritz Tenorth, Lars Kunze, Martin Schuster
   All rights reserved.
 
@@ -24,10 +23,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Moritz Tenorth, Lars Kunze, Martin Schuster
-@license BSD
-
 */
 
 :- module(comp_similarity,
@@ -39,6 +34,11 @@
       rdf_paths/3,
       rdf_most_similar/4
     ]).
+/** <module> Computables that calculate semantic similarities between objects.
+
+@author Moritz Tenorth, Lars Kunze, Martin Schuster
+@license BSD
+*/
 
 :- use_module(library('semweb/rdf_db')).
 

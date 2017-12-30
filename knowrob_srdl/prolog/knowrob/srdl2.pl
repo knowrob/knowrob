@@ -1,6 +1,4 @@
-/** <module> Reasoning about robot components and capabilities
-
-
+/*
   Copyright (C) 2011 Moritz Tenorth
   All rights reserved.
 
@@ -25,9 +23,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-  @author Moritz Tenorth
-  @license BSD
 */
 
 :- module(srdl2,
@@ -58,7 +53,11 @@
         srdl_inFieldOfView/2,
         srdl_inFieldOfView/3
   ]).
+/** <module> Reasoning about robot components and capabilities
 
+  @author Moritz Tenorth
+  @license BSD
+*/
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl_parser')).
@@ -565,7 +564,12 @@ comp_installable_on_robot(Comp, CompC, Robot) :-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % Pose of semantic components
 
-%% comp_baselink_pose
+%% comp_baselink_pose(+Obj,-Pose) is nondet.
+%% comp_baselink_pose(+Obj,-Pose,+Interval) is nondet.
+%
+% Computes the pose of a component composition as the 
+% pose of one of its base links.
+%
 comp_baselink_pose(Obj, Pose) :-
   current_time(Instant),
   comp_baselink_pose_at_time(Obj, Pose, [Instant,Instant]).
@@ -580,7 +584,7 @@ comp_baselink_pose(Obj, Pose, Interval) :-
 %
 
 %% srdl_inFieldOfView(+Agent, ?Object) is nondet.
-%% srdl_inFieldOfView_at_time(+Agent, ?Object, +Instant) is nondet.
+%% srdl_inFieldOfView(+Agent, ?Object, +Instant) is nondet.
 %
 % Check if Obj is visible by Agent at time Instant by reading the camera
 % properties from the robot's SRDL description and computing whether the

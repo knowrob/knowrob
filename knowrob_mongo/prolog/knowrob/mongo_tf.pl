@@ -1,5 +1,4 @@
-/** 
-
+/*
   Copyright (C) 2013 Moritz Tenorth
   Copyright (C) 2015 Daniel Beßler
   All rights reserved.
@@ -25,10 +24,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Moritz Tenorth
-@author Daniel Beßler
-@license BSD
 */
 
 :- module(mongo_tf,
@@ -37,6 +32,12 @@
       mng_transform_pose/5,
       mng_comp_pose/3
     ]).
+/** <module> Looking up tf transforms in a mongo DB
+
+@author Moritz Tenorth
+@author Daniel Beßler
+@license BSD
+*/
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
@@ -118,7 +119,10 @@ mng_transform_pose(SourceFrame,
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % hook mongo TF data into computable property knowrob:pose by expanding `holds`
 
-%% comp_mng_pose_at_time
+%% mng_comp_pose(+Obj, -Pose, +Interval).
+%
+% Pose is an OWL individual of knowrob:'Pose' that represents logged tf data.
+%
 mng_comp_pose(Obj, Pose, [Instant,Instant]) :-
   nonvar(Obj), nonvar(Instant),
   % only compute poses for time instants in the past

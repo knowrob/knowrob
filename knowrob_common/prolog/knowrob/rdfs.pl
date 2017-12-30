@@ -1,5 +1,4 @@
-/** <module> Reasoning using procedural attachments, called "computables"
-
+/*
   Copyright (C) 2008-10 Bernhard Kirchlechner, Moritz Tenorth
   Copyright (C) 2017 Daniel Beßler
   All rights reserved.
@@ -25,10 +24,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Bernhard Kirchlechner, Moritz Tenorth
-@license BSD
-
 */
 
 :- module(knowrob_rdfs,
@@ -46,6 +41,11 @@
       rdfs_common_ancestor/2,
       strip_literal_type/2
     ]).
+/** <module> Reasoning using procedural attachments, called "computables"
+
+@author Bernhard Kirchlechner, Moritz Tenorth
+@license BSD
+*/
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
@@ -92,7 +92,7 @@ rdf_instance_from_class(Class, SourceRef, Instance) :-
     rdf_assert(Instance, rdf:type, T) ;
     rdf_assert(Instance, rdf:type, T, SourceRef)).
 
-%% rdf_unique_id(+Class, -UniqID) is det
+%% rdf_unique_id(+Class, -UniqID) is det.
 %
 % UniqID is a IRI that uses Class as prefix and is
 % not yet used in the RDF triple store.
@@ -116,7 +116,7 @@ rdf_unique_id(Class, UniqID) :-
 		 *		  Properties				*
 		 *******************************/
 
-%% rdf_phas(+Property, ?P, ?O) is nondet
+%% rdf_phas(+Property, ?P, ?O) is nondet.
 %
 % True if Property or one of its super properties
 % has a property assertion for P with value O.
@@ -129,7 +129,7 @@ rdf_phas(Property, P, O) :-
 	rdfs_subproperty_of(Property, Super),
 	rdf_has(Super, P, O).
 
-%% rdf_has_prolog(?Subject,?Predicate,?Value)
+%% rdf_has_prolog(?Subject,?Predicate,?Value).
 %
 % Calls rdf_has and converts data values to
 % Prolog representation (e.g., xsd:float to Prolog number).
@@ -142,7 +142,8 @@ rdf_has_prolog(S,P,O) :-
   rdf_has(S,P,O_rdf),
   rdfs_value_prolog(P,O_rdf,O).
 
-%% rdf_assert_prolog(?Subject,?Predicate,?Value)
+%% rdf_assert_prolog(?Subject,?Predicate,?Value).
+%% rdf_assert_prolog(?Subject,?Predicate,?Value,+Graph).
 %
 % Asserts a triple to the RDF datastore,
 % and accepts some Prolog encoded data values.
@@ -163,11 +164,12 @@ rdf_assert_prolog(S,P,O,Graph) :-
   rdf_assert(S,P,O,Graph).
   
 
-%% rdfs_value_prolog(+Property, +RDFValue, -PrologValue)
+%% rdfs_value_prolog(+Property, +RDFValue, -PrologValue).
 %
 % Converts RDF value to native Prolog representation.
 %
-% TODO: convert to standard SI unit
+% @tbd convert to standard SI unit
+%
 rdfs_value_prolog('http://knowrob.org/kb/knowrob.owl#boundingBoxSize', literal(type(_,Val)), Vec) :- % TODO: make subproperty of knowrob:vector
   rdf_vector_prolog(Val, Vec), !.
 rdfs_value_prolog('http://knowrob.org/kb/knowrob.owl#mainColorOfObject', literal(type(_,Val)), Vec) :- % TODO: make subproperty of knowrob:vector
@@ -185,7 +187,7 @@ rdfs_value_prolog(_, literal(type(_,Atom)), Atom) :- !.
 rdfs_value_prolog(_, literal(Atom), Atom) :- !.
 rdfs_value_prolog(_, V, V).
 
-%% strip_literal_type(+Input,-Output)
+%% strip_literal_type(+Input,-Output).
 %
 % Strip the literal(type(..., Value)) and return value if present, else return the original.
 %
@@ -193,7 +195,7 @@ strip_literal_type(literal(type(_, Value)), Value) :- !.
 strip_literal_type(literal(Value), Value) :- !.
 strip_literal_type(Value, Value).
 
-%% rdf_vector_prolog(+In, -Out) is semidet
+%% rdf_vector_prolog(+In, -Out) is semidet.
 rdf_vector_prolog([X|Y], [X|Y]).
 rdf_vector_prolog(In, Numbers) :-
   rdf_vector_prolog(In, Numbers, ' ').
@@ -207,7 +209,7 @@ rdf_vector_prolog(In, Numbers, Delimiter) :-
 		 *		  Class hierarchy		*
 		 *******************************/
 
-%% rdfs_type_of(?Resource, ?Type) is nondet
+%% rdfs_type_of(?Resource, ?Type) is nondet.
 %
 % True if Type is one of the most specific types of Resoure.
 %

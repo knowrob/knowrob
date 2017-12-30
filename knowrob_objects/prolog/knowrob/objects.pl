@@ -1,5 +1,4 @@
-/** <module> Utilities for reasoning about objects
-
+/*
   Copyright (C) 2011-2014 Moritz Tenorth
   Copyright (C) 2017 Daniel Beßler
   All rights reserved.
@@ -25,9 +24,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-  @author Moritz Tenorth
-  @license BSD
 */
 
 :- module(knowrob_objects,
@@ -52,6 +48,12 @@
       comp_widthOfObject/2,
       comp_heightOfObject/2
     ]).
+/** <module> Utilities for reasoning about objects
+  
+  @author Moritz Tenorth
+  @author Daniel Beßler
+  @license BSD
+*/
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
@@ -150,27 +152,26 @@ object_frame_name(Obj,FrameName) :-
 
 %% object_distance(+A:iri, +B:iri, ?Distance:float) is semidet
 % 
-% Computes eucledean distance between A and B.
+% Computes euclidean distance between A and B.
 %
 % @param A         Instance of SpatialThing
 % @param B         Instance of SpatialThing
 % @param Distance  The current distance between A and B
 %
-object_distance(A,B,D):-
+object_distance(A,B,Distance):-
   map_frame_name(MapFrame),
   current_object_pose(A, [MapFrame,_,[AX,AY,AZ],_]),
   current_object_pose(B, [MapFrame,_,[BX,BY,BZ],_]),
   DX is AX - BX,
   DY is AY - BY,
   DZ is AZ - BZ,
-  D is sqrt( ((DX*DX) + (DY*DY)) + (DZ*DZ)), !.
+  Distance is sqrt( ((DX*DX) + (DY*DY)) + (DZ*DZ)), !.
 
 %% object_color(?Obj:iri, ?Col:list) is det
 %
-% Get the main color of the object.
-% The color is returned as [float red, green, blue, alpha], on a scale of 0-1.
-% If there is no color given for an object in the knowledge base,
-% then a default [0.5, 0.5, 0.5, 1] is returned.
+% True if Col is the main color of Obj.
+% Col is encoded as as [float red, green, blue, alpha], on a scale of 0-1.
+% Fallback color is [0.5, 0.5, 0.5, 1].
 %
 % @param Obj  Instance of a subclass of EnduringThing-Localized
 % @param Col  Main color of the object
@@ -229,16 +230,16 @@ object_boundingBox(Obj, Depth, Width, Height) :-
   holds(Obj, knowrob:boundingBoxSize, Size_rdf),
   rdfs_value_prolog(knowrob:boundingBoxSize, Size_rdf, [Depth, Width, Height]),!.
 
-%% comp_depthOfObject(+Obj:iri, ?Depth:term) is semidet
-%% comp_widthOfObject(+Obj:iri, ?Depth:term) is semidet
-%% comp_heightOfObject(+Obj:iri, ?Depth:term) is semidet
-%
-% Computes dimension components from boundingBox properties of an object.
-%
+%% comp_depthOfObject(+Obj:iri, ?Depth:number) is semidet.
+% Computes the depth of Obj from its bounding box.
 comp_depthOfObject(Obj, literal(type('http://www.w3.org/2001/XMLSchema#float', Depth))) :-
   object_boundingBox(Obj, Val, _, _), atom_number(Depth, Val).
+%% comp_widthOfObject(+Obj:iri, ?Width:number) is semidet.
+% Computes the width of Obj from its bounding box.
 comp_widthOfObject(Obj, literal(type('http://www.w3.org/2001/XMLSchema#float', Width))) :-
   object_boundingBox(Obj, _, Val, _), atom_number(Width, Val).
+%% comp_heightOfObject(+Obj:iri, ?Height:number) is semidet.
+% Computes the height of Obj from its bounding box.
 comp_heightOfObject(Obj, literal(type('http://www.w3.org/2001/XMLSchema#float', Height))) :-
   object_boundingBox(Obj, _, _, Val), atom_number(Height, Val).
 
@@ -255,7 +256,7 @@ object_assert_dimensions(Obj, Depth, Width, Height) :-
   atomic_list_concat([Depth, Width, Height], ' ', V),
   rdf_assert(Obj, knowrob:boundingBoxSize, literal(type(xsd:string, V))).
 
-%% object_mesh_path(+Obj:iri, -FilePath:atom) is det.
+%% object_mesh_path(+Obj:iri, -FilePath:atom) is det
 %
 % True if FilePath is a path to a mesh file (stl or dae) for Obj.
 %
@@ -269,7 +270,14 @@ object_mesh_path(Obj, FilePath) :-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % Pose from TF
 
-%% comp_tf_pose
+%% comp_tf_pose(+Obj,-Pose).
+%% comp_tf_pose(+Obj,-Pose,+Interval).
+%
+% Computes the pose of Obj using a ROS TF
+% transform client.
+% This client caches transforms only for
+% about 20 seconds.
+%
 comp_tf_pose(Obj, Pose) :-
   current_time(Instant),
   comp_tf_pose(Obj, Pose, [Instant,Instant]).
@@ -287,7 +295,7 @@ comp_tf_pose(Obj, Pose, [Instant,_]) :-
 % % % % % Reasoning about function and storage location of objects
 % TODO: add utility rules resoning about object function (i.e., how to use it for action?)
 
-%% storagePlaceFor(St, ObjT) is nondet.
+%% storagePlaceFor(St, ObjT) is nondet
 %
 % Computes the nominal storage location of an object based on assertions for
 % typePrimaryFunction-containerFor for any of its superclasses. For example,
@@ -301,7 +309,7 @@ comp_tf_pose(Obj, Pose, [Instant,_]) :-
 storagePlaceFor(St, ObjT) :-
   storagePlaceForBecause(St, ObjT, _).
 
-%% storagePlaceForBecause(St, ObjType, ObjT) is nondet.
+%% storagePlaceForBecause(St, ObjType, ObjT) is nondet
 %
 % Computes the nominal storage location of an object based on assertions for
 % typePrimaryFunction-containerFor for any of its superclasses. For example,
@@ -316,15 +324,12 @@ storagePlaceFor(St, ObjT) :-
 % @param Obj      Object class or instance
 % @param ObjType  Class for which information about the storage place has been asserted
 %
-
-% two instances
 storagePlaceForBecause(St, Obj, ObjT) :-
   owl_subclass_of(StT, knowrob:'StorageConstruct'),
   owl_restriction_on(StT, restriction(knowrob:'typePrimaryFunction-containerFor', some_values_from(ObjT))),
   owl_individual_of(Obj, ObjT),
   owl_individual_of(St, StT).
 
-% obj type, storage instance
 storagePlaceForBecause(St, ObjType, ObjT) :-
   owl_subclass_of(StT, knowrob:'StorageConstruct'),
   owl_restriction_on(StT, restriction(knowrob:'typePrimaryFunction-containerFor', some_values_from(ObjT))),
@@ -337,8 +342,8 @@ storagePlaceForBecause(St, ObjType, ObjT) :-
 
 %% object_queries(+Obj:iri, -Queries:list) is det
 %
-% gather facts about queries that can be asked about an object.
-% queries are represented as [string category, string title, string query].
+% Gather facts about queries that can be asked about an object.
+% Queries are represented as [atom category, atom title, atom query].
 % Category and title are primary used for displaying possible queries
 % to the user.
 %

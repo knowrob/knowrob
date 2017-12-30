@@ -1,10 +1,4 @@
-/** 
-
-  Prolog-predicates as wrappers around the tfjava methods
-
-  Provide an interface to the tf system from within Prolog, allowing
-  to transform coordinates and to lookup transformations.
-
+/*
   Copyright (C) 2011 Sjoerd van den Dries, Moritz Tenorth
   Copyright (C) 2017 Daniel Beßler
   All rights reserved.
@@ -30,10 +24,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Sjoerd van den Dries, Moritz Tenorth
-@license BSD
-
 */
 
 :- module(tfjava,
@@ -43,6 +33,15 @@
         tfjava_transform_point/5,  % find transforms within some target frame
         tfjava_transform_pose/5 
     ]).
+/** <module> Prolog-predicates as wrappers around tfjava
+
+  Provides an interface to the tf system from within Prolog, allowing
+  to transform coordinates and to lookup transformations.
+  
+@author Sjoerd van den Dries
+@author Moritz Tenorth
+@license BSD
+*/
 
 :- use_module(library('jpl')).
 
@@ -51,7 +50,7 @@
 
 %% tfjava_start_listener is det
 %
-% starts the tf listener, which runs in a separate thread
+% Starts the tf listener, which runs in a separate thread.
 %
 tfjava_start_listener :-
     not(tf_listener(_)),

@@ -1,5 +1,4 @@
-/** <module> Predicates for temporal reasoning in KnowRob
-
+/*
   Copyright (C) 2016 Daniel Beßler
   All rights reserved.
 
@@ -24,9 +23,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Daniel Beßler
-@license BSD
 */
 
 :- module(knowrob_temporal,
@@ -71,6 +67,11 @@
       interval_overlaps/2,
       interval_during/2
     ]).
+/** <module> Predicates for temporal reasoning in KnowRob
+
+@author Daniel Beßler
+@license BSD
+*/
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
@@ -120,16 +121,17 @@
 		 *	 high-level predicates		*
 		 *******************************/
 
-%% holds(+Term)
-%% holds(+Term, ?Interval)
+%% holds(+Term).
+%% holds(+Term, ?Interval).
+%% holds(?S, ?P, ?O).
+%% holds(?S, ?P, ?O, ?Interval).
 %
-% True iff Term holds during Interval. Where Interval is a TimeInterval or TimePoint individual,
+% True iff relation `P(S,O)` holds during Interval, and with Term=P(S,O).
+% Where Interval is a TimeInterval or TimePoint individual,
 % a number or a list of two numbers representing a time interval.
 %
 % @param Term Must be of the form: PROPERTY(SUBJECT, OBJECT).
-%             For example: Term = knowrob:insideOf(example:'DinnerPlate_fdigh245', example:'Drawer_bsdgwe8trg').
-% @param T Can be TimeInterval or TimePoint individual, a number or a list of two numbers
-%          representing a time interval.
+% @param T Can be TimeInterval or TimePoint individual, a number or a list of two numbers representing a time interval.
 %
 holds(Term) :-
   current_time(T),
@@ -170,9 +172,9 @@ holds(S, P, O, T) :-
 holds(S, P, O, I) :-
   owl_has_during(S, P, O, I).
 
-%% occurs(?Evt) is nondet
-%% occurs(?Evt,?Time) is nondet
-%% occurs(?Evt,?Time,?Type) is nondet
+%% occurs(?Evt) is nondet.
+%% occurs(?Evt,?Time) is nondet.
+%% occurs(?Evt,?Time,?Type) is nondet.
 %
 % True iff Evt occurs during Time. Where Time is a TimeInterval or TimePoint individual,
 % a number or a list of two numbers representing a time interval.
@@ -199,13 +201,11 @@ occurs(Evt, Interval, Type) :-
 		 *	 	  OWL expansion			*
 		 *******************************/
 
-rdfs_has_during(S, P, O, I) :- rdf_triple_during(P, S, O, I).
-
 owl_temporal_db(I, db(rdfs_has_during(I),
                       rdfs_instance_of_during(I))).
 
-%% owl_individual_of_during(?Resource,?Description) is nondet
-%% owl_individual_of_during(?Resource,?Description,Interval) is nondet
+%% owl_individual_of_during(?Resource,?Description) is nondet.
+%% owl_individual_of_during(?Resource,?Description,+Interval) is nondet.
 %
 % True if Resource satisfies Description during Interval
 % (or at the moment if not specified)
@@ -226,7 +226,7 @@ owl_individual_of_during(Resource, Description, Interval) :-
     once(owl_individual_of(Resource, Description, DB)) ; 
     owl_individual_of(Resource, Description, DB) ).
 
-%% owl_has_during(?Subject, ?Predicate, ?Object, ?Interval)
+%% owl_has_during(?Subject, ?Predicate, ?Object, ?Interval).
 %
 % True if this relation is specified, or can be deduced using OWL
 % inference rules, computable semantics, or temporal semantics.
@@ -246,7 +246,7 @@ owl_has_during(S, P, O, Interval) :-
 		 *	   Temporal semantics		*
 		 *******************************/
 
-%% rdfs_instance_of_during(?Resource, ?RDF_Type, Interval) is nondet
+%% rdfs_instance_of_during(?Resource, ?RDF_Type, Interval) is nondet.
 %
 % True if RDF_Type is the type of Resource during Interval
 % according to RDFS, computable, or temporal semantics.
@@ -301,6 +301,19 @@ temporal_part_during(TemporalPart, Interval) :-
     interval_during(Interval, TemporalExtend) ;
     Interval=TemporalExtend
   ).
+
+%% rdfs_has_during(?Subject, ?Predicate, ?Object, ?Interval) is nondet.
+%
+% True if the RDF triple store contains (Subject Predicate Object),
+% or if the triple can be derived from computable predicates,
+% or temporal semantics.
+%
+% @param Property The property iri
+% @param Frame RDF resource iri
+% @param Value RDF resource iri or datatype value
+% @param Interval The interval during which the triple holds
+%
+rdfs_has_during(S, P, O, I) :- rdf_triple_during(P, S, O, I).
 
 %% rdf_triple_during(?Property, ?Frame, ?Value, ?Interval) is nondet.
 %
@@ -516,7 +529,8 @@ temporal_part_value(S, P, O) :-
   ).
 
 
-%% temporal_part_has(?Subject, ?Predicate, ?Object, ?Interval)
+%% temporal_part_has(?Subject, ?Predicate, ?Object).
+%% temporal_part_has(?Subject, ?Predicate, ?Object, ?Interval).
 %
 % True if this relation is specified via knowrob:TemporalPart
 % or can be deduced using OWL inference rules.
@@ -561,7 +575,7 @@ temporal_part_has(S, P, O, Interval, Lifespan) :-
 		 *		Time instants			*
 		 *******************************/
 
-%% current_time(-CurrentTime)
+%% current_time(-CurrentTime).
 %
 % Unifies CurrentTime with the current time in seconds.
 %
@@ -569,7 +583,9 @@ current_time(CurrentTime) :-
   set_prolog_flag(float_format, '%.12g'),
   get_time(CurrentTime).
 
-%% time_term(+Timepoint, -TimeTerm)
+%% time_term(+Timepoint, -TimeTerm).
+%
+% TimeTerm is a numerical representation of Timepoint.
 %
 time_term(Timepoint, Timepoint) :-
   number(Timepoint), !.
@@ -601,9 +617,11 @@ time_term(Timepoint, Time) :-
      )
   ).
 
-%% time_between(+T, +T0, +T1)
+%% time_between(+T, +T0, +T1).
+%% time_between(+T, +Interval).
 %
-% True iff T0 <= T <= T1
+% True iff T0 <= T <= T1, and
+% Interval=[T0,T1].
 %
 time_between(Timeinterval, T0, T1) :-
   atom(Timeinterval),
@@ -633,7 +651,7 @@ time_between(T, [Begin]) :-
   time_later_then(T, [Begin]).
 
 
-%% time_later_then(+T0, +T1)
+%% time_later_then(+T0, +T1).
 %
 % True iff T0 >= T1
 %
@@ -647,7 +665,7 @@ time_later_then_([_,T0], [T1])   :- T1 =< T0, !.
 time_later_then_([_,T0], [_,T1]) :- T1 =< T0, !.
 time_later_then_(T0, T1) :- number(T0), number(T1), T1 =< T0, !.
 
-%% time_earlier_then(+T0, +T1)
+%% time_earlier_then(+T0, +T1).
 %
 % True iff T0 <= T1
 %
@@ -665,12 +683,12 @@ time_earlier_then_(T0, T1) :- number(T0), number(T1), T0 =< T1, !.
 		 *	Allen's interval algebra	*
 		 *******************************/
 
-%% interval(I,[ST,ET]) is semidet.
+%% interval(+In,-Out) is semidet.
 %
-% The interval of I
+% True if Out is the interval of In.
 %
-% @param I Time point, interval or temporally extended entity
-% @param [ST,ET] Start and end time of the interval
+% @param In Time point, interval or temporally extended entity
+% @param Out Start and end time of the interval
 % 
 interval(I0, I1) :- is_list(I0), !, I1 = I0.
 interval(Time, [Time,Time]) :- number(Time), !.

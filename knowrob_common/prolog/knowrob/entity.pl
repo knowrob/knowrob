@@ -1,5 +1,4 @@
-/** <module> Reasoning via partial descriptions of entities.
-
+/*
   Copyright (C) 2016 Daniel Beßler
   All rights reserved.
 
@@ -24,10 +23,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Daniel Beßler
-@license BSD
-
 */
 
 :- module(entities,
@@ -39,6 +34,11 @@
       entity_write/1,
       with_owl_description/3
     ]).
+/** <module> Reasoning via partial descriptions of entities.
+
+@author Daniel Beßler
+@license BSD
+*/
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
@@ -58,7 +58,7 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % methods for querying OWL entities
 
-%% entity(?Entity, +Descr) is nondet.
+%% entity(?Entity, +Descr) is nondet
 %
 % Query for entity matching an entity description or build
 % description for entity.
@@ -66,8 +66,6 @@
 % @param Entity IRI of matching entity
 % @param Descr An entity description, OWL individual or class IRI
 %
-% TODO: support for trajectory entities
-%    - [a, trajectory, [urdf, 'base_link'], [temporal_extend, [an, interval, [40.0,80.0]]]]
 entity(Entity, EntityClass) :-
   atom(EntityClass),
   owl_individual_of(Entity, EntityClass), !.
@@ -233,7 +231,8 @@ entity_name(Descr, Entity) :-
 entity_name(_, _).
 
 
-%% Read entity description value
+%% entity_has(+Descr, +Key, Value).
+% Read entity description value
 entity_has([[Key,Val|_]|_], Key, Val).
 entity_has([_|Tail], Key, Val) :- entity_has(Tail, Key, Val).
 
@@ -262,7 +261,7 @@ entity_type(Entity, TypeBase, Type) :-
   rdf_reachable(Type, rdfs:subClassOf, TypeBase).
 
 
-%% entity_assert(-Entity, +Descr) is nondet.
+%% entity_assert(-Entity, +Descr).
 %
 % Assert entity description in RDF triple store as new individual.
 %
@@ -342,7 +341,7 @@ entity_assert(Entity, [[Key,Value,during,IntervalDescr]|Descr]) :-
 
 entity_assert(_, []).
 
-%% entity_retract(+Entity) is nondet.
+%% entity_retract(+Entity).
 %
 % Assert entity description in RDF triple store as new individual.
 %
@@ -355,7 +354,7 @@ entity_retract(Entity) :-
   rdf_retractall(Entity, _, _).
 
 
-%% with_owl_description(+Description, ?Individual, +Goal) is nondet.
+%% with_owl_description(+Description, ?Individual, +Goal).
 %
 % Ensures entity description is asserted and binds the name to
 % Individual before goal is called.

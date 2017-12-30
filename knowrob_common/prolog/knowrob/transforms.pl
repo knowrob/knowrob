@@ -1,5 +1,4 @@
-/** <module> Utilities for handling transforms in KnowRob.
-
+/*
   Copyright (C) 2017 Daniel Beßler
   All rights reserved.
 
@@ -27,7 +26,6 @@
 
 @author Daniel Beßler
 @license BSD
-
 */
 
 :- module(knowrob_transforms,
@@ -46,6 +44,11 @@
       quaternion_inverse/2,         % +Quaternion, -Inverse
       quaternion_transform/3        % +Quaternion, +Vector, -Transformed
     ]).
+/** <module> Utilities for handling transforms in KnowRob.
+
+@author Daniel Beßler
+@license BSD
+*/
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
@@ -58,10 +61,11 @@
 
 :- rdf_db:rdf_register_ns(knowrob,'http://knowrob.org/kb/knowrob.owl#', [keep(true)]).
 
-%% map_frame
+%% map_frame(?MapFrame).
+% True if MapFrame is the OWL individual that corresponds to the global coordinate system.
 map_frame('http://knowrob.org/kb/knowrob.owl#MapFrame').
 
-%% map_frame_name(?Name:atom) is det
+%% map_frame_name(?Name:atom) is det.
 %
 % True is Name is the name of the global coordinate system.
 %
@@ -71,7 +75,7 @@ map_frame_name(FrameName) :-
   %ros_param_get_string('knowrob/map_frame', FrameName)
 map_frame_name('map').
 
-%% transform_multiply(+Transform1:term, +Transform2:term, ?Product:term) is semidet
+%% transform_multiply(+Transform1:term, +Transform2:term, ?Product:term) is semidet.
 %
 % True if Product is Transform1 x Transform2.
 % This is only defined if the target frame of Transform1 is equal
@@ -95,7 +99,7 @@ transform_multiply([RefFrame,       F, [Lx,Ly,Lz], [LQx, LQy, LQz, LQw]],
   Ny is Ly + RRy,
   Nz is Lz + RRz.
 
-%% transform_between(+Transform1:term, +Transform2:term, ?Relative:term) is semidet
+%% transform_between(+Transform1:term, +Transform2:term, ?Relative:term) is semidet.
 %
 % True if Relative is the relative transform between the target frame of
 % Transform1 and Transform2.
@@ -115,7 +119,7 @@ transform_between([F,TgFrame, [T1x,T1y,T1z],Q1],
   Diff_z is T2z - T1z,
   quaternion_transform(Q1, [Diff_x,Diff_y,Diff_z], TN).
 
-%% transform_data(+Transform:term, ?Data:tuple) is semidet
+%% transform_data(+Transform:term, ?Data:tuple) is semidet.
 %
 % True if Pos, and Rot are the translation and orientation of
 % Transform and Data=(Pos,Rot).
@@ -154,7 +158,7 @@ matrix_prolog(RDF, [M00, M01, M02, M03,
   rdf_has_prolog(RDF, knowrob:m32, M32),
   rdf_has_prolog(RDF, knowrob:m33, M33).
 
-%% transform_invert(+Transform:term, ?Inverted:term) is det
+%% transform_invert(+Transform:term, ?Inverted:term) is det.
 %
 % True if Inverted is the inverted transform of Transform
 % (i.e., with inverted reference and source frame).
@@ -168,7 +172,7 @@ transform_invert([X,Y,[TX,TY,TZ],Q],
   X is -TX, Y is -TY, Z is -TZ,
   quaternion_transform(Q_inv,[X,Y,Z],T_inv).
 
-%% transform_reference_frame(+Transform, ?Ref) is det
+%% transform_reference_frame(+Transform, ?Ref) is det.
 %
 % True if Ref is the reference frame of Transform.
 % Ref is unified with the global coordinate frame if
@@ -184,7 +188,7 @@ transform_reference_frame(Transform, Ref) :-
 transform_reference_frame(_TransformId, MapFrame) :-
   map_frame_name(MapFrame).
 
-%% transform_close_to(+Transform1:term, +Transform2:term, +Delta:number) is semidet
+%% transform_close_to(+Transform1:term, +Transform2:term, +Delta:number) is semidet.
 %
 % True if the squared distance between Transform1 and Transform2
 % is less then or equal to Delta.
@@ -203,7 +207,7 @@ transform_close_to(
   DmaxSq is Dmax*Dmax,
   Dsq =< DmaxSq.
 
-%% matrix(?Matrix:list, ?Translation:list, ?Quaternion:list) is semidet
+%% matrix(?Matrix:list, ?Translation:list, ?Quaternion:list) is semidet.
 %
 % True if Matrix is the transformation matrix build from
 % Translation and Quaternion.
@@ -228,7 +232,7 @@ matrix(Matrix, [X,Y,Z], Quaternion) :-
   jpl_call('org.knowrob.utils.MathUtil', 'matrixToQuaternion', [MatrixArr], QuaternionArr),
   jpl_array_to_list(QuaternionArr, Quaternion).
 
-%% matrix_translate(+In:list, +Offset:list, ?Out:list) is semidet
+%% matrix_translate(+In:list, +Offset:list, ?Out:list) is semidet.
 %
 % True if Out unifies with In translated by Offset.
 %
@@ -249,7 +253,7 @@ matrix_translate([M00, M01, M02, MX,
   MY_ is MY + OY,
   MZ_ is MZ + OZ.
 
-%% quaternion_multiply(+Quaternion1:list, +Quaternion2:list, ?Multiplied:list) is semidet
+%% quaternion_multiply(+Quaternion1:list, +Quaternion2:list, ?Multiplied:list) is semidet.
 %
 % True if Multiplied is the result of multiplying Quaternion1
 % with Quaternion2.
@@ -264,7 +268,7 @@ quaternion_multiply(Quaternion1, Quaternion2, Multiplied) :-
   jpl_call('org.knowrob.utils.MathUtil', 'quaternionMultiply', [Q0_array, Q1_array], Out_array),
   jpl_array_to_list(Out_array, Multiplied).
 
-%% quaternion_inverse(+Quaternion:list, ?Inverse:list) is semidet
+%% quaternion_inverse(+Quaternion:list, ?Inverse:list) is semidet.
 %
 % True if Inverse is the inverse of Quaternion.
 %
@@ -276,7 +280,7 @@ quaternion_inverse(Quaternion, Inverse) :-
   jpl_call('org.knowrob.utils.MathUtil', 'quaternionInverse', [Q_array], Out_array),
   jpl_array_to_list(Out_array, Inverse).
 
-%% quaternion_transform(+Quaternion:list, +Vector:list, ?Transformed:list) is semidet
+%% quaternion_transform(+Quaternion:list, +Vector:list, ?Transformed:list) is semidet.
 %
 % True if Transformed unifies with Vector rotated by Quaternion.
 %

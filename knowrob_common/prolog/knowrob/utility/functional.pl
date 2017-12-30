@@ -1,5 +1,4 @@
-/** <module> Prolog/OWL utility predicates
-
+/*
   Copyright (C) 2009 Bernhard Kirchlechner, Moritz Tenorth
   All rights reserved.
 
@@ -24,10 +23,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Bernhard Kirchlechner, Moritz Tenorth
-@license BSD
-
 */
 
 :- module(knowrob_functional,
@@ -36,6 +31,11 @@
       zip/3,
       zipm/3
 ]).
+/** <module> Prolog/OWL utility predicates
+
+@author Bernhard Kirchlechner, Moritz Tenorth
+@license BSD
+*/
 
 %% reduce(+Predicate, +List, +StartValue, -Result).
 % The predicate is first called for the first element of the list, the start value and an intermediate result.

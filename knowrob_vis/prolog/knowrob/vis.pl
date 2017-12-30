@@ -1,5 +1,4 @@
-/** <module> Methods for visualizing parts of the knowledge base
-
+/*
   Copyright (C) 2011 Moritz Tenorth
   Copyright (C) 2015 Daniel Beßler
   All rights reserved.
@@ -25,9 +24,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-  @author Moritz Tenorth
-  @license BSD
 */
 
 :- module(knowrob_vis,
@@ -42,7 +38,12 @@
       camera_pose/2,
       visualisation_server/0
     ]).
+/** <module> Methods for visualizing parts of the knowledge base
 
+  @author Moritz Tenorth
+  @author Daniel Beßler
+  @license BSD
+*/
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('jpl')).
@@ -60,16 +61,16 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % Convinience predicate for different types of visualizations
 
-%% show is det
-%% show(+VisualThing) is det
-%% show(+VisualThing, +Instant) is det
-%% show(+VisualThing, +Instant, +Properties) is det
+%% show is det.
+%% show(+VisualThing) is det.
+%% show(+VisualThing, +Instant) is det.
+%% show(+VisualThing, +Instant, +Properties) is det.
 %
 % VisualThing is a thing with a visual interpretation
 % and some way to generate a ROS visualization message for it.
 % This includes marker_visualization messages and data_vis messages.
 % VisualThing may be a RDF IRI of some OWL individual,
-% a marker term (e.g., "object(Iri)"), or a data vis object (e.g., "timeline(Identifier)").
+% a marker term (e.g., object(Iri)), or a data vis object (e.g., timeline(Identifier)).
 % All existing markers are updated for the current timepoint if
 % VisualThing is left unspecified.
 % Properties is a list of properties passed to
@@ -114,9 +115,10 @@ show_next :-
   marker_highlight_remove(all),
   marker_remove(trajectories).
 
-%% highlight(+VisualThing) is det
+%% highlight(+VisualThing) is det.
+%% highlight(+VisualThing,+Color) is det.
 %
-% Queues a VisualThing to be highlighted in the respective canvas.
+% Visually highlights VisualThing in the respective canvas.
 highlight(VisualThing) :-
   marker_term(VisualThing, MarkerTerm),
   marker_highlight(MarkerTerm).
@@ -129,7 +131,8 @@ highlight(VisualThing,Color) :-
 
 %% camera_pose(+Position:list, +Orientation:list) is det
 %
-% Sends a pose via the ROS topic "/camera/pose".
+% Sends a pose via the ROS topic _|/camera/pose|_.
+% Visualization clients may choose to manipulate some 3D camera accordingly.
 %
 % @param Position [float x,y,z]
 % @param Orientation [float qx,qy,qz,qw]
@@ -155,7 +158,11 @@ camera_interface(Camera) :-
 
 %% visualisation_server is det.
 %
-% Launch the visualization server
+% Launches a web server that runs a minimal visualization client.
+% This implementation is able to handle most marker visualization messages,
+% data visualization messages (among other features) are unsupported.
+% A proper client is implemented in [[openEASE][http://www.open-ease.org/]].
+% You can access the minimal client via http://localhost:1111
 %
 visualisation_server :-
   visualisation_server(_).

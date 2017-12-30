@@ -1,5 +1,4 @@
-/** <module> Integration of SWRL rules into KnowRob
-
+/*
   Copyright (C) 2017 Daniel Beßler
   All rights reserved.
 
@@ -24,9 +23,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Daniel Beßler
-@license BSD
 */
 :- module(swrl,
     [
@@ -48,6 +44,11 @@
       swrl_satisfied/1,
       swrl_satisfied/2
     ]).
+/** <module> Integration of SWRL rules into KnowRob
+
+@author Daniel Beßler
+@license BSD
+*/
 
 :- rdf_db:rdf_register_prefix(swrl, 'http://www.w3.org/2003/11/swrl#', [keep(true)]).
 :- rdf_db:rdf_register_ns(swrla, 'http://swrl.stanford.edu/ontologies/3.3/swrla.owl#', [keep(true)]).
@@ -71,12 +72,12 @@
 		 * RDF-based SWRL representation *
 		 ********************************/
 
-%% rdf_swrl_rule(?Descr, ?Term)
+%% rdf_swrl_rule(?Descr, ?Term).
 %
 % `Term` is a structure that represents the RDF SWRL rule `Descr`.
 %
-% @Descr The RDF description of a SWRL rule
-% @Term Prolog term representing a SWRL rule
+% @param Descr The RDF description of a SWRL rule
+% @param Term Prolog term representing a SWRL rule
 %
 rdf_swrl_rule(Descr, Head :- Body) :-
   rdf_has(Descr, rdf:type, swrl:'Imp'),
@@ -90,12 +91,12 @@ rdf_swrl_description(Descr,Descr) :-
 rdf_swrl_description(Name,Descr) :-
   atom(Name), rdf_swrl_name(Descr,Name).
 
-%% rdf_swrl_atom(?Descr, ?Term)
+%% rdf_swrl_atom(?Descr, ?Term).
 %
 % `Term` is a structure that represents the RDF SWRL rule atom `Descr`.
 %
-% @Descr The RDF description of a SWRL atom
-% @Term Prolog term representing a SWRL atom
+% @param Descr The RDF description of a SWRL atom
+% @param Term Prolog term representing a SWRL atom
 %
 rdf_swrl_atom(Descr, List) :-
   rdf_has(Descr, rdf:type, swrl:'AtomList'), !,
@@ -151,18 +152,18 @@ rdf_swrl_atom_list(Descr, [First|Rest]) :-
   rdf_has(Descr, rdf:rest, RestDescr),
   rdf_swrl_atom_list(RestDescr, Rest).
 
-%% rdf_swrl_name(?Descr,?Name)
+%% rdf_swrl_name(?Descr,?Name).
 %
 % `Name` is the rdfs:label value of the RDF SWRL rule `Descr`.
 %
-% @Descr The RDF description of a SWRL rule
-% @Name The rdfs:label of the rule.
+% @param Descr The RDF description of a SWRL rule
+% @param Name The rdfs:label of the rule.
 %
 rdf_swrl_name(Descr, Name) :-
   rdf_has(Descr, rdfs:label, literal(type(_,Name))), 
   rdf_has(Descr, rdf:type, swrl:'Imp'), !.
 
-%% rdf_swrl_enabled(?Descr)
+%% rdf_swrl_enabled(?Descr).
 %
 % True if the RDF SWRL rule 'Descr' is enabled.
 %
@@ -172,7 +173,7 @@ rdf_swrl_enabled(Descr) :-
   rdf_has(Descr, swrla:isRuleEnabled, Val),
   strip_literal_type(Val, true).
 
-%% rdf_swrl_load
+%% rdf_swrl_load.
 % 
 % Asserts all enabled RDF SWRL rules in Prolog KB
 %
@@ -182,11 +183,11 @@ rdf_swrl_load :- forall((
   rdf_swrl_rule(Descr, Rule),
   rdf_swrl_assert(Descr,Rule))).
 
-%% rdf_swrl_load(+Descr)
+%% rdf_swrl_load(+Descr).
 % 
 % Asserts RDF SWRL rule `Descr` in Prolog KB
 %
-% @Descr RDF identifier of SWRl rule description, or the name of a rule.
+% @param Descr RDF identifier of SWRl rule description, or the name of a rule.
 %
 rdf_swrl_load(Descr) :-
   rdf_swrl_description(Descr, Descr_),
@@ -198,7 +199,7 @@ rdf_swrl_assert(Descr,Rule) :-
   swrl_assert(Rule, Rules),
   forall(member(R,Rules), assertz( rdf_swrl_store(Descr,R) )).
 
-%% rdf_swrl_unload
+%% rdf_swrl_unload.
 % 
 % Retacts all previously loaded RDF SWRL rules from Prolog KB
 %
@@ -208,11 +209,11 @@ rdf_swrl_unload :-
       ignore(retract( Rule ))
   )).
 
-%% rdf_swrl_unload(+Descr)
+%% rdf_swrl_unload(+Descr).
 % 
 % Retacts the RDF SWRL rule `Descr` from Prolog KB
 %
-% @Descr RDF identifier of SWRl rule description, or the name of a rule.
+% @param Descr RDF identifier of SWRl rule description, or the name of a rule.
 %
 rdf_swrl_unload(Descr) :-
   rdf_swrl_description(Descr, Descr_),
@@ -224,12 +225,12 @@ rdf_swrl_retract(Descr) :-
       ignore(retract( Rule ))
   )).
 
-%% rdf_swrl_project(+Descr)
-%% rdf_swrl_project(+Descr,+Vars_user)
+%% rdf_swrl_project(+Descr).
+%% rdf_swrl_project(+Descr,+Vars_user).
 %
 % Project implication of named SWRL rule into the RDF triple store.
 %
-% @Descr RDF identifier of SWRl rule description, or the name of a rule.
+% @param Descr RDF identifier of SWRl rule description, or the name of a rule.
 % 
 rdf_swrl_project(Descr) :- rdf_swrl_project(Descr, []).
 rdf_swrl_project(Descr,Vars) :-
@@ -237,8 +238,8 @@ rdf_swrl_project(Descr,Vars) :-
   rdf_swrl_rule(Descr_, Rule),
   swrl_project(Rule,Vars).
 
-%% rdf_swrl_satisfied(+Descr)
-%% rdf_swrl_satisfied(+Descr,+Vars_user)
+%% rdf_swrl_satisfied(+Descr).
+%% rdf_swrl_satisfied(+Descr,+Vars_user).
 %
 rdf_swrl_satisfied(Descr) :- rdf_swrl_satisfied(Descr, []).
 rdf_swrl_satisfied(Descr, Vars) :-
@@ -309,20 +310,20 @@ rdf_class_list_pl(RestDescr, Rest).
 		 * Prolog-based SWRL representation *
 		 ************************************/
 
-%% swrl_assert(+Rule)
+%% swrl_assert(+Rule).
 %
 % Assert SWRL rule in the Prolog KB.
 %
-% @Rule Prolog-based representation of SWRL rule.
+% @param Rule Prolog-based representation of SWRL rule.
 %
 swrl_assert(Rule) :- swrl_assert(Rule,_).
 
-%% swrl_assert(+Rule, -Rule_pl)
+%% swrl_assert(+Rule, -Rule_pl).
 %
 % Assert SWRL rule in the Prolog KB.
 %
-% @Rule Prolog-based representation of SWRL rule.
-% @Rule_pl Prolog rule that corresponds to a SWRL rule.
+% @param Rule Prolog-based representation of SWRL rule.
+% @param Rule_pl Prolog rule that corresponds to a SWRL rule.
 %
 swrl_assert([] :- _, []).
 swrl_assert([HeadAtom|Xs] :- Body, [Asserted|Rest]) :-
@@ -602,8 +603,8 @@ swrl_nums([X|Xs],[Y|Ys],Vars) :-
 % TODO: convert units of datatype properties
 %convert_to_unit(literal(type(InputType, InputVal)), OutputType, OutputVal).
 
-%% swrl_satisfied(+Rule)
-%% swrl_satisfied(+Rule,+Vars_user)
+%% swrl_satisfied(+Rule).
+%% swrl_satisfied(+Rule,+Vars_user).
 %
 swrl_satisfied(Rule)            :- swrl_satisfied(Rule, [], _).
 swrl_satisfied(Rule, Vars_user) :- swrl_satisfied(Rule, Vars_user, _).
@@ -620,8 +621,8 @@ swrl_satisfied([HeadAtom|Xs] :- Body, Vars_user, Vars) :-
 		  *   Projection of SWRL rules       *
 		  ************************************/
 
-%% swrl_project(+Rule)
-%% swrl_project(+Rule,+Vars_user)
+%% swrl_project(+Rule).
+%% swrl_project(+Rule,+Vars_user).
 %
 % Project implications of a SWRL rule into the RDF triple store.
 % The rule is described by the individual `Descr` in the RDF triple store
@@ -770,7 +771,7 @@ swrl_class_atom_satisfied(S, Cls) :-
 		  *            SWRL phrases          *
 		  ************************************/
 
-%% swrl_phrase(?Term, ?Expr)
+%% swrl_phrase(?Term, ?Expr).
 %
 % `Term` is is the parse tree of parsing the atom `Expr` as SWRL rule.
 % Can be used to generate human readable syntax for Prolog SWRL terms,
@@ -783,8 +784,8 @@ swrl_class_atom_satisfied(S, Cls) :-
 %   Term = [ class(test_swrl:'Person',var(p)) ] :-
 %                [ class(test_swrl:'Driver',var(p)) ]
 %
-% @Term A Prolog term describing a SWRL rule
-% @Expr A SWRL describtion in human readable syntax
+% @param Term A Prolog term describing a SWRL rule
+% @param Expr A SWRL describtion in human readable syntax
 %
 swrl_phrase(Term, Expr) :-
   ground(Term),
@@ -795,7 +796,7 @@ swrl_phrase(Term, Expr) :-
   tokenize_atom(Expr, Tokens),
   phrase(swrl_parser(Term), Tokens).
 
-%% swrl_phrase_assert(?Phrase)
+%% swrl_phrase_assert(?Phrase).
 %
 % Assert SWRL rule in human readable Syntax as native Prolog rule(s).
 %

@@ -1,5 +1,4 @@
-/** <module> Prediction of action effects
-
+/*
   Copyright (C) 2011 Moritz Tenorth
   Copyright (C) 2016-2017 Daniel Beßler
   All rights reserved.
@@ -25,10 +24,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Moritz Tenorth
-@license BSD
-
 */
 :- module(action_effects,
     [
@@ -39,6 +34,12 @@
       action_precondition_check/2,
       comp_actionEffectRule/2
     ]).
+/** <module> Prediction of action effects
+
+@author Moritz Tenorth
+@author Daniel Beßler
+@license BSD
+*/
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
@@ -79,21 +80,24 @@ comp_actionEffectRule(Action, Effect) :-
 % Reasoning about which ActionClass (when the action is successfully performed)
 % will have a desired effect on the object manipulated during the action.
 % EffectTerm is a Prolog term describing the effect:
-%  - updated(P,O): If value O is specified for property P
-%  - created(Type): If Type is a new type of the manipulated object
-%  - destroyed(Type): If Type is not a type of the manipulated object anymore after the action was performed
-%  - destroyed: If the object is not spatially existing anymore
+%
+%	| updated(P,O)		   | If value O is specified for property P	  |
+%	| created(Type)		   | If Type is a new type of the manipulated object	|
+%	| destroyed(Type)	   | If Type is not a type of the manipulated object anymore after the action was performed	  |
+%	| destroyed			   | If the object is not spatially existing anymore	  |
 %
 % `created` and `destroyed` effect terms follow the convention that type assertions
 % are represented in rule heads as `Type(?obj)`, and type retractions as `(not Type)(?obj)`.
 % 
 % For example:
+% ==
 %     action_effect_on_object(knowrob:'TurningOnPoweredDevice',
 %            updated(knowrob:stateOfObject,knowrob:'DeviceStateOn'))
 %     action_effect_on_object(knowrob:'BakingFood',
 %            created(knowrob:'Baked'))
 %     action_effect_on_object(knowrob:'Cracking',
 %            destroyed)
+% ==
 %
 action_effect_on_object(ActionClass, updated(P,O)) :-
   % find SWRL action rule and the variable denoting the manipulated object within the rule
@@ -171,8 +175,8 @@ action_effect_stop_process(Proc) :-
   owl_instance_from_class(knowrob:'TimePoint', [instant=Now], Timepoint),
   rdf_assert(Proc, knowrob:endTime, Timepoint).
 
-%% action_precondition_check(+Act:iri)
-%% action_precondition_check(+Act:iri,+Effect:iri)
+%% action_precondition_check(+Act:iri).
+%% action_precondition_check(+Act:iri,+Effect:iri).
 %
 % True if Act is an action without unsatisfied preconditions, or
 % if Effect is a satisfied precondition of Act.

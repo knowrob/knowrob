@@ -1,5 +1,4 @@
-/** <module> Predicates for reading elements of a semantic map
-
+/*
   Copyright (C) 2009-13 Lars Kunze, Lorenz Moesenlechner, Moritz Tenorth
   All rights reserved.
 
@@ -24,10 +23,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Lars Kunze, Lorenz Moesenlechner, Moritz Tenorth
-@license BSD
-
 */
 
 :- module(semantic_map_utils,
@@ -46,6 +41,13 @@
       map_connection_type/3,
       map_joint_name/3
     ]).
+/** <module> Predicates for reading elements of a semantic map
+
+@author Lars Kunze
+@author Lorenz Moesenlechner
+@author Moritz Tenorth
+@license BSD
+*/
 
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).

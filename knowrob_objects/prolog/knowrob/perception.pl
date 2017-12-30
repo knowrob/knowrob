@@ -1,10 +1,6 @@
-/** <module> Asserting and reasoning about perception events.
-  These events allow temporal representation of the object pose via reification:
-  VisualPerception events may have eventOccursAt properties that are used for 
-  computing the pose property of an object.
-
+/*
   Copyright (C) 2011-2014 Moritz Tenorth
-  Copyright (C) 2017      Daniel Beßler
+  Copyright (C) 2017 Daniel Beßler
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -28,16 +24,12 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-  @author Moritz Tenorth, Daniel Beßler
-  @license BSD
 */
 
 :- module(knowrob_perception,
     [
       comp_detected_pose/2,
       comp_detected_pose/3,
-      comp_detected_pose_at_time/3,
       create_visual_perception/1,
       create_visual_perception/2,
       perception_set_object/2,
@@ -48,6 +40,16 @@
       read_joint_information/9,
       delete_joint_information/1
     ]).
+/** <module> Asserting and reasoning about perception events.
+
+  These events allow temporal representation of the object pose via reification:
+  VisualPerception events may have eventOccursAt properties that are used for 
+  computing the pose property of an object.
+
+  @author Moritz Tenorth
+  @author Daniel Beßler
+  @license BSD
+*/
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
@@ -69,7 +71,12 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % Pose of perceived objects
 
-%% comp_detected_pose
+%% comp_detected_pose(+Obj, -Pose).
+%% comp_detected_pose(+Obj, -Pose, +Interval).
+%
+% Computes the pose of Obj based on perception events
+% and where they occured.
+%
 comp_detected_pose(Obj, Pose) :-
   current_time(Instant),
   comp_detected_pose_at_time(Obj, Pose, [Instant,Instant]).
@@ -105,14 +112,17 @@ comp_detected_pose_at_time(Obj, Pose, Instant) :-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 % % % % % Asserting visual perception events
 
-%% create_perception_instance(PerceptionTypes, Perception) is det.
-%% create_perception_instance(PerceptionTypes, ModelTypes, Perception) is det.
+%% create_visual_perception(-Perception) is det.
+%% create_visual_perception(-Perception, +ModelTypes) is det.
+%
+% Creates a new OWL individual of knowrob:VisualPerception
+% and assigns its start time to the current time.
 %
 create_visual_perception(Perception) :-
   rdf_instance_from_class('http://knowrob.org/kb/knowrob.owl#VisualPerception', Perception),
   owl_instance_from_class(knowrob:'TimePoint', TimePoint),
   rdf_assert(Perception, knowrob:startTime, TimePoint).
-create_visual_perception(ModelType, Perception) :-
+create_visual_perception(Perception, ModelType) :-
   create_visual_perception(Perception),
   % set the perceivedUsingModel relation
   rdf_assert(Perception, knowrob:perceivedUsingModel, ModelType).
@@ -441,7 +451,7 @@ create_joint_information(Type, Parent, Child, Pose, Dir, Radius, Qmin, Qmax, Joi
       rdf_assert(Joint, knowrob:'turnRadius', literal(type(xsd:float, Radius)))
     ) ).
 
-%% update_joint_information(+Joint, +Type, +Pose, +Direction, +Radius, +Qmin, +Qmax)
+%% update_joint_information(+Joint, +Type, +Pose, +Direction, +Radius, +Qmin, +Qmax).
 %
 % Update type, pose and articulation information for a joint after creation.
 % Leaves Parent and Child untouched, i.e. assumes that only the estimated

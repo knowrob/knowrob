@@ -1,5 +1,4 @@
-/** <module> Predicates for spatial reasoning
-
+/*
   This module contains all computables that calculate qualitative spatial relations
   between objects to allow for spatial reasoning.
 
@@ -28,10 +27,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Moritz Tenorth, Lars Kunze
-@license BSD
-
 */
 :- module(comp_spatial,
     [
@@ -57,7 +52,12 @@
       objectAtPoint2D/2,
       objectAtPoint2D/3
     ]).
+/** <module> Predicates for spatial reasoning
 
+@author Moritz Tenorth
+@author Lars Kunze
+@license BSD
+*/
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('knowrob/computable')).
@@ -90,35 +90,6 @@
     comp_inCenterOf_at_time(r, r,+),
     comp_center(r, r).
 
-
-spatially_holds_interval(S, P, O, I) :-
-  var(I), !,
-  call(P, S, O, I).
-spatially_holds_interval(S, P, O, I) :-
-  % I is a time instant
-  nonvar(I),
-  time_term(I, Instant), !,
-  call(P, S, O, Instant).
-spatially_holds_interval(S, P, O, I) :-
-  % I is a closed interval
-  nonvar(I),
-  interval(I, [Begin, End]), !,
-  spatially_holds_interval(S, P, O, Begin, End).
-spatially_holds_interval(S, P, O, I) :-
-  % I is an opened interval
-  nonvar(I),
-  interval(I, [Begin]), !,
-  current_time(End),
-  spatially_holds_interval(S, P, O, Begin, End).
-spatially_holds_interval(S, P, O, Begin, End) :-
-  % NOTE: this is an approximation, just checking if the relations holds
-  %       for begin and end of the time interval.
-  %       This could be wrong if object poses change within this interval
-  % TODO: ensure that this inference is correct by taking into account timepoints
-  %       where the pose changed.
-  call(P, S, O, Begin),
-  call(P, S, O, End).
-
 spatial_thing(Thing) :-
   % if unbound limit search to human scale objects
   ground(Thing)
@@ -126,6 +97,7 @@ spatial_thing(Thing) :-
   ;  rdfs_individual_of(Thing, knowrob:'HumanScaleObject').
 
 %% on_Physical(?Top, ?Bottom) is nondet.
+%% on_Physical(?Top, ?Bottom, +Interval) is nondet.
 %
 % Check if Top is in the area of and above Bottom.
 %
@@ -159,6 +131,7 @@ on_Physical_at_time(Top, Bottom, Instant) :-
     <( BZ, TZ).
 
 %% comp_above_of(?Top, ?Bottom) is nondet.
+%% comp_above_of(?Top, ?Bottom, +Interval) is nondet.
 %
 % Check if Top is in the area of and above Bottom.
 %
@@ -196,6 +169,7 @@ comp_above_of_at_time(Top, Bottom, Instant) :-
 
 
 %% comp_below_of(?Bottom, ?Top) is nondet.
+%% comp_below_of(?Bottom, ?Top, +Interval) is nondet.
 %
 % Check if Top is in the area of and above Bottom.
 %
@@ -210,6 +184,7 @@ comp_below_of(Bottom, Top, Interval) :- comp_above_of(Top, Bottom, Interval).
 
 
 %% comp_toTheLeftOf(?Left, ?Right) is nondet.
+%% comp_toTheLeftOf(?Left, ?Right, +Interval) is nondet.
 %
 % Check if Left is to the left of Right.
 %
@@ -244,6 +219,7 @@ comp_toTheLeftOf_at_time(Left, Right, Instant) :-
 
 
 %% comp_toTheRightOf(?Right,?Left) is nondet.
+%% comp_toTheRightOf(?Right,?Left,+Interval) is nondet.
 %
 % Check if Right is to the right of Left.
 %
@@ -259,6 +235,7 @@ comp_toTheRightOf(Right, Left, Interval) :- comp_toTheLeftOf(Left, Right, Interv
 
 
 %% comp_toTheSideOf(?A, ?B) is nondet.
+%% comp_toTheSideOf(?A, ?B, +Interval) is nondet.
 %
 % Check if A is either to the left or the rigth of B.
 %
@@ -278,6 +255,7 @@ comp_toTheSideOf(A, B, I) :-
 
 
 %% comp_inFrontOf(?Front, ?Back) is nondet.
+%% comp_inFrontOf(?Front, ?Back, +Interval) is nondet.
 %
 % Check if Front is in front of Back. Currently does not take the orientation
 % into account, only the position and dimension.
@@ -311,6 +289,7 @@ comp_inFrontOf_at_time(Front, Back, Instant) :-
 
 
 %% comp_inCenterOf(?Inner, ?Outer) is nondet.
+%% comp_inCenterOf(?Inner, ?Outer, +Interval) is nondet.
 %
 % Check if Inner is in the center of OuterObj. Currently does not take the orientation
 % into account, only the position and dimension.
@@ -343,6 +322,7 @@ comp_inCenterOf_at_time(Inner, Outer, Instant) :-
 
 
 %% in_ContGeneric(?InnerObj, ?OuterObj) is nondet.
+%% in_ContGeneric(?InnerObj, ?OuterObj, +Interval) is nondet.
 %
 % Check if InnerObj is contained by OuterObj. Currently does not take the orientation
 % into account, only the position and dimension.
@@ -473,3 +453,32 @@ objectAtPoint2D(PX, PY, Obj, Instant) :-
 
     =<(0,DOT1), =<(DOT1, DOTV1),
     =<(0,DOT2), =<(DOT2, DOTV2).
+
+
+spatially_holds_interval(S, P, O, I) :-
+  var(I), !,
+  call(P, S, O, I).
+spatially_holds_interval(S, P, O, I) :-
+  % I is a time instant
+  nonvar(I),
+  time_term(I, Instant), !,
+  call(P, S, O, Instant).
+spatially_holds_interval(S, P, O, I) :-
+  % I is a closed interval
+  nonvar(I),
+  interval(I, [Begin, End]), !,
+  spatially_holds_interval(S, P, O, Begin, End).
+spatially_holds_interval(S, P, O, I) :-
+  % I is an opened interval
+  nonvar(I),
+  interval(I, [Begin]), !,
+  current_time(End),
+  spatially_holds_interval(S, P, O, Begin, End).
+spatially_holds_interval(S, P, O, Begin, End) :-
+  % NOTE: this is an approximation, just checking if the relations holds
+  %       for begin and end of the time interval.
+  %       This could be wrong if object poses change within this interval
+  % TODO: ensure that this inference is correct by taking into account timepoints
+  %       where the pose changed.
+  call(P, S, O, Begin),
+  call(P, S, O, End).

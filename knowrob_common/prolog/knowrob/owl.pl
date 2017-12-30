@@ -1,5 +1,4 @@
-/** <module> Utilities for handling OWL information in KnowRob.
-
+/*
   Copyright (C) 2011 Moritz Tenorth, 2016 Daniel Beßler
   All rights reserved.
 
@@ -24,10 +23,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Moritz Tenorth, Daniel Beßler
-@license BSD
-
 */
 
 :- module(knowrob_owl,
@@ -46,6 +41,12 @@
       owl_instance_from_class/2,
       owl_instance_from_class/3
     ]).
+/** <module> Utilities for handling OWL information in KnowRob.
+
+@author Moritz Tenorth
+@author Daniel Beßler
+@license BSD
+*/
 
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/rdfs')).
@@ -82,7 +83,7 @@
 %% owl_computable_db
 owl_computable_db(db(rdfs_computable_has,rdfs_instance_of)).
 
-%% owl_compute_individual_of(?Resource, ?Description) is nondet
+%% owl_compute_individual_of(?Resource, ?Description) is nondet.
 %
 % True if Resource satisfies Description
 % according the the OWL-Description entailment rules,
@@ -95,7 +96,7 @@ owl_compute_individual_of(Resource, Description) :-
   owl_computable_db(DB),
   owl_individual_of(Resource, Description, DB).
 
-%% owl_compute_has(?Subject, ?Predicate, ?Object)
+%% owl_compute_has(?Subject, ?Predicate, ?Object).
 %
 % True if this relation is specified, or can be deduced using OWL
 % inference rules, or computable semantics.
@@ -254,7 +255,7 @@ owl_inspect(Thing, P, O) :-
 		 *		  Input-Output			*
 		 *******************************/
 
-%% owl_write_readable(+Resource) is semidet
+%% owl_write_readable(+Resource) is semidet.
 % 
 % Writes human readable description of Resource.
 %
@@ -285,7 +286,8 @@ owl_readable_internal(X,Y) :- compound(X), rdf_readable(X,Y).
 		 *******************************/
 
 
-%% owl_instance_from_class(+Class, -Instance) is det
+%% owl_instance_from_class(+Class, -Instance) is det.
+%% owl_instance_from_class(+Class, +ConfigDict, -Instance) is det.
 %
 % Asserts new instance Instance with rdf:type Class.
 %

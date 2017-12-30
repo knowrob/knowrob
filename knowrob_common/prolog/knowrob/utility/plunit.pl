@@ -1,4 +1,4 @@
-/*  $Id$
+/*  plunit
 
     Part of SWI-Prolog
 

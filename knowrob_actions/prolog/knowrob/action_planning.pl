@@ -1,5 +1,4 @@
-/** <module> Methods for reasoning about object changes caused by actions
-  
+/*
   Copyright (C) 2011 Moritz Tenorth
   Copyright (C) 2017 Daniel Beßler
   All rights reserved.
@@ -25,10 +24,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Moritz Tenorth
-@license BSD
-
 */
 
 :- module(action_planning,
@@ -41,7 +36,11 @@
       plan_objects/2,             % all object types involved in performing a complexaction
       plan_constrained_objects/3  % link outputs of previous actions as inputs of another action
     ]).
+/** <module> Methods for reasoning about object changes caused by actions
 
+@author Moritz Tenorth
+@license BSD
+*/
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/rdf_db')).
 :- use_module(library('semweb/owl_parser')).
@@ -146,7 +145,7 @@ plan_start_action(ActionClass, ActionInstance) :-
   rdf_instance_from_class(ActionClass, ActionInstance),
   rdf_assert(ActionInstance, knowrob:'startTime', Timepoint).
 
-%% plan_start_action(+ActionInstance:iri) is semidet.
+%% plan_finish_action(+ActionInstance:iri) is semidet.
 %
 % Specify the endTime of ActionInstance and project its effects.
 %

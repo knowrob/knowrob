@@ -1,4 +1,4 @@
-/*  $Id$
+/*  owl.pl
 
     Part of SWI-Prolog
 

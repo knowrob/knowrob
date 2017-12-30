@@ -1,5 +1,4 @@
-/** <module> Computable properties for spatial reasoning
-
+/*
   Contains all computables that calculate temporal relations between events
   to allow for temporal reasoning.
 
@@ -27,31 +26,26 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Moritz Tenorth, Lars Kunze, Daniel Beßler
-@license BSD
-
 */
 :- module(comp_temporal,
     [
      comp_temporallySubsumes/2,
-     comp_after/2,
      comp_duration/2,
      comp_equalI/2,
-     comp_afterI/2,
-     comp_beforeI/2,
-     comp_meetsI/2,
      comp_meetsInvI/2,
-     comp_overlapsI/2,
      comp_overlapsInvI/2,
-     comp_startsI/2,
      comp_startsInvI/2,
-     comp_duringI/2,
      comp_duringInvI/2,
-     comp_finishesI/2,
      comp_finishesInvI/2
     ]).
+/** <module> Computable properties for spatial reasoning
 
+@author Moritz Tenorth
+@author Lars Kunze
+@author Daniel Beßler
+@license BSD
+
+*/
 :-  rdf_meta
     comp_temporallySubsumes(r, r),
     comp_after(r, r),
@@ -101,7 +95,8 @@ comp_temporallySubsumes(Long, Short) :-
 % @param Event Identifier of a TemporalThing
 % @param Duration Duration of the event
 %
-% TODO: should be literal(type(qudt:'MinuteTime', Duration))
+% @tbd Duration should be literal(type(qudt:'MinuteTime', Duration))
+%
 comp_duration(Event, Duration) :-
   interval(Event, [ST,ET]),
   Duration is (ET-ST).

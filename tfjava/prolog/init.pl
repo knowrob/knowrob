@@ -29,7 +29,6 @@
 
 */
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% dependencies
-
+:- register_ros_package(rosprolog).
+:- register_ros_package(tfjava).
 :- use_module(library('knowrob/tfjava')).

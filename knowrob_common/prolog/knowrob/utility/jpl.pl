@@ -1,5 +1,4 @@
-/** <module> Prolog/OWL utility predicates
-
+/*
   Copyright (C) 2009 Bernhard Kirchlechner, Moritz Tenorth
   All rights reserved.
 
@@ -24,16 +23,17 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Bernhard Kirchlechner, Moritz Tenorth
-@license BSD
-
 */
 
 :- module(knowrob_jpl,
     [ arrays_to_lists/2,
       lists_to_arrays/2
 ]).
+/** <module> Prolog/OWL utility predicates
+
+@author Bernhard Kirchlechner, Moritz Tenorth
+@license BSD
+*/
 
 %% arrays_to_lists(+Object, -Result).
 %

@@ -1,5 +1,4 @@
-/** <module> Methods for recursively parsing OWL files
-
+/*
   Copyright (C) 2014 Moritz Tenorth
   All rights reserved.
 
@@ -24,16 +23,17 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Moritz Tenorth
-@license BSD
-
 */
 
 
 :- module(owl_parser, [
       owl_parse/1
    ]).
+/** <module> Methods for recursively parsing OWL files
+
+@author Moritz Tenorth
+@license BSD
+*/
 
 :- use_module(library('semweb/rdf_db.pl')).
 :- use_module(library('semweb/rdf_edit.pl')).

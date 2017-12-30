@@ -1,5 +1,4 @@
-/** <module> Prolog/OWL utility predicates
-
+/*
   Copyright (C) 2016 Daniel Beßler
   All rights reserved.
 
@@ -24,10 +23,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Daniel Beßler
-@license BSD
-
 */
 
 :- module(atoms,
@@ -38,24 +33,33 @@
       atom_ensure_suffix/3,
       atom_remove_prefix/3
 ]).
+/** <module> Prolog/OWL utility predicates
+
+@author Daniel Beßler
+@license BSD
+*/
 
 :- use_module(library('clpfd')).
 :- use_module(library('knowrob/utility/delay')).
 
+%% atom_ensure_prefix(?Atom:atom, ?Prefix:atom, -AtomResolved:atom) is semidet.
 atom_ensure_prefix(Atom, Prefix, Atom) :-
   sub_atom(Atom, 0, _, _, Prefix), !.
 atom_ensure_prefix(Atom, Prefix, AtomResolved) :-
   atom_concat(Prefix, Atom, AtomResolved).
 
+%% atom_ensure_suffix(?Atom:atom, ?Suffix:atom, -AtomResolved:atom) is semidet.
 atom_ensure_suffix(Atom, Suffix, Atom) :-
   atom_concat(_, Suffix, Atom), !.
 atom_ensure_suffix(Atom, Suffix, AtomResolved) :-
   atom_concat(Atom, Suffix, AtomResolved).
 
+%% atom_remove_prefix(?Atom:atom, ?Prefix:atom, -AtomResolved:atom) is semidet.
 atom_remove_prefix(Atom, Prefix, AtomOut) :-
   atom_concat(Prefix, AtomOut, Atom), !.
 atom_remove_prefix(Atom, _, Atom).
 
+%% lowercase(?Upper:atom, ?Lower:atom) is semidet.
 lowercase(Upper,Lower) :-
     (ground(Upper);ground(Lower)),
     delay(atom_codes(Upper,UpperCodes)),

@@ -1,5 +1,4 @@
-/** <module> Filesystem utilities
-
+/*
   Copyright (C) 2016 Daniel Beßler
   All rights reserved.
 
@@ -24,10 +23,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Daniel Beßler
-@license BSD
-
 */
 
 :- module(knowrob_filesystem,
@@ -36,6 +31,11 @@
       path_split/2,
       mkdir/1
 ]).
+/** <module> Filesystem utilities
+
+@author Daniel Beßler
+@license BSD
+*/
 
 %% path_delimiter(?Delimiter)
 %
@@ -47,7 +47,7 @@ path_delimiter('/').
 %
 % Concatenate path prefix with path suffix.
 % Makes sure that one filesytem delimiter is added time_between
-% @Prefix and @Suffix.
+% Prefix and Suffix.
 %
 path_concat(Prefix, Suffix, Path) :-
   path_delimiter(Delimiter),
@@ -63,8 +63,8 @@ path_concat(Prefix, Suffix, Path) :-
 
 %% path_split(?Path, ?PathList)
 %
-% Splits @Path at delimiter characters and
-% unifies with splitted path elements @PathList.
+% Splits Path at delimiter characters and
+% unifies with splitted path elements PathList.
 %
 path_split(Path, PathList) :-
   path_delimiter(Delimiter),
@@ -72,7 +72,7 @@ path_split(Path, PathList) :-
   
 %% mkdir(+Dir)
 %
-% Create directory at @Dir if it does not yet exist.
+% Create directory at Dir if it does not yet exist.
 % Also creates all not-existing parent directories.
 %
 mkdir(Dir) :- exists_directory(Dir), !.

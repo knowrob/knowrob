@@ -1,5 +1,4 @@
-/** 
-
+/*
   Copyright (C) 2013 Moritz Tenorth
   Copyright (C) 2015 Daniel Beßler
   All rights reserved.
@@ -25,10 +24,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Moritz Tenorth
-@author Daniel Beßler
-@license BSD
 */
 
 :- module(mongo_designators,
@@ -42,7 +37,12 @@
       mng_designator_property/3,
       mng_designator_resolve/2
     ]).
+/** <module> Looking up designators in a mongo DB
 
+@author Moritz Tenorth
+@author Daniel Beßler
+@license BSD
+*/
 :- use_module(library('semweb/rdfs')).
 :- use_module(library('semweb/owl')).
 :- use_module(library('jpl')).
@@ -230,9 +230,9 @@ mng_designator_resolve(Designator, Entity) :-
 mng_designator_resolve(object, Designator, Entity) :-
   mng_designator_object_type(Designator, ObjType),
   rdfs_individual_of(Entity, ObjType).
-mng_designator_resolve(action, Designator, Entity) :-
+mng_designator_resolve(action, _Designator, _Entity) :-
   fail.
-mng_designator_resolve(location, Designator, Entity) :-
+mng_designator_resolve(location, _Designator, _Entity) :-
   fail.
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

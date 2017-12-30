@@ -1,12 +1,4 @@
-/** <module> Reasoning about organizational principles in household environments
-
-  This module contains all computables that compute the location where
-  an object should be placed given other objects at different locations
-  in the environment. Can also be used to infer where an object could
-  probably be found, given earlier (outdated) observations of other
-  objects in the environment. Uses the WUP similartiy from
-  comp_similartiy module.
-
+/*
   Copyright (C) 2011 Martin Schuster
   All rights reserved.
 
@@ -31,10 +23,6 @@
   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-@author Martin Schuster
-@license BSD
-
 */
 :- module(comp_orgprinciples,
     [
@@ -44,7 +32,18 @@
 		avg_similarity_object_location/4,
 		max_similarity_object_location/4
     ]).
+/** <module> Reasoning about organizational principles in household environments
 
+  This module contains all computables that compute the location where
+  an object should be placed given other objects at different locations
+  in the environment. Can also be used to infer where an object could
+  probably be found, given earlier (outdated) observations of other
+  objects in the environment. Uses the WUP similartiy from
+  comp_similartiy module.
+
+@author Martin Schuster
+@license BSD
+*/
 :- use_module(library('semweb/rdf_db')).
 :-  rdf_meta
           best_location_maxMaxWup(r,-),
@@ -222,13 +221,13 @@ max_similarity_object_location(SimFct, Class, List, Max) :-
 	max_list(Similarities, Max))).
 
 
-%% similarities(:SimFct:predicate, +Class:rdf_class, +[H|T]:list, -Similarities:list).
+%% similarities(:SimFct:predicate, +Class:rdf_class, +List:list, -Similarities:list).
 %
 % compute similarity of an object to each element of a list of object, using SimFct/3
 %
 % @param SimFct similarity function SimFct(+Class1, +Class2, -Similartiy)
 % @param Class class to compute similiarities with location
-% @param [H|T] list of classes that define the location
+% @param List list of classes that define the location
 % @param Similarities similarities of Class with each element of [H|T]
 similarities(_, _,[], []).
 similarities(SimFct, Class, [H|T], Similarities) :-

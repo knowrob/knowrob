@@ -1,5 +1,4 @@
-/** 
-
+/*
   Copyright (C) 2009 Lars Kunze, Lorenz Moesenlechner, Moritz Tenorth
   All rights reserved.
 
@@ -25,9 +24,8 @@
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-@author Lars Kunze, Lorenz Moesenlechner, Moritz Tenorth
-@license BSD
-
+  @author Lars Kunze, Lorenz Moesenlechner, Moritz Tenorth
+  @license BSD
 */
 
 :- use_module(library('semweb/rdfs')).
