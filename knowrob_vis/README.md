@@ -34,4 +34,3 @@ In addition, KnowRob supports a set of complex marker types.
   * **object(Name)**: A marker that represents an OWL individual (including children objects)
   * **agent(Name)**: A marker that represents an OWL agent individual (including all links)
   * **stickman(Name)**: A special human skeleton visualization, kinematic structure is spanned by the OWL individual indentified by Name
-  
