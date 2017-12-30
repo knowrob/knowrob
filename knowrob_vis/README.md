@@ -1,6 +1,6 @@
 Based on [[rviz Markers][http://www.ros.org/wiki/rviz/DisplayTypes/Marker]], this visualization module can display 3D information in a browser-based canvas that has been built using the [[ros3djs library][https://github.com/RobotWebTools/ros3djs]].
 
----+++ Usage
+### Usage
 
 First, setup the rosbridge communication interface and initialiaze the `knowrob_vis` package.
 ==
@@ -13,7 +13,7 @@ Markers must be explicitly published by the user with following query ([[openEAS
 marker_publish.
 ==
 
----+++ Marker Types
+### Marker Types
 
 The set of supported primitive marker types includes
 arrow, cube, sphere, cylinder, line_strip,
