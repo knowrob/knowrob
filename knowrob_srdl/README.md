@@ -26,21 +26,18 @@ The SRDL ontology is organized in a modular way, e.g. to describe only component
 
 ### Startup
 
-==
-$ rosrun rosprolog rosprolog knowrob_srdl
-==
+    $ rosrun rosprolog rosprolog knowrob_srdl
 
 Load SRDL model of the PR2 and Baxter robots
-==
-?- owl_parse('package://knowrob_srdl/owl/PR2.owl').
-?- owl_parse('package://knowrob_srdl/owl/baxter.owl').
-==
+
+    ?- owl_parse('package://knowrob_srdl/owl/PR2.owl').
+    ?- owl_parse('package://knowrob_srdl/owl/baxter.owl').
+
 
 Load an example task description for serving a drink
-==
-?- register_ros_package(knowrob_actions).
-?- owl_parse('package://knowrob_actions/owl/pancake-making.owl').
-==
+
+    ?- register_ros_package(knowrob_actions).
+    ?- owl_parse('package://knowrob_actions/owl/pancake-making.owl').
 
 ### Tutorial
 

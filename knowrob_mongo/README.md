@@ -30,9 +30,9 @@ Another useful predicate is mng_query_latest/4
 that yields ordered records before some constant time instant (latest record first).
 For example, to read only the latest image published
 on the topic "kinect_head_rgb_image_color", and before time Instant, one can write:
-==
-mng_query_latest('kinect_head_rgb_image_color', one(DBObj), 'header.stamp', Instant).
-==
+
+    mng_query_latest('kinect_head_rgb_image_color', one(DBObj), 'header.stamp', Instant).
+
 
 Finally, mng_query_incremental/3 allows to hook a Prolog goal into
 incrementally querying the mongo DB to allow integration of
@@ -48,6 +48,6 @@ message type specifiers, and the topic on which the message should
 be published.
 
 For example, camera info messages could be republished like this:
-==
-mng_republish(DBObj, 'sensor_msgs.CameraInfo', 'sensor_msgs/CameraInfo', 'camera_info', Msg).
-==
+
+    mng_republish(DBObj, 'sensor_msgs.CameraInfo', 'sensor_msgs/CameraInfo', 'camera_info', Msg).
+

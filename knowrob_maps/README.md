@@ -28,12 +28,12 @@ optional arguments:
 
 Example
 - 1. Convert URDF model to SemanticEnvironmentMap
-==
-$ rosrun knowrob_maps urdf_to_sem -s PM580j -n iai-map kitchen.urdf kitchen.owl
-==
+
+    $ rosrun knowrob_maps urdf_to_sem -s PM580j -n iai-map kitchen.urdf kitchen.owl
+
 - 2. Load Ontology
-==
-?- register_ros_package('knowrob_vis').
-?- owl_parse('kitchen.owl').
-?- owl_individual_of(M, knowrob:'SemanticEnvironmentMap'), marker_update(object(M)).
-==
+
+    ?- register_ros_package('knowrob_vis').
+    ?- owl_parse('kitchen.owl').
+    ?- owl_individual_of(M, knowrob:'SemanticEnvironmentMap'), marker_update(object(M)).
+

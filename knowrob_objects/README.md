@@ -35,6 +35,5 @@ the script to reload the dirty objects, and
 to republish tf and marker visualization messages.
 
 You can run the publisher with:
-==
-rosrun knowrob_objects object_state_publisher.py
-==
+
+    rosrun knowrob_objects object_state_publisher.py

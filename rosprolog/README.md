@@ -11,14 +11,14 @@ Some new predicates are added in this package:
  * tf_lookup_transform/3 TFTransformListener interface.
 
 To run rosprolog, use:
-==
-rosrun rosprolog rosprolog
-==
+
+    rosrun rosprolog rosprolog
+
  
 To start a prolog package within rosprolog (incl. calling its init.pl file and all init.pl of referenced packages), use:
-==
-rosrun rosprolog rosprolog <pkgname>
-==
+
+    rosrun rosprolog rosprolog <pkgname>
+
 
 For a introduction on KnowRob packages, please consult [knowrob.org](http://knowrob.org/doc/create_your_own_knowrob_package).
 
