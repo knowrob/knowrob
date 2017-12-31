@@ -6,25 +6,25 @@ Additional predicates for manipulating semantic maps and reasoning about them.
 
 ### urdf_to_sem
 
-  A script to convert URDF to [SemanticEnvironmentMap](http://knowrob.org/kb/knowrob.owl#SemanticEnvironmentMap)
+A script to convert URDF to [SemanticEnvironmentMap](http://knowrob.org/kb/knowrob.owl#SemanticEnvironmentMap)
 
-==
-$ rosrun knowrob_maps urdf_to_sem
+    $ rosrun knowrob_maps urdf_to_sem
 
-usage: urdf_to_sem [-h] [-n NAMESPACE] [-s SUFFIX] [-f] urdf [sem]
+Usage
 
-positional arguments:
-  urdf                  Path to URDF file. (required)
-  sem                   Path to output SemanticEnvironmentMap file. (default: <urdf file name>.owl)
+    urdf_to_sem [-h] [-n NAMESPACE] [-s SUFFIX] [-f] urdf [sem]
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -n NAMESPACE, --namespace NAMESPACE
-                        Namespace of output map. (default: file name of urdf)
-  -s SUFFIX, --suffix SUFFIX
-                        Suffix for SemanticEnvironmentMap instance. (default: unique string)
-  -f, --overwrite       Overwrite output file if exists. (default: false)
-==
+Positional arguments
+
+      urdf                  Path to URDF file. (required)
+      sem                   Path to output SemanticEnvironmentMap file. (default: <urdf file name>.owl)
+      
+Optional arguments
+
+      -h, --help            show this help message and exit
+      -n NAMESPACE, --namespace NAMESPACE Namespace of output map. (default: file name of urdf)
+      -s SUFFIX, --suffix SUFFIX Suffix for SemanticEnvironmentMap instance. (default: unique string)
+      -f, --overwrite       Overwrite output file if exists. (default: false)
 
 Example
 - 1. Convert URDF model to SemanticEnvironmentMap
