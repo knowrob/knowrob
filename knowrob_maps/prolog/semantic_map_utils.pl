@@ -123,8 +123,9 @@ map_child_object(Parent, Child) :-
 
 %% map_object_info(-Info) is nondet.
 %
-% Read information about all objects in the map, returning a structured list for
-% each object consisting of the instance ID, the class, the pose as list[16], and
+% Read information about all objects in the map.
+% Returning a structured list for
+% each object consisting of the instance ID, the class, the pose, and
 % a list of the object dimensions [D, W, H].
 % 
 % @param Inst  Object instance
